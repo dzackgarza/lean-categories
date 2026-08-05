@@ -16,7 +16,7 @@ inductive SubdiagramType
 
 /-- Reflection representation W -> O(V) in signature (1,n). -/
 structure Representation (L : IntegralLattice) where
-  group_action : L.carrier →ₗ[ℤ] L.carrier
+  groupAction : L.carrier →ₗ[ℤ] L.carrier
 
 /-- Endomorphism underlying a chamber representation. -/
 structure ChamberEndomorphism (L : IntegralLattice) where

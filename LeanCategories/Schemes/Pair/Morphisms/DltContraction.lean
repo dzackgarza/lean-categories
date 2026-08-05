@@ -22,6 +22,6 @@ structure DltContraction (source target : LogPair) where
   exceptionalDivisors : Type
   source_dlt : HasSingularity source .dlt
   target_lc : HasSingularity target .lc
-  contracts_exactly_exceptional : Prop
+  contractsExactlyExceptional : Prop
 
 end LeanCategories.Schemes.Pair

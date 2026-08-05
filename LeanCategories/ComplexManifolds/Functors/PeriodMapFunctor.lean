@@ -15,10 +15,10 @@ structure PeriodMapFunctor where
   map : ∀ {S T}, StackMorphism S T → HolomorphicMap (obj S) (obj T)
   map_identity : ∀ S, (map ({
     map := id
-    map_objects := fun _ => id
+    mapObjects := fun _ => id
     representable := Function.injective_id
   } : StackMorphism S S)).map = id
-  map_composition : Prop
+  mapComposition : Prop
 
 /-- The Torelli construction determines the period-map functor. -/
 axiom periodMapFunctor : PeriodMapFunctor

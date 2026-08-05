@@ -6,6 +6,7 @@ module
 
 public import CategoryGraph.Core.CategoricalPullback
 public import CategoryGraph.Core.Ids
+public import CategoryGraph.Core.Linters
 public import Mathlib.CategoryTheory.Equivalence
 
 @[expose] public section
@@ -46,7 +47,17 @@ structure ClassifiedCategory where
 @[ext] structure ClassifierSquare (A B : ClassifiedCategory.{uObj, uHom}) where
   baseMap : A.host ⟶ B.host
   totalMap : A.classifier.total ⟶ B.classifier.total
-  /-- Existence, rather than a chosen 2-cell, makes the square category strict. -/
+  /-- Confirmed incorrect per #30 ("Actual comparison 2-cells are mandatory —
+  `Nonempty (CatCommSq …)` is banned"): `ClassifiedCategory` should carry real
+  2-cell data. Swapping in a constructed `CatCommSq` here was attempted and
+  reverted — it breaks `id_comp`/`comp_id`/`assoc` below, which then need
+  `composeSquare` to be associative and unital *as equal data*, a real
+  2-categorical coherence lemma (pentagon-shaped) that is unproved. That
+  failure is evidence `ClassifiedCategory` most likely needs to be a
+  bicategory (composition/identity holding up to a coherence iso, not on the
+  nose), not evidence that `Nonempty` is fine. Left unresolved and
+  un-suppressed on purpose: `noBareNonempty` should keep flagging this
+  declaration until it is actually fixed, not silenced by `nolint`. -/
   square : Nonempty <|
     CatCommSq
       totalMap.toFunctor

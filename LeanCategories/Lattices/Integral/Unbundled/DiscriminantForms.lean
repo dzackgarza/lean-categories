@@ -41,8 +41,9 @@ structure PrimitiveEmbedding {L1 L2 : Type*}
 def IsTwoElementary (M : IntegralLattice L) : Prop :=
   ∀ f : L →ₗ[ℤ] ℤ, 2 • f ∈ LinearMap.range M.B
 
-/-- Nikulin coparity invariant $\delta \in \{0, 1\}$ for 2-elementary lattices. -/
-def TwoElementaryCoparity (M : IntegralLattice L) (h2 : M.IsTwoElementary) : Prop :=
+/-- Nikulin coparity invariant $\delta \in \{0, 1\}$, meaningfully studied for 2-elementary
+lattices (`IsTwoElementary`) but stated generally: the formula does not need that hypothesis. -/
+def TwoElementaryCoparity (M : IntegralLattice L) : Prop :=
   ∀ f : L →ₗ[ℤ] ℤ, ∃ v : L, M.B v = 2 • f ∧ Even (M.quad v / 2)
 
 

@@ -16,9 +16,9 @@ inductive ADEType where
 
 /-- Minimal resolution of a surface with rational double points. -/
 structure RDPResolution (X : Scheme) where
-  X_tilde : Scheme
-  π : X_tilde ⟶ X
-  exceptionalCurves : List (Set X_tilde)
+  xTilde : Scheme
+  π : xTilde ⟶ X
+  exceptionalCurves : List (Set xTilde)
   singularityTypes : List ADEType
   minimal : Prop
   resolves : Prop

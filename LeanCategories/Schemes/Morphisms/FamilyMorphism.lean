@@ -15,6 +15,6 @@ structure FamilyMorphism (S : Scheme) where
   flat : Prop
   fiberDimension : ℕ
   genericFiber : Scheme
-  specialFiber : ∀ s : S, Scheme
+  specialFiber : ∀ _s : S, Scheme
 
 end LeanCategories.Schemes

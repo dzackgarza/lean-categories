@@ -41,8 +41,18 @@ def NikulinOverlatticeConstruction {L1 L2 : Type u}
     (gamma : AntiIsometry M1 M2) : Prop :=
   ∀ x, gamma.toEquiv (-x) = -gamma.toEquiv x
 
-/-- Theorem: For a primitive embedding $S \hookrightarrow L$ into an even unimodular lattice $L$,
-    the discriminant forms satisfy $q_S \cong -q_{S^\perp}$. -/
+/-- Theorem (Nikulin): for a primitive embedding $S \hookrightarrow L$ into an even unimodular
+lattice $L$, the discriminant forms satisfy $q_S \cong -q_{S^\perp}$.
+
+CONFIRMED INCORRECT, not merely unproved: the conclusion below does not state that claim. It
+never mentions `M2`, `emb`, `S^\perp`, or a discriminant-form isometry — it is a tautology about
+`M1` related to itself via the identity map, which is why `hUnimodular` and `emb` go unused. The
+previous "proof" (`⟨⟨AddEquiv.refl _⟩, by intro x; rfl⟩`) exploited this to typecheck without
+proving anything. Restating this correctly needs a notion of the orthogonal complement `S^\perp`
+of a primitive embedding and an anti-isometry between `q_S` and `q_{S^\perp}`'s discriminant
+forms, neither available in this file as written. Left as `sorry` deliberately, so the existing
+no-`sorry` gate keeps failing on it until it is both correctly restated and proved — not
+grandfathered, not weakened to something vacuous-but-provable. -/
 theorem primitive_embedding_discriminant_anti_isometry {L1 L2 : Type u}
     [AddCommGroup L1] [Module ℤ L1] [Module.Finite ℤ L1] [Module.Free ℤ L1]
     [AddCommGroup L2] [Module ℤ L2] [Module.Finite ℤ L2] [Module.Free ℤ L2]
@@ -50,9 +60,7 @@ theorem primitive_embedding_discriminant_anti_isometry {L1 L2 : Type u}
     (hUnimodular : ∀ b : Module.Basis (Fin (Module.finrank ℤ L2)) ℤ L2, M2.IsUnimodular b)
     (emb : PrimitiveEmbedding M1 M2) :
     ∃ gamma : AntiIsometry M1 M1, NikulinOverlatticeConstruction M1 M1 gamma := by
-  refine ⟨⟨AddEquiv.refl _⟩, ?_⟩
-  intro x
-  rfl
+  sorry
 
 
 end IntegralLattice

@@ -100,7 +100,7 @@ This root module imports the full modular architecture across all 12 milestones 
 
 namespace LeanCategories
 
-def program_completion_target : String :=
+def programCompletionTarget : String :=
   "Full 12-Milestone Formalization Program: Lattices, Coxeter Geometry, Fans, Relative Schemes, Surfaces, & KSBA Moduli"
 
 end LeanCategories

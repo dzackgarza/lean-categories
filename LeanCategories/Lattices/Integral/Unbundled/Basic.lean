@@ -79,7 +79,7 @@ def div (M : IntegralLattice L) (v : L) : Submodule ℤ ℤ :=
   Submodule.map (M.B v) ⊤
 
 /-- Gram matrix relative to a given basis. -/
-noncomputable def gramMatrix {ι : Type*} [Fintype ι] [DecidableEq ι] (M : IntegralLattice L)
+noncomputable def gramMatrix {ι : Type*} (M : IntegralLattice L)
     (b : Module.Basis ι ℤ L) : Matrix ι ι ℤ :=
   Matrix.of (fun i j => M.eval (b i) (b j))
 
