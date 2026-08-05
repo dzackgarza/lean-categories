@@ -3,7 +3,7 @@
 
 This repository uses the central agent memory vault at `/home/dzack/.agent-memory-vault`.
 
-Project memory key: `projects/github.com__dzackgarza__lean-lattices/index`.
+Project memory key: `projects/github.com__dzackgarza__lean-categories/index`.
 
 Repository `.agents` and `.hermes` paths are symlinks to the same vault-owned project directory.
 
