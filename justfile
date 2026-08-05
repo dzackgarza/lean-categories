@@ -33,6 +33,7 @@ test: build
     @just _lean-vacuity-audit
     @just _lean-mathlib-lint-audit
     @just _lean-unused-variables
+    @just _lean-axiom-audit-leancategories
 
 [private]
 test-commit: test
@@ -44,6 +45,20 @@ test-ci: test
 [private]
 _lean-axiom-audit:
     @lake exe category-graph-axiom-audit
+
+# Same kernel-axiom-budget check, scoped to LeanCategories instead of
+# CategoryGraph (LeanCategories/Meta/AxiomAudit.lean; a deliberate sibling,
+# not a widening of the CategoryGraph filter — see that file's module doc).
+# Before this existed, nothing in this repo's automation looked at
+# LeanCategories' axiom footprint at all: 71 raw `axiom` declarations across
+# ~29 files were invisible to every existing check, several of them standing
+# in for named classical theorems (Nikulin, Vinberg, KSBA properness) that
+# issue #21's own ledger already lists as axioms to eliminate. Run in `test`
+# directly (not push-only like `_lean-axiom-audit`) given the scale of what
+# it currently catches — 180 flagged declarations on introduction.
+[private]
+_lean-axiom-audit-leancategories:
+    @lake build LeanCategories.Meta.AxiomAudit
 
 # Repo-supplied vacuous-witness audit (bans bare `Nonempty` in exported
 # CategoryGraph types; see CategoryGraph/Tools/VacuityAudit.lean). No `lake
