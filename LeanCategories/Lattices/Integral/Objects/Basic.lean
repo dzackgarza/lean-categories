@@ -12,18 +12,24 @@ open LeanCategories.Modules.Bilinear
 def AdjointInjective (L : SymmBilinModuleCat ℤ) : Prop :=
   Function.Injective L.form
 
-/-- Full subcategory IntegralLat ⊂ SymBil_Z. -/
+/-- Full subcategory IntegralLat ⊂ SymBil_Z.
+
+There is deliberately no `Module ℤ carrier` field: an abelian group has exactly
+one ℤ-module structure (`AddCommMonoid.subsingletonIntModule`), so such a field
+is redundant. It is also actively harmful — an independent field is not
+definitionally `AddCommGroup.toIntModule carrier`, so on a product carrier the
+field-derived instance and Mathlib's `Prod.instModule` fail to agree and
+constructions like `OrthogonalSum` cannot be built at all. -/
 structure IntegralLattice where
   carrier : Type u
   [addCommGroup : AddCommGroup carrier]
-  [module : Module ℤ carrier]
   [finite : Module.Finite ℤ carrier]
   [free : Module.Free ℤ carrier]
   form : LinearMap.BilinForm ℤ carrier
   isSymm : form.IsSymm
   nondegenerate : form.Nondegenerate
 
-attribute [instance] IntegralLattice.addCommGroup IntegralLattice.module
+attribute [instance] IntegralLattice.addCommGroup
   IntegralLattice.finite IntegralLattice.free
 
 /-- Automatic injectivity of form-preserving embeddings into nondegenerate lattices. -/
