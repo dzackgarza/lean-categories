@@ -1,6 +1,32 @@
-# lean-lattices
+# lean-categories
 
-Lean libraries for lattice mathematics and reusable categorical foundations.
+The centralized Lean baseline of categorical constructions. Downstream projects require
+this package and import the trees they need; no construction is duplicated downstream.
+
+`LeanCategories` holds the categories themselves, organized into top-level trees that
+follow subcategory containment. Lattices are one such tree, on the same footing as every
+other:
+
+```text
+LeanCategories/
+  Modules/           FiniteFreeZ, Bilinear, Quadratic
+  Lattices/          Integral (+ Integral/Unbundled), Discriminant
+  Groups/            Reflection
+  Schemes/           Objects, Morphisms, Functors, Surface, Divisor, Pair
+  Stacks/
+  ComplexManifolds/
+  Fans/
+  Util/
+```
+
+Each category tree carries `Objects/`, `Morphisms/`, and `Functors/`. Directory names are
+plural so the namespaces do not shadow the Mathlib identifiers `Module`, `Group`, and
+`Scheme`.
+
+`Lattices/Integral/Unbundled/` is the pre-migration monolithic layer: one namespace
+holding an unbundled `IntegralLattice` (a form on a fixed carrier, no nondegeneracy) plus
+Enriques-surface and fan material that belongs in `Schemes/` and `Fans/`. It duplicates
+parts of `Lattices/Integral/` and is scheduled for reconciliation.
 
 `CategoryGraph` is the neutral normalized-category-graph library migrated from the
 historical research prototype. It owns the generic expression language, classifier
@@ -62,5 +88,5 @@ comparison category, the computational-language semantics, categorical presentat
 exact packages, and convex/reflection/period/degeneration geometry). AGENTS.md governs
 *how* agents work; FOUNDATIONS.md governs *what* the mathematics is. The governing
 execution state is the issue ledger
-([#1](https://github.com/dzackgarza/lean-lattices/issues/1): north star, decision
+([#1](https://github.com/dzackgarza/lean-categories/issues/1): north star, decision
 records) and the consolidated work units (#30–#40, #21–#29, #49, #53–#54).

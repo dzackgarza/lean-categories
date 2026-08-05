@@ -1,4 +1,4 @@
-# lean-lattices — Lean libraries for lattice mathematics and categorical foundations.
+# lean-categories — the shared Lean baseline of categorical constructions.
 #
 # Lake owns compilation and Mathlib supplies the dependency cache. Language-level
 # QC law is delegated to the global gate (~/ai-review-ci/justfiles/lean.just);

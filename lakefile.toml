@@ -1,7 +1,7 @@
-name = "lean_lattices"
+name = "lean_categories"
 version = "0.1.0"
 keywords = ["math"]
-defaultTargets = ["LeanLattices", "CategoryGraph", "category-graph-export"]
+defaultTargets = ["LeanCategories", "CategoryGraph", "category-graph-export"]
 
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
@@ -24,7 +24,7 @@ subDir = "lean"
 rev = "main"
 
 [[lean_lib]]
-name = "LeanLattices"
+name = "LeanCategories"
 
 [[lean_lib]]
 name = "CategoryGraph"
