@@ -5,7 +5,6 @@ public import LeanCategories.Lattices.Integral.Unbundled.DualAndDiscriminant
 public import LeanCategories.Lattices.Integral.Unbundled.StandardLattices
 public import LeanCategories.Lattices.Integral.Unbundled.DiscriminantForms
 public import LeanCategories.Lattices.Integral.Unbundled.CoxeterAndReflectiveLattices
-public import LeanCategories.Lattices.Integral.Unbundled.EnriquesSurfaceTheory
 
 @[expose] public section
 

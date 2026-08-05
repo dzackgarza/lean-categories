@@ -15,7 +15,16 @@ def gramMatrix {n : ℕ} (L : IntegralLattice) (b : Fin n → L.carrier) :
 noncomputable def determinant {n : ℕ} (L : IntegralLattice) (b : Fin n → L.carrier) : ℤ :=
   Matrix.det (gramMatrix L b)
 
-/-- Orthogonal direct sum of integral lattices. -/
+/-- Orthogonal direct sum of integral lattices.
+
+Still an axiom: `IntegralLattice` carries `AddCommGroup carrier` and
+`Module ℤ carrier` as independent fields, so on a product carrier Lean fixes the
+module field to `AddCommGroup.toIntModule` while Mathlib's `Module.Finite.prod`
+and `Module.Free.prod` produce the `Prod.instModule` form. The two are not
+definitionally equal, and no choice of the `module` field satisfies both the
+form and the finiteness/freeness obligations at once. Discharging this axiom
+needs the redundant `module` field removed from `IntegralLattice`, which is a
+change to the core structure rather than to this file. -/
 axiom OrthogonalSum (L₁ L₂ : IntegralLattice) : IntegralLattice
 
 /-- The direct-sum form is the sum of the two component forms. -/

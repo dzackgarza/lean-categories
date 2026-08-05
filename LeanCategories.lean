@@ -5,10 +5,10 @@ public import LeanCategories.Lattices.Integral.Unbundled.DualAndDiscriminant
 public import LeanCategories.Lattices.Integral.Unbundled.StandardLattices
 public import LeanCategories.Lattices.Integral.Unbundled.DiscriminantForms
 public import LeanCategories.Lattices.Integral.Unbundled.CoxeterAndReflectiveLattices
-public import LeanCategories.Lattices.Integral.Unbundled.EnriquesSurfaceTheory
+public import LeanCategories.Schemes.Surface.Enriques
 public import LeanCategories.Lattices.Integral.Unbundled.NikulinGluing
 public import LeanCategories.Lattices.Integral.Unbundled.OverlatticesAndGluing
-public import LeanCategories.Lattices.Integral.Unbundled.RationalFansAndSemifans
+public import LeanCategories.Fans.Unbundled
 public import LeanCategories.Lattices.Integral.Unbundled.Form.Basic
 public import LeanCategories.Lattices.Integral.Unbundled.Form.Dual
 public import LeanCategories.Lattices.Integral.Unbundled.Form.Discriminant

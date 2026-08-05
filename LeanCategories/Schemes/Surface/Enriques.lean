@@ -1,13 +1,11 @@
 module
 
-public import LeanCategories.Lattices.Integral.Unbundled.Basic
-public import LeanCategories.Lattices.Integral.Unbundled.StandardLattices
-public import LeanCategories.Lattices.Integral.Unbundled.DiscriminantForms
-public import LeanCategories.Lattices.Integral.Unbundled.CoxeterAndReflectiveLattices
+public import Mathlib.Data.Int.Notation
+public import Mathlib.Data.Nat.Notation
 
 @[expose] public section
 
-namespace LeanCategories.Lattices.Integral.Unbundled
+namespace LeanCategories.Schemes.Surface
 
 /-!
 # Enriques Surfaces, Polarized Log Pairs, and Period Maps
@@ -17,11 +15,15 @@ This module formalizes:
 - Log pair $(X, D)$ with boundary divisor $D$
 - Folded ABCDE surface root types
 - Period domain $\Omega_{E_8 \oplus U}$ and period map
+
+None of the declarations below reference a lattice, so this module carries no
+lattice imports.
 -/
 
-namespace IntegralLattice
+/-- Enriques surface period lattice $E_8 \oplus E_8 \oplus U \oplus U \oplus U$.
 
-/-- Enriques surface period lattice $E_8 \oplus E_8 \oplus U \oplus U \oplus U$. -/
+The body is a rank-four placeholder and does not yet realize the rank-26 lattice
+named in the docstring. -/
 def EnriquesPeriodLatticeType : Type :=
   (ℤ × ℤ) × (ℤ × ℤ)
 
@@ -38,6 +40,4 @@ structure BoundaryComponent where
   type : FoldedADEType
   multiplicity : ℕ
 
-end IntegralLattice
-
-end LeanCategories.Lattices.Integral.Unbundled
+end LeanCategories.Schemes.Surface
