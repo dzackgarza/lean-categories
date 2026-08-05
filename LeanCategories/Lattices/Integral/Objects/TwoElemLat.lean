@@ -27,20 +27,4 @@ structure NikulinInvariants where
 axiom nikulinInvariants (L : IntegralLattice) (hEven : IsEven L)
     (h2elem : IsTwoElementary L) : NikulinInvariants
 
-/-- Nikulin's classification theorem for 2-elementary even lattices:
-    two such lattices with the same signature and (r,a,δ) invariants are isometric.
-    See Nikulin, Theorem 3.6.2. -/
-axiom nikulin_two_elementary_classification
-    (L₁ L₂ : IntegralLattice)
-    (hE₁ : IsEven L₁) (hE₂ : IsEven L₂)
-    (h2₁ : IsTwoElementary L₁) (h2₂ : IsTwoElementary L₂)
-    (hInv : nikulinInvariants L₁ hE₁ h2₁ = nikulinInvariants L₂ hE₂ h2₂) :
-    Nonempty (L₁.carrier ≃ₗ[ℤ] L₂.carrier)
-
-/-- Existence constraints on Nikulin invariants: a 2-elementary even lattice
-    of signature (l₊, l₋) with invariants (r,a,δ) exists iff certain
-    congruence conditions hold. See Nikulin, Theorem 3.6.2. -/
-axiom nikulin_existence_constraints (inv : NikulinInvariants) (l_pos l_neg : ℕ) :
-    Prop
-
 end LeanCategories.Lattices.Integral

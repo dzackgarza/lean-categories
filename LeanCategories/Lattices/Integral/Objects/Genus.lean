@@ -14,8 +14,4 @@ structure Genus (L : IntegralLattice) where
 def Genus.IsLocallyAdmissible {L : IntegralLattice} (g : Genus L) : Prop :=
   0 ≤ g.signature.1 ∧ 0 ≤ g.signature.2
 
-/-- Nikulin's local-to-global genus classification. -/
-axiom nikulin_genus_classification (L : IntegralLattice) :
-  ∃ g : Genus L, g.IsLocallyAdmissible
-
 end LeanCategories.Lattices.Integral

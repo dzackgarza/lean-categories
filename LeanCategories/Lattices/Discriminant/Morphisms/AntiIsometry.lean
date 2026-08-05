@@ -30,19 +30,4 @@ structure PrimitiveEmbeddingDiscriminantData (S L : IntegralLattice) where
   sourceCarrier : sourceModule.carrier = discrGroup S
   antiIsometry : AntiIsometry sourceModule complementModule
 
-/-- Nikulin's theorem: primitive embeddings S ↪ L (with L even unimodular)
-    are classified by anti-isometries of discriminant forms.
-    Specifically, there is a bijection between:
-    - Isometry classes of primitive embeddings S ↪ L
-    - Anti-isometries γ : (A_S, q_S) ≅ (H, -q_S|_H) for isotropic subgroups H ≤ A_S
-    See Nikulin, Theorem 1.14.4. -/
-axiom primitive_embedding_anti_isometry_bijection
-    (S L : IntegralLattice) (hUnimod : IsUnimodular L) :
-    PrimitiveEmbedding S L ≃ PrimitiveEmbeddingDiscriminantData S L
-
-/-- Anti-isometry induced by a primitive embedding. -/
-axiom induced_anti_isometry (S L : IntegralLattice)
-    (f : PrimitiveEmbedding S L) (hUnimod : IsUnimodular L) :
-    PrimitiveEmbeddingDiscriminantData S L
-
 end LeanCategories.Lattices.Discriminant

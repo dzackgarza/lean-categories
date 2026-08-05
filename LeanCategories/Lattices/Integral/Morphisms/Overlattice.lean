@@ -42,20 +42,4 @@ theorem IsotropicSubgroup.ext {L : IntegralLattice} {hEven : IsEven L}
 instance (L : IntegralLattice) (hEven : IsEven L) : PartialOrder (IsotropicSubgroup L hEven) :=
   PartialOrder.lift IsotropicSubgroup.subgroup fun _ _ => IsotropicSubgroup.ext
 
-/-- Nikulin's overlattice theorem: Even overlattices L ⊆ L' ⊆ L* biject with
-    isotropic subgroups of the discriminant group A_L.
-    See Nikulin, "Integer symmetric bilinear forms and some of their
-    geometric applications", Theorem 1.4.1. -/
-axiom overlattice_isotropic_equiv (L : IntegralLattice) (hEven : IsEven L) :
-    Overlattice L ≃ IsotropicSubgroup L hEven
-
-/-- Nikulin's correspondence is inclusion-preserving in both directions. -/
-axiom overlattice_isotropic_order_iso (L : IntegralLattice) (hEven : IsEven L) :
-    Overlattice L ≃o IsotropicSubgroup L hEven
-
-/-- The number of even overlattices is determined by the discriminant group. -/
-axiom overlattice_count (L : IntegralLattice) (hEven : IsEven L)
-    [Fintype (DiscriminantGroup L)] [Fintype (IsotropicSubgroup L hEven)] :
-    ∃ n : ℕ, n = Fintype.card (IsotropicSubgroup L hEven)
-
 end LeanCategories.Lattices.Integral
