@@ -38,6 +38,18 @@ agent-memory maintain move <key> --to global/advice
 
 # Mathematical Simplicity as Architecture
 
+## Mathematical correction reset
+
+- Before you add a catalogue entry, classify its mathematical role.
+- Use one of these roles: definition, construction, functor, theorem, computation, or upstream declaration.
+- For a category, state its objects and morphisms.
+- For a functor, state its source, target, object action, and morphism action.
+- Search repository declarations and project memory before you add a declaration or decision.
+- If a correction changes these data, discard all dependent entries and derivations.
+- Do not preserve a rejected predicate through renaming, sign changes, or wrapper changes.
+- Treat corrections as evidence. Check sources before you adopt them.
+- Store settled mathematics in project decisions. Do not store it in this routing file.
+
 ## A long-horizon orientation document for agents working on the Lean foundations, Sage bridge, and mathematical DSL
 
 **Status.** This is an orientation and knowledge-transfer document. It is not a replacement issue plan, an implementation specification, or an adjudication of every technical claim made during the attached conversations. The conversations are a derivation record: many individual proposals were corrected or superseded. This report extracts the stable project vision, the recurring modes of agent failure, and the style of mathematical reasoning repeatedly taught through those corrections.
@@ -839,4 +851,3 @@ The citations below identify the source passages used for the synthesis. They in
 - **[S7]** Same file and `DSLDiscussion/mathematical-language-style-guide.md`: audience-relative auditability; layer quarantine; foreign-discipline vocabulary, coinage, and collisions; mathematical prose aimed at working mathematicians.
 - **[S8]** `gpt-web-math-chats-2026-07-16_to_2026-07-23.zip`, extracted `graph-simplification-request/.../conversation.md`, lines 532–774: code-as-ontology capture; relation-kind collapse; proof-carrying laundering; capability promotion; false gaps; singleton reification; proxy optimization; principle–action decoupling; correction-local patching; formalization at typing speed; throughput replacing mathematical judgment.
 - **[S9]** `DSLDiscussion/axiom-classifiers-framework.md`: a distilled but partly provisional attempt to state the classifier, truncation, diagram-filler, and operadic framework. Used here only as evidence of the intended uniform scope; later corrections in [S3] control where the two conflict.
-
