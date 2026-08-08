@@ -38,38 +38,6 @@ agent-memory maintain move <key> --to global/advice
 
 # Mathematical Simplicity as Architecture
 
-## Transcript-derived catalogue gate
-
-- Each catalogue row must cite its source-defined mathematical role.
-- Classify it as a definition, construction, functor, theorem, computation, or upstream declaration.
-- State whether it concerns presentations, object equality, isomorphism, or category equivalence.
-- For a category, state its objects and morphisms.
-- For a functor, state its source, target, object action, and morphism action.
-- An object constructor alone is not a functor.
-- Use type `B_2` before you merge Gram, Cartan, Coxeter, or diagram data.
-- A Gram matrix records form values. A Cartan matrix records different data and need not be symmetric.
-- A Coxeter matrix records reflection orders. A Coxeter diagram is derived from Coxeter data.
-- For roots, separate the source definition from each norm or divisibility criterion.
-- Record a criterion as a theorem only after proof.
-- Test general group rows on an infinite group and on expensive generator computation.
-- Do not define geometric monodromy by an arithmetic stabilizer.
-- Equality between geometric monodromy and an arithmetic bound needs a theorem.
-- Reject renaming or sign changes that preserve a rejected predicate.
-- If a correction changes these data, discard all dependent rows and derivations.
-- Treat corrections as evidence. Check sources before you adopt them.
-
-The owning decision is `projects/github.com__dzackgarza__lean-categories/decisions/catalogue-correction-boundaries`.
-
-Use these traps during review:
-
-- `global/traps/when-a-premise-is-deleted-its-conclusion-must-be-re-derived-or-deleted-with-it-never-re-justified`;
-- `global/traps/do-not-collapse-category-object-and-presentation`;
-- `global/traps/software-shape-is-not-mathematical-ontology`;
-- `global/traps/supplied-generators-never-stand-in-for-a-canonical-group`;
-- `global/traps/a-criterion-or-upper-bound-is-not-a-definition`;
-- `global/traps/identify-the-functor-before-selecting-its-proof-obligation`;
-- `global/traps/computability-must-not-define-mathematical-ontology-two-axis-rule`.
-
 ## A long-horizon orientation document for agents working on the Lean foundations, Sage bridge, and mathematical DSL
 
 **Status.** This is an orientation and knowledge-transfer document. It is not a replacement issue plan, an implementation specification, or an adjudication of every technical claim made during the attached conversations. The conversations are a derivation record: many individual proposals were corrected or superseded. This report extracts the stable project vision, the recurring modes of agent failure, and the style of mathematical reasoning repeatedly taught through those corrections.
