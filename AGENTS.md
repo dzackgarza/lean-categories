@@ -101,6 +101,24 @@ The failure this gate prevents is §4.3 and §4.4: writing a plausible new defin
 
 ---
 
+## Sourcing a citation — the source gate
+
+The reuse gate above governs *formalizations*; this one governs *mathematical sources*. Much of this programme's content is transcribed from the literature — Nikulin's genus theorems, O'Meara's modularity, Conway–Sloane, Kac. **A citation entering a plan, issue, docstring, or commit message carries an item key from the live library and a statement read on the page.**
+
+Before citing any paper, book, or theorem number, in order:
+
+1. **Load the [[zotero/SKILL|zotero]] skill and read through the live library.** It owns the transport: the running Zotero desktop's local API, `lib/zotero.py` in the `zotero-library` repo, `health()` first. Follow it rather than a remembered command surface. The library is what supplies the item key that makes a citation resolvable by a later agent.
+
+2. **Use [[zotero-metadata-proof/SKILL|zotero-metadata-proof]] and [[zotero-pdf-extraction-attachments/SKILL|zotero-pdf-extraction-attachments]]** when the question is whether an item's metadata is right, or whether the text in hand is the item's current extraction child. `get_children` paginates, so confirm the full child list before concluding what attachments an item has.
+
+3. **Transcribe the numbered result, and label its role.** Quote the statement as the source gives it, and say whether it is a *definition* or a *characterization*. The distinction carries the hypotheses and names the auxiliary invariants the definition depends on — which is how a missing ingredient becomes visible (§3.5: implications are theorems, not definitions).
+
+4. **Report searches in the reuse gate's form** — name the scope searched (§10.7).
+
+What this gate buys: a citation that resolves, a statement checked against the page, and the auxiliary notions the source's own definition requires. The third is the one that pays — a definition transcribed from the page brings its ingredients with it, and those ingredients are how the catalogue learns which invariants it still owes.
+
+---
+
 ## 1. What the project is actually building
 
 ### 1.1 Not a category taxonomy
