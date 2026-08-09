@@ -8,6 +8,7 @@ public import LeanCategories.Lattices.Valued.Arithmetic
 public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
@@ -152,6 +153,26 @@ theorem orthogonalSum_pairing (L₁ L₂ : LatticeCat R W)
       L₁.obj.pairing x.1 y.1 + L₂.obj.pairing x.2 y.2 :=
   rfl
 
+/-- An orthogonal sum of unimodular integral lattices is unimodular. -/
+theorem isUnimodular_orthogonalSum (L₁ L₂ : IntegralLatticeCat R)
+    (h₁ : IsUnimodular L₁) (h₂ : IsUnimodular L₂) :
+    IsUnimodular (orthogonalSum L₁ L₂) := by
+  let e : (L₁.obj.carrier × L₂.obj.carrier) ≃ₗ[R]
+      ((L₁.obj.carrier × L₂.obj.carrier) →ₗ[R] R) :=
+    (LinearEquiv.prodCongr
+      (LinearEquiv.ofBijective L₁.obj.adjoint h₁)
+      (LinearEquiv.ofBijective L₂.obj.adjoint h₂)).trans
+        (Module.dualProdDualEquivDual R L₁.obj.carrier L₂.obj.carrier)
+  rw [IsUnimodular]
+  have he : (orthogonalSum L₁ L₂).obj.adjoint = e.toLinearMap := by
+    apply LinearMap.ext
+    intro x
+    apply LinearMap.ext
+    intro y
+    rfl
+  rw [he]
+  exact e.bijective
+
 /-- The bilinear map for a finite indexed orthogonal sum. -/
 noncomputable def indexedOrthogonalSumBilinMap {I : Type} [Fintype I]
     (L : I → LatticeCat R W) :
@@ -188,6 +209,32 @@ theorem indexedOrthogonalSum_pairing {I : Type} [Fintype I]
       ∑ i, (L i).obj.pairing (x i) (y i) :=
   rfl
 
+/-- A finite indexed orthogonal sum of unimodular lattices is unimodular. -/
+theorem isUnimodular_indexedOrthogonalSum {I : Type} [Fintype I]
+    (L : I → IntegralLatticeCat R) (hL : ∀ i, IsUnimodular (L i)) :
+    IsUnimodular (indexedOrthogonalSum L) := by
+  classical
+  let e : ((i : I) → (L i).obj.carrier) ≃ₗ[R]
+      (((i : I) → (L i).obj.carrier) →ₗ[R] R) :=
+    (LinearEquiv.piCongrRight fun i ↦
+      LinearEquiv.ofBijective (L i).obj.adjoint (hL i)).trans
+        (LinearMap.lsum R (fun i ↦ (L i).obj.carrier) R)
+  rw [IsUnimodular]
+  have he : (indexedOrthogonalSum L).obj.adjoint = e.toLinearMap := by
+    apply LinearMap.ext
+    intro x
+    apply LinearMap.ext
+    intro y
+    change (∑ i, (L i).obj.pairing (x i) (y i)) =
+      (LinearMap.lsum R (fun i ↦ (L i).obj.carrier) R
+        (fun i ↦ (L i).obj.adjoint (x i))) y
+    rw [LinearMap.lsum_apply]
+    simp only [LinearMap.sum_apply, LinearMap.coe_comp,
+      Function.comp_apply, LinearMap.proj_apply]
+    rfl
+  rw [he]
+  exact e.bijective
+
 /-- The `n`-fold orthogonal power of a lattice. -/
 noncomputable def orthogonalPower (L : LatticeCat R W) (n : ℕ) :
     LatticeCat R W :=
@@ -199,5 +246,10 @@ theorem orthogonalPower_pairing (L : LatticeCat R W) (n : ℕ)
     (orthogonalPower L n).obj.pairing x y =
       ∑ i, L.obj.pairing (x i) (y i) :=
   rfl
+
+/-- Every finite orthogonal power of a unimodular lattice is unimodular. -/
+theorem isUnimodular_orthogonalPower (L : IntegralLatticeCat R) (n : ℕ)
+    (hL : IsUnimodular L) : IsUnimodular (orthogonalPower L n) :=
+  isUnimodular_indexedOrthogonalSum (fun _ : Fin n ↦ L) (fun _ ↦ hL)
 
 end LeanCategories.Lattices.Valued

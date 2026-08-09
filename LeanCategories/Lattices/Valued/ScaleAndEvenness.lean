@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Lattices.Valued.BaseChange
+public import LeanCategories.Lattices.Valued.Constructions
 
 @[expose] public section
 
@@ -224,6 +225,78 @@ theorem isBilinearlyEven_span_singleton_of_isUnit
 /-- Classical evenness is quadratic `2R`-evenness. -/
 abbrev IsEven (L : IntegralLatticeCat R) : Prop :=
   IsQuadraticallyEven L (Ideal.span {(2 : R)})
+
+/-- The polar form of `x ↦ b(x,x)` is twice the symmetric pairing. -/
+theorem quadraticMap_polar (L : IntegralLatticeCat R)
+    (x y : L.obj.carrier) :
+    QuadraticMap.polar (quadraticMap L) x y =
+      (2 : R) • L.obj.pairing x y := by
+  rw [quadraticMap, LinearMap.BilinMap.polar_toQuadraticMap]
+  change L.obj.pairing x y + L.obj.pairing y x =
+    (2 : R) • L.obj.pairing x y
+  rw [← L.property.2 x y, two_smul R]
+
+/-- A symmetric lattice is even when all vectors of one basis have even square. -/
+theorem isEven_of_basis {I : Type*} (L : IntegralLatticeCat R)
+    (b : Module.Basis I R L.obj.carrier)
+    (h : ∀ i, quadraticMap L (b i) ∈ Ideal.span {(2 : R)}) :
+    IsEven L := by
+  change IsQuadraticallyEven L (Ideal.span {(2 : R)})
+  rw [isQuadraticallyEven_iff_value_mem]
+  intro x
+  have hx : x ∈ Submodule.span R (Set.range b) := by
+    rw [b.span_eq]
+    exact Submodule.mem_top
+  induction hx using Submodule.span_induction with
+  | mem x hx =>
+      rcases hx with ⟨i, rfl⟩
+      exact h i
+  | zero =>
+      simp [quadraticMap]
+  | add x y _ _ hx hy =>
+      rw [QuadraticMap.map_add (quadraticMap L) x y]
+      exact (Ideal.span {(2 : R)}).add_mem
+        ((Ideal.span {(2 : R)}).add_mem hx hy) (by
+          rw [quadraticMap_polar]
+          rw [Ideal.mem_span_singleton]
+          exact dvd_mul_right (2 : R) (L.obj.pairing x y))
+  | smul a x _ hx =>
+      rw [QuadraticMap.map_smul]
+      exact (Ideal.span {(2 : R)}).smul_mem (a * a) hx
+
+/-- An orthogonal sum preserves quadratic evenness. -/
+theorem isQuadraticallyEven_orthogonalSum (L₁ L₂ : IntegralLatticeCat R)
+    (I : Ideal R) (h₁ : IsQuadraticallyEven L₁ I)
+    (h₂ : IsQuadraticallyEven L₂ I) :
+    IsQuadraticallyEven (orthogonalSum L₁ L₂) I := by
+  rw [isQuadraticallyEven_iff_value_mem] at h₁ h₂ ⊢
+  rintro ⟨x₁, x₂⟩
+  exact I.add_mem (h₁ x₁) (h₂ x₂)
+
+/-- A finite indexed orthogonal sum preserves quadratic evenness. -/
+theorem isQuadraticallyEven_indexedOrthogonalSum {J : Type} [Fintype J]
+    (L : J → IntegralLatticeCat R) (I : Ideal R)
+    (hL : ∀ j, IsQuadraticallyEven (L j) I) :
+    IsQuadraticallyEven (indexedOrthogonalSum L) I := by
+  classical
+  rw [isQuadraticallyEven_iff_value_mem]
+  intro x
+  change (∑ j, (L j).obj.pairing (x j) (x j)) ∈ I
+  exact Submodule.sum_mem I fun j _ ↦
+    (isQuadraticallyEven_iff_value_mem (L j) I).mp (hL j) (x j)
+
+/-- Every finite orthogonal power of an even lattice is even. -/
+theorem isEven_orthogonalPower (L : IntegralLatticeCat R) (n : ℕ)
+    (hL : IsEven L) : IsEven (orthogonalPower L n) :=
+  isQuadraticallyEven_indexedOrthogonalSum (fun _ : Fin n ↦ L)
+    (Ideal.span {(2 : R)}) (fun _ ↦ hL)
+
+/-- An orthogonal sum of even lattices is even. -/
+theorem isEven_orthogonalSum (L₁ L₂ : IntegralLatticeCat R)
+    (h₁ : IsEven L₁) (h₂ : IsEven L₂) :
+    IsEven (orthogonalSum L₁ L₂) :=
+  isQuadraticallyEven_orthogonalSum L₁ L₂
+    (Ideal.span {(2 : R)}) h₁ h₂
 
 section BaseChangeEvenness
 
