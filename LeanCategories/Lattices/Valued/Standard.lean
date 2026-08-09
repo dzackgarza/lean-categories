@@ -7,6 +7,8 @@ module
 public import LeanCategories.Lattices.Valued.Arithmetic
 public import LeanCategories.Lattices.Valued.Constructions
 public import LeanCategories.Lattices.Valued.ScaleAndEvenness
+public import LeanCategories.Lattices.Valued.Signature
+public import Mathlib.LinearAlgebra.Basis.Prod
 public import Mathlib.LinearAlgebra.Matrix.Notation
 
 @[expose] public section
@@ -196,6 +198,217 @@ theorem hyperbolicPlane_isEven : IsEven hyperbolicPlane := by
   simp only [Pi.basisFun_apply, Matrix.toBilin'_single]
   fin_cases i <;> norm_num [hyperbolicPlaneGramMatrix]
 
+/-- A real basis change diagonalizes the hyperbolic plane. -/
+def hyperbolicRealChange : Matrix (Fin 2) (Fin 2) ℝ := !![1, 1; 1, -1]
+
+noncomputable def hyperbolicRealChangeInverse : Matrix (Fin 2) (Fin 2) ℝ :=
+  !![(1 : ℝ) / 2, (1 : ℝ) / 2; (1 : ℝ) / 2, -(1 : ℝ) / 2]
+
+theorem hyperbolicRealChange_leftInverse :
+    hyperbolicRealChangeInverse * hyperbolicRealChange = 1 := by
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    norm_num [hyperbolicRealChange, hyperbolicRealChangeInverse,
+      Matrix.mul_apply, Fin.sum_univ_succ]
+
+theorem hyperbolicRealChange_rightInverse :
+    hyperbolicRealChange * hyperbolicRealChangeInverse = 1 := by
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    norm_num [hyperbolicRealChange, hyperbolicRealChangeInverse,
+      Matrix.mul_apply, Fin.sum_univ_succ]
+
+noncomputable def hyperbolicRealDiagonalEquiv :
+    (Fin 2 → ℝ) ≃ₗ[ℝ] (Fin 2 → ℝ) :=
+  Matrix.toLin'OfInv hyperbolicRealChange_leftInverse
+    hyperbolicRealChange_rightInverse
+
+noncomputable def hyperbolicRealWeights : Fin 2 → ℝ :=
+  ![(1 : ℝ) / 2, -(1 : ℝ) / 2]
+
+/-- The real hyperbolic form has one positive and one negative square. -/
+noncomputable def hyperbolicRealDiagonalIsometry :
+    (matrixQuadraticForm ℝ
+      (hyperbolicPlaneGramMatrix.map (Int.castRingHom ℝ))).IsometryEquiv
+      (QuadraticMap.weightedSumSquares ℝ hyperbolicRealWeights) where
+  toLinearEquiv := hyperbolicRealDiagonalEquiv
+  map_app' x := by
+    change QuadraticMap.weightedSumSquares ℝ hyperbolicRealWeights
+      (hyperbolicRealDiagonalEquiv x) =
+      Matrix.toBilin' (hyperbolicPlaneGramMatrix.map (Int.castRingHom ℝ)) x x
+    simp [QuadraticMap.weightedSumSquares_apply, hyperbolicRealWeights,
+      hyperbolicRealDiagonalEquiv, Matrix.toLin'OfInv, Matrix.toLin'_apply',
+      hyperbolicRealChange, hyperbolicPlaneGramMatrix,
+      Matrix.toBilin'_apply, Fin.sum_univ_succ]
+    simp [Matrix.vecHead, Matrix.vecTail]
+    ring
+
+theorem hyperbolicPlane_matrixSignature :
+    matrixSignature ℝ
+      (hyperbolicPlaneGramMatrix.map (Int.castRingHom ℝ)) = (1, 1, 0) := by
+  rw [matrixSignature_eq_of_equivalent_weighted ℝ _ hyperbolicRealWeights
+    ⟨hyperbolicRealDiagonalIsometry⟩]
+  have hp : {i | 0 < hyperbolicRealWeights i} = {0} := by
+    ext i
+    fin_cases i <;> norm_num [hyperbolicRealWeights]
+  have hn : {i | hyperbolicRealWeights i < 0} = {1} := by
+    ext i
+    fin_cases i <;> norm_num [hyperbolicRealWeights]
+  have hz : {i | hyperbolicRealWeights i = 0} = ∅ := by
+    ext i
+    fin_cases i <;> norm_num [hyperbolicRealWeights]
+  rw [hp, hn, hz]
+  norm_num
+
+/-- The integral hyperbolic plane has signature `(1,1,0)`. -/
+theorem hyperbolicPlane_integralSignature :
+    integralSignature hyperbolicPlaneFiniteLattice = (1, 1, 0) := by
+  rw [integralSignature_eq_matrixSignature hyperbolicPlaneFiniteLattice
+    (Pi.basisFun ℤ (Fin 2))]
+  rw [show gramMatrix hyperbolicPlaneFiniteLattice.obj
+    (Pi.basisFun ℤ (Fin 2)) = hyperbolicPlaneGramMatrix from
+      hyperbolicPlane_gramMatrix]
+  exact hyperbolicPlane_matrixSignature
+
+theorem hyperbolicRealGram_factorization :
+    hyperbolicPlaneGramMatrix.map (Int.castRingHom ℝ) =
+      hyperbolicRealChange.transpose * Matrix.diagonal hyperbolicRealWeights *
+        hyperbolicRealChange := by
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    norm_num [hyperbolicPlaneGramMatrix, hyperbolicRealChange,
+      hyperbolicRealWeights, Matrix.mul_apply, Matrix.diagonal,
+      Fin.sum_univ_succ]
+
+/-- The real root-coordinate map for negative `E₈`. -/
+noncomputable def e8RealRootChange : Matrix (Fin 8) (Fin 8) ℝ := ![
+  ![ (1 : ℝ) / 2, 1, -1,  0,  0,  0,  0, 0],
+  ![-(1 : ℝ) / 2, 1,  1, -1,  0,  0,  0, 0],
+  ![-(1 : ℝ) / 2, 0,  0,  1, -1,  0,  0, 0],
+  ![-(1 : ℝ) / 2, 0,  0,  0,  1, -1,  0, 0],
+  ![-(1 : ℝ) / 2, 0,  0,  0,  0,  1, -1, 0],
+  ![-(1 : ℝ) / 2, 0,  0,  0,  0,  0,  1, -1],
+  ![-(1 : ℝ) / 2, 0,  0,  0,  0,  0,  0, 1],
+  ![ (1 : ℝ) / 2, 0,  0,  0,  0,  0,  0, 0]]
+
+/-- The inverse root-coordinate map. -/
+noncomputable def e8RealRootChangeInverse : Matrix (Fin 8) (Fin 8) ℝ := ![
+  ![0, 0, 0, 0, 0, 0, 0, 2],
+  ![(1 : ℝ) / 2, (1 : ℝ) / 2, (1 : ℝ) / 2, (1 : ℝ) / 2,
+    (1 : ℝ) / 2, (1 : ℝ) / 2, (1 : ℝ) / 2, (5 : ℝ) / 2],
+  ![-(1 : ℝ) / 2, (1 : ℝ) / 2, (1 : ℝ) / 2, (1 : ℝ) / 2,
+    (1 : ℝ) / 2, (1 : ℝ) / 2, (1 : ℝ) / 2, (7 : ℝ) / 2],
+  ![0, 0, 1, 1, 1, 1, 1, 5],
+  ![0, 0, 0, 1, 1, 1, 1, 4],
+  ![0, 0, 0, 0, 1, 1, 1, 3],
+  ![0, 0, 0, 0, 0, 1, 1, 2],
+  ![0, 0, 0, 0, 0, 0, 1, 1]]
+
+theorem e8RealRootChange_leftInverse :
+    e8RealRootChangeInverse * e8RealRootChange = 1 := by
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    norm_num [e8RealRootChange, e8RealRootChangeInverse,
+      Matrix.mul_apply, Fin.sum_univ_succ]
+
+theorem e8RealRootChange_rightInverse :
+    e8RealRootChange * e8RealRootChangeInverse = 1 := by
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    norm_num [e8RealRootChange, e8RealRootChangeInverse,
+      Matrix.mul_apply, Fin.sum_univ_succ]
+
+noncomputable def e8RealRootEquiv :
+    (Fin 8 → ℝ) ≃ₗ[ℝ] (Fin 8 → ℝ) :=
+  Matrix.toLin'OfInv e8RealRootChange_leftInverse
+    e8RealRootChange_rightInverse
+
+def e8RealWeights : Fin 8 → ℝ := fun _ ↦ -1
+
+theorem e8RealGram_factorization :
+    e8GramMatrix.map (Int.castRingHom ℝ) =
+      -(e8RealRootChange.transpose * e8RealRootChange) := by
+  rw [e8GramMatrix_eq]
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    norm_num [e8RealRootChange, Matrix.mul_apply, Fin.sum_univ_succ]
+
+theorem e8RealGram_diagonal_factorization :
+    e8GramMatrix.map (Int.castRingHom ℝ) =
+      e8RealRootChange.transpose * Matrix.diagonal e8RealWeights *
+        e8RealRootChange := by
+  rw [e8RealGram_factorization]
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    norm_num [e8RealRootChange, e8RealWeights, Matrix.mul_apply,
+      Matrix.diagonal, Fin.sum_univ_succ]
+
+theorem weightedNegativeSquares_eq_toBilin_transpose_mul
+    {I : Type*} [Fintype I] [DecidableEq I]
+    (B : Matrix I I ℝ) (x : I → ℝ) :
+    QuadraticMap.weightedSumSquares ℝ (fun (_ : I) ↦ (-1 : ℝ)) (B.mulVec x) =
+      Matrix.toBilin' (-(B.transpose * B)) x x := by
+  rw [QuadraticMap.weightedSumSquares_apply, Matrix.toBilin'_apply']
+  simp only [smul_eq_mul, neg_one_mul, Finset.sum_neg_distrib,
+    Matrix.neg_mulVec, dotProduct_neg]
+  congr 1
+  rw [← Matrix.mulVec_mulVec]
+  change dotProduct (B.mulVec x) (B.mulVec x) = _
+  exact (Matrix.dotProduct_transpose_mulVec B x (B.mulVec x)).symm
+
+theorem weightedSquares_eq_toBilin_transpose_diagonal_mul
+    {I : Type*} [Fintype I] [DecidableEq I]
+    (B : Matrix I I ℝ) (w : I → ℝ) (x : I → ℝ) :
+    QuadraticMap.weightedSumSquares ℝ w (B.mulVec x) =
+      Matrix.toBilin' (B.transpose * Matrix.diagonal w * B) x x := by
+  rw [Matrix.toBilin'_apply']
+  simp only [← Matrix.mulVec_mulVec]
+  rw [Matrix.dotProduct_transpose_mulVec]
+  rw [QuadraticMap.weightedSumSquares_apply]
+  simp only [smul_eq_mul, dotProduct, Matrix.mulVec_diagonal]
+  apply Finset.sum_congr rfl
+  intro i _
+  ring
+
+/-- Negative `E₈` is a sum of eight negative real squares. -/
+noncomputable def e8RealDiagonalIsometry :
+    (matrixQuadraticForm ℝ
+      (e8GramMatrix.map (Int.castRingHom ℝ))).IsometryEquiv
+      (QuadraticMap.weightedSumSquares ℝ e8RealWeights) where
+  toLinearEquiv := e8RealRootEquiv
+  map_app' x := by
+    change QuadraticMap.weightedSumSquares ℝ e8RealWeights
+      (e8RealRootEquiv x) =
+      Matrix.toBilin' (e8GramMatrix.map (Int.castRingHom ℝ)) x x
+    rw [e8RealGram_factorization]
+    exact weightedNegativeSquares_eq_toBilin_transpose_mul
+      e8RealRootChange x
+
+theorem e8Lattice_matrixSignature :
+    matrixSignature ℝ (e8GramMatrix.map (Int.castRingHom ℝ)) = (0, 8, 0) := by
+  rw [matrixSignature_eq_of_equivalent_weighted ℝ _ e8RealWeights
+    ⟨e8RealDiagonalIsometry⟩]
+  have hp : {i | 0 < e8RealWeights i} = ∅ := by
+    ext i
+    simp [e8RealWeights]
+  have hn : {i | e8RealWeights i < 0} = Set.univ := by
+    ext i
+    simp [e8RealWeights]
+  have hz : {i | e8RealWeights i = 0} = ∅ := by
+    ext i
+    simp [e8RealWeights]
+  rw [hp, hn, hz]
+  norm_num
+
+/-- The negative `E₈` lattice has signature `(0,8,0)`. -/
+theorem e8Lattice_integralSignature :
+    integralSignature e8FiniteLattice = (0, 8, 0) := by
+  rw [integralSignature_eq_matrixSignature e8FiniteLattice
+    (Pi.basisFun ℤ (Fin 8))]
+  rw [show gramMatrix e8FiniteLattice.obj (Pi.basisFun ℤ (Fin 8)) =
+    e8GramMatrix from e8Lattice_gramMatrix]
+  exact e8Lattice_matrixSignature
+
 /-- The `K3` lattice `3U ⊥ 2E₈`, with negative `E₈`. -/
 noncomputable def k3Lattice : IntegralLatticeCat ℤ :=
   orthogonalSum (orthogonalPower hyperbolicPlane 3)
@@ -207,6 +420,272 @@ noncomputable def k3FiniteLattice : FiniteProjectiveLatticeCat ℤ ℤ := by
   change Module.Finite ℤ ((Fin 3 → Fin 2 → ℤ) × (Fin 2 → Fin 8 → ℤ))
   infer_instance
 
+abbrev K3Index :=
+  (Σ _ : Fin 3, Fin 2) ⊕ (Σ _ : Fin 2, Fin 8)
+
+noncomputable def hyperbolicPowerBasis :
+    Module.Basis (Σ _ : Fin 3, Fin 2) ℤ (Fin 3 → Fin 2 → ℤ) :=
+  (Pi.basisFun ℤ (Σ _ : Fin 3, Fin 2)).map
+    (LinearEquiv.piCurry ℤ (fun _ : Fin 3 ↦ fun _ : Fin 2 ↦ ℤ))
+
+noncomputable def e8PowerBasis :
+    Module.Basis (Σ _ : Fin 2, Fin 8) ℤ (Fin 2 → Fin 8 → ℤ) :=
+  (Pi.basisFun ℤ (Σ _ : Fin 2, Fin 8)).map
+    (LinearEquiv.piCurry ℤ (fun _ : Fin 2 ↦ fun _ : Fin 8 ↦ ℤ))
+
+@[simp]
+theorem hyperbolicPowerBasis_apply (i : Σ _ : Fin 3, Fin 2) :
+    hyperbolicPowerBasis i = Pi.single i.1 (Pi.single i.2 1) := by
+  rcases i with ⟨i, a⟩
+  ext j k
+  by_cases h : j = i
+  · subst j
+    simp only [hyperbolicPowerBasis, Module.Basis.map_apply, Pi.basisFun_apply,
+      LinearEquiv.piCurry_apply]
+    change Pi.single (⟨i, a⟩ : Σ _ : Fin 3, Fin 2) 1
+      (⟨i, k⟩ : Σ _ : Fin 3, Fin 2) = _
+    simp [Pi.single_apply]
+  · simp only [hyperbolicPowerBasis, Module.Basis.map_apply, Pi.basisFun_apply,
+      LinearEquiv.piCurry_apply]
+    change Pi.single (⟨i, a⟩ : Σ _ : Fin 3, Fin 2) 1
+      (⟨j, k⟩ : Σ _ : Fin 3, Fin 2) = _
+    simp [h]
+
+@[simp]
+theorem e8PowerBasis_apply (i : Σ _ : Fin 2, Fin 8) :
+    e8PowerBasis i = Pi.single i.1 (Pi.single i.2 1) := by
+  rcases i with ⟨i, a⟩
+  ext j k
+  by_cases h : j = i
+  · subst j
+    simp only [e8PowerBasis, Module.Basis.map_apply, Pi.basisFun_apply,
+      LinearEquiv.piCurry_apply]
+    change Pi.single (⟨i, a⟩ : Σ _ : Fin 2, Fin 8) 1
+      (⟨i, k⟩ : Σ _ : Fin 2, Fin 8) = _
+    simp [Pi.single_apply]
+  · simp only [e8PowerBasis, Module.Basis.map_apply, Pi.basisFun_apply,
+      LinearEquiv.piCurry_apply]
+    change Pi.single (⟨i, a⟩ : Σ _ : Fin 2, Fin 8) 1
+      (⟨j, k⟩ : Σ _ : Fin 2, Fin 8) = _
+    simp [h]
+
+noncomputable def k3Basis :
+    Module.Basis K3Index ℤ k3Lattice.obj.carrier := by
+  change Module.Basis K3Index ℤ
+    ((Fin 3 → Fin 2 → ℤ) × (Fin 2 → Fin 8 → ℤ))
+  exact hyperbolicPowerBasis.prod e8PowerBasis
+
+noncomputable def k3GramMatrix : Matrix K3Index K3Index ℤ
+  | Sum.inl ⟨i, a⟩, Sum.inl ⟨j, b⟩ =>
+      if i = j then hyperbolicPlaneGramMatrix a b else 0
+  | Sum.inr ⟨i, a⟩, Sum.inr ⟨j, b⟩ =>
+      if i = j then e8GramMatrix a b else 0
+  | _, _ => 0
+
+noncomputable def k3RealChange : Matrix K3Index K3Index ℝ
+  | Sum.inl ⟨i, a⟩, Sum.inl ⟨j, b⟩ =>
+      if i = j then hyperbolicRealChange a b else 0
+  | Sum.inr ⟨i, a⟩, Sum.inr ⟨j, b⟩ =>
+      if i = j then e8RealRootChange a b else 0
+  | _, _ => 0
+
+noncomputable def k3RealChangeInverse : Matrix K3Index K3Index ℝ
+  | Sum.inl ⟨i, a⟩, Sum.inl ⟨j, b⟩ =>
+      if i = j then hyperbolicRealChangeInverse a b else 0
+  | Sum.inr ⟨i, a⟩, Sum.inr ⟨j, b⟩ =>
+      if i = j then e8RealRootChangeInverse a b else 0
+  | _, _ => 0
+
+noncomputable def k3RealWeights : K3Index → ℝ
+  | Sum.inl ⟨_, a⟩ => hyperbolicRealWeights a
+  | Sum.inr _ => -1
+
+theorem k3Lattice_gramMatrix :
+    gramMatrix k3Lattice k3Basis = k3GramMatrix := by
+  ext i j
+  rcases i with i | i <;> rcases j with j | j <;>
+    rcases i with ⟨i, a⟩ <;> rcases j with ⟨j, b⟩
+  · simp only [gramMatrix]
+    rw [LinearMap.BilinForm.toMatrix_apply]
+    change (orthogonalSum (orthogonalPower hyperbolicPlane 3)
+      (orthogonalPower e8Lattice 2)).obj.pairing
+        ((hyperbolicPowerBasis.prod e8PowerBasis) (Sum.inl ⟨i, a⟩))
+        ((hyperbolicPowerBasis.prod e8PowerBasis) (Sum.inl ⟨j, b⟩)) = _
+    rw [orthogonalSum_pairing]
+    simp only [Module.Basis.prod_apply, LinearMap.coe_inl, LinearMap.coe_inr,
+      Sum.elim_inl, Function.comp_apply, hyperbolicPowerBasis_apply,
+      orthogonalPower_pairing, hyperbolicPlane_pairing, Pi.zero_apply,
+      e8Lattice_pairing, map_zero,
+      Finset.sum_const_zero, add_zero]
+    fin_cases i <;> fin_cases j <;>
+      simp [k3GramMatrix, Fin.sum_univ_succ, Pi.single_apply,
+        Matrix.toBilin'_single]
+  · simp only [gramMatrix]
+    rw [LinearMap.BilinForm.toMatrix_apply]
+    change (orthogonalSum (orthogonalPower hyperbolicPlane 3)
+      (orthogonalPower e8Lattice 2)).obj.pairing
+        ((hyperbolicPowerBasis.prod e8PowerBasis) (Sum.inl ⟨i, a⟩))
+        ((hyperbolicPowerBasis.prod e8PowerBasis) (Sum.inr ⟨j, b⟩)) = _
+    rw [orthogonalSum_pairing]
+    simp [k3GramMatrix]
+  · simp only [gramMatrix]
+    rw [LinearMap.BilinForm.toMatrix_apply]
+    change (orthogonalSum (orthogonalPower hyperbolicPlane 3)
+      (orthogonalPower e8Lattice 2)).obj.pairing
+        ((hyperbolicPowerBasis.prod e8PowerBasis) (Sum.inr ⟨i, a⟩))
+        ((hyperbolicPowerBasis.prod e8PowerBasis) (Sum.inl ⟨j, b⟩)) = _
+    rw [orthogonalSum_pairing]
+    simp [k3GramMatrix]
+  · simp only [gramMatrix]
+    rw [LinearMap.BilinForm.toMatrix_apply]
+    change (orthogonalSum (orthogonalPower hyperbolicPlane 3)
+      (orthogonalPower e8Lattice 2)).obj.pairing
+        ((hyperbolicPowerBasis.prod e8PowerBasis) (Sum.inr ⟨i, a⟩))
+        ((hyperbolicPowerBasis.prod e8PowerBasis) (Sum.inr ⟨j, b⟩)) = _
+    rw [orthogonalSum_pairing]
+    simp only [Module.Basis.prod_apply, LinearMap.coe_inl, LinearMap.coe_inr,
+      Sum.elim_inr, Function.comp_apply, e8PowerBasis_apply,
+      orthogonalPower_pairing, Pi.zero_apply, hyperbolicPlane_pairing,
+      map_zero, Finset.sum_const_zero,
+      e8Lattice_pairing, Fin.sum_univ_two, Fin.isValue, zero_add]
+    fin_cases i <;> fin_cases j <;>
+      simp [k3GramMatrix, Matrix.toBilin'_single]
+
+theorem k3RealGram_factorization :
+    k3GramMatrix.map (Int.castRingHom ℝ) =
+      k3RealChange.transpose * Matrix.diagonal k3RealWeights *
+        k3RealChange := by
+  classical
+  ext i j
+  rcases i with ⟨i, a⟩ | ⟨i, a⟩ <;>
+    rcases j with ⟨j, b⟩ | ⟨j, b⟩
+  all_goals
+    simp [Matrix.mul_apply, Fintype.sum_sum_type, Fintype.sum_sigma,
+      k3GramMatrix, k3RealChange, k3RealWeights, Matrix.diagonal]
+  · by_cases h : i = j
+    · subst j
+      simpa [Matrix.mul_apply] using
+        congrFun (congrFun hyperbolicRealGram_factorization a) b
+    · simp [h, ne_comm]
+  · by_cases h : i = j
+    · subst j
+      simpa [Matrix.mul_apply] using
+        congrFun (congrFun e8RealGram_factorization a) b
+    · simp [h, ne_comm]
+
+theorem k3RealChange_leftInverse :
+    k3RealChangeInverse * k3RealChange = 1 := by
+  classical
+  ext i j
+  rcases i with ⟨i, a⟩ | ⟨i, a⟩ <;>
+    rcases j with ⟨j, b⟩ | ⟨j, b⟩
+  all_goals
+    simp [Matrix.mul_apply, Fintype.sum_sum_type, Fintype.sum_sigma,
+      k3RealChange, k3RealChangeInverse, Matrix.one_apply]
+  · by_cases h : i = j
+    · subst j
+      simpa [Matrix.mul_apply, Matrix.one_apply] using
+        congrFun (congrFun hyperbolicRealChange_leftInverse a) b
+    · simp [h]
+  · by_cases h : i = j
+    · subst j
+      simpa [Matrix.mul_apply, Matrix.one_apply] using
+        congrFun (congrFun e8RealRootChange_leftInverse a) b
+    · simp [h]
+
+theorem k3RealChange_rightInverse :
+    k3RealChange * k3RealChangeInverse = 1 := by
+  classical
+  ext i j
+  rcases i with ⟨i, a⟩ | ⟨i, a⟩ <;>
+    rcases j with ⟨j, b⟩ | ⟨j, b⟩
+  all_goals
+    simp [Matrix.mul_apply, Fintype.sum_sum_type, Fintype.sum_sigma,
+      k3RealChange, k3RealChangeInverse, Matrix.one_apply]
+  · by_cases h : i = j
+    · subst j
+      simpa [Matrix.mul_apply, Matrix.one_apply] using
+        congrFun (congrFun hyperbolicRealChange_rightInverse a) b
+    · simp [h]
+  · by_cases h : i = j
+    · subst j
+      simpa [Matrix.mul_apply, Matrix.one_apply] using
+        congrFun (congrFun e8RealRootChange_rightInverse a) b
+    · simp [h]
+
+noncomputable def k3RealEquiv :
+    (K3Index → ℝ) ≃ₗ[ℝ] (K3Index → ℝ) :=
+  Matrix.toLin'OfInv k3RealChange_leftInverse k3RealChange_rightInverse
+
+/-- The `K3` Gram matrix is a sum of three positive and nineteen negative squares. -/
+noncomputable def k3RealDiagonalIsometry :
+    (matrixQuadraticForm ℝ
+      (k3GramMatrix.map (Int.castRingHom ℝ))).IsometryEquiv
+      (QuadraticMap.weightedSumSquares ℝ k3RealWeights) where
+  toLinearEquiv := k3RealEquiv
+  map_app' x := by
+    change QuadraticMap.weightedSumSquares ℝ k3RealWeights
+      (k3RealEquiv x) =
+      Matrix.toBilin' (k3GramMatrix.map (Int.castRingHom ℝ)) x x
+    rw [k3RealGram_factorization]
+    exact weightedSquares_eq_toBilin_transpose_diagonal_mul
+      k3RealChange k3RealWeights x
+
+theorem k3Lattice_matrixSignature :
+    matrixSignature ℝ (k3GramMatrix.map (Int.castRingHom ℝ)) =
+      (3, 19, 0) := by
+  rw [matrixSignature_eq_of_equivalent_weighted ℝ _ k3RealWeights
+    ⟨k3RealDiagonalIsometry⟩]
+  let positive : Fin 3 → K3Index :=
+    fun i ↦ Sum.inl ⟨i, 0⟩
+  let negativeU : Fin 3 → K3Index :=
+    fun i ↦ Sum.inl ⟨i, 1⟩
+  let negativeE8 : (Σ _ : Fin 2, Fin 8) → K3Index := Sum.inr
+  have positive_injective : Function.Injective positive := by
+    intro i j h
+    simpa [positive] using h
+  have negativeU_injective : Function.Injective negativeU := by
+    intro i j h
+    simpa [negativeU] using h
+  have negativeE8_injective : Function.Injective negativeE8 := Sum.inr_injective
+  have hp : {i | 0 < k3RealWeights i} = Set.range positive := by
+    ext x
+    rcases x with ⟨i, a⟩ | ⟨i, a⟩
+    · fin_cases a <;> simp [k3RealWeights, hyperbolicRealWeights, positive]
+    · simp [k3RealWeights, positive]
+  have hn : {i | k3RealWeights i < 0} =
+      Set.range negativeU ∪ Set.range negativeE8 := by
+    ext x
+    rcases x with ⟨i, a⟩ | ⟨i, a⟩
+    · fin_cases a
+      · norm_num [k3RealWeights, hyperbolicRealWeights, negativeU, negativeE8]
+        constructor <;> intro x h <;> cases h
+      · norm_num [k3RealWeights, hyperbolicRealWeights, negativeU, negativeE8]
+    · simp [k3RealWeights, negativeU, negativeE8]
+  have hz : {i | k3RealWeights i = 0} = ∅ := by
+    ext x
+    rcases x with ⟨i, a⟩ | ⟨i, a⟩
+    · fin_cases a <;> simp [k3RealWeights, hyperbolicRealWeights]
+    · simp [k3RealWeights]
+  have hd : Disjoint (Set.range negativeU) (Set.range negativeE8) := by
+    refine Set.disjoint_left.2 ?_
+    intro x hx hy
+    rcases hx with ⟨i, rfl⟩
+    rcases hy with ⟨j, h⟩
+    simp [negativeE8, negativeU] at h
+  rw [hp, hn, hz, Set.ncard_union_eq hd,
+    Set.ncard_range_of_injective positive_injective,
+    Set.ncard_range_of_injective negativeU_injective,
+    Set.ncard_range_of_injective negativeE8_injective]
+  norm_num
+
+/-- The `K3` lattice has signature `(3,19,0)`. -/
+theorem k3Lattice_integralSignature :
+    integralSignature k3FiniteLattice = (3, 19, 0) := by
+  rw [integralSignature_eq_matrixSignature k3FiniteLattice k3Basis]
+  rw [show gramMatrix k3FiniteLattice.obj k3Basis = k3GramMatrix from
+    k3Lattice_gramMatrix]
+  exact k3Lattice_matrixSignature
 /-- The `K3` lattice is unimodular. -/
 theorem k3Lattice_isUnimodular : IsUnimodular k3Lattice :=
   isUnimodular_orthogonalSum _ _

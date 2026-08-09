@@ -6,7 +6,10 @@ module
 
 public import LeanCategories.Lattices.Valued.Arithmetic
 public import LeanCategories.Lattices.Valued.BaseChange
+public import LeanCategories.Lattices.Valued.Constructions
+public import LeanCategories.Lattices.Valued.ScaleAndEvenness
 public import Mathlib.CategoryTheory.Core
+public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.QuadraticForm.Real
 public import Mathlib.LinearAlgebra.QuadraticForm.Signature
 
@@ -43,6 +46,56 @@ def finiteFormQuadraticIsometryEquiv {L M : FiniteFormCat K K}
 noncomputable def signature (L : FiniteFormCat K K) : ℕ × ℕ × ℕ :=
   let Q := finiteFormQuadraticForm K L
   (sigPos Q, sigNeg Q, Module.finrank K Q.radical)
+
+/-- The quadratic form represented by a matrix in the standard basis. -/
+def matrixQuadraticForm {I : Type*} [Fintype I] [DecidableEq I]
+    (A : Matrix I I K) : QuadraticForm K (I → K) :=
+  LinearMap.BilinMap.toQuadraticMap (Matrix.toBilin' A)
+
+/-- The total signature of a symmetric matrix. -/
+noncomputable def matrixSignature {I : Type*} [Fintype I] [DecidableEq I]
+    (A : Matrix I I K) : ℕ × ℕ × ℕ :=
+  let Q := matrixQuadraticForm K A
+  (sigPos Q, sigNeg Q, Module.finrank K Q.radical)
+
+/-- A basis identifies a finite formed module with its matrix quadratic form. -/
+noncomputable def finiteFormQuadraticIsometryBasis
+    {I : Type*} [Fintype I] [DecidableEq I]
+    (L : FiniteFormCat K K) (b : Module.Basis I K L.obj.carrier) :
+    (finiteFormQuadraticForm K L).IsometryEquiv
+      (matrixQuadraticForm K (LinearMap.BilinForm.toMatrix b L.obj.bilinMap)) where
+  toLinearEquiv := b.equivFun
+  map_app' x := by
+    change Matrix.toBilin' (LinearMap.BilinForm.toMatrix b L.obj.bilinMap)
+      (b.equivFun x) (b.equivFun x) = L.obj.pairing x x
+    rw [Matrix.toBilin'_apply', Module.Basis.equivFun_apply]
+    exact (LinearMap.BilinForm.apply_eq_dotProduct_toMatrix_mulVec
+      b L.obj.bilinMap x x).symm
+
+/-- A finite formed module has the signature of its Gram matrix. -/
+theorem signature_eq_matrixSignature {I : Type*} [Fintype I] [DecidableEq I]
+    (L : FiniteFormCat K K) (b : Module.Basis I K L.obj.carrier) :
+    signature K L =
+      matrixSignature K (LinearMap.BilinForm.toMatrix b L.obj.bilinMap) := by
+  let h : QuadraticMap.Equivalent
+      (finiteFormQuadraticForm K L)
+      (matrixQuadraticForm K (LinearMap.BilinForm.toMatrix b L.obj.bilinMap)) :=
+    ⟨finiteFormQuadraticIsometryBasis K L b⟩
+  simp only [signature, matrixSignature]
+  rw [h.sigPos_eq, h.sigNeg_eq, h.rank_radical_eq]
+
+/-- A weighted diagonalization computes every part of a matrix signature. -/
+theorem matrixSignature_eq_of_equivalent_weighted
+    {I : Type*} [Fintype I] [DecidableEq I] [IsStrictOrderedRing K]
+    (A : Matrix I I K) (w : I → K)
+    (h : QuadraticMap.Equivalent (matrixQuadraticForm K A)
+      (QuadraticMap.weightedSumSquares K w)) :
+    matrixSignature K A =
+      ({i | 0 < w i}.ncard, {i | w i < 0}.ncard, {i | w i = 0}.ncard) := by
+  simp only [matrixSignature]
+  rw [QuadraticForm.sigPos_of_equiv_weightedSumSquares h,
+    QuadraticForm.sigNeg_of_equiv_weightedSumSquares h,
+    QuadraticForm.finrank_radical_of_equiv_weightedSumSquares h]
 
 /-- Signature is invariant under isomorphisms of finite symmetric forms. -/
 theorem signature_eq_of_iso {L M : FiniteFormCat K K} (e : L ≅ M) :
@@ -92,6 +145,32 @@ noncomputable def integralSignature
   signature ℝ
     ((finiteProjectiveToFiniteForm ℝ ℝ).obj
       ((baseChangeFiniteIntegral ℤ ℝ).obj L))
+
+/-- An integral lattice has the signature of its real Gram matrix. -/
+theorem integralSignature_eq_matrixSignature {I : Type*} [Fintype I]
+    [DecidableEq I] (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    (b : Module.Basis I ℤ L.obj.obj.carrier) :
+    integralSignature L = matrixSignature ℝ
+      ((gramMatrix L.obj b).map (Int.castRingHom ℝ)) := by
+  let M := (finiteProjectiveToFiniteForm ℝ ℝ).obj
+    ((baseChangeFiniteIntegral ℤ ℝ).obj L)
+  let bℝ : Module.Basis I ℝ M.obj.carrier := b.baseChange ℝ
+  have hMatrix : LinearMap.BilinForm.toMatrix bℝ M.obj.bilinMap =
+      (gramMatrix L.obj b).map (Int.castRingHom ℝ) := by
+    ext i j
+    rw [LinearMap.BilinForm.toMatrix_apply]
+    have hb (k : I) : bℝ k = (1 ⊗ₜ[ℤ] b k) := by
+      dsimp [bℝ]
+      exact b.baseChange_apply ℝ k
+    rw [hb i, hb j]
+    dsimp [M]
+    change ((baseChangeIntegral ℤ ℝ).obj L.obj).obj.pairing
+      (1 ⊗ₜ[ℤ] b i) (1 ⊗ₜ[ℤ] b j) = _
+    rw [baseChangeIntegral_pairing_tmul]
+    simp [gramMatrix, LinearMap.BilinForm.toMatrix_apply]
+  rw [integralSignature]
+  rw [signature_eq_matrixSignature ℝ M bℝ]
+  exact congrArg (matrixSignature ℝ) hMatrix
 
 /-- Real signature as a functor on finite integral lattices and their isomorphisms. -/
 noncomputable def integralSignatureFunctor :
