@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Modules.Quadratic.Valued.Fixed
+public import LeanCategories.Modules.Quadratic.Valued.OrthogonalGroup
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 

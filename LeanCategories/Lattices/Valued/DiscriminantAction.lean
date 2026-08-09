@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Lattices.Valued.Discriminant
+public import LeanCategories.Lattices.Valued.DiscriminantQuadratic
 public import LeanCategories.Lattices.Valued.OrthogonalGroup
 
 @[expose] public section
 
 open LeanCategories.Modules.Bilinear.Valued
+open LeanCategories.Modules.Quadratic.Valued
 
 namespace LeanCategories.Lattices.Valued
 
@@ -229,6 +230,48 @@ noncomputable def stableOrthogonalGroup [IsDomain R]
     (hL : IsGenericallyNondegenerate R L) :
     Subgroup (OrthogonalGroup L) :=
   MonoidHom.ker (discriminantRepresentation hL)
+
+/-- The action on `A_L` preserves the even discriminant quadratic form. -/
+theorem evenDiscriminantQuadraticMap_actOnDefect [IsDomain R]
+    (g : OrthogonalGroup L)
+    (hL : IsGenericallyNondegenerate R L) (hEven : IsEven L)
+    (x : L.obj.defect) :
+    evenDiscriminantQuadraticMap L hL hEven (actOnDefect g x) =
+      evenDiscriminantQuadraticMap L hL hEven x := by
+  induction x using Submodule.Quotient.induction_on with
+  | _ f =>
+      simp only [actOnDefect_mk, evenDiscriminantQuadraticMap_mk]
+      rw [rieszDualBilinMap_actOnValueDual]
+
+/-- The induced isometry of the even quadratic discriminant module. -/
+noncomputable def actOnEvenDiscriminantQuadraticForm [IsDomain R]
+    (g : OrthogonalGroup L)
+    (hL : IsGenericallyNondegenerate R L) (hEven : IsEven L) :
+    QuadModuleCat.OrthogonalGroup
+      (evenDiscriminantQuadraticObject L hL hEven) :=
+  ⟨actOnDefect g, evenDiscriminantQuadraticMap_actOnDefect g hL hEven⟩
+
+/-- The natural homomorphism `O(L) → O(q_A)` for an even lattice. -/
+noncomputable def evenDiscriminantRepresentation [IsDomain R]
+    (hL : IsGenericallyNondegenerate R L) (hEven : IsEven L) :
+    OrthogonalGroup L →*
+      QuadModuleCat.OrthogonalGroup
+        (evenDiscriminantQuadraticObject L hL hEven) where
+  toFun := fun g ↦ actOnEvenDiscriminantQuadraticForm g hL hEven
+  map_one' := by
+    apply Subtype.ext
+    ext x
+    exact actOnDefect_one_apply x
+  map_mul' g h := by
+    apply Subtype.ext
+    ext x
+    exact actOnDefect_mul_apply g h x
+
+/-- The subgroup of `O(L)` that acts trivially on `q_A`. -/
+noncomputable def stableEvenOrthogonalGroup [IsDomain R]
+    (hL : IsGenericallyNondegenerate R L) (hEven : IsEven L) :
+    Subgroup (OrthogonalGroup L) :=
+  MonoidHom.ker (evenDiscriminantRepresentation hL hEven)
 
 end OrthogonalGroup
 
