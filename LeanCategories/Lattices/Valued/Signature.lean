@@ -5,7 +5,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Lattices.Valued.Arithmetic
+public import LeanCategories.Lattices.Valued.BaseChange
 public import Mathlib.CategoryTheory.Core
+public import Mathlib.LinearAlgebra.QuadraticForm.Real
 public import Mathlib.LinearAlgebra.QuadraticForm.Signature
 
 @[expose] public section
@@ -66,6 +68,37 @@ noncomputable def signatureFunctor :
   map f := Discrete.eqToHom (signature_eq_of_iso K f.iso)
   map_id _ := Subsingleton.elim _ _
   map_comp _ _ := Subsingleton.elim _ _
+
+/-- Scalar extension of finite projective integral lattices. -/
+noncomputable def baseChangeFiniteIntegral
+    (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] :
+    FiniteProjectiveLatticeCat R R ⥤ FiniteProjectiveLatticeCat S S where
+  obj L := by
+    letI : Module.Finite R L.obj.obj.carrier := L.property
+    refine ⟨(baseChangeIntegral R S).obj L.obj, ?_⟩
+    change Module.Finite S (TensorProduct R S L.obj.obj.carrier)
+    infer_instance
+  map f := ObjectProperty.homMk ((baseChangeIntegral R S).map f.hom)
+  map_id L := by
+    apply ObjectProperty.hom_ext
+    exact (baseChangeIntegral R S).map_id L.obj
+  map_comp f g := by
+    apply ObjectProperty.hom_ext
+    exact (baseChangeIntegral R S).map_comp f.hom g.hom
+
+/-- The real signature of a finite projective integral lattice. -/
+noncomputable def integralSignature
+    (L : FiniteProjectiveLatticeCat ℤ ℤ) : ℕ × ℕ × ℕ :=
+  signature ℝ
+    ((finiteProjectiveToFiniteForm ℝ ℝ).obj
+      ((baseChangeFiniteIntegral ℤ ℝ).obj L))
+
+/-- Real signature as a functor on finite integral lattices and their isomorphisms. -/
+noncomputable def integralSignatureFunctor :
+    Core (FiniteProjectiveLatticeCat ℤ ℤ) ⥤ Discrete (ℕ × ℕ × ℕ) :=
+  (baseChangeFiniteIntegral ℤ ℝ).core ⋙
+    (finiteProjectiveToFiniteForm ℝ ℝ).core ⋙
+      signatureFunctor ℝ
 
 /-- A signature value is positive definite when it has no negative or null part. -/
 def IsPositiveDefiniteSignature : ℕ × ℕ × ℕ → Prop

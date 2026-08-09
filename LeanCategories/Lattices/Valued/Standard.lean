@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
+public import LeanCategories.Lattices.Valued.Arithmetic
 public import LeanCategories.Lattices.Valued.Constructions
 public import Mathlib.LinearAlgebra.Matrix.Notation
 
@@ -68,6 +69,12 @@ noncomputable def e8Lattice : IntegralLatticeCat ℤ := by
     exact (Matrix.isSymm_toBilin'_iff_isSymm.mpr
       e8GramMatrix_isSymm).eq x y
 
+/-- The negative `E₈` lattice as a finite projective lattice. -/
+noncomputable def e8FiniteLattice : FiniteProjectiveLatticeCat ℤ ℤ := by
+  refine ⟨e8Lattice, ?_⟩
+  change Module.Finite ℤ (Fin 8 → ℤ)
+  infer_instance
+
 @[simp]
 theorem e8Lattice_pairing (x y : e8Lattice.obj.carrier) :
     e8Lattice.obj.pairing x y = Matrix.toBilin' e8GramMatrix x y :=
@@ -96,6 +103,12 @@ def hyperbolicPlane : IntegralLatticeCat ℤ := by
   change x₁ * y₂ + x₂ * y₁ = y₁ * x₂ + y₂ * x₁
   ring
 
+/-- The hyperbolic plane as a finite projective lattice. -/
+def hyperbolicPlaneFiniteLattice : FiniteProjectiveLatticeCat ℤ ℤ := by
+  refine ⟨hyperbolicPlane, ?_⟩
+  change Module.Finite ℤ (ℤ × ℤ)
+  infer_instance
+
 @[simp]
 theorem hyperbolicPlane_pairing (x y : hyperbolicPlane.obj.carrier) :
     hyperbolicPlane.obj.pairing x y = x.1 * y.2 + x.2 * y.1 :=
@@ -105,5 +118,11 @@ theorem hyperbolicPlane_pairing (x y : hyperbolicPlane.obj.carrier) :
 noncomputable def k3Lattice : IntegralLatticeCat ℤ :=
   orthogonalSum (orthogonalPower hyperbolicPlane 3)
     (orthogonalPower e8Lattice 2)
+
+/-- The `K3` lattice as a finite projective lattice. -/
+noncomputable def k3FiniteLattice : FiniteProjectiveLatticeCat ℤ ℤ := by
+  refine ⟨k3Lattice, ?_⟩
+  change Module.Finite ℤ ((Fin 3 → ℤ × ℤ) × (Fin 2 → Fin 8 → ℤ))
+  infer_instance
 
 end LeanCategories.Lattices.Valued

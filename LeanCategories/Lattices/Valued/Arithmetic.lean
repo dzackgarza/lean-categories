@@ -57,6 +57,14 @@ def finiteFreeToFiniteProjective :
   map_id _ := rfl
   map_comp _ _ := rfl
 
+/-- Forget projectivity while retaining finiteness and symmetry. -/
+def finiteProjectiveToFiniteForm :
+    FiniteProjectiveLatticeCat R W ⥤ FiniteFormCat R W where
+  obj L := ⟨L.obj.obj, L.property, L.obj.property.2⟩
+  map f := ObjectProperty.homMk f.hom.hom
+  map_id _ := rfl
+  map_comp _ _ := rfl
+
 /-- Over a principal ideal domain, every finite projective lattice is finite free. -/
 def finiteProjectiveToFiniteFree [IsDomain R] [IsPrincipalIdealRing R] :
     FiniteProjectiveLatticeCat R W ⥤ FiniteFreeLatticeCat R W where
