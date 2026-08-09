@@ -47,7 +47,35 @@ theorem carrier_free [IsDomain R] [IsPrincipalIdealRing R]
   letI : Module.Finite R L.obj.obj.carrier := L.property
   infer_instance
 
+/-- The intrinsic rank of a finite projective lattice over a principal ideal domain. -/
+noncomputable def rank [IsDomain R] [IsPrincipalIdealRing R]
+    (L : FiniteProjectiveLatticeCat R W) : ℕ :=
+  Module.finrank R L.obj.obj.carrier
+
+/-- Every finite basis computes the intrinsic lattice rank. -/
+theorem rank_eq_card_basis [IsDomain R] [IsPrincipalIdealRing R]
+    (L : FiniteProjectiveLatticeCat R W)
+    {I : Type*} [Fintype I]
+    (b : Module.Basis I R L.obj.obj.carrier) :
+    L.rank = Fintype.card I := by
+  letI : Module.Finite R L.obj.obj.carrier := L.property
+  exact Module.finrank_eq_card_basis b
+
 end FiniteProjectiveLatticeCat
+
+/-- Forget a finite projective lattice to its carrier module. -/
+def finiteProjectiveForget :
+    FiniteProjectiveLatticeCat R W ⥤ ModuleCat R :=
+  (isFiniteProjectiveLattice R W).ι ⋙
+    (isLattice R W).ι ⋙
+      LeanCategories.Modules.Bilinear.Valued.forget R W
+
+/-- Isomorphic finite projective lattices have equal intrinsic rank. -/
+theorem finiteProjective_rank_eq_of_iso [IsDomain R]
+    [IsPrincipalIdealRing R]
+    {L M : FiniteProjectiveLatticeCat R W} (e : L ≅ M) :
+    L.rank = M.rank := by
+  exact ((finiteProjectiveForget R W).mapIso e).toLinearEquiv.finrank_eq
 
 /-- Forget that a finite free lattice has a free carrier. -/
 def finiteFreeToFiniteProjective :
