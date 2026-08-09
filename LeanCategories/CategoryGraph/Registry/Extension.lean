@@ -53,10 +53,10 @@ def RegistryEntry.stableId : RegistryEntry → String
 
 /-- Lean declarations that must resolve before this row can be persisted. -/
 def RegistryEntry.declarations : RegistryEntry → Array Name
-  | .category e => #[e.declaration] ++ e.realization.toArray
+  | .category e => #[e.declaration, e.realization]
   | .categoryFamily e => #[e.declaration, e.fibreDeclaration]
   | .classifier e => #[e.declaration]
-  | .functor e => #[e.declaration]
+  | .functor e => #[e.declaration, e.realization]
   | .constructor e => #[e.declaration]
   | .finiteLimitCone e => #[e.declaration]
   | .coherence e => #[e.declaration]
@@ -236,12 +236,19 @@ def ensureCategoryDeclaration (declaration : Name) : MetaM Unit := do
   unless result.isConstOf ``CategoryGraph.ObjCat do
     throwError "registry declaration {declaration} must return ObjCat, but returns {result}"
 
-/-- Require an optional category-realization declaration to have the typed witness form. -/
+/-- Require a category-realization declaration to have the typed witness form. -/
 def ensureCategoryRealization (realization : Name) : MetaM Unit := do
   let result ← declarationResultType realization
   unless result.isAppOfArity ``CategoryGraph.CategoryRealization 5 do
     throwError
       "registry realization {realization} must return CategoryRealization ..., but returns {result}"
+
+/-- Require a functor-realization declaration to have the typed witness form. -/
+def ensureFunctorRealization (realization : Name) : MetaM Unit := do
+  let result ← declarationResultType realization
+  unless result.isAppOfArity ``CategoryGraph.FunctorRealization 7 do
+    throwError
+      "registry realization {realization} must return FunctorRealization ..., but returns {result}"
 
 /-- Require a declaration to return a classifier after its parameters are supplied. -/
 def ensureClassifierDeclaration (declaration : Name) : MetaM Unit := do
@@ -262,13 +269,14 @@ def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
   match entry with
   | .category e => do
       ensureCategoryDeclaration e.declaration
-      if let some realization := e.realization then
-        ensureCategoryRealization realization
+      ensureCategoryRealization e.realization
   | .categoryFamily e => do
       ensureCategoryDeclaration e.declaration
       ensureCategoryDeclaration e.fibreDeclaration
   | .classifier e => ensureClassifierDeclaration e.declaration
-  | .functor e => ensureFunctorDeclaration e.declaration
+  | .functor e => do
+      ensureFunctorDeclaration e.declaration
+      ensureFunctorRealization e.realization
   | .constructor e => ensureFunctorDeclaration e.declaration
   | .finiteLimitCone _ => pure ()
   | .coherence _ => pure ()

@@ -24,105 +24,133 @@ normalized_registry .category
   { id := CategoryId.sets, canonicalName := "Sets"
     declaration := `CategoryGraph.Normalized.Sets
     expression := exprSets
-    realization := some `CategoryGraph.Specimen.specimenSetsRealization
+    realization := `CategoryGraph.Specimen.specimenSetsRealization
     origin := .root, visibility := .present }
 
 normalized_registry .category
   { id := CategoryId.magmas, canonicalName := "Magmas"
     declaration := `CategoryGraph.Normalized.Magmas
     expression := exprMagmas
-    realization := some `CategoryGraph.Specimen.specimenMagmasRealization
+    realization := `CategoryGraph.Specimen.specimenMagmasRealization
     origin := .atomicClassifierTotal, visibility := .present }
 
 normalized_registry .category
   { id := CategoryId.unitalMagmas, canonicalName := "UnitalMagmas"
     declaration := `CategoryGraph.Realization.Mathlib.UnitalMagmas
     expression := .classifierTotal ClassifierId.magmasUnital
+    realization := `CategoryGraph.Specimen.specimenUnitalMagmasRealization
     origin := .atomicClassifierTotal, visibility := .semanticOnly }
 
 normalized_registry .category
   { id := CategoryId.semigroups, canonicalName := "Semigroups"
     declaration := `CategoryGraph.Normalized.Semigroups
     expression := exprSemigroups
-    realization := some `CategoryGraph.Specimen.specimenSemigroupsRealization
+    realization := `CategoryGraph.Specimen.specimenSemigroupsRealization
     origin := .derivedNamed, visibility := .present }
 
 normalized_registry .category
   { id := CategoryId.monoids, canonicalName := "Monoids"
     declaration := `CategoryGraph.Normalized.Monoids
-    expression := exprMonoids, origin := .derivedNamed, visibility := .present }
+    expression := exprMonoids
+    realization := `CategoryGraph.Specimen.specimenMonoidsRealization
+    origin := .derivedNamed, visibility := .present }
 
 normalized_registry .category
   { id := CategoryId.groups, canonicalName := "Groups"
     declaration := `CategoryGraph.Normalized.Groups
-    expression := exprGroups, origin := .derivedNamed, visibility := .present }
+    expression := exprGroups
+    realization := `CategoryGraph.Specimen.specimenGroupsRealization
+    origin := .derivedNamed, visibility := .present }
 
 normalized_registry .category
   { id := CategoryId.additiveMagmas, canonicalName := "AdditiveMagmas"
     declaration := `CategoryGraph.Normalized.AdditiveMagmas
-    expression := exprAdditiveMagmas, origin := .derivedNamed, visibility := .present }
+    expression := exprAdditiveMagmas
+    realization := `CategoryGraph.Specimen.specimenAdditiveMagmasRealization
+    origin := .derivedNamed, visibility := .present }
 
 normalized_registry .category
   { id := CategoryId.additiveSemigroups, canonicalName := "AdditiveSemigroups"
     declaration := `CategoryGraph.Normalized.AdditiveSemigroups
-    expression := exprAdditiveSemigroups, origin := .derivedNamed, visibility := .present }
+    expression := exprAdditiveSemigroups
+    realization := `CategoryGraph.Specimen.specimenAdditiveSemigroupsRealization
+    origin := .derivedNamed, visibility := .present }
 
 normalized_registry .category
   { id := CategoryId.additiveMonoids, canonicalName := "AdditiveMonoids"
     declaration := `CategoryGraph.Normalized.AdditiveMonoids
-    expression := exprAdditiveMonoids, origin := .derivedNamed, visibility := .present }
+    expression := exprAdditiveMonoids
+    realization := `CategoryGraph.Specimen.specimenAdditiveMonoidsRealization
+    origin := .derivedNamed, visibility := .present }
 
 normalized_registry .category
   { id := CategoryId.additiveGroups, canonicalName := "AdditiveGroups"
     declaration := `CategoryGraph.Normalized.AdditiveGroups
-    expression := exprAdditiveGroups, origin := .derivedNamed, visibility := .present }
+    expression := exprAdditiveGroups
+    realization := `CategoryGraph.Specimen.specimenAdditiveGroupsRealization
+    origin := .derivedNamed, visibility := .present }
 
 normalized_registry .category
   { id := CategoryId.rings, canonicalName := "Rings"
     declaration := `CategoryGraph.Normalized.Rings
-    expression := exprRings, origin := .derivedNamed, visibility := .present }
+    expression := exprRings
+    realization := `CategoryGraph.Specimen.specimenRingsRealization
+    origin := .derivedNamed, visibility := .present }
 
 normalized_registry .category
   { id := CategoryId.commutativeRings, canonicalName := "CommutativeRings"
     declaration := `CategoryGraph.Normalized.CommutativeRings
-    expression := exprCommRings, origin := .derivedNamed, visibility := .present }
+    expression := exprCommRings
+    realization := `CategoryGraph.Specimen.specimenCommRingsRealization
+    origin := .derivedNamed, visibility := .present }
 
 normalized_registry .category
   { id := CategoryId.divisionRings, canonicalName := "DivisionRings"
     declaration := `CategoryGraph.Normalized.DivisionRings
-    expression := exprDivisionRings, origin := .derivedNamed, visibility := .present }
+    expression := exprDivisionRings
+    realization := `CategoryGraph.Specimen.specimenDivisionRingsRealization
+    origin := .derivedNamed, visibility := .present }
 
 normalized_registry .category
   { id := CategoryId.modulesR, canonicalName := "Modules(R)"
     declaration := `CategoryGraph.Normalized.Modules
-    expression := exprModules, origin := .root, visibility := .present }
+    expression := exprModules
+    realization := `CategoryGraph.Specimen.specimenModulesRealization
+    origin := .root, visibility := .present }
 
 normalized_registry .category
   { id := CategoryId.finitelyGeneratedModules, canonicalName := "FinitelyGeneratedModules(R)"
     declaration := `CategoryGraph.Normalized.FinitelyGeneratedModules
-    expression := exprFinitelyGeneratedModules, origin := .derivedNamed, visibility := .present }
+    expression := exprFinitelyGeneratedModules
+    realization := `CategoryGraph.Specimen.specimenFinitelyGeneratedModulesRealization
+    origin := .derivedNamed, visibility := .present }
 
 normalized_registry .category
   { id := CategoryId.finiteRankModules, canonicalName := "FiniteRankModules(R)"
     declaration := `CategoryGraph.Normalized.FiniteRankModules
-    expression := exprFiniteRankModules, origin := .derivedNamed, visibility := .present }
+    expression := exprFiniteRankModules
+    realization := `CategoryGraph.Specimen.specimenFiniteRankModulesRealization
+    origin := .derivedNamed, visibility := .present }
 
 normalized_registry .category
   { id := CategoryId.freeModules, canonicalName := "FreeModules(R)"
     declaration := `CategoryGraph.Normalized.FreeModules
-    expression := exprFreeModules, origin := .derivedNamed, visibility := .present }
+    expression := exprFreeModules
+    realization := `CategoryGraph.Specimen.specimenFreeModulesRealization
+    origin := .derivedNamed, visibility := .present }
 
 normalized_registry .category
   { id := CategoryId.magmasWithTwoOperations, canonicalName := "MagmasWithTwoOperations"
     declaration := `CategoryGraph.Normalized.MagmasWithTwoOperations
     expression := exprMagmasWithTwoOperations
-    realization := some `CategoryGraph.Specimen.specimenMagmasWithTwoOperationsRealization
+    realization := `CategoryGraph.Specimen.specimenMagmasWithTwoOperationsRealization
     origin := .opaqueCategory, visibility := .semanticOnly }
 
 normalized_registry .category
   { id := CategoryId.crystals, canonicalName := "Crystals"
     declaration := `CategoryGraph.Realization.Mathlib.Crystals
     expression := .opaque CategoryId.crystals
+    realization := `CategoryGraph.Specimen.specimenCrystalsRealization
     origin := .opaqueCategory, visibility := .semanticOnly }
 
 normalized_registry .categoryFamily
@@ -209,6 +237,7 @@ normalized_registry .functor
     source := exprSets
     target := exprSets
     declaration := `CategoryGraph.Specimen.specimenSetsIdentity
+    realization := `CategoryGraph.Specimen.specimenSetsIdentityRealization
     expression := exprSetsIdentity
     role := .generatedStructural
     admissibility := .generated
@@ -266,5 +295,6 @@ normalized_registry .category
     canonicalName := "InvalidAST"
     declaration := `CategoryGraph.Specimen.exprSets
     expression := exprSets
+    realization := `CategoryGraph.Specimen.specimenSetsRealization
     origin := .root
     visibility := .semanticOnly }

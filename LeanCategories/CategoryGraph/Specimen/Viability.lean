@@ -174,15 +174,130 @@ noncomputable def specimenSemigroupsRealization :
     CategoryRealization Realization.Mathlib.atomicModel.{0}
       Realization.Mathlib.specimenRingBinding (FunctorSemantics.empty _)
       exprSemigroups (Normalized.Semigroups Realization.Mathlib.atomicModel) := by
-  let A := Realization.Mathlib.atomicModel.algebra.associative
-  refine ⟨(Classifier.reindex (CategoryTheory.CategoryStruct.id _) A).total, ?_, ?_⟩
-  · have inverse : ClassifierId.magmasAssociative ≠ ClassifierId.magmasInverse := by decide
-    simp [evalCategory, exprSemigroups, Categories.Algebra.Magmas.Semigroups,
-      Categories.Algebra.Magmas.Magmas, Categories.Algebra.Magmas.Associative,
-      magmasClassifier, forgetfulToMagmas,
-      Normalized.Magmas, Realization.Mathlib.atomicModel,
-      Realization.Mathlib.atomicModelComponents, A, inverse]
-  · exact (ForMathlib.reindexIdIso A).equiv
+  refine ⟨Normalized.Semigroups Realization.Mathlib.atomicModel, ?_,
+    CategoryTheory.Equivalence.refl⟩
+  simp (disch := decide) [evalCategory, exprSemigroups,
+    Categories.Algebra.Magmas.Semigroups, Categories.Algebra.Magmas.Magmas,
+    Categories.Algebra.Magmas.Associative, magmasClassifier, forgetfulToMagmas,
+    forgetfulToM2O,
+    Normalized.Semigroups, Realization.Mathlib.atomicModel,
+    Realization.Mathlib.atomicModelComponents, ClassifierId.magmasAssociative,
+    ClassifierId.magmasCommutative, ClassifierId.magmasUnital,
+    ClassifierId.magmasInverse, ClassifierId.setsBinaryOperation]
+
+/-- The remaining named Magmas tower categories use their canonical model terms. -/
+noncomputable def specimenUnitalMagmasRealization :
+    CategoryRealization Realization.Mathlib.atomicModel.{0}
+      Realization.Mathlib.specimenRingBinding (FunctorSemantics.empty _)
+      (.classifierTotal ClassifierId.magmasUnital)
+      Realization.Mathlib.UnitalMagmas := by
+  refine ⟨Realization.Mathlib.UnitalMagmas, ?_, CategoryTheory.Equivalence.refl⟩
+  rfl
+
+noncomputable def specimenMonoidsRealization :
+    CategoryRealization Realization.Mathlib.atomicModel.{0}
+      Realization.Mathlib.specimenRingBinding (FunctorSemantics.empty _)
+      exprMonoids (Normalized.Monoids Realization.Mathlib.atomicModel) := by
+  refine ⟨Normalized.Monoids Realization.Mathlib.atomicModel, ?_,
+    CategoryTheory.Equivalence.refl⟩
+  simp (disch := decide) [evalCategory, exprMonoids,
+    Categories.Algebra.Magmas.Monoids,
+    Categories.Algebra.Magmas.Semigroups, Categories.Algebra.Magmas.Magmas,
+    Categories.Algebra.Magmas.Associative, Categories.Algebra.Magmas.Unital,
+    magmasClassifier, forgetfulToMagmas, forgetfulToM2O, Normalized.Monoids,
+    Normalized.semigroupsToMagmas,
+    Realization.Mathlib.atomicModel, Realization.Mathlib.atomicModelComponents,
+    ClassifierId.magmasAssociative, ClassifierId.magmasCommutative,
+    ClassifierId.magmasUnital, ClassifierId.magmasInverse,
+    ClassifierId.setsBinaryOperation] <;> rfl
+
+noncomputable def specimenGroupsRealization :
+    CategoryRealization Realization.Mathlib.atomicModel.{0}
+      Realization.Mathlib.specimenRingBinding (FunctorSemantics.empty _)
+      exprGroups (Normalized.Groups Realization.Mathlib.atomicModel) := by
+  refine ⟨Normalized.Groups Realization.Mathlib.atomicModel, ?_,
+    CategoryTheory.Equivalence.refl⟩
+  simp (disch := decide) [evalCategory, exprGroups,
+    Categories.Algebra.Magmas.Groups,
+    Categories.Algebra.Magmas.Monoids, Categories.Algebra.Magmas.Semigroups,
+    Categories.Algebra.Magmas.Magmas, Categories.Algebra.Magmas.Associative,
+    Categories.Algebra.Magmas.Unital, Categories.Algebra.Magmas.Inverse,
+    magmasClassifier, forgetfulToMagmas, forgetfulToUnitalMagma, forgetfulToM2O,
+    Normalized.Groups, Normalized.Monoids, Normalized.semigroupsToMagmas,
+    Normalized.monoidsToUnitalMagma,
+    Realization.Mathlib.atomicModel, Realization.Mathlib.atomicModelComponents,
+    ClassifierId.magmasAssociative, ClassifierId.magmasCommutative,
+    ClassifierId.magmasUnital, ClassifierId.magmasInverse,
+    ClassifierId.setsBinaryOperation] <;> rfl
+
+noncomputable def specimenAdditiveMagmasRealization :
+    CategoryRealization Realization.Mathlib.atomicModel.{0}
+      Realization.Mathlib.specimenRingBinding (FunctorSemantics.empty _)
+      exprAdditiveMagmas (Normalized.AdditiveMagmas Realization.Mathlib.atomicModel) := by
+  refine ⟨Normalized.AdditiveMagmas Realization.Mathlib.atomicModel, ?_,
+    CategoryTheory.Equivalence.refl⟩
+  simp (disch := decide) [evalCategory, exprAdditiveMagmas, exprMagmas,
+    Categories.Algebra.Magmas.Magmas, magmasClassifier, forgetfulToMagmas,
+    forgetfulToM2O,
+    Normalized.AdditiveMagmas, Realization.Mathlib.atomicModel,
+    Realization.Mathlib.atomicModelComponents, ClassifierId.magmasAssociative,
+    ClassifierId.magmasCommutative, ClassifierId.magmasUnital,
+    ClassifierId.magmasInverse, ClassifierId.magmasAdditive,
+    ClassifierId.setsBinaryOperation]
+
+noncomputable def specimenAdditiveSemigroupsRealization :
+    CategoryRealization Realization.Mathlib.atomicModel.{0}
+      Realization.Mathlib.specimenRingBinding (FunctorSemantics.empty _)
+      exprAdditiveSemigroups
+      (Normalized.AdditiveSemigroups Realization.Mathlib.atomicModel) := by
+  refine ⟨Normalized.AdditiveSemigroups Realization.Mathlib.atomicModel, ?_,
+    CategoryTheory.Equivalence.refl⟩
+  simp (disch := decide) [evalCategory, exprAdditiveSemigroups,
+    exprAdditiveMagmas, exprMagmas,
+    Categories.Algebra.Magmas.Magmas, magmasClassifier, forgetfulToMagmas,
+    forgetfulToM2O,
+    Normalized.AdditiveSemigroups, Normalized.additiveMagmasToMagmas,
+    Realization.Mathlib.atomicModel, Realization.Mathlib.atomicModelComponents,
+    ClassifierId.magmasAssociative, ClassifierId.magmasCommutative,
+    ClassifierId.magmasUnital, ClassifierId.magmasInverse,
+    ClassifierId.magmasAdditive, ClassifierId.setsBinaryOperation] <;> rfl
+
+noncomputable def specimenAdditiveMonoidsRealization :
+    CategoryRealization Realization.Mathlib.atomicModel.{0}
+      Realization.Mathlib.specimenRingBinding (FunctorSemantics.empty _)
+      exprAdditiveMonoids (Normalized.AdditiveMonoids Realization.Mathlib.atomicModel) := by
+  refine ⟨Normalized.AdditiveMonoids Realization.Mathlib.atomicModel, ?_,
+    CategoryTheory.Equivalence.refl⟩
+  simp (disch := decide) [evalCategory, exprAdditiveMonoids,
+    exprAdditiveSemigroups,
+    exprAdditiveMagmas, exprMagmas, Categories.Algebra.Magmas.Magmas,
+    magmasClassifier, forgetfulToMagmas, forgetfulToM2O, Normalized.AdditiveMonoids,
+    Normalized.AdditiveSemigroups, Normalized.additiveMagmasToMagmas,
+    Normalized.additiveSemigroupsToAdditiveMagmas, Realization.Mathlib.atomicModel,
+    Realization.Mathlib.atomicModelComponents, ClassifierId.magmasAssociative,
+    ClassifierId.magmasCommutative, ClassifierId.magmasUnital,
+    ClassifierId.magmasInverse, ClassifierId.magmasAdditive,
+    ClassifierId.setsBinaryOperation] <;> rfl
+
+noncomputable def specimenAdditiveGroupsRealization :
+    CategoryRealization Realization.Mathlib.atomicModel.{0}
+      Realization.Mathlib.specimenRingBinding (FunctorSemantics.empty _)
+      exprAdditiveGroups (Normalized.AdditiveGroups Realization.Mathlib.atomicModel) := by
+  refine ⟨Normalized.AdditiveGroups Realization.Mathlib.atomicModel, ?_,
+    CategoryTheory.Equivalence.refl⟩
+  simp (disch := decide) [evalCategory, exprAdditiveGroups,
+    exprAdditiveMonoids,
+    exprAdditiveSemigroups, exprAdditiveMagmas, exprMagmas,
+    Categories.Algebra.Magmas.Magmas, magmasClassifier, forgetfulToMagmas,
+    forgetfulToUnitalMagma, forgetfulToM2O, Normalized.AdditiveGroups,
+    Normalized.AdditiveMonoids,
+    Normalized.AdditiveSemigroups, Normalized.additiveMagmasToMagmas,
+    Normalized.additiveSemigroupsToAdditiveMagmas,
+    Normalized.additiveMonoidsToUnitalMagma, Realization.Mathlib.atomicModel,
+    Realization.Mathlib.atomicModelComponents, ClassifierId.magmasAssociative,
+    ClassifierId.magmasCommutative, ClassifierId.magmasUnital,
+    ClassifierId.magmasInverse, ClassifierId.magmasAdditive,
+    ClassifierId.setsBinaryOperation] <;> rfl
 
 /-- The Groups expression evaluates through the unital-magma inverse classifier. -/
 example :
@@ -193,7 +308,7 @@ example :
     Categories.Algebra.Magmas.Semigroups, Categories.Algebra.Magmas.Magmas,
     Categories.Algebra.Magmas.Associative, Categories.Algebra.Magmas.Unital,
     Categories.Algebra.Magmas.Inverse, magmasClassifier, forgetfulToMagmas,
-    forgetfulToUnitalMagma, Realization.Mathlib.atomicModel,
+    forgetfulToUnitalMagma, forgetfulToM2O, Realization.Mathlib.atomicModel,
     Realization.Mathlib.atomicModelComponents]
 
 /-- The opaque two-operation host is realized by its declared Mathlib category. -/
@@ -204,6 +319,122 @@ noncomputable def specimenMagmasWithTwoOperationsRealization :
       (Normalized.MagmasWithTwoOperations Realization.Mathlib.atomicModel) := by
   refine ⟨Normalized.MagmasWithTwoOperations Realization.Mathlib.atomicModel, ?_,
     CategoryTheory.Equivalence.refl⟩
+  rfl
+
+noncomputable def specimenRingsRealization :
+    CategoryRealization Realization.Mathlib.atomicModel.{0}
+      Realization.Mathlib.specimenRingBinding (FunctorSemantics.empty _)
+      exprRings (Normalized.Rings Realization.Mathlib.atomicModel) := by
+  refine ⟨Normalized.Rings Realization.Mathlib.atomicModel, ?_,
+    CategoryTheory.Equivalence.refl⟩
+  simp (disch := decide) [evalCategory, exprRings,
+    Categories.Algebra.Rings.Rings,
+    Categories.Algebra.Rings.MagmasWithTwoOperations,
+    Categories.Algebra.Magmas.Associative, Categories.Algebra.Magmas.Commutative,
+    Categories.Algebra.Magmas.Unital, Categories.Algebra.Magmas.Inverse,
+    magmasClassifier, forgetfulToMagmas, forgetfulToUnitalMagma, forgetfulToM2O,
+    m2oMagmaPort, m2oClassifier,
+    Normalized.Rings, Normalized.Rngs, Normalized.M2O.MultiplicativeAssociative,
+    Normalized.M2O.AdditiveInverse, Normalized.M2O.AdditiveUnital,
+    Normalized.M2O.AdditiveCommutative, Normalized.M2O.AdditiveAssociative,
+    Realization.Mathlib.atomicModel, Realization.Mathlib.atomicModelComponents,
+    ClassifierId.magmasAssociative, ClassifierId.magmasCommutative,
+    ClassifierId.magmasUnital, ClassifierId.magmasInverse,
+    ClassifierId.magmasAdditive, ClassifierId.magmasMultiplicative,
+    ClassifierId.m2oDistributive, ClassifierId.setsBinaryOperation,
+    RouteId.additive, RouteId.multiplicative, CategoryId.magmasWithTwoOperations] <;> rfl
+
+noncomputable def specimenCommRingsRealization :
+    CategoryRealization Realization.Mathlib.atomicModel.{0}
+      Realization.Mathlib.specimenRingBinding (FunctorSemantics.empty _)
+      exprCommRings (Normalized.CommutativeRings Realization.Mathlib.atomicModel) := by
+  refine ⟨Normalized.CommutativeRings Realization.Mathlib.atomicModel, ?_,
+    CategoryTheory.Equivalence.refl⟩
+  rfl
+
+noncomputable def specimenDivisionRingsRealization :
+    CategoryRealization Realization.Mathlib.atomicModel.{0}
+      Realization.Mathlib.specimenRingBinding (FunctorSemantics.empty _)
+      exprDivisionRings (Normalized.DivisionRings Realization.Mathlib.atomicModel) := by
+  refine ⟨Normalized.DivisionRings Realization.Mathlib.atomicModel, ?_,
+    CategoryTheory.Equivalence.refl⟩
+  rfl
+
+noncomputable def specimenModulesRealization :
+    CategoryRealization Realization.Mathlib.atomicModel.{0}
+      Realization.Mathlib.specimenRingBinding (FunctorSemantics.empty _)
+      exprModules (Normalized.Modules Realization.Mathlib.atomicModel (RingCat.of ℤ)) := by
+  refine ⟨Normalized.Modules Realization.Mathlib.atomicModel (RingCat.of ℤ), ?_,
+    CategoryTheory.Equivalence.refl⟩
+  rfl
+
+noncomputable def specimenFreeModulesRealization :
+    CategoryRealization Realization.Mathlib.atomicModel.{0}
+      Realization.Mathlib.specimenRingBinding (FunctorSemantics.empty _)
+      exprFreeModules
+      (Normalized.FreeModules Realization.Mathlib.atomicModel (RingCat.of ℤ)) := by
+  refine ⟨Normalized.FreeModules Realization.Mathlib.atomicModel (RingCat.of ℤ), ?_,
+    CategoryTheory.Equivalence.refl⟩
+  simp (disch := decide) [evalCategory, exprFreeModules, exprModules,
+    forgetfulToModules, forgetfulToM2O,
+    modulesClassifier, Normalized.FreeModules, Realization.Mathlib.specimenRingBinding,
+    Realization.Mathlib.atomicModel, Realization.Mathlib.atomicModelComponents,
+    ClassifierId.magmasAssociative, ClassifierId.magmasCommutative,
+    ClassifierId.magmasUnital, ClassifierId.magmasInverse,
+    ClassifierId.magmasAdditive, ClassifierId.magmasMultiplicative,
+    ClassifierId.modulesFree, ClassifierId.modulesFinitelyGenerated,
+    ClassifierId.modulesFiniteRank, ClassifierId.setsFinite, ClassifierId.setsGraded,
+    ClassifierId.setsBinaryOperation, ClassifierId.m2oDistributive,
+    ClassifierId.ringsDivision] <;> rfl
+
+noncomputable def specimenFinitelyGeneratedModulesRealization :
+    CategoryRealization Realization.Mathlib.atomicModel.{0}
+      Realization.Mathlib.specimenRingBinding (FunctorSemantics.empty _)
+      exprFinitelyGeneratedModules
+      (Normalized.FinitelyGeneratedModules Realization.Mathlib.atomicModel
+        (RingCat.of ℤ)) := by
+  refine ⟨Normalized.FinitelyGeneratedModules Realization.Mathlib.atomicModel
+    (RingCat.of ℤ), ?_, CategoryTheory.Equivalence.refl⟩
+  simp (disch := decide) [evalCategory,
+    exprFinitelyGeneratedModules, exprModules, forgetfulToModules, forgetfulToM2O,
+    modulesClassifier, Normalized.FinitelyGeneratedModules,
+    Realization.Mathlib.specimenRingBinding, Realization.Mathlib.atomicModel,
+    Realization.Mathlib.atomicModelComponents, ClassifierId.magmasAssociative,
+    ClassifierId.magmasCommutative, ClassifierId.magmasUnital,
+    ClassifierId.magmasInverse, ClassifierId.magmasAdditive,
+    ClassifierId.magmasMultiplicative, ClassifierId.modulesFree,
+    ClassifierId.modulesFinitelyGenerated, ClassifierId.modulesFiniteRank,
+    ClassifierId.setsFinite, ClassifierId.setsGraded,
+    ClassifierId.setsBinaryOperation, ClassifierId.m2oDistributive,
+    ClassifierId.ringsDivision] <;> rfl
+
+noncomputable def specimenFiniteRankModulesRealization :
+    CategoryRealization Realization.Mathlib.atomicModel.{0}
+      Realization.Mathlib.specimenRingBinding (FunctorSemantics.empty _)
+      exprFiniteRankModules
+      (Normalized.FiniteRankModules Realization.Mathlib.atomicModel
+        (RingCat.of ℤ)) := by
+  refine ⟨Normalized.FiniteRankModules Realization.Mathlib.atomicModel
+    (RingCat.of ℤ), ?_, CategoryTheory.Equivalence.refl⟩
+  simp (disch := decide) [evalCategory,
+    exprFiniteRankModules, exprModules, forgetfulToModules, forgetfulToM2O,
+    modulesClassifier, Normalized.FiniteRankModules,
+    Realization.Mathlib.specimenRingBinding, Realization.Mathlib.atomicModel,
+    Realization.Mathlib.atomicModelComponents, ClassifierId.magmasAssociative,
+    ClassifierId.magmasCommutative, ClassifierId.magmasUnital,
+    ClassifierId.magmasInverse, ClassifierId.magmasAdditive,
+    ClassifierId.magmasMultiplicative, ClassifierId.modulesFree,
+    ClassifierId.modulesFinitelyGenerated, ClassifierId.modulesFiniteRank,
+    ClassifierId.setsFinite, ClassifierId.setsGraded,
+    ClassifierId.setsBinaryOperation, ClassifierId.m2oDistributive,
+    ClassifierId.ringsDivision] <;> rfl
+
+noncomputable def specimenCrystalsRealization :
+    CategoryRealization Realization.Mathlib.atomicModel.{0}
+      Realization.Mathlib.specimenRingBinding (FunctorSemantics.empty _)
+      (.opaque CategoryId.crystals)
+      Realization.Mathlib.Crystals := by
+  refine ⟨Realization.Mathlib.Crystals, ?_, CategoryTheory.Equivalence.refl⟩
   rfl
 
 /-- Implicit unnamed target: constructible, not a named registry node. -/

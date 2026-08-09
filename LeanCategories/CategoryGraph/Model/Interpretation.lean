@@ -145,6 +145,62 @@ structure ForgetfulToModules (M : AtomicModel.{uObj, uHom}) where
   domain : ObjCat.{uObj, uHom}
   forget : domain ⟶ Modules M ring
 
+/-- A category in the two-operation tower, with its projection to the host. -/
+structure ForgetfulToM2O (M : AtomicModel.{uObj, uHom}) where
+  domain : ObjCat.{uObj, uHom}
+  forget : domain ⟶ MagmasWithTwoOperations M
+  unitalForget : Option (domain ⟶ M.algebra.unital.total) := none
+
+/-- Select one of the two magma ports from the two-operation host. -/
+noncomputable def m2oMagmaPort (M : AtomicModel.{uObj, uHom}) :
+    Option RouteId → Option (MagmasWithTwoOperations M ⟶ Magmas M)
+  | some route =>
+      if route == RouteId.multiplicative then some (m2oToMagmasMul M)
+      else if route == RouteId.additive then some (m2oToMagmasAdd M)
+      else none
+  | none => some (m2oToMagmasAdd M)
+
+/-- Interpret a refinement tower over the two-operation host. -/
+noncomputable def forgetfulToM2O (M : AtomicModel.{uObj, uHom}) :
+    CategoryExpr → Option (ForgetfulToM2O M)
+  | .atom id | .opaque id | .reference id =>
+      if id == CategoryId.magmasWithTwoOperations then
+        some ⟨MagmasWithTwoOperations M, CategoryTheory.CategoryStruct.id _, none⟩
+      else none
+  | .refine base clf route =>
+      match forgetfulToM2O M base with
+      | none => none
+      | some Fbase =>
+          if clf == ClassifierId.magmasInverse then
+            match Fbase.unitalForget with
+            | some toUnital =>
+                let inverse := Classifier.reindex toUnital M.algebra.inverse
+                some ⟨inverse.total, inverse.baseProjection ≫ Fbase.forget, none⟩
+            | none => none
+          else if clf == ClassifierId.magmasUnital then
+            match m2oMagmaPort M route with
+            | some port =>
+                let refined := Classifier.reindex (Fbase.forget ≫ port) M.algebra.unital
+                some
+                  ⟨refined.total, refined.baseProjection ≫ Fbase.forget,
+                    some refined.axiomProjection⟩
+            | none => none
+          else
+            match magmasClassifier M clf with
+            | some A =>
+                match m2oMagmaPort M route with
+                | some port =>
+                    let refined := Classifier.reindex (Fbase.forget ≫ port) A
+                    some ⟨refined.total, refined.baseProjection ≫ Fbase.forget, none⟩
+                | none => none
+            | none =>
+                match m2oClassifier M clf with
+                | some A =>
+                    let refined := Classifier.reindex Fbase.forget A
+                    some ⟨refined.total, refined.baseProjection ≫ Fbase.forget, none⟩
+                | none => none
+  | _ => none
+
 /-- Forgetful for named Magmas-tower atoms. -/
 noncomputable def forgetfulToMagmasAtom (M : AtomicModel.{uObj, uHom}) (id : CategoryId) :
     Option (ForgetfulToMagmas M) :=
@@ -180,8 +236,16 @@ noncomputable def forgetfulToMagmas (M : AtomicModel.{uObj, uHom}) :
   | .refine base clf _ =>
       match magmasClassifier M clf, forgetfulToMagmas M base with
       | some A, some Fbase =>
-          let R := Classifier.reindex Fbase.forget A
-          some ⟨R.total, R.baseProjection ≫ Fbase.forget⟩
+          match base with
+          | .classifierTotal id =>
+              if id == ClassifierId.setsBinaryOperation then
+                some ⟨A.total, A.forget⟩
+              else
+                let R := Classifier.reindex Fbase.forget A
+                some ⟨R.total, R.baseProjection ≫ Fbase.forget⟩
+          | _ =>
+              let R := Classifier.reindex Fbase.forget A
+              some ⟨R.total, R.baseProjection ≫ Fbase.forget⟩
       | _, _ => none
   | _ => none
 
@@ -220,8 +284,11 @@ noncomputable def forgetfulToModules (M : AtomicModel.{uObj, uHom})
       | some Fbase =>
           match modulesClassifier M Fbase.ring clf with
           | some A =>
-              let R := Classifier.reindex Fbase.forget A
-              some ⟨Fbase.ring, R.total, R.baseProjection ≫ Fbase.forget⟩
+              match base with
+              | .familyApp _ _ => some ⟨Fbase.ring, A.total, A.forget⟩
+              | _ =>
+                  let R := Classifier.reindex Fbase.forget A
+                  some ⟨Fbase.ring, R.total, R.baseProjection ≫ Fbase.forget⟩
           | none => none
       | none => none
   | _ => none
@@ -290,15 +357,24 @@ noncomputable def evalCategory (M : AtomicModel.{uObj, uHom})
                 match m2oClassifier M id with
                 | some A => some A.total
                 | none => none
-  | .refine base clf route =>
-      if clf == ClassifierId.magmasInverse then
+  | expression@(.refine base clf route) =>
+      match forgetfulToM2O M expression with
+      | some evaluated => some evaluated.domain
+      | none => if clf == ClassifierId.magmasInverse then
         match forgetfulToUnitalMagma M base with
         | some F => some (Classifier.reindex F.forget M.algebra.inverse).total
         | none => none
       else match magmasClassifier M clf with
       | some A =>
           match forgetfulToMagmas M base with
-          | some F => some (Classifier.reindex F.forget A).total
+          | some F =>
+              match base with
+              | .classifierTotal id =>
+                  if id == ClassifierId.setsBinaryOperation then
+                    some A.total
+                  else
+                    some (Classifier.reindex F.forget A).total
+              | _ => some (Classifier.reindex F.forget A).total
           | none =>
               match base with
               | .atom bid =>
@@ -322,7 +398,9 @@ noncomputable def evalCategory (M : AtomicModel.{uObj, uHom})
           | some F =>
               match modulesClassifier M F.ring clf with
               | some A =>
-                  some (Classifier.reindex F.forget A).total
+                  match base with
+                  | .familyApp _ _ => some A.total
+                  | _ => some (Classifier.reindex F.forget A).total
               | none => none
           | none =>
               match setsClassifier M clf with

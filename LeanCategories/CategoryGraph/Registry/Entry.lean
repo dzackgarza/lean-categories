@@ -24,8 +24,8 @@ structure NamedCategoryEntry where
   canonicalName : String
   declaration : Lean.Name
   expression : CategoryExpr
-  /-- Optional elaborated witness tying this expression to the declared category. -/
-  realization : Option Lean.Name := none
+  /-- Elaborated witness tying this expression to the declared category. -/
+  realization : Lean.Name
   origin : CategoryOrigin
   visibility : Visibility
   deriving Repr, Inhabited
@@ -95,6 +95,7 @@ structure FunctorEntry where
   source : CategoryExpr
   target : CategoryExpr
   declaration : Lean.Name
+  realization : Lean.Name
   expression : FunctorExpr source target
   role : FunctorRole
   admissibility : StructuralAdmissibility
