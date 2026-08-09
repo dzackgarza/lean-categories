@@ -4,8 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Lattices.Valued.Basic
+public import LeanCategories.Lattices.Valued.Arithmetic
 public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
@@ -51,19 +54,74 @@ def divisibility (L : IntegralLatticeCat R) (x : L.obj.carrier) : Ideal R :=
   LinearMap.range (L.obj.bilinMap x)
 
 /-- The Gram matrix of a lattice in a selected basis. -/
-noncomputable def gramMatrix {I : Type*} (L : IntegralLatticeCat R)
+noncomputable def gramMatrix {I : Type*} [Fintype I] [DecidableEq I]
+    (L : IntegralLatticeCat R)
     (b : Module.Basis I R L.obj.carrier) : Matrix I I R :=
-  Matrix.of fun i j ↦ L.obj.pairing (b i) (b j)
+  LinearMap.BilinForm.toMatrix b L.obj.bilinMap
 
 /-- The determinant of a finite Gram matrix. -/
 noncomputable def determinant {I : Type*} [Fintype I] [DecidableEq I]
     (L : IntegralLatticeCat R) (b : Module.Basis I R L.obj.carrier) : R :=
   (gramMatrix L b).det
 
-/-- A finite based lattice is unimodular when its Gram determinant is a unit. -/
-def IsUnimodular {I : Type*} [Fintype I] [DecidableEq I]
-    (L : IntegralLatticeCat R) (b : Module.Basis I R L.obj.carrier) : Prop :=
-  IsUnit (determinant L b)
+/-- A lattice is unimodular when its adjoint is a linear equivalence. -/
+def IsUnimodular (L : IntegralLatticeCat R) : Prop :=
+  Function.Bijective L.obj.adjoint
+
+/-- Gram determinants from two bases with the same index are associated. -/
+theorem determinant_associated {I : Type*} [Fintype I] [DecidableEq I]
+    (L : IntegralLatticeCat R)
+    (b c : Module.Basis I R L.obj.carrier) :
+    Associated (determinant L b) (determinant L c) := by
+  letI := b.invertibleToMatrix c
+  have hu : IsUnit (b.toMatrix c).det :=
+    (Matrix.isUnit_iff_isUnit_det (b.toMatrix c)).mp
+      (isUnit_of_invertible (b.toMatrix c))
+  have hmatrix :=
+    LinearMap.BilinForm.toMatrix_mul_basis_toMatrix (b := b) c L.obj.bilinMap
+  have hdet := congrArg Matrix.det hmatrix
+  simp only [Matrix.det_mul, Matrix.det_transpose] at hdet
+  simp only [determinant, gramMatrix]
+  apply (associated_mul_unit_right
+    ((LinearMap.BilinForm.toMatrix b) L.obj.bilinMap).det
+    ((b.toMatrix c).det * (b.toMatrix c).det) (hu.mul hu)).trans
+  rw [← hdet]
+  simpa only [mul_assoc, mul_comm, mul_left_comm] using
+    (Associated.refl
+      (((LinearMap.BilinForm.toMatrix b) L.obj.bilinMap).det *
+        ((b.toMatrix c).det * (b.toMatrix c).det)))
+
+/-- Unimodularity does not depend on the selected finite basis. -/
+theorem isUnit_determinant_iff {I : Type*} [Fintype I] [DecidableEq I]
+    (L : IntegralLatticeCat R)
+    (b c : Module.Basis I R L.obj.carrier) :
+    IsUnit (determinant L b) ↔ IsUnit (determinant L c) :=
+  (determinant_associated L b c).isUnit_iff
+
+/-- The adjoint matrix in the dual basis is the Gram matrix. -/
+theorem adjoint_toMatrix_eq_gramMatrix {I : Type*} [Fintype I]
+    [DecidableEq I] (L : IntegralLatticeCat R)
+    (b : Module.Basis I R L.obj.carrier) :
+    LinearMap.toMatrix b b.dualBasis L.obj.adjoint = gramMatrix L b := by
+  ext i j
+  rw [LinearMap.toMatrix_apply, Module.Basis.dualBasis_repr]
+  rw [gramMatrix, LinearMap.BilinForm.toMatrix_apply]
+  change L.obj.pairing (b j) (b i) = L.obj.pairing (b i) (b j)
+  exact L.property.2 (b j) (b i)
+
+/-- For a finite free lattice, perfectness is equivalent to a unit Gram determinant. -/
+theorem isUnimodular_iff_isUnit_determinant {I : Type*} [Fintype I]
+    [DecidableEq I] (L : IntegralLatticeCat R)
+    (b : Module.Basis I R L.obj.carrier) :
+    IsUnimodular L ↔ IsUnit (determinant L b) := by
+  rw [determinant]
+  rw [← adjoint_toMatrix_eq_gramMatrix L b]
+  constructor
+  · intro h
+    exact (LinearEquiv.ofBijective L.obj.adjoint h).isUnit_det b b.dualBasis
+  · intro h
+    exact (LinearEquiv.ofIsUnitDet
+      (f := L.obj.adjoint) (v := b) (v' := b.dualBasis) h).bijective
 
 /-- The orthogonal direct-sum bilinear map. -/
 def orthogonalSumBilinMap (L₁ L₂ : LatticeCat R W) :
@@ -92,6 +150,54 @@ theorem orthogonalSum_pairing (L₁ L₂ : LatticeCat R W)
     (x y : L₁.obj.carrier × L₂.obj.carrier) :
     (orthogonalSum L₁ L₂).obj.pairing x y =
       L₁.obj.pairing x.1 y.1 + L₂.obj.pairing x.2 y.2 :=
+  rfl
+
+/-- The bilinear map for a finite indexed orthogonal sum. -/
+noncomputable def indexedOrthogonalSumBilinMap {I : Type} [Fintype I]
+    (L : I → LatticeCat R W) :
+    LinearMap.BilinMap R ((i : I) → (L i).obj.carrier) W := by
+  classical
+  exact LinearMap.mk₂ R
+    (fun x y ↦ ∑ i, (L i).obj.pairing (x i) (y i))
+    (fun _ _ _ ↦ by simp [Finset.sum_add_distrib])
+    (fun _ _ _ ↦ by simp [Finset.smul_sum])
+    (fun _ _ _ ↦ by simp [Finset.sum_add_distrib])
+    (fun _ _ _ ↦ by simp [Finset.smul_sum])
+
+/-- The orthogonal sum of a finite indexed family of lattices. -/
+noncomputable def indexedOrthogonalSum {I : Type} [Fintype I]
+    (L : I → LatticeCat R W) : LatticeCat R W := by
+  letI (i : I) : Module.Projective R (L i).obj.carrier := (L i).property.1
+  refine ⟨BilinModuleCat.ofBilinMap (indexedOrthogonalSumBilinMap L), ?_, ?_⟩
+  · change Module.Projective R ((i : I) → (L i).obj.carrier)
+    exact Module.Projective.of_equiv'
+      (DFinsupp.linearEquivFunOnFintype (R := R)
+        (M := fun i ↦ (L i).obj.carrier))
+  · intro x y
+    change (∑ i, (L i).obj.pairing (x i) (y i)) =
+      ∑ i, (L i).obj.pairing (y i) (x i)
+    apply Finset.sum_congr rfl
+    intro i _
+    exact (L i).property.2 (x i) (y i)
+
+@[simp]
+theorem indexedOrthogonalSum_pairing {I : Type} [Fintype I]
+    (L : I → LatticeCat R W)
+    (x y : (i : I) → (L i).obj.carrier) :
+    (indexedOrthogonalSum L).obj.pairing x y =
+      ∑ i, (L i).obj.pairing (x i) (y i) :=
+  rfl
+
+/-- The `n`-fold orthogonal power of a lattice. -/
+noncomputable def orthogonalPower (L : LatticeCat R W) (n : ℕ) :
+    LatticeCat R W :=
+  indexedOrthogonalSum (I := Fin n) fun _ ↦ L
+
+@[simp]
+theorem orthogonalPower_pairing (L : LatticeCat R W) (n : ℕ)
+    (x y : Fin n → L.obj.carrier) :
+    (orthogonalPower L n).obj.pairing x y =
+      ∑ i, L.obj.pairing (x i) (y i) :=
   rfl
 
 end LeanCategories.Lattices.Valued
