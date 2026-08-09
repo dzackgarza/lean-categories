@@ -397,6 +397,36 @@ theorem e7Lattice_isEven : IsEven e7Lattice := by
   refine ⟨-1, ?_⟩
   fin_cases i <;> norm_num
 
+/-- The determinant of the selected negative `E₇` matrix is negative two. -/
+theorem e7GramMatrix_det : e7GramMatrix.det = -2 := by
+  rw [e7GramMatrix_eq]
+  let A : Matrix (Fin 7) (Fin 7) ℤ := ![
+    ![-2,  0,  1,  0,  0,  0,  0],
+    ![ 0, -2,  0,  1,  0,  0,  0],
+    ![ 1,  0, -2,  1,  0,  0,  0],
+    ![ 0,  1,  1, -2,  1,  0,  0],
+    ![ 0,  0,  0,  1, -2,  1,  0],
+    ![ 0,  0,  0,  0,  1, -2,  1],
+    ![ 0,  0,  0,  0,  0,  1, -2]]
+  change A.det = -2
+  have h5 : (A.submatrix
+      (6 : Fin 7).succAbove (5 : Fin 7).succAbove).det = -4 := by
+    set_option maxRecDepth 10000 in decide
+  have h6 : (A.submatrix
+      (6 : Fin 7).succAbove (6 : Fin 7).succAbove).det = 3 := by
+    set_option maxRecDepth 10000 in decide
+  have hrow (j : Fin 7) : A (6 : Fin 7) j =
+      if j = 5 then 1 else if j = 6 then -2 else 0 := by
+    fin_cases j <;> decide
+  rw [Matrix.det_succ_row A (6 : Fin 7)]
+  simp_rw [hrow]
+  simp (disch := decide) [Fin.sum_univ_succ, h5, h6]
+
+/-- The standard basis computes the determinant of the negative `E₇` lattice. -/
+theorem e7Lattice_determinant :
+    determinant e7Lattice (Pi.basisFun ℤ (Fin 7)) = -2 := by
+  rw [determinant, e7Lattice_gramMatrix, e7GramMatrix_det]
+
 /-- The negative definite `E₈` root lattice in its simple-root basis. -/
 noncomputable def e8Lattice : IntegralLatticeCat ℤ := by
   refine ⟨BilinModuleCat.ofBilinMap (Matrix.toBilin' e8GramMatrix), ?_, ?_⟩
