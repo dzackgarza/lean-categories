@@ -26,6 +26,11 @@ def IsPrimitiveEmbedding {L M : BilinModuleCat R W} (f : L ⟶ M) : Prop :=
     Module.IsTorsionFree R
       (M.carrier ⧸ LinearMap.range (underlyingMap f))
 
+/-- A formed embedding has finite index when it is injective with finite cokernel. -/
+def IsFiniteIndexEmbedding {L M : BilinModuleCat R W} (f : L ⟶ M) : Prop :=
+  Function.Injective (underlyingMap f) ∧
+    Finite (M.carrier ⧸ LinearMap.range (underlyingMap f))
+
 end LeanCategories.Modules.Bilinear.Valued.BilinModuleCat
 
 namespace LeanCategories.Lattices.Valued
@@ -39,6 +44,11 @@ variable {W : Type u} [AddCommGroup W] [Module R W]
 def IsPrimitiveSubmodule {M : Type u} [AddCommGroup M] [Module R M]
     (P : Submodule R M) : Prop :=
   Module.IsTorsionFree R (M ⧸ P)
+
+/-- A submodule has finite index when its quotient has finitely many elements. -/
+def IsFiniteIndexSubmodule {M : Type u} [AddCommGroup M] [Module R M]
+    (P : Submodule R M) : Prop :=
+  Finite (M ⧸ P)
 
 /-- The saturation of a submodule over an integral domain. -/
 def saturation {M : Type u} [AddCommGroup M] [Module R M] [IsDomain R]
@@ -147,6 +157,56 @@ def formedSublatticeInclusion (L : LatticeCat R W)
     (P : Submodule R L.obj.carrier) [Module.Projective R P] :
     formedSublattice L P ⟶ L :=
   ObjectProperty.homMk (L.obj.restrictInclusion P)
+
+/-- A formed-sublattice inclusion is primitive exactly when its submodule is primitive. -/
+theorem formedSublatticeInclusion_isPrimitive_iff
+    (L : LatticeCat R W) (P : Submodule R L.obj.carrier)
+    [Module.Projective R P] :
+    BilinModuleCat.IsPrimitiveEmbedding
+        (formedSublatticeInclusion L P).hom ↔
+      IsPrimitiveSubmodule P := by
+  constructor
+  · intro h
+    have hCokernel := h.2
+    change Module.IsTorsionFree R
+      (L.obj.carrier ⧸ LinearMap.range P.subtype) at hCokernel
+    rw [Submodule.range_subtype] at hCokernel
+    exact hCokernel
+  · intro h
+    constructor
+    · exact Subtype.val_injective
+    · change Module.IsTorsionFree R
+        (L.obj.carrier ⧸ LinearMap.range P.subtype)
+      rw [Submodule.range_subtype]
+      exact h
+
+/-- A formed-sublattice inclusion has finite index exactly when its submodule does. -/
+theorem formedSublatticeInclusion_isFiniteIndex_iff
+    (L : LatticeCat R W) (P : Submodule R L.obj.carrier)
+    [Module.Projective R P] :
+    BilinModuleCat.IsFiniteIndexEmbedding
+        (formedSublatticeInclusion L P).hom ↔
+      IsFiniteIndexSubmodule P := by
+  constructor
+  · intro h
+    have hCokernel := h.2
+    change Finite
+      (L.obj.carrier ⧸ LinearMap.range P.subtype) at hCokernel
+    rw [Submodule.range_subtype] at hCokernel
+    exact hCokernel
+  · intro h
+    constructor
+    · exact Subtype.val_injective
+    · change Finite
+        (L.obj.carrier ⧸ LinearMap.range P.subtype)
+      rw [Submodule.range_subtype]
+      exact h
+
+/-- Sublattice inclusion followed by quotient is exact. -/
+theorem formedSublattice_exact
+    (L : LatticeCat R W) (P : Submodule R L.obj.carrier) :
+    Function.Exact P.subtype P.mkQ :=
+  LinearMap.exact_subtype_mkQ P
 
 /-- The submodule orthogonal to `P` inside an integral lattice. -/
 def orthogonalSubmodule (L : IntegralLatticeCat R)
