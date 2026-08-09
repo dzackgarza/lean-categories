@@ -9,6 +9,7 @@ public import LeanCategories.Lattices.Valued.BaseChange
 public import LeanCategories.Lattices.Valued.Constructions
 public import LeanCategories.Lattices.Valued.ScaleAndEvenness
 public import Mathlib.CategoryTheory.Core
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.QuadraticForm.Real
 public import Mathlib.LinearAlgebra.QuadraticForm.Signature
@@ -57,6 +58,23 @@ noncomputable def matrixSignature {I : Type*} [Fintype I] [DecidableEq I]
     (A : Matrix I I K) : ℕ × ℕ × ℕ :=
   let Q := matrixQuadraticForm K A
   (sigPos Q, sigNeg Q, Module.finrank K Q.radical)
+
+/-- Negation swaps the positive and negative parts of a matrix signature. -/
+@[simp]
+theorem matrixSignature_neg {I : Type*} [Fintype I] [DecidableEq I]
+    (A : Matrix I I K) :
+    matrixSignature K (-A) =
+      ((matrixSignature K A).2.1, (matrixSignature K A).1,
+        (matrixSignature K A).2.2) := by
+  have hQ : matrixQuadraticForm K (-A) = -(matrixQuadraticForm K A) := by
+    ext x
+    simp [matrixQuadraticForm, Matrix.toBilin'_apply']
+  have hRadical : (-(matrixQuadraticForm K A)).radical =
+      (matrixQuadraticForm K A).radical := by
+    ext x
+    simp [QuadraticMap.mem_radical_iff']
+  simp only [matrixSignature]
+  rw [hQ, sigPos_neg, sigNeg_neg, hRadical]
 
 /-- A basis identifies a finite formed module with its matrix quadratic form. -/
 noncomputable def finiteFormQuadraticIsometryBasis
@@ -171,6 +189,25 @@ theorem integralSignature_eq_matrixSignature {I : Type*} [Fintype I]
   rw [integralSignature]
   rw [signature_eq_matrixSignature ℝ M bℝ]
   exact congrArg (matrixSignature ℝ) hMatrix
+
+/-- Negation swaps the positive and negative parts of an integral signature. -/
+@[simp]
+theorem integralSignature_opposite (L : FiniteProjectiveLatticeCat ℤ ℤ) :
+    integralSignature (oppositeFiniteProjectiveLattice L) =
+      ((integralSignature L).2.1, (integralSignature L).1,
+        (integralSignature L).2.2) := by
+  classical
+  letI : Module.Free ℤ L.obj.obj.carrier := L.carrier_free
+  letI : Module.Finite ℤ L.obj.obj.carrier := L.property
+  let b := Module.Free.chooseBasis ℤ L.obj.obj.carrier
+  rw [integralSignature_eq_matrixSignature
+    (oppositeFiniteProjectiveLattice L) b]
+  rw [integralSignature_eq_matrixSignature L b]
+  change matrixSignature ℝ
+    ((gramMatrix (oppositeLattice L.obj) b).map (Int.castRingHom ℝ)) = _
+  rw [gramMatrix_opposite]
+  rw [Matrix.map_neg _ (map_neg (Int.castRingHom ℝ))]
+  exact matrixSignature_neg ℝ _
 
 /-- Real signature as a functor on finite integral lattices and their isomorphisms. -/
 noncomputable def integralSignatureFunctor :

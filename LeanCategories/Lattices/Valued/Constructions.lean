@@ -41,6 +41,16 @@ def scaleLattice (L : LatticeCat R W) (a : R) : LatticeCat R W := by
 def oppositeLattice (L : LatticeCat R W) : LatticeCat R W :=
   scaleLattice L (-1)
 
+/-- Change a finite projective lattice form to its negative. -/
+def oppositeFiniteProjectiveLattice (L : FiniteProjectiveLatticeCat R W) :
+    FiniteProjectiveLatticeCat R W :=
+  ⟨oppositeLattice L.obj, L.property⟩
+
+@[simp]
+theorem oppositeLattice_pairing (L : LatticeCat R W) (x y : L.obj.carrier) :
+    (oppositeLattice L).obj.pairing x y = -L.obj.pairing x y := by
+  simp [oppositeLattice, scaleLattice]
+
 /-- A vector is isotropic when its self-pairing is zero. -/
 def IsIsotropic (L : LatticeCat R W) (x : L.obj.carrier) : Prop :=
   L.obj.pairing x x = 0
@@ -59,6 +69,15 @@ noncomputable def gramMatrix {I : Type*} [Fintype I] [DecidableEq I]
     (L : IntegralLatticeCat R)
     (b : Module.Basis I R L.obj.carrier) : Matrix I I R :=
   LinearMap.BilinForm.toMatrix b L.obj.bilinMap
+
+@[simp]
+theorem gramMatrix_opposite {I : Type*} [Fintype I] [DecidableEq I]
+    (L : IntegralLatticeCat R)
+    (b : Module.Basis I R L.obj.carrier) :
+    gramMatrix (oppositeLattice L) b = -gramMatrix L b := by
+  ext i j
+  simp [gramMatrix, LinearMap.BilinForm.toMatrix_apply]
+  rfl
 
 /-- The determinant of a finite Gram matrix. -/
 noncomputable def determinant {I : Type*} [Fintype I] [DecidableEq I]
