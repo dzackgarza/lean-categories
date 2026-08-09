@@ -70,9 +70,9 @@ def orthogonalSumBilinMap (L₁ L₂ : LatticeCat R W) :
     LinearMap.BilinMap R (L₁.obj.carrier × L₂.obj.carrier) W :=
   LinearMap.mk₂ R
     (fun x y ↦ L₁.obj.pairing x.1 y.1 + L₂.obj.pairing x.2 y.2)
-    (fun _ _ _ ↦ by simp [add_assoc, add_left_comm, add_comm])
+    (fun _ _ _ ↦ by simp [add_assoc, add_left_comm])
     (fun _ _ _ ↦ by simp)
-    (fun _ _ _ ↦ by simp [add_assoc, add_left_comm, add_comm])
+    (fun _ _ _ ↦ by simp [add_assoc, add_left_comm])
     (fun _ _ _ ↦ by simp)
 
 /-- The orthogonal direct sum of two lattices. -/
