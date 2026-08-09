@@ -62,23 +62,14 @@ Lattice theory should use those categories through full subcategories and functo
 
 ### Declarations whose names exceed their definitions
 
-Several declared functors are not honest Lean functors.
+The cleanup removed three declarations whose names exceeded their definitions.
 
-`LeanCategories/Modules/Quadratic/Functors/DiscriminantFunctor.lean` defines:
+- The quadratic `DiscriminantFunctor` was only a type-valued function.
+- The integral-lattice discriminant functor used axiomatic maps and laws.
+- The finite-free scalar-extension functors used axiomatic maps and laws.
 
-```lean
-def DiscriminantFunctor (B : LinearMap.BilinForm R M) : Type _ :=
-  IntegralLattice.DiscriminantModule B
-```
-
-This declaration is a type-valued function.
-It is not a functor between defined categories.
-
-`LeanCategories/Lattices/Integral/Functors/DiscFunctor.lean` declares the discriminant object, map, identity law, and composition law as axioms.
-
-`LeanCategories/Modules/FiniteFreeZ/Functors/ScalarExtension.lean` declares rationalized and realified maps and their functor laws as axioms.
-
-Directory placement and declaration names therefore state more mathematical structure than the definitions provide.
+The canonical spine now provides honest base-change and rationalization functors.
+The core-restricted discriminant functor remains open.
 
 ### Conflicting dual and discriminant theories
 
@@ -93,7 +84,7 @@ Importing them together leaves the core discriminant object without one canonica
 
 ### Axiomatic and shallow branches
 
-The repository contains 35 explicit `axiom` declarations.
+The repository contains 31 explicit `axiom` declarations.
 It contains no `sorry` or `admit` declarations.
 
 Important axiomatic areas include:
@@ -174,7 +165,7 @@ No move, deletion, or integration is safe without that decision.
 - The internal import graph has no cycles.
 - The two Lean libraries have no cross-library imports.
 - The repository contains no `sorry` or `admit` declarations.
-- The repository contains 35 explicit `axiom` declarations.
+- The repository contains 31 explicit `axiom` declarations.
 - The root module imports only the canonical valued foundation.
 - `lean_lattices/` is outside the parent build.
 
