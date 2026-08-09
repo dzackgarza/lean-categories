@@ -94,6 +94,38 @@ An underlying equivalence does not identify structured objects. A module map doe
 
 Partial work is legitimate when its limits remain visible. State exactly what you proved. Keep the stronger obligation open. Never give a partial result the completed theorem's name.
 
+### Build the mathematical language before the target
+
+An advanced target is not ready when the repository cannot state its definition.
+
+Decompose the target through its definitions. Repeat this work for each missing object, morphism, predicate, functor, and universal construction.
+
+Continue until each leaf already exists or becomes explicit foundational work. This recursive decomposition can be most of the research.
+
+A period domain needs prior language for signatures, scalar extension, isotropic vectors, and orthogonal groups. Its name supplies none of this.
+
+Likewise, a moduli object needs its schemes, morphisms, local conditions, and families. A declaration name cannot replace these foundations.
+
+Keep a high-level plan as a horizon when useful. Add prerequisite plans below it before implementation starts.
+
+A floating declaration with an advanced name is not a partial formalization. It is an unsupported assertion about an undefined object.
+
+### Unfold compressed mathematical insight
+
+An advisor can express a large structure through one short question. Treat the question as mathematical evidence, not patch instructions.
+
+For example, ideals are submodules of the regular module. An integral basis is a basis of a specified integral algebra.
+
+Together, these facts point toward scalar-extension functors for algebras and modules. They do not request another basis-returning method.
+
+This general structure can remove many apparent tasks. The missing functor is mathematical compression, not expensive support work.
+
+Removing a Sage wrapper increases the need to own the represented mathematical object. It does not remove that object.
+
+The agent must derive the wider consequences. The advisor must not have to list every prerequisite or downstream construction.
+
+The derivation can disagree with the advisor. Such disagreement must follow from the mathematics, not implementation convenience.
+
 ### Balance autonomous and interactive work
 
 This repository is a research collaboration. It is not a programming queue that ends when tests pass.
