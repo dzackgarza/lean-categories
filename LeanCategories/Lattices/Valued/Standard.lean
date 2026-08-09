@@ -93,6 +93,107 @@ theorem rankOneLattice_isUnimodular_iff (a : ℤ) :
     (rankOneLattice a) (Pi.basisFun ℤ (Fin 1))]
   simp
 
+/-- The integral lattice represented by a symmetric integer matrix. -/
+def latticeOfGramMatrix {n : ℕ} (A : Matrix (Fin n) (Fin n) ℤ)
+    (hA : A.IsSymm) : IntegralLatticeCat ℤ := by
+  refine ⟨BilinModuleCat.ofBilinMap (Matrix.toBilin' A), ?_, ?_⟩
+  · change Module.Projective ℤ (Fin n → ℤ)
+    infer_instance
+  · intro x y
+    exact (Matrix.isSymm_toBilin'_iff_isSymm.mpr hA).eq x y
+
+/-- A symmetric integer Gram matrix gives a finite projective lattice. -/
+def finiteLatticeOfGramMatrix {n : ℕ}
+    (A : Matrix (Fin n) (Fin n) ℤ) (hA : A.IsSymm) :
+    FiniteProjectiveLatticeCat ℤ ℤ := by
+  refine ⟨latticeOfGramMatrix A hA, ?_⟩
+  change Module.Finite ℤ (Fin n → ℤ)
+  infer_instance
+
+/-- The standard basis recovers the selected symmetric Gram matrix. -/
+theorem latticeOfGramMatrix_gramMatrix {n : ℕ}
+    (A : Matrix (Fin n) (Fin n) ℤ) (hA : A.IsSymm) :
+    gramMatrix (latticeOfGramMatrix A hA) (Pi.basisFun ℤ (Fin n)) = A :=
+  LinearMap.BilinForm.toMatrix'_toBilin' A
+
+/-- An even diagonal gives an even matrix lattice. -/
+theorem latticeOfGramMatrix_isEven {n : ℕ}
+    (A : Matrix (Fin n) (Fin n) ℤ) (hA : A.IsSymm)
+    (hDiag : ∀ i, A i i ∈ Ideal.span {(2 : ℤ)}) :
+    IsEven (latticeOfGramMatrix A hA) := by
+  apply isEven_of_basis (latticeOfGramMatrix A hA)
+    (Pi.basisFun ℤ (Fin n))
+  intro i
+  change Matrix.toBilin' A
+    ((Pi.basisFun ℤ (Fin n)) i) ((Pi.basisFun ℤ (Fin n)) i) ∈ _
+  simpa only [Pi.basisFun_apply, Matrix.toBilin'_single] using hDiag i
+
+/-- The standard coordinate roots `eᵢ - eᵢ₊₁` for type `A`. -/
+def aRootVector (n : ℕ) (i : Fin n) (k : Fin (n + 1)) : ℤ :=
+  if k.val = i.val then 1 else if k.val = i.val + 1 then -1 else 0
+
+/-- The negative inner-product matrix of the standard type-`A` roots. -/
+def aRootGramMatrix (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
+  fun i j ↦ -∑ k, aRootVector n i k * aRootVector n j k
+
+theorem aRootGramMatrix_isSymm (n : ℕ) :
+    (aRootGramMatrix n).IsSymm :=
+  Matrix.IsSymm.ext fun i j ↦ by
+    simp only [aRootGramMatrix]
+    congr 1
+    apply Finset.sum_congr rfl
+    intro k _
+    ring
+
+/-- The negative-definite root lattice of type `A` and rank `n`. -/
+def aRootLattice (n : ℕ) : IntegralLatticeCat ℤ :=
+  latticeOfGramMatrix (aRootGramMatrix n) (aRootGramMatrix_isSymm n)
+
+/-- The finite projective negative type-`A` root lattice. -/
+def aRootFiniteLattice (n : ℕ) : FiniteProjectiveLatticeCat ℤ ℤ :=
+  finiteLatticeOfGramMatrix
+    (aRootGramMatrix n) (aRootGramMatrix_isSymm n)
+
+/-- The standard type-`A` basis has the root inner-product matrix. -/
+theorem aRootLattice_gramMatrix (n : ℕ) :
+    gramMatrix (aRootLattice n) (Pi.basisFun ℤ (Fin n)) =
+      aRootGramMatrix n :=
+  latticeOfGramMatrix_gramMatrix _ _
+
+/-- The standard coordinate roots for type `D`. -/
+def dRootVector (n : ℕ) (i k : Fin n) : ℤ :=
+  if i.val + 1 < n then
+    if k.val = i.val then 1 else if k.val = i.val + 1 then -1 else 0
+  else if 2 ≤ n ∧ (k.val + 2 = n ∨ k.val + 1 = n) then 1 else 0
+
+/-- The negative inner-product matrix of the standard type-`D` roots. -/
+def dRootGramMatrix (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
+  fun i j ↦ -∑ k, dRootVector n i k * dRootVector n j k
+
+theorem dRootGramMatrix_isSymm (n : ℕ) :
+    (dRootGramMatrix n).IsSymm :=
+  Matrix.IsSymm.ext fun i j ↦ by
+    simp only [dRootGramMatrix]
+    congr 1
+    apply Finset.sum_congr rfl
+    intro k _
+    ring
+
+/-- The negative-definite root lattice of type `D` and rank `n`. -/
+def dRootLattice (n : ℕ) : IntegralLatticeCat ℤ :=
+  latticeOfGramMatrix (dRootGramMatrix n) (dRootGramMatrix_isSymm n)
+
+/-- The finite projective negative type-`D` root lattice. -/
+def dRootFiniteLattice (n : ℕ) : FiniteProjectiveLatticeCat ℤ ℤ :=
+  finiteLatticeOfGramMatrix
+    (dRootGramMatrix n) (dRootGramMatrix_isSymm n)
+
+/-- The standard type-`D` basis has the root inner-product matrix. -/
+theorem dRootLattice_gramMatrix (n : ℕ) :
+    gramMatrix (dRootLattice n) (Pi.basisFun ℤ (Fin n)) =
+      dRootGramMatrix n :=
+  latticeOfGramMatrix_gramMatrix _ _
+
 /-- Twice the coordinates of a standard simple-root basis for `E₈`. -/
 def e8RootNumerator : Fin 8 → Fin 8 → ℤ := ![
   ![ 1, -1, -1, -1, -1, -1, -1,  1],
