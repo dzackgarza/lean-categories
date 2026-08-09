@@ -123,6 +123,8 @@ The valued bilinear spine now uses these mathematical owners:
 
 The two `Valued.lean` files are public import surfaces.
 
+`Modules/Quadratic/Valued/Fixed.lean` owns the general `W`-valued quadratic-module category.
+
 ### CategoryGraph
 
 `CategoryGraph` is structurally cleaner.
@@ -160,8 +162,8 @@ No move, deletion, or integration is safe without that decision.
 ### Current evidence
 
 - The full repository build succeeds.
-- The repository contains 121 Lean files under `LeanCategories` and `CategoryGraph`.
-- Those files have 146 internal import edges.
+- The repository contains 131 Lean files under `LeanCategories` and `CategoryGraph`.
+- Those files have 156 internal public-import edges.
 - The internal import graph has no cycles.
 - The two Lean libraries have no cross-library imports.
 - The repository contains no `sorry` or `admit` declarations.
@@ -178,7 +180,7 @@ They do not establish semantic agreement between the competing definitions.
 
 - [x] Select one canonical category for fixed-value bilinear forms.
 - [x] Select one canonical total category when the value module varies.
-- [ ] Define symmetric, skew-symmetric, alternating, and quadratic variants through precise predicates or full subcategories.
+- [x] Define symmetric, skew-symmetric, alternating, and quadratic variants through precise predicates or full subcategories.
 - [ ] Define the lattice category through its exact finiteness, torsion, and projectivity predicate.
 - [x] Define integral lattices as the `R`-valued case.
 - [ ] State exact comparison functors or equivalences for every retained older presentation.
