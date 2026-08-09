@@ -80,6 +80,148 @@ The repeated alignment question is:
 
 ---
 
+## Hold the mathematical object fixed
+
+Your first duty is not to make Lean accept code. Keep the mathematics unchanged while you find its formal expression.
+
+Begin with the mathematical object. Identify its category, morphisms, functors, and universal properties. Only then choose a Lean representation.
+
+When Lean resists, do not negotiate with the theorem. The resistance can expose an unclear assumption, construction, or categorical home. Return to the mathematics.
+
+Do not replace an object with information obtained after forgetting structure. A shadow can help prove a theorem. It cannot replace the theorem.
+
+An underlying equivalence does not identify structured objects. A module map does not automatically become a formed morphism. Prove the required lift at its proper level.
+
+Partial work is legitimate when its limits remain visible. State exactly what you proved. Keep the stronger obligation open. Never give a partial result the completed theorem's name.
+
+### Balance autonomous and interactive work
+
+This repository is a research collaboration. It is not a programming queue that ends when tests pass.
+
+The mathematician supplies ideas and intended mathematics. The agent develops the formalization and resolves routine implementation problems autonomously.
+
+Resolve syntax errors, imports, file connections, and other representation problems without interrupting work. These changes must preserve the mathematical obligation.
+
+Stop and discuss any problem that can change the mathematical content or research direction.
+
+Such problems can concern truth, hypotheses, proof burden, generality, categorical placement, or conflicts between definitions. Mathlib can also misrepresent specialized mathematics.
+
+The mathematician can also be wrong. Present the evidence and discuss the statement. Do not silently replace the intended mathematics.
+
+This project creates new mathematics around one mathematician's programme. Existing formalizations and short proofs do not determine the intended result.
+
+The shortest path can destroy the new theory by binding it to existing ideas too early. Sometimes the correct theory must recover those ideas.
+
+You cannot infer the author's multi-year scope from one request. Therefore, do not decide such tradeoffs alone.
+
+For example, an exact-sequence definition can be intended to generalize later to cofiber sequences. An equivalent classical characterization can erase that path.
+
+Use autonomy to solve formal representation problems. Request mathematical judgment when progress requires a choice between different mathematical obligations.
+
+Tests confirm formal consistency after that choice. They do not select the correct statement, definition, category, or research path.
+
+Stop when you find a genuine theoretical blocker. This includes a false statement, a missing theorem, or an unresolved categorical home.
+
+Discuss the blocker with a mathematician. Determine the acceptable compromise or alternative path together. This decision requires interactive mathematical judgment.
+
+Do not silently change categories, definitions, objects, or statements. Do not replace a requested theorem with an easier theorem. Such substitutions are negative progress.
+
+A silent substitution hides the failure and changes the meaning of later work. The user discovers the change only after more work depends on it.
+
+The cost then grows. One must find the deviation, reconstruct the intent, resolve the original theory, and redo the formalization. One must also repair every dependent result.
+
+This work is unavoidable. Pay its cost when the blocker appears. A compiling program today does not justify technical debt that can destroy the project.
+
+Future mathematicians will learn the project from its declarations. Names and types become mathematical testimony. A misleading declaration can teach an entire dependency graph the wrong subject.
+
+Lean certifies derivations from formal statements. It does not certify that those statements express the intended mathematics. You retain that responsibility.
+
+The central discipline is simple but never automatic:
+
+> Hold the mathematical object fixed. Change the representation, not the obligation.
+
+No finite procedure guarantees this. It requires mathematical judgment, source knowledge, honest uncertainty, and willingness to leave difficult work visibly unfinished.
+
+---
+
+## Organize by mathematical ownership
+
+The directory tree must express mathematical ownership.
+A concept has one canonical owner.
+That owner defines its category, morphisms, functors, properties, and comparison maps.
+
+Specialized theories import general foundations.
+General foundations do not import specialized subjects to recover basic definitions.
+Inspect conceptual dependency direction, not only Lean's acyclic import graph.
+
+Choose an owner from the governing universal construction.
+For example, valued bilinear forms belong to formed-module theory.
+Lattices then form the appropriate full subcategory.
+Duals and discriminants belong where their required formed structures exist.
+
+### Resolve parallel presentations
+
+Two presentations can coexist only while their exact relationship is under study.
+State whether that relationship is equality, equivalence, a comparison functor, or a forgetful map.
+
+Do not import competing presentations through the root module as peer authorities.
+Downstream work must use the selected canonical presentation.
+After the decision, remove the superseded presentation and its downstream surface.
+
+An equivalence does not justify a permanent parallel hierarchy.
+It explains how to move existing mathematics into the canonical hierarchy.
+
+### Make names testify accurately
+
+Names and paths make mathematical claims.
+A declaration called a functor must define an honest functor between stated categories.
+A type-valued assignment plus axiomatic laws is not a functor definition.
+
+The same rule applies to categories, morphisms, exact sequences, duals, and discriminant forms.
+If the claimed structure cannot yet be defined, use a precise partial name or leave the obligation open.
+
+Never let directory placement supply mathematical content that the declaration lacks.
+
+### Keep the root surface coherent
+
+The root import module is the public mathematical surface.
+It must present one coherent theory, not every branch that happens to compile.
+
+Experimental or truncated work stays outside the root surface.
+State its exact relationship to the intended theory.
+Promote it only after the comparison and replacement path are settled.
+
+### Split files at mathematical boundaries
+
+File boundaries follow standard constructions and their natural users.
+They do not follow generic engineering labels or line counts.
+
+A small end-to-end foundation can begin in one file.
+Split it when distinct mathematical owners become stable.
+Examples include fixed-value categories, total categories, base-change functors, duals, and cokernel constructions.
+
+The file path should identify where a mathematician would expect the construction to live.
+Moving a declaration cannot repair an incorrect mathematical owner.
+
+### Connect catalogues through realization
+
+A catalogue and a formalization can remain separate only with an explicit realization boundary.
+Each realized catalogue entry identifies an actual Lean category, functor, predicate, or comparison.
+An abstract entry remains explicitly abstract until that realization exists.
+
+Do not let registry metadata become a second mathematical authority.
+The formalized categories and functors determine the realized catalogue.
+
+### Treat compilation as a structural check
+
+A successful build proves that all imported declarations typecheck together.
+It does not prove unique ownership, semantic agreement, or correct categorical placement.
+
+Before adding a foundation to the root surface, identify its exact category and functors.
+Also identify its predicates, universal properties, and relationship to existing foundations.
+
+---
+
 ## Reuse before you write — the operational gate
 
 Sections 4.3–4.4 and 10.2 give the *principle* (novelty bias, false gaps, mathematical home); this is the *procedure*, and it is a hard gate. **Do not author a new definition, structure, class, or instance until you have searched for an existing one, and if you still write your own, related it to what exists.** The measure of good foundational work is accidental freedom removed (§0); the cheapest way to remove it is to not re-derive what Mathlib or a prior formalization already owns. Minimal reinvention, maximal integration-compatibility with Mathlib, is the standing default — reinvention is the failure mode, never the first move.

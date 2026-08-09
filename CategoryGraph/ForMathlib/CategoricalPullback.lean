@@ -6,7 +6,7 @@ module
 
 public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.Basic
-public import CategoryGraph.Core.AxiomOpfibration
+public import CategoryGraph.Core.ClassifierReindexing
 public import CategoryGraph.Core.CategoricalPullback
 
 @[expose] public section
@@ -159,12 +159,12 @@ noncomputable def pullbackCompEquiv {A B C E : Type u}
 
 /-- Identity reindex: `(𝟙)^* A ≌ A`. -/
 noncomputable def reindexIdIso {C : ObjCat.{uObj, uHom}} (A : Classifier C) :
-    AxiomOpfibration.ReindexIdIso A where
+    ClassifierReindexing.ReindexIdIso A where
   equiv := pullbackIdEquiv A.forget.toFunctor
 
 /-- Composition reindex: `(G ≫ F)^* A ≌ G^*(F^* A)`. -/
 noncomputable def reindexCompIso {B C D : ObjCat.{uObj, uHom}} (G : D ⟶ C) (F : C ⟶ B)
-    (A : Classifier B) : AxiomOpfibration.ReindexCompIso G F A where
+    (A : Classifier B) : ClassifierReindexing.ReindexCompIso G F A where
   equiv := pullbackCompEquiv F.toFunctor G.toFunctor A.forget.toFunctor
 
 end CategoryGraph.ForMathlib

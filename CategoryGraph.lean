@@ -8,7 +8,7 @@ public import CategoryGraph.Core.Universes
 public import CategoryGraph.Core.Ids
 public import CategoryGraph.Core.Classifier
 public import CategoryGraph.Core.CategoricalPullback
-public import CategoryGraph.Core.AxiomOpfibration
+public import CategoryGraph.Core.ClassifierReindexing
 public import CategoryGraph.Core.Expr
 public import CategoryGraph.Core.Normalize
 public import CategoryGraph.Core.StructuralMap
