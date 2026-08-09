@@ -117,12 +117,13 @@ def denotesCategory (expression : CategoryExpr) (id : CategoryId) : Bool :=
 /-- Validate references within a typed functor expression against prior persistent entries. -/
 partial def FunctorExpr.referencesValid (state : RegistryState)
     {source target : CategoryExpr} : FunctorExpr source target → Bool
-  | .identity _ => true
+  | .identity _ | .normalizedIdentity _ _ => true
   | .named id =>
       match state.functor? id with
       | some entry => sameEndpoint entry.source source && sameEndpoint entry.target target
       | none => false
-  | .baseProjection _ | .classifierProjection _ => true
+  | .baseProjection _ | .classifierProjection _ | .classifierForget _ _ => true
+  | .unfoldAtom _ _ | .unfoldReference _ _ => true
   | .opaquePort id =>
       match state.opaquePort? id with
       | some entry => denotesCategory source entry.source && denotesCategory target entry.target

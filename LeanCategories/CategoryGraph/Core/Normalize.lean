@@ -17,8 +17,7 @@ Exact-host refinements collapse immediately:
 \operatorname{refine}(\operatorname{host}(A), A) \rightsquigarrow \operatorname{total}(A).
 \]
 
-Also: flatten trivial compositions, project identity, alias canonicalization
-(alias handling lives with the registry map passed in).
+Alias handling lives with the registry map passed in.
 -/
 
 namespace CategoryGraph
@@ -69,15 +68,6 @@ partial def normalizeCategory
           if hid == host then .classifierTotal clf
           else .refine base' clf route
       | _, _ => .refine base' clf route
-
-/-- Normalize a structural map expression (drop empties / singletons). -/
-partial def normalizeMap : StructuralMapExpr → StructuralMapExpr
-  | .compose first second =>
-      match normalizeMap first, normalizeMap second with
-      | .identity _, rest => rest
-      | first, .identity _ => first
-      | first, second => .compose first second
-  | e => e
 
 /-- After alias canonicalization, equal source/target is identity (no edge). -/
 def isIdentityEdge (src tgt : CategoryId) (aliases : AliasTable) : Bool :=

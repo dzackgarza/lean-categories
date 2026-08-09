@@ -11,7 +11,7 @@ public import LeanCategories.CategoryGraph.Core.Normalize
 /-!
 # Structural projection
 
-`project : CategoryExpr → CategoryExpr → RouteSelector → Option StructuralMapExpr`
+`project` returns an indexed `FunctorExpr` with normalized endpoints.
 
 Ordinary ancestry is recovered by structural recursion through the category's
 definition — not by searching all functors in a graph.
@@ -62,96 +62,97 @@ def categoryExprEq
   let nb := normalizeCategory ctx.hosts ctx.aliases b
   na.syntacticEq nb
 
-/-- Unfold references / named atoms one step. -/
-def unfoldOnce (ctx : ProjectionContext) : CategoryExpr → CategoryExpr
-  | .atom id =>
-      match ctx.named.bodyOf (ctx.aliases.canonicalize id) with
-      | some e => e
-      | none => .atom (ctx.aliases.canonicalize id)
-  | .reference id =>
-      match ctx.named.bodyOf (ctx.aliases.canonicalize id) with
-      | some e => e
-      | none => .reference (ctx.aliases.canonicalize id)
-  | e => e
-
 /-- Core structural projection (partial: returns `none` when unreachable). -/
-partial def project
+partial def projectNormalized
     (ctx : ProjectionContext) (src tgt : CategoryExpr) (route : RouteSelector) :
-    Option StructuralMapExpr :=
-  let srcN := normalizeCategory ctx.hosts ctx.aliases src
-  let tgtN := normalizeCategory ctx.hosts ctx.aliases tgt
-  if categoryExprEq ctx srcN tgtN then
-    some (.identity srcN)
+    Option (FunctorExpr src tgt) :=
+  if categoryExprEq ctx src tgt then
+    some (.normalizedIdentity src tgt)
   else
-    match srcN with
+    match src with
     | .refine base clf r =>
-        let π := StructuralMapExpr.baseProjection (ctx.refinementId base clf r)
-        if categoryExprEq ctx base tgtN then
-          some π
+        let refinement := RefinementExpr.mk (ctx.refinementId base clf r) base clf r
+        let projection := FunctorExpr.baseProjection refinement
+        if categoryExprEq ctx base tgt then
+          some (.compose projection (.normalizedIdentity base tgt))
         else
-          match project ctx base tgtN route with
-          | some rest => some (normalizeMap (.compose π rest))
+          match projectNormalized ctx base tgt route with
+          | some rest => some (.compose projection rest)
           | none => none
     | .classifierTotal clf =>
-        -- total(A) projects to host(A) via the classifier leg
         match ctx.hosts.hostOf clf with
         | none => none
         | some host =>
             let hostE : CategoryExpr := .atom host
-            let π := StructuralMapExpr.classifierProjection
-              (ctx.refinementId hostE clf none)
-            if categoryExprEq ctx hostE tgtN then
-              some π
+            let projection := FunctorExpr.classifierForget clf host
+            if categoryExprEq ctx hostE tgt then
+              some (.compose projection (.normalizedIdentity hostE tgt))
             else
-              match project ctx hostE tgtN route with
-              | some rest => some (normalizeMap (.compose π rest))
+              match projectNormalized ctx hostE tgt route with
+              | some rest => some (.compose projection rest)
               | none => none
     | .atom id =>
-        let id' := ctx.aliases.canonicalize id
-        -- named unfolding
-        match ctx.named.bodyOf id' with
+        match ctx.named.bodyOf id with
         | some body =>
-            if categoryExprEq ctx body (.atom id') then
-              -- opaque / root with no further body
-              match srcN, tgtN with
-              | .atom s, .atom t =>
-                  match ctx.opaquePorts.port s t route with
-                  | some p => some (.opaquePort p)
-                  | none =>
-                      if s == t then some (.identity srcN) else none
-              | _, _ => none
-            else
-              project ctx body tgtN route
-        | none =>
-            match tgtN with
-            | .atom t =>
-                if id' == ctx.aliases.canonicalize t then
-                  some (.identity srcN)
-                else
-                  match ctx.opaquePorts.port id' (ctx.aliases.canonicalize t) route with
-                  | some p => some (.opaquePort p)
+            if categoryExprEq ctx body (.atom id) then
+              match tgt with
+              | .atom target =>
+                  match ctx.opaquePorts.port id target route with
+                  | some port => some (.opaquePort port)
                   | none => none
+              | _ => none
+            else
+              let expansion := FunctorExpr.unfoldAtom id body
+              if categoryExprEq ctx body tgt then
+                some (.compose expansion (.normalizedIdentity body tgt))
+              else
+                match projectNormalized ctx body tgt route with
+                | some rest => some (.compose expansion rest)
+                | none => none
+        | none =>
+            match tgt with
+            | .atom target =>
+                match ctx.opaquePorts.port id target route with
+                | some port => some (.opaquePort port)
+                | none => none
             | _ => none
     | .opaque id =>
-        match tgtN with
-        | .atom t | .opaque t | .reference t =>
-            match ctx.opaquePorts.port id (ctx.aliases.canonicalize t) route with
-            | some p => some (.opaquePort p)
-            | none =>
-                if id == ctx.aliases.canonicalize t then some (.identity srcN) else none
+        match tgt with
+        | .atom target | .opaque target | .reference target =>
+            match ctx.opaquePorts.port id target route with
+            | some port => some (.opaquePort port)
+            | none => none
         | _ => none
-    | .reference _ =>
-        project ctx (unfoldOnce ctx srcN) tgtN route
+    | .reference id =>
+        match ctx.named.bodyOf id with
+        | some body =>
+            let expansion := FunctorExpr.unfoldReference id body
+            if categoryExprEq ctx body tgt then
+              some (.compose expansion (.normalizedIdentity body tgt))
+            else
+              match projectNormalized ctx body tgt route with
+              | some rest => some (.compose expansion rest)
+              | none => none
+        | none => none
     | .familyApp family args =>
         match ctx.familySignatures.arity family with
         | some arity =>
             if args.size == arity then
-              match ctx.familyPorts.port family args tgtN route with
+              match ctx.familyPorts.port family args tgt route with
               | some port => some (.opaquePort port)
               | none => none
             else
               none
         | none => none
     | .pullback .. | .constructor .. => none
+
+/-- Compute a typed structural projection between normalized category expressions. -/
+def project
+    (ctx : ProjectionContext) (src tgt : CategoryExpr) (route : RouteSelector) :
+    Option SomeFunctorExpr :=
+  let source := normalizeCategory ctx.hosts ctx.aliases src
+  let target := normalizeCategory ctx.hosts ctx.aliases tgt
+  (projectNormalized ctx source target route).map fun expression =>
+    ⟨source, target, expression⟩
 
 end CategoryGraph

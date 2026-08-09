@@ -411,6 +411,22 @@ noncomputable def validateFunctor (M : AtomicModel.{uObj, uHom})
       · exact none
   | _, _ => exact none
 
+/-- Interpret a symbolic unfolding only when both expressions denote one category. -/
+noncomputable def evalUnfolding (M : AtomicModel.{uObj, uHom})
+    (resolveRing : RingParameterId → Option M.modules.RingObjects)
+    (semantics : FunctorSemantics M) (source target : CategoryExpr) :
+    Option (EvaluatedFunctor M) := by
+  classical
+  match evalCategory M resolveRing semantics source,
+      evalCategory M resolveRing semantics target with
+  | some actualSource, some actualTarget =>
+      by_cases h : actualSource = actualTarget
+      · subst actualTarget
+        exact some
+          ⟨actualSource, actualSource, CategoryTheory.CategoryStruct.id actualSource⟩
+      · exact none
+  | _, _ => exact none
+
 /-- Evaluate a typed functor expression using its actual semantic bindings. -/
 noncomputable def evalFunctor (M : AtomicModel.{uObj, uHom})
     (resolveRing : RingParameterId → Option M.modules.RingObjects)
@@ -420,6 +436,7 @@ noncomputable def evalFunctor (M : AtomicModel.{uObj, uHom})
       match evalCategory M resolveRing semantics category with
       | some evaluated => some ⟨evaluated, evaluated, CategoryTheory.CategoryStruct.id evaluated⟩
       | none => none
+  | .normalizedIdentity _ _ => evalUnfolding M resolveRing semantics source target
   | .named id => validateFunctor M resolveRing semantics source target (semantics.named id)
   | .baseProjection (.mk refinementId _ _ _) =>
       validateFunctor M resolveRing semantics source target <|
@@ -429,6 +446,14 @@ noncomputable def evalFunctor (M : AtomicModel.{uObj, uHom})
       validateFunctor M resolveRing semantics source target <|
         (semantics.refinement refinementId).map fun value =>
           ⟨value.refined, value.classifierTotal, value.classifierProjection⟩
+  | .classifierForget classifier host =>
+      match evalClassifier M resolveRing (.atom host) classifier with
+      | some value =>
+          validateFunctor M resolveRing semantics source target
+            (some ⟨value.total, value.host, value.forget⟩)
+      | none => none
+  | .unfoldAtom _ _ => evalUnfolding M resolveRing semantics source target
+  | .unfoldReference _ _ => evalUnfolding M resolveRing semantics source target
   | .opaquePort port => validateFunctor M resolveRing semantics source target (semantics.opaquePort port)
   | .theoremInclusion theoremId =>
       validateFunctor M resolveRing semantics source target (semantics.theoremInclusion theoremId)
@@ -440,29 +465,6 @@ noncomputable def evalFunctor (M : AtomicModel.{uObj, uHom})
       match evalFunctor M resolveRing semantics first, evalFunctor M resolveRing semantics second with
       | some evaluatedFirst, some evaluatedSecond =>
           validateFunctor M resolveRing semantics source target (evaluatedFirst.compose evaluatedSecond)
-      | _, _ => none
-
-/-- Evaluate a legacy structural-map expression through the same semantic bindings. -/
-noncomputable def evalStructuralMap (M : AtomicModel.{uObj, uHom})
-    (resolveRing : RingParameterId → Option M.modules.RingObjects)
-    (semantics : FunctorSemantics M) : StructuralMapExpr → Option (EvaluatedFunctor M)
-  | .identity category =>
-      match evalCategory M resolveRing semantics category with
-      | some evaluated => some ⟨evaluated, evaluated, CategoryTheory.CategoryStruct.id evaluated⟩
-      | none => none
-  | .baseProjection refinementId =>
-      (semantics.refinement refinementId).map fun value =>
-        ⟨value.refined, value.base, value.baseProjection⟩
-  | .classifierProjection refinementId =>
-      (semantics.refinement refinementId).map fun value =>
-        ⟨value.refined, value.classifierTotal, value.classifierProjection⟩
-  | .opaquePort port => semantics.opaquePort port
-  | .thmInclusion theoremId => semantics.theoremInclusion theoremId
-  | .finiteLimitLift cone => semantics.finiteLimitLift cone
-  | .compose first second =>
-      match evalStructuralMap M resolveRing semantics first,
-          evalStructuralMap M resolveRing semantics second with
-      | some evaluatedFirst, some evaluatedSecond => evaluatedFirst.compose evaluatedSecond
       | _, _ => none
 
 /--

@@ -115,9 +115,9 @@ example :
     specimenFunctorSemantics]
 
 example :
-    (evalStructuralMap Realization.Mathlib.atomicModel.{0} Realization.Mathlib.specimenRingBinding
+    (evalFunctor Realization.Mathlib.atomicModel.{0} Realization.Mathlib.specimenRingBinding
       specimenFunctorSemantics (.compose (.identity exprSets) (.identity exprSets))).isSome = true := by
-  simp [evalStructuralMap, evalCategory, exprSets, specimenFunctorSemantics,
+  simp [evalFunctor, validateFunctor, evalCategory, exprSets, specimenFunctorSemantics,
     EvaluatedFunctor.compose]
 
 example :

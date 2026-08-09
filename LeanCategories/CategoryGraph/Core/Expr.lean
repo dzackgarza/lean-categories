@@ -50,11 +50,18 @@ category is literally shared by the two legs.
 -/
 inductive FunctorExpr : CategoryExpr → CategoryExpr → Type
   | identity (category : CategoryExpr) : FunctorExpr category category
+  | normalizedIdentity (source target : CategoryExpr) : FunctorExpr source target
   | named {source target : CategoryExpr} (id : FunctorId) : FunctorExpr source target
   | baseProjection {refined base total : CategoryExpr}
       (refinement : RefinementExpr refined base total) : FunctorExpr refined base
   | classifierProjection {refined base total : CategoryExpr}
       (refinement : RefinementExpr refined base total) : FunctorExpr refined total
+  | classifierForget (classifier : ClassifierId) (host : CategoryId) :
+      FunctorExpr (.classifierTotal classifier) (.atom host)
+  | unfoldAtom (id : CategoryId) (body : CategoryExpr) :
+      FunctorExpr (.atom id) body
+  | unfoldReference (id : CategoryId) (body : CategoryExpr) :
+      FunctorExpr (.reference id) body
   | opaquePort {source target : CategoryExpr} (port : OpaquePortId) : FunctorExpr source target
   | theoremInclusion {source target : CategoryExpr} (theoremId : StructuralTheoremId) :
       FunctorExpr source target
@@ -64,16 +71,11 @@ inductive FunctorExpr : CategoryExpr → CategoryExpr → Type
       (second : FunctorExpr middle target) : FunctorExpr source target
   deriving Repr
 
-/-- Legacy unindexed projection syntax, retained while `project` is migrated to `FunctorExpr`. -/
-inductive StructuralMapExpr
-  | identity (category : CategoryExpr)
-  | baseProjection (refinement : RefinementId)
-  | classifierProjection (refinement : RefinementId)
-  | opaquePort (port : OpaquePortId)
-  | thmInclusion (thm : StructuralTheoremId)
-  | finiteLimitLift (cone : ConeCertificateId)
-  | compose (first second : StructuralMapExpr)
-  deriving Repr, Inhabited
+/-- A typed functor expression with existential source and target indices. -/
+structure SomeFunctorExpr where
+  source : CategoryExpr
+  target : CategoryExpr
+  expression : FunctorExpr source target
 
 /-- Syntactic equality of normalized category expressions, independent of rendered syntax. -/
 partial def CategoryExpr.syntacticEq : CategoryExpr → CategoryExpr → Bool

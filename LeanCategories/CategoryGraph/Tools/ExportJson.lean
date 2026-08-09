@@ -96,10 +96,21 @@ def admissibilityJson : StructuralAdmissibility → Json
 
 def functorExprJson {source target : CategoryExpr} : FunctorExpr source target → Json
   | .identity category => object [("tag", "identity"), ("category", categoryExprJson category)]
+  | .normalizedIdentity source target =>
+      object [("tag", "normalizedIdentity"), ("source", categoryExprJson source),
+        ("target", categoryExprJson target)]
   | .named id => object [("tag", "named"), ("id", id.raw)]
   | .baseProjection (.mk id _ _ _) => object [("tag", "baseProjection"), ("id", id.raw)]
   | .classifierProjection (.mk id _ _ _) =>
       object [("tag", "classifierProjection"), ("id", id.raw)]
+  | .classifierForget classifier host =>
+      object [("tag", "classifierForget"), ("classifier", classifier.raw),
+        ("host", host.raw)]
+  | .unfoldAtom id body =>
+      object [("tag", "unfoldAtom"), ("id", id.raw), ("body", categoryExprJson body)]
+  | .unfoldReference id body =>
+      object [("tag", "unfoldReference"), ("id", id.raw),
+        ("body", categoryExprJson body)]
   | .opaquePort id => object [("tag", "opaquePort"), ("id", id.raw)]
   | .theoremInclusion id => object [("tag", "theoremInclusion"), ("id", id.raw)]
   | .finiteLimitLift id => object [("tag", "finiteLimitLift"), ("id", id.raw)]
