@@ -40,6 +40,92 @@ def IsPrimitiveSubmodule {M : Type u} [AddCommGroup M] [Module R M]
     (P : Submodule R M) : Prop :=
   Module.IsTorsionFree R (M ⧸ P)
 
+/-- The saturation of a submodule over an integral domain. -/
+def saturation {M : Type u} [AddCommGroup M] [Module R M] [IsDomain R]
+    (P : Submodule R M) : Submodule R M where
+  carrier := {x | ∃ a : R, a ≠ 0 ∧ a • x ∈ P}
+  zero_mem' := ⟨1, one_ne_zero, by simp⟩
+  add_mem' := by
+    rintro x y ⟨a, ha, hax⟩ ⟨b, hb, hby⟩
+    refine ⟨a * b, mul_ne_zero ha hb, ?_⟩
+    rw [smul_add]
+    exact P.add_mem
+      (by
+        rw [mul_comm a b, mul_smul]
+        exact P.smul_mem b hax)
+      (by
+        rw [mul_smul]
+        exact P.smul_mem a hby)
+  smul_mem' := by
+    rintro r x ⟨a, ha, hax⟩
+    refine ⟨a, ha, ?_⟩
+    rw [smul_comm]
+    exact P.smul_mem r hax
+
+@[simp]
+theorem mem_saturation_iff {M : Type u} [AddCommGroup M] [Module R M]
+    [IsDomain R] (P : Submodule R M) (x : M) :
+    x ∈ saturation P ↔ ∃ a : R, a ≠ 0 ∧ a • x ∈ P :=
+  Iff.rfl
+
+/-- Every submodule lies in its saturation. -/
+theorem le_saturation {M : Type u} [AddCommGroup M] [Module R M]
+    [IsDomain R] (P : Submodule R M) : P ≤ saturation P := by
+  intro x hx
+  exact ⟨1, one_ne_zero, by simpa using hx⟩
+
+/-- The saturation has torsion-free quotient. -/
+theorem saturation_isPrimitive {M : Type u} [AddCommGroup M] [Module R M]
+    [IsDomain R] (P : Submodule R M) :
+    IsPrimitiveSubmodule (saturation P) := by
+  rw [IsPrimitiveSubmodule, Module.isTorsionFree_iff_smul_eq_zero]
+  intro a x hx
+  induction x using Quotient.inductionOn with
+  | _ x =>
+      by_cases ha : a = 0
+      · exact Or.inl ha
+      · right
+        change (Submodule.Quotient.mk x : M ⧸ saturation P) = 0
+        rw [Submodule.Quotient.mk_eq_zero]
+        have hax : a • x ∈ saturation P := by
+          rw [← Submodule.Quotient.mk_eq_zero,
+            Submodule.Quotient.mk_smul]
+          exact hx
+        obtain ⟨b, hb, hbax⟩ := hax
+        refine ⟨b * a, mul_ne_zero hb ha, ?_⟩
+        simpa [mul_smul] using hbax
+
+/-- A submodule is primitive exactly when it contains its saturation. -/
+theorem isPrimitiveSubmodule_iff_saturation_le
+    {M : Type u} [AddCommGroup M] [Module R M] [IsDomain R]
+    (P : Submodule R M) :
+    IsPrimitiveSubmodule P ↔ saturation P ≤ P := by
+  constructor
+  · intro hP x hx
+    letI : Module.IsTorsionFree R (M ⧸ P) := hP
+    obtain ⟨a, ha, hax⟩ := hx
+    have hzero : a • (P.mkQ x) = 0 := by
+      rw [← map_smul, Submodule.mkQ_apply,
+        Submodule.Quotient.mk_eq_zero]
+      exact hax
+    have hxzero : P.mkQ x = 0 :=
+      (smul_eq_zero.mp hzero).resolve_left ha
+    rw [Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero] at hxzero
+    exact hxzero
+  · intro h
+    have hEq : saturation P = P :=
+      le_antisymm h (le_saturation P)
+    rw [← hEq]
+    exact saturation_isPrimitive P
+
+/-- A submodule is primitive exactly when saturation does not enlarge it. -/
+theorem isPrimitiveSubmodule_iff_saturation_eq
+    {M : Type u} [AddCommGroup M] [Module R M] [IsDomain R]
+    (P : Submodule R M) :
+    IsPrimitiveSubmodule P ↔ saturation P = P := by
+  rw [isPrimitiveSubmodule_iff_saturation_le]
+  exact ⟨fun h ↦ le_antisymm h (le_saturation P), fun h ↦ h.le⟩
+
 /-- A projective submodule with the restricted form. -/
 def formedSublattice (L : LatticeCat R W) (P : Submodule R L.obj.carrier)
     [Module.Projective R P] : LatticeCat R W := by
@@ -49,6 +135,12 @@ def formedSublattice (L : LatticeCat R W) (P : Submodule R L.obj.carrier)
   · intro x y
     change P at x y
     exact L.property.2 x y
+
+/-- The primitive closure of a formed sublattice. -/
+def saturatedFormedSublattice [IsDomain R] (L : LatticeCat R W)
+    (P : Submodule R L.obj.carrier)
+    [Module.Projective R (saturation P)] : LatticeCat R W :=
+  formedSublattice L (saturation P)
 
 /-- The inclusion of a formed sublattice. -/
 def formedSublatticeInclusion (L : LatticeCat R W)
