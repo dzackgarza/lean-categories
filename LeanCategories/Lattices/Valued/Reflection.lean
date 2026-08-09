@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Lattices.Valued.OrthogonalGroup
+public import LeanCategories.Lattices.Valued.Involution
 
 @[expose] public section
 
@@ -118,11 +118,6 @@ def reflectionOrthogonalElement (L : IntegralLatticeCat ℤ)
     OrthogonalGroup L :=
   ⟨reflectionEquiv L r hr, reflectionMap_isometry L r hr⟩
 
-/-- An element of `O(L)` with square one. -/
-structure Involution (L : IntegralLatticeCat ℤ) where
-  element : OrthogonalGroup L
-  involutive : element * element = 1
-
 /-- A root reflection as an involution. -/
 def reflectionInvolution (L : IntegralLatticeCat ℤ)
     (r : L.obj.carrier)
@@ -133,15 +128,5 @@ def reflectionInvolution (L : IntegralLatticeCat ℤ)
     apply Subtype.ext
     ext x
     exact reflectionMap_involutive L r hr x
-
-/-- The fixed submodule of an involution. -/
-def fixedSubmodule (L : IntegralLatticeCat ℤ) (J : Involution L) :
-    Submodule ℤ L.obj.carrier :=
-  LinearMap.ker (J.element.1.toLinearMap - LinearMap.id)
-
-/-- The anti-fixed submodule of an involution. -/
-def antiFixedSubmodule (L : IntegralLatticeCat ℤ) (J : Involution L) :
-    Submodule ℤ L.obj.carrier :=
-  LinearMap.ker (J.element.1.toLinearMap + LinearMap.id)
 
 end LeanCategories.Lattices.Valued

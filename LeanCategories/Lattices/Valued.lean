@@ -13,6 +13,7 @@ public import LeanCategories.Lattices.Valued.DiscriminantAction
 public import LeanCategories.Lattices.Valued.Standard
 public import LeanCategories.Lattices.Valued.Signature
 public import LeanCategories.Lattices.Valued.LocalGlobal
+public import LeanCategories.Lattices.Valued.Involution
 public import LeanCategories.Lattices.Valued.Reflection
 
 @[expose] public section
