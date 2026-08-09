@@ -118,6 +118,26 @@ theorem map_pairing {L M : BilinModuleCat R W} (f : L ⟶ M)
   have h := f.unop.property
   exact LinearMap.congr_fun h (x ⊗ₜ[R] y)
 
+/-- Build a formed-module morphism from a form-preserving linear map. -/
+def homMk {L M : BilinModuleCat R W} (f : L.carrier →ₗ[R] M.carrier)
+    (h : ∀ x y, M.pairing (f x) (f y) = L.pairing x y) : L ⟶ M := by
+  refine Quiver.Hom.op (CategoryOfElements.homMk _ _
+    (op (ModuleCat.ofHom f)) ?_)
+  dsimp [bilinearForms]
+  apply LinearMap.ext
+  intro z
+  induction z using TensorProduct.induction_on with
+  | zero => simp
+  | tmul x y => exact h x y
+  | add x y hx hy => simp [hx, hy]
+
+@[simp]
+theorem underlyingMap_homMk {L M : BilinModuleCat R W}
+    (f : L.carrier →ₗ[R] M.carrier)
+    (h : ∀ x y, M.pairing (f x) (f y) = L.pairing x y) :
+    underlyingMap (homMk f h) = f :=
+  rfl
+
 /-- Symmetry of the form. -/
 def IsSymmetric (L : BilinModuleCat R W) : Prop :=
   ∀ x y, L.pairing x y = L.pairing y x
