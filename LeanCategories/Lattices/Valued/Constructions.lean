@@ -51,6 +51,35 @@ theorem oppositeLattice_pairing (L : LatticeCat R W) (x y : L.obj.carrier) :
     (oppositeLattice L).obj.pairing x y = -L.obj.pairing x y := by
   simp [oppositeLattice, scaleLattice]
 
+/-- The tensor product of two integral lattices. -/
+def tensorProductLattice (L M : IntegralLatticeCat R) :
+    IntegralLatticeCat R := by
+  refine ⟨BilinModuleCat.ofBilinMap
+    (LinearMap.BilinForm.tmul L.obj.bilinMap M.obj.bilinMap), ?_, ?_⟩
+  · letI : Module.Projective R L.obj.carrier := L.property.1
+    letI : Module.Projective R M.obj.carrier := M.property.1
+    change Module.Projective R
+      (TensorProduct R L.obj.carrier M.obj.carrier)
+    infer_instance
+  · let hL : LinearMap.IsSymm L.obj.bilinMap :=
+      ⟨fun x y ↦ by simpa using L.property.2 x y⟩
+    let hM : LinearMap.IsSymm M.obj.bilinMap :=
+      ⟨fun x y ↦ by simpa using M.property.2 x y⟩
+    exact (hL.tmul hM).eq
+
+@[simp]
+theorem tensorProductLattice_pairing_tmul
+    (L M : IntegralLatticeCat R)
+    (x x' : L.obj.carrier) (y y' : M.obj.carrier) :
+    (tensorProductLattice L M).obj.pairing
+      (x ⊗ₜ[R] y) (x' ⊗ₜ[R] y') =
+        L.obj.pairing x x' * M.obj.pairing y y' :=
+  by
+    change LinearMap.BilinForm.tmul L.obj.bilinMap M.obj.bilinMap
+      (x ⊗ₜ[R] y) (x' ⊗ₜ[R] y') = _
+    rw [LinearMap.BilinForm.tensorDistrib_tmul]
+    simp [smul_eq_mul, mul_comm]
+
 /-- A vector is isotropic when its self-pairing is zero. -/
 def IsIsotropic (L : LatticeCat R W) (x : L.obj.carrier) : Prop :=
   L.obj.pairing x x = 0
