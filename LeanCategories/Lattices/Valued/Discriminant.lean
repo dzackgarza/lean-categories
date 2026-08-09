@@ -5,6 +5,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Lattices.Valued.MetricDual
+public import LeanCategories.Modules.Bilinear.Valued.Torsion
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
 
 @[expose] public section
 
@@ -204,6 +206,47 @@ theorem discriminantBilinObject_isSymmetric (L : IntegralLatticeCat R)
     (discriminantBilinObject R L hL).IsSymmetric :=
   discriminantBilinMap_isSymmetric R L hL
 
+/-- Generic nondegeneracy makes the integral adjoint injective. -/
+theorem adjoint_injective_of_genericallyNondegenerate
+    (L : IntegralLatticeCat R)
+    (hL : IsGenericallyNondegenerate R L) :
+    Function.Injective L.obj.adjoint := by
+  intro x y hxy
+  letI : Module.Projective R L.obj.carrier := L.property.1
+  apply Module.Flat.tensorProduct_mk_injective R L.obj.carrier
+    (FractionRing R)
+  change toRationalSpan R L x = toRationalSpan R L y
+  rw [← rieszEmbedding_adjoint R L hL x]
+  rw [← rieszEmbedding_adjoint R L hL y]
+  exact congrArg (rieszEmbedding R L hL) hxy
+
+/-- The discriminant module of a finite integer lattice is a torsion module. -/
+theorem discriminant_isTorsion_int (L : IntegralLatticeCat ℤ)
+    [Module.Finite ℤ L.obj.carrier]
+    (hL : IsGenericallyNondegenerate ℤ L) :
+    Module.IsTorsion ℤ L.obj.defect := by
+  letI : Module.Projective ℤ L.obj.carrier := L.property.1
+  letI : Module.Free ℤ L.obj.carrier := inferInstance
+  letI : Module.Finite ℤ L.obj.valueDual := inferInstance
+  letI : Module.Free ℤ L.obj.valueDual := inferInstance
+  have hinj := adjoint_injective_of_genericallyNondegenerate ℤ L hL
+  have hrange : Module.finrank ℤ (LinearMap.range L.obj.adjoint) =
+      Module.finrank ℤ L.obj.carrier :=
+    (LinearEquiv.ofInjective L.obj.adjoint hinj).finrank_eq.symm
+  let b := Module.Free.chooseBasis ℤ L.obj.carrier
+  have hdual : Module.finrank ℤ L.obj.valueDual =
+      Module.finrank ℤ L.obj.carrier := by
+    rw [Module.finrank_eq_card_basis b.dualBasis]
+    rw [Module.finrank_eq_card_basis b]
+  have hfull : Module.finrank ℤ (LinearMap.range L.obj.adjoint) =
+      Module.finrank ℤ L.obj.valueDual :=
+    hrange.trans hdual.symm
+  letI : Finite L.obj.defect :=
+    Submodule.finiteQuotientOfFreeOfRankEq
+      (LinearMap.range L.obj.adjoint) hfull
+  exact (AddMonoid.isTorsion_iff_isTorsion_int).mp
+    is_add_torsion_of_finite
+
 /-- `A_L` in the category of finite symmetric `Frac(R) / R`-valued form modules. -/
 noncomputable def discriminantFormModule (L : IntegralLatticeCat R)
     [Module.Finite R L.obj.carrier]
@@ -214,6 +257,27 @@ noncomputable def discriminantFormModule (L : IntegralLatticeCat R)
   change Module.Finite R L.obj.defect ∧
     (discriminantBilinObject R L hL).IsSymmetric
   exact ⟨inferInstance, discriminantBilinObject_isSymmetric R L hL⟩
+
+/-- A discriminant form with a proved torsion carrier. -/
+noncomputable def discriminantTorsionFormModule
+    (L : IntegralLatticeCat R) [Module.Finite R L.obj.carrier]
+    (hL : IsGenericallyNondegenerate R L)
+    (hT : Module.IsTorsion R L.obj.defect) :
+    FiniteTorsionSymBilinModuleCat R (FractionValueQuotient R) := by
+  letI : Module.Projective R L.obj.carrier := L.property.1
+  refine ⟨discriminantBilinObject R L hL, ?_⟩
+  change Module.Finite R L.obj.defect ∧
+    Module.IsTorsion R L.obj.defect ∧
+    (discriminantBilinObject R L hL).IsSymmetric
+  exact ⟨inferInstance, hT,
+    discriminantBilinObject_isSymmetric R L hL⟩
+
+/-- The integer discriminant form, with torsion proved from generic nondegeneracy. -/
+noncomputable def discriminantTorsionFormModuleInt
+    (L : IntegralLatticeCat ℤ) [Module.Finite ℤ L.obj.carrier]
+    (hL : IsGenericallyNondegenerate ℤ L) :=
+  discriminantTorsionFormModule ℤ L hL
+    (discriminant_isTorsion_int L hL)
 
 /-- The Riesz model after projection of its values to `Frac(R) / R`. -/
 noncomputable def projectedRieszDualLattice (L : IntegralLatticeCat R)
