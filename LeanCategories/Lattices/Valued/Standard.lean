@@ -314,6 +314,24 @@ theorem e6Lattice_gramMatrix :
     gramMatrix e6Lattice (Pi.basisFun ℤ (Fin 6)) = e6GramMatrix :=
   latticeOfGramMatrix_gramMatrix _ _
 
+/-- The determinant of the selected negative `E₆` matrix is three. -/
+theorem e6GramMatrix_det : e6GramMatrix.det = 3 := by
+  rw [e6GramMatrix_eq]
+  set_option maxRecDepth 10000 in decide
+
+/-- The standard basis computes the determinant of the negative `E₆` lattice. -/
+theorem e6Lattice_determinant :
+    determinant e6Lattice (Pi.basisFun ℤ (Fin 6)) = 3 := by
+  rw [determinant, e6Lattice_gramMatrix, e6GramMatrix_det]
+
+/-- The negative `E₆` lattice is even. -/
+theorem e6Lattice_isEven : IsEven e6Lattice := by
+  apply latticeOfGramMatrix_isEven e6GramMatrix e6GramMatrix_isSymm
+  intro i
+  rw [Ideal.mem_span_singleton, e6GramMatrix_eq]
+  refine ⟨-1, ?_⟩
+  fin_cases i <;> norm_num
+
 /-- Twice the coordinates of the first seven roots in the selected `E₈` presentation. -/
 def e7RootNumerator (i : Fin 7) : Fin 8 → ℤ :=
   e8RootNumerator (Fin.castLE (by omega) i)
@@ -370,6 +388,14 @@ noncomputable def e7FiniteLattice : FiniteProjectiveLatticeCat ℤ ℤ :=
 theorem e7Lattice_gramMatrix :
     gramMatrix e7Lattice (Pi.basisFun ℤ (Fin 7)) = e7GramMatrix :=
   latticeOfGramMatrix_gramMatrix _ _
+
+/-- The negative `E₇` lattice is even. -/
+theorem e7Lattice_isEven : IsEven e7Lattice := by
+  apply latticeOfGramMatrix_isEven e7GramMatrix e7GramMatrix_isSymm
+  intro i
+  rw [Ideal.mem_span_singleton, e7GramMatrix_eq]
+  refine ⟨-1, ?_⟩
+  fin_cases i <;> norm_num
 
 /-- The negative definite `E₈` root lattice in its simple-root basis. -/
 noncomputable def e8Lattice : IntegralLatticeCat ℤ := by
