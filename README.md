@@ -3,38 +3,37 @@
 The centralized Lean baseline of categorical constructions. Downstream projects require
 this package and import the trees they need; no construction is duplicated downstream.
 
-`LeanCategories` holds the categories themselves, organized into top-level trees that
-follow subcategory containment. Lattices are one such tree, on the same footing as every
-other:
+`LeanCategories` is one category-theory library and one Lean namespace. The source tree
+uses mathematical owners and support roles:
 
 ```text
 LeanCategories/
-  CategoryGraph/     Expressions, registry, realization, and export
-  Modules/           Bilinear and quadratic forms
-  Lattices/          Integral (+ Integral/Unbundled), Discriminant
-  Groups/            Reflection
-  Schemes/           Objects, Morphisms, Functors, Surface, Divisor, Pair
+  Algebra/
+  Modules/
+  Lattices/
+  Schemes/
   Stacks/
   ComplexManifolds/
-  Fans/
+  Core/
+  ForMathlib/
+  Model/
+  Names/
+  Presentation/
+  Realization/
+  Registry/
+  Specimen/
+  Tools/
   Util/
 ```
 
-Each category tree carries `Objects/`, `Morphisms/`, and `Functors/`. Directory names are
-plural so the namespaces do not shadow the Mathlib identifiers `Module`, `Group`, and
-`Scheme`.
+The support directories describe the same mathematical library. They do not define a
+second category system. `Core` and `Model` define the common language. `Realization`
+connects it to Mathlib. `Registry`, `Specimen`, and `Tools` inspect and export that
+language.
 
-`Lattices/Integral/Unbundled/` is the pre-migration monolithic layer: one namespace
-holding an unbundled `IntegralLattice` (a form on a fixed carrier, no nondegeneracy) plus
-Enriques-surface and fan material that belongs in `Schemes/` and `Fans/`. It duplicates
-parts of `Lattices/Integral/` and is scheduled for reconciliation.
-
-`LeanCategories/CategoryGraph` owns the normalized category catalogue. It contains the
-generic expression language, classifier
-machinery, Mathlib realization, registry reflection, typed category/functor declarations,
-and JSON/DOT export. Sage observation, CatDSL method exposure, backend routing, and
-runnable parity are owned by [`dzackgarza/lean-cas-dsl`](https://github.com/dzackgarza/lean-cas-dsl),
-not by a Sage-to-Lean category correspondence in this repository.
+Sage observation, method exposure, backend routing, and runnable parity belong to
+[`dzackgarza/lean-cas-dsl`](https://github.com/dzackgarza/lean-cas-dsl). Sage labels and
+implementation details do not define this library.
 
 The current catalogue is a deliberately incomplete specimen. It establishes a
 Lean-authoritative registry/export path but does not claim the complete normalized
@@ -45,7 +44,7 @@ or release denominator.
 ```bash
 just cache
 just build
-lake exe category-graph-export
+lake exe lean-categories-export
 ```
 
 ## Mathematical design

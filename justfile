@@ -27,13 +27,13 @@ cache:
 
 # Run the complete repository quality gate
 test: build
-    @lake exe category-graph-export >/dev/null
+    @lake exe lean-categories-export >/dev/null
     @just -f ~/ai-review-ci/justfiles/lean.just -d . lean-no-sorry
     @just _lint-conventions
     @just _lean-vacuity-audit
     @just _lean-mathlib-lint-audit
     @just _lean-unused-variables
-    @just _lean-axiom-audit-leancategories
+    @just _lean-axiom-audit
 
 [private]
 test-commit: test
@@ -44,23 +44,10 @@ test-ci: test
 # Repo-supplied kernel-axiom audit, consumed by the global lean-axiom-audit gate
 [private]
 _lean-axiom-audit:
-    @lake exe category-graph-axiom-audit
-
-# Kernel-axiom-budget check for the non-catalogue LeanCategories modules.
-# LeanCategories/Meta/AxiomAudit.lean defines its exact module filter.
-# Before this existed, nothing in this repo's automation looked at
-# LeanCategories' axiom footprint at all: 71 raw `axiom` declarations across
-# ~29 files were invisible to every existing check, several of them standing
-# in for named classical theorems (Nikulin, Vinberg, KSBA properness) that
-# issue #21's own ledger already lists as axioms to eliminate. Run in `test`
-# directly (not push-only like `_lean-axiom-audit`) given the scale of what
-# it currently catches — 180 flagged declarations on introduction.
-[private]
-_lean-axiom-audit-leancategories:
-    @lake build LeanCategories.Meta.AxiomAudit
+    @lake exe lean-categories-axiom-audit
 
 # Repo-supplied vacuous-witness audit (bans bare `Nonempty` in exported
-# CategoryGraph types; see LeanCategories/CategoryGraph/Tools/VacuityAudit.lean). No `lake
+# LeanCategories types; see LeanCategories/Tools/VacuityAudit.lean). No `lake
 # exe` wrapper: the check is a `Batteries.Tactic.Lint` `env_linter`, which the
 # attribute framework requires to be `meta`, and `meta` declarations cannot
 # back a plain compiled executable. Building the module is enough — `run_cmd
@@ -69,14 +56,14 @@ _lean-axiom-audit-leancategories:
 # target for this check exists yet.
 [private]
 _lean-vacuity-audit:
-    @lake build LeanCategories.CategoryGraph.Tools.VacuityAudit
+    @lake build LeanCategories.Tools.VacuityAudit
 
 # Repo-supplied standard Batteries/Mathlib `#lint` battery, minus `docBlame`
 # (later work, see the files' module docs) and `unusedArguments` (demonstrated
 # unreliable at this codebase's scale via Batteries' `#lint`/`lintCore` and via
 # a from-scratch reimplementation of its exact check; both silently dropped a
 # known-true finding under load with no crash or exception, root cause not
-# identified — see LeanCategories/CategoryGraph/Tools/MathlibLintAudit.lean's module doc).
+# identified — see LeanCategories/Tools/MathlibLintAudit.lean's module doc).
 # Unused-argument checking is NOT actually missing, though: `_lean-unused-variables`
 # below covers it via a different, already-reliable mechanism. This is a
 # signal, not a gate: it is meant to fail loudly on real findings and stay red
@@ -84,7 +71,7 @@ _lean-vacuity-audit:
 # inconvenient.
 [private]
 _lean-mathlib-lint-audit:
-    @lake build LeanCategories.CategoryGraph.Tools.MathlibLintAudit LeanCategories.Meta.MathlibLintAudit
+    @lake build LeanCategories.Tools.MathlibLintAudit
 
 # Gates on Lean 4's own built-in `linter.unusedVariables` (core compiler, not
 # Mathlib/Batteries) — covers unused function/theorem parameters
