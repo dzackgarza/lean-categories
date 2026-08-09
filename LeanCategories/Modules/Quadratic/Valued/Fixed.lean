@@ -38,6 +38,11 @@ namespace QuadModuleCat
 
 variable {R W}
 
+/-- Make a quadratic-module object from a quadratic map. -/
+def ofQuadraticMap {M : Type u} [AddCommGroup M] [Module R M]
+    (q : QuadraticMap R M W) : QuadModuleCat R W :=
+  op ⟨op (ModuleCat.of R M), q⟩
+
 /-- The underlying `R`-module. -/
 def carrierObj (Q : QuadModuleCat R W) : ModuleCat R :=
   (unop Q).1.unop
@@ -58,6 +63,40 @@ theorem map_form {Q P : QuadModuleCat R W} (f : Q ⟶ P) (x : Q.carrier) :
     P.form (underlyingMap f x) = Q.form x := by
   have h := f.unop.property
   exact QuadraticMap.congr_fun h x
+
+/-- Build a quadratic-module morphism from a form-preserving linear map. -/
+def homMk {Q P : QuadModuleCat R W} (f : Q.carrier →ₗ[R] P.carrier)
+    (h : ∀ x, P.form (f x) = Q.form x) : Q ⟶ P := by
+  refine Quiver.Hom.op (CategoryOfElements.homMk _ _
+    (op (ModuleCat.ofHom f)) ?_)
+  dsimp [quadraticMaps]
+  ext x
+  exact h x
+
+@[simp]
+theorem underlyingMap_homMk {Q P : QuadModuleCat R W}
+    (f : Q.carrier →ₗ[R] P.carrier)
+    (h : ∀ x, P.form (f x) = Q.form x) :
+    underlyingMap (homMk f h) = f :=
+  rfl
+
+/-- The bilinear polarization of a quadratic module. -/
+def polarBilin (Q : QuadModuleCat R W) :
+    LinearMap.BilinMap R Q.carrier W :=
+  Q.form.polarBilin
+
+/-- The adjoint of the polarized bilinear form. -/
+def polarAdjoint (Q : QuadModuleCat R W) :
+    Q.carrier →ₗ[R] (Q.carrier →ₗ[R] W) :=
+  Q.polarBilin
+
+/-- A quadratic module is nondegenerate when its polar adjoint is injective. -/
+def IsNondegenerate (Q : QuadModuleCat R W) : Prop :=
+  Function.Injective Q.polarAdjoint
+
+/-- A quadratic module is perfect when its polar adjoint is bijective. -/
+def IsPerfect (Q : QuadModuleCat R W) : Prop :=
+  Function.Bijective Q.polarAdjoint
 
 end QuadModuleCat
 
