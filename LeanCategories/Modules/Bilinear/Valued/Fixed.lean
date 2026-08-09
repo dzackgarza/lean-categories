@@ -47,6 +47,12 @@ namespace BilinModuleCat
 
 variable {R W}
 
+/-- Make a bilinear-module object from a bilinear map. -/
+def ofBilinMap {M : Type u} [AddCommGroup M] [Module R M]
+    (B : LinearMap.BilinMap R M W) : BilinModuleCat R W :=
+  op ⟨op (ModuleCat.of R M),
+    (TensorProduct.lift.equiv (.id R) M M W) B⟩
+
 /-- The underlying `R`-module. -/
 def carrierObj (L : BilinModuleCat R W) : ModuleCat R :=
   (unop L).1.unop
@@ -61,6 +67,12 @@ def form (L : BilinModuleCat R W) :
 /-- The value of the form on a pair. -/
 def pairing (L : BilinModuleCat R W) (x y : L.carrier) : W :=
   L.form (x ⊗ₜ[R] y)
+
+@[simp]
+theorem ofBilinMap_pairing {M : Type u} [AddCommGroup M] [Module R M]
+    (B : LinearMap.BilinMap R M W) (x y : M) :
+    (ofBilinMap B).pairing x y = B x y :=
+  rfl
 
 @[simp]
 theorem pairing_zero_left (L : BilinModuleCat R W) (y : L.carrier) :
@@ -81,6 +93,18 @@ theorem pairing_add_left (L : BilinModuleCat R W) (x y z : L.carrier) :
 theorem pairing_add_right (L : BilinModuleCat R W) (x y z : L.carrier) :
     L.pairing x (y + z) = L.pairing x y + L.pairing x z := by
   simp [pairing, TensorProduct.tmul_add]
+
+@[simp]
+theorem pairing_smul_left (L : BilinModuleCat R W) (r : R) (x y : L.carrier) :
+    L.pairing (r • x) y = r • L.pairing x y := by
+  rw [pairing, TensorProduct.smul_tmul, TensorProduct.tmul_smul, map_smul]
+  rfl
+
+@[simp]
+theorem pairing_smul_right (L : BilinModuleCat R W) (r : R) (x y : L.carrier) :
+    L.pairing x (r • y) = r • L.pairing x y := by
+  rw [pairing, TensorProduct.tmul_smul, map_smul]
+  rfl
 
 /-- The underlying linear map of a morphism. -/
 def underlyingMap {L M : BilinModuleCat R W} (f : L ⟶ M) :

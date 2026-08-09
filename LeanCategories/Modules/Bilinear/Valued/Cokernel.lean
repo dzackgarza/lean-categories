@@ -54,6 +54,16 @@ abbrev CokernelValue := Y.value ⧸ cokernelValueRelations f
 def cokernelCarrierProjection : Y.carrier →ₗ[R] CokernelCarrier f :=
   Submodule.mkQ (cokernelCarrierRelations f)
 
+/-- The underlying carrier sequence is exact at the cokernel source. -/
+theorem exact_carrierMap_cokernelCarrierProjection :
+    Function.Exact (carrierMap f).hom (cokernelCarrierProjection f) :=
+  LinearMap.exact_map_mkQ_range (carrierMap f).hom
+
+/-- The underlying carrier projection is surjective. -/
+theorem cokernelCarrierProjection_surjective :
+    Function.Surjective (cokernelCarrierProjection f) :=
+  Submodule.mkQ_surjective _
+
 def cokernelValueProjection : Y.value →ₗ[R] CokernelValue f :=
   Submodule.mkQ (cokernelValueRelations f)
 

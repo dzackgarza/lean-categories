@@ -312,4 +312,34 @@ theorem exact_radical_toMetricDual (L : IntegralLatticeCat R)
     Function.Exact L.obj.radicalInclusion (toMetricDual R L) := by
   exact (exact_radical_toMetricDual_iff R L).mpr hL
 
+/-- The metric-dual map followed by the carrier map of the formed cokernel is exact. -/
+theorem exact_toMetricDual_discriminantCarrier (L : IntegralLatticeCat R) :
+    Function.Exact (toMetricDual R L)
+      (BilWFormCat.carrierMap (discriminantSymBilWFormProjection R L).hom).hom := by
+  exact BilWFormCat.exact_carrierMap_cokernelCarrierProjection
+    (toMetricDualSymBilWForm R L).hom
+
+/-- The carrier map of the formed discriminant projection is surjective. -/
+theorem discriminantCarrierProjection_surjective (L : IntegralLatticeCat R) :
+    Function.Surjective
+      (BilWFormCat.carrierMap (discriminantSymBilWFormProjection R L).hom).hom := by
+  exact BilWFormCat.cokernelCarrierProjection_surjective
+    (toMetricDualSymBilWForm R L).hom
+
+/--
+The underlying module sequence
+`0 → rad(L) → L → L♯ → A(L) → 0` is exact for a nondegenerate lattice.
+-/
+theorem discriminantCarrierModuleSequenceExact (L : IntegralLatticeCat R)
+    (hL : L.obj.IsNondegenerate) :
+    Function.Injective L.obj.radicalInclusion ∧
+      Function.Exact L.obj.radicalInclusion (toMetricDual R L) ∧
+      Function.Exact (toMetricDual R L)
+        (BilWFormCat.carrierMap (discriminantSymBilWFormProjection R L).hom).hom ∧
+      Function.Surjective
+        (BilWFormCat.carrierMap (discriminantSymBilWFormProjection R L).hom).hom :=
+  ⟨L.obj.radicalInclusion_injective, exact_radical_toMetricDual R L hL,
+    exact_toMetricDual_discriminantCarrier R L,
+    discriminantCarrierProjection_surjective R L⟩
+
 end LeanCategories.Lattices.Valued

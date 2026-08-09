@@ -304,7 +304,12 @@ theorem metricDualBilinObject_isSymmetric (L : IntegralLatticeCat R) :
     rationalizedForm R L (metricDualInclusion R L y) (metricDualInclusion R L x)
   exact rationalizedForm_isSymmetric R L _ _
 
-/-- The actual metric-dual submodule as a `Frac(R)`-valued `R`-lattice. -/
+/--
+The metric dual as a formed lattice.
+
+This construction requires a finite carrier and a bijective rational adjoint.
+It does not require the original integral form to be nondegenerate over `R`.
+-/
 noncomputable def metricDualLattice (L : IntegralLatticeCat R)
     [Module.Finite R L.obj.carrier]
     (hL : IsGenericallyNondegenerate R L) :
