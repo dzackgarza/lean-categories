@@ -1,0 +1,235 @@
+/-
+Copyright (c) 2026 Dzack Garza. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+-/
+module
+
+public import LeanCategories.Lattices.Valued.Discriminant
+public import LeanCategories.Lattices.Valued.OrthogonalGroup
+
+@[expose] public section
+
+open LeanCategories.Modules.Bilinear.Valued
+
+namespace LeanCategories.Lattices.Valued
+
+universe u
+
+variable {R : Type u} [CommRing R]
+variable {L : IntegralLatticeCat R}
+
+namespace OrthogonalGroup
+
+/-- The contragredient action of `O(L)` on the value dual. -/
+def actOnValueDual (g : OrthogonalGroup L) :
+    L.obj.valueDual ≃ₗ[R] L.obj.valueDual :=
+  g.1.symm.dualMap
+
+/-- The dual action carries an adjoint vector to the adjoint of its image. -/
+theorem actOnValueDual_adjoint (g : OrthogonalGroup L)
+    (x : L.obj.carrier) :
+    actOnValueDual g (L.obj.adjoint x) = L.obj.adjoint (g.1 x) := by
+  ext y
+  change L.obj.pairing x (g.1.symm y) = L.obj.pairing (g.1 x) y
+  simpa using (g.property x (g.1.symm y)).symm
+
+/-- The dual action preserves the image of the adjoint map. -/
+theorem actOnValueDual_adjointRange (g : OrthogonalGroup L) :
+    (LinearMap.range L.obj.adjoint).map
+        (actOnValueDual g).toLinearMap =
+      LinearMap.range L.obj.adjoint := by
+  ext f
+  constructor
+  · rintro ⟨_, ⟨x, rfl⟩, rfl⟩
+    exact ⟨g.1 x, (actOnValueDual_adjoint g x).symm⟩
+  · rintro ⟨x, rfl⟩
+    refine ⟨L.obj.adjoint (g.1.symm x), ⟨g.1.symm x, rfl⟩, ?_⟩
+    change actOnValueDual g (L.obj.adjoint (g.1.symm x)) = L.obj.adjoint x
+    rw [actOnValueDual_adjoint]
+    simp
+
+/-- The action of `O(L)` on the discriminant module `A_L`. -/
+def actOnDefect (g : OrthogonalGroup L) :
+    L.obj.defect ≃ₗ[R] L.obj.defect :=
+  Submodule.Quotient.equiv
+    (LinearMap.range L.obj.adjoint)
+    (LinearMap.range L.obj.adjoint)
+    (actOnValueDual g)
+    (actOnValueDual_adjointRange g)
+
+@[simp]
+theorem actOnDefect_mk (g : OrthogonalGroup L) (f : L.obj.valueDual) :
+    actOnDefect g (Submodule.Quotient.mk f) =
+      Submodule.Quotient.mk (actOnValueDual g f) :=
+  rfl
+
+@[simp]
+theorem actOnValueDual_one_apply (f : L.obj.valueDual) :
+    actOnValueDual (1 : OrthogonalGroup L) f = f := by
+  ext x
+  rfl
+
+@[simp]
+theorem actOnValueDual_mul_apply (g h : OrthogonalGroup L)
+    (f : L.obj.valueDual) :
+    actOnValueDual (g * h) f =
+      actOnValueDual g (actOnValueDual h f) := by
+  ext x
+  rfl
+
+@[simp]
+theorem actOnDefect_one_apply (x : L.obj.defect) :
+    actOnDefect (1 : OrthogonalGroup L) x = x := by
+  induction x using Submodule.Quotient.induction_on with
+  | _ f => simp
+
+@[simp]
+theorem actOnDefect_mul_apply (g h : OrthogonalGroup L)
+    (x : L.obj.defect) :
+    actOnDefect (g * h) x = actOnDefect g (actOnDefect h x) := by
+  induction x using Submodule.Quotient.induction_on with
+  | _ f => simp
+
+/-- The linear action of `O(L)` on its discriminant module. -/
+def defectRepresentation :
+    OrthogonalGroup L →* (L.obj.defect ≃ₗ[R] L.obj.defect) where
+  toFun := actOnDefect
+  map_one' := by
+    ext x
+    exact actOnDefect_one_apply x
+  map_mul' g h := by
+    ext x
+    exact actOnDefect_mul_apply g h x
+
+/-- The scalar extension of an orthogonal action to the rational span. -/
+noncomputable def actOnRationalSpan [IsDomain R]
+    (g : OrthogonalGroup L) :
+    RationalSpan R L ≃ₗ[FractionRing R] RationalSpan R L :=
+  g.1.baseChange R (FractionRing R) L.obj.carrier L.obj.carrier
+
+/-- The rational action preserves the extended bilinear form. -/
+theorem actOnRationalSpan_isometry [IsDomain R]
+    (g : OrthogonalGroup L) (x y : RationalSpan R L) :
+    rationalizedForm R L (actOnRationalSpan g x)
+        (actOnRationalSpan g y) = rationalizedForm R L x y := by
+  induction x using TensorProduct.induction_on with
+  | zero => simp
+  | tmul a x =>
+      induction y using TensorProduct.induction_on with
+      | zero => simp
+      | tmul b y =>
+          simp only [actOnRationalSpan, LinearEquiv.baseChange_tmul,
+            rationalizedForm_tmul]
+          rw [g.property]
+      | add y z hy hz => simp [map_add, hy, hz]
+  | add x z hx hz => simp [map_add, hx, hz]
+
+@[simp]
+theorem actOnRationalSpan_inv_apply [IsDomain R]
+    (g : OrthogonalGroup L) (x : RationalSpan R L) :
+    actOnRationalSpan g (actOnRationalSpan g⁻¹ x) = x := by
+  change (g.1.baseChange R (FractionRing R) L.obj.carrier L.obj.carrier)
+    (((g⁻¹).1.baseChange R (FractionRing R)
+      L.obj.carrier L.obj.carrier) x) = x
+  rw [← LinearEquiv.mul_apply, ← LinearEquiv.baseChange_mul]
+  simp
+
+/-- Move an orthogonal action across the rationalized form. -/
+theorem rationalizedForm_actOnRationalSpan_left [IsDomain R]
+    (g : OrthogonalGroup L) (x y : RationalSpan R L) :
+    rationalizedForm R L (actOnRationalSpan g x) y =
+      rationalizedForm R L x (actOnRationalSpan g⁻¹ y) := by
+  rw [← actOnRationalSpan_isometry g x (actOnRationalSpan g⁻¹ y)]
+  rw [actOnRationalSpan_inv_apply]
+
+/-- The Riesz realization intertwines the dual and rational actions. -/
+theorem rieszEmbedding_actOnValueDual [IsDomain R]
+    (g : OrthogonalGroup L)
+    (hL : IsGenericallyNondegenerate R L) (f : L.obj.valueDual) :
+    rieszEmbedding R L hL (actOnValueDual g f) =
+      actOnRationalSpan g (rieszEmbedding R L hL f) := by
+  apply (rationalAdjointEquiv R L hL).injective
+  rw [show (rationalAdjointEquiv R L hL)
+      (rieszEmbedding R L hL (actOnValueDual g f)) =
+        Module.Dual.baseChange (FractionRing R) (actOnValueDual g f) by
+    simp [rieszEmbedding]]
+  apply LinearMap.ext
+  intro y
+  induction y using TensorProduct.induction_on with
+  | zero => simp
+  | tmul a x =>
+      change Module.Dual.baseChange (FractionRing R) (actOnValueDual g f)
+          (a ⊗ₜ[R] x) =
+        rationalizedForm R L (actOnRationalSpan g
+          (rieszEmbedding R L hL f)) (a ⊗ₜ[R] x)
+      rw [Module.Dual.baseChange_apply_tmul,
+        rationalizedForm_actOnRationalSpan_left]
+      change (f (g.1.symm x)) • a =
+        rationalizedForm R L (rieszEmbedding R L hL f)
+          (a ⊗ₜ[R] g.1.symm x)
+      have htensor : (a ⊗ₜ[R] g.1.symm x) =
+          a • toRationalSpan R L (g.1.symm x) := by
+        exact TensorProduct.tmul_eq_smul_one_tmul a (g.1.symm x)
+      rw [htensor]
+      rw [map_smul, rationalizedForm_rieszEmbedding]
+      simp [Algebra.smul_def, mul_comm]
+  | add x y hx hy => simp [map_add, hx, hy]
+
+/-- The dual action preserves the Riesz bilinear form. -/
+theorem rieszDualBilinMap_actOnValueDual [IsDomain R]
+    (g : OrthogonalGroup L)
+    (hL : IsGenericallyNondegenerate R L) (f k : L.obj.valueDual) :
+    rieszDualBilinMap R L hL (actOnValueDual g f)
+        (actOnValueDual g k) = rieszDualBilinMap R L hL f k := by
+  change rationalizedForm R L
+      (rieszEmbedding R L hL (actOnValueDual g f))
+      (rieszEmbedding R L hL (actOnValueDual g k)) =
+    rationalizedForm R L (rieszEmbedding R L hL f)
+      (rieszEmbedding R L hL k)
+  rw [rieszEmbedding_actOnValueDual, rieszEmbedding_actOnValueDual]
+  exact actOnRationalSpan_isometry g _ _
+
+/-- The action on `A_L` preserves its discriminant bilinear form. -/
+theorem discriminantBilinMap_actOnDefect [IsDomain R]
+    (g : OrthogonalGroup L)
+    (hL : IsGenericallyNondegenerate R L) (x y : L.obj.defect) :
+    discriminantBilinMap R L hL (actOnDefect g x) (actOnDefect g y) =
+      discriminantBilinMap R L hL x y := by
+  induction x using Submodule.Quotient.induction_on with
+  | _ f =>
+      induction y using Submodule.Quotient.induction_on with
+      | _ k =>
+          simp only [actOnDefect_mk, discriminantBilinMap_mk]
+          rw [rieszDualBilinMap_actOnValueDual]
+
+/-- The induced isometry of the discriminant bilinear module. -/
+noncomputable def actOnDiscriminantForm [IsDomain R]
+    (g : OrthogonalGroup L)
+    (hL : IsGenericallyNondegenerate R L) :
+    BilinModuleCat.OrthogonalGroup (discriminantBilinObject R L hL) :=
+  ⟨actOnDefect g, discriminantBilinMap_actOnDefect g hL⟩
+
+/-- The natural homomorphism `O(L) → O(A_L)`. -/
+noncomputable def discriminantRepresentation [IsDomain R]
+    (hL : IsGenericallyNondegenerate R L) :
+    OrthogonalGroup L →*
+      BilinModuleCat.OrthogonalGroup (discriminantBilinObject R L hL) where
+  toFun := fun g ↦ actOnDiscriminantForm g hL
+  map_one' := by
+    apply Subtype.ext
+    ext x
+    exact actOnDefect_one_apply x
+  map_mul' g h := by
+    apply Subtype.ext
+    ext x
+    exact actOnDefect_mul_apply g h x
+
+/-- The stable orthogonal group, which acts trivially on `A_L`. -/
+noncomputable def stableOrthogonalGroup [IsDomain R]
+    (hL : IsGenericallyNondegenerate R L) :
+    Subgroup (OrthogonalGroup L) :=
+  MonoidHom.ker (discriminantRepresentation hL)
+
+end OrthogonalGroup
+
+end LeanCategories.Lattices.Valued
