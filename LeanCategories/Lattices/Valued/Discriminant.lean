@@ -279,6 +279,123 @@ noncomputable def discriminantTorsionFormModuleInt
   discriminantTorsionFormModule ℤ L hL
     (discriminant_isTorsion_int L hL)
 
+omit [IsDomain R] in
+/-- The integral image is the integral span of a base-changed integral basis. -/
+theorem integralImage_eq_span_baseChangeBasis
+    (L : IntegralLatticeCat R) [Module.Free R L.obj.carrier]
+    [Module.Finite R L.obj.carrier] :
+    integralImage R L =
+      Submodule.span R (Set.range
+        ((Module.Free.chooseBasis R L.obj.carrier).baseChange
+          (FractionRing R))) := by
+  let b := Module.Free.chooseBasis R L.obj.carrier
+  apply le_antisymm
+  · rintro _ ⟨x, rfl⟩
+    rw [← b.sum_repr x, map_sum]
+    apply Submodule.sum_mem
+    intro i _
+    rw [map_smul]
+    apply Submodule.smul_mem
+    apply Submodule.subset_span
+    apply Set.mem_range.mpr
+    refine ⟨i, ?_⟩
+    rw [Module.Basis.baseChange_apply]
+    change 1 ⊗ₜ[R] b i = 1 ⊗ₜ[R] b i
+    rfl
+  · rw [Submodule.span_le]
+    rintro _ ⟨i, rfl⟩
+    exact ⟨b i, by simp [b, toRationalSpan]⟩
+
+/-- The discriminant bilinear form of a finite free lattice has zero radical. -/
+theorem discriminantBilinObject_isNondegenerate
+    (L : IntegralLatticeCat R) [Module.Free R L.obj.carrier]
+    [Module.Finite R L.obj.carrier]
+    (hL : IsGenericallyNondegenerate R L) :
+    (discriminantBilinObject R L hL).IsNondegenerate := by
+  rw [BilinModuleCat.isNondegenerate_iff_adjoint_injective]
+  change Function.Injective (discriminantBilinMap R L hL)
+  apply LinearMap.ker_eq_bot.mp
+  apply le_antisymm
+  · intro x hx
+    rw [LinearMap.mem_ker] at hx
+    induction x using Submodule.Quotient.induction_on with
+    | _ f =>
+      change Submodule.Quotient.mk f = 0
+      rw [Submodule.Quotient.mk_eq_zero]
+      have hRationalNondegenerate :
+          (rationalizedForm R L).Nondegenerate := by
+        apply LinearMap.BilinForm.Nondegenerate.ofSeparatingLeft
+        intro v hv
+        apply hL.1
+        apply LinearMap.ext
+        intro y
+        simpa using hv y
+      have hRationalSymmetric : (rationalizedForm R L).IsSymm :=
+        LinearMap.BilinForm.isSymm_def.mpr
+          (rationalizedForm_isSymmetric R L)
+      have hDoubleDual :=
+        (rationalizedForm R L).dualSubmodule_dualSubmodule_of_basis
+          (R := R) (S := FractionRing R)
+          hRationalNondegenerate hRationalSymmetric
+          ((Module.Free.chooseBasis R L.obj.carrier).baseChange
+            (FractionRing R))
+      rw [← integralImage_eq_span_baseChangeBasis R L] at hDoubleDual
+      have hRieszInDoubleDual :
+          rieszEmbedding R L hL f ∈
+            (rationalizedForm R L).dualSubmodule (metricDual R L) := by
+        rw [LinearMap.BilinForm.mem_dualSubmodule]
+        intro y hy
+        let yDual : metricDual R L := ⟨y, hy⟩
+        let g := metricDualToValueDual R L yDual
+        have hPair := LinearMap.congr_fun hx (Submodule.Quotient.mk g)
+        change fractionValueProjection R
+          (rieszDualBilinMap R L hL f g) = 0 at hPair
+        have hyEq : rieszEmbedding R L hL g = y := by
+          exact congrArg Subtype.val
+            (rieszToMetricDual_metricDualToValueDual R L hL yDual)
+        change fractionValueProjection R
+          (rationalizedForm R L (rieszEmbedding R L hL f)
+            (rieszEmbedding R L hL g)) = 0 at hPair
+        rw [hyEq] at hPair
+        rw [fractionValueProjection, Submodule.mkQ_apply,
+          Submodule.Quotient.mk_eq_zero] at hPair
+        rcases hPair with ⟨r, hr⟩
+        exact Submodule.mem_one.mpr ⟨r, hr⟩
+      have hRieszInIntegralImage :
+          rieszEmbedding R L hL f ∈ integralImage R L := by
+        rw [← hDoubleDual]
+        exact hRieszInDoubleDual
+      rcases hRieszInIntegralImage with ⟨z, hz⟩
+      refine ⟨z, ?_⟩
+      apply (rieszMetricDualEquiv R L hL).injective
+      apply Subtype.ext
+      exact (rieszEmbedding_adjoint R L hL z).trans hz
+  · exact bot_le
+
+/-- A finite free discriminant form with proved torsion and zero radical. -/
+noncomputable def discriminantRadicalFreeTorsionFormModule
+    (L : IntegralLatticeCat R) [Module.Free R L.obj.carrier]
+    [Module.Finite R L.obj.carrier]
+    (hL : IsGenericallyNondegenerate R L)
+    (hT : Module.IsTorsion R L.obj.defect) :
+    RadicalFreeFiniteTorsionBilinModuleCat R (FractionValueQuotient R) := by
+  letI : Module.Projective R L.obj.carrier := L.property.1
+  refine ⟨discriminantBilinObject R L hL, ?_⟩
+  change Module.Finite R L.obj.defect ∧ Module.IsTorsion R L.obj.defect ∧
+    (discriminantBilinObject R L hL).IsSymmetric ∧
+    (discriminantBilinObject R L hL).IsNondegenerate
+  exact ⟨inferInstance, hT, discriminantBilinObject_isSymmetric R L hL,
+    discriminantBilinObject_isNondegenerate R L hL⟩
+
+/-- The integer discriminant form in the radical-free finite torsion category. -/
+noncomputable def discriminantRadicalFreeTorsionFormModuleInt
+    (L : IntegralLatticeCat ℤ) [Module.Finite ℤ L.obj.carrier]
+    (hL : IsGenericallyNondegenerate ℤ L) :=
+  letI : Module.Projective ℤ L.obj.carrier := L.property.1
+  letI : Module.Free ℤ L.obj.carrier := inferInstance
+  discriminantRadicalFreeTorsionFormModule ℤ L hL
+    (discriminant_isTorsion_int L hL)
+
 /-- The Riesz model after projection of its values to `Frac(R) / R`. -/
 noncomputable def projectedRieszDualLattice (L : IntegralLatticeCat R)
     [Module.Finite R L.obj.carrier]

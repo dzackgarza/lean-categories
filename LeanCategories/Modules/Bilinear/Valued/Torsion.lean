@@ -36,6 +36,16 @@ def isFiniteTorsionSymBilinModule : ObjectProperty (BilinModuleCat R W) :=
 abbrev FiniteTorsionSymBilinModuleCat :=
   (isFiniteTorsionSymBilinModule R W).FullSubcategory
 
+/-- Radical-free finite torsion symmetric bilinear modules. -/
+def isRadicalFreeFiniteTorsionBilinModule :
+    ObjectProperty (BilinModuleCat R W) :=
+  fun A ↦ Module.Finite R A.carrier ∧
+    Module.IsTorsion R A.carrier ∧ A.IsSymmetric ∧ A.IsNondegenerate
+
+/-- The category of radical-free finite torsion symmetric bilinear modules. -/
+abbrev RadicalFreeFiniteTorsionBilinModuleCat :=
+  (isRadicalFreeFiniteTorsionBilinModule R W).FullSubcategory
+
 /-- Perfect finite torsion symmetric bilinear modules. -/
 def isNonsingularFiniteTorsionBilinModule :
     ObjectProperty (BilinModuleCat R W) :=
