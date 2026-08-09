@@ -7,6 +7,7 @@ module
 public import LeanCategories.Lattices.Valued.Arithmetic
 public import LeanCategories.Lattices.Valued.Sublattice
 public import LeanCategories.Lattices.Valued.Discriminant
+public import LeanCategories.Lattices.Valued.OrthogonalGroup
 public import LeanCategories.Lattices.Valued.Standard
 public import LeanCategories.Lattices.Valued.Reflection
 

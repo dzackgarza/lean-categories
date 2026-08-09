@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Lattices.Valued.Constructions
+public import LeanCategories.Lattices.Valued.OrthogonalGroup
 
 @[expose] public section
 
@@ -73,20 +73,75 @@ theorem reflectionMap_isometry (L : IntegralLatticeCat ℤ)
     rw [hsymm r y]
     ring
 
-/-- An involutive lattice isometry. -/
+/-- A root reflection has square one. -/
+theorem reflectionMap_involutive (L : IntegralLatticeCat ℤ)
+    (r : L.obj.carrier) (hr : L.obj.pairing r r = -2 ∨
+      L.obj.pairing r r = 2) (x : L.obj.carrier) :
+    reflectionMap L r hr (reflectionMap L r hr x) = x := by
+  rcases hr with h | h
+  · have hpair : L.obj.pairing (reflectionMap L r (Or.inl h) x) r =
+        -L.obj.pairing x r := by
+      change L.obj.bilinMap (reflectionMap L r (Or.inl h) x) r =
+        -L.obj.bilinMap x r
+      rw [reflectionMap_apply_of_neg L r (Or.inl h) h]
+      simp only [map_add, LinearMap.add_apply, map_zsmul,
+        LinearMap.smul_apply, smul_eq_mul, BilinModuleCat.bilinMap_apply, h]
+      ring
+    rw [reflectionMap_apply_of_neg L r (Or.inl h) h,
+      hpair, reflectionMap_apply_of_neg L r (Or.inl h) h]
+    simp
+  · have hpair : L.obj.pairing (reflectionMap L r (Or.inr h) x) r =
+        -L.obj.pairing x r := by
+      change L.obj.bilinMap (reflectionMap L r (Or.inr h) x) r =
+        -L.obj.bilinMap x r
+      rw [reflectionMap_apply_of_pos L r (Or.inr h) h]
+      simp only [map_sub, LinearMap.sub_apply, map_zsmul,
+        LinearMap.smul_apply, smul_eq_mul, BilinModuleCat.bilinMap_apply, h]
+      ring
+    rw [reflectionMap_apply_of_pos L r (Or.inr h) h,
+      hpair, reflectionMap_apply_of_pos L r (Or.inr h) h]
+    simp
+
+/-- A root reflection as a linear automorphism. -/
+def reflectionEquiv (L : IntegralLatticeCat ℤ) (r : L.obj.carrier)
+    (hr : L.obj.pairing r r = -2 ∨ L.obj.pairing r r = 2) :
+    L.obj.carrier ≃ₗ[ℤ] L.obj.carrier where
+  toLinearMap := reflectionMap L r hr
+  invFun := reflectionMap L r hr
+  left_inv := reflectionMap_involutive L r hr
+  right_inv := reflectionMap_involutive L r hr
+
+/-- A root reflection as an element of the orthogonal group. -/
+def reflectionOrthogonalElement (L : IntegralLatticeCat ℤ)
+    (r : L.obj.carrier)
+    (hr : L.obj.pairing r r = -2 ∨ L.obj.pairing r r = 2) :
+    OrthogonalGroup L :=
+  ⟨reflectionEquiv L r hr, reflectionMap_isometry L r hr⟩
+
+/-- An element of `O(L)` with square one. -/
 structure Involution (L : IntegralLatticeCat ℤ) where
-  hom : L ⟶ L
-  involutive : ∀ x, BilinModuleCat.underlyingMap hom.hom
-    (BilinModuleCat.underlyingMap hom.hom x) = x
+  element : OrthogonalGroup L
+  involutive : element * element = 1
+
+/-- A root reflection as an involution. -/
+def reflectionInvolution (L : IntegralLatticeCat ℤ)
+    (r : L.obj.carrier)
+    (hr : L.obj.pairing r r = -2 ∨ L.obj.pairing r r = 2) :
+    Involution L where
+  element := reflectionOrthogonalElement L r hr
+  involutive := by
+    apply Subtype.ext
+    ext x
+    exact reflectionMap_involutive L r hr x
 
 /-- The fixed submodule of an involution. -/
 def fixedSubmodule (L : IntegralLatticeCat ℤ) (J : Involution L) :
     Submodule ℤ L.obj.carrier :=
-  LinearMap.ker (BilinModuleCat.underlyingMap J.hom.hom - LinearMap.id)
+  LinearMap.ker (J.element.1.toLinearMap - LinearMap.id)
 
 /-- The anti-fixed submodule of an involution. -/
 def antiFixedSubmodule (L : IntegralLatticeCat ℤ) (J : Involution L) :
     Submodule ℤ L.obj.carrier :=
-  LinearMap.ker (BilinModuleCat.underlyingMap J.hom.hom + LinearMap.id)
+  LinearMap.ker (J.element.1.toLinearMap + LinearMap.id)
 
 end LeanCategories.Lattices.Valued
