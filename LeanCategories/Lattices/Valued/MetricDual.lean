@@ -1,0 +1,362 @@
+/-
+Copyright (c) 2026 Dzack Garza. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+-/
+module
+
+public import LeanCategories.Lattices.Valued.IdealDual
+
+@[expose] public section
+
+open CategoryTheory
+open CategoryTheory.Limits
+open Opposite
+open LeanCategories.Modules.Bilinear.Valued
+
+namespace LeanCategories.Lattices.Valued
+
+universe u
+
+variable (R : Type u) [CommRing R]
+variable (W : Type u) [AddCommGroup W] [Module R W]
+
+variable [IsDomain R]
+
+/-- The metric dual as a submodule of the rational span. -/
+noncomputable abbrev metricDual (L : IntegralLatticeCat R) :
+    Submodule R (RationalSpan R L) :=
+  (rationalizedForm R L).dualSubmodule (integralImage R L)
+
+/-- The specified inclusion `L♯ → L ⊗_R Frac(R)`. -/
+noncomputable def metricDualInclusion (L : IntegralLatticeCat R) :
+    metricDual R L →ₗ[R] RationalSpan R L :=
+  (metricDual R L).subtype
+
+/-- The canonical map `L → L♯`. -/
+noncomputable def toMetricDual (L : IntegralLatticeCat R) :
+    L.obj.carrier →ₗ[R] metricDual R L :=
+  LinearMap.codRestrict (metricDual R L) (toRationalSpan R L) (by
+    intro x
+    change (toRationalSpan R L) x ∈
+      (rationalizedForm R L).dualSubmodule (integralImage R L)
+    rw [LinearMap.BilinForm.mem_dualSubmodule]
+    intro y hy
+    rcases hy with ⟨y, rfl⟩
+    refine Submodule.mem_one.mpr ⟨L.obj.pairing x y, ?_⟩
+    change algebraMap R (FractionRing R) (L.obj.pairing x y) =
+      rationalizedForm R L (1 ⊗ₜ[R] x) (1 ⊗ₜ[R] y)
+    rw [rationalizedForm_tmul]
+    simp)
+
+/-- Rational nondegeneracy means that the adjoint of the extended form is bijective. -/
+def IsGenericallyNondegenerate (L : IntegralLatticeCat R) : Prop :=
+  Function.Bijective (rationalizedForm R L)
+
+/-- The Riesz equivalence supplied by the extended form and rational nondegeneracy. -/
+noncomputable def rationalAdjointEquiv (L : IntegralLatticeCat R)
+    (hL : IsGenericallyNondegenerate R L) :
+    RationalSpan R L ≃ₗ[FractionRing R]
+      Module.Dual (FractionRing R) (RationalSpan R L) :=
+  LinearEquiv.ofBijective (rationalizedForm R L) hL
+
+/-- The Riesz realization of `Hom_R(L,R)` inside the rational span. -/
+noncomputable def rieszEmbedding (L : IntegralLatticeCat R)
+    (hL : IsGenericallyNondegenerate R L) :
+    L.obj.valueDual →ₗ[R] RationalSpan R L :=
+  (rationalAdjointEquiv R L hL).symm.toLinearMap.restrictScalars R ∘ₗ
+    Module.Dual.baseChange (FractionRing R)
+
+/-- The extended form, restricted to `R`-scalars. -/
+noncomputable def restrictedRationalizedForm (L : IntegralLatticeCat R) :
+    LinearMap.BilinMap R (RationalSpan R L) (FractionRing R) :=
+  LinearMap.mk₂ R (fun x y ↦ rationalizedForm R L x y)
+    (fun _ _ _ ↦ by simp)
+    (fun _ _ _ ↦ by simp)
+    (fun _ _ _ ↦ by simp)
+    (fun _ _ _ ↦ by simp)
+
+/-- The form on `Hom_R(L,R)` transported through its Riesz realization. -/
+noncomputable def rieszDualBilinMap (L : IntegralLatticeCat R)
+    (hL : IsGenericallyNondegenerate R L) :
+    LinearMap.BilinMap R L.obj.valueDual (FractionRing R) :=
+  (restrictedRationalizedForm R L).compl₁₂
+    (rieszEmbedding R L hL) (rieszEmbedding R L hL)
+
+/-- Tensor-hom form transported to `Hom_R(L,R)` by the Riesz realization. -/
+noncomputable def rieszDualForm (L : IntegralLatticeCat R)
+    (hL : IsGenericallyNondegenerate R L) :
+    TensorProduct R L.obj.valueDual L.obj.valueDual →ₗ[R] FractionRing R :=
+  (TensorProduct.lift.equiv (.id R) L.obj.valueDual L.obj.valueDual
+    (FractionRing R)) (rieszDualBilinMap R L hL)
+
+/-- `Hom_R(L,R)` with the form supplied by `b_K` and its Riesz equivalence. -/
+noncomputable def rieszDualBilinObject (L : IntegralLatticeCat R)
+    (hL : IsGenericallyNondegenerate R L) :
+    BilinModuleCat R (FractionRing R) :=
+  op ⟨op (ModuleCat.of R L.obj.valueDual), rieszDualForm R L hL⟩
+
+omit [IsDomain R] in
+theorem rationalizedForm_isSymmetric (L : IntegralLatticeCat R) :
+    ∀ x y, rationalizedForm R L x y = rationalizedForm R L y x := by
+  intro x y
+  have hsymm : ∀ a b, L.obj.bilinMap a b = L.obj.bilinMap b a := by
+    intro a b
+    exact L.property.2.2 a b
+  change (TensorProduct.AlgebraTensorModule.rid R (FractionRing R)
+      (FractionRing R))
+      (LinearMap.BilinMap.baseChange (FractionRing R) L.obj.bilinMap x y) =
+    (TensorProduct.AlgebraTensorModule.rid R (FractionRing R)
+      (FractionRing R))
+      (LinearMap.BilinMap.baseChange (FractionRing R) L.obj.bilinMap y x)
+  rw [LinearMap.BilinMap.baseChange_isSymm hsymm]
+
+omit [IsDomain R] in
+theorem rieszDualBilinObject_isSymmetric (L : IntegralLatticeCat R)
+    (hL : IsGenericallyNondegenerate R L) :
+    (rieszDualBilinObject R L hL).IsSymmetric := by
+  intro f g
+  exact rationalizedForm_isSymmetric R L _ _
+
+omit [IsDomain R] in
+theorem rieszEmbedding_adjoint (L : IntegralLatticeCat R)
+    (hL : IsGenericallyNondegenerate R L) (x : L.obj.carrier) :
+    rieszEmbedding R L hL (L.obj.adjoint x) = toRationalSpan R L x := by
+  apply (rationalAdjointEquiv R L hL).injective
+  simp only [rieszEmbedding, LinearMap.comp_apply, LinearMap.coe_restrictScalars,
+    toRationalSpan]
+  change (rationalAdjointEquiv R L hL)
+      ((rationalAdjointEquiv R L hL).symm
+        (Module.Dual.baseChange (FractionRing R) (L.obj.adjoint x))) =
+    (rationalAdjointEquiv R L hL) (1 ⊗ₜ[R] x)
+  rw [LinearEquiv.apply_symm_apply]
+  change Module.Dual.baseChange (FractionRing R) (L.obj.adjoint x) =
+    rationalizedForm R L (1 ⊗ₜ[R] x)
+  ext z
+  simp [BilinModuleCat.adjoint]
+
+omit [IsDomain R] in
+theorem rieszDualBilinMap_adjoint (L : IntegralLatticeCat R)
+    (hL : IsGenericallyNondegenerate R L) (x y : L.obj.carrier) :
+    rieszDualBilinMap R L hL (L.obj.adjoint x) (L.obj.adjoint y) =
+      algebraMap R (FractionRing R) (L.obj.pairing x y) := by
+  change rationalizedForm R L
+    (rieszEmbedding R L hL (L.obj.adjoint x))
+    (rieszEmbedding R L hL (L.obj.adjoint y)) = _
+  rw [rieszEmbedding_adjoint, rieszEmbedding_adjoint]
+  change rationalizedForm R L (1 ⊗ₜ[R] x) (1 ⊗ₜ[R] y) = _
+  rw [rationalizedForm_tmul]
+  simp
+
+/-- Change an integral form from `R`-values to `Frac(R)`-values. -/
+noncomputable def fractionValuedLattice (L : IntegralLatticeCat R) :
+    LatticeCat R (FractionRing R) :=
+  (changeValue R R (Algebra.linearMap R (FractionRing R))).obj L
+
+/-- The Riesz model of `L♯`: `Hom_R(L,R)` with the form induced by `b_K`. -/
+noncomputable def rieszDualLattice (L : IntegralLatticeCat R)
+    (hL : IsGenericallyNondegenerate R L) :
+    LatticeCat R (FractionRing R) := by
+  letI : Module.Finite R L.obj.carrier := L.property.1
+  letI : Module.Projective R L.obj.carrier := L.property.2.1
+  refine ⟨rieszDualBilinObject R L hL, ?_⟩
+  change Module.Finite R L.obj.valueDual ∧ Module.Projective R L.obj.valueDual ∧
+    (rieszDualBilinObject R L hL).IsSymmetric
+  exact ⟨inferInstance, inferInstance, rieszDualBilinObject_isSymmetric R L hL⟩
+
+/-- The adjoint is an isometry after changing values to `Frac(R)`. -/
+noncomputable def toRieszDualBilin (L : IntegralLatticeCat R)
+    (hL : IsGenericallyNondegenerate R L) :
+    (fractionValuedLattice R L).obj ⟶ rieszDualBilinObject R L hL := by
+  refine Quiver.Hom.op (CategoryOfElements.homMk _ _
+    (op (ModuleCat.ofHom L.obj.adjoint)) ?_)
+  dsimp [bilinearForms]
+  apply LinearMap.ext
+  intro z
+  induction z using TensorProduct.induction_on with
+  | zero => simp
+  | tmul x y =>
+    exact rieszDualBilinMap_adjoint R L hL x y
+  | add x y hx hy => simp [hx, hy]
+
+/-- The adjoint `L → L♯` in the category of `Frac(R)`-valued `R`-lattices. -/
+noncomputable def toRieszDual (L : IntegralLatticeCat R)
+    (hL : IsGenericallyNondegenerate R L) :
+    fractionValuedLattice R L ⟶ rieszDualLattice R L hL :=
+  ObjectProperty.homMk (toRieszDualBilin R L hL)
+
+omit [IsDomain R] in
+theorem rationalizedForm_rieszEmbedding (L : IntegralLatticeCat R)
+    (hL : IsGenericallyNondegenerate R L) (f : L.obj.valueDual)
+    (x : L.obj.carrier) :
+    rationalizedForm R L (rieszEmbedding R L hL f) (toRationalSpan R L x) =
+      algebraMap R (FractionRing R) (f x) := by
+  change (rationalAdjointEquiv R L hL) (rieszEmbedding R L hL f)
+      (1 ⊗ₜ[R] x) = _
+  simp [rieszEmbedding, Algebra.smul_def]
+
+/-- The Riesz model maps into the metric-dual submodule of the rational span. -/
+noncomputable def rieszToMetricDual (L : IntegralLatticeCat R)
+    (hL : IsGenericallyNondegenerate R L) :
+    L.obj.valueDual →ₗ[R] metricDual R L :=
+  LinearMap.codRestrict (metricDual R L) (rieszEmbedding R L hL) (by
+    intro f
+    rw [LinearMap.BilinForm.mem_dualSubmodule]
+    intro y hy
+    rcases hy with ⟨y, rfl⟩
+    refine Submodule.mem_one.mpr ⟨f y, ?_⟩
+    exact (rationalizedForm_rieszEmbedding R L hL f y).symm)
+
+@[simp]
+theorem rieszToMetricDual_coe (L : IntegralLatticeCat R)
+    (hL : IsGenericallyNondegenerate R L) (f : L.obj.valueDual) :
+    (rieszToMetricDual R L hL f : RationalSpan R L) = rieszEmbedding R L hL f :=
+  rfl
+
+/-- The integral lattice mapped onto its image in the rational span. -/
+def toIntegralImage (L : IntegralLatticeCat R) :
+    L.obj.carrier →ₗ[R] integralImage R L :=
+  (toRationalSpan R L).rangeRestrict
+
+/-- A metric-dual vector defines an `R`-linear functional by integral pairing. -/
+noncomputable def metricDualToValueDual (L : IntegralLatticeCat R) :
+    metricDual R L →ₗ[R] L.obj.valueDual where
+  toFun v := ((rationalizedForm R L).dualSubmoduleToDual
+    (integralImage R L) v).comp (toIntegralImage R L)
+  map_add' v w := by
+    ext x
+    simp [toIntegralImage]
+  map_smul' r v := by
+    ext x
+    simp [toIntegralImage]
+
+theorem metricDualToValueDual_rieszToMetricDual (L : IntegralLatticeCat R)
+    (hL : IsGenericallyNondegenerate R L) (f : L.obj.valueDual) :
+    metricDualToValueDual R L (rieszToMetricDual R L hL f) = f := by
+  ext x
+  apply FaithfulSMul.algebraMap_injective R (FractionRing R)
+  change algebraMap R (FractionRing R)
+      ((rationalizedForm R L).dualSubmoduleParing
+        (rieszToMetricDual R L hL f) (toIntegralImage R L x)) =
+    algebraMap R (FractionRing R) (f x)
+  rw [LinearMap.BilinForm.dualSubmoduleParing_spec]
+  exact rationalizedForm_rieszEmbedding R L hL f x
+
+theorem rieszToMetricDual_metricDualToValueDual (L : IntegralLatticeCat R)
+    (hL : IsGenericallyNondegenerate R L) (v : metricDual R L) :
+    rieszToMetricDual R L hL (metricDualToValueDual R L v) = v := by
+  apply Subtype.ext
+  apply (rationalAdjointEquiv R L hL).injective
+  change (rationalAdjointEquiv R L hL)
+      ((rationalAdjointEquiv R L hL).symm
+        (Module.Dual.baseChange (FractionRing R) (metricDualToValueDual R L v))) =
+    rationalizedForm R L v
+  rw [LinearEquiv.apply_symm_apply]
+  ext x
+  simp only [TensorProduct.AlgebraTensorModule.curry_apply, TensorProduct.curry_apply]
+  simp only [LinearMap.coe_restrictScalars]
+  rw [Module.Dual.baseChange_apply_tmul]
+  simp only [Algebra.smul_def, mul_one]
+  change algebraMap R (FractionRing R)
+      ((rationalizedForm R L).dualSubmoduleParing v (toIntegralImage R L x)) =
+    rationalizedForm R L v (1 ⊗ₜ[R] x)
+  exact (rationalizedForm R L).dualSubmoduleParing_spec v (toIntegralImage R L x)
+
+/-- The Riesz model and the metric-dual submodule are isomorphic as `R`-modules. -/
+noncomputable def rieszMetricDualEquiv (L : IntegralLatticeCat R)
+    (hL : IsGenericallyNondegenerate R L) :
+    L.obj.valueDual ≃ₗ[R] metricDual R L :=
+  { toLinearMap := rieszToMetricDual R L hL
+    invFun := metricDualToValueDual R L
+    left_inv := metricDualToValueDual_rieszToMetricDual R L hL
+    right_inv := rieszToMetricDual_metricDualToValueDual R L hL }
+
+@[simp]
+theorem rieszMetricDualEquiv_adjoint (L : IntegralLatticeCat R)
+    (hL : IsGenericallyNondegenerate R L) (x : L.obj.carrier) :
+    rieszMetricDualEquiv R L hL (L.obj.adjoint x) = toMetricDual R L x := by
+  apply Subtype.ext
+  change rieszEmbedding R L hL (L.obj.adjoint x) = toRationalSpan R L x
+  exact rieszEmbedding_adjoint R L hL x
+
+/-- The restriction of `b_K` to the metric-dual submodule. -/
+noncomputable def metricDualBilinMap (L : IntegralLatticeCat R) :
+    LinearMap.BilinMap R (metricDual R L) (FractionRing R) :=
+  (restrictedRationalizedForm R L).compl₁₂
+    (metricDualInclusion R L) (metricDualInclusion R L)
+
+/-- Tensor-hom form on the metric-dual submodule. -/
+noncomputable def metricDualForm (L : IntegralLatticeCat R) :
+    TensorProduct R (metricDual R L) (metricDual R L) →ₗ[R] FractionRing R :=
+  (TensorProduct.lift.equiv (.id R) (metricDual R L) (metricDual R L)
+    (FractionRing R)) (metricDualBilinMap R L)
+
+/-- The metric dual as a bilinear object, using the restriction of `b_K`. -/
+noncomputable def metricDualBilinObject (L : IntegralLatticeCat R) :
+    BilinModuleCat R (FractionRing R) :=
+  op ⟨op (ModuleCat.of R (metricDual R L)), metricDualForm R L⟩
+
+theorem metricDualBilinObject_isSymmetric (L : IntegralLatticeCat R) :
+    (metricDualBilinObject R L).IsSymmetric := by
+  intro x y
+  change metricDualBilinMap R L x y = metricDualBilinMap R L y x
+  change rationalizedForm R L (metricDualInclusion R L x) (metricDualInclusion R L y) =
+    rationalizedForm R L (metricDualInclusion R L y) (metricDualInclusion R L x)
+  exact rationalizedForm_isSymmetric R L _ _
+
+/-- The actual metric-dual submodule as a `Frac(R)`-valued `R`-lattice. -/
+noncomputable def metricDualLattice (L : IntegralLatticeCat R)
+    (hL : IsGenericallyNondegenerate R L) :
+    LatticeCat R (FractionRing R) := by
+  letI : Module.Finite R L.obj.carrier := L.property.1
+  letI : Module.Projective R L.obj.carrier := L.property.2.1
+  letI : Module.Finite R L.obj.valueDual := inferInstance
+  letI : Module.Projective R L.obj.valueDual := inferInstance
+  refine ⟨metricDualBilinObject R L, ?_⟩
+  change Module.Finite R (metricDual R L) ∧ Module.Projective R (metricDual R L) ∧
+    (metricDualBilinObject R L).IsSymmetric
+  exact ⟨Module.Finite.equiv (rieszMetricDualEquiv R L hL),
+    Module.Projective.of_equiv' (rieszMetricDualEquiv R L hL),
+      metricDualBilinObject_isSymmetric R L⟩
+
+/-- The inclusion `L → L♯` preserves the `Frac(R)`-valued forms. -/
+noncomputable def toMetricDualBilin (L : IntegralLatticeCat R) :
+    (fractionValuedLattice R L).obj ⟶ metricDualBilinObject R L := by
+  refine Quiver.Hom.op (CategoryOfElements.homMk _ _
+    (op (ModuleCat.ofHom (toMetricDual R L))) ?_)
+  dsimp [bilinearForms]
+  apply LinearMap.ext
+  intro z
+  induction z using TensorProduct.induction_on with
+  | zero => simp
+  | tmul x y =>
+    change rationalizedForm R L (1 ⊗ₜ[R] x) (1 ⊗ₜ[R] y) =
+      algebraMap R (FractionRing R) (L.obj.pairing x y)
+    rw [rationalizedForm_tmul]
+    simp
+  | add x y hx hy => simp [hx, hy]
+
+/-- An integral lattice in the total category of symmetric variable-valued forms. -/
+noncomputable def integralSymBilWFormObject (L : IntegralLatticeCat R) : SymBilWFormCat R :=
+  ⟨BilWFormCat.of (ModuleCat.of R L.obj.carrier) (ModuleCat.of R R) L.obj.form,
+    L.property.2.2⟩
+
+/-- The metric dual in the total category of symmetric variable-valued forms. -/
+noncomputable def metricDualSymBilWFormObject (L : IntegralLatticeCat R) : SymBilWFormCat R :=
+  ⟨⟨ModuleCat.of R (FractionRing R), metricDualBilinObject R L⟩,
+    metricDualBilinObject_isSymmetric R L⟩
+
+/-- The inclusion into the metric dual, with values changed from `R` to `Frac(R)`. -/
+noncomputable def toMetricDualSymBilWForm (L : IntegralLatticeCat R) :
+    integralSymBilWFormObject R L ⟶ metricDualSymBilWFormObject R L :=
+  ObjectProperty.homMk
+    (BilWFormCat.homMk (toMetricDual R L) (Algebra.linearMap R (FractionRing R)) (by
+      intro x y
+      change algebraMap R (FractionRing R) (L.obj.pairing x y) =
+        rationalizedForm R L (toRationalSpan R L x) (toRationalSpan R L y)
+      change algebraMap R (FractionRing R) (L.obj.pairing x y) =
+        rationalizedForm R L (1 ⊗ₜ[R] x) (1 ⊗ₜ[R] y)
+      rw [rationalizedForm_tmul]
+      simp))
+
+end LeanCategories.Lattices.Valued
+
