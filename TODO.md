@@ -93,14 +93,13 @@ Importing them together leaves the core discriminant object without one canonica
 
 ### Axiomatic and shallow branches
 
-The repository contains 45 explicit `axiom` declarations.
+The repository contains 35 explicit `axiom` declarations.
 It contains no `sorry` or `admit` declarations.
 
 Important axiomatic areas include:
 
 - quadratic forms and polarization for even lattices;
 - discriminant objects, maps, and functor laws;
-- scalar extension on finite free modules;
 - discriminant bilinear and quadratic forms;
 - several geometric constructions for schemes, fans, and reflection groups.
 
@@ -160,11 +159,12 @@ Whether that boundary remains abstract or gains a realization layer needs an exp
 
 ### Workspace boundary
 
-`lean_lattices/` is an untracked nested Git repository.
+`lean_lattices/` is an untracked nested Git repository with no commits or remote.
+Its files form a standalone Mathlib template named `LeanLattices`.
 It is not part of either library in the parent `lakefile.toml`.
 
-Its presence makes the workspace boundary unclear.
-Its provenance and intended owner must be identified before any move, deletion, or integration.
+The local Git data does not identify its author or intended owner.
+No move, deletion, or integration is safe without that decision.
 
 ### Current evidence
 
@@ -174,7 +174,7 @@ Its provenance and intended owner must be identified before any move, deletion, 
 - The internal import graph has no cycles.
 - The two Lean libraries have no cross-library imports.
 - The repository contains no `sorry` or `admit` declarations.
-- The repository contains 45 explicit `axiom` declarations.
+- The repository contains 35 explicit `axiom` declarations.
 - The root module imports only the canonical valued foundation.
 - `lean_lattices/` is outside the parent build.
 
