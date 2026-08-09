@@ -38,8 +38,8 @@ The critical problem is duplicate mathematical ownership.
 - `LeanCategories/Lattices/Valued.lean` defines `LatticeCat` as a full subcategory.
 - The same file defines integral lattices as `LatticeCat R R`.
 
-`LeanCategories.lean` imports all these systems.
-Compilation therefore proves coexistence, not agreement.
+`LeanCategories.lean` now imports only the valued spine.
+The older systems remain as source files outside the public root.
 
 Downstream theories select different foundations.
 Fans and reflection theory use the older bundled lattice.
@@ -112,36 +112,26 @@ The directory tree therefore overstates the semantic integration of those subjec
 
 ### Large mathematical owner files
 
-`LeanCategories/Lattices/Valued.lean` has 1,375 lines.
-It contains:
+The valued lattice spine now uses these mathematical owners:
 
-- the lattice full subcategory;
-- change-of-value and base-change constructions;
-- integral lattices and rationalization;
-- scale and value modules;
-- quadratic and bilinear `I`-evenness;
-- ideal duals;
-- metric duals;
-- transported dual forms;
-- discriminant modules and forms;
-- cokernel and exactness results.
+- `Basic.lean` owns the lattice full subcategory;
+- `ChangeValue.lean` owns postcomposition of values;
+- `BaseChange.lean` owns scalar extension;
+- `ScaleAndEvenness.lean` owns scale, value, and `I`-evenness;
+- `Rationalization.lean` owns the rational span;
+- `IdealDual.lean` owns ideal duals;
+- `MetricDual.lean` owns transported dual forms; and
+- `Discriminant.lean` owns the formed cokernel and exact sequence.
 
-`LeanCategories/Modules/Bilinear/Valued.lean` has 639 lines.
-It contains:
+The valued bilinear spine now uses these mathematical owners:
 
-- the fixed-value bilinear-form category;
-- the total varying-value category;
-- symmetric full subcategories;
-- change-of-value functors;
-- zero morphisms;
-- quotient forms;
-- the general cokernel construction and universal proof.
+- `Fixed.lean` owns fixed-value forms and their predicates;
+- `ChangeValue.lean` owns postcomposition of values;
+- `Total.lean` owns the varying-value category;
+- `Properties.lean` owns its full subcategories; and
+- `Cokernel.lean` owns formed cokernels and their universal proofs.
 
-Each file contains one coherent research direction.
-Each file still combines several canonical mathematical constructions with different downstream users.
-
-The split must follow mathematical ownership.
-File size alone does not determine the correct split.
+The two `Valued.lean` files are public import surfaces.
 
 ### CategoryGraph
 
@@ -185,7 +175,7 @@ Its provenance and intended owner must be identified before any move, deletion, 
 - The two Lean libraries have no cross-library imports.
 - The repository contains no `sorry` or `admit` declarations.
 - The repository contains 45 explicit `axiom` declarations.
-- The root module imports all three lattice foundations.
+- The root module imports only the canonical valued foundation.
 - `lean_lattices/` is outside the parent build.
 
 These facts establish structural coexistence and compilation.
@@ -195,11 +185,11 @@ They do not establish semantic agreement between the competing definitions.
 
 ### One canonical category chain
 
-- [ ] Select one canonical category for fixed-value bilinear forms.
-- [ ] Select one canonical total category when the value module varies.
+- [x] Select one canonical category for fixed-value bilinear forms.
+- [x] Select one canonical total category when the value module varies.
 - [ ] Define symmetric, skew-symmetric, alternating, and quadratic variants through precise predicates or full subcategories.
 - [ ] Define the lattice category through its exact finiteness, torsion, and projectivity predicate.
-- [ ] Define integral lattices as the `R`-valued case.
+- [x] Define integral lattices as the `R`-valued case.
 - [ ] State exact comparison functors or equivalences for every retained older presentation.
 - [ ] Remove obsolete bundled and unbundled foundations after the comparison is decided.
 
@@ -218,26 +208,26 @@ It must not become canonical merely because the current code compiles.
 
 ### Honest functors and predicates
 
-- [ ] Define change-of-value as an honest functor.
-- [ ] Define base change as an honest functor on its exact domain.
-- [ ] Define rationalization as the functor induced by `R -> Frac(R)`.
-- [ ] Define scale and value modules from the exact image constructions.
-- [ ] Define quadratic and bilinear `I`-evenness as precise lift predicates.
-- [ ] Keep ideal duals distinct from metric duals and ordinary module duals.
+- [x] Define change-of-value as an honest functor.
+- [x] Define base change as an honest functor on its exact domain.
+- [x] Define rationalization as the functor induced by `R -> Frac(R)`.
+- [x] Define scale and value modules from the exact image constructions.
+- [x] Define quadratic and bilinear `I`-evenness as precise lift predicates.
+- [x] Keep ideal duals distinct from metric duals and ordinary module duals.
 - [ ] State every hypothesis needed to transport a formed structure to a dual module.
-- [ ] Define the discriminant object as the correct cokernel in the varying-value formed-module category.
+- [x] Define the discriminant object as the correct cokernel in the varying-value formed-module category.
 - [ ] State its underlying module exact sequence through the relevant forgetful functor.
 - [ ] Remove axiomatic functor laws after their definitions and proofs exist.
 
 ### Mathematical file ownership
 
-- [ ] Separate fixed-value form categories from the varying-value total category.
-- [ ] Separate change-of-value from scalar base change.
-- [ ] Give the lattice full subcategory one owner.
-- [ ] Give `I`-evenness, scale, and value modules one owner.
-- [ ] Give ideal duals one owner.
-- [ ] Give metric duals and transported dual forms one owner.
-- [ ] Give the discriminant cokernel and exact sequence one owner.
+- [x] Separate fixed-value form categories from the varying-value total category.
+- [x] Separate change-of-value from scalar base change.
+- [x] Give the lattice full subcategory one owner.
+- [x] Give `I`-evenness, scale, and value modules one owner.
+- [x] Give ideal duals one owner.
+- [x] Give metric duals and transported dual forms one owner.
+- [x] Give the discriminant cokernel and exact sequence one owner.
 
 ### Catalogue integration
 

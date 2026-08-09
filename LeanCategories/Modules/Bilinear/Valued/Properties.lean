@@ -26,5 +26,19 @@ def isSymmetricBilWForm : ObjectProperty (BilWFormCat R) :=
 /-- The total category of symmetric forms with variable value modules. -/
 abbrev SymBilWFormCat := (isSymmetricBilWForm R).FullSubcategory
 
+/-- Skew-symmetric objects in the total category of variable-valued forms. -/
+def isSkewSymmetricBilWForm : ObjectProperty (BilWFormCat R) :=
+  fun X ↦ X.IsSkewSymmetric
+
+/-- The total category of skew-symmetric forms with variable value modules. -/
+abbrev SkewBilWFormCat := (isSkewSymmetricBilWForm R).FullSubcategory
+
+/-- Alternating objects in the total category of variable-valued forms. -/
+def isAlternatingBilWForm : ObjectProperty (BilWFormCat R) :=
+  fun X ↦ X.IsAlternating
+
+/-- The total category of alternating forms with variable value modules. -/
+abbrev AltBilWFormCat := (isAlternatingBilWForm R).FullSubcategory
+
 end LeanCategories.Modules.Bilinear.Valued
 

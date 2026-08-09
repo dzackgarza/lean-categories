@@ -55,6 +55,19 @@ abbrev pairing (X : BilWFormCat R) (x y : X.carrier) : X.value :=
 def IsSymmetric (X : BilWFormCat R) : Prop :=
   X.formed.IsSymmetric
 
+/-- Skew-symmetry of a formed module in the total category. -/
+def IsSkewSymmetric (X : BilWFormCat R) : Prop :=
+  X.formed.IsSkewSymmetric
+
+/-- Alternation of a formed module in the total category. -/
+def IsAlternating (X : BilWFormCat R) : Prop :=
+  X.formed.IsAlternating
+
+/-- Every alternating object in the total category is skew-symmetric. -/
+theorem isSkewSymmetric_of_isAlternating (X : BilWFormCat R)
+    (hX : X.IsAlternating) : X.IsSkewSymmetric :=
+  X.formed.isSkewSymmetric_of_isAlternating hX
+
 /-- The map between value modules underlying a morphism in the total category. -/
 abbrev valueMap {X Y : BilWFormCat R} (f : X ⟶ Y) : X.value ⟶ Y.value :=
   f.base
@@ -156,4 +169,3 @@ theorem map_pairing {X Y : BilWFormCat R} (f : X ⟶ Y)
 end BilWFormCat
 
 end LeanCategories.Modules.Bilinear.Valued
-

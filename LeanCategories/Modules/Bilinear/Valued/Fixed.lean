@@ -98,6 +98,26 @@ theorem map_pairing {L M : BilinModuleCat R W} (f : L ⟶ M)
 def IsSymmetric (L : BilinModuleCat R W) : Prop :=
   ∀ x y, L.pairing x y = L.pairing y x
 
+/-- Skew-symmetry of the form. -/
+def IsSkewSymmetric (L : BilinModuleCat R W) : Prop :=
+  ∀ x y, L.pairing x y = -L.pairing y x
+
+/-- Alternation of the form. -/
+def IsAlternating (L : BilinModuleCat R W) : Prop :=
+  ∀ x, L.pairing x x = 0
+
+/-- Every alternating bilinear form is skew-symmetric. -/
+theorem isSkewSymmetric_of_isAlternating (L : BilinModuleCat R W)
+    (hL : L.IsAlternating) : L.IsSkewSymmetric := by
+  intro x y
+  apply eq_neg_of_add_eq_zero_left
+  calc
+    L.pairing x y + L.pairing y x = L.pairing (x + y) (x + y) := by
+      rw [BilinModuleCat.pairing_add_left, BilinModuleCat.pairing_add_right,
+        BilinModuleCat.pairing_add_right, hL x, hL y]
+      simp
+    _ = 0 := hL (x + y)
+
 /-- The module adjoint `L → Hom_R(L,W)`. No formed structure on the codomain is implied. -/
 def adjoint (L : BilinModuleCat R W) :
     L.carrier →ₗ[R] (L.carrier →ₗ[R] W) :=
@@ -157,12 +177,78 @@ theorem isNondegenerate_iff_adjoint_injective (L : BilinModuleCat R W) :
 def IsPerfect (L : BilinModuleCat R W) : Prop :=
   Function.Bijective L.adjoint
 
+/-- A perfect form has zero radical. -/
+theorem isNondegenerate_of_isPerfect (L : BilinModuleCat R W)
+    (hL : L.IsPerfect) : L.IsNondegenerate :=
+  L.isNondegenerate_iff_adjoint_injective.mpr hL.1
+
 end BilinModuleCat
 
 /-- The forgetful functor to `R`-modules. -/
 def forget : BilinModuleCat R W ⥤ ModuleCat R where
   obj := BilinModuleCat.carrierObj
   map := fun f ↦ ModuleCat.ofHom (BilinModuleCat.underlyingMap f)
+  map_id _ := rfl
+  map_comp _ _ := rfl
+
+/-- Symmetric objects in the fixed-value bilinear-module category. -/
+def isSymmetricBilinModule : ObjectProperty (BilinModuleCat R W) :=
+  fun L ↦ L.IsSymmetric
+
+/-- Fixed-value symmetric bilinear modules. -/
+abbrev SymBilinModuleCat := (isSymmetricBilinModule R W).FullSubcategory
+
+/-- Skew-symmetric objects in the fixed-value bilinear-module category. -/
+def isSkewSymmetricBilinModule : ObjectProperty (BilinModuleCat R W) :=
+  fun L ↦ L.IsSkewSymmetric
+
+/-- Fixed-value skew-symmetric bilinear modules. -/
+abbrev SkewBilinModuleCat := (isSkewSymmetricBilinModule R W).FullSubcategory
+
+/-- Alternating objects in the fixed-value bilinear-module category. -/
+def isAlternatingBilinModule : ObjectProperty (BilinModuleCat R W) :=
+  fun L ↦ L.IsAlternating
+
+/-- Fixed-value alternating bilinear modules. -/
+abbrev AltBilinModuleCat := (isAlternatingBilinModule R W).FullSubcategory
+
+/-- Symmetric forms with zero radical. -/
+def isRadicalFreeSymBilinModule : ObjectProperty (BilinModuleCat R W) :=
+  fun L ↦ L.IsSymmetric ∧ L.IsNondegenerate
+
+/-- Fixed-value radical-free symmetric bilinear modules. -/
+abbrev RadicalFreeSymBilinModuleCat :=
+  (isRadicalFreeSymBilinModule R W).FullSubcategory
+
+/-- Symmetric forms whose adjoint map is bijective. -/
+def isPerfectSymBilinModule : ObjectProperty (BilinModuleCat R W) :=
+  fun L ↦ L.IsSymmetric ∧ L.IsPerfect
+
+/-- Fixed-value perfect symmetric bilinear modules. -/
+abbrev PerfectSymBilinModuleCat :=
+  (isPerfectSymBilinModule R W).FullSubcategory
+
+/-- The inclusion from alternating forms to skew-symmetric forms. -/
+def alternatingToSkew : AltBilinModuleCat R W ⥤ SkewBilinModuleCat R W where
+  obj L := ⟨L.obj, L.obj.isSkewSymmetric_of_isAlternating L.property⟩
+  map f := ObjectProperty.homMk f.hom
+  map_id _ := rfl
+  map_comp _ _ := rfl
+
+/-- The inclusion from radical-free symmetric forms to symmetric forms. -/
+def radicalFreeToSymmetric :
+    RadicalFreeSymBilinModuleCat R W ⥤ SymBilinModuleCat R W where
+  obj L := ⟨L.obj, L.property.1⟩
+  map f := ObjectProperty.homMk f.hom
+  map_id _ := rfl
+  map_comp _ _ := rfl
+
+/-- The inclusion from perfect symmetric forms to radical-free symmetric forms. -/
+def perfectToRadicalFree :
+    PerfectSymBilinModuleCat R W ⥤ RadicalFreeSymBilinModuleCat R W where
+  obj L := ⟨L.obj, ⟨L.property.1,
+    L.obj.isNondegenerate_of_isPerfect L.property.2⟩⟩
+  map f := ObjectProperty.homMk f.hom
   map_id _ := rfl
   map_comp _ _ := rfl
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Modules.Bilinear.Valued.Symmetric
+public import LeanCategories.Modules.Bilinear.Valued.Properties
 public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 public import Mathlib.LinearAlgebra.Quotient.Bilinear
@@ -346,4 +346,3 @@ def cokernelIsColimit : IsColimit (cokernelCofork f) :=
 end SymBilWFormCat
 
 end LeanCategories.Modules.Bilinear.Valued
-
