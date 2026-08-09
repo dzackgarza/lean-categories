@@ -1,7 +1,7 @@
 name = "lean_categories"
 version = "0.1.0"
 keywords = ["math"]
-defaultTargets = ["LeanCategories", "CategoryGraph", "category-graph-export"]
+defaultTargets = ["LeanCategories", "category-graph-export"]
 
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
@@ -26,15 +26,12 @@ rev = "main"
 [[lean_lib]]
 name = "LeanCategories"
 
-[[lean_lib]]
-name = "CategoryGraph"
-
 [[lean_exe]]
 name = "category-graph-export"
-root = "CategoryGraph.Tools.ExportMain"
+root = "LeanCategories.CategoryGraph.Tools.ExportMain"
 supportInterpreter = true
 
 [[lean_exe]]
 name = "category-graph-axiom-audit"
-root = "CategoryGraph.Tools.AxiomAuditMain"
+root = "LeanCategories.CategoryGraph.Tools.AxiomAuditMain"
 supportInterpreter = true

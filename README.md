@@ -9,7 +9,8 @@ other:
 
 ```text
 LeanCategories/
-  Modules/           FiniteFreeZ, Bilinear, Quadratic
+  CategoryGraph/     Expressions, registry, realization, and export
+  Modules/           Bilinear and quadratic forms
   Lattices/          Integral (+ Integral/Unbundled), Discriminant
   Groups/            Reflection
   Schemes/           Objects, Morphisms, Functors, Surface, Divisor, Pair
@@ -28,8 +29,8 @@ holding an unbundled `IntegralLattice` (a form on a fixed carrier, no nondegener
 Enriques-surface and fan material that belongs in `Schemes/` and `Fans/`. It duplicates
 parts of `Lattices/Integral/` and is scheduled for reconciliation.
 
-`CategoryGraph` is the neutral normalized-category-graph library migrated from the
-historical research prototype. It owns the generic expression language, classifier
+`LeanCategories/CategoryGraph` owns the normalized category catalogue. It contains the
+generic expression language, classifier
 machinery, Mathlib realization, registry reflection, typed category/functor declarations,
 and JSON/DOT export. Sage observation, CatDSL method exposure, backend routing, and
 runnable parity are owned by [`dzackgarza/lean-cas-dsl`](https://github.com/dzackgarza/lean-cas-dsl),

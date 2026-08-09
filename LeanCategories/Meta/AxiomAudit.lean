@@ -13,7 +13,7 @@ public import Lean.Util.CollectAxioms
 # Kernel-axiom audit — LeanCategories
 
 Checks every exported `LeanCategories` declaration against the standard Lean
-axiom budget, mirroring `CategoryGraph/Tools/AxiomAudit.lean` exactly (same
+axiom budget, mirroring `LeanCategories/CategoryGraph/Tools/AxiomAudit.lean` exactly (same
 mechanism, different name prefix). This is a separate sibling file, not an
 extension of that file's own filter, for two reasons: that file backs the
 existing `category-graph-axiom-audit` `lake_exe` and the external

@@ -101,7 +101,7 @@ theorem rationalizedForm_isSymmetric (L : IntegralLatticeCat R) :
   intro x y
   have hsymm : ∀ a b, L.obj.bilinMap a b = L.obj.bilinMap b a := by
     intro a b
-    exact L.property.2.2 a b
+    exact L.property.2 a b
   change (TensorProduct.AlgebraTensorModule.rid R (FractionRing R)
       (FractionRing R))
       (LinearMap.BilinMap.baseChange (FractionRing R) L.obj.bilinMap x y) =
@@ -154,14 +154,14 @@ noncomputable def fractionValuedLattice (L : IntegralLatticeCat R) :
 
 /-- The Riesz model of `L♯`: `Hom_R(L,R)` with the form induced by `b_K`. -/
 noncomputable def rieszDualLattice (L : IntegralLatticeCat R)
+    [Module.Finite R L.obj.carrier]
     (hL : IsGenericallyNondegenerate R L) :
     LatticeCat R (FractionRing R) := by
-  letI : Module.Finite R L.obj.carrier := L.property.1
-  letI : Module.Projective R L.obj.carrier := L.property.2.1
+  letI : Module.Projective R L.obj.carrier := L.property.1
   refine ⟨rieszDualBilinObject R L hL, ?_⟩
-  change Module.Finite R L.obj.valueDual ∧ Module.Projective R L.obj.valueDual ∧
+  change Module.Projective R L.obj.valueDual ∧
     (rieszDualBilinObject R L hL).IsSymmetric
-  exact ⟨inferInstance, inferInstance, rieszDualBilinObject_isSymmetric R L hL⟩
+  exact ⟨inferInstance, rieszDualBilinObject_isSymmetric R L hL⟩
 
 /-- The adjoint is an isometry after changing values to `Frac(R)`. -/
 noncomputable def toRieszDualBilin (L : IntegralLatticeCat R)
@@ -180,6 +180,7 @@ noncomputable def toRieszDualBilin (L : IntegralLatticeCat R)
 
 /-- The adjoint `L → L♯` in the category of `Frac(R)`-valued `R`-lattices. -/
 noncomputable def toRieszDual (L : IntegralLatticeCat R)
+    [Module.Finite R L.obj.carrier]
     (hL : IsGenericallyNondegenerate R L) :
     fractionValuedLattice R L ⟶ rieszDualLattice R L hL :=
   ObjectProperty.homMk (toRieszDualBilin R L hL)
@@ -305,18 +306,17 @@ theorem metricDualBilinObject_isSymmetric (L : IntegralLatticeCat R) :
 
 /-- The actual metric-dual submodule as a `Frac(R)`-valued `R`-lattice. -/
 noncomputable def metricDualLattice (L : IntegralLatticeCat R)
+    [Module.Finite R L.obj.carrier]
     (hL : IsGenericallyNondegenerate R L) :
     LatticeCat R (FractionRing R) := by
-  letI : Module.Finite R L.obj.carrier := L.property.1
-  letI : Module.Projective R L.obj.carrier := L.property.2.1
+  letI : Module.Projective R L.obj.carrier := L.property.1
   letI : Module.Finite R L.obj.valueDual := inferInstance
   letI : Module.Projective R L.obj.valueDual := inferInstance
   refine ⟨metricDualBilinObject R L, ?_⟩
-  change Module.Finite R (metricDual R L) ∧ Module.Projective R (metricDual R L) ∧
+  change Module.Projective R (metricDual R L) ∧
     (metricDualBilinObject R L).IsSymmetric
-  exact ⟨Module.Finite.equiv (rieszMetricDualEquiv R L hL),
-    Module.Projective.of_equiv' (rieszMetricDualEquiv R L hL),
-      metricDualBilinObject_isSymmetric R L⟩
+  exact ⟨Module.Projective.of_equiv' (rieszMetricDualEquiv R L hL),
+    metricDualBilinObject_isSymmetric R L⟩
 
 /-- The inclusion `L → L♯` preserves the `Frac(R)`-valued forms. -/
 noncomputable def toMetricDualBilin (L : IntegralLatticeCat R) :
@@ -338,7 +338,7 @@ noncomputable def toMetricDualBilin (L : IntegralLatticeCat R) :
 /-- An integral lattice in the total category of symmetric variable-valued forms. -/
 noncomputable def integralSymBilWFormObject (L : IntegralLatticeCat R) : SymBilWFormCat R :=
   ⟨BilWFormCat.of (ModuleCat.of R L.obj.carrier) (ModuleCat.of R R) L.obj.form,
-    L.property.2.2⟩
+    L.property.2⟩
 
 /-- The metric dual in the total category of symmetric variable-valued forms. -/
 noncomputable def metricDualSymBilWFormObject (L : IntegralLatticeCat R) : SymBilWFormCat R :=
@@ -359,4 +359,3 @@ noncomputable def toMetricDualSymBilWForm (L : IntegralLatticeCat R) :
       simp))
 
 end LeanCategories.Lattices.Valued
-

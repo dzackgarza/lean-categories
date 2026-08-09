@@ -180,7 +180,7 @@ theorem isBilinearlyEven_of_isQuadraticallyEven_of_invertible_two
     rw [quadraticMap, LinearMap.BilinMap.polar_toQuadraticMap]
     change L.obj.pairing x y + L.obj.pairing y x =
       (2 : R) • L.obj.pairing x y
-    rw [← L.property.2.2 x y]
+    rw [← L.property.2 x y]
     rw [two_smul R]
   rw [hPolarEq] at hPolar
   have hScaled := I.smul_mem (⅟(2 : R)) hPolar
@@ -400,4 +400,3 @@ end BaseChangeEvenness
 end Evenness
 
 end LeanCategories.Lattices.Valued
-

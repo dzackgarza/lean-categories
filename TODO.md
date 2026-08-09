@@ -127,7 +127,7 @@ The two `Valued.lean` files are public import surfaces.
 
 ### CategoryGraph
 
-`CategoryGraph` is structurally cleaner.
+`LeanCategories/CategoryGraph` is structurally cleaner.
 Its main order is:
 
 ```text
@@ -138,38 +138,32 @@ The model-parametric `AtomicModel` gives the catalogue a useful semantic boundar
 The Mathlib realization remains separate from the expression and registry layers.
 
 Its main visible debt is the parallel expression representation.
-`CategoryGraph/Core/Expr.lean` retains `StructuralMapExpr` while migration to indexed `FunctorExpr` continues.
+`LeanCategories/CategoryGraph/Core/Expr.lean` retains `StructuralMapExpr` during the indexed `FunctorExpr` migration.
 
 `StructuralMapExpr` still has consumers in normalization, projection, and interpretation.
 It is not dead code.
 It is an unfinished migration that currently duplicates structural-map syntax.
 
-There are no imports between `CategoryGraph` and `LeanCategories`.
-They build as separate libraries.
-
-This separation means the catalogue does not yet normalize the actual categories and functors defined in `LeanCategories`.
-Whether that boundary remains abstract or gains a realization layer needs an explicit mathematical decision.
+The catalogue and mathematical categories now form one `LeanCategories` library tree.
+Catalogue rows still need realization proofs for the canonical categories and functors.
 
 ### Workspace boundary
 
-`lean_lattices/` is an untracked nested Git repository with no commits or remote.
-Its files form a standalone Mathlib template named `LeanLattices`.
-It is not part of either library in the parent `lakefile.toml`.
-
-The local Git data does not identify its author or intended owner.
-No move, deletion, or integration is safe without that decision.
+The obsolete `lean_lattices/` repository had no commits or remote.
+Its only Lean declaration was `hello := "world"`.
+The cleanup found no mathematical content to move and sent the template to trash.
 
 ### Current evidence
 
 - The full repository build succeeds.
-- The repository contains 131 Lean files under `LeanCategories` and `CategoryGraph`.
+- The repository contains 131 Lean files under `LeanCategories`.
 - Those files have 156 internal public-import edges.
 - The internal import graph has no cycles.
-- The two Lean libraries have no cross-library imports.
+- One Lean library owns the catalogue and mathematical categories.
 - The repository contains no `sorry` or `admit` declarations.
 - The repository contains 31 explicit `axiom` declarations.
-- The root module imports only the canonical valued foundation.
-- `lean_lattices/` is outside the parent build.
+- The root module imports the catalogue and canonical valued foundations.
+- The obsolete `lean_lattices/` template is no longer in the workspace.
 
 These facts establish structural coexistence and compilation.
 They do not establish semantic agreement between the competing definitions.
@@ -181,7 +175,7 @@ They do not establish semantic agreement between the competing definitions.
 - [x] Select one canonical category for fixed-value bilinear forms.
 - [x] Select one canonical total category when the value module varies.
 - [x] Define symmetric, skew-symmetric, alternating, and quadratic variants through precise predicates or full subcategories.
-- [ ] Define the lattice category through its exact finiteness, torsion, and projectivity predicate.
+- [x] Define lattices as projective modules with symmetric forms, without a finite-rank condition.
 - [x] Define integral lattices as the `R`-valued case.
 - [ ] State exact comparison functors or equivalences for every retained older presentation.
 - [ ] Remove obsolete bundled and unbundled foundations after the comparison is decided.
@@ -224,13 +218,13 @@ It must not become canonical merely because the current code compiles.
 
 ### Catalogue integration
 
-- [ ] Decide the exact realization boundary between `CategoryGraph` and `LeanCategories`.
+- [x] Merge `CategoryGraph` and the mathematical categories into one `LeanCategories` tree.
 - [ ] Make catalogue entries denote the canonical categories and functors.
 - [ ] Complete migration from `StructuralMapExpr` to indexed `FunctorExpr`.
 - [ ] Remove `StructuralMapExpr` after all consumers migrate.
 
 ### Workspace ownership
 
-- [ ] Identify the provenance and intended owner of `lean_lattices/`.
-- [ ] Decide whether it is a reference clone, an input repository, or intended parent content.
-- [ ] Do not change or remove it before that decision.
+- [x] Inspect `lean_lattices/` for mathematical content.
+- [x] Confirm that it contains only a new-project template.
+- [x] Remove the obsolete template after scavenging it.

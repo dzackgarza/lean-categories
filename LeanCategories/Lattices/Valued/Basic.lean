@@ -33,9 +33,9 @@ universe u
 variable (R : Type u) [CommRing R]
 variable (W : Type u) [AddCommGroup W] [Module R W]
 
-/-- The objects that are finite projective and have a symmetric form. -/
+/-- Projective modules with a symmetric form. The carrier can have infinite rank. -/
 def isLattice : ObjectProperty (BilinModuleCat R W) :=
-  fun L ↦ Module.Finite R L.carrier ∧ Module.Projective R L.carrier ∧ L.IsSymmetric
+  fun L ↦ Module.Projective R L.carrier ∧ L.IsSymmetric
 
 /-- The category of `W`-valued `R`-lattices. -/
 abbrev LatticeCat := (isLattice R W).FullSubcategory
@@ -51,4 +51,3 @@ abbrev FiniteFormCat := (isFiniteForm R W).FullSubcategory
 abbrev IntegralLatticeCat := LatticeCat R R
 
 end LeanCategories.Lattices.Valued
-

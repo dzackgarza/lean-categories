@@ -73,6 +73,7 @@ theorem discriminantValueRelations_eq (L : IntegralLatticeCat R) :
 
 /-- The inclusion `L → L♯` in the category of `Frac(R)`-valued `R`-lattices. -/
 noncomputable def toMetricDualLattice (L : IntegralLatticeCat R)
+    [Module.Finite R L.obj.carrier]
     (hL : IsGenericallyNondegenerate R L) :
     fractionValuedLattice R L ⟶ metricDualLattice R L hL :=
   ObjectProperty.homMk (toMetricDualBilin R L)
@@ -205,10 +206,10 @@ theorem discriminantBilinObject_isSymmetric (L : IntegralLatticeCat R)
 
 /-- `A_L` in the category of finite symmetric `Frac(R) / R`-valued form modules. -/
 noncomputable def discriminantFormModule (L : IntegralLatticeCat R)
+    [Module.Finite R L.obj.carrier]
     (hL : IsGenericallyNondegenerate R L) :
     FiniteFormCat R (FractionValueQuotient R) := by
-  letI : Module.Finite R L.obj.carrier := L.property.1
-  letI : Module.Projective R L.obj.carrier := L.property.2.1
+  letI : Module.Projective R L.obj.carrier := L.property.1
   refine ⟨discriminantBilinObject R L hL, ?_⟩
   change Module.Finite R L.obj.defect ∧
     (discriminantBilinObject R L hL).IsSymmetric
@@ -216,6 +217,7 @@ noncomputable def discriminantFormModule (L : IntegralLatticeCat R)
 
 /-- The Riesz model after projection of its values to `Frac(R) / R`. -/
 noncomputable def projectedRieszDualLattice (L : IntegralLatticeCat R)
+    [Module.Finite R L.obj.carrier]
     (hL : IsGenericallyNondegenerate R L) :
     LatticeCat R (FractionValueQuotient R) :=
   (changeValue R (FractionRing R) (fractionValueProjection R)).obj
@@ -223,14 +225,19 @@ noncomputable def projectedRieszDualLattice (L : IntegralLatticeCat R)
 
 /-- The projected Riesz model, regarded as a finite symmetric form module. -/
 noncomputable def projectedRieszDualFiniteForm (L : IntegralLatticeCat R)
+    [Module.Finite R L.obj.carrier]
     (hL : IsGenericallyNondegenerate R L) :
-    FiniteFormCat R (FractionValueQuotient R) :=
-  ⟨(projectedRieszDualLattice R L hL).obj,
-    ⟨(projectedRieszDualLattice R L hL).property.1,
-      (projectedRieszDualLattice R L hL).property.2.2⟩⟩
+    FiniteFormCat R (FractionValueQuotient R) := by
+  letI : Module.Projective R L.obj.carrier := L.property.1
+  letI : Module.Finite R L.obj.valueDual := inferInstance
+  refine ⟨(projectedRieszDualLattice R L hL).obj, ?_⟩
+  change Module.Finite R L.obj.valueDual ∧
+    (projectedRieszDualLattice R L hL).obj.IsSymmetric
+  exact ⟨inferInstance, (projectedRieszDualLattice R L hL).property.2⟩
 
 /-- The quotient projection `L♯ → A_L` preserves the projected forms. -/
 noncomputable def discriminantProjectionBilin (L : IntegralLatticeCat R)
+    [Module.Finite R L.obj.carrier]
     (hL : IsGenericallyNondegenerate R L) :
     (projectedRieszDualLattice R L hL).obj ⟶ discriminantBilinObject R L hL := by
   refine Quiver.Hom.op (CategoryOfElements.homMk _ _
@@ -245,6 +252,7 @@ noncomputable def discriminantProjectionBilin (L : IntegralLatticeCat R)
 
 /-- The quotient projection `L♯ → A_L` in the finite-form category. -/
 noncomputable def discriminantProjection (L : IntegralLatticeCat R)
+    [Module.Finite R L.obj.carrier]
     (hL : IsGenericallyNondegenerate R L) :
     projectedRieszDualFiniteForm R L hL ⟶ discriminantFormModule R L hL :=
   ObjectProperty.homMk (discriminantProjectionBilin R L hL)
@@ -274,7 +282,7 @@ theorem adjointModuleSequenceExact (L : IntegralLatticeCat R) :
 
 theorem toRationalSpan_injective (L : IntegralLatticeCat R) :
     Function.Injective (toRationalSpan R L) := by
-  letI : Module.Projective R L.obj.carrier := L.property.2.1
+  letI : Module.Projective R L.obj.carrier := L.property.1
   exact Module.Flat.tensorProduct_mk_injective R L.obj.carrier (FractionRing R)
 
 theorem toMetricDual_injective (L : IntegralLatticeCat R) :
@@ -305,4 +313,3 @@ theorem exact_radical_toMetricDual (L : IntegralLatticeCat R)
   exact (exact_radical_toMetricDual_iff R L).mpr hL
 
 end LeanCategories.Lattices.Valued
-

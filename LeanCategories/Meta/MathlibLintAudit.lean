@@ -12,7 +12,8 @@ public meta import Batteries.Tactic.Lint
 /-!
 # Standard Batteries/Mathlib linter audit — LeanCategories
 
-Runs the same standard `#lint` battery as `CategoryGraph/Tools/MathlibLintAudit.lean`
+Runs the same standard `#lint` battery as
+`LeanCategories/CategoryGraph/Tools/MathlibLintAudit.lean`
 (minus `docBlame` and `unusedArguments`) against every `LeanCategories`
 declaration, as a permanent signal. See that file's module doc for why
 `unusedArguments` is excluded here (not a coverage gap — Lean 4's own

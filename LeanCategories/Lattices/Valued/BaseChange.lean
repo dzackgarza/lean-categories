@@ -142,18 +142,15 @@ def baseChangeSymBilWForm : SymBilWFormCat R ⥤ SymBilWFormCat S where
     apply ObjectProperty.hom_ext
     exact (baseChangeBilWForm R S).map_comp f.hom g.hom
 
-/-- Scalar extension preserves finite projective symmetric lattices. -/
+/-- Scalar extension preserves projective symmetric lattices. -/
 def baseChange : LatticeCat R W ⥤ LatticeCat S (TensorProduct R S W) where
   obj L := by
-    letI : Module.Finite R L.obj.carrier := L.property.1
-    letI : Module.Projective R L.obj.carrier := L.property.2.1
+    letI : Module.Projective R L.obj.carrier := L.property.1
     refine ⟨baseChangeObject R W S L.obj, ?_⟩
-    change Module.Finite S (TensorProduct R S L.obj.carrier) ∧
-      Module.Projective S (TensorProduct R S L.obj.carrier) ∧
+    change Module.Projective S (TensorProduct R S L.obj.carrier) ∧
         ∀ x y, (LinearMap.BilinMap.baseChange S L.obj.bilinMap) x y =
           (LinearMap.BilinMap.baseChange S L.obj.bilinMap) y x
-    exact ⟨inferInstance, inferInstance,
-      LinearMap.BilinMap.baseChange_isSymm L.property.2.2⟩
+    exact ⟨inferInstance, LinearMap.BilinMap.baseChange_isSymm L.property.2⟩
   map f := ObjectProperty.homMk ((baseChangeBilin R W S).map f.hom)
   map_id L := by
     apply ObjectProperty.hom_ext
@@ -179,4 +176,3 @@ noncomputable def baseChangeIntegral (S : Type u) [CommRing S] [Algebra R S] :
   map_comp f g := by simp
 
 end LeanCategories.Lattices.Valued
-
