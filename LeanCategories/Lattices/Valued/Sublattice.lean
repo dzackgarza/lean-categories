@@ -20,28 +20,6 @@ universe u
 variable {R : Type u} [CommRing R]
 variable {W : Type u} [AddCommGroup W] [Module R W]
 
-/-- Restrict a formed module to a submodule. -/
-def restrict (L : BilinModuleCat R W) (P : Submodule R L.carrier) :
-    BilinModuleCat R W :=
-  ofBilinMap (LinearMap.domRestrict₁₂ L.bilinMap P P)
-
-@[simp]
-theorem restrict_pairing (L : BilinModuleCat R W) (P : Submodule R L.carrier)
-    (x y : P) :
-    (L.restrict P).pairing x y = L.pairing x y :=
-  rfl
-
-/-- The inclusion of a restricted formed module. -/
-def restrictInclusion (L : BilinModuleCat R W) (P : Submodule R L.carrier) :
-    L.restrict P ⟶ L :=
-  homMk P.subtype fun _ _ ↦ rfl
-
-@[simp]
-theorem underlyingMap_restrictInclusion
-    (L : BilinModuleCat R W) (P : Submodule R L.carrier) :
-    underlyingMap (L.restrictInclusion P) = P.subtype :=
-  rfl
-
 /-- A formed embedding is primitive when it is injective and has torsion-free cokernel. -/
 def IsPrimitiveEmbedding {L M : BilinModuleCat R W} (f : L ⟶ M) : Prop :=
   Function.Injective (underlyingMap f) ∧

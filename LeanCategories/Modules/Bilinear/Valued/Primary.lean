@@ -1,0 +1,87 @@
+/-
+Copyright (c) 2026 Dzack Garza. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+-/
+module
+
+public import LeanCategories.Modules.Bilinear.Valued.Torsion
+public import Mathlib.Algebra.Module.Torsion.PrimaryComponent
+
+@[expose] public section
+
+open CategoryTheory
+
+namespace LeanCategories.Modules.Bilinear.Valued
+
+universe u
+
+variable {R : Type u} [CommRing R]
+variable {W : Type u} [AddCommGroup W] [Module R W]
+
+namespace BilinModuleCat
+
+/-- The form on the `I`-primary component. -/
+def primaryComponent (A : BilinModuleCat R W) (I : Ideal R) :
+    BilinModuleCat R W :=
+  A.restrict (Ideal.primaryComponent A.carrier I)
+
+/-- The inclusion of the `I`-primary formed component. -/
+def primaryComponentInclusion (A : BilinModuleCat R W) (I : Ideal R) :
+    A.primaryComponent I ⟶ A :=
+  A.restrictInclusion (Ideal.primaryComponent A.carrier I)
+
+@[simp]
+theorem primaryComponent_pairing (A : BilinModuleCat R W) (I : Ideal R)
+    (x y : Ideal.primaryComponent A.carrier I) :
+    (A.primaryComponent I).pairing x y = A.pairing x y :=
+  rfl
+
+/-- A formed morphism restricts to each primary component. -/
+def primaryComponentMap {A B : BilinModuleCat R W} (I : Ideal R) (f : A ⟶ B) :
+    A.primaryComponent I ⟶ B.primaryComponent I :=
+  homMk (Ideal.primaryComponent.map I (underlyingMap f)) fun x y ↦
+    map_pairing f x.1 y.1
+
+@[simp]
+theorem underlyingMap_primaryComponentMap {A B : BilinModuleCat R W}
+    (I : Ideal R) (f : A ⟶ B) :
+    underlyingMap (primaryComponentMap I f) =
+      Ideal.primaryComponent.map I (underlyingMap f) :=
+  rfl
+
+end BilinModuleCat
+
+/-- The `I`-primary component of a finite torsion symmetric form. -/
+noncomputable def primaryComponent
+    [IsNoetherianRing R]
+    (I : Ideal R) (A : FiniteTorsionSymBilinModuleCat R W) :
+    FiniteTorsionSymBilinModuleCat R W := by
+  let P := Ideal.primaryComponent A.obj.carrier I
+  letI : Module.Finite R A.obj.carrier := A.property.1
+  haveI : IsNoetherian R A.obj.carrier := inferInstance
+  haveI : IsNoetherian R P :=
+    isNoetherian_of_submodule_of_noetherian R A.obj.carrier P inferInstance
+  refine ⟨A.obj.primaryComponent I, ?_, ?_, ?_⟩
+  · change Module.Finite R P
+    infer_instance
+  · intro x
+    obtain ⟨a, ha⟩ := A.property.2.1 (x := x.1)
+    exact ⟨a, Subtype.ext ha⟩
+  · intro x y
+    exact A.property.2.2 x.1 y.1
+
+/-- The carrier primary components span a torsion form over a Dedekind domain. -/
+theorem iSup_primaryComponent_eq_top [IsDedekindDomain R]
+    (A : FiniteTorsionSymBilinModuleCat R W) :
+    ⨆ P : IsDedekindDomain.HeightOneSpectrum R,
+        Ideal.primaryComponent A.obj.carrier P.asIdeal = ⊤ :=
+  Ideal.iSup_primaryComponent_eq_top A.property.2.1
+
+/-- The carrier primary components form an independent family. -/
+theorem iSupIndep_primaryComponent [IsDedekindDomain R]
+    (A : FiniteTorsionSymBilinModuleCat R W) :
+    iSupIndep fun P : IsDedekindDomain.HeightOneSpectrum R ↦
+      Ideal.primaryComponent A.obj.carrier P.asIdeal :=
+  Ideal.iSupIndep_primaryComponent R A.obj.carrier
+
+end LeanCategories.Modules.Bilinear.Valued

@@ -174,6 +174,28 @@ theorem bilinMap_apply (L : BilinModuleCat R W) (x y : L.carrier) :
     L.bilinMap x y = L.pairing x y :=
   rfl
 
+/-- Restrict a formed module to a submodule. -/
+def restrict (L : BilinModuleCat R W) (P : Submodule R L.carrier) :
+    BilinModuleCat R W :=
+  ofBilinMap (LinearMap.domRestrict₁₂ L.bilinMap P P)
+
+@[simp]
+theorem restrict_pairing (L : BilinModuleCat R W) (P : Submodule R L.carrier)
+    (x y : P) :
+    (L.restrict P).pairing x y = L.pairing x y :=
+  rfl
+
+/-- The inclusion of a restricted formed module. -/
+def restrictInclusion (L : BilinModuleCat R W) (P : Submodule R L.carrier) :
+    L.restrict P ⟶ L :=
+  homMk P.subtype fun _ _ ↦ rfl
+
+@[simp]
+theorem underlyingMap_restrictInclusion
+    (L : BilinModuleCat R W) (P : Submodule R L.carrier) :
+    underlyingMap (L.restrictInclusion P) = P.subtype :=
+  rfl
+
 /-- The radical is the kernel of the adjoint map. -/
 def radical (L : BilinModuleCat R W) : Submodule R L.carrier :=
   LinearMap.ker L.adjoint
