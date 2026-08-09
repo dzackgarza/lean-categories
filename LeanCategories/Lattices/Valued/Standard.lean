@@ -256,6 +256,119 @@ theorem e8GramMatrix_eq : e8GramMatrix = ![
     norm_num [e8GramMatrix, e8RootNumerator, Fin.sum_univ_succ] at h ⊢ <;>
     omega
 
+/-- Twice the coordinates of the first six roots in the selected `E₈` presentation. -/
+def e6RootNumerator (i : Fin 6) : Fin 8 → ℤ :=
+  e8RootNumerator (Fin.castLE (by omega) i)
+
+/-- The exact inner product of two roots in the selected `E₆` presentation. -/
+noncomputable def e6RootInnerProduct (i j : Fin 6) : ℤ :=
+  e8RootInnerProduct
+    (Fin.castLE (by omega) i) (Fin.castLE (by omega) j)
+
+theorem e6RootInnerProduct_spec (i j : Fin 6) :
+    ∑ k, e6RootNumerator i k * e6RootNumerator j k =
+      4 * e6RootInnerProduct i j :=
+  e8RootInnerProduct_spec
+    (Fin.castLE (by omega) i) (Fin.castLE (by omega) j)
+
+theorem e6RootInnerProduct_comm (i j : Fin 6) :
+    e6RootInnerProduct i j = e6RootInnerProduct j i :=
+  e8RootInnerProduct_comm
+    (Fin.castLE (by omega) i) (Fin.castLE (by omega) j)
+
+/-- The negative `E₆` Gram matrix derived from the selected roots. -/
+noncomputable def e6GramMatrix : Matrix (Fin 6) (Fin 6) ℤ :=
+  fun i j ↦ -e6RootInnerProduct i j
+
+theorem e6GramMatrix_isSymm : e6GramMatrix.IsSymm :=
+  Matrix.IsSymm.ext fun i j ↦ by
+    simp only [e6GramMatrix]
+    rw [e6RootInnerProduct_comm]
+
+/-- The selected roots give the standard negative `E₆` matrix. -/
+theorem e6GramMatrix_eq : e6GramMatrix = ![
+    ![-2,  0,  1,  0,  0,  0],
+    ![ 0, -2,  0,  1,  0,  0],
+    ![ 1,  0, -2,  1,  0,  0],
+    ![ 0,  1,  1, -2,  1,  0],
+    ![ 0,  0,  0,  1, -2,  1],
+    ![ 0,  0,  0,  0,  1, -2]] := by
+  ext i j
+  change e8GramMatrix
+    (Fin.castLE (by omega) i) (Fin.castLE (by omega) j) = _
+  rw [e8GramMatrix_eq]
+  fin_cases i <;> fin_cases j <;> norm_num [Fin.castLE]
+
+/-- The negative-definite root lattice of type `E₆`. -/
+noncomputable def e6Lattice : IntegralLatticeCat ℤ :=
+  latticeOfGramMatrix e6GramMatrix e6GramMatrix_isSymm
+
+/-- The finite projective negative type-`E₆` root lattice. -/
+noncomputable def e6FiniteLattice : FiniteProjectiveLatticeCat ℤ ℤ :=
+  finiteLatticeOfGramMatrix e6GramMatrix e6GramMatrix_isSymm
+
+/-- The simple-root basis has the selected negative `E₆` Gram matrix. -/
+theorem e6Lattice_gramMatrix :
+    gramMatrix e6Lattice (Pi.basisFun ℤ (Fin 6)) = e6GramMatrix :=
+  latticeOfGramMatrix_gramMatrix _ _
+
+/-- Twice the coordinates of the first seven roots in the selected `E₈` presentation. -/
+def e7RootNumerator (i : Fin 7) : Fin 8 → ℤ :=
+  e8RootNumerator (Fin.castLE (by omega) i)
+
+/-- The exact inner product of two roots in the selected `E₇` presentation. -/
+noncomputable def e7RootInnerProduct (i j : Fin 7) : ℤ :=
+  e8RootInnerProduct
+    (Fin.castLE (by omega) i) (Fin.castLE (by omega) j)
+
+theorem e7RootInnerProduct_spec (i j : Fin 7) :
+    ∑ k, e7RootNumerator i k * e7RootNumerator j k =
+      4 * e7RootInnerProduct i j :=
+  e8RootInnerProduct_spec
+    (Fin.castLE (by omega) i) (Fin.castLE (by omega) j)
+
+theorem e7RootInnerProduct_comm (i j : Fin 7) :
+    e7RootInnerProduct i j = e7RootInnerProduct j i :=
+  e8RootInnerProduct_comm
+    (Fin.castLE (by omega) i) (Fin.castLE (by omega) j)
+
+/-- The negative `E₇` Gram matrix derived from the selected roots. -/
+noncomputable def e7GramMatrix : Matrix (Fin 7) (Fin 7) ℤ :=
+  fun i j ↦ -e7RootInnerProduct i j
+
+theorem e7GramMatrix_isSymm : e7GramMatrix.IsSymm :=
+  Matrix.IsSymm.ext fun i j ↦ by
+    simp only [e7GramMatrix]
+    rw [e7RootInnerProduct_comm]
+
+/-- The selected roots give the standard negative `E₇` matrix. -/
+theorem e7GramMatrix_eq : e7GramMatrix = ![
+    ![-2,  0,  1,  0,  0,  0,  0],
+    ![ 0, -2,  0,  1,  0,  0,  0],
+    ![ 1,  0, -2,  1,  0,  0,  0],
+    ![ 0,  1,  1, -2,  1,  0,  0],
+    ![ 0,  0,  0,  1, -2,  1,  0],
+    ![ 0,  0,  0,  0,  1, -2,  1],
+    ![ 0,  0,  0,  0,  0,  1, -2]] := by
+  ext i j
+  change e8GramMatrix
+    (Fin.castLE (by omega) i) (Fin.castLE (by omega) j) = _
+  rw [e8GramMatrix_eq]
+  fin_cases i <;> fin_cases j <;> norm_num [Fin.castLE]
+
+/-- The negative-definite root lattice of type `E₇`. -/
+noncomputable def e7Lattice : IntegralLatticeCat ℤ :=
+  latticeOfGramMatrix e7GramMatrix e7GramMatrix_isSymm
+
+/-- The finite projective negative type-`E₇` root lattice. -/
+noncomputable def e7FiniteLattice : FiniteProjectiveLatticeCat ℤ ℤ :=
+  finiteLatticeOfGramMatrix e7GramMatrix e7GramMatrix_isSymm
+
+/-- The simple-root basis has the selected negative `E₇` Gram matrix. -/
+theorem e7Lattice_gramMatrix :
+    gramMatrix e7Lattice (Pi.basisFun ℤ (Fin 7)) = e7GramMatrix :=
+  latticeOfGramMatrix_gramMatrix _ _
+
 /-- The negative definite `E₈` root lattice in its simple-root basis. -/
 noncomputable def e8Lattice : IntegralLatticeCat ℤ := by
   refine ⟨BilinModuleCat.ofBilinMap (Matrix.toBilin' e8GramMatrix), ?_, ?_⟩
