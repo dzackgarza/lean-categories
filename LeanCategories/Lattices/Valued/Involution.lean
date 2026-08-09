@@ -74,9 +74,10 @@ theorem coinvariantSubmodule_le_antiFixedSubmodule
   rw [L.property.2] at horth
   exact horth
 
-/-- Each anti-fixed integral vector is coinvariant. -/
+/-- Each anti-fixed vector is coinvariant away from characteristic two. -/
 theorem antiFixedSubmodule_le_coinvariantSubmodule
-    (L : IntegralLatticeCat ℤ) (J : Involution L) :
+    [IsDomain R] [NeZero (2 : R)]
+    (L : IntegralLatticeCat R) (J : Involution L) :
     antiFixedSubmodule L J ≤ coinvariantSubmodule L J := by
   intro x hx
   change x ∈ orthogonalSubmodule L (fixedSubmodule L J)
@@ -92,16 +93,47 @@ theorem antiFixedSubmodule_le_coinvariantSubmodule
   rw [hy', hx'] at hisom
   change L.obj.bilinMap y (-x) = L.obj.bilinMap y x at hisom
   rw [LinearMap.BilinForm.neg_right] at hisom
-  change L.obj.bilinMap y x = 0
-  omega
+  have htwo : (2 : R) * L.obj.bilinMap y x = 0 := by
+    linear_combination -hisom
+  exact (mul_eq_zero.mp htwo).resolve_left (NeZero.ne 2)
 
-/-- For a nondegenerate integral lattice, coinvariant and anti-fixed vectors agree. -/
+/-- Away from characteristic two, nondegenerate coinvariant and anti-fixed vectors agree. -/
 theorem coinvariantSubmodule_eq_antiFixedSubmodule
-    (L : IntegralLatticeCat ℤ) (J : Involution L)
+    [IsDomain R] [NeZero (2 : R)]
+    (L : IntegralLatticeCat R) (J : Involution L)
     (hL : L.obj.IsNondegenerate) :
     coinvariantSubmodule L J = antiFixedSubmodule L J :=
   le_antisymm (coinvariantSubmodule_le_antiFixedSubmodule L J hL)
     (antiFixedSubmodule_le_coinvariantSubmodule L J)
+
+/-- The fixed submodule is primitive. -/
+theorem fixedSubmodule_isPrimitive (L : IntegralLatticeCat R)
+    (J : Involution L) : IsPrimitiveSubmodule (fixedSubmodule L J) := by
+  letI : Module.Projective R L.obj.carrier := L.property.1
+  letI : Module.IsTorsionFree R L.obj.carrier := by infer_instance
+  let f := J.element.1.toLinearMap - LinearMap.id
+  let e := f.quotKerEquivRange
+  exact Function.Injective.moduleIsTorsionFree e e.injective
+    (fun r x ↦ e.map_smul r x)
+
+/-- The anti-fixed submodule is primitive. -/
+theorem antiFixedSubmodule_isPrimitive (L : IntegralLatticeCat R)
+    (J : Involution L) : IsPrimitiveSubmodule (antiFixedSubmodule L J) := by
+  letI : Module.Projective R L.obj.carrier := L.property.1
+  letI : Module.IsTorsionFree R L.obj.carrier := by infer_instance
+  let f := J.element.1.toLinearMap + LinearMap.id
+  let e := f.quotKerEquivRange
+  exact Function.Injective.moduleIsTorsionFree e e.injective
+    (fun r x ↦ e.map_smul r x)
+
+/-- A nondegenerate coinvariant submodule is primitive away from characteristic two. -/
+theorem coinvariantSubmodule_isPrimitive
+    [IsDomain R] [NeZero (2 : R)]
+    (L : IntegralLatticeCat R) (J : Involution L)
+    (hL : L.obj.IsNondegenerate) :
+    IsPrimitiveSubmodule (coinvariantSubmodule L J) := by
+  rw [coinvariantSubmodule_eq_antiFixedSubmodule L J hL]
+  exact antiFixedSubmodule_isPrimitive L J
 
 /-- The cyclic order-two representation determined by an involution. -/
 noncomputable def Involution.cyclicActionHom (L : IntegralLatticeCat R)
@@ -158,6 +190,18 @@ noncomputable def invariantLatticeInclusion (L : IntegralLatticeCat R)
     fixedSubmodule_projective L J
   exact formedSublatticeInclusion L (fixedSubmodule L J)
 
+/-- The invariant-lattice inclusion is a primitive formed embedding. -/
+theorem invariantLatticeInclusion_isPrimitive
+    (L : IntegralLatticeCat R) [Module.Finite R L.obj.carrier]
+    (J : Involution L) :
+    BilinModuleCat.IsPrimitiveEmbedding (invariantLatticeInclusion L J).hom := by
+  constructor
+  · exact Subtype.val_injective
+  · change Module.IsTorsionFree R
+      (L.obj.carrier ⧸ LinearMap.range (fixedSubmodule L J).subtype)
+    rw [Submodule.range_subtype]
+    exact fixedSubmodule_isPrimitive L J
+
 /-- The coinvariant submodule of a finite projective lattice is projective. -/
 theorem coinvariantSubmodule_projective (L : IntegralLatticeCat R)
     [Module.Finite R L.obj.carrier] (J : Involution L) :
@@ -182,6 +226,18 @@ noncomputable def coinvariantLatticeInclusion (L : IntegralLatticeCat R)
   letI : Module.Projective R (coinvariantSubmodule L J) :=
     coinvariantSubmodule_projective L J
   exact formedSublatticeInclusion L (coinvariantSubmodule L J)
+
+/-- A nondegenerate coinvariant inclusion is primitive away from characteristic two. -/
+theorem coinvariantLatticeInclusion_isPrimitive [NeZero (2 : R)]
+    (L : IntegralLatticeCat R) [Module.Finite R L.obj.carrier]
+    (J : Involution L) (hL : L.obj.IsNondegenerate) :
+    BilinModuleCat.IsPrimitiveEmbedding (coinvariantLatticeInclusion L J).hom := by
+  constructor
+  · exact Subtype.val_injective
+  · change Module.IsTorsionFree R
+      (L.obj.carrier ⧸ LinearMap.range (coinvariantSubmodule L J).subtype)
+    rw [Submodule.range_subtype]
+    exact coinvariantSubmodule_isPrimitive L J hL
 
 end PID
 
