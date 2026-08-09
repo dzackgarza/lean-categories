@@ -11,9 +11,6 @@ LeanCategories/
   Algebra/
   Modules/
   Lattices/
-  Schemes/
-  Stacks/
-  ComplexManifolds/
   Core/
   ForMathlib/
   Model/
@@ -30,6 +27,10 @@ The support directories describe the same mathematical library. They do not defi
 second category system. `Core` and `Model` define the common language. `Realization`
 connects it to Mathlib. `Registry`, `Specimen`, and `Tools` inspect and export that
 language.
+
+Scheme theory, stacks, manifolds, and period constructions remain roadmap targets.
+Issues #38, #39, and #40 own their prerequisite order. No placeholder source represents
+those domains.
 
 Sage observation, method exposure, backend routing, and runnable parity belong to
 [`dzackgarza/lean-cas-dsl`](https://github.com/dzackgarza/lean-cas-dsl). Sage labels and

@@ -64,6 +64,14 @@ It also removed their axiomatic or shallow downstream theories.
 - [x] It contained only a new-project template.
 - [x] The template was sent to trash.
 
+## Premature geometric sketches
+
+- [x] Scheme targets were scavenged into issue #38.
+- [x] Stack, log-pair, and KSBA targets were scavenged into issue #39.
+- [x] Manifold, Hodge, and period targets were scavenged into issue #40.
+- [x] The 33 placeholder source files were removed.
+- [x] No axiom preserves a missing geometric construction.
+
 ## Verification
 
 - [x] The canonical `LeanCategories` root builds.
