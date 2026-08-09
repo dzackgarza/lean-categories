@@ -24,6 +24,11 @@ structure Involution (L : IntegralLatticeCat R) where
   element : OrthogonalGroup L
   involutive : element * element = 1
 
+@[simp]
+theorem Involution.apply_apply (L : IntegralLatticeCat R) (J : Involution L)
+    (x : L.obj.carrier) : J.element.1 (J.element.1 x) = x :=
+  congrArg (fun g : OrthogonalGroup L ↦ g.1 x) J.involutive
+
 /-- The fixed submodule of an involution. -/
 def fixedSubmodule (L : IntegralLatticeCat R) (J : Involution L) :
     Submodule R L.obj.carrier :=
@@ -33,6 +38,70 @@ def fixedSubmodule (L : IntegralLatticeCat R) (J : Involution L) :
 def antiFixedSubmodule (L : IntegralLatticeCat R) (J : Involution L) :
     Submodule R L.obj.carrier :=
   LinearMap.ker (J.element.1.toLinearMap + LinearMap.id)
+
+/-- The orthogonal complement of the invariant lattice carrier. -/
+def coinvariantSubmodule (L : IntegralLatticeCat R) (J : Involution L) :
+    Submodule R L.obj.carrier :=
+  orthogonalSubmodule L (fixedSubmodule L J)
+
+/-- Nondegeneracy makes each coinvariant vector anti-fixed. -/
+theorem coinvariantSubmodule_le_antiFixedSubmodule
+    (L : IntegralLatticeCat R) (J : Involution L)
+    (hL : L.obj.IsNondegenerate) :
+    coinvariantSubmodule L J ≤ antiFixedSubmodule L J := by
+  intro x hx
+  apply LinearMap.mem_ker.mpr
+  change J.element.1 x + x = 0
+  have hinj : Function.Injective L.obj.adjoint :=
+    L.obj.isNondegenerate_iff_adjoint_injective.mp hL
+  apply hinj
+  ext z
+  change L.obj.bilinMap (J.element.1 x + x) z = L.obj.bilinMap 0 z
+  rw [LinearMap.BilinForm.add_left, LinearMap.BilinForm.zero_left]
+  have hmove : L.obj.bilinMap (J.element.1 x) z =
+      L.obj.bilinMap x (J.element.1 z) := by
+    have h := J.element.property x (J.element.1 z)
+    rw [J.apply_apply L z] at h
+    exact h
+  rw [hmove, ← LinearMap.BilinForm.add_right]
+  have hfixed : J.element.1 z + z ∈ fixedSubmodule L J := by
+    apply LinearMap.mem_ker.mpr
+    change J.element.1 (J.element.1 z + z) - (J.element.1 z + z) = 0
+    rw [map_add, J.apply_apply L]
+    abel
+  have horth := (mem_orthogonalSubmodule_iff L (fixedSubmodule L J) x).mp hx
+    (J.element.1 z + z) hfixed
+  rw [L.property.2] at horth
+  exact horth
+
+/-- Each anti-fixed integral vector is coinvariant. -/
+theorem antiFixedSubmodule_le_coinvariantSubmodule
+    (L : IntegralLatticeCat ℤ) (J : Involution L) :
+    antiFixedSubmodule L J ≤ coinvariantSubmodule L J := by
+  intro x hx
+  change x ∈ orthogonalSubmodule L (fixedSubmodule L J)
+  rw [mem_orthogonalSubmodule_iff]
+  intro y hy
+  have hx0 := LinearMap.mem_ker.mp hx
+  have hy0 := LinearMap.mem_ker.mp hy
+  change J.element.1 x + x = 0 at hx0
+  change J.element.1 y - y = 0 at hy0
+  have hx' : J.element.1 x = -x := eq_neg_of_add_eq_zero_left hx0
+  have hy' : J.element.1 y = y := sub_eq_zero.mp hy0
+  have hisom := J.element.property y x
+  rw [hy', hx'] at hisom
+  change L.obj.bilinMap y (-x) = L.obj.bilinMap y x at hisom
+  rw [LinearMap.BilinForm.neg_right] at hisom
+  change L.obj.bilinMap y x = 0
+  omega
+
+/-- For a nondegenerate integral lattice, coinvariant and anti-fixed vectors agree. -/
+theorem coinvariantSubmodule_eq_antiFixedSubmodule
+    (L : IntegralLatticeCat ℤ) (J : Involution L)
+    (hL : L.obj.IsNondegenerate) :
+    coinvariantSubmodule L J = antiFixedSubmodule L J :=
+  le_antisymm (coinvariantSubmodule_le_antiFixedSubmodule L J hL)
+    (antiFixedSubmodule_le_coinvariantSubmodule L J)
 
 /-- The cyclic order-two representation determined by an involution. -/
 noncomputable def Involution.cyclicActionHom (L : IntegralLatticeCat R)
@@ -88,11 +157,6 @@ noncomputable def invariantLatticeInclusion (L : IntegralLatticeCat R)
   letI : Module.Projective R (fixedSubmodule L J) :=
     fixedSubmodule_projective L J
   exact formedSublatticeInclusion L (fixedSubmodule L J)
-
-/-- The orthogonal complement of the invariant lattice carrier. -/
-def coinvariantSubmodule (L : IntegralLatticeCat R) (J : Involution L) :
-    Submodule R L.obj.carrier :=
-  orthogonalSubmodule L (fixedSubmodule L J)
 
 /-- The coinvariant submodule of a finite projective lattice is projective. -/
 theorem coinvariantSubmodule_projective (L : IntegralLatticeCat R)
