@@ -1163,3 +1163,195 @@ The central lesson is this:
 > Mathematics determines its representations. Representations do not determine the mathematics without a theorem connecting them.
 
 A coordinate calculation can be excellent mathematics. It becomes poor mathematics when it silently acts as definition, classification, and semantic certification.
+
+I would use this example once. I would then teach general habits that apply across mathematics.
+
+## Start from the mathematical object
+
+- State the objects before you name constructions on them.
+- State the ambient category or mathematical setting.
+- State the permitted morphisms.
+- Separate the carrier from the structure on that carrier.
+- Separate an object from one chosen presentation of it.
+- Keep the intended object fixed while changing its representation.
+- Identify which theory owns each construction.
+- Put each result at the lowest level where it is true.
+- Add structure only when the result uses that structure.
+- Track every hypothesis and where the proof uses it.
+
+## Classify each claim
+
+- Decide whether a claim is a definition, construction, theorem, or notation.
+- Do not make a theorem true by hiding it inside a definition.
+- Do not present a characterization as the primary definition without reason.
+- Do not replace an implication with inheritance between definitions.
+- Separate existence, uniqueness, and choice.
+- Separate an object from evidence that it has a property.
+- Distinguish equality, isomorphism, equivalence, and correspondence.
+- Distinguish a map from a family of maps.
+- Distinguish a functor from one value of that functor.
+- Distinguish a theorem from the data used in its statement.
+
+## Find the correct owner
+
+- Ask where the construction first exists.
+- Define an axiom where its constrained operation first exists.
+- Let richer theories inherit results from simpler theories.
+- Do not duplicate a theorem inside every structured setting.
+- Treat special cases as values of general constructions.
+- Create a new primitive only when mathematics requires one.
+- Keep general foundations independent from specialized applications.
+- Use forgetful maps to explain which structure a theorem does not need.
+- Use lifting results to explain which extra structure survives.
+- Do not let a file path supply missing mathematical meaning.
+
+## Control abstraction
+
+- Abstract only after you identify the repeated mathematical construction.
+- Use abstraction to remove choices, not to display advanced language.
+- Require every abstraction to simplify several genuine cases.
+- Do not create machinery for one example.
+- Do not confuse more categorical language with better mathematics.
+- Do not reject categorical language when coherence genuinely requires it.
+- Choose the lowest sufficient level of generality.
+- Check that added generality preserves the original object.
+- Avoid both underpowered models and needless higher structure.
+- Prefer standard universal constructions over local devices.
+
+## Define things intrinsically
+
+- Define an object from its mathematical data and laws.
+- Do not define maps by transporting through the theorem you want to prove.
+- Do not make naturality automatic through a circular construction.
+- Use a universal property when it governs the object.
+- State all choices that affect the result.
+- Call a construction canonical only after proving independence from choices.
+- Check whether the definition survives a change of coordinates.
+- Check whether it survives replacement by an isomorphic object.
+- Treat coordinate calculations as proofs, not semantic definitions.
+- Explain what makes the construction mathematically necessary.
+
+## Work carefully with structure
+
+- Never identify structured objects from an underlying equivalence alone.
+- Prove that maps preserve all required structure.
+- State exactly what a forgetful functor forgets.
+- Do not call forgotten property evidence a forgotten refinement.
+- Remember that equal carriers can support different structures.
+- Remember that isomorphic objects need not be definitionally equal.
+- Check whether restriction, quotient, sum, or dual preserves the structure.
+- Separate inherited structure from newly chosen structure.
+- Prove compatibility instead of assuming it from notation.
+- Place orthogonality, invariance, or coherence in the layer that uses it.
+
+## Work carefully with functors
+
+- State the source and target categories.
+- Define the action on objects.
+- Define the action on morphisms intrinsically.
+- Verify identity and composition laws.
+- Explain why the action preserves the relevant structure.
+- Check variance before writing formulas.
+- State natural transformations as comparisons between functors.
+- Verify that each naturality square expresses real mathematics.
+- Do not manufacture naturality by conjugating through the desired comparison.
+- Treat such transport as transport when it is genuinely useful.
+- Do not mistake a functorial package for a new theorem.
+- Do not promote important functor values into separate primitive objects.
+
+## Prove the intended theorem
+
+- Restate the exact target before starting the proof.
+- Preserve its category, hypotheses, and conclusion.
+- Do not replace it with an easier underlying statement.
+- Do not prove a shadow after forgetting essential structure.
+- Mark partial results as partial results.
+- Keep the stronger obligation visible.
+- Show where each hypothesis enters.
+- Test whether any hypothesis is unnecessary.
+- Search for counterexamples when a statement feels automatic.
+- Check zero, trivial, singular, and boundary cases.
+- Compare both sides before applying automation.
+- Ask whether the proof explains the theorem or only satisfies the checker.
+
+## Use examples correctly
+
+- Use examples to test definitions.
+- Do not derive a general definition from one convenient example.
+- Vary the ring, object, map, and structure.
+- Test cases where expected implications fail.
+- Test cases with the same carrier and different structures.
+- Test cases with different presentations of the same object.
+- Use counterexamples to locate missing hypotheses.
+- Treat successful examples as evidence, not classification.
+
+## Reuse established mathematics
+
+- Search for the standard construction before inventing one.
+- Learn its normal hypotheses and conclusion.
+- Compare new notation with standard notation.
+- Relate any new construction to the established one.
+- Prefer composition of standard constructions over parallel definitions.
+- Read exact theorem statements instead of relying on memory.
+- Distinguish a missing name from a missing construction.
+- Cite the source that actually supports the claim.
+- State the searched scope when no source appears.
+- Never infer nonexistence from a limited search.
+
+## Write accurate mathematical prose
+
+- Make every noun name the correct kind of object.
+- Do not call a functor a form.
+- Do not call an isomorphism an equality.
+- Do not call a property witness additional mathematical structure.
+- Use names that state the actual result.
+- Avoid stronger words than the theorem supports.
+- Explain the mathematical role before implementation details.
+- Give each declaration one clear purpose.
+- Avoid comments that merely repeat the type.
+- Update prose when the mathematical interpretation changes.
+
+## Interpret formal success correctly
+
+- Treat type checking as proof of the formal statement only.
+- Do not treat compilation as proof of correct mathematical intent.
+- Do not treat a natural isomorphism as evidence that its construction matters.
+- Do not count declarations as mathematical progress.
+- Do not confuse packaging with theory.
+- Inspect what a proof depends on.
+- Watch for results that are true only by construction.
+- Ask whether deleting the new layer loses mathematical content.
+- Prefer one meaningful theorem over several empty interfaces.
+- Measure progress by removed accidental choices.
+
+## Respond correctly to a correction
+
+- Stop when a correction exposes a conceptual error.
+- Reconstruct the mathematics before editing words.
+- Identify the first false assumption.
+- Trace which later constructions depend on it.
+- Preserve only results that remain independently valid.
+- Delete machinery whose mathematical purpose disappeared.
+- Do not rename an incorrect object and continue.
+- Do not repair semantic errors with better comments.
+- Explain the corrected ownership boundary.
+- Recheck the original goal after the correction.
+
+## Develop good working habits
+
+- Write a dependency diagram before difficult formalization.
+- List objects, morphisms, predicates, and universal properties.
+- Ask what remains after forgetting each structure.
+- Ask what new fact the richer structure adds.
+- Ask whether the construction is intrinsic.
+- Ask whether the result is natural under the intended maps.
+- Ask whether the abstraction removes or adds arbitrary choices.
+- Ask what mathematics would disappear if the code vanished.
+- Leave unresolved mathematics visibly unresolved.
+- Request mathematical judgment when two paths change the intended theory.
+
+The central lesson is not “avoid formed-module functors.”
+
+The central lesson is this:
+
+> Locate the mathematics first. Then formalize only the structure that the mathematics actually supplies.
