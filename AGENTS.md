@@ -78,6 +78,84 @@ The repeated alignment question is:
 
 > Is the proposed object, morphism, theorem, computation, or piece of metadata being expressed at the lowest level at which it is generated, inside a framework broad enough that later phases remain instances rather than refactors?
 
+## How to learn the reasoning in this document
+
+The rules below are compressed conclusions. A learner cannot apply them merely by reading them.
+
+Do not test a learner with a slogan before teaching the distinction inside that slogan.
+
+Use this sequence for each new distinction:
+
+1. Show one small worked example.
+2. Name each choice made in the example.
+3. Change one choice while preserving the mathematical object.
+4. Contrast the example with a nearby wrong case.
+5. Ask the learner to explain what changed and what remained fixed.
+6. Give a similar example with fewer prompts.
+7. Ask for transfer to a different mathematical subject.
+8. State the general rule only after the examples support it.
+
+Do not ask, “Did you preserve the mathematical object?” That question assumes the learner can already identify it.
+
+Ask observable questions instead:
+
+- Which symbols name data?
+- Which symbols name chosen coordinates or presentations?
+- Which parts change after a basis change?
+- Which equation compares the two presentations?
+- Which definition still makes sense after the presentation disappears?
+- Which theorem is needed to pass from one presentation to another?
+
+### First worked example: a linear map and its matrix
+
+Let (T : V 	o V) be a linear map. Choose a basis (e), which gives a matrix (A).
+
+Choose another basis (e'). The matrix changes to (A' = P^{-1}AP). The map (T) does not change.
+
+Walk through these questions:
+
+1. What is the object? The linear map (T).
+2. What is the chosen presentation? The basis (e) and matrix (A).
+3. What changes? The entries of the matrix.
+4. What remains fixed? The linear map and its basis-independent properties.
+5. What connects the presentations? The change-of-basis matrix (P).
+6. Which matrix predicates are invariant under conjugation?
+7. Which predicates describe only one displayed matrix?
+
+Now repeat the exercise with a module and a chosen basis.
+
+Then repeat it with a group and a chosen presentation.
+
+Only after these examples introduce the rule:
+
+> Keep the mathematical object fixed. Change the representation, not the obligation.
+
+### Second worked example: finding mathematical ownership
+
+Let (M) be a finite torsion (R)-module with a bilinear form (B).
+
+Define the (P)-primary part using (P^n x = 0).
+
+Now temporarily erase (B).
+
+The primary part and module decomposition still exist. Therefore, module theory owns those constructions.
+
+Restore (B). Ask what new statement now becomes possible.
+
+The new statement is orthogonality between different primary parts. Formed-module theory owns that compatibility.
+
+This example teaches ownership through removal and restoration. It does not require the learner to recognize ownership in advance.
+
+### Fade the support
+
+Give complete answers for the first example.
+
+Give only the questions for the second example.
+
+For the third example, ask the learner to create the comparison and a near-miss case.
+
+Do not confuse intelligence with prior internalization. Reduce support only after the learner demonstrates transfer.
+
 ---
 
 ## Hold the mathematical object fixed
@@ -1088,6 +1166,20 @@ The student starts with an available artifact. The student then makes the mathem
 
 32. If the argument stops working, identify the missing invariance theorem.
 
+If “why is the theorem true?” produces no answer, do not repeat the question.
+
+Walk through this smaller sequence:
+
+1. Write the conclusion without Lean syntax.
+2. Underline each mathematical noun in the conclusion.
+3. Match each noun to data in the hypotheses.
+4. Mark the first step where new information enters.
+5. Name the theorem or universal property that supplies that information.
+6. Remove one hypothesis and seek a counterexample.
+7. Explain why that counterexample fails in the original setting.
+
+The learner can now see the proof mechanism before receiving the general advice.
+
 ## Advice about generality
 
 33. Prove the generic statement before the named instance when the generic structure is already visible.
@@ -1157,6 +1249,26 @@ The student starts with an available artifact. The student then makes the mathem
 63. In each example, identify what changes and what remains fixed.
 
 64. Learn to detect artifact-first reasoning before calculation begins.
+
+Do not assign item 64 as an unsupported act of self-diagnosis.
+
+Teach it with this prompt sequence:
+
+1. Circle the artifact that appeared first: matrix, API, declaration, graph node, or theorem name.
+2. Write the intended mathematical object without using that artifact.
+3. List two other presentations of the same object.
+4. Ask whether the current definition accepts both presentations.
+5. Identify the theorem that connects each presentation to the object.
+6. If no such theorem exists, mark the representation as ungrounded.
+
+Then show one contrast:
+
+- Artifact-first reasoning starts from the available representation and declares it authoritative.
+- Object-first reasoning starts from the invariant object and proves each representation correct.
+
+Ask the learner to perform the sequence on a matrix, a group presentation, and a Lean structure.
+
+Only then ask for independent recognition in a new subject.
 
 The central lesson is this:
 
@@ -1602,6 +1714,84 @@ The proof is formally valid. However, it gives no evidence that the definition r
 This failure is difficult because the author cannot reliably detect it. The author chose the definition, proof target, examples, and success criteria. Each local success confirms the author’s own prior choices.
 
 Therefore, advice such as “avoid circular definitions” is too weak. The formalization needs external constraints that the author cannot redefine.
+
+Do not begin by asking the author whether a definition is self-sealing.
+
+The author selected the definition and therefore lacks an independent comparison point.
+
+Teach the failure through two worked cases.
+
+### Worked case one: an obvious injected conclusion
+
+Suppose the goal is to prove (T(A)).
+
+Define:
+
+```text
+Good(A) := T(A)
+```
+
+Then prove:
+
+```text
+Good(A) → T(A)
+```
+
+Walk through the proof:
+
+1. Expand `Good(A)`.
+2. Observe that the hypothesis becomes (T(A)).
+3. Observe that the conclusion is also (T(A)).
+4. Identify the new mathematical input. There is none.
+
+The proof is valid. It is an elimination lemma for the definition of `Good`.
+
+It does not establish a theorem about an independently defined class of good objects.
+
+### Worked case two: a hidden injected conclusion
+
+Suppose objects (D(M)) come with chosen isomorphisms (phi_M : D(M) cong M).
+
+Define the action on a map (f : M 	o N) by conjugation through (phi_M) and (phi_N).
+
+Now prove that (phi) is natural.
+
+Walk through the diagnosis:
+
+1. Write the naturality square.
+2. Substitute the definition of the map on (D).
+3. Cancel the chosen isomorphisms.
+4. Observe that the square commutes because the map was defined from that square.
+5. Identify any theorem about the internal construction of (D(M)). None was used.
+
+The result proves transported naturality. It does not prove intrinsic functoriality of the named construction.
+
+Now contrast the intrinsic version.
+
+Define (D(f)) directly on the mathematical components of (D(M)).
+
+Prove that (f) preserves those components.
+
+Then prove naturality from that preservation theorem.
+
+The contrast reveals the missing mathematical content without asking the author to detect its own bias.
+
+### Guided reflection before independent judgment
+
+For the next definition, supply these prompts:
+
+- Which part came from an external definition?
+- Which part came from the desired theorem?
+- What remains after unfolding every local definition?
+- Which proof step uses mathematics not inserted by a constructor?
+- Which nearby wrong object does the definition reject?
+- What source could force a change to this definition?
+
+After one successful guided diagnosis, remove two prompts.
+
+After a second successful diagnosis, ask the learner to build the wrong model.
+
+Only then ask the learner to audit a fresh formalization independently.
 
 ## Addendum: Prevent self-sealing formalizations
 
