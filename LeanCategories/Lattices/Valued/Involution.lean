@@ -7,6 +7,7 @@ module
 public import LeanCategories.Lattices.Valued.OrthogonalGroup
 public import LeanCategories.Lattices.Valued.Sublattice
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+public import Mathlib.RingTheory.Finiteness.Cardinality
 
 @[expose] public section
 
@@ -235,6 +236,24 @@ theorem invariantCoinvariantGlue_isTorsionBy_two
         Submodule.Quotient.mk_eq_zero]
       exact two_smul_mem_fixed_sup_coinvariant L J hL x
 
+/-- The invariant-coinvariant glue group of a finite integral lattice is finite. -/
+theorem invariantCoinvariantGlue_finite
+    [IsDomain R] [NeZero (2 : R)]
+    [Finite (R ⧸ Ideal.span {(2 : R)})]
+    (L : IntegralLatticeCat R) [Module.Finite R L.obj.carrier]
+    (J : Involution L) (hL : L.obj.IsNondegenerate) :
+    Finite (orthogonalGlueModule L (fixedSubmodule L J)) := by
+  let hTwo := invariantCoinvariantGlue_isTorsionBy_two L J hL
+  have hSpan : Module.IsTorsionBySet R
+      (orthogonalGlueModule L (fixedSubmodule L J))
+      (Ideal.span {(2 : R)}) := by
+    rwa [Module.isTorsionBySet_span_singleton_iff]
+  letI := hSpan.module
+  letI : Module.Finite (R ⧸ Ideal.span {(2 : R)})
+      (orthogonalGlueModule L (fixedSubmodule L J)) :=
+    Module.Finite.of_surjective hSpan.semilinearMap Function.surjective_id
+  exact Module.finite_of_finite (R ⧸ Ideal.span {(2 : R)})
+
 /-- The fixed submodule is primitive. -/
 theorem fixedSubmodule_isPrimitive (L : IntegralLatticeCat R)
     (J : Involution L) : IsPrimitiveSubmodule (fixedSubmodule L J) := by
@@ -378,6 +397,36 @@ noncomputable def coinvariantLattice (L : IntegralLatticeCat R)
   letI : Module.Projective R (coinvariantSubmodule L J) :=
     coinvariantSubmodule_projective L J
   exact formedSublattice L (coinvariantSubmodule L J)
+
+/-- The orthogonal sum of the invariant and coinvariant lattices inside the ambient lattice. -/
+noncomputable def invariantCoinvariantOrthogonalSumInclusion
+    (L : IntegralLatticeCat R) [Module.Finite R L.obj.carrier]
+    (J : Involution L) :
+    orthogonalSum (invariantLattice L J) (coinvariantLattice L J) ⟶ L := by
+  letI := fixedSubmodule_projective L J
+  letI : Module.Projective R
+      (orthogonalSubmodule L (fixedSubmodule L J)) := by
+    change Module.Projective R (coinvariantSubmodule L J)
+    exact coinvariantSubmodule_projective L J
+  exact sublatticeOrthogonalSumInclusion L (fixedSubmodule L J)
+
+/-- The invariant and coinvariant lattices have finite index in the ambient lattice. -/
+theorem invariantCoinvariantOrthogonalSum_isFiniteIndex
+    [NeZero (2 : R)] [Finite (R ⧸ Ideal.span {(2 : R)})]
+    (L : IntegralLatticeCat R) [Module.Finite R L.obj.carrier]
+    (J : Involution L) (hL : L.obj.IsNondegenerate) :
+    BilinModuleCat.IsFiniteIndexEmbedding
+      (invariantCoinvariantOrthogonalSumInclusion L J).hom := by
+  letI := fixedSubmodule_projective L J
+  letI : Module.Projective R
+      (orthogonalSubmodule L (fixedSubmodule L J)) := by
+    change Module.Projective R (coinvariantSubmodule L J)
+    exact coinvariantSubmodule_projective L J
+  change BilinModuleCat.IsFiniteIndexEmbedding
+    (sublatticeOrthogonalSumInclusion L (fixedSubmodule L J)).hom
+  rw [sublatticeOrthogonalSumInclusion_isFiniteIndex_iff L
+    (fixedSubmodule L J) (invariantLattice_isNondegenerate L J hL)]
+  exact invariantCoinvariantGlue_finite L J hL
 
 /-- The inclusion of the coinvariant lattice. -/
 noncomputable def coinvariantLatticeInclusion (L : IntegralLatticeCat R)

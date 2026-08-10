@@ -365,6 +365,13 @@ instance orthogonalGlueModuleModule (L : IntegralLatticeCat R)
   inferInstanceAs (Module R
     (L.obj.carrier ⧸ (P ⊔ orthogonalSubmodule L P)))
 
+instance orthogonalGlueModuleFinite (L : IntegralLatticeCat R)
+    [Module.Finite R L.obj.carrier]
+    (P : Submodule R L.obj.carrier) :
+    Module.Finite R (orthogonalGlueModule L P) :=
+  inferInstanceAs (Module.Finite R
+    (L.obj.carrier ⧸ (P ⊔ orthogonalSubmodule L P)))
+
 /-- The ambient lattice projects onto the glue module. -/
 def orthogonalGlueProjection (L : IntegralLatticeCat R)
     (P : Submodule R L.obj.carrier) :
