@@ -140,6 +140,28 @@ theorem determinant_associated {I : Type*} [Fintype I] [DecidableEq I]
       (((LinearMap.BilinForm.toMatrix b) L.obj.bilinMap).det *
         ((b.toMatrix c).det * (b.toMatrix c).det)))
 
+/-- The determinant ideal of a finite free lattice in a selected basis. -/
+noncomputable def determinantIdeal {I : Type*} [Fintype I] [DecidableEq I]
+    (L : IntegralLatticeCat R)
+    (b : Module.Basis I R L.obj.carrier) : Ideal R :=
+  Ideal.span {determinant L b}
+
+/-- The determinant ideal does not depend on the selected basis. -/
+theorem determinantIdeal_eq {I : Type*} [Fintype I] [DecidableEq I]
+    (L : IntegralLatticeCat R)
+    (b c : Module.Basis I R L.obj.carrier) :
+    determinantIdeal L b = determinantIdeal L c := by
+  obtain ⟨u, hu⟩ := determinant_associated L b c
+  change Ideal.span {determinant L b} = Ideal.span {determinant L c}
+  rw [← hu, Ideal.span_singleton_mul_right_unit u.isUnit]
+
+@[simp]
+theorem determinantIdeal_eq_top_iff {I : Type*} [Fintype I]
+    [DecidableEq I] (L : IntegralLatticeCat R)
+    (b : Module.Basis I R L.obj.carrier) :
+    determinantIdeal L b = ⊤ ↔ IsUnit (determinant L b) := by
+  exact Ideal.span_singleton_eq_top
+
 /-- Unimodularity does not depend on the selected finite basis. -/
 theorem isUnit_determinant_iff {I : Type*} [Fintype I] [DecidableEq I]
     (L : IntegralLatticeCat R)
@@ -171,6 +193,14 @@ theorem isUnimodular_iff_isUnit_determinant {I : Type*} [Fintype I]
   · intro h
     exact (LinearEquiv.ofIsUnitDet
       (f := L.obj.adjoint) (v := b) (v' := b.dualBasis) h).bijective
+
+/-- A finite free lattice is unimodular exactly when its determinant ideal is trivial. -/
+theorem isUnimodular_iff_determinantIdeal_eq_top {I : Type*} [Fintype I]
+    [DecidableEq I] (L : IntegralLatticeCat R)
+    (b : Module.Basis I R L.obj.carrier) :
+    IsUnimodular L ↔ determinantIdeal L b = ⊤ := by
+  exact (isUnimodular_iff_isUnit_determinant L b).trans
+    (determinantIdeal_eq_top_iff L b).symm
 
 /-- The orthogonal direct-sum bilinear map. -/
 def orthogonalSumBilinMap (L₁ L₂ : BilinModuleCat R W) :
