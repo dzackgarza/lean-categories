@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Lattices.Valued.Arithmetic
 public import LeanCategories.Lattices.Valued.ChangeValue
+public import Mathlib.RingTheory.Flat.Basic
 
 @[expose] public section
 
@@ -16,7 +17,7 @@ open LeanCategories.Modules.Bilinear.Valued
 
 namespace LeanCategories.Lattices.Valued
 
-universe u
+universe u v
 
 variable (R : Type u) [CommRing R]
 variable (W : Type u) [AddCommGroup W] [Module R W]
@@ -24,6 +25,18 @@ variable (W : Type u) [AddCommGroup W] [Module R W]
 section BaseChange
 
 variable (S : Type u) [CommRing S] [Algebra R S]
+
+/-- Flat scalar extension preserves exact sequences of linear maps. -/
+theorem baseChange_exact [Module.Flat R S]
+    {M N P : Type v}
+    [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
+    [Module R M] [Module R N] [Module R P]
+    (f : M →ₗ[R] N) (g : N →ₗ[R] P)
+    (h : Function.Exact f g) :
+    Function.Exact (LinearMap.baseChange S f)
+      (LinearMap.baseChange S g) := by
+  simpa only [LinearMap.baseChange_eq_ltensor] using
+    Module.Flat.lTensor_exact S h
 
 /-- Scalar extension of the form. -/
 def baseChangeForm (L : BilinModuleCat R W) :

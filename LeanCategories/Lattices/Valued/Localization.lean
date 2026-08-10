@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Lattices.Valued.BaseChange
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.Flat.Localization
 
 @[expose] public section
 
@@ -16,6 +17,19 @@ namespace LeanCategories.Lattices.Valued
 universe u
 
 variable (R : Type u) [CommRing R]
+
+/-- Localization at a prime ideal preserves exact linear sequences. -/
+theorem localizeAtPrime_exact
+    (P : Ideal R) [P.IsPrime]
+    {M N O : Type u}
+    [AddCommGroup M] [AddCommGroup N] [AddCommGroup O]
+    [Module R M] [Module R N] [Module R O]
+    (f : M →ₗ[R] N) (g : N →ₗ[R] O)
+    (h : Function.Exact f g) :
+    Function.Exact
+      (LinearMap.baseChange (Localization.AtPrime P) f)
+      (LinearMap.baseChange (Localization.AtPrime P) g) :=
+  baseChange_exact R (Localization.AtPrime P) f g h
 
 /-- Integral lattices localized at a prime ideal. -/
 noncomputable def localizeIntegralAtPrime
