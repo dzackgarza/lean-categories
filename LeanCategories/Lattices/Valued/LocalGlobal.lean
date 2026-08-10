@@ -5,7 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Lattices.Valued.Arithmetic
-public import LeanCategories.Lattices.Valued.BaseChange
+public import LeanCategories.Lattices.Valued.Completion
 public import Mathlib.Data.Real.Basic
 public import Mathlib.NumberTheory.Padics.PadicIntegers
 
@@ -32,8 +32,8 @@ noncomputable def IsPadicallyIsometricAt (p : ℕ) (hp : p.Prime)
     (L M : IntegralLatticeCat ℤ) : Prop :=
   letI : Fact p.Prime := ⟨hp⟩
   Nonempty
-    (((baseChangeIntegral ℤ ℤ_[p]).obj L) ≅
-      ((baseChangeIntegral ℤ ℤ_[p]).obj M))
+    (((completeIntegralAtPrime p).obj L) ≅
+      ((completeIntegralAtPrime p).obj M))
 
 /-- Two finite integral lattices have the same genus. -/
 noncomputable def SameGenus
@@ -95,7 +95,7 @@ theorem sameGenus_of_isGloballyIsometric
   · exact ⟨(baseChangeIntegral ℤ ℝ).mapIso latticeIso⟩
   · intro p hp
     letI : Fact p.Prime := ⟨hp⟩
-    exact ⟨(baseChangeIntegral ℤ ℤ_[p]).mapIso latticeIso⟩
+    exact ⟨(completeIntegralAtPrime p).mapIso latticeIso⟩
 
 /-- Global isometry as an equivalence relation on finite integral lattices. -/
 def globalIsometrySetoid : Setoid (FiniteProjectiveLatticeCat ℤ ℤ) where
