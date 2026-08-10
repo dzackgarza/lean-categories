@@ -40,6 +40,23 @@ universe u
 variable {R : Type u} [CommRing R]
 variable {W : Type u} [AddCommGroup W] [Module R W]
 
+/-- A primitive formed embedding between projective symmetric lattices. -/
+abbrev PrimitiveEmbedding (L M : LatticeCat R W) :=
+  {f : L ⟶ M // BilinModuleCat.IsPrimitiveEmbedding f.hom}
+
+/-- A primitive embedding from `L` to `M` exists. -/
+def HasPrimitiveEmbedding (L M : LatticeCat R W) : Prop :=
+  Nonempty (PrimitiveEmbedding L M)
+
+/-- Lattices which admit a primitive embedding into `M`. -/
+def primitiveEmbeddableProperty (M : LatticeCat R W) :
+    ObjectProperty (LatticeCat R W) :=
+  fun L ↦ HasPrimitiveEmbedding L M
+
+/-- The full category of lattices which embed primitively into `M`. -/
+abbrev PrimitiveEmbeddableCat (M : LatticeCat R W) :=
+  (primitiveEmbeddableProperty M).FullSubcategory
+
 /-- A submodule is primitive when its quotient is torsion-free. -/
 def IsPrimitiveSubmodule {M : Type u} [AddCommGroup M] [Module R M]
     (P : Submodule R M) : Prop :=

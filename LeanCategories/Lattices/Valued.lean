@@ -24,9 +24,11 @@ public import LeanCategories.Lattices.Valued.Completion
 public import LeanCategories.Lattices.Valued.Residue
 public import LeanCategories.Lattices.Valued.LocalGlobal
 public import LeanCategories.Lattices.Valued.LocalInvariants
+public import LeanCategories.Lattices.Valued.Dyadic
 public import LeanCategories.Lattices.Valued.Jordan
 public import LeanCategories.Lattices.Valued.Hasse
 public import LeanCategories.Lattices.Valued.Spinor
+public import LeanCategories.Lattices.Valued.SpinorGenus
 public import LeanCategories.Lattices.Valued.Involution
 public import LeanCategories.Lattices.Valued.Reflection
 public import LeanCategories.Lattices.Valued.RootSystem

@@ -230,4 +230,21 @@ noncomputable def evenDiscriminantQuadraticFormModuleInt
   evenDiscriminantQuadraticFormModule L hL hEven
     (discriminant_isTorsion_int L hL)
 
+/-- An anti-isometry between the quadratic discriminant forms of two even lattices. -/
+noncomputable abbrev EvenDiscriminantAntiIsometry
+    (L M : IntegralLatticeCat R)
+    (hL : IsGenericallyNondegenerate R L)
+    (hM : IsGenericallyNondegenerate R M)
+    (hEvenL : IsEven L) (hEvenM : IsEven M) :=
+  (-evenDiscriminantQuadraticMap L hL hEvenL).IsometryEquiv
+    (evenDiscriminantQuadraticMap M hM hEvenM)
+
+/-- The quadratic discriminant forms of two even lattices are anti-isometric. -/
+def HasEvenDiscriminantAntiIsometry
+    (L M : IntegralLatticeCat R)
+    (hL : IsGenericallyNondegenerate R L)
+    (hM : IsGenericallyNondegenerate R M)
+    (hEvenL : IsEven L) (hEvenM : IsEven M) : Prop :=
+  Nonempty (EvenDiscriminantAntiIsometry L M hL hM hEvenL hEvenM)
+
 end LeanCategories.Lattices.Valued

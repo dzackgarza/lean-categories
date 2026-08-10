@@ -50,6 +50,24 @@ def HasHyperbolicSummand (L : FiniteFormCat K K) : Prop :=
 def HasWittDecomposition (L : FiniteFormCat K K) : Prop :=
   Nonempty (WittDecomposition K L)
 
+/-- An isometry after adding finite hyperbolic forms to both sides. -/
+structure WittStableIsometry (L M : FiniteFormCat K K) where
+  leftCarrier : Type u
+  [leftCarrierAddCommGroup : AddCommGroup leftCarrier]
+  [leftCarrierModule : Module K leftCarrier]
+  [leftCarrierFinite : Module.Finite K leftCarrier]
+  rightCarrier : Type u
+  [rightCarrierAddCommGroup : AddCommGroup rightCarrier]
+  [rightCarrierModule : Module K rightCarrier]
+  [rightCarrierFinite : Module.Finite K rightCarrier]
+  isometry :
+    finiteFormOrthogonalSum L (hyperbolicFiniteForm K leftCarrier) ≅
+      finiteFormOrthogonalSum M (hyperbolicFiniteForm K rightCarrier)
+
+/-- Two finite forms are Witt equivalent when they are stably isometric. -/
+def IsWittEquivalent (L M : FiniteFormCat K K) : Prop :=
+  Nonempty (WittStableIsometry K L M)
+
 /-- A Witt decomposition gives a hyperbolic summand. -/
 theorem HasWittDecomposition.hasHyperbolicSummand
     {L : FiniteFormCat K K} (hL : HasWittDecomposition K L) :

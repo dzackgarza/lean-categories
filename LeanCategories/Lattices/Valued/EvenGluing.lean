@@ -20,6 +20,22 @@ universe u
 variable {R : Type u} [CommRing R] [IsDomain R]
 variable {L : IntegralLatticeCat R}
 
+/-- The discriminant anti-isometry data used to glue two even lattices. -/
+structure EvenDiscriminantGluingData
+    (L M : IntegralLatticeCat R) where
+  left_isGenericallyNondegenerate : IsGenericallyNondegenerate R L
+  right_isGenericallyNondegenerate : IsGenericallyNondegenerate R M
+  left_isEven : IsEven L
+  right_isEven : IsEven M
+  antiIsometry : EvenDiscriminantAntiIsometry L M
+    left_isGenericallyNondegenerate right_isGenericallyNondegenerate
+    left_isEven right_isEven
+
+/-- Two even lattices have discriminant data which can support anti-isometric gluing. -/
+def HasEvenDiscriminantGluingData
+    (L M : IntegralLatticeCat R) : Prop :=
+  Nonempty (EvenDiscriminantGluingData L M)
+
 /-- An isotropic subgroup of the quadratic discriminant form of an even lattice. -/
 noncomputable abbrev EvenDiscriminantIsotropicSubgroup
     (hL : IsGenericallyNondegenerate R L) (hEven : IsEven L) :=
