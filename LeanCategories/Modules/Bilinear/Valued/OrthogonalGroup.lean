@@ -9,6 +9,8 @@ public import Mathlib.LinearAlgebra.BilinearForm.IsometryEquiv
 
 @[expose] public section
 
+open CategoryTheory
+
 namespace LeanCategories.Modules.Bilinear.Valued
 
 universe u
@@ -63,6 +65,31 @@ theorem to_fromMathlibIsometryEquiv
     {N : BilinModuleCat R R}
     (g : N.asBilinForm.IsometryEquiv N.asBilinForm) :
     toMathlibIsometryEquiv (fromMathlibIsometryEquiv g) = g :=
+  rfl
+
+/-- Regard an orthogonal-group element as an automorphism in the formed-module category. -/
+def toIso (g : OrthogonalGroup M) : M ≅ M where
+  hom := BilinModuleCat.homMk g.1.toLinearMap g.property
+  inv := BilinModuleCat.homMk g.1.symm.toLinearMap (fun x y ↦ by
+    simpa using (g.property (g.1.symm x) (g.1.symm y)).symm)
+  hom_inv_id := by
+    apply Quiver.Hom.unop_inj
+    apply CategoryOfElements.ext
+    apply Quiver.Hom.unop_inj
+    apply ModuleCat.hom_ext
+    ext x
+    exact g.1.symm_apply_apply x
+  inv_hom_id := by
+    apply Quiver.Hom.unop_inj
+    apply CategoryOfElements.ext
+    apply Quiver.Hom.unop_inj
+    apply ModuleCat.hom_ext
+    ext x
+    exact g.1.apply_symm_apply x
+
+@[simp]
+theorem underlyingMap_toIso_hom (g : OrthogonalGroup M) :
+    BilinModuleCat.underlyingMap (toIso g).hom = g.1.toLinearMap :=
   rfl
 
 /-- The action of the orthogonal group on the carrier. -/

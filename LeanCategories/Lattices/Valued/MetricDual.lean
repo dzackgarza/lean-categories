@@ -52,6 +52,21 @@ noncomputable def toMetricDual (L : IntegralLatticeCat R) :
 def IsGenericallyNondegenerate (L : IntegralLatticeCat R) : Prop :=
   Function.Bijective (rationalizedForm R L)
 
+/-- Finite projective integral lattices whose rational forms are nondegenerate. -/
+def isGenericallyNondegenerateFiniteProjectiveLattice :
+    ObjectProperty (FiniteProjectiveLatticeCat R R) :=
+  fun L ↦ IsGenericallyNondegenerate R L.obj
+
+/-- The full category of finite projective, generically nondegenerate integral lattices. -/
+abbrev GenericallyNondegenerateFiniteProjectiveLatticeCat :=
+  (isGenericallyNondegenerateFiniteProjectiveLattice R).FullSubcategory
+
+/-- Forget finiteness and generic nondegeneracy while retaining the integral lattice. -/
+def genericallyNondegenerateFiniteProjectiveForget :
+    GenericallyNondegenerateFiniteProjectiveLatticeCat R ⥤ IntegralLatticeCat R :=
+  (isGenericallyNondegenerateFiniteProjectiveLattice R).ι ⋙
+    (isFiniteProjectiveLattice R R).ι
+
 omit [IsDomain R] in
 /-- A base-changed basis maps the integral Gram matrix into the fraction field. -/
 theorem rationalizedForm_toMatrix {I : Type*} [Fintype I]
