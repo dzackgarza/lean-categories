@@ -9,5 +9,6 @@ public import LeanCategories.Modules.Bilinear.Valued.Isometry
 public import LeanCategories.Modules.Bilinear.Valued.OrthogonalGroup
 public import LeanCategories.Modules.Bilinear.Valued.Primary
 public import LeanCategories.Modules.Bilinear.Valued.Torsion
+public import LeanCategories.Modules.Bilinear.Valued.Witt
 
 @[expose] public section
