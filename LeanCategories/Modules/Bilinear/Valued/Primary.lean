@@ -49,6 +49,38 @@ theorem underlyingMap_primaryComponentMap {A B : BilinModuleCat R W}
       Ideal.primaryComponent.map I (underlyingMap f) :=
   rfl
 
+/-- Restriction to an ideal-primary component is functorial on formed modules. -/
+def primaryComponentFunctor (I : Ideal R) :
+    BilinModuleCat R W ⥤ BilinModuleCat R W where
+  obj A := A.primaryComponent I
+  map f := primaryComponentMap I f
+  map_id A := by
+    apply Quiver.Hom.unop_inj
+    apply CategoryOfElements.ext
+    apply Quiver.Hom.unop_inj
+    apply ModuleCat.hom_ext
+    ext x
+    rfl
+  map_comp f g := by
+    apply Quiver.Hom.unop_inj
+    apply CategoryOfElements.ext
+    apply Quiver.Hom.unop_inj
+    apply ModuleCat.hom_ext
+    ext x
+    rfl
+
+/-- Each primary component includes naturally into its formed module. -/
+def primaryComponentInclusionNatTrans (I : Ideal R) :
+    primaryComponentFunctor I ⟶ 𝟭 (BilinModuleCat R W) where
+  app A := A.primaryComponentInclusion I
+  naturality A B f := by
+    apply Quiver.Hom.unop_inj
+    apply CategoryOfElements.ext
+    apply Quiver.Hom.unop_inj
+    apply ModuleCat.hom_ext
+    ext x
+    rfl
+
 end BilinModuleCat
 
 /-- The `I`-primary component of a finite torsion symmetric form. -/
@@ -69,6 +101,32 @@ noncomputable def primaryComponent
     exact ⟨a, Subtype.ext ha⟩
   · intro x y
     exact A.property.2.2 x.1 y.1
+
+/-- Primary restriction is a functor on finite torsion symmetric forms. -/
+noncomputable def finiteTorsionPrimaryComponentFunctor
+    [IsNoetherianRing R] (I : Ideal R) :
+    FiniteTorsionSymBilinModuleCat R W ⥤
+      FiniteTorsionSymBilinModuleCat R W where
+  obj A := primaryComponent I A
+  map f := ObjectProperty.homMk
+    (BilinModuleCat.primaryComponentMap I f.hom)
+  map_id A := by
+    apply ObjectProperty.hom_ext
+    exact (BilinModuleCat.primaryComponentFunctor I).map_id A.obj
+  map_comp f g := by
+    apply ObjectProperty.hom_ext
+    exact (BilinModuleCat.primaryComponentFunctor I).map_comp f.hom g.hom
+
+/-- The primary-component inclusions are natural on finite torsion symmetric forms. -/
+noncomputable def finiteTorsionPrimaryComponentInclusionNatTrans
+    [IsNoetherianRing R] (I : Ideal R) :
+    finiteTorsionPrimaryComponentFunctor I ⟶
+      𝟭 (FiniteTorsionSymBilinModuleCat R W) where
+  app A := ObjectProperty.homMk
+    (A.obj.primaryComponentInclusion I)
+  naturality A B f := by
+    apply ObjectProperty.hom_ext
+    exact (BilinModuleCat.primaryComponentInclusionNatTrans I).naturality f.hom
 
 /-- The carrier primary components span a torsion form over a Dedekind domain. -/
 theorem iSup_primaryComponent_eq_top [IsDedekindDomain R]
@@ -146,6 +204,31 @@ noncomputable def primaryComponentDirectSumIso [IsDedekindDomain R]
       change e (e.symm x) = x
       exact e.apply_symm_apply x
   }
+
+/-- A formed morphism acts on the direct sum of all primary components. -/
+noncomputable def primaryComponentDirectSumMap [IsDedekindDomain R]
+    {A B : FiniteTorsionSymBilinModuleCat R W} (f : A ⟶ B) :
+    primaryComponentDirectSum A ⟶ primaryComponentDirectSum B :=
+  (primaryComponentDirectSumIso A).hom ≫ f.hom ≫
+    (primaryComponentDirectSumIso B).inv
+
+/-- Primary decomposition is a functor to formed modules. -/
+noncomputable def primaryComponentDirectSumFunctor [IsDedekindDomain R] :
+    FiniteTorsionSymBilinModuleCat R W ⥤ BilinModuleCat R W where
+  obj := primaryComponentDirectSum
+  map := primaryComponentDirectSumMap
+  map_id A := by
+    simp [primaryComponentDirectSumMap]
+  map_comp f g := by
+    simp [primaryComponentDirectSumMap, Category.assoc]
+
+/-- The primary direct-sum functor is naturally isomorphic to the underlying form. -/
+noncomputable def primaryComponentDirectSumNatIso [IsDedekindDomain R] :
+    primaryComponentDirectSumFunctor ≅
+      (isFiniteTorsionSymBilinModule R W).ι :=
+  NatIso.ofComponents primaryComponentDirectSumIso fun {A B} f ↦ by
+    simp [primaryComponentDirectSumFunctor, primaryComponentDirectSumMap,
+      Category.assoc]
 
 /-- A vector supported at one height-one primary component. -/
 noncomputable def primaryComponentSingle [IsDedekindDomain R]
@@ -399,6 +482,32 @@ noncomputable def radicalFreePrimaryComponent [IsDedekindDomain R]
   exact ⟨C.obj, C.property.1, C.property.2.1, C.property.2.2,
     primaryComponent_isNondegenerate B A.property.2.2.2 P⟩
 
+/-- Height-one primary restriction is functorial on radical-free torsion forms. -/
+noncomputable def radicalFreePrimaryComponentFunctor [IsDedekindDomain R]
+    (P : IsDedekindDomain.HeightOneSpectrum R) :
+    RadicalFreeFiniteTorsionBilinModuleCat R W ⥤
+      RadicalFreeFiniteTorsionBilinModuleCat R W where
+  obj A := radicalFreePrimaryComponent P A
+  map f := ObjectProperty.homMk
+    (BilinModuleCat.primaryComponentMap P.asIdeal f.hom)
+  map_id A := by
+    apply ObjectProperty.hom_ext
+    exact (BilinModuleCat.primaryComponentFunctor P.asIdeal).map_id A.obj
+  map_comp f g := by
+    apply ObjectProperty.hom_ext
+    exact (BilinModuleCat.primaryComponentFunctor P.asIdeal).map_comp f.hom g.hom
+
+/-- Radical-free primary components include naturally into their source forms. -/
+noncomputable def radicalFreePrimaryComponentInclusionNatTrans
+    [IsDedekindDomain R] (P : IsDedekindDomain.HeightOneSpectrum R) :
+    radicalFreePrimaryComponentFunctor P ⟶
+      𝟭 (RadicalFreeFiniteTorsionBilinModuleCat R W) where
+  app A := ObjectProperty.homMk
+    (A.obj.primaryComponentInclusion P.asIdeal)
+  naturality A B f := by
+    apply ObjectProperty.hom_ext
+    exact (BilinModuleCat.primaryComponentInclusionNatTrans P.asIdeal).naturality f.hom
+
 /-- The perfect finite torsion category is closed under primary restriction. -/
 noncomputable def nonsingularPrimaryComponent [IsDedekindDomain R]
     (P : IsDedekindDomain.HeightOneSpectrum R)
@@ -409,5 +518,31 @@ noncomputable def nonsingularPrimaryComponent [IsDedekindDomain R]
   let C := primaryComponent P.asIdeal B
   exact ⟨C.obj, C.property.1, C.property.2.1, C.property.2.2,
     primaryComponent_isPerfect B A.property.2.2.2 P⟩
+
+/-- Height-one primary restriction is functorial on nonsingular torsion forms. -/
+noncomputable def nonsingularPrimaryComponentFunctor [IsDedekindDomain R]
+    (P : IsDedekindDomain.HeightOneSpectrum R) :
+    NonsingularFiniteTorsionBilinModuleCat R W ⥤
+      NonsingularFiniteTorsionBilinModuleCat R W where
+  obj A := nonsingularPrimaryComponent P A
+  map f := ObjectProperty.homMk
+    (BilinModuleCat.primaryComponentMap P.asIdeal f.hom)
+  map_id A := by
+    apply ObjectProperty.hom_ext
+    exact (BilinModuleCat.primaryComponentFunctor P.asIdeal).map_id A.obj
+  map_comp f g := by
+    apply ObjectProperty.hom_ext
+    exact (BilinModuleCat.primaryComponentFunctor P.asIdeal).map_comp f.hom g.hom
+
+/-- Nonsingular primary components include naturally into their source forms. -/
+noncomputable def nonsingularPrimaryComponentInclusionNatTrans
+    [IsDedekindDomain R] (P : IsDedekindDomain.HeightOneSpectrum R) :
+    nonsingularPrimaryComponentFunctor P ⟶
+      𝟭 (NonsingularFiniteTorsionBilinModuleCat R W) where
+  app A := ObjectProperty.homMk
+    (A.obj.primaryComponentInclusion P.asIdeal)
+  naturality A B f := by
+    apply ObjectProperty.hom_ext
+    exact (BilinModuleCat.primaryComponentInclusionNatTrans P.asIdeal).naturality f.hom
 
 end LeanCategories.Modules.Bilinear.Valued

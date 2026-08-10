@@ -1013,3 +1013,153 @@ The citations below identify the source passages used for the synthesis. They in
 - **[S7]** Same file and `DSLDiscussion/mathematical-language-style-guide.md`: audience-relative auditability; layer quarantine; foreign-discipline vocabulary, coinage, and collisions; mathematical prose aimed at working mathematicians.
 - **[S8]** `gpt-web-math-chats-2026-07-16_to_2026-07-23.zip`, extracted `graph-simplification-request/.../conversation.md`, lines 532–774: code-as-ontology capture; relation-kind collapse; proof-carrying laundering; capability promotion; false gaps; singleton reification; proxy optimization; principle–action decoupling; correction-local patching; formalization at typing speed; throughput replacing mathematical judgment.
 - **[S9]** `DSLDiscussion/axiom-classifiers-framework.md`: a distilled but partly provisional attempt to state the classifier, truncation, diagram-filler, and operadic framework. Used here only as evidence of the intended uniform scope; later corrections in [S3] control where the two conflict.
+
+I would not focus on this lattice example. I would diagnose a general failure of mathematical orientation.
+
+The student starts with an available artifact. The student then makes the mathematics conform to that artifact. The correct direction is the reverse.
+
+## Advice about mathematical objects
+
+1. Start with the object, not its representation.
+
+2. State the ambient category or structure.
+
+3. State the allowed morphisms.
+
+4. State when two objects count as equivalent.
+
+5. Separate an object from its coordinates, basis, presentation, generators, or equations.
+
+6. Identify every choice used in a construction.
+
+7. Prove that the result is independent of irrelevant choices.
+
+8. If dependence is real, include the choice in the mathematical object.
+
+9. Do not use a convenient representation as an unstated definition.
+
+10. Do not call one selected example a class of objects.
+
+## Advice about definitions
+
+11. Separate definitions from characterizations.
+
+12. Separate characterizations from computable tests.
+
+13. Separate constructions from recognition procedures.
+
+14. Separate mathematical properties from certificates of those properties.
+
+15. Do not define an object by properties that merely detect it in one presentation.
+
+16. Do not assume expected properties identify the intended object.
+
+17. A good name does not supply a missing definition.
+
+18. A classification claim needs an invariant comparison theorem.
+
+19. Find the lowest mathematical level where the structure is generated.
+
+20. Put each property where its required operations first exist.
+
+## Advice about proofs
+
+21. Ask why the theorem is true before asking how to prove it.
+
+22. Express that reason without coordinates when possible.
+
+23. Find the structural map, equivalence, or universal property.
+
+24. Prove transport through isomorphisms and equivalences.
+
+25. Make coordinate calculations consequences or local proof tools.
+
+26. Know the exact scope of every calculation.
+
+27. One successful computation proves one case unless another theorem expands its scope.
+
+28. Do not chain several shadows of one fact and call the chain an explanation.
+
+29. Check whether an intermediate theorem uses information equivalent to the conclusion.
+
+30. Search for counterexamples outside the selected presentation.
+
+31. Change the basis, coordinates, embedding, or model mentally.
+
+32. If the argument stops working, identify the missing invariance theorem.
+
+## Advice about generality
+
+33. Prove the generic statement before the named instance when the generic structure is already visible.
+
+34. Do not generalize without a mathematical reason.
+
+35. Generalize to the natural owner, not to the largest imaginable setting.
+
+36. Treat named examples as values of general constructions when appropriate.
+
+37. Make special examples corollaries of structural results.
+
+38. Do not create one new theory for each convenient presentation.
+
+39. Ask what later constructions can reuse from the theorem.
+
+40. A theorem with no transport or composition behavior is often only a local certificate.
+
+## Advice about formalization
+
+41. Do not let the prover choose the mathematics.
+
+42. Settle the object, statement, and abstraction level before writing tactics.
+
+43. Treat typechecking as proof of the encoded statement only.
+
+44. Typechecking does not prove that the encoding matches the intended mathematics.
+
+45. Do not confuse a short proof with a good definition.
+
+46. Do not confuse a long proof with substantial mathematics.
+
+47. Name representation lemmas as representation lemmas.
+
+48. Keep implementation checks below the invariant mathematical interface.
+
+49. If every new presentation needs a new proof, the abstraction is incomplete.
+
+50. If a theorem only confirms construction data, call it a sanity check.
+
+## Advice about learning
+
+51. Explain the object without software vocabulary.
+
+52. Explain the same idea through two different presentations.
+
+53. Give an example where the selected criterion fails to transport.
+
+54. Derive consequences from an advisor’s insight.
+
+55. Do not copy the advisor’s latest wording as a new rule.
+
+56. Do not replace understanding with agreement.
+
+57. Test understanding on an unrelated subject.
+
+58. Compare a group with a presentation of that group.
+
+59. Compare a linear map with one matrix representing it.
+
+60. Compare a module with one chosen basis.
+
+61. Compare a manifold with one coordinate chart.
+
+62. Compare a functor with its action on selected objects.
+
+63. In each example, identify what changes and what remains fixed.
+
+64. Learn to detect artifact-first reasoning before calculation begins.
+
+The central lesson is this:
+
+> Mathematics determines its representations. Representations do not determine the mathematics without a theorem connecting them.
+
+A coordinate calculation can be excellent mathematics. It becomes poor mathematics when it silently acts as definition, classification, and semantic certification.
