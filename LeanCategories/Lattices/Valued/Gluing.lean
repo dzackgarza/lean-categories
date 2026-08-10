@@ -21,9 +21,7 @@ variable {R : Type u} [CommRing R] [IsDomain R]
 def IsIntegralSubmodule (R : Type u) [CommRing R] [IsDomain R]
     (L : IntegralLatticeCat R)
     (P : Submodule R (RationalSpan R L)) : Prop :=
-  ∀ x ∈ P, ∀ y ∈ P,
-    rationalizedForm R L x y ∈
-      LinearMap.range (Algebra.linearMap R (FractionRing R))
+  P ≤ (rationalizedForm R L).dualSubmodule P
 
 /-- An integral overlattice lies between a lattice and its metric dual. -/
 noncomputable def Overlattice (R : Type u) [CommRing R] [IsDomain R]
@@ -127,7 +125,13 @@ theorem overlatticeSubmodule_isIntegral
     {L : IntegralLatticeCat R} (hL : IsGenericallyNondegenerate R L)
     (H : DiscriminantIsotropicSubgroup R hL) :
     IsIntegralSubmodule R L (overlatticeSubmodule R hL H) := by
-  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
+  intro z hz
+  rcases hz with ⟨x, hx, hxz⟩
+  subst z
+  intro w hw
+  rcases hw with ⟨y, hy, hyw⟩
+  subst w
+  rw [Submodule.mem_one]
   have hyOrthogonal := H.property hy
   have hzero :=
     ((discriminantBilinObject R L hL).mem_orthogonalSubmodule_iff
@@ -175,7 +179,13 @@ theorem glueSubgroup_isTotallyIsotropic (M : Overlattice R L) :
   rw [discriminant_pairing_metricDualToDiscriminant R hL]
   change fractionValueProjection R
       (rationalizedForm R L (y : RationalSpan R L) (x : RationalSpan R L)) = 0
-  rcases M.isIntegral y y.property x x.property with ⟨r, hr⟩
+  have hyDual := M.isIntegral y.property
+  change ∀ z ∈ M.carrier,
+      rationalizedForm R L (y : RationalSpan R L) z ∈
+        (1 : Submodule R (FractionRing R)) at hyDual
+  have hPair := hyDual x x.property
+  rw [Submodule.mem_one] at hPair
+  rcases hPair with ⟨r, hr⟩
   rw [← hr]
   change fractionValueProjection R
       (algebraMap R (FractionRing R) r) = 0
