@@ -448,6 +448,72 @@ theorem e6Lattice_isEven : IsEven e6Lattice := by
   refine ⟨-1, ?_⟩
   fin_cases i <;> norm_num
 
+/-- The selected `E₆` roots as real coordinate columns. -/
+noncomputable def e6RealRootMatrix : Matrix (Fin 8) (Fin 6) ℝ :=
+  fun k i ↦ e6RootNumerator i k / 2
+
+/-- The real `E₆` Gram matrix is negative the coordinate Gram matrix. -/
+theorem e6RealGram_factorization :
+    e6GramMatrix.map (Int.castRingHom ℝ) =
+      -(e6RealRootMatrix.transpose * e6RealRootMatrix) := by
+  ext i j
+  have hroots :
+      (∑ k, (e6RootNumerator i k : ℝ) * e6RootNumerator j k) =
+        4 * e6RootInnerProduct i j := by
+    exact_mod_cast e6RootInnerProduct_spec i j
+  simp only [Matrix.map_apply, e6GramMatrix, map_neg,
+    Matrix.neg_apply, Matrix.mul_apply, Matrix.transpose_apply,
+    e6RealRootMatrix]
+  calc
+    -(e6RootInnerProduct i j : ℝ) =
+        -((4 : ℝ) * e6RootInnerProduct i j / 4) := by ring
+    _ = -((∑ k, (e6RootNumerator i k : ℝ) *
+        e6RootNumerator j k) / 4) := by rw [hroots]
+    _ = -∑ k, (e6RootNumerator i k : ℝ) / 2 *
+        ((e6RootNumerator j k : ℝ) / 2) := by
+      congr 1
+      rw [div_eq_mul_inv, Finset.sum_mul]
+      apply Finset.sum_congr rfl
+      intro k _
+      ring
+
+/-- The real coordinate map of the selected `E₆` roots is injective. -/
+theorem e6RealRootMatrix_mulVec_injective :
+    Function.Injective e6RealRootMatrix.mulVec := by
+  intro x y hxy
+  apply sub_eq_zero.mp
+  apply Matrix.eq_zero_of_mulVec_eq_zero (M :=
+    e6GramMatrix.map (Int.castRingHom ℝ))
+  · change (e6GramMatrix.map (fun x : ℤ ↦ (x : ℝ))).det ≠ 0
+    rw [← Int.cast_det, e6GramMatrix_det]
+    norm_num
+  · rw [e6RealGram_factorization, Matrix.neg_mulVec, neg_eq_zero]
+    rw [← Matrix.mulVec_mulVec, Matrix.mulVec_sub, hxy, sub_self,
+      Matrix.mulVec_zero]
+
+/-- The negative `E₆` lattice has real matrix signature `(0,6,0)`. -/
+theorem e6Lattice_matrixSignature :
+    matrixSignature ℝ (e6GramMatrix.map (Int.castRingHom ℝ)) =
+      (0, 6, 0) := by
+  rw [e6RealGram_factorization]
+  exact matrixSignature_neg_transpose_mul_self e6RealRootMatrix
+    e6RealRootMatrix_mulVec_injective
+
+/-- The negative `E₆` lattice has signature `(0,6,0)`. -/
+theorem e6Lattice_integralSignature :
+    integralSignature e6FiniteLattice = (0, 6, 0) := by
+  rw [integralSignature_eq_matrixSignature e6FiniteLattice
+    (Pi.basisFun ℤ (Fin 6))]
+  rw [show gramMatrix e6FiniteLattice.obj (Pi.basisFun ℤ (Fin 6)) =
+    e6GramMatrix from e6Lattice_gramMatrix]
+  exact e6Lattice_matrixSignature
+
+/-- The selected `E₆` lattice is negative definite. -/
+theorem e6Lattice_isNegativeDefinite :
+    IsNegativeDefiniteLattice e6FiniteLattice := by
+  simp [IsNegativeDefiniteLattice, IsNegativeDefiniteSignature,
+    e6Lattice_integralSignature]
+
 /-- Twice the coordinates of the first seven roots in the selected `E₈` presentation. -/
 def e7RootNumerator (i : Fin 7) : Fin 8 → ℤ :=
   e8RootNumerator (Fin.castLE (by omega) i)
@@ -572,6 +638,72 @@ theorem e7Lattice_natCard_defect :
 noncomputable def e7LatticeDefectEquivZMod :
     e7Lattice.obj.defect ≃+ ZMod 2 :=
   addEquivOfPrimeCardEq e7Lattice_natCard_defect (Nat.card_zmod 2)
+
+/-- The selected `E₇` roots as real coordinate columns. -/
+noncomputable def e7RealRootMatrix : Matrix (Fin 8) (Fin 7) ℝ :=
+  fun k i ↦ e7RootNumerator i k / 2
+
+/-- The real `E₇` Gram matrix is negative the coordinate Gram matrix. -/
+theorem e7RealGram_factorization :
+    e7GramMatrix.map (Int.castRingHom ℝ) =
+      -(e7RealRootMatrix.transpose * e7RealRootMatrix) := by
+  ext i j
+  have hroots :
+      (∑ k, (e7RootNumerator i k : ℝ) * e7RootNumerator j k) =
+        4 * e7RootInnerProduct i j := by
+    exact_mod_cast e7RootInnerProduct_spec i j
+  simp only [Matrix.map_apply, e7GramMatrix, map_neg,
+    Matrix.neg_apply, Matrix.mul_apply, Matrix.transpose_apply,
+    e7RealRootMatrix]
+  calc
+    -(e7RootInnerProduct i j : ℝ) =
+        -((4 : ℝ) * e7RootInnerProduct i j / 4) := by ring
+    _ = -((∑ k, (e7RootNumerator i k : ℝ) *
+        e7RootNumerator j k) / 4) := by rw [hroots]
+    _ = -∑ k, (e7RootNumerator i k : ℝ) / 2 *
+        ((e7RootNumerator j k : ℝ) / 2) := by
+      congr 1
+      rw [div_eq_mul_inv, Finset.sum_mul]
+      apply Finset.sum_congr rfl
+      intro k _
+      ring
+
+/-- The real coordinate map of the selected `E₇` roots is injective. -/
+theorem e7RealRootMatrix_mulVec_injective :
+    Function.Injective e7RealRootMatrix.mulVec := by
+  intro x y hxy
+  apply sub_eq_zero.mp
+  apply Matrix.eq_zero_of_mulVec_eq_zero (M :=
+    e7GramMatrix.map (Int.castRingHom ℝ))
+  · change (e7GramMatrix.map (fun x : ℤ ↦ (x : ℝ))).det ≠ 0
+    rw [← Int.cast_det, e7GramMatrix_det]
+    norm_num
+  · rw [e7RealGram_factorization, Matrix.neg_mulVec, neg_eq_zero]
+    rw [← Matrix.mulVec_mulVec, Matrix.mulVec_sub, hxy, sub_self,
+      Matrix.mulVec_zero]
+
+/-- The negative `E₇` lattice has real matrix signature `(0,7,0)`. -/
+theorem e7Lattice_matrixSignature :
+    matrixSignature ℝ (e7GramMatrix.map (Int.castRingHom ℝ)) =
+      (0, 7, 0) := by
+  rw [e7RealGram_factorization]
+  exact matrixSignature_neg_transpose_mul_self e7RealRootMatrix
+    e7RealRootMatrix_mulVec_injective
+
+/-- The negative `E₇` lattice has signature `(0,7,0)`. -/
+theorem e7Lattice_integralSignature :
+    integralSignature e7FiniteLattice = (0, 7, 0) := by
+  rw [integralSignature_eq_matrixSignature e7FiniteLattice
+    (Pi.basisFun ℤ (Fin 7))]
+  rw [show gramMatrix e7FiniteLattice.obj (Pi.basisFun ℤ (Fin 7)) =
+    e7GramMatrix from e7Lattice_gramMatrix]
+  exact e7Lattice_matrixSignature
+
+/-- The selected `E₇` lattice is negative definite. -/
+theorem e7Lattice_isNegativeDefinite :
+    IsNegativeDefiniteLattice e7FiniteLattice := by
+  simp [IsNegativeDefiniteLattice, IsNegativeDefiniteSignature,
+    e7Lattice_integralSignature]
 
 /-- The negative definite `E₈` root lattice in its simple-root basis. -/
 noncomputable def e8Lattice : IntegralLatticeCat ℤ := by

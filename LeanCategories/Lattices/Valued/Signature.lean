@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Core
 public import Mathlib.Data.Matrix.Block
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
+public import Mathlib.LinearAlgebra.Matrix.DotProduct
 public import Mathlib.LinearAlgebra.QuadraticForm.Real
 public import Mathlib.LinearAlgebra.QuadraticForm.Signature
 public import Mathlib.LinearAlgebra.QuadraticForm.Prod
@@ -251,6 +252,43 @@ theorem matrixSignature_eq_of_equivalent_weighted
   rw [QuadraticForm.sigPos_of_equiv_weightedSumSquares h,
     QuadraticForm.sigNeg_of_equiv_weightedSumSquares h,
     QuadraticForm.finrank_radical_of_equiv_weightedSumSquares h]
+
+/-- An injective coordinate map gives a negative-definite Gram matrix. -/
+theorem matrixSignature_neg_transpose_mul_self
+    {I J : Type*} [Fintype I] [Fintype J] [DecidableEq J]
+    (B : Matrix I J ℝ) (hB : Function.Injective B.mulVec) :
+    matrixSignature ℝ (-(B.transpose * B)) =
+      (0, Fintype.card J, 0) := by
+  let Q := matrixQuadraticForm ℝ (-(B.transpose * B))
+  have hneg : (-Q).PosDef := by
+    intro x hx
+    have hBx : B.mulVec x ≠ 0 := by
+      intro h
+      exact hx (hB (h.trans (Matrix.mulVec_zero B).symm))
+    have hsquares : 0 < dotProduct (B.mulVec x) (B.mulVec x) :=
+      lt_of_le_of_ne (Fintype.sum_nonneg fun _ ↦ mul_self_nonneg _)
+        (Ne.symm (dotProduct_self_eq_zero.not.mpr hBx))
+    simp only [QuadraticMap.neg_apply, Left.neg_pos_iff, gt_iff_lt]
+    change Matrix.toBilin' (-(B.transpose * B)) x x < 0
+    rw [Matrix.toBilin'_apply', Matrix.neg_mulVec, dotProduct_neg,
+      neg_lt_zero]
+    rw [← Matrix.mulVec_mulVec, Matrix.dotProduct_transpose_mulVec]
+    exact hsquares
+  have hsigNeg : sigNeg Q = Fintype.card J := by
+    apply le_antisymm
+    · simpa [Q, Module.finrank_fintype_fun_eq_card] using
+        sigPos_le_finrank (-Q)
+    · have htop : ((-Q).restrict (⊤ : Submodule ℝ (J → ℝ))).PosDef := by
+        intro x hx
+        exact hneg x.1 (by simpa using hx)
+      simpa [Module.finrank_fintype_fun_eq_card] using
+        le_sigNeg_of_negDef Q htop
+  have hsum := QuadraticForm.sigPos_add_sigNeg_add_radical (Q := Q)
+  rw [hsigNeg, Module.finrank_fintype_fun_eq_card] at hsum
+  have hsigPos : sigPos Q = 0 := by omega
+  have hradical : Module.finrank ℝ Q.radical = 0 := by omega
+  change (sigPos Q, sigNeg Q, Module.finrank ℝ Q.radical) = _
+  rw [hsigPos, hsigNeg, hradical]
 
 /-- Signature is invariant under isomorphisms of finite symmetric forms. -/
 theorem signature_eq_of_iso {L M : FiniteFormCat K K} (e : L ≅ M) :
