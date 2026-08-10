@@ -48,6 +48,28 @@ noncomputable def toMetricDual (L : IntegralLatticeCat R) :
     rw [rationalizedForm_tmul]
     simp)
 
+/-- A lattice is unimodular when its metric dual equals its integral image. -/
+noncomputable def IsUnimodular (L : IntegralLatticeCat R) : Prop :=
+  metricDual R L = integralImage R L
+
+/-- Metric-dual equality is equivalent to surjectivity of the canonical inclusion. -/
+theorem isUnimodular_iff_toMetricDual_surjective (L : IntegralLatticeCat R) :
+    IsUnimodular R L ↔ Function.Surjective (toMetricDual R L) := by
+  constructor
+  · intro h v
+    have hv : (v : RationalSpan R L) ∈ integralImage R L := h ▸ v.property
+    rcases hv with ⟨x, hx⟩
+    refine ⟨x, Subtype.ext ?_⟩
+    exact hx
+  · intro h
+    apply le_antisymm
+    · intro v hv
+      obtain ⟨x, hx⟩ := h ⟨v, hv⟩
+      exact ⟨x, congrArg Subtype.val hx⟩
+    · intro v hv
+      rcases hv with ⟨x, rfl⟩
+      exact (toMetricDual R L x).property
+
 /-- Rational nondegeneracy means that the adjoint of the extended form is bijective. -/
 def IsGenericallyNondegenerate (L : IntegralLatticeCat R) : Prop :=
   Function.Bijective (rationalizedForm R L)
@@ -60,6 +82,15 @@ def isGenericallyNondegenerateFiniteProjectiveLattice :
 /-- The full category of finite projective, generically nondegenerate integral lattices. -/
 abbrev GenericallyNondegenerateFiniteProjectiveLatticeCat :=
   (isGenericallyNondegenerateFiniteProjectiveLattice R).FullSubcategory
+
+/-- Unimodular finite projective lattices with nondegenerate rational form. -/
+noncomputable def isUnimodularFiniteProjectiveLattice :
+    ObjectProperty (GenericallyNondegenerateFiniteProjectiveLatticeCat R) :=
+  fun L ↦ IsUnimodular R L.obj.obj
+
+/-- The full category of unimodular finite projective lattices. -/
+noncomputable abbrev UnimodularLatticeCat :=
+  (isUnimodularFiniteProjectiveLattice R).FullSubcategory
 
 /-- Forget finiteness and generic nondegeneracy while retaining the integral lattice. -/
 def genericallyNondegenerateFiniteProjectiveForget :
@@ -349,6 +380,38 @@ theorem rieszMetricDualEquiv_adjoint (L : IntegralLatticeCat R)
   apply Subtype.ext
   change rieszEmbedding R L hL (L.obj.adjoint x) = toRationalSpan R L x
   exact rieszEmbedding_adjoint R L hL x
+
+/-- The canonical map from a projective lattice to its metric dual is injective. -/
+theorem toMetricDual_injective (L : IntegralLatticeCat R) :
+    Function.Injective (toMetricDual R L) := by
+  intro x y hxy
+  letI : Module.Projective R L.obj.carrier := L.property.1
+  apply Module.Flat.tensorProduct_mk_injective R L.obj.carrier (FractionRing R)
+  exact congrArg Subtype.val hxy
+
+/-- For a generically nondegenerate lattice, perfectness equals unimodularity. -/
+theorem isPerfect_iff_isUnimodular (L : IntegralLatticeCat R)
+    (hL : IsGenericallyNondegenerate R L) :
+    L.obj.IsPerfect ↔ IsUnimodular R L := by
+  rw [isUnimodular_iff_toMetricDual_surjective]
+  let e := rieszMetricDualEquiv R L hL
+  constructor
+  · intro h v
+    obtain ⟨x, hx⟩ := h.2 (e.symm v)
+    refine ⟨x, ?_⟩
+    rw [← rieszMetricDualEquiv_adjoint R L hL]
+    simpa only [LinearEquiv.apply_symm_apply] using congrArg e hx
+  · intro h
+    refine ⟨?_, ?_⟩
+    · intro x y hxy
+      apply toMetricDual_injective R L
+      rw [← rieszMetricDualEquiv_adjoint R L hL,
+        ← rieszMetricDualEquiv_adjoint R L hL, hxy]
+    · intro f
+      obtain ⟨x, hx⟩ := h (e f)
+      refine ⟨x, e.injective ?_⟩
+      rw [rieszMetricDualEquiv_adjoint R L hL]
+      exact hx
 
 /-- The restriction of `b_K` to the metric-dual submodule. -/
 noncomputable def metricDualBilinMap (L : IntegralLatticeCat R) :

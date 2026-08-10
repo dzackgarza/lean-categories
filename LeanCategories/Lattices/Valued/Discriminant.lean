@@ -576,12 +576,6 @@ theorem toRationalSpan_injective (L : IntegralLatticeCat R) :
   letI : Module.Projective R L.obj.carrier := L.property.1
   exact Module.Flat.tensorProduct_mk_injective R L.obj.carrier (FractionRing R)
 
-theorem toMetricDual_injective (L : IntegralLatticeCat R) :
-    Function.Injective (toMetricDual R L) := by
-  intro x y h
-  apply toRationalSpan_injective R L
-  exact congr_arg Subtype.val h
-
 theorem exact_radical_toMetricDual_iff (L : IntegralLatticeCat R) :
     Function.Exact L.obj.radicalInclusion (toMetricDual R L) ↔
       L.obj.IsNondegenerate := by

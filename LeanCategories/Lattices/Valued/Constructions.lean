@@ -114,10 +114,6 @@ noncomputable def determinant {I : Type*} [Fintype I] [DecidableEq I]
     (L : IntegralLatticeCat R) (b : Module.Basis I R L.obj.carrier) : R :=
   (gramMatrix L b).det
 
-/-- A lattice is unimodular when its adjoint is a linear equivalence. -/
-def IsUnimodular (L : IntegralLatticeCat R) : Prop :=
-  Function.Bijective L.obj.adjoint
-
 /-- Gram determinants from two bases with the same index are associated. -/
 theorem determinant_associated {I : Type*} [Fintype I] [DecidableEq I]
     (L : IntegralLatticeCat R)
@@ -182,10 +178,10 @@ theorem adjoint_toMatrix_eq_gramMatrix {I : Type*} [Fintype I]
   exact L.property.2 (b j) (b i)
 
 /-- For a finite free lattice, perfectness is equivalent to a unit Gram determinant. -/
-theorem isUnimodular_iff_isUnit_determinant {I : Type*} [Fintype I]
+theorem isPerfect_iff_isUnit_determinant {I : Type*} [Fintype I]
     [DecidableEq I] (L : IntegralLatticeCat R)
     (b : Module.Basis I R L.obj.carrier) :
-    IsUnimodular L ↔ IsUnit (determinant L b) := by
+    L.obj.IsPerfect ↔ IsUnit (determinant L b) := by
   rw [determinant]
   rw [← adjoint_toMatrix_eq_gramMatrix L b]
   constructor
@@ -195,12 +191,12 @@ theorem isUnimodular_iff_isUnit_determinant {I : Type*} [Fintype I]
     exact (LinearEquiv.ofIsUnitDet
       (f := L.obj.adjoint) (v := b) (v' := b.dualBasis) h).bijective
 
-/-- A finite free lattice is unimodular exactly when its determinant ideal is trivial. -/
-theorem isUnimodular_iff_determinantIdeal_eq_top {I : Type*} [Fintype I]
+/-- A finite free lattice is perfect exactly when its determinant ideal is trivial. -/
+theorem isPerfect_iff_determinantIdeal_eq_top {I : Type*} [Fintype I]
     [DecidableEq I] (L : IntegralLatticeCat R)
     (b : Module.Basis I R L.obj.carrier) :
-    IsUnimodular L ↔ determinantIdeal L b = ⊤ := by
-  exact (isUnimodular_iff_isUnit_determinant L b).trans
+    L.obj.IsPerfect ↔ determinantIdeal L b = ⊤ := by
+  exact (isPerfect_iff_isUnit_determinant L b).trans
     (determinantIdeal_eq_top_iff L b).symm
 
 /-- The orthogonal direct-sum bilinear map. -/
@@ -300,17 +296,17 @@ theorem determinantIdeal_orthogonalSum
     Ideal.span {determinant L b} * Ideal.span {determinant M c}
   exact (Ideal.span_singleton_mul_span_singleton _ _).symm
 
-/-- An orthogonal sum of unimodular integral lattices is unimodular. -/
-theorem isUnimodular_orthogonalSum (L₁ L₂ : IntegralLatticeCat R)
-    (h₁ : IsUnimodular L₁) (h₂ : IsUnimodular L₂) :
-    IsUnimodular (orthogonalSum L₁ L₂) := by
+/-- An orthogonal sum of perfect integral lattices is perfect. -/
+theorem isPerfect_orthogonalSum (L₁ L₂ : IntegralLatticeCat R)
+    (h₁ : L₁.obj.IsPerfect) (h₂ : L₂.obj.IsPerfect) :
+    (orthogonalSum L₁ L₂).obj.IsPerfect := by
   let e : (L₁.obj.carrier × L₂.obj.carrier) ≃ₗ[R]
       ((L₁.obj.carrier × L₂.obj.carrier) →ₗ[R] R) :=
     (LinearEquiv.prodCongr
       (LinearEquiv.ofBijective L₁.obj.adjoint h₁)
       (LinearEquiv.ofBijective L₂.obj.adjoint h₂)).trans
         (Module.dualProdDualEquivDual R L₁.obj.carrier L₂.obj.carrier)
-  rw [IsUnimodular]
+  change Function.Bijective (orthogonalSum L₁ L₂).obj.adjoint
   have he : (orthogonalSum L₁ L₂).obj.adjoint = e.toLinearMap := by
     apply LinearMap.ext
     intro x
@@ -465,17 +461,17 @@ noncomputable def finiteProjectiveOrthogonalPowerSuccIso
   exact ObjectProperty.isoMk
     (P := isFiniteProjectiveLattice R W) eLattice
 
-/-- A finite indexed orthogonal sum of unimodular lattices is unimodular. -/
-theorem isUnimodular_indexedOrthogonalSum {I : Type} [Fintype I]
-    (L : I → IntegralLatticeCat R) (hL : ∀ i, IsUnimodular (L i)) :
-    IsUnimodular (indexedOrthogonalSum L) := by
+/-- A finite indexed orthogonal sum of perfect lattices is perfect. -/
+theorem isPerfect_indexedOrthogonalSum {I : Type} [Fintype I]
+    (L : I → IntegralLatticeCat R) (hL : ∀ i, (L i).obj.IsPerfect) :
+    (indexedOrthogonalSum L).obj.IsPerfect := by
   classical
   let e : ((i : I) → (L i).obj.carrier) ≃ₗ[R]
       (((i : I) → (L i).obj.carrier) →ₗ[R] R) :=
     (LinearEquiv.piCongrRight fun i ↦
       LinearEquiv.ofBijective (L i).obj.adjoint (hL i)).trans
         (LinearMap.lsum R (fun i ↦ (L i).obj.carrier) R)
-  rw [IsUnimodular]
+  change Function.Bijective (indexedOrthogonalSum L).obj.adjoint
   have he : (indexedOrthogonalSum L).obj.adjoint = e.toLinearMap := by
     apply LinearMap.ext
     intro x
@@ -503,9 +499,9 @@ theorem orthogonalPower_pairing (L : LatticeCat R W) (n : ℕ)
       ∑ i, L.obj.pairing (x i) (y i) :=
   rfl
 
-/-- Every finite orthogonal power of a unimodular lattice is unimodular. -/
-theorem isUnimodular_orthogonalPower (L : IntegralLatticeCat R) (n : ℕ)
-    (hL : IsUnimodular L) : IsUnimodular (orthogonalPower L n) :=
-  isUnimodular_indexedOrthogonalSum (fun _ : Fin n ↦ L) (fun _ ↦ hL)
+/-- Every finite orthogonal power of a perfect lattice is perfect. -/
+theorem isPerfect_orthogonalPower (L : IntegralLatticeCat R) (n : ℕ)
+    (hL : L.obj.IsPerfect) : (orthogonalPower L n).obj.IsPerfect :=
+  isPerfect_indexedOrthogonalSum (fun _ : Fin n ↦ L) (fun _ ↦ hL)
 
 end LeanCategories.Lattices.Valued

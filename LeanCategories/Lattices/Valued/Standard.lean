@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Lattices.Valued.Arithmetic
 public import LeanCategories.Lattices.Valued.Constructions
+public import LeanCategories.Lattices.Valued.MetricDual
 public import LeanCategories.Lattices.Valued.ScaleAndEvenness
 public import LeanCategories.Lattices.Valued.Signature
 public import LeanCategories.Lattices.Valued.SmithNormalForm
@@ -47,11 +48,23 @@ theorem rankZeroLattice_gramMatrix :
       rankZeroGramMatrix :=
   LinearMap.BilinForm.toMatrix'_toBilin' rankZeroGramMatrix
 
-/-- The rank-zero lattice is unimodular. -/
-theorem rankZeroLattice_isUnimodular : IsUnimodular rankZeroLattice := by
-  rw [isUnimodular_iff_isUnit_determinant rankZeroLattice
+/-- The rank-zero lattice is perfect. -/
+theorem rankZeroLattice_isPerfect : rankZeroLattice.obj.IsPerfect := by
+  rw [isPerfect_iff_isUnit_determinant rankZeroLattice
     (Pi.basisFun ℤ (Fin 0))]
   simp [determinant, rankZeroLattice_gramMatrix, rankZeroGramMatrix]
+
+/-- The rank-zero lattice is generically nondegenerate. -/
+theorem rankZeroLattice_isGenericallyNondegenerate :
+    IsGenericallyNondegenerate ℤ rankZeroLattice := by
+  rw [isGenericallyNondegenerate_iff_determinant_ne_zero
+    ℤ rankZeroLattice (Pi.basisFun ℤ (Fin 0))]
+  simp [determinant, rankZeroLattice_gramMatrix, rankZeroGramMatrix]
+
+/-- The rank-zero lattice is unimodular. -/
+theorem rankZeroLattice_isUnimodular : IsUnimodular ℤ rankZeroLattice :=
+  (isPerfect_iff_isUnimodular ℤ rankZeroLattice
+    rankZeroLattice_isGenericallyNondegenerate).mp rankZeroLattice_isPerfect
 
 /-- The Gram matrix of the rank-one lattice with square `a`. -/
 def rankOneGramMatrix (a : ℤ) : Matrix (Fin 1) (Fin 1) ℤ := !![a]
@@ -95,10 +108,10 @@ theorem rankOneLattice_determinantIdeal (a : ℤ) :
       Ideal.span {a} := by
   rw [determinantIdeal, rankOneLattice_determinant]
 
-/-- A rank-one lattice is unimodular exactly when its square is a unit. -/
-theorem rankOneLattice_isUnimodular_iff (a : ℤ) :
-    IsUnimodular (rankOneLattice a) ↔ IsUnit a := by
-  rw [isUnimodular_iff_isUnit_determinant
+/-- A rank-one lattice is perfect exactly when its square is a unit. -/
+theorem rankOneLattice_isPerfect_iff (a : ℤ) :
+    (rankOneLattice a).obj.IsPerfect ↔ IsUnit a := by
+  rw [isPerfect_iff_isUnit_determinant
     (rankOneLattice a) (Pi.basisFun ℤ (Fin 1))]
   simp
 
@@ -893,16 +906,21 @@ theorem e8Lattice_natCard_defect :
 theorem e8GramMatrix_isUnit_det : IsUnit e8GramMatrix.det :=
   Matrix.isUnit_det_of_right_inverse e8GramMatrix_mul_inverse
 
-/-- The negative `E₈` lattice is unimodular. -/
-theorem e8Lattice_isUnimodular : IsUnimodular e8Lattice := by
-  rw [isUnimodular_iff_isUnit_determinant e8Lattice (Pi.basisFun ℤ (Fin 8))]
+/-- The negative `E₈` lattice is perfect. -/
+theorem e8Lattice_isPerfect : e8Lattice.obj.IsPerfect := by
+  rw [isPerfect_iff_isUnit_determinant e8Lattice (Pi.basisFun ℤ (Fin 8))]
   simpa [determinant, e8Lattice_gramMatrix] using e8GramMatrix_isUnit_det
+
+/-- The negative `E₈` lattice is unimodular. -/
+theorem e8Lattice_isUnimodular : IsUnimodular ℤ e8Lattice :=
+  (isPerfect_iff_isUnimodular ℤ e8Lattice
+    e8Lattice_isGenericallyNondegenerate).mp e8Lattice_isPerfect
 
 /-- The determinant ideal of the negative `E₈` lattice is the unit ideal. -/
 theorem e8Lattice_determinantIdeal_eq_top :
     determinantIdeal e8Lattice (Pi.basisFun ℤ (Fin 8)) = ⊤ :=
-  (isUnimodular_iff_determinantIdeal_eq_top e8Lattice
-    (Pi.basisFun ℤ (Fin 8))).mp e8Lattice_isUnimodular
+  (isPerfect_iff_determinantIdeal_eq_top e8Lattice
+    (Pi.basisFun ℤ (Fin 8))).mp e8Lattice_isPerfect
 
 /-- The negative `E₈` lattice is even. -/
 theorem e8Lattice_isEven : IsEven e8Lattice := by
@@ -951,19 +969,33 @@ theorem hyperbolicPlane_gramMatrix :
       hyperbolicPlaneGramMatrix := by
   exact LinearMap.BilinForm.toMatrix'_toBilin' hyperbolicPlaneGramMatrix
 
-/-- The integral hyperbolic plane is unimodular. -/
-theorem hyperbolicPlane_isUnimodular : IsUnimodular hyperbolicPlane := by
-  rw [isUnimodular_iff_isUnit_determinant hyperbolicPlane
+/-- The integral hyperbolic plane is perfect. -/
+theorem hyperbolicPlane_isPerfect : hyperbolicPlane.obj.IsPerfect := by
+  rw [isPerfect_iff_isUnit_determinant hyperbolicPlane
     (Pi.basisFun ℤ (Fin 2))]
   rw [determinant, hyperbolicPlane_gramMatrix, hyperbolicPlaneGramMatrix,
     Matrix.det_fin_two]
   norm_num
 
+/-- The integral hyperbolic plane is generically nondegenerate. -/
+theorem hyperbolicPlane_isGenericallyNondegenerate :
+    IsGenericallyNondegenerate ℤ hyperbolicPlane := by
+  rw [isGenericallyNondegenerate_iff_determinant_ne_zero
+    ℤ hyperbolicPlane (Pi.basisFun ℤ (Fin 2))]
+  rw [determinant, hyperbolicPlane_gramMatrix, hyperbolicPlaneGramMatrix,
+    Matrix.det_fin_two]
+  norm_num
+
+/-- The integral hyperbolic plane is unimodular. -/
+theorem hyperbolicPlane_isUnimodular : IsUnimodular ℤ hyperbolicPlane :=
+  (isPerfect_iff_isUnimodular ℤ hyperbolicPlane
+    hyperbolicPlane_isGenericallyNondegenerate).mp hyperbolicPlane_isPerfect
+
 /-- The determinant ideal of the hyperbolic plane is the unit ideal. -/
 theorem hyperbolicPlane_determinantIdeal_eq_top :
     determinantIdeal hyperbolicPlane (Pi.basisFun ℤ (Fin 2)) = ⊤ :=
-  (isUnimodular_iff_determinantIdeal_eq_top hyperbolicPlane
-    (Pi.basisFun ℤ (Fin 2))).mp hyperbolicPlane_isUnimodular
+  (isPerfect_iff_determinantIdeal_eq_top hyperbolicPlane
+    (Pi.basisFun ℤ (Fin 2))).mp hyperbolicPlane_isPerfect
 
 /-- The integral hyperbolic plane is even. -/
 theorem hyperbolicPlane_isEven : IsEven hyperbolicPlane := by
@@ -1483,17 +1515,30 @@ theorem k3Lattice_isIndefinite :
   simp [IsIndefiniteLattice, IsIndefiniteSignature,
     k3Lattice_integralSignature]
 
+/-- The `K3` lattice is perfect. -/
+theorem k3Lattice_isPerfect : k3Lattice.obj.IsPerfect :=
+  isPerfect_orthogonalSum _ _
+    (isPerfect_orthogonalPower hyperbolicPlane 3 hyperbolicPlane_isPerfect)
+    (isPerfect_orthogonalPower e8Lattice 2 e8Lattice_isPerfect)
+
+/-- The `K3` lattice is generically nondegenerate. -/
+theorem k3Lattice_isGenericallyNondegenerate :
+    IsGenericallyNondegenerate ℤ k3Lattice := by
+  rw [isGenericallyNondegenerate_iff_determinant_ne_zero
+    ℤ k3Lattice k3Basis]
+  exact ((isPerfect_iff_isUnit_determinant k3Lattice k3Basis).mp
+    k3Lattice_isPerfect).ne_zero
+
 /-- The `K3` lattice is unimodular. -/
-theorem k3Lattice_isUnimodular : IsUnimodular k3Lattice :=
-  isUnimodular_orthogonalSum _ _
-    (isUnimodular_orthogonalPower hyperbolicPlane 3 hyperbolicPlane_isUnimodular)
-    (isUnimodular_orthogonalPower e8Lattice 2 e8Lattice_isUnimodular)
+theorem k3Lattice_isUnimodular : IsUnimodular ℤ k3Lattice :=
+  (isPerfect_iff_isUnimodular ℤ k3Lattice
+    k3Lattice_isGenericallyNondegenerate).mp k3Lattice_isPerfect
 
 /-- The determinant ideal of the `K3` lattice is the unit ideal. -/
 theorem k3Lattice_determinantIdeal_eq_top :
     determinantIdeal k3Lattice k3Basis = ⊤ :=
-  (isUnimodular_iff_determinantIdeal_eq_top k3Lattice k3Basis).mp
-    k3Lattice_isUnimodular
+  (isPerfect_iff_determinantIdeal_eq_top k3Lattice k3Basis).mp
+    k3Lattice_isPerfect
 
 /-- The `K3` lattice is even. -/
 theorem k3Lattice_isEven : IsEven k3Lattice :=
