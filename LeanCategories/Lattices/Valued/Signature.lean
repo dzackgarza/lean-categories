@@ -224,6 +224,14 @@ def IsPositiveDefiniteSignature : ℕ × ℕ × ℕ → Prop
 def IsNegativeDefiniteSignature : ℕ × ℕ × ℕ → Prop
   | (p, _, z) => p = 0 ∧ z = 0
 
+/-- A signature value is positive semidefinite when it has no negative part. -/
+def IsPositiveSemidefiniteSignature : ℕ × ℕ × ℕ → Prop
+  | (_, n, _) => n = 0
+
+/-- A signature value is negative semidefinite when it has no positive part. -/
+def IsNegativeSemidefiniteSignature : ℕ × ℕ × ℕ → Prop
+  | (p, _, _) => p = 0
+
 /-- A signature value is indefinite when both signed parts are nonzero. -/
 def IsIndefiniteSignature : ℕ × ℕ × ℕ → Prop
   | (p, n, _) => 0 < p ∧ 0 < n
@@ -231,5 +239,31 @@ def IsIndefiniteSignature : ℕ × ℕ × ℕ → Prop
 /-- A nondegenerate signature is Lorentzian when its smaller signed rank is one. -/
 def IsLorentzianSignature : ℕ × ℕ × ℕ → Prop
   | (p, n, z) => min p n = 1 ∧ z = 0
+
+/-- A finite integral lattice is positive definite through its real signature. -/
+def IsPositiveDefiniteLattice (L : FiniteProjectiveLatticeCat ℤ ℤ) : Prop :=
+  IsPositiveDefiniteSignature (integralSignature L)
+
+/-- A finite integral lattice is negative definite through its real signature. -/
+def IsNegativeDefiniteLattice (L : FiniteProjectiveLatticeCat ℤ ℤ) : Prop :=
+  IsNegativeDefiniteSignature (integralSignature L)
+
+/-- A finite integral lattice is positive semidefinite through its real signature. -/
+def IsPositiveSemidefiniteLattice
+    (L : FiniteProjectiveLatticeCat ℤ ℤ) : Prop :=
+  IsPositiveSemidefiniteSignature (integralSignature L)
+
+/-- A finite integral lattice is negative semidefinite through its real signature. -/
+def IsNegativeSemidefiniteLattice
+    (L : FiniteProjectiveLatticeCat ℤ ℤ) : Prop :=
+  IsNegativeSemidefiniteSignature (integralSignature L)
+
+/-- A finite integral lattice is indefinite through its real signature. -/
+def IsIndefiniteLattice (L : FiniteProjectiveLatticeCat ℤ ℤ) : Prop :=
+  IsIndefiniteSignature (integralSignature L)
+
+/-- A finite integral lattice is Lorentzian through its real signature. -/
+def IsLorentzianLattice (L : FiniteProjectiveLatticeCat ℤ ℤ) : Prop :=
+  IsLorentzianSignature (integralSignature L)
 
 end LeanCategories.Lattices.Valued

@@ -657,6 +657,12 @@ theorem hyperbolicPlane_integralSignature :
       hyperbolicPlane_gramMatrix]
   exact hyperbolicPlane_matrixSignature
 
+/-- The hyperbolic plane is indefinite. -/
+theorem hyperbolicPlane_isIndefinite :
+    IsIndefiniteLattice hyperbolicPlaneFiniteLattice := by
+  simp [IsIndefiniteLattice, IsIndefiniteSignature,
+    hyperbolicPlane_integralSignature]
+
 theorem hyperbolicRealGram_factorization :
     hyperbolicPlaneGramMatrix.map (Int.castRingHom ℝ) =
       hyperbolicRealChange.transpose * Matrix.diagonal hyperbolicRealWeights *
@@ -795,6 +801,12 @@ theorem e8Lattice_integralSignature :
   rw [show gramMatrix e8FiniteLattice.obj (Pi.basisFun ℤ (Fin 8)) =
     e8GramMatrix from e8Lattice_gramMatrix]
   exact e8Lattice_matrixSignature
+
+/-- The selected `E₈` lattice is negative definite. -/
+theorem e8Lattice_isNegativeDefinite :
+    IsNegativeDefiniteLattice e8FiniteLattice := by
+  simp [IsNegativeDefiniteLattice, IsNegativeDefiniteSignature,
+    e8Lattice_integralSignature]
 
 /-- The `K3` lattice `3U ⊥ 2E₈`, with negative `E₈`. -/
 noncomputable def k3Lattice : IntegralLatticeCat ℤ :=
@@ -1073,6 +1085,13 @@ theorem k3Lattice_integralSignature :
   rw [show gramMatrix k3FiniteLattice.obj k3Basis = k3GramMatrix from
     k3Lattice_gramMatrix]
   exact k3Lattice_matrixSignature
+
+/-- The `K3` lattice is indefinite. -/
+theorem k3Lattice_isIndefinite :
+    IsIndefiniteLattice k3FiniteLattice := by
+  simp [IsIndefiniteLattice, IsIndefiniteSignature,
+    k3Lattice_integralSignature]
+
 /-- The `K3` lattice is unimodular. -/
 theorem k3Lattice_isUnimodular : IsUnimodular k3Lattice :=
   isUnimodular_orthogonalSum _ _
