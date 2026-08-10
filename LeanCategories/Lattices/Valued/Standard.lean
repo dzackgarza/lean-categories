@@ -169,6 +169,74 @@ theorem aRootLattice_gramMatrix (n : ℕ) :
       aRootGramMatrix n :=
   latticeOfGramMatrix_gramMatrix _ _
 
+theorem aRootFiniteLattice_gramMatrix (n : ℕ) :
+    gramMatrix (aRootFiniteLattice n).obj (Pi.basisFun ℤ (Fin n)) =
+      aRootGramMatrix n :=
+  latticeOfGramMatrix_gramMatrix
+    (aRootGramMatrix n) (aRootGramMatrix_isSymm n)
+
+/-- The coordinate matrix whose columns are the standard type-`A` roots. -/
+def aRootCoordinateMatrix (n : ℕ) : Matrix (Fin (n + 1)) (Fin n) ℝ :=
+  fun k i ↦ aRootVector n i k
+
+/-- The square matrix obtained from the first `n` root coordinates. -/
+def aRootLeadingMatrix (n : ℕ) : Matrix (Fin n) (Fin n) ℝ :=
+  (aRootCoordinateMatrix n).submatrix Fin.castSucc id
+
+private theorem aRootLeadingMatrix_lowerTriangular (n : ℕ) :
+    (aRootLeadingMatrix n).BlockTriangular OrderDual.toDual := by
+  intro i j hij
+  change i < j at hij
+  simp only [aRootLeadingMatrix, Matrix.submatrix_apply, Function.id_def,
+    aRootCoordinateMatrix, aRootVector, Fin.val_castSucc]
+  split_ifs <;> norm_num <;> omega
+
+theorem aRootLeadingMatrix_det (n : ℕ) :
+    (aRootLeadingMatrix n).det = 1 := by
+  rw [Matrix.det_of_lowerTriangular _
+    (aRootLeadingMatrix_lowerTriangular n)]
+  simp [aRootLeadingMatrix, aRootCoordinateMatrix, aRootVector]
+
+private theorem aRootLeadingMatrix_isUnit (n : ℕ) :
+    IsUnit (aRootLeadingMatrix n) := by
+  rw [Matrix.isUnit_iff_isUnit_det, aRootLeadingMatrix_det]
+  exact isUnit_one
+
+theorem aRootCoordinateMatrix_mulVec_injective (n : ℕ) :
+    Function.Injective (aRootCoordinateMatrix n).mulVec := by
+  intro x y hxy
+  apply Matrix.mulVec_injective_of_isUnit (aRootLeadingMatrix_isUnit n)
+  funext k
+  have hk := congrFun hxy k.castSucc
+  simpa [aRootLeadingMatrix, aRootCoordinateMatrix, Matrix.mulVec,
+    dotProduct] using hk
+
+/-- The real type-`A` Gram matrix is negative coordinate dot product. -/
+theorem aRootGramMatrix_cast (n : ℕ) :
+    (aRootGramMatrix n).map (Int.castRingHom ℝ) =
+      -((aRootCoordinateMatrix n).transpose * aRootCoordinateMatrix n) := by
+  ext i j
+  simp only [aRootGramMatrix, Matrix.map_apply, RingHom.map_neg,
+    Matrix.neg_apply, Matrix.mul_apply, Matrix.transpose_apply,
+    aRootCoordinateMatrix]
+  congr 1
+  rw [map_sum]
+  apply Finset.sum_congr rfl
+  intro k _
+  rw [map_mul]
+  rfl
+
+/-- The negative type-`A` lattice has signature `(0,n,0)`. -/
+theorem aRootLattice_signature (n : ℕ) :
+    integralSignature (aRootFiniteLattice n) = (0, n, 0) := by
+  rw [integralSignature_eq_matrixSignature
+    (aRootFiniteLattice n) (Pi.basisFun ℤ (Fin n))]
+  rw [aRootFiniteLattice_gramMatrix, aRootGramMatrix_cast,
+    matrixSignature_neg_transpose_mul_self
+      (aRootCoordinateMatrix n)
+      (aRootCoordinateMatrix_mulVec_injective n)]
+  simp
+
 private theorem sum_two_indicators {I : Type*} [Fintype I] [DecidableEq I]
     (i₀ i₁ : I) (hi : i₀ ≠ i₁) :
     (∑ k, if k = i₀ then (1 : ℤ) else if k = i₁ then 1 else 0) = 2 := by
