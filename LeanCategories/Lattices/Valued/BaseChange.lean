@@ -216,45 +216,32 @@ section CompositionComparison
 variable (T : Type u) [CommRing T]
 variable [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
-/-- Canonical scalar-tower equivalence for iterated extension of modules. -/
-noncomputable def scalarTowerTensorEquiv
-    (M : Type u) [AddCommGroup M] [Module R M] :
-    TensorProduct R T M ≃ₗ[T]
-      TensorProduct S T (TensorProduct R S M) :=
-  (TensorProduct.AlgebraTensorModule.congr
-      (TensorProduct.AlgebraTensorModule.rid S T T)
-      (LinearEquiv.refl R M)).symm.trans
-    (TensorProduct.AlgebraTensorModule.assoc R S T T S M)
-
-@[simp]
-theorem scalarTowerTensorEquiv_tmul
-    (M : Type u) [AddCommGroup M] [Module R M]
-    (a : T) (x : M) :
-    scalarTowerTensorEquiv R S T M (a ⊗ₜ[R] x) =
-      a ⊗ₜ[S] (1 ⊗ₜ[R] x) :=
-  rfl
-
 /-- Direct and iterated scalar extension give isomorphic formed objects. -/
 noncomputable def baseChangeBilWFormCompositionIsoObj
     (X : BilWFormCat R) :
     (baseChangeBilWForm R T).obj X ≅
       (baseChangeBilWForm S T).obj ((baseChangeBilWForm R S).obj X) :=
-  BilWFormCat.isoMk (scalarTowerTensorEquiv R S T X.carrier)
-    (scalarTowerTensorEquiv R S T X.value) (by
+  BilWFormCat.isoMk
+    (TensorProduct.AlgebraTensorModule.cancelBaseChange R S T T X.carrier).symm
+    (TensorProduct.AlgebraTensorModule.cancelBaseChange R S T T X.value).symm (by
       intro x y
-      change scalarTowerTensorEquiv R S T X.value
+      change (TensorProduct.AlgebraTensorModule.cancelBaseChange
+          R S T T X.value).symm
           (LinearMap.BilinMap.baseChange T X.formed.bilinMap x y) =
         LinearMap.BilinMap.baseChange T
           (LinearMap.BilinMap.baseChange S X.formed.bilinMap)
-          (scalarTowerTensorEquiv R S T X.carrier x)
-          (scalarTowerTensorEquiv R S T X.carrier y)
+          ((TensorProduct.AlgebraTensorModule.cancelBaseChange
+            R S T T X.carrier).symm x)
+          ((TensorProduct.AlgebraTensorModule.cancelBaseChange
+            R S T T X.carrier).symm y)
       induction x using TensorProduct.induction_on with
       | zero => simp only [LinearMap.zero_apply, map_zero]
       | tmul a x =>
         induction y using TensorProduct.induction_on with
         | zero => simp only [map_zero]
         | tmul b y => simp only [LinearMap.BilinMap.baseChange_tmul,
-            scalarTowerTensorEquiv_tmul, one_mul]
+            TensorProduct.AlgebraTensorModule.cancelBaseChange_symm_tmul,
+            one_mul]
         | add y₁ y₂ hy₁ hy₂ =>
           simp only [map_add, hy₁, hy₂]
       | add x₁ x₂ hx₁ hx₂ =>
@@ -268,11 +255,13 @@ noncomputable def baseChangeBilWFormCompositionIso :
     intro X Y f
     apply BilWFormCat.hom_ext
     · apply ModuleCat.hom_ext
-      change (scalarTowerTensorEquiv R S T Y.value).toLinearMap.comp
+      change (TensorProduct.AlgebraTensorModule.cancelBaseChange
+          R S T T Y.value).symm.toLinearMap.comp
           (LinearMap.baseChange T (BilWFormCat.valueMap f).hom) =
         (LinearMap.baseChange T
           (LinearMap.baseChange S (BilWFormCat.valueMap f).hom)).comp
-            (scalarTowerTensorEquiv R S T X.value).toLinearMap
+            (TensorProduct.AlgebraTensorModule.cancelBaseChange
+              R S T T X.value).symm.toLinearMap
       apply LinearMap.ext
       intro z
       induction z using TensorProduct.induction_on with
@@ -284,11 +273,13 @@ noncomputable def baseChangeBilWFormCompositionIso :
         rfl
       | add x y hx hy => simp only [map_add, hx, hy]
     · apply ModuleCat.hom_ext
-      change (scalarTowerTensorEquiv R S T Y.carrier).toLinearMap.comp
+      change (TensorProduct.AlgebraTensorModule.cancelBaseChange
+          R S T T Y.carrier).symm.toLinearMap.comp
           (LinearMap.baseChange T (BilWFormCat.carrierMap f).hom) =
         (LinearMap.baseChange T
           (LinearMap.baseChange S (BilWFormCat.carrierMap f).hom)).comp
-            (scalarTowerTensorEquiv R S T X.carrier).toLinearMap
+            (TensorProduct.AlgebraTensorModule.cancelBaseChange
+              R S T T X.carrier).symm.toLinearMap
       apply LinearMap.ext
       intro z
       induction z using TensorProduct.induction_on with

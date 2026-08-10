@@ -42,7 +42,8 @@ noncomputable def IsPadicScalarExtensionOf (p : ℕ) [Fact p.Prime]
   ∀ x : L.obj.obj.carrier,
     ((finiteProjectiveForget ℚ_[p] ℚ_[p]).mapIso eₚ).toLinearEquiv
         (1 ⊗ₜ[ℤ] x) =
-      (scalarTowerTensorEquiv ℤ ℚ ℚ_[p] M.obj.obj.carrier).symm
+      TensorProduct.AlgebraTensorModule.cancelBaseChange
+        ℤ ℚ ℚ_[p] ℚ_[p] M.obj.obj.carrier
         (1 ⊗ₜ[ℚ]
           ((finiteProjectiveForget ℚ ℚ).mapIso e).toLinearEquiv
             (1 ⊗ₜ[ℤ] x))
@@ -55,7 +56,8 @@ noncomputable def IsPadicCompletionExtensionOf (p : ℕ) [Fact p.Prime]
   ∀ x : L.obj.obj.carrier,
     ((finiteProjectiveForget ℚ_[p] ℚ_[p]).mapIso eₚ).toLinearEquiv
         (1 ⊗ₜ[ℤ] x) =
-      (scalarTowerTensorEquiv ℤ ℤ_[p] ℚ_[p] M.obj.obj.carrier).symm
+      TensorProduct.AlgebraTensorModule.cancelBaseChange
+        ℤ ℤ_[p] ℚ_[p] ℚ_[p] M.obj.obj.carrier
         (1 ⊗ₜ[ℤ_[p]]
           ((finiteProjectiveForget ℤ_[p] ℤ_[p]).mapIso e).toLinearEquiv
             (1 ⊗ₜ[ℤ] x))
