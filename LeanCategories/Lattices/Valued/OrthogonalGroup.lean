@@ -69,4 +69,40 @@ theorem submoduleStabilizer_le_orthogonalSubmoduleStabilizer
   rw [MulAction.mem_stabilizer_iff] at hg ⊢
   rw [smul_orthogonalSubmodule, hg]
 
+/-- Orthogonal-group elements carry saturation to saturation. -/
+theorem smul_saturation [IsDomain R] (L : IntegralLatticeCat R)
+    (g : OrthogonalGroup L) (P : Submodule R L.obj.carrier) :
+    g • saturation P = saturation (g • P) := by
+  apply le_antisymm
+  · rintro x ⟨y, hy, rfl⟩
+    obtain ⟨a, ha, hay⟩ := hy
+    refine ⟨a, ha, ?_⟩
+    exact ⟨a • y, hay, by simp⟩
+  · intro x hx
+    obtain ⟨a, ha, hax⟩ := hx
+    rcases hax with ⟨y, hy, hay⟩
+    refine ⟨g⁻¹.1 x, ?_, by simp⟩
+    refine ⟨a, ha, ?_⟩
+    have hyx : y = a • g⁻¹.1 x := by
+      apply g.1.injective
+      calc
+        g.1 y = a • x := hay
+        _ = g.1 (a • g⁻¹.1 x) := by simp
+    rw [← hyx]
+    exact hy
+
+/-- Primitivity is invariant under the orthogonal-group action. -/
+theorem isPrimitiveSubmodule_smul_iff [IsDomain R]
+    (L : IntegralLatticeCat R) (g : OrthogonalGroup L)
+    (P : Submodule R L.obj.carrier) :
+    IsPrimitiveSubmodule (g • P) ↔ IsPrimitiveSubmodule P := by
+  rw [isPrimitiveSubmodule_iff_saturation_eq,
+    isPrimitiveSubmodule_iff_saturation_eq, ← smul_saturation]
+  constructor
+  · intro h
+    have h' := congrArg (fun Q ↦ g⁻¹ • Q) h
+    change g⁻¹ • (g • saturation P) = g⁻¹ • (g • P) at h'
+    simpa only [inv_smul_smul] using h'
+  · exact congrArg (fun Q ↦ g • Q)
+
 end LeanCategories.Lattices.Valued
