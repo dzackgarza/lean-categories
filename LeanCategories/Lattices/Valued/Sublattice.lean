@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Lattices.Valued.Arithmetic
+public import LeanCategories.Lattices.Valued.Constructions
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 
@@ -231,5 +231,121 @@ def orthogonalComplementInclusion (L : IntegralLatticeCat R)
     [Module.Projective R (orthogonalSubmodule L P)] :
     orthogonalComplement L P ⟶ L :=
   formedSublatticeInclusion L (orthogonalSubmodule L P)
+
+/-- Addition maps a sublattice and its orthogonal complement into the ambient lattice. -/
+def sublatticeOrthogonalSumLinearMap (L : IntegralLatticeCat R)
+    (P : Submodule R L.obj.carrier) :
+    P × orthogonalSubmodule L P →ₗ[R] L.obj.carrier :=
+  LinearMap.coprod P.subtype (orthogonalSubmodule L P).subtype
+
+@[simp]
+theorem sublatticeOrthogonalSumLinearMap_apply (L : IntegralLatticeCat R)
+    (P : Submodule R L.obj.carrier)
+    (x : P × orthogonalSubmodule L P) :
+    sublatticeOrthogonalSumLinearMap L P x = x.1.1 + x.2.1 :=
+  rfl
+
+/-- The orthogonal sum of a sublattice and its complement maps isometrically into the lattice. -/
+def sublatticeOrthogonalSumInclusion (L : IntegralLatticeCat R)
+    (P : Submodule R L.obj.carrier)
+    [Module.Projective R P]
+    [Module.Projective R (orthogonalSubmodule L P)] :
+    orthogonalSum (formedSublattice L P) (orthogonalComplement L P) ⟶ L :=
+  ObjectProperty.homMk <| BilinModuleCat.homMk
+    (sublatticeOrthogonalSumLinearMap L P) fun x y ↦ by
+      change L.obj.pairing (x.1.1 + x.2.1) (y.1.1 + y.2.1) =
+        L.obj.pairing x.1.1 y.1.1 + L.obj.pairing x.2.1 y.2.1
+      rw [BilinModuleCat.pairing_add_left, BilinModuleCat.pairing_add_right,
+        BilinModuleCat.pairing_add_right]
+      have hxy : L.obj.pairing x.1.1 y.2.1 = 0 :=
+        (mem_orthogonalSubmodule_iff L P y.2.1).mp y.2.2 x.1.1 x.1.2
+      have hyx : L.obj.pairing x.2.1 y.1.1 = 0 := by
+        rw [L.property.2]
+        exact (mem_orthogonalSubmodule_iff L P x.2.1).mp x.2.2 y.1.1 y.1.2
+      rw [hxy, hyx, add_zero, zero_add]
+
+/-- The orthogonal-sum map has range `P + Pᵖ`. -/
+theorem range_sublatticeOrthogonalSumLinearMap (L : IntegralLatticeCat R)
+    (P : Submodule R L.obj.carrier) :
+    LinearMap.range (sublatticeOrthogonalSumLinearMap L P) =
+      P ⊔ orthogonalSubmodule L P := by
+  change LinearMap.range
+      (LinearMap.coprod P.subtype (orthogonalSubmodule L P).subtype) = _
+  rw [LinearMap.range_eq_map, ← Submodule.prod_top,
+    LinearMap.coprod_map_prod]
+  simp only [← LinearMap.range_eq_map, Submodule.range_subtype]
+
+/-- A nondegenerate sublattice meets its orthogonal complement only at zero. -/
+theorem disjoint_orthogonalSubmodule_of_isNondegenerate
+    (L : IntegralLatticeCat R) (P : Submodule R L.obj.carrier)
+    [Module.Projective R P]
+    (hP : (formedSublattice L P).obj.IsNondegenerate) :
+    Disjoint P (orthogonalSubmodule L P) := by
+  rw [Submodule.disjoint_def]
+  intro x hxP hxOrthogonal
+  let xP : P := ⟨x, hxP⟩
+  have hxPzero : xP = 0 := by
+    apply ((formedSublattice L P).obj.isNondegenerate_iff_adjoint_injective.mp hP)
+    apply LinearMap.ext
+    intro y
+    change L.obj.pairing x y.1 = L.obj.pairing 0 y.1
+    rw [L.property.2]
+    simp only [BilinModuleCat.pairing_zero_left]
+    exact (mem_orthogonalSubmodule_iff L P x).mp hxOrthogonal y.1 y.2
+  exact Subtype.ext_iff.mp hxPzero
+
+/-- The addition map is injective when the sublattice form is nondegenerate. -/
+theorem sublatticeOrthogonalSumLinearMap_injective
+    (L : IntegralLatticeCat R) (P : Submodule R L.obj.carrier)
+    [Module.Projective R P]
+    (hP : (formedSublattice L P).obj.IsNondegenerate) :
+    Function.Injective (sublatticeOrthogonalSumLinearMap L P) := by
+  rw [← LinearMap.ker_eq_bot]
+  change LinearMap.ker
+      (LinearMap.coprod P.subtype (orthogonalSubmodule L P).subtype) = ⊥
+  have hd : Disjoint (LinearMap.range P.subtype)
+      (LinearMap.range (orthogonalSubmodule L P).subtype) := by
+    simpa only [Submodule.range_subtype] using
+      disjoint_orthogonalSubmodule_of_isNondegenerate L P hP
+  rw [LinearMap.ker_coprod_of_disjoint_range _ _ hd]
+  simp
+
+/-- A nondegenerate sublattice and its orthogonal complement embed as a direct sum. -/
+theorem sublatticeOrthogonalSumInclusion_injective
+    (L : IntegralLatticeCat R) (P : Submodule R L.obj.carrier)
+    [Module.Projective R P]
+    [Module.Projective R (orthogonalSubmodule L P)]
+    (hP : (formedSublattice L P).obj.IsNondegenerate) :
+    Function.Injective
+      (BilinModuleCat.underlyingMap
+        (sublatticeOrthogonalSumInclusion L P).hom) := by
+  intro x y hxy
+  exact sublatticeOrthogonalSumLinearMap_injective L P hP hxy
+
+/-- Finite index for the orthogonal-sum embedding means finite index for `P + Pᵖ`. -/
+theorem sublatticeOrthogonalSumInclusion_isFiniteIndex_iff
+    (L : IntegralLatticeCat R) (P : Submodule R L.obj.carrier)
+    [Module.Projective R P]
+    [Module.Projective R (orthogonalSubmodule L P)]
+    (hP : (formedSublattice L P).obj.IsNondegenerate) :
+    BilinModuleCat.IsFiniteIndexEmbedding
+        (sublatticeOrthogonalSumInclusion L P).hom ↔
+      IsFiniteIndexSubmodule (P ⊔ orthogonalSubmodule L P) := by
+  constructor
+  · intro h
+    have hFinite := h.2
+    change Finite
+      (L.obj.carrier ⧸ LinearMap.range
+        (sublatticeOrthogonalSumLinearMap L P)) at hFinite
+    rw [range_sublatticeOrthogonalSumLinearMap] at hFinite
+    exact hFinite
+  · intro hFinite
+    constructor
+    · exact sublatticeOrthogonalSumInclusion_injective L P hP
+    · change Finite
+        (L.obj.carrier ⧸ LinearMap.range
+          (sublatticeOrthogonalSumLinearMap L P))
+      rw [range_sublatticeOrthogonalSumLinearMap]
+      exact hFinite
 
 end LeanCategories.Lattices.Valued
