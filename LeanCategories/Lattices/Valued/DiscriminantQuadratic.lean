@@ -36,7 +36,7 @@ def doubleFractionValueProjection :
 
 /-- Multiplication by two on the fraction ring. -/
 def twiceFraction : FractionRing R →ₗ[R] FractionRing R :=
-  (2 : R) • LinearMap.id
+  LinearMap.lsmul R (FractionRing R) (2 : R)
 
 /-- The map `Frac(R) / R → Frac(R) / 2R` induced by multiplication by two. -/
 def doubleValueMap :
@@ -48,6 +48,53 @@ def doubleValueMap :
       rintro _ ⟨r, rfl⟩
       refine ⟨r, ?_⟩
       simp [twiceFraction, doubleAlgebraMap, Algebra.smul_def])
+
+/-- Multiplication by two on the fraction ring, when two is nonzero. -/
+noncomputable def twiceFractionEquiv [NeZero (2 : R)] :
+    FractionRing R ≃ₗ[R] FractionRing R := by
+  apply LinearEquiv.ofBijective (twiceFraction R)
+  have htwo : algebraMap R (FractionRing R) (2 : R) ≠ 0 :=
+    by
+      simpa using (IsFractionRing.injective R (FractionRing R)).ne
+        (NeZero.ne (2 : R))
+  constructor
+  · intro x y hxy
+    simp only [twiceFraction, LinearMap.lsmul_apply, Algebra.smul_def] at hxy
+    exact mul_left_cancel₀ htwo hxy
+  · intro y
+    refine ⟨(algebraMap R (FractionRing R) (2 : R))⁻¹ * y, ?_⟩
+    simp only [twiceFraction, LinearMap.lsmul_apply, Algebra.smul_def]
+    rw [← mul_assoc, mul_inv_cancel₀ htwo, one_mul]
+
+/-- Multiplication by two identifies `Frac(R) / R` with `Frac(R) / 2R`. -/
+noncomputable def doubleValueEquiv [NeZero (2 : R)] :
+    FractionValueQuotient R ≃ₗ[R] DoubleFractionValueQuotient R :=
+  Submodule.Quotient.equiv
+    (LinearMap.range (Algebra.linearMap R (FractionRing R)))
+    (LinearMap.range (doubleAlgebraMap R))
+    (twiceFractionEquiv R) (by
+      ext x
+      constructor
+      · rintro ⟨_, ⟨r, rfl⟩, rfl⟩
+        exact ⟨r, by
+          simp [twiceFractionEquiv, twiceFraction, doubleAlgebraMap,
+            Algebra.smul_def]⟩
+      · rintro ⟨r, rfl⟩
+        exact ⟨algebraMap R (FractionRing R) r, ⟨r, rfl⟩, by
+          simp [twiceFractionEquiv, twiceFraction, doubleAlgebraMap,
+            Algebra.smul_def]⟩)
+
+@[simp]
+theorem doubleValueEquiv_mk [NeZero (2 : R)] (x : FractionRing R) :
+    doubleValueEquiv R (Submodule.Quotient.mk x) =
+      Submodule.Quotient.mk (twiceFraction R x) :=
+  rfl
+
+/-- The quotient map by multiplication by two is the canonical equivalence. -/
+theorem doubleValueMap_eq_doubleValueEquiv [NeZero (2 : R)] :
+    doubleValueMap R = (doubleValueEquiv R).toLinearMap := by
+  ext x
+  rfl
 
 omit [IsDomain R] in
 @[simp]
