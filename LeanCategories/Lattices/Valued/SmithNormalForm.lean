@@ -129,4 +129,15 @@ theorem natCard_defect_eq_natAbs_determinant {I : Type*} [Fintype I]
   rw [Module.Basis.toMatrix_apply]
   simp [br, e, LinearMap.toMatrix_apply]
 
+/-- The discriminant order generates the determinant ideal. -/
+theorem determinantIdeal_eq_span_natCard_defect
+    {I : Type*} [Fintype I] [DecidableEq I]
+    (L : IntegralLatticeCat ℤ) [Module.Finite ℤ L.obj.carrier]
+    (hL : IsGenericallyNondegenerate ℤ L)
+    (b : Module.Basis I ℤ L.obj.carrier) :
+    determinantIdeal L b =
+      Ideal.span {(Nat.card L.obj.defect : ℤ)} := by
+  rw [determinantIdeal, natCard_defect_eq_natAbs_determinant L hL b]
+  exact (Int.span_natAbs (determinant L b)).symm
+
 end LeanCategories.Lattices.Valued

@@ -246,6 +246,23 @@ def finiteProjectiveOrthogonalSum
   change Module.Finite R (L₁.obj.obj.carrier × L₂.obj.obj.carrier)
   infer_instance
 
+/-- The rank of a finite projective orthogonal sum is additive. -/
+theorem finiteProjectiveOrthogonalSum_rank [IsDomain R]
+    [IsPrincipalIdealRing R]
+    (L₁ L₂ : FiniteProjectiveLatticeCat R W) :
+    (finiteProjectiveOrthogonalSum L₁ L₂).rank = L₁.rank + L₂.rank := by
+  letI : Module.Finite R L₁.obj.obj.carrier := L₁.property
+  letI : Module.Finite R L₂.obj.obj.carrier := L₂.property
+  letI : Module.Projective R L₁.obj.obj.carrier := L₁.obj.property.1
+  letI : Module.Projective R L₂.obj.obj.carrier := L₂.obj.property.1
+  letI : Module.Free R L₁.obj.obj.carrier := L₁.carrier_free
+  letI : Module.Free R L₂.obj.obj.carrier := L₂.carrier_free
+  change Module.finrank R
+      (L₁.obj.obj.carrier × L₂.obj.obj.carrier) =
+    Module.finrank R L₁.obj.obj.carrier +
+      Module.finrank R L₂.obj.obj.carrier
+  exact Module.finrank_prod
+
 @[simp]
 theorem orthogonalSum_pairing (L₁ L₂ : LatticeCat R W)
     (x y : L₁.obj.carrier × L₂.obj.carrier) :
@@ -401,6 +418,19 @@ noncomputable def finiteProjectiveOrthogonalPower
     (L : FiniteProjectiveLatticeCat R W) (n : ℕ) :
     FiniteProjectiveLatticeCat R W :=
   finiteProjectiveIndexedOrthogonalSum (I := Fin n) fun _ ↦ L
+
+/-- The rank of an orthogonal power is the rank times its exponent. -/
+theorem finiteProjectiveOrthogonalPower_rank [IsDomain R]
+    [IsPrincipalIdealRing R]
+    (L : FiniteProjectiveLatticeCat R W) (n : ℕ) :
+    (finiteProjectiveOrthogonalPower L n).rank = n * L.rank := by
+  letI : Module.Projective R L.obj.obj.carrier := L.obj.property.1
+  letI : Module.Finite R L.obj.obj.carrier := L.property
+  letI : Module.Free R L.obj.obj.carrier := L.carrier_free
+  change Module.finrank R (Fin n → L.obj.obj.carrier) =
+    n * Module.finrank R L.obj.obj.carrier
+  rw [Module.finrank_pi_fintype]
+  simp
 
 @[simp]
 theorem finiteProjectiveOrthogonalPower_pairing
