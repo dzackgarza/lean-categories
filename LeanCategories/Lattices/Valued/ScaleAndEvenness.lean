@@ -228,14 +228,6 @@ theorem isIIntegral_top (L : IntegralLatticeCat R) :
   ext x
   rfl
 
-/-- An `R`-valued lattice is integral. -/
-abbrev IsIntegral (L : IntegralLatticeCat R) : Prop :=
-  IsIIntegral L ⊤
-
-/-- Every object of `IntegralLatticeCat R` is integral by construction. -/
-theorem isIntegral (L : IntegralLatticeCat R) : IsIntegral L :=
-  isIIntegral_top L
-
 theorem isIEven_of_eq_top (L : IntegralLatticeCat R)
     (I : Ideal R) (hI : I = ⊤) : IsIEven L I := by
   subst I
