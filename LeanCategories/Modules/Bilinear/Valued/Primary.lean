@@ -128,4 +128,49 @@ theorem primaryComponent_pairing_eq_zero_of_ne [IsDedekindDomain R]
       ((P.isCoprime_pow_of_ne Q hPQ n m).sup_eq)
   exact Submodule.disjoint_def.mp hd _ hzP hzQ
 
+/-- A height-one primary restriction of a radical-free torsion form has zero radical. -/
+theorem primaryComponent_isNondegenerate [IsDedekindDomain R]
+    (A : FiniteTorsionSymBilinModuleCat R W)
+    (hA : A.obj.IsNondegenerate)
+    (P : IsDedekindDomain.HeightOneSpectrum R) :
+    (A.obj.primaryComponent P.asIdeal).IsNondegenerate := by
+  rw [BilinModuleCat.isNondegenerate_iff_adjoint_injective]
+  intro x y hxy
+  apply Subtype.ext
+  apply (BilinModuleCat.isNondegenerate_iff_adjoint_injective A.obj).mp hA
+  apply LinearMap.ext
+  intro z
+  let f := A.obj.adjoint x.1 - A.obj.adjoint y.1
+  have hcomponent (Q : IsDedekindDomain.HeightOneSpectrum R) :
+      Ideal.primaryComponent A.obj.carrier Q.asIdeal ≤ LinearMap.ker f := by
+    intro w hw
+    rw [LinearMap.mem_ker]
+    change A.obj.pairing x.1 w - A.obj.pairing y.1 w = 0
+    by_cases hQP : Q = P
+    · subst Q
+      apply sub_eq_zero.mpr
+      exact LinearMap.congr_fun hxy ⟨w, hw⟩
+    · rw [primaryComponent_pairing_eq_zero_of_ne A (Ne.symm hQP) x ⟨w, hw⟩,
+        primaryComponent_pairing_eq_zero_of_ne A (Ne.symm hQP) y ⟨w, hw⟩]
+      exact sub_self 0
+  have hall : (⨆ Q : IsDedekindDomain.HeightOneSpectrum R,
+      Ideal.primaryComponent A.obj.carrier Q.asIdeal) ≤ LinearMap.ker f :=
+    iSup_le hcomponent
+  rw [iSup_primaryComponent_eq_top A] at hall
+  have hzmem : z ∈ LinearMap.ker f := hall (by simp)
+  have hz := LinearMap.mem_ker.mp hzmem
+  change (A.obj.adjoint x.1) z - (A.obj.adjoint y.1) z = 0 at hz
+  exact sub_eq_zero.mp hz
+
+/-- The radical-free category is closed under height-one primary restriction. -/
+noncomputable def radicalFreePrimaryComponent [IsDedekindDomain R]
+    (P : IsDedekindDomain.HeightOneSpectrum R)
+    (A : RadicalFreeFiniteTorsionBilinModuleCat R W) :
+    RadicalFreeFiniteTorsionBilinModuleCat R W := by
+  let B : FiniteTorsionSymBilinModuleCat R W :=
+    ⟨A.obj, A.property.1, A.property.2.1, A.property.2.2.1⟩
+  let C := primaryComponent P.asIdeal B
+  exact ⟨C.obj, C.property.1, C.property.2.1, C.property.2.2,
+    primaryComponent_isNondegenerate B A.property.2.2.2 P⟩
+
 end LeanCategories.Modules.Bilinear.Valued
