@@ -4,13 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Lattices.Valued.DiscriminantFunctor
 public import LeanCategories.Lattices.Valued.DiscriminantQuadratic
 public import LeanCategories.Lattices.Valued.OrthogonalGroup
 
 @[expose] public section
 
-open CategoryTheory
 open LeanCategories.Modules.Bilinear.Valued
 open LeanCategories.Modules.Quadratic.Valued
 
@@ -23,23 +21,10 @@ variable {L : IntegralLatticeCat R}
 
 namespace OrthogonalGroup
 
-/-- Regard an orthogonal-group element as an automorphism of its integral lattice. -/
-def asLatticeIso (g : OrthogonalGroup L) : L ≅ L :=
-  ObjectProperty.isoMk (isLattice R R)
-    (BilinModuleCat.OrthogonalGroup.toIso g)
-
 /-- The contragredient action of `O(L)` on the value dual. -/
 def actOnValueDual (g : OrthogonalGroup L) :
     L.obj.valueDual ≃ₗ[R] L.obj.valueDual :=
   g.1.symm.dualMap
-
-/-- The dual action is the general discriminant transport for the lattice automorphism. -/
-theorem actOnValueDual_eq_discriminantValueDualEquiv
-    (g : OrthogonalGroup L) :
-    actOnValueDual g = discriminantValueDualEquiv (asLatticeIso g) :=
-  by
-    ext f x
-    rfl
 
 /-- The dual action carries an adjoint vector to the adjoint of its image. -/
 theorem actOnValueDual_adjoint (g : OrthogonalGroup L)
@@ -72,15 +57,6 @@ def actOnDefect (g : OrthogonalGroup L) :
     (LinearMap.range L.obj.adjoint)
     (actOnValueDual g)
     (actOnValueDual_adjointRange g)
-
-/-- The defect action is the general discriminant transport for the lattice automorphism. -/
-theorem actOnDefect_eq_discriminantCarrierEquiv
-    (g : OrthogonalGroup L) :
-    actOnDefect g = discriminantCarrierEquiv (asLatticeIso g) :=
-  by
-    ext x
-    induction x using Submodule.Quotient.induction_on with
-    | _ f => rfl
 
 @[simp]
 theorem actOnDefect_mk (g : OrthogonalGroup L) (f : L.obj.valueDual) :
@@ -233,17 +209,6 @@ noncomputable def actOnDiscriminantForm [IsDomain R]
     (hL : IsGenericallyNondegenerate R L) :
     BilinModuleCat.OrthogonalGroup (discriminantBilinObject R L hL) :=
   ⟨actOnDefect g, discriminantBilinMap_actOnDefect g hL⟩
-
-/-- The discriminant-form action is the functorial transport of the lattice automorphism. -/
-theorem underlyingMap_discriminantBilinIso_asLatticeIso [IsDomain R]
-    (g : OrthogonalGroup L)
-    (hL : IsGenericallyNondegenerate R L) :
-    BilinModuleCat.underlyingMap
-        (discriminantBilinIso (asLatticeIso g) hL hL).hom =
-      (actOnDiscriminantForm g hL).1.toLinearMap :=
-  by
-    ext x
-    rfl
 
 /-- The natural homomorphism `O(L) → O(A_L)`. -/
 noncomputable def discriminantRepresentation [IsDomain R]
