@@ -9,6 +9,7 @@ public import LeanCategories.Lattices.Valued.Constructions
 public import LeanCategories.Lattices.Valued.ScaleAndEvenness
 public import LeanCategories.Lattices.Valued.Signature
 public import LeanCategories.Lattices.Valued.SmithNormalForm
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 public import Mathlib.LinearAlgebra.Basis.Prod
 public import Mathlib.LinearAlgebra.Matrix.Notation
 
@@ -434,6 +435,11 @@ theorem e6Lattice_natCard_defect :
     e6Lattice_determinant]
   norm_num
 
+/-- The discriminant group of the negative `E₆` lattice is cyclic of order three. -/
+noncomputable def e6LatticeDefectEquivZMod :
+    e6Lattice.obj.defect ≃+ ZMod 3 :=
+  addEquivOfPrimeCardEq e6Lattice_natCard_defect (Nat.card_zmod 3)
+
 /-- The negative `E₆` lattice is even. -/
 theorem e6Lattice_isEven : IsEven e6Lattice := by
   apply latticeOfGramMatrix_isEven e6GramMatrix e6GramMatrix_isSymm
@@ -561,6 +567,11 @@ theorem e7Lattice_natCard_defect :
     e7Lattice_isGenericallyNondegenerate (Pi.basisFun ℤ (Fin 7)),
     e7Lattice_determinant]
   norm_num
+
+/-- The discriminant group of the negative `E₇` lattice is cyclic of order two. -/
+noncomputable def e7LatticeDefectEquivZMod :
+    e7Lattice.obj.defect ≃+ ZMod 2 :=
+  addEquivOfPrimeCardEq e7Lattice_natCard_defect (Nat.card_zmod 2)
 
 /-- The negative definite `E₈` root lattice in its simple-root basis. -/
 noncomputable def e8Lattice : IntegralLatticeCat ℤ := by
