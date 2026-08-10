@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Lattices.Valued.Arithmetic
 public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.Basis.Prod
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Dual.Lemmas
@@ -255,6 +256,49 @@ theorem orthogonalSum_pairing (L₁ L₂ : LatticeCat R W)
     (orthogonalSum L₁ L₂).obj.pairing x y =
       L₁.obj.pairing x.1 y.1 + L₂.obj.pairing x.2 y.2 :=
   rfl
+
+/-- The product basis gives a block Gram matrix for an orthogonal sum. -/
+theorem gramMatrix_orthogonalSum
+    {I J : Type*} [Fintype I] [Fintype J]
+    [DecidableEq I] [DecidableEq J]
+    (L M : IntegralLatticeCat R)
+    (b : Module.Basis I R L.obj.carrier)
+    (c : Module.Basis J R M.obj.carrier) :
+    gramMatrix (orthogonalSum L M) (b.prod c) =
+      Matrix.fromBlocks (gramMatrix L b) 0 0 (gramMatrix M c) := by
+  ext i j
+  rw [gramMatrix, LinearMap.BilinForm.toMatrix_apply]
+  change L.obj.pairing ((b.prod c i).1) ((b.prod c j).1) +
+      M.obj.pairing ((b.prod c i).2) ((b.prod c j).2) = _
+  cases i <;> cases j <;>
+    simp [gramMatrix, LinearMap.BilinForm.toMatrix_apply]
+
+/-- Gram determinants multiply under orthogonal sums. -/
+theorem determinant_orthogonalSum
+    {I J : Type*} [Fintype I] [Fintype J]
+    [DecidableEq I] [DecidableEq J]
+    (L M : IntegralLatticeCat R)
+    (b : Module.Basis I R L.obj.carrier)
+    (c : Module.Basis J R M.obj.carrier) :
+    determinant (orthogonalSum L M) (b.prod c) =
+      determinant L b * determinant M c := by
+  rw [determinant, gramMatrix_orthogonalSum,
+    Matrix.det_fromBlocks_zero₂₁]
+  rfl
+
+/-- Determinant ideals multiply under orthogonal sums. -/
+theorem determinantIdeal_orthogonalSum
+    {I J : Type*} [Fintype I] [Fintype J]
+    [DecidableEq I] [DecidableEq J]
+    (L M : IntegralLatticeCat R)
+    (b : Module.Basis I R L.obj.carrier)
+    (c : Module.Basis J R M.obj.carrier) :
+    determinantIdeal (orthogonalSum L M) (b.prod c) =
+      determinantIdeal L b * determinantIdeal M c := by
+  rw [determinantIdeal, determinant_orthogonalSum]
+  change Ideal.span {determinant L b * determinant M c} =
+    Ideal.span {determinant L b} * Ideal.span {determinant M c}
+  exact (Ideal.span_singleton_mul_span_singleton _ _).symm
 
 /-- An orthogonal sum of unimodular integral lattices is unimodular. -/
 theorem isUnimodular_orthogonalSum (L₁ L₂ : IntegralLatticeCat R)
