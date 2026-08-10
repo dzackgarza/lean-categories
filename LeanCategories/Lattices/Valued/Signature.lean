@@ -9,6 +9,7 @@ public import LeanCategories.Lattices.Valued.BaseChange
 public import LeanCategories.Lattices.Valued.Constructions
 public import LeanCategories.Lattices.Valued.ScaleAndEvenness
 public import Mathlib.CategoryTheory.Core
+public import Mathlib.Data.Matrix.Block
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.QuadraticForm.Real
@@ -144,6 +145,57 @@ noncomputable def matrixSignature {I : Type*} [Fintype I] [DecidableEq I]
   let Q := matrixQuadraticForm K A
   (sigPos Q, sigNeg Q, Module.finrank K Q.radical)
 
+/-- The block matrix of an orthogonal sum. -/
+noncomputable def matrixBlockSum
+    {S : Type*} [Zero S]
+    {I J : Type*} [Fintype I] [Fintype J]
+    [DecidableEq I] [DecidableEq J]
+    (A : Matrix I I S) (B : Matrix J J S) :
+    Matrix (I ⊕ J) (I ⊕ J) S :=
+  Matrix.fromBlocks A 0 0 B
+
+/-- The quadratic form of a block sum is the product quadratic form. -/
+noncomputable def matrixBlockSumIsometry
+    {I J : Type*} [Fintype I] [Fintype J]
+    [DecidableEq I] [DecidableEq J]
+    (A : Matrix I I K) (B : Matrix J J K) :
+    (matrixQuadraticForm K (matrixBlockSum A B)).IsometryEquiv
+      ((matrixQuadraticForm K A).prod (matrixQuadraticForm K B)) where
+  toLinearEquiv := LinearEquiv.sumPiEquivProdPi K I J (fun _ ↦ K)
+  map_app' x := by
+    simp [matrixQuadraticForm, matrixBlockSum,
+      Matrix.toBilin'_apply', dotProduct, Matrix.mulVec,
+      Fintype.sum_sum_type, mul_add]
+
+/-- Matrix signatures add under block sums. -/
+theorem matrixSignature_blockSum [IsStrictOrderedRing K]
+    {I J : Type*} [Fintype I] [Fintype J]
+    [DecidableEq I] [DecidableEq J]
+    (A : Matrix I I K) (B : Matrix J J K) :
+    matrixSignature K (matrixBlockSum A B) =
+      ((matrixSignature K A).1 + (matrixSignature K B).1,
+        (matrixSignature K A).2.1 + (matrixSignature K B).2.1,
+        (matrixSignature K A).2.2 + (matrixSignature K B).2.2) := by
+  let h : QuadraticMap.Equivalent
+      (matrixQuadraticForm K (matrixBlockSum A B))
+      ((matrixQuadraticForm K A).prod (matrixQuadraticForm K B)) :=
+    ⟨matrixBlockSumIsometry K A B⟩
+  simp only [matrixSignature]
+  rw [h.sigPos_eq, h.sigNeg_eq, h.rank_radical_eq]
+  exact quadraticSignature_prod K (matrixQuadraticForm K A)
+    (matrixQuadraticForm K B)
+
+/-- Ring maps preserve block sums. -/
+theorem matrixBlockSum_map
+    {I J : Type*} [Fintype I] [Fintype J]
+    [DecidableEq I] [DecidableEq J]
+    {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
+    (A : Matrix I I R) (B : Matrix J J R) :
+    (matrixBlockSum A B).map f =
+      matrixBlockSum (A.map f) (B.map f) := by
+  ext i j
+  cases i <;> cases j <;> simp [matrixBlockSum]
+
 /-- Negation swaps the positive and negative parts of a matrix signature. -/
 @[simp]
 theorem matrixSignature_neg {I : Type*} [Fintype I] [DecidableEq I]
@@ -257,6 +309,44 @@ theorem integralSignature_eq_matrixSignature {I : Type*} [Fintype I]
   rw [integralSignature]
   rw [signature_eq_matrixSignature ℝ M bℝ]
   exact congrArg (matrixSignature ℝ) hMatrix
+
+/-- The product basis gives the block Gram matrix of an orthogonal sum. -/
+theorem gramMatrix_finiteProjectiveOrthogonalSum
+    {I J : Type*} [Fintype I] [Fintype J]
+    [DecidableEq I] [DecidableEq J]
+    (L M : FiniteProjectiveLatticeCat ℤ ℤ)
+    (b : Module.Basis I ℤ L.obj.obj.carrier)
+    (c : Module.Basis J ℤ M.obj.obj.carrier) :
+    gramMatrix (finiteProjectiveOrthogonalSum L M).obj (b.prod c) =
+      matrixBlockSum (gramMatrix L.obj b) (gramMatrix M.obj c) := by
+  ext i j
+  rw [gramMatrix, LinearMap.BilinForm.toMatrix_apply]
+  change L.obj.obj.pairing ((b.prod c i).1) ((b.prod c j).1) +
+      M.obj.obj.pairing ((b.prod c i).2) ((b.prod c j).2) = _
+  cases i <;> cases j <;>
+    simp [matrixBlockSum, gramMatrix,
+      LinearMap.BilinForm.toMatrix_apply]
+
+/-- Integral signatures add under finite projective orthogonal sums. -/
+theorem integralSignature_orthogonalSum
+    (L M : FiniteProjectiveLatticeCat ℤ ℤ) :
+    integralSignature (finiteProjectiveOrthogonalSum L M) =
+      ((integralSignature L).1 + (integralSignature M).1,
+        (integralSignature L).2.1 + (integralSignature M).2.1,
+        (integralSignature L).2.2 + (integralSignature M).2.2) := by
+  letI : Module.Free ℤ L.obj.obj.carrier := L.carrier_free
+  letI : Module.Free ℤ M.obj.obj.carrier := M.carrier_free
+  letI : Module.Finite ℤ L.obj.obj.carrier := L.property
+  letI : Module.Finite ℤ M.obj.obj.carrier := M.property
+  let b := Module.Free.chooseBasis ℤ L.obj.obj.carrier
+  let c := Module.Free.chooseBasis ℤ M.obj.obj.carrier
+  rw [integralSignature_eq_matrixSignature
+    (finiteProjectiveOrthogonalSum L M) (b.prod c)]
+  rw [gramMatrix_finiteProjectiveOrthogonalSum L M b c,
+    matrixBlockSum_map]
+  rw [matrixSignature_blockSum]
+  rw [← integralSignature_eq_matrixSignature L b,
+    ← integralSignature_eq_matrixSignature M c]
 
 /-- Negation swaps the positive and negative parts of an integral signature. -/
 @[simp]
