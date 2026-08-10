@@ -176,6 +176,17 @@ noncomputable def baseChangeIntegral (S : Type u) [CommRing S] [Algebra R S] :
   map_id L := by simp
   map_comp f g := by simp
 
+@[simp]
+theorem baseChangeIntegral_pairing_tmul
+    (S : Type u) [CommRing S] [Algebra R S]
+    (L : IntegralLatticeCat R) (a b : S) (x y : L.obj.carrier) :
+    ((baseChangeIntegral R S).obj L).obj.pairing
+        (a ⊗ₜ[R] x) (b ⊗ₜ[R] y) =
+      (a * b) * algebraMap R S (L.obj.pairing x y) := by
+  change (TensorProduct.AlgebraTensorModule.rid R S S)
+      ((a * b) ⊗ₜ[R] L.obj.pairing x y) = _
+  simp [Algebra.smul_def, mul_comm]
+
 /-- Scalar extension of finite projective integral lattices. -/
 noncomputable def baseChangeFiniteIntegral
     (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] :

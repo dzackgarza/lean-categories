@@ -302,16 +302,6 @@ section BaseChangeEvenness
 
 variable (S : Type u) [CommRing S] [Algebra R S]
 
-@[simp]
-theorem baseChangeIntegral_pairing_tmul (L : IntegralLatticeCat R)
-    (a b : S) (x y : L.obj.carrier) :
-    ((baseChangeIntegral R S).obj L).obj.pairing
-        (a ⊗ₜ[R] x) (b ⊗ₜ[R] y) =
-      (a * b) * algebraMap R S (L.obj.pairing x y) := by
-  change (TensorProduct.AlgebraTensorModule.rid R S S)
-      ((a * b) ⊗ₜ[R] L.obj.pairing x y) = _
-  simp [Algebra.smul_def, mul_comm]
-
 theorem baseChangeIntegral_pairing_zero_left (L : IntegralLatticeCat R)
     (y : TensorProduct R S L.obj.carrier) :
     ((baseChangeIntegral R S).obj L).obj.pairing 0 y = 0 :=
