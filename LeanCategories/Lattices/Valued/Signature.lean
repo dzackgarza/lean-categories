@@ -28,6 +28,7 @@ universe u
 
 variable (K : Type u) [Field K] [LinearOrder K]
 
+omit [LinearOrder K] in
 /-- The quadratic form associated to a finite symmetric bilinear form. -/
 def finiteFormQuadraticForm (L : FiniteFormCat K K) :
     QuadraticForm K L.obj.carrier :=

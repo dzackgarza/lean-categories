@@ -64,6 +64,19 @@ noncomputable def idealDual (L : IntegralLatticeCat R) (I : Ideal R) :
     Submodule R (RationalSpan R L) :=
   LinearMap.ker (idealDualMap R L I)
 
+/-- A lattice is `I`-modular when it equals its metric `I`-dual. -/
+noncomputable def IsIModular (L : IntegralLatticeCat R) (I : Ideal R) : Prop :=
+  idealDual R L I = integralImage R L
+
+/-- `I`-modularity as a property of finite projective integral lattices. -/
+noncomputable def isIModularFiniteProjectiveLattice (I : Ideal R) :
+    ObjectProperty (FiniteProjectiveLatticeCat R R) :=
+  fun L ↦ IsIModular R L.obj I
+
+/-- The full category of finite projective `I`-modular lattices. -/
+noncomputable abbrev IModularLatticeCat (I : Ideal R) :=
+  (isIModularFiniteProjectiveLattice R I).FullSubcategory
+
 noncomputable def idealDualInclusion (L : IntegralLatticeCat R) (I : Ideal R) :
     idealDual R L I →ₗ[R] RationalSpan R L :=
   (idealDual R L I).subtype
@@ -133,4 +146,3 @@ theorem isBilinearlyEven_iff_canonicalMapLiftsToIdealDual
     exact (ι x).property
 
 end LeanCategories.Lattices.Valued
-
