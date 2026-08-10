@@ -507,6 +507,64 @@ theorem integralSignature_orthogonalSum
   rw [← integralSignature_eq_matrixSignature L b,
     ← integralSignature_eq_matrixSignature M c]
 
+/-- Integral signature is invariant under lattice isomorphism. -/
+theorem integralSignature_eq_of_iso
+    {L M : FiniteProjectiveLatticeCat ℤ ℤ} (e : L ≅ M) :
+    integralSignature L = integralSignature M := by
+  exact signature_eq_of_iso ℝ
+    ((finiteProjectiveToFiniteForm ℝ ℝ).mapIso
+      ((baseChangeFiniteIntegral ℤ ℝ).mapIso e))
+
+/-- The empty orthogonal power has zero signature. -/
+theorem integralSignature_orthogonalPower_zero
+    (L : FiniteProjectiveLatticeCat ℤ ℤ) :
+    integralSignature (finiteProjectiveOrthogonalPower L 0) = (0, 0, 0) := by
+  let P := (finiteProjectiveToFiniteForm ℝ ℝ).obj
+    ((baseChangeFiniteIntegral ℤ ℝ).obj
+      (finiteProjectiveOrthogonalPower L 0))
+  have hzero (x : P.obj.carrier) : x = 0 := by
+    induction x using TensorProduct.induction_on with
+    | zero => rfl
+    | tmul a x =>
+      rw [show x = 0 from funext fun i ↦ Fin.elim0 i]
+      exact TensorProduct.tmul_zero
+        (finiteProjectiveOrthogonalPower L 0).obj.obj.carrier a
+    | add x y hx hy =>
+      calc
+        x + y = 0 + 0 := congrArg₂ (fun a b ↦ a + b) hx hy
+        _ = 0 := add_zero 0
+  have hsub : Subsingleton P.obj.carrier :=
+    ⟨fun x y ↦ (hzero x).trans (hzero y).symm⟩
+  letI : Module.Finite ℝ P.obj.carrier := P.property.1
+  have hrank : Module.finrank ℝ P.obj.carrier = 0 :=
+    Module.finrank_zero_iff.mpr hsub
+  have hsum := signature_sum ℝ P
+  rw [hrank] at hsum
+  change signature ℝ P = (0, 0, 0)
+  apply Prod.ext
+  · change (signature ℝ P).1 = 0
+    omega
+  · apply Prod.ext
+    · change (signature ℝ P).2.1 = 0
+      omega
+    · change (signature ℝ P).2.2 = 0
+      omega
+
+/-- Integral signature is multiplied by the exponent under orthogonal powers. -/
+theorem integralSignature_orthogonalPower
+    (L : FiniteProjectiveLatticeCat ℤ ℤ) (n : ℕ) :
+    integralSignature (finiteProjectiveOrthogonalPower L n) =
+      (n * (integralSignature L).1,
+        n * (integralSignature L).2.1,
+        n * (integralSignature L).2.2) := by
+  induction n with
+  | zero => simpa using integralSignature_orthogonalPower_zero L
+  | succ n hn =>
+    rw [integralSignature_eq_of_iso
+      (finiteProjectiveOrthogonalPowerSuccIso L n),
+      integralSignature_orthogonalSum, hn]
+    simp [Nat.succ_mul, Nat.add_comm]
+
 /-- Negation swaps the positive and negative parts of an integral signature. -/
 @[simp]
 theorem integralSignature_opposite (L : FiniteProjectiveLatticeCat ℤ ℤ) :

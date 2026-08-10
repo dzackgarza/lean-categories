@@ -391,6 +391,80 @@ theorem finiteFormOrthogonalPower_pairing (L : FiniteFormCat R W) (n : ℕ)
       ∑ i, L.obj.pairing (x i) (y i) :=
   rfl
 
+/-- The orthogonal sum of a finite indexed family of finite projective lattices. -/
+noncomputable def finiteProjectiveIndexedOrthogonalSum
+    {I : Type} [Fintype I] (L : I → FiniteProjectiveLatticeCat R W) :
+    FiniteProjectiveLatticeCat R W := by
+  refine ⟨indexedOrthogonalSum fun i ↦ (L i).obj, ?_⟩
+  letI (i : I) : Module.Finite R (L i).obj.obj.carrier := (L i).property
+  change Module.Finite R ((i : I) → (L i).obj.obj.carrier)
+  infer_instance
+
+/-- The `n`-fold orthogonal power of a finite projective lattice. -/
+noncomputable def finiteProjectiveOrthogonalPower
+    (L : FiniteProjectiveLatticeCat R W) (n : ℕ) :
+    FiniteProjectiveLatticeCat R W :=
+  finiteProjectiveIndexedOrthogonalSum (I := Fin n) fun _ ↦ L
+
+@[simp]
+theorem finiteProjectiveOrthogonalPower_pairing
+    (L : FiniteProjectiveLatticeCat R W) (n : ℕ)
+    (x y : Fin n → L.obj.obj.carrier) :
+    (finiteProjectiveOrthogonalPower L n).obj.obj.pairing x y =
+      ∑ i, L.obj.obj.pairing (x i) (y i) :=
+  rfl
+
+/-- A successor orthogonal power splits off its first summand. -/
+noncomputable def finiteProjectiveOrthogonalPowerSuccIso
+    (L : FiniteProjectiveLatticeCat R W) (n : ℕ) :
+    finiteProjectiveOrthogonalPower L (n + 1) ≅
+      finiteProjectiveOrthogonalSum L
+        (finiteProjectiveOrthogonalPower L n) := by
+  let e : (Fin (n + 1) → L.obj.obj.carrier) ≃ₗ[R]
+      L.obj.obj.carrier × (Fin n → L.obj.obj.carrier) :=
+    (Fin.consLinearEquiv R fun _ : Fin (n + 1) ↦ L.obj.obj.carrier).symm
+  have he (x y : Fin (n + 1) → L.obj.obj.carrier) :
+      (finiteProjectiveOrthogonalSum L
+        (finiteProjectiveOrthogonalPower L n)).obj.obj.pairing
+          (e x) (e y) =
+        (finiteProjectiveOrthogonalPower L (n + 1)).obj.obj.pairing x y := by
+    change L.obj.obj.pairing (x 0) (y 0) +
+        ∑ i : Fin n, L.obj.obj.pairing (x i.succ) (y i.succ) =
+      ∑ i : Fin (n + 1), L.obj.obj.pairing (x i) (y i)
+    rw [Fin.sum_univ_succ]
+  let eBilin :
+      (finiteProjectiveOrthogonalPower L (n + 1)).obj.obj ≅
+        (finiteProjectiveOrthogonalSum L
+          (finiteProjectiveOrthogonalPower L n)).obj.obj := {
+    hom := BilinModuleCat.homMk e.toLinearMap he
+    inv := BilinModuleCat.homMk e.symm.toLinearMap (fun x y ↦ by
+      change (∑ i : Fin (n + 1),
+          L.obj.obj.pairing ((e.symm x) i) ((e.symm y) i)) =
+        L.obj.obj.pairing x.1 y.1 +
+          ∑ i : Fin n, L.obj.obj.pairing (x.2 i) (y.2 i)
+      rw [Fin.sum_univ_succ]
+      rfl)
+    hom_inv_id := by
+      apply Quiver.Hom.unop_inj
+      apply CategoryOfElements.ext
+      apply Quiver.Hom.unop_inj
+      apply ModuleCat.hom_ext
+      ext x
+      change e.symm (e x) = x
+      exact e.symm_apply_apply x
+    inv_hom_id := by
+      apply Quiver.Hom.unop_inj
+      apply CategoryOfElements.ext
+      apply Quiver.Hom.unop_inj
+      apply ModuleCat.hom_ext
+      ext x
+      change e (e.symm x) = x
+      exact e.apply_symm_apply x
+  }
+  let eLattice := ObjectProperty.isoMk (P := isLattice R W) eBilin
+  exact ObjectProperty.isoMk
+    (P := isFiniteProjectiveLattice R W) eLattice
+
 /-- A finite indexed orthogonal sum of unimodular lattices is unimodular. -/
 theorem isUnimodular_indexedOrthogonalSum {I : Type} [Fintype I]
     (L : I → IntegralLatticeCat R) (hL : ∀ i, IsUnimodular (L i)) :
