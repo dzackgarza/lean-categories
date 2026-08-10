@@ -237,6 +237,12 @@ theorem aRootLattice_signature (n : ℕ) :
       (aRootCoordinateMatrix_mulVec_injective n)]
   simp
 
+/-- The type-`A` finite lattice is negative definite. -/
+theorem aRootLattice_isNegativeDefinite (n : ℕ) :
+    IsNegativeDefiniteLattice (aRootFiniteLattice n) := by
+  simp [IsNegativeDefiniteLattice, IsNegativeDefiniteSignature,
+    aRootLattice_signature]
+
 private theorem sum_two_indicators {I : Type*} [Fintype I] [DecidableEq I]
     (i₀ i₁ : I) (hi : i₀ ≠ i₁) :
     (∑ k, if k = i₀ then (1 : ℤ) else if k = i₁ then 1 else 0) = 2 := by
