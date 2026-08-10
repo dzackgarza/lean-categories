@@ -17,5 +17,6 @@ public import LeanCategories.Lattices.Valued.Signature
 public import LeanCategories.Lattices.Valued.LocalGlobal
 public import LeanCategories.Lattices.Valued.Involution
 public import LeanCategories.Lattices.Valued.Reflection
+public import LeanCategories.Lattices.Valued.RootSystem
 
 @[expose] public section
