@@ -15,6 +15,7 @@ public import LeanCategories.Lattices.Valued.DiscriminantAction
 public import LeanCategories.Lattices.Valued.Standard
 public import LeanCategories.Lattices.Valued.Signature
 public import LeanCategories.Lattices.Valued.LocalGlobal
+public import LeanCategories.Lattices.Valued.LocalInvariants
 public import LeanCategories.Lattices.Valued.Involution
 public import LeanCategories.Lattices.Valued.Reflection
 public import LeanCategories.Lattices.Valued.RootSystem
