@@ -43,6 +43,77 @@ theorem finiteFormQuadraticForm_orthogonalSum
   ext x
   rfl
 
+omit [LinearOrder K] in
+/-- The quadratic form of an indexed orthogonal sum is the indexed sum. -/
+@[simp]
+theorem finiteFormQuadraticForm_indexedOrthogonalSum
+    {I : Type} [Fintype I] (L : I → FiniteFormCat K K) :
+    finiteFormQuadraticForm K (finiteFormIndexedOrthogonalSum L) =
+      QuadraticMap.pi (fun i ↦ finiteFormQuadraticForm K (L i)) := by
+  classical
+  ext x
+  simp only [finiteFormQuadraticForm,
+    LinearMap.BilinMap.toQuadraticMap_apply,
+    BilinModuleCat.bilinMap_apply]
+  erw [QuadraticMap.pi_apply]
+  simp only [LinearMap.BilinMap.toQuadraticMap_apply,
+    BilinModuleCat.bilinMap_apply]
+  exact finiteFormIndexedOrthogonalSum_pairing L x x
+
+omit [LinearOrder K] in
+/-- The quadratic form of an orthogonal power is the indexed sum of one form. -/
+@[simp]
+theorem finiteFormQuadraticForm_orthogonalPower
+    (L : FiniteFormCat K K) (n : ℕ) :
+    finiteFormQuadraticForm K (finiteFormOrthogonalPower L n) =
+      QuadraticMap.pi (fun _ : Fin n ↦ finiteFormQuadraticForm K L) := by
+  change finiteFormQuadraticForm K
+      (finiteFormIndexedOrthogonalSum fun _ : Fin n ↦ L) = _
+  exact finiteFormQuadraticForm_indexedOrthogonalSum K fun _ : Fin n ↦ L
+
+/-- Currying identifies indexed copies of one diagonal quadratic form. -/
+noncomputable def piWeightedSumSquaresIsometryEquiv
+    {I J : Type} [Fintype I] [Fintype J] (w : J → K) :
+    (QuadraticMap.pi fun _ : I ↦
+      QuadraticMap.weightedSumSquares K w).IsometryEquiv
+      (QuadraticMap.weightedSumSquares K
+        (fun s : Σ _ : I, J ↦ w s.2)) where
+  toLinearEquiv := (LinearEquiv.piCurry K fun _ _ ↦ K).symm
+  map_app' x := by
+    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
+      LinearEquiv.coe_coe, LinearEquiv.piCurry_symm_apply,
+      QuadraticMap.weightedSumSquares_apply, smul_eq_mul,
+      QuadraticMap.pi_apply]
+    exact Fintype.sum_sigma' fun i j ↦ w j * (x i j * x i j)
+
+private def setOfSigmaEquivProd
+    {I J : Type} {A : Type*} (f : J → A) (p : A → Prop) :
+    {s : Σ _ : I, J // p (f s.2)} ≃ I × {j : J // p (f j)} where
+  toFun s := ⟨s.1.1, ⟨s.1.2, s.2⟩⟩
+  invFun s := ⟨⟨s.1, s.2.1⟩, s.2.2⟩
+  left_inv s := by
+    cases s with
+    | mk s hs => cases s; rfl
+  right_inv s := by
+    cases s with
+    | mk i s => cases s; rfl
+
+private theorem ncard_setOf_sigma_const
+    {I J : Type} {A : Type*} [Fintype I]
+    (f : J → A) (p : A → Prop) :
+    {s : Σ _ : I, J | p (f s.2)}.ncard =
+      Fintype.card I * {j : J | p (f j)}.ncard := by
+  calc
+    {s : Σ _ : I, J | p (f s.2)}.ncard =
+        Nat.card {s : Σ _ : I, J // p (f s.2)} :=
+      (Nat.card_coe_set_eq _).symm
+    _ = Nat.card (I × {j : J // p (f j)}) :=
+      Nat.card_congr (setOfSigmaEquivProd f p)
+    _ = Nat.card I * Nat.card {j : J // p (f j)} := Nat.card_prod _ _
+    _ = Fintype.card I * {j : J | p (f j)}.ncard := by
+      rw [Nat.card_eq_fintype_card]
+      congr 1
+
 /-- A weighted form on a sum type is the product of its two restrictions. -/
 noncomputable def weightedSumSquaresSumIsometryEquiv
     {I J : Type*} [Fintype I] [Fintype J]
@@ -103,6 +174,46 @@ theorem quadraticSignature_prod [IsStrictOrderedRing K]
         QuadraticForm.finrank_radical_of_equiv_weightedSumSquares hw₂]
       exact ncard_setOf_sum_elim w₁ w₂ (· = 0)
 
+/-- An orthogonal power multiplies each part of a quadratic signature. -/
+theorem quadraticSignature_pi_const [IsStrictOrderedRing K]
+    {M : Type*} [AddCommGroup M] [Module K M] [Module.Finite K M]
+    (Q : QuadraticForm K M) (n : ℕ) :
+    (sigPos (QuadraticMap.pi fun _ : Fin n ↦ Q),
+      sigNeg (QuadraticMap.pi fun _ : Fin n ↦ Q),
+      Module.finrank K (QuadraticMap.pi fun _ : Fin n ↦ Q).radical) =
+    (n * sigPos Q, n * sigNeg Q,
+      n * Module.finrank K Q.radical) := by
+  letI : Invertible (2 : K) := invertibleOfNonzero (by positivity)
+  obtain ⟨w, hw⟩ := Q.equivalent_weightedSumSquares
+  let hwPi : QuadraticMap.Equivalent
+      (QuadraticMap.pi fun _ : Fin n ↦ Q)
+      (QuadraticMap.pi fun _ : Fin n ↦
+        QuadraticMap.weightedSumSquares K w) :=
+    QuadraticMap.Equivalent.pi fun _ ↦ hw
+  let hwTotal : QuadraticMap.Equivalent
+      (QuadraticMap.pi fun _ : Fin n ↦ Q)
+      (QuadraticMap.weightedSumSquares K
+        (fun s : Σ _ : Fin n, Fin (Module.finrank K M) ↦ w s.2)) :=
+    hwPi.trans ⟨piWeightedSumSquaresIsometryEquiv K w⟩
+  apply Prod.ext
+  · change sigPos (QuadraticMap.pi fun _ : Fin n ↦ Q) =
+      n * sigPos Q
+    rw [QuadraticForm.sigPos_of_equiv_weightedSumSquares hwTotal,
+      QuadraticForm.sigPos_of_equiv_weightedSumSquares hw]
+    simpa using ncard_setOf_sigma_const (I := Fin n) w (0 < ·)
+  · apply Prod.ext
+    · change sigNeg (QuadraticMap.pi fun _ : Fin n ↦ Q) =
+        n * sigNeg Q
+      rw [QuadraticForm.sigNeg_of_equiv_weightedSumSquares hwTotal,
+        QuadraticForm.sigNeg_of_equiv_weightedSumSquares hw]
+      simpa using ncard_setOf_sigma_const (I := Fin n) w (· < 0)
+    · change Module.finrank K
+          (QuadraticMap.pi fun _ : Fin n ↦ Q).radical =
+        n * Module.finrank K Q.radical
+      rw [QuadraticForm.finrank_radical_of_equiv_weightedSumSquares hwTotal,
+        QuadraticForm.finrank_radical_of_equiv_weightedSumSquares hw]
+      simpa using ncard_setOf_sigma_const (I := Fin n) w (· = 0)
+
 /-- The underlying finite-dimensional module of a finite symmetric form. -/
 def finiteFormForget : FiniteFormCat K K ⥤ ModuleCat K :=
   ObjectProperty.ι (isFiniteForm K K) ⋙
@@ -134,6 +245,16 @@ theorem signature_orthogonalSum [IsStrictOrderedRing K]
     finiteFormQuadraticForm_orthogonalSum]
   exact quadraticSignature_prod K (finiteFormQuadraticForm K L)
     (finiteFormQuadraticForm K M)
+
+/-- Signature is multiplied by the exponent under finite orthogonal powers. -/
+theorem signature_orthogonalPower [IsStrictOrderedRing K]
+    (L : FiniteFormCat K K) (n : ℕ) :
+    signature K (finiteFormOrthogonalPower L n) =
+      (n * (signature K L).1, n * (signature K L).2.1,
+        n * (signature K L).2.2) := by
+  letI : Module.Finite K L.obj.carrier := L.property.1
+  rw [signature, signature, finiteFormQuadraticForm_orthogonalPower]
+  exact quadraticSignature_pi_const K (finiteFormQuadraticForm K L) n
 
 /-- The quadratic form represented by a matrix in the standard basis. -/
 def matrixQuadraticForm {I : Type*} [Fintype I] [DecidableEq I]

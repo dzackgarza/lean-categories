@@ -322,11 +322,11 @@ theorem isUnimodular_orthogonalSum (L₁ L₂ : IntegralLatticeCat R)
 
 /-- The bilinear map for a finite indexed orthogonal sum. -/
 noncomputable def indexedOrthogonalSumBilinMap {I : Type} [Fintype I]
-    (L : I → LatticeCat R W) :
-    LinearMap.BilinMap R ((i : I) → (L i).obj.carrier) W := by
+    (L : I → BilinModuleCat R W) :
+    LinearMap.BilinMap R ((i : I) → (L i).carrier) W := by
   classical
   exact LinearMap.mk₂ R
-    (fun x y ↦ ∑ i, (L i).obj.pairing (x i) (y i))
+    (fun x y ↦ ∑ i, (L i).pairing (x i) (y i))
     (fun _ _ _ ↦ by simp [Finset.sum_add_distrib])
     (fun _ _ _ ↦ by simp [Finset.smul_sum])
     (fun _ _ _ ↦ by simp [Finset.sum_add_distrib])
@@ -336,7 +336,8 @@ noncomputable def indexedOrthogonalSumBilinMap {I : Type} [Fintype I]
 noncomputable def indexedOrthogonalSum {I : Type} [Fintype I]
     (L : I → LatticeCat R W) : LatticeCat R W := by
   letI (i : I) : Module.Projective R (L i).obj.carrier := (L i).property.1
-  refine ⟨BilinModuleCat.ofBilinMap (indexedOrthogonalSumBilinMap L), ?_, ?_⟩
+  refine ⟨BilinModuleCat.ofBilinMap
+    (indexedOrthogonalSumBilinMap fun i ↦ (L i).obj), ?_, ?_⟩
   · change Module.Projective R ((i : I) → (L i).obj.carrier)
     exact Module.Projective.of_equiv'
       (DFinsupp.linearEquivFunOnFintype (R := R)
@@ -354,6 +355,40 @@ theorem indexedOrthogonalSum_pairing {I : Type} [Fintype I]
     (x y : (i : I) → (L i).obj.carrier) :
     (indexedOrthogonalSum L).obj.pairing x y =
       ∑ i, (L i).obj.pairing (x i) (y i) :=
+  rfl
+
+/-- The orthogonal sum of a finite indexed family of finite symmetric forms. -/
+noncomputable def finiteFormIndexedOrthogonalSum {I : Type} [Fintype I]
+    (L : I → FiniteFormCat R W) : FiniteFormCat R W := by
+  refine ⟨BilinModuleCat.ofBilinMap (indexedOrthogonalSumBilinMap fun i ↦ (L i).obj), ?_, ?_⟩
+  · letI (i : I) : Module.Finite R (L i).obj.carrier := (L i).property.1
+    change Module.Finite R ((i : I) → (L i).obj.carrier)
+    infer_instance
+  · intro x y
+    change (∑ i, (L i).obj.pairing (x i) (y i)) =
+      ∑ i, (L i).obj.pairing (y i) (x i)
+    apply Finset.sum_congr rfl
+    intro i _
+    exact (L i).property.2 (x i) (y i)
+
+@[simp]
+theorem finiteFormIndexedOrthogonalSum_pairing {I : Type} [Fintype I]
+    (L : I → FiniteFormCat R W)
+    (x y : (finiteFormIndexedOrthogonalSum L).obj.carrier) :
+    (finiteFormIndexedOrthogonalSum L).obj.pairing x y =
+      ∑ i, (L i).obj.pairing (x i) (y i) :=
+  rfl
+
+/-- The `n`-fold orthogonal power of a finite symmetric form. -/
+noncomputable def finiteFormOrthogonalPower (L : FiniteFormCat R W) (n : ℕ) :
+    FiniteFormCat R W :=
+  finiteFormIndexedOrthogonalSum (I := Fin n) fun _ ↦ L
+
+@[simp]
+theorem finiteFormOrthogonalPower_pairing (L : FiniteFormCat R W) (n : ℕ)
+    (x y : (finiteFormOrthogonalPower L n).obj.carrier) :
+    (finiteFormOrthogonalPower L n).obj.pairing x y =
+      ∑ i, L.obj.pairing (x i) (y i) :=
   rfl
 
 /-- A finite indexed orthogonal sum of unimodular lattices is unimodular. -/
