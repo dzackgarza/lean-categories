@@ -1592,3 +1592,437 @@ The final check is specific:
 > What fact about the bilinear form would be false or unstated if this declaration were removed?
 
 If the answer is “none,” the declaration does not advance formed-module theory.
+
+The issue is semantic self-sealing. Lean usually prevents direct logical cycles. It cannot prevent a false mathematical interpretation.
+
+An agent wants theorem \(T\). It selects a definition that contains \(T\), implies \(T\), or transports \(T\) into place. It then proves \(T\) by unfolding, projection, simplification, or conjugation.
+
+The proof is formally valid. However, it gives no evidence that the definition represents the standard mathematical object.
+
+This failure is difficult because the author cannot reliably detect it. The author chose the definition, proof target, examples, and success criteria. Each local success confirms the author’s own prior choices.
+
+Therefore, advice such as “avoid circular definitions” is too weak. The formalization needs external constraints that the author cannot redefine.
+
+## Addendum: Prevent self-sealing formalizations
+
+A formalization is self-sealing when its internal definitions manufacture the evidence used to justify those definitions.
+
+The usual dependency has this form:
+
+```text
+desired theorem
+        ↓
+convenient definition
+        ↓
+easy proof of desired theorem
+        ↓
+claim that the definition captured the mathematics
+```
+
+This direction is invalid.
+
+Use this direction:
+
+```text
+independent mathematical authority
+        ↓
+standard object and hypotheses
+        ↓
+Lean representation
+        ↓
+comparison with existing formalizations
+        ↓
+theorem proved from the defining mathematics
+```
+
+The source must constrain the definition before theorem proving begins.
+
+## Do not let the author certify its own semantics
+
+The author may check syntax, types, and proofs.
+
+The author may not use those internal results to certify that the formalization represents the intended mathematics.
+
+These facts do not establish semantic grounding:
+
+- The file compiles.
+- The main theorem has a short proof.
+- All examples built by the author work.
+- The definitions compose conveniently.
+- The API looks categorical.
+- A natural isomorphism exists by construction.
+- The target theorem follows by `rfl`, `simp`, or field projection.
+- The same author says the construction is standard.
+
+Require an independent mathematical anchor.
+
+An anchor can be:
+
+- the pinned Mathlib definition;
+- a precise Stacks Project definition or result;
+- a textbook statement read through the live Zotero library;
+- a primary paper or relevant arXiv source;
+- an established formalization in another proof assistant;
+- an explicit mathematical decision from the project owner.
+
+A source is an anchor only when its statement constrains the Lean type.
+
+A citation added after implementation is not an anchor. It is citation laundering.
+
+## Source the definition before proving its theorems
+
+Before creating a standard-named object, record:
+
+```text
+Authority:
+Exact definition:
+Defining data:
+Defining axioms:
+Ambient category:
+Permitted morphisms:
+Required hypotheses:
+Results derived later:
+Lean representation:
+Comparison with existing formalizations:
+```
+
+Read the actual definition or theorem statement.
+
+Do not rely on a remembered name, abstract, introduction, or search result.
+
+Do not search for a source that merely resembles completed code.
+
+If authorities give different definitions, identify the comparison hypotheses.
+
+Do not choose the version that makes the current theorem easiest.
+
+If no standard source exists, mark the construction as novel or provisional.
+
+Do not give a provisional construction an established mathematical name.
+
+## Separate defining content from derived content
+
+For each proposed definition, divide its fields into two groups:
+
+```text
+Content supplied by the standard definition.
+Content desired as a later theorem.
+```
+
+Only the first group belongs in the definition.
+
+If a desired conclusion appears as a field, witness, or definitional equality, stop.
+
+Do not prove a field by projecting that field from the object.
+
+Do not prove an existence theorem from existence data inserted into the definition.
+
+Do not prove compatibility from a map defined through that compatibility.
+
+Do not prove classification from a structure that already contains classification completeness.
+
+A standard definition can legitimately contain axioms. The source must identify them as defining axioms.
+
+A theorem that extracts such an axiom is an elimination lemma. It is not a new mathematical theorem.
+
+## Audit proofs for injected conclusions
+
+Inspect what makes the proof close.
+
+Classify the proof as one of these:
+
+- definitional unfolding;
+- constructor or field projection;
+- transport through an equivalence;
+- structural well-formedness;
+- comparison with a standard object;
+- genuine deduction from mathematical hypotheses.
+
+Do not report the first four classes as substantive theorems.
+
+They can be useful interface lemmas. Name and document them accurately.
+
+A genuine theorem must add information not already inserted into the definition.
+
+Before proving it, complete this sentence:
+
+> This theorem adds ___ beyond the defining data because ___.
+
+If the first blank is empty, the result is not a substantive theorem.
+
+## Apply the target-exclusion test
+
+Remove the desired theorem from view.
+
+Now define the object from the source alone.
+
+Do not use the target theorem, its expected proof, or its needed API while choosing the definition.
+
+After the definition is fixed, restore the theorem.
+
+If the theorem becomes difficult, preserve that difficulty.
+
+Proof difficulty can reveal missing mathematics. It does not authorize a new definition that makes the theorem automatic.
+
+Never weaken the object until the target becomes true.
+
+Never strengthen the definition until the target becomes a field.
+
+Never replace the theorem with an equivalent-looking statement chosen for easy formalization.
+
+## Apply the wrong-model test
+
+Construct a nearby object that should not satisfy the standard definition.
+
+Then ask whether the Lean definition accepts it.
+
+Useful wrong models include:
+
+- a trivial object;
+- an arbitrary isomorphic copy;
+- an object carrying the desired conclusion as extra data;
+- a structure missing one standard axiom;
+- a degenerate example excluded by the source;
+- an object satisfying a necessary condition but not the definition;
+- a coordinate presentation without representation independence.
+
+If the Lean definition accepts these wrong models, it is too weak.
+
+If every constructed example satisfies the theorem, the examples may be biased by the same definition.
+
+Include a near-miss example that the definition must reject.
+
+The author must not choose only examples generated by its own constructors.
+
+## Apply the theorem-survival test
+
+Replace the intended definition with a plainly weaker substitute.
+
+Then inspect the theorem.
+
+If the proof still works, the theorem does not characterize the intended mathematics.
+
+Replace the construction with an arbitrary object equipped with the desired isomorphism.
+
+If naturality or classification still follows, the proof concerns transport data rather than the named construction.
+
+Replace substantive morphisms with maps defined by conjugation through the target comparison.
+
+If the theorem becomes automatic, it proves the transport choice, not the underlying mathematics.
+
+This test does not require the author to recognize its own bias. It changes the object and observes what survives.
+
+## Apply the unfolding test
+
+Unfold every local definition used by the theorem.
+
+Then write the theorem in ordinary mathematical language.
+
+If the result becomes one of these forms, classify it as weak:
+
+```text
+Given a witness of P, prove P.
+Given an isomorphism to X, prove an isomorphism to X.
+Given a map defined to commute, prove that it commutes.
+Given a complete classification, prove that the classification is complete.
+Given an object defined by invariant I, prove that it has invariant I.
+```
+
+The theorem can remain as an interface lemma. It cannot support a claim of mathematical completion.
+
+## Require a comparison theorem
+
+A new representation of a standard object must connect to the established object.
+
+Use one of these comparisons:
+
+- definitional equality;
+- proved equality;
+- equivalence;
+- categorical equivalence;
+- comparison functor;
+- forgetful map with characterized image;
+- universal-property equivalence;
+- an `if and only if` theorem under explicit hypotheses.
+
+State which comparison applies.
+
+Do not say two constructions “correspond” without defining the comparison.
+
+Do not use matching names as evidence of matching semantics.
+
+Do not export a new construction under a standard name before proving the comparison.
+
+When no formal reference exists, compare against the source’s defining properties and distinguishing examples.
+
+## Make authorities carry real force
+
+A source must be allowed to falsify the implementation.
+
+If the source definition disagrees with the Lean definition, change the Lean definition.
+
+Do not reinterpret the source until it matches the code.
+
+Do not replace the source with a later paper that uses more convenient conventions without reporting the change.
+
+Do not cite a characterization while omitting its hypotheses.
+
+Do not turn a theorem valid under extra hypotheses into the general definition.
+
+Do not treat one computational criterion as the mathematical object unless the authority does so.
+
+Record whether each sourced statement is:
+
+- a definition;
+- an equivalent characterization;
+- a sufficient condition;
+- a necessary condition;
+- a classification theorem;
+- a computational criterion;
+- an example.
+
+These roles are not interchangeable.
+
+## Protect difficult proof obligations
+
+A missing proof is not permission to edit the statement until it closes.
+
+Keep the original theorem visible when:
+
+- the standard definition makes the proof difficult;
+- Mathlib lacks a needed bridge;
+- the source uses undeveloped prerequisite theory;
+- the correct categorical home remains unclear;
+- a comparison theorem is not yet available;
+- the theorem might need stronger hypotheses.
+
+State the exact open obligation.
+
+A visible gap preserves the research programme.
+
+A circular definition hides the gap and corrupts later work.
+
+## Distinguish representation lemmas from mathematical theorems
+
+Use accurate labels.
+
+Examples include:
+
+```text
+constructor_projection
+transported_map_commutes
+comparison_hom_naturality
+underlying_object_iso
+representation_sanity
+```
+
+These names identify implementation facts.
+
+Reserve mathematical theorem names for results derived from independent definitions and hypotheses.
+
+Do not name a transported fact after the source theorem it imitates.
+
+Do not let namespace placement upgrade a representation lemma into mathematics.
+
+## Require semantic content in naturality
+
+Naturality can express a real theorem. It can also confirm a map engineered to commute.
+
+Before defining a functorial action, define the mathematical action independently.
+
+Then state why the comparison square commutes.
+
+The proof should use facts about the construction.
+
+Examples include:
+
+- maps preserve primary submodules;
+- localization commutes with the relevant operation;
+- pullback satisfies its universal property;
+- restriction preserves the form;
+- sums commute with the underlying linear map.
+
+If the proof uses only the comparison isomorphisms that defined the action, naturality has no independent content.
+
+Call the result transported naturality.
+
+Do not call it functoriality of the original mathematical construction.
+
+## Require one positive and one separating example
+
+A grounded formalization needs two different examples.
+
+The positive example shows that the intended object satisfies the definition.
+
+The separating example distinguishes the definition from a plausible weaker substitute.
+
+For example:
+
+- one exact sequence and one sequence with only zero composite;
+- one nondegenerate form and one form with trivial-looking coordinates but nonzero radical;
+- one true product and one object with projection maps but no universal property;
+- one primary decomposition and one arbitrary direct-sum presentation;
+- one invariant classification and one pair sharing the invariant without being equivalent.
+
+A positive example alone cannot distinguish the intended definition from a weak one.
+
+## Use the deletion question
+
+For every theorem, ask:
+
+> If I delete the local definitions, what independent mathematical fact remains?
+
+If nothing remains, the result describes only the local encoding.
+
+For every definition, ask:
+
+> Which source statement forces this exact data and these exact axioms?
+
+If no source or project decision answers, the definition lacks grounding.
+
+For every comparison, ask:
+
+> Could I have made this theorem true by changing the map definition?
+
+If yes, define the map independently before accepting the comparison.
+
+## Stop self-confirmation after the first weak theorem
+
+One weak theorem can be an interface lemma.
+
+A sequence of weak theorems indicates a self-sealing theory.
+
+Observable signals include:
+
+- several proofs close by `rfl`;
+- several theorems project structure fields;
+- naturality follows from conjugation definitions;
+- every example uses local constructors;
+- no counterexample tests the boundary;
+- no theorem imports an external mathematical result;
+- definitions become stronger whenever proofs fail;
+- theorem statements become weaker whenever definitions resist;
+- citations appear only after implementation;
+- the same author supplies every semantic comparison.
+
+When any two signals occur, stop adding declarations.
+
+Return to the external definition and rebuild the dependency direction.
+
+Do not ask whether the current theory “feels mathematically sound.” The author’s judgment is already inside the failed loop.
+
+## Final grounding rule
+
+No internally generated proof can establish that its own definitions represent a standard mathematical concept.
+
+That claim requires an external anchor and an explicit comparison.
+
+The formal kernel certifies:
+
+> This conclusion follows from these declarations.
+
+It does not certify:
+
+> These declarations formalize the mathematical object named in their comments.
+
+The second claim remains the author’s responsibility. The author must discharge it through sources, comparisons, and separating examples.
