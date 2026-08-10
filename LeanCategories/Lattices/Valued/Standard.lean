@@ -606,6 +606,72 @@ theorem e8GramMatrix_mul_inverse :
   fin_cases i <;> fin_cases j <;>
     norm_num [e8GramMatrixInverse, Matrix.mul_apply, Fin.sum_univ_succ]
 
+/-- The determinant of the negative `E₈` Gram matrix is one. -/
+theorem e8GramMatrix_det : e8GramMatrix.det = 1 := by
+  rw [e8GramMatrix_eq]
+  let A : Matrix (Fin 8) (Fin 8) ℤ := ![
+    ![-2,  0,  1,  0,  0,  0,  0,  0],
+    ![ 0, -2,  0,  1,  0,  0,  0,  0],
+    ![ 1,  0, -2,  1,  0,  0,  0,  0],
+    ![ 0,  1,  1, -2,  1,  0,  0,  0],
+    ![ 0,  0,  0,  1, -2,  1,  0,  0],
+    ![ 0,  0,  0,  0,  1, -2,  1,  0],
+    ![ 0,  0,  0,  0,  0,  1, -2,  1],
+    ![ 0,  0,  0,  0,  0,  0,  1, -2]]
+  change A.det = 1
+  have h6 : (A.submatrix
+      (7 : Fin 8).succAbove (6 : Fin 8).succAbove).det = 3 := by
+    let B := A.submatrix
+      (7 : Fin 8).succAbove (6 : Fin 8).succAbove
+    have hminor : B.transpose.submatrix
+        (6 : Fin 7).succAbove (6 : Fin 7).succAbove = e6GramMatrix := by
+      rw [e6GramMatrix_eq]
+      set_option maxRecDepth 10000 in decide
+    have hrow (j : Fin 7) : B.transpose (6 : Fin 7) j =
+        if j = 6 then 1 else 0 := by
+      fin_cases j <;> decide
+    rw [← Matrix.det_transpose]
+    rw [Matrix.det_succ_row B.transpose (6 : Fin 7)]
+    simp_rw [hrow]
+    simp (disch := decide) [hminor, e6GramMatrix_det]
+  have h7 : (A.submatrix
+      (7 : Fin 8).succAbove (7 : Fin 8).succAbove).det = -2 := by
+    have hminor : A.submatrix
+        (7 : Fin 8).succAbove (7 : Fin 8).succAbove = e7GramMatrix := by
+      rw [e7GramMatrix_eq]
+      set_option maxRecDepth 10000 in decide
+    rw [hminor, e7GramMatrix_det]
+  have hrow (j : Fin 8) : A (7 : Fin 8) j =
+      if j = 6 then 1 else if j = 7 then -2 else 0 := by
+    fin_cases j <;> decide
+  rw [Matrix.det_succ_row A (7 : Fin 8)]
+  simp_rw [hrow]
+  simp (disch := decide) [Fin.sum_univ_succ, h6, h7]
+
+/-- The standard basis computes the determinant of the negative `E₈` lattice. -/
+theorem e8Lattice_determinant :
+    determinant e8Lattice (Pi.basisFun ℤ (Fin 8)) = 1 := by
+  rw [determinant, e8Lattice_gramMatrix, e8GramMatrix_det]
+
+/-- The negative `E₈` lattice is generically nondegenerate. -/
+theorem e8Lattice_isGenericallyNondegenerate :
+    IsGenericallyNondegenerate ℤ e8Lattice :=
+  (isGenericallyNondegenerate_iff_determinant_ne_zero
+    ℤ e8Lattice (Pi.basisFun ℤ (Fin 8))).mpr (by
+      rw [e8Lattice_determinant]
+      norm_num)
+
+/-- The discriminant group of the negative `E₈` lattice has order one. -/
+theorem e8Lattice_natCard_defect :
+    Nat.card e8Lattice.obj.defect = 1 := by
+  letI : Module.Finite ℤ e8Lattice.obj.carrier := by
+    change Module.Finite ℤ (Fin 8 → ℤ)
+    infer_instance
+  rw [natCard_defect_eq_natAbs_determinant e8Lattice
+    e8Lattice_isGenericallyNondegenerate (Pi.basisFun ℤ (Fin 8)),
+    e8Lattice_determinant]
+  norm_num
+
 /-- The negative `E₈` Gram determinant is a unit. -/
 theorem e8GramMatrix_isUnit_det : IsUnit e8GramMatrix.det :=
   Matrix.isUnit_det_of_right_inverse e8GramMatrix_mul_inverse
