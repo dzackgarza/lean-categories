@@ -84,4 +84,14 @@ theorem iSupIndep_primaryComponent [IsDedekindDomain R]
       Ideal.primaryComponent A.obj.carrier P.asIdeal :=
   Ideal.iSupIndep_primaryComponent R A.obj.carrier
 
+/-- A finite torsion carrier is the direct sum of its height-one primary components. -/
+noncomputable def primaryComponentLinearEquiv [IsDedekindDomain R]
+    (A : FiniteTorsionSymBilinModuleCat R W) :
+    (Π₀ P : IsDedekindDomain.HeightOneSpectrum R,
+      Ideal.primaryComponent A.obj.carrier P.asIdeal) ≃ₗ[R]
+        A.obj.carrier := by
+  classical
+  exact (iSupIndep_primaryComponent A).linearEquiv
+    (iSup_primaryComponent_eq_top A)
+
 end LeanCategories.Modules.Bilinear.Valued
