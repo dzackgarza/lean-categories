@@ -15,6 +15,7 @@ public import LeanCategories.Registry.Extension
 public import LeanCategories.Presentation.Nodes
 public import LeanCategories.Algebra.Magmas
 public import LeanCategories.Algebra.Rings
+public import LeanCategories.Algebra.FractionalIdeals
 public import LeanCategories.Names.Standard
 public import LeanCategories.ForMathlib.CategoricalPullback
 public import LeanCategories.Modules.Bilinear.Valued
