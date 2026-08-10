@@ -192,6 +192,49 @@ theorem coinvariantSubmodule_eq_antiFixedSubmodule
   le_antisymm (coinvariantSubmodule_le_antiFixedSubmodule L J hL)
     (antiFixedSubmodule_le_coinvariantSubmodule L J)
 
+/-- Twice each vector lies in the sum of the invariant and coinvariant submodules. -/
+theorem two_smul_mem_fixed_sup_coinvariant
+    [IsDomain R] [NeZero (2 : R)]
+    (L : IntegralLatticeCat R) (J : Involution L)
+    (hL : L.obj.IsNondegenerate) (x : L.obj.carrier) :
+    (2 : R) • x ∈ fixedSubmodule L J ⊔ coinvariantSubmodule L J := by
+  have hfixed : x + J.element.1 x ∈ fixedSubmodule L J := by
+    rw [mem_fixedSubmodule_iff]
+    rw [map_add, J.apply_apply]
+    abel
+  have hanti : x - J.element.1 x ∈ antiFixedSubmodule L J := by
+    apply LinearMap.mem_ker.mpr
+    change J.element.1 (x - J.element.1 x) + (x - J.element.1 x) = 0
+    rw [map_sub, J.apply_apply]
+    abel
+  have hcoin : x - J.element.1 x ∈ coinvariantSubmodule L J := by
+    rw [coinvariantSubmodule_eq_antiFixedSubmodule L J hL]
+    exact hanti
+  have hsum : (2 : R) • x =
+      (x + J.element.1 x) + (x - J.element.1 x) := by
+    rw [two_smul]
+    abel
+  rw [hsum]
+  exact Submodule.add_mem_sup hfixed hcoin
+
+/-- The invariant-coinvariant glue module is annihilated by two. -/
+theorem invariantCoinvariantGlue_isTorsionBy_two
+    [IsDomain R] [NeZero (2 : R)]
+    (L : IntegralLatticeCat R) (J : Involution L)
+    (hL : L.obj.IsNondegenerate) :
+    Module.IsTorsionBy R
+      (orthogonalGlueModule L (fixedSubmodule L J)) 2 := by
+  intro z
+  induction z using Quotient.inductionOn with
+  | _ x =>
+      change (2 : R) •
+          (Submodule.Quotient.mk x :
+            L.obj.carrier ⧸
+              (fixedSubmodule L J ⊔ coinvariantSubmodule L J)) = 0
+      rw [← Submodule.Quotient.mk_smul,
+        Submodule.Quotient.mk_eq_zero]
+      exact two_smul_mem_fixed_sup_coinvariant L J hL x
+
 /-- The fixed submodule is primitive. -/
 theorem fixedSubmodule_isPrimitive (L : IntegralLatticeCat R)
     (J : Involution L) : IsPrimitiveSubmodule (fixedSubmodule L J) := by
