@@ -348,4 +348,62 @@ theorem sublatticeOrthogonalSumInclusion_isFiniteIndex_iff
       rw [range_sublatticeOrthogonalSumLinearMap]
       exact hFinite
 
+/-- The glue module measures the failure of `P + Pᵖ` to fill the ambient lattice. -/
+def orthogonalGlueModule (L : IntegralLatticeCat R)
+    (P : Submodule R L.obj.carrier) : Type u :=
+  L.obj.carrier ⧸ (P ⊔ orthogonalSubmodule L P)
+
+instance orthogonalGlueModuleAddCommGroup (L : IntegralLatticeCat R)
+    (P : Submodule R L.obj.carrier) :
+    AddCommGroup (orthogonalGlueModule L P) :=
+  inferInstanceAs (AddCommGroup
+    (L.obj.carrier ⧸ (P ⊔ orthogonalSubmodule L P)))
+
+instance orthogonalGlueModuleModule (L : IntegralLatticeCat R)
+    (P : Submodule R L.obj.carrier) :
+    Module R (orthogonalGlueModule L P) :=
+  inferInstanceAs (Module R
+    (L.obj.carrier ⧸ (P ⊔ orthogonalSubmodule L P)))
+
+/-- The ambient lattice projects onto the glue module. -/
+def orthogonalGlueProjection (L : IntegralLatticeCat R)
+    (P : Submodule R L.obj.carrier) :
+    L.obj.carrier →ₗ[R] orthogonalGlueModule L P :=
+  (P ⊔ orthogonalSubmodule L P).mkQ
+
+/-- The orthogonal-sum map followed by the glue projection is exact. -/
+theorem sublatticeOrthogonalSum_glue_exact (L : IntegralLatticeCat R)
+    (P : Submodule R L.obj.carrier) :
+    Function.Exact (sublatticeOrthogonalSumLinearMap L P)
+      (orthogonalGlueProjection L P) := by
+  rw [LinearMap.exact_iff]
+  rw [range_sublatticeOrthogonalSumLinearMap]
+  exact (P ⊔ orthogonalSubmodule L P).ker_mkQ
+
+/-- The ambient lattice surjects onto its orthogonal glue module. -/
+theorem orthogonalGlueProjection_surjective (L : IntegralLatticeCat R)
+    (P : Submodule R L.obj.carrier) :
+    Function.Surjective (orthogonalGlueProjection L P) :=
+  Submodule.mkQ_surjective _
+
+/-- The glue module is the carrier cokernel of the orthogonal-sum embedding. -/
+def orthogonalGlueCokernelEquiv (L : IntegralLatticeCat R)
+    (P : Submodule R L.obj.carrier) :
+    (L.obj.carrier ⧸ LinearMap.range
+      (sublatticeOrthogonalSumLinearMap L P)) ≃ₗ[R]
+        orthogonalGlueModule L P :=
+  Submodule.quotEquivOfEq _ _
+    (range_sublatticeOrthogonalSumLinearMap L P)
+
+/-- A finite-index orthogonal sum has a finite glue module. -/
+theorem orthogonalGlueModule_finite
+    (L : IntegralLatticeCat R) (P : Submodule R L.obj.carrier)
+    [Module.Projective R P]
+    [Module.Projective R (orthogonalSubmodule L P)]
+    (hP : (formedSublattice L P).obj.IsNondegenerate)
+    (hFinite : BilinModuleCat.IsFiniteIndexEmbedding
+      (sublatticeOrthogonalSumInclusion L P).hom) :
+    Finite (orthogonalGlueModule L P) :=
+  (sublatticeOrthogonalSumInclusion_isFiniteIndex_iff L P hP).mp hFinite
+
 end LeanCategories.Lattices.Valued
