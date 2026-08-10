@@ -222,7 +222,7 @@ noncomputable def primaryComponentDirectSumFunctor [IsDedekindDomain R] :
   map_comp f g := by
     simp [primaryComponentDirectSumMap, Category.assoc]
 
-/-- The primary direct-sum functor is naturally isomorphic to the underlying form. -/
+/-- The primary direct-sum functor is naturally isomorphic to the inclusion functor. -/
 noncomputable def primaryComponentDirectSumNatIso [IsDedekindDomain R] :
     primaryComponentDirectSumFunctor ≅
       (isFiniteTorsionSymBilinModule R W).ι :=
