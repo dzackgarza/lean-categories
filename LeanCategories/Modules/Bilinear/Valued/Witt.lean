@@ -15,43 +15,49 @@ namespace LeanCategories.Modules.Bilinear.Valued
 
 universe u
 
-variable {R : Type u} [CommRing R]
+variable {R W : Type u} [CommRing R]
+variable [AddCommGroup W] [Module R W]
 
 namespace BilinModuleCat
 
-/-- The orthogonal submodule of a scalar-valued bilinear module. -/
-def orthogonalSubmodule (L : BilinModuleCat R R)
-    (P : Submodule R L.carrier) : Submodule R L.carrier :=
-  LinearMap.BilinForm.orthogonal L.bilinMap P
+/-- The orthogonal submodule of a bilinear module. -/
+def orthogonalSubmodule (L : BilinModuleCat R W)
+    (P : Submodule R L.carrier) : Submodule R L.carrier where
+  carrier := {x | ∀ p ∈ P, L.pairing p x = 0}
+  zero_mem' p hp := L.pairing_zero_right p
+  add_mem' hx hy p hp := by
+    rw [L.pairing_add_right, hx p hp, hy p hp, add_zero]
+  smul_mem' r x hx p hp := by
+    rw [L.pairing_smul_right, hx p hp, smul_zero]
 
 @[simp]
-theorem mem_orthogonalSubmodule_iff (L : BilinModuleCat R R)
+theorem mem_orthogonalSubmodule_iff (L : BilinModuleCat R W)
     (P : Submodule R L.carrier) (x : L.carrier) :
     x ∈ L.orthogonalSubmodule P ↔
       ∀ p ∈ P, L.pairing p x = 0 :=
   Iff.rfl
 
 /-- A submodule is totally isotropic when it lies in its orthogonal. -/
-def IsTotallyIsotropic (L : BilinModuleCat R R)
+def IsTotallyIsotropic (L : BilinModuleCat R W)
     (P : Submodule R L.carrier) : Prop :=
   P ≤ L.orthogonalSubmodule P
 
 /-- A submodule is Lagrangian when it equals its orthogonal. -/
-def IsLagrangian (L : BilinModuleCat R R)
+def IsLagrangian (L : BilinModuleCat R W)
     (P : Submodule R L.carrier) : Prop :=
   L.orthogonalSubmodule P = P
 
-/-- A scalar-valued form is metabolic when it has a Lagrangian submodule. -/
-def IsMetabolic (L : BilinModuleCat R R) : Prop :=
+/-- A formed module is metabolic when it has a Lagrangian submodule. -/
+def IsMetabolic (L : BilinModuleCat R W) : Prop :=
   ∃ P, L.IsLagrangian P
 
-/-- A scalar-valued form is anisotropic when zero is its only isotropic vector. -/
-def IsAnisotropic (L : BilinModuleCat R R) : Prop :=
+/-- A formed module is anisotropic when zero is its only isotropic vector. -/
+def IsAnisotropic (L : BilinModuleCat R W) : Prop :=
   ∀ x, L.pairing x x = 0 → x = 0
 
 /-- Every Lagrangian submodule is totally isotropic. -/
 theorem IsLagrangian.isTotallyIsotropic
-    {L : BilinModuleCat R R} {P : Submodule R L.carrier}
+    {L : BilinModuleCat R W} {P : Submodule R L.carrier}
     (hP : L.IsLagrangian P) : L.IsTotallyIsotropic P := by
   intro x hx
   rw [hP]
@@ -100,8 +106,7 @@ theorem hyperbolicLagrangian_isLagrangian :
     have h := hx (f, 0) (by
       change (0 : M) = 0
       rfl)
-    rw [BilinModuleCat.bilinMap_apply,
-      hyperbolicBilinModule_pairing] at h
+    rw [hyperbolicBilinModule_pairing] at h
     simpa using h
   · intro hx
     rw [BilinModuleCat.mem_orthogonalSubmodule_iff]
