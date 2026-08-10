@@ -24,6 +24,50 @@ structure Involution (L : IntegralLatticeCat R) where
   element : OrthogonalGroup L
   involutive : element * element = 1
 
+@[ext]
+theorem Involution.ext {L : IntegralLatticeCat R} {J K : Involution L}
+    (h : J.element = K.element) : J = K := by
+  cases J
+  cases K
+  simp_all
+
+/-- Conjugation of an involution by an orthogonal-group element. -/
+def Involution.conjugate (L : IntegralLatticeCat R)
+    (g : OrthogonalGroup L) (J : Involution L) : Involution L where
+  element := g * J.element * g⁻¹
+  involutive := by
+    calc
+      (g * J.element * g⁻¹) * (g * J.element * g⁻¹) =
+          g * (J.element * J.element) * g⁻¹ := by group
+      _ = 1 := by rw [J.involutive]; simp
+
+@[simp]
+theorem Involution.conjugate_one (L : IntegralLatticeCat R)
+    (J : Involution L) : J.conjugate L 1 = J := by
+  ext
+  simp [Involution.conjugate]
+
+theorem Involution.conjugate_mul (L : IntegralLatticeCat R)
+    (g h : OrthogonalGroup L) (J : Involution L) :
+    J.conjugate L (g * h) = (J.conjugate L h).conjugate L g := by
+  ext
+  simp only [Involution.conjugate]
+  group
+
+/-- The orthogonal group acts on involutions by conjugation. -/
+instance involutionMulAction (L : IntegralLatticeCat R) :
+    MulAction (OrthogonalGroup L) (Involution L) where
+  smul g J := J.conjugate L g
+  one_smul := Involution.conjugate_one L
+  mul_smul := Involution.conjugate_mul L
+
+@[simp]
+theorem Involution.conjugate_apply (L : IntegralLatticeCat R)
+    (g : OrthogonalGroup L) (J : Involution L) (x : L.obj.carrier) :
+    (J.conjugate L g).element.1 x =
+      g.1 (J.element.1 (g⁻¹.1 x)) :=
+  rfl
+
 @[simp]
 theorem Involution.apply_apply (L : IntegralLatticeCat R) (J : Involution L)
     (x : L.obj.carrier) : J.element.1 (J.element.1 x) = x :=
@@ -34,6 +78,40 @@ def fixedSubmodule (L : IntegralLatticeCat R) (J : Involution L) :
     Submodule R L.obj.carrier :=
   LinearMap.ker (J.element.1.toLinearMap - LinearMap.id)
 
+@[simp]
+theorem mem_fixedSubmodule_iff (L : IntegralLatticeCat R)
+    (J : Involution L) (x : L.obj.carrier) :
+    x ∈ fixedSubmodule L J ↔ J.element.1 x = x := by
+  rw [fixedSubmodule, LinearMap.mem_ker]
+  exact sub_eq_zero
+
+/-- Conjugation carries the invariant carrier to the invariant carrier. -/
+theorem fixedSubmodule_smul (L : IntegralLatticeCat R)
+    (g : OrthogonalGroup L) (J : Involution L) :
+    fixedSubmodule L (g • J) = g • fixedSubmodule L J := by
+  ext x
+  constructor
+  · intro hx
+    rw [mem_fixedSubmodule_iff] at hx
+    change (J.conjugate L g).element.1 x = x at hx
+    refine ⟨g⁻¹.1 x, ?_, by simp⟩
+    apply (mem_fixedSubmodule_iff L J _).mpr
+    apply g.1.injective
+    calc
+      g.1 (J.element.1 (g⁻¹.1 x)) = x := hx
+      _ = g.1 (g⁻¹.1 x) := by simp
+  · rintro ⟨y, hy, rfl⟩
+    have hy' := (mem_fixedSubmodule_iff L J y).mp hy
+    apply (mem_fixedSubmodule_iff L (g • J) _).mpr
+    change (J.conjugate L g).element.1 (g.1 y) = g.1 y
+    calc
+      (J.conjugate L g).element.1 (g.1 y) =
+          g.1 (J.element.1 y) := by
+        rw [Involution.conjugate_apply]
+        congr 2
+        exact inv_smul_smul g y
+      _ = g.1 y := congrArg g.1 hy'
+
 /-- The anti-fixed submodule of an involution. -/
 def antiFixedSubmodule (L : IntegralLatticeCat R) (J : Involution L) :
     Submodule R L.obj.carrier :=
@@ -43,6 +121,14 @@ def antiFixedSubmodule (L : IntegralLatticeCat R) (J : Involution L) :
 def coinvariantSubmodule (L : IntegralLatticeCat R) (J : Involution L) :
     Submodule R L.obj.carrier :=
   orthogonalSubmodule L (fixedSubmodule L J)
+
+/-- Conjugation carries the coinvariant carrier to the coinvariant carrier. -/
+theorem coinvariantSubmodule_smul (L : IntegralLatticeCat R)
+    (g : OrthogonalGroup L) (J : Involution L) :
+    coinvariantSubmodule L (g • J) = g • coinvariantSubmodule L J := by
+  change orthogonalSubmodule L (fixedSubmodule L (g • J)) =
+    g • orthogonalSubmodule L (fixedSubmodule L J)
+  rw [fixedSubmodule_smul, ← smul_orthogonalSubmodule]
 
 /-- Nondegeneracy makes each coinvariant vector anti-fixed. -/
 theorem coinvariantSubmodule_le_antiFixedSubmodule
