@@ -85,6 +85,19 @@ theorem actOnSubmodule_mul (g h : OrthogonalGroup M)
       actOnSubmodule g (actOnSubmodule h P) := by
   exact Submodule.map_comp h.1.toLinearMap g.1.toLinearMap P
 
+/-- The orthogonal group acts on submodules by linear image. -/
+instance submoduleMulAction (M : BilinModuleCat R W) :
+    MulAction (OrthogonalGroup M) (Submodule R M.carrier) where
+  smul := actOnSubmodule
+  one_smul := actOnSubmodule_one
+  mul_smul := actOnSubmodule_mul
+
+@[simp]
+theorem smul_submodule_eq_actOnSubmodule (g : OrthogonalGroup M)
+    (P : Submodule R M.carrier) :
+    g • P = actOnSubmodule g P :=
+  rfl
+
 end OrthogonalGroup
 
 end BilinModuleCat
