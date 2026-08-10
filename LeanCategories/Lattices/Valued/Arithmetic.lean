@@ -7,6 +7,7 @@ module
 public import LeanCategories.Lattices.Valued.Basic
 public import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.RingTheory.Flat.TorsionFree
+public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 @[expose] public section
 
@@ -40,6 +41,20 @@ namespace FiniteProjectiveLatticeCat
 
 variable {R W}
 
+/-- The rank of a finite projective lattice at each prime of its coefficient ring. -/
+noncomputable def localRank (L : FiniteProjectiveLatticeCat R W) :
+    PrimeSpectrum R → ℕ :=
+  Module.rankAtStalk L.obj.obj.carrier
+
+/-- The local rank of a finite projective lattice is locally constant. -/
+theorem localRank_isLocallyConstant (L : FiniteProjectiveLatticeCat R W) :
+    IsLocallyConstant L.localRank := by
+  letI : Module.Finite R L.obj.obj.carrier := L.property
+  letI : Module.Projective R L.obj.obj.carrier := L.obj.property.1
+  letI : Module.FinitePresentation R L.obj.obj.carrier :=
+    Module.finitePresentation_of_projective R L.obj.obj.carrier
+  exact Module.isLocallyConstant_rankAtStalk
+
 /-- A finite projective module over a principal ideal domain is free. -/
 theorem carrier_free [IsDomain R] [IsPrincipalIdealRing R]
     (L : FiniteProjectiveLatticeCat R W) : Module.Free R L.obj.obj.carrier := by
@@ -51,6 +66,16 @@ theorem carrier_free [IsDomain R] [IsPrincipalIdealRing R]
 noncomputable def rank [IsDomain R] [IsPrincipalIdealRing R]
     (L : FiniteProjectiveLatticeCat R W) : ℕ :=
   Module.finrank R L.obj.obj.carrier
+
+/-- Over a principal ideal domain, local rank is the constant intrinsic rank. -/
+theorem localRank_eq_rank [IsDomain R] [IsPrincipalIdealRing R]
+    (L : FiniteProjectiveLatticeCat R W) :
+    L.localRank = Function.const (PrimeSpectrum R) L.rank := by
+  letI : Module.Finite R L.obj.obj.carrier := L.property
+  letI : Module.Projective R L.obj.obj.carrier := L.obj.property.1
+  letI : Module.Free R L.obj.obj.carrier := L.carrier_free
+  ext p
+  simp [localRank, rank]
 
 /-- Every finite basis computes the intrinsic lattice rank. -/
 theorem rank_eq_card_basis [IsDomain R] [IsPrincipalIdealRing R]
