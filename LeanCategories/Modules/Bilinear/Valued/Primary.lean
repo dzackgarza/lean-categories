@@ -94,6 +94,59 @@ noncomputable def primaryComponentLinearEquiv [IsDedekindDomain R]
   exact (iSupIndep_primaryComponent A).linearEquiv
     (iSup_primaryComponent_eq_top A)
 
+/-- The bilinear form on the direct sum of all height-one primary components. -/
+noncomputable def primaryComponentDirectSumBilinMap [IsDedekindDomain R]
+    (A : FiniteTorsionSymBilinModuleCat R W) :
+    LinearMap.BilinMap R
+      (Π₀ P : IsDedekindDomain.HeightOneSpectrum R,
+        Ideal.primaryComponent A.obj.carrier P.asIdeal) W :=
+  let e := primaryComponentLinearEquiv A
+  (A.obj.bilinMap.compl₂ e.toLinearMap).comp e.toLinearMap
+
+/-- The formed direct sum of all height-one primary components. -/
+noncomputable def primaryComponentDirectSum [IsDedekindDomain R]
+    (A : FiniteTorsionSymBilinModuleCat R W) : BilinModuleCat R W :=
+  BilinModuleCat.ofBilinMap (primaryComponentDirectSumBilinMap A)
+
+@[simp]
+theorem primaryComponentDirectSum_pairing [IsDedekindDomain R]
+    (A : FiniteTorsionSymBilinModuleCat R W)
+    (x y : Π₀ P : IsDedekindDomain.HeightOneSpectrum R,
+      Ideal.primaryComponent A.obj.carrier P.asIdeal) :
+    (primaryComponentDirectSum A).pairing x y =
+      A.obj.pairing (primaryComponentLinearEquiv A x)
+        (primaryComponentLinearEquiv A y) :=
+  rfl
+
+/-- A finite torsion form is the formed direct sum of its primary components. -/
+noncomputable def primaryComponentDirectSumIso [IsDedekindDomain R]
+    (A : FiniteTorsionSymBilinModuleCat R W) :
+    primaryComponentDirectSum A ≅ A.obj := by
+  let e := primaryComponentLinearEquiv A
+  exact {
+    hom := BilinModuleCat.homMk e.toLinearMap (fun _ _ ↦ rfl)
+    inv := BilinModuleCat.homMk e.symm.toLinearMap (fun x y ↦ by
+      change A.obj.pairing (e (e.symm x)) (e (e.symm y)) =
+        A.obj.pairing x y
+      rw [e.apply_symm_apply, e.apply_symm_apply])
+    hom_inv_id := by
+      apply Quiver.Hom.unop_inj
+      apply CategoryOfElements.ext
+      apply Quiver.Hom.unop_inj
+      apply ModuleCat.hom_ext
+      ext x
+      change e.symm (e x) = x
+      exact e.symm_apply_apply x
+    inv_hom_id := by
+      apply Quiver.Hom.unop_inj
+      apply CategoryOfElements.ext
+      apply Quiver.Hom.unop_inj
+      apply ModuleCat.hom_ext
+      ext x
+      change e (e.symm x) = x
+      exact e.apply_symm_apply x
+  }
+
 /-- A vector supported at one height-one primary component. -/
 noncomputable def primaryComponentSingle [IsDedekindDomain R]
     (A : FiniteTorsionSymBilinModuleCat R W)
@@ -119,6 +172,19 @@ theorem primaryComponentLinearEquiv_single [IsDedekindDomain R]
     simpa [primaryComponentLinearEquiv, primaryComponentSingle] using hx
   rw [← hx']
   exact (primaryComponentLinearEquiv A).apply_symm_apply x.1
+
+/-- The direct-sum form restricts to the original form on each component. -/
+theorem primaryComponentDirectSum_pairing_single [IsDedekindDomain R]
+    (A : FiniteTorsionSymBilinModuleCat R W)
+    (P : IsDedekindDomain.HeightOneSpectrum R)
+    (x y : Ideal.primaryComponent A.obj.carrier P.asIdeal) :
+    (primaryComponentDirectSum A).pairing
+      (primaryComponentSingle A P x) (primaryComponentSingle A P y) =
+        (A.obj.primaryComponent P.asIdeal).pairing x y := by
+  rw [primaryComponentDirectSum_pairing,
+    primaryComponentLinearEquiv_single,
+    primaryComponentLinearEquiv_single]
+  rfl
 
 /-- The canonical projection onto one height-one primary component. -/
 noncomputable def primaryComponentProjection [IsDedekindDomain R]
@@ -206,6 +272,20 @@ theorem primaryComponent_pairing_eq_zero_of_ne [IsDedekindDomain R]
     Submodule.disjoint_torsionBySet_ideal
       ((P.isCoprime_pow_of_ne Q hPQ n m).sup_eq)
   exact Submodule.disjoint_def.mp hd _ hzP hzQ
+
+/-- Vectors in different direct-sum primary components are orthogonal. -/
+theorem primaryComponentDirectSum_pairing_single_eq_zero_of_ne
+    [IsDedekindDomain R]
+    (A : FiniteTorsionSymBilinModuleCat R W)
+    {P Q : IsDedekindDomain.HeightOneSpectrum R} (hPQ : P ≠ Q)
+    (x : Ideal.primaryComponent A.obj.carrier P.asIdeal)
+    (y : Ideal.primaryComponent A.obj.carrier Q.asIdeal) :
+    (primaryComponentDirectSum A).pairing
+      (primaryComponentSingle A P x) (primaryComponentSingle A Q y) = 0 := by
+  rw [primaryComponentDirectSum_pairing,
+    primaryComponentLinearEquiv_single,
+    primaryComponentLinearEquiv_single]
+  exact primaryComponent_pairing_eq_zero_of_ne A hPQ x y
 
 /-- Projecting the first argument preserves pairings with the selected component. -/
 theorem primaryComponentProjection_pairing [IsDedekindDomain R]
