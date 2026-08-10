@@ -55,6 +55,14 @@ theorem isIntegral (M : Overlattice R L) :
     IsIntegralSubmodule R L M.carrier :=
   M.property.2.2
 
+/-- Include the original lattice in an overlattice. -/
+noncomputable def inclusion (M : Overlattice R L) :
+    L.obj.carrier →ₗ[R] M.carrier :=
+  LinearMap.codRestrict M.carrier (toRationalSpan R L) (by
+    intro x
+    apply M.integralImage_le
+    exact LinearMap.mem_range_self (toRationalSpan R L) x)
+
 end Overlattice
 
 variable {L : IntegralLatticeCat R}
@@ -73,45 +81,6 @@ noncomputable abbrev DiscriminantMetabolizer
     {L : IntegralLatticeCat R} (hL : IsGenericallyNondegenerate R L) :=
   {H : Submodule R L.obj.defect //
     (discriminantBilinObject R L hL).IsLagrangian H}
-
-/-- The metric dual maps to the discriminant module. -/
-noncomputable def metricDualToDiscriminant
-    (R : Type u) [CommRing R] [IsDomain R]
-    (L : IntegralLatticeCat R) :
-    metricDual R L →ₗ[R] L.obj.defect :=
-  L.obj.defectProjection.comp (metricDualToValueDual R L)
-
-@[simp]
-theorem metricDualToValueDual_toMetricDual
-    (R : Type u) [CommRing R] [IsDomain R]
-    {L : IntegralLatticeCat R} (hL : IsGenericallyNondegenerate R L)
-    (x : L.obj.carrier) :
-    metricDualToValueDual R L (toMetricDual R L x) = L.obj.adjoint x := by
-  change (rieszMetricDualEquiv R L hL).symm (toMetricDual R L x) =
-    L.obj.adjoint x
-  rw [← rieszMetricDualEquiv_adjoint R L hL x]
-  exact (rieszMetricDualEquiv R L hL).symm_apply_apply _
-
-@[simp]
-theorem discriminant_pairing_metricDualToDiscriminant
-    (R : Type u) [CommRing R] [IsDomain R]
-    {L : IntegralLatticeCat R} (hL : IsGenericallyNondegenerate R L)
-    (x y : metricDual R L) :
-    (discriminantBilinObject R L hL).pairing
-        (metricDualToDiscriminant R L x)
-        (metricDualToDiscriminant R L y) =
-      fractionValueProjection R
-        (rationalizedForm R L (x : RationalSpan R L) (y : RationalSpan R L)) := by
-  change discriminantBilinMap R L hL
-      (Submodule.Quotient.mk (metricDualToValueDual R L x))
-      (Submodule.Quotient.mk (metricDualToValueDual R L y)) = _
-  rw [discriminantBilinMap_mk]
-  change fractionValueProjection R
-      (rationalizedForm R L
-        (rieszEmbedding R L hL (metricDualToValueDual R L x))
-        (rieszEmbedding R L hL (metricDualToValueDual R L y))) = _
-  rw [← rieszToMetricDual_coe, rieszToMetricDual_metricDualToValueDual,
-    ← rieszToMetricDual_coe, rieszToMetricDual_metricDualToValueDual]
 
 /-- The inverse image of an isotropic subgroup inside the metric dual. -/
 noncomputable def metricDualPreimage

@@ -7,10 +7,12 @@ module
 public import LeanCategories.Lattices.Valued.DiscriminantFunctor
 public import LeanCategories.Lattices.Valued.DiscriminantQuadratic
 public import LeanCategories.Lattices.Valued.OrthogonalGroup
+public import Mathlib.Algebra.Module.Submodule.Pointwise
 
 @[expose] public section
 
 open CategoryTheory
+open scoped Pointwise
 open LeanCategories.Modules.Bilinear.Valued
 open LeanCategories.Modules.Quadratic.Valued
 
@@ -115,6 +117,20 @@ theorem actOnDefect_mul_apply (g h : OrthogonalGroup L)
   induction x using Submodule.Quotient.induction_on with
   | _ f => simp
 
+/-- The linear action of `O(L)` on the discriminant module. -/
+noncomputable instance defectDistribMulAction :
+    DistribMulAction (OrthogonalGroup L) L.obj.defect where
+  smul g := actOnDefect g
+  one_smul := actOnDefect_one_apply
+  mul_smul := actOnDefect_mul_apply
+  smul_zero g := (actOnDefect g).map_zero
+  smul_add g := (actOnDefect g).map_add
+
+/-- The discriminant action commutes with scalar multiplication. -/
+noncomputable instance defectSMulCommClass :
+    SMulCommClass (OrthogonalGroup L) R L.obj.defect where
+  smul_comm g r x := (actOnDefect g).map_smul r x
+
 /-- The linear action of `O(L)` on its discriminant module. -/
 def defectRepresentation :
     OrthogonalGroup L →* (L.obj.defect ≃ₗ[R] L.obj.defect) where
@@ -126,11 +142,43 @@ def defectRepresentation :
     ext x
     exact actOnDefect_mul_apply g h x
 
+/-- The orbit of a discriminant submodule under `O(L)`. -/
+noncomputable abbrev discriminantSubmoduleOrbit
+    (H : Submodule R L.obj.defect) :=
+  MulAction.orbit (OrthogonalGroup L) H
+
+/-- The subgroup of `O(L)` that preserves a discriminant submodule. -/
+noncomputable abbrev discriminantSubmoduleStabilizer
+    (H : Submodule R L.obj.defect) :=
+  MulAction.stabilizer (OrthogonalGroup L) H
+
 /-- The scalar extension of an orthogonal action to the rational span. -/
 noncomputable def actOnRationalSpan [IsDomain R]
     (g : OrthogonalGroup L) :
     RationalSpan R L ≃ₗ[FractionRing R] RationalSpan R L :=
   g.1.baseChange R (FractionRing R) L.obj.carrier L.obj.carrier
+
+/-- The action of `O(L)` on the metric dual. -/
+noncomputable def actOnMetricDual [IsDomain R]
+    (g : OrthogonalGroup L) (hL : IsGenericallyNondegenerate R L) :
+    metricDual R L ≃ₗ[R] metricDual R L :=
+  (rieszMetricDualEquiv R L hL).symm |>.trans
+    (actOnValueDual g) |>.trans
+      (rieszMetricDualEquiv R L hL)
+
+@[simp]
+theorem actOnMetricDual_one_apply [IsDomain R]
+    (hL : IsGenericallyNondegenerate R L) (x : metricDual R L) :
+    actOnMetricDual (1 : OrthogonalGroup L) hL x = x := by
+  simp [actOnMetricDual]
+
+@[simp]
+theorem actOnMetricDual_mul_apply [IsDomain R]
+    (g h : OrthogonalGroup L)
+    (hL : IsGenericallyNondegenerate R L) (x : metricDual R L) :
+    actOnMetricDual (g * h) hL x =
+      actOnMetricDual g hL (actOnMetricDual h hL x) := by
+  simp [actOnMetricDual]
 
 /-- The rational action preserves the extended bilinear form. -/
 theorem actOnRationalSpan_isometry [IsDomain R]
@@ -199,6 +247,42 @@ theorem rieszEmbedding_actOnValueDual [IsDomain R]
       rw [map_smul, rationalizedForm_rieszEmbedding]
       simp [Algebra.smul_def, mul_comm]
   | add x y hx hy => simp [map_add, hx, hy]
+
+@[simp]
+theorem metricDualToValueDual_actOnMetricDual [IsDomain R]
+    (g : OrthogonalGroup L)
+    (hL : IsGenericallyNondegenerate R L) (x : metricDual R L) :
+    metricDualToValueDual R L (actOnMetricDual g hL x) =
+      actOnValueDual g (metricDualToValueDual R L x) := by
+  change metricDualToValueDual R L
+      (rieszToMetricDual R L hL
+        (actOnValueDual g (metricDualToValueDual R L x))) = _
+  rw [metricDualToValueDual_rieszToMetricDual]
+
+/-- The metric-dual action is the restriction of the rational action. -/
+theorem actOnMetricDual_coe [IsDomain R]
+    (g : OrthogonalGroup L)
+    (hL : IsGenericallyNondegenerate R L) (x : metricDual R L) :
+    (actOnMetricDual g hL x : RationalSpan R L) =
+      actOnRationalSpan g x := by
+  change rieszEmbedding R L hL
+      (actOnValueDual g (metricDualToValueDual R L x)) =
+    actOnRationalSpan g x
+  rw [rieszEmbedding_actOnValueDual]
+  congr 1
+  exact congrArg Subtype.val
+    (rieszToMetricDual_metricDualToValueDual R L hL x)
+
+/-- The metric-dual and discriminant actions commute with the quotient map. -/
+theorem metricDualToDiscriminant_actOnMetricDual [IsDomain R]
+    (g : OrthogonalGroup L)
+    (hL : IsGenericallyNondegenerate R L) (x : metricDual R L) :
+    metricDualToDiscriminant R L (actOnMetricDual g hL x) =
+      actOnDefect g (metricDualToDiscriminant R L x) := by
+  change Submodule.Quotient.mk
+      (metricDualToValueDual R L (actOnMetricDual g hL x)) =
+    actOnDefect g (Submodule.Quotient.mk (metricDualToValueDual R L x))
+  rw [metricDualToValueDual_actOnMetricDual, actOnDefect_mk]
 
 /-- The dual action preserves the Riesz bilinear form. -/
 theorem rieszDualBilinMap_actOnValueDual [IsDomain R]
