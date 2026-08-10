@@ -173,10 +173,10 @@ theorem isUnimodular_iff_isUnit_determinant {I : Type*} [Fintype I]
       (f := L.obj.adjoint) (v := b) (v' := b.dualBasis) h).bijective
 
 /-- The orthogonal direct-sum bilinear map. -/
-def orthogonalSumBilinMap (L₁ L₂ : LatticeCat R W) :
-    LinearMap.BilinMap R (L₁.obj.carrier × L₂.obj.carrier) W :=
+def orthogonalSumBilinMap (L₁ L₂ : BilinModuleCat R W) :
+    LinearMap.BilinMap R (L₁.carrier × L₂.carrier) W :=
   LinearMap.mk₂ R
-    (fun x y ↦ L₁.obj.pairing x.1 y.1 + L₂.obj.pairing x.2 y.2)
+    (fun x y ↦ L₁.pairing x.1 y.1 + L₂.pairing x.2 y.2)
     (fun _ _ _ ↦ by simp [add_assoc, add_left_comm])
     (fun _ _ _ ↦ by simp)
     (fun _ _ _ ↦ by simp [add_assoc, add_left_comm])
@@ -186,13 +186,38 @@ def orthogonalSumBilinMap (L₁ L₂ : LatticeCat R W) :
 def orthogonalSum (L₁ L₂ : LatticeCat R W) : LatticeCat R W := by
   letI : Module.Projective R L₁.obj.carrier := L₁.property.1
   letI : Module.Projective R L₂.obj.carrier := L₂.property.1
-  refine ⟨BilinModuleCat.ofBilinMap (orthogonalSumBilinMap L₁ L₂), ?_, ?_⟩
+  refine ⟨BilinModuleCat.ofBilinMap
+    (orthogonalSumBilinMap L₁.obj L₂.obj), ?_, ?_⟩
   · change Module.Projective R (L₁.obj.carrier × L₂.obj.carrier)
     infer_instance
   rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩
   change L₁.obj.pairing x₁ y₁ + L₂.obj.pairing x₂ y₂ =
     L₁.obj.pairing y₁ x₁ + L₂.obj.pairing y₂ x₂
   rw [L₁.property.2 x₁ y₁, L₂.property.2 x₂ y₂]
+
+/-- The orthogonal sum of two finite symmetric forms. -/
+def finiteFormOrthogonalSum (L₁ L₂ : FiniteFormCat R W) :
+    FiniteFormCat R W := by
+  refine ⟨BilinModuleCat.ofBilinMap
+    (orthogonalSumBilinMap L₁.obj L₂.obj), ?_, ?_⟩
+  · letI : Module.Finite R L₁.obj.carrier := L₁.property.1
+    letI : Module.Finite R L₂.obj.carrier := L₂.property.1
+    change Module.Finite R (L₁.obj.carrier × L₂.obj.carrier)
+    infer_instance
+  · rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩
+    change L₁.obj.pairing x₁ y₁ + L₂.obj.pairing x₂ y₂ =
+      L₁.obj.pairing y₁ x₁ + L₂.obj.pairing y₂ x₂
+    rw [L₁.property.2 x₁ y₁, L₂.property.2 x₂ y₂]
+
+/-- The orthogonal sum of two finite projective lattices. -/
+def finiteProjectiveOrthogonalSum
+    (L₁ L₂ : FiniteProjectiveLatticeCat R W) :
+    FiniteProjectiveLatticeCat R W := by
+  refine ⟨orthogonalSum L₁.obj L₂.obj, ?_⟩
+  letI : Module.Finite R L₁.obj.obj.carrier := L₁.property
+  letI : Module.Finite R L₂.obj.obj.carrier := L₂.property
+  change Module.Finite R (L₁.obj.obj.carrier × L₂.obj.obj.carrier)
+  infer_instance
 
 @[simp]
 theorem orthogonalSum_pairing (L₁ L₂ : LatticeCat R W)

@@ -13,6 +13,7 @@ public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.QuadraticForm.Real
 public import Mathlib.LinearAlgebra.QuadraticForm.Signature
+public import Mathlib.LinearAlgebra.QuadraticForm.Prod
 
 @[expose] public section
 
@@ -29,6 +30,76 @@ variable (K : Type u) [Field K] [LinearOrder K]
 def finiteFormQuadraticForm (L : FiniteFormCat K K) :
     QuadraticForm K L.obj.carrier :=
   LinearMap.BilinMap.toQuadraticMap L.obj.bilinMap
+
+omit [LinearOrder K] in
+/-- The quadratic form of an orthogonal sum is the product quadratic form. -/
+@[simp]
+theorem finiteFormQuadraticForm_orthogonalSum
+    (L M : FiniteFormCat K K) :
+    finiteFormQuadraticForm K (finiteFormOrthogonalSum L M) =
+      (finiteFormQuadraticForm K L).prod (finiteFormQuadraticForm K M) := by
+  ext x
+  rfl
+
+/-- A weighted form on a sum type is the product of its two restrictions. -/
+noncomputable def weightedSumSquaresSumIsometryEquiv
+    {I J : Type*} [Fintype I] [Fintype J]
+    (w₁ : I → K) (w₂ : J → K) :
+    (QuadraticMap.weightedSumSquares K (Sum.elim w₁ w₂)).IsometryEquiv
+      ((QuadraticMap.weightedSumSquares K w₁).prod
+        (QuadraticMap.weightedSumSquares K w₂)) where
+  toLinearEquiv := LinearEquiv.sumPiEquivProdPi K I J (fun _ ↦ K)
+  map_app' x := by
+    simp [QuadraticMap.weightedSumSquares_apply]
+
+private theorem ncard_setOf_sum_elim
+    {I J A : Type*} [Finite I] [Finite J]
+    (f : I → A) (g : J → A) (p : A → Prop) :
+    {s | p (Sum.elim f g s)}.ncard =
+      {i | p (f i)}.ncard + {j | p (g j)}.ncard := by
+  have hset : {s | p (Sum.elim f g s)} =
+      Sum.inl '' {i | p (f i)} ∪ Sum.inr '' {j | p (g j)} := by
+    ext s
+    cases s <;> simp
+  rw [hset, Set.ncard_union_eq Set.disjoint_image_inl_image_inr,
+    Set.ncard_image_of_injective _ Sum.inl_injective,
+    Set.ncard_image_of_injective _ Sum.inr_injective]
+
+/-- Positive, negative, and null ranks add under products of quadratic forms. -/
+theorem quadraticSignature_prod [IsStrictOrderedRing K]
+    {M₁ M₂ : Type*} [AddCommGroup M₁] [AddCommGroup M₂]
+    [Module K M₁] [Module K M₂]
+    [Module.Finite K M₁] [Module.Finite K M₂]
+    (Q₁ : QuadraticForm K M₁) (Q₂ : QuadraticForm K M₂) :
+    (sigPos (Q₁.prod Q₂), sigNeg (Q₁.prod Q₂),
+      Module.finrank K (Q₁.prod Q₂).radical) =
+    (sigPos Q₁ + sigPos Q₂, sigNeg Q₁ + sigNeg Q₂,
+      Module.finrank K Q₁.radical + Module.finrank K Q₂.radical) := by
+  letI : Invertible (2 : K) := invertibleOfNonzero (by positivity)
+  obtain ⟨w₁, hw₁⟩ := Q₁.equivalent_weightedSumSquares
+  obtain ⟨w₂, hw₂⟩ := Q₂.equivalent_weightedSumSquares
+  let hw : QuadraticMap.Equivalent (Q₁.prod Q₂)
+      (QuadraticMap.weightedSumSquares K (Sum.elim w₁ w₂)) :=
+    (hw₁.prod hw₂).trans
+      ⟨(weightedSumSquaresSumIsometryEquiv K w₁ w₂).symm⟩
+  apply Prod.ext
+  · change sigPos (Q₁.prod Q₂) = sigPos Q₁ + sigPos Q₂
+    rw [QuadraticForm.sigPos_of_equiv_weightedSumSquares hw,
+      QuadraticForm.sigPos_of_equiv_weightedSumSquares hw₁,
+      QuadraticForm.sigPos_of_equiv_weightedSumSquares hw₂]
+    exact ncard_setOf_sum_elim w₁ w₂ (0 < ·)
+  · apply Prod.ext
+    · change sigNeg (Q₁.prod Q₂) = sigNeg Q₁ + sigNeg Q₂
+      rw [QuadraticForm.sigNeg_of_equiv_weightedSumSquares hw,
+        QuadraticForm.sigNeg_of_equiv_weightedSumSquares hw₁,
+        QuadraticForm.sigNeg_of_equiv_weightedSumSquares hw₂]
+      exact ncard_setOf_sum_elim w₁ w₂ (· < 0)
+    · change Module.finrank K (Q₁.prod Q₂).radical =
+          Module.finrank K Q₁.radical + Module.finrank K Q₂.radical
+      rw [QuadraticForm.finrank_radical_of_equiv_weightedSumSquares hw,
+        QuadraticForm.finrank_radical_of_equiv_weightedSumSquares hw₁,
+        QuadraticForm.finrank_radical_of_equiv_weightedSumSquares hw₂]
+      exact ncard_setOf_sum_elim w₁ w₂ (· = 0)
 
 /-- The underlying finite-dimensional module of a finite symmetric form. -/
 def finiteFormForget : FiniteFormCat K K ⥤ ModuleCat K :=
@@ -47,6 +118,20 @@ def finiteFormQuadraticIsometryEquiv {L M : FiniteFormCat K K}
 noncomputable def signature (L : FiniteFormCat K K) : ℕ × ℕ × ℕ :=
   let Q := finiteFormQuadraticForm K L
   (sigPos Q, sigNeg Q, Module.finrank K Q.radical)
+
+/-- Signature is additive under orthogonal sums. -/
+theorem signature_orthogonalSum [IsStrictOrderedRing K]
+    (L M : FiniteFormCat K K) :
+    signature K (finiteFormOrthogonalSum L M) =
+      ((signature K L).1 + (signature K M).1,
+        (signature K L).2.1 + (signature K M).2.1,
+        (signature K L).2.2 + (signature K M).2.2) := by
+  letI : Module.Finite K L.obj.carrier := L.property.1
+  letI : Module.Finite K M.obj.carrier := M.property.1
+  rw [signature, signature, signature,
+    finiteFormQuadraticForm_orthogonalSum]
+  exact quadraticSignature_prod K (finiteFormQuadraticForm K L)
+    (finiteFormQuadraticForm K M)
 
 /-- The quadratic form represented by a matrix in the standard basis. -/
 def matrixQuadraticForm {I : Type*} [Fintype I] [DecidableEq I]
