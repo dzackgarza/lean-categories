@@ -94,4 +94,38 @@ noncomputable def primaryComponentLinearEquiv [IsDedekindDomain R]
   exact (iSupIndep_primaryComponent A).linearEquiv
     (iSup_primaryComponent_eq_top A)
 
+/-- Distinct height-one primary components are orthogonal. -/
+theorem primaryComponent_pairing_eq_zero_of_ne [IsDedekindDomain R]
+    (A : FiniteTorsionSymBilinModuleCat R W)
+    {P Q : IsDedekindDomain.HeightOneSpectrum R} (hPQ : P ≠ Q)
+    (x : Ideal.primaryComponent A.obj.carrier P.asIdeal)
+    (y : Ideal.primaryComponent A.obj.carrier Q.asIdeal) :
+    A.obj.pairing x y = 0 := by
+  obtain ⟨n, hx⟩ :=
+    (Ideal.primaryComponent_mem A.obj.carrier P.asIdeal x).mp x.property
+  obtain ⟨m, hy⟩ :=
+    (Ideal.primaryComponent_mem A.obj.carrier Q.asIdeal y).mp y.property
+  have hx0 := (Submodule.mem_torsionBySet_iff _ x.1).mp hx
+  have hy0 := (Submodule.mem_torsionBySet_iff _ y.1).mp hy
+  have hzP : A.obj.pairing x y ∈
+      Submodule.torsionBySet R W ↑(P.asIdeal ^ n) := by
+    rw [Submodule.mem_torsionBySet_iff]
+    intro a
+    have h := congrArg (fun v : A.obj.carrier ↦ A.obj.pairing v y)
+      (hx0 a)
+    simpa using h
+  have hzQ : A.obj.pairing x y ∈
+      Submodule.torsionBySet R W ↑(Q.asIdeal ^ m) := by
+    rw [Submodule.mem_torsionBySet_iff]
+    intro a
+    have h := congrArg (fun v : A.obj.carrier ↦ A.obj.pairing x v)
+      (hy0 a)
+    simpa using h
+  have hd : Disjoint
+      (Submodule.torsionBySet R W ↑(P.asIdeal ^ n))
+      (Submodule.torsionBySet R W ↑(Q.asIdeal ^ m)) :=
+    Submodule.disjoint_torsionBySet_ideal
+      ((P.isCoprime_pow_of_ne Q hPQ n m).sup_eq)
+  exact Submodule.disjoint_def.mp hd _ hzP hzQ
+
 end LeanCategories.Modules.Bilinear.Valued
