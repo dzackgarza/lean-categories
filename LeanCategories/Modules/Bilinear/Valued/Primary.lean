@@ -94,6 +94,85 @@ noncomputable def primaryComponentLinearEquiv [IsDedekindDomain R]
   exact (iSupIndep_primaryComponent A).linearEquiv
     (iSup_primaryComponent_eq_top A)
 
+/-- A vector supported at one height-one primary component. -/
+noncomputable def primaryComponentSingle [IsDedekindDomain R]
+    (A : FiniteTorsionSymBilinModuleCat R W)
+    (P : IsDedekindDomain.HeightOneSpectrum R)
+    (x : Ideal.primaryComponent A.obj.carrier P.asIdeal) :
+    Π₀ Q : IsDedekindDomain.HeightOneSpectrum R,
+      Ideal.primaryComponent A.obj.carrier Q.asIdeal := by
+  classical
+  exact DFinsupp.single P x
+
+/-- The direct-sum equivalence includes a vector from one primary component. -/
+@[simp]
+theorem primaryComponentLinearEquiv_single [IsDedekindDomain R]
+    (A : FiniteTorsionSymBilinModuleCat R W)
+    (P : IsDedekindDomain.HeightOneSpectrum R)
+    (x : Ideal.primaryComponent A.obj.carrier P.asIdeal) :
+    primaryComponentLinearEquiv A (primaryComponentSingle A P x) = x.1 := by
+  classical
+  have hx := (iSupIndep_primaryComponent A).linearEquiv_symm_apply
+    (iSup_primaryComponent_eq_top A) x.property
+  have hx' : (primaryComponentLinearEquiv A).symm x.1 =
+      primaryComponentSingle A P x := by
+    simpa [primaryComponentLinearEquiv, primaryComponentSingle] using hx
+  rw [← hx']
+  exact (primaryComponentLinearEquiv A).apply_symm_apply x.1
+
+/-- The canonical projection onto one height-one primary component. -/
+noncomputable def primaryComponentProjection [IsDedekindDomain R]
+    (A : FiniteTorsionSymBilinModuleCat R W)
+    (P : IsDedekindDomain.HeightOneSpectrum R) :
+    A.obj.carrier →ₗ[R] Ideal.primaryComponent A.obj.carrier P.asIdeal :=
+  (DFinsupp.lapply (R := R)
+    (M := fun Q : IsDedekindDomain.HeightOneSpectrum R ↦
+      Ideal.primaryComponent A.obj.carrier Q.asIdeal) P).comp
+    (primaryComponentLinearEquiv A).symm.toLinearMap
+
+/-- The primary projection fixes its selected component. -/
+@[simp]
+theorem primaryComponentProjection_apply [IsDedekindDomain R]
+    (A : FiniteTorsionSymBilinModuleCat R W)
+    (P : IsDedekindDomain.HeightOneSpectrum R)
+    (x : Ideal.primaryComponent A.obj.carrier P.asIdeal) :
+    primaryComponentProjection A P x.1 = x := by
+  classical
+  change (DFinsupp.lapply (R := R)
+    (M := fun Q : IsDedekindDomain.HeightOneSpectrum R ↦
+      Ideal.primaryComponent A.obj.carrier Q.asIdeal) P)
+      ((primaryComponentLinearEquiv A).symm x.1) = x
+  have hx := (iSupIndep_primaryComponent A).linearEquiv_symm_apply
+    (iSup_primaryComponent_eq_top A) x.property
+  rw [show (primaryComponentLinearEquiv A).symm x.1 =
+      DFinsupp.single P x by
+    simpa [primaryComponentLinearEquiv] using hx]
+  change (DFinsupp.single
+    (β := fun Q : IsDedekindDomain.HeightOneSpectrum R ↦
+      Ideal.primaryComponent A.obj.carrier Q.asIdeal) P x) P = x
+  exact DFinsupp.single_eq_same
+
+/-- The selected primary projection vanishes on every different component. -/
+theorem primaryComponentProjection_apply_of_ne [IsDedekindDomain R]
+    (A : FiniteTorsionSymBilinModuleCat R W)
+    {P Q : IsDedekindDomain.HeightOneSpectrum R} (hQP : Q ≠ P)
+    (x : Ideal.primaryComponent A.obj.carrier Q.asIdeal) :
+    primaryComponentProjection A P x.1 = 0 := by
+  classical
+  change (DFinsupp.lapply (R := R)
+    (M := fun S : IsDedekindDomain.HeightOneSpectrum R ↦
+      Ideal.primaryComponent A.obj.carrier S.asIdeal) P)
+      ((primaryComponentLinearEquiv A).symm x.1) = 0
+  have hx := (iSupIndep_primaryComponent A).linearEquiv_symm_apply
+    (iSup_primaryComponent_eq_top A) x.property
+  rw [show (primaryComponentLinearEquiv A).symm x.1 =
+      DFinsupp.single Q x by
+    simpa [primaryComponentLinearEquiv] using hx]
+  change (DFinsupp.single
+    (β := fun S : IsDedekindDomain.HeightOneSpectrum R ↦
+      Ideal.primaryComponent A.obj.carrier S.asIdeal) Q x) P = 0
+  exact DFinsupp.single_eq_of_ne (Ne.symm hQP)
+
 /-- Distinct height-one primary components are orthogonal. -/
 theorem primaryComponent_pairing_eq_zero_of_ne [IsDedekindDomain R]
     (A : FiniteTorsionSymBilinModuleCat R W)
@@ -127,6 +206,48 @@ theorem primaryComponent_pairing_eq_zero_of_ne [IsDedekindDomain R]
     Submodule.disjoint_torsionBySet_ideal
       ((P.isCoprime_pow_of_ne Q hPQ n m).sup_eq)
   exact Submodule.disjoint_def.mp hd _ hzP hzQ
+
+/-- Projecting the first argument preserves pairings with the selected component. -/
+theorem primaryComponentProjection_pairing [IsDedekindDomain R]
+    (A : FiniteTorsionSymBilinModuleCat R W)
+    (P : IsDedekindDomain.HeightOneSpectrum R)
+    (x : A.obj.carrier)
+    (y : Ideal.primaryComponent A.obj.carrier P.asIdeal) :
+    A.obj.pairing (primaryComponentProjection A P x).1 y.1 =
+      A.obj.pairing x y.1 := by
+  classical
+  let e := primaryComponentLinearEquiv A
+  let includeP : Ideal.primaryComponent A.obj.carrier P.asIdeal →ₗ[R]
+      A.obj.carrier := (Ideal.primaryComponent A.obj.carrier P.asIdeal).subtype
+  let f : A.obj.carrier →ₗ[R] W :=
+    (A.obj.bilinMap.flip y.1).comp
+      (includeP.comp (primaryComponentProjection A P))
+  let g : A.obj.carrier →ₗ[R] W := A.obj.bilinMap.flip y.1
+  have hcomp : f.comp e.toLinearMap = g.comp e.toLinearMap := by
+    apply DFinsupp.lhom_ext
+    intro Q z
+    simp only [LinearMap.comp_apply]
+    have he : e (DFinsupp.single Q z) = z.1 := by
+      simpa [e, primaryComponentSingle] using
+        primaryComponentLinearEquiv_single A Q z
+    change A.obj.pairing
+        (primaryComponentProjection A P (e (DFinsupp.single Q z))).1 y.1 =
+      A.obj.pairing (e (DFinsupp.single Q z)) y.1
+    rw [he]
+    by_cases hQP : Q = P
+    · subst Q
+      rw [primaryComponentProjection_apply]
+    · rw [primaryComponentProjection_apply_of_ne A hQP z]
+      change A.obj.bilinMap (0 : A.obj.carrier) y.1 =
+        A.obj.pairing z.1 y.1
+      rw [map_zero, LinearMap.zero_apply]
+      exact (primaryComponent_pairing_eq_zero_of_ne A hQP z y).symm
+  have hx := LinearMap.congr_fun hcomp (e.symm x)
+  change A.obj.pairing
+      (primaryComponentProjection A P (e (e.symm x))).1 y.1 =
+    A.obj.pairing (e (e.symm x)) y.1 at hx
+  rw [e.apply_symm_apply] at hx
+  exact hx
 
 /-- A height-one primary restriction of a radical-free torsion form has zero radical. -/
 theorem primaryComponent_isNondegenerate [IsDedekindDomain R]
@@ -162,6 +283,31 @@ theorem primaryComponent_isNondegenerate [IsDedekindDomain R]
   change (A.obj.adjoint x.1) z - (A.obj.adjoint y.1) z = 0 at hz
   exact sub_eq_zero.mp hz
 
+/-- A height-one primary restriction of a perfect torsion form is perfect. -/
+theorem primaryComponent_isPerfect [IsDedekindDomain R]
+    (A : FiniteTorsionSymBilinModuleCat R W)
+    (hA : A.obj.IsPerfect)
+    (P : IsDedekindDomain.HeightOneSpectrum R) :
+    (A.obj.primaryComponent P.asIdeal).IsPerfect := by
+  constructor
+  · rw [← BilinModuleCat.isNondegenerate_iff_adjoint_injective]
+    exact primaryComponent_isNondegenerate A
+      (A.obj.isNondegenerate_of_isPerfect hA) P
+  · intro φ
+    let extended : A.obj.carrier →ₗ[R] W :=
+      φ.comp (primaryComponentProjection A P)
+    obtain ⟨x, hx⟩ := hA.2 extended
+    refine ⟨primaryComponentProjection A P x, ?_⟩
+    apply LinearMap.ext
+    intro y
+    change A.obj.pairing (primaryComponentProjection A P x).1 y.1 = φ y
+    rw [primaryComponentProjection_pairing]
+    have hxy := LinearMap.congr_fun hx y.1
+    change A.obj.pairing x y.1 =
+      φ (primaryComponentProjection A P y.1) at hxy
+    rw [primaryComponentProjection_apply] at hxy
+    exact hxy
+
 /-- The radical-free category is closed under height-one primary restriction. -/
 noncomputable def radicalFreePrimaryComponent [IsDedekindDomain R]
     (P : IsDedekindDomain.HeightOneSpectrum R)
@@ -172,5 +318,16 @@ noncomputable def radicalFreePrimaryComponent [IsDedekindDomain R]
   let C := primaryComponent P.asIdeal B
   exact ⟨C.obj, C.property.1, C.property.2.1, C.property.2.2,
     primaryComponent_isNondegenerate B A.property.2.2.2 P⟩
+
+/-- The perfect finite torsion category is closed under primary restriction. -/
+noncomputable def nonsingularPrimaryComponent [IsDedekindDomain R]
+    (P : IsDedekindDomain.HeightOneSpectrum R)
+    (A : NonsingularFiniteTorsionBilinModuleCat R W) :
+    NonsingularFiniteTorsionBilinModuleCat R W := by
+  let B : FiniteTorsionSymBilinModuleCat R W :=
+    ⟨A.obj, A.property.1, A.property.2.1, A.property.2.2.1⟩
+  let C := primaryComponent P.asIdeal B
+  exact ⟨C.obj, C.property.1, C.property.2.1, C.property.2.2,
+    primaryComponent_isPerfect B A.property.2.2.2 P⟩
 
 end LeanCategories.Modules.Bilinear.Valued
