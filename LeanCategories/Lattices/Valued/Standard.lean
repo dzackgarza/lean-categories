@@ -161,6 +161,44 @@ theorem aRootLattice_gramMatrix (n : ℕ) :
       aRootGramMatrix n :=
   latticeOfGramMatrix_gramMatrix _ _
 
+private theorem sum_two_indicators {I : Type*} [Fintype I] [DecidableEq I]
+    (i₀ i₁ : I) (hi : i₀ ≠ i₁) :
+    (∑ k, if k = i₀ then (1 : ℤ) else if k = i₁ then 1 else 0) = 2 := by
+  calc
+    (∑ k, if k = i₀ then (1 : ℤ) else if k = i₁ then 1 else 0) =
+        ∑ k, ((if k = i₀ then (1 : ℤ) else 0) +
+          (if k = i₁ then 1 else 0)) := by
+      apply Finset.sum_congr rfl
+      intro k _
+      split_ifs <;> simp_all
+    _ = 2 := by
+      rw [Finset.sum_add_distrib]
+      rw [Fintype.sum_ite_eq', Fintype.sum_ite_eq']
+      norm_num
+
+/-- Every negative type-`A` root lattice is even. -/
+theorem aRootLattice_isEven (n : ℕ) : IsEven (aRootLattice n) := by
+  apply latticeOfGramMatrix_isEven
+  intro i
+  have hdiag : aRootGramMatrix n i i = -2 := by
+    let i₀ : Fin (n + 1) := ⟨i, Nat.lt_succ_of_lt i.isLt⟩
+    let i₁ : Fin (n + 1) := ⟨i + 1, Nat.succ_lt_succ i.isLt⟩
+    have hi : i₀ ≠ i₁ := by
+      intro h
+      have := congrArg Fin.val h
+      simp [i₀, i₁] at this
+    have hvalue (k : Fin (n + 1)) :
+        aRootVector n i k * aRootVector n i k =
+          if k = i₀ then 1 else if k = i₁ then 1 else 0 := by
+      simp only [aRootVector]
+      split_ifs <;> simp_all [i₀, i₁, Fin.ext_iff]
+    simp only [aRootGramMatrix]
+    simp_rw [hvalue]
+    rw [sum_two_indicators i₀ i₁ hi]
+  rw [hdiag]
+  exact (Ideal.span {(2 : ℤ)}).neg_mem
+    (Ideal.subset_span (Set.mem_singleton 2))
+
 /-- The standard coordinate roots for type `D` in rank at least four. -/
 def dRootVector (n : ℕ) (_hn : 4 ≤ n) (i k : Fin n) : ℤ :=
   if i.val + 1 < n then
@@ -196,6 +234,45 @@ theorem dRootLattice_gramMatrix (n : ℕ) (hn : 4 ≤ n) :
     gramMatrix (dRootLattice n hn) (Pi.basisFun ℤ (Fin n)) =
       dRootGramMatrix n hn :=
   latticeOfGramMatrix_gramMatrix _ _
+
+/-- Every negative type-`D` root lattice is even. -/
+theorem dRootLattice_isEven (n : ℕ) (hn : 4 ≤ n) :
+    IsEven (dRootLattice n hn) := by
+  apply latticeOfGramMatrix_isEven
+  intro i
+  have hdiag : dRootGramMatrix n hn i i = -2 := by
+    simp only [dRootGramMatrix]
+    by_cases hnext : i.val + 1 < n
+    · let i₀ : Fin n := i
+      let i₁ : Fin n := ⟨i + 1, hnext⟩
+      have hi : i₀ ≠ i₁ := by
+        intro h
+        have := congrArg Fin.val h
+        simp [i₀, i₁] at this
+      have hvalue (k : Fin n) :
+          dRootVector n hn i k * dRootVector n hn i k =
+            if k = i₀ then 1 else if k = i₁ then 1 else 0 := by
+        simp only [dRootVector, hnext]
+        split_ifs <;> simp_all [i₀, i₁, Fin.ext_iff]
+      simp_rw [hvalue]
+      rw [sum_two_indicators i₀ i₁ hi]
+    · let i₀ : Fin n := ⟨n - 2, by omega⟩
+      let i₁ : Fin n := ⟨n - 1, by omega⟩
+      have hi : i₀ ≠ i₁ := by
+        intro h
+        have := congrArg Fin.val h
+        simp [i₀, i₁] at this
+        omega
+      have hvalue (k : Fin n) :
+          dRootVector n hn i k * dRootVector n hn i k =
+            if k = i₀ then 1 else if k = i₁ then 1 else 0 := by
+        simp only [dRootVector, hnext]
+        split_ifs <;> simp_all [i₀, i₁, Fin.ext_iff] <;> omega
+      simp_rw [hvalue]
+      rw [sum_two_indicators i₀ i₁ hi]
+  rw [hdiag]
+  exact (Ideal.span {(2 : ℤ)}).neg_mem
+    (Ideal.subset_span (Set.mem_singleton 2))
 
 /-- Twice the coordinates of a standard simple-root basis for `E₈`. -/
 def e8RootNumerator : Fin 8 → Fin 8 → ℤ := ![
