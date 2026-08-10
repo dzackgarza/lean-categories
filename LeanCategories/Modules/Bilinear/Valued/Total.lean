@@ -199,19 +199,9 @@ def isoMk {X Y : BilWFormCat R}
 end BilWFormCat
 
 /-- Include one fixed-value fiber into the total formed-module category. -/
-def fixedValueInclusion (W : ModuleCat.{u} R) :
-    BilinModuleCat R W ⥤ BilWFormCat R where
-  obj L := ⟨W, L⟩
-  map f := BilWFormCat.homMk (BilinModuleCat.underlyingMap f)
-    LinearMap.id (fun x y ↦ (BilinModuleCat.map_pairing f x y).symm)
-  map_id L := by
-    apply BilWFormCat.hom_ext
-    · rfl
-    · rfl
-  map_comp f g := by
-    apply BilWFormCat.hom_ext
-    · rfl
-    · rfl
+abbrev fixedValueInclusion (W : ModuleCat.{u} R) :
+    BilinModuleCat R W ⥤ BilWFormCat R :=
+  Grothendieck.ι (valueFibers R) W
 
 @[simp]
 theorem fixedValueInclusion_value (W : ModuleCat.{u} R)
