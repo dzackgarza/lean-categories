@@ -52,6 +52,62 @@ noncomputable def toMetricDual (L : IntegralLatticeCat R) :
 def IsGenericallyNondegenerate (L : IntegralLatticeCat R) : Prop :=
   Function.Bijective (rationalizedForm R L)
 
+omit [IsDomain R] in
+/-- A base-changed basis maps the integral Gram matrix into the fraction field. -/
+theorem rationalizedForm_toMatrix {I : Type*} [Fintype I]
+    [DecidableEq I] (L : IntegralLatticeCat R)
+    (b : Module.Basis I R L.obj.carrier) :
+    LinearMap.BilinForm.toMatrix
+      (b.baseChange (FractionRing R)) (rationalizedForm R L) =
+        (algebraMap R (FractionRing R)).mapMatrix (gramMatrix L b) := by
+  ext i j
+  simp [LinearMap.BilinForm.toMatrix_apply, gramMatrix, Algebra.smul_def]
+
+/-- A finite Gram determinant is nonzero exactly when the lattice is generically nondegenerate. -/
+theorem isGenericallyNondegenerate_iff_determinant_ne_zero
+    {I : Type*} [Fintype I] [DecidableEq I]
+    (L : IntegralLatticeCat R)
+    (b : Module.Basis I R L.obj.carrier) :
+    IsGenericallyNondegenerate R L ↔ determinant L b ≠ 0 := by
+  let bK := b.baseChange (FractionRing R)
+  let B := rationalizedForm R L
+  letI : Module.Finite (FractionRing R) (RationalSpan R L) :=
+    Module.Finite.of_basis bK
+  have hmatrix : LinearMap.BilinForm.toMatrix bK B =
+      (algebraMap R (FractionRing R)).mapMatrix (gramMatrix L b) :=
+    rationalizedForm_toMatrix R L b
+  constructor
+  · intro hB
+    have hseparating : B.SeparatingLeft := by
+      intro x hx
+      apply hB.1
+      apply LinearMap.ext
+      intro y
+      simpa [B] using hx y
+    have hnondegenerate : B.Nondegenerate :=
+      LinearMap.BilinForm.Nondegenerate.ofSeparatingLeft hseparating
+    have hdet :=
+      (LinearMap.BilinForm.nondegenerate_iff_det_ne_zero bK).mp
+        hnondegenerate
+    rw [hmatrix, ← RingHom.map_det] at hdet
+    simpa [determinant] using hdet
+  · intro hdet
+    have hdetK : (LinearMap.BilinForm.toMatrix bK B).det ≠ 0 := by
+      rw [hmatrix, ← RingHom.map_det]
+      simpa [determinant] using hdet
+    have hnondegenerate : B.Nondegenerate :=
+      (LinearMap.BilinForm.nondegenerate_iff_det_ne_zero bK).mpr hdetK
+    let e := B.toDual hnondegenerate
+    have he : B = e.toLinearMap := by
+      apply LinearMap.ext
+      intro x
+      apply LinearMap.ext
+      intro y
+      exact (LinearMap.BilinForm.toDual_def hnondegenerate).symm
+    change Function.Bijective B
+    rw [he]
+    exact e.bijective
+
 /-- The Riesz equivalence supplied by the extended form and rational nondegeneracy. -/
 noncomputable def rationalAdjointEquiv (L : IntegralLatticeCat R)
     (hL : IsGenericallyNondegenerate R L) :
