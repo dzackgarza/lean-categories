@@ -8,6 +8,7 @@ public import LeanCategories.Lattices.Valued.Arithmetic
 public import LeanCategories.Lattices.Valued.Constructions
 public import LeanCategories.Lattices.Valued.ScaleAndEvenness
 public import LeanCategories.Lattices.Valued.Signature
+public import LeanCategories.Lattices.Valued.SmithNormalForm
 public import Mathlib.LinearAlgebra.Basis.Prod
 public import Mathlib.LinearAlgebra.Matrix.Notation
 
@@ -324,6 +325,25 @@ theorem e6Lattice_determinant :
     determinant e6Lattice (Pi.basisFun ℤ (Fin 6)) = 3 := by
   rw [determinant, e6Lattice_gramMatrix, e6GramMatrix_det]
 
+/-- The negative `E₆` lattice is generically nondegenerate. -/
+theorem e6Lattice_isGenericallyNondegenerate :
+    IsGenericallyNondegenerate ℤ e6Lattice :=
+  (isGenericallyNondegenerate_iff_determinant_ne_zero
+    ℤ e6Lattice (Pi.basisFun ℤ (Fin 6))).mpr (by
+      rw [e6Lattice_determinant]
+      norm_num)
+
+/-- The discriminant group of the negative `E₆` lattice has order three. -/
+theorem e6Lattice_natCard_defect :
+    Nat.card e6Lattice.obj.defect = 3 := by
+  letI : Module.Finite ℤ e6Lattice.obj.carrier := by
+    change Module.Finite ℤ (Fin 6 → ℤ)
+    infer_instance
+  rw [natCard_defect_eq_natAbs_determinant e6Lattice
+    e6Lattice_isGenericallyNondegenerate (Pi.basisFun ℤ (Fin 6)),
+    e6Lattice_determinant]
+  norm_num
+
 /-- The negative `E₆` lattice is even. -/
 theorem e6Lattice_isEven : IsEven e6Lattice := by
   apply latticeOfGramMatrix_isEven e6GramMatrix e6GramMatrix_isSymm
@@ -426,6 +446,25 @@ theorem e7GramMatrix_det : e7GramMatrix.det = -2 := by
 theorem e7Lattice_determinant :
     determinant e7Lattice (Pi.basisFun ℤ (Fin 7)) = -2 := by
   rw [determinant, e7Lattice_gramMatrix, e7GramMatrix_det]
+
+/-- The negative `E₇` lattice is generically nondegenerate. -/
+theorem e7Lattice_isGenericallyNondegenerate :
+    IsGenericallyNondegenerate ℤ e7Lattice :=
+  (isGenericallyNondegenerate_iff_determinant_ne_zero
+    ℤ e7Lattice (Pi.basisFun ℤ (Fin 7))).mpr (by
+      rw [e7Lattice_determinant]
+      norm_num)
+
+/-- The discriminant group of the negative `E₇` lattice has order two. -/
+theorem e7Lattice_natCard_defect :
+    Nat.card e7Lattice.obj.defect = 2 := by
+  letI : Module.Finite ℤ e7Lattice.obj.carrier := by
+    change Module.Finite ℤ (Fin 7 → ℤ)
+    infer_instance
+  rw [natCard_defect_eq_natAbs_determinant e7Lattice
+    e7Lattice_isGenericallyNondegenerate (Pi.basisFun ℤ (Fin 7)),
+    e7Lattice_determinant]
+  norm_num
 
 /-- The negative definite `E₈` root lattice in its simple-root basis. -/
 noncomputable def e8Lattice : IntegralLatticeCat ℤ := by
