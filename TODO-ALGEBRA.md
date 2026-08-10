@@ -1,147 +1,96 @@
-## Core finding
+# Algebra delta after upstream reuse
 
-The central foundation is not lattice classification. It is the arithmetic theory of formed modules.
+## Purpose
 
-Its basic object is:
+This file records only the algebra that this project must own.
+
+Pinned Mathlib already owns the general ring, module, form, and group foundations.
+Audited Lean projects supply further reference implementations.
+
+Do not use this file as a general algebra syllabus.
+Do not create a parallel definition for an existing construction.
+
+For each item, first inspect current project declarations.
+The remaining delta can be a definition, theorem, functor, or comparison.
+
+## Reuse boundary
+
+Use these upstream owners directly:
+
+| Area | Upstream owner |
+| --- | --- |
+| Rings, ideals, quotients, localization, and Dedekind domains | Mathlib `RingTheory` |
+| Modules, tensor products, exactness, rank, and bases | Mathlib module and linear-algebra libraries |
+| Torsion and primary decomposition | `Algebra.Module.Torsion` |
+| Smith normal form | `LinearAlgebra.FreeModule.PID` |
+| Module scalar change and its adjunction | `ModuleCat.ChangeOfRings` |
+| Module-valued bilinear maps | `LinearMap.BilinMap R M W` |
+| Module-valued quadratic maps | `QuadraticMap R M W` |
+| Orthogonality, radicals, isometries, and signatures | Mathlib form libraries |
+| Metric dual submodules | `BilinForm.dualSubmodule` |
+| Root systems and Weyl groups | `LinearAlgebra.RootSystem` |
+| Generic groups, actions, orbits, and stabilizers | Mathlib group theory |
+| Concrete integral E8 data | Sphere-Packing-Lean `SpherePacking.Basic.E8` |
+| Total-category reference constructions | Mathlib Grothendieck machinery and LeanFibredCategories |
+
+Atlas is a theorem and definition index.
+Its inspected algebra files mostly wrap Mathlib declarations.
+
+Formal-conjectures supplies statement shapes and support definitions.
+No inspected file replaces the formed-lattice arithmetic layer.
+
+## 1. Canonical formed categories
+
+Select one canonical category for module-valued bilinear forms.
+Its objects have the form
 
 \[
 (M,W,b),\qquad b:M\otimes_R M\to W.
 \]
 
-Here, \(M\) is an \(R\)-module. The value module \(W\) can change between constructions.
-
-This small object connects most of the research program:
-
-```text
-rings and ring maps
-        ↓
-modules, submodules, quotients, Hom, tensor
-        ↓
-scalar extension and change of values
-        ↓
-bilinear and quadratic formed modules
-        ↓
-finite projective lattices and sublattices
-        ↓
-finite torsion discriminant forms
-        ↓
-orthogonal groups and actions
-        ↓
-local theory, gluing, and classification
-        ↓
-U, E₈, L_K3, involutions, and period geometry
-```
-
-The higher category theory gives this structure a common language. It does not replace the elementary algebra.
-
-## 1. Basic ring and algebra theory
-
-This is mainly undergraduate and first-year graduate algebra.
-
-The program needs:
-
-- Rings, commutative rings, domains, fields, and algebras.
-- Ideals as submodules of the regular module.
-- Quotient rings and quotient modules.
-- Principal ideal domains and unique factorization.
-- Prime and maximal ideals.
-- Fraction fields and modules such as \(K/R\).
-- Polynomial rings and free algebras.
-- Integral elements, integral extensions, and integral closure.
-- Localization of rings, modules, ideals, and maps.
-- Local rings, discrete valuation rings, and residue fields.
-- Fractional ideals and Dedekind domains.
-
-Two transcript examples expose the common foundation.
-
-An ideal of \(R\) is an \(R\)-submodule of \(R\). An integral basis is a basis of an integral \(R\)-algebra.
-
-Both examples require algebra-to-module forgetful functors. They also require scalar extension:
+A morphism contains maps \(f:M\to N\) and \(\alpha:W\to V\).
+It satisfies
 
 \[
-K\otimes_R(-):\operatorname{Alg}_R\to\operatorname{Alg}_K.
+\alpha\circ b=c\circ(f\otimes f).
 \]
 
-A denominator-clearing procedure cannot replace this theory.
+The remaining obligations are:
 
-## 2. Basic module theory
+- Compare all current project presentations.
+- Select one public presentation.
+- Relate the fixed-value fibers to the total category.
+- Supply change-of-value and scalar-change functors.
+- Prove their identity and composition comparisons.
+- State the cokernel through its universal property.
+- Prove that the cokernel kills the required mixed pairings.
+- Add the quadratic analogue only when a current consumer requires it.
 
-This is the largest low-level dependency.
+Do not replace `BilinMap` or `QuadraticMap` with new form types.
 
-The program needs:
+## 2. Arithmetic formed modules
 
-- Modules, submodules, generated submodules, and quotient modules.
-- Kernels, images, cokernels, and exact sequences.
-- Tensor products and their universal property.
-- Linear duals \(\operatorname{Hom}_R(M,W)\).
-- Finitely generated, finitely presented, free, and projective modules.
-- Torsion-free modules and torsion modules.
-- Rank and basis-independent rank.
-- Bases, matrices, determinants, and change of basis.
-- Smith normal form over a PID.
-- The structure theorem for finite torsion modules.
-- Primary decomposition of torsion modules.
-- Finite-index submodules.
-- Saturated submodules and primitive inclusions.
+Define the arithmetic properties that Mathlib does not supply as a coherent layer:
 
-Primary decomposition belongs here. It is first a theorem about torsion modules.
+- Perfect and unimodular forms.
+- Integral and \(I\)-integral forms.
+- Even and \(I\)-even forms.
+- Scale ideals.
+- Value ideals generated by diagonal values.
+- Finite projective formed modules.
+- Finite free formed modules over a PID.
+- Formed submodules and inclusion isometries.
+- Finite-index and saturated formed submodules.
+- Primitive inclusions and primitive closure.
 
-A bilinear form adds an orthogonality theorem between distinct primary parts. It does not own the decomposition.
+Build orthogonal sums and finite orthogonal powers from existing form operations.
+Do not create another tensor-product or base-change operation.
 
-## 3. Change of scalars
+State each finiteness or projectivity predicate over its base ring.
 
-This is the most repeated missing machine in the transcripts.
+## 3. Dual and discriminant theory
 
-For a ring map \(R\to S\), the program needs:
-
-- Restriction of scalars.
-- Extension of scalars \(S\otimes_R-\).
-- Scalar extension for algebras and modules.
-- Base change for linear maps, submodules, quotients, and exact sequences.
-- Base change for bilinear and quadratic forms.
-- Compatibility with localization.
-- Preservation results for finite generation, projectivity, and rank.
-- Comparison maps and natural isomorphisms.
-
-Projectivity always depends on the base ring.
-
-For example, \(\mathbb Q\) is projective over \(\mathbb Q\). It is not projective over \(\mathbb Z\).
-
-The formal categories must record this base ring.
-
-## 4. Elementary bilinear and quadratic form theory
-
-The fundamental object is a morphism:
-
-\[
-b:M\otimes_R M\to W.
-\]
-
-The program then needs:
-
-- Symmetric, alternating, and skew-symmetric forms.
-- The adjoint map \(b^\flat:M\to\operatorname{Hom}_R(M,W)\).
-- The radical \(\ker b^\flat\).
-- Nondegenerate, perfect, and unimodular forms.
-- Restriction of a form to a submodule.
-- Orthogonal complements and orthogonal sums.
-- Finite orthogonal powers.
-- Scaling a form by a scalar.
-- Tensor products of formed modules.
-- Isometries and isometric equivalences.
-- Basis change and matrix congruence.
-- Basis-independent determinants and signatures.
-- Witt decomposition and hyperbolic planes.
-
-The diagonal function \(q(x)=b(x,x)\) is usually not linear.
-
-Therefore, its value module is the submodule generated by all \(b(x,x)\). It is not a linear image.
-
-This distinction supports scale ideals, value ideals, and evenness.
-
-## 5. Duals must remain distinct
-
-The transcripts repeatedly exposed three different objects:
+Keep these objects distinct:
 
 \[
 M^*=\operatorname{Hom}_R(M,R),
@@ -151,141 +100,123 @@ M^*=\operatorname{Hom}_R(M,R),
 M^\#=\{x\in M_K\mid b_K(x,M)\subseteq R\},
 \]
 
-and the image or cokernel of the adjoint map \(b^\flat\).
+and the kernel, image, or cokernel of the adjoint map.
 
-These objects can agree under strong hypotheses. They are not equal by definition.
+Reuse `BilinForm.dualSubmodule` for the metric dual foundation.
 
-There is no natural bilinear form on \(M^*\) in general.
+The project delta is:
 
-A form can move to \(M^*\) only through extra structure. This usually uses nondegeneracy and a Riesz-type isomorphism.
+- Compare the algebraic dual with the metric dual.
+- State the hypotheses for each comparison isomorphism.
+- Define \(I\)-duals when an ideal-valued condition requires them.
+- Define the discriminant module \(A_L=L^\#/L\).
+- Construct its \(K/R\)-valued bilinear form.
+- Construct its quadratic refinement for even lattices.
+- Prove functoriality under lattice isometries.
+- Prove finiteness and nonsingularity under exact hypotheses.
+- Relate discriminant order to determinant ideals.
+- Prove the required dual and discriminant exact sequences.
 
-This distinction controls the exact sequences.
+Do not give \(M^*\) a form without the structure that transports one.
 
-The radical belongs to the kernel of \(b^\flat\). The metric-dual inclusion \(M\hookrightarrow M^\#\) usually has zero kernel.
+## 4. Embeddings, complements, and gluing
 
-## 6. The general category of formed modules
+Develop the formed-module theorems needed for lattice embeddings:
 
-A fixed value module \(W\) is too narrow for discriminant constructions.
-
-The necessary total category has objects:
-
-\[
-(M,W,b).
-\]
-
-A morphism from \((M,W,b)\) to \((N,V,c)\) contains maps \(f:M\to N\) and \(\alpha:W\to V\).
-
-They satisfy:
-
-\[
-\alpha\circ b=c\circ(f\otimes f).
-\]
-
-This category contains:
-
-\[
-(L,R,b_L)\longrightarrow(L^\#,K,b_{L^\#})
-\longrightarrow(A_L,K/R,b_{A_L}).
-\]
-
-Its cokernels must quotient both the module and the value module. They must also kill mixed pairings.
-
-This construction is the actual bridge between ordinary modules and discriminant forms.
-
-## 7. Arithmetic lattice theory
-
-Only after the prior layers does lattice theory become coherent.
-
-It needs:
-
-- General formed modules, including infinite and degenerate examples.
-- The full subcategory of finite projective formed modules.
-- Finite free lattices over a PID.
-- Integral forms and \(I\)-even forms.
-- Scale and value ideals.
-- Formed sublattices and inclusion isometries.
-- Primitive and finite-index embeddings.
+- Orthogonal complements of formed submodules.
+- Primitive orthogonal embeddings.
 - Saturation and primitive closure.
-- Metric duals and \(I\)-duals.
-- Discriminant modules \(A_L=L^\#/L\).
-- \(K/R\)-valued discriminant bilinear forms.
-- Quadratic refinements for even lattices.
-- Finiteness and nonsingularity of discriminant forms.
-- Relations between determinant and discriminant order.
-- Orthogonal complements and gluing data.
+- Discriminant data for a submodule and its complement.
+- Isotropic subgroups of discriminant forms.
+- Overlattices constructed from isotropic subgroups.
+- Recovery of gluing data from an overlattice.
+- Extension criteria for isometries across a gluing construction.
 
-Finite torsion bilinear and quadratic modules need their own categories. They are not decorated quotient modules.
+State each result at the formed-module level when possible.
+Specialize to integral lattices only when arithmetic hypotheses require it.
 
-## 8. Groups and actions
+## 5. Orthogonal groups and derived actions
 
-The group theory is standard. The lattice-specific functorial action is missing from the mathematical spine.
+Build lattice-specific actions from existing automorphism and action machinery:
 
-The program needs:
+- Define \(O(L)\) as the isometry automorphism group.
+- Construct its action on vectors and formed submodules.
+- Construct its action on metric duals and discriminant forms.
+- Define the map \(O(L)\to O(A_L)\).
+- Define the stable orthogonal group as its kernel.
+- Relate involutions to \(C_2\)-actions.
+- Construct invariant and coinvariant formed submodules.
+- Connect project lattices to Mathlib root systems and Weyl groups.
 
-- Automorphism groups of structured objects.
-- The orthogonal group \(O(L)\).
-- Actions on vectors, sublattices, duals, and discriminant forms.
-- The map \(O(L)\to O(A_L)\).
-- Its kernel, the stable orthogonal group.
-- Involutions as elements of \(O(L)\).
-- Equivalent \(C_2\)-actions.
-- Invariant and coinvariant sublattices.
-- Reflections, root systems, and Weyl groups.
-- Orbits, stabilizers, and conjugacy.
+Do not rebuild generic group actions, orbits, stabilizers, or conjugacy.
 
-A theorem about one Gram matrix does not classify a root lattice.
+## 6. Local and classification theory
 
-The program first needs signature and definiteness invariance under isometry and basis change.
+Mathlib supplies local rings, localizations, completions, DVRs, and residue fields.
+The project still needs their formed-lattice arithmetic:
 
-## 9. Later graduate arithmetic
-
-These subjects are necessary later. They are not the first foundation.
-
-- Localizations and completions.
-- Discrete valuation modules and lattices.
+- Lattices over DVRs and completed local rings.
 - Residue forms and unit square classes.
-- Separate theory at \(p=2\).
-- Jordan decomposition.
-- Hasse invariants and Witt groups.
+- Separate \(2\)-adic theory.
+- Jordan decomposition of local lattices.
+- Hasse invariants for the required form categories.
+- Witt-group comparisons needed by classification.
 - Genus and spinor genus.
-- Local-to-global principles.
-- Overlattices from isotropic subgroups.
+- Local-to-global comparison theorems.
 - Primitive embedding criteria.
-- Nikulin-style gluing.
+- Nikulin-style gluing and classification theorems.
 
-## The smallest coherent algebraic nucleus
+No inspected source supplies this complete layer.
 
-The most basic reusable nucleus contains six parts:
+## 7. Standard lattices
 
-1. Submodules, quotients, tensor products, Hom, and exact sequences.
-2. Finite projective modules and finite torsion modules.
-3. Scalar extension and localization.
-4. Module-valued bilinear forms and their adjoints.
-5. Isometries, orthogonal constructions, and basis invariance.
-6. Automorphism groups and actions on derived objects.
+Define named lattices through the generic formed-lattice constructions.
 
-Everything from \(A_L\) through \(L_{K3}\) should derive from this nucleus.
+- Compare the project E8 object with Sphere-Packing-Lean `E8Lattice`.
+- Record and prove any sign change explicitly.
+- Define the hyperbolic plane from its form.
+- Build \(U^n\) through finite orthogonal powers.
+- Build \(E_8(-1)^n\) through scaling and orthogonal powers.
+- Define \(L_{K3}=U^3\perp E_8(-1)^2\).
+- Derive rank, signature, parity, and discriminant from generic theorems.
 
-The geometry branch needs another elementary spine. It starts with localization, local rings, tensor products, and flatness.
+Do not create a matrix-first parallel hierarchy for these objects.
 
-Only then can schemes, fiber products, sheaves, and geometric morphism properties have precise definitions.
+## Dependency order
+
+Work in this order:
+
+1. Canonical formed categories and comparison functors.
+2. Arithmetic formed-module predicates and subobjects.
+3. Dual and discriminant theory.
+4. Orthogonal actions, embeddings, and gluing.
+5. Standard lattices through generic constructions.
+6. Local classification and global arithmetic theorems.
+
+A later item must not supply a missing definition to an earlier item.
 
 ## Evidence boundary
 
-I parsed five relevant Codex sessions. They contain 59,806 normalized transcript lines.
+This delta uses pinned Mathlib commit `81a5d257c8e410db227a6665ed08f64fea08e997`.
 
-The parser found 135 direct user prompts. I inspected all audit prompts and the mathematics-related prompts in the other sessions.
+The external source audit covered these relevant families:
 
-I also inspected the 238-line attached algebra program from the long implementation session.
+- Sphere-Packing-Lean at commit `bad3de916074748eb88b7d1ee6dbf9494361ad17`.
+- Atlas at commit `34ffed396f376454c1a9b297f3fd74c5c801fb50`.
+- Formal-conjectures at commit `b123bb89b5978ae6b648159e430c4e4dce161b97`.
+- LeanFibredCategories at commit `a58604a389544523aa171daf890386fb8317568b`.
+- FLT at commit `d18b563029f32a6855f46cdd0edaab39ccc5b8f5`.
 
-This is a dependency reconstruction. It is not a current repository or Mathlib coverage audit.
+Atlas and formal-conjectures received class-level inspection.
+Their complete declaration sets were not individually inspected.
 
-Other Codex sessions can contain further requirements. They could extend this list, especially outside lattice arithmetic.
+“Not found” means “not found in the listed sources and commits.”
+It does not assert global nonexistence.
 
-Source sessions:
+## Completion standard
 
-- [Base-change analysis](/home/dzack/.codex/sessions/2026/08/08/rollout-2026-08-08T19-44-54-019fe130-b838-7d92-a6a7-dcc414922492.jsonl)
-- [Formed-module foundations](/home/dzack/.codex/sessions/2026/08/09/rollout-2026-08-09T15-21-05-019fe565-8e61-7b91-89c8-7a5b1cc3827a.jsonl)
-- [Missing-algebra audit](/home/dzack/.codex/sessions/2026/08/09/rollout-2026-08-09T21-18-55-019fe6ad-2821-7502-92f5-92fc1fe4a13d.jsonl)
-- [Primary decomposition and root-system corrections](/home/dzack/.codex/sessions/2026/08/10/rollout-2026-08-10T02-49-21-019fe7db-acda-7161-8f7c-ca40d7b234e0.jsonl)
-- [Representation-invariance critique](/home/dzack/.codex/sessions/2026/08/10/rollout-2026-08-10T13-30-50-019fea26-f926-7521-bb74-a21d7217305f.jsonl)
+Each new declaration must identify its relationship to existing mathematics.
+Use an instance, comparison map, functor, or equivalence as appropriate.
+
+The root module must expose one coherent hierarchy.
+Passing compilation does not prove that two parallel presentations agree.
