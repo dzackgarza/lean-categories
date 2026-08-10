@@ -109,19 +109,19 @@ theorem valueProjection_surjective (L : IntegralLatticeCat R) :
     Function.Surjective (valueProjection L) :=
   Submodule.mkQ_surjective _
 
-/-- Quadratic `I`-evenness is a lift of `x ↦ b(x,x)` through `I ↪ R`. -/
-def IsQuadraticallyEven (L : IntegralLatticeCat R) (I : Ideal R) : Prop :=
+/-- `I`-evenness is a lift of `x ↦ b(x,x)` through `I ↪ R`. -/
+def IsIEven (L : IntegralLatticeCat R) (I : Ideal R) : Prop :=
   ∃ qI : QuadraticMap R L.obj.carrier I,
     I.subtype.compQuadraticMap qI = quadraticMap L
 
-/-- Bilinear `I`-evenness is a lift of the tensor form through `I ↪ R`. -/
-def IsBilinearlyEven (L : IntegralLatticeCat R) (I : Ideal R) : Prop :=
+/-- `I`-integrality is a lift of the tensor form through `I ↪ R`. -/
+def IsIIntegral (L : IntegralLatticeCat R) (I : Ideal R) : Prop :=
   ∃ bI : TensorProduct R L.obj.carrier L.obj.carrier →ₗ[R] I,
     I.subtype ∘ₗ bI = L.obj.form
 
-theorem isBilinearlyEven_iff_pairing_mem (L : IntegralLatticeCat R)
+theorem isIIntegral_iff_pairing_mem (L : IntegralLatticeCat R)
     (I : Ideal R) :
-    IsBilinearlyEven L I ↔ ∀ x y, L.obj.pairing x y ∈ I := by
+    IsIIntegral L I ↔ ∀ x y, L.obj.pairing x y ∈ I := by
   constructor
   · rintro ⟨bI, hbI⟩ x y
     have hxy := LinearMap.congr_fun hbI (x ⊗ₜ[R] y)
@@ -140,9 +140,9 @@ theorem isBilinearlyEven_iff_pairing_mem (L : IntegralLatticeCat R)
     ext z
     rfl
 
-theorem isQuadraticallyEven_iff_value_mem
+theorem isIEven_iff_value_mem
     (L : IntegralLatticeCat R) (I : Ideal R) :
-    IsQuadraticallyEven L I ↔ ∀ x, quadraticMap L x ∈ I := by
+    IsIEven L I ↔ ∀ x, quadraticMap L x ∈ I := by
   constructor
   · rintro ⟨qI, hqI⟩ x
     have hx := QuadraticMap.congr_fun hqI x
@@ -154,9 +154,37 @@ theorem isQuadraticallyEven_iff_value_mem
     ext x
     rfl
 
-theorem isQuadraticallyEven_of_isBilinearlyEven
+/-- `I`-integrality means that the scale ideal lies in `I`. -/
+theorem isIIntegral_iff_scaleModule_le
+    (L : IntegralLatticeCat R) (I : Ideal R) :
+    IsIIntegral L I ↔ scaleModule L ≤ I := by
+  rw [isIIntegral_iff_pairing_mem]
+  constructor
+  · intro h z hz
+    obtain ⟨t, rfl⟩ := hz
+    induction t using TensorProduct.induction_on with
+    | zero => simp only [map_zero, I.zero_mem]
+    | tmul x y => exact h x y
+    | add x y hx hy => simpa using I.add_mem hx hy
+  · intro h x y
+    exact h ⟨x ⊗ₜ[R] y, rfl⟩
+
+/-- `I`-evenness means that the value ideal lies in `I`. -/
+theorem isIEven_iff_valueModule_le
+    (L : IntegralLatticeCat R) (I : Ideal R) :
+    IsIEven L I ↔ valueModule L ≤ I := by
+  rw [isIEven_iff_value_mem]
+  constructor
+  · intro h
+    rw [valueModule, Ideal.span_le]
+    rintro _ ⟨x, rfl⟩
+    exact h x
+  · intro h x
+    exact h (Ideal.subset_span (Set.mem_range_self x))
+
+theorem isIEven_of_isIIntegral
     (L : IntegralLatticeCat R) (I : Ideal R)
-    (hL : IsBilinearlyEven L I) : IsQuadraticallyEven L I := by
+    (hL : IsIIntegral L I) : IsIEven L I := by
   rcases hL with ⟨bI, hbI⟩
   let bI' : LinearMap.BilinMap R L.obj.carrier I :=
     (TensorProduct.lift.equiv (.id R) L.obj.carrier L.obj.carrier I).symm bI
@@ -167,11 +195,11 @@ theorem isQuadraticallyEven_of_isBilinearlyEven
   change I.subtype (bI (x ⊗ₜ[R] x)) = L.obj.form (x ⊗ₜ[R] x)
   exact LinearMap.congr_fun hbI (x ⊗ₜ[R] x)
 
-theorem isBilinearlyEven_of_isQuadraticallyEven_of_invertible_two
+theorem isIIntegral_of_isIEven_of_invertible_two
     [Invertible (2 : R)] (L : IntegralLatticeCat R) (I : Ideal R)
-    (hL : IsQuadraticallyEven L I) : IsBilinearlyEven L I := by
-  rw [isBilinearlyEven_iff_pairing_mem]
-  rw [isQuadraticallyEven_iff_value_mem] at hL
+    (hL : IsIEven L I) : IsIIntegral L I := by
+  rw [isIIntegral_iff_pairing_mem]
+  rw [isIEven_iff_value_mem] at hL
   intro x y
   have hPolar : QuadraticMap.polar (quadraticMap L) x y ∈ I :=
     I.sub_mem (I.sub_mem (hL (x + y)) (hL x)) (hL y)
@@ -187,44 +215,52 @@ theorem isBilinearlyEven_of_isQuadraticallyEven_of_invertible_two
   have hScaled := I.smul_mem (⅟(2 : R)) hPolar
   simpa [smul_smul, invOf_mul_self] using hScaled
 
-theorem isQuadraticallyEven_top (L : IntegralLatticeCat R) :
-    IsQuadraticallyEven L (⊤ : Ideal R) := by
+theorem isIEven_top (L : IntegralLatticeCat R) :
+    IsIEven L (⊤ : Ideal R) := by
   refine ⟨Submodule.topEquiv.symm.toLinearMap.compQuadraticMap
     (quadraticMap L), ?_⟩
   ext x
   rfl
 
-theorem isBilinearlyEven_top (L : IntegralLatticeCat R) :
-    IsBilinearlyEven L (⊤ : Ideal R) := by
+theorem isIIntegral_top (L : IntegralLatticeCat R) :
+    IsIIntegral L (⊤ : Ideal R) := by
   refine ⟨Submodule.topEquiv.symm.toLinearMap ∘ₗ L.obj.form, ?_⟩
   ext x
   rfl
 
-theorem isQuadraticallyEven_of_eq_top (L : IntegralLatticeCat R)
-    (I : Ideal R) (hI : I = ⊤) : IsQuadraticallyEven L I := by
-  subst I
-  exact isQuadraticallyEven_top L
+/-- An `R`-valued lattice is integral. -/
+abbrev IsIntegral (L : IntegralLatticeCat R) : Prop :=
+  IsIIntegral L ⊤
 
-theorem isBilinearlyEven_of_eq_top (L : IntegralLatticeCat R)
-    (I : Ideal R) (hI : I = ⊤) : IsBilinearlyEven L I := by
-  subst I
-  exact isBilinearlyEven_top L
+/-- Every object of `IntegralLatticeCat R` is integral by construction. -/
+theorem isIntegral (L : IntegralLatticeCat R) : IsIntegral L :=
+  isIIntegral_top L
 
-theorem isQuadraticallyEven_span_singleton_of_isUnit
+theorem isIEven_of_eq_top (L : IntegralLatticeCat R)
+    (I : Ideal R) (hI : I = ⊤) : IsIEven L I := by
+  subst I
+  exact isIEven_top L
+
+theorem isIIntegral_of_eq_top (L : IntegralLatticeCat R)
+    (I : Ideal R) (hI : I = ⊤) : IsIIntegral L I := by
+  subst I
+  exact isIIntegral_top L
+
+theorem isIEven_span_singleton_of_isUnit
     (L : IntegralLatticeCat R) (a : R) (ha : IsUnit a) :
-    IsQuadraticallyEven L (Ideal.span {a}) :=
-  isQuadraticallyEven_of_eq_top L _
+    IsIEven L (Ideal.span {a}) :=
+  isIEven_of_eq_top L _
     (Ideal.span_singleton_eq_top.mpr ha)
 
-theorem isBilinearlyEven_span_singleton_of_isUnit
+theorem isIIntegral_span_singleton_of_isUnit
     (L : IntegralLatticeCat R) (a : R) (ha : IsUnit a) :
-    IsBilinearlyEven L (Ideal.span {a}) :=
-  isBilinearlyEven_of_eq_top L _
+    IsIIntegral L (Ideal.span {a}) :=
+  isIIntegral_of_eq_top L _
     (Ideal.span_singleton_eq_top.mpr ha)
 
-/-- Classical evenness is quadratic `2R`-evenness. -/
+/-- Classical evenness is `I`-evenness for `I = 2R`. -/
 abbrev IsEven (L : IntegralLatticeCat R) : Prop :=
-  IsQuadraticallyEven L (Ideal.span {(2 : R)})
+  IsIEven L (Ideal.span {(2 : R)})
 
 /-- The polar form of `x ↦ b(x,x)` is twice the symmetric pairing. -/
 theorem quadraticMap_polar (L : IntegralLatticeCat R)
@@ -241,8 +277,8 @@ theorem isEven_of_basis {I : Type*} (L : IntegralLatticeCat R)
     (b : Module.Basis I R L.obj.carrier)
     (h : ∀ i, quadraticMap L (b i) ∈ Ideal.span {(2 : R)}) :
     IsEven L := by
-  change IsQuadraticallyEven L (Ideal.span {(2 : R)})
-  rw [isQuadraticallyEven_iff_value_mem]
+  change IsIEven L (Ideal.span {(2 : R)})
+  rw [isIEven_iff_value_mem]
   intro x
   have hx : x ∈ Submodule.span R (Set.range b) := by
     rw [b.span_eq]
@@ -265,37 +301,37 @@ theorem isEven_of_basis {I : Type*} (L : IntegralLatticeCat R)
       exact (Ideal.span {(2 : R)}).smul_mem (a * a) hx
 
 /-- An orthogonal sum preserves quadratic evenness. -/
-theorem isQuadraticallyEven_orthogonalSum (L₁ L₂ : IntegralLatticeCat R)
-    (I : Ideal R) (h₁ : IsQuadraticallyEven L₁ I)
-    (h₂ : IsQuadraticallyEven L₂ I) :
-    IsQuadraticallyEven (orthogonalSum L₁ L₂) I := by
-  rw [isQuadraticallyEven_iff_value_mem] at h₁ h₂ ⊢
+theorem isIEven_orthogonalSum (L₁ L₂ : IntegralLatticeCat R)
+    (I : Ideal R) (h₁ : IsIEven L₁ I)
+    (h₂ : IsIEven L₂ I) :
+    IsIEven (orthogonalSum L₁ L₂) I := by
+  rw [isIEven_iff_value_mem] at h₁ h₂ ⊢
   rintro ⟨x₁, x₂⟩
   exact I.add_mem (h₁ x₁) (h₂ x₂)
 
 /-- A finite indexed orthogonal sum preserves quadratic evenness. -/
-theorem isQuadraticallyEven_indexedOrthogonalSum {J : Type} [Fintype J]
+theorem isIEven_indexedOrthogonalSum {J : Type} [Fintype J]
     (L : J → IntegralLatticeCat R) (I : Ideal R)
-    (hL : ∀ j, IsQuadraticallyEven (L j) I) :
-    IsQuadraticallyEven (indexedOrthogonalSum L) I := by
+    (hL : ∀ j, IsIEven (L j) I) :
+    IsIEven (indexedOrthogonalSum L) I := by
   classical
-  rw [isQuadraticallyEven_iff_value_mem]
+  rw [isIEven_iff_value_mem]
   intro x
   change (∑ j, (L j).obj.pairing (x j) (x j)) ∈ I
   exact Submodule.sum_mem I fun j _ ↦
-    (isQuadraticallyEven_iff_value_mem (L j) I).mp (hL j) (x j)
+    (isIEven_iff_value_mem (L j) I).mp (hL j) (x j)
 
 /-- Every finite orthogonal power of an even lattice is even. -/
 theorem isEven_orthogonalPower (L : IntegralLatticeCat R) (n : ℕ)
     (hL : IsEven L) : IsEven (orthogonalPower L n) :=
-  isQuadraticallyEven_indexedOrthogonalSum (fun _ : Fin n ↦ L)
+  isIEven_indexedOrthogonalSum (fun _ : Fin n ↦ L)
     (Ideal.span {(2 : R)}) (fun _ ↦ hL)
 
 /-- An orthogonal sum of even lattices is even. -/
 theorem isEven_orthogonalSum (L₁ L₂ : IntegralLatticeCat R)
     (h₁ : IsEven L₁) (h₂ : IsEven L₂) :
     IsEven (orthogonalSum L₁ L₂) :=
-  isQuadraticallyEven_orthogonalSum L₁ L₂
+  isIEven_orthogonalSum L₁ L₂
     (Ideal.span {(2 : R)}) h₁ h₂
 
 section BaseChangeEvenness
@@ -343,11 +379,11 @@ theorem baseChangeIntegral_quadraticMap_add (L : IntegralLatticeCat R)
     BilinModuleCat.bilinMap_apply]
   abel
 
-theorem symmetrized_pairing_mem_of_isQuadraticallyEven
+theorem symmetrized_pairing_mem_of_isIEven
     (L : IntegralLatticeCat R) (I : Ideal R)
-    (hL : IsQuadraticallyEven L I) (x y : L.obj.carrier) :
+    (hL : IsIEven L I) (x y : L.obj.carrier) :
     L.obj.pairing x y + L.obj.pairing y x ∈ I := by
-  rw [isQuadraticallyEven_iff_value_mem] at hL
+  rw [isIEven_iff_value_mem] at hL
   have h := I.sub_mem (I.sub_mem (hL (x + y)) (hL x)) (hL y)
   change QuadraticMap.polar (quadraticMap L) x y ∈ I at h
   rw [quadraticMap, LinearMap.BilinMap.polar_toQuadraticMap] at h
@@ -355,7 +391,7 @@ theorem symmetrized_pairing_mem_of_isQuadraticallyEven
 
 theorem baseChangeIntegral_symmetrized_pairing_mem
     (L : IntegralLatticeCat R) (I : Ideal R)
-    (hL : IsQuadraticallyEven L I)
+    (hL : IsIEven L I)
     (x y : TensorProduct R S L.obj.carrier) :
     ((baseChangeIntegral R S).obj L).obj.pairing x y +
       ((baseChangeIntegral R S).obj L).obj.pairing y x ∈
@@ -379,7 +415,7 @@ theorem baseChangeIntegral_symmetrized_pairing_mem
           zero_add]
       exact hEq.symm ▸ (Ideal.map (algebraMap R S) I).zero_mem
     | tmul b y =>
-      have hxy := symmetrized_pairing_mem_of_isQuadraticallyEven L I hL x y
+      have hxy := symmetrized_pairing_mem_of_isIEven L I hL x y
       have hMap : algebraMap R S
           (L.obj.pairing x y + L.obj.pairing y x) ∈
           Ideal.map (algebraMap R S) I :=
@@ -398,12 +434,12 @@ theorem baseChangeIntegral_symmetrized_pairing_mem
     convert (Ideal.map (algebraMap R S) I).add_mem hx₁ hx₂ using 1
     all_goals abel
 
-theorem baseChangeIntegral_isQuadraticallyEven
+theorem baseChangeIntegral_isIEven
     (L : IntegralLatticeCat R) (I : Ideal R)
-    (hL : IsQuadraticallyEven L I) :
-    IsQuadraticallyEven ((baseChangeIntegral R S).obj L)
+    (hL : IsIEven L I) :
+    IsIEven ((baseChangeIntegral R S).obj L)
       (Ideal.map (algebraMap R S) I) := by
-  rw [isQuadraticallyEven_iff_value_mem]
+  rw [isIEven_iff_value_mem]
   intro x
   change TensorProduct R S L.obj.carrier at x
   induction x using TensorProduct.induction_on with
@@ -414,7 +450,7 @@ theorem baseChangeIntegral_isQuadraticallyEven
     change ((baseChangeIntegral R S).obj L).obj.pairing
       (a ⊗ₜ[R] x) (a ⊗ₜ[R] x) ∈ Ideal.map (algebraMap R S) I
     rw [baseChangeIntegral_pairing_tmul]
-    rw [isQuadraticallyEven_iff_value_mem] at hL
+    rw [isIEven_iff_value_mem] at hL
     have hx := hL x
     change L.obj.pairing x x ∈ I at hx
     have hMap : algebraMap R S (L.obj.pairing x x) ∈
@@ -428,12 +464,12 @@ theorem baseChangeIntegral_isQuadraticallyEven
     exact (Ideal.map (algebraMap R S) I).add_mem
       ((Ideal.map (algebraMap R S) I).add_mem hx hy) hSym
 
-theorem baseChangeIntegral_isBilinearlyEven
+theorem baseChangeIntegral_isIIntegral
     (L : IntegralLatticeCat R) (I : Ideal R)
-    (hL : IsBilinearlyEven L I) :
-    IsBilinearlyEven ((baseChangeIntegral R S).obj L)
+    (hL : IsIIntegral L I) :
+    IsIIntegral ((baseChangeIntegral R S).obj L)
       (Ideal.map (algebraMap R S) I) := by
-  rw [isBilinearlyEven_iff_pairing_mem] at hL ⊢
+  rw [isIIntegral_iff_pairing_mem] at hL ⊢
   intro x y
   change TensorProduct R S L.obj.carrier at x y
   induction x using TensorProduct.induction_on with

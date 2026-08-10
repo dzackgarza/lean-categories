@@ -127,10 +127,10 @@ def CanonicalMapLiftsToIdealDual (L : IntegralLatticeCat R) (I : Ideal R) : Prop
   ∃ ι : L.obj.carrier →ₗ[R] idealDual R L I,
     idealDualInclusion R L I ∘ₗ ι = toRationalSpan R L
 
-theorem isBilinearlyEven_iff_canonicalMapLiftsToIdealDual
+theorem isIIntegral_iff_canonicalMapLiftsToIdealDual
     (L : IntegralLatticeCat R) (I : Ideal R) :
-    IsBilinearlyEven L I ↔ CanonicalMapLiftsToIdealDual R L I := by
-  rw [isBilinearlyEven_iff_pairing_mem]
+    IsIIntegral L I ↔ CanonicalMapLiftsToIdealDual R L I := by
+  rw [isIIntegral_iff_pairing_mem]
   constructor
   · intro h
     refine ⟨LinearMap.codRestrict (idealDual R L I) (toRationalSpan R L) ?_, ?_⟩

@@ -148,7 +148,7 @@ theorem adjointRange_le_projectedRieszQuadraticRadical
         (L.obj.adjoint x)) = 0
     rw [rieszDualBilinMap_adjoint]
     apply doubleFractionValueProjection_algebraMap_of_even
-    exact (isQuadraticallyEven_iff_value_mem L
+    exact (isIEven_iff_value_mem L
       (Ideal.span {(2 : R)})).mp hEven x
   · apply LinearMap.ext
     intro f
