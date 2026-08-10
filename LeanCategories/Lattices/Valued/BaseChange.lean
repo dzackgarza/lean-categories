@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
+public import LeanCategories.Lattices.Valued.Arithmetic
 public import LeanCategories.Lattices.Valued.ChangeValue
 
 @[expose] public section
@@ -174,5 +175,22 @@ noncomputable def baseChangeIntegral (S : Type u) [CommRing S] [Algebra R S] :
         ((baseChange R R S).map f)
   map_id L := by simp
   map_comp f g := by simp
+
+/-- Scalar extension of finite projective integral lattices. -/
+noncomputable def baseChangeFiniteIntegral
+    (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] :
+    FiniteProjectiveLatticeCat R R ⥤ FiniteProjectiveLatticeCat S S where
+  obj L := by
+    letI : Module.Finite R L.obj.obj.carrier := L.property
+    refine ⟨(baseChangeIntegral R S).obj L.obj, ?_⟩
+    change Module.Finite S (TensorProduct R S L.obj.obj.carrier)
+    infer_instance
+  map f := ObjectProperty.homMk ((baseChangeIntegral R S).map f.hom)
+  map_id L := by
+    apply ObjectProperty.hom_ext
+    exact (baseChangeIntegral R S).map_id L.obj
+  map_comp f g := by
+    apply ObjectProperty.hom_ext
+    exact (baseChangeIntegral R S).map_comp f.hom g.hom
 
 end LeanCategories.Lattices.Valued

@@ -140,23 +140,6 @@ noncomputable def signatureFunctor :
   map_id _ := Subsingleton.elim _ _
   map_comp _ _ := Subsingleton.elim _ _
 
-/-- Scalar extension of finite projective integral lattices. -/
-noncomputable def baseChangeFiniteIntegral
-    (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] :
-    FiniteProjectiveLatticeCat R R ⥤ FiniteProjectiveLatticeCat S S where
-  obj L := by
-    letI : Module.Finite R L.obj.obj.carrier := L.property
-    refine ⟨(baseChangeIntegral R S).obj L.obj, ?_⟩
-    change Module.Finite S (TensorProduct R S L.obj.obj.carrier)
-    infer_instance
-  map f := ObjectProperty.homMk ((baseChangeIntegral R S).map f.hom)
-  map_id L := by
-    apply ObjectProperty.hom_ext
-    exact (baseChangeIntegral R S).map_id L.obj
-  map_comp f g := by
-    apply ObjectProperty.hom_ext
-    exact (baseChangeIntegral R S).map_comp f.hom g.hom
-
 /-- The real signature of a finite projective integral lattice. -/
 noncomputable def integralSignature
     (L : FiniteProjectiveLatticeCat ℤ ℤ) : ℕ × ℕ × ℕ :=
