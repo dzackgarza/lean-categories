@@ -311,6 +311,37 @@ noncomputable def invariantLattice (L : IntegralLatticeCat R)
     fixedSubmodule_projective L J
   exact formedSublattice L (fixedSubmodule L J)
 
+/-- The invariant lattice of a nondegenerate lattice is nondegenerate away from two. -/
+theorem invariantLattice_isNondegenerate [NeZero (2 : R)]
+    (L : IntegralLatticeCat R) [Module.Finite R L.obj.carrier]
+    (J : Involution L) (hL : L.obj.IsNondegenerate) :
+    (invariantLattice L J).obj.IsNondegenerate := by
+  rw [BilinModuleCat.isNondegenerate_iff_adjoint_injective]
+  intro x y hxy
+  change fixedSubmodule L J at x y
+  apply Subtype.ext
+  apply (L.obj.isNondegenerate_iff_adjoint_injective.mp hL)
+  apply LinearMap.ext
+  intro z
+  have hzfixed : J.element.1 z + z ∈ fixedSubmodule L J := by
+    rw [mem_fixedSubmodule_iff, map_add, J.apply_apply]
+    abel
+  have hpair := LinearMap.congr_fun hxy ⟨J.element.1 z + z, hzfixed⟩
+  change L.obj.bilinMap x (J.element.1 z + z) =
+      L.obj.bilinMap y (J.element.1 z + z) at hpair
+  rw [LinearMap.BilinForm.add_right, LinearMap.BilinForm.add_right] at hpair
+  have hxmove : L.obj.bilinMap x (J.element.1 z) = L.obj.bilinMap x z := by
+    have hx := J.element.property (x : L.obj.carrier) z
+    rw [(mem_fixedSubmodule_iff L J x).mp x.property] at hx
+    exact hx
+  have hymove : L.obj.bilinMap y (J.element.1 z) = L.obj.bilinMap y z := by
+    have hy := J.element.property (y : L.obj.carrier) z
+    rw [(mem_fixedSubmodule_iff L J y).mp y.property] at hy
+    exact hy
+  rw [hxmove, hymove] at hpair
+  apply mul_left_cancel₀ (NeZero.ne (2 : R))
+  simpa [two_mul] using hpair
+
 /-- The inclusion of the invariant lattice. -/
 noncomputable def invariantLatticeInclusion (L : IntegralLatticeCat R)
     [Module.Finite R L.obj.carrier] (J : Involution L) :
