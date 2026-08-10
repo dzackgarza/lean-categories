@@ -143,6 +143,165 @@ def baseChangeBilWForm : BilWFormCat R ⥤ BilWFormCat S where
       exact LinearMap.baseChange_comp (A := S)
         (f := (BilWFormCat.carrierMap f).hom) (BilWFormCat.carrierMap g).hom
 
+section IdentityComparison
+
+/-- Scalar extension along the identity ring map changes no formed object. -/
+noncomputable def baseChangeBilWFormIdentityIsoObj
+    (X : BilWFormCat R) :
+    (baseChangeBilWForm R R).obj X ≅ X :=
+  BilWFormCat.isoMk (TensorProduct.lid R X.carrier)
+    (TensorProduct.lid R X.value) (by
+      intro x y
+      change (TensorProduct.lid R X.value)
+          (LinearMap.BilinMap.baseChange R X.formed.bilinMap x y) =
+        X.formed.bilinMap ((TensorProduct.lid R X.carrier) x)
+          ((TensorProduct.lid R X.carrier) y)
+      induction x using TensorProduct.induction_on with
+      | zero => simp only [LinearMap.zero_apply, map_zero]
+      | tmul a x =>
+        induction y using TensorProduct.induction_on with
+        | zero => simp only [map_zero]
+        | tmul b y =>
+          simp only [LinearMap.BilinMap.baseChange_tmul]
+          rw [TensorProduct.lid_tmul, TensorProduct.lid_tmul,
+            TensorProduct.lid_tmul]
+          simp only [map_smul, LinearMap.smul_apply]
+          rw [smul_smul, mul_comm]
+        | add y₁ y₂ hy₁ hy₂ =>
+          simp only [map_add, hy₁, hy₂]
+      | add x₁ x₂ hx₁ hx₂ =>
+        simp only [map_add, LinearMap.add_apply, hx₁, hx₂])
+
+/-- Identity scalar extension is naturally isomorphic to the identity functor. -/
+noncomputable def baseChangeBilWFormIdentityIso :
+    baseChangeBilWForm R R ≅ 𝟭 (BilWFormCat R) :=
+  NatIso.ofComponents (baseChangeBilWFormIdentityIsoObj R) (by
+    intro X Y f
+    apply BilWFormCat.hom_ext
+    · apply ModuleCat.hom_ext
+      change (TensorProduct.lid R Y.value).toLinearMap.comp
+          (LinearMap.baseChange R (BilWFormCat.valueMap f).hom) =
+        (BilWFormCat.valueMap f).hom.comp
+          (TensorProduct.lid R X.value).toLinearMap
+      apply LinearMap.ext
+      intro z
+      induction z using TensorProduct.induction_on with
+      | zero => simp only [map_zero]
+      | tmul a x =>
+        simp only [LinearMap.comp_apply, LinearMap.baseChange_tmul]
+        change a • (BilWFormCat.valueMap f).hom x =
+          (BilWFormCat.valueMap f).hom (a • x)
+        exact ((BilWFormCat.valueMap f).hom.map_smul a x).symm
+      | add x y hx hy => simp only [map_add, hx, hy]
+    · apply ModuleCat.hom_ext
+      change (TensorProduct.lid R Y.carrier).toLinearMap.comp
+          (LinearMap.baseChange R (BilWFormCat.carrierMap f).hom) =
+        (BilWFormCat.carrierMap f).hom.comp
+          (TensorProduct.lid R X.carrier).toLinearMap
+      apply LinearMap.ext
+      intro z
+      induction z using TensorProduct.induction_on with
+      | zero => simp only [map_zero]
+      | tmul a x =>
+        simp only [LinearMap.comp_apply, LinearMap.baseChange_tmul]
+        change a • (BilWFormCat.carrierMap f).hom x =
+          (BilWFormCat.carrierMap f).hom (a • x)
+        exact ((BilWFormCat.carrierMap f).hom.map_smul a x).symm
+      | add x y hx hy => simp only [map_add, hx, hy])
+
+end IdentityComparison
+
+section CompositionComparison
+
+variable (T : Type u) [CommRing T]
+variable [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+
+/-- Canonical scalar-tower equivalence for iterated extension of modules. -/
+noncomputable def scalarTowerTensorEquiv
+    (M : Type u) [AddCommGroup M] [Module R M] :
+    TensorProduct R T M ≃ₗ[T]
+      TensorProduct S T (TensorProduct R S M) :=
+  (TensorProduct.AlgebraTensorModule.congr
+      (TensorProduct.AlgebraTensorModule.rid S T T)
+      (LinearEquiv.refl R M)).symm.trans
+    (TensorProduct.AlgebraTensorModule.assoc R S T T S M)
+
+@[simp]
+theorem scalarTowerTensorEquiv_tmul
+    (M : Type u) [AddCommGroup M] [Module R M]
+    (a : T) (x : M) :
+    scalarTowerTensorEquiv R S T M (a ⊗ₜ[R] x) =
+      a ⊗ₜ[S] (1 ⊗ₜ[R] x) :=
+  rfl
+
+/-- Direct and iterated scalar extension give isomorphic formed objects. -/
+noncomputable def baseChangeBilWFormCompositionIsoObj
+    (X : BilWFormCat R) :
+    (baseChangeBilWForm R T).obj X ≅
+      (baseChangeBilWForm S T).obj ((baseChangeBilWForm R S).obj X) :=
+  BilWFormCat.isoMk (scalarTowerTensorEquiv R S T X.carrier)
+    (scalarTowerTensorEquiv R S T X.value) (by
+      intro x y
+      change scalarTowerTensorEquiv R S T X.value
+          (LinearMap.BilinMap.baseChange T X.formed.bilinMap x y) =
+        LinearMap.BilinMap.baseChange T
+          (LinearMap.BilinMap.baseChange S X.formed.bilinMap)
+          (scalarTowerTensorEquiv R S T X.carrier x)
+          (scalarTowerTensorEquiv R S T X.carrier y)
+      induction x using TensorProduct.induction_on with
+      | zero => simp only [LinearMap.zero_apply, map_zero]
+      | tmul a x =>
+        induction y using TensorProduct.induction_on with
+        | zero => simp only [map_zero]
+        | tmul b y => simp only [LinearMap.BilinMap.baseChange_tmul,
+            scalarTowerTensorEquiv_tmul, one_mul]
+        | add y₁ y₂ hy₁ hy₂ =>
+          simp only [map_add, hy₁, hy₂]
+      | add x₁ x₂ hx₁ hx₂ =>
+        simp only [map_add, LinearMap.add_apply, hx₁, hx₂])
+
+/-- Direct scalar extension equals iterated extension up to natural isomorphism. -/
+noncomputable def baseChangeBilWFormCompositionIso :
+    baseChangeBilWForm R T ≅
+      baseChangeBilWForm R S ⋙ baseChangeBilWForm S T :=
+  NatIso.ofComponents (baseChangeBilWFormCompositionIsoObj R S T) (by
+    intro X Y f
+    apply BilWFormCat.hom_ext
+    · apply ModuleCat.hom_ext
+      change (scalarTowerTensorEquiv R S T Y.value).toLinearMap.comp
+          (LinearMap.baseChange T (BilWFormCat.valueMap f).hom) =
+        (LinearMap.baseChange T
+          (LinearMap.baseChange S (BilWFormCat.valueMap f).hom)).comp
+            (scalarTowerTensorEquiv R S T X.value).toLinearMap
+      apply LinearMap.ext
+      intro z
+      induction z using TensorProduct.induction_on with
+      | zero => simp only [map_zero]
+      | tmul a x =>
+        simp only [LinearMap.comp_apply]
+        change a ⊗ₜ[S] (1 ⊗ₜ[R] (BilWFormCat.valueMap f).hom x) =
+          a ⊗ₜ[S] (1 ⊗ₜ[R] (BilWFormCat.valueMap f).hom x)
+        rfl
+      | add x y hx hy => simp only [map_add, hx, hy]
+    · apply ModuleCat.hom_ext
+      change (scalarTowerTensorEquiv R S T Y.carrier).toLinearMap.comp
+          (LinearMap.baseChange T (BilWFormCat.carrierMap f).hom) =
+        (LinearMap.baseChange T
+          (LinearMap.baseChange S (BilWFormCat.carrierMap f).hom)).comp
+            (scalarTowerTensorEquiv R S T X.carrier).toLinearMap
+      apply LinearMap.ext
+      intro z
+      induction z using TensorProduct.induction_on with
+      | zero => simp only [map_zero]
+      | tmul a x =>
+        simp only [LinearMap.comp_apply]
+        change a ⊗ₜ[S] (1 ⊗ₜ[R] (BilWFormCat.carrierMap f).hom x) =
+          a ⊗ₜ[S] (1 ⊗ₜ[R] (BilWFormCat.carrierMap f).hom x)
+        rfl
+      | add x y hx hy => simp only [map_add, hx, hy])
+
+end CompositionComparison
+
 /-- Scalar extension on the total category of symmetric variable-valued forms. -/
 def baseChangeSymBilWForm : SymBilWFormCat R ⥤ SymBilWFormCat S where
   obj X := by

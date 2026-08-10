@@ -166,6 +166,63 @@ theorem map_pairing {X Y : BilWFormCat R} (f : X ⟶ Y)
       Y.pairing ((carrierMap f).hom x) ((carrierMap f).hom y) :=
   (BilinModuleCat.map_pairing f.fiber x y).symm
 
+/-- Build a formed isomorphism from compatible carrier and value equivalences. -/
+def isoMk {X Y : BilWFormCat R}
+    (f : X.carrier ≃ₗ[R] Y.carrier)
+    (α : X.value ≃ₗ[R] Y.value)
+    (h : ∀ x y, α (X.pairing x y) = Y.pairing (f x) (f y)) :
+    X ≅ Y := by
+  have hinv : ∀ x y,
+      α.symm (Y.pairing x y) = X.pairing (f.symm x) (f.symm y) := by
+    intro x y
+    apply α.injective
+    change α (α.symm (Y.pairing x y)) =
+      α (X.pairing (f.symm x) (f.symm y))
+    rw [α.apply_symm_apply, h, f.apply_symm_apply, f.apply_symm_apply]
+  refine ⟨homMk f.toLinearMap α.toLinearMap h,
+    homMk f.symm.toLinearMap α.symm.toLinearMap hinv, ?_, ?_⟩
+  · apply hom_ext
+    · apply ModuleCat.hom_ext
+      ext x
+      exact α.symm_apply_apply x
+    · apply ModuleCat.hom_ext
+      ext x
+      exact f.symm_apply_apply x
+  · apply hom_ext
+    · apply ModuleCat.hom_ext
+      ext x
+      exact α.apply_symm_apply x
+    · apply ModuleCat.hom_ext
+      ext x
+      exact f.apply_symm_apply x
+
 end BilWFormCat
+
+/-- Include one fixed-value fiber into the total formed-module category. -/
+def fixedValueInclusion (W : ModuleCat.{u} R) :
+    BilinModuleCat R W ⥤ BilWFormCat R where
+  obj L := ⟨W, L⟩
+  map f := BilWFormCat.homMk (BilinModuleCat.underlyingMap f)
+    LinearMap.id (fun x y ↦ (BilinModuleCat.map_pairing f x y).symm)
+  map_id L := by
+    apply BilWFormCat.hom_ext
+    · rfl
+    · rfl
+  map_comp f g := by
+    apply BilWFormCat.hom_ext
+    · rfl
+    · rfl
+
+@[simp]
+theorem fixedValueInclusion_value (W : ModuleCat.{u} R)
+    (L : BilinModuleCat R W) :
+    ((fixedValueInclusion R W).obj L).value = W :=
+  rfl
+
+@[simp]
+theorem fixedValueInclusion_formed (W : ModuleCat.{u} R)
+    (L : BilinModuleCat R W) :
+    ((fixedValueInclusion R W).obj L).formed = L :=
+  rfl
 
 end LeanCategories.Modules.Bilinear.Valued

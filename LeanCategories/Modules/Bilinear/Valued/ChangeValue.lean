@@ -32,5 +32,18 @@ def changeValue {W' : Type u} [AddCommGroup W'] [Module R W']
     (f : W →ₗ[R] W') : BilinModuleCat R W ⥤ BilinModuleCat R W' :=
   (NatTrans.mapElements (changeValueNatTrans R W f)).op
 
-end LeanCategories.Modules.Bilinear.Valued
+/-- Changing values along the identity map is the identity functor. -/
+theorem changeValue_id :
+    changeValue R W LinearMap.id = 𝟭 (BilinModuleCat R W) :=
+  rfl
 
+/-- Successive value changes equal change along the composite map. -/
+theorem changeValue_comp {W' W'' : Type u}
+    [AddCommGroup W'] [Module R W']
+    [AddCommGroup W''] [Module R W'']
+    (f : W →ₗ[R] W') (g : W' →ₗ[R] W'') :
+    changeValue R W (g.comp f) =
+      changeValue R W f ⋙ changeValue R W' g :=
+  rfl
+
+end LeanCategories.Modules.Bilinear.Valued
