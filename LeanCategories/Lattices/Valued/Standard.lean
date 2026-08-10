@@ -807,11 +807,6 @@ noncomputable def e8FiniteLattice : FiniteProjectiveLatticeCat ℤ ℤ := by
   change Module.Finite ℤ (Fin 8 → ℤ)
   infer_instance
 
-/-- The negative `E₈` lattice has rank eight. -/
-theorem e8FiniteLattice_rank : e8FiniteLattice.rank = 8 := by
-  simpa using e8FiniteLattice.rank_eq_card_basis
-    (Pi.basisFun ℤ (Fin 8))
-
 @[simp]
 theorem e8Lattice_pairing (x y : e8Lattice.obj.carrier) :
     e8Lattice.obj.pairing x y = Matrix.toBilin' e8GramMatrix x y :=
@@ -961,12 +956,6 @@ def hyperbolicPlaneFiniteLattice : FiniteProjectiveLatticeCat ℤ ℤ := by
   refine ⟨hyperbolicPlane, ?_⟩
   change Module.Finite ℤ (Fin 2 → ℤ)
   infer_instance
-
-/-- The hyperbolic plane has rank two. -/
-theorem hyperbolicPlaneFiniteLattice_rank :
-    hyperbolicPlaneFiniteLattice.rank = 2 := by
-  simpa using hyperbolicPlaneFiniteLattice.rank_eq_card_basis
-    (Pi.basisFun ℤ (Fin 2))
 
 @[simp]
 theorem hyperbolicPlane_pairing (x y : hyperbolicPlane.obj.carrier) :
@@ -1242,16 +1231,6 @@ theorem e8Lattice_isNegativeDefinite :
   simp [IsNegativeDefiniteLattice, IsNegativeDefiniteSignature,
     e8Lattice_integralSignature]
 
-/-- The finite orthogonal power `Uⁿ` of the hyperbolic plane. -/
-noncomputable def hyperbolicPlanePower (n : ℕ) :
-    FiniteProjectiveLatticeCat ℤ ℤ :=
-  finiteProjectiveOrthogonalPower hyperbolicPlaneFiniteLattice n
-
-/-- The finite orthogonal power `E₈(-1)ⁿ`. -/
-noncomputable def negativeE8Power (n : ℕ) :
-    FiniteProjectiveLatticeCat ℤ ℤ :=
-  finiteProjectiveOrthogonalPower e8FiniteLattice n
-
 /-- The `K3` lattice `3U ⊥ 2E₈`, with negative `E₈`. -/
 noncomputable def k3Lattice : IntegralLatticeCat ℤ :=
   orthogonalSum (orthogonalPower hyperbolicPlane 3)
@@ -1317,12 +1296,6 @@ noncomputable def k3Basis :
   change Module.Basis K3Index ℤ
     ((Fin 3 → Fin 2 → ℤ) × (Fin 2 → Fin 8 → ℤ))
   exact hyperbolicPowerBasis.prod e8PowerBasis
-
-/-- The `K3` lattice has rank twenty-two. -/
-theorem k3FiniteLattice_rank : k3FiniteLattice.rank = 22 := by
-  change Module.finrank ℤ
-    ((Fin 3 → Fin 2 → ℤ) × (Fin 2 → Fin 8 → ℤ)) = 22
-  simp [Module.finrank_prod, Module.finrank_pi_fintype]
 
 noncomputable def k3GramMatrix : Matrix K3Index K3Index ℤ
   | Sum.inl ⟨i, a⟩, Sum.inl ⟨j, b⟩ =>
