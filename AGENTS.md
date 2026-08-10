@@ -1355,3 +1355,240 @@ The central lesson is not “avoid formed-module functors.”
 The central lesson is this:
 
 > Locate the mathematics first. Then formalize only the structure that the mathematics actually supplies.
+
+The missing advice needs a precise test for moving mathematics into a more structured category.
+
+## Addendum: Do not move a theorem merely because its objects carry more structure
+
+Before formalizing a structured version, remove the extra structure from the statement.
+
+Then ask three questions:
+
+1. Does the construction still exist?
+2. Does the main theorem still hold?
+3. What new statement uses the extra structure?
+
+The answers determine ownership.
+
+If the construction and theorem survive, the base theory owns them. The structured theory owns only the new compatibility result.
+
+For primary decomposition:
+
+- The \(P\)-primary part uses the \(R\)-module action and the ideal \(P\).
+- The direct-sum decomposition uses finite torsion module theory.
+- Neither construction uses the bilinear form.
+- The form supplies restrictions to the primary parts.
+- The form also supplies orthogonality between distinct primary parts.
+- These facts produce an orthogonal formed isometry from the module decomposition.
+
+Write this separation before writing Lean:
+
+```text
+Base construction: P-primary submodule.
+Base theorem: the finite torsion module is the direct sum of its primary parts.
+Structured addition: distinct primary parts are orthogonal.
+Structured consequence: the module decomposition becomes an orthogonal formed isometry.
+```
+
+If the structured addition line is empty, do not create a structured theorem.
+
+## Use a dependency test
+
+Inspect the definition’s mathematical inputs.
+
+If a definition never evaluates the added structure, that structure does not own the definition.
+
+For example, primary membership has the form
+
+\[
+x\in M_P \iff P^n x=0
+\]
+
+for some \(n\).
+
+This statement uses the module action. It does not use the pairing \(B(x,y)\).
+
+Therefore, `primaryComponent` belongs to module theory. A formed version can only reuse that submodule and restrict the form.
+
+Apply the same test elsewhere:
+
+- Eigenspaces belong to linear algebra.
+- Inner products add orthogonality for suitable operators.
+- Chinese remainder decompositions belong to module or ring theory.
+- Forms can add orthogonal decompositions.
+- Gradings belong to algebraic structure.
+- Metrics can add orthogonality or norm identities.
+
+This test targets irrelevant structure without banning useful structured results.
+
+## State the structured delta
+
+Every lifted theorem must state its mathematical delta.
+
+Bad delta:
+
+> Primary decomposition is functorial on formed modules.
+
+This wording hides which part uses the form.
+
+Good delta:
+
+> The module primary-component functor preserves formed morphisms after restricting the form.
+
+Better, when the real theorem is orthogonality:
+
+> Distinct primary components are orthogonal, so the module decomposition map preserves the form.
+
+The delta must name a fact involving the added structure.
+
+Words such as “lift,” “package,” and “functorial” do not identify that fact.
+
+## Do not reconstruct base theory in the structured layer
+
+A structured layer can expose an induced functor when later mathematics needs it.
+
+However, that functor must visibly reuse the base functor.
+
+Its object map must use the existing primary submodule.
+
+Its morphism map must use the existing restriction of module maps.
+
+Its new proof must show preservation of the form.
+
+Do not repeat the primary-component construction for each property subcategory.
+
+Do not create separate decomposition theories for symmetric, radical-free, and nonsingular forms.
+
+Those properties can be closure theorems for the same restricted object.
+
+The expected dependency direction is:
+
+```text
+module primary decomposition
+        ↓
+restriction of the form
+        ↓
+cross-component orthogonality
+        ↓
+orthogonal formed isometry
+```
+
+The formed layer must not contain a parallel copy of the top row.
+
+## Reject comparison-driven definitions
+
+Define each map before using the comparison theorem that should describe it.
+
+For a direct sum of primary components, define the map intrinsically:
+
+\[
+(x_P)_P \longmapsto \sum_P x_P.
+\]
+
+For a morphism \(f:M\to N\), define the induced direct-sum map componentwise:
+
+\[
+(x_P)_P \longmapsto (f(x_P))_P.
+\]
+
+Then prove that these maps commute.
+
+Do not define the functorial action by
+
+\[
+D(f)=\phi_M\circ f\circ\phi_N^{-1}
+\]
+
+using the desired decomposition isomorphisms.
+
+That formula transports a functor structure through an isomorphism. It does not explain primary decomposition.
+
+It also makes the later naturality theorem nearly automatic. The theorem then confirms the definition that was designed from it.
+
+Use this diagnostic question:
+
+> Can I define the morphism action without the comparison isomorphism?
+
+If not, the construction is transported packaging rather than intrinsic mathematics.
+
+Transported packaging can be legitimate. Name it as transport and do not present it as the decomposition theorem.
+
+## Demand mathematical content from naturality
+
+A naturality proof should use the theorem that morphisms preserve primary parts.
+
+For each \(P\), it should express
+
+\[
+f(M_P)\subseteq N_P.
+\]
+
+For the direct sum, it should express
+
+\[
+f\left(\sum_P x_P\right)=\sum_P f(x_P).
+\]
+
+For forms, it should also use
+
+\[
+B_N(fx,fy)=B_M(x,y).
+\]
+
+If naturality follows only because the morphism action was defined through the target isomorphism, the proof adds no decomposition content.
+
+## Separate closure results from new constructions
+
+Radical-free and nonsingular conditions can survive primary restriction.
+
+Those are closure theorems:
+
+```text
+primaryComponent_preserves_radicalFree
+primaryComponent_preserves_nonsingular
+```
+
+They do not require new primary-component theories.
+
+Create a restricted functor only when downstream work needs categorical composition.
+
+Even then, identify it as the restriction of the module-owned construction.
+
+## Audit every claim by forgetting structure
+
+For each new structured declaration, apply the forgetful functor mentally.
+
+Then ask:
+
+- Does it become an existing base declaration?
+- Does it become a duplicate declaration?
+- Does it become a tautology?
+- Which proof field disappears?
+- Which mathematical statement remains?
+
+A good structured declaration forgets to a known base construction.
+
+Its new proof fields record exactly the added compatibility.
+
+A bad structured declaration forgets to a second copy of the base theory.
+
+## Do not overcorrect
+
+The existence of a formed-module functor is not automatically bad mathematics.
+
+It is justified when later formed mathematics needs functorial composition.
+
+The error occurs when the agent treats that packaging as the source theorem.
+
+The correct distinction is:
+
+- Module theory owns primary decomposition.
+- Formed-module theory owns orthogonality and form preservation.
+- Category theory can package both after those owners are clear.
+- Packaging must expose this dependency instead of replacing it.
+
+The final check is specific:
+
+> What fact about the bilinear form would be false or unstated if this declaration were removed?
+
+If the answer is “none,” the declaration does not advance formed-module theory.
