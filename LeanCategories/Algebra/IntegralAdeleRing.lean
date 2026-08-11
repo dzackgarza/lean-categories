@@ -8,6 +8,7 @@ public import Mathlib.NumberTheory.NumberField.AdeleRing
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.NumberTheory.Padics.HeightOneSpectrum
 public import Mathlib.RingTheory.LocalRing.Pullback
+public import LeanCategories.Modules.TensorProduct.Pi
 
 /-!
 # Integral adele rings
@@ -37,6 +38,27 @@ abbrev FiniteIntegralAdeleRing :=
   (v : HeightOneSpectrum R) → v.adicCompletionIntegers K
 
 namespace FiniteIntegralAdeleRing
+
+/-- The product of the local scalar extensions of an `R`-module. -/
+abbrev ModuleProduct (M : Type u) [AddCommGroup M] [Module R M] :=
+  (v : HeightOneSpectrum R) → TensorProduct R M (v.adicCompletionIntegers K)
+
+/-- For a finite projective module, scalar extension to the integral finite adeles is the
+product of its scalar extensions to the completed local integer rings. -/
+def tensorProductEquivModuleProduct
+    (M : Type u) [AddCommGroup M] [Module R M] [Module.Finite R M]
+    [Module.Projective R M] :
+    TensorProduct R M (FiniteIntegralAdeleRing R K) ≃ₗ[R] ModuleProduct R K M :=
+  TensorProduct.piRightOfFiniteProjective R
+    (fun v : HeightOneSpectrum R ↦ v.adicCompletionIntegers K) M
+
+@[simp]
+theorem tensorProductEquivModuleProduct_tmul
+    (M : Type u) [AddCommGroup M] [Module R M] [Module.Finite R M]
+    [Module.Projective R M] (x : M) (a : FiniteIntegralAdeleRing R K) :
+    tensorProductEquivModuleProduct R K M (x ⊗ₜ[R] a) =
+      fun v ↦ x ⊗ₜ[R] a v :=
+  rfl
 
 /-- The canonical inclusion of integral finite adeles into finite field adeles. -/
 def inclusion : FiniteIntegralAdeleRing R K →A[R] FiniteAdeleRing R K where
