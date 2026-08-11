@@ -83,7 +83,7 @@ theorem isAdic_maximalIdeal_adicCompletionIntegers :
         (MonoidWithZeroHom.ValueGroup₀.embedding_unit_ne_zero γ))
     refine ⟨n, fun y hy ↦ ?_⟩
     refine hts (hγ ?_)
-    show (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).restrict
+    change (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).restrict
       (y : v.adicCompletion K) < γ.1
     rw [Valuation.restrict_lt_iff_lt_embedding]
     calc
