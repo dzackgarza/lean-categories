@@ -33,7 +33,7 @@ declaration has the correct semantic owner.
 | Fixed-value formed modules | `BilinModuleCat R W` and quadratic analogues | Select one public hierarchy and complete all comparisons |
 | Variable-value forms | Total categories and change-of-value functors | Relate every public fiber to the total category |
 | Scalar extension | Form and lattice scalar extension, exactness, and composition comparisons | Reuse it in all later local and adelic constructions |
-| Duality | Algebraic duals, metric duals, and ideal-valued metric duals | Make the ideal-valued dual the general owner and identify the metric dual at \(I=R\) |
+| Duality | Algebraic duals, metric duals, and ideal-valued metric duals | Make the ideal-valued dual the general owner and identify the metric dual at \(I=\top : Ideal\ R\) |
 | Discriminant data | \(K/R\)-valued bilinear forms and \(K/2R\)-valued quadratic forms | Add more local classification and projective determinant comparisons |
 | Orthogonal groups | \(O(L)\), submodule stabilizers, discriminant actions, and stable kernels | Add systematic equivariant centralizers and normalizers |
 | Finite torsion forms | Height-one primary components, orthogonality, and projections | Start from annihilator and quotient-module theory; make prime-elementary notions specializations |
@@ -53,23 +53,38 @@ The following present surfaces still have explicit ownership debt:
 | Spinor norm | A chosen homomorphism with prescribed reflection values | Construct the canonical homomorphism from Clifford theory |
 | Dyadic theory | A natural-prime test for \(p=2\) | Define dyadic height-one primes by residual characteristic \(2\) |
 
-## Semantic ownership results
+## Declaration-level semantic ownership audit
 
-The supplied audit fixes the following owners and comparison obligations.
-These results replace name-based completion claims.
+This audit compares the current public declarations with their mathematical
+owners. It distinguishes a definition from a specialization, a selected
+witness, and a formula that still needs an invariance theorem.
 
-| Notion | Natural owner | Required disposition |
-| --- | --- | --- |
-| Equivariant lattice | A \(G\)-object in the lattice category | Derive involutions from \(G=C_2\) |
-| Isotypic component | Semisimple representation theory | Apply it to \(L_K\); treat integral intersections and glue as arithmetic |
-| Ideal and metric dual | \(I\)-valued metric dual \(L^{\#,I}\) | Prove the ordinary metric dual is the \(I=R\) specialization |
-| Elementary discriminant module | Torsion modules annihilated by an ideal \(I\) | Derive \(\mathfrak p\)-elementary and \(p\)-elementary notation |
-| Dyadic place | Height-one prime with residual characteristic \(2\) | Derive the \((2)\)-adic integer case |
-| Completion | Scalar extension to \(R_v\) and \(K_v\) for height-one \(v\) | Derive \(\mathbb Z_p\) and \(\mathbb Q_p\) |
-| Genus | Local-isometry class in a Dedekind lattice fiber | Derive completion, adelic, and \(\mathbb Z\)-specific presentations |
-| Hasse invariant | Isometry class of a nondegenerate quadratic space | Prove each diagonal formula is independent of diagonalization |
-| Spinor norm | Canonical Clifford-theoretic homomorphism | Prove the reflection formula |
-| Definite or indefinite lattice | A property of the common lattice object at real places | Form full subcategories; do not define new lattice objects |
+| Notion | Current declaration or searched surface | Audit result | Mathematical owner and required comparison |
+| --- | --- | --- | --- |
+| Lattice category | `isLattice`, `LatticeCat`, and `IntegralLatticeCat` in `Lattices/Valued/Basic.lean` | General owner present | Keep the lattice as a full subcategory of the formed-module category. Later arithmetic loci must be object properties or full subcategories. |
+| Scalar extension | `baseChange`, `baseChangeIntegral`, composition isomorphisms, and flat exactness in `BaseChange.lean` | General owner present | All localization, completion, and adelization must be instances of this scalar-extension theory. |
+| Prime localization | `localizeIntegralAtPrime` and `IsIsometricAfterLocalizationAtPrime` in `Localization.lean` | General owner present | Use localization at arbitrary prime ideals. Height-one completion must compare with this owner. |
+| Finite-projective arithmetic | `isFiniteProjectiveLattice` and `localRank` in `Arithmetic.lean`; basis-dependent `determinantIdeal` in `Constructions.lean` | General carrier present; intrinsic determinant data absent | Define the determinant line of a finite projective module, its ideal or Steinitz class over a Dedekind domain, and the discriminant ideal of the pairing. Prove that the current Gram determinant ideal is the free based formula. |
+| Metric duality | `idealDual` in `IdealDual.lean` and `metricDual` in `MetricDual.lean` | Parallel owners | The ideal-valued dual is the general construction. Prove `idealDual R L (\top : Ideal R) = metricDual R L`, including the membership theorem for arbitrary points of the rational span. |
+| Equivariant lattices | `Involution` and `Involution.cyclicActionHom` in `Involution.lean` | Rich \(C_2\) specialization; general owner absent | Define a \(G\)-object in the lattice category, equivalently a homomorphism \(G\to O(L)\) in the fixed-value case. Recover the current involution theory at \(G=C_2\). |
+| Isotypic theory | No project declaration found. Pinned Mathlib supplies `isotypicComponent`, `Rep.equivalenceModuleMonoidAlgebra`, `subrepresentationSubmoduleOrderIso`, and Maschke instances. | Upstream owner present; arithmetic integration absent | Decompose the rational representation \(L_K\). Define integral intersections and the finite gluing defect as lattice arithmetic. |
+| Elementary discriminant module | Primary decomposition exists in the formed torsion-module layer. No named elementary-lattice predicate was found. | Underlying owner present; lattice specialization absent | Start with an \(R\)-module annihilated by an ideal \(I\). Define \(\mathfrak p\)-elementary discriminant data and its residue-field dimension, then derive the integer-prime notation. |
+| Dyadic place | `IsDyadicPrime (p : \mathbb N) := p = 2` in `LocalInvariants.lean`; Type I and II only over `ℤ_[2]` in `Dyadic.lean` | Integer specialization presented as owner | Define a height-one prime with residual characteristic \(2\), or a prime above \((2)\) for number rings. Recover the existing declarations as specializations. |
+| Completion | `completeIntegralAtPrime` and fraction-field variants in `Completion.lean` | Only \(\mathbb Z_p\) and \(\mathbb Q_p\) | Apply scalar extension to Mathlib's `adicCompletionIntegers` and `adicCompletion` for a height-one point. Derive the natural-prime functions. |
+| Genus | `SameGenus` in `LocalGlobal.lean` uses real isometry and all natural-prime completions for finite projective \(\mathbb Z\)-lattices. | Concrete characterization presented as owner | Define genus by local isometry at every height-one prime in a fixed formed generic-space fiber. Prove the intrinsic, completion, adelic, and \(\mathbb Z\)-specific descriptions agree. |
+| Finite adelization | No adele declaration was found in the project lattice or formed-module trees. Pinned Mathlib supplies `FiniteAdeleRing`. | Integration absent | Construct the adelic formed space, integral adelic lattice, adelic orthogonal group, and compact open stabilizer from the upstream restricted product. |
+| Hasse invariant | `diagonalWeights` selects a diagonalization; `hasseInvariant` and `determinantSquareClass` use the selected coefficients in `Hasse.lean`. No choice-independence theorem appears there. No Hilbert-symbol or Hasse-invariant owner was found in the pinned Mathlib tree. | Computational presentation without intrinsic descent | Attach the invariant to the isometry class of a nondegenerate quadratic space. Prove invariance under diagonalization and isometry. Treat the diagonal product as a formula. |
+| Jordan decomposition | `JordanDecomposition` and `HasJordanDecomposition` in `Jordan.lean` | Witness vocabulary without the existence theorem | Keep the witness type only as the statement language. Supply existence, orthogonality, and uniqueness or classification results in the local theory. |
+| Spinor norm | `SpinorNorm` is a subtype of chosen homomorphisms satisfying `IsSpinorNorm`; `SameSpinorGenus` contains such a choice. | Characterizing witness presented as canonical data | Construct the canonical spinor norm in quadratic-space Clifford theory. Pinned Mathlib supplies `lipschitzGroup`, `pinGroup`, and `spinGroup`, but its searched Spin-group file supplies no spinor norm. Prove the reflection formula and then define the canonical kernel and spinor genus. |
+| Signature loci | `IsPositiveDefiniteLattice`, `IsIndefiniteLattice`, and `IsLorentzianLattice` in `Signature.lean` are integer-specific predicates. | Useful specialization; general loci and categories absent | Define place-indexed signatures and total definiteness as properties of the common lattice object. Form the corresponding full subcategories. |
+| Analytic lattice | No `IsZLattice`, `ZLattice`, or covolume comparison was found in the project. Pinned Mathlib owns these in `Algebra.Module.ZLattice.Basic` and `ZLattice.Covolume`. | Comparison absent | Map an algebraic integral lattice into its real scalar extension and prove the hypotheses for Mathlib's topological lattice. Use that comparison for covolume and theta theory. |
+
+The root module `Lattices/Valued.lean` currently imports the concrete genus,
+Hasse, spinor, dyadic, completion, and involution files. Thus the public surface
+does not distinguish canonical foundations from specializations or witness
+vocabulary. Each affected file needs one of three outcomes: a comparison with
+the canonical owner, a name that states its limited status, or removal from the
+root surface until the comparison exists.
 
 ## Upstream reuse boundary
 
@@ -86,7 +101,8 @@ Use these upstream owners directly.
 | Module-valued quadratic maps | `QuadraticMap R M W` |
 | Orthogonality, radicals, isometries, and signatures | Mathlib form libraries |
 | Metric dual submodules | `BilinForm.dualSubmodule` |
-| Representations and monoid-algebra modules | `RepresentationTheory.Basic` |
+| Representations and monoid-algebra modules | `RepresentationTheory.Basic` and `Rep.Iso` |
+| Subrepresentations and monoid-algebra submodules | `RepresentationTheory.Subrepresentation` |
 | Semisimple isotypic components | `RingTheory.SimpleModule.Isotypic` |
 | Maschke semisimplicity | `RepresentationTheory.Maschke` |
 | Fractional ideals and ideal classes | Mathlib Dedekind-domain libraries |
@@ -96,7 +112,7 @@ Use these upstream owners directly.
 | Clifford, Lipschitz, Pin, and Spin groups | Mathlib Clifford-algebra libraries |
 | Generic centralizers and normalizers | Mathlib group theory |
 | Root systems and Weyl groups | `LinearAlgebra.RootSystem` |
-| Analytic lattices and covolumes | `Algebra.Module.Lattice` |
+| Analytic lattices and covolumes | `Algebra.Module.ZLattice.Basic` and `ZLattice.Covolume` |
 | Concrete integral E8 data | Sphere-Packing-Lean `SpherePacking.Basic.E8` |
 | Total-category reference constructions | Mathlib Grothendieck machinery and LeanFibredCategories |
 
@@ -676,22 +692,29 @@ Do not move these items before their stated prerequisites:
 
 ## Evidence boundary
 
-This revision organizes a supplied arithmetic-foundation audit against current
-repository plan surfaces. It does not independently certify all upstream claims.
+This revision records a declaration-level audit of the current project and its
+pinned Mathlib source. The audit inspected the named project files, their root
+imports, and the upstream files named below.
 
 The earlier reuse audit used pinned Mathlib commit
 `81a5d257c8e410db227a6665ed08f64fea08e997`.
 
-The supplied audit cites these upstream families:
+The audit inspected these upstream families:
 
-- `Mathlib.RepresentationTheory.Basic` and `Maschke`.
+- `Mathlib.RepresentationTheory.Basic`, `Rep.Iso`, `Subrepresentation`, and
+  `Maschke`.
 - `Mathlib.RingTheory.SimpleModule.Isotypic`.
 - `Mathlib.Algebra.Module.DedekindDomain`.
 - `Mathlib.RingTheory.DedekindDomain.AdicValuation`.
 - `Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing`.
 - `Mathlib.NumberTheory.NumberField.AdeleRing` and infinite places.
 - `Mathlib.LinearAlgebra.CliffordAlgebra.Basic` and `SpinGroup`.
-- `Mathlib.Algebra.Module.Lattice`.
+- `Mathlib.Algebra.Module.ZLattice.Basic` and `ZLattice.Covolume`.
+
+Searches of the pinned Mathlib tree found no lattice-theoretic Steinitz
+classification, determinant-line interface, Hasse invariant, Hilbert symbol, or
+spinor norm. This is a scoped negative result. It does not assert that no Lean
+formalization exists outside the inspected tree.
 
 At implementation time, verify every exact declaration and source path against the
 pinned Mathlib revision. Search prior Lean formalizations before new authorship.
