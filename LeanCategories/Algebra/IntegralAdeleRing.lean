@@ -263,7 +263,8 @@ protected def diagonalRingHom : (𝓞 K) →+* RingAdeleRing K where
   map_add' _ _ := by change (_, _) = (_, _); simp
 
 instance : Algebra (𝓞 K) (RingAdeleRing K) :=
-  (RingAdeleRing.diagonalRingHom K).toAlgebra
+  Prod.algebra (𝓞 K) (NumberField.InfiniteAdeleRing K)
+    (FiniteIntegralAdeleRing (𝓞 K) K)
 
 protected def fieldAdeleDiagonalRingHom : (𝓞 K) →+* NumberField.AdeleRing (𝓞 K) K :=
   (algebraMap K (NumberField.AdeleRing (𝓞 K) K)).comp (algebraMap (𝓞 K) K)
