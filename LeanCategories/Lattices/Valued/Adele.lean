@@ -8,6 +8,7 @@ public import LeanCategories.Algebra.IntegralAdeleRing
 public import LeanCategories.Lattices.Valued.BaseChange
 public import LeanCategories.Lattices.Valued.OrthogonalGroup
 public import LeanCategories.Modules.Pi
+public import LeanCategories.Modules.ProdRing
 public import Mathlib.RingTheory.Flat.Equalizer
 
 /-!
@@ -50,6 +51,60 @@ def finiteIntegralAdeleBaseChange :
       FiniteProjectiveLatticeCat
         (FiniteIntegralAdeleRing (𝓞 K) K) (FiniteIntegralAdeleRing (𝓞 K) K) :=
   baseChangeFiniteIntegral (𝓞 K) (FiniteIntegralAdeleRing (𝓞 K) K)
+
+/-- The infinite and integral finite carriers of ring-adelic scalar extension. -/
+abbrev RingAdeleComponentCarriers
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :=
+  TensorProduct (𝓞 K) (NumberField.InfiniteAdeleRing K) L.obj.obj.carrier ×
+    TensorProduct (𝓞 K) (FiniteIntegralAdeleRing (𝓞 K) K) L.obj.obj.carrier
+
+local instance infiniteAdeleCarrierRingAdeleModule
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    Module (RingAdeleRing K)
+      (TensorProduct (𝓞 K) (NumberField.InfiniteAdeleRing K) L.obj.obj.carrier) :=
+  Module.compHom _ (RingHom.fst _ _)
+
+local instance integralFiniteAdeleCarrierRingAdeleModule
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    Module (RingAdeleRing K)
+      (TensorProduct (𝓞 K) (FiniteIntegralAdeleRing (𝓞 K) K) L.obj.obj.carrier) :=
+  Module.compHom _ (RingHom.snd _ _)
+
+/-- Ring-adelic scalar extension splits into its two carriers as an integral linear equivalence. -/
+def ringAdeleCarrierLinearEquiv
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    TensorProduct (𝓞 K) (RingAdeleRing K) L.obj.obj.carrier
+      ≃ₗ[𝓞 K] RingAdeleComponentCarriers K L :=
+  TensorProduct.prodLeft (𝓞 K) (𝓞 K)
+    (NumberField.InfiniteAdeleRing K)
+    (FiniteIntegralAdeleRing (𝓞 K) K) L.obj.obj.carrier
+
+/-- Ring-adelic scalar extension splits into its infinite and integral finite carriers. -/
+def ringAdeleCarrierEquiv
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    TensorProduct (𝓞 K) (RingAdeleRing K) L.obj.obj.carrier
+      ≃ₗ[RingAdeleRing K] RingAdeleComponentCarriers K L :=
+  LinearEquiv.ofBijective
+    { toFun := ringAdeleCarrierLinearEquiv K L
+      map_add' := map_add (ringAdeleCarrierLinearEquiv K L)
+      map_smul' := by
+        intro a x
+        induction x using TensorProduct.induction_on with
+        | zero => simp
+        | tmul b x =>
+            change ((a.1 * b.1) ⊗ₜ[𝓞 K] x, (a.2 * b.2) ⊗ₜ[𝓞 K] x) =
+              (a.1 • (b.1 ⊗ₜ[𝓞 K] x), a.2 • (b.2 ⊗ₜ[𝓞 K] x))
+            ext <;> simp [TensorProduct.smul_tmul', Algebra.smul_def]
+        | add x y hx hy => simp only [smul_add, map_add, hx, hy] }
+    (ringAdeleCarrierLinearEquiv K L).bijective
+
+@[simp]
+theorem ringAdeleCarrierEquiv_tmul
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K))
+    (a : RingAdeleRing K) (x : L.obj.obj.carrier) :
+    ringAdeleCarrierEquiv K L (a ⊗ₜ[𝓞 K] x) =
+      (a.1 ⊗ₜ[𝓞 K] x, a.2 ⊗ₜ[𝓞 K] x) :=
+  rfl
 
 /-- Scalar extension of finite projective lattices to the finite field adele ring. -/
 def finiteFieldAdeleBaseChange :
@@ -466,6 +521,243 @@ theorem isFiniteIntegrallyAdelicallyIsometric_iff_isIsometricAtEveryFinitePlace
     classical
     exact ⟨finiteIntegralAdeleIsoOfLocalIsometries K
       (fun v ↦ Classical.choice (h v))⟩
+
+/-- The full ring-adelic pairing is the pair of its infinite and integral finite pairings. -/
+theorem ringAdeleBaseChange_pairing_components
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K))
+    (x y : TensorProduct (𝓞 K) (RingAdeleRing K) L.obj.obj.carrier) :
+    baseChangeIntegralBilinMap (𝓞 K) (RingAdeleRing K) L.obj x y =
+      (baseChangeIntegralBilinMap (𝓞 K)
+          (NumberField.InfiniteAdeleRing K) L.obj
+          (ringAdeleCarrierEquiv K L x).1 (ringAdeleCarrierEquiv K L y).1,
+        baseChangeIntegralBilinMap (𝓞 K)
+          (FiniteIntegralAdeleRing (𝓞 K) K) L.obj
+          (ringAdeleCarrierEquiv K L x).2 (ringAdeleCarrierEquiv K L y).2) := by
+  induction x using TensorProduct.induction_on with
+  | zero => apply Prod.ext <;> simp
+  | tmul a x =>
+      induction y using TensorProduct.induction_on with
+      | zero => apply Prod.ext <;> simp
+      | tmul b y =>
+          simp only [baseChangeIntegralBilinMap_tmul, ringAdeleCarrierEquiv_tmul]
+          rfl
+      | add y₁ y₂ hy₁ hy₂ =>
+          apply Prod.ext <;>
+            simp_all only [map_add, LinearMap.add_apply, Prod.fst_add, Prod.snd_add]
+  | add x₁ x₂ hx₁ hx₂ =>
+      apply Prod.ext <;>
+        simp_all only [map_add, LinearMap.add_apply, Prod.fst_add, Prod.snd_add]
+
+/-- A pair of infinite and integral finite formed-module isometries. -/
+abbrev RingAdeleComponentIsometryPair
+    (L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :=
+  (((baseChangeIntegral (𝓞 K) (NumberField.InfiniteAdeleRing K)).obj L.obj).obj ≅
+      ((baseChangeIntegral (𝓞 K) (NumberField.InfiniteAdeleRing K)).obj M.obj).obj) ×
+    (((baseChangeIntegral (𝓞 K)
+      (FiniteIntegralAdeleRing (𝓞 K) K)).obj L.obj).obj ≅
+      ((baseChangeIntegral (𝓞 K)
+        (FiniteIntegralAdeleRing (𝓞 K) K)).obj M.obj).obj)
+
+/-- Component isometries assemble to a full ring-adelic carrier equivalence. -/
+noncomputable def ringAdeleCarrierIsometryLinearEquiv
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
+    (e : RingAdeleComponentIsometryPair K L M) :
+    TensorProduct (𝓞 K) (RingAdeleRing K) L.obj.obj.carrier
+      ≃ₗ[RingAdeleRing K]
+    TensorProduct (𝓞 K) (RingAdeleRing K) M.obj.obj.carrier :=
+  (ringAdeleCarrierEquiv K L).trans <|
+    (LinearEquiv.prodRing _ _ _ _ _ _
+      (BilinModuleCat.linearEquivOfIso e.1)
+      (BilinModuleCat.linearEquivOfIso e.2)).trans
+        (ringAdeleCarrierEquiv K M).symm
+
+/-- The assembled full ring-adelic carrier equivalence preserves the form. -/
+theorem ringAdeleCarrierIsometryLinearEquiv_pairing
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
+    (e : RingAdeleComponentIsometryPair K L M)
+    (x y : TensorProduct (𝓞 K) (RingAdeleRing K) L.obj.obj.carrier) :
+    baseChangeIntegralBilinMap (𝓞 K) (RingAdeleRing K) M.obj
+        (ringAdeleCarrierIsometryLinearEquiv K e x)
+        (ringAdeleCarrierIsometryLinearEquiv K e y) =
+      baseChangeIntegralBilinMap (𝓞 K) (RingAdeleRing K) L.obj x y := by
+  have hinf (z) :
+        (ringAdeleCarrierEquiv K M
+          (ringAdeleCarrierIsometryLinearEquiv K e z)).1 =
+        BilinModuleCat.linearEquivOfIso e.1 (ringAdeleCarrierEquiv K L z).1 :=
+    by
+      change
+        (ringAdeleCarrierEquiv K M
+          ((ringAdeleCarrierEquiv K M).symm
+            (BilinModuleCat.linearEquivOfIso e.1 (ringAdeleCarrierEquiv K L z).1,
+              BilinModuleCat.linearEquivOfIso e.2
+                (ringAdeleCarrierEquiv K L z).2))).1 = _
+      rw [(ringAdeleCarrierEquiv K M).apply_symm_apply]
+  have hfin (z) :
+        (ringAdeleCarrierEquiv K M
+          (ringAdeleCarrierIsometryLinearEquiv K e z)).2 =
+        BilinModuleCat.linearEquivOfIso e.2 (ringAdeleCarrierEquiv K L z).2 :=
+    by
+      change
+        (ringAdeleCarrierEquiv K M
+          ((ringAdeleCarrierEquiv K M).symm
+            (BilinModuleCat.linearEquivOfIso e.1 (ringAdeleCarrierEquiv K L z).1,
+              BilinModuleCat.linearEquivOfIso e.2
+                (ringAdeleCarrierEquiv K L z).2))).2 = _
+      rw [(ringAdeleCarrierEquiv K M).apply_symm_apply]
+  apply Prod.ext
+  · rw [show
+        (baseChangeIntegralBilinMap (𝓞 K) (RingAdeleRing K) M.obj
+          (ringAdeleCarrierIsometryLinearEquiv K e x)
+          (ringAdeleCarrierIsometryLinearEquiv K e y)).1 = _ from
+        congrArg Prod.fst (ringAdeleBaseChange_pairing_components K M _ _)]
+    rw [show
+        (baseChangeIntegralBilinMap (𝓞 K) (RingAdeleRing K) L.obj x y).1 = _ from
+        congrArg Prod.fst (ringAdeleBaseChange_pairing_components K L x y)]
+    rw [hinf x, hinf y]
+    exact BilinModuleCat.linearEquivOfIso_pairing e.1 _ _
+  · rw [show
+        (baseChangeIntegralBilinMap (𝓞 K) (RingAdeleRing K) M.obj
+          (ringAdeleCarrierIsometryLinearEquiv K e x)
+          (ringAdeleCarrierIsometryLinearEquiv K e y)).2 = _ from
+        congrArg Prod.snd (ringAdeleBaseChange_pairing_components K M _ _)]
+    rw [show
+        (baseChangeIntegralBilinMap (𝓞 K) (RingAdeleRing K) L.obj x y).2 = _ from
+        congrArg Prod.snd (ringAdeleBaseChange_pairing_components K L x y)]
+    rw [hfin x, hfin y]
+    exact BilinModuleCat.linearEquivOfIso_pairing e.2 _ _
+
+/-- Component isometries assemble to a full ring-adelic formed-module isomorphism. -/
+noncomputable def ringAdeleBilinIsoOfComponentIsometries
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
+    (e : RingAdeleComponentIsometryPair K L M) :
+    ((baseChangeIntegral (𝓞 K) (RingAdeleRing K)).obj L.obj).obj ≅
+      ((baseChangeIntegral (𝓞 K) (RingAdeleRing K)).obj M.obj).obj :=
+  BilinModuleCat.isoMk (ringAdeleCarrierIsometryLinearEquiv K e)
+    (ringAdeleCarrierIsometryLinearEquiv_pairing K e)
+
+/-- Forget a full ring-adelic lattice isomorphism to its formed-module isomorphism. -/
+def ringAdeleBilinIso
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
+    (e : (finiteRingAdeleBaseChange K).obj L ≅
+      (finiteRingAdeleBaseChange K).obj M) :
+    ((baseChangeIntegral (𝓞 K) (RingAdeleRing K)).obj L.obj).obj ≅
+      ((baseChangeIntegral (𝓞 K) (RingAdeleRing K)).obj M.obj).obj :=
+  (ObjectProperty.ι (isLattice (RingAdeleRing K) (RingAdeleRing K))).mapIso <|
+    (ObjectProperty.ι (isFiniteProjectiveLattice
+      (RingAdeleRing K) (RingAdeleRing K))).mapIso e
+
+/-- A full ring-adelic isomorphism in the two-component carrier presentation. -/
+noncomputable def ringAdeleComponentCarrierLinearEquivOfIso
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
+    (e : (finiteRingAdeleBaseChange K).obj L ≅
+      (finiteRingAdeleBaseChange K).obj M) :
+    RingAdeleComponentCarriers K L ≃ₗ[RingAdeleRing K]
+      RingAdeleComponentCarriers K M :=
+  (ringAdeleCarrierEquiv K L).symm |>.trans <|
+    (BilinModuleCat.linearEquivOfIso (ringAdeleBilinIso K e)).trans
+      (ringAdeleCarrierEquiv K M)
+
+/-- Restrict a full ring-adelic isomorphism to the infinite carrier. -/
+noncomputable def ringAdeleInfiniteLinearEquivOfIso
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
+    (e : (finiteRingAdeleBaseChange K).obj L ≅
+      (finiteRingAdeleBaseChange K).obj M) :
+    TensorProduct (𝓞 K) (NumberField.InfiniteAdeleRing K) L.obj.obj.carrier
+      ≃ₗ[NumberField.InfiniteAdeleRing K]
+    TensorProduct (𝓞 K) (NumberField.InfiniteAdeleRing K) M.obj.obj.carrier :=
+  LinearEquiv.prodRingLeft _ _ _ _ _ _
+    (ringAdeleComponentCarrierLinearEquivOfIso K e)
+
+/-- Restrict a full ring-adelic isomorphism to the integral finite carrier. -/
+noncomputable def ringAdeleIntegralFiniteLinearEquivOfIso
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
+    (e : (finiteRingAdeleBaseChange K).obj L ≅
+      (finiteRingAdeleBaseChange K).obj M) :
+    TensorProduct (𝓞 K) (FiniteIntegralAdeleRing (𝓞 K) K) L.obj.obj.carrier
+      ≃ₗ[FiniteIntegralAdeleRing (𝓞 K) K]
+    TensorProduct (𝓞 K) (FiniteIntegralAdeleRing (𝓞 K) K) M.obj.obj.carrier :=
+  LinearEquiv.prodRingRight _ _ _ _ _ _
+    (ringAdeleComponentCarrierLinearEquivOfIso K e)
+
+/-- The infinite restriction preserves the scalar-extended form. -/
+theorem ringAdeleInfiniteLinearEquivOfIso_pairing
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
+    (e : (finiteRingAdeleBaseChange K).obj L ≅
+      (finiteRingAdeleBaseChange K).obj M)
+    (x y : TensorProduct (𝓞 K) (NumberField.InfiniteAdeleRing K) L.obj.obj.carrier) :
+    baseChangeIntegralBilinMap (𝓞 K) (NumberField.InfiniteAdeleRing K) M.obj
+        (ringAdeleInfiniteLinearEquivOfIso K e x)
+        (ringAdeleInfiniteLinearEquivOfIso K e y) =
+      baseChangeIntegralBilinMap (𝓞 K) (NumberField.InfiniteAdeleRing K) L.obj x y := by
+  let xA := (ringAdeleCarrierEquiv K L).symm (x, 0)
+  let yA := (ringAdeleCarrierEquiv K L).symm (y, 0)
+  have h := BilinModuleCat.linearEquivOfIso_pairing (ringAdeleBilinIso K e) xA yA
+  rw [← baseChangeIntegralBilinMap_apply, ← baseChangeIntegralBilinMap_apply] at h
+  rw [ringAdeleBaseChange_pairing_components K M,
+    ringAdeleBaseChange_pairing_components K L] at h
+  change
+    baseChangeIntegralBilinMap (𝓞 K) (NumberField.InfiniteAdeleRing K) M.obj
+        ((ringAdeleCarrierEquiv K M
+          (BilinModuleCat.underlyingMap (ringAdeleBilinIso K e).hom xA)).1)
+        ((ringAdeleCarrierEquiv K M
+          (BilinModuleCat.underlyingMap (ringAdeleBilinIso K e).hom yA)).1) = _
+  simpa [xA, yA, ringAdeleInfiniteLinearEquivOfIso,
+    ringAdeleComponentCarrierLinearEquivOfIso, LinearEquiv.prodRingLeft,
+    BilinModuleCat.linearEquivOfIso_apply] using
+      congrArg Prod.fst h
+
+/-- The integral finite restriction preserves the scalar-extended form. -/
+theorem ringAdeleIntegralFiniteLinearEquivOfIso_pairing
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
+    (e : (finiteRingAdeleBaseChange K).obj L ≅
+      (finiteRingAdeleBaseChange K).obj M)
+    (x y : TensorProduct (𝓞 K)
+      (FiniteIntegralAdeleRing (𝓞 K) K) L.obj.obj.carrier) :
+    baseChangeIntegralBilinMap (𝓞 K) (FiniteIntegralAdeleRing (𝓞 K) K) M.obj
+        (ringAdeleIntegralFiniteLinearEquivOfIso K e x)
+        (ringAdeleIntegralFiniteLinearEquivOfIso K e y) =
+      baseChangeIntegralBilinMap (𝓞 K)
+        (FiniteIntegralAdeleRing (𝓞 K) K) L.obj x y := by
+  let xA := (ringAdeleCarrierEquiv K L).symm (0, x)
+  let yA := (ringAdeleCarrierEquiv K L).symm (0, y)
+  have h := BilinModuleCat.linearEquivOfIso_pairing (ringAdeleBilinIso K e) xA yA
+  rw [← baseChangeIntegralBilinMap_apply, ← baseChangeIntegralBilinMap_apply] at h
+  rw [ringAdeleBaseChange_pairing_components K M,
+    ringAdeleBaseChange_pairing_components K L] at h
+  change
+    baseChangeIntegralBilinMap (𝓞 K)
+        (FiniteIntegralAdeleRing (𝓞 K) K) M.obj
+        ((ringAdeleCarrierEquiv K M
+          (BilinModuleCat.underlyingMap (ringAdeleBilinIso K e).hom xA)).2)
+        ((ringAdeleCarrierEquiv K M
+          (BilinModuleCat.underlyingMap (ringAdeleBilinIso K e).hom yA)).2) = _
+  simpa [xA, yA, ringAdeleIntegralFiniteLinearEquivOfIso,
+    ringAdeleComponentCarrierLinearEquivOfIso, LinearEquiv.prodRingRight,
+    BilinModuleCat.linearEquivOfIso_apply] using
+      congrArg Prod.snd h
+
+/-- Restrict a full ring-adelic isomorphism to its two component isometries. -/
+noncomputable def ringAdeleComponentIsometriesOfIso
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
+    (e : (finiteRingAdeleBaseChange K).obj L ≅
+      (finiteRingAdeleBaseChange K).obj M) :
+    RingAdeleComponentIsometryPair K L M :=
+  (BilinModuleCat.isoMk (ringAdeleInfiniteLinearEquivOfIso K e)
+      (ringAdeleInfiniteLinearEquivOfIso_pairing K e),
+    BilinModuleCat.isoMk (ringAdeleIntegralFiniteLinearEquivOfIso K e)
+      (ringAdeleIntegralFiniteLinearEquivOfIso_pairing K e))
+
+/-- Component isometries assemble to an isomorphism of finite projective adelic lattices. -/
+noncomputable def ringAdeleIsoOfComponentIsometries
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
+    (e : RingAdeleComponentIsometryPair K L M) :
+    (finiteRingAdeleBaseChange K).obj L ≅
+      (finiteRingAdeleBaseChange K).obj M := by
+  let eLattice := ObjectProperty.isoMk
+    (P := isLattice (RingAdeleRing K) (RingAdeleRing K))
+    (ringAdeleBilinIsoOfComponentIsometries K e)
+  exact ObjectProperty.isoMk
+    (P := isFiniteProjectiveLattice (RingAdeleRing K) (RingAdeleRing K)) eLattice
 /-- The orthogonal group of the full ring-adelic scalar extension. -/
 abbrev RingAdelicOrthogonalGroup
     (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :=
@@ -574,6 +866,42 @@ def SameAdeleGenus
     (L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) : Prop :=
   Nonempty ((finiteRingAdeleBaseChange K).obj L ≅
     (finiteRingAdeleBaseChange K).obj M)
+
+/-- Isometry after scalar extension to the infinite adele ring. -/
+def IsInfinitelyAdelicallyIsometric
+    (L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) : Prop :=
+  Nonempty
+    (((baseChangeIntegral (𝓞 K) (NumberField.InfiniteAdeleRing K)).obj L.obj).obj ≅
+      ((baseChangeIntegral (𝓞 K) (NumberField.InfiniteAdeleRing K)).obj M.obj).obj)
+
+/-- Full ring-adelic genus is equivalent to its infinite and integral finite parts. -/
+theorem sameAdeleGenus_iff_infinite_and_finite
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)} :
+    SameAdeleGenus K L M ↔
+      IsInfinitelyAdelicallyIsometric K L M ∧
+        IsFiniteIntegrallyAdelicallyIsometric K L M := by
+  constructor
+  · rintro ⟨e⟩
+    let components := ringAdeleComponentIsometriesOfIso K e
+    exact ⟨⟨components.1⟩, ⟨ObjectProperty.isoMk
+      (P := isFiniteProjectiveLattice
+        (FiniteIntegralAdeleRing (𝓞 K) K)
+        (FiniteIntegralAdeleRing (𝓞 K) K))
+      (ObjectProperty.isoMk
+        (P := isLattice (FiniteIntegralAdeleRing (𝓞 K) K)
+          (FiniteIntegralAdeleRing (𝓞 K) K)) components.2)⟩⟩
+  · rintro ⟨⟨eInfinite⟩, ⟨eFinite⟩⟩
+    exact ⟨ringAdeleIsoOfComponentIsometries K
+      (eInfinite, finiteIntegralAdeleBilinIso K eFinite)⟩
+
+/-- Full ring-adelic genus is equivalent to infinite isometry and isometry at every finite place. -/
+theorem sameAdeleGenus_iff_isometric_at_every_place
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)} :
+    SameAdeleGenus K L M ↔
+      IsInfinitelyAdelicallyIsometric K L M ∧
+        IsIsometricAtEveryFinitePlace K L M := by
+  rw [sameAdeleGenus_iff_infinite_and_finite,
+    isFiniteIntegrallyAdelicallyIsometric_iff_isIsometricAtEveryFinitePlace]
 
 theorem sameAdeleGenus_refl
     (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
