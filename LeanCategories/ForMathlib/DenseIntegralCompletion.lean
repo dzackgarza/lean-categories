@@ -13,6 +13,7 @@ public import LeanCategories.ForMathlib.AdicCompletionIntegers
 @[expose] public section
 
 open scoped WithZero
+open WithZero
 
 namespace IsDedekindDomain.HeightOneSpectrum
 
@@ -92,5 +93,104 @@ theorem denseRange_algebraMap_adicCompletionIntegers :
     _ ≤ MonoidWithZeroHom.ValueGroup₀.embedding γ.1 := by
       exact MonoidWithZeroHom.ValueGroup₀.embedding_strictMono.monotone
         (by simp [δ, Units.min_val])
+
+/-- Pulling a power of the local maximal ideal back to `R` gives the matching prime power. -/
+theorem comap_pow_maximalIdeal_adicCompletionIntegers (n : ℕ) :
+    (IsLocalRing.maximalIdeal (v.adicCompletionIntegers K) ^ n).comap
+      (algebraMap R (v.adicCompletionIntegers K)) = v.asIdeal ^ n := by
+  let f : R →+*
+      (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).valuationSubring :=
+    algebraMap R (v.adicCompletionIntegers K)
+  obtain ⟨r, hr, hr₂⟩ := Ideal.exists_mem_pow_notMem_pow_succ
+    v.asIdeal v.ne_bot v.isPrime.ne_top 1
+  have hr' : r ∈ v.asIdeal := by simpa using hr
+  have hr₂' : r ∉ v.asIdeal ^ 2 := by simpa using hr₂
+  have hr₀ : r ≠ 0 := by
+    intro h
+    exact hr₂' (h ▸ (v.asIdeal ^ 2).zero_mem)
+  have hval_le : v.intValuation r ≤ exp (-1 : ℤ) :=
+    (v.intValuation_le_pow_iff_mem r 1).2 (by simpa using hr')
+  have hemult_le : emultiplicity v.asIdeal (Ideal.span {r}) ≤ 1 := by
+    apply (ENat.lt_coe_add_one_iff (n := 1)).mp
+    apply lt_of_not_ge
+    intro h
+    exact hr₂' ((v.intValuation_le_pow_iff_mem r 2).1
+      ((v.intValuation_le_exp_iff_le_emultiplicity (r := r) (n := 2)).2 h))
+  have hval_ge : exp (-1 : ℤ) ≤ v.intValuation r :=
+    (v.exp_le_intValuation_iff_emultiplicity_le (r := r) (n := 1)).2 hemult_le
+  have hval : v.intValuation r = exp (-1 : ℤ) := le_antisymm hval_le hval_ge
+  let ϖ : (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).valuationSubring :=
+    f r
+  have hϖval : Valued.v (ϖ : v.adicCompletion K) = exp (-1 : ℤ) := by
+    calc
+      Valued.v (ϖ : v.adicCompletion K) = v.valuation K (algebraMap R K r) := by
+        exact valuedAdicCompletion_eq_valuation' (v := v) (k := algebraMap R K r)
+      _ = v.intValuation r := v.valuation_of_algebraMap r
+      _ = exp (-1 : ℤ) := hval
+  have hgen :
+      Valuation.IsRankOneDiscrete.generator
+        (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰) =
+          Units.mk0 (exp (-1 : ℤ) : ℤᵐ⁰) (by simp) :=
+    Valuation.IsRankOneDiscrete.generator_eq_exp_neg_one_of_mem_range
+      ⟨(ϖ : v.adicCompletion K), hϖval⟩
+  have hϖ : (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).IsUniformizer ϖ := by
+    rw [Valuation.IsUniformizer.iff, hgen]
+    simpa only [Units.val_mk0] using hϖval
+  change ((IsLocalRing.maximalIdeal
+    (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).valuationSubring ^ n).comap
+      f) = v.asIdeal ^ n
+  rw [Valuation.IsUniformizer.is_generator hϖ, Ideal.span_singleton_pow]
+  ext x
+  rw [Ideal.mem_comap]
+  have hspan : f x ∈ Ideal.span {ϖ ^ n} ↔
+      Valued.v (f x : v.adicCompletion K) ≤
+        Valued.v ((ϖ ^ n :
+          (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).valuationSubring) :
+            v.adicCompletion K) := by
+    change f x ∈ (Ideal.span {ϖ ^ n} : Set _) ↔ _
+    exact Set.ext_iff.mp (Valuation.integer.coe_span_singleton_eq_setOf_le_v_coe
+      (ϖ ^ n)) (f x)
+  rw [hspan]
+  rw [show Valued.v (f x : v.adicCompletion K) = v.intValuation x by
+        exact (valuedAdicCompletion_eq_valuation' (v := v)
+          (k := algebraMap R K x)).trans (v.valuation_of_algebraMap x),
+    show Valued.v ((ϖ ^ n :
+      (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).valuationSubring) :
+        v.adicCompletion K) = Valued.v (ϖ : v.adicCompletion K) ^ n by
+      rw [show ((ϖ ^ n :
+        (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).valuationSubring) :
+          v.adicCompletion K) = (ϖ : v.adicCompletion K) ^ n by norm_cast,
+        map_pow],
+    hϖval]
+  simpa using v.intValuation_le_pow_iff_mem x n
+
+/-- The quotient of `R` by `v ^ n` is the matching quotient of the local integer ring. -/
+noncomputable def quotientPowEquivAdicCompletionIntegers (n : ℕ) :
+    (R ⧸ (v.asIdeal ^ n)) ≃+*
+      (v.adicCompletionIntegers K ⧸
+        (IsLocalRing.maximalIdeal (v.adicCompletionIntegers K) ^ n)) := by
+  let I := IsLocalRing.maximalIdeal (v.adicCompletionIntegers K) ^ n
+  let f := algebraMap R (v.adicCompletionIntegers K)
+  have hcomap : I.comap f = v.asIdeal ^ n := by
+    exact comap_pow_maximalIdeal_adicCompletionIntegers K v n
+  let q : (R ⧸ (v.asIdeal ^ n)) →+* (v.adicCompletionIntegers K ⧸ I) :=
+    Ideal.quotientMap I f hcomap.symm.le
+  have hinj : Function.Injective q :=
+    Ideal.quotientMap_injective' hcomap.le
+  have hopen : IsOpen (I : Set (v.adicCompletionIntegers K)) := by
+    exact (isAdic_iff.mp (isAdic_maximalIdeal_adicCompletionIntegers K v)).1 n
+  have hsurj : Function.Surjective q := by
+    intro z
+    obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective z
+    let U : Set (v.adicCompletionIntegers K) := {x | x - y ∈ I}
+    have hUopen : IsOpen U := hopen.preimage (continuous_id.sub continuous_const)
+    have hy : y ∈ U := by simp [U]
+    obtain ⟨r, hr⟩ := (denseRange_algebraMap_adicCompletionIntegers K v).mem_nhds
+      (hUopen.mem_nhds hy)
+    refine ⟨Ideal.Quotient.mk (v.asIdeal ^ n) r, ?_⟩
+    change Ideal.Quotient.mk I (f r) = Ideal.Quotient.mk I y
+    rw [← sub_eq_zero, ← map_sub, Ideal.Quotient.eq_zero_iff_mem]
+    exact hr
+  exact RingEquiv.ofBijective q ⟨hinj, hsurj⟩
 
 end IsDedekindDomain.HeightOneSpectrum
