@@ -433,8 +433,8 @@ theorem factorExponent_primePowerFactor (v : HeightOneSpectrum R) (n : ℕ) :
   rw [factors_primePower]
   simp
 
--- Dependent transport across height-one places is expensive for the elaborator.
 set_option maxHeartbeats 1000000 in
+-- Dependent transport across height-one places is expensive for the elaborator.
 theorem eval_fromPrimeAdic_primePower (v : HeightOneSpectrum R) (n : ℕ)
     (y : (w : HeightOneSpectrum R) → AdicCompletion w.asIdeal R) :
     eval R (primePower R v n) (fromPrimeAdic R y) =

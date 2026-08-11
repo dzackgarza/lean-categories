@@ -261,6 +261,14 @@ def pullbackAlgEquiv : RingAdeleRing K ≃ₐ[𝓞 K] Pullback K where
     · exact (inclusion K).commutes _
     · rfl
 
+/-- The intrinsic pullback presentation has the same topology as the product presentation. -/
+def pullbackContinuousAlgEquiv : RingAdeleRing K ≃A[𝓞 K] Pullback K where
+  toAlgEquiv := pullbackAlgEquiv K
+  continuous_toFun :=
+    ((inclusion K).cont.prodMk continuous_snd).subtype_mk _
+  continuous_invFun :=
+    (continuous_subtype_val.fst.fst).prodMk continuous_subtype_val.snd
+
 @[simp]
 theorem pullbackAlgEquiv_apply_fst (x : RingAdeleRing K) :
     (pullbackAlgEquiv K x).1.1 = inclusion K x :=
