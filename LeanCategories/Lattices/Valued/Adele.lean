@@ -7,6 +7,7 @@ module
 public import LeanCategories.Algebra.IntegralAdeleRing
 public import LeanCategories.Lattices.Valued.BaseChange
 public import LeanCategories.Lattices.Valued.OrthogonalGroup
+public import LeanCategories.Modules.Pi
 
 /-!
 # Adelic scalar extension of integral lattices
@@ -330,6 +331,132 @@ noncomputable def finiteIntegralAdeleIsoOfLocalIsometries
     (P := isFiniteProjectiveLattice
       (FiniteIntegralAdeleRing (𝓞 K) K) (FiniteIntegralAdeleRing (𝓞 K) K)) eLattice
 
+/-- Forget an integral finite adelic lattice isomorphism to its formed-module isomorphism. -/
+def finiteIntegralAdeleBilinIso
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
+    (e : (finiteIntegralAdeleBaseChange K).obj L ≅
+      (finiteIntegralAdeleBaseChange K).obj M) :
+    ((baseChangeIntegral (𝓞 K)
+      (FiniteIntegralAdeleRing (𝓞 K) K)).obj L.obj).obj ≅
+      ((baseChangeIntegral (𝓞 K)
+        (FiniteIntegralAdeleRing (𝓞 K) K)).obj M.obj).obj :=
+  (ObjectProperty.ι (isLattice
+    (FiniteIntegralAdeleRing (𝓞 K) K)
+    (FiniteIntegralAdeleRing (𝓞 K) K))).mapIso <|
+    (ObjectProperty.ι (isFiniteProjectiveLattice
+      (FiniteIntegralAdeleRing (𝓞 K) K)
+      (FiniteIntegralAdeleRing (𝓞 K) K))).mapIso e
+
+/-- An integral finite adelic isomorphism in the product-of-local-carriers presentation. -/
+noncomputable def finiteAdeleLocalProductLinearEquivOfIso
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
+    (e : (finiteIntegralAdeleBaseChange K).obj L ≅
+      (finiteIntegralAdeleBaseChange K).obj M) :
+    FiniteAdeleLocalModuleProduct K L ≃ₗ[FiniteIntegralAdeleRing (𝓞 K) K]
+      FiniteAdeleLocalModuleProduct K M :=
+  (finiteAdeleLocalCarrierAlgEquiv K L).symm |>.trans <|
+    (BilinModuleCat.linearEquivOfIso (finiteIntegralAdeleBilinIso K e)).trans
+      (finiteAdeleLocalCarrierAlgEquiv K M)
+
+local instance finiteAdelePlaceDecidableEq :
+    DecidableEq (HeightOneSpectrum (𝓞 K)) :=
+  Classical.decEq _
+
+/-- Restrict an integral finite adelic isomorphism to one finite place. -/
+noncomputable def finiteAdeleLocalLinearEquivOfIso
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
+    (e : (finiteIntegralAdeleBaseChange K).obj L ≅
+      (finiteIntegralAdeleBaseChange K).obj M)
+    (v : HeightOneSpectrum (𝓞 K)) :
+    TensorProduct (𝓞 K) (v.adicCompletionIntegers K) L.obj.obj.carrier
+      ≃ₗ[v.adicCompletionIntegers K]
+    TensorProduct (𝓞 K) (v.adicCompletionIntegers K) M.obj.obj.carrier :=
+  LinearEquiv.piRingCoordinate
+    (fun v : HeightOneSpectrum (𝓞 K) ↦ v.adicCompletionIntegers K)
+    (fun v ↦ TensorProduct (𝓞 K) (v.adicCompletionIntegers K) L.obj.obj.carrier)
+    (fun v ↦ TensorProduct (𝓞 K) (v.adicCompletionIntegers K) M.obj.obj.carrier)
+    (finiteAdeleLocalProductLinearEquivOfIso K e) v
+
+@[simp]
+theorem finiteAdeleLocalCarrierEquiv_symm_single_apply
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K))
+    (v : HeightOneSpectrum (𝓞 K))
+    (x : TensorProduct (𝓞 K) (v.adicCompletionIntegers K) L.obj.obj.carrier) :
+    finiteAdeleLocalCarrierEquiv K L
+        ((finiteAdeleLocalCarrierAlgEquiv K L).symm (Pi.single v x)) v = x := by
+  change finiteAdeleLocalCarrierAlgEquiv K L
+      ((finiteAdeleLocalCarrierAlgEquiv K L).symm (Pi.single v x)) v = x
+  rw [LinearEquiv.apply_symm_apply, Pi.single_eq_same]
+
+@[simp]
+theorem finiteAdeleLocalCarrierEquiv_map_globalIso_single_apply
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
+    (e : (finiteIntegralAdeleBaseChange K).obj L ≅
+      (finiteIntegralAdeleBaseChange K).obj M)
+    (v : HeightOneSpectrum (𝓞 K))
+    (x : TensorProduct (𝓞 K) (v.adicCompletionIntegers K) L.obj.obj.carrier) :
+    finiteAdeleLocalCarrierEquiv K M
+        (BilinModuleCat.underlyingMap (finiteIntegralAdeleBilinIso K e).hom
+          ((finiteAdeleLocalCarrierAlgEquiv K L).symm (Pi.single v x))) v =
+      finiteAdeleLocalLinearEquivOfIso K e v x :=
+  rfl
+
+/-- The restriction of an integral finite adelic isomorphism preserves the local form. -/
+theorem finiteAdeleLocalLinearEquivOfIso_pairing
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
+    (e : (finiteIntegralAdeleBaseChange K).obj L ≅
+      (finiteIntegralAdeleBaseChange K).obj M)
+    (v : HeightOneSpectrum (𝓞 K))
+    (x y : TensorProduct (𝓞 K) (v.adicCompletionIntegers K) L.obj.obj.carrier) :
+    ((baseChangeIntegral (𝓞 K) (v.adicCompletionIntegers K)).obj M.obj).obj.pairing
+        (finiteAdeleLocalLinearEquivOfIso K e v x)
+        (finiteAdeleLocalLinearEquivOfIso K e v y) =
+      ((baseChangeIntegral (𝓞 K) (v.adicCompletionIntegers K)).obj L.obj).obj.pairing x y := by
+  let xA := (finiteAdeleLocalCarrierAlgEquiv K L).symm (Pi.single v x)
+  let yA := (finiteAdeleLocalCarrierAlgEquiv K L).symm (Pi.single v y)
+  have h := BilinModuleCat.linearEquivOfIso_pairing
+    (finiteIntegralAdeleBilinIso K e) xA yA
+  have hv := congrArg (fun z : FiniteIntegralAdeleRing (𝓞 K) K ↦ z v) h
+  rw [finiteIntegralAdeleBaseChange_pairing_apply K M,
+    finiteIntegralAdeleBaseChange_pairing_apply K L] at hv
+  simpa [xA, yA] using hv
+
+/-- Restrict an integral finite adelic isomorphism to a local formed-module isomorphism. -/
+noncomputable def finiteAdeleLocalIsoOfIso
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
+    (e : (finiteIntegralAdeleBaseChange K).obj L ≅
+      (finiteIntegralAdeleBaseChange K).obj M)
+    (v : HeightOneSpectrum (𝓞 K)) :
+    ((baseChangeIntegral (𝓞 K) (v.adicCompletionIntegers K)).obj L.obj).obj ≅
+      ((baseChangeIntegral (𝓞 K) (v.adicCompletionIntegers K)).obj M.obj).obj :=
+  BilinModuleCat.isoMk (finiteAdeleLocalLinearEquivOfIso K e v)
+    (finiteAdeleLocalLinearEquivOfIso_pairing K e v)
+
+/-- Isometry after scalar extension to the integral finite adele ring. -/
+def IsFiniteIntegrallyAdelicallyIsometric
+    (L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) : Prop :=
+  Nonempty ((finiteIntegralAdeleBaseChange K).obj L ≅
+    (finiteIntegralAdeleBaseChange K).obj M)
+
+/-- Isometry after scalar extension at every finite place. -/
+def IsIsometricAtEveryFinitePlace
+    (L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) : Prop :=
+  ∀ v : HeightOneSpectrum (𝓞 K),
+    Nonempty (((baseChangeIntegral (𝓞 K) (v.adicCompletionIntegers K)).obj L.obj).obj ≅
+      ((baseChangeIntegral (𝓞 K) (v.adicCompletionIntegers K)).obj M.obj).obj)
+
+/-- Integral finite adelic isometry is equivalent to isometry at every finite place. -/
+theorem isFiniteIntegrallyAdelicallyIsometric_iff_isIsometricAtEveryFinitePlace
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)} :
+    IsFiniteIntegrallyAdelicallyIsometric K L M ↔
+      IsIsometricAtEveryFinitePlace K L M := by
+  constructor
+  · rintro ⟨e⟩ v
+    exact ⟨finiteAdeleLocalIsoOfIso K e v⟩
+  · intro h
+    classical
+    exact ⟨finiteIntegralAdeleIsoOfLocalIsometries K
+      (fun v ↦ Classical.choice (h v))⟩
 /-- The orthogonal group of the full ring-adelic scalar extension. -/
 abbrev RingAdelicOrthogonalGroup
     (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :=
