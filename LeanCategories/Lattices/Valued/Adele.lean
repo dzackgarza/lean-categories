@@ -8,6 +8,7 @@ public import LeanCategories.Algebra.IntegralAdeleRing
 public import LeanCategories.Lattices.Valued.BaseChange
 public import LeanCategories.Lattices.Valued.OrthogonalGroup
 public import LeanCategories.Modules.Pi
+public import Mathlib.RingTheory.Flat.Equalizer
 
 /-!
 # Adelic scalar extension of integral lattices
@@ -520,6 +521,46 @@ def finiteIntegralAdeleLattice
     (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
     Set (TensorProduct (𝓞 K) (FiniteAdeleRing (𝓞 K) K) L.obj.obj.carrier) :=
   Set.range (finiteIntegralAdeleLatticeMap K L)
+
+/-- The two maps whose equalizer is the intersection of `K` and the integral finite adeles. -/
+def finiteAdeleIntersectionLeftMap :
+    (K × FiniteIntegralAdeleRing (𝓞 K) K) →ₗ[𝓞 K]
+      FiniteAdeleRing (𝓞 K) K :=
+  (RingAdeleRing.fieldFiniteDiagonal K).toLinearMap.comp
+    (LinearMap.fst (𝓞 K) K (FiniteIntegralAdeleRing (𝓞 K) K))
+
+def finiteAdeleIntersectionRightMap :
+    (K × FiniteIntegralAdeleRing (𝓞 K) K) →ₗ[𝓞 K]
+      FiniteAdeleRing (𝓞 K) K :=
+  (FiniteIntegralAdeleRing.inclusion (𝓞 K) K).toLinearMap.comp
+    (LinearMap.snd (𝓞 K) K (FiniteIntegralAdeleRing (𝓞 K) K))
+
+/-- The module pullback of the rational and integral finite adelic scalar extensions. -/
+abbrev FiniteAdeleLatticeIntersectionPullback
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :=
+  LinearMap.eqLocus
+    (TensorProduct.AlgebraTensorModule.lTensor (𝓞 K) L.obj.obj.carrier
+      (finiteAdeleIntersectionLeftMap K))
+    (TensorProduct.AlgebraTensorModule.lTensor (𝓞 K) L.obj.obj.carrier
+      (finiteAdeleIntersectionRightMap K))
+
+/-- The coefficient-ring intersection, viewed as a linear equalizer. -/
+def integerIntersectionLinearEquiv :
+    (𝓞 K) ≃ₗ[𝓞 K] LinearMap.eqLocus
+      (finiteAdeleIntersectionLeftMap K) (finiteAdeleIntersectionRightMap K) :=
+  (RingAdeleRing.integerIntersectionAlgEquiv K).toLinearEquiv
+
+/-- A finite projective lattice is the pullback of its rational and integral finite adelic
+extensions inside its finite field-adelic extension. -/
+def finiteAdeleLatticeIntersectionEquiv
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    L.obj.obj.carrier ≃ₗ[𝓞 K] FiniteAdeleLatticeIntersectionPullback K L := by
+  letI : Module.Projective (𝓞 K) L.obj.obj.carrier := L.obj.property.1
+  exact (TensorProduct.lid (𝓞 K) L.obj.obj.carrier).symm |>.trans
+    (TensorProduct.comm (𝓞 K) (𝓞 K) L.obj.obj.carrier) |>.trans
+    (LinearEquiv.lTensor L.obj.obj.carrier (integerIntersectionLinearEquiv K)) |>.trans
+    (LinearMap.tensorEqLocusEquiv (𝓞 K) L.obj.obj.carrier
+      (finiteAdeleIntersectionLeftMap K) (finiteAdeleIntersectionRightMap K))
 
 /-- The stabilizer of the integral finite adelic lattice in the finite adelic orthogonal group. -/
 abbrev FiniteIntegralAdeleLatticeStabilizer
