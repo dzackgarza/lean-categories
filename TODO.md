@@ -20,7 +20,11 @@ It described a strict subcategory of `IntegralLatticeCat ℤ`.
 The old unbundled type fixed a finite free carrier before it selected a form.
 It described the same extra conditions in one carrier fibre.
 
-Neither old presentation remains. Thus, no comparison functor remains necessary.
+Neither old presentation remains. No comparison functor between those removed
+presentations remains necessary.
+
+This fact does not remove the comparison for selected coordinates. The current coordinate
+comparison forgets a chosen basis and returns the intrinsic lattice.
 
 The cleanup moved these proved constructions to the valued lattice owner:
 
@@ -34,6 +38,18 @@ The cleanup moved these proved constructions to the valued lattice owner:
 
 The cleanup removed the obsolete bundled and unbundled trees.
 It also removed their axiomatic or shallow downstream theories.
+
+## Even and coordinatized lattices
+
+- [x] `IsEven` defines the full subcategory `EvenLatticeCat`.
+- [x] `GenFrame R n` is the epimorphic locus of rank-`n` frame arrows.
+- [x] `BasisFrame R n` is the isomorphic locus of rank-`n` frame arrows.
+- [x] `Coord R n` uses arbitrary module maps between based free modules.
+- [x] `CoordLatticeCat R n` is the categorical pullback over module carriers.
+- [x] `coordLatticeToIntegral` forgets coordinates and returns the intrinsic lattice.
+
+This layer is fixed-rank. It does not define arbitrary-index frames. It also does not
+define the symmetric-matrix category or the Gram comparison functor.
 
 ## Duals and discriminants
 

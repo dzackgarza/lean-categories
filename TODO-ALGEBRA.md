@@ -182,11 +182,25 @@ Define named lattices through the generic formed-lattice constructions.
 
 Do not create a matrix-first parallel hierarchy for these objects.
 
+## Current framed-category realization
+
+The fixed-rank frame and intrinsic comparison layer now exists under issue #33.
+
+- `GenFrame R n` and `BasisFrame R n` use structured-arrow loci.
+- `Coord R n` has arbitrary module maps as morphisms.
+- `CoordLatticeCat R n` is a categorical pullback over the module carrier.
+- `coordLatticeToIntegral` compares a coordinatized lattice with its intrinsic lattice.
+- `EvenLatticeCat` is the full subcategory defined by `IsEven`.
+
+This does not complete the arbitrary-index `FramedModules` catalogue entry. It also does
+not define `SymMat_n` or the Gram comparison functor.
+
 ## Dependency order
 
 Work in this order:
 
-1. Canonical formed categories and comparison functors.
+1. Canonical formed categories and comparison functors. The fixed-rank coordinate
+   comparison is complete. Other named comparisons remain separate work.
 2. Arithmetic formed-module predicates and subobjects.
 3. Dual and discriminant theory.
 4. Orthogonal actions, embeddings, and gluing.

@@ -28,6 +28,14 @@ second category system. `Core` and `Model` define the common language. `Realizat
 connects it to Mathlib. `Registry`, `Specimen`, and `Tools` inspect and export that
 language.
 
+The current module foundation includes fixed-rank generating frames, basis frames, and
+coordinatized modules. The lattice foundation includes even integral lattices as a full
+subcategory. It also includes coordinatized integral lattices as a categorical pullback.
+The comparison functor forgets the selected coordinates and returns the intrinsic lattice.
+
+These declarations use frames indexed by `Fin n`. They do not yet define frames indexed
+by an arbitrary type. The matrix category and Gram comparison functor also remain open.
+
 Scheme theory, stacks, manifolds, and period constructions remain roadmap targets.
 Issues #38, #39, and #40 own their prerequisite order. No placeholder source represents
 those domains.

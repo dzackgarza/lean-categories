@@ -901,6 +901,11 @@ The two categories answer different questions.
 There is a faithful identity-on-objects functor from framed bases to coordinatized modules,
 but the two categories are not identified.
 
+**Lean realization status (2026-08-11).** `LeanCategories.Modules.Framed` defines
+`GenFrame R n`, `BasisFrame R n`, and `Coord R n`. It also defines the faithful functor
+`Coord.fromBasisFrame`. These declarations use the standard free module indexed by
+`Fin n`. The arbitrary-index version with source \(F_R(S)\) remains open.
+
 ### Remark 13.7 (Freeness versus a chosen basis)
 
 For a module \(M\), let
@@ -1358,6 +1363,9 @@ For \(R=\mathbb Z\), an intrinsic lattice is **even** if its bilinear form is ev
 
 The corresponding categories are reindexings of the evenness and perfectness classifiers along \(\mathbf{Lat}_{\mathbb Z}\to\mathbf{SymBil}_{\mathbb Z,\mathbb Z}\).
 
+**Lean realization status (2026-08-11).** `isEvenLattice` packages `IsEven` as an
+object property. `EvenLatticeCat` is its `ObjectProperty.FullSubcategory`.
+
 ## 20. Signature and definiteness
 
 ### Definition 20.1 (Signature) {#def-signature}
@@ -1414,6 +1422,12 @@ Its objects also carry ordered bases, but its morphisms are arbitrary form-prese
 represented by matrices relative to the chosen bases. The framed and coordinatized categories
 must not be conflated.
 
+**Lean realization status (2026-08-11).** `CoordLatticeCat R n` realizes the
+coordinatized pullback. `coordLatticeToIntegral` is its comparison with intrinsic integral
+lattices. The source also defines `coordLatticeToCoord` and the constructor
+`CoordLatticeCat.ofBasis`. The generating-frame and basis-frame lattice pullbacks above do
+not yet have separate named Lean declarations.
+
 ### Definition 21.2 (Symmetric matrix category) {#def-symmetric-matrix-category}
 
 Fix \(n\). Let \(\mathbf{SymMat}_n(R)\) be the category whose objects are symmetric matrices
@@ -1464,6 +1478,10 @@ rank \(n\) and Gram matrices. The morphisms of the coordinatized category are ab
 form-preserving linear maps; a matrix is obtained from a morphism by applying the chosen
 source and target bases, and represents it by the basis-case comparison of Corollary 74.5.
 The basis-preserving framed category has a different, stricter morphism convention.
+
+**Lean realization status (2026-08-11).** The repository has coordinate extraction and
+bounded matrix constructors. It does not yet define `SymMat_n`, `Gram_n`, or the stated
+equivalence theorem.
 
 For the named ADE lattices the Gram constructor is used only after the root-presentation
 Gram matrix has been derived from a chosen root realization, and its output is compared to
