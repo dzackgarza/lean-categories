@@ -6,6 +6,7 @@ module
 
 public import Mathlib.RingTheory.DedekindDomain.Factorization
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # Completion over all nonzero ideals
@@ -61,6 +62,27 @@ def subalgebra : Subalgebra R ((I : NonzeroIdeal R) → R ⧸ (I : Ideal R)) whe
 /-- The inverse limit of `R / I` over all nonzero ideals `I`. -/
 abbrev Completion := subalgebra R
 
+/-- Each quotient in the inverse system has its discrete topology. -/
+@[reducible] def quotientTopology (I : NonzeroIdeal R) :
+    TopologicalSpace (R ⧸ (I : Ideal R)) :=
+  ⊥
+
+/-- The inverse-limit topology is the subspace topology from the product of discrete quotients. -/
+instance : TopologicalSpace (Completion R) := by
+  letI (I : NonzeroIdeal R) : TopologicalSpace (R ⧸ (I : Ideal R)) :=
+    quotientTopology R I
+  exact inferInstance
+
+/-- The inverse limit is a topological ring for its natural product-subspace topology. -/
+instance : IsTopologicalRing (Completion R) := by
+  letI (I : NonzeroIdeal R) : TopologicalSpace (R ⧸ (I : Ideal R)) :=
+    quotientTopology R I
+  letI (I : NonzeroIdeal R) : DiscreteTopology (R ⧸ (I : Ideal R)) :=
+    ⟨rfl⟩
+  letI : IsTopologicalRing ((I : NonzeroIdeal R) → R ⧸ (I : Ideal R)) :=
+    inferInstance
+  exact Subring.instIsTopologicalRing (subalgebra R).toSubring
+
 /-- Evaluation at one nonzero ideal. -/
 def eval (I : NonzeroIdeal R) : Completion R →ₐ[R] R ⧸ (I : Ideal R) :=
   { toFun := fun x ↦ x.1 I
@@ -74,6 +96,14 @@ def eval (I : NonzeroIdeal R) : Completion R →ₐ[R] R ⧸ (I : Ideal R) :=
 theorem eval_apply (I : NonzeroIdeal R) (x : Completion R) :
     eval R I x = x.1 I :=
   rfl
+
+/-- Each projection from the all-ideal inverse limit is continuous. -/
+theorem continuous_eval (I : NonzeroIdeal R) :
+    @Continuous (Completion R) (R ⧸ (I : Ideal R)) inferInstance
+      (quotientTopology R I) (eval R I) := by
+  letI (J : NonzeroIdeal R) : TopologicalSpace (R ⧸ (J : Ideal R)) :=
+    quotientTopology R J
+  exact (continuous_apply I).comp continuous_subtype_val
 
 /-- The diagonal map into the inverse limit. -/
 def diagonal : R →ₐ[R] Completion R :=

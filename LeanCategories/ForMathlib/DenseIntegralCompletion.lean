@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.ForMathlib.AdicCompletionIntegers
+public import LeanCategories.ForMathlib.AdicCompletionTopology
 public import Mathlib.RingTheory.AdicCompletion.RingHom
 
 /-!
@@ -355,5 +356,62 @@ noncomputable def adicCompletionEquivAdicCompletionIntegers :
   map_add' := map_add (adicCompletionToIntegers K v)
   map_mul' := map_mul (adicCompletionToIntegers K v)
   }
+
+/-- The comparison map from the inverse-limit completion to local integers is continuous. -/
+theorem continuous_adicCompletionToIntegers :
+    Continuous (adicCompletionToIntegers K v) := by
+  apply continuous_of_tendsto_nhds_zero (adicCompletionToIntegers K v)
+  apply (isAdic_maximalIdeal_adicCompletionIntegers K v).hasBasis_nhds_zero.tendsto_right_iff.mpr
+  intro n _
+  letI : TopologicalSpace (R ⧸ v.asIdeal ^ n) :=
+    AdicCompletion.quotientPowTopology R v.asIdeal n
+  letI : DiscreteTopology (R ⧸ v.asIdeal ^ n) :=
+    ⟨rfl⟩
+  have hopen : IsOpen {x : AdicCompletion v.asIdeal R |
+      AdicCompletion.evalₐ v.asIdeal n x = 0} := by
+    exact (isOpen_discrete {0}).preimage
+      (AdicCompletion.continuous_eval R v.asIdeal n)
+  refine Filter.mem_of_superset (hopen.mem_nhds (show
+    AdicCompletion.evalₐ v.asIdeal n 0 = 0 by simp)) ?_
+  intro x hx
+  apply Ideal.Quotient.eq_zero_iff_mem.mp
+  rw [mk_adicCompletionToIntegers K v n]
+  simp only [Set.mem_setOf_eq] at hx
+  rw [hx, map_zero]
+
+/-- The comparison map from local integers to the inverse-limit completion is continuous. -/
+theorem continuous_integersToAdicCompletion :
+    Continuous (integersToAdicCompletion K v) := by
+  letI (n : ℕ) : TopologicalSpace (R ⧸ v.asIdeal ^ n) :=
+    AdicCompletion.quotientPowTopology R v.asIdeal n
+  letI (n : ℕ) : DiscreteTopology (R ⧸ v.asIdeal ^ n) :=
+    ⟨rfl⟩
+  apply continuous_induced_rng.mpr
+  apply continuous_pi
+  intro n
+  letI : TopologicalSpace
+      ((v.adicCompletionIntegers K) ⧸
+        IsLocalRing.maximalIdeal (v.adicCompletionIntegers K) ^ n) := ⊥
+  letI : DiscreteTopology
+      ((v.adicCompletionIntegers K) ⧸
+        IsLocalRing.maximalIdeal (v.adicCompletionIntegers K) ^ n) := ⟨rfl⟩
+  change Continuous (fun x ↦ AdicCompletion.evalₐ v.asIdeal n
+    (integersToAdicCompletion K v x))
+  rw [show (fun x ↦ AdicCompletion.evalₐ v.asIdeal n
+      (integersToAdicCompletion K v x)) =
+      (quotientPowEquivAdicCompletionIntegers K v n).symm ∘
+        Ideal.Quotient.mk
+          (IsLocalRing.maximalIdeal (v.adicCompletionIntegers K) ^ n) by
+    funext x
+    exact eval_integersToAdicCompletion K v n x]
+  exact continuous_of_discreteTopology.comp
+    ((isAdic_maximalIdeal_adicCompletionIntegers K v).continuous_quotient_mk n)
+
+/-- The prime-adic inverse limit is homeomorphic to the valuation ring in the local field. -/
+noncomputable def adicCompletionHomeomorphAdicCompletionIntegers :
+    AdicCompletion v.asIdeal R ≃ₜ v.adicCompletionIntegers K where
+  toEquiv := (adicCompletionEquivAdicCompletionIntegers K v).toEquiv
+  continuous_toFun := continuous_adicCompletionToIntegers K v
+  continuous_invFun := continuous_integersToAdicCompletion K v
 
 end IsDedekindDomain.HeightOneSpectrum

@@ -376,6 +376,55 @@ theorem eval_fromPrimeAdic (I : NonzeroIdeal R)
     (y : (v : HeightOneSpectrum R) → AdicCompletion v.asIdeal R) :
     eval R I (fromPrimeAdic R y) = fromPrimeAdicResidue R I y := rfl
 
+/-- Reconstructing one residue class from prime-adic components is continuous. -/
+theorem continuous_fromPrimeAdicResidue (I : NonzeroIdeal R) :
+    @Continuous ((v : HeightOneSpectrum R) → AdicCompletion v.asIdeal R)
+      (R ⧸ (I : Ideal R)) inferInstance (quotientTopology R I)
+      (fromPrimeAdicResidue R I) := by
+  letI (P : (UniqueFactorizationMonoid.factors (I : Ideal R)).toFinset) :
+      TopologicalSpace
+        (R ⧸ ((P : Ideal R) ^ Multiset.count (P : Ideal R)
+          (UniqueFactorizationMonoid.factors (I : Ideal R)))) := ⊥
+  letI (P : (UniqueFactorizationMonoid.factors (I : Ideal R)).toFinset) :
+      DiscreteTopology
+        (R ⧸ ((P : Ideal R) ^ Multiset.count (P : Ideal R)
+          (UniqueFactorizationMonoid.factors (I : Ideal R)))) := ⟨rfl⟩
+  letI : TopologicalSpace (R ⧸ (I : Ideal R)) := quotientTopology R I
+  letI : DiscreteTopology (R ⧸ (I : Ideal R)) := ⟨rfl⟩
+  have hcomponents : Continuous fun
+      y : (v : HeightOneSpectrum R) → AdicCompletion v.asIdeal R ↦
+        fun P ↦ factorEval R I P y := by
+    apply continuous_pi
+    intro P
+    letI : TopologicalSpace
+        (R ⧸ (factorPlace R P).asIdeal ^ factorExponent R P) := ⊥
+    letI : DiscreteTopology
+        (R ⧸ (factorPlace R P).asIdeal ^ factorExponent R P) := ⟨rfl⟩
+    change Continuous fun
+      y : (v : HeightOneSpectrum R) → AdicCompletion v.asIdeal R ↦
+        Ideal.quotEquivOfEq (show
+          (factorPlace R P).asIdeal ^ factorExponent R P =
+            (P : Ideal R) ^ Multiset.count (P : Ideal R)
+              (UniqueFactorizationMonoid.factors (I : Ideal R)) by rfl)
+      (AdicCompletion.evalₐ (factorPlace R P).asIdeal (factorExponent R P)
+        (y (factorPlace R P)))
+    apply continuous_of_discreteTopology.comp
+    exact (AdicCompletion.continuous_eval R (factorPlace R P).asIdeal
+      (factorExponent R P)).comp (continuous_apply (factorPlace R P))
+  change Continuous ((IsDedekindDomain.quotientEquivPiFactors I.prop).symm ∘
+    fun y ↦ fun P ↦ factorEval R I P y)
+  exact (continuous_of_discreteTopology : Continuous
+    (IsDedekindDomain.quotientEquivPiFactors I.prop).symm).comp hcomponents
+
+/-- The reconstruction map from all prime-adic components is continuous. -/
+theorem continuous_fromPrimeAdic : Continuous (fromPrimeAdic R) := by
+  letI (I : NonzeroIdeal R) : TopologicalSpace (R ⧸ (I : Ideal R)) :=
+    quotientTopology R I
+  apply continuous_induced_rng.mpr
+  apply continuous_pi
+  intro I
+  exact continuous_fromPrimeAdicResidue R I
+
 theorem fromPrimeAdic_toPrimeAdic (x : Completion R) :
     fromPrimeAdic R (toPrimeAdic R x) = x := by
   ext I
@@ -505,6 +554,26 @@ theorem toPrimeAdic_fromPrimeAdic
       (toPrimeAdicComponent R v (fromPrimeAdic R y)) = _
   rw [eval_toPrimeAdicComponent, eval_fromPrimeAdic_primePower]
 
+/-- Restriction from the all-ideal inverse limit to every prime-adic subsystem is continuous. -/
+theorem continuous_toPrimeAdic : Continuous (toPrimeAdic R) := by
+  apply continuous_pi
+  intro v
+  letI (n : ℕ) : TopologicalSpace (R ⧸ v.asIdeal ^ n) :=
+    AdicCompletion.quotientPowTopology R v.asIdeal n
+  letI (n : ℕ) : DiscreteTopology (R ⧸ v.asIdeal ^ n) := ⟨rfl⟩
+  apply continuous_induced_rng.mpr
+  apply continuous_pi
+  intro n
+  letI : TopologicalSpace (R ⧸ (primePower R v n : Ideal R)) :=
+    quotientTopology R (primePower R v n)
+  change Continuous fun x ↦ AdicCompletion.evalₐ v.asIdeal n
+    (toPrimeAdicComponent R v x)
+  rw [show (fun x ↦ AdicCompletion.evalₐ v.asIdeal n
+      (toPrimeAdicComponent R v x)) = fun x ↦ eval R (primePower R v n) x by
+    funext x
+    exact eval_toPrimeAdicComponent R v n x]
+  exact IdealProfiniteCompletion.continuous_eval R (primePower R v n)
+
 /-- The inverse limit over all nonzero ideals of a Dedekind domain is the product of its
 prime-adic completions. -/
 def completionEquivPrimeAdic : Completion R ≃+*
@@ -516,6 +585,13 @@ def completionEquivPrimeAdic : Completion R ≃+*
   map_add' := map_add (toPrimeAdic R)
   map_mul' := map_mul (toPrimeAdic R)
 
+/-- The all-ideal inverse limit is homeomorphic to the product of prime-adic inverse limits. -/
+def completionHomeomorphPrimeAdic : Completion R ≃ₜ
+    ((v : HeightOneSpectrum R) → AdicCompletion v.asIdeal R) where
+  toEquiv := (completionEquivPrimeAdic R).toEquiv
+  continuous_toFun := continuous_toPrimeAdic R
+  continuous_invFun := continuous_fromPrimeAdic R
+
 variable (K : Type u) [Field K] [Algebra R K] [IsFractionRing R K]
 
 /-- The inverse limit of all nonzero ideal quotients is the integral finite adele ring. -/
@@ -524,5 +600,12 @@ def completionEquivFiniteIntegralAdele :
   (completionEquivPrimeAdic R).trans <|
     RingEquiv.piCongrRight fun v ↦
       IsDedekindDomain.HeightOneSpectrum.adicCompletionEquivAdicCompletionIntegers K v
+
+/-- The inverse limit over all nonzero ideals is homeomorphic to the integral finite adeles. -/
+def completionHomeomorphFiniteIntegralAdele :
+    Completion R ≃ₜ FiniteIntegralAdeleRing R K :=
+  (completionHomeomorphPrimeAdic R).trans <|
+    Homeomorph.piCongr (Equiv.refl (HeightOneSpectrum R)) fun v ↦
+      IsDedekindDomain.HeightOneSpectrum.adicCompletionHomeomorphAdicCompletionIntegers K v
 
 end LeanCategories.IdealProfiniteCompletion
