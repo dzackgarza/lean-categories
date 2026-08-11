@@ -12,31 +12,71 @@ Pinned Mathlib owns the general algebra, representation theory, local fields,
 and adele rings. This project must connect those foundations to formed modules
 and lattices.
 
+Define each notion once at the generality where its mathematics is generated.
+Concrete cases are specializations, equivalent characterizations,
+computational presentations, or notation. They are not parallel definitions.
+
 Do not use this file as a general algebra syllabus. Do not create a parallel
 definition for an existing construction.
 
 For each item, first inspect current project declarations and pinned Mathlib.
-The remaining delta can be a definition, theorem, functor, or comparison.
+Then identify the unique mathematical owner. The remaining delta can be a
+definition, theorem, functor, specialization, or comparison.
 
-## Present project foundation
+## Present project surfaces and ownership debt
 
-The project already has a substantial local algebra core.
+The project has a substantial local algebra core. This does not prove that each
+declaration has the correct semantic owner.
 
 | Area | Present project surface | Remaining boundary |
 | --- | --- | --- |
 | Fixed-value formed modules | `BilinModuleCat R W` and quadratic analogues | Select one public hierarchy and complete all comparisons |
 | Variable-value forms | Total categories and change-of-value functors | Relate every public fiber to the total category |
 | Scalar extension | Form and lattice scalar extension, exactness, and composition comparisons | Reuse it in all later local and adelic constructions |
-| Duality | Algebraic duals, metric duals, and ideal-valued metric duals | Add determinant-line and Dedekind ideal packaging |
+| Duality | Algebraic duals, metric duals, and ideal-valued metric duals | Make the ideal-valued dual the general owner and identify the metric dual at \(I=R\) |
 | Discriminant data | \(K/R\)-valued bilinear forms and \(K/2R\)-valued quadratic forms | Add more local classification and projective determinant comparisons |
 | Orthogonal groups | \(O(L)\), submodule stabilizers, discriminant actions, and stable kernels | Add systematic equivariant centralizers and normalizers |
-| Finite torsion forms | Height-one primary components, orthogonality, and projections | Add named elementary-lattice and local classification interfaces |
-| Localization and residue | Generic localization and residue functors | Add generic completion and place-indexed realization |
+| Finite torsion forms | Height-one primary components, orthogonality, and projections | Start from annihilator and quotient-module theory; make prime-elementary notions specializations |
+| Localization and residue | Generic localization and residue functors | Make arbitrary height-one scalar change and completion the owner; specialize to \(\mathbb Z_p\) |
 | Framed realization | `GenFrame`, `BasisFrame`, `Coord`, and intrinsic comparison | Complete the general descent and matrix-realization comparisons |
 
 This inventory does not certify every theorem named by a file. A file can contain
 definitions or witness structures without the associated existence or
 classification theorem.
+
+The following present surfaces still have explicit ownership debt:
+
+| Notion | Present surface | Required correction |
+| --- | --- | --- |
+| Genus | A real and all-\(p\)-adic relation for \(\mathbb Z\)-lattices | Replace the owner with genus in a general Dedekind lattice fiber |
+| Hasse invariant | A value computed from selected diagonal coefficients | Attach the invariant to the isometry class and prove the diagonal formula is choice-independent |
+| Spinor norm | A chosen homomorphism with prescribed reflection values | Construct the canonical homomorphism from Clifford theory |
+| Dyadic theory | A natural-prime test for \(p=2\) | Define dyadic height-one primes by residual characteristic \(2\) |
+
+## Semantic ownership audit
+
+For each relevant notion, determine:
+
+1. Its natural domain and generality.
+2. Its upstream owner, if one exists.
+3. The exact relation between the project declaration and that owner.
+4. Which concrete declarations must become specializations or theorems.
+5. Which comparison theorem prevents two parallel meanings.
+
+Apply this audit before counting a declaration as foundationally complete.
+
+| Notion | Natural owner | Required disposition |
+| --- | --- | --- |
+| Equivariant lattice | A \(G\)-object in the lattice category | Derive involutions from \(G=C_2\) |
+| Isotypic component | Semisimple representation theory | Apply it to \(L_K\); treat integral intersections and glue as arithmetic |
+| Ideal and metric dual | \(I\)-valued metric dual \(L^{\#,I}\) | Prove the ordinary metric dual is the \(I=R\) specialization |
+| Elementary discriminant module | Torsion modules annihilated by an ideal \(I\) | Derive \(\mathfrak p\)-elementary and \(p\)-elementary notation |
+| Dyadic place | Height-one prime with residual characteristic \(2\) | Derive the \((2)\)-adic integer case |
+| Completion | Scalar extension to \(R_v\) and \(K_v\) for height-one \(v\) | Derive \(\mathbb Z_p\) and \(\mathbb Q_p\) |
+| Genus | Local-isometry class in a Dedekind lattice fiber | Derive completion, adelic, and \(\mathbb Z\)-specific presentations |
+| Hasse invariant | Isometry class of a nondegenerate quadratic space | Prove each diagonal formula is independent of diagonalization |
+| Spinor norm | Canonical Clifford-theoretic homomorphism | Prove the reflection formula |
+| Definite or indefinite lattice | A property of the common lattice object at real places | Form full subcategories; do not define new lattice objects |
 
 ## Upstream reuse boundary
 
@@ -77,15 +117,17 @@ The foundation has this order.
 \begin{aligned}
 &\text{Dedekind and global arithmetic} \\
 &\qquad\downarrow \\
-&\text{finite-projective and equivariant module arithmetic} \\
+&\text{finite-projective module arithmetic} \\
 &\qquad\downarrow \\
 &\text{formed modules, value change, scalar change, and duality} \\
 &\qquad\downarrow \\
-&\text{lattices, discriminant data, orthogonal actions, and completions} \\
+&\text{intrinsic lattices, ideal duals, discriminant data, and localization} \\
 &\qquad\downarrow \\
-&\text{local, adelic, Clifford, spinor, and genus theory} \\
+&\text{general genus and equivariant lattice theory} \\
 &\qquad\downarrow \\
-&\text{definite, indefinite, reflection, and geometric branches.}
+&\text{completion, adeles, Clifford theory, and comparison theorems} \\
+&\qquad\downarrow \\
+&\text{signature loci and their downstream theories.}
 \end{aligned}
 \]
 
@@ -173,20 +215,38 @@ not package as formed-lattice theory:
 Build orthogonal sums and finite orthogonal powers from existing form operations.
 Do not create another tensor-product or base-change operation.
 
-Keep these dual objects distinct:
+The general metric construction is the \(I\)-valued dual. For a nonzero
+fractional ideal \(I\subseteq K\), define
 
 \[
-M^*=\operatorname{Hom}_R(M,R),
+L^{\#,I}
+=
+\{x\in L_K\mid b_K(x,L)\subseteq I\}.
 \]
+
+The ordinary metric dual is the specialization
 
 \[
-M^\#=\{x\in M_K\mid b_K(x,M)\subseteq R\},
+L^\#=L^{\#,R}.
 \]
 
-and the kernel, image, or cokernel of the adjoint map.
+Keep this object distinct from the algebraic dual
 
-Reuse `BilinForm.dualSubmodule` for the metric dual foundation. Extend the
-existing discriminant theory by proving
+\[
+L^*=\operatorname{Hom}_R(L,R),
+\]
+
+and from the kernel, image, or cokernel of the adjoint map.
+
+The existing quotient-kernel definition using \(K/I\) must be compared with
+the containment definition above. Prove
+
+\[
+\operatorname{idealDual}(L,R)\simeq\operatorname{metricDual}(L)
+\]
+
+through the existing `BilinForm.dualSubmodule` construction. Then extend the
+discriminant theory by proving
 
 \[
 A_L\simeq\operatorname{coker}(\operatorname{ad}_b)
@@ -247,7 +307,8 @@ gluing data. It is not a missing canonical decomposition.
 
 ## 5. Place-indexed localization and completion
 
-Replace the \(\mathbb Z_p\)-only completion surface with a general construction.
+The owner is scalar extension and completion at an arbitrary height-one point.
+The \(\mathbb Z_p\)-only surface is a specialization.
 
 For a Dedekind domain \(R\), fraction field \(K\), and height-one point
 \(v\), use Mathlib's
@@ -269,7 +330,44 @@ The project needs:
 
 Do not model an archimedean place as a point of `Spec R`.
 
-## 6. Finite and full adelic realization
+## 6. Genus at its natural generality
+
+Fix a nondegenerate formed \(K\)-space \((V,b_K)\). Let
+
+\[
+\operatorname{Lat}_R(V,b_K)
+\]
+
+denote the category or groupoid of full integral \(R\)-lattices in \(V\).
+This fiber is the recommended owner of genus.
+
+For \(L,M\in\operatorname{Lat}_R(V,b_K)\), define
+
+\[
+L\sim_{\mathrm{gen}}M
+\iff
+L_{\mathfrak p}\simeq M_{\mathfrak p}
+\quad
+\text{for every }\mathfrak p\in\operatorname{Ht}_1(R),
+\]
+
+where the local objects use the general localization functor.
+
+The foundation must then prove:
+
+- Equivalence with an intrinsic formulation using isometric generic fibers.
+- Independence from any chosen identification of those generic fibers.
+- Equivalence with the height-one completion formulation.
+- For \(R=\mathbb Z\), equivalence with the familiar real and all-\(p\)-adic
+  formulation under the exact hypotheses.
+- For number rings, the relation between the fixed generic formed space and
+  signatures at archimedean places.
+
+The current \(\mathbb Z\)-specific `SameGenus` declaration must become a theorem,
+specialization, or notation for this owner. It must not remain a second
+definition.
+
+## 7. Finite and full adelic realization
 
 Reuse Mathlib's finite adele ring. Do not implement a new restricted product.
 
@@ -299,16 +397,35 @@ The required interfaces and theorems are:
   R=K\cap\widehat R\quad\text{inside }\mathbb A_{K,f}.
   \]
 - The corresponding lattice intersection statement.
+- The equivalence between the general genus and the adelic orbit relation.
+- The double-coset presentation
+  \[
+  O(V)(K)\backslash O(V)(\mathbb A_f)/K_L
+  \]
+  for isometry classes in the genus.
 
 Use the full adele ring only for number fields until a separate function-field
 definition is present. Do not generalize Mathlib's number-field product by name.
 
-## 7. Elementary discriminant modules and local classification
+Adelic genus is not a second definition. It is a theorem about the genus already
+defined in the Dedekind lattice fiber.
 
-The existing discriminant and primary-decomposition layers support a small
-foundational addition.
+## 8. Elementary discriminant modules and local classification
 
-For a height-one prime \(\mathfrak p\), define
+The owner is the standard annihilator and quotient-module construction. For an
+ideal \(I\subseteq R\) and an \(R\)-module \(A\), use the predicate
+
+\[
+\operatorname{IsIElementary}(A,I)
+\iff
+I\cdot A=0.
+\]
+
+This predicate names the standard condition. It does not define a second module
+theory. The condition gives \(A\) its canonical \(R/I\)-module structure.
+
+For a lattice, apply this definition to \(A_L\). For a height-one prime
+\(\mathfrak p\), define the specialization
 
 \[
 \operatorname{IsPElementary}(L,\mathfrak p)
@@ -324,21 +441,53 @@ a_\mathfrak p(L)
 \dim_{R/\mathfrak p}A_L.
 \]
 
+For \(R=\mathbb Z\), \(p\)-elementary is notation for
+\((p)\)-elementary. It is not a separate definition.
+
+Dyadicity also belongs at the place level. Define
+
+\[
+\operatorname{IsDyadic}(\mathfrak p)
+\iff
+\operatorname{char}(R/\mathfrak p)=2.
+\]
+
+In the number-ring case, this is equivalent to \(\mathfrak p\mid 2R\).
+The prime \(2\) and the ring \(\mathbb Z_2\) are specializations.
+
+The Hasse invariant belongs to the isometry class of a nondegenerate quadratic
+space. If
+
+\[
+q\simeq\langle a_1,\ldots,a_n\rangle
+\]
+
+over a field \(F\) of characteristic different from \(2\), the diagonal formula
+has the form
+
+\[
+\epsilon(q)=\prod_{i<j}(a_i,a_j)_F.
+\]
+
+The foundation must first fix the codomain and normalization for the relevant
+local field. It must then prove that this value is independent of the
+diagonalization and invariant under isometry.
+
 The later local layer needs:
 
 - Lattices over DVRs and completed local rings.
 - Residue forms and unit square-class filtrations.
 - Norm and scale ideals.
 - Jordan constituents and decomposition theorems.
-- Hasse invariants in the required local contexts.
+- Intrinsic Hasse invariants in the required local contexts.
 - Witt comparisons needed by classification.
-- A separate dyadic classification layer.
+- Classification over dyadic height-one places.
 - Finite quadratic modules at \(2\).
 
 The \(K/R\) bilinear and \(K/2R\) quadratic value objects already exist.
 Do not list them as missing definitions.
 
-## 8. Canonical Clifford and spinor theory
+## 9. Canonical Clifford and spinor theory
 
 The current spinor files provide a prototype vocabulary. A chosen homomorphism
 with prescribed reflection values is not yet the canonical spinor norm.
@@ -367,31 +516,6 @@ It must include:
 - Local and adelic spinor maps.
 
 Define the canonical spinor kernel and spinor genus only after this layer exists.
-
-## 9. Genus and local-to-global comparison
-
-Keep genus as a local isometry relation. Generalize the current
-\(\mathbb Z\)-specific definition to the correct place-indexed context.
-
-For number fields, the local presentation includes all finite places and the
-required archimedean data.
-
-After the adelic layer exists, prove the comparison with the double-coset
-presentation
-
-\[
-O(V)(K)\backslash O(V)(\mathbb A_f)/K_L.
-\]
-
-The local and adelic definitions are two presentations of one theory. Do not keep
-them as unrelated notions.
-
-Only after this comparison should later work develop:
-
-- Spinor genera.
-- Class sets and class numbers.
-- Strong approximation statements.
-- Masses and local density products.
 
 ## 10. Embeddings, complements, and gluing
 
@@ -433,9 +557,26 @@ L\hookrightarrow V_{\mathbb C},\qquad V_{\mathbb C}/L.
 Do not identify \(L_K/L\) with a complex torus. For \(R=\mathbb Z\), the first
 object is a torsion module such as \((\mathbb Q/\mathbb Z)^n\).
 
-## 12. Definite, indefinite, reflection, and geometric branches
+## 12. Signature loci and their downstream theories
 
-After the shared foundation, organize the later theory by mathematical owner.
+Definite and indefinite lattices are not different lattice notions. They are
+properties of the common lattice object after scalar extension to real places.
+
+For each real place \(v\), define the signature
+
+\[
+\operatorname{sig}_v(L)=(r_v,s_v).
+\]
+
+Use these properties to form full subcategories:
+
+- positive-definite and negative-definite at \(v\);
+- totally definite at every real place;
+- indefinite at a specified real place;
+- Lorentzian for the selected \((1,n)\) or \((n,1)\) convention.
+
+State the sign convention in the property name or theorem. The theories on these
+full subcategories can diverge after the common definitions are fixed.
 
 ### General formed lattices
 
@@ -449,8 +590,8 @@ Witt theory, dyadic classification, and local spinor theory.
 
 ### Definite arithmetic
 
-This branch owns finite automorphism groups, minima, short vectors,
-enumeration, theta series, class numbers, and mass formulas.
+On the definite full subcategories, develop finite automorphism groups, minima,
+short vectors, enumeration, theta series, class numbers, and mass formulas.
 
 A basic theta series belongs early in this branch. A mass formula belongs late.
 It requires finite class sets, finite automorphism groups, adelic quotients, and
@@ -458,8 +599,9 @@ local measure theory.
 
 ### Indefinite arithmetic
 
-This branch owns isotropic theory, hyperbolic planes, Witt index, arithmetic
-orthogonal groups, spinor kernels, strong approximation, and symmetric domains.
+On the indefinite full subcategories, develop isotropic theory, hyperbolic
+planes, Witt index, arithmetic orthogonal groups, spinor kernels, strong
+approximation, and symmetric domains.
 
 ### Reflection and root theory
 
@@ -493,16 +635,23 @@ Use this order for new work:
 1. Reconfirm the pinned Mathlib reuse map and current project comparisons.
 2. Complete Dedekind finite-projective determinant and ideal-class arithmetic.
 3. Consolidate the canonical formed-module and lattice categories.
-4. Extend existing dual and discriminant results to projective determinant ideals.
-5. Develop equivariant formed lattices and rational isotypic intersections.
-6. Generalize completion to all height-one places.
-7. Build finite adelic lattice and orthogonal-group realization.
-8. Integrate Clifford theory and construct the canonical spinor norm.
-9. Generalize genus and prove its adelic comparison.
-10. Split later work into local, definite, indefinite, reflection, and geometric branches.
+4. Make the ideal-valued dual the owner and connect discriminant modules to
+   projective Fitting ideals.
+5. Establish annihilator, support, and generic localization interfaces.
+6. Define genus in the fixed formed-\(K\)-space fiber.
+7. Develop equivariant lattices and rational isotypic intersections.
+8. Generalize completion to all height-one places and prove the completion
+   characterization of genus.
+9. Build finite adelic lattice theory and prove the double-coset characterization.
+10. Integrate Clifford theory and construct the canonical spinor norm.
+11. Define signature properties and full subcategories on the common lattice
+    category.
+12. Develop the local, definite, indefinite, reflection, and geometric theories
+    on those loci.
 
-Steps 5 and 6 can proceed in parallel after steps 2 through 4. Step 8 can proceed
-in parallel with step 7. Genus comparison needs both completion and adelic layers.
+Steps 6 and 7 can proceed in parallel after steps 1 through 5. Clifford theory
+can proceed in parallel with completion and adelization. The definition of genus
+does not depend on completion or adeles. Only its comparison theorems do.
 
 Existing gluing and named-lattice work remains valid. It must consume these common
 foundations when they apply.
