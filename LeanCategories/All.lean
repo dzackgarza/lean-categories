@@ -20,6 +20,7 @@ public import LeanCategories.Algebra.FractionalIdeals
 public import LeanCategories.Algebra.IntegralAdeleRing
 public import LeanCategories.Algebra.IdealProfiniteCompletion
 public import LeanCategories.ForMathlib.AdicCompletionIntegers
+public import LeanCategories.ForMathlib.DenseIntegralCompletion
 public import LeanCategories.Names.Standard
 public import LeanCategories.Modules.Framed
 public import LeanCategories.Modules.Bilinear.Valued
