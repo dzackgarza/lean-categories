@@ -6,6 +6,7 @@ module
 
 public import Mathlib.NumberTheory.NumberField.AdeleRing
 public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.NumberTheory.Padics.HeightOneSpectrum
 public import Mathlib.RingTheory.LocalRing.Pullback
 
 /-!
@@ -73,6 +74,37 @@ theorem mem_range_inclusion_iff (x : FiniteAdeleRing R K) :
     rfl
 
 end FiniteIntegralAdeleRing
+
+namespace Rat
+
+local instance (p : Nat.Primes) : Fact p.1.Prime := ⟨p.2⟩
+
+/-- The standard product presentation of the integral finite adeles of `ℚ`. -/
+abbrev PadicIntegerProduct := (p : Nat.Primes) → ℤ_[p]
+
+/-- The local integer completion at a prime ideal of `ℤ` is the corresponding `ℤ_p`. -/
+def adicCompletionIntegersEquivPadicInt (v : HeightOneSpectrum ℤ) :
+    v.adicCompletionIntegers ℚ ≃+* ℤ_[Rat.HeightOneSpectrum.primesEquiv v] := by
+  let e := Rat.HeightOneSpectrum.adicCompletionIntegers.padicIntEquiv v
+  exact @AlgEquiv.toRingEquiv ℤ _ _ _ _ _
+    (Ring.toIntAlgebra _)
+    (Ring.toIntAlgebra _)
+    (@ContinuousAlgEquiv.toAlgEquiv ℤ _ _ _ _ _ _ _
+      (Ring.toIntAlgebra _)
+      (Ring.toIntAlgebra _) e)
+
+/-- The integral finite adeles of `ℚ` are the product of the rings `ℤ_p` over all primes. -/
+def finiteIntegralAdeleRingEquivPadicIntegerProduct :
+    FiniteIntegralAdeleRing ℤ ℚ ≃+* PadicIntegerProduct :=
+  (RingEquiv.piCongrRight fun v ↦
+    adicCompletionIntegersEquivPadicInt v).trans
+    (RingEquiv.piCongrLeft (fun p : Nat.Primes ↦ ℤ_[p])
+      (Rat.HeightOneSpectrum.primesEquiv (R := ℤ)))
+
+/-- The standard product model `ℝ × ∏_p ℤ_p` for the ring adeles of `ℚ`. -/
+abbrev RingAdeleModel := ℝ × PadicIntegerProduct
+
+end Rat
 
 /-- The adele ring of the full ring of integers of a number field. Its infinite factors are
 field completions, and its finite factors are completed integer rings. -/
