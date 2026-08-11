@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.ForMathlib.AdicCompletionIntegers
+public import Mathlib.RingTheory.AdicCompletion.RingHom
 
 /-!
 # Density of global integers in a local completion
@@ -192,5 +193,167 @@ noncomputable def quotientPowEquivAdicCompletionIntegers (n : ℕ) :
     rw [← sub_eq_zero, ← map_sub, Ideal.Quotient.eq_zero_iff_mem]
     exact hr
   exact RingEquiv.ofBijective q ⟨hinj, hsurj⟩
+
+theorem quotientPowEquivAdicCompletionIntegers_compatible {m n : ℕ} (hmn : m ≤ n) :
+    (Ideal.Quotient.factorPow
+      (IsLocalRing.maximalIdeal (v.adicCompletionIntegers K)) hmn).comp
+        (quotientPowEquivAdicCompletionIntegers K v n).toRingHom =
+      (quotientPowEquivAdicCompletionIntegers K v m).toRingHom.comp
+        (Ideal.Quotient.factorPow v.asIdeal hmn) := by
+  apply DFunLike.ext _ _
+  intro z
+  obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective z
+  rfl
+
+theorem quotientPowEquivAdicCompletionIntegers_symm_compatible {m n : ℕ}
+    (hmn : m ≤ n) :
+    (Ideal.Quotient.factorPow v.asIdeal hmn).comp
+        (quotientPowEquivAdicCompletionIntegers K v n).symm.toRingHom =
+      (quotientPowEquivAdicCompletionIntegers K v m).symm.toRingHom.comp
+        (Ideal.Quotient.factorPow
+          (IsLocalRing.maximalIdeal (v.adicCompletionIntegers K)) hmn) := by
+  ext z
+  apply (quotientPowEquivAdicCompletionIntegers K v m).injective
+  change (quotientPowEquivAdicCompletionIntegers K v m)
+      (Ideal.Quotient.factorPow v.asIdeal hmn
+        ((quotientPowEquivAdicCompletionIntegers K v n).symm
+          (Ideal.Quotient.mk _ z))) =
+    (quotientPowEquivAdicCompletionIntegers K v m)
+      ((quotientPowEquivAdicCompletionIntegers K v m).symm
+        (Ideal.Quotient.factorPow
+          (IsLocalRing.maximalIdeal (v.adicCompletionIntegers K)) hmn
+            (Ideal.Quotient.mk _ z)))
+  rw [RingEquiv.apply_symm_apply]
+  have h := RingHom.congr_fun
+      (quotientPowEquivAdicCompletionIntegers_compatible K v hmn)
+        ((quotientPowEquivAdicCompletionIntegers K v n).symm
+          (Ideal.Quotient.mk _ z))
+  simp only [RingHom.comp_apply, RingEquiv.toRingHom_eq_coe] at h
+  change Ideal.Quotient.factorPow
+      (IsLocalRing.maximalIdeal (v.adicCompletionIntegers K)) hmn
+        ((quotientPowEquivAdicCompletionIntegers K v n)
+          ((quotientPowEquivAdicCompletionIntegers K v n).symm
+            (Ideal.Quotient.mk _ z))) = _ at h
+  rw [RingEquiv.apply_symm_apply] at h
+  exact h.symm
+
+omit [IsDedekindDomain R] in
+theorem factorPow_eval_adicCompletion {m n : ℕ} (hmn : m ≤ n)
+    (x : AdicCompletion v.asIdeal R) :
+    Ideal.Quotient.factorPow v.asIdeal hmn
+      (AdicCompletion.evalₐ v.asIdeal n x) =
+        AdicCompletion.evalₐ v.asIdeal m x := by
+  let hm : (v.asIdeal ^ m • ⊤ : Ideal R) = v.asIdeal ^ m := Ideal.mul_top _
+  apply (Ideal.quotientEquivAlgOfEq R hm).symm.injective
+  simp only [Ideal.quotientEquivAlgOfEq_symm]
+  change Ideal.Quotient.factor (le_of_eq hm.symm)
+      (Ideal.Quotient.factorPow v.asIdeal hmn
+        (AdicCompletion.evalₐ v.asIdeal n x)) =
+    Ideal.Quotient.factor (le_of_eq hm.symm)
+      (AdicCompletion.evalₐ v.asIdeal m x)
+  rw [AdicCompletion.factor_evalₐ_eq_eval (I := v.asIdeal) (R := R) x
+    (le_of_eq hm.symm)]
+  change Ideal.Quotient.factor (le_of_eq hm.symm)
+      (Ideal.Quotient.factorPow v.asIdeal hmn
+        (AdicCompletion.evalₐ v.asIdeal n x)) = x.1 m
+  rw [← x.2 hmn]
+  obtain ⟨r, hr⟩ := Ideal.Quotient.mk_surjective
+    (AdicCompletion.evalₐ v.asIdeal n x)
+  have hraw := AdicCompletion.factor_evalₐ_eq_eval
+    (I := v.asIdeal) (R := R) x
+      (show v.asIdeal ^ n ≤ v.asIdeal ^ n • ⊤ by simp)
+  rw [← hr] at hraw ⊢
+  change Ideal.Quotient.factor _ (Ideal.Quotient.mk _ r) = x.1 n at hraw
+  rw [← hraw]
+  simp [AdicCompletion.transitionMap, Ideal.Quotient.factorPow]
+
+/-- The completion of `R` at `v` maps to the complete local integer ring through its
+compatible residue quotients. -/
+noncomputable def adicCompletionToIntegers :
+    AdicCompletion v.asIdeal R →+* v.adicCompletionIntegers K := by
+  letI : IsAdicComplete
+      (IsLocalRing.maximalIdeal (v.adicCompletionIntegers K))
+      (v.adicCompletionIntegers K) :=
+    isAdicComplete_maximalIdeal_adicCompletionIntegers K v
+  exact IsAdicComplete.liftRingHom
+    (IsLocalRing.maximalIdeal (v.adicCompletionIntegers K))
+    (fun n ↦ (quotientPowEquivAdicCompletionIntegers K v n).toRingHom.comp
+      (AdicCompletion.evalₐ v.asIdeal n).toRingHom)
+    (fun {m n} hmn ↦ by
+      ext x
+      simp only [RingHom.comp_apply]
+      calc
+        _ = quotientPowEquivAdicCompletionIntegers K v m
+            (Ideal.Quotient.factorPow v.asIdeal hmn
+              (AdicCompletion.evalₐ v.asIdeal n x)) :=
+          RingHom.congr_fun
+            (quotientPowEquivAdicCompletionIntegers_compatible K v hmn)
+              (AdicCompletion.evalₐ v.asIdeal n x)
+        _ = _ := congrArg (quotientPowEquivAdicCompletionIntegers K v m)
+          (factorPow_eval_adicCompletion v hmn x))
+
+/-- The complete local integer ring maps back to the prime-adic completion through the
+inverse residue quotient equivalences. -/
+noncomputable def integersToAdicCompletion :
+    v.adicCompletionIntegers K →+* AdicCompletion v.asIdeal R :=
+  AdicCompletion.liftRingHom v.asIdeal
+    (fun n ↦ (quotientPowEquivAdicCompletionIntegers K v n).symm.toRingHom.comp
+      (Ideal.Quotient.mk (IsLocalRing.maximalIdeal
+        (v.adicCompletionIntegers K) ^ n)))
+    (fun {m n} hmn ↦ by
+      ext x
+      simpa only [RingHom.comp_apply, Ideal.Quotient.factor_mk] using
+        RingHom.congr_fun
+          (quotientPowEquivAdicCompletionIntegers_symm_compatible K v hmn)
+            (Ideal.Quotient.mk _ x))
+
+@[simp]
+theorem mk_adicCompletionToIntegers (n : ℕ) (x : AdicCompletion v.asIdeal R) :
+    Ideal.Quotient.mk
+      (IsLocalRing.maximalIdeal (v.adicCompletionIntegers K) ^ n)
+        (adicCompletionToIntegers K v x) =
+      quotientPowEquivAdicCompletionIntegers K v n
+        (AdicCompletion.evalₐ v.asIdeal n x) := by
+  letI : IsAdicComplete
+      (IsLocalRing.maximalIdeal (v.adicCompletionIntegers K))
+      (v.adicCompletionIntegers K) :=
+    isAdicComplete_maximalIdeal_adicCompletionIntegers K v
+  exact IsAdicComplete.mk_liftRingHom _ _ _ n x
+
+@[simp]
+theorem eval_integersToAdicCompletion (n : ℕ) (x : v.adicCompletionIntegers K) :
+    AdicCompletion.evalₐ v.asIdeal n (integersToAdicCompletion K v x) =
+      (quotientPowEquivAdicCompletionIntegers K v n).symm
+        (Ideal.Quotient.mk _ x) := by
+  exact AdicCompletion.evalₐ_liftRingHom _ _ _ n x
+
+/-- The prime-adic completion of `R` is its valuation ring inside the completed fraction field. -/
+noncomputable def adicCompletionEquivAdicCompletionIntegers :
+    AdicCompletion v.asIdeal R ≃+* v.adicCompletionIntegers K := by
+  letI : IsAdicComplete
+      (IsLocalRing.maximalIdeal (v.adicCompletionIntegers K))
+      (v.adicCompletionIntegers K) :=
+    isAdicComplete_maximalIdeal_adicCompletionIntegers K v
+  exact {
+  toFun := adicCompletionToIntegers K v
+  invFun := integersToAdicCompletion K v
+  left_inv x := by
+    apply AdicCompletion.ext_evalₐ
+    intro n
+    rw [eval_integersToAdicCompletion, mk_adicCompletionToIntegers,
+      RingEquiv.symm_apply_apply]
+  right_inv x := by
+    have h : (adicCompletionToIntegers K v).comp
+        (integersToAdicCompletion K v) = RingHom.id _ := by
+      apply DFunLike.ext _ _
+      intro y
+      apply congrFun (IsHausdorff.funext'
+        (IsLocalRing.maximalIdeal (v.adicCompletionIntegers K))
+          (fun n z ↦ by
+            simp [mk_adicCompletionToIntegers, eval_integersToAdicCompletion])) y
+    exact RingHom.congr_fun h x
+  map_add' := map_add (adicCompletionToIntegers K v)
+  map_mul' := map_mul (adicCompletionToIntegers K v)
+  }
 
 end IsDedekindDomain.HeightOneSpectrum

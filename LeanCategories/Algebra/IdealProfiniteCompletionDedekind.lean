@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Algebra.IdealProfiniteCompletion
+public import LeanCategories.Algebra.IntegralAdeleRing
 public import LeanCategories.ForMathlib.DenseIntegralCompletion
 public import Mathlib.RingTheory.AdicCompletion.Algebra
 
@@ -26,6 +27,30 @@ open IsDedekindDomain
 universe u
 
 variable (R : Type u) [CommRing R] [IsDedekindDomain R]
+
+omit [IsDedekindDomain R] in
+theorem quotEquivOfEq_heq {I J : Ideal R} (h : I = J) (x : R ⧸ I) :
+    Ideal.quotEquivOfEq h x ≍ x := by
+  cases h
+  rw [Ideal.quotEquivOfEq_eq_factor, Ideal.Quotient.factor_eq]
+  rfl
+
+omit [IsDedekindDomain R] in
+theorem evalAdicCompletion_heq_of_place_eq
+    {v w : HeightOneSpectrum R} (h : v = w) (n : ℕ)
+    (y : (u : HeightOneSpectrum R) → AdicCompletion u.asIdeal R) :
+    AdicCompletion.evalₐ v.asIdeal n (y v) ≍
+      AdicCompletion.evalₐ w.asIdeal n (y w) := by
+  cases h
+  rfl
+
+omit [IsDedekindDomain R] in
+theorem evalAdicCompletion_heq_of_exponent_eq
+    (v : HeightOneSpectrum R) {m n : ℕ} (h : m = n)
+    (x : AdicCompletion v.asIdeal R) :
+    AdicCompletion.evalₐ v.asIdeal m x ≍ AdicCompletion.evalₐ v.asIdeal n x := by
+  cases h
+  rfl
 
 /-- A prime power, regarded as a nonzero ideal. -/
 def primePower (v : HeightOneSpectrum R) (n : ℕ) : NonzeroIdeal R :=
@@ -380,5 +405,124 @@ theorem fromPrimeAdic_toPrimeAdic (x : Completion R) :
   change Ideal.Quotient.factor _ (eval R I x) =
       eval R (primePower R (factorPlace R P) (factorExponent R P)) x at hx
   exact hr.trans hx.symm
+
+theorem factors_primePower (v : HeightOneSpectrum R) (n : ℕ) :
+    UniqueFactorizationMonoid.factors (v.asIdeal ^ n) =
+      Multiset.replicate n v.asIdeal := by
+  rw [UniqueFactorizationMonoid.factors_eq_normalizedFactors,
+    v.irreducible.normalizedFactors_pow]
+  simp
+
+/-- The unique prime factor of a positive power of a height-one prime. -/
+def primePowerFactor (v : HeightOneSpectrum R) (n : ℕ) :
+    (UniqueFactorizationMonoid.factors (v.asIdeal ^ (n + 1))).toFinset := by
+  refine ⟨v.asIdeal, Multiset.mem_toFinset.mpr ?_⟩
+  rw [factors_primePower]
+  simp
+
+@[simp]
+theorem factorPlace_primePowerFactor (v : HeightOneSpectrum R) (n : ℕ) :
+    factorPlace R (primePowerFactor R v n) = v := by
+  apply HeightOneSpectrum.ext
+  rfl
+
+theorem factorExponent_primePowerFactor (v : HeightOneSpectrum R) (n : ℕ) :
+    factorExponent R (primePowerFactor R v n) = n + 1 := by
+  change Multiset.count v.asIdeal
+    (UniqueFactorizationMonoid.factors (v.asIdeal ^ (n + 1))) = n + 1
+  rw [factors_primePower]
+  simp
+
+-- Dependent transport across height-one places is expensive for the elaborator.
+set_option maxHeartbeats 1000000 in
+theorem eval_fromPrimeAdic_primePower (v : HeightOneSpectrum R) (n : ℕ)
+    (y : (w : HeightOneSpectrum R) → AdicCompletion w.asIdeal R) :
+    eval R (primePower R v n) (fromPrimeAdic R y) =
+      AdicCompletion.evalₐ v.asIdeal n (y v) := by
+  cases n with
+  | zero =>
+      obtain ⟨a, ha⟩ := Ideal.Quotient.mk_surjective
+        (eval R (primePower R v 0) (fromPrimeAdic R y))
+      obtain ⟨b, hb⟩ := Ideal.Quotient.mk_surjective
+        (AdicCompletion.evalₐ v.asIdeal 0 (y v))
+      rw [← ha, ← hb]
+      apply Ideal.Quotient.eq.mpr
+      simp [primePower]
+  | succ n =>
+      let P := primePowerFactor R v n
+      have hf := factor_fromPrimeAdicResidue R (primePower R v (n + 1)) P y
+      obtain ⟨r, hr⟩ := Ideal.Quotient.mk_surjective
+        (fromPrimeAdicResidue R (primePower R v (n + 1)) y)
+      obtain ⟨s, hs⟩ := Ideal.Quotient.mk_surjective
+        (AdicCompletion.evalₐ (factorPlace R P).asIdeal
+          (factorExponent R P) (y (factorPlace R P)))
+      rw [← hr] at hf
+      simp only [Ideal.Quotient.factor_mk] at hf
+      have hfactor := factorEval_eq_mk R (primePower R v (n + 1)) P y s hs.symm
+      rw [hfactor] at hf
+      have htarget : (factorPlace R P).asIdeal ^ factorExponent R P =
+          v.asIdeal ^ (n + 1) := by
+        have hp : factorPlace R P = v := by
+          dsimp [P]
+          exact factorPlace_primePowerFactor R v n
+        have he : factorExponent R P = n + 1 := by
+          dsimp [P]
+          exact factorExponent_primePowerFactor R v n
+        rw [hp, he]
+      have hmem : r - s ∈ (factorPlace R P).asIdeal ^ factorExponent R P :=
+        Ideal.Quotient.eq.mp hf
+      have hmk : Ideal.Quotient.mk (v.asIdeal ^ (n + 1)) r =
+          Ideal.Quotient.mk (v.asIdeal ^ (n + 1)) s := by
+        apply Ideal.Quotient.eq.mpr
+        rwa [← htarget]
+      have hp : factorPlace R P = v := by
+        dsimp [P]
+        exact factorPlace_primePowerFactor R v n
+      have he : factorExponent R P = n + 1 := by
+        dsimp [P]
+        exact factorExponent_primePowerFactor R v n
+      have heval : Ideal.quotEquivOfEq htarget
+          (AdicCompletion.evalₐ (factorPlace R P).asIdeal
+            (factorExponent R P) (y (factorPlace R P))) =
+          AdicCompletion.evalₐ v.asIdeal (n + 1) (y v) := by
+        have hv := evalAdicCompletion_heq_of_place_eq R hp (factorExponent R P) y
+        have hn := evalAdicCompletion_heq_of_exponent_eq R v he (y v)
+        exact eq_of_heq ((quotEquivOfEq_heq R htarget _).trans (hv.trans hn))
+      have hs' : Ideal.Quotient.mk (v.asIdeal ^ (n + 1)) s =
+          AdicCompletion.evalₐ v.asIdeal (n + 1) (y v) := by
+        simpa only [Ideal.quotEquivOfEq_mk] using
+          (congrArg (Ideal.quotEquivOfEq htarget) hs).trans heval
+      rw [eval_fromPrimeAdic, ← hr]
+      exact hmk.trans hs'
+
+theorem toPrimeAdic_fromPrimeAdic
+    (y : (v : HeightOneSpectrum R) → AdicCompletion v.asIdeal R) :
+    toPrimeAdic R (fromPrimeAdic R y) = y := by
+  funext v
+  apply AdicCompletion.ext_evalₐ
+  intro n
+  change AdicCompletion.evalₐ v.asIdeal n
+      (toPrimeAdicComponent R v (fromPrimeAdic R y)) = _
+  rw [eval_toPrimeAdicComponent, eval_fromPrimeAdic_primePower]
+
+/-- The inverse limit over all nonzero ideals of a Dedekind domain is the product of its
+prime-adic completions. -/
+def completionEquivPrimeAdic : Completion R ≃+*
+    ((v : HeightOneSpectrum R) → AdicCompletion v.asIdeal R) where
+  toFun := toPrimeAdic R
+  invFun := fromPrimeAdic R
+  left_inv := fromPrimeAdic_toPrimeAdic R
+  right_inv := toPrimeAdic_fromPrimeAdic R
+  map_add' := map_add (toPrimeAdic R)
+  map_mul' := map_mul (toPrimeAdic R)
+
+variable (K : Type u) [Field K] [Algebra R K] [IsFractionRing R K]
+
+/-- The inverse limit of all nonzero ideal quotients is the integral finite adele ring. -/
+def completionEquivFiniteIntegralAdele :
+    Completion R ≃+* FiniteIntegralAdeleRing R K :=
+  (completionEquivPrimeAdic R).trans <|
+    RingEquiv.piCongrRight fun v ↦
+      IsDedekindDomain.HeightOneSpectrum.adicCompletionEquivAdicCompletionIntegers K v
 
 end LeanCategories.IdealProfiniteCompletion
