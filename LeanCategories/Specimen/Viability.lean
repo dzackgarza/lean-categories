@@ -4,20 +4,20 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Core.StructuralMap
+public import LeanCategories.Catalogue.StructuralMap
 public import LeanCategories.Algebra.Rings
 public import LeanCategories.ForMathlib.CategoricalPullback
-public import LeanCategories.Registry.Entry
+public import LeanCategories.Catalogue.Registry.Entry
 public import LeanCategories.Realization.Mathlib.Atomic
 public import LeanCategories.Specimen.ViabilityData
 public meta import LeanCategories.Specimen.ViabilityData
-public meta import LeanCategories.Core.Expr
-public meta import LeanCategories.Core.Ids
-public meta import LeanCategories.Core.StructuralMap
-public meta import LeanCategories.Core.Normalize
+public meta import LeanCategories.Catalogue.Syntax
+public meta import LeanCategories.Catalogue.Id
+public meta import LeanCategories.Catalogue.StructuralMap
+public meta import LeanCategories.Catalogue.Normalize
 public meta import LeanCategories.Algebra.Magmas
 public meta import LeanCategories.Algebra.Rings
-public meta import LeanCategories.Registry.Extension
+public meta import LeanCategories.Catalogue.Registry.Extension
 
 
 

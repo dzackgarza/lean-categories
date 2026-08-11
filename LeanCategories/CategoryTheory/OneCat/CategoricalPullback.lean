@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Core.Classifier
+public import LeanCategories.CategoryTheory.OneCat.Classifier
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.Basic
 public import Mathlib.CategoryTheory.CatCommSq
 

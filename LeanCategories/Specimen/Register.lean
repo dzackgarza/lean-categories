@@ -5,7 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Specimen.Viability
-public import LeanCategories.Registry.Extension
+public import LeanCategories.Catalogue.Registry.Extension
 
 @[expose] public section
 

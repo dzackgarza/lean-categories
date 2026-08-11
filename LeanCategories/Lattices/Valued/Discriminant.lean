@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Lattices.Valued.MetricDual
 public import LeanCategories.Modules.Bilinear.Valued.Torsion
+public import LeanCategories.Modules.Bilinear.Valued.Cokernel
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
 
 @[expose] public section

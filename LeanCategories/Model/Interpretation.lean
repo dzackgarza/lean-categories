@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Core.CategoricalPullback
-public import LeanCategories.Core.Expr
+public import LeanCategories.CategoryTheory.OneCat.CategoricalPullback
+public import LeanCategories.Catalogue.Syntax
 public import LeanCategories.Model.Atomic
 
 @[expose] public section

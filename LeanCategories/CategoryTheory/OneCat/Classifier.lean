@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Core.Universes
+public import LeanCategories.CategoryTheory.OneCat.Universes
 public import Mathlib.CategoryTheory.Functor.FullyFaithful
 
 @[expose] public section

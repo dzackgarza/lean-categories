@@ -5,7 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Algebra.Rings
-public import LeanCategories.Core.Ids
+public import LeanCategories.Catalogue.Id
 
 @[expose] public section
 

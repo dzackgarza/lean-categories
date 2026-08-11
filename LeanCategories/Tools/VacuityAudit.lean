@@ -5,14 +5,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public meta import LeanCategories.All
-public meta import LeanCategories.Core.Linters
+public meta import LeanCategories.Tools.Linters
 
 @[expose] public meta section
 
 /-!
 # Vacuous-witness audit
 
-Drives `noBareNonempty` from `LeanCategories.Core.Linters` as a build-time gate over the
+Drives `noBareNonempty` from `LeanCategories.Tools.Linters` as a build-time gate over the
 whole environment. It is also a `Batteries.Tactic.Lint` linter. `#lint only
 noBareNonempty` runs it interactively, and `#list_linters` shows it.
 -/

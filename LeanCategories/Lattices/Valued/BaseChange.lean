@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Lattices.Valued.Arithmetic
 public import LeanCategories.Lattices.Valued.ChangeValue
+public import LeanCategories.Modules.Bilinear.Valued.Properties
 public import Mathlib.RingTheory.Flat.Basic
 
 @[expose] public section

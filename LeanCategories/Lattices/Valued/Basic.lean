@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Modules.Bilinear.Valued
+public import LeanCategories.Modules.Bilinear.Valued.Fixed
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.LinearAlgebra.BilinearForm.DualLattice
 public import Mathlib.LinearAlgebra.BilinearForm.TensorProduct

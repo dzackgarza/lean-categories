@@ -6,8 +6,8 @@ module
 
 public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.Basic
-public import LeanCategories.Core.ClassifierReindexing
-public import LeanCategories.Core.CategoricalPullback
+public import LeanCategories.CategoryTheory.OneCat.Reindex
+public import LeanCategories.CategoryTheory.OneCat.CategoricalPullback
 
 @[expose] public section
 

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Registry.Entry
-public import LeanCategories.Core.Classifier
+public import LeanCategories.Catalogue.Registry.Entry
+public import LeanCategories.CategoryTheory.OneCat.Classifier
 public import LeanCategories.Model.Interpretation
 public import Lean
 

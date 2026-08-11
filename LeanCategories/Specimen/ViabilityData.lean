@@ -5,11 +5,11 @@ statements) and `public meta` (so `native_decide` can compile them).
 -/
 module
 
-public import LeanCategories.Core.Expr
-public import LeanCategories.Core.Ids
+public import LeanCategories.Catalogue.Syntax
+public import LeanCategories.Catalogue.Id
 public import LeanCategories.Algebra.Magmas
 public import LeanCategories.Algebra.Rings
-public import LeanCategories.Core.StructuralMap
+public import LeanCategories.Catalogue.StructuralMap
 public import LeanCategories.Realization.Mathlib.Atomic
 
 @[expose] public section
