@@ -254,6 +254,13 @@ theorem isIIntegral_span_singleton_of_isUnit
 abbrev IsEven (L : IntegralLatticeCat R) : Prop :=
   IsIEven L (Ideal.span {(2 : R)})
 
+/-- The property of an integral lattice being even. -/
+def isEvenLattice : ObjectProperty (IntegralLatticeCat R) :=
+  fun L ↦ IsEven L
+
+/-- Even integral lattices and all form-preserving morphisms between them. -/
+abbrev EvenLatticeCat := (isEvenLattice (R := R)).FullSubcategory
+
 /-- The polar form of `x ↦ b(x,x)` is twice the symmetric pairing. -/
 theorem quadraticMap_polar (L : IntegralLatticeCat R)
     (x y : L.obj.carrier) :
