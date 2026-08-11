@@ -1,7 +1,7 @@
 # lean-categories — the shared Lean baseline of categorical constructions.
 #
 # Lake owns compilation and Mathlib supplies the dependency cache. Language-level
-# QC law is delegated to the global gate (~/ai-review-ci/justfiles/lean.just);
+# QC law is delegated to the declared ai-review-ci Lake dependency;
 # this file keeps only build entry points, the repo-supplied kernel-axiom audit,
 # and the repo's additive convention layer.
 #
@@ -11,6 +11,8 @@
 # debt. Do not add suppressions to adopt it sooner.
 
 set dotenv-load := true
+
+ai_review_ci := justfile_directory() / ".lake/packages/aiReviewCiLean"
 
 # Show available recipes
 default:
@@ -28,7 +30,7 @@ cache:
 # Run the complete repository quality gate
 test: build
     @lake exe lean-categories-export >/dev/null
-    @just -f ~/ai-review-ci/justfiles/lean.just -d . lean-no-sorry
+    @just -f {{ai_review_ci}}/justfiles/lean.just -d . lean-no-sorry
     @just _lint-conventions
     @just _lean-vacuity-audit
     @just _lean-mathlib-lint-audit
@@ -108,4 +110,4 @@ _lint-conventions:
 
 [private]
 test-push: test-ci
-    @just -f ~/ai-review-ci/justfiles/lean.just -d . lean-axiom-audit
+    @just -f {{ai_review_ci}}/justfiles/lean.just -d . lean-axiom-audit
