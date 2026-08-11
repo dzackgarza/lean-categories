@@ -59,16 +59,18 @@ theorem isAdic_maximalIdeal_adicCompletionIntegers :
         (pow_ne_zero n hϖ.ne_zero) |>.ne'
   rw [isAdic_iff]
   refine ⟨fun n ↦ ?_, fun s hs ↦ ?_⟩
-  · rw [hpow n, show {y : v.adicCompletionIntegers K |
+  · rw [hpow n]
+    have hset : {y : v.adicCompletionIntegers K |
         Valued.v (y : v.adicCompletion K) ≤
           Valued.v ((ϖ ^ n : _) : v.adicCompletion K)} =
       Subtype.val ⁻¹' {x : v.adicCompletion K |
         (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).restrict x ≤
           (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).restrict
-            ((ϖ ^ n : _) : v.adicCompletion K)} from by
+            ((ϖ ^ n : _) : v.adicCompletion K)} := by
         ext y
         simp only [Set.mem_setOf_eq, Set.mem_preimage,
-          Valuation.restrict_le_iff]]
+          Valuation.restrict_le_iff]
+    rw [hset]
     exact (Valued.isOpen_closedBall _ (by simpa using hϖ0 n)).preimage
       continuous_subtype_val
   · rw [mem_nhds_subtype] at hs
