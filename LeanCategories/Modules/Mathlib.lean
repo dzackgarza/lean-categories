@@ -11,7 +11,7 @@ public import Mathlib.RingTheory.Finiteness.Basic
 public import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
-public import LeanCategories.Algebra.Mathlib
+public import LeanCategories.Algebra.Concrete.Rings
 
 @[expose] public section
 

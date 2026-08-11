@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Algebra.Rings
+public import LeanCategories.Algebra.Catalogue.Rings
 public import LeanCategories.Catalogue.Id
 
 @[expose] public section
@@ -20,7 +20,7 @@ namespace LeanCategories.Names
 
 open LeanCategories
 
-abbrev CommutativeRings := Algebra.Rings.CommutativeRings
+abbrev CommutativeRings := Algebra.Catalogue.Rings.CommutativeRings
 
 /-- Spelling alias — registry id `alias.crings`. -/
 abbrev CRings := CategoryId.commutativeRings

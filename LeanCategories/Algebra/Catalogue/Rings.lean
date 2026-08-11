@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Algebra.Magmas
+public import LeanCategories.Algebra.Catalogue.Magmas
 public import LeanCategories.Algebra.Catalogue
 
 @[expose] public section
@@ -17,10 +17,10 @@ Owns the two-operation host interface and ring names. Does **not** redeclare
 multiplicative port.
 -/
 
-namespace LeanCategories.Algebra.Rings
+namespace LeanCategories.Algebra.Catalogue.Rings
 
 open LeanCategories
-open Algebra.Magmas
+open Algebra.Catalogue.Magmas
 
 /-- The two-operation host is intentionally opaque at this presentation layer. -/
 def MagmasWithTwoOperations : CategoryExpr := .opaque CategoryId.magmasWithTwoOperations
@@ -42,4 +42,4 @@ def CommutativeRings : CategoryExpr :=
 def DivisionRings : CategoryExpr :=
   .refine (.atom CategoryId.rings) ClassifierId.ringsDivision none
 
-end LeanCategories.Algebra.Rings
+end LeanCategories.Algebra.Catalogue.Rings

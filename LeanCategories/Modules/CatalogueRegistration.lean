@@ -28,7 +28,7 @@ noncomputable def finiteRankModulesRealization (R : RingCat.{u}) :
 
 noncomputable def modulesFamilyRealization :
     CategoryFamilyRealization CategoryFamilyId.modules where
-  Parameter := RingCat.{u}
+  Parameters := RingCat.{u}
   fibre := Modules.Mathlib.ModulesOf
 
 noncomputable def freeRealization (R : RingCat.{u}) :
@@ -69,7 +69,7 @@ normalized_registry .category
 
 normalized_registry .categoryFamily
   { id := CategoryFamilyId.modules, canonicalName := "Modules(R)"
-    parameter := { name := "R", kind := ParameterKindId.ringObject }
+    parameters := #[{ name := "R", kind := ParameterKindId.ringObject }]
     realization := `LeanCategories.Modules.CatalogueRegistration.modulesFamilyRealization
     variance := VarianceId.restrictionOfScalarsContravariant }
 

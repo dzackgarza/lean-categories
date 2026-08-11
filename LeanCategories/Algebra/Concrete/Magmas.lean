@@ -27,7 +27,7 @@ public import LeanCategories.Foundation.Mathlib
   with inverse- and unit-preserving morphisms.
 -/
 
-namespace LeanCategories.Algebra.Mathlib
+namespace LeanCategories.Algebra
 
 open CategoryTheory
 open LeanCategories
@@ -199,18 +199,4 @@ def AdditiveMagmas : ObjCat.{u + 1, u} := Cat.of AddMagmaCat.{u}
 def AdditiveSemigroups : ObjCat.{u + 1, u} := Cat.of AddSemigrp.{u}
 def AdditiveMonoids : ObjCat.{u + 1, u} := Cat.of AddMonCat.{u}
 def AdditiveGroups : ObjCat.{u + 1, u} := Cat.of AddGrpCat.{u}
-def Rings : ObjCat.{u + 1, u} := Cat.of RingCat.{u}
-def CommutativeRings : ObjCat.{u + 1, u} := Cat.of CommRingCat.{u}
-
-def IsDivisionRing (R : RingCat.{u}) : Prop := Nonempty (DivisionRing R)
-
-abbrev DivisionRingCat : Type (u + 1) :=
-  ObjectProperty.FullSubcategory (C := RingCat.{u}) IsDivisionRing
-
-noncomputable def divisionOnRings : Classifier Rings where
-  total := Cat.of DivisionRingCat.{u}
-  forget := (ObjectProperty.ι (C := RingCat.{u}) IsDivisionRing).toCatHom
-
-noncomputable def DivisionRings : ObjCat.{u + 1, u} := divisionOnRings.total
-
-end LeanCategories.Algebra.Mathlib
+end LeanCategories.Algebra

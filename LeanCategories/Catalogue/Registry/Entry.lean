@@ -39,13 +39,13 @@ structure CategoryFamilyParameter where
 /--
 A parameterized category family, distinct from any selected category node.
 
-The typed realization supplies the parameter type and its category-valued fibre.
+The typed realization supplies the parameter data and its category-valued fibre.
 The registry records transport orientation separately.
 -/
 structure CategoryFamilyEntry where
   id : CategoryFamilyId
   canonicalName : String
-  parameter : CategoryFamilyParameter
+  parameters : Array CategoryFamilyParameter
   realization : Lean.Name
   variance : VarianceId
   deriving Repr, Inhabited

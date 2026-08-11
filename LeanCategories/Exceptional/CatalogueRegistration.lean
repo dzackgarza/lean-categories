@@ -1,13 +1,13 @@
 module
 
-public import LeanCategories.Algebra.Rings
+public import LeanCategories.Algebra.Catalogue.Rings
 public import LeanCategories.Catalogue.Registry.Extension
 public import LeanCategories.Exceptional.Mathlib
 public import LeanCategories.Foundation.Expressions
 public import LeanCategories.Exceptional.Catalogue
 public meta import LeanCategories.Catalogue.Registry.Extension
 public meta import LeanCategories.Exceptional.Catalogue
-public meta import LeanCategories.Algebra.Rings
+public meta import LeanCategories.Algebra.Catalogue.Rings
 
 @[expose] public section
 
@@ -20,12 +20,12 @@ universe u
 def CrystalsExpr : CategoryExpr := .opaque CategoryId.crystals
 
 noncomputable def m2oRealization :
-    CategoryRealization Algebra.Rings.MagmasWithTwoOperations
+    CategoryRealization Algebra.Catalogue.Rings.MagmasWithTwoOperations
       Exceptional.Mathlib.MagmasWithTwoOperations := ⟨⟩
 noncomputable def crystalsRealization :
     CategoryRealization CrystalsExpr Exceptional.Mathlib.Crystals := ⟨⟩
 noncomputable def distributiveRealization :
-    ClassifierRealization Algebra.Rings.MagmasWithTwoOperations
+    ClassifierRealization Algebra.Catalogue.Rings.MagmasWithTwoOperations
       ClassifierId.m2oDistributive Exceptional.Mathlib.MagmasWithTwoOperations
       Exceptional.Mathlib.distributive := ⟨⟩
 
@@ -33,7 +33,7 @@ normalized_registry .category
   { id := CategoryId.magmasWithTwoOperations
     canonicalName := "MagmasWithTwoOperations"
     declaration := `LeanCategories.Exceptional.Mathlib.MagmasWithTwoOperations
-    expression := Algebra.Rings.MagmasWithTwoOperations
+    expression := Algebra.Catalogue.Rings.MagmasWithTwoOperations
     realization := `LeanCategories.Exceptional.CatalogueRegistration.m2oRealization
     origin := .opaqueCategory, visibility := .semanticOnly }
 normalized_registry .category
@@ -46,7 +46,7 @@ normalized_registry .category
 normalized_registry .classifier
   { id := ClassifierId.m2oDistributive, canonicalName := "Distributive"
     declaration := `LeanCategories.Exceptional.Mathlib.distributive
-    host := Algebra.Rings.MagmasWithTwoOperations
+    host := Algebra.Catalogue.Rings.MagmasWithTwoOperations
     realization := `LeanCategories.Exceptional.CatalogueRegistration.distributiveRealization
     visibility := .present }
 

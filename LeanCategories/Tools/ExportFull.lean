@@ -103,7 +103,11 @@ def validate (j : Json) : Except String Unit := do
   let familyId ← family.getObjValAs? String "id"
   if familyId != "fam.modules" then
     throw s!"expected the Modules family, got {familyId}"
-  let parameter ← family.getObjValAs? Json "parameter"
+  let parameters ← family.getObjValAs? (Array Json) "parameters"
+  if parameters.size != 1 then
+    throw s!"Modules family must have one parameter, got {parameters.size}"
+  let some parameter := parameters[0]?
+    | throw "registered Modules family has no parameter"
   let parameterKind ← parameter.getObjValAs? String "kind"
   if parameterKind != "parameter-kind.ring-object" then
     throw s!"Modules family parameter must be a RingCat object, got {parameterKind}"

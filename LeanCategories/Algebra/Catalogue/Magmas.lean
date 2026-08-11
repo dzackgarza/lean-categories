@@ -17,7 +17,7 @@ Owns Magmas and the magma classifiers Associative / Commutative / Unital / Inver
 plus standard names Semigroups / Monoids / Groups as expressions.
 -/
 
-namespace LeanCategories.Algebra.Magmas
+namespace LeanCategories.Algebra.Catalogue.Magmas
 
 open LeanCategories
 /-- Magmas := total(BinaryOperation on Sets). -/
@@ -44,4 +44,4 @@ def AdditiveMonoids : CategoryExpr :=
 def AdditiveGroups : CategoryExpr :=
   .refine AdditiveMonoids Inverse (some RouteId.additive)
 
-end LeanCategories.Algebra.Magmas
+end LeanCategories.Algebra.Catalogue.Magmas

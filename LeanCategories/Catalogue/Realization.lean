@@ -24,8 +24,8 @@ structure CategoryRealization (expression : CategoryExpr)
 
 /-- An actual parameterized family assigned to a family identifier. -/
 structure CategoryFamilyRealization (identifier : CategoryFamilyId) where
-  Parameter : Type uParam
-  fibre : Parameter → ObjCat.{uObj, uHom}
+  Parameters : Type uParam
+  fibre : Parameters → ObjCat.{uObj, uHom}
 
 /-- An actual classifier assigned to a symbolic host and classifier identifier. -/
 structure ClassifierRealization (host : CategoryExpr) (identifier : ClassifierId)
