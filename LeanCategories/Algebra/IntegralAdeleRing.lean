@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.NumberTheory.NumberField.AdeleRing
+public import Mathlib.RingTheory.LocalRing.Pullback
 
 /-!
 # Integral adele rings
@@ -147,6 +148,49 @@ theorem mem_range_inclusion_iff (x : NumberField.AdeleRing R K) :
     apply RestrictedProduct.ext
     intro v
     rfl
+
+/-- The finite projection from the field adele ring. -/
+def finiteProjection : NumberField.AdeleRing R K →ₐ[R] FiniteAdeleRing R K where
+  toFun := Prod.snd
+  map_one' := rfl
+  map_mul' _ _ := rfl
+  map_zero' := rfl
+  map_add' _ _ := rfl
+  commutes' _ := rfl
+
+/-- The algebraic pullback of the finite projection and the integral finite inclusion. -/
+abbrev Pullback := AlgHom.pullback (finiteProjection R K)
+  (FiniteIntegralAdeleRing.inclusion R K).toAlgHom
+
+/-- The product presentation of ring adeles is the intrinsic pullback presentation. -/
+def pullbackAlgEquiv : RingAdeleRing R K ≃ₐ[R] Pullback R K where
+  toFun x := ⟨(inclusion R K x, x.2), rfl⟩
+  invFun x := (x.1.1.1, x.1.2)
+  left_inv _ := rfl
+  right_inv x := by
+    apply Subtype.ext
+    apply Prod.ext
+    · apply Prod.ext
+      · rfl
+      · exact x.2.symm
+    · rfl
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
+  commutes' _ := by
+    apply Subtype.ext
+    apply Prod.ext
+    · exact (inclusion R K).commutes _
+    · rfl
+
+@[simp]
+theorem pullbackAlgEquiv_apply_fst (x : RingAdeleRing R K) :
+    (pullbackAlgEquiv R K x).1.1 = inclusion R K x :=
+  rfl
+
+@[simp]
+theorem pullbackAlgEquiv_apply_snd (x : RingAdeleRing R K) :
+    (pullbackAlgEquiv R K x).1.2 = x.2 :=
+  rfl
 
 end RingAdeleRing
 
