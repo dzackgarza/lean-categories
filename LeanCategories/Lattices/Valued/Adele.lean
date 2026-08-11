@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Algebra.IntegralAdeleRing
 public import LeanCategories.Lattices.Valued.BaseChange
+public import LeanCategories.Lattices.Valued.OrthogonalGroup
 
 /-!
 # Adelic scalar extension of integral lattices
@@ -185,6 +186,16 @@ theorem finiteIntegralAdeleBaseChange_pairing_apply
   rw [← baseChangeIntegralBilinMap_apply, ← baseChangeIntegralBilinMap_apply]
   exact congrFun (LinearMap.congr_fun
     (LinearMap.congr_fun (finiteIntegralAdelePairing_eq_localPairing K L) x) y) v
+
+/-- The orthogonal group of the full ring-adelic scalar extension. -/
+abbrev RingAdelicOrthogonalGroup
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :=
+  BilinModuleCat.OrthogonalGroup ((finiteRingAdeleBaseChange K).obj L).obj.obj
+
+/-- The orthogonal group of the integral finite adelic scalar extension. -/
+abbrev FiniteIntegralAdelicOrthogonalGroup
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :=
+  BilinModuleCat.OrthogonalGroup ((finiteIntegralAdeleBaseChange K).obj L).obj.obj
 
 /-- Two finite projective integral lattices have the same genus when their adelic scalar
 extensions are isometric. -/
