@@ -127,6 +127,65 @@ theorem finiteIntegralAdeleBaseChange_pairing_tmul_apply
     _ = _ := (baseChangeIntegral_pairing_tmul (𝓞 K)
       (v.adicCompletionIntegers K) L.obj (a v) (b v) x y).symm
 
+/-- The finite adelic form as an `𝓞 K`-bilinear map on its explicit tensor carrier. -/
+def finiteIntegralAdelePairing
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    TensorProduct (𝓞 K) (FiniteIntegralAdeleRing (𝓞 K) K) L.obj.obj.carrier →ₗ[𝓞 K]
+      TensorProduct (𝓞 K) (FiniteIntegralAdeleRing (𝓞 K) K) L.obj.obj.carrier →ₗ[𝓞 K]
+        FiniteIntegralAdeleRing (𝓞 K) K :=
+  (baseChangeIntegralBilinMap (𝓞 K)
+    (FiniteIntegralAdeleRing (𝓞 K) K) L.obj).restrictScalars₁₂ (𝓞 K) (𝓞 K)
+
+/-- The product of all local scalar-extension forms. -/
+def finiteAdeleLocalPairing
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    TensorProduct (𝓞 K) (FiniteIntegralAdeleRing (𝓞 K) K) L.obj.obj.carrier →ₗ[𝓞 K]
+      TensorProduct (𝓞 K) (FiniteIntegralAdeleRing (𝓞 K) K) L.obj.obj.carrier →ₗ[𝓞 K]
+        FiniteIntegralAdeleRing (𝓞 K) K :=
+  LinearMap.mk₂ (𝓞 K)
+    (fun x y v ↦ baseChangeIntegralBilinMap (𝓞 K)
+      (v.adicCompletionIntegers K) L.obj
+        (finiteAdeleLocalCarrierEquiv K L x v)
+        (finiteAdeleLocalCarrierEquiv K L y v))
+    (by intro x₁ x₂ y; funext v; simp)
+    (by intro r x y; funext v; simp)
+    (by intro x y₁ y₂; funext v; simp)
+    (by intro r x y; funext v; simp)
+
+/-- The finite adelic form is the product of its local scalar-extension forms. -/
+theorem finiteIntegralAdelePairing_eq_localPairing
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    finiteIntegralAdelePairing K L = finiteAdeleLocalPairing K L := by
+  apply LinearMap.ext
+  intro x
+  induction x using TensorProduct.induction_on with
+  | zero => simp
+  | tmul a x =>
+      apply LinearMap.ext
+      intro y
+      induction y using TensorProduct.induction_on with
+      | zero => simp
+      | tmul b y =>
+          funext v
+          simp [finiteIntegralAdelePairing, finiteAdeleLocalPairing]
+      | add y₁ y₂ hy₁ hy₂ => simp only [map_add, hy₁, hy₂]
+  | add x₁ x₂ hx₁ hx₂ => simp only [map_add, hx₁, hx₂]
+
+/-- Every pair of finite adelic vectors has the coordinatewise local pairing. -/
+theorem finiteIntegralAdeleBaseChange_pairing_apply
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K))
+    (x y : TensorProduct (𝓞 K)
+      (FiniteIntegralAdeleRing (𝓞 K) K) L.obj.obj.carrier)
+    (v : HeightOneSpectrum (𝓞 K)) :
+    ((baseChangeIntegral (𝓞 K)
+      (FiniteIntegralAdeleRing (𝓞 K) K)).obj L.obj).obj.pairing x y v =
+      ((baseChangeIntegral (𝓞 K) (v.adicCompletionIntegers K)).obj L.obj).obj.pairing
+        (finiteAdeleLocalCarrierEquiv K L x v)
+        (finiteAdeleLocalCarrierEquiv K L y v) := by
+  rw [← baseChangeIntegralBilinMap_apply, ← baseChangeIntegralBilinMap_apply]
+  exact congrFun (LinearMap.congr_fun
+    (LinearMap.congr_fun (finiteIntegralAdelePairing_eq_localPairing K L) x) y) v
+
 /-- Two finite projective integral lattices have the same genus when their adelic scalar
 extensions are isometric. -/
 def SameAdeleGenus

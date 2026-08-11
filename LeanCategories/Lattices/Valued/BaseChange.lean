@@ -351,6 +351,33 @@ theorem baseChangeIntegral_pairing_tmul
       ((a * b) ⊗ₜ[R] L.obj.pairing x y) = _
   simp [Algebra.smul_def, mul_comm]
 
+/-- The bilinear map underlying integral scalar extension, on its explicit tensor carrier. -/
+def baseChangeIntegralBilinMap
+    (S : Type u) [CommRing S] [Algebra R S]
+    (L : IntegralLatticeCat R) :
+    LinearMap.BilinMap S (TensorProduct R S L.obj.carrier) S :=
+  (LinearMap.BilinMap.baseChange S L.obj.bilinMap).compr₂
+    (TensorProduct.AlgebraTensorModule.rid R S S).toLinearMap
+
+@[simp]
+theorem baseChangeIntegralBilinMap_tmul
+    (S : Type u) [CommRing S] [Algebra R S]
+    (L : IntegralLatticeCat R) (a b : S) (x y : L.obj.carrier) :
+    baseChangeIntegralBilinMap R S L (a ⊗ₜ[R] x) (b ⊗ₜ[R] y) =
+      (a * b) * algebraMap R S (L.obj.pairing x y) := by
+  simp [baseChangeIntegralBilinMap, LinearMap.BilinMap.baseChange_tmul,
+    Algebra.smul_def, mul_comm]
+
+/-- The explicit scalar-extension bilinear map equals the form carried by the
+scalar-extension object. -/
+theorem baseChangeIntegralBilinMap_apply
+    (S : Type u) [CommRing S] [Algebra R S]
+    (L : IntegralLatticeCat R)
+    (x y : TensorProduct R S L.obj.carrier) :
+    baseChangeIntegralBilinMap R S L x y =
+      ((baseChangeIntegral R S).obj L).obj.pairing x y :=
+  rfl
+
 /-- Scalar extension of finite projective integral lattices. -/
 noncomputable def baseChangeFiniteIntegral
     (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] :
