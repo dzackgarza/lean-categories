@@ -17,6 +17,7 @@ public import LeanCategories.Catalogue.Presentation.Nodes
 public import LeanCategories.Algebra.Concrete.Magmas
 public import LeanCategories.Algebra.Concrete.Rings
 public import LeanCategories.Algebra.FractionalIdeals
+public import LeanCategories.Algebra.IntegralAdeleRing
 public import LeanCategories.Names.Standard
 public import LeanCategories.Modules.Framed
 public import LeanCategories.Modules.Bilinear.Valued
