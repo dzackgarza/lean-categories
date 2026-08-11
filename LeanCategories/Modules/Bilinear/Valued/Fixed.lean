@@ -253,40 +253,40 @@ theorem defectProjection_surjective (L : BilinModuleCat R W) :
     Function.Surjective L.defectProjection :=
   Submodule.mkQ_surjective _
 
-/-- The form is left-separating when its left radical vanishes. -/
-def IsLeftSeparating (L : BilinModuleCat R W) : Prop :=
+/-- A form is left-nondegenerate when `b(x,-) = 0` implies `x = 0`. -/
+def IsLeftNondegenerate (L : BilinModuleCat R W) : Prop :=
   L.bilinMap.SeparatingLeft
 
-/-- The form is right-separating when its right radical vanishes. -/
-def IsRightSeparating (L : BilinModuleCat R W) : Prop :=
+/-- A form is right-nondegenerate when `b(-,y) = 0` implies `y = 0`. -/
+def IsRightNondegenerate (L : BilinModuleCat R W) : Prop :=
   L.bilinMap.SeparatingRight
 
-/-- A form is nondegenerate when it is both left- and right-separating. -/
+/-- A form is nondegenerate when it is both left- and right-nondegenerate. -/
 def IsNondegenerate (L : BilinModuleCat R W) : Prop :=
-  L.bilinMap.Nondegenerate
+  L.IsLeftNondegenerate ∧ L.IsRightNondegenerate
 
-theorem isLeftSeparating_iff_leftRadical_eq_bot (L : BilinModuleCat R W) :
-    L.IsLeftSeparating ↔ L.leftRadical = ⊥ :=
+theorem isLeftNondegenerate_iff_leftRadical_eq_bot (L : BilinModuleCat R W) :
+    L.IsLeftNondegenerate ↔ L.leftRadical = ⊥ :=
   LinearMap.separatingLeft_iff_ker_eq_bot
 
-theorem isRightSeparating_iff_rightRadical_eq_bot (L : BilinModuleCat R W) :
-    L.IsRightSeparating ↔ L.rightRadical = ⊥ :=
+theorem isRightNondegenerate_iff_rightRadical_eq_bot (L : BilinModuleCat R W) :
+    L.IsRightNondegenerate ↔ L.rightRadical = ⊥ :=
   LinearMap.separatingRight_iff_flip_ker_eq_bot
 
-theorem isLeftSeparating_iff_adjoint_injective (L : BilinModuleCat R W) :
-    L.IsLeftSeparating ↔ Function.Injective L.adjoint := by
-  rw [isLeftSeparating_iff_leftRadical_eq_bot]
+theorem isLeftNondegenerate_iff_adjoint_injective (L : BilinModuleCat R W) :
+    L.IsLeftNondegenerate ↔ Function.Injective L.adjoint := by
+  rw [isLeftNondegenerate_iff_leftRadical_eq_bot]
   exact LinearMap.ker_eq_bot
 
-theorem isRightSeparating_iff_rightAdjoint_injective (L : BilinModuleCat R W) :
-    L.IsRightSeparating ↔ Function.Injective L.rightAdjoint := by
-  rw [isRightSeparating_iff_rightRadical_eq_bot]
+theorem isRightNondegenerate_iff_rightAdjoint_injective (L : BilinModuleCat R W) :
+    L.IsRightNondegenerate ↔ Function.Injective L.rightAdjoint := by
+  rw [isRightNondegenerate_iff_rightRadical_eq_bot]
   exact LinearMap.ker_eq_bot
 
 theorem isNondegenerate_iff_radicals_eq_bot (L : BilinModuleCat R W) :
     L.IsNondegenerate ↔ L.leftRadical = ⊥ ∧ L.rightRadical = ⊥ := by
-  exact and_congr L.isLeftSeparating_iff_leftRadical_eq_bot
-    L.isRightSeparating_iff_rightRadical_eq_bot
+  exact and_congr L.isLeftNondegenerate_iff_leftRadical_eq_bot
+    L.isRightNondegenerate_iff_rightRadical_eq_bot
 
 /-- For a symmetric form, left separation is equivalent to nondegeneracy. -/
 theorem isNondegenerate_iff_adjoint_injective_of_isSymmetric
@@ -294,10 +294,10 @@ theorem isNondegenerate_iff_adjoint_injective_of_isSymmetric
     L.IsNondegenerate ↔ Function.Injective L.adjoint := by
   constructor
   · intro h
-    exact L.isLeftSeparating_iff_adjoint_injective.mp h.1
+    exact L.isLeftNondegenerate_iff_adjoint_injective.mp h.1
   · intro h
-    have hleft : L.IsLeftSeparating :=
-      L.isLeftSeparating_iff_adjoint_injective.mpr h
+    have hleft : L.IsLeftNondegenerate :=
+      L.isLeftNondegenerate_iff_adjoint_injective.mpr h
     refine ⟨hleft, ?_⟩
     intro y hy
     apply h
@@ -330,8 +330,8 @@ theorem isPerfect_iff_adjoint_bijective_of_isSymmetric
 /-- A perfect form is nondegenerate. -/
 theorem isNondegenerate_of_isPerfect (L : BilinModuleCat R W)
     (hL : L.IsPerfect) : L.IsNondegenerate :=
-  ⟨L.isLeftSeparating_iff_adjoint_injective.mpr hL.1.1,
-    L.isRightSeparating_iff_rightAdjoint_injective.mpr hL.2.1⟩
+  ⟨L.isLeftNondegenerate_iff_adjoint_injective.mpr hL.1.1,
+    L.isRightNondegenerate_iff_rightAdjoint_injective.mpr hL.2.1⟩
 
 end BilinModuleCat
 

@@ -632,8 +632,8 @@ theorem exact_radical_toMetricDual_iff (L : IntegralLatticeCat R) :
   rw [eq_comm]
   exact ((L.obj.isNondegenerate_iff_adjoint_injective_of_isSymmetric
     L.property.2).trans
-      (L.obj.isLeftSeparating_iff_adjoint_injective.symm.trans
-        L.obj.isLeftSeparating_iff_leftRadical_eq_bot)).symm
+      (L.obj.isLeftNondegenerate_iff_adjoint_injective.symm.trans
+        L.obj.isLeftNondegenerate_iff_leftRadical_eq_bot)).symm
 
 /-- The radical-to-metric-dual sequence is exact for a nondegenerate lattice. -/
 theorem exact_radical_toMetricDual (L : IntegralLatticeCat R)
