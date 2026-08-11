@@ -367,6 +367,36 @@ Before citing any paper, book, or theorem number, in order:
 
 4. **Report searches in the reuse gate's form** — name the scope searched (§10.7).
 
+### Read the Zotero extraction corpus
+
+Search the local Zotero Markdown extractions before searching the web or relying on memory.
+The extraction corpus is live under `~/Zotero/storage`; it is not a repository mirror.
+
+```bash
+cd /home/dzack/zotero-library
+just search 'period domain' -- -C2
+just search 'Nikulin' -- -w
+```
+
+`just search` performs a case-insensitive regular-expression search over
+`*_extracted.md` files. It prints matching lines, the parent Zotero key, and a
+`zotero://select` link. Treat this output as a locator. Read the matching Markdown
+attachment itself and record the relevant line numbers or page markers. A search miss
+means only that the inspected extraction corpus had no match.
+
+Resolve the source identity through live Zotero before citing it. Call `health()` first,
+then use `get_data(parent_key)` for the parent and paginated `get_children(parent_key)`
+to find the child whose `data.contentType` is `text/markdown` and whose filename ends in
+`_extracted.md`. Read that file at
+`~/Zotero/storage/<attachment-key>/<filename>`. If the desktop or local addon is down,
+report that blocker; do not use the cloud API or a translation-server fallback.
+
+The parent item's `data.citationKey` is the Better BibTeX key. Use that exact key in the
+target document's citation syntax: `[@key]` in Pandoc Markdown or `\cite{key}` in
+LaTeX. Add a locator when the extraction supplies one, for example `[@key, p. 12]`.
+Never invent a key, derive one from the author or year, or cite only the Zotero key.
+When reporting a source, include its Zotero key, Better BibTeX key, creator, and title.
+
 What this gate buys: a citation that resolves, a statement checked against the page, and the auxiliary notions the source's own definition requires. The third is the one that pays — a definition transcribed from the page brings its ingredients with it, and those ingredients are how the catalogue learns which invariants it still owes.
 
 ---
