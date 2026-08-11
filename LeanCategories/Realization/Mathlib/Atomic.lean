@@ -58,18 +58,19 @@ noncomputable def atomicModel : AtomicModel.{u + 1, u} :=
     evalAtom atomicModel CategoryId.sets = some (Normalized.Sets atomicModel) := rfl
 
 /-- Concrete binding used to evaluate the specimen family expression over `ℤ`. -/
-def specimenRingBinding (id : RingParameterId) : Option RingCat.{0} :=
-  if id == RingParameterId.r then some (RingCat.of ℤ) else none
+def specimenRingBinding (id : ParameterId) : Option RingCat.{0} :=
+  if id == ParameterId.r then some (RingCat.of ℤ) else none
 
 example :
     (evalCategory atomicModel.{0} specimenRingBinding (.empty atomicModel)
-      (.familyApp CategoryFamilyId.modules #[.ringVariable RingParameterId.r])).isSome = true := by
+      (.familyApp CategoryFamilyId.modules #[.variable ParameterId.r])).isSome = true := by
   simp [evalCategory, forgetfulToModules,
     Normalized.moduleParameter, specimenRingBinding]
 
 example :
     (evalCategory atomicModel.{0} specimenRingBinding (.empty atomicModel)
-      (.familyApp CategoryFamilyId.modules #[.opposite (.ringVariable RingParameterId.r)])).isSome =
+      (.familyApp CategoryFamilyId.modules
+        #[.apply ParameterOperationId.opposite (.variable ParameterId.r)])).isSome =
       true := by
   change (some (Normalized.Modules atomicModel (oppositeRing (RingCat.of ℤ)))).isSome = true
   rfl
@@ -82,7 +83,7 @@ example :
 example :
     (evalCategory atomicModel.{0} specimenRingBinding (.empty atomicModel)
       (.familyApp CategoryFamilyId.modules
-        #[.ringVariable RingParameterId.r, .ringVariable RingParameterId.r])).isNone = true := by
+        #[.variable ParameterId.r, .variable ParameterId.r])).isNone = true := by
   simp [evalCategory, forgetfulToModules]
 
 /-- Normalized Magmas from the Mathlib model. -/

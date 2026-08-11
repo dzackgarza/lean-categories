@@ -105,10 +105,10 @@ def validate (j : Json) : Except String Unit := do
     throw s!"expected the Modules family, got {familyId}"
   let parameter ← family.getObjValAs? Json "parameter"
   let parameterKind ← parameter.getObjValAs? String "kind"
-  if parameterKind != "RingCatObject" then
+  if parameterKind != "parameter-kind.ring-object" then
     throw s!"Modules family parameter must be a RingCat object, got {parameterKind}"
   let variance ← family.getObjValAs? String "variance"
-  if variance != "restrictionOfScalarsContravariant" then
+  if variance != "variance.restriction-of-scalars-contravariant" then
     throw s!"Modules family variance must be contravariant restriction of scalars, got {variance}"
   pure ()
 

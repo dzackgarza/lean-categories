@@ -293,11 +293,14 @@ def ModuleRingObjects : ObjCat := M.modules.RingObjects
 def Modules (R : M.modules.RingObjects) : ObjCat := M.modules.modules R
 
 /-- Interpret a typed parameter expression in an explicit variable environment. -/
-def moduleParameter (resolve : RingParameterId → Option M.modules.RingObjects)
+def moduleParameter (resolve : ParameterId → Option M.modules.RingObjects)
     (parameter : ParameterExpr) : Option M.modules.RingObjects :=
   match parameter with
-  | .ringVariable id => resolve id
-  | .opposite parameter => M.modules.oppositeRing <$> moduleParameter resolve parameter
+  | .variable id => resolve id
+  | .apply operation argument =>
+      if operation == ParameterOperationId.opposite then
+        M.modules.oppositeRing <$> moduleParameter resolve argument
+      else none
 
 def FreeModules (R : M.modules.RingObjects) : ObjCat := (M.modules.free R).total
 

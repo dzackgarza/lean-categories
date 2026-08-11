@@ -547,7 +547,7 @@ example :
 
 example :
     Option.isNone (project specimenCtx
-      (.familyApp CategoryFamilyId.modules #[.ringVariable RingParameterId.r, .ringVariable RingParameterId.r])
+      (.familyApp CategoryFamilyId.modules #[.variable ParameterId.r, .variable ParameterId.r])
       (.atom CategoryId.sets) .none) = true := by
   native_decide
 

@@ -20,8 +20,8 @@ namespace LeanCategories
 
 /-- Parameter expression for family applications (symbolic). -/
 inductive ParameterExpr
-  | ringVariable (id : RingParameterId)
-  | opposite (of : ParameterExpr)
+  | variable (id : ParameterId)
+  | apply (operation : ParameterOperationId) (argument : ParameterExpr)
   deriving DecidableEq, Repr
 
 /-- Normalized symbolic category language. -/

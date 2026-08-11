@@ -30,20 +30,10 @@ structure NamedCategoryEntry where
   visibility : Visibility
   deriving Repr, Inhabited
 
-/-- The sort of an explicitly bound category-family parameter. -/
-inductive CategoryFamilyParameterKind
-  | ringObject
-  deriving DecidableEq, Repr, Inhabited
-
-/-- Declared variance of a category family.  This does not assert a registered action on morphisms. -/
-inductive CategoryFamilyVariance
-  | restrictionOfScalarsContravariant
-  deriving DecidableEq, Repr, Inhabited
-
 /-- A bound parameter of a category family. -/
 structure CategoryFamilyParameter where
   name : String
-  kind : CategoryFamilyParameterKind
+  kind : ParameterKindId
   deriving Repr, Inhabited
 
 /--
@@ -59,7 +49,7 @@ structure CategoryFamilyEntry where
   declaration : Lean.Name
   parameter : CategoryFamilyParameter
   fibreDeclaration : Lean.Name
-  variance : CategoryFamilyVariance
+  variance : VarianceId
   deriving Repr, Inhabited
 
 /-- Classifier registry row. -/

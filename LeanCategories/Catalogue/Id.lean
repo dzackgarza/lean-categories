@@ -31,8 +31,23 @@ structure CategoryFamilyId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 
-/-- Stable identity of a ring parameter variable in a category-family expression. -/
-structure RingParameterId where
+/-- Stable identity of a parameter variable in a category-family expression. -/
+structure ParameterId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
+/-- Stable identity of an operation on symbolic parameters. -/
+structure ParameterOperationId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
+/-- Stable identity of a category-family parameter kind. -/
+structure ParameterKindId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
+/-- Stable identity of a category-family variance declaration. -/
+structure VarianceId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 
@@ -151,10 +166,26 @@ def modules : CategoryFamilyId := ⟨"fam.modules"⟩
 instance : Inhabited CategoryFamilyId := ⟨modules⟩
 end CategoryFamilyId
 
-namespace RingParameterId
-def r : RingParameterId := ⟨"R"⟩
-instance : Inhabited RingParameterId := ⟨r⟩
-end RingParameterId
+namespace ParameterId
+def r : ParameterId := ⟨"R"⟩
+instance : Inhabited ParameterId := ⟨r⟩
+end ParameterId
+
+namespace ParameterOperationId
+def opposite : ParameterOperationId := ⟨"parameter.opposite"⟩
+instance : Inhabited ParameterOperationId := ⟨opposite⟩
+end ParameterOperationId
+
+namespace ParameterKindId
+def ringObject : ParameterKindId := ⟨"parameter-kind.ring-object"⟩
+instance : Inhabited ParameterKindId := ⟨ringObject⟩
+end ParameterKindId
+
+namespace VarianceId
+def restrictionOfScalarsContravariant : VarianceId :=
+  ⟨"variance.restriction-of-scalars-contravariant"⟩
+instance : Inhabited VarianceId := ⟨restrictionOfScalarsContravariant⟩
+end VarianceId
 
 namespace PortId
 def additive : PortId := ⟨"port.additive"⟩

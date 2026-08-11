@@ -157,9 +157,9 @@ normalized_registry .categoryFamily
   { id := CategoryFamilyId.modules
     canonicalName := "Modules(R)"
     declaration := `LeanCategories.Normalized.Modules
-    parameter := { name := "R", kind := .ringObject }
+    parameter := { name := "R", kind := ParameterKindId.ringObject }
     fibreDeclaration := `LeanCategories.Normalized.Modules
-    variance := .restrictionOfScalarsContravariant }
+    variance := VarianceId.restrictionOfScalarsContravariant }
 
 normalized_registry .classifier
   { id := ClassifierId.setsFinite, canonicalName := "Finite"

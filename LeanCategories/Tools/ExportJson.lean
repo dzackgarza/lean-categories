@@ -26,8 +26,13 @@ open Specimen
 def object (fields : List (String × Json)) : Json := Json.mkObj fields
 
 def parameterJson : ParameterExpr → Json
-  | .ringVariable id => object [("tag", "ringVariable"), ("id", id.raw)]
-  | .opposite p => object [("tag", "opposite"), ("of", parameterJson p)]
+  | .variable id => object [("tag", "variable"), ("id", id.raw)]
+  | .apply operation argument =>
+      object [
+        ("tag", "apply"),
+        ("operation", operation.raw),
+        ("argument", parameterJson argument),
+      ]
 
 def categoryExprJson : CategoryExpr → Json
   | .atom id => object [("tag", "atom"), ("id", id.raw)]
@@ -75,11 +80,9 @@ def visibilityJson : Visibility → Json
   | .semanticOnly => "semanticOnly"
   | .presentationHidden => "presentationHidden"
 
-def parameterKindJson : CategoryFamilyParameterKind → Json
-  | .ringObject => "RingCatObject"
+def parameterKindJson (kind : ParameterKindId) : Json := kind.raw
 
-def varianceJson : CategoryFamilyVariance → Json
-  | .restrictionOfScalarsContravariant => "restrictionOfScalarsContravariant"
+def varianceJson (variance : VarianceId) : Json := variance.raw
 
 def functorRoleJson : FunctorRole → Json
   | .generatedStructural => "generatedStructural"

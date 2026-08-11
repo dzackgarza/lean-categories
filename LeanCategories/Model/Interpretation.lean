@@ -268,7 +268,7 @@ noncomputable def forgetfulToUnitalMagma (M : AtomicModel.{uObj, uHom}) :
 
 /-- Forgetful from a Modules-family expression to its selected fibre. -/
 noncomputable def forgetfulToModules (M : AtomicModel.{uObj, uHom})
-    (resolveRing : RingParameterId → Option M.modules.RingObjects) :
+    (resolveRing : ParameterId → Option M.modules.RingObjects) :
     CategoryExpr → Option (ForgetfulToModules M)
   | .familyApp family args =>
       if family == CategoryFamilyId.modules && args.size == 1 then
@@ -306,7 +306,7 @@ The host expression determines the ring fibre for module classifiers.  The remai
 classifier namespaces have a unique host in an atomic model.
 -/
 noncomputable def evalClassifier (M : AtomicModel.{uObj, uHom})
-    (resolveRing : RingParameterId → Option M.modules.RingObjects)
+    (resolveRing : ParameterId → Option M.modules.RingObjects)
     (host : CategoryExpr) (id : ClassifierId) : Option (EvaluatedClassifier M) :=
   if id == ClassifierId.ringsDivision then
     if host.syntacticEq (.atom CategoryId.rings) then
@@ -339,7 +339,7 @@ noncomputable def evalClassifier (M : AtomicModel.{uObj, uHom})
 
 /-- Evaluate a category expression to an actual `ObjCat`. -/
 noncomputable def evalCategory (M : AtomicModel.{uObj, uHom})
-    (resolveRing : RingParameterId → Option M.modules.RingObjects)
+    (resolveRing : ParameterId → Option M.modules.RingObjects)
     (semantics : FunctorSemantics M) :
     CategoryExpr → Option (ObjCat.{uObj, uHom})
   | .atom id => evalAtom M id
@@ -466,13 +466,13 @@ noncomputable def evalCategory (M : AtomicModel.{uObj, uHom})
 
 /-- Evaluate an expression that contains no declaration-backed functor references. -/
 noncomputable def evalCategoryWithoutFunctors (M : AtomicModel.{uObj, uHom})
-    (resolveRing : RingParameterId → Option M.modules.RingObjects) :
+    (resolveRing : ParameterId → Option M.modules.RingObjects) :
     CategoryExpr → Option (ObjCat.{uObj, uHom}) :=
   evalCategory M resolveRing (.empty M)
 
 /-- Retain a semantic functor only when its concrete endpoints realize the indexed expressions. -/
 noncomputable def validateFunctor (M : AtomicModel.{uObj, uHom})
-    (resolveRing : RingParameterId → Option M.modules.RingObjects)
+    (resolveRing : ParameterId → Option M.modules.RingObjects)
     (semantics : FunctorSemantics M) (source target : CategoryExpr)
     (candidate : Option (EvaluatedFunctor M)) : Option (EvaluatedFunctor M) := by
   classical
@@ -491,7 +491,7 @@ noncomputable def validateFunctor (M : AtomicModel.{uObj, uHom})
 
 /-- Interpret a symbolic unfolding only when both expressions denote one category. -/
 noncomputable def evalUnfolding (M : AtomicModel.{uObj, uHom})
-    (resolveRing : RingParameterId → Option M.modules.RingObjects)
+    (resolveRing : ParameterId → Option M.modules.RingObjects)
     (semantics : FunctorSemantics M) (source target : CategoryExpr) :
     Option (EvaluatedFunctor M) := by
   classical
@@ -507,7 +507,7 @@ noncomputable def evalUnfolding (M : AtomicModel.{uObj, uHom})
 
 /-- Evaluate a typed functor expression using its actual semantic bindings. -/
 noncomputable def evalFunctor (M : AtomicModel.{uObj, uHom})
-    (resolveRing : RingParameterId → Option M.modules.RingObjects)
+    (resolveRing : ParameterId → Option M.modules.RingObjects)
     (semantics : FunctorSemantics M) {source target : CategoryExpr} :
     FunctorExpr source target → Option (EvaluatedFunctor M)
   | .identity category =>
@@ -553,7 +553,7 @@ Registry rows will cite declarations of this type rather than independently asse
 that a `Lean.Name` and a `CategoryExpr` describe the same category.
 -/
 structure CategoryRealization (M : AtomicModel.{uObj, uHom})
-    (resolveRing : RingParameterId → Option M.modules.RingObjects)
+    (resolveRing : ParameterId → Option M.modules.RingObjects)
     (semantics : FunctorSemantics M) (expression : CategoryExpr)
     (category : ObjCat.{uObj, uHom}) where
   evaluated : ObjCat.{uObj, uHom}
@@ -566,7 +566,7 @@ and forgetful functor.  The indexed expression rules out host metadata detached 
 actual classifier.
 -/
 structure ClassifierRealization (M : AtomicModel.{uObj, uHom})
-    (resolveRing : RingParameterId → Option M.modules.RingObjects)
+    (resolveRing : ParameterId → Option M.modules.RingObjects)
     (host : CategoryExpr) (identifier : ClassifierId)
     (classifier : EvaluatedClassifier M) : Prop where
   realizes : evalClassifier M resolveRing host identifier = some classifier
@@ -576,7 +576,7 @@ An elaborated functor declaration whose concrete endpoints and map realize its t
 symbolic expression.
 -/
 structure FunctorRealization (M : AtomicModel.{uObj, uHom})
-    (resolveRing : RingParameterId → Option M.modules.RingObjects)
+    (resolveRing : ParameterId → Option M.modules.RingObjects)
     (semantics : FunctorSemantics M) {source target : CategoryExpr}
     (expression : FunctorExpr source target) (functor : EvaluatedFunctor M) : Prop where
   realizes : evalFunctor M resolveRing semantics expression = some functor

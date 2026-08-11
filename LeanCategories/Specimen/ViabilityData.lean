@@ -59,10 +59,11 @@ def exprDivisionRings : CategoryExpr :=
   .refine (.atom CategoryId.rings) ClassifierId.ringsDivision none
 
 def exprModules : CategoryExpr :=
-  .familyApp CategoryFamilyId.modules #[.ringVariable RingParameterId.r]
+  .familyApp CategoryFamilyId.modules #[.variable ParameterId.r]
 
 def exprRightModules : CategoryExpr :=
-  .familyApp CategoryFamilyId.modules #[.opposite (.ringVariable RingParameterId.r)]
+  .familyApp CategoryFamilyId.modules
+    #[.apply ParameterOperationId.opposite (.variable ParameterId.r)]
 
 def exprFreeModules : CategoryExpr :=
   .refine exprModules ClassifierId.modulesFree none
