@@ -59,6 +59,17 @@ abbrev FiniteAdeleLocalModuleProduct
   (v : HeightOneSpectrum (𝓞 K)) →
     TensorProduct (𝓞 K) (v.adicCompletionIntegers K) L.obj.obj.carrier
 
+/-- The product ring acts on the product of local scalar extensions coordinatewise. -/
+noncomputable instance finiteAdeleLocalModuleProductModule
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    Module (FiniteIntegralAdeleRing (𝓞 K) K) (FiniteAdeleLocalModuleProduct K L) := by
+  letI (v : HeightOneSpectrum (𝓞 K)) :
+      Module (FiniteIntegralAdeleRing (𝓞 K) K)
+        (TensorProduct (𝓞 K) (v.adicCompletionIntegers K) L.obj.obj.carrier) :=
+    Module.compHom _ (Pi.evalRingHom
+      (fun w : HeightOneSpectrum (𝓞 K) ↦ w.adicCompletionIntegers K) v)
+  infer_instance
+
 /-- The finite part of adelic scalar extension is the product of all completed local scalar
 extensions. -/
 def finiteAdeleCarrierEquiv
@@ -104,6 +115,35 @@ theorem finiteAdeleLocalCarrierEquiv_tmul
       fun v ↦ a v ⊗ₜ[𝓞 K] x := by
   ext v
   simp [finiteAdeleLocalCarrierEquiv, finiteAdeleCarrierEquiv_tmul]
+
+/-- The local-carrier presentation is linear over the integral finite adele ring. -/
+def finiteAdeleLocalCarrierAlgEquiv
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    TensorProduct (𝓞 K) (FiniteIntegralAdeleRing (𝓞 K) K) L.obj.obj.carrier
+      ≃ₗ[FiniteIntegralAdeleRing (𝓞 K) K] FiniteAdeleLocalModuleProduct K L :=
+  LinearEquiv.ofBijective
+    { toFun := finiteAdeleLocalCarrierEquiv K L
+      map_add' := map_add (finiteAdeleLocalCarrierEquiv K L)
+      map_smul' := by
+        intro a x
+        induction x using TensorProduct.induction_on with
+        | zero => simp
+        | tmul b x =>
+            ext v
+            change (a v * b v) ⊗ₜ[𝓞 K] x =
+              a v • (b v ⊗ₜ[𝓞 K] x)
+            rw [TensorProduct.smul_tmul']
+            rfl
+        | add x y hx hy => simp only [smul_add, map_add, hx, hy] }
+    (finiteAdeleLocalCarrierEquiv K L).bijective
+
+@[simp]
+theorem finiteAdeleLocalCarrierAlgEquiv_tmul
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K))
+    (a : FiniteIntegralAdeleRing (𝓞 K) K) (x : L.obj.obj.carrier) :
+    finiteAdeleLocalCarrierAlgEquiv K L (a ⊗ₜ[𝓞 K] x) =
+      fun v ↦ a v ⊗ₜ[𝓞 K] x :=
+  finiteAdeleLocalCarrierEquiv_tmul K L a x
 
 /-- On pure tensors, each coordinate of the finite adelic form is the corresponding local
 scalar-extension form. -/
