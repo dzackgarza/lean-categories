@@ -347,9 +347,38 @@ def fromPrimeAdic :
     funext I
     exact map_add (fromPrimeAdicResidue R I) x y
 
-@[simp]
 theorem eval_fromPrimeAdic (I : NonzeroIdeal R)
     (y : (v : HeightOneSpectrum R) → AdicCompletion v.asIdeal R) :
     eval R I (fromPrimeAdic R y) = fromPrimeAdicResidue R I y := rfl
+
+theorem fromPrimeAdic_toPrimeAdic (x : Completion R) :
+    fromPrimeAdic R (toPrimeAdic R x) = x := by
+  ext I
+  apply (IsDedekindDomain.quotientEquivPiFactors I.prop).injective
+  funext P
+  change IsDedekindDomain.quotientEquivPiFactors I.prop
+      (fromPrimeAdicResidue R I (toPrimeAdic R x)) P =
+    IsDedekindDomain.quotientEquivPiFactors I.prop (eval R I x) P
+  rw [quotientEquivPiFactors_apply R I.prop P,
+    quotientEquivPiFactors_apply R I.prop P,
+    factor_fromPrimeAdicResidue R I P]
+  have hx := x.2 I
+    (primePower R (factorPlace R P) (factorExponent R P))
+      (ideal_le_factorPower R I.prop P)
+  obtain ⟨r, hr⟩ := Ideal.Quotient.mk_surjective
+    (eval R (primePower R (factorPlace R P) (factorExponent R P)) x)
+  have heval : AdicCompletion.evalₐ (factorPlace R P).asIdeal
+      (factorExponent R P)
+        (toPrimeAdic R x (factorPlace R P)) = Ideal.Quotient.mk _ r := by
+    change AdicCompletion.evalₐ (factorPlace R P).asIdeal
+      (factorExponent R P)
+        (toPrimeAdicComponent R (factorPlace R P) x) = _
+    rw [eval_toPrimeAdicComponent]
+    exact hr.symm
+  have hfactor := factorEval_eq_mk R I P (toPrimeAdic R x) r heval
+  rw [hfactor]
+  change Ideal.Quotient.factor _ (eval R I x) =
+      eval R (primePower R (factorPlace R P) (factorExponent R P)) x at hx
+  exact hr.trans hx.symm
 
 end LeanCategories.IdealProfiniteCompletion

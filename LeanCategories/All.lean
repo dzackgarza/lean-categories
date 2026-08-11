@@ -19,6 +19,7 @@ public import LeanCategories.Algebra.Concrete.Rings
 public import LeanCategories.Algebra.FractionalIdeals
 public import LeanCategories.Algebra.IntegralAdeleRing
 public import LeanCategories.Algebra.IdealProfiniteCompletion
+public import LeanCategories.Algebra.IdealProfiniteCompletionDedekind
 public import LeanCategories.ForMathlib.AdicCompletionIntegers
 public import LeanCategories.ForMathlib.DenseIntegralCompletion
 public import LeanCategories.Names.Standard
