@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.NumberTheory.NumberField.AdeleRing
+public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.LocalRing.Pullback
 
 /-!
@@ -19,7 +20,8 @@ field completions, while all finite coordinates remain integral.
 
 noncomputable section
 
-open IsDedekindDomain
+open IsDedekindDomain NumberField
+open scoped NumberField
 open scoped RestrictedProduct
 
 namespace LeanCategories
@@ -72,37 +74,37 @@ theorem mem_range_inclusion_iff (x : FiniteAdeleRing R K) :
 
 end FiniteIntegralAdeleRing
 
-/-- The adele ring of a number ring: field completions at infinite places and integral
-completions at finite places. -/
-abbrev RingAdeleRing [NumberField K] :=
-  NumberField.InfiniteAdeleRing K × FiniteIntegralAdeleRing R K
+/-- The adele ring of the full ring of integers of a number field. Its infinite factors are
+field completions, and its finite factors are completed integer rings. -/
+abbrev RingAdeleRing (K : Type u) [Field K] [NumberField K] :=
+  NumberField.InfiniteAdeleRing K × FiniteIntegralAdeleRing (𝓞 K) K
 
 namespace RingAdeleRing
 
-variable [NumberField K]
+variable (K : Type u) [Field K] [NumberField K]
 
-protected def diagonalRingHom : R →+* RingAdeleRing R K where
+protected def diagonalRingHom : (𝓞 K) →+* RingAdeleRing K where
   toFun r :=
-    (algebraMap K (NumberField.InfiniteAdeleRing K) (algebraMap R K r),
-      algebraMap R (FiniteIntegralAdeleRing R K) r)
+    (algebraMap K (NumberField.InfiniteAdeleRing K) (algebraMap (𝓞 K) K r),
+      algebraMap (𝓞 K) (FiniteIntegralAdeleRing (𝓞 K) K) r)
   map_one' := by change (_, _) = (_, _); simp
   map_mul' _ _ := by change (_, _) = (_, _); simp
   map_zero' := by change (_, _) = (_, _); simp
   map_add' _ _ := by change (_, _) = (_, _); simp
 
-instance : Algebra R (RingAdeleRing R K) :=
-  (RingAdeleRing.diagonalRingHom R K).toAlgebra
+instance : Algebra (𝓞 K) (RingAdeleRing K) :=
+  (RingAdeleRing.diagonalRingHom K).toAlgebra
 
-protected def fieldAdeleDiagonalRingHom : R →+* NumberField.AdeleRing R K :=
-  (algebraMap K (NumberField.AdeleRing R K)).comp (algebraMap R K)
+protected def fieldAdeleDiagonalRingHom : (𝓞 K) →+* NumberField.AdeleRing (𝓞 K) K :=
+  (algebraMap K (NumberField.AdeleRing (𝓞 K) K)).comp (algebraMap (𝓞 K) K)
 
-instance : Algebra R (NumberField.AdeleRing R K) :=
-  (RingAdeleRing.fieldAdeleDiagonalRingHom R K).toAlgebra
+instance : Algebra (𝓞 K) (NumberField.AdeleRing (𝓞 K) K) :=
+  (RingAdeleRing.fieldAdeleDiagonalRingHom K).toAlgebra
 
 /-- The canonical inclusion of ring adeles into the field adele ring. -/
-def inclusion : RingAdeleRing R K →A[R] NumberField.AdeleRing R K where
+def inclusion : RingAdeleRing K →A[𝓞 K] NumberField.AdeleRing (𝓞 K) K where
   toAlgHom :=
-    { toFun x := (x.1, FiniteIntegralAdeleRing.inclusion R K x.2)
+    { toFun x := (x.1, FiniteIntegralAdeleRing.inclusion (𝓞 K) K x.2)
       map_one' := rfl
       map_mul' _ _ := rfl
       map_zero' := rfl
@@ -114,43 +116,44 @@ def inclusion : RingAdeleRing R K →A[R] NumberField.AdeleRing R K where
           intro v
           rfl }
   cont := continuous_fst.prodMk
-    ((FiniteIntegralAdeleRing.inclusion R K).cont.comp continuous_snd)
+    ((FiniteIntegralAdeleRing.inclusion (𝓞 K) K).cont.comp continuous_snd)
 
 @[simp]
-theorem inclusion_fst (x : RingAdeleRing R K) :
-    (inclusion R K x).1 = x.1 :=
+theorem inclusion_fst (x : RingAdeleRing K) :
+    (inclusion K x).1 = x.1 :=
   by rfl
 
 @[simp]
-theorem inclusion_snd_apply (x : RingAdeleRing R K) (v : HeightOneSpectrum R) :
-    (inclusion R K x).2 v = x.2 v :=
+theorem inclusion_snd_apply (x : RingAdeleRing K) (v : HeightOneSpectrum (𝓞 K)) :
+    (inclusion K x).2 v = x.2 v :=
   by rfl
 
 /-- The full ring adele inclusion is injective. -/
-theorem inclusion_injective : Function.Injective (inclusion R K) := fun x y h ↦ by
+theorem inclusion_injective : Function.Injective (inclusion K) := fun x y h ↦ by
   change (x.1, x.2) = (y.1, y.2)
   apply Prod.ext
   · simpa only [inclusion_fst] using congrArg Prod.fst h
-  · apply FiniteIntegralAdeleRing.inclusion_injective R K
-    change (FiniteIntegralAdeleRing.inclusion R K) x.2 =
-      (FiniteIntegralAdeleRing.inclusion R K) y.2
+  · apply FiniteIntegralAdeleRing.inclusion_injective (𝓞 K) K
+    change (FiniteIntegralAdeleRing.inclusion (𝓞 K) K) x.2 =
+      (FiniteIntegralAdeleRing.inclusion (𝓞 K) K) y.2
     exact congrArg Prod.snd h
 
 /-- A field adele comes from the ring adele ring exactly when each finite coordinate is integral. -/
-theorem mem_range_inclusion_iff (x : NumberField.AdeleRing R K) :
-    x ∈ Set.range (inclusion R K) ↔ ∀ v, x.2 v ∈ v.adicCompletionIntegers K := by
+theorem mem_range_inclusion_iff (x : NumberField.AdeleRing (𝓞 K) K) :
+    x ∈ Set.range (inclusion K) ↔ ∀ v, x.2 v ∈ v.adicCompletionIntegers K := by
   constructor
   · rintro ⟨y, rfl⟩ v
     simpa only [inclusion_snd_apply] using (y.2 v).property
   · intro hx
-    let y : RingAdeleRing R K := (x.1, fun v ↦ ⟨x.2 v, hx v⟩)
-    refine ⟨y, Prod.ext (inclusion_fst R K y) ?_⟩
+    let y : RingAdeleRing K := (x.1, fun v ↦ ⟨x.2 v, hx v⟩)
+    refine ⟨y, Prod.ext (inclusion_fst K y) ?_⟩
     apply RestrictedProduct.ext
     intro v
     rfl
 
 /-- The finite projection from the field adele ring. -/
-def finiteProjection : NumberField.AdeleRing R K →ₐ[R] FiniteAdeleRing R K where
+def finiteProjection :
+    NumberField.AdeleRing (𝓞 K) K →ₐ[𝓞 K] FiniteAdeleRing (𝓞 K) K where
   toFun := Prod.snd
   map_one' := rfl
   map_mul' _ _ := rfl
@@ -159,12 +162,12 @@ def finiteProjection : NumberField.AdeleRing R K →ₐ[R] FiniteAdeleRing R K w
   commutes' _ := rfl
 
 /-- The algebraic pullback of the finite projection and the integral finite inclusion. -/
-abbrev Pullback := AlgHom.pullback (finiteProjection R K)
-  (FiniteIntegralAdeleRing.inclusion R K).toAlgHom
+abbrev Pullback := AlgHom.pullback (finiteProjection K)
+  (FiniteIntegralAdeleRing.inclusion (𝓞 K) K).toAlgHom
 
 /-- The product presentation of ring adeles is the intrinsic pullback presentation. -/
-def pullbackAlgEquiv : RingAdeleRing R K ≃ₐ[R] Pullback R K where
-  toFun x := ⟨(inclusion R K x, x.2), rfl⟩
+def pullbackAlgEquiv : RingAdeleRing K ≃ₐ[𝓞 K] Pullback K where
+  toFun x := ⟨(inclusion K x, x.2), rfl⟩
   invFun x := (x.1.1.1, x.1.2)
   left_inv _ := rfl
   right_inv x := by
@@ -179,18 +182,73 @@ def pullbackAlgEquiv : RingAdeleRing R K ≃ₐ[R] Pullback R K where
   commutes' _ := by
     apply Subtype.ext
     apply Prod.ext
-    · exact (inclusion R K).commutes _
+    · exact (inclusion K).commutes _
     · rfl
 
 @[simp]
-theorem pullbackAlgEquiv_apply_fst (x : RingAdeleRing R K) :
-    (pullbackAlgEquiv R K x).1.1 = inclusion R K x :=
+theorem pullbackAlgEquiv_apply_fst (x : RingAdeleRing K) :
+    (pullbackAlgEquiv K x).1.1 = inclusion K x :=
   rfl
 
 @[simp]
-theorem pullbackAlgEquiv_apply_snd (x : RingAdeleRing R K) :
-    (pullbackAlgEquiv R K x).1.2 = x.2 :=
+theorem pullbackAlgEquiv_apply_snd (x : RingAdeleRing K) :
+    (pullbackAlgEquiv K x).1.2 = x.2 :=
   rfl
+
+/-- The diagonal map from the number field to its finite adele ring, as an algebra map over
+the ring of integers. -/
+def fieldFiniteDiagonal : K →ₐ[𝓞 K] FiniteAdeleRing (𝓞 K) K :=
+  IsScalarTower.toAlgHom (𝓞 K) K (FiniteAdeleRing (𝓞 K) K)
+
+/-- The pullback expressing the intersection of the number field and all integral finite
+components inside the finite adele ring. -/
+abbrev IntegerIntersectionPullback := AlgHom.pullback (fieldFiniteDiagonal K)
+  (FiniteIntegralAdeleRing.inclusion (𝓞 K) K).toAlgHom
+
+/-- The canonical map from the ring of integers into the adelic intersection pullback. -/
+def integerIntersectionMap :
+    (𝓞 K) →ₐ[𝓞 K] IntegerIntersectionPullback K where
+  toFun r := ⟨(algebraMap (𝓞 K) K r,
+    algebraMap (𝓞 K) (FiniteIntegralAdeleRing (𝓞 K) K) r), rfl⟩
+  map_one' := by apply Subtype.ext; apply Prod.ext <;> simp
+  map_mul' _ _ := by apply Subtype.ext; apply Prod.ext <;> simp
+  map_zero' := by apply Subtype.ext; apply Prod.ext <;> simp
+  map_add' _ _ := by apply Subtype.ext; apply Prod.ext <;> simp
+  commutes' _ := rfl
+
+/-- The ring of integers is the intersection of the number field with the integral finite
+adeles inside the finite field adeles. -/
+def integerIntersectionAlgEquiv :
+    (𝓞 K) ≃ₐ[𝓞 K] IntegerIntersectionPullback K :=
+  AlgEquiv.ofBijective (integerIntersectionMap K) ⟨
+    fun x y h ↦ by
+      apply RingOfIntegers.ext
+      simpa [integerIntersectionMap] using congrArg (fun z ↦ z.1.1) h,
+    fun x ↦ by
+      have hIntegral : ∀ v : HeightOneSpectrum (𝓞 K), v.valuation K x.1.1 ≤ 1 := by
+        intro v
+        rw [← HeightOneSpectrum.valuedAdicCompletion_eq_valuation' (v := v)]
+        have hcoord := congrArg (fun a : FiniteAdeleRing (𝓞 K) K ↦ a v) x.2
+        change (x.1.1 : v.adicCompletion K) = (x.1.2 v : v.adicCompletion K) at hcoord
+        rw [hcoord]
+        exact (HeightOneSpectrum.mem_adicCompletionIntegers (𝓞 K) K v).1
+          (x.1.2 v).property
+      obtain ⟨r, hr⟩ := HeightOneSpectrum.mem_integers_of_valuation_le_one
+        K x.1.1 hIntegral
+      refine ⟨r, ?_⟩
+      apply Subtype.ext
+      change (algebraMap (𝓞 K) K r,
+        algebraMap (𝓞 K) (FiniteIntegralAdeleRing (𝓞 K) K) r) = x.1
+      apply Prod.ext
+      · exact hr
+      · apply funext
+        intro v
+        have hcoord := congrArg (fun a : FiniteAdeleRing (𝓞 K) K ↦ a v) x.2
+        change (x.1.1 : v.adicCompletion K) = (x.1.2 v : v.adicCompletion K) at hcoord
+        apply Subtype.ext
+        change (algebraMap (𝓞 K) K r : v.adicCompletion K) =
+          (x.1.2 v : v.adicCompletion K)
+        rw [hr, hcoord]⟩
 
 end RingAdeleRing
 
