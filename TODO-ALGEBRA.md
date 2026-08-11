@@ -53,17 +53,10 @@ The following present surfaces still have explicit ownership debt:
 | Spinor norm | A chosen homomorphism with prescribed reflection values | Construct the canonical homomorphism from Clifford theory |
 | Dyadic theory | A natural-prime test for \(p=2\) | Define dyadic height-one primes by residual characteristic \(2\) |
 
-## Semantic ownership audit
+## Semantic ownership results
 
-For each relevant notion, determine:
-
-1. Its natural domain and generality.
-2. Its upstream owner, if one exists.
-3. The exact relation between the project declaration and that owner.
-4. Which concrete declarations must become specializations or theorems.
-5. Which comparison theorem prevents two parallel meanings.
-
-Apply this audit before counting a declaration as foundationally complete.
+The supplied audit fixes the following owners and comparison obligations.
+These results replace name-based completion claims.
 
 | Notion | Natural owner | Required disposition |
 | --- | --- | --- |
