@@ -49,9 +49,11 @@ def finFreePiRight (n : ℕ) :
 theorem finFreePiRight_tmul (n : ℕ) (x : Fin n → R) (a : (i : ι) → A i) :
     finFreePiRight R A n (x ⊗ₜ[R] a) = fun i ↦ x ⊗ₜ[R] a i := by
   ext i
-  simp [finFreePiRight, piComm]
+  change (TensorProduct.comm R (A i) (Fin n → R))
+    ((piScalarRight R R (A i) (Fin n)).symm (fun j ↦ x j • a i)) =
+      x ⊗ₜ[R] a i
   apply (TensorProduct.comm R (Fin n → R) (A i)).injective
-  simp
+  simp only [comm_comm, comm_tmul]
   apply (piScalarRight R R (A i) (Fin n)).injective
   ext j
   simp
@@ -110,7 +112,7 @@ theorem piRightHom_bijective_of_finite_projective
     funext i
     change TensorProduct.map f (LinearMap.id (R := R) (M := A i))
       (TensorProduct.map g (LinearMap.id (R := R) (M := A i)) (y i)) = y i
-    simpa [← TensorProduct.map_comp, ← LinearMap.comp_apply, hfg]
+    simp [← TensorProduct.map_comp, ← LinearMap.comp_apply, hfg]
 
 /-- Tensoring with a finite projective module commutes with an arbitrary product. -/
 def piRightOfFiniteProjective
