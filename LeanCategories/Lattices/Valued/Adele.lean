@@ -94,7 +94,7 @@ def ringAdeleCarrierEquiv
         | tmul b x =>
             change ((a.1 * b.1) ⊗ₜ[𝓞 K] x, (a.2 * b.2) ⊗ₜ[𝓞 K] x) =
               (a.1 • (b.1 ⊗ₜ[𝓞 K] x), a.2 • (b.2 ⊗ₜ[𝓞 K] x))
-            ext <;> simp [TensorProduct.smul_tmul', Algebra.smul_def]
+            ext <;> simp [TensorProduct.smul_tmul']
         | add x y hx hy => simp only [smul_add, map_add, hx, hy] }
     (ringAdeleCarrierLinearEquiv K L).bijective
 
@@ -543,7 +543,7 @@ theorem ringAdeleBaseChange_pairing_components
           rfl
       | add y₁ y₂ hy₁ hy₂ =>
           apply Prod.ext <;>
-            simp_all only [map_add, LinearMap.add_apply, Prod.fst_add, Prod.snd_add]
+            simp_all only [map_add, Prod.fst_add, Prod.snd_add]
   | add x₁ x₂ hx₁ hx₂ =>
       apply Prod.ext <;>
         simp_all only [map_add, LinearMap.add_apply, Prod.fst_add, Prod.snd_add]
@@ -779,8 +779,8 @@ instance finiteAdelicOrthogonalGroupMulAction
     MulAction (FiniteAdelicOrthogonalGroup K L)
       (TensorProduct (𝓞 K) (FiniteAdeleRing (𝓞 K) K) L.obj.obj.carrier) where
   smul g x := g.1 x
-  one_smul x := rfl
-  mul_smul g h x := rfl
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
 
 /-- The integral finite adelic carrier mapped into the finite field-adelic carrier. -/
 def finiteIntegralAdeleLatticeMap
@@ -902,6 +902,40 @@ theorem sameAdeleGenus_iff_isometric_at_every_place
         IsIsometricAtEveryFinitePlace K L M := by
   rw [sameAdeleGenus_iff_infinite_and_finite,
     isFiniteIntegrallyAdelicallyIsometric_iff_isIsometricAtEveryFinitePlace]
+
+/-- The finite place of `ℚ` corresponding to a rational prime. -/
+noncomputable def rationalFinitePlace (p : Nat.Primes) : HeightOneSpectrum (𝓞 ℚ) :=
+  (Rat.HeightOneSpectrum.primesEquiv (R := 𝓞 ℚ)).symm p
+
+/-- Isometry at every finite place of `ℚ`, indexed by the corresponding rational prime. -/
+noncomputable def IsIsometricAtEveryRationalPrime
+    (L M : FiniteProjectiveLatticeCat (𝓞 ℚ) (𝓞 ℚ)) : Prop :=
+  ∀ p : Nat.Primes,
+    Nonempty
+      (((baseChangeIntegral (𝓞 ℚ)
+        ((rationalFinitePlace p).adicCompletionIntegers ℚ)).obj
+          L.obj).obj ≅
+        ((baseChangeIntegral (𝓞 ℚ)
+          ((rationalFinitePlace p).adicCompletionIntegers ℚ)).obj
+            M.obj).obj)
+
+/-- For rational lattices, the finite-place condition can be indexed by rational primes. -/
+theorem sameAdeleGenus_rat_iff_isometric_at_infinity_and_every_rational_prime
+    (L M : FiniteProjectiveLatticeCat (𝓞 ℚ) (𝓞 ℚ)) :
+    SameAdeleGenus ℚ L M ↔
+      IsInfinitelyAdelicallyIsometric ℚ L M ∧
+        IsIsometricAtEveryRationalPrime L M := by
+  rw [sameAdeleGenus_iff_isometric_at_every_place]
+  apply and_congr Iff.rfl
+  constructor
+  · intro h p
+    exact h (rationalFinitePlace p)
+  · intro h v
+    have hv : rationalFinitePlace
+        (Rat.HeightOneSpectrum.primesEquiv (R := 𝓞 ℚ) v) = v :=
+      (Rat.HeightOneSpectrum.primesEquiv (R := 𝓞 ℚ)).symm_apply_apply v
+    rw [← hv]
+    exact h (Rat.HeightOneSpectrum.primesEquiv (R := 𝓞 ℚ) v)
 
 theorem sameAdeleGenus_refl
     (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
