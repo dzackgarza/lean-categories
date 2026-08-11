@@ -34,10 +34,14 @@ The definitions are intended to be stable under later extensions to monoidal and
 
 ### Reference conventions
 
-Inline citations use the live Zotero Better BibTeX keys. Each citation appears at the
-definition or construction it supports. Mathlib-owned definitions are intentionally
-uncited; repository-specific syntheses are not presented as quotations from external
-sources.
+Precise bibliographic pinning is deferred. The following are the standard reference families intended whenever the indicated terminology occurs.
+
+- Higher categories, truncation, (co)cartesian fibrations, comma objects, and homotopy limits: Lurie, *Higher Topos Theory* and *Higher Algebra*; Kerodon; Riehl–Verity, *Infinity Category Theory from Scratch* and *Elements of \(\infty\)-Category Theory*.
+- Ordinary and enriched category theory: Mac Lane, *Categories for the Working Mathematician*; Riehl, *Category Theory in Context*; Kelly, *Basic Concepts of Enriched Category Theory*.
+- Stuff, structure, and property: Baez–Shulman, *Lectures on \(n\)-Categories and Cohomology*; the corresponding nLab entry.
+- Grothendieck constructions, fibred categories, sites, sheaves, and algebraic stacks: the Stacks Project; SGA; Giraud.
+- Operads and coherent algebra: Stasheff; Boardman–Vogt; May; Lurie, *Higher Algebra*.
+- Integral lattices and discriminant forms: Serre, *A Course in Arithmetic*; Milnor–Husemoller; O'Meara; Conway–Sloane; Nikulin.
 
 When a term has several standard meanings, the definition adopted here is stated explicitly.
 
@@ -53,7 +57,7 @@ Fix Grothendieck universes
 \[
 \mathcal U\in \mathcal V.
 \]
-An object, category, or diagram is called **small** without qualification when it is \(\mathcal U\)-small. The collection of \(\mathcal U\)-small \(\infty\)-categories is \(\mathcal V\)-large. The size convention follows Kerodon's treatment of smallness and local smallness [@Lur18c, §§4.9.2–4.9.5].
+An object, category, or diagram is called **small** without qualification when it is \(\mathcal U\)-small. The collection of \(\mathcal U\)-small \(\infty\)-categories is \(\mathcal V\)-large.
 
 ### Definition 1.2 (The ambient \((\infty,2)\)-category) {#def-ambient-cat}
 
@@ -74,8 +78,6 @@ The theory is model-independent: one may work with scaled simplicial sets, compl
 3. the finite and small homotopy limits used below;
 4. cores and truncation functors;
 5. operadic algebra categories.
-
-The ambient \(\infty\)-category and \(\infty\)-bicategory of \(\infty\)-categories are developed in [@Lur18c, §§5.5.3–5.5.4].
 
 ### Remark 1.3 (Underlying truncations)
 
@@ -99,7 +101,7 @@ Equivalently, it is an object \(x\in\mathcal C\). A category \(\mathcal C\) itse
 c_{\mathcal C}:\mathbf 1\longrightarrow \mathfrak{Cat}_{\mathcal U}.
 \]
 
-This convention is the mathematical meaning of declarations of the form “let \(x\in\mathcal C\).” The object-and-morphism convention is [@Lur18c, §1.4.1].
+This convention is the mathematical meaning of declarations of the form “let \(x\in\mathcal C\).”
 
 ## 2. Mapping objects, cores, components, and loops
 
@@ -115,7 +117,7 @@ is the mapping \(\infty\)-category. For \(x,y\in\mathcal C\), write
 \]
 for the mapping space between \(x\) and \(y\).
 
-In a \((2,1)\)-category such as the ordinary theory of stacks in groupoids, the hom-object between two objects is a category: its objects are \(1\)-morphisms and its arrows are \(2\)-isomorphisms. It is not replaced by a set unless a truncation is explicitly applied. The internal functor category and mapping-space conventions are [@Lur18c, §§1.5.3, 4.6.1].
+In a \((2,1)\)-category such as the ordinary theory of stacks in groupoids, the hom-object between two objects is a category: its objects are \(1\)-morphisms and its arrows are \(2\)-isomorphisms. It is not replaced by a set unless a truncation is explicitly applied.
 
 ### Definition 2.2 (Core) {#def-core}
 
@@ -127,7 +129,7 @@ the sub-\(\infty\)-category containing every object and only equivalences. The c
 \[
 (-)^{\simeq}:\mathfrak{Cat}_{\mathcal U}\longrightarrow \mathcal S_{\mathcal U}
 \]
-is functorial. The core construction is [@Lur18c, §4.4.3].
+is functorial.
 
 ### Definition 2.3 (Connected components) {#def-pi0}
 
@@ -139,7 +141,7 @@ For an \(\infty\)-category \(\mathcal C\), the set of equivalence classes of obj
 \[
 \pi_0(\mathcal C^{\simeq}).
 \]
-This notation is used only after taking the core. No set of “objects modulo isomorphism” is taken as a primitive for an arbitrary large or nonconcrete category. The connected-component construction is [@Lur18c, §1.2.1].
+This notation is used only after taking the core. No set of “objects modulo isomorphism” is taken as a primitive for an arbitrary large or nonconcrete category.
 
 ### Definition 2.4 (Automorphism object) {#def-aut}
 
@@ -161,7 +163,7 @@ An equivalence \(u:x\simeq y\) induces conjugation
 \qquad
 g\longmapsto ugu^{-1}.
 \]
-Thus automorphism groups form a functor on the core, understood up to the natural higher coherence. This is the mapping-space and core convention of [@Lur18c, §§4.4.3, 4.6.1].
+Thus automorphism groups form a functor on the core, understood up to the natural higher coherence.
 
 ### Definition 2.5 (Isomorphism torsor) {#def-isom-torsor}
 
@@ -171,7 +173,7 @@ For \(x,y\in\mathcal C\), define
 :=
 \operatorname{Map}_{\mathcal C^{\simeq}}(x,y).
 \]
-When nonempty, it carries commuting left and right actions by \(\operatorname{Aut}(y)\) and \(\operatorname{Aut}(x)\), and is a bitorsor in the ordinary \(1\)-categorical case. The equivalence and morphism-space conventions are [@Lur18c, §§4.4.3, 4.6.1].
+When nonempty, it carries commuting left and right actions by \(\operatorname{Aut}(y)\) and \(\operatorname{Aut}(x)\), and is a bitorsor in the ordinary \(1\)-categorical case.
 
 ### Definition 2.6 (Loop object in an \(\infty\)-category) {#def-loop-object}
 
@@ -181,7 +183,7 @@ Let \((\mathcal C,*)\) be a pointed \(\infty\)-category with finite limits. For 
 :=
 *\times_X *.
 \]
-Equivalently, it is the limit of the cospan \(*\to X\leftarrow *\). This definition applies in spaces, spectra, stable \(\infty\)-categories, and any other pointed \(\infty\)-category with finite limits. The pointed and homotopy-pullback constructions are [@Lur18c, §§3.2.1, 3.4.1].
+Equivalently, it is the limit of the cospan \(*\to X\leftarrow *\). This definition applies in spaces, spectra, stable \(\infty\)-categories, and any other pointed \(\infty\)-category with finite limits.
 
 ## 3. Truncation
 
@@ -198,7 +200,6 @@ The inclusion \(\mathcal S_{\le n}\hookrightarrow\mathcal S\) has a left adjoint
 \[
 \tau_{\le n}:\mathcal S\longrightarrow \mathcal S_{\le n}.
 \]
-The truncation convention is [@Lur18c, §§3.5.7, 4.7.1].
 
 ### Definition 3.2 (Truncated morphism) {#def-truncated-morphism}
 
@@ -211,11 +212,10 @@ A morphism \(f:X\to Y\) in an \(\infty\)-category with pullbacks is **\(n\)-trun
 0\text{-truncated}
 \Longrightarrow\cdots.
 \]
-The fiberwise definition of truncated morphisms is [@Lur18c, §3.5.9].
 
 ### Definition 3.3 (Locally truncated categories) {#def-locally-truncated}
 
-An \(\infty\)-category \(\mathcal C\) is **locally \(n\)-truncated** if each mapping space \(\operatorname{Map}_{\mathcal C}(x,y)\) is \(n\)-truncated. An ordinary category is locally \(0\)-truncated; a \((2,1)\)-category is locally \(1\)-truncated. The locally truncated convention is [@Lur18c, §4.7.6].
+An \(\infty\)-category \(\mathcal C\) is **locally \(n\)-truncated** if each mapping space \(\operatorname{Map}_{\mathcal C}(x,y)\) is \(n\)-truncated. An ordinary category is locally \(0\)-truncated; a \((2,1)\)-category is locally \(1\)-truncated.
 
 ### Remark 3.4 (Why truncation is recorded)
 
@@ -236,7 +236,6 @@ The endpoint evaluations are
 \operatorname{ev}_0,\operatorname{ev}_1:
 \operatorname{Ar}(\mathcal C)\longrightarrow\mathcal C.
 \]
-The functor-category presentation is [@Lur18c, §1.5.3].
 
 ### Definition 4.2 (Slice and coslice) {#def-slice}
 
@@ -250,7 +249,6 @@ For \(x\in\mathcal C\), the slice and coslice are the comma \(\infty\)-categorie
 \,=\,
 (x\downarrow\operatorname{id}_{\mathcal C}).
 \]
-The slice construction is [@Lur18c, §4.3.6].
 
 ### Definition 4.3 (Comma category) {#def-comma}
 
@@ -266,7 +264,6 @@ is the homotopy pullback
 \times_{\operatorname{ev}_1,\mathcal C}
 \mathcal B.
 \]
-The oriented-fiber-product presentation is [@Lur18c, §4.6.4].
 
 ### Definition 4.4 (Diagram category) {#def-diagram-category}
 
@@ -274,7 +271,7 @@ For a small \(\infty\)-category \(K\), the category of \(K\)-shaped diagrams in 
 \[
 \operatorname{Fun}(K,\mathcal C).
 \]
-A limit is a terminal cone and a colimit is an initial cocone. Unless a strict model is specifically selected, limits and pullbacks in this report mean homotopy-coherent limits in the relevant \(\infty\)-category. The diagram and limit conventions are [@Lur18c, §7.1].
+A limit is a terminal cone and a colimit is an initial cocone. Unless a strict model is specifically selected, limits and pullbacks in this report mean homotopy-coherent limits in the relevant \(\infty\)-category.
 
 ### Definition 4.5 (Full and replete subcategory) {#def-full-replete-subcategory}
 
@@ -291,7 +288,7 @@ It is **replete** if every object of \(\mathcal C\) equivalent to an object of
 This terminology is local to a fixed category. It does not assert that
 \(\mathfrak{Cat}\) has a subobject classifier or that every classifier is a monomorphism.
 Replete full subcategories arise as the ordinary categorical presentations of property
-classifiers. The subcategory and equivalence conventions are [@Lur18c, §§4.1.2, 4.4.3].
+classifiers.
 
 ### Definition 4.6 (Grothendieck construction) {#def-grothendieck-construction}
 
@@ -305,10 +302,9 @@ fiber over \(c\) is equivalent to \(\Phi(c)\). A covariant functor
 \(\Psi:\mathcal C\to\mathfrak{Cat}_{\mathcal U}\) similarly classifies a cocartesian
 fibration.
 
-The cartesian and cocartesian cases are the straightening--unstraightening constructions
-for fibrations of ∞-categories [@Lur18c, §§5.1.4, 5.6.1, Def. 5.6.2.4, Thm. 5.6.0.2].
-A classifier need not itself arise this way over all arrows of its base; when it does, the
-fibration is additional structure.
+The construction is cited in the sense of Grothendieck fibrations, the Stacks Project, and
+higher-categorical straightening/unstraightening. A classifier need not itself arise this
+way over all arrows of its base; when it does, the fibration is additional structure.
 
 ### Definition 4.7 (Category of elements) {#def-category-elements}
 
@@ -327,9 +323,6 @@ is a morphism \(f:c\to d\) satisfying
 x=P(f)(y).
 \]
 This convention fixes the variance used for the form categories of Part IV.
-The ordinary construction is Riehl's category of elements [@Rie16, §2.4, Defs. 2.4.1–2.4.2];
-the space-valued construction is Kerodon's ∞-category of elements [@Lur18c, §5.6.1,
-Def. 5.6.2.4].
 
 ### Remark 4.8 (When no category of elements exists)
 
@@ -358,9 +351,7 @@ Its homotopy fiber over \(x\in\mathcal C\) is denoted
 :=
 \mathbf 1\times^{h}_{\mathcal C}\mathcal E.
 \]
-It is the moduli object of lifts of \(x\) to \(\mathcal E\). This classifier-as-structured-
-objects convention follows the property/structure/stuff framework [@BS07, §2.4] and its
-∞-categorical category-of-elements analogue [@Lur18c, §5.6.1].
+It is the moduli object of lifts of \(x\) to \(\mathcal E\).
 
 ### Definition 5.2 (Axiom classifier) {#def-axiom-classifier}
 
@@ -370,9 +361,7 @@ p_A:\mathcal C.A\longrightarrow\mathcal C
 \]
 whose total category \(\mathcal C.A\), morphisms, and projection are defined by an explicit mathematical construction representing specified data, equations, limit conditions, or coherent fillers on objects of \(\mathcal C\).
 
-Thus “axiom” is not an independent token or truth-valued predicate. It is shorthand for the
-displayed classifying morphism together with the construction of its total category. The
-terminology is aligned with the stuff/structure/property distinction [@BS07, §2.4].
+Thus “axiom” is not an independent token or truth-valued predicate. It is shorthand for the displayed classifying morphism together with the construction of its total category.
 
 The definition deliberately does **not** require \(p_A\) itself to be a cartesian or cocartesian fibration over every morphism of \(\mathcal C\). Many natural classifiers, including the classifier of binary operations on sets, admit no canonical pushforward or pullback of their data along an arbitrary map. What is always available is reindexing of the classifier itself by homotopy pullback.
 
@@ -392,9 +381,7 @@ For a functor \(F:\mathcal D\to\mathcal C\), an **\(A\)-structure on \(F\)** is 
 \[
 p_A\widehat F\simeq F.
 \]
-When \(F=\operatorname{id}_{\mathcal C}\), such a lift is a section of \(p_A\). This is the
-section/lift form of the fibration classification [@Lur18c, §§5.1.4, 5.6.1,
-Thm. 5.6.0.2].
+When \(F=\operatorname{id}_{\mathcal C}\), such a lift is a section of \(p_A\).
 
 ### Remark 5.4 (Assertions as factorizations)
 
@@ -419,8 +406,6 @@ particular forgetful morphism. None of them alone is the definition.
 ### Definition 6.1 (Truncation class of a classifier) {#def-classifier-truncation}
 
 An axiom classifier \(p_A\) is **\(n\)-truncated** if it is an \(n\)-truncated morphism in the underlying \((\infty,1)\)-category of \(\mathfrak{Cat}\). Equivalently, each classifying fiber \((\mathcal C.A)_x\) is \(n\)-truncated, with the corresponding local condition on morphisms.
-The truncation convention is the one for objects and morphisms in an \(\infty\)-category
-[@Lur18c, §§3.5.9, 4.7.1–4.7.2].
 
 ### Definition 6.2 (Property classifier) {#def-property-classifier}
 
@@ -430,7 +415,6 @@ In an ordinary \(1\)-categorical presentation, a property classifier is represen
 \[
 \mathcal C.A\hookrightarrow\mathcal C.
 \]
-The property/structure terminology follows [@BS07, §2.4].
 
 ### Definition 6.3 (Structure classifier) {#def-structure-classifier}
 
@@ -445,8 +429,6 @@ A general axiom classifier, with no prescribed truncation on its fibers, may for
 \text{property}\subseteq\text{structure}\subseteq\text{stuff}.
 \]
 They are not mutually exclusive labels.
-This cumulative hierarchy is the framework of [@BS07, §2.4], not a repository-specific
-enumeration.
 
 ### Example 6.5
 
@@ -474,7 +456,6 @@ F^*(\mathcal C.A)
 \mathcal D.
 \]
 An object is a pair consisting of \(d\in\mathcal D\) and an \(A\)-structure on \(F(d)\), together with the required coherence.
-This is base change of a classifier by a homotopy pullback [@Lur18c, §3.4.1].
 
 ### Definition 7.2 (Categorical intersection or conjunction) {#def-intersection}
 
@@ -488,8 +469,6 @@ For classifiers \(p_A:\mathcal C.A\to\mathcal C\) and \(p_B:\mathcal C.B\to\math
 It is the product of the two objects in the slice \(\mathfrak{Cat}_{/\mathcal C}\), hence the terminal cone over the cospan. It classifies objects carrying both structures compatibly.
 
 Finite conjunctions are defined by finite homotopy limits over the complete diagram of the participating classifiers and their structural maps. This universal property is essential: a merely chosen category mapping to the classifier totals need not be the universal category of all compatibly structured objects.
-The pullback and finite-limit operations used here are the standard homotopy limits of
-[@Lur18c, §§3.4.1, 7.1].
 
 ### Proposition 7.3 (Stability of truncation)
 
@@ -538,7 +517,6 @@ it is part of the defining universal property.
 Thus alternating and skew-symmetric forms are defined independently; Lemma 16.2 supplies the
 implication functor. Similarly, perfectness implies radical-freeness through the defect exact
 sequence rather than by defining perfect forms inside the radical-free classifier.
-The separation of structure from implication follows the framework of [@BS07, §2.4].
 
 ## 8. Classifiers of operations
 
@@ -580,8 +558,6 @@ The pullback carries a universal operation
 \boldsymbol\mu:U_n^n\Longrightarrow U_n
 \]
 in the appropriate higher-categorical sense.
-This arrow-category pullback is the oriented fiber-product construction
-[@Lur18c, §2.1.4, Not. 2.1.4.19].
 
 ### Example 8.2
 
@@ -611,8 +587,6 @@ For \(F:\mathcal C\to\mathcal E\), define
 \mathcal C\times^{h}_{\mathcal E}\operatorname{Op}_n(\mathcal E).
 \]
 It is the category of objects \(c\in\mathcal C\) equipped with an \(n\)-ary operation on \(F(c)\).
-It is the same oriented fiber product after reindexing [@Lur18c, §2.1.4,
-Not. 2.1.4.19].
 
 ## 9. Diagram-extension classifiers
 
@@ -643,7 +617,7 @@ An object is \(b\in\mathcal B\), a \(K\)-diagram \(\widetilde R_b\), and an equi
 \[
 j^*\widetilde R_b\simeq R_A(b).
 \]
-The fiber over \(b\) is the moduli space or moduli category of fillers of the operation-built boundary. This is a homotopy-pullback classifier [@Lur18c, §3.4.1].
+The fiber over \(b\) is the moduli space or moduli category of fillers of the operation-built boundary.
 
 ### Remark 9.3 (Why the whole boundary is used)
 
@@ -667,16 +641,13 @@ The forgetful functor
 \longrightarrow
 \mathcal M
 \]
-is the corresponding operadic classifier. The algebra-object convention is
-[@Maz21, §10.3.2], and its operadic presentation is [@Maz21, §11.6.7].
+is the corresponding operadic classifier.
 
 ### Definition 10.2 (Cellular or matching-object presentation) {#def-matching-presentation}
 
 Choose a cofibrant cellular presentation of \(\mathcal O\). At each stage \(r\), the lower operations determine a boundary in a matching object \(M_r\), defined as the homotopy limit over the proper faces of the \(r\)-th generating cell. The next stage is obtained by the homotopy pullback selecting fillers extending this prescribed boundary. The full category of algebras is the homotopy limit of the resulting tower.
 
 The matching condition is essential: independent fillers of each shape need not satisfy operadic composition laws. Homotopy limits are essential: strict limits may not have the invariant homotopy type.
-This matching-object tower is a repository-level cellular presentation of the standard
-operadic algebra category [@Maz21, §§10.3.2, 11.6.7].
 
 ### Theorem 10.3 (Comparison with the standard operadic definition)
 
@@ -851,7 +822,7 @@ Its Grothendieck construction is the category of pairs \((R,M)\), with \(M\) an 
 \[
 \int_{R\in\mathbf{Ring}^{\simeq}}R\text{-}\mathbf{Mod}.
 \]
-More generally, allowing arbitrary ring homomorphisms requires a choice of variance: restriction of scalars is contravariant in the ring, while extension of scalars is covariant and pseudofunctorial. The chosen variance must be stated whenever the total family is used. The two variances unstraighten to a cocartesian and a cartesian fibration over \(\mathbf{Ring}\) respectively [@Lur18c, §§5.1.4, 5.6.1, Def. 5.6.2.4, Thm. 5.6.0.2]. The four module-family functors and their total categories are the constructions of Proposition 83.4 and Section 84; the bimodule analogue over \(\mathbf{Ring}\times\mathbf{Ring}\) is Section 86.
+More generally, allowing arbitrary ring homomorphisms requires a choice of variance: restriction of scalars is contravariant in the ring, while extension of scalars is covariant and pseudofunctorial. The chosen variance must be stated whenever the total family is used. The two variances unstraighten to a cocartesian and a cartesian fibration over \(\mathbf{Ring}\) respectively; the precise four module-family functors and their total categories are Proposition 83.4 and Section 84, and the bimodule analogue over \(\mathbf{Ring}\times\mathbf{Ring}\) is Section 86.
 
 ### Definition 13.3 (Regular module section) {#def-regular-module}
 
@@ -874,8 +845,6 @@ The following are classifiers over \(R\text{-}\mathbf{Mod}\):
 - torsion modules and torsion-free modules, when \(R\) is a domain.
 
 These conditions are owned at the module level. They are not obtained by pulling set-level conditions back along the underlying-set functor. For example, finite generation of an abelian group does not imply finite generation of its underlying additive monoid.
-The finite and finitely presented module conditions are [@The25, tag 0518]. Finite locally
-free modules and their equivalence with finite projectivity are [@The25, tags 00NW, 00NX].
 
 ### Definition 13.5 (Framed generators and framed bases) {#def-module-generators-bases}
 
@@ -902,7 +871,7 @@ to be the locus where \(s\) is an isomorphism.
 Thus a framed generating family is a chosen surjection from a standard free module, while a
 framed basis is a chosen isomorphism from a standard free module. Morphisms preserve the
 chosen frame. The projections to \(R\text{-}\mathbf{Mod}\) are the canonical comma-category
-projections [@Rie16, §1.3, Ex. 1.3.vi].
+projections.
 
 These fixed-source comma categories are the **strict frame-preserving** categories. They are
 one of three distinct morphism conventions for modules with chosen generators: abstract
@@ -928,8 +897,6 @@ The two categories answer different questions.
   basis-preserving morphisms.
 - \(\operatorname{Coord}_n(R)\) is the category appropriate for matrix calculus and
   change of coordinates; its morphisms need not preserve either basis.
-The change-of-basis and Gram-matrix comparison is the classical free-module calculation
-[@MH73, §I.2].
 
 There is a faithful identity-on-objects functor from framed bases to coordinatized modules,
 but the two categories are not identified.
@@ -1000,8 +967,6 @@ action, not an \(R\)-module (Proposition 92.1). Intrinsically, bimodules are the
 \(1\)-morphisms of the Morita \((\infty,2)\)-category, whose hom categories from and to the
 monoidal unit \(\mathbb Z\) recover the left and right module categories
 (Definition 93.1, Proposition 93.2).
-The bicategorical bimodule construction and relative-tensor composition are explicit in
-[@Lur18c, Ex. 2.2.2.4].
 
 ### Definition 13.9 (Algebras over a commutative ring) {#def-algebra-category}
 
@@ -1065,7 +1030,6 @@ b:M\otimes_R M\longrightarrow W,
 equivalently a map \(b:M\times M\to W\) linear in each variable.
 
 The value module \(W\) is part of the defining data. The map from \(M\) to a dual module is derived from \(b\); it is not the definition of the form.
-This is Milnor--Husemoller's bilinear-form definition [@MH73, §I.1, Def. 1.1].
 
 ### Definition 15.2 (The bilinear-form category) {#def-bilinear-category}
 
@@ -1096,7 +1060,6 @@ Equivalently, \(\mathbf{Bil}_{R,W}\) is the category of elements of the contrava
 M\longmapsto\operatorname{Hom}_R(M\otimes_RM,W),
 \]
 after applying the underlying-space or underlying-set functor. The explicit definition above fixes the variance convention: morphisms preserve the source form by pullback.
-The category-of-elements presentation is [@Rie16, §2.4, Defs. 2.4.1–2.4.2].
 
 ### Definition 15.3 (Quadratic map) {#def-quadratic-map}
 
@@ -1187,7 +1150,6 @@ b(x,x)=0
 \]
 
 Each condition defines a property classifier over \(\mathbf{Bil}_{R,W}\). They are defined independently at the bilinear-form level.
-The three conditions and their matrix interpretation are [@MH73, §§I.1–I.2].
 
 ### Lemma 16.2 (Alternating implies skew-symmetric) {#lem-alt-skew}
 
@@ -1262,7 +1224,6 @@ Let \((M,b)\) be a symmetric bilinear form. A **quadratic refinement** of \(b\) 
 The total category of refined forms is the homotopy pullback of the polarization functor along the inclusion of the chosen symmetric form.
 
 The classifying fiber over \(b\) is the moduli object of its quadratic refinements. It can be empty, contractible, or nontrivial. Consequently, “having a quadratic refinement” is property-like only under hypotheses guaranteeing uniqueness.
-The finite quadratic refinement convention used later is [@Nik80, §2°].
 
 ### Definition 17.5 (Even integral form) {#def-even-form}
 
@@ -1280,7 +1241,6 @@ Q_b(x)=\frac{b(x,x)}2,
 \operatorname{polar}(Q_b)=b.
 \]
 The quotient by two is exact divisibility data; it is not integer truncation. This equivalence uses the injectivity of multiplication by \(2\) on \(\mathbb Z\).
-The associated integral and finite quadratic conventions are [@Nik80, §2°–§3°].
 
 ### Remark 17.6 (Two quadratic conventions)
 
@@ -1350,7 +1310,6 @@ It is **perfect** if \(\widetilde b\) is an isomorphism, equivalently if
 \operatorname{Def}(M,b)=0.
 \]
 For an integral lattice, perfectness is also called unimodularity.
-The strong nondegeneracy and unimodularity terminology follows [@MH73, §I.1, Def. 1.1].
 
 ### Remark 18.4 (Terminology “nondegenerate”)
 
@@ -1383,8 +1342,6 @@ The category \(\mathbf{Lat}_R\) has intrinsic lattices as objects and form-prese
 b_L(x,y)=b_M(fx,fy).
 \]
 The core \(\mathbf{Lat}_R^{\simeq}\) is the isometry groupoid.
-The finite-projective arithmetic setting and the bilinear-form module are anchored in
-[@MH73, §§I.1, IV.3].
 
 ### Remark 19.3 (Natural generality)
 
@@ -1408,7 +1365,6 @@ The corresponding categories are reindexings of the evenness and perfectness cla
 
 **Lean realization status (2026-08-11).** `isEvenLattice` packages `IsEven` as an
 object property. `EvenLatticeCat` is its `ObjectProperty.FullSubcategory`.
-The even-lattice and discriminant conventions are [@Nik80, §§2°–4°].
 
 ## 20. Signature and definiteness
 
@@ -1470,8 +1426,7 @@ must not be conflated.
 coordinatized pullback. `coordLatticeToIntegral` is its comparison with intrinsic integral
 lattices. The source also defines `coordLatticeToCoord` and the constructor
 `CoordLatticeCat.ofBasis`. The generating-frame and basis-frame lattice pullbacks above do
-not yet have separate named Lean declarations. The coordinate and Gram-matrix convention
-is [@MH73, §I.2].
+not yet have separate named Lean declarations.
 
 ### Definition 21.2 (Symmetric matrix category) {#def-symmetric-matrix-category}
 
@@ -1527,7 +1482,6 @@ The basis-preserving framed category has a different, stricter morphism conventi
 **Lean realization status (2026-08-11).** The repository has coordinate extraction and
 bounded matrix constructors. It does not yet define `SymMat_n`, `Gram_n`, or the stated
 equivalence theorem.
-The matrix presentation and its change-of-basis law are [@MH73, §I.2].
 
 For the named ADE lattices the Gram constructor is used only after the root-presentation
 Gram matrix has been derived from a chosen root realization, and its output is compared to
@@ -1699,7 +1653,6 @@ It is a finitely generated torsion \(R\)-module, hence of finite length. By Prop
 A_L\simeq\operatorname{coker}(\widetilde b).
 \]
 The quotient \(L^{\#}/L\) is the definition; the cokernel description is a comparison theorem arising from the governing diagram.
-This discriminant-module construction is [@Nik80, §3°].
 
 ### Diagram 24.6 (The comparison of exact sequences) {#diag-dual-comparison}
 
@@ -1767,8 +1720,6 @@ Equivalently, using the canonical isomorphism
 \]
 \(b_q\) is obtained by inverse bilinearization. The form is nondegenerate if \(b_q\) is perfect.
 
-The finite quadratic-form convention is [@Nik80, §2°].
-
 ### Definition 25.5 (Category of discriminant quadratic forms) {#def-discquad-category}
 
 The category \(\mathbf{DiscQuad}_{\mathbb Z}\) is the pullback
@@ -1779,8 +1730,6 @@ The category \(\mathbf{DiscQuad}_{\mathbb Z}\) is the pullback
 \]
 along bilinearization. Thus a quadratic discriminant form is a quadratic object whose bilinearization is a finite nondegenerate bilinear discriminant form. It is not defined as an “even bilinear form.”
 
-The pullback formulation records the same finite quadratic and bilinear forms as [@Nik80, §2°].
-
 ### Definition 25.6 (Discriminant quadratic form of an even lattice) {#def-lattice-discriminant-quadratic}
 
 If \(L\) is even, define
@@ -1790,8 +1739,6 @@ q_L:A_L\longrightarrow\mathbb Q/2\mathbb Z,
 q_L(x+L)=b_K(x,x)\bmod2\mathbb Z.
 \]
 The evenness of \(L\) is exactly what makes this independent of the choice of lift. Its bilinearization is \(b_L\).
-
-The discriminant quadratic form of an even lattice is [@Nik80, §3°].
 
 ## 26. Discriminant functors and automorphism groups
 
@@ -1856,8 +1803,6 @@ A finitely generated torsion module with invariant factors need not be free over
 
 This distinction is mathematical: replacing a quotient presentation by a matrix subgroup can change the group.
 
-The discriminant representation and orthogonal-group map are [@Nik80, §§3°–4°].
-
 ## 27. Overlattices and gluing
 
 ### Definition 27.1 (Overlattice) {#def-overlattice}
@@ -1921,8 +1866,6 @@ is isotropic for \(q_1\oplus q_2\). The corresponding overlattice of \(L_1\perp 
 
 The equivalence between suitable gluing data and suitable overlattices is a theorem constructed from Theorem 27.4.
 
-The overlattice/isotropic-subgroup correspondence is [@Nik80, §4°, Prop. 1.4.1].
-
 ## 28. Embeddings, markings, and actions
 
 ### Definition 28.1 (Primitive embedding) {#def-primitive-embedding}
@@ -1958,8 +1901,6 @@ For a group \(G\), a \(G\)-action on a lattice is a functor
 BG\longrightarrow\mathbf{Lat}_R^{\simeq}.
 \]
 An involution is the case \(G=C_2\); equivalently, it is an isometry \(\sigma:L\to L\) with \(\sigma^2=1\).
-
-The primitive-embedding convention is [@Nik80, §§1°, 5°–6°].
 
 ## 29. Localizations and genera
 
@@ -2016,8 +1957,6 @@ where \(E=\mathbf{Lat}_{\mathbb Z}^{\simeq}\) and \(B=\prod_v\mathbf{Lat}_{\math
 The distinction exemplifies the general rule that truncation level is mathematical content. The groupoid of local identifications, the homotopy fiber, and the set of global isometry classes in the genus are related but not identical.
 
 ***
-The local-profile and genus invariants are [@Nik80, §1.9, Cor. 1.9.4].
-
 # Part VII. Sites, sheaves, stacks, and geometric categories
 
 The preceding constructions are internal to the higher category of categories.  Algebraic
@@ -2037,8 +1976,8 @@ Let \(\mathcal C\) be an ordinary category and \(U\in\mathcal C\).  A **sieve** 
 \(V\to U\) belongs to \(S\) and \(W\to V\) is any morphism, the composite \(W\to U\)
 belongs to \(S\).
 
-Equivalently, a sieve is a subpresheaf of the representable presheaf \(h_U\).  This is the
-definition in the Stacks Project [@The25, tag 00YX].
+Equivalently, a sieve is a subpresheaf of the representable presheaf \(h_U\).  See the
+Stacks Project treatment of sites and sieves.
 
 ### Definition 30.2 (Grothendieck topology and site) {#def-site}
 
@@ -2047,8 +1986,7 @@ A **Grothendieck topology** \(J\) on \(\mathcal C\) assigns to each object \(U\)
 A **site** is a pair \((\mathcal C,J)\).
 
 A Grothendieck pretopology may be used to generate \(J\); the invariant object is the
-resulting topology, not the chosen list of covering families.  The site convention is
-[@The25, tag 03NH].
+resulting topology, not the chosen list of covering families.
 
 ### Definition 30.3 (Presheaves and sheaves of spaces) {#def-sheaf}
 
@@ -2075,7 +2013,7 @@ for the full \(\infty\)-subcategory of sheaves.
 
 For set-valued or groupoid-valued sheaves this definition is truncated in the corresponding
 way.  Ordinary sheaves and stacks are therefore truncations of one sheaf-of-spaces
-construction. The presheaf and sheaf conventions are [@Lur09a, §§5.1, 6.1–6.2].
+construction.
 
 ### Theorem 30.4 (Sheafification) {#thm-sheafification}
 
@@ -2092,8 +2030,7 @@ a_J:\operatorname{PSh}(\mathcal C)\longrightarrow\operatorname{Sh}(\mathcal C,J)
 called **sheafification**.
 
 This is standard in topos theory and higher topos theory.  Left exactness is the property
-that permits finite-limit constructions to be performed before or after sheafification. The
-higher construction is [@Lur09a, §§6.2.2–6.2.3].
+that permits finite-limit constructions to be performed before or after sheafification.
 
 ### Definition 30.5 (Yoneda embedding and representability) {#def-yoneda-representable}
 
@@ -2105,13 +2042,13 @@ U\longmapsto h_U:=\operatorname{Map}_{\mathcal C}(-,U).
 \]
 A presheaf or sheaf \(F\) is **representable** if there exists \(U\in\mathcal C\) and an
 equivalence \(F\simeq h_U\).  A representing object is unique up to a contractible space of
-choices. The Yoneda and representability conventions are [@Rie16, §§2.2–2.3].
+choices.
 
 ### Definition 30.6 (Subcanonical topology) {#def-subcanonical}
 
 A Grothendieck topology is **subcanonical** if every representable presheaf is a sheaf.  The
 Zariski, étale, smooth, fppf, and fpqc topologies on the usual categories of schemes are
-subcanonical. The Stacks Project definition is [@The25, tag 00WQ].
+subcanonical.
 
 ### Remark 30.7 (Big and small sites)
 
@@ -2134,7 +2071,6 @@ f^*:\mathcal Y\rightleftarrows\mathcal X:f_*
 in which \(f^*\) is left exact. Ringed topoi and their morphisms are obtained by adjoining
 commutative ring objects and compatible maps of structure sheaves. This is the higher-topos
 framework used by the ringed and derived constructions below.
-The definition and basic constructions of \(\infty\)-topoi are [@Lur09a, §§6.1–6.2].
 
 ## 31. Fibred categories and stacks
 
@@ -2146,7 +2082,7 @@ Let \(p:\mathcal X\to\mathcal C\) be a functor of ordinary categories.  A morphi
 morphisms \(z\to x'\) over \(g:V\to U'\) and morphisms \(z\to x\) over \(fg\).
 
 The \(\infty\)-categorical definition replaces this bijection by an equivalence of mapping
-spaces. The ordinary fibred-in-groupoids convention is [@The25, tag 003T].
+spaces.
 
 ### Definition 31.2 (Fibred category) {#def-fibred-category}
 
@@ -2163,7 +2099,7 @@ pseudofunctor
 \longrightarrow
 \mathbf{Grpd}.
 \]
-This is the standard Stacks Project convention [@The25, tag 003T].
+This is the standard Stacks Project convention.
 
 ### Definition 31.3 (Descent datum) {#def-descent-datum}
 
@@ -2172,9 +2108,8 @@ Let \(\{U_i\to U\}\) be a covering family.  A **descent datum** for a fibred cat
 between their pullbacks to \(U_i\times_U U_j\), and the cocycle condition on triple fiber
 products.
 
-The ordinary effectiveness statement for descent data is [@The25, tag 02ZF]. In the
-\(\infty\)-categorical setting used here, the Čech nerve is interpreted by a homotopy limit
-rather than by a set of strictly commuting equations.
+In the \(\infty\)-categorical setting, descent data form the homotopy limit of the Čech
+nerve diagram rather than a set of strictly commuting equations.
 
 ### Definition 31.4 (Prestack and stack) {#def-prestack-stack}
 
@@ -2183,16 +2118,14 @@ isomorphism presheaves satisfy descent.  It is a **stack** if every descent datu
 equivalently, the pseudofunctor of fibers satisfies descent for objects and morphisms.
 
 In higher language, a stack is simply a sheaf of spaces on \((\mathcal C,J)\).  A
-\(1\)-stack is a \(1\)-truncated such sheaf.  The ordinary stack-in-groupoids convention is
-[@The25, tag 02ZI]; the higher sheaf-of-spaces formulation is the \(\infty\)-categorical
-lift used in this plan.
+\(1\)-stack is a \(1\)-truncated such sheaf.  This identifies ordinary stacks in groupoids
+with the \((2,1)\)-truncation of the general sheaf-of-spaces theory.
 
 ### Theorem 31.5 (Stackification) {#thm-stackification}
 
 The inclusion of stacks into prestacks admits a left adjoint, **stackification**, under the
 standard size hypotheses.  In the \(\infty\)-categorical formulation this is the restriction
-of sheafification to groupoid-valued presheaves. The ordinary construction is [@The25, tag
-02ZM].
+of sheafification to groupoid-valued presheaves.
 
 ### Definition 31.6 (The 2-category of stacks) {#def-stack-2-category}
 
@@ -2203,7 +2136,6 @@ For a site \((\mathcal C,J)\), write
 for the \((2,1)\)-category whose objects are stacks in groupoids, whose \(1\)-morphisms are
 cartesian functors, and whose \(2\)-morphisms are natural isomorphisms.  More generally,
 \(\operatorname{Sh}(\mathcal C,J)\) is the ambient \(\infty\)-category of stacks of spaces.
-The ordinary 2-category of stacks in groupoids is [@The25, tag 02ZK].
 
 ### Theorem 31.7 (2-Yoneda) {#thm-2-yoneda}
 
@@ -2215,20 +2147,20 @@ For a stack \(\mathcal X\) and an object \(U\in\mathcal C\), evaluation at the i
 \mathcal X(U).
 \]
 The higher Yoneda lemma gives the corresponding equivalence of mapping spaces for stacks of
-spaces [@Lur18c, §8.3.3, Thm. 8.3.3.13].
+spaces.
 
 ## 32. Representable morphisms and geometric properties
 
 ### Definition 32.1 (Representable morphism) {#def-representable-morphism}
 
 Let \(f:\mathcal X\to\mathcal Y\) be a morphism of stacks on a site of schemes.  The
-morphism \(f\) is **representable by algebraic spaces** if, for every scheme \(T\) and every
-morphism \(T\to\mathcal Y\), the homotopy pullback
+morphism \(f\) is **representable by schemes** if, for every scheme \(T\) and every morphism
+\(T\to\mathcal Y\), the homotopy pullback
 \[
 \mathcal X\times_{\mathcal Y}T
 \]
-is representable by an algebraic space. Representability by schemes is the stronger variant
-in which the pullback is a scheme. The Stacks Project definition is [@The25, tag 02ZW].
+is representable by a scheme.  Replacing “scheme” by “algebraic space” gives
+representability by algebraic spaces.
 
 ### Definition 32.2 (A geometric property of morphisms) {#def-geometric-property}
 
@@ -2241,7 +2173,7 @@ has property \(P\) for every scheme \(T\to\mathcal Y\).
 
 Examples include affine, finite, proper, separated, quasi-compact, smooth, étale, unramified,
 flat, and locally of finite presentation, with the hypotheses customary in the Stacks
-Project. The base-change-stable property convention is [@The25, tag 03YK].
+Project.
 
 ### Remark 32.3 (Properties live on arrow categories)
 
@@ -2312,7 +2244,7 @@ An **algebraic space** over \(S\) is an fppf sheaf \(X\) on \(\mathbf{Sch}_{/S}\
 2. there exists a scheme \(U\) and a surjective étale morphism \(U\to X\).
 
 Equivalent standard variants may replace the fppf site by the étale site and adjust the
-representability hypotheses accordingly. The algebraic-space convention is [@The25, tag 025Y].
+representability hypotheses accordingly.
 
 ### Definition 33.3 (Algebraic stack) {#def-algebraic-stack}
 
@@ -2323,13 +2255,11 @@ topology such that:
 2. there exists a scheme \(U\) and a smooth surjective morphism \(U\to\mathcal X\).
 
 The morphism \(U\to\mathcal X\) is an **atlas**.
-This is the algebraic-stack definition used by the Stacks Project [@The25, tag 026O].
 
 ### Definition 33.4 (Deligne--Mumford stack) {#def-dm-stack}
 
 A **Deligne--Mumford stack** is an algebraic stack admitting an étale surjective atlas by a
 scheme.  Equivalently, under the customary hypotheses, its diagonal is unramified.
-The Stacks Project definition is [@The25, tag 03YO].
 
 Thus there are structural functors
 \[
@@ -2495,7 +2425,6 @@ Write
 \]
 for the corresponding category.  In derived geometry, \(\operatorname{QCoh}(X)\) is a
 stable presentable \(\infty\)-category.
-The affine-local definition is [@The25, tag 01BE].
 
 ### Definition 36.4 (Sheaf of algebras and graded algebra) {#def-sheaf-algebra}
 
@@ -2599,8 +2528,7 @@ For a morphism \(f:X\to Y\) in a derived geometric context, the **cotangent comp
 \operatorname{Der}_Y(X,M).
 \]
 This universal property is the definition; any explicit complex is a model of the
-representing object. The ordinary ring-map construction is [@The25, tag 08PN], and the
-scheme-level notation is [@The25, tag 08T2].
+representing object.
 
 ### Definition 37.4 (Tangent complex, tangent space, and obstruction group) {#def-tangent-obstruction}
 
@@ -4001,7 +3929,7 @@ and universal comparison maps.  Until then, “semitoroidal compactification” 
 research target rather than a primitive of this foundation.
 
 ***
-# Part XIII. Status of the theory
+# Part XIII. Status of the theory and reference map
 
 ## 63. Source status of the parts
 
@@ -4194,6 +4122,98 @@ underlying set.  Statements using cardinality, finite automorphism groups, or en
 must include the corresponding finiteness hypotheses on residue rings or specialize to
 \(\mathbb Z\) and number-ring settings where the assertion is valid.
 
+## 66. Reference map
+
+The following references are intended as general anchors for terminology and constructions.
+They are not an exhaustive bibliography.
+
+### Higher category theory and homotopy theory
+
+- Jacob Lurie, *Higher Topos Theory*.
+- Jacob Lurie, *Higher Algebra*.
+- Kerodon, especially the sections on \(\infty\)-categories, fibrations, limits, and
+  operadic algebra.
+- Emily Riehl and Dominic Verity, *Elements of \(\infty\)-Category Theory* and
+  *Infinity Category Theory from Scratch*.
+- J. Peter May, *A Concise Course in Algebraic Topology*.
+
+### Ordinary and enriched category theory
+
+- Saunders Mac Lane, *Categories for the Working Mathematician*.
+- Emily Riehl, *Category Theory in Context*.
+- G. M. Kelly, *Basic Concepts of Enriched Category Theory*.
+- Ross Street and Stephen Lack on \(2\)-categories, weighted limits, computads, and
+  categorical coherence.
+
+### Classifiers, truncation, and structured objects
+
+- John Baez and Michael Shulman, *Lectures on \(n\)-Categories and Cohomology*, for
+  stuff/structure/property.
+- nLab entries on stuff, structure, property; core; automorphism group; torsor; category of
+  elements; Grothendieck construction; and pseudopullback.
+
+### Sheaves, stacks, and algebraic geometry
+
+- The Stacks Project, especially the chapters on sites, fibred categories, stacks, algebraic
+  spaces, algebraic stacks, quasi-coherent modules, and deformation theory.
+- SGA 1 and SGA 4; Jean Giraud, *Cohomologie non abélienne*.
+- Martin Olsson, Laumon--Moret-Bailly, and standard texts on algebraic stacks.
+- Bertrand Toën and Gabriele Vezzosi; Jacob Lurie, for derived algebraic geometry.
+
+### Algebra and homological algebra
+
+- Charles Weibel, *An Introduction to Homological Algebra*.
+- Cartan--Eilenberg and standard references on derived functors and obstruction sequences.
+- Eilenberg--Mac Lane, Lawvere, and standard references on algebraic theories and operads.
+
+### Operads and coherence
+
+- James Stasheff on associahedra and \(A_\infty\)-spaces.
+- Boardman--Vogt and J. Peter May on operads.
+- Mac Lane and Joyal--Street on monoidal and braided coherence.
+
+### Lattices and quadratic forms
+
+- Jean-Pierre Serre, *A Course in Arithmetic*.
+- John Milnor and Dale Husemoller, *Symmetric Bilinear Forms*.
+- O. T. O'Meara, *Introduction to Quadratic Forms*.
+- Conway and Sloane, *Sphere Packings, Lattices and Groups*.
+- V. V. Nikulin on integral symmetric bilinear forms and discriminant forms.
+
+### Convex, toric, reflection, and period geometry
+
+- Fulton, *Introduction to Toric Varieties*; Cox--Little--Schenck, *Toric Varieties*.
+- Bourbaki and Humphreys on root systems and Coxeter groups.
+- Vinberg on hyperbolic reflection groups.
+- Griffiths on period domains; Baily--Borel on arithmetic quotients.
+- Ash--Mumford--Rapoport--Tai and standard texts on toroidal compactifications.
+- Kollár--Mori and Kollár on singularities, the minimal model program, and stable pairs.
+
+### Root realizations, presentations, and descent
+
+- Bourbaki, *Groupes et algèbres de Lie*, Chapters IV--VI, and Humphreys, *Reflection Groups
+  and Coxeter Groups*, for root systems, simple roots, root lattices, Cartan matrices, and the
+  finite ADE classification; the root-pairing literature summarized in Mathlib's
+  `LinearAlgebra.RootSystem` development.
+- Conway--Sloane, *Sphere Packings, Lattices and Groups*, for the coordinate realizations of
+  \(A_n,D_n,E_6,E_7,E_8\); standard tables in Bourbaki.
+- Stacks Project, Section 10.5, “Finite modules and finitely presented modules,” for finite
+  generation and finite presentation.
+- Weibel, *An Introduction to Homological Algebra*, and the Stacks Project chapters on
+  projective resolutions and derived categories, for complexes, homotopy categories, and the
+  comparison theorem.
+- Lurie, *Higher Algebra*, and Kerodon, for stable \(\infty\)-categories, module categories,
+  perfect objects, and operadic algebras.
+
+### Modules, bimodules, and Morita theory
+
+- Kerodon, Chapter 5, for straightening, unstraightening, and the module cocartesian
+  fibration.
+- Lurie, *Higher Algebra*, for module \(\infty\)-categories and relative tensor products.
+- Haugseng, *The Higher Morita Category of \(E_n\)-Algebras*, for the Morita
+  \((\infty,2)\)-category.
+- The Stacks Project sections on bimodules, tensor products, and derived tensor products.
+
 ***
 
 # Part XIV. Intrinsic lattices, root realizations, and numerical matrices
@@ -4209,8 +4229,6 @@ data. Second, matrices live on free objects and descend: for modules given by ge
 presentations, matrices represent lifts on free modules, induce abstract module maps only
 after satisfying a descent condition, and different matrices may represent the same abstract
 morphism.
-The root-system, root-lattice, and coordinate conventions are [@Bou08, chs. IV–VI;
-@Hum90, ch. 1; @MH73, §I.2].
 
 ## 67. Ambient quadratic modules
 
@@ -4698,7 +4716,7 @@ q:F_n\twoheadrightarrow M
 \]
 for some \(n\ge0\).
 
-The elements \(q(e_1),\ldots,q(e_n)\) are the chosen ordered generators. Conversely, an ordered generating family defines such a surjection. The finite-generation convention is [@The25, tag 0518].
+The elements \(q(e_1),\ldots,q(e_n)\) are the chosen ordered generators. Conversely, an ordered generating family defines such a surjection.
 
 ### Definition 73.3 (Generated modules with abstract morphisms) {#def-genpres-abs}
 
@@ -4934,7 +4952,7 @@ F_n
 M
 \longrightarrow0.
 \]
-It consists of chosen generators together with chosen finite generators for the module of relations. The finite-presentation convention is [@The25, tag 0518].
+It consists of chosen generators together with chosen finite generators for the module of relations.
 
 ### Definition 75.2 (Finite-presentation objects and abstract morphisms) {#def-finpres-abs}
 
@@ -5042,7 +5060,7 @@ d_i d_{i+1}=0,
 \qquad
 \epsilon d_1=0.
 \]
-It is a **resolution** if the augmented sequence is exact. Chain complexes and their homotopies are [@Wei94, §§1.1, 1.4].
+It is a **resolution** if the augmented sequence is exact.
 
 ### Definition 76.2 (Free and projective resolution) {#def-projective-resolution}
 
@@ -5053,7 +5071,7 @@ A resolution is:
 - **finite in degree \(i\)** if \(P_i\) is finitely generated;
 - **finite free in degree \(i\)** if \(P_i\) is finite-rank free.
 
-A chosen resolution is a point of a category of exact augmented complexes. It is additional data, not an intrinsic replacement for \(M\). Projective resolutions are treated in [@Wei94, §2.2].
+A chosen resolution is a point of a category of exact augmented complexes. It is additional data, not an intrinsic replacement for \(M\).
 
 ### Definition 76.3 (Modules of type \(FP_n\)) {#def-fp-n}
 
@@ -5114,7 +5132,7 @@ extends degreewise to a functor
 \mathbf{AddCat}.
 \]
 
-It is not defined on an arbitrary category without additive structure, because the equation \(d^2=0\) uses zero morphisms and addition of morphisms. The additive chain-complex construction is [@Wei94, §§1.1–1.2].
+It is not defined on an arbitrary category without additive structure, because the equation \(d^2=0\) uses zero morphisms and addition of morphisms.
 
 ### Definition 77.2 (Termwise properties and lifted complex structure) {#def-termwise-classifier}
 
@@ -5211,7 +5229,7 @@ Consequently,
 \]
 where the right side consists of augmentation-compatible chain maps modulo chain homotopy.
 
-This is the full generalization of the degree-zero matrix-descent theorem. The comparison theorem for projective resolutions is [@Wei94, §2.2, Thm. 2.2.6].
+This is the full generalization of the degree-zero matrix-descent theorem.
 
 ### Definition 78.2 (Matrix representative of a chain map) {#def-matrix-chain-map}
 
@@ -5228,7 +5246,7 @@ A chain homotopy from \(A\) to \(B\) is represented by matrices \(H_i:P_i\to Q_{
 A-B=d_QH+Hd_P.
 \]
 
-Thus morphisms in the homotopy or derived category are represented by matrix complexes modulo the homotopy relation. The matrices are representatives on chosen free resolutions; the abstract morphisms are the resulting homotopy classes. The chain-homotopy convention is [@Wei94, §1.4, Def. 1.4.4].
+Thus morphisms in the homotopy or derived category are represented by matrix complexes modulo the homotopy relation. The matrices are representatives on chosen free resolutions; the abstract morphisms are the resulting homotopy classes.
 
 ### Corollary 78.3 (No category of “matrix morphisms” is foundational) {#cor-no-matrix-category}
 
@@ -5254,8 +5272,6 @@ For an ordinary ring this is equivalent to the stable \(\infty\)-category of mod
 \[
 \operatorname{Mod}_A.
 \]
-The classical localization is [@Wei94, §§10.1, 10.3–10.4], and the stable \(\infty\)-categorical
-replacement is [@Lur09, §§2, 13].
 
 ### Remark 79.2 (The derived category is the semantic object)
 
@@ -5268,7 +5284,6 @@ Accordingly, a derived implementation should expose the stable object while reta
 An object \(P\in\mathcal D(R)\) is **perfect** if it is compact. For an ordinary ring, the perfect objects are precisely those represented by bounded complexes of finitely generated projective modules.
 
 A chosen bounded finite-projective complex is a presentation of a perfect object. Perfectness is the corresponding intrinsic property.
-Compact objects in the stable setting are described in [@Lur09, §§9, 13].
 
 ### Remark 79.4 (Finite presentation is not perfectness)
 
@@ -5294,7 +5309,6 @@ Let \(\mathcal C\) be a presentable stable \(\infty\)-category and let \(\mathca
 The category of such presentations maps to \(\mathcal C\) by geometric realization or totalization. Its fiber over \(X\) is the moduli category of chosen presentations of \(X\).
 
 This is the derived analogue of the category of finite free presentations of an ordinary module.
-Cellular and compact presentations are developed in [@Lur09, §9] and [@EKMM07, ch. III, §2].
 
 ### Remark 80.2 (Classical chain complexes as one model)
 
@@ -5313,7 +5327,6 @@ For an ordinary commutative ring \(R\), a differential graded associative algebr
 After localization, the intrinsic derived notion is an \(E_1\)-algebra in \(\mathcal D(R)\) or an \(E_1\)-ring spectrum. Commutative derived algebras are governed by the corresponding \(E_\infty\)-operad.
 
 This operadic construction is used only when multiplicative structure is actually part of the object.
-The algebra-object convention is [@Maz21, §10.3.2], with the operadic form in [@Maz21, §11.6.7].
 
 ***
 
@@ -5450,8 +5463,6 @@ by restricting the left action along \(f\). There is an adjunction
 \[
 f_!^L\dashv f^{*L}.
 \]
-The relative-tensor and restriction constructions are the bimodule instance of
-[@Lur18c, Ex. 2.2.2.4].
 
 ### Definition 83.3 (Extension and restriction of scalars: right modules) {#def-scalar-change-right}
 
@@ -5538,8 +5549,6 @@ satisfying
 \widetilde\varphi(rm)=f(r)\widetilde\varphi(m).
 \]
 The cocartesian morphism with source \((R,M)\) over \(f\) has target \((S,S\otimes_RM)\).
-The cocartesian total-category construction is [@Lur18c, §§5.1.4, 5.6.1,
-Def. 5.6.2.4, Thm. 5.6.0.2].
 
 ### Definition 84.2 (Cartesian total category of left modules) {#def-lmod-cartesian}
 
@@ -5563,7 +5572,6 @@ The analogous constructions are denoted
 \pi_R^*:
 \int\mathbf{RMod}^{*}\to\mathbf{Ring}.
 \]
-The cartesian case is [@Lur18c, §§5.1.4, 5.6.1].
 
 ### Proposition 84.3 (Fibers over points) {#prop-module-family-fibers}
 
@@ -5603,7 +5611,7 @@ A morphism of \((R,S)\)-bimodules is an additive map preserving both actions. Wr
 \]
 for the resulting category.
 
-The phrase “bilinear map” is not used for a morphism in this category: a bimodule homomorphism is a unary additive map linear for both actions. The bimodule and relative-tensor conventions are [@Lur18c, Ex. 2.2.2.4].
+The phrase “bilinear map” is not used for a morphism in this category: a bimodule homomorphism is a unary additive map linear for both actions.
 
 ### Definition 85.2 (The category of two unconstrained actions) {#def-biact}
 
@@ -5621,7 +5629,7 @@ R\text{-}\mathbf{Mod}
 \times^h_{\mathbf{Ab}}
 \mathbf{Mod}\text{-}S.
 \]
-An object is an abelian group equipped with a left \(R\)-action and a right \(S\)-action, together with the comparison identifying the two underlying additive groups. No commutation of the actions is imposed. This is the oriented fiber-product presentation of [@Lur18c, §2.1.4, Not. 2.1.4.19].
+An object is an abelian group equipped with a left \(R\)-action and a right \(S\)-action, together with the comparison identifying the two underlying additive groups. No commutation of the actions is imposed.
 
 ### Definition 85.3 (Commutation classifier) {#def-commutation-classifier}
 
@@ -5682,7 +5690,6 @@ Equivalently,
 \[
 (f,g)_!M=R'\otimes_RM\otimes_SS'.
 \]
-Its composition law is relative tensor product as in [@Lur18c, Ex. 2.2.2.4].
 
 ### Definition 86.2 (Simultaneous restriction of scalars) {#def-bimodule-restriction}
 
@@ -6209,7 +6216,7 @@ With this orientation,
 {}_R\mathbf{Bimod}_S.
 \]
 
-Associativity and unitality hold up to the standard coherent equivalences of relative tensor product. The ordinary rings-and-bimodules model is [@EKMM07, ch. VI, §5]. The \((\infty,2)\)-categorical enhancement for \(E_1\)-algebras is the target construction of this plan.
+Associativity and unitality hold up to the standard coherent equivalences of relative tensor product. Haugseng's higher Morita construction gives the corresponding \((\infty,2)\)-category for \(E_1\)-algebras in a monoidal \(\infty\)-category.
 
 ### Proposition 93.2 (Module categories as hom categories from the unit) {#prop-modules-as-homs}
 
@@ -6375,13 +6382,13 @@ Let \(\mathcal V\) be a presentable symmetric monoidal \(\infty\)-category whose
 \]
 be the \(\infty\)-category of \((A,B)\)-bimodule objects.
 
-Relative tensor product gives composition, and the resulting higher Morita category has the same formal structure as Part XXII [@Maz21, §§10.3.2, 11.6.7; @EKMM07, ch. VI, §5].
+Relative tensor product gives composition, and the resulting higher Morita category has the same formal structure as Part XXII.
 
 ### Example 96.2 (Ordinary and spectral rings)
 
 - For \(\mathcal V=\mathbf{Ab}\), one recovers ordinary rings and ordinary bimodules.
 - For \(\mathcal V=\mathbf{Sp}\), one obtains \(E_1\)-ring spectra and module spectra.
-- The Eilenberg--Mac Lane construction sends an ordinary ring \(R\) to the ring spectrum \(HR\); the ordinary comparison with module spectra is developed in [@EKMM07, ch. IV, §2]. The identification of derived module \(\infty\)-categories is its stable \(\infty\)-categorical refinement [@Lur09, §§2, 13].
+- The Eilenberg--Mac Lane functor sends an ordinary ring \(R\) to \(HR\) and identifies the derived \(\infty\)-category of \(R\)-modules with the appropriate module \(\infty\)-category over \(HR\).
 
 ### Remark 96.3 (Derived scalar change)
 
@@ -6547,11 +6554,7 @@ These functors have different domains, codomains, universal properties, and esse
 
 Throughout, the ambient universe is the universe-stratified \((\infty,2)\)-category \(\mathfrak{Cat}\) fixed in the foundations report. Mapping objects are \(\infty\)-categories. All definitions specialize to ordinary categories by truncation. Rings are associative and unital and ring homomorphisms preserve the unit. Whenever tensor products of left modules or bialgebras are used, the base ring \(R\) is commutative unless another monoidal base has been specified.
 
-The adjunction and reflective-localization conventions below use Riehl's definitions [@Rie16,
-§§4.1–4.2, 4.5] and Kerodon's \(\infty\)-categorical versions [@Lur18c, §§6.1–6.3].
-The higher algebra conventions use the cited sections of Mazel-Gee [@Maz21, §§10.3.2,
-11.6.7]. The Sage-specific packaging and the named algebra functors are definitions of this
-plan; no external source is claimed for their exact packaging.
+Standard references include Mac Lane, *Categories for the Working Mathematician*; Riehl, *Category Theory in Context*; Lurie, *Higher Algebra*; Kerodon, especially its treatments of adjunctions, essential images, Kan extensions, and localizations; the Stacks Project sections on sheafification, functoriality of presheaves, and free abelian sheaves; and standard texts on associative, commutative, and Hopf algebras such as Bourbaki, Sweedler, and Montgomery.
 
 ***
 
@@ -6581,7 +6584,7 @@ together with the standard coherent triangle identities. Equivalently, it consis
 \]
 for \(X\in\mathcal C\) and \(Y\in\mathcal D\).
 
-The functor \(F\) is the **left adjoint** and \(U\) is the **right adjoint**. The notation does not imply that \(U\) is forgetful. When \(U\) is a displayed projection from structured objects to their underlying objects, it is also called the forgetful functor. The unit--counit and mapping-space formulations are [@Rie16, §4.1, Def. 4.1.1; §4.2, Def. 4.2.5].
+The functor \(F\) is the **left adjoint** and \(U\) is the **right adjoint**. The notation does not imply that \(U\) is forgetful. When \(U\) is a displayed projection from structured objects to their underlying objects, it is also called the forgetful functor.
 
 ### Lemma 1.2 (Composition of adjunctions) {#lem-composition-adjunctions}
 
@@ -6618,7 +6621,7 @@ G:=FU
 \]
 on \(\mathcal D\). The multiplication of \(T\) and comultiplication of \(G\) are induced by the counit and unit, respectively.
 
-When \(U\) is monadic, \(\mathcal D\) is equivalent to the category of algebras for \(T\). The category of all \(T\)-algebras must not be identified with the essential image of the free functor \(F\): the latter consists only of free \(T\)-algebras. The monad and comonad constructions are [@Rie16, §5.1].
+When \(U\) is monadic, \(\mathcal D\) is equivalent to the category of algebras for \(T\). The category of all \(T\)-algebras must not be identified with the essential image of the free functor \(F\): the latter consists only of free \(T\)-algebras.
 
 ### Remark 1.4 (Existence versus a chosen adjunction)
 
@@ -6640,7 +6643,7 @@ Its defining property is
 \simeq
 \operatorname{Map}_{\mathcal C}(X,UY).
 \]
-The phrase “free on \(X\)” includes the specified generating object \(X\) and the universal map \(\eta_X\). This is the universal-arrow formulation of a free object [@Rie16, §4.2].
+The phrase “free on \(X\)” includes the specified generating object \(X\) and the universal map \(\eta_X\).
 
 ### Definition 2.2 (Free object) {#def-free-object-essential-image}
 
@@ -6650,7 +6653,7 @@ FX\simeq Y.
 \]
 Thus the free objects form the essential image of \(F\).
 
-This is an existence statement. It does not select \(X\), an equivalence \(FX\simeq Y\), a basis, a family of generators, or any other presentation. The essential-image formulation is [@Lur18c, §4.8.1, Def. 4.8.1.11].
+This is an existence statement. It does not select \(X\), an equivalence \(FX\simeq Y\), a basis, a family of generators, or any other presentation.
 
 ### Definition 2.3 (Chosen free presentation) {#def-chosen-free-presentation}
 
@@ -6702,7 +6705,7 @@ There is a factorization
 \]
 where \(F_{\mathrm{ess}}\) is essentially surjective and \(j_F\) is fully faithful and replete.
 
-This is the standard essential-image factorization of a functor. It is invariant under equivalence of categories and functors. The \(\infty\)-categorical definition and factorization are [@Lur18c, §4.8.1, Def. 4.8.1.11, Rem. 4.8.1.12].
+This is the standard essential-image factorization of a functor. It is invariant under equivalence of categories and functors.
 
 ### Proposition 3.2 (Universal property of the essential image) {#prop-essential-image-universal}
 
@@ -6883,9 +6886,6 @@ Li\Longrightarrow\operatorname{id}_{\mathcal D}
 \]
 is an equivalence. The monad \(\ell=iL\) is idempotent.
 
-The ordinary definition of a reflective subcategory is [@Rie16, §4.5, Def. 4.5.12]; the
-corresponding \(\infty\)-categorical localization language is [@Lur18c, §§6.2.2–6.3.3].
-
 ### Proposition 6.2 (Local objects) {#prop-local-objects}
 
 For \(X\in\mathcal C\), the following are equivalent:
@@ -6951,8 +6951,6 @@ A presheaf \(F\) is a sheaf if and only if the unit
 F\longrightarrow i_Ja_JF
 \]
 is an equivalence.
-
-The higher sheaf and sheafification constructions are [@Lur09a, §§6.2.2–6.2.3].
 
 ### Corollary 7.2 (Colimits of sheaves) {#cor-colimits-sheafification}
 
@@ -7037,9 +7035,6 @@ The free monoid \(X^*\) consists of finite words in \(X\), including the empty w
 \operatorname{Map}_{\mathbf{Set}}(X,U_{\mathrm{Grp}}G).
 \]
 
-The free monoid, group, and abelian-group examples are [@Rie16, §4.1, Ex. 4.1.10(ii),
-(iv), (ix)].
-
 ### Definition 8.2 (Free abelian group) {#def-free-abelian-group}
 
 The free abelian group functor
@@ -7056,8 +7051,6 @@ is left adjoint to the underlying-set functor. It sends \(X\) to the direct sum
 This is the special case \(R=\mathbb Z\) of the free \(R\)-module functor.
 
 ## 9. The free \(R\)-module functor
-
-The free abelian-group construction is [@Rie16, §4.1, Ex. 4.1.10(iv)].
 
 ### Definition 9.1 (Free left \(R\)-module) {#def-free-R-module-functor}
 
@@ -7084,8 +7077,6 @@ with natural bijection
 \operatorname{Map}(X,U_RM).
 \]
 A function \(f:X\to U_RM\) corresponds to the unique linear map satisfying \([x]\mapsto f(x)\).
-
-The free-module example is [@Rie16, §4.1, Ex. 4.1.10(v)].
 
 ### Corollary 9.2 (Free and finite free modules) {#cor-free-finite-free-essential-image}
 
@@ -7199,8 +7190,6 @@ admits a left adjoint
 \]
 
 This is the higher-categorical free-algebra construction. It is distinct from the category \(\operatorname{Alg}_{\mathcal O}(\mathcal V)\) itself and from the essential image of \(\operatorname{Free}_{\mathcal O}\).
-
-The algebra-object and operadic conventions are [@Maz21, §§10.3.2, 11.6.7].
 
 ### Remark 11.2 (Algebra objects versus free algebras)
 
@@ -7813,10 +7802,7 @@ The ambient setting is a universe-stratified \((\infty,2)\)-category
 \]
 of infinity-categories, infinity-functors, natural transformations, and higher modifications. A model may be supplied by an infinity-cosmos and its homotopy \(2\)-category, scaled simplicial sets, complete Segal \(2\)-spaces, or another equivalent presentation. The constructions below use only mapping infinity-categories, arrow and comma infinity-categories, cores, homotopy fibers, adjunctions, and localizations.
 
-The adjunction and essential-image conventions used below are [@Rie16, §§4.1–4.2]
-and [@Lur18c, §§4.8.1, 6.1–6.3]. The operadic algebra convention is [@Maz21,
-§§10.3.2, 11.6.7]. The walking-adjunction presentation itself is a chosen construction
-of this plan; no external source is claimed for its exact model.
+Standard references are Street and the formal theory of monads for the walking adjunction; Riehl--Verity for adjunctions and comma objects in an infinity-cosmos; Kerodon and Lurie for adjunctions, localizations, and infinity-categorical essential images; the Stacks Project for sheafification and stackification; and Lurie, *Higher Algebra*, for free operadic algebras.
 
 This addendum does not choose a model of spectra or derived affine schemes. Those remain parameters of the larger theory. The general operadic statements apply to spectral or derived ambients after such an ambient symmetric monoidal infinity-category has been fixed.
 
@@ -7989,8 +7975,6 @@ F:\mathcal C\longrightarrow\mathcal D
 be a functor. The **essential image** \(\operatorname{EssIm}_{\mathcal D}(F)\) is the full replete infinity-subcategory of \(\mathcal D\) spanned by objects equivalent to \(F(X)\) for some \(X\in\mathcal C\).
 
 The ambient codomain is included in the notation when it matters, since changing the morphisms of the codomain can change the essential image as a category even when the represented target objects are unchanged.
-
-The essential-image definition is [@Lur18c, §4.8.1, Def. 4.8.1.11].
 
 ### Proposition 2.2 (Essential-image factorization) {#prop-essential-image-factorization-addendum}
 
@@ -8233,8 +8217,6 @@ is the localization morphism.
 
 An object \(X\in\mathcal C\) is **local** if \(\eta_X\) is an equivalence. The local objects form precisely the essential image of \(i\).
 
-The reflective-localization definition is [@Rie16, §4.5, Def. 4.5.12].
-
 ### Definition 6.2 (Coreflective subcategory and colocalization) {#def-coreflective-subcategory}
 
 A full replete inclusion
@@ -8419,8 +8401,6 @@ a_Ji_J\longrightarrow\operatorname{id}_{\operatorname{Sh}}
 \]
 is an equivalence.
 
-The higher sheafification localization is [@Lur09a, §§6.2.2–6.2.3].
-
 ### Definition 8.2 (Local equivalence of presheaves) {#def-local-equivalence-presheaves}
 
 A morphism of presheaves
@@ -8460,8 +8440,6 @@ a_J^{\mathrm{st}}:
 called **stackification**.
 
 Stackification is the same reflective-localization construction as sheafification, applied to space-valued presheaves. Stacks in groupoids are obtained by the appropriate truncation. A prestack is already a stack precisely when the unit to its stackification is an equivalence.
-
-The ordinary stackification construction is [@The25, tag 02ZM].
 
 ### Remark 9.2 (No separate foundational mechanism)
 
