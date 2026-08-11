@@ -23,11 +23,6 @@ git = "https://github.com/dzackgarza/ai-review-ci"
 subDir = "lean"
 rev = "main"
 
-[[require]]
-name = "SpherePacking"
-git = "https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean"
-rev = "bad3de916074748eb88b7d1ee6dbf9494361ad17"
-
 [[lean_lib]]
 name = "LeanCategories"
 
