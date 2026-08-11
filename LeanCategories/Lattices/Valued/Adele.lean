@@ -20,6 +20,7 @@ noncomputable section
 
 open CategoryTheory
 open IsDedekindDomain NumberField
+open LeanCategories.Modules.Bilinear.Valued
 open scoped NumberField
 
 namespace LeanCategories.Lattices.Valued
@@ -39,10 +40,23 @@ def finiteRingAdeleBaseChange :
       FiniteProjectiveLatticeCat (RingAdeleRing K) (RingAdeleRing K) :=
   baseChangeFiniteIntegral (𝓞 K) (RingAdeleRing K)
 
+/-- Scalar extension of finite projective lattices to the integral finite adele ring. -/
+def finiteIntegralAdeleBaseChange :
+    FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K) ⥤
+      FiniteProjectiveLatticeCat
+        (FiniteIntegralAdeleRing (𝓞 K) K) (FiniteIntegralAdeleRing (𝓞 K) K) :=
+  baseChangeFiniteIntegral (𝓞 K) (FiniteIntegralAdeleRing (𝓞 K) K)
+
 /-- The finite local scalar extensions of a finite projective lattice. -/
 abbrev FiniteAdeleModuleProduct
     (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :=
   FiniteIntegralAdeleRing.ModuleProduct (𝓞 K) K L.obj.obj.carrier
+
+/-- The product of the local scalar extensions, with the scalar ring in the first tensor factor. -/
+abbrev FiniteAdeleLocalModuleProduct
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :=
+  (v : HeightOneSpectrum (𝓞 K)) →
+    TensorProduct (𝓞 K) (v.adicCompletionIntegers K) L.obj.obj.carrier
 
 /-- The finite part of adelic scalar extension is the product of all completed local scalar
 extensions. -/
@@ -71,6 +85,47 @@ theorem finiteAdeleCarrierEquiv_tmul
         L.obj.obj.carrier) (a ⊗ₜ[𝓞 K] x)) = _
   rw [TensorProduct.comm_tmul,
     FiniteIntegralAdeleRing.tensorProductEquivModuleProduct_tmul]
+
+/-- The finite adelic carrier as the product of the carriers obtained by local scalar extension. -/
+def finiteAdeleLocalCarrierEquiv
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    TensorProduct (𝓞 K) (FiniteIntegralAdeleRing (𝓞 K) K) L.obj.obj.carrier ≃ₗ[𝓞 K]
+      FiniteAdeleLocalModuleProduct K L :=
+  (finiteAdeleCarrierEquiv K L).trans <|
+    LinearEquiv.piCongrRight fun v ↦
+      TensorProduct.comm (𝓞 K) L.obj.obj.carrier (v.adicCompletionIntegers K)
+
+@[simp]
+theorem finiteAdeleLocalCarrierEquiv_tmul
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K))
+    (a : FiniteIntegralAdeleRing (𝓞 K) K) (x : L.obj.obj.carrier) :
+    finiteAdeleLocalCarrierEquiv K L (a ⊗ₜ[𝓞 K] x) =
+      fun v ↦ a v ⊗ₜ[𝓞 K] x := by
+  ext v
+  simp [finiteAdeleLocalCarrierEquiv, finiteAdeleCarrierEquiv_tmul]
+
+/-- On pure tensors, each coordinate of the finite adelic form is the corresponding local
+scalar-extension form. -/
+theorem finiteIntegralAdeleBaseChange_pairing_tmul_apply
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K))
+    (a b : FiniteIntegralAdeleRing (𝓞 K) K)
+    (x y : L.obj.obj.carrier)
+    (v : HeightOneSpectrum (𝓞 K)) :
+    ((baseChangeIntegral (𝓞 K)
+      (FiniteIntegralAdeleRing (𝓞 K) K)).obj L.obj).obj.pairing
+        (a ⊗ₜ[𝓞 K] x) (b ⊗ₜ[𝓞 K] y) v =
+      ((baseChangeIntegral (𝓞 K) (v.adicCompletionIntegers K)).obj L.obj).obj.pairing
+        (a v ⊗ₜ[𝓞 K] x) (b v ⊗ₜ[𝓞 K] y) := by
+  calc
+    _ = ((a * b) * algebraMap (𝓞 K)
+        (FiniteIntegralAdeleRing (𝓞 K) K) (L.obj.obj.pairing x y)) v :=
+      congrArg (fun z : FiniteIntegralAdeleRing (𝓞 K) K ↦ z v)
+        (baseChangeIntegral_pairing_tmul (𝓞 K)
+          (FiniteIntegralAdeleRing (𝓞 K) K) L.obj a b x y)
+    _ = (a v * b v) * algebraMap (𝓞 K)
+        (v.adicCompletionIntegers K) (L.obj.obj.pairing x y) := rfl
+    _ = _ := (baseChangeIntegral_pairing_tmul (𝓞 K)
+      (v.adicCompletionIntegers K) L.obj (a v) (b v) x y).symm
 
 /-- Two finite projective integral lattices have the same genus when their adelic scalar
 extensions are isometric. -/
