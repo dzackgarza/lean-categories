@@ -8,6 +8,7 @@ public import Mathlib.NumberTheory.NumberField.AdeleRing
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.NumberTheory.Padics.HeightOneSpectrum
 public import Mathlib.RingTheory.LocalRing.Pullback
+public import Mathlib.Topology.Homeomorph.Lemmas
 public import LeanCategories.Modules.TensorProduct.Pi
 
 /-!
@@ -115,6 +116,25 @@ def adicCompletionIntegersEquivPadicInt (v : HeightOneSpectrum ℤ) :
       (Ring.toIntAlgebra _)
       (Ring.toIntAlgebra _) e)
 
+theorem continuous_adicCompletionIntegersEquivPadicInt (v : HeightOneSpectrum ℤ) :
+    Continuous (adicCompletionIntegersEquivPadicInt v) := by
+  let e := Rat.HeightOneSpectrum.adicCompletionIntegers.padicIntEquiv v
+  exact @ContinuousAlgEquiv.continuous ℤ _ _ _ _ _ _ _
+    (Ring.toIntAlgebra _) (Ring.toIntAlgebra _) e
+
+theorem continuous_adicCompletionIntegersEquivPadicInt_symm (v : HeightOneSpectrum ℤ) :
+    Continuous (adicCompletionIntegersEquivPadicInt v).symm := by
+  let e := Rat.HeightOneSpectrum.adicCompletionIntegers.padicIntEquiv v
+  exact @ContinuousAlgEquiv.continuous_invFun ℤ _ _ _ _ _ _ _
+    (Ring.toIntAlgebra _) (Ring.toIntAlgebra _) e
+
+/-- The local integer completion at `v` is homeomorphic to the corresponding `ℤ_p`. -/
+def adicCompletionIntegersHomeomorphPadicInt (v : HeightOneSpectrum ℤ) :
+    v.adicCompletionIntegers ℚ ≃ₜ ℤ_[Rat.HeightOneSpectrum.primesEquiv v] where
+  toEquiv := (adicCompletionIntegersEquivPadicInt v).toEquiv
+  continuous_toFun := continuous_adicCompletionIntegersEquivPadicInt v
+  continuous_invFun := continuous_adicCompletionIntegersEquivPadicInt_symm v
+
 /-- The integral finite adeles of `ℚ` are the product of the rings `ℤ_p` over all primes. -/
 def finiteIntegralAdeleRingEquivPadicIntegerProduct :
     FiniteIntegralAdeleRing ℤ ℚ ≃+* PadicIntegerProduct :=
@@ -122,6 +142,27 @@ def finiteIntegralAdeleRingEquivPadicIntegerProduct :
     adicCompletionIntegersEquivPadicInt v).trans
     (RingEquiv.piCongrLeft (fun p : Nat.Primes ↦ ℤ_[p])
       (Rat.HeightOneSpectrum.primesEquiv (R := ℤ)))
+
+/-- The standard p-adic product presentation is an equivalence of topological `ℤ`-algebras. -/
+def finiteIntegralAdeleRingContinuousAlgEquivPadicIntegerProduct :
+    FiniteIntegralAdeleRing ℤ ℚ ≃A[ℤ] PadicIntegerProduct where
+  toAlgEquiv :=
+    { toRingEquiv := finiteIntegralAdeleRingEquivPadicIntegerProduct
+      commutes' := by
+        intro n
+        simp }
+  continuous_toFun := by
+    let h : FiniteIntegralAdeleRing ℤ ℚ ≃ₜ PadicIntegerProduct :=
+      Homeomorph.piCongr (Rat.HeightOneSpectrum.primesEquiv (R := ℤ)) fun v ↦
+        adicCompletionIntegersHomeomorphPadicInt v
+    convert h.continuous using 1
+    rfl
+  continuous_invFun := by
+    let h : FiniteIntegralAdeleRing ℤ ℚ ≃ₜ PadicIntegerProduct :=
+      Homeomorph.piCongr (Rat.HeightOneSpectrum.primesEquiv (R := ℤ)) fun v ↦
+        adicCompletionIntegersHomeomorphPadicInt v
+    convert h.symm.continuous using 1
+    rfl
 
 /-- The integral finite adeles of the ring of integers of `ℚ` are the product of all `ℤ_p`. -/
 def ringOfIntegersFiniteIntegralAdeleRingEquiv :
@@ -134,11 +175,51 @@ def ringOfIntegersFiniteIntegralAdeleRingEquiv :
     (RingEquiv.piCongrLeft (fun p : Nat.Primes ↦ ℤ_[p])
       (Rat.HeightOneSpectrum.primesEquiv (R := 𝓞 ℚ)))
 
+/-- The integral finite adeles of `𝓞 ℚ` are topologically the product of all `ℤ_p`. -/
+def ringOfIntegersFiniteIntegralAdeleRingContinuousAlgEquiv :
+    FiniteIntegralAdeleRing (𝓞 ℚ) ℚ ≃A[ℤ] PadicIntegerProduct where
+  toAlgEquiv :=
+    { toRingEquiv := ringOfIntegersFiniteIntegralAdeleRingEquiv
+      commutes' := by
+        intro n
+        simp }
+  continuous_toFun := by
+    let h : FiniteIntegralAdeleRing (𝓞 ℚ) ℚ ≃ₜ PadicIntegerProduct :=
+      Homeomorph.piCongr (Rat.HeightOneSpectrum.primesEquiv (R := 𝓞 ℚ)) fun v ↦
+        (Rat.HeightOneSpectrum.adicCompletionIntegers.padicIntEquiv v).toHomeomorph
+    exact h.continuous
+  continuous_invFun := by
+    let h : FiniteIntegralAdeleRing (𝓞 ℚ) ℚ ≃ₜ PadicIntegerProduct :=
+      Homeomorph.piCongr (Rat.HeightOneSpectrum.primesEquiv (R := 𝓞 ℚ)) fun v ↦
+        (Rat.HeightOneSpectrum.adicCompletionIntegers.padicIntEquiv v).toHomeomorph
+    exact h.symm.continuous
+
 /-- The infinite adele ring of `ℚ` is its real completion. -/
 def infiniteAdeleRingEquivReal : NumberField.InfiniteAdeleRing ℚ ≃+* ℝ :=
   (RingEquiv.piUnique fun v : NumberField.InfinitePlace ℚ ↦ v.Completion).trans
     (NumberField.InfinitePlace.Completion.ringEquivRealOfIsReal
       Rat.isReal_infinitePlace)
+
+/-- The infinite adele ring of `ℚ` is topologically equivalent to `ℝ`. -/
+def infiniteAdeleRingContinuousAlgEquivReal :
+    NumberField.InfiniteAdeleRing ℚ ≃A[ℤ] ℝ where
+  toAlgEquiv :=
+    { toRingEquiv := infiniteAdeleRingEquivReal
+      commutes' := by intro n; simp }
+  continuous_toFun := by
+    let h : NumberField.InfiniteAdeleRing ℚ ≃ₜ ℝ :=
+      (Homeomorph.piUnique
+        (fun v : NumberField.InfinitePlace ℚ ↦ v.Completion)).trans
+          (NumberField.InfinitePlace.Completion.isometryEquivRealOfIsReal
+            Rat.isReal_infinitePlace).toHomeomorph
+    exact h.continuous
+  continuous_invFun := by
+    let h : NumberField.InfiniteAdeleRing ℚ ≃ₜ ℝ :=
+      (Homeomorph.piUnique
+        (fun v : NumberField.InfinitePlace ℚ ↦ v.Completion)).trans
+          (NumberField.InfinitePlace.Completion.isometryEquivRealOfIsReal
+            Rat.isReal_infinitePlace).toHomeomorph
+    exact h.symm.continuous
 
 /-- The standard product model `ℝ × ∏_p ℤ_p` for the ring adeles of `ℚ`. -/
 abbrev RingAdeleModel := ℝ × PadicIntegerProduct
@@ -154,6 +235,19 @@ abbrev RingAdeleRing (K : Type u) [Field K] [NumberField K] :=
 def Rat.ringAdeleRingEquivModel : RingAdeleRing ℚ ≃+* Rat.RingAdeleModel :=
   RingEquiv.prodCongr Rat.infiniteAdeleRingEquivReal
     Rat.ringOfIntegersFiniteIntegralAdeleRingEquiv
+
+/-- The standard model `ℝ × ∏_p ℤ_p` is a topological `ℤ`-algebra presentation. -/
+def Rat.ringAdeleRingContinuousAlgEquivModel :
+    RingAdeleRing ℚ ≃A[ℤ] Rat.RingAdeleModel where
+  toAlgEquiv :=
+    { toRingEquiv := Rat.ringAdeleRingEquivModel
+      commutes' := by intro n; simp }
+  continuous_toFun :=
+    (Rat.infiniteAdeleRingContinuousAlgEquivReal.toHomeomorph.prodCongr
+      Rat.ringOfIntegersFiniteIntegralAdeleRingContinuousAlgEquiv.toHomeomorph).continuous
+  continuous_invFun :=
+    (Rat.infiniteAdeleRingContinuousAlgEquivReal.toHomeomorph.prodCongr
+      Rat.ringOfIntegersFiniteIntegralAdeleRingContinuousAlgEquiv.toHomeomorph).symm.continuous
 
 namespace RingAdeleRing
 
