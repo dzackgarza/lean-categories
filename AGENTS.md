@@ -384,6 +384,20 @@ just search 'Nikulin' -- -w
 attachment itself and record the relevant line numbers or page markers. A search miss
 means only that the inspected extraction corpus had no match.
 
+### Use the local PDF when the extraction is unclear
+
+The Markdown child is the searchable transcription. When a formula, symbol, page
+layout, or OCR passage is unclear, open the PDF child attached to the same parent and
+inspect the cited page locally. Resolve its file path from the attachment record's
+`links.enclosure` field. This preserves the source identity already established in
+Zotero.
+
+Use the local PDF to confirm notation, page numbers, and theorem statements. If the
+local PDF needs a new text extraction, route it through [[reading-pdfs/SKILL|reading-pdfs]]
+and the managed Zotero extraction workflow. A publisher or web copy is relevant when
+the source identity or edition remains unresolved; it is not a presumed improvement to
+the local extraction.
+
 Resolve the source identity through live Zotero before citing it. Call `health()` first,
 then use `get_data(parent_key)` for the parent and paginated `get_children(parent_key)`
 to find the child whose `data.contentType` is `text/markdown` and whose filename ends in
