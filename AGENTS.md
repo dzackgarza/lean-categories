@@ -606,6 +606,20 @@ The source extracts a “homological presentation” convention:
 - state the domain on which a construction is functorial;
 - present invariants as truncations or shadows of a named categorical or homological construction.
 
+Use this convention as the default definitional framework. When the ambient category
+has the required constructions, do not define predicates element by element. Prefer:
+
+- vanishing kernels to pointwise zero conditions or injectivity;
+- vanishing cokernels to quotient presentations or surjectivity;
+- vanishing terms in exact sequences to bijectivity or isomorphism conditions;
+- fibers and cofibers to kernel and cokernel models in homotopical settings;
+- pullbacks, pushouts, limits, and colimits to elementwise compatibility conditions.
+
+Choose definitions that still make sense in categories without elements, including
+categories of sheaves. Also preserve their extension to derived, homotopical, and
+infinity-categorical settings. Prove elementwise formulas and simpler recognition
+criteria as consequences only when a consumer needs them.
+
 This is why “nondegenerate means the adjoint is injective” is mathematically poorer than a named radical/discriminant sequence in which nondegeneracy and perfectness occupy identifiable positions. [S2]
 
 ### 3.11 Mathematical prose is audited by human mathematicians
