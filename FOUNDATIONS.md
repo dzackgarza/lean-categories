@@ -413,7 +413,6 @@ classifier presentation, not an arbitrary functor subsequently declared to be fo
 
 Faithfulness, fullness, conservativity, and fibrational properties are theorems about a
 particular forgetful morphism. None of them alone is the definition.
-The structure/forgetful distinction is [@BS07, §2.4].
 
 ## 6. Property, structure, and stuff
 
@@ -434,8 +433,6 @@ In an ordinary \(1\)-categorical presentation, a property classifier is represen
 The property/structure terminology follows [@BS07, §2.4].
 
 ### Definition 6.3 (Structure classifier) {#def-structure-classifier}
-
-The structure-versus-property distinction is [@BS07, §2.4].
 
 Suppose the ambient is locally \(n\)-truncated. A **structure classifier** is an axiom classifier whose fibers are at most \(n\)-truncated, so that the moduli of structures have no higher cells beyond those naturally visible in the ambient.
 
@@ -526,7 +523,6 @@ For example, commutativity is defined on binary operations and pulled back to mo
 groups, rings, and algebras. Finite generation of modules is defined at the module level and
 is not inherited from the underlying additive monoid. The phrase “lowest level” refers to
 this factorization property, not to an externally imposed hierarchy of names.
-The pullback formulation is the standard base-change construction [@Lur18c, §3.4.1].
 
 ### Definition 7.7 (Implication between classifiers) {#def-classifier-implication}
 
@@ -632,8 +628,6 @@ j^*:\operatorname{Fun}(K,\mathcal E)
 \longrightarrow
 \operatorname{Fun}(\partial K,\mathcal E).
 \]
-The diagram-shape convention is the standard one for diagram categories [@Lur18c, §7.1];
-the boundary datum itself is a repository-specific parameter for the classifier below.
 
 ### Definition 9.2 (Diagram-extension classifier) {#def-diagram-extension-classifier}
 
@@ -772,11 +766,8 @@ The category of magmas is
 The category of semigroups is obtained by the associativity classifier. The category of monoids is obtained by adjoining a nullary operation and imposing associativity and the unit diagrams. The category of groups is obtained by adjoining an inverse operation and imposing the two inverse diagrams.
 
 Each stage carries the canonical forgetful functor to the preceding one. Distant forgetful functors are composites, not additional primitive morphisms.
-The operation-and-algebra-object convention is [@Maz21, §10.3.2].
 
 ### Definition 12.2 (Operation roles) {#def-operation-role}
-
-The operation and algebra-object convention is [@Maz21, §10.3.2].
 
 Let
 \[
@@ -806,8 +797,6 @@ U_{+}:\mathbf{Ring}\longrightarrow\mathbf{AddAbGrp},
 U_{\times}:\mathbf{Ring}\longrightarrow\mathbf{MulMon}.
 \]
 Their composites to \(\mathbf{Set}\) are canonically equivalent. A commutative ring is obtained by reindexing the commutativity classifier along \(U_{\times}\).
-This is the ordinary algebra-object presentation in a monoidal module category
-[@Maz21, §10.3.2].
 
 ### Remark 12.4 (The ring diamond)
 
@@ -871,8 +860,6 @@ The assignment
 R\longmapsto {}_RR
 \]
 defines the regular-module section of the module family. It is the mathematical reason that a ring is canonically a module over itself. This is not an additional forgetful functor from rings to a fixed module category; the codomain varies with \(R\).
-The section is the usual regular-module construction; its categorical family is the
-Grothendieck construction already cited in Definition 13.2 [@Lur18c, Def. 5.6.2.4].
 
 ### Definition 13.4 (Module-theoretic classifiers) {#def-module-classifiers}
 
@@ -1029,7 +1016,6 @@ appropriate truncation. Write
 \]
 for the corresponding categories. Their structural functors to modules, rings, and sets are
 induced by the operadic forgetful morphisms and the algebraic spine.
-The algebra-object and operadic conventions are [@Maz21, §§10.3.2, 11.6.7].
 
 ## 14. Structures on categories
 
@@ -1046,7 +1032,6 @@ A monoidal structure on \(\mathcal C\) consists of a bifunctor \(\otimes\), a un
 \mathbf{MonCat}\longrightarrow\mathfrak{Cat}.
 \]
 The fiber over a fixed category can contain several inequivalent monoidal structures. A consumer must therefore specify the chosen lift, for example \(\otimes_R\) or \(\oplus\) on \(R\text{-}\mathbf{Mod}\).
-The coherent algebra-object formulation is [@Maz21, §§10.3.2, 11.6.7].
 
 ### Definition 14.3 (Dualizable object) {#def-dualizable-object}
 
@@ -1060,8 +1045,6 @@ is **dualizable** if there exists an object \(X^\vee\) and morphisms
 satisfying the two triangle identities. A choice of \(X^\vee\), evaluation, and coevaluation
 is duality structure; dualizability itself is its propositional truncation. Perfect
 complexes are the principal geometric example under the standard hypotheses.
-The evaluation, coevaluation, and triangle identities are the standard duality data
-[@Maz21, §10.3.2].
 
 ### Remark 14.4 (Properties of categories as classifiers)
 
@@ -1128,7 +1111,6 @@ for \(r\in R\), and such that its raw polarization
 q(x+y)-q(x)-q(y)
 \]
 is \(R\)-bilinear. The precise definition may be adjusted to the conventional notion of quadratic map over a general base ring; the bilinearity of \(\beta_q\) is the datum used below.
-For finite discriminant forms, the adopted quadratic convention is [@Nik80, §2°].
 
 ### Definition 15.4 (The quadratic-form category) {#def-quadratic-category}
 
@@ -1140,8 +1122,6 @@ It carries the projection
 \[
 \pi_{\mathrm{Quad}}:\mathbf{Quad}_{R,W}\longrightarrow R\text{-}\mathbf{Mod}.
 \]
-The category-of-structured-objects presentation follows the category-of-elements construction
-[@Rie16, §2.4, Defs. 2.4.1–2.4.2].
 
 ### Definition 15.5 (Change of values) {#def-change-values}
 
@@ -1232,9 +1212,6 @@ The implication in Lemma 16.2 is a theorem, not part of the definition of altern
 ## 17. Diagonal, polarization, and quadratic refinements
 
 ### Definition 17.1 (Diagonal and polarization functors) {#def-diag-polar}
-
-The quadratic polarization convention is [@Nik80, §2°]; the functorial packaging here is
-repository-specific.
 
 The diagonal construction sends a symmetric bilinear form to the quadratic map
 \[
@@ -1444,7 +1421,6 @@ For an integral lattice \(L\), extend scalars to \(\mathbb R\). By Sylvester's l
 is the signature.
 
 The terms positive definite, negative definite, and indefinite refer to \((p,0)\), \((0,q)\), and \(p,q>0\), respectively. A hyperbolic lattice is an indefinite lattice in the specified hyperbolic class; the word is not used as a synonym for every indefinite lattice.
-The signature convention is [@Nik80, §1°].
 
 ### Remark 20.2
 
@@ -1498,8 +1474,6 @@ not yet have separate named Lean declarations. The coordinate and Gram-matrix co
 is [@MH73, §I.2].
 
 ### Definition 21.2 (Symmetric matrix category) {#def-symmetric-matrix-category}
-
-The coordinate-form convention is [@MH73, §I.2].
 
 Fix \(n\). Let \(\mathbf{SymMat}_n(R)\) be the category whose objects are symmetric matrices
 \[
@@ -1583,15 +1557,12 @@ L\perp M
 (L\oplus M,b_L\oplus b_M),
 \]
 where the two summands are orthogonal. This gives a symmetric monoidal structure on the lattice category under the appropriate morphism convention.
-The orthogonal-sum convention is [@Nik80, §1°].
 
 ### Remark 22.2 (Not generally a categorical coproduct)
 
 Orthogonal sum is not automatically the categorical coproduct in the category of form-preserving maps: a pair of maps out of \(L\) and \(M\) extends to a form-preserving map from \(L\perp M\) only when the two images are orthogonal. It is therefore recorded as a monoidal product, not identified with a coproduct without a theorem.
 
 ### Definition 22.3 (Scaling) {#def-lattice-scaling}
-
-The scaling convention is [@Nik80, §1°].
 
 For \(a\in R\), define
 \[
@@ -1610,8 +1581,6 @@ The rank-one lattice \(\langle a\rangle\) has Gram matrix \([a]\). The hyperboli
 \[
 \begin{pmatrix}0&1\\1&0\end{pmatrix}.
 \]
-
-The standard hyperbolic-plane convention is [@Nik80, §1°].
 
 ### Definition 23.2 (ADE root lattices) {#def-ade-lattices}
 
@@ -1642,8 +1611,6 @@ of a simple-root Gram matrix with the negated Cartan matrix in simply-laced type
 derived comparison theorem of Proposition 70.2, valid only after a simple-root basis,
 normalization, and sign convention have been chosen; Cartan matrices have no role in the
 primary construction (Convention 70.4).
-The root-system terminology is [@Hum90, §§1.1–1.3]; the negative-definite realization is
-the project convention.
 
 ### Definition 23.3 (Even unimodular indefinite lattices) {#def-IIpq}
 
@@ -1659,7 +1626,6 @@ U^{\perp q}\perp (-E_8)^{\perp (p-q)/8},&p\ge q,
 when \(p-q\equiv0\pmod 8\).
 
 The congruence condition and uniqueness up to isometry are classification theorems; they are not built into the definition of lattice.
-The existence and uniqueness theorem is [@Nik80, §1°, Thm. 1.1.1].
 
 ### Convention 23.4 (K3 and Enriques lattices) {#conv-k3-lattice}
 
@@ -1709,7 +1675,6 @@ L^{\#}_{b,W}
 \{x\in V_L\mid b_K(x,L)\subseteq W\}.
 \]
 The usual metric dual is the case \(W=R\).
-The dual-lattice convention is [@Nik80, §1°].
 
 ### Proposition 24.4 (Comparison with the module dual) {#prop-metric-module-dual}
 
@@ -1752,8 +1717,6 @@ This diagram is the natural home of the discriminant module and the comparison i
 
 ### Definition 25.1 (Discriminant bilinear form) {#def-discriminant-bilinear-form}
 
-The discriminant-pairing convention is [@Nik80, §3°].
-
 Let \(L\) be an intrinsic \(R\)-lattice. The discriminant bilinear form is
 \[
 b_L:A_L\times A_L\longrightarrow K/R,
@@ -1781,7 +1744,6 @@ b:A\times A\longrightarrow K/R,
 and whose morphisms are pairing-preserving \(R\)-linear maps.
 
 For \(R=\mathbb Z\), the value group is \(\mathbb Q/\mathbb Z\).
-The finite discriminant-form category is based on [@Nik80, §3°].
 
 ### Definition 25.4 (Finite quadratic form) {#def-finite-quadratic-form}
 
@@ -1851,7 +1813,6 @@ and
 \]
 
 The foundational domain is the core. Arbitrary form-preserving embeddings do not canonically induce morphisms of discriminant forms in the same direction.
-The isometry-level discriminant construction is [@Nik80, §§3°–4°].
 
 ### Definition 26.2 (Orthogonal group) {#def-orthogonal-group}
 
@@ -1866,8 +1827,6 @@ O(A,q):=\operatorname{Aut}_{\mathbf{DiscQuad}}(A,q).
 These are values of the generic automorphism construction, not separate categorical primitives.
 
 ### Definition 26.3 (Discriminant representation and stable orthogonal group) {#def-stable-orthogonal}
-
-The discriminant representation is [@Nik80, §§3°–4°].
 
 Applying automorphisms to the discriminant functor gives the discriminant representation
 \[
@@ -1903,8 +1862,6 @@ The discriminant representation and orthogonal-group map are [@Nik80, §§3°–
 
 ### Definition 27.1 (Overlattice) {#def-overlattice}
 
-The overlattice convention is [@Nik80, §4°].
-
 Let \(L\) be an integral lattice with rational span \(V_L\). An **overlattice** of \(L\) is an integral lattice \(L'\subseteq V_L\) such that
 \[
 L\subseteq L'\subseteq L^{\#}
@@ -1920,7 +1877,6 @@ Let \((A,q)\) be a finite quadratic form. A subgroup \(H\subseteq A\) is **isotr
 q|_H=0.
 \]
 For a bilinear discriminant form, isotropic means \(b|_{H\times H}=0\).
-The isotropic-subgroup convention is [@Nik80, §4°, Prop. 1.4.1].
 
 ### Construction 27.3 (Overlattice from a subgroup) {#construction-overlattice-subgroup}
 
@@ -1941,8 +1897,6 @@ with the induced quadratic form.
 This is a classical theorem of discriminant-form theory. It is not part of the definition of an overlattice or of an isotropic subgroup.
 
 ### Definition 27.5 (Anti-isometry) {#def-anti-isometry}
-
-The anti-isometry convention is [@Nik80, §4°].
 
 Let \((A_1,q_1)\) and \((A_2,q_2)\) be finite quadratic forms. An **anti-isometry** between subgroups \(H_i\subseteq A_i\) is an isomorphism
 \[
@@ -1973,8 +1927,6 @@ The overlattice/isotropic-subgroup correspondence is [@Nik80, §4°, Prop. 1.4.1
 
 ### Definition 28.1 (Primitive embedding) {#def-primitive-embedding}
 
-The primitive-embedding convention is [@Nik80, §§1°, 5°–6°].
-
 An isometric embedding
 \[
 i:L\hookrightarrow M
@@ -1990,7 +1942,6 @@ i(L)^{\perp}
 \{m\in M\mid b_M(m,i(L))=0\}.
 \]
 Under the usual nondegeneracy and projectivity hypotheses this is a lattice. Its relation to \(L\), \(M\), and their discriminant forms is theorem-level gluing data.
-The primitive-embedding and orthogonal-complement conventions are [@Nik80, §§1°, 5°–6°].
 
 ### Definition 28.3 (Marking) {#def-marking}
 
@@ -2022,7 +1973,6 @@ For an integral lattice \(L\), let \(L_v\) denote its scalar extension to the ap
 \prod_v\mathbf{Lat}_{\mathbb Z_v}^{\simeq},
 \]
 with a restricted product used when the arithmetic setting requires it.
-The local-profile convention is [@Nik80, §1.9].
 
 ### Definition 29.2 (Genus) {#def-genus}
 
@@ -2040,7 +1990,6 @@ over the point \([\operatorname{Loc}(L)]\). Thus
 \{[M]\mid M_v\simeq L_v\text{ for every }v\}.
 \]
 It is a pointed set, pointed by \([L]\).
-The genus convention is [@Nik80, §1.9, Cor. 1.9.4].
 
 ### Proposition 29.3 (Genus is not \(\pi_0\) of the homotopy fiber) {#prop-genus-not-hofib}
 
@@ -2424,7 +2373,6 @@ BG\longrightarrow\mathcal C
 \]
 selecting \(X\), where \(BG\) is the one-object groupoid associated with \(G\), interpreted
 internally when necessary.
-The internal group-action and algebra-object convention is [@Maz21, §10.3.2].
 
 ### Definition 34.2 (Torsor) {#def-geometric-torsor}
 
@@ -2438,11 +2386,8 @@ Let \(G\) be a sheaf of groups on a site.  A **right \(G\)-torsor** over \(T\) i
    \qquad (p,g)\longmapsto(p,pg),
    \]
    is an equivalence.
-The torsor condition is [@The25, tag 03AH].
 
 ### Definition 34.3 (Action groupoid and nerve) {#def-action-groupoid}
-
-The action-groupoid presentation of a quotient is [@The25, tag 044Q].
 
 For a group action \(G\curvearrowright X\), the **action groupoid** is the internal groupoid
 \[
@@ -2468,8 +2413,6 @@ on \(T\).  The **quotient stack**
 is the stackification of the action groupoid, equivalently the stack whose objects over
 \(T\) are pairs \((P,u)\) consisting of a \(G\)-torsor \(P\to T\) and a \(G\)-equivariant
 map \(P\to X\).
-The action-groupoid quotient is [@The25, tag 044Q], and the torsor-classifying case is
-[@The25, tag 036Z].
 
 The coarse orbit sheaf \(X/G\), when it exists, is not in general equivalent to the quotient
 stack; the latter retains stabilizer groups.
@@ -2485,7 +2428,6 @@ A **moduli problem** on a site \((\mathcal C,J)\) is a pseudofunctor
 or, more invariantly, a stack of spaces after imposing descent.  An object of
 \(\mathcal M(T)\) is a family over \(T\); pullback along \(T'\to T\) is base change of the
 family.
-The groupoid-valued moduli convention and its passage to stacks are [@Alp21, §§0.3–0.4].
 
 ### Definition 35.2 (Fine moduli object) {#def-fine-moduli}
 
@@ -2494,7 +2436,6 @@ A moduli problem \(\mathcal M\) is **finely represented** by \(M\in\mathcal C\) 
 \mathcal M\simeq h_M.
 \]
 The identity point of \(h_M(M)\) corresponds to a universal family over \(M\).
-This is the Yoneda/representability convention [@Rie16, §§2.2–2.3].
 
 ### Definition 35.3 (Coarse moduli space) {#def-coarse-moduli}
 
@@ -2508,7 +2449,6 @@ additional hypotheses are those of the relevant coarse-moduli theorem.
 
 A coarse moduli space truncates automorphism information; it is not a replacement for the
 stack.
-The universal property and geometric-point condition are [@Alp21, §3.3.1].
 
 ### Definition 35.4 (Relative curves and stable objects) {#def-relative-curves}
 
@@ -2521,8 +2461,6 @@ descent theorem is established.
 The conversations did not settle a complete self-contained definition of the KSBA or MMP
 classifiers.  Those terms therefore remain names for standard downstream theories rather
 than primitives of the present foundations.
-The relative-curve ingredient is the standard nodal-family definition [@The25, tag 0C58];
-the stronger KSBA classifier remains a named downstream parameter here.
 
 ## 36. Ringed geometry and quasi-coherent sheaves
 
@@ -2531,7 +2469,6 @@ the stronger KSBA classifier remains a named downstream parameter here.
 A **ringed site** is a site \((\mathcal C,J)\) together with a sheaf of rings
 \(\mathcal O\).  A **ringed \(\infty\)-topos** is an \(\infty\)-topos \(\mathcal X\) together
 with a ring object \(\mathcal O_{\mathcal X}\).
-The ordinary ringed-site definition is [@The25, tag 03AD].
 
 ### Definition 36.2 (Modules over the structure sheaf) {#def-mod-structure-sheaf}
 
@@ -2542,7 +2479,6 @@ For a ringed site or ringed stack \((X,\mathcal O_X)\), let
 denote the category or stable \(\infty\)-category of sheaves of \(\mathcal O_X\)-modules.
 Pullback and pushforward along a morphism of ringed spaces or stacks are the standard
 functors, with derived functors used when required.
-Modules on a ringed site are the standard objects of [@The25, tag 01DQ].
 
 ### Definition 36.3 (Quasi-coherent module) {#def-quasi-coherent}
 
@@ -2566,7 +2502,6 @@ The affine-local definition is [@The25, tag 01BE].
 A **quasi-coherent \(\mathcal O_X\)-algebra** is a commutative algebra object in
 \(\operatorname{QCoh}(X)\).  A graded quasi-coherent algebra is a graded commutative algebra
 object, with the grading category stated explicitly.
-The algebra-object convention is [@Maz21, §10.3.2].
 
 ### Definition 36.5 (Relative spectrum) {#def-relative-spec}
 
@@ -2590,7 +2525,6 @@ Equivalently, relative spectrum gives the standard contravariant equivalence
 \]
 under the usual hypotheses, with quasi-inverse sending an affine morphism
 \(f:Y\to X\) to \(f_*\mathcal O_Y\).
-The relative-spectrum definition is [@The25, tag 01LW].
 
 ### Definition 36.6 (Relative Proj) {#def-relative-proj}
 
@@ -2601,7 +2535,6 @@ hypotheses on grading, generation, and base are part of the definition.
 
 The general-base construction depends on the quasi-coherent algebra theory of Definitions
 36.3--36.4; it cannot be replaced by unconstrained types or propositions.
-The relative-Proj construction is [@The25, tag 01O0].
 
 ### Definition 36.7 (Derived category and perfect complexes) {#def-derived-qcoh}
 
@@ -2609,7 +2542,6 @@ For a ringed space or stack \(X\), write \(D_{\mathrm{qc}}(X)\) for the derived
 \(\infty\)-category of complexes with quasi-coherent cohomology.  A complex is **perfect** if
 it is locally equivalent to a bounded complex of finite-rank vector bundles, or equivalently
 is dualizable in \(\operatorname{QCoh}(X)\) under the standard hypotheses.
-The derived/perfect convention is [@Lur09, §§2, 13; @The25, tag 0657].
 
 ### Definition 36.8 (Coherent sheaf) {#def-coherent-sheaf}
 
@@ -2624,7 +2556,6 @@ finite type and kernels of maps from finite free modules are locally of finite t
 \]
 for the full subcategory of coherent sheaves. Outside the Noetherian setting the precise
 finiteness condition must be stated rather than imported from this equivalence.
-For schemes and algebraic stacks, the coherence conventions are [@The25, tags 01XY, 0GR4].
 
 ## 37. Deformation theory
 
@@ -2642,7 +2573,6 @@ Let \(A\) be a commutative ring or derived commutative ring and \(M\) an \(A\)-m
 \]
 in which \(M^2=0\), with the corresponding derived definition when \(A\) is simplicial or
 spectral.
-The square-zero extension convention is [@Lur09b, §§3, 3.1].
 
 ### Definition 37.2 (Deformation groupoid) {#def-deformation-groupoid}
 
@@ -2657,7 +2587,6 @@ extension \(A'\to A\), the **deformation groupoid** of \(x\) to \(A'\) is the ho
 \]
 Its objects are lifts of \(x\), its morphisms are isomorphisms of lifts, and its higher
 homotopy groups record higher automorphisms when the moduli problem is genuinely derived.
-This homotopy-fiber formulation is the deformation-theory pattern of [@Lur09b, §3.3].
 
 ### Definition 37.3 (Cotangent complex) {#def-cotangent-complex}
 
@@ -2691,7 +2620,6 @@ H^0(T_xX)=\operatorname{Ext}^{0}(x^*L_X,k).
 \]
 Higher and negative cohomology record derived deformation and automorphism data according to
 the same convention.
-The tangent and obstruction interpretation is [@Lur09b, §§1.2, 3.3].
 
 ### Remark 37.5 (The governing exact triangle)
 
@@ -2747,8 +2675,6 @@ spaces, modules, complexes, or spectra—is part of the definition.
 
 ### Definition 39.1 (Derived affine object) {#def-derived-affine}
 
-The derived-affine convention is [@GR17c, §§1.1, 2.1].
-
 Choose a category \(\mathbf{CAlg}^{\mathrm{der}}\) of derived commutative algebras, such as
 simplicial commutative rings in an appropriate characteristic regime, connective
 \(E_\infty\)-rings, or another specified model.  The category of derived affine schemes is
@@ -2766,7 +2692,6 @@ F:\mathbf{dAff}^{\mathrm{op}}\longrightarrow\mathcal S.
 \]
 Geometricity is defined recursively as in Definition 33.5.  A **spectral stack** is defined
 similarly using connective \(E_\infty\)-rings or the selected spectral affine category.
-Derived affine and sheaf-valued definitions follow [@Lur09b, §§3, 3.1; @Lur09a, §§6.1–6.2].
 
 ### Remark 39.3 (Unresolved model choice)
 
@@ -3736,7 +3661,6 @@ The natural pairing is
 \[
 \langle-,-\rangle:M_{\mathbb Q}\times N_{\mathbb Q}\to\mathbb Q.
 \]
-The lattice-dual convention is [@Tel22, §2.1].
 
 ### Definition 58.2 (Rational polyhedral cone) {#def-rational-cone}
 
@@ -3754,7 +3678,6 @@ Its linear span and dimension are taken inside \(N_{\mathbb Q}\).
 
 The cone is the intrinsic convex subset.  A chosen list \((v_1,\ldots,v_r)\) is a generating
 presentation and is additional structure.
-Rational polyhedral cones and their duals are [@Tel22, §§2.6–2.7].
 
 ### Definition 58.3 (Dual cone and face) {#def-dual-cone-face}
 
@@ -3773,7 +3696,6 @@ For \(u\in\sigma^\vee\), the subset
 \]
 is a **face** of \(\sigma\).  Write \(\tau\preceq\sigma\).  Faces, with inclusion, form a
 finite poset for a rational polyhedral cone.
-The face and dual-cone conventions are [@Tel22, §§2.6–2.7].
 
 ### Definition 58.4 (Fan) {#def-fan}
 
@@ -3786,7 +3708,6 @@ rational polyhedral cones such that:
 A fan is finite, complete, simplicial, regular, or projective according to the standard
 conditions.  A morphism of fans is a homomorphism of lattices carrying every cone of the
 source into a cone of the target.
-The fan axioms and fan morphisms are [@Tel22, §4.2].
 
 ### Definition 58.5 (Semifan) {#def-semifan}
 
@@ -3818,7 +3739,6 @@ A face inclusion \(\tau\preceq\sigma\) induces an open immersion
 \[
 U_\tau\hookrightarrow U_\sigma.
 \]
-The affine toric monoid and cone construction is [@Tel22, §§2.6–2.7].
 
 ### Definition 59.2 (Toric scheme of a fan) {#def-toric-scheme}
 
@@ -3833,7 +3753,6 @@ in the category of schemes, with the diagram oriented by face inclusions.
 
 A morphism of fans induces a toric morphism.  Thus the toric construction is a functor after
 the direction conventions are fixed.
-The gluing construction from a fan is [@Tel22, §4.2].
 
 ### Remark 59.3 (Intrinsic versus presented cones)
 
@@ -3860,7 +3779,6 @@ The vector \(r\) is an **integral reflection vector** if
 \text{for all }x\in L,
 \]
 so that \(s_r\in O(L)\).
-The reflection formula and integrality condition are [@Hum90, §§1.1–1.2].
 
 When a root convention imposes a prescribed norm, such as \(b(r,r)=-2\), that norm is part
 of the selected root classifier rather than the general definition of an integral reflection
@@ -3872,7 +3790,6 @@ A **root system** in \(L\) is a subset \(\Phi\subseteq L\setminus\{0\}\) satisfy
 selected finiteness, spanning, integrality, and reflection-stability axioms.  In a
 negative-definite ADE lattice, the roots of norm \(-2\) recover the usual simply-laced root
 system under the sign convention of Section 23.
-The root and reflection conventions are [@Hum90, §§1.1–1.2].
 
 ### Definition 60.3 (Reflection group and arrangement) {#def-reflection-group}
 
@@ -3891,7 +3808,6 @@ The associated hyperplane arrangement in \(L_{\mathbb R}\) is
 \]
 A **chamber** is a connected component of the complement of this arrangement in a selected
 positive or negative cone.
-The reflection-group and chamber construction is [@Hum90, §§1.3, 1.12].
 
 ### Definition 60.4 (Coxeter system and Coxeter diagram) {#def-coxeter-system}
 
@@ -3908,7 +3824,6 @@ For a chamber bounded by reflecting hyperplanes, the simple wall reflections for
 system when the usual angle and discreteness hypotheses hold.  Establishing that a computed
 set of walls is complete or that an algorithm terminates is theorem-level and is not part of
 the definition.
-The Coxeter presentation and diagram convention are [@Hum90, §§1.9, 5.1].
 
 ### Definition 60.5 (Lorentzian reflection datum) {#def-lorentzian-reflection-datum}
 
@@ -3943,14 +3858,12 @@ usual opposedness condition.
 
 Morphisms preserve the integral structure and the Hodge decomposition, or equivalently the
 filtration.
-The Hodge-structure and filtration conventions are [@LZ16, §§1.3, 1.3.2].
 
 ### Definition 61.2 (Polarized Hodge structure) {#def-polarized-hodge-structure}
 
 A **polarization** is a nondegenerate bilinear form \(Q\) of parity \((-1)^n\) satisfying
 the Hodge orthogonality and Hodge--Riemann positivity conditions.  A polarized Hodge
 structure is a Hodge structure together with such a chosen \(Q\).
-The polarization convention is [@LZ16, §1.3.2].
 
 ### Definition 61.3 (Type-IV period domain) {#def-type-iv-domain}
 
@@ -3970,7 +3883,6 @@ It has two connected components.  Choosing one component is additional data.
 
 Equivalently, \(\Omega_T\) is the space of oriented positive-definite real \(2\)-planes in
 \(T_{\mathbb R}\).
-The Type-IV domain description is [@LZ16, §3.1.2].
 
 ### Definition 61.4 (Arithmetic quotient) {#def-arithmetic-period-quotient}
 
@@ -3981,7 +3893,6 @@ The natural quotient object is the quotient stack
 \]
 Its coarse analytic quotient \(\Gamma\backslash\Omega_T\), when formed, forgets stabilizer
 data and is generally an orbifold rather than a manifold.
-The locally symmetric quotient convention is [@LZ16, §§2.1, 3.1].
 
 ### Definition 61.5 (Period map) {#def-period-map}
 
@@ -3998,7 +3909,6 @@ induced functorially by the Hodge filtration.  In a marked moduli problem the ta
 
 Torelli, surjectivity, extension to a compactification, and compatibility with boundary
 strata are theorems about \(\mathcal P\), not fields in its definition.
-The period-domain and period-map setup is [@LZ16, §§1.3.2, 2.1].
 
 ### Definition 61.6 (Heegner divisor) {#def-heegner-divisor}
 
@@ -4010,7 +3920,6 @@ integrality condition, the associated **Heegner divisor** is the image in
 \left(\Omega_T\cap\mathbb P((\gamma v)^\perp_{\mathbb C})\right).
 \]
 The norm, divisibility, and orbit are part of the label of the divisor.
-The orthogonal-modular hyperplane convention is [@Daw23, §1].
 
 ## 62. Compactifications and degenerations
 
@@ -4022,7 +3931,6 @@ graded ring of automorphic forms, under the standard finite-generation theorem.
 
 Its boundary strata are indexed by rational boundary components.  For Type-IV domains these
 are determined by rational isotropic subspaces of the lattice.
-The Baily--Borel construction is [@LZ16, §3.1].
 
 ### Definition 62.2 (Toroidal compactification datum) {#def-toroidal-data}
 
@@ -4033,7 +3941,6 @@ corresponding torus embeddings.
 
 The cone decomposition is chosen data.  Independence, comparison, refinement, and
 projectivity are theorem-level properties.
-The toroidal compactification datum is [@LZ16, §3.2].
 
 ### Definition 62.3 (Log pair and KSBA-stable pair) {#def-ksba-pair}
 
@@ -4047,8 +3954,6 @@ satisfy the standard flatness, \(\mathbb Q\)-Gorenstein, and base-change conditi
 
 The precise coefficient set, dimension, polarization, and allowed singularities are
 parameters of the moduli category.
-The stable-curve part of this convention is [@The25, tag 0E7N]; the KSBA extension remains
-parameterized here.
 
 ### Definition 62.4 (dlt pair and dlt model) {#def-dlt-model}
 
@@ -4311,8 +4216,6 @@ The root-system, root-lattice, and coordinate conventions are [@Bou08, chs. IV�
 
 ### Definition 67.1 (Standard odd unimodular lattice) {#def-odd-unimodular-lattice}
 
-The standard odd-unimodular convention is [@Nik80, §1°].
-
 For integers \(p,q\ge 0\), let
 \[
 I_{p,q}:=\mathbb Z^{p+q}
@@ -4376,11 +4279,8 @@ s_r(x):=x-\frac{2b(x,r)}{b(r,r)}r=x+b(x,r)r
 preserves \(L\).
 
 For an integral lattice, the final condition is automatic for a vector of norm \(-2\), since \(b(x,r)\in\mathbb Z\).
-The reflection and root convention is [@Hum90, §§1.1–1.2].
 
 ### Definition 68.2 (Root system in a quadratic space) {#def-root-system-quadratic-space}
-
-The root-system and simple-system conventions are [@Hum90, §§1.1–1.3].
 
 Let \(V\) be a finite-dimensional rational or real quadratic space. A finite subset
 \[
@@ -4398,8 +4298,6 @@ Compare Definition 60.2, which axiomatizes root systems inside an integral latti
 A **simple system** or **base** is a subset \(\Delta\subseteq\Phi\) which is a basis of \(V\) and with respect to which every root is an integral linear combination whose coefficients have one sign.
 
 ### Definition 68.3 (Root lattice) {#def-root-lattice}
-
-The root-lattice convention is [@Hum90, §1.3]; the sign choice is the project convention.
 
 The **root lattice** of \(\Phi\) is
 \[
@@ -4458,9 +4356,6 @@ Neither arrow is generally an equivalence: the first forgets an ambient realizat
 
 ### Definition 68.5 (Categories of root frames and embedded root realizations) {#def-root-frame-categories}
 
-The total-category construction used here is the Grothendieck construction [@Lur18c,
-Def. 5.6.2.4].
-
 Fix a finite indexing set \(S\). Let
 \[
 \mathbf{RootFrame}_S
@@ -4502,8 +4397,6 @@ point of an embedded-root-realization category followed by these forgetful funct
 
 ### Construction 68.6 (Named root lattice from a presentation) {#construction-named-root-lattice}
 
-The finite root-system realizations are [@Hum90, §§1.1–1.3].
-
 A named ADE lattice is constructed by specifying a cited root realization
 \[
 (J_\Gamma,\Phi_\Gamma,\Delta_\Gamma)
@@ -4526,8 +4419,6 @@ This is a classification theorem of finite root systems. It is the comparison th
 
 ### Definition 69.1 (Coordinate matrix of a root frame) {#def-coordinate-matrix-root-frame}
 
-The coordinate convention is [@MH73, §I.2].
-
 Suppose the ambient lattice \(J\) has an ordered basis \(e=(e_1,\ldots,e_N)\), and the root frame is ordered as
 \[
 \Delta=(\alpha_1,\ldots,\alpha_r).
@@ -4537,8 +4428,6 @@ The **coordinate matrix** of \(\Delta\) in \(e\) is the \(N\times r\) matrix \(R
 This matrix records the embedding of the free module on the roots into the ambient free module. It is not the Gram matrix.
 
 ### Definition 69.2 (Gram matrix of a frame) {#def-gram-matrix-frame}
-
-The Gram-matrix convention is [@MH73, §I.2].
 
 For a lattice \((L,b)\) with ordered frame \(v=(v_1,\ldots,v_r)\), its **Gram matrix** is
 \[
@@ -4578,8 +4467,6 @@ is the additional realization datum.
 ## 70. Cartan matrices are derived root--coroot data
 
 ### Definition 70.1 (Cartan matrix) {#def-cartan-matrix}
-
-The Cartan-matrix convention is [@Hum90, §1.9].
 
 Let \(\Delta=(\alpha_1,\ldots,\alpha_r)\) be a simple system, with coroots
 \[
@@ -4629,8 +4516,6 @@ The following coordinate models give canonical convenient points of the correspo
 
 ### Definition 71.1 (The lattice \(A_n^-\)) {#def-lattice-an-neg}
 
-The standard \(A_n\) realization is [@Bou08, ch. IV].
-
 For \(n\ge1\), let
 \[
 A_n^-:=
@@ -4655,8 +4540,6 @@ The Gram matrix in this basis has diagonal entries \(-2\), adjacent entries \(1\
 
 ### Definition 71.2 (The lattice \(D_n^-\)) {#def-lattice-dn-neg}
 
-The standard \(D_n\) realization is [@Bou08, ch. IV].
-
 For \(n\ge4\), let
 \[
 D_n^-:=
@@ -4678,8 +4561,6 @@ One may take
 with the usual adjustment of indexing at the branching vertex.
 
 ### Definition 71.3 (The lattice \(E_8^-\)) {#def-lattice-e8-neg}
-
-The standard \(E_8\) realization is [@Bou08, chs. IV–VI].
 
 Let
 \[
@@ -4706,8 +4587,6 @@ E_8^+=D_8+\mathbb Z\cdot\tfrac12(1,1,1,1,1,1,1,1)
 inside \(\mathbb Q^8\), with the standard parity convention.
 
 ### Definition 71.4 (The lattices \(E_7^-\) and \(E_6^-\)) {#def-lattices-e7-e6-neg}
-
-The root-system classification underlying these names is [@Hum90, ch. 1].
 
 Inside the standard \(E_8^+\) realization, set
 \[
@@ -5576,9 +5455,6 @@ The relative-tensor and restriction constructions are the bimodule instance of
 
 ### Definition 83.3 (Extension and restriction of scalars: right modules) {#def-scalar-change-right}
 
-The right-module construction is the opposite-ring form of the relative-tensor convention
-[@Lur18c, Ex. 2.2.2.4].
-
 For a right \(R\)-module \(N\), define
 \[
 f_!^R(N):=N\otimes_R {}_R S_S,
@@ -5809,8 +5685,6 @@ Equivalently,
 Its composition law is relative tensor product as in [@Lur18c, Ex. 2.2.2.4].
 
 ### Definition 86.2 (Simultaneous restriction of scalars) {#def-bimodule-restriction}
-
-The restriction and relative-tensor adjunction is [@Lur18c, Ex. 2.2.2.4].
 
 For \(N\in{}_{R'}\mathbf{Bimod}_{S'}\), define
 \[
@@ -6355,8 +6229,6 @@ Thus left and right module categories are not unrelated families attached extern
 ## 94. Ring homomorphisms as companion and conjoint bimodules
 
 ### Definition 94.1 (The two bimodules attached to a ring map) {#def-companion-conjoint}
-
-The companion and conjoint bimodule convention is [@EKMM07, ch. VI, §5].
 
 Let \(f:R\to S\). Define
 \[
