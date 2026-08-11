@@ -23,12 +23,12 @@ variable {L : IntegralLatticeCat R}
 /-- The discriminant anti-isometry data used to glue two even lattices. -/
 structure EvenDiscriminantGluingData
     (L M : IntegralLatticeCat R) where
-  left_isGenericallyNondegenerate : IsGenericallyNondegenerate R L
-  right_isGenericallyNondegenerate : IsGenericallyNondegenerate R M
+  left_fractionFieldPerfect : IsFractionFieldPerfect R L
+  right_fractionFieldPerfect : IsFractionFieldPerfect R M
   left_isEven : IsEven L
   right_isEven : IsEven M
   antiIsometry : EvenDiscriminantAntiIsometry L M
-    left_isGenericallyNondegenerate right_isGenericallyNondegenerate
+    left_fractionFieldPerfect right_fractionFieldPerfect
     left_isEven right_isEven
 
 /-- Two even lattices have discriminant data which can support anti-isometric gluing. -/
@@ -38,13 +38,13 @@ def HasEvenDiscriminantGluingData
 
 /-- An isotropic subgroup of the quadratic discriminant form of an even lattice. -/
 noncomputable abbrev EvenDiscriminantIsotropicSubgroup
-    (hL : IsGenericallyNondegenerate R L) (hEven : IsEven L) :=
+    (hL : IsFractionFieldPerfect R L) (hEven : IsEven L) :=
   {H : Submodule R L.obj.defect //
     (evenDiscriminantQuadraticObject L hL hEven).IsTotallyIsotropic H}
 
 /-- A quadratic metabolizer is both quadratic-isotropic and bilinear-Lagrangian. -/
 noncomputable abbrev EvenDiscriminantMetabolizer
-    (hL : IsGenericallyNondegenerate R L) (hEven : IsEven L) :=
+    (hL : IsFractionFieldPerfect R L) (hEven : IsEven L) :=
   {H : Submodule R L.obj.defect //
     (evenDiscriminantQuadraticObject L hL hEven).IsTotallyIsotropic H ∧
       (discriminantBilinObject R L hL).IsLagrangian H}
@@ -52,7 +52,7 @@ noncomputable abbrev EvenDiscriminantMetabolizer
 /-- A quadratic-isotropic subgroup is isotropic for the discriminant pairing. -/
 noncomputable def EvenDiscriminantIsotropicSubgroup.toBilinear
     [NeZero (2 : R)]
-    {hL : IsGenericallyNondegenerate R L} {hEven : IsEven L}
+    {hL : IsFractionFieldPerfect R L} {hEven : IsEven L}
     (H : EvenDiscriminantIsotropicSubgroup hL hEven) :
     DiscriminantIsotropicSubgroup R hL := by
   refine ⟨H.1, ?_⟩
@@ -71,7 +71,7 @@ noncomputable def EvenDiscriminantIsotropicSubgroup.toBilinear
 /-- A quadratic-isotropic subgroup constructs an integral overlattice. -/
 noncomputable def evenOverlatticeFromIsotropicSubgroup
     [NeZero (2 : R)]
-    (hL : IsGenericallyNondegenerate R L) (hEven : IsEven L)
+    (hL : IsFractionFieldPerfect R L) (hEven : IsEven L)
     (H : EvenDiscriminantIsotropicSubgroup hL hEven) : Overlattice R L :=
   overlatticeFromIsotropicSubgroup R hL H.toBilinear
 

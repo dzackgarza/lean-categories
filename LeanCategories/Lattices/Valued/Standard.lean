@@ -54,17 +54,17 @@ theorem rankZeroLattice_isPerfect : rankZeroLattice.obj.IsPerfect := by
     (Pi.basisFun ℤ (Fin 0))]
   simp [determinant, rankZeroLattice_gramMatrix, rankZeroGramMatrix]
 
-/-- The rank-zero lattice is generically nondegenerate. -/
-theorem rankZeroLattice_isGenericallyNondegenerate :
-    IsGenericallyNondegenerate ℤ rankZeroLattice := by
-  rw [isGenericallyNondegenerate_iff_determinant_ne_zero
+/-- The rank-zero lattice has a perfect fraction-field form. -/
+theorem rankZeroLattice_isFractionFieldPerfect :
+    IsFractionFieldPerfect ℤ rankZeroLattice := by
+  rw [isFractionFieldPerfect_iff_determinant_ne_zero
     ℤ rankZeroLattice (Pi.basisFun ℤ (Fin 0))]
   simp [determinant, rankZeroLattice_gramMatrix, rankZeroGramMatrix]
 
 /-- The rank-zero lattice is unimodular. -/
 theorem rankZeroLattice_isUnimodular : IsUnimodular ℤ rankZeroLattice :=
   (isPerfect_iff_isUnimodular ℤ rankZeroLattice
-    rankZeroLattice_isGenericallyNondegenerate).mp rankZeroLattice_isPerfect
+    rankZeroLattice_isFractionFieldPerfect).mp rankZeroLattice_isPerfect
 
 /-- The Gram matrix of the rank-one lattice with square `a`. -/
 def rankOneGramMatrix (a : ℤ) : Matrix (Fin 1) (Fin 1) ℤ := !![a]
@@ -503,10 +503,10 @@ theorem e6Lattice_determinantIdeal :
       Ideal.span {(3 : ℤ)} := by
   rw [determinantIdeal, e6Lattice_determinant]
 
-/-- The negative `E₆` lattice is generically nondegenerate. -/
-theorem e6Lattice_isGenericallyNondegenerate :
-    IsGenericallyNondegenerate ℤ e6Lattice :=
-  (isGenericallyNondegenerate_iff_determinant_ne_zero
+/-- The negative `E₆` lattice has a perfect fraction-field form. -/
+theorem e6Lattice_isFractionFieldPerfect :
+    IsFractionFieldPerfect ℤ e6Lattice :=
+  (isFractionFieldPerfect_iff_determinant_ne_zero
     ℤ e6Lattice (Pi.basisFun ℤ (Fin 6))).mpr (by
       rw [e6Lattice_determinant]
       norm_num)
@@ -518,7 +518,7 @@ theorem e6Lattice_natCard_defect :
     change Module.Finite ℤ (Fin 6 → ℤ)
     infer_instance
   rw [natCard_defect_eq_natAbs_determinant e6Lattice
-    e6Lattice_isGenericallyNondegenerate (Pi.basisFun ℤ (Fin 6)),
+    e6Lattice_isFractionFieldPerfect (Pi.basisFun ℤ (Fin 6)),
     e6Lattice_determinant]
   norm_num
 
@@ -702,10 +702,10 @@ theorem e7Lattice_determinantIdeal :
       Ideal.span {(-2 : ℤ)} := by
   rw [determinantIdeal, e7Lattice_determinant]
 
-/-- The negative `E₇` lattice is generically nondegenerate. -/
-theorem e7Lattice_isGenericallyNondegenerate :
-    IsGenericallyNondegenerate ℤ e7Lattice :=
-  (isGenericallyNondegenerate_iff_determinant_ne_zero
+/-- The negative `E₇` lattice has a perfect fraction-field form. -/
+theorem e7Lattice_isFractionFieldPerfect :
+    IsFractionFieldPerfect ℤ e7Lattice :=
+  (isFractionFieldPerfect_iff_determinant_ne_zero
     ℤ e7Lattice (Pi.basisFun ℤ (Fin 7))).mpr (by
       rw [e7Lattice_determinant]
       norm_num)
@@ -717,7 +717,7 @@ theorem e7Lattice_natCard_defect :
     change Module.Finite ℤ (Fin 7 → ℤ)
     infer_instance
   rw [natCard_defect_eq_natAbs_determinant e7Lattice
-    e7Lattice_isGenericallyNondegenerate (Pi.basisFun ℤ (Fin 7)),
+    e7Lattice_isFractionFieldPerfect (Pi.basisFun ℤ (Fin 7)),
     e7Lattice_determinant]
   norm_num
 
@@ -883,10 +883,10 @@ theorem e8Lattice_determinant :
     determinant e8Lattice (Pi.basisFun ℤ (Fin 8)) = 1 := by
   rw [determinant, e8Lattice_gramMatrix, e8GramMatrix_det]
 
-/-- The negative `E₈` lattice is generically nondegenerate. -/
-theorem e8Lattice_isGenericallyNondegenerate :
-    IsGenericallyNondegenerate ℤ e8Lattice :=
-  (isGenericallyNondegenerate_iff_determinant_ne_zero
+/-- The negative `E₈` lattice has a perfect fraction-field form. -/
+theorem e8Lattice_isFractionFieldPerfect :
+    IsFractionFieldPerfect ℤ e8Lattice :=
+  (isFractionFieldPerfect_iff_determinant_ne_zero
     ℤ e8Lattice (Pi.basisFun ℤ (Fin 8))).mpr (by
       rw [e8Lattice_determinant]
       norm_num)
@@ -898,7 +898,7 @@ theorem e8Lattice_natCard_defect :
     change Module.Finite ℤ (Fin 8 → ℤ)
     infer_instance
   rw [natCard_defect_eq_natAbs_determinant e8Lattice
-    e8Lattice_isGenericallyNondegenerate (Pi.basisFun ℤ (Fin 8)),
+    e8Lattice_isFractionFieldPerfect (Pi.basisFun ℤ (Fin 8)),
     e8Lattice_determinant]
   norm_num
 
@@ -914,7 +914,7 @@ theorem e8Lattice_isPerfect : e8Lattice.obj.IsPerfect := by
 /-- The negative `E₈` lattice is unimodular. -/
 theorem e8Lattice_isUnimodular : IsUnimodular ℤ e8Lattice :=
   (isPerfect_iff_isUnimodular ℤ e8Lattice
-    e8Lattice_isGenericallyNondegenerate).mp e8Lattice_isPerfect
+    e8Lattice_isFractionFieldPerfect).mp e8Lattice_isPerfect
 
 /-- The determinant ideal of the negative `E₈` lattice is the unit ideal. -/
 theorem e8Lattice_determinantIdeal_eq_top :
@@ -977,10 +977,10 @@ theorem hyperbolicPlane_isPerfect : hyperbolicPlane.obj.IsPerfect := by
     Matrix.det_fin_two]
   norm_num
 
-/-- The integral hyperbolic plane is generically nondegenerate. -/
-theorem hyperbolicPlane_isGenericallyNondegenerate :
-    IsGenericallyNondegenerate ℤ hyperbolicPlane := by
-  rw [isGenericallyNondegenerate_iff_determinant_ne_zero
+/-- The integral hyperbolic plane has a perfect fraction-field form. -/
+theorem hyperbolicPlane_isFractionFieldPerfect :
+    IsFractionFieldPerfect ℤ hyperbolicPlane := by
+  rw [isFractionFieldPerfect_iff_determinant_ne_zero
     ℤ hyperbolicPlane (Pi.basisFun ℤ (Fin 2))]
   rw [determinant, hyperbolicPlane_gramMatrix, hyperbolicPlaneGramMatrix,
     Matrix.det_fin_two]
@@ -989,7 +989,7 @@ theorem hyperbolicPlane_isGenericallyNondegenerate :
 /-- The integral hyperbolic plane is unimodular. -/
 theorem hyperbolicPlane_isUnimodular : IsUnimodular ℤ hyperbolicPlane :=
   (isPerfect_iff_isUnimodular ℤ hyperbolicPlane
-    hyperbolicPlane_isGenericallyNondegenerate).mp hyperbolicPlane_isPerfect
+    hyperbolicPlane_isFractionFieldPerfect).mp hyperbolicPlane_isPerfect
 
 /-- The determinant ideal of the hyperbolic plane is the unit ideal. -/
 theorem hyperbolicPlane_determinantIdeal_eq_top :
@@ -1521,10 +1521,10 @@ theorem k3Lattice_isPerfect : k3Lattice.obj.IsPerfect :=
     (isPerfect_orthogonalPower hyperbolicPlane 3 hyperbolicPlane_isPerfect)
     (isPerfect_orthogonalPower e8Lattice 2 e8Lattice_isPerfect)
 
-/-- The `K3` lattice is generically nondegenerate. -/
-theorem k3Lattice_isGenericallyNondegenerate :
-    IsGenericallyNondegenerate ℤ k3Lattice := by
-  rw [isGenericallyNondegenerate_iff_determinant_ne_zero
+/-- The `K3` lattice has a perfect fraction-field form. -/
+theorem k3Lattice_isFractionFieldPerfect :
+    IsFractionFieldPerfect ℤ k3Lattice := by
+  rw [isFractionFieldPerfect_iff_determinant_ne_zero
     ℤ k3Lattice k3Basis]
   exact ((isPerfect_iff_isUnit_determinant k3Lattice k3Basis).mp
     k3Lattice_isPerfect).ne_zero
@@ -1532,7 +1532,7 @@ theorem k3Lattice_isGenericallyNondegenerate :
 /-- The `K3` lattice is unimodular. -/
 theorem k3Lattice_isUnimodular : IsUnimodular ℤ k3Lattice :=
   (isPerfect_iff_isUnimodular ℤ k3Lattice
-    k3Lattice_isGenericallyNondegenerate).mp k3Lattice_isPerfect
+    k3Lattice_isFractionFieldPerfect).mp k3Lattice_isPerfect
 
 /-- The determinant ideal of the `K3` lattice is the unit ideal. -/
 theorem k3Lattice_determinantIdeal_eq_top :

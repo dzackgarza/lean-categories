@@ -183,6 +183,7 @@ theorem isPerfect_iff_isUnit_determinant {I : Type*} [Fintype I]
     [DecidableEq I] (L : IntegralLatticeCat R)
     (b : Module.Basis I R L.obj.carrier) :
     L.obj.IsPerfect ↔ IsUnit (determinant L b) := by
+  rw [L.obj.isPerfect_iff_adjoint_bijective_of_isSymmetric L.property.2]
   rw [determinant]
   rw [← adjoint_toMatrix_eq_gramMatrix L b]
   constructor
@@ -318,11 +319,17 @@ theorem determinantIdeal_orthogonalSum
 theorem isPerfect_orthogonalSum (L₁ L₂ : IntegralLatticeCat R)
     (h₁ : L₁.obj.IsPerfect) (h₂ : L₂.obj.IsPerfect) :
     (orthogonalSum L₁ L₂).obj.IsPerfect := by
+  rw [(orthogonalSum L₁ L₂).obj.isPerfect_iff_adjoint_bijective_of_isSymmetric
+    (orthogonalSum L₁ L₂).property.2]
+  have h₁left : Function.Bijective L₁.obj.adjoint :=
+    (L₁.obj.isPerfect_iff_adjoint_bijective_of_isSymmetric L₁.property.2).mp h₁
+  have h₂left : Function.Bijective L₂.obj.adjoint :=
+    (L₂.obj.isPerfect_iff_adjoint_bijective_of_isSymmetric L₂.property.2).mp h₂
   let e : (L₁.obj.carrier × L₂.obj.carrier) ≃ₗ[R]
       ((L₁.obj.carrier × L₂.obj.carrier) →ₗ[R] R) :=
     (LinearEquiv.prodCongr
-      (LinearEquiv.ofBijective L₁.obj.adjoint h₁)
-      (LinearEquiv.ofBijective L₂.obj.adjoint h₂)).trans
+      (LinearEquiv.ofBijective L₁.obj.adjoint h₁left)
+      (LinearEquiv.ofBijective L₂.obj.adjoint h₂left)).trans
         (Module.dualProdDualEquivDual R L₁.obj.carrier L₂.obj.carrier)
   change Function.Bijective (orthogonalSum L₁ L₂).obj.adjoint
   have he : (orthogonalSum L₁ L₂).obj.adjoint = e.toLinearMap := by
@@ -497,10 +504,15 @@ theorem isPerfect_indexedOrthogonalSum {I : Type} [Fintype I]
     (L : I → IntegralLatticeCat R) (hL : ∀ i, (L i).obj.IsPerfect) :
     (indexedOrthogonalSum L).obj.IsPerfect := by
   classical
+  rw [(indexedOrthogonalSum L).obj.isPerfect_iff_adjoint_bijective_of_isSymmetric
+    (indexedOrthogonalSum L).property.2]
+  have hLleft (i : I) : Function.Bijective (L i).obj.adjoint :=
+    ((L i).obj.isPerfect_iff_adjoint_bijective_of_isSymmetric
+      (L i).property.2).mp (hL i)
   let e : ((i : I) → (L i).obj.carrier) ≃ₗ[R]
       (((i : I) → (L i).obj.carrier) →ₗ[R] R) :=
     (LinearEquiv.piCongrRight fun i ↦
-      LinearEquiv.ofBijective (L i).obj.adjoint (hL i)).trans
+      LinearEquiv.ofBijective (L i).obj.adjoint (hLleft i)).trans
         (LinearMap.lsum R (fun i ↦ (L i).obj.carrier) R)
   change Function.Bijective (indexedOrthogonalSum L).obj.adjoint
   have he : (indexedOrthogonalSum L).obj.adjoint = e.toLinearMap := by

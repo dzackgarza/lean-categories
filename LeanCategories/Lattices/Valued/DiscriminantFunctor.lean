@@ -152,8 +152,8 @@ theorem rationalizedForm_latticeIso_left (e : L ≅ M)
 omit [IsDomain R] in
 /-- The Riesz realization is natural under integral-lattice isomorphisms. -/
 theorem rieszEmbedding_latticeIso (e : L ≅ M)
-    (hL : IsGenericallyNondegenerate R L)
-    (hM : IsGenericallyNondegenerate R M) (f : L.obj.valueDual) :
+    (hL : IsFractionFieldPerfect R L)
+    (hM : IsFractionFieldPerfect R M) (f : L.obj.valueDual) :
     rieszEmbedding R M hM (discriminantValueDualEquiv e f) =
       latticeIsoRationalSpanEquiv e (rieszEmbedding R L hL f) := by
   apply (rationalAdjointEquiv R M hM).injective
@@ -192,8 +192,8 @@ theorem rieszEmbedding_latticeIso (e : L ≅ M)
 omit [IsDomain R] in
 /-- An integral-lattice isomorphism preserves the Riesz form on value duals. -/
 theorem rieszDualBilinMap_latticeIso (e : L ≅ M)
-    (hL : IsGenericallyNondegenerate R L)
-    (hM : IsGenericallyNondegenerate R M) (f g : L.obj.valueDual) :
+    (hL : IsFractionFieldPerfect R L)
+    (hM : IsFractionFieldPerfect R M) (f g : L.obj.valueDual) :
     rieszDualBilinMap R M hM (discriminantValueDualEquiv e f)
         (discriminantValueDualEquiv e g) =
       rieszDualBilinMap R L hL f g := by
@@ -208,8 +208,8 @@ theorem rieszDualBilinMap_latticeIso (e : L ≅ M)
 omit [IsDomain R] in
 /-- An integral-lattice isomorphism preserves the discriminant bilinear form. -/
 theorem discriminantBilinMap_latticeIso (e : L ≅ M)
-    (hL : IsGenericallyNondegenerate R L)
-    (hM : IsGenericallyNondegenerate R M) (x y : L.obj.defect) :
+    (hL : IsFractionFieldPerfect R L)
+    (hM : IsFractionFieldPerfect R M) (x y : L.obj.defect) :
     discriminantBilinMap R M hM (discriminantCarrierEquiv e x)
         (discriminantCarrierEquiv e y) =
       discriminantBilinMap R L hL x y := by
@@ -222,8 +222,8 @@ theorem discriminantBilinMap_latticeIso (e : L ≅ M)
 
 /-- An integral-lattice isomorphism induces an isomorphism of discriminant forms. -/
 noncomputable def discriminantBilinIso (e : L ≅ M)
-    (hL : IsGenericallyNondegenerate R L)
-    (hM : IsGenericallyNondegenerate R M) :
+    (hL : IsFractionFieldPerfect R L)
+    (hM : IsFractionFieldPerfect R M) :
     discriminantBilinObject R L hL ≅ discriminantBilinObject R M hM := by
   let d := discriminantCarrierEquiv e
   have hd (x y : L.obj.defect) :
@@ -264,20 +264,20 @@ local instance (priority := 10000) moduleIntFractionValueQuotient :
 
 /-- The nonsingular discriminant form of a finite projective integral lattice. -/
 noncomputable def integralDiscriminantFormObject
-    (L : GenericallyNondegenerateFiniteProjectiveLatticeCat ℤ) :
+    (L : FractionFieldPerfectFiniteProjectiveLatticeCat ℤ) :
     NonsingularDiscriminantFormCat ℤ := by
   letI : Module.Finite ℤ L.obj.obj.obj.carrier := L.obj.property
   exact discriminantNonsingularTorsionFormModuleInt L.obj.obj L.property
 
 /-- Forget a finite projective lattice isomorphism to an integral lattice isomorphism. -/
 def integralLatticeIso
-    {L M : GenericallyNondegenerateFiniteProjectiveLatticeCat ℤ}
+    {L M : FractionFieldPerfectFiniteProjectiveLatticeCat ℤ}
     (e : L ≅ M) : L.obj.obj ≅ M.obj.obj :=
-  (genericallyNondegenerateFiniteProjectiveForget ℤ).mapIso e
+  (fractionFieldPerfectFiniteProjectiveForget ℤ).mapIso e
 
 /-- An integral lattice isomorphism induces an isomorphism of nonsingular discriminant forms. -/
 noncomputable def integralDiscriminantFormIso
-    {L M : GenericallyNondegenerateFiniteProjectiveLatticeCat ℤ}
+    {L M : FractionFieldPerfectFiniteProjectiveLatticeCat ℤ}
     (e : L ≅ M) :
     integralDiscriminantFormObject L ≅ integralDiscriminantFormObject M :=
   ObjectProperty.isoMk
@@ -286,7 +286,7 @@ noncomputable def integralDiscriminantFormIso
 
 @[simp]
 theorem underlyingMap_integralDiscriminantFormIso_hom
-    {L M : GenericallyNondegenerateFiniteProjectiveLatticeCat ℤ}
+    {L M : FractionFieldPerfectFiniteProjectiveLatticeCat ℤ}
     (e : L ≅ M) :
     BilinModuleCat.underlyingMap (integralDiscriminantFormIso e).hom.hom =
       (discriminantCarrierEquiv (integralLatticeIso e)).toLinearMap :=
@@ -294,7 +294,7 @@ theorem underlyingMap_integralDiscriminantFormIso_hom
 
 /-- The nonsingular discriminant form as a functor on integral-lattice isomorphisms. -/
 noncomputable def integralDiscriminantFormFunctor :
-    Core (GenericallyNondegenerateFiniteProjectiveLatticeCat ℤ) ⥤
+    Core (FractionFieldPerfectFiniteProjectiveLatticeCat ℤ) ⥤
       Core (NonsingularDiscriminantFormCat ℤ) where
   obj L := ⟨integralDiscriminantFormObject L.of⟩
   map e := ⟨integralDiscriminantFormIso e.iso⟩

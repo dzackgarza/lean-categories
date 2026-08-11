@@ -160,7 +160,7 @@ noncomputable def actOnRationalSpan [IsDomain R]
 
 /-- The action of `O(L)` on the metric dual. -/
 noncomputable def actOnMetricDual [IsDomain R]
-    (g : OrthogonalGroup L) (hL : IsGenericallyNondegenerate R L) :
+    (g : OrthogonalGroup L) (hL : IsFractionFieldPerfect R L) :
     metricDual R L ≃ₗ[R] metricDual R L :=
   (rieszMetricDualEquiv R L hL).symm |>.trans
     (actOnValueDual g) |>.trans
@@ -168,14 +168,14 @@ noncomputable def actOnMetricDual [IsDomain R]
 
 @[simp]
 theorem actOnMetricDual_one_apply [IsDomain R]
-    (hL : IsGenericallyNondegenerate R L) (x : metricDual R L) :
+    (hL : IsFractionFieldPerfect R L) (x : metricDual R L) :
     actOnMetricDual (1 : OrthogonalGroup L) hL x = x := by
   simp [actOnMetricDual]
 
 @[simp]
 theorem actOnMetricDual_mul_apply [IsDomain R]
     (g h : OrthogonalGroup L)
-    (hL : IsGenericallyNondegenerate R L) (x : metricDual R L) :
+    (hL : IsFractionFieldPerfect R L) (x : metricDual R L) :
     actOnMetricDual (g * h) hL x =
       actOnMetricDual g hL (actOnMetricDual h hL x) := by
   simp [actOnMetricDual]
@@ -218,7 +218,7 @@ theorem rationalizedForm_actOnRationalSpan_left [IsDomain R]
 /-- The Riesz realization intertwines the dual and rational actions. -/
 theorem rieszEmbedding_actOnValueDual [IsDomain R]
     (g : OrthogonalGroup L)
-    (hL : IsGenericallyNondegenerate R L) (f : L.obj.valueDual) :
+    (hL : IsFractionFieldPerfect R L) (f : L.obj.valueDual) :
     rieszEmbedding R L hL (actOnValueDual g f) =
       actOnRationalSpan g (rieszEmbedding R L hL f) := by
   apply (rationalAdjointEquiv R L hL).injective
@@ -251,7 +251,7 @@ theorem rieszEmbedding_actOnValueDual [IsDomain R]
 @[simp]
 theorem metricDualToValueDual_actOnMetricDual [IsDomain R]
     (g : OrthogonalGroup L)
-    (hL : IsGenericallyNondegenerate R L) (x : metricDual R L) :
+    (hL : IsFractionFieldPerfect R L) (x : metricDual R L) :
     metricDualToValueDual R L (actOnMetricDual g hL x) =
       actOnValueDual g (metricDualToValueDual R L x) := by
   change metricDualToValueDual R L
@@ -262,7 +262,7 @@ theorem metricDualToValueDual_actOnMetricDual [IsDomain R]
 /-- The metric-dual action is the restriction of the rational action. -/
 theorem actOnMetricDual_coe [IsDomain R]
     (g : OrthogonalGroup L)
-    (hL : IsGenericallyNondegenerate R L) (x : metricDual R L) :
+    (hL : IsFractionFieldPerfect R L) (x : metricDual R L) :
     (actOnMetricDual g hL x : RationalSpan R L) =
       actOnRationalSpan g x := by
   change rieszEmbedding R L hL
@@ -276,7 +276,7 @@ theorem actOnMetricDual_coe [IsDomain R]
 /-- The metric-dual and discriminant actions commute with the quotient map. -/
 theorem metricDualToDiscriminant_actOnMetricDual [IsDomain R]
     (g : OrthogonalGroup L)
-    (hL : IsGenericallyNondegenerate R L) (x : metricDual R L) :
+    (hL : IsFractionFieldPerfect R L) (x : metricDual R L) :
     metricDualToDiscriminant R L (actOnMetricDual g hL x) =
       actOnDefect g (metricDualToDiscriminant R L x) := by
   change Submodule.Quotient.mk
@@ -287,7 +287,7 @@ theorem metricDualToDiscriminant_actOnMetricDual [IsDomain R]
 /-- The dual action preserves the Riesz bilinear form. -/
 theorem rieszDualBilinMap_actOnValueDual [IsDomain R]
     (g : OrthogonalGroup L)
-    (hL : IsGenericallyNondegenerate R L) (f k : L.obj.valueDual) :
+    (hL : IsFractionFieldPerfect R L) (f k : L.obj.valueDual) :
     rieszDualBilinMap R L hL (actOnValueDual g f)
         (actOnValueDual g k) = rieszDualBilinMap R L hL f k := by
   change rationalizedForm R L
@@ -301,7 +301,7 @@ theorem rieszDualBilinMap_actOnValueDual [IsDomain R]
 /-- The action on `A_L` preserves its discriminant bilinear form. -/
 theorem discriminantBilinMap_actOnDefect [IsDomain R]
     (g : OrthogonalGroup L)
-    (hL : IsGenericallyNondegenerate R L) (x y : L.obj.defect) :
+    (hL : IsFractionFieldPerfect R L) (x y : L.obj.defect) :
     discriminantBilinMap R L hL (actOnDefect g x) (actOnDefect g y) =
       discriminantBilinMap R L hL x y := by
   induction x using Submodule.Quotient.induction_on with
@@ -314,14 +314,14 @@ theorem discriminantBilinMap_actOnDefect [IsDomain R]
 /-- The induced isometry of the discriminant bilinear module. -/
 noncomputable def actOnDiscriminantForm [IsDomain R]
     (g : OrthogonalGroup L)
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     BilinModuleCat.OrthogonalGroup (discriminantBilinObject R L hL) :=
   ⟨actOnDefect g, discriminantBilinMap_actOnDefect g hL⟩
 
 /-- The discriminant-form action is the functorial transport of the lattice automorphism. -/
 theorem underlyingMap_discriminantBilinIso_asLatticeIso [IsDomain R]
     (g : OrthogonalGroup L)
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     BilinModuleCat.underlyingMap
         (discriminantBilinIso (asLatticeIso g) hL hL).hom =
       (actOnDiscriminantForm g hL).1.toLinearMap :=
@@ -331,7 +331,7 @@ theorem underlyingMap_discriminantBilinIso_asLatticeIso [IsDomain R]
 
 /-- The natural homomorphism `O(L) → O(A_L)`. -/
 noncomputable def discriminantRepresentation [IsDomain R]
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     OrthogonalGroup L →*
       BilinModuleCat.OrthogonalGroup (discriminantBilinObject R L hL) where
   toFun := fun g ↦ actOnDiscriminantForm g hL
@@ -346,14 +346,14 @@ noncomputable def discriminantRepresentation [IsDomain R]
 
 /-- The stable orthogonal group, which acts trivially on `A_L`. -/
 noncomputable def stableOrthogonalGroup [IsDomain R]
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     Subgroup (OrthogonalGroup L) :=
   MonoidHom.ker (discriminantRepresentation hL)
 
 /-- The action on `A_L` preserves the even discriminant quadratic form. -/
 theorem evenDiscriminantQuadraticMap_actOnDefect [IsDomain R]
     (g : OrthogonalGroup L)
-    (hL : IsGenericallyNondegenerate R L) (hEven : IsEven L)
+    (hL : IsFractionFieldPerfect R L) (hEven : IsEven L)
     (x : L.obj.defect) :
     evenDiscriminantQuadraticMap L hL hEven (actOnDefect g x) =
       evenDiscriminantQuadraticMap L hL hEven x := by
@@ -365,14 +365,14 @@ theorem evenDiscriminantQuadraticMap_actOnDefect [IsDomain R]
 /-- The induced isometry of the even quadratic discriminant module. -/
 noncomputable def actOnEvenDiscriminantQuadraticForm [IsDomain R]
     (g : OrthogonalGroup L)
-    (hL : IsGenericallyNondegenerate R L) (hEven : IsEven L) :
+    (hL : IsFractionFieldPerfect R L) (hEven : IsEven L) :
     QuadModuleCat.OrthogonalGroup
       (evenDiscriminantQuadraticObject L hL hEven) :=
   ⟨actOnDefect g, evenDiscriminantQuadraticMap_actOnDefect g hL hEven⟩
 
 /-- The natural homomorphism `O(L) → O(q_A)` for an even lattice. -/
 noncomputable def evenDiscriminantRepresentation [IsDomain R]
-    (hL : IsGenericallyNondegenerate R L) (hEven : IsEven L) :
+    (hL : IsFractionFieldPerfect R L) (hEven : IsEven L) :
     OrthogonalGroup L →*
       QuadModuleCat.OrthogonalGroup
         (evenDiscriminantQuadraticObject L hL hEven) where
@@ -388,7 +388,7 @@ noncomputable def evenDiscriminantRepresentation [IsDomain R]
 
 /-- The subgroup of `O(L)` that acts trivially on `q_A`. -/
 noncomputable def stableEvenOrthogonalGroup [IsDomain R]
-    (hL : IsGenericallyNondegenerate R L) (hEven : IsEven L) :
+    (hL : IsFractionFieldPerfect R L) (hEven : IsEven L) :
     Subgroup (OrthogonalGroup L) :=
   MonoidHom.ker (evenDiscriminantRepresentation hL hEven)
 

@@ -18,15 +18,15 @@ variable {R : Type u} [CommRing R]
 
 /-- The radical lies in the left kernel of the lattice form. -/
 theorem radical_le_bilinMap_ker (L : IntegralLatticeCat R) :
-    L.obj.radical ≤ LinearMap.ker L.obj.bilinMap := by
+    L.obj.leftRadical ≤ LinearMap.ker L.obj.bilinMap := by
   intro x hx
   exact hx
 
 /-- Symmetry puts the radical in the right kernel of the lattice form. -/
 theorem radical_le_bilinMap_flip_ker (L : IntegralLatticeCat R) :
-    L.obj.radical ≤ LinearMap.ker L.obj.bilinMap.flip := by
+    L.obj.leftRadical ≤ LinearMap.ker L.obj.bilinMap.flip := by
   intro x hx
-  rw [BilinModuleCat.radical, LinearMap.mem_ker] at hx
+  rw [BilinModuleCat.leftRadical, LinearMap.mem_ker] at hx
   rw [LinearMap.mem_ker]
   apply LinearMap.ext
   intro y
@@ -38,8 +38,8 @@ theorem radical_le_bilinMap_flip_ker (L : IntegralLatticeCat R) :
 
 /-- The form induced on the quotient by the radical. -/
 def radicalQuotientBilinMap (L : IntegralLatticeCat R) :
-    LinearMap.BilinMap R (L.obj.carrier ⧸ L.obj.radical) R :=
-  L.obj.bilinMap.liftQ₂ L.obj.radical L.obj.radical
+    LinearMap.BilinMap R (L.obj.carrier ⧸ L.obj.leftRadical) R :=
+  L.obj.bilinMap.liftQ₂ L.obj.leftRadical L.obj.leftRadical
     (radical_le_bilinMap_ker L)
     (radical_le_bilinMap_flip_ker L)
 
@@ -68,15 +68,16 @@ theorem radicalQuotient_isSymmetric (L : IntegralLatticeCat R) :
 /-- Quotienting by the radical gives a nondegenerate formed module. -/
 theorem radicalQuotient_isNondegenerate (L : IntegralLatticeCat R) :
     (radicalQuotient L).IsNondegenerate := by
-  rw [BilinModuleCat.isNondegenerate_iff_adjoint_injective]
+  rw [BilinModuleCat.isNondegenerate_iff_adjoint_injective_of_isSymmetric _
+    (radicalQuotient_isSymmetric L)]
   rw [injective_iff_map_eq_zero]
   intro x hx
   induction x using Quotient.inductionOn with
   | _ x =>
       change (Submodule.Quotient.mk x :
-        L.obj.carrier ⧸ L.obj.radical) = 0
+        L.obj.carrier ⧸ L.obj.leftRadical) = 0
       rw [Submodule.Quotient.mk_eq_zero]
-      rw [BilinModuleCat.radical, LinearMap.mem_ker]
+      rw [BilinModuleCat.leftRadical, LinearMap.mem_ker]
       apply LinearMap.ext
       intro y
       have hxy := LinearMap.congr_fun hx (Submodule.Quotient.mk y)

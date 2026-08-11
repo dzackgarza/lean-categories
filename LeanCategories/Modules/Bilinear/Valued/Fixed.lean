@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.LinearAlgebra.Quotient.Bilinear
+public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Map
 
 @[expose] public section
@@ -169,6 +170,11 @@ def adjoint (L : BilinModuleCat R W) :
 
 abbrev bilinMap (L : BilinModuleCat R W) := L.adjoint
 
+/-- The right correlation map `y ↦ (x ↦ b(x,y))`. -/
+def rightAdjoint (L : BilinModuleCat R W) :
+    L.carrier →ₗ[R] (L.carrier →ₗ[R] W) :=
+  L.bilinMap.flip
+
 @[simp]
 theorem bilinMap_apply (L : BilinModuleCat R W) (x y : L.carrier) :
     L.bilinMap x y = L.pairing x y :=
@@ -196,9 +202,13 @@ theorem underlyingMap_restrictInclusion
     underlyingMap (L.restrictInclusion P) = P.subtype :=
   rfl
 
-/-- The radical is the kernel of the adjoint map. -/
-def radical (L : BilinModuleCat R W) : Submodule R L.carrier :=
+/-- The left radical is the kernel of `x ↦ b(x,-)`. -/
+def leftRadical (L : BilinModuleCat R W) : Submodule R L.carrier :=
   LinearMap.ker L.adjoint
+
+/-- The right radical is the kernel of `y ↦ b(-,y)`. -/
+def rightRadical (L : BilinModuleCat R W) : Submodule R L.carrier :=
+  LinearMap.ker L.rightAdjoint
 
 /-- The module of `W`-valued linear maps. It has no canonical induced form. -/
 abbrev valueDual (L : BilinModuleCat R W) := L.carrier →ₗ[R] W
@@ -207,46 +217,121 @@ abbrev valueDual (L : BilinModuleCat R W) := L.carrier →ₗ[R] W
 abbrev defect (L : BilinModuleCat R W) :=
   L.valueDual ⧸ LinearMap.range L.adjoint
 
-def radicalInclusion (L : BilinModuleCat R W) :
-    L.radical →ₗ[R] L.carrier :=
-  L.radical.subtype
+def leftRadicalInclusion (L : BilinModuleCat R W) :
+    L.leftRadical →ₗ[R] L.carrier :=
+  L.leftRadical.subtype
+
+def rightRadicalInclusion (L : BilinModuleCat R W) :
+    L.rightRadical →ₗ[R] L.carrier :=
+  L.rightRadical.subtype
 
 def defectProjection (L : BilinModuleCat R W) :
     L.valueDual →ₗ[R] L.defect :=
   Submodule.mkQ (LinearMap.range L.adjoint)
 
-theorem exact_radical_adjoint (L : BilinModuleCat R W) :
-    Function.Exact L.radicalInclusion L.adjoint :=
+theorem exact_leftRadical_adjoint (L : BilinModuleCat R W) :
+    Function.Exact L.leftRadicalInclusion L.adjoint :=
   LinearMap.exact_subtype_ker_map L.adjoint
+
+theorem exact_rightRadical_rightAdjoint (L : BilinModuleCat R W) :
+    Function.Exact L.rightRadicalInclusion L.rightAdjoint :=
+  LinearMap.exact_subtype_ker_map L.rightAdjoint
 
 theorem exact_adjoint_defect (L : BilinModuleCat R W) :
     Function.Exact L.adjoint L.defectProjection :=
   LinearMap.exact_map_mkQ_range L.adjoint
 
-theorem radicalInclusion_injective (L : BilinModuleCat R W) :
-    Function.Injective L.radicalInclusion :=
+theorem leftRadicalInclusion_injective (L : BilinModuleCat R W) :
+    Function.Injective L.leftRadicalInclusion :=
+  Subtype.val_injective
+
+theorem rightRadicalInclusion_injective (L : BilinModuleCat R W) :
+    Function.Injective L.rightRadicalInclusion :=
   Subtype.val_injective
 
 theorem defectProjection_surjective (L : BilinModuleCat R W) :
     Function.Surjective L.defectProjection :=
   Submodule.mkQ_surjective _
 
-/-- A form is nondegenerate when its radical is zero. -/
-def IsNondegenerate (L : BilinModuleCat R W) : Prop :=
-  L.radical = ⊥
+/-- The form is left-separating when its left radical vanishes. -/
+def IsLeftSeparating (L : BilinModuleCat R W) : Prop :=
+  L.bilinMap.SeparatingLeft
 
-theorem isNondegenerate_iff_adjoint_injective (L : BilinModuleCat R W) :
-    L.IsNondegenerate ↔ Function.Injective L.adjoint := by
+/-- The form is right-separating when its right radical vanishes. -/
+def IsRightSeparating (L : BilinModuleCat R W) : Prop :=
+  L.bilinMap.SeparatingRight
+
+/-- A form is nondegenerate when it is both left- and right-separating. -/
+def IsNondegenerate (L : BilinModuleCat R W) : Prop :=
+  L.bilinMap.Nondegenerate
+
+theorem isLeftSeparating_iff_leftRadical_eq_bot (L : BilinModuleCat R W) :
+    L.IsLeftSeparating ↔ L.leftRadical = ⊥ :=
+  LinearMap.separatingLeft_iff_ker_eq_bot
+
+theorem isRightSeparating_iff_rightRadical_eq_bot (L : BilinModuleCat R W) :
+    L.IsRightSeparating ↔ L.rightRadical = ⊥ :=
+  LinearMap.separatingRight_iff_flip_ker_eq_bot
+
+theorem isLeftSeparating_iff_adjoint_injective (L : BilinModuleCat R W) :
+    L.IsLeftSeparating ↔ Function.Injective L.adjoint := by
+  rw [isLeftSeparating_iff_leftRadical_eq_bot]
   exact LinearMap.ker_eq_bot
 
-/-- A form is perfect when its adjoint map is bijective. -/
-def IsPerfect (L : BilinModuleCat R W) : Prop :=
+theorem isRightSeparating_iff_rightAdjoint_injective (L : BilinModuleCat R W) :
+    L.IsRightSeparating ↔ Function.Injective L.rightAdjoint := by
+  rw [isRightSeparating_iff_rightRadical_eq_bot]
+  exact LinearMap.ker_eq_bot
+
+theorem isNondegenerate_iff_radicals_eq_bot (L : BilinModuleCat R W) :
+    L.IsNondegenerate ↔ L.leftRadical = ⊥ ∧ L.rightRadical = ⊥ := by
+  exact and_congr L.isLeftSeparating_iff_leftRadical_eq_bot
+    L.isRightSeparating_iff_rightRadical_eq_bot
+
+/-- For a symmetric form, left separation is equivalent to nondegeneracy. -/
+theorem isNondegenerate_iff_adjoint_injective_of_isSymmetric
+    (L : BilinModuleCat R W) (hL : L.IsSymmetric) :
+    L.IsNondegenerate ↔ Function.Injective L.adjoint := by
+  constructor
+  · intro h
+    exact L.isLeftSeparating_iff_adjoint_injective.mp h.1
+  · intro h
+    have hleft : L.IsLeftSeparating :=
+      L.isLeftSeparating_iff_adjoint_injective.mpr h
+    refine ⟨hleft, ?_⟩
+    intro y hy
+    apply h
+    apply LinearMap.ext
+    intro x
+    simpa only [map_zero, LinearMap.zero_apply, bilinMap_apply, hL y x] using hy x
+
+/-- The left correlation map is an isomorphism. -/
+def IsLeftPerfect (L : BilinModuleCat R W) : Prop :=
   Function.Bijective L.adjoint
 
-/-- A perfect form has zero radical. -/
+/-- The right correlation map is an isomorphism. -/
+def IsRightPerfect (L : BilinModuleCat R W) : Prop :=
+  Function.Bijective L.rightAdjoint
+
+/-- A pairing is perfect when both correlation maps are isomorphisms. -/
+def IsPerfect (L : BilinModuleCat R W) : Prop :=
+  L.IsLeftPerfect ∧ L.IsRightPerfect
+
+/-- For a symmetric form, one correlation isomorphism implies perfectness. -/
+theorem isPerfect_iff_adjoint_bijective_of_isSymmetric
+    (L : BilinModuleCat R W) (hL : L.IsSymmetric) :
+    L.IsPerfect ↔ Function.Bijective L.adjoint := by
+  have hright : L.rightAdjoint = L.adjoint := by
+    ext x y
+    exact hL y x
+  rw [IsPerfect, IsLeftPerfect, IsRightPerfect, hright]
+  simp
+
+/-- A perfect form is nondegenerate. -/
 theorem isNondegenerate_of_isPerfect (L : BilinModuleCat R W)
     (hL : L.IsPerfect) : L.IsNondegenerate :=
-  L.isNondegenerate_iff_adjoint_injective.mpr hL.1
+  ⟨L.isLeftSeparating_iff_adjoint_injective.mpr hL.1.1,
+    L.isRightSeparating_iff_rightAdjoint_injective.mpr hL.2.1⟩
 
 end BilinModuleCat
 

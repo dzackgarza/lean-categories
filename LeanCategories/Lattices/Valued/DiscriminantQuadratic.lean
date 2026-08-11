@@ -127,7 +127,7 @@ variable (L : IntegralLatticeCat R)
 
 /-- The Riesz norm with values reduced modulo `2R`. -/
 noncomputable def projectedRieszQuadraticMap
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     QuadraticMap R L.obj.valueDual (DoubleFractionValueQuotient R) :=
   (doubleFractionValueProjection R).compQuadraticMap
     (LinearMap.BilinMap.toQuadraticMap (rieszDualBilinMap R L hL))
@@ -135,7 +135,7 @@ noncomputable def projectedRieszQuadraticMap
 omit [IsDomain R] in
 /-- Evenness makes the adjoint image invisible to the projected Riesz norm. -/
 theorem adjointRange_le_projectedRieszQuadraticRadical
-    (hL : IsGenericallyNondegenerate R L) (hEven : IsEven L) :
+    (hL : IsFractionFieldPerfect R L) (hEven : IsEven L) :
     LinearMap.range L.obj.adjoint ≤
       (projectedRieszQuadraticMap L hL).radical := by
   rintro _ ⟨x, rfl⟩
@@ -164,7 +164,7 @@ theorem adjointRange_le_projectedRieszQuadraticRadical
 
 /-- The quadratic discriminant map `q_A : A_L → Frac(R) / 2R`. -/
 noncomputable def evenDiscriminantQuadraticMap
-    (hL : IsGenericallyNondegenerate R L) (hEven : IsEven L) :
+    (hL : IsFractionFieldPerfect R L) (hEven : IsEven L) :
     QuadraticMap R L.obj.defect (DoubleFractionValueQuotient R) :=
   (projectedRieszQuadraticMap L hL).lift
     (LinearMap.range L.obj.adjoint)
@@ -173,7 +173,7 @@ noncomputable def evenDiscriminantQuadraticMap
 omit [IsDomain R] in
 @[simp]
 theorem evenDiscriminantQuadraticMap_mk
-    (hL : IsGenericallyNondegenerate R L) (hEven : IsEven L)
+    (hL : IsFractionFieldPerfect R L) (hEven : IsEven L)
     (f : L.obj.valueDual) :
     evenDiscriminantQuadraticMap L hL hEven (Submodule.Quotient.mk f) =
       doubleFractionValueProjection R (rieszDualBilinMap R L hL f f) :=
@@ -182,7 +182,7 @@ theorem evenDiscriminantQuadraticMap_mk
 omit [IsDomain R] in
 /-- The polarization of `q_A` is twice the discriminant bilinear form. -/
 theorem evenDiscriminantQuadraticMap_polar
-    (hL : IsGenericallyNondegenerate R L) (hEven : IsEven L)
+    (hL : IsFractionFieldPerfect R L) (hEven : IsEven L)
     (x y : L.obj.defect) :
     QuadraticMap.polar (evenDiscriminantQuadraticMap L hL hEven) x y =
       doubleValueMap R (discriminantBilinMap R L hL x y) := by
@@ -208,14 +208,14 @@ theorem evenDiscriminantQuadraticMap_polar
 
 /-- The quadratic discriminant module of an even lattice. -/
 noncomputable def evenDiscriminantQuadraticObject
-    (hL : IsGenericallyNondegenerate R L) (hEven : IsEven L) :
+    (hL : IsFractionFieldPerfect R L) (hEven : IsEven L) :
     QuadModuleCat R (DoubleFractionValueQuotient R) :=
   QuadModuleCat.ofQuadraticMap (evenDiscriminantQuadraticMap L hL hEven)
 
 /-- An even discriminant form with finite torsion carrier. -/
 noncomputable def evenDiscriminantQuadraticFormModule
     [Module.Finite R L.obj.carrier]
-    (hL : IsGenericallyNondegenerate R L) (hEven : IsEven L)
+    (hL : IsFractionFieldPerfect R L) (hEven : IsEven L)
     (hT : Module.IsTorsion R L.obj.defect) :
     FiniteTorsionQuadModuleCat R (DoubleFractionValueQuotient R) := by
   letI : Module.Projective R L.obj.carrier := L.property.1
@@ -226,15 +226,15 @@ noncomputable def evenDiscriminantQuadraticFormModule
 /-- The finite torsion quadratic discriminant form of an even integer lattice. -/
 noncomputable def evenDiscriminantQuadraticFormModuleInt
     (L : IntegralLatticeCat ℤ) [Module.Finite ℤ L.obj.carrier]
-    (hL : IsGenericallyNondegenerate ℤ L) (hEven : IsEven L) :=
+    (hL : IsFractionFieldPerfect ℤ L) (hEven : IsEven L) :=
   evenDiscriminantQuadraticFormModule L hL hEven
     (discriminant_isTorsion_int L hL)
 
 /-- An anti-isometry between the quadratic discriminant forms of two even lattices. -/
 noncomputable abbrev EvenDiscriminantAntiIsometry
     (L M : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L)
-    (hM : IsGenericallyNondegenerate R M)
+    (hL : IsFractionFieldPerfect R L)
+    (hM : IsFractionFieldPerfect R M)
     (hEvenL : IsEven L) (hEvenM : IsEven M) :=
   (-evenDiscriminantQuadraticMap L hL hEvenL).IsometryEquiv
     (evenDiscriminantQuadraticMap M hM hEvenM)
@@ -242,8 +242,8 @@ noncomputable abbrev EvenDiscriminantAntiIsometry
 /-- The quadratic discriminant forms of two even lattices are anti-isometric. -/
 def HasEvenDiscriminantAntiIsometry
     (L M : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L)
-    (hM : IsGenericallyNondegenerate R M)
+    (hL : IsFractionFieldPerfect R L)
+    (hM : IsFractionFieldPerfect R M)
     (hEvenL : IsEven L) (hEvenM : IsEven M) : Prop :=
   Nonempty (EvenDiscriminantAntiIsometry L M hL hM hEvenL hEvenM)
 

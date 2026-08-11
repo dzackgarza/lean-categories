@@ -77,13 +77,13 @@ theorem discriminantValueRelations_eq (L : IntegralLatticeCat R) :
 /-- The inclusion `L → L♯` in the category of `Frac(R)`-valued `R`-lattices. -/
 noncomputable def toMetricDualLattice (L : IntegralLatticeCat R)
     [Module.Finite R L.obj.carrier]
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     fractionValuedLattice R L ⟶ metricDualLattice R L hL :=
   ObjectProperty.homMk (toMetricDualBilin R L)
 
 omit [IsDomain R] in
 theorem rieszDualBilinMap_adjoint_left (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) (x : L.obj.carrier)
+    (hL : IsFractionFieldPerfect R L) (x : L.obj.carrier)
     (f : L.obj.valueDual) :
     rieszDualBilinMap R L hL (L.obj.adjoint x) f =
       algebraMap R (FractionRing R) (f x) := by
@@ -94,7 +94,7 @@ theorem rieszDualBilinMap_adjoint_left (L : IntegralLatticeCat R)
 
 omit [IsDomain R] in
 theorem rieszDualBilinMap_adjoint_right (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) (f : L.obj.valueDual)
+    (hL : IsFractionFieldPerfect R L) (f : L.obj.valueDual)
     (x : L.obj.carrier) :
     rieszDualBilinMap R L hL f (L.obj.adjoint x) =
       algebraMap R (FractionRing R) (f x) := by
@@ -121,13 +121,13 @@ theorem fractionValueProjection_algebraMap (r : R) :
 
 /-- The Riesz form after projection to `Frac(R) / R`. -/
 noncomputable def quotientRieszDualBilinMap (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     LinearMap.BilinMap R L.obj.valueDual (FractionValueQuotient R) :=
   (rieszDualBilinMap R L hL).compr₂ (fractionValueProjection R)
 
 omit [IsDomain R] in
 theorem adjointRange_le_ker_quotientRieszDual (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     LinearMap.range L.obj.adjoint ≤ LinearMap.ker (quotientRieszDualBilinMap R L hL) := by
   rintro f ⟨x, rfl⟩
   rw [LinearMap.mem_ker]
@@ -139,7 +139,7 @@ theorem adjointRange_le_ker_quotientRieszDual (L : IntegralLatticeCat R)
 
 omit [IsDomain R] in
 theorem adjointRange_le_flipKer_quotientRieszDual (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     LinearMap.range L.obj.adjoint ≤
       LinearMap.ker (quotientRieszDualBilinMap R L hL).flip := by
   rintro f ⟨x, rfl⟩
@@ -152,7 +152,7 @@ theorem adjointRange_le_flipKer_quotientRieszDual (L : IntegralLatticeCat R)
 
 /-- The discriminant bilinear map on `A_L = L*/iota_L(L)`. -/
 noncomputable def discriminantBilinMap (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     LinearMap.BilinMap R L.obj.defect (FractionValueQuotient R) :=
   (quotientRieszDualBilinMap R L hL).liftQ₂
     (LinearMap.range L.obj.adjoint) (LinearMap.range L.obj.adjoint)
@@ -161,21 +161,21 @@ noncomputable def discriminantBilinMap (L : IntegralLatticeCat R)
 
 /-- Tensor-hom form of the discriminant bilinear map. -/
 noncomputable def discriminantForm (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     TensorProduct R L.obj.defect L.obj.defect →ₗ[R] FractionValueQuotient R :=
   (TensorProduct.lift.equiv (.id R) L.obj.defect L.obj.defect
     (FractionValueQuotient R)) (discriminantBilinMap R L hL)
 
 /-- The discriminant module with its `Frac(R) / R`-valued bilinear form. -/
 noncomputable def discriminantBilinObject (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     BilinModuleCat R (FractionValueQuotient R) :=
   op ⟨op (ModuleCat.of R L.obj.defect), discriminantForm R L hL⟩
 
 omit [IsDomain R] in
 @[simp]
 theorem discriminantBilinMap_mk (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) (f g : L.obj.valueDual) :
+    (hL : IsFractionFieldPerfect R L) (f g : L.obj.valueDual) :
     discriminantBilinMap R L hL
         (Submodule.Quotient.mk f) (Submodule.Quotient.mk g) =
       fractionValueProjection R (rieszDualBilinMap R L hL f g) :=
@@ -188,7 +188,7 @@ noncomputable def metricDualToDiscriminant (L : IntegralLatticeCat R) :
 
 @[simp]
 theorem metricDualToValueDual_toMetricDual
-    {L : IntegralLatticeCat R} (hL : IsGenericallyNondegenerate R L)
+    {L : IntegralLatticeCat R} (hL : IsFractionFieldPerfect R L)
     (x : L.obj.carrier) :
     metricDualToValueDual R L (toMetricDual R L x) = L.obj.adjoint x := by
   change (rieszMetricDualEquiv R L hL).symm (toMetricDual R L x) =
@@ -198,7 +198,7 @@ theorem metricDualToValueDual_toMetricDual
 
 @[simp]
 theorem discriminant_pairing_metricDualToDiscriminant
-    {L : IntegralLatticeCat R} (hL : IsGenericallyNondegenerate R L)
+    {L : IntegralLatticeCat R} (hL : IsFractionFieldPerfect R L)
     (x y : metricDual R L) :
     (discriminantBilinObject R L hL).pairing
         (metricDualToDiscriminant R L x)
@@ -218,14 +218,14 @@ theorem discriminant_pairing_metricDualToDiscriminant
 
 omit [IsDomain R] in
 theorem rieszDualBilinMap_isSymmetric (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     ∀ f g, rieszDualBilinMap R L hL f g = rieszDualBilinMap R L hL g f := by
   intro f g
   exact rationalizedForm_isSymmetric R L _ _
 
 omit [IsDomain R] in
 theorem discriminantBilinMap_isSymmetric (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     ∀ x y, discriminantBilinMap R L hL x y = discriminantBilinMap R L hL y x := by
   intro x y
   induction x using Submodule.Quotient.induction_on with
@@ -238,14 +238,14 @@ theorem discriminantBilinMap_isSymmetric (L : IntegralLatticeCat R)
 
 omit [IsDomain R] in
 theorem discriminantBilinObject_isSymmetric (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     (discriminantBilinObject R L hL).IsSymmetric :=
   discriminantBilinMap_isSymmetric R L hL
 
-/-- Generic nondegeneracy makes the integral adjoint injective. -/
-theorem adjoint_injective_of_genericallyNondegenerate
+/-- Fraction-field perfection makes the integral adjoint injective. -/
+theorem adjoint_injective_of_fractionFieldPerfect
     (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     Function.Injective L.obj.adjoint := by
   intro x y hxy
   letI : Module.Projective R L.obj.carrier := L.property.1
@@ -259,13 +259,13 @@ theorem adjoint_injective_of_genericallyNondegenerate
 /-- The discriminant module of a finite integer lattice is a torsion module. -/
 theorem discriminant_isTorsion_int (L : IntegralLatticeCat ℤ)
     [Module.Finite ℤ L.obj.carrier]
-    (hL : IsGenericallyNondegenerate ℤ L) :
+    (hL : IsFractionFieldPerfect ℤ L) :
     Module.IsTorsion ℤ L.obj.defect := by
   letI : Module.Projective ℤ L.obj.carrier := L.property.1
   letI : Module.Free ℤ L.obj.carrier := inferInstance
   letI : Module.Finite ℤ L.obj.valueDual := inferInstance
   letI : Module.Free ℤ L.obj.valueDual := inferInstance
-  have hinj := adjoint_injective_of_genericallyNondegenerate ℤ L hL
+  have hinj := adjoint_injective_of_fractionFieldPerfect ℤ L hL
   have hrange : Module.finrank ℤ (LinearMap.range L.obj.adjoint) =
       Module.finrank ℤ L.obj.carrier :=
     (LinearEquiv.ofInjective L.obj.adjoint hinj).finrank_eq.symm
@@ -286,7 +286,7 @@ theorem discriminant_isTorsion_int (L : IntegralLatticeCat ℤ)
 /-- `A_L` in the category of finite symmetric `Frac(R) / R`-valued form modules. -/
 noncomputable def discriminantFormModule (L : IntegralLatticeCat R)
     [Module.Finite R L.obj.carrier]
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     FiniteFormCat R (FractionValueQuotient R) := by
   letI : Module.Projective R L.obj.carrier := L.property.1
   refine ⟨discriminantBilinObject R L hL, ?_⟩
@@ -297,7 +297,7 @@ noncomputable def discriminantFormModule (L : IntegralLatticeCat R)
 /-- A discriminant form with a proved torsion carrier. -/
 noncomputable def discriminantTorsionFormModule
     (L : IntegralLatticeCat R) [Module.Finite R L.obj.carrier]
-    (hL : IsGenericallyNondegenerate R L)
+    (hL : IsFractionFieldPerfect R L)
     (hT : Module.IsTorsion R L.obj.defect) :
     FiniteTorsionSymBilinModuleCat R (FractionValueQuotient R) := by
   letI : Module.Projective R L.obj.carrier := L.property.1
@@ -308,10 +308,10 @@ noncomputable def discriminantTorsionFormModule
   exact ⟨inferInstance, hT,
     discriminantBilinObject_isSymmetric R L hL⟩
 
-/-- The integer discriminant form, with torsion proved from generic nondegeneracy. -/
+/-- The integer discriminant form, with torsion proved from fraction-field perfection. -/
 noncomputable def discriminantTorsionFormModuleInt
     (L : IntegralLatticeCat ℤ) [Module.Finite ℤ L.obj.carrier]
-    (hL : IsGenericallyNondegenerate ℤ L) :=
+    (hL : IsFractionFieldPerfect ℤ L) :=
   discriminantTorsionFormModule ℤ L hL
     (discriminant_isTorsion_int L hL)
 
@@ -346,9 +346,10 @@ theorem integralImage_eq_span_baseChangeBasis
 theorem discriminantBilinObject_isNondegenerate
     (L : IntegralLatticeCat R) [Module.Free R L.obj.carrier]
     [Module.Finite R L.obj.carrier]
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     (discriminantBilinObject R L hL).IsNondegenerate := by
-  rw [BilinModuleCat.isNondegenerate_iff_adjoint_injective]
+  rw [BilinModuleCat.isNondegenerate_iff_adjoint_injective_of_isSymmetric _
+    (discriminantBilinObject_isSymmetric R L hL)]
   change Function.Injective (discriminantBilinMap R L hL)
   apply LinearMap.ker_eq_bot.mp
   apply le_antisymm
@@ -412,11 +413,14 @@ theorem discriminantBilinObject_isNondegenerate
 theorem discriminantBilinObject_isPerfect
     (L : IntegralLatticeCat R) [Module.Free R L.obj.carrier]
     [Module.Finite R L.obj.carrier]
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     (discriminantBilinObject R L hL).IsPerfect := by
+  rw [BilinModuleCat.isPerfect_iff_adjoint_bijective_of_isSymmetric _
+    (discriminantBilinObject_isSymmetric R L hL)]
   change Function.Bijective (discriminantBilinMap R L hL)
-  refine ⟨(BilinModuleCat.isNondegenerate_iff_adjoint_injective
-    (discriminantBilinObject R L hL)).mp
+  refine ⟨(BilinModuleCat.isNondegenerate_iff_adjoint_injective_of_isSymmetric
+    (discriminantBilinObject R L hL)
+      (discriminantBilinObject_isSymmetric R L hL)).mp
       (discriminantBilinObject_isNondegenerate R L hL), ?_⟩
   letI : Module.Projective R L.obj.carrier := L.property.1
   letI : Module.Projective R L.obj.valueDual := inferInstance
@@ -498,7 +502,7 @@ theorem discriminantBilinObject_isPerfect
 noncomputable def discriminantRadicalFreeTorsionFormModule
     (L : IntegralLatticeCat R) [Module.Free R L.obj.carrier]
     [Module.Finite R L.obj.carrier]
-    (hL : IsGenericallyNondegenerate R L)
+    (hL : IsFractionFieldPerfect R L)
     (hT : Module.IsTorsion R L.obj.defect) :
     RadicalFreeFiniteTorsionBilinModuleCat R (FractionValueQuotient R) := by
   letI : Module.Projective R L.obj.carrier := L.property.1
@@ -512,7 +516,7 @@ noncomputable def discriminantRadicalFreeTorsionFormModule
 /-- The integer discriminant form in the radical-free finite torsion category. -/
 noncomputable def discriminantRadicalFreeTorsionFormModuleInt
     (L : IntegralLatticeCat ℤ) [Module.Finite ℤ L.obj.carrier]
-    (hL : IsGenericallyNondegenerate ℤ L) :=
+    (hL : IsFractionFieldPerfect ℤ L) :=
   letI : Module.Projective ℤ L.obj.carrier := L.property.1
   letI : Module.Free ℤ L.obj.carrier := inferInstance
   discriminantRadicalFreeTorsionFormModule ℤ L hL
@@ -522,7 +526,7 @@ noncomputable def discriminantRadicalFreeTorsionFormModuleInt
 noncomputable def discriminantNonsingularTorsionFormModule
     (L : IntegralLatticeCat R) [Module.Free R L.obj.carrier]
     [Module.Finite R L.obj.carrier]
-    (hL : IsGenericallyNondegenerate R L)
+    (hL : IsFractionFieldPerfect R L)
     (hT : Module.IsTorsion R L.obj.defect) :
     NonsingularFiniteTorsionBilinModuleCat R (FractionValueQuotient R) := by
   letI : Module.Projective R L.obj.carrier := L.property.1
@@ -536,7 +540,7 @@ noncomputable def discriminantNonsingularTorsionFormModule
 /-- The integer discriminant form in the nonsingular finite torsion category. -/
 noncomputable def discriminantNonsingularTorsionFormModuleInt
     (L : IntegralLatticeCat ℤ) [Module.Finite ℤ L.obj.carrier]
-    (hL : IsGenericallyNondegenerate ℤ L) :=
+    (hL : IsFractionFieldPerfect ℤ L) :=
   letI : Module.Projective ℤ L.obj.carrier := L.property.1
   letI : Module.Free ℤ L.obj.carrier := inferInstance
   discriminantNonsingularTorsionFormModule ℤ L hL
@@ -545,7 +549,7 @@ noncomputable def discriminantNonsingularTorsionFormModuleInt
 /-- The Riesz model after projection of its values to `Frac(R) / R`. -/
 noncomputable def projectedRieszDualLattice (L : IntegralLatticeCat R)
     [Module.Finite R L.obj.carrier]
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     LatticeCat R (FractionValueQuotient R) :=
   (changeValue R (FractionRing R) (fractionValueProjection R)).obj
     (rieszDualLattice R L hL)
@@ -553,7 +557,7 @@ noncomputable def projectedRieszDualLattice (L : IntegralLatticeCat R)
 /-- The projected Riesz model, regarded as a finite symmetric form module. -/
 noncomputable def projectedRieszDualFiniteForm (L : IntegralLatticeCat R)
     [Module.Finite R L.obj.carrier]
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     FiniteFormCat R (FractionValueQuotient R) := by
   letI : Module.Projective R L.obj.carrier := L.property.1
   letI : Module.Finite R L.obj.valueDual := inferInstance
@@ -565,7 +569,7 @@ noncomputable def projectedRieszDualFiniteForm (L : IntegralLatticeCat R)
 /-- The quotient projection `L♯ → A_L` preserves the projected forms. -/
 noncomputable def discriminantProjectionBilin (L : IntegralLatticeCat R)
     [Module.Finite R L.obj.carrier]
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     (projectedRieszDualLattice R L hL).obj ⟶ discriminantBilinObject R L hL := by
   refine Quiver.Hom.op (CategoryOfElements.homMk _ _
     (op (ModuleCat.ofHom L.obj.defectProjection)) ?_)
@@ -580,31 +584,31 @@ noncomputable def discriminantProjectionBilin (L : IntegralLatticeCat R)
 /-- The quotient projection `L♯ → A_L` in the finite-form category. -/
 noncomputable def discriminantProjection (L : IntegralLatticeCat R)
     [Module.Finite R L.obj.carrier]
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     projectedRieszDualFiniteForm R L hL ⟶ discriminantFormModule R L hL :=
   ObjectProperty.homMk (discriminantProjectionBilin R L hL)
 
 /-- The associated quadratic map `q(x) = b_A(x,x)` on the discriminant module. -/
 noncomputable def discriminantQuadraticMap (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     QuadraticMap R L.obj.defect (FractionValueQuotient R) :=
   (discriminantBilinMap R L hL).toQuadraticMap
 
 omit [IsDomain R] in
 @[simp]
 theorem discriminantQuadraticMap_apply (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) (x : L.obj.defect) :
+    (hL : IsFractionFieldPerfect R L) (x : L.obj.defect) :
     discriminantQuadraticMap R L hL x = discriminantBilinMap R L hL x x :=
   rfl
 
 omit [IsDomain R] in
 /-- The module sequence from the radical through the adjoint and its cokernel is exact. -/
 theorem adjointModuleSequenceExact (L : IntegralLatticeCat R) :
-    Function.Injective L.obj.radicalInclusion ∧
-      Function.Exact L.obj.radicalInclusion L.obj.adjoint ∧
+    Function.Injective L.obj.leftRadicalInclusion ∧
+      Function.Exact L.obj.leftRadicalInclusion L.obj.adjoint ∧
       Function.Exact L.obj.adjoint L.obj.defectProjection ∧
       Function.Surjective L.obj.defectProjection :=
-  ⟨L.obj.radicalInclusion_injective, L.obj.exact_radical_adjoint,
+  ⟨L.obj.leftRadicalInclusion_injective, L.obj.exact_leftRadical_adjoint,
     L.obj.exact_adjoint_defect, L.obj.defectProjection_surjective⟩
 
 theorem toRationalSpan_injective (L : IntegralLatticeCat R) :
@@ -613,7 +617,7 @@ theorem toRationalSpan_injective (L : IntegralLatticeCat R) :
   exact Module.Flat.tensorProduct_mk_injective R L.obj.carrier (FractionRing R)
 
 theorem exact_radical_toMetricDual_iff (L : IntegralLatticeCat R) :
-    Function.Exact L.obj.radicalInclusion (toMetricDual R L) ↔
+    Function.Exact L.obj.leftRadicalInclusion (toMetricDual R L) ↔
       L.obj.IsNondegenerate := by
   rw [LinearMap.exact_iff]
   have hker : LinearMap.ker (toMetricDual R L) = ⊥ := by
@@ -622,15 +626,19 @@ theorem exact_radical_toMetricDual_iff (L : IntegralLatticeCat R) :
       have hx0 : x = 0 := (toMetricDual_injective R L) (by simpa using hx)
       simp [hx0]
     · exact bot_le
-  have hrange : LinearMap.range L.obj.radicalInclusion = L.obj.radical :=
-    Submodule.range_subtype L.obj.radical
+  have hrange : LinearMap.range L.obj.leftRadicalInclusion = L.obj.leftRadical :=
+    Submodule.range_subtype L.obj.leftRadical
   rw [hker, hrange]
-  exact eq_comm
+  rw [eq_comm]
+  exact ((L.obj.isNondegenerate_iff_adjoint_injective_of_isSymmetric
+    L.property.2).trans
+      (L.obj.isLeftSeparating_iff_adjoint_injective.symm.trans
+        L.obj.isLeftSeparating_iff_leftRadical_eq_bot)).symm
 
 /-- The radical-to-metric-dual sequence is exact for a nondegenerate lattice. -/
 theorem exact_radical_toMetricDual (L : IntegralLatticeCat R)
     (hL : L.obj.IsNondegenerate) :
-    Function.Exact L.obj.radicalInclusion (toMetricDual R L) := by
+    Function.Exact L.obj.leftRadicalInclusion (toMetricDual R L) := by
   exact (exact_radical_toMetricDual_iff R L).mpr hL
 
 /-- The metric-dual map followed by the carrier map of the formed cokernel is exact. -/
@@ -653,13 +661,13 @@ The underlying module sequence
 -/
 theorem discriminantCarrierModuleSequenceExact (L : IntegralLatticeCat R)
     (hL : L.obj.IsNondegenerate) :
-    Function.Injective L.obj.radicalInclusion ∧
-      Function.Exact L.obj.radicalInclusion (toMetricDual R L) ∧
+    Function.Injective L.obj.leftRadicalInclusion ∧
+      Function.Exact L.obj.leftRadicalInclusion (toMetricDual R L) ∧
       Function.Exact (toMetricDual R L)
         (BilWFormCat.carrierMap (discriminantSymBilWFormProjection R L).hom).hom ∧
       Function.Surjective
         (BilWFormCat.carrierMap (discriminantSymBilWFormProjection R L).hom).hom :=
-  ⟨L.obj.radicalInclusion_injective, exact_radical_toMetricDual R L hL,
+  ⟨L.obj.leftRadicalInclusion_injective, exact_radical_toMetricDual R L hL,
     exact_toMetricDual_discriminantCarrier R L,
     discriminantCarrierProjection_surjective R L⟩
 

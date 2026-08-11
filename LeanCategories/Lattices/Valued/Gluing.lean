@@ -70,26 +70,26 @@ noncomputable def inclusion (M : Overlattice R L) :
 end Overlattice
 
 variable {L : IntegralLatticeCat R}
-variable (hL : IsGenericallyNondegenerate R L)
+variable (hL : IsFractionFieldPerfect R L)
 
 /-- An isotropic subgroup of the bilinear discriminant form. -/
 noncomputable abbrev DiscriminantIsotropicSubgroup
     (R : Type u) [CommRing R] [IsDomain R]
-    {L : IntegralLatticeCat R} (hL : IsGenericallyNondegenerate R L) :=
+    {L : IntegralLatticeCat R} (hL : IsFractionFieldPerfect R L) :=
   {H : Submodule R L.obj.defect //
     (discriminantBilinObject R L hL).IsTotallyIsotropic H}
 
 /-- A metabolizer is a Lagrangian subgroup of the discriminant form. -/
 noncomputable abbrev DiscriminantMetabolizer
     (R : Type u) [CommRing R] [IsDomain R]
-    {L : IntegralLatticeCat R} (hL : IsGenericallyNondegenerate R L) :=
+    {L : IntegralLatticeCat R} (hL : IsFractionFieldPerfect R L) :=
   {H : Submodule R L.obj.defect //
     (discriminantBilinObject R L hL).IsLagrangian H}
 
 /-- The inverse image of an isotropic subgroup inside the metric dual. -/
 noncomputable def metricDualPreimage
     (R : Type u) [CommRing R] [IsDomain R]
-    {L : IntegralLatticeCat R} (hL : IsGenericallyNondegenerate R L)
+    {L : IntegralLatticeCat R} (hL : IsFractionFieldPerfect R L)
     (H : DiscriminantIsotropicSubgroup R hL) :
     Submodule R (metricDual R L) :=
   H.1.comap (metricDualToDiscriminant R L)
@@ -97,14 +97,14 @@ noncomputable def metricDualPreimage
 /-- The rational-span submodule associated to an isotropic subgroup. -/
 noncomputable def overlatticeSubmodule
     (R : Type u) [CommRing R] [IsDomain R]
-    {L : IntegralLatticeCat R} (hL : IsGenericallyNondegenerate R L)
+    {L : IntegralLatticeCat R} (hL : IsFractionFieldPerfect R L)
     (H : DiscriminantIsotropicSubgroup R hL) :
     Submodule R (RationalSpan R L) :=
   (metricDualPreimage R hL H).map (metricDualInclusion R L)
 
 theorem integralImage_le_overlatticeSubmodule
     (R : Type u) [CommRing R] [IsDomain R]
-    {L : IntegralLatticeCat R} (hL : IsGenericallyNondegenerate R L)
+    {L : IntegralLatticeCat R} (hL : IsFractionFieldPerfect R L)
     (H : DiscriminantIsotropicSubgroup R hL) :
     integralImage R L ≤ overlatticeSubmodule R hL H := by
   rintro _ ⟨x, rfl⟩
@@ -120,7 +120,7 @@ theorem integralImage_le_overlatticeSubmodule
 
 theorem overlatticeSubmodule_isIntegral
     (R : Type u) [CommRing R] [IsDomain R]
-    {L : IntegralLatticeCat R} (hL : IsGenericallyNondegenerate R L)
+    {L : IntegralLatticeCat R} (hL : IsFractionFieldPerfect R L)
     (H : DiscriminantIsotropicSubgroup R hL) :
     IsIntegralSubmodule R L (overlatticeSubmodule R hL H) := by
   intro z hz
@@ -143,7 +143,7 @@ theorem overlatticeSubmodule_isIntegral
 /-- An isotropic subgroup constructs an integral overlattice. -/
 noncomputable def overlatticeFromIsotropicSubgroup
     (R : Type u) [CommRing R] [IsDomain R]
-    {L : IntegralLatticeCat R} (hL : IsGenericallyNondegenerate R L)
+    {L : IntegralLatticeCat R} (hL : IsFractionFieldPerfect R L)
     (H : DiscriminantIsotropicSubgroup R hL) : Overlattice R L :=
   ⟨overlatticeSubmodule R hL H,
     integralImage_le_overlatticeSubmodule R hL H,

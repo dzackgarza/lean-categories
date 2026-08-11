@@ -17,7 +17,7 @@ universe u
 
 variable {R : Type u} [CommRing R] [IsDomain R]
 variable {L : IntegralLatticeCat R}
-variable {hL : IsGenericallyNondegenerate R L}
+variable {hL : IsFractionFieldPerfect R L}
 
 /-- The subgroup of `O(L)` that preserves an isotropic gluing subgroup. -/
 noncomputable abbrev gluingStabilizer

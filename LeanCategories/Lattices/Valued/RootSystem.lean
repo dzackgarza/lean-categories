@@ -37,7 +37,8 @@ noncomputable def reflectiveRootPairing
   letI : Module.Free R L.obj.obj.carrier := L.carrier_free
   letI : Module.IsReflexive R L.obj.obj.carrier := inferInstance
   have hinjective : Function.Injective L.obj.obj.adjoint :=
-    L.obj.obj.isNondegenerate_iff_adjoint_injective.mp hL
+    (L.obj.obj.isNondegenerate_iff_adjoint_injective_of_isSymmetric
+      L.obj.property.2).mp hL
   have hseparating : L.obj.obj.bilinMap.SeparatingLeft := by
     intro x hx
     apply hinjective

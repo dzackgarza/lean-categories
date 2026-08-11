@@ -23,17 +23,17 @@ section PID
 
 variable [IsDomain R] [IsPrincipalIdealRing R]
 
-/-- A generically nondegenerate adjoint has full-rank image in the value dual. -/
+/-- Fraction-field perfection gives a full-rank adjoint image in the value dual. -/
 theorem adjointRange_finrank_eq_valueDual (L : IntegralLatticeCat R)
     [Module.Finite R L.obj.carrier]
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     Module.finrank R (LinearMap.range L.obj.adjoint) =
       Module.finrank R L.obj.valueDual := by
   letI : Module.Projective R L.obj.carrier := L.property.1
   letI : Module.Free R L.obj.carrier := by infer_instance
   letI : Module.Finite R L.obj.valueDual := by infer_instance
   letI : Module.Free R L.obj.valueDual := by infer_instance
-  have hinj := adjoint_injective_of_genericallyNondegenerate R L hL
+  have hinj := adjoint_injective_of_fractionFieldPerfect R L hL
   have hrange : Module.finrank R (LinearMap.range L.obj.adjoint) =
       Module.finrank R L.obj.carrier :=
     (LinearEquiv.ofInjective L.obj.adjoint hinj).finrank_eq.symm
@@ -47,7 +47,7 @@ theorem adjointRange_finrank_eq_valueDual (L : IntegralLatticeCat R)
 /-- Smith normal form for the adjoint image inside the value dual. -/
 noncomputable def adjointSmithNormalForm {I : Type*} [Fintype I] [DecidableEq I]
     (L : IntegralLatticeCat R) [Module.Finite R L.obj.carrier]
-    (hL : IsGenericallyNondegenerate R L)
+    (hL : IsFractionFieldPerfect R L)
     (b : Module.Basis I R L.obj.carrier) :
     Module.Basis.SmithNormalForm (LinearMap.range L.obj.adjoint) I
       (Fintype.card I) := by
@@ -61,7 +61,7 @@ noncomputable def adjointSmithNormalForm {I : Type*} [Fintype I] [DecidableEq I]
 /-- The adjoint defect as the product of its cyclic Smith factors. -/
 noncomputable def defectEquivPiSpan {I : Type*} [Finite I] [DecidableEq I]
     (L : IntegralLatticeCat R) [Module.Finite R L.obj.carrier]
-    (hL : IsGenericallyNondegenerate R L)
+    (hL : IsFractionFieldPerfect R L)
     (b : Module.Basis I R L.obj.carrier) :
     L.obj.defect ≃ₗ[R]
       ∀ i, R ⧸ Ideal.span
@@ -79,7 +79,7 @@ end PID
 /-- An integral discriminant module as a product of cyclic Smith factors. -/
 noncomputable def defectEquivPiZMod {I : Type*} [Finite I] [DecidableEq I]
     (L : IntegralLatticeCat ℤ) [Module.Finite ℤ L.obj.carrier]
-    (hL : IsGenericallyNondegenerate ℤ L)
+    (hL : IsFractionFieldPerfect ℤ L)
     (b : Module.Basis I ℤ L.obj.carrier) :
     L.obj.defect ≃+
       ∀ i, ZMod (Submodule.smithNormalFormCoeffs b.dualBasis
@@ -95,7 +95,7 @@ noncomputable def defectEquivPiZMod {I : Type*} [Finite I] [DecidableEq I]
 theorem natCard_defect_eq_prod_smithCoefficients {I : Type*} [Fintype I]
     [DecidableEq I] (L : IntegralLatticeCat ℤ)
     [Module.Finite ℤ L.obj.carrier]
-    (hL : IsGenericallyNondegenerate ℤ L)
+    (hL : IsFractionFieldPerfect ℤ L)
     (b : Module.Basis I ℤ L.obj.carrier) :
     Nat.card L.obj.defect =
       ∏ i, (Submodule.smithNormalFormCoeffs b.dualBasis
@@ -107,7 +107,7 @@ theorem natCard_defect_eq_prod_smithCoefficients {I : Type*} [Fintype I]
 theorem natCard_defect_eq_natAbs_determinant {I : Type*} [Fintype I]
     [DecidableEq I] (L : IntegralLatticeCat ℤ)
     [Module.Finite ℤ L.obj.carrier]
-    (hL : IsGenericallyNondegenerate ℤ L)
+    (hL : IsFractionFieldPerfect ℤ L)
     (b : Module.Basis I ℤ L.obj.carrier) :
     Nat.card L.obj.defect = Int.natAbs (determinant L b) := by
   symm
@@ -115,7 +115,7 @@ theorem natCard_defect_eq_natAbs_determinant {I : Type*} [Fintype I]
   letI : Module.Free ℤ L.obj.carrier := Module.Free.of_basis b
   letI : Module.Finite ℤ L.obj.valueDual := by infer_instance
   letI : Module.Free ℤ L.obj.valueDual := by infer_instance
-  have hinj := adjoint_injective_of_genericallyNondegenerate ℤ L hL
+  have hinj := adjoint_injective_of_fractionFieldPerfect ℤ L hL
   let e := LinearEquiv.ofInjective L.obj.adjoint hinj
   let br : Module.Basis I ℤ (LinearMap.range L.obj.adjoint) := b.map e
   have hcard := Submodule.natAbs_det_basis_change b.dualBasis
@@ -133,7 +133,7 @@ theorem natCard_defect_eq_natAbs_determinant {I : Type*} [Fintype I]
 theorem determinantIdeal_eq_span_natCard_defect
     {I : Type*} [Fintype I] [DecidableEq I]
     (L : IntegralLatticeCat ℤ) [Module.Finite ℤ L.obj.carrier]
-    (hL : IsGenericallyNondegenerate ℤ L)
+    (hL : IsFractionFieldPerfect ℤ L)
     (b : Module.Basis I ℤ L.obj.carrier) :
     determinantIdeal L b =
       Ideal.span {(Nat.card L.obj.defect : ℤ)} := by

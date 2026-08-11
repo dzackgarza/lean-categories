@@ -335,10 +335,15 @@ theorem primaryComponent_isNondegenerate [IsDedekindDomain R]
     (hA : A.obj.IsNondegenerate)
     (P : IsDedekindDomain.HeightOneSpectrum R) :
     (A.obj.primaryComponent P.asIdeal).IsNondegenerate := by
-  rw [BilinModuleCat.isNondegenerate_iff_adjoint_injective]
+  have hsym : (A.obj.primaryComponent P.asIdeal).IsSymmetric := by
+    intro x y
+    exact A.property.2.2 x.1 y.1
+  rw [BilinModuleCat.isNondegenerate_iff_adjoint_injective_of_isSymmetric _
+    hsym]
   intro x y hxy
   apply Subtype.ext
-  apply (BilinModuleCat.isNondegenerate_iff_adjoint_injective A.obj).mp hA
+  apply (A.obj.isNondegenerate_iff_adjoint_injective_of_isSymmetric
+    A.property.2.2).mp hA
   apply LinearMap.ext
   intro z
   let f := A.obj.adjoint x.1 - A.obj.adjoint y.1
@@ -369,14 +374,22 @@ theorem primaryComponent_isPerfect [IsDedekindDomain R]
     (hA : A.obj.IsPerfect)
     (P : IsDedekindDomain.HeightOneSpectrum R) :
     (A.obj.primaryComponent P.asIdeal).IsPerfect := by
+  have hsym : (A.obj.primaryComponent P.asIdeal).IsSymmetric := by
+    intro x y
+    exact A.property.2.2 x.1 y.1
+  rw [BilinModuleCat.isPerfect_iff_adjoint_bijective_of_isSymmetric _
+    hsym]
+  have hAleft : Function.Bijective A.obj.adjoint :=
+    (A.obj.isPerfect_iff_adjoint_bijective_of_isSymmetric A.property.2.2).mp hA
   constructor
-  · rw [← BilinModuleCat.isNondegenerate_iff_adjoint_injective]
+  · rw [← BilinModuleCat.isNondegenerate_iff_adjoint_injective_of_isSymmetric _
+      hsym]
     exact primaryComponent_isNondegenerate A
       (A.obj.isNondegenerate_of_isPerfect hA) P
   · intro φ
     let extended : A.obj.carrier →ₗ[R] W :=
       φ.comp (primaryComponentProjection A P)
-    obtain ⟨x, hx⟩ := hA.2 extended
+    obtain ⟨x, hx⟩ := hAleft.2 extended
     refine ⟨primaryComponentProjection A P x, ?_⟩
     apply LinearMap.ext
     intro y

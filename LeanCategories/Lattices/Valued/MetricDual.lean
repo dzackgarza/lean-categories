@@ -70,32 +70,64 @@ theorem isUnimodular_iff_toMetricDual_surjective (L : IntegralLatticeCat R) :
       rcases hv with ⟨x, rfl⟩
       exact (toMetricDual R L x).property
 
-/-- Rational nondegeneracy means that the adjoint of the extended form is bijective. -/
-def IsGenericallyNondegenerate (L : IntegralLatticeCat R) : Prop :=
+/-- The form over the fraction field is nondegenerate when both radicals vanish. -/
+def IsFractionFieldNondegenerate (L : IntegralLatticeCat R) : Prop :=
+  (rationalizedForm R L).Nondegenerate
+
+/-- The form over the fraction field is perfect when its correlation map is an isomorphism.
+This does not say that the integral adjoint is a primitive embedding. -/
+def IsFractionFieldPerfect (L : IntegralLatticeCat R) : Prop :=
   Function.Bijective (rationalizedForm R L)
 
-/-- Finite projective integral lattices whose rational forms are nondegenerate. -/
-def isGenericallyNondegenerateFiniteProjectiveLattice :
+/-- For a finite-projective lattice, fraction-field nondegeneracy equals perfection. -/
+theorem isFractionFieldNondegenerate_iff_isFractionFieldPerfect
+    (L : IntegralLatticeCat R) [Module.Finite R L.obj.carrier] :
+    IsFractionFieldNondegenerate R L ↔ IsFractionFieldPerfect R L := by
+  let B := rationalizedForm R L
+  letI : Module.Finite (FractionRing R) (RationalSpan R L) := inferInstance
+  constructor
+  · intro hB
+    let e := B.toDual hB
+    have he : B = e.toLinearMap := by
+      apply LinearMap.ext
+      intro x
+      apply LinearMap.ext
+      intro y
+      exact (LinearMap.BilinForm.toDual_def hB).symm
+    change Function.Bijective B
+    rw [he]
+    exact e.bijective
+  · intro hB
+    have hseparating : B.SeparatingLeft := by
+      intro x hx
+      apply hB.1
+      apply LinearMap.ext
+      intro y
+      simpa only [map_zero, LinearMap.zero_apply] using hx y
+    exact LinearMap.BilinForm.Nondegenerate.ofSeparatingLeft hseparating
+
+/-- Finite projective integral lattices whose fraction-field form is perfect. -/
+def isFractionFieldPerfectFiniteProjectiveLattice :
     ObjectProperty (FiniteProjectiveLatticeCat R R) :=
-  fun L ↦ IsGenericallyNondegenerate R L.obj
+  fun L ↦ IsFractionFieldPerfect R L.obj
 
-/-- The full category of finite projective, generically nondegenerate integral lattices. -/
-abbrev GenericallyNondegenerateFiniteProjectiveLatticeCat :=
-  (isGenericallyNondegenerateFiniteProjectiveLattice R).FullSubcategory
+/-- Finite projective integral lattices whose fraction-field form is perfect. -/
+abbrev FractionFieldPerfectFiniteProjectiveLatticeCat :=
+  (isFractionFieldPerfectFiniteProjectiveLattice R).FullSubcategory
 
-/-- Unimodular finite projective lattices with nondegenerate rational form. -/
+/-- Unimodular finite projective lattices whose fraction-field form is perfect. -/
 noncomputable def isUnimodularFiniteProjectiveLattice :
-    ObjectProperty (GenericallyNondegenerateFiniteProjectiveLatticeCat R) :=
+    ObjectProperty (FractionFieldPerfectFiniteProjectiveLatticeCat R) :=
   fun L ↦ IsUnimodular R L.obj.obj
 
 /-- The full category of unimodular finite projective lattices. -/
 noncomputable abbrev UnimodularLatticeCat :=
   (isUnimodularFiniteProjectiveLattice R).FullSubcategory
 
-/-- Forget finiteness and generic nondegeneracy while retaining the integral lattice. -/
-def genericallyNondegenerateFiniteProjectiveForget :
-    GenericallyNondegenerateFiniteProjectiveLatticeCat R ⥤ IntegralLatticeCat R :=
-  (isGenericallyNondegenerateFiniteProjectiveLattice R).ι ⋙
+/-- Forget finiteness and fraction-field perfection while retaining the integral lattice. -/
+def fractionFieldPerfectFiniteProjectiveForget :
+    FractionFieldPerfectFiniteProjectiveLatticeCat R ⥤ IntegralLatticeCat R :=
+  (isFractionFieldPerfectFiniteProjectiveLattice R).ι ⋙
     (isFiniteProjectiveLattice R R).ι
 
 omit [IsDomain R] in
@@ -109,12 +141,12 @@ theorem rationalizedForm_toMatrix {I : Type*} [Fintype I]
   ext i j
   simp [LinearMap.BilinForm.toMatrix_apply, gramMatrix, Algebra.smul_def]
 
-/-- A finite Gram determinant is nonzero exactly when the lattice is generically nondegenerate. -/
-theorem isGenericallyNondegenerate_iff_determinant_ne_zero
+/-- A finite Gram determinant is nonzero exactly when the fraction-field form is perfect. -/
+theorem isFractionFieldPerfect_iff_determinant_ne_zero
     {I : Type*} [Fintype I] [DecidableEq I]
     (L : IntegralLatticeCat R)
     (b : Module.Basis I R L.obj.carrier) :
-    IsGenericallyNondegenerate R L ↔ determinant L b ≠ 0 := by
+    IsFractionFieldPerfect R L ↔ determinant L b ≠ 0 := by
   let bK := b.baseChange (FractionRing R)
   let B := rationalizedForm R L
   letI : Module.Finite (FractionRing R) (RationalSpan R L) :=
@@ -154,16 +186,16 @@ theorem isGenericallyNondegenerate_iff_determinant_ne_zero
     rw [he]
     exact e.bijective
 
-/-- The Riesz equivalence supplied by the extended form and rational nondegeneracy. -/
+/-- The Riesz equivalence supplied by the extended form and fraction-field perfection. -/
 noncomputable def rationalAdjointEquiv (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     RationalSpan R L ≃ₗ[FractionRing R]
       Module.Dual (FractionRing R) (RationalSpan R L) :=
   LinearEquiv.ofBijective (rationalizedForm R L) hL
 
 /-- The Riesz realization of `Hom_R(L,R)` inside the rational span. -/
 noncomputable def rieszEmbedding (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     L.obj.valueDual →ₗ[R] RationalSpan R L :=
   (rationalAdjointEquiv R L hL).symm.toLinearMap.restrictScalars R ∘ₗ
     Module.Dual.baseChange (FractionRing R)
@@ -179,21 +211,21 @@ noncomputable def restrictedRationalizedForm (L : IntegralLatticeCat R) :
 
 /-- The form on `Hom_R(L,R)` transported through its Riesz realization. -/
 noncomputable def rieszDualBilinMap (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     LinearMap.BilinMap R L.obj.valueDual (FractionRing R) :=
   (restrictedRationalizedForm R L).compl₁₂
     (rieszEmbedding R L hL) (rieszEmbedding R L hL)
 
 /-- Tensor-hom form transported to `Hom_R(L,R)` by the Riesz realization. -/
 noncomputable def rieszDualForm (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     TensorProduct R L.obj.valueDual L.obj.valueDual →ₗ[R] FractionRing R :=
   (TensorProduct.lift.equiv (.id R) L.obj.valueDual L.obj.valueDual
     (FractionRing R)) (rieszDualBilinMap R L hL)
 
 /-- `Hom_R(L,R)` with the form supplied by `b_K` and its Riesz equivalence. -/
 noncomputable def rieszDualBilinObject (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     BilinModuleCat R (FractionRing R) :=
   op ⟨op (ModuleCat.of R L.obj.valueDual), rieszDualForm R L hL⟩
 
@@ -214,14 +246,14 @@ theorem rationalizedForm_isSymmetric (L : IntegralLatticeCat R) :
 
 omit [IsDomain R] in
 theorem rieszDualBilinObject_isSymmetric (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     (rieszDualBilinObject R L hL).IsSymmetric := by
   intro f g
   exact rationalizedForm_isSymmetric R L _ _
 
 omit [IsDomain R] in
 theorem rieszEmbedding_adjoint (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) (x : L.obj.carrier) :
+    (hL : IsFractionFieldPerfect R L) (x : L.obj.carrier) :
     rieszEmbedding R L hL (L.obj.adjoint x) = toRationalSpan R L x := by
   apply (rationalAdjointEquiv R L hL).injective
   simp only [rieszEmbedding, LinearMap.comp_apply, LinearMap.coe_restrictScalars,
@@ -238,7 +270,7 @@ theorem rieszEmbedding_adjoint (L : IntegralLatticeCat R)
 
 omit [IsDomain R] in
 theorem rieszDualBilinMap_adjoint (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) (x y : L.obj.carrier) :
+    (hL : IsFractionFieldPerfect R L) (x y : L.obj.carrier) :
     rieszDualBilinMap R L hL (L.obj.adjoint x) (L.obj.adjoint y) =
       algebraMap R (FractionRing R) (L.obj.pairing x y) := by
   change rationalizedForm R L
@@ -257,7 +289,7 @@ noncomputable def fractionValuedLattice (L : IntegralLatticeCat R) :
 /-- The Riesz model of `L♯`: `Hom_R(L,R)` with the form induced by `b_K`. -/
 noncomputable def rieszDualLattice (L : IntegralLatticeCat R)
     [Module.Finite R L.obj.carrier]
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     LatticeCat R (FractionRing R) := by
   letI : Module.Projective R L.obj.carrier := L.property.1
   refine ⟨rieszDualBilinObject R L hL, ?_⟩
@@ -267,7 +299,7 @@ noncomputable def rieszDualLattice (L : IntegralLatticeCat R)
 
 /-- The adjoint is an isometry after changing values to `Frac(R)`. -/
 noncomputable def toRieszDualBilin (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     (fractionValuedLattice R L).obj ⟶ rieszDualBilinObject R L hL := by
   refine Quiver.Hom.op (CategoryOfElements.homMk _ _
     (op (ModuleCat.ofHom L.obj.adjoint)) ?_)
@@ -283,13 +315,13 @@ noncomputable def toRieszDualBilin (L : IntegralLatticeCat R)
 /-- The adjoint `L → L♯` in the category of `Frac(R)`-valued `R`-lattices. -/
 noncomputable def toRieszDual (L : IntegralLatticeCat R)
     [Module.Finite R L.obj.carrier]
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     fractionValuedLattice R L ⟶ rieszDualLattice R L hL :=
   ObjectProperty.homMk (toRieszDualBilin R L hL)
 
 omit [IsDomain R] in
 theorem rationalizedForm_rieszEmbedding (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) (f : L.obj.valueDual)
+    (hL : IsFractionFieldPerfect R L) (f : L.obj.valueDual)
     (x : L.obj.carrier) :
     rationalizedForm R L (rieszEmbedding R L hL f) (toRationalSpan R L x) =
       algebraMap R (FractionRing R) (f x) := by
@@ -299,7 +331,7 @@ theorem rationalizedForm_rieszEmbedding (L : IntegralLatticeCat R)
 
 /-- The Riesz model maps into the metric-dual submodule of the rational span. -/
 noncomputable def rieszToMetricDual (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     L.obj.valueDual →ₗ[R] metricDual R L :=
   LinearMap.codRestrict (metricDual R L) (rieszEmbedding R L hL) (by
     intro f
@@ -311,7 +343,7 @@ noncomputable def rieszToMetricDual (L : IntegralLatticeCat R)
 
 @[simp]
 theorem rieszToMetricDual_coe (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) (f : L.obj.valueDual) :
+    (hL : IsFractionFieldPerfect R L) (f : L.obj.valueDual) :
     (rieszToMetricDual R L hL f : RationalSpan R L) = rieszEmbedding R L hL f :=
   rfl
 
@@ -333,7 +365,7 @@ noncomputable def metricDualToValueDual (L : IntegralLatticeCat R) :
     simp [toIntegralImage]
 
 theorem metricDualToValueDual_rieszToMetricDual (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) (f : L.obj.valueDual) :
+    (hL : IsFractionFieldPerfect R L) (f : L.obj.valueDual) :
     metricDualToValueDual R L (rieszToMetricDual R L hL f) = f := by
   ext x
   apply FaithfulSMul.algebraMap_injective R (FractionRing R)
@@ -345,7 +377,7 @@ theorem metricDualToValueDual_rieszToMetricDual (L : IntegralLatticeCat R)
   exact rationalizedForm_rieszEmbedding R L hL f x
 
 theorem rieszToMetricDual_metricDualToValueDual (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) (v : metricDual R L) :
+    (hL : IsFractionFieldPerfect R L) (v : metricDual R L) :
     rieszToMetricDual R L hL (metricDualToValueDual R L v) = v := by
   apply Subtype.ext
   apply (rationalAdjointEquiv R L hL).injective
@@ -366,7 +398,7 @@ theorem rieszToMetricDual_metricDualToValueDual (L : IntegralLatticeCat R)
 
 /-- The Riesz model and the metric-dual submodule are isomorphic as `R`-modules. -/
 noncomputable def rieszMetricDualEquiv (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     L.obj.valueDual ≃ₗ[R] metricDual R L :=
   { toLinearMap := rieszToMetricDual R L hL
     invFun := metricDualToValueDual R L
@@ -375,7 +407,7 @@ noncomputable def rieszMetricDualEquiv (L : IntegralLatticeCat R)
 
 @[simp]
 theorem rieszMetricDualEquiv_adjoint (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) (x : L.obj.carrier) :
+    (hL : IsFractionFieldPerfect R L) (x : L.obj.carrier) :
     rieszMetricDualEquiv R L hL (L.obj.adjoint x) = toMetricDual R L x := by
   apply Subtype.ext
   change rieszEmbedding R L hL (L.obj.adjoint x) = toRationalSpan R L x
@@ -389,10 +421,11 @@ theorem toMetricDual_injective (L : IntegralLatticeCat R) :
   apply Module.Flat.tensorProduct_mk_injective R L.obj.carrier (FractionRing R)
   exact congrArg Subtype.val hxy
 
-/-- For a generically nondegenerate lattice, perfectness equals unimodularity. -/
+/-- For a lattice with perfect generic fiber, perfectness equals unimodularity. -/
 theorem isPerfect_iff_isUnimodular (L : IntegralLatticeCat R)
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     L.obj.IsPerfect ↔ IsUnimodular R L := by
+  rw [L.obj.isPerfect_iff_adjoint_bijective_of_isSymmetric L.property.2]
   rw [isUnimodular_iff_toMetricDual_surjective]
   let e := rieszMetricDualEquiv R L hL
   constructor
@@ -446,7 +479,7 @@ It does not require the original integral form to be nondegenerate over `R`.
 -/
 noncomputable def metricDualLattice (L : IntegralLatticeCat R)
     [Module.Finite R L.obj.carrier]
-    (hL : IsGenericallyNondegenerate R L) :
+    (hL : IsFractionFieldPerfect R L) :
     LatticeCat R (FractionRing R) := by
   letI : Module.Projective R L.obj.carrier := L.property.1
   letI : Module.Finite R L.obj.valueDual := inferInstance

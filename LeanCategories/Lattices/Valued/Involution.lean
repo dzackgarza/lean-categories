@@ -140,7 +140,8 @@ theorem coinvariantSubmodule_le_antiFixedSubmodule
   apply LinearMap.mem_ker.mpr
   change J.element.1 x + x = 0
   have hinj : Function.Injective L.obj.adjoint :=
-    L.obj.isNondegenerate_iff_adjoint_injective.mp hL
+    (L.obj.isNondegenerate_iff_adjoint_injective_of_isSymmetric
+      L.property.2).mp hL
   apply hinj
   ext z
   change L.obj.bilinMap (J.element.1 x + x) z = L.obj.bilinMap 0 z
@@ -335,11 +336,13 @@ theorem invariantLattice_isNondegenerate [NeZero (2 : R)]
     (L : IntegralLatticeCat R) [Module.Finite R L.obj.carrier]
     (J : Involution L) (hL : L.obj.IsNondegenerate) :
     (invariantLattice L J).obj.IsNondegenerate := by
-  rw [BilinModuleCat.isNondegenerate_iff_adjoint_injective]
+  rw [BilinModuleCat.isNondegenerate_iff_adjoint_injective_of_isSymmetric _
+    (invariantLattice L J).property.2]
   intro x y hxy
   change fixedSubmodule L J at x y
   apply Subtype.ext
-  apply (L.obj.isNondegenerate_iff_adjoint_injective.mp hL)
+  apply ((L.obj.isNondegenerate_iff_adjoint_injective_of_isSymmetric
+    L.property.2).mp hL)
   apply LinearMap.ext
   intro z
   have hzfixed : J.element.1 z + z ∈ fixedSubmodule L J := by

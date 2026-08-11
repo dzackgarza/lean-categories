@@ -302,7 +302,8 @@ theorem disjoint_orthogonalSubmodule_of_isNondegenerate
   intro x hxP hxOrthogonal
   let xP : P := ⟨x, hxP⟩
   have hxPzero : xP = 0 := by
-    apply ((formedSublattice L P).obj.isNondegenerate_iff_adjoint_injective.mp hP)
+    apply (BilinModuleCat.isNondegenerate_iff_adjoint_injective_of_isSymmetric
+      (formedSublattice L P).obj (formedSublattice L P).property.2).mp hP
     apply LinearMap.ext
     intro y
     change L.obj.pairing x y.1 = L.obj.pairing 0 y.1
