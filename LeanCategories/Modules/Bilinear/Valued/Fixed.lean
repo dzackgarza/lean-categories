@@ -138,6 +138,52 @@ theorem underlyingMap_homMk {L M : BilinModuleCat R W}
     underlyingMap (homMk f h) = f :=
   rfl
 
+/-- Build a fixed-value formed-module isomorphism from a form-preserving linear equivalence. -/
+def isoMk {L M : BilinModuleCat R W} (f : L.carrier ≃ₗ[R] M.carrier)
+    (h : ∀ x y, M.pairing (f x) (f y) = L.pairing x y) : L ≅ M where
+  hom := homMk f.toLinearMap h
+  inv := homMk f.symm.toLinearMap fun x y ↦ by
+    simpa using (h (f.symm x) (f.symm y)).symm
+  hom_inv_id := by
+    apply Quiver.Hom.unop_inj
+    apply CategoryOfElements.ext
+    apply Quiver.Hom.unop_inj
+    apply ModuleCat.hom_ext
+    ext x
+    exact f.symm_apply_apply x
+  inv_hom_id := by
+    apply Quiver.Hom.unop_inj
+    apply CategoryOfElements.ext
+    apply Quiver.Hom.unop_inj
+    apply ModuleCat.hom_ext
+    ext x
+    exact f.apply_symm_apply x
+
+/-- The carrier equivalence underlying a fixed-value formed-module isomorphism. -/
+def linearEquivOfIso {L M : BilinModuleCat R W} (e : L ≅ M) :
+    L.carrier ≃ₗ[R] M.carrier where
+  toFun := underlyingMap e.hom
+  invFun := underlyingMap e.inv
+  map_add' := map_add (underlyingMap e.hom)
+  map_smul' := map_smul (underlyingMap e.hom)
+  left_inv x := by
+    have h := congrArg (fun f : L ⟶ L ↦ underlyingMap f x) e.hom_inv_id
+    exact h
+  right_inv x := by
+    have h := congrArg (fun f : M ⟶ M ↦ underlyingMap f x) e.inv_hom_id
+    exact h
+
+@[simp]
+theorem linearEquivOfIso_apply {L M : BilinModuleCat R W} (e : L ≅ M)
+    (x : L.carrier) :
+    linearEquivOfIso e x = underlyingMap e.hom x :=
+  rfl
+
+theorem linearEquivOfIso_pairing {L M : BilinModuleCat R W} (e : L ≅ M)
+    (x y : L.carrier) :
+    M.pairing (linearEquivOfIso e x) (linearEquivOfIso e y) = L.pairing x y :=
+  map_pairing e.hom x y
+
 /-- Symmetry of the form. -/
 def IsSymmetric (L : BilinModuleCat R W) : Prop :=
   ∀ x y, L.pairing x y = L.pairing y x

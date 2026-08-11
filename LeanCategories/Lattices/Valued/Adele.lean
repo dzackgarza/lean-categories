@@ -227,6 +227,109 @@ theorem finiteIntegralAdeleBaseChange_pairing_apply
   exact congrFun (LinearMap.congr_fun
     (LinearMap.congr_fun (finiteIntegralAdelePairing_eq_localPairing K L) x) y) v
 
+/-- A family of isometries between the scalar extensions at every finite place. -/
+abbrev FiniteAdeleLocalIsometryFamily
+    (L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :=
+  (v : HeightOneSpectrum (𝓞 K)) →
+    ((baseChangeIntegral (𝓞 K) (v.adicCompletionIntegers K)).obj L.obj).obj ≅
+      ((baseChangeIntegral (𝓞 K) (v.adicCompletionIntegers K)).obj M.obj).obj
+
+/-- A family of local isometries acts coordinatewise on the product of local carriers. -/
+noncomputable def finiteAdeleLocalIsometryLinearEquiv
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
+    (e : FiniteAdeleLocalIsometryFamily K L M) :
+    FiniteAdeleLocalModuleProduct K L ≃ₗ[FiniteIntegralAdeleRing (𝓞 K) K]
+      FiniteAdeleLocalModuleProduct K M where
+  toFun x v := BilinModuleCat.linearEquivOfIso (e v) (x v)
+  invFun x v := (BilinModuleCat.linearEquivOfIso (e v)).symm (x v)
+  map_add' x y := by
+    funext v
+    exact map_add (BilinModuleCat.linearEquivOfIso (e v)) (x v) (y v)
+  map_smul' a x := by
+    funext v
+    exact map_smul (BilinModuleCat.linearEquivOfIso (e v)) (a v) (x v)
+  left_inv x := by
+    funext v
+    exact (BilinModuleCat.linearEquivOfIso (e v)).symm_apply_apply (x v)
+  right_inv x := by
+    funext v
+    exact (BilinModuleCat.linearEquivOfIso (e v)).apply_symm_apply (x v)
+
+/-- Placewise isometries assemble to an isometry of the integral finite adelic carriers. -/
+noncomputable def finiteAdeleCarrierIsometryLinearEquiv
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
+    (e : FiniteAdeleLocalIsometryFamily K L M) :
+    TensorProduct (𝓞 K) (FiniteIntegralAdeleRing (𝓞 K) K) L.obj.obj.carrier
+      ≃ₗ[FiniteIntegralAdeleRing (𝓞 K) K]
+    TensorProduct (𝓞 K) (FiniteIntegralAdeleRing (𝓞 K) K) M.obj.obj.carrier :=
+  (finiteAdeleLocalCarrierAlgEquiv K L).trans <|
+    (finiteAdeleLocalIsometryLinearEquiv K e).trans
+      (finiteAdeleLocalCarrierAlgEquiv K M).symm
+
+@[simp]
+theorem finiteAdeleLocalCarrierAlgEquiv_apply_carrierIsometry
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
+    (e : FiniteAdeleLocalIsometryFamily K L M)
+    (x : TensorProduct (𝓞 K) (FiniteIntegralAdeleRing (𝓞 K) K)
+      L.obj.obj.carrier) (v : HeightOneSpectrum (𝓞 K)) :
+    finiteAdeleLocalCarrierAlgEquiv K M
+        (finiteAdeleCarrierIsometryLinearEquiv K e x) v =
+      BilinModuleCat.linearEquivOfIso (e v)
+        (finiteAdeleLocalCarrierAlgEquiv K L x v) :=
+  by
+    simp [finiteAdeleCarrierIsometryLinearEquiv,
+      finiteAdeleLocalIsometryLinearEquiv]
+
+theorem finiteAdeleLocalCarrierEquiv_apply_carrierIsometry
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
+    (e : FiniteAdeleLocalIsometryFamily K L M)
+    (x : TensorProduct (𝓞 K) (FiniteIntegralAdeleRing (𝓞 K) K)
+      L.obj.obj.carrier) (v : HeightOneSpectrum (𝓞 K)) :
+    finiteAdeleLocalCarrierEquiv K M
+        (finiteAdeleCarrierIsometryLinearEquiv K e x) v =
+      BilinModuleCat.linearEquivOfIso (e v)
+        (finiteAdeleLocalCarrierEquiv K L x v) := by
+  exact finiteAdeleLocalCarrierAlgEquiv_apply_carrierIsometry K e x v
+
+/-- The assembled carrier equivalence preserves the integral finite adelic form. -/
+theorem finiteAdeleCarrierIsometryLinearEquiv_pairing
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
+    (e : FiniteAdeleLocalIsometryFamily K L M)
+    (x y : TensorProduct (𝓞 K) (FiniteIntegralAdeleRing (𝓞 K) K)
+      L.obj.obj.carrier) :
+    ((baseChangeIntegral (𝓞 K)
+      (FiniteIntegralAdeleRing (𝓞 K) K)).obj M.obj).obj.pairing
+        (finiteAdeleCarrierIsometryLinearEquiv K e x)
+        (finiteAdeleCarrierIsometryLinearEquiv K e y) =
+      ((baseChangeIntegral (𝓞 K)
+        (FiniteIntegralAdeleRing (𝓞 K) K)).obj L.obj).obj.pairing x y := by
+  apply funext
+  intro v
+  rw [finiteIntegralAdeleBaseChange_pairing_apply K M,
+    finiteIntegralAdeleBaseChange_pairing_apply K L]
+  rw [finiteAdeleLocalCarrierEquiv_apply_carrierIsometry K e x v,
+    finiteAdeleLocalCarrierEquiv_apply_carrierIsometry K e y v]
+  exact BilinModuleCat.linearEquivOfIso_pairing (e v) _ _
+
+/-- Placewise finite isometries assemble to an isometry after integral finite adelic base change. -/
+noncomputable def finiteIntegralAdeleIsoOfLocalIsometries
+    {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
+    (e : FiniteAdeleLocalIsometryFamily K L M) :
+    (finiteIntegralAdeleBaseChange K).obj L ≅
+      (finiteIntegralAdeleBaseChange K).obj M := by
+  let eBilin :
+      ((baseChangeIntegral (𝓞 K)
+        (FiniteIntegralAdeleRing (𝓞 K) K)).obj L.obj).obj ≅
+      ((baseChangeIntegral (𝓞 K)
+        (FiniteIntegralAdeleRing (𝓞 K) K)).obj M.obj).obj :=
+    BilinModuleCat.isoMk (finiteAdeleCarrierIsometryLinearEquiv K e)
+      (finiteAdeleCarrierIsometryLinearEquiv_pairing K e)
+  let eLattice := ObjectProperty.isoMk (P := isLattice
+    (FiniteIntegralAdeleRing (𝓞 K) K) (FiniteIntegralAdeleRing (𝓞 K) K)) eBilin
+  exact ObjectProperty.isoMk
+    (P := isFiniteProjectiveLattice
+      (FiniteIntegralAdeleRing (𝓞 K) K) (FiniteIntegralAdeleRing (𝓞 K) K)) eLattice
+
 /-- The orthogonal group of the full ring-adelic scalar extension. -/
 abbrev RingAdelicOrthogonalGroup
     (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :=
