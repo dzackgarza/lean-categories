@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.LinearAlgebra.Quotient.Bilinear
-public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Map
 
 @[expose] public section
@@ -255,11 +254,11 @@ theorem defectProjection_surjective (L : BilinModuleCat R W) :
 
 /-- A form is left-nondegenerate when `b(x,-) = 0` implies `x = 0`. -/
 def IsLeftNondegenerate (L : BilinModuleCat R W) : Prop :=
-  L.bilinMap.SeparatingLeft
+  LinearMap.ker L.adjoint = ⊥
 
 /-- A form is right-nondegenerate when `b(-,y) = 0` implies `y = 0`. -/
 def IsRightNondegenerate (L : BilinModuleCat R W) : Prop :=
-  L.bilinMap.SeparatingRight
+  LinearMap.ker L.rightAdjoint = ⊥
 
 /-- A form is nondegenerate when it is both left- and right-nondegenerate. -/
 def IsNondegenerate (L : BilinModuleCat R W) : Prop :=
@@ -267,11 +266,11 @@ def IsNondegenerate (L : BilinModuleCat R W) : Prop :=
 
 theorem isLeftNondegenerate_iff_leftRadical_eq_bot (L : BilinModuleCat R W) :
     L.IsLeftNondegenerate ↔ L.leftRadical = ⊥ :=
-  LinearMap.separatingLeft_iff_ker_eq_bot
+  Iff.rfl
 
 theorem isRightNondegenerate_iff_rightRadical_eq_bot (L : BilinModuleCat R W) :
     L.IsRightNondegenerate ↔ L.rightRadical = ⊥ :=
-  LinearMap.separatingRight_iff_flip_ker_eq_bot
+  Iff.rfl
 
 theorem isLeftNondegenerate_iff_adjoint_injective (L : BilinModuleCat R W) :
     L.IsLeftNondegenerate ↔ Function.Injective L.adjoint := by
@@ -298,12 +297,15 @@ theorem isNondegenerate_iff_adjoint_injective_of_isSymmetric
   · intro h
     have hleft : L.IsLeftNondegenerate :=
       L.isLeftNondegenerate_iff_adjoint_injective.mpr h
-    refine ⟨hleft, ?_⟩
-    intro y hy
+    refine ⟨hleft, L.isRightNondegenerate_iff_rightAdjoint_injective.mpr ?_⟩
+    intro y z hyz
     apply h
     apply LinearMap.ext
     intro x
-    simpa only [map_zero, LinearMap.zero_apply, bilinMap_apply, hL y x] using hy x
+    have hxy := DFunLike.congr_fun hyz x
+    change L.pairing x y = L.pairing x z at hxy
+    change L.pairing y x = L.pairing z x
+    simpa only [hL y x, hL z x] using hxy
 
 /-- The left correlation map is an isomorphism. -/
 def IsLeftPerfect (L : BilinModuleCat R W) : Prop :=
