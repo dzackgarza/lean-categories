@@ -24,6 +24,7 @@ open CategoryTheory
 open IsDedekindDomain NumberField
 open LeanCategories.Modules.Bilinear.Valued
 open scoped NumberField
+open scoped Pointwise
 
 namespace LeanCategories.Lattices.Valued
 
@@ -48,6 +49,13 @@ def finiteIntegralAdeleBaseChange :
       FiniteProjectiveLatticeCat
         (FiniteIntegralAdeleRing (𝓞 K) K) (FiniteIntegralAdeleRing (𝓞 K) K) :=
   baseChangeFiniteIntegral (𝓞 K) (FiniteIntegralAdeleRing (𝓞 K) K)
+
+/-- Scalar extension of finite projective lattices to the finite field adele ring. -/
+def finiteFieldAdeleBaseChange :
+    FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K) ⥤
+      FiniteProjectiveLatticeCat
+        (FiniteAdeleRing (𝓞 K) K) (FiniteAdeleRing (𝓞 K) K) :=
+  baseChangeFiniteIntegral (𝓞 K) (FiniteAdeleRing (𝓞 K) K)
 
 /-- The finite local scalar extensions of a finite projective lattice. -/
 abbrev FiniteAdeleModuleProduct
@@ -466,6 +474,58 @@ abbrev RingAdelicOrthogonalGroup
 abbrev FiniteIntegralAdelicOrthogonalGroup
     (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :=
   BilinModuleCat.OrthogonalGroup ((finiteIntegralAdeleBaseChange K).obj L).obj.obj
+
+/-- The orthogonal group of the finite field-adelic scalar extension. -/
+abbrev FiniteAdelicOrthogonalGroup
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :=
+  BilinModuleCat.OrthogonalGroup ((finiteFieldAdeleBaseChange K).obj L).obj.obj
+
+/-- The finite adelic orthogonal group acts through its underlying linear equivalences. -/
+instance finiteAdelicOrthogonalGroupMulAction
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    MulAction (FiniteAdelicOrthogonalGroup K L)
+      (TensorProduct (𝓞 K) (FiniteAdeleRing (𝓞 K) K) L.obj.obj.carrier) where
+  smul g x := g.1 x
+  one_smul x := rfl
+  mul_smul g h x := rfl
+
+/-- The integral finite adelic carrier mapped into the finite field-adelic carrier. -/
+def finiteIntegralAdeleLatticeMap
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    TensorProduct (𝓞 K) (FiniteIntegralAdeleRing (𝓞 K) K) L.obj.obj.carrier →ₗ[𝓞 K]
+      TensorProduct (𝓞 K) (FiniteAdeleRing (𝓞 K) K) L.obj.obj.carrier :=
+  LinearMap.rTensor L.obj.obj.carrier
+    (FiniteIntegralAdeleRing.inclusion (𝓞 K) K).toLinearMap
+
+@[simp]
+theorem finiteIntegralAdeleLatticeMap_tmul
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K))
+    (a : FiniteIntegralAdeleRing (𝓞 K) K) (x : L.obj.obj.carrier) :
+    finiteIntegralAdeleLatticeMap K L (a ⊗ₜ[𝓞 K] x) =
+      FiniteIntegralAdeleRing.inclusion (𝓞 K) K a ⊗ₜ[𝓞 K] x := by
+  rfl
+
+/-- The integral finite adelic carrier embeds into the finite field-adelic carrier. -/
+theorem finiteIntegralAdeleLatticeMap_injective
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    Function.Injective (finiteIntegralAdeleLatticeMap K L) := by
+  letI : Module.Projective (𝓞 K) L.obj.obj.carrier := L.obj.property.1
+  let f := (FiniteIntegralAdeleRing.inclusion (𝓞 K) K).toLinearMap
+  change Function.Injective (LinearMap.rTensor L.obj.obj.carrier f)
+  apply Module.Flat.rTensor_preserves_injective_linearMap
+  exact FiniteIntegralAdeleRing.inclusion_injective (𝓞 K) K
+
+/-- The integral finite adelic lattice inside the finite field-adelic carrier. -/
+def finiteIntegralAdeleLattice
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    Set (TensorProduct (𝓞 K) (FiniteAdeleRing (𝓞 K) K) L.obj.obj.carrier) :=
+  Set.range (finiteIntegralAdeleLatticeMap K L)
+
+/-- The stabilizer of the integral finite adelic lattice in the finite adelic orthogonal group. -/
+abbrev FiniteIntegralAdeleLatticeStabilizer
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :=
+  MulAction.stabilizer (FiniteAdelicOrthogonalGroup K L)
+    (finiteIntegralAdeleLattice K L)
 
 /-- Two finite projective integral lattices have the same genus when their adelic scalar
 extensions are isometric. -/
