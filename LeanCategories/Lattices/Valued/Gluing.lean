@@ -27,7 +27,7 @@ def IsIntegralSubmodule (R : Type u) [CommRing R] [IsDomain R]
 noncomputable def Overlattice (R : Type u) [CommRing R] [IsDomain R]
     (L : IntegralLatticeCat R) :=
   {P : Submodule R (RationalSpan R L) //
-    integralImage R L ≤ P ∧ P ≤ metricDual R L ∧ IsIntegralSubmodule R L P}
+    integralImage R L ≤ P ∧ IsIntegralSubmodule R L P}
 
 namespace Overlattice
 
@@ -45,13 +45,19 @@ theorem integralImage_le (M : Overlattice R L) :
 
 /-- Each overlattice lies in the metric dual. -/
 theorem le_metricDual (M : Overlattice R L) :
-    M.carrier ≤ metricDual R L :=
-  M.property.2.1
+    M.carrier ≤ metricDual R L := by
+  intro x hx
+  have hxDual := M.property.2 hx
+  change ∀ y ∈ M.carrier,
+      rationalizedForm R L x y ∈
+        (1 : Submodule R (FractionRing R)) at hxDual
+  intro y hy
+  exact hxDual y (M.integralImage_le hy)
 
 /-- The restricted pairing of an overlattice is integral. -/
 theorem isIntegral (M : Overlattice R L) :
     IsIntegralSubmodule R L M.carrier :=
-  M.property.2.2
+  M.property.2
 
 /-- Include the original lattice in an overlattice. -/
 noncomputable def inclusion (M : Overlattice R L) :
@@ -112,14 +118,6 @@ theorem integralImage_le_overlatticeSubmodule
     metricDualToValueDual_toMetricDual R hL, hz]
   exact H.1.zero_mem
 
-theorem overlatticeSubmodule_le_metricDual
-    (R : Type u) [CommRing R] [IsDomain R]
-    {L : IntegralLatticeCat R} (hL : IsGenericallyNondegenerate R L)
-    (H : DiscriminantIsotropicSubgroup R hL) :
-    overlatticeSubmodule R hL H ≤ metricDual R L := by
-  rintro _ ⟨x, _, rfl⟩
-  exact x.property
-
 theorem overlatticeSubmodule_isIntegral
     (R : Type u) [CommRing R] [IsDomain R]
     {L : IntegralLatticeCat R} (hL : IsGenericallyNondegenerate R L)
@@ -149,7 +147,6 @@ noncomputable def overlatticeFromIsotropicSubgroup
     (H : DiscriminantIsotropicSubgroup R hL) : Overlattice R L :=
   ⟨overlatticeSubmodule R hL H,
     integralImage_le_overlatticeSubmodule R hL H,
-    overlatticeSubmodule_le_metricDual R hL H,
     overlatticeSubmodule_isIntegral R hL H⟩
 
 namespace Overlattice
