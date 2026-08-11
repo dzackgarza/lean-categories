@@ -398,6 +398,10 @@ and the managed Zotero extraction workflow. A publisher or web copy is relevant 
 the source identity or edition remains unresolved; it is not a presumed improvement to
 the local extraction.
 
+When local inspection confirms material OCR defects, add the `bad-ocr` tag to the parent
+bibliographic item with `add_item_tags(parent_key, ["bad-ocr"])`. Tag the parent rather
+than its PDF or Markdown child so later triage sees the source item.
+
 Resolve the source identity through live Zotero before citing it. Call `health()` first,
 then use `get_data(parent_key)` for the parent and paginated `get_children(parent_key)`
 to find the child whose `data.contentType` is `text/markdown` and whose filename ends in
