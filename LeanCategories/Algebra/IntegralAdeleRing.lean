@@ -101,6 +101,23 @@ def finiteIntegralAdeleRingEquivPadicIntegerProduct :
     (RingEquiv.piCongrLeft (fun p : Nat.Primes ↦ ℤ_[p])
       (Rat.HeightOneSpectrum.primesEquiv (R := ℤ)))
 
+/-- The integral finite adeles of the ring of integers of `ℚ` are the product of all `ℤ_p`. -/
+def ringOfIntegersFiniteIntegralAdeleRingEquiv :
+    FiniteIntegralAdeleRing (𝓞 ℚ) ℚ ≃+* PadicIntegerProduct :=
+  (RingEquiv.piCongrRight fun v ↦
+    @AlgEquiv.toRingEquiv ℤ _ _ _ _ _ (Ring.toIntAlgebra _) (Ring.toIntAlgebra _)
+      (@ContinuousAlgEquiv.toAlgEquiv ℤ _ _ _ _ _ _ _ (Ring.toIntAlgebra _)
+        (Ring.toIntAlgebra _)
+        (Rat.HeightOneSpectrum.adicCompletionIntegers.padicIntEquiv v))).trans
+    (RingEquiv.piCongrLeft (fun p : Nat.Primes ↦ ℤ_[p])
+      (Rat.HeightOneSpectrum.primesEquiv (R := 𝓞 ℚ)))
+
+/-- The infinite adele ring of `ℚ` is its real completion. -/
+def infiniteAdeleRingEquivReal : NumberField.InfiniteAdeleRing ℚ ≃+* ℝ :=
+  (RingEquiv.piUnique fun v : NumberField.InfinitePlace ℚ ↦ v.Completion).trans
+    (NumberField.InfinitePlace.Completion.ringEquivRealOfIsReal
+      Rat.isReal_infinitePlace)
+
 /-- The standard product model `ℝ × ∏_p ℤ_p` for the ring adeles of `ℚ`. -/
 abbrev RingAdeleModel := ℝ × PadicIntegerProduct
 
@@ -110,6 +127,11 @@ end Rat
 field completions, and its finite factors are completed integer rings. -/
 abbrev RingAdeleRing (K : Type u) [Field K] [NumberField K] :=
   NumberField.InfiniteAdeleRing K × FiniteIntegralAdeleRing (𝓞 K) K
+
+/-- The ring adeles of `ℚ` have the standard presentation `ℝ × ∏_p ℤ_p`. -/
+def Rat.ringAdeleRingEquivModel : RingAdeleRing ℚ ≃+* Rat.RingAdeleModel :=
+  RingEquiv.prodCongr Rat.infiniteAdeleRingEquivReal
+    Rat.ringOfIntegersFiniteIntegralAdeleRingEquiv
 
 namespace RingAdeleRing
 
