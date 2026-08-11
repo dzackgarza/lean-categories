@@ -5,7 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Algebra.Magmas
-public import LeanCategories.Catalogue.Id
+public import LeanCategories.Algebra.Catalogue
 
 @[expose] public section
 
@@ -38,5 +38,8 @@ def Rings : CategoryExpr :=
 /-- CommutativeRings := Rings.Commutative[via := multiplicative]. -/
 def CommutativeRings : CategoryExpr :=
   .refine (.atom CategoryId.rings) Commutative (some RouteId.multiplicative)
+
+def DivisionRings : CategoryExpr :=
+  .refine (.atom CategoryId.rings) ClassifierId.ringsDivision none
 
 end LeanCategories.Algebra.Rings

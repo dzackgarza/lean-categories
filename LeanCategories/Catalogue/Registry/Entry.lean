@@ -39,16 +39,14 @@ structure CategoryFamilyParameter where
 /--
 A parameterized category family, distinct from any selected category node.
 
-`fibreDeclaration` names the Lean declaration that accepts the bound parameter
-and returns the corresponding category.  The registry records transport
-orientation separately: a family value does not assert covariance.
+The typed realization supplies the parameter type and its category-valued fibre.
+The registry records transport orientation separately.
 -/
 structure CategoryFamilyEntry where
   id : CategoryFamilyId
   canonicalName : String
-  declaration : Lean.Name
   parameter : CategoryFamilyParameter
-  fibreDeclaration : Lean.Name
+  realization : Lean.Name
   variance : VarianceId
   deriving Repr, Inhabited
 
@@ -57,7 +55,8 @@ structure ClassifierEntry where
   id : ClassifierId
   canonicalName : String
   declaration : Lean.Name
-  hostId : CategoryId
+  host : CategoryExpr
+  realization : Lean.Name
   visibility : Visibility
   deriving Repr, Inhabited
 

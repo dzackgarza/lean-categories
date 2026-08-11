@@ -5,7 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Tools.ExportJson
-public import LeanCategories.Specimen.Register
+public import LeanCategories.Catalogue.Standard
 public import Lean.Data.Json
 
 public meta import LeanCategories.Tools.ExportJson
@@ -28,7 +28,7 @@ run_cmd
   let env ← getEnv
   let s := LeanCategories.getRegistry env
   if s.categories.isEmpty then
-    throwError "getRegistry empty after importing Specimen.Register"
+    throwError "getRegistry empty after importing Catalogue.Standard"
   if !(s.categories.any fun category => category.id == LeanCategories.CategoryId.sets) then
     throwError "getRegistry is missing the registered Sets category"
   if !(s.categoryFamilies.any fun family =>
@@ -61,7 +61,7 @@ def loadRegisteredSnapshot : IO RegistrySnapshot := do
   Lean.initSearchPath (← Lean.findSysroot) (buildOleanRoot :: packageOleanRoots)
   unsafe Lean.enableInitializersExecution
   let env ← Lean.importModules
-    #[{ module := `LeanCategories.Specimen.Register }] {}
+    #[{ module := `LeanCategories.Catalogue.Standard }] {}
     (loadExts := true)
   pure ((getRegistry env).snapshot "0.1.0-specimen")
 

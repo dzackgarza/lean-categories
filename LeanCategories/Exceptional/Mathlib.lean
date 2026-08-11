@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.CategoryTheory.Types.Basic
-public import LeanCategories.Realization.Mathlib.Foundation
+public import LeanCategories.Foundation.Mathlib
 
 @[expose] public section
 
@@ -26,10 +26,11 @@ public import LeanCategories.Realization.Mathlib.Foundation
 * `Crystals` — combinatorial crystals as types with Kashiwara operators.
 -/
 
-namespace LeanCategories.Realization.Mathlib
+namespace LeanCategories.Exceptional.Mathlib
 
 open CategoryTheory CategoryTheory.Limits
 open LeanCategories
+open LeanCategories.Foundation.Mathlib
 
 universe u
 
@@ -75,8 +76,7 @@ noncomputable def distributive : Classifier MagmasWithTwoOperations where
         (C := CategoricalPullback magmaForget magmaForget) IsDistributive).toCatHom
 
 /-- The two operations carried by this object form a division ring.
-This is a property classifier on the two-operation host; `Normalized.DivisionRings`
-reindexes it along Rings → MagmasWithTwoOperations. It is **not** Magmas.Inverse. -/
+This is a property classifier on the two-operation host. It is **not** Magmas.Inverse. -/
 def IsDivisionRingUnderlyingSet (x : CategoricalPullback magmaForget magmaForget) : Prop :=
   let mulOnFst : x.fst → x.fst → x.fst := (· * ·)
   ∃ D : DivisionRing x.fst,
@@ -153,14 +153,4 @@ def Crystals : ObjCat.{u + 1, u} := Cat.of Crystal.{u}
 noncomputable def crystalsToSets : Crystals ⟶ Sets :=
   Crystal.forgetFunctor.toCatHom
 
-/-- Exceptional atoms. -/
-noncomputable def exceptionalAtoms : ExceptionalAtoms foundationAtoms where
-  MagmasWithTwoOperations := MagmasWithTwoOperations
-  additivePort := additivePort
-  multiplicativePort := multiplicativePort
-  distributive := distributive
-  division := division
-  Crystals := Crystals
-  crystalsToSets := crystalsToSets
-
-end LeanCategories.Realization.Mathlib
+end LeanCategories.Exceptional.Mathlib

@@ -5,7 +5,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Catalogue.Syntax
-public import LeanCategories.Catalogue.Id
+public import LeanCategories.Foundation.Catalogue
+public import LeanCategories.Algebra.Catalogue
 
 @[expose] public section
 
@@ -30,5 +31,17 @@ def Inverse : ClassifierId := ClassifierId.magmasInverse
 def Semigroups : CategoryExpr := .refine Magmas Associative none
 def Monoids : CategoryExpr := .refine Semigroups Unital none
 def Groups : CategoryExpr := .refine Monoids Inverse none
+
+def AdditiveMagmas : CategoryExpr :=
+  .refine Magmas ClassifierId.magmasAdditive none
+
+def AdditiveSemigroups : CategoryExpr :=
+  .refine AdditiveMagmas Associative (some RouteId.additive)
+
+def AdditiveMonoids : CategoryExpr :=
+  .refine AdditiveSemigroups Unital (some RouteId.additive)
+
+def AdditiveGroups : CategoryExpr :=
+  .refine AdditiveMonoids Inverse (some RouteId.additive)
 
 end LeanCategories.Algebra.Magmas

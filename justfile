@@ -1,7 +1,7 @@
 # lean-categories — the shared Lean baseline of categorical constructions.
 #
 # Lake owns compilation and Mathlib supplies the dependency cache. Language-level
-# QC law is delegated to the declared ai-review-ci Lake dependency;
+# QC law is delegated to the global ai-review-ci checkout;
 # this file keeps only build entry points, the repo-supplied kernel-axiom audit,
 # and the repo's additive convention layer.
 #
@@ -12,7 +12,7 @@
 
 set dotenv-load := true
 
-ai_review_ci := justfile_directory() / ".lake/packages/aiReviewCiLean"
+ai_review_ci := env_var("HOME") / "ai-review-ci"
 
 # Show available recipes
 default:

@@ -124,7 +124,7 @@ inductive RouteSelector
 
 namespace CategoryExpr
 
-instance : Inhabited CategoryExpr := ⟨.atom CategoryId.sets⟩
+instance : Inhabited CategoryExpr := ⟨.atom ⟨""⟩⟩
 
 /-- Convenience: refine without a route. -/
 def refine' (base : CategoryExpr) (classifier : ClassifierId) : CategoryExpr :=

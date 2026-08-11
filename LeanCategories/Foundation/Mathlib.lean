@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.CategoryTheory.GradedObject
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
-public import LeanCategories.Model.Atomic
+public import LeanCategories.CategoryTheory.OneCat.Classifier
 
 @[expose] public section
 
@@ -26,7 +26,7 @@ All four fields of `FoundationAtoms` are mathematical.
 * `BinaryOperation` — Mathlib `MagmaCat`
 -/
 
-namespace LeanCategories.Realization.Mathlib
+namespace LeanCategories.Foundation.Mathlib
 
 open CategoryTheory CategoryTheory.Limits
 open LeanCategories
@@ -62,15 +62,4 @@ noncomputable def graded : Classifier Sets where
   total := GradedSets
   forget := (GradedObject.total ℤ (Type u)).toCatHom
 
-/-- Complete foundation atoms. -/
-noncomputable def foundationAtoms : FoundationAtoms.{u + 1, u} where
-  Sets := Sets
-  finite := finite
-  graded := graded
-  binaryOperation := binaryOperation
-
-example : foundationAtoms.binaryOperation.total = Magmas := rfl
-example : foundationAtoms.finite.total = FiniteSets := rfl
-example : foundationAtoms.graded.total = GradedSets := rfl
-
-end LeanCategories.Realization.Mathlib
+end LeanCategories.Foundation.Mathlib

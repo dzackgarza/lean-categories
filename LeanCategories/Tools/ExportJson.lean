@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Specimen.Viability
+public import LeanCategories.Catalogue.Registry.Entry
 public import Lean.Data.Json
 
 @[expose] public section
@@ -21,7 +21,6 @@ namespace LeanCategories.Tools
 
 open Lean
 open LeanCategories
-open Specimen
 
 def object (fields : List (String × Json)) : Json := Json.mkObj fields
 
@@ -137,12 +136,11 @@ def categoryFamilyJson (e : CategoryFamilyEntry) : Json :=
   object [
     ("id", e.id.raw),
     ("canonicalName", e.canonicalName),
-    ("declaration", e.declaration.toString),
+    ("realization", e.realization.toString),
     ("parameter", object [
       ("name", e.parameter.name),
       ("kind", parameterKindJson e.parameter.kind),
     ]),
-    ("fibreDeclaration", e.fibreDeclaration.toString),
     ("variance", varianceJson e.variance),
   ]
 
@@ -158,8 +156,9 @@ def classifierJson (e : ClassifierEntry) : Json :=
   object [
     ("id", e.id.raw),
     ("canonicalName", e.canonicalName),
-    ("hostId", e.hostId.raw),
+    ("host", categoryExprJson e.host),
     ("declaration", e.declaration.toString),
+    ("realization", e.realization.toString),
     ("visibility", visibilityJson e.visibility),
   ]
 

@@ -6,7 +6,7 @@ module
 
 public import LeanCategories.Catalogue.Registry.Entry
 public import LeanCategories.CategoryTheory.OneCat.Classifier
-public import LeanCategories.Model.Interpretation
+public import LeanCategories.Catalogue.Realization
 public import Lean
 
 @[expose] public section
@@ -54,8 +54,8 @@ def RegistryEntry.stableId : RegistryEntry → String
 /-- Lean declarations that must resolve before this row can be persisted. -/
 def RegistryEntry.declarations : RegistryEntry → Array Name
   | .category e => #[e.declaration, e.realization]
-  | .categoryFamily e => #[e.declaration, e.fibreDeclaration]
-  | .classifier e => #[e.declaration]
+  | .categoryFamily e => #[e.realization]
+  | .classifier e => #[e.declaration, e.realization]
   | .functor e => #[e.declaration, e.realization]
   | .constructor e => #[e.declaration]
   | .finiteLimitCone e => #[e.declaration]
@@ -239,16 +239,30 @@ def ensureCategoryDeclaration (declaration : Name) : MetaM Unit := do
 /-- Require a category-realization declaration to have the typed witness form. -/
 def ensureCategoryRealization (realization : Name) : MetaM Unit := do
   let result ← declarationResultType realization
-  unless result.isAppOfArity ``LeanCategories.CategoryRealization 5 do
+  unless result.isAppOf ``LeanCategories.CategoryRealization do
     throwError
       "registry realization {realization} must return CategoryRealization ..., but returns {result}"
 
 /-- Require a functor-realization declaration to have the typed witness form. -/
 def ensureFunctorRealization (realization : Name) : MetaM Unit := do
   let result ← declarationResultType realization
-  unless result.isAppOfArity ``LeanCategories.FunctorRealization 7 do
+  unless result.isAppOf ``LeanCategories.FunctorRealization do
     throwError
       "registry realization {realization} must return FunctorRealization ..., but returns {result}"
+
+/-- Require a declaration to return a typed family realization. -/
+def ensureCategoryFamilyRealization (realization : Name) : MetaM Unit := do
+  let result ← declarationResultType realization
+  unless result.isAppOf ``LeanCategories.CategoryFamilyRealization do
+    throwError
+      "registry realization {realization} must return CategoryFamilyRealization ..., but returns {result}"
+
+/-- Require a declaration to return a typed classifier realization. -/
+def ensureClassifierRealization (realization : Name) : MetaM Unit := do
+  let result ← declarationResultType realization
+  unless result.isAppOf ``LeanCategories.ClassifierRealization do
+    throwError
+      "registry realization {realization} must return ClassifierRealization ..., but returns {result}"
 
 /-- Require a declaration to return a classifier after its parameters are supplied. -/
 def ensureClassifierDeclaration (declaration : Name) : MetaM Unit := do
@@ -270,10 +284,10 @@ def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
   | .category e => do
       ensureCategoryDeclaration e.declaration
       ensureCategoryRealization e.realization
-  | .categoryFamily e => do
-      ensureCategoryDeclaration e.declaration
-      ensureCategoryDeclaration e.fibreDeclaration
-  | .classifier e => ensureClassifierDeclaration e.declaration
+  | .categoryFamily e => ensureCategoryFamilyRealization e.realization
+  | .classifier e => do
+      ensureClassifierDeclaration e.declaration
+      ensureClassifierRealization e.realization
   | .functor e => do
       ensureFunctorDeclaration e.declaration
       ensureFunctorRealization e.realization

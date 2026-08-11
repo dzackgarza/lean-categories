@@ -17,12 +17,6 @@ name = "mathlib"
 scope = "leanprover-community"
 rev = "v4.32.0"
 
-[[require]]
-name = "aiReviewCiLean"
-git = "https://github.com/dzackgarza/ai-review-ci"
-subDir = "lean"
-rev = "main"
-
 [[lean_lib]]
 name = "LeanCategories"
 

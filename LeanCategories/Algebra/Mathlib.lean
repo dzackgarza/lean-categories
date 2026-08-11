@@ -5,11 +5,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.Algebra.Category.Semigrp.Basic
+public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
-public import LeanCategories.Realization.Mathlib.Foundation
+public import LeanCategories.Foundation.Mathlib
 
 @[expose] public section
 
@@ -24,10 +27,11 @@ public import LeanCategories.Realization.Mathlib.Foundation
   with inverse- and unit-preserving morphisms.
 -/
 
-namespace LeanCategories.Realization.Mathlib
+namespace LeanCategories.Algebra.Mathlib
 
 open CategoryTheory
 open LeanCategories
+open LeanCategories.Foundation.Mathlib
 
 universe u
 
@@ -187,13 +191,26 @@ noncomputable def multiplicative : Classifier Magmas where
   total := Cat.of MultiplicativeMagma.{u}
   forget := MultiplicativeMagma.toMagmaCatFunctor.toCatHom
 
-/-- Algebra atoms over the Mathlib foundations. -/
-noncomputable def algebraAtoms : AlgebraAtoms foundationAtoms where
-  associative := associative
-  commutative := commutative
-  unital := unital
-  inverse := inverse
-  additive := additive
-  multiplicative := multiplicative
+def Magmas : ObjCat.{u + 1, u} := Foundation.Mathlib.Magmas
+def Semigroups : ObjCat.{u + 1, u} := Cat.of Semigrp.{u}
+def Monoids : ObjCat.{u + 1, u} := Cat.of MonCat.{u}
+def Groups : ObjCat.{u + 1, u} := Cat.of GrpCat.{u}
+def AdditiveMagmas : ObjCat.{u + 1, u} := Cat.of AddMagmaCat.{u}
+def AdditiveSemigroups : ObjCat.{u + 1, u} := Cat.of AddSemigrp.{u}
+def AdditiveMonoids : ObjCat.{u + 1, u} := Cat.of AddMonCat.{u}
+def AdditiveGroups : ObjCat.{u + 1, u} := Cat.of AddGrpCat.{u}
+def Rings : ObjCat.{u + 1, u} := Cat.of RingCat.{u}
+def CommutativeRings : ObjCat.{u + 1, u} := Cat.of CommRingCat.{u}
 
-end LeanCategories.Realization.Mathlib
+def IsDivisionRing (R : RingCat.{u}) : Prop := Nonempty (DivisionRing R)
+
+abbrev DivisionRingCat : Type (u + 1) :=
+  ObjectProperty.FullSubcategory (C := RingCat.{u}) IsDivisionRing
+
+noncomputable def divisionOnRings : Classifier Rings where
+  total := Cat.of DivisionRingCat.{u}
+  forget := (ObjectProperty.ι (C := RingCat.{u}) IsDivisionRing).toCatHom
+
+noncomputable def DivisionRings : ObjCat.{u + 1, u} := divisionOnRings.total
+
+end LeanCategories.Algebra.Mathlib

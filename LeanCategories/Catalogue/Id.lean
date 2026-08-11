@@ -111,102 +111,16 @@ structure ClusterId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 
-namespace CategoryId
-def sets : CategoryId := ⟨"cat.sets"⟩
-instance : Inhabited CategoryId := ⟨sets⟩
-def magmas : CategoryId := ⟨"cat.magmas"⟩
-/-- Semantic host for inverse laws; not a separately audited presentation target. -/
-def unitalMagmas : CategoryId := ⟨"cat.unital_magmas"⟩
-def rings : CategoryId := ⟨"cat.rings"⟩
-def commutativeRings : CategoryId := ⟨"cat.commutative_rings"⟩
-def groups : CategoryId := ⟨"cat.groups"⟩
-def semigroups : CategoryId := ⟨"cat.semigroups"⟩
-def monoids : CategoryId := ⟨"cat.monoids"⟩
-def modulesR : CategoryId := ⟨"cat.modules_r"⟩
-def finitelyGeneratedModules : CategoryId := ⟨"cat.finitelygeneratedmodules"⟩
-def finiteRankModules : CategoryId := ⟨"cat.finiterankmodules"⟩
-def freeModules : CategoryId := ⟨"cat.freemodules"⟩
-def magmasWithTwoOperations : CategoryId := ⟨"cat.magmaswithtwooperations"⟩
-def crystals : CategoryId := ⟨"cat.crystals"⟩
-/-- DivisionRings := Rings.Division. -/
-def divisionRings : CategoryId := ⟨"cat.division_rings"⟩
-end CategoryId
-
-namespace ClassifierId
-def setsFinite : ClassifierId := ⟨"clf.sets.finite"⟩
-instance : Inhabited ClassifierId := ⟨setsFinite⟩
-def setsGraded : ClassifierId := ⟨"clf.sets.graded"⟩
-def setsBinaryOperation : ClassifierId := ⟨"clf.sets.binary_operation"⟩
-def magmasAssociative : ClassifierId := ⟨"clf.magmas.associative"⟩
-def magmasCommutative : ClassifierId := ⟨"clf.magmas.commutative"⟩
-def magmasUnital : ClassifierId := ⟨"clf.magmas.unital"⟩
-def magmasInverse : ClassifierId := ⟨"clf.magmas.inverse"⟩
-/-- Magmas.Additive — operation role/presentation on Magmas (one-tower). -/
-def magmasAdditive : ClassifierId := ⟨"clf.magmas.additive"⟩
-/-- Magmas.Multiplicative — dual role when both ops are in play. -/
-def magmasMultiplicative : ClassifierId := ⟨"clf.magmas.multiplicative"⟩
-def modulesFree : ClassifierId := ⟨"clf.modules_free"⟩
-def modulesFinitelyGenerated : ClassifierId := ⟨"clf.modules_finitelygenerated"⟩
-/-- Finite rank — distinct from finitely generated. -/
-def modulesFiniteRank : ClassifierId := ⟨"clf.modules_finiterank"⟩
-def m2oDistributive : ClassifierId := ⟨"clf.magmaswithtwooperations.distributive"⟩
-/-- Nonzero multiplicative invertibility on Rings — not Magmas.Inverse. -/
-def ringsDivision : ClassifierId := ⟨"clf.division"⟩
-end ClassifierId
-
-namespace CategoryId
-def additiveMagmas : CategoryId := ⟨"cat.additive_magmas"⟩
-def additiveSemigroups : CategoryId := ⟨"cat.additive_semigroups"⟩
-def additiveMonoids : CategoryId := ⟨"cat.additive_monoids"⟩
-def additiveGroups : CategoryId := ⟨"cat.additive_groups"⟩
-end CategoryId
-
-namespace CategoryFamilyId
-def modules : CategoryFamilyId := ⟨"fam.modules"⟩
-instance : Inhabited CategoryFamilyId := ⟨modules⟩
-end CategoryFamilyId
-
-namespace ParameterId
-def r : ParameterId := ⟨"R"⟩
-instance : Inhabited ParameterId := ⟨r⟩
-end ParameterId
-
-namespace ParameterOperationId
-def opposite : ParameterOperationId := ⟨"parameter.opposite"⟩
-instance : Inhabited ParameterOperationId := ⟨opposite⟩
-end ParameterOperationId
-
-namespace ParameterKindId
-def ringObject : ParameterKindId := ⟨"parameter-kind.ring-object"⟩
-instance : Inhabited ParameterKindId := ⟨ringObject⟩
-end ParameterKindId
-
-namespace VarianceId
-def restrictionOfScalarsContravariant : VarianceId :=
-  ⟨"variance.restriction-of-scalars-contravariant"⟩
-instance : Inhabited VarianceId := ⟨restrictionOfScalarsContravariant⟩
-end VarianceId
-
-namespace PortId
-def additive : PortId := ⟨"port.additive"⟩
-instance : Inhabited PortId := ⟨additive⟩
-def multiplicative : PortId := ⟨"port.multiplicative"⟩
-def underlyingSet : PortId := ⟨"port.underlying_set"⟩
-end PortId
-
-namespace RouteId
-def multiplicative : RouteId := ⟨"route.multiplicative"⟩
-instance : Inhabited RouteId := ⟨multiplicative⟩
-def additive : RouteId := ⟨"route.additive"⟩
-end RouteId
-
-namespace AliasId
-def crings : AliasId := ⟨"alias.crings"⟩
-instance : Inhabited AliasId := ⟨crings⟩
-end AliasId
-
-namespace OpaquePortId
+instance : Inhabited CategoryId := ⟨⟨""⟩⟩
+instance : Inhabited ClassifierId := ⟨⟨""⟩⟩
+instance : Inhabited CategoryFamilyId := ⟨⟨""⟩⟩
+instance : Inhabited ParameterId := ⟨⟨""⟩⟩
+instance : Inhabited ParameterOperationId := ⟨⟨""⟩⟩
+instance : Inhabited ParameterKindId := ⟨⟨""⟩⟩
+instance : Inhabited VarianceId := ⟨⟨""⟩⟩
+instance : Inhabited PortId := ⟨⟨""⟩⟩
+instance : Inhabited AliasId := ⟨⟨""⟩⟩
+instance : Inhabited RouteId := ⟨⟨""⟩⟩
 instance : Inhabited OpaquePortId := ⟨⟨""⟩⟩
-end OpaquePortId
 
 end LeanCategories

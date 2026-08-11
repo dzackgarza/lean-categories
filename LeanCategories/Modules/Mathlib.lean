@@ -11,7 +11,7 @@ public import Mathlib.RingTheory.Finiteness.Basic
 public import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
-public import LeanCategories.Realization.Mathlib.Algebra
+public import LeanCategories.Algebra.Mathlib
 
 @[expose] public section
 
@@ -27,10 +27,11 @@ public import LeanCategories.Realization.Mathlib.Algebra
   finitely generated modules need not be free / finite-rank.
 -/
 
-namespace LeanCategories.Realization.Mathlib
+namespace LeanCategories.Modules.Mathlib
 
 open CategoryTheory
 open LeanCategories
+open LeanCategories.Foundation.Mathlib
 
 universe u
 
@@ -85,6 +86,14 @@ noncomputable def finiteRank (R : RingCat.{u}) : Classifier (ModulesOf R) where
   total := Cat.of (FiniteRankModuleCat R)
   forget := (ObjectProperty.ι (C := ModuleCat.{u} R) (IsFiniteRank R)).toCatHom
 
+noncomputable def FreeModules (R : RingCat.{u}) : ObjCat.{u + 1, u} := (free R).total
+
+noncomputable def FinitelyGeneratedModules (R : RingCat.{u}) : ObjCat.{u + 1, u} :=
+  (finitelyGenerated R).total
+
+noncomputable def FiniteRankModules (R : RingCat.{u}) : ObjCat.{u + 1, u} :=
+  (finiteRank R).total
+
 /-- Forgetful `Modules(R) → Sets`. -/
 noncomputable def modulesToSets (R : RingCat.{u}) : ModulesOf R ⟶ Sets :=
   (forget (ModuleCat.{u} R)).toCatHom
@@ -98,14 +107,4 @@ noncomputable def RightModulesOf (R : RingCat.{u}) : ObjCat.{u + 1, u} :=
 
 example (R : RingCat.{u}) : RightModulesOf R = ModulesOf (oppositeRing R) := rfl
 
-/-- Module atoms over Mathlib foundations + algebra. -/
-noncomputable def moduleAtoms : ModuleAtoms foundationAtoms algebraAtoms where
-  RingObjects := RingObjects
-  modules := ModulesOf
-  oppositeRing := oppositeRing
-  free := free
-  finitelyGenerated := finitelyGenerated
-  finiteRank := finiteRank
-  modulesToSets := modulesToSets
-
-end LeanCategories.Realization.Mathlib
+end LeanCategories.Modules.Mathlib
