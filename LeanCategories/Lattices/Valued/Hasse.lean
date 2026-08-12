@@ -358,6 +358,16 @@ theorem hasseMinkowskiInvariantOfDiagonal_cons_congr [HasBilinearHilbertSymbol K
     hasseMinkowskiInvariantOfDiagonal_cons_prod, hvalue,
     hilbertSymbol_eq_of_fieldSquareClass_eq_right a (∏ i, v i) (∏ i, v' i) hdet]
 
+/-- The leading coefficient enters the Hasse--Minkowski value only by its square class. -/
+theorem hasseMinkowskiInvariantOfDiagonal_cons_head_congr [HasBilinearHilbertSymbol K]
+    {n : ℕ} (b b' : Kˣ) (v : Fin n → Kˣ)
+    (h : fieldSquareClass b = fieldSquareClass b') :
+    hasseMinkowskiInvariantOfDiagonal (Fin.cons b v) =
+      hasseMinkowskiInvariantOfDiagonal (Fin.cons b' v) := by
+  rw [hasseMinkowskiInvariantOfDiagonal_cons_prod,
+    hasseMinkowskiInvariantOfDiagonal_cons_prod,
+    hilbertSymbol_eq_of_fieldSquareClass_eq_left b b' (∏ i, v i) h]
+
 /-- The Hasse--Minkowski value of a diagonal form with two leading coefficients.
 
 The leading pair contributes its own Hilbert symbol and one symbol of its product against

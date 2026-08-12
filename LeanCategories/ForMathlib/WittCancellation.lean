@@ -269,6 +269,48 @@ theorem equivalent_weightedSumSquares_two_of_repr (a₁ a₂ x y c : K) (hc : c 
       (binaryRepresentation a₁ a₂ x y c hc hcval).symm).trans
     (twoLineFormIsometry c (a₁ * a₂ * c))⟩
 
+omit [Invertible (2 : K)] in
+/-- Associativity of the orthogonal product of three quadratic forms.
+
+Mathlib supplies `QuadraticMap.IsometryEquiv.prodComm` but no associativity counterpart. -/
+private def prodAssocIsometry {M₁ M₂ M₃ : Type u} [AddCommGroup M₁] [Module K M₁]
+    [AddCommGroup M₂] [Module K M₂] [AddCommGroup M₃] [Module K M₃]
+    (Q₁ : QuadraticForm K M₁) (Q₂ : QuadraticForm K M₂) (Q₃ : QuadraticForm K M₃) :
+    ((Q₁.prod Q₂).prod Q₃).IsometryEquiv (Q₁.prod (Q₂.prod Q₃)) where
+  toLinearEquiv := LinearEquiv.prodAssoc K M₁ M₂ M₃
+  map_app' x := by
+    simp [QuadraticMap.prod_apply, add_assoc]
+
+omit [Invertible (2 : K)] in
+/-- Swapping the two coefficients of a binary diagonal form preserves equivalence. -/
+theorem equivalent_weightedSumSquares_two_swap (b₁ b₂ : K) :
+    QuadraticMap.Equivalent (weightedSumSquares K ![b₁, b₂])
+      (weightedSumSquares K ![b₂, b₁]) :=
+  ⟨((twoLineFormIsometry b₁ b₂).symm.trans
+      (QuadraticMap.IsometryEquiv.prodComm (lineForm b₁) (lineForm b₂))).trans
+    (twoLineFormIsometry b₂ b₁)⟩
+
+omit [Invertible (2 : K)] in
+/-- Replacing the two leading coefficients of a diagonal form by an equivalent binary pair. -/
+theorem equivalent_cons_cons_of_equivalent_two {n : ℕ} (b₁ b₂ b₁' b₂' : K) (v : Fin n → K)
+    (h : QuadraticMap.Equivalent (weightedSumSquares K ![b₁, b₂])
+      (weightedSumSquares K ![b₁', b₂'])) :
+    QuadraticMap.Equivalent
+      (weightedSumSquares K (Fin.cons b₁ (Fin.cons b₂ v) : Fin (n + 2) → K))
+      (weightedSumSquares K (Fin.cons b₁' (Fin.cons b₂' v) : Fin (n + 2) → K)) := by
+  obtain ⟨e⟩ := h
+  have epair : ((lineForm b₁).prod (lineForm b₂)).IsometryEquiv
+      ((lineForm b₁').prod (lineForm b₂')) :=
+    ((twoLineFormIsometry b₁ b₂).trans e).trans (twoLineFormIsometry b₁' b₂').symm
+  refine ⟨(consLineFormIsometry b₁ (Fin.cons b₂ v)).symm.trans ?_⟩
+  refine ((QuadraticMap.IsometryEquiv.refl (lineForm b₁)).prod
+    (consLineFormIsometry b₂ v).symm).trans ?_
+  refine ((prodAssocIsometry (lineForm b₁) (lineForm b₂) (weightedSumSquares K v)).symm.trans
+    ((epair.prod (QuadraticMap.IsometryEquiv.refl (weightedSumSquares K v))).trans
+      (prodAssocIsometry (lineForm b₁') (lineForm b₂') (weightedSumSquares K v)))).trans ?_
+  exact ((QuadraticMap.IsometryEquiv.refl (lineForm b₁')).prod
+    (consLineFormIsometry b₂' v)).trans (consLineFormIsometry b₁' (Fin.cons b₂' v))
+
 end Diagonal
 
 end LeanCategories.ForMathlib

@@ -45,6 +45,11 @@ theorem modSquares_sq {G : Type u} [CommGroup G]
   apply (QuotientGroup.eq_one_iff _).mpr
   exact Subgroup.mem_square.mpr ⟨g, pow_two g⟩
 
+/-- The square class of a product is the product of the square classes. -/
+theorem fieldSquareClass_mul {K : Type u} [Field K] (u v : Kˣ) :
+    fieldSquareClass (u * v) = fieldSquareClass u * fieldSquareClass v :=
+  map_mul _ _ _
+
 /-- Multiplying by a square does not change the square class. -/
 theorem fieldSquareClass_mul_sq {K : Type u} [Field K] (u q : Kˣ) :
     fieldSquareClass (u * (q * q)) = fieldSquareClass u := by
