@@ -77,7 +77,26 @@ instance realLatticeImageIsZLattice (L : FiniteProjectiveLatticeCat ℤ ℤ)
 
 section Covolume
 
-variable [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
+variable [MeasurableSpace E] [BorelSpace E]
+
+/-- The basis parallelepiped of a real realization. -/
+def realFundamentalDomain (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    {I : Type*} [Finite I]
+    (_b : Module.Basis I ℤ L.obj.obj.carrier) (c : Module.Basis I ℝ E) : Set E :=
+  ZSpan.fundamentalDomain c
+
+/-- The basis parallelepiped is an additive fundamental domain for the realized lattice. -/
+theorem realFundamentalDomain_isAddFundamentalDomain
+    (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    {I : Type*} [Finite I]
+    (b : Module.Basis I ℤ L.obj.obj.carrier) (c : Module.Basis I ℝ E)
+    (μ : MeasureTheory.Measure E) :
+    MeasureTheory.IsAddFundamentalDomain
+      (L.realLatticeImage b c) (L.realFundamentalDomain b c) μ := by
+  rw [realLatticeImage_eq_span L b c]
+  exact ZSpan.isAddFundamentalDomain c μ
+
+variable [FiniteDimensional ℝ E]
 
 /-- The covolume of an algebraic lattice in a basis-compatible real realization. -/
 noncomputable def realLatticeCovolume (L : FiniteProjectiveLatticeCat ℤ ℤ)
@@ -93,6 +112,28 @@ theorem realLatticeCovolume_pos (L : FiniteProjectiveLatticeCat ℤ ℤ)
     (μ : MeasureTheory.Measure E) [μ.IsAddHaarMeasure] :
     0 < L.realLatticeCovolume b c μ :=
   ZLattice.covolume_pos (L.realLatticeImage b c) μ
+
+/-- Covolume is the measure of the basis parallelepiped. -/
+theorem realLatticeCovolume_eq_measureReal_fundamentalDomain
+    (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    {I : Type*} [Finite I]
+    (b : Module.Basis I ℤ L.obj.obj.carrier) (c : Module.Basis I ℝ E)
+    (μ : MeasureTheory.Measure E) [μ.IsAddHaarMeasure] :
+    L.realLatticeCovolume b c μ = μ.real (L.realFundamentalDomain b c) :=
+  ZLattice.covolume_eq_measure_fundamentalDomain
+    (L.realLatticeImage b c) μ
+    (L.realFundamentalDomain_isAddFundamentalDomain b c μ)
+
+omit [BorelSpace E] in
+/-- A realized lattice has a finite-measure fundamental domain. -/
+theorem measure_realFundamentalDomain_ne_top
+    (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    {I : Type*} [Finite I]
+    (b : Module.Basis I ℤ L.obj.obj.carrier) (c : Module.Basis I ℝ E)
+    (μ : MeasureTheory.Measure E) [μ.IsAddHaarMeasure] :
+    μ (L.realFundamentalDomain b c) ≠ ⊤ :=
+  ne_of_lt <| Bornology.IsBounded.measure_lt_top
+    (ZSpan.fundamentalDomain_isBounded c)
 
 end Covolume
 
