@@ -120,4 +120,42 @@ noncomputable def isometryEquivOfProdLineForm {a : K} (ha : a ≠ 0)
   restrictComplement ha (h.trans hex.choose)
     (show hex.choose (h (1, 0)) = (1, 0) from hex.choose_spec)
 
+section Diagonal
+
+/-- Splitting the first coefficient off a diagonal form. -/
+noncomputable def prodLineFormIsometry {n : ℕ} (w : Fin (n + 1) → K) :
+    ((lineForm (w 0)).prod
+        (weightedSumSquares K fun i : Fin n => w i.succ)).IsometryEquiv
+      (weightedSumSquares K w) where
+  toLinearEquiv := Fin.consLinearEquiv K fun _ => K
+  map_app' x := by
+    simp [QuadraticMap.weightedSumSquares_apply, Fin.sum_univ_succ,
+      Fin.consLinearEquiv, Fin.consEquiv, QuadraticMap.prod_apply]
+
+/-- Witt cancellation of the leading coefficient of a diagonal form. -/
+theorem equivalent_tail_of_equivalent {n : ℕ} (a : Kˣ) (w w' : Fin n → Kˣ)
+    (h : QuadraticMap.Equivalent (weightedSumSquares K (Fin.cons (a : K) fun i => (w i : K)))
+      (weightedSumSquares K (Fin.cons (a : K) fun i => (w' i : K)))) :
+    QuadraticMap.Equivalent (weightedSumSquares K fun i => (w i : K))
+      (weightedSumSquares K fun i => (w' i : K)) := by
+  obtain ⟨e⟩ := h
+  have hsplit : ∀ v : Fin n → Kˣ,
+      ((lineForm (a : K)).prod
+          (weightedSumSquares K fun i => (v i : K))).IsometryEquiv
+        (weightedSumSquares K (Fin.cons (a : K) fun i => (v i : K))) := by
+    intro v
+    have h0 : (Fin.cons (a : K) (fun i => (v i : K)) : Fin (n + 1) → K) 0 = (a : K) := by
+      simp
+    have hsucc :
+        (fun i : Fin n => (Fin.cons (a : K) (fun i => (v i : K)) : Fin (n + 1) → K) i.succ) =
+          fun i => (v i : K) := by
+      funext i
+      simp
+    have := prodLineFormIsometry (K := K) (Fin.cons (a : K) fun i => (v i : K))
+    rwa [h0, hsucc] at this
+  exact ⟨isometryEquivOfProdLineForm (Units.ne_zero a)
+    (((hsplit w).trans e).trans (hsplit w').symm)⟩
+
+end Diagonal
+
 end LeanCategories.ForMathlib
