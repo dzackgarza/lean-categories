@@ -23,6 +23,7 @@ public import LeanCategories.Lattices.Valued.Standard
 public import LeanCategories.Lattices.Valued.Topological
 public import LeanCategories.Lattices.Valued.TopologicalOrthogonalGroup
 public import LeanCategories.Lattices.Valued.Signature
+public import LeanCategories.Lattices.Valued.Theta
 public import LeanCategories.Lattices.Valued.Witt
 public import LeanCategories.Lattices.Valued.Localization
 public import LeanCategories.Lattices.Valued.Completion
