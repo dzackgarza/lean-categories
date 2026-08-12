@@ -71,7 +71,11 @@ noncomputable def finiteFormReflectionElement (L : FiniteFormCat K K)
 
 variable [Invertible (2 : K)]
 
-/-- A spinor norm is a group map with the standard value on reflections. -/
+/-- A spinor norm is a group map with the standard value on reflections.
+
+Cassels constructs the spinor norm through the Clifford group and computes a product of
+reflections as the product of their quadratic values modulo squares
+[@Cas08a, Chapter 10, §3]. -/
 def IsSpinorNorm (L : FiniteFormCat K K)
     (ν : BilinModuleCat.OrthogonalGroup L.obj →* FieldSquareClass K) : Prop :=
   ∀ (v : L.obj.carrier) (hv : L.obj.pairing v v ≠ 0),
@@ -82,6 +86,34 @@ def IsSpinorNorm (L : FiniteFormCat K K)
 abbrev SpinorNorm (L : FiniteFormCat K K) :=
   { ν : BilinModuleCat.OrthogonalGroup L.obj →* FieldSquareClass K //
     IsSpinorNorm L ν }
+
+/-- The set of reflections in nonsingular vectors. -/
+def finiteFormReflections (L : FiniteFormCat K K) :
+    Set (BilinModuleCat.OrthogonalGroup L.obj) :=
+  {g | ∃ (v : L.obj.carrier) (hv : L.obj.pairing v v ≠ 0),
+    g = finiteFormReflectionElement L v hv}
+
+/-- Reflections generate the orthogonal group.
+
+This isolates the reflection-generation theorem needed to prove uniqueness of the spinor norm.
+-/
+def ReflectionsGenerate (L : FiniteFormCat K K) : Prop :=
+  Subgroup.closure (finiteFormReflections L) = ⊤
+
+omit [Invertible (2 : K)] in
+/-- Two spinor norms agree when reflections generate the orthogonal group. -/
+theorem spinorNorm_unique (L : FiniteFormCat K K)
+    (hgenerate : ReflectionsGenerate L) (ν μ : SpinorNorm L) : ν = μ := by
+  apply Subtype.ext
+  apply MonoidHom.eq_of_eqOn_dense hgenerate
+  intro g hg
+  obtain ⟨v, hv, rfl⟩ := hg
+  rw [ν.2 v hv, μ.2 v hv]
+
+/-- Spinor norms form a subsingleton when reflections generate the orthogonal group. -/
+instance (L : FiniteFormCat K K) [hgenerate : Fact (ReflectionsGenerate L)] :
+    Subsingleton (SpinorNorm L) :=
+  ⟨spinorNorm_unique L hgenerate.out⟩
 
 /-- The spinor kernel consists of isometries with trivial spinor norm. -/
 def spinorKernel (L : FiniteFormCat K K) (ν : SpinorNorm L) :
