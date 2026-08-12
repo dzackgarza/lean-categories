@@ -101,6 +101,88 @@ theorem hilbertSymbol_mul_square_right (a b : K) {t : K} (ht : t ≠ 0) :
   nth_rw 1 [← mul_one a]
   rw [← one_pow 2, hilbertSymbol_mul_square a b one_ne_zero ht]
 
+/-- The Hilbert symbol of `a` and `-a` is one when `a` is nonzero. -/
+@[simp]
+theorem hilbertSymbol_neg_self (a : K) (ha : a ≠ 0) :
+    hilbertSymbol a (-a) = 1 := by
+  classical
+  rw [hilbertSymbol, if_neg (by simp [ha]), if_pos]
+  exact ⟨0, 1, 1, by simp, by ring⟩
+
+/-- The Hilbert symbol of `a` and `1-a` is one away from zero and one. -/
+@[simp]
+theorem hilbertSymbol_one_sub_self (a : K) (ha0 : a ≠ 0) (ha1 : a ≠ 1) :
+    hilbertSymbol a (1 - a) = 1 := by
+  classical
+  rw [hilbertSymbol, if_neg (by simp [ha0, sub_ne_zero.mpr ha1.symm]), if_pos]
+  exact ⟨1, 1, 1, by simp, by ring⟩
+
+/-- A field has a bilinear Hilbert symbol when the symbol is multiplicative in one entry.
+
+By symmetry, this is equivalent to multiplicativity in both entries. Milne proves this for
+local fields in Proposition 4.6(c) [@Mil20b, p. 211]. -/
+class HasBilinearHilbertSymbol (K : Type u) [Field K] : Prop where
+  map_mul_left {a b c : K} :
+    hilbertSymbol (a * b) c = hilbertSymbol a c * hilbertSymbol b c
+
+/-- Bilinearity in the second entry follows from symmetry. -/
+theorem hilbertSymbol_mul_right [HasBilinearHilbertSymbol K] (a b c : K) :
+    hilbertSymbol a (b * c) = hilbertSymbol a b * hilbertSymbol a c := by
+  rw [hilbertSymbol_comm, HasBilinearHilbertSymbol.map_mul_left,
+    hilbertSymbol_comm b, hilbertSymbol_comm c]
+
+/-- The standard relation `(a, -ab) = (a, b)` for a bilinear Hilbert symbol. -/
+@[simp]
+theorem hilbertSymbol_neg_mul [HasBilinearHilbertSymbol K] (a b : K) :
+    hilbertSymbol a (-(a * b)) = hilbertSymbol a b := by
+  by_cases ha : a = 0
+  · simp [ha, hilbertSymbol]
+  rw [← neg_mul, hilbertSymbol_mul_right, hilbertSymbol_neg_self a ha]
+  simp
+
+/-- Over `ℝ`, the Hilbert symbol is `-1` precisely when both entries are negative. -/
+theorem hilbertSymbol_real {a b : ℝ} (ha : a ≠ 0) (hb : b ≠ 0) :
+    hilbertSymbol a b = if 0 < a ∨ 0 < b then 1 else -1 := by
+  split_ifs with h
+  · wlog ha_pos : 0 < a generalizing a b with swap
+    · rw [hilbertSymbol_comm]
+      exact swap hb ha (by tauto) (by tauto)
+    simp only [hilbertSymbol, ha, hb, or_self, ↓reduceIte, ne_eq, Prod.mk.injEq,
+      not_and, Int.reduceNeg, ite_eq_left_iff, not_exists, reduceCtorEq, imp_false,
+      not_forall, Decidable.not_not]
+    exact ⟨Real.sqrt a, 1, 0, by simp, by simp [Real.sq_sqrt ha_pos.le]⟩
+  · simp only [not_or, not_lt] at h
+    simp only [hilbertSymbol, ha, hb, or_self, ↓reduceIte, ne_eq, Prod.mk.injEq,
+      not_and, sub_sub, Int.reduceNeg, ite_eq_right_iff, reduceCtorEq, imp_false,
+      not_exists, sub_eq_add_neg _ (_ + _)]
+    intro z x y h0
+    have hz : 0 ≤ z ^ 2 := by positivity
+    have hax : 0 ≤ -a * x ^ 2 := by positivity [Left.nonneg_neg_iff.mpr h.1]
+    have hby : 0 ≤ -b * y ^ 2 := by positivity [Left.nonneg_neg_iff.mpr h.2]
+    have zero_terms {r s : ℝ} (hr : 0 ≤ r) (hs : 0 ≤ s) (hrs : r + s = 0) :
+        r = 0 ∧ s = 0 :=
+      (add_eq_zero_iff_of_nonneg hr hs).mp hrs
+    grind
+
+/-- The Hilbert symbol is bilinear over the real local field. -/
+instance : HasBilinearHilbertSymbol ℝ where
+  map_mul_left {a b c} := by
+    by_cases h0 : a = 0 ∨ b = 0 ∨ c = 0
+    · rcases h0 with h0 | h0 | h0 <;> simp [hilbertSymbol, h0]
+    simp only [not_or] at h0
+    obtain ⟨ha, hb, hc⟩ := h0
+    rw [hilbertSymbol_real ha hc, hilbertSymbol_real hb hc,
+      hilbertSymbol_real (mul_ne_zero ha hb) hc]
+    rcases lt_or_gt_of_ne (Ne.symm ha) with ha_pos | ha_neg
+    · simp [ha_pos]
+    · by_cases hc_pos : 0 < c
+      · simp [hc_pos]
+      · by_cases hb_pos : 0 < b
+        · simp [not_lt_of_ge ha_neg.le, hb_pos, hc_pos]
+        · have hb_neg : b < 0 := lt_of_le_of_ne (not_lt.mp hb_pos) hb
+          simp [not_lt_of_ge ha_neg.le, hb_pos, hc_pos,
+            mul_pos_of_neg_of_neg ha_neg hb_neg]
+
 /-- The Hasse--Minkowski value of a diagonal list of nonzero coefficients.
 
 Cassels defines this value as `∏ i < j, (a_i, a_j)` [@Cas08a, p. 55]. -/
