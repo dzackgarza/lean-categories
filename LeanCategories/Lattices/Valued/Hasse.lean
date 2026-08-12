@@ -219,6 +219,46 @@ theorem hasseMinkowskiInvariantOfDiagonal_two_swap (w : Fin 2 → Kˣ) :
   rw [hasseMinkowskiInvariantOfDiagonal_two, hasseMinkowskiInvariantOfDiagonal_two]
   simpa using hilbertSymbol_comm (w 1 : K) (w 0 : K)
 
+/-- Pairs of negative coefficients in a real diagonal presentation. -/
+noncomputable def negativeCoefficientPairs {n : ℕ} (w : Fin n → ℝˣ) :
+    Finset (Fin n × Fin n) :=
+  Finset.univ.filter fun p => p.1 < p.2 ∧ (w p.1 : ℝ) < 0 ∧ (w p.2 : ℝ) < 0
+
+/-- Cassels's real formula for the Hasse--Minkowski value.
+
+Each pair contributes `-1` exactly when both coefficients are negative. This is the
+formula preceding Cassels's Theorem 1.2 [@Cas08a, p. 55]. -/
+theorem hasseMinkowskiInvariantOfDiagonal_real (w : Fin n → ℝˣ) :
+    hasseMinkowskiInvariantOfDiagonal w =
+      (-1 : ℤ) ^ (negativeCoefficientPairs w).card := by
+  classical
+  rw [hasseMinkowskiInvariantOfDiagonal]
+  calc
+    (∏ p : Fin n × Fin n with p.1 < p.2,
+        hilbertSymbol (w p.1 : ℝ) (w p.2 : ℝ)) =
+        ∏ p : Fin n × Fin n with p.1 < p.2,
+          if (w p.1 : ℝ) < 0 ∧ (w p.2 : ℝ) < 0 then -1 else 1 := by
+      apply Finset.prod_congr rfl
+      intro p hp
+      rw [hilbertSymbol_real (Units.ne_zero _) (Units.ne_zero _)]
+      by_cases hn : (w p.1 : ℝ) < 0 ∧ (w p.2 : ℝ) < 0
+      · simp [hn, not_lt_of_ge hn.1.le, not_lt_of_ge hn.2.le]
+      · have hp : 0 < (w p.1 : ℝ) ∨ 0 < (w p.2 : ℝ) := by
+          rcases lt_or_gt_of_ne (Ne.symm (Units.ne_zero (w p.1))) with h1 | h1
+          · exact Or.inl h1
+          · rcases lt_or_gt_of_ne (Ne.symm (Units.ne_zero (w p.2))) with h2 | h2
+            · exact Or.inr h2
+            · exact (hn ⟨h1, h2⟩).elim
+        simp [hn, hp]
+    _ = ∏ _p ∈ negativeCoefficientPairs w, (-1 : ℤ) := by
+      rw [Finset.prod_ite]
+      simp only [Finset.prod_const_one, mul_one]
+      apply Finset.prod_congr
+      · ext p
+        simp [negativeCoefficientPairs]
+      · simp
+    _ = (-1 : ℤ) ^ (negativeCoefficientPairs w).card := Finset.prod_const (-1)
+
 /-- Rescaling diagonal coordinates does not change their Hasse--Minkowski value. -/
 theorem hasseMinkowskiInvariantOfDiagonal_squareRescale
     {n : ℕ} (w w' u : Fin n → Kˣ)
