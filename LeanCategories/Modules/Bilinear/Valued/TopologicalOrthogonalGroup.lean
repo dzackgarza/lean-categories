@@ -5,9 +5,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+public import Mathlib.MeasureTheory.Measure.Haar.Basic
 public import Mathlib.Topology.Algebra.Group.Basic
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Compactness.Compact
+public import Mathlib.Topology.Compactness.LocallyCompact
 public import Mathlib.Topology.Instances.Matrix
 
 /-!
@@ -80,6 +82,23 @@ theorem matrixOrthogonalGroup_isCompact [T2Space R] [CompactSpace R]
   letI : CompactSpace (MatrixOrthogonalGroup B) :=
     (matrixOrthogonalGroup_isClosed B).isClosedEmbedding_subtypeVal.compactSpace
   exact isCompact_univ
+
+/-- Matrix orthogonal groups over locally compact Hausdorff rings are locally compact. -/
+noncomputable instance matrixOrthogonalGroupLocallyCompactSpace
+    [T2Space R] [LocallyCompactSpace R] (B : Matrix n n R) :
+    LocallyCompactSpace (MatrixOrthogonalGroup B) := by
+  letI : LocallyCompactSpace (n → R) := Pi.locallyCompactSpace_of_finite
+  letI : LocallyCompactSpace (Matrix n n R) := Pi.locallyCompactSpace_of_finite
+  letI : LocallyCompactSpace (Matrix.GeneralLinearGroup n R) := inferInstance
+  exact (matrixOrthogonalGroup_isClosed B).isClosedEmbedding_subtypeVal.locallyCompactSpace
+
+/-- The canonical Mathlib Haar measure on a matrix orthogonal group. -/
+noncomputable def matrixOrthogonalHaarMeasure [T2Space R] [LocallyCompactSpace R]
+    (B : Matrix n n R) :
+    @MeasureTheory.Measure (MatrixOrthogonalGroup B) (borel (MatrixOrthogonalGroup B)) := by
+  letI : MeasurableSpace (MatrixOrthogonalGroup B) := borel _
+  letI : BorelSpace (MatrixOrthogonalGroup B) := ⟨rfl⟩
+  exact MeasureTheory.Measure.haar
 
 end Topology
 

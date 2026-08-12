@@ -10,6 +10,7 @@ public import LeanCategories.Modules.Bilinear.Valued.TopologicalOrthogonalGroup
 public import Mathlib.Algebra.Group.Subgroup.Map
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.MeasureTheory.Measure.Haar.Basic
 
 /-!
 # Matrix presentations of lattice orthogonal groups
@@ -105,6 +106,34 @@ theorem orthogonalGroup_isTopologicalGroup (L : IntegralLatticeCat R)
     @IsTopologicalGroup (BilinModuleCat.OrthogonalGroup L.obj)
       (orthogonalGroupTopology L b) inferInstance :=
   topologicalGroup_induced (orthogonalGroupMatrixEquiv L b)
+
+/-- The matrix presentation transports local compactness to the intrinsic orthogonal group. -/
+theorem orthogonalGroupLocallyCompactSpace
+    [T2Space R] [LocallyCompactSpace R]
+    (L : IntegralLatticeCat R) (b : Module.Basis I R L.obj.carrier) :
+    @LocallyCompactSpace (BilinModuleCat.OrthogonalGroup L.obj)
+      (orthogonalGroupTopology L b) := by
+  letI : TopologicalSpace (BilinModuleCat.OrthogonalGroup L.obj) :=
+    orthogonalGroupTopology L b
+  let e := orthogonalGroupMatrixEquiv L b
+  exact (show Topology.IsInducing e from ⟨rfl⟩).locallyCompactSpace <| by
+    rw [Set.range_eq_univ.mpr e.surjective]
+    exact isOpen_univ.isLocallyClosed
+
+/-- Haar measure on the intrinsic orthogonal group in a basis presentation. -/
+noncomputable def orthogonalGroupHaarMeasure [T2Space R] [LocallyCompactSpace R]
+    (L : IntegralLatticeCat R) (b : Module.Basis I R L.obj.carrier) :
+    @MeasureTheory.Measure (BilinModuleCat.OrthogonalGroup L.obj)
+      (@borel (BilinModuleCat.OrthogonalGroup L.obj) (orthogonalGroupTopology L b)) := by
+  letI : TopologicalSpace (BilinModuleCat.OrthogonalGroup L.obj) :=
+    orthogonalGroupTopology L b
+  letI : IsTopologicalGroup (BilinModuleCat.OrthogonalGroup L.obj) :=
+    orthogonalGroup_isTopologicalGroup L b
+  letI : LocallyCompactSpace (BilinModuleCat.OrthogonalGroup L.obj) :=
+    orthogonalGroupLocallyCompactSpace L b
+  letI : MeasurableSpace (BilinModuleCat.OrthogonalGroup L.obj) := borel _
+  letI : BorelSpace (BilinModuleCat.OrthogonalGroup L.obj) := ⟨rfl⟩
+  exact MeasureTheory.Measure.haar
 
 end Topology
 
