@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Action.Basic
 public import Mathlib.GroupTheory.Subgroup.Centralizer
 public import Mathlib.RepresentationTheory.Coinvariants
 public import Mathlib.RepresentationTheory.Invariants
+public import Mathlib.RingTheory.SimpleModule.Isotypic
 
 /-!
 # Equivariant formed lattices
@@ -59,6 +60,35 @@ abbrev invariants (L : EquivariantLatticeCat R G) :=
 /-- The coinvariant carrier of an equivariant lattice. -/
 abbrev Coinvariants (L : EquivariantLatticeCat R G) :=
   (carrierRepresentation R G L).Coinvariants
+
+/-- The carrier of an equivariant lattice as a module over the group algebra. -/
+abbrev groupAlgebraModule (L : EquivariantLatticeCat R G) : Type u :=
+  (carrierRepresentation R G L).asModule
+
+/-- The isotypic component of an equivariant lattice at a group-algebra module `S`. -/
+def isotypicComponent (L : EquivariantLatticeCat R G) (S : Type u) [AddCommGroup S]
+    [Module (MonoidAlgebra R G) S] :
+    Submodule (MonoidAlgebra R G) (groupAlgebraModule R G L) :=
+  _root_.isotypicComponent (MonoidAlgebra R G) (groupAlgebraModule R G L) S
+
+/-- The isotypic component realized inside the lattice carrier. -/
+def isotypicSubmodule (L : EquivariantLatticeCat R G) (S : Type u) [AddCommGroup S]
+    [Module (MonoidAlgebra R G) S] :
+    Submodule R L.V.obj.obj.carrier :=
+  ((isotypicComponent R G L S).restrictScalars R).map
+    (carrierRepresentation R G L).asModuleEquiv.toLinearMap
+
+/-- The group action preserves every isotypic submodule. -/
+theorem isotypicSubmodule_map_le (L : EquivariantLatticeCat R G) (S : Type u)
+    [AddCommGroup S] [Module (MonoidAlgebra R G) S] (g : G) :
+    (isotypicSubmodule R G L S).map (carrierRepresentation R G L g) ≤
+      isotypicSubmodule R G L S := by
+  rintro _ ⟨_, ⟨y, hy, rfl⟩, rfl⟩
+  refine ⟨MonoidAlgebra.single g (1 : R) • y,
+    (isotypicComponent R G L S).smul_mem _ hy, ?_⟩
+  rw [LinearEquiv.coe_coe, Representation.asModuleEquiv_map_smul,
+    Representation.asAlgebraHom_single]
+  simp
 
 /-- The formed-module isomorphism supplied by one element of the group action. -/
 def formedIso (L : EquivariantLatticeCat R G) (g : G) :
