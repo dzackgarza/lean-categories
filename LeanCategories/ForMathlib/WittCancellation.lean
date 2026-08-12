@@ -213,6 +213,24 @@ noncomputable def prodLineFormIsometry {n : ℕ} (w : Fin (n + 1) → K) :
     simp [QuadraticMap.weightedSumSquares_apply, Fin.sum_univ_succ,
       Fin.consLinearEquiv, Fin.consEquiv, QuadraticMap.prod_apply]
 
+/-- Splitting the leading coefficient off a diagonal form written with `Fin.cons`. -/
+private noncomputable def consLineFormIsometry {n : ℕ} (a : K) (v : Fin n → K) :
+    ((lineForm a).prod (weightedSumSquares K v)).IsometryEquiv
+      (weightedSumSquares K (Fin.cons a v : Fin (n + 1) → K)) := by
+  have h0 : (Fin.cons a v : Fin (n + 1) → K) 0 = a := by simp
+  have hsucc : (fun i : Fin n => (Fin.cons a v : Fin (n + 1) → K) i.succ) = v := by
+    funext i
+    simp
+  have hsplit := prodLineFormIsometry (K := K) (Fin.cons a v : Fin (n + 1) → K)
+  rwa [h0, hsucc] at hsplit
+
+/-- A binary diagonal form is the product of the two corresponding line forms. -/
+private noncomputable def twoLineFormIsometry (t₁ t₂ : K) :
+    ((lineForm t₁).prod (lineForm t₂)).IsometryEquiv (weightedSumSquares K ![t₁, t₂]) where
+  toLinearEquiv := (LinearEquiv.finTwoArrow K K).symm
+  map_app' z := by
+    simp [QuadraticMap.weightedSumSquares_apply, Fin.sum_univ_two, QuadraticMap.prod_apply]
+
 /-- Witt cancellation of the leading coefficient of a diagonal form. -/
 theorem equivalent_tail_of_equivalent {n : ℕ} (a : Kˣ) (w w' : Fin n → Kˣ)
     (h : QuadraticMap.Equivalent (weightedSumSquares K (Fin.cons (a : K) fun i => (w i : K)))
@@ -223,19 +241,33 @@ theorem equivalent_tail_of_equivalent {n : ℕ} (a : Kˣ) (w w' : Fin n → Kˣ)
   have hsplit : ∀ v : Fin n → Kˣ,
       ((lineForm (a : K)).prod
           (weightedSumSquares K fun i => (v i : K))).IsometryEquiv
-        (weightedSumSquares K (Fin.cons (a : K) fun i => (v i : K))) := by
-    intro v
-    have h0 : (Fin.cons (a : K) (fun i => (v i : K)) : Fin (n + 1) → K) 0 = (a : K) := by
-      simp
-    have hsucc :
-        (fun i : Fin n => (Fin.cons (a : K) (fun i => (v i : K)) : Fin (n + 1) → K) i.succ) =
-          fun i => (v i : K) := by
-      funext i
-      simp
-    have := prodLineFormIsometry (K := K) (Fin.cons (a : K) fun i => (v i : K))
-    rwa [h0, hsucc] at this
+        (weightedSumSquares K (Fin.cons (a : K) fun i => (v i : K))) :=
+    fun v => consLineFormIsometry (a : K) fun i => (v i : K)
   exact ⟨isometryEquivOfProdLineForm (Units.ne_zero a)
     (((hsplit w).trans e).trans (hsplit w').symm)⟩
+
+omit [Invertible (2 : K)] in
+/-- Prepending a common coefficient preserves equivalence of diagonal forms. -/
+theorem equivalent_cons_of_equivalent {n : ℕ} (a : K) (v v' : Fin n → K)
+    (h : QuadraticMap.Equivalent (weightedSumSquares K v) (weightedSumSquares K v')) :
+    QuadraticMap.Equivalent (weightedSumSquares K (Fin.cons a v : Fin (n + 1) → K))
+      (weightedSumSquares K (Fin.cons a v' : Fin (n + 1) → K)) := by
+  obtain ⟨e⟩ := h
+  exact ⟨((consLineFormIsometry a v).symm.trans
+    (((QuadraticMap.IsometryEquiv.refl (lineForm a)).prod e).trans
+      (consLineFormIsometry a v')))⟩
+
+omit [Invertible (2 : K)] in
+/-- A binary diagonal form is equivalent to one built from any nonzero value it represents.
+
+If `c = a₁x² + a₂y²` is nonzero then `⟨a₁, a₂⟩ ≅ ⟨c, a₁a₂c⟩`. -/
+theorem equivalent_weightedSumSquares_two_of_repr (a₁ a₂ x y c : K) (hc : c ≠ 0)
+    (hcval : a₁ * (x * x) + a₂ * (y * y) = c) :
+    QuadraticMap.Equivalent (weightedSumSquares K ![a₁, a₂])
+      (weightedSumSquares K ![c, a₁ * a₂ * c]) :=
+  ⟨((twoLineFormIsometry a₁ a₂).symm.trans
+      (binaryRepresentation a₁ a₂ x y c hc hcval).symm).trans
+    (twoLineFormIsometry c (a₁ * a₂ * c))⟩
 
 end Diagonal
 
