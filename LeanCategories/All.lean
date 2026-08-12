@@ -22,6 +22,7 @@ public import LeanCategories.Algebra.IntegralGeneralLinearGroup
 public import LeanCategories.Algebra.IdeleGroup
 public import LeanCategories.Algebra.IdealProfiniteCompletion
 public import LeanCategories.Algebra.IdealProfiniteCompletionDedekind
+public import LeanCategories.Algebra.BlockDecomposition
 public import LeanCategories.ForMathlib.AdicCompletionIntegers
 public import LeanCategories.ForMathlib.DenseIntegralCompletion
 public import LeanCategories.ForMathlib.QuadraticReflection
