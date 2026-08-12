@@ -234,6 +234,36 @@ noncomputable def rationalFiniteAdelicOrthogonalGroupHaarMeasure
   letI : BorelSpace (RationalFiniteAdelicOrthogonalGroup K L) := ⟨rfl⟩
   exact MeasureTheory.Measure.haar
 
+/-- Haar volume of the compact-open integral subgroup in the selected rational basis. -/
+noncomputable def rationalBasisIntegralOrthogonalSubgroupVolume
+    (L : FiniteProjectiveLatticeCat (RingOfIntegers K) (RingOfIntegers K)) : ENNReal := by
+  letI : MeasurableSpace (RationalFiniteAdelicOrthogonalGroup K L) := borel _
+  exact rationalFiniteAdelicOrthogonalGroupHaarMeasure K L
+    (RationalBasisIntegralOrthogonalSubgroup K L)
+
+/-- The compact-open integral subgroup has positive Haar volume. -/
+theorem rationalBasisIntegralOrthogonalSubgroupVolume_pos
+    (L : FiniteProjectiveLatticeCat (RingOfIntegers K) (RingOfIntegers K)) :
+    0 < rationalBasisIntegralOrthogonalSubgroupVolume K L := by
+  letI : MeasurableSpace (RationalFiniteAdelicOrthogonalGroup K L) := borel _
+  let μ := rationalFiniteAdelicOrthogonalGroupHaarMeasure K L
+  letI : μ.IsHaarMeasure := by
+    dsimp [μ, rationalFiniteAdelicOrthogonalGroupHaarMeasure]
+    infer_instance
+  exact (isOpen_rationalBasisIntegralOrthogonalSubgroup K L).measure_pos μ
+    ⟨1, Subgroup.one_mem _⟩
+
+/-- The compact-open integral subgroup has finite Haar volume. -/
+theorem rationalBasisIntegralOrthogonalSubgroupVolume_lt_top
+    (L : FiniteProjectiveLatticeCat (RingOfIntegers K) (RingOfIntegers K)) :
+    rationalBasisIntegralOrthogonalSubgroupVolume K L < ⊤ := by
+  letI : MeasurableSpace (RationalFiniteAdelicOrthogonalGroup K L) := borel _
+  let μ := rationalFiniteAdelicOrthogonalGroupHaarMeasure K L
+  letI : μ.IsHaarMeasure := by
+    dsimp [μ, rationalFiniteAdelicOrthogonalGroupHaarMeasure]
+    infer_instance
+  exact (isCompact_rationalBasisIntegralOrthogonalSubgroup K L).measure_lt_top
+
 /-- Scalar extension gives the diagonal rational subgroup in the finite adelic group. -/
 noncomputable def rationalFiniteAdeleOrthogonalHom
     (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
