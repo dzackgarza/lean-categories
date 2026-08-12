@@ -2269,6 +2269,46 @@ induction on the rank, splitting off an anisotropic line at each step.
 Consequently a nondegenerate form carries **at most one** spinor norm, with no further
 hypothesis. Existence of the spinor norm is a separate question and belongs to Clifford theory.
 
+### Definition 29b.3 (Spinor kernel without a chosen norm) {#def-spinor-kernel}
+
+The spinor kernel does not need a spinor norm to be defined. An isometry lies in it when it is a
+product of reflections
+\[
+\tau_{v_1}\cdots\tau_{v_k}
+\qquad\text{with}\qquad
+\prod_i b(v_i,v_i)\in (K^\times)^2 .
+\]
+`SpinorGenusAdelic.lean` defines the kernel this way and proves that for a nondegenerate form it
+coincides with the kernel of **every** spinor norm. So the spinor genus makes no choice at all,
+rather than making one that later has to be shown immaterial.
+
+The spinor genus is then defined over the ring-adelic genus of Definition 29.2, with local
+comparison at each prime. It refines the genus. Symmetry and transitivity of the relation need
+functorial base change of isometries, which is a separate obligation.
+
+### Definition 29b.4 (Local density) {#def-local-density}
+
+At a height-one place the orthogonal group of the completed lattice is locally compact, its
+integral subgroup is compact and open, and the Haar volume of that subgroup is the **local
+density**. `LocalDensity.lean` constructs the measure and proves the volume is positive and
+finite. The product formula relating these local factors to the global mass is not proved.
+
+Note that the full local orthogonal group is **not** compact in general — only for anisotropic
+forms — so compactness statements must be made about the integral subgroup, not the group.
+
+### Definition 29b.5 (Jordan components) {#def-jordan-component}
+
+Over a discrete valuation ring with \(2\) invertible, a lattice of nonzero scale contains a
+vector \(v\) whose self-pairing generates the scale, and the line it spans splits off
+orthogonally. That line, as a formed sublattice, is \(\pi^e\)-modular where
+\(b(v,v)=u\pi^e\).
+
+`JordanSplitting.lean` proves the splitting, `RankOneDual.lean` computes the metric dual of a
+rank-one lattice and characterizes its modularity, and `JordanComponent.lean` combines them into
+the first genuine Jordan component. A full Jordan decomposition additionally requires the
+splitting as an isomorphism, rank additivity for the recursion, and a merge step grouping equal
+exponents.
+
 # Part VII. Sites, sheaves, stacks, and geometric categories
 
 The preceding constructions are internal to the higher category of categories.  Algebraic
