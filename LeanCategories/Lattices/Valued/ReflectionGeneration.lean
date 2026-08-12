@@ -72,6 +72,15 @@ theorem apply_line_eq (L : FiniteFormCat K K) (v : L.obj.carrier)
   obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.mp a.2
   rw [show (a : L.obj.carrier) = c • v from hc.symm, map_smul, hg]
 
+omit [Invertible (2 : K)] in
+/-- The carrier of a restricted form is the submodule itself.
+
+This transports an automorphism across that identification, so that later steps work with a
+single set of module instances. -/
+def ofRestrictCarrier (L : FiniteFormCat K K) (P : Submodule K L.obj.carrier)
+    (f : (restrictForm L P).obj.carrier ≃ₗ[K] (restrictForm L P).obj.carrier) : P ≃ₗ[K] P :=
+  f
+
 /-- The line of a nonsingular vector and its orthogonal complement split the carrier. -/
 noncomputable def splitEquiv (L : FiniteFormCat K K) (v : L.obj.carrier)
     (hv : L.obj.pairing v v ≠ 0) :
@@ -107,6 +116,32 @@ theorem extendComplementEquiv_apply (L : FiniteFormCat K K) (v : L.obj.carrier)
   rfl
 
 omit [Invertible (2 : K)] in
+/-- The extension of the identity is the identity. -/
+theorem extendComplementEquiv_one (L : FiniteFormCat K K) (v : L.obj.carrier)
+    (hv : L.obj.pairing v v ≠ 0) :
+    extendComplementEquiv L v hv (LinearEquiv.refl K (anisotropicComplement L v)) =
+      LinearEquiv.refl K L.obj.carrier := by
+  refine LinearEquiv.ext fun x ↦ ?_
+  rw [extendComplementEquiv_apply]
+  exact splitEquiv_symm_add L v hv x
+
+omit [Invertible (2 : K)] in
+/-- The extension turns composition into composition. -/
+theorem extendComplementEquiv_trans (L : FiniteFormCat K K) (v : L.obj.carrier)
+    (hv : L.obj.pairing v v ≠ 0)
+    (f g : (anisotropicComplement L v) ≃ₗ[K] (anisotropicComplement L v)) :
+    extendComplementEquiv L v hv (g.trans f) =
+      (extendComplementEquiv L v hv g).trans (extendComplementEquiv L v hv f) := by
+  refine LinearEquiv.ext fun x ↦ ?_
+  have hsymm : (splitEquiv L v hv).symm (extendComplementEquiv L v hv g x) =
+      ((LinearEquiv.refl K (K ∙ v)).prodCongr g) ((splitEquiv L v hv).symm x) :=
+    (splitEquiv L v hv).symm_apply_apply _
+  change extendComplementEquiv L v hv (g.trans f) x =
+    extendComplementEquiv L v hv f (extendComplementEquiv L v hv g x)
+  rw [extendComplementEquiv_apply, extendComplementEquiv_apply, hsymm]
+  rfl
+
+omit [Invertible (2 : K)] in
 /-- The extension of an isometry of the complement is an isometry. -/
 theorem extendComplementEquiv_isometry (L : FiniteFormCat K K) (v : L.obj.carrier)
     (hv : L.obj.pairing v v ≠ 0)
@@ -125,20 +160,36 @@ noncomputable def extendOrthogonal (L : FiniteFormCat K K) (v : L.obj.carrier)
     (hv : L.obj.pairing v v ≠ 0) :
     BilinModuleCat.OrthogonalGroup (restrictForm L (anisotropicComplement L v)).obj →*
       BilinModuleCat.OrthogonalGroup L.obj where
-  toFun f := ⟨extendComplementEquiv L v hv f.1,
-    extendComplementEquiv_isometry L v hv f.1 f.property⟩
-  map_one' := by
-    refine Subtype.ext (LinearEquiv.ext fun x ↦ ?_)
-    rw [extendComplementEquiv_apply]
-    exact splitEquiv_symm_add L v hv x
-  map_mul' f g := by
-    refine Subtype.ext (LinearEquiv.ext fun x ↦ ?_)
-    rw [extendComplementEquiv_apply]
-    change _ = extendComplementEquiv L v hv f.1 (extendComplementEquiv L v hv g.1 x)
-    rw [extendComplementEquiv_apply, extendComplementEquiv_apply]
-    congr 1 <;> rw [show (splitEquiv L v hv).symm (extendComplementEquiv L v hv g.1 x) =
-      ((LinearEquiv.refl K (K ∙ v)).prodCongr g.1) ((splitEquiv L v hv).symm x) from
-      (splitEquiv L v hv).symm_apply_apply _]
+  toFun f := ⟨extendComplementEquiv L v hv (ofRestrictCarrier L _ f.1),
+    extendComplementEquiv_isometry L v hv _ f.property⟩
+  map_one' := Subtype.ext (extendComplementEquiv_one L v hv)
+  map_mul' f g :=
+    Subtype.ext (extendComplementEquiv_trans L v hv
+      (ofRestrictCarrier L _ f.1) (ofRestrictCarrier L _ g.1))
+
+omit [Invertible (2 : K)] in
+/-- The extension is the extension of the underlying automorphism. -/
+theorem extendOrthogonal_apply (L : FiniteFormCat K K) (v : L.obj.carrier)
+    (hv : L.obj.pairing v v ≠ 0)
+    (f : BilinModuleCat.OrthogonalGroup (restrictForm L (anisotropicComplement L v)).obj)
+    (x : L.obj.carrier) :
+    (extendOrthogonal L v hv f).1 x =
+      extendComplementEquiv L v hv (ofRestrictCarrier L _ f.1) x :=
+  rfl
+
+omit [Invertible (2 : K)] in
+/-- A reflection of the restricted form acts by the ambient reflection formula. -/
+theorem coe_ofRestrictCarrier_reflection (L : FiniteFormCat K K) (v : L.obj.carrier)
+    (w : anisotropicComplement L v)
+    (hw : L.obj.pairing (w : L.obj.carrier) (w : L.obj.carrier) ≠ 0)
+    (b : anisotropicComplement L v) :
+    ((ofRestrictCarrier L (anisotropicComplement L v)
+        (finiteFormReflectionElement (restrictForm L (anisotropicComplement L v)) w hw).1 b :
+      L.obj.carrier)) =
+      (b : L.obj.carrier) -
+        (2 * (L.obj.pairing (w : L.obj.carrier) (w : L.obj.carrier))⁻¹ *
+          L.obj.pairing (w : L.obj.carrier) (b : L.obj.carrier)) • (w : L.obj.carrier) :=
+  rfl
 
 omit [Invertible (2 : K)] in
 /-- The extension of a reflection of the complement is a reflection. -/
@@ -149,18 +200,17 @@ theorem extendOrthogonal_reflection (L : FiniteFormCat K K) (v : L.obj.carrier)
         (finiteFormReflectionElement (restrictForm L (anisotropicComplement L v)) w hw) =
       finiteFormReflectionElement L (w : L.obj.carrier) hw := by
   refine Subtype.ext (LinearEquiv.ext fun x ↦ ?_)
-  set b := ((splitEquiv L v hv).symm x).2 with hb
-  have hcoeff : reflectionFunctional (restrictForm L (anisotropicComplement L v)) w hw b =
-      reflectionFunctional L (w : L.obj.carrier) hw x := by
-    simp only [reflectionFunctional, LinearMap.smul_apply, BilinModuleCat.bilinMap_apply,
-      smul_eq_mul, pairing_restrictForm]
-    rw [← splitEquiv_symm_add L v hv x, BilinModuleCat.pairing_add_right,
-      pairing_complement_line L v w _, ← hb, zero_add]
-  change (((splitEquiv L v hv).symm x).1 : L.obj.carrier) +
-    ((finiteFormReflection (restrictForm L (anisotropicComplement L v)) w hw b :
-      anisotropicComplement L v) : L.obj.carrier) = _
-  rw [finiteFormReflection_apply, finiteFormReflection_apply, hcoeff,
-    Submodule.coe_sub, Submodule.coe_smul, ← splitEquiv_symm_add L v hv x, ← hb]
+  change extendComplementEquiv L v hv
+      (ofRestrictCarrier L (anisotropicComplement L v)
+        (finiteFormReflectionElement (restrictForm L (anisotropicComplement L v)) w hw).1) x =
+    finiteFormReflection L (w : L.obj.carrier) hw x
+  rw [extendComplementEquiv_apply, coe_ofRestrictCarrier_reflection, finiteFormReflection_apply]
+  simp only [reflectionFunctional, LinearMap.smul_apply, BilinModuleCat.bilinMap_apply,
+    smul_eq_mul]
+  set a := ((splitEquiv L v hv).symm x).1
+  set b := ((splitEquiv L v hv).symm x).2
+  have hx : (a : L.obj.carrier) + (b : L.obj.carrier) = x := splitEquiv_symm_add L v hv x
+  rw [← hx, BilinModuleCat.pairing_add_right, pairing_complement_line L v w a, zero_add]
   module
 
 omit [Invertible (2 : K)] in
@@ -168,7 +218,8 @@ omit [Invertible (2 : K)] in
 theorem map_anisotropicComplement_eq (L : FiniteFormCat K K) (v : L.obj.carrier)
     (g : BilinModuleCat.OrthogonalGroup L.obj) (hg : g.1 v = v) :
     (anisotropicComplement L v).map g.1.toLinearMap = anisotropicComplement L v := by
-  refine le_antisymm (map_anisotropicComplement_le L v g hg) fun y hy ↦ ⟨g.1.symm y, ?_, by simp⟩
+  refine le_antisymm (map_anisotropicComplement_le L v g hg) fun y hy ↦
+    Submodule.mem_map.mpr ⟨g.1.symm y, ?_, by simp⟩
   rw [mem_anisotropicComplement_iff] at hy ⊢
   rw [← g.property v (g.1.symm y), hg, LinearEquiv.apply_symm_apply]
   exact hy
@@ -180,19 +231,29 @@ noncomputable def restrictOrthogonal (L : FiniteFormCat K K) (v : L.obj.carrier)
     BilinModuleCat.OrthogonalGroup (restrictForm L (anisotropicComplement L v)).obj :=
   ⟨(g.1.submoduleMap (anisotropicComplement L v)).trans
       (LinearEquiv.ofEq _ _ (map_anisotropicComplement_eq L v g hg)),
-    fun x y ↦ g.property (x : L.obj.carrier) (y : L.obj.carrier)⟩
+    fun _ _ ↦ g.property _ _⟩
+
+omit [Invertible (2 : K)] in
+/-- The restricted isometry acts by the ambient isometry. -/
+theorem coe_ofRestrictCarrier_restrictOrthogonal (L : FiniteFormCat K K) (v : L.obj.carrier)
+    (g : BilinModuleCat.OrthogonalGroup L.obj) (hg : g.1 v = v)
+    (b : anisotropicComplement L v) :
+    ((ofRestrictCarrier L (anisotropicComplement L v) (restrictOrthogonal L v g hg).1 b :
+      L.obj.carrier)) = g.1 (b : L.obj.carrier) :=
+  rfl
 
 omit [Invertible (2 : K)] in
 /-- Extending a restricted isometry recovers the isometry. -/
 theorem extendOrthogonal_restrictOrthogonal (L : FiniteFormCat K K) (v : L.obj.carrier)
     (hv : L.obj.pairing v v ≠ 0) (g : BilinModuleCat.OrthogonalGroup L.obj) (hg : g.1 v = v) :
     extendOrthogonal L v hv (restrictOrthogonal L v g hg) = g := by
-  refine Subtype.ext (LinearEquiv.ext fun x ?_)
-  rw [extendComplementEquiv_apply]
-  change (((splitEquiv L v hv).symm x).1 : L.obj.carrier) +
-    g.1 (((splitEquiv L v hv).symm x).2 : L.obj.carrier) = g.1 x
-  rw [← splitEquiv_symm_add L v hv x, map_add,
-    apply_line_eq L v g hg ((splitEquiv L v hv).symm x).1]
+  refine Subtype.ext (LinearEquiv.ext fun x ↦ ?_)
+  rw [extendOrthogonal_apply, extendComplementEquiv_apply,
+    coe_ofRestrictCarrier_restrictOrthogonal]
+  set a := ((splitEquiv L v hv).symm x).1
+  set b := ((splitEquiv L v hv).symm x).2
+  have hx : (a : L.obj.carrier) + (b : L.obj.carrier) = x := splitEquiv_symm_add L v hv x
+  rw [← hx, map_add, apply_line_eq L v g hg]
 
 omit [Invertible (2 : K)] in
 /-- The restriction of a nondegenerate form to the complement of a nonsingular vector is
@@ -201,7 +262,7 @@ theorem isLeftNondegenerate_restrictForm (L : FiniteFormCat K K)
     (hL : L.obj.IsLeftNondegenerate) (v : L.obj.carrier) (hv : L.obj.pairing v v ≠ 0) :
     (restrictForm L (anisotropicComplement L v)).obj.IsLeftNondegenerate := by
   rw [BilinModuleCat.IsLeftNondegenerate, Submodule.eq_bot_iff]
-  intro b hb
+  rintro (b : anisotropicComplement L v) hb
   have hb' : ∀ d : anisotropicComplement L v,
       L.obj.pairing (b : L.obj.carrier) (d : L.obj.carrier) = 0 := fun d ↦
     LinearMap.congr_fun (LinearMap.mem_ker.mp hb) d
@@ -212,7 +273,7 @@ theorem isLeftNondegenerate_restrictForm (L : FiniteFormCat K K)
   have hmem : (b : L.obj.carrier) ∈ LinearMap.ker L.obj.adjoint :=
     LinearMap.mem_ker.mpr (LinearMap.ext hzero)
   rw [hL] at hmem
-  exact Subtype.ext (by simpa using hmem)
+  exact Submodule.coe_eq_zero.mp (by simpa using hmem)
 
 /-- Reflections generate the orthogonal group, by induction on the rank. -/
 theorem reflectionsGenerate_of_finrank_eq :
@@ -228,7 +289,8 @@ theorem reflectionsGenerate_of_finrank_eq :
     by_cases hsub : Subsingleton L.obj.carrier
     · have hone : g = 1 := Subtype.ext (LinearEquiv.ext fun x ↦ Subsingleton.elim _ _)
       exact hone ▸ Subgroup.one_mem _
-    · obtain ⟨x, hx⟩ := exists_ne (0 : L.obj.carrier) (α := L.obj.carrier)
+    · haveI : Nontrivial L.obj.carrier := not_subsingleton_iff_nontrivial.mp hsub
+      obtain ⟨x, hx⟩ := exists_ne (0 : L.obj.carrier)
       obtain ⟨v, hv⟩ := exists_pairing_self_ne_zero L hL hx
       have hv0 : v ≠ 0 := by
         rintro rfl
@@ -250,7 +312,7 @@ theorem reflectionsGenerate_of_finrank_eq :
       have himg : (extendOrthogonal L v hv) ''
           finiteFormReflections (restrictForm L (anisotropicComplement L v)) ⊆
           finiteFormReflections L := by
-        rintro _ ⟨_, ⟨w, hw, rfl⟩, rfl⟩
+        rintro _ ⟨_, ⟨(w : anisotropicComplement L v), hw, rfl⟩, rfl⟩
         exact ⟨(w : L.obj.carrier), hw, extendOrthogonal_reflection L v hv w hw⟩
       have hmem : h * g ∈ Subgroup.closure (finiteFormReflections L) := by
         have hres : restrictOrthogonal L v (h * g) hfix ∈
@@ -258,9 +320,9 @@ theorem reflectionsGenerate_of_finrank_eq :
               (finiteFormReflections (restrictForm L (anisotropicComplement L v))) := by
           rw [hgen]
           trivial
-        have := Subgroup.mem_map_of_mem (extendOrthogonal L v hv) hres
-        rw [MonoidHom.map_closure, extendOrthogonal_restrictOrthogonal] at this
-        exact Subgroup.closure_mono himg this
+        have hmap := Subgroup.mem_map_of_mem (extendOrthogonal L v hv) hres
+        rw [MonoidHom.map_closure, extendOrthogonal_restrictOrthogonal] at hmap
+        exact Subgroup.closure_mono himg hmap
       have hsplit : g = h⁻¹ * (h * g) := by group
       exact hsplit ▸ Subgroup.mul_mem _ (Subgroup.inv_mem _ hhmem) hmem
 
