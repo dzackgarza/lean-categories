@@ -14,6 +14,8 @@ namespace LeanCategories.Lattices.Valued
 
 universe u
 
+open Module QuadraticMap
+
 variable {K : Type u} [Field K]
 
 /--
@@ -446,6 +448,118 @@ noncomputable def DiagonalPresentation.determinantSquareClass
       (finiteFormQuadraticForm K L).associated}
     (d : DiagonalPresentation L hL) : FieldSquareClass K :=
   fieldSquareClass (∏ i, d.weights i)
+
+/-- The discriminant of a weighted sum of squares is the product of its weights. -/
+theorem weightedSumSquares_discr'
+    {n : Type*} [Fintype n] [DecidableEq n]
+    (w : n → K) :
+    QuadraticForm.discr' (QuadraticMap.weightedSumSquares K w) = ∏ i, w i := by
+  rw [QuadraticForm.discr']
+  have hvalue (i : n) :
+      QuadraticMap.weightedSumSquares K w (Pi.single i (1 : K)) = w i := by
+    classical
+    simp [QuadraticMap.weightedSumSquares_apply, Pi.single_apply, eq_comm]
+  have hadd (i j : n) (hij : i ≠ j) :
+      QuadraticMap.weightedSumSquares K w
+          (Pi.single i (1 : K) + Pi.single j (1 : K)) =
+        w i + w j := by
+    classical
+    rw [QuadraticMap.weightedSumSquares_apply]
+    calc
+      (∑ x, w x * (((Pi.single i (1 : K) : n → K) x +
+          (Pi.single j (1 : K) : n → K) x) *
+          ((Pi.single i (1 : K) : n → K) x +
+          (Pi.single j (1 : K) : n → K) x))) =
+          ∑ x, ((if i = x then w x else 0) + (if j = x then w x else 0)) := by
+            apply Finset.sum_congr rfl
+            intro x _
+            by_cases hxi : i = x <;> by_cases hxj : j = x
+            · exact (hij (hxi.trans hxj.symm)).elim
+            · simp [hxi, hxj]
+            · simp [hxi, hxj]
+            · simp [hxi, hxj]
+      _ = w i + w j := by
+        rw [Finset.sum_add_distrib]
+        simp
+  have hmatrix :
+      QuadraticForm.toMatrix' (QuadraticMap.weightedSumSquares K w) =
+        Matrix.diagonal w := by
+    ext i j
+    by_cases hij : i = j
+    · subst j
+      simpa [QuadraticForm.toMatrix'] using
+        QuadraticMap.associated_eq_self_apply K
+          (QuadraticMap.weightedSumSquares K w) (Pi.single i (1 : K)) |>.trans (hvalue i)
+    · simp only [QuadraticForm.toMatrix', LinearMap.toMatrix₂'_apply,
+        Matrix.diagonal_apply, hij, if_false]
+      rw [QuadraticMap.associated_apply, hadd i j hij, hvalue i, hvalue j]
+      simp
+  rw [hmatrix, Matrix.det_diagonal]
+
+/-- Equivalent nonsingular diagonal forms have the same determinant square class.
+
+Cassels states this basis-independence when he defines the determinant of a quadratic form
+modulo nonzero squares [@Cas08a, p. 55]. Mathlib's discriminant change formula supplies the
+square factor produced by the change-of-basis determinant.
+-/
+theorem determinantSquareClass_eq_of_equivalent_weightedSumSquares
+    {n : Type*} [Fintype n] [DecidableEq n]
+    (w w' : n → Kˣ)
+    (h : QuadraticMap.Equivalent
+      (QuadraticMap.weightedSumSquares K w)
+      (QuadraticMap.weightedSumSquares K w')) :
+    fieldSquareClass (∏ i, w i) = fieldSquareClass (∏ i, w' i) := by
+  let e := Classical.choice h
+  let b := Pi.basisFun K n
+  let δ : Kˣ := (e.toLinearEquiv.isUnit_det b b).unit
+  have hform : QuadraticMap.weightedSumSquares K w =
+      (QuadraticMap.weightedSumSquares K w').comp e.toLinearEquiv.toLinearMap := by
+    ext x
+    exact (e.map_app x).symm
+  have hdet : (∏ i, (w i : K)) = (δ : K) ^ 2 * ∏ i, (w' i : K) := by
+    have hdiscr := congrArg QuadraticForm.discr' hform
+    rw [QuadraticForm.discr'_comp] at hdiscr
+    change QuadraticForm.discr' (QuadraticMap.weightedSumSquares K
+        (fun i ↦ (w i : K))) = _ * _ *
+      QuadraticForm.discr' (QuadraticMap.weightedSumSquares K
+        (fun i ↦ (w' i : K))) at hdiscr
+    rw [weightedSumSquares_discr' (fun i ↦ (w i : K)),
+      weightedSumSquares_discr' (fun i ↦ (w' i : K))] at hdiscr
+    simpa [δ, b, pow_two] using hdiscr
+  have hunits : (∏ i, w i) = δ ^ 2 * ∏ i, w' i := by
+    ext
+    simpa using hdet
+  rw [hunits]
+  change (QuotientGroup.mk' (Subgroup.square Kˣ))
+      (δ ^ 2 * ∏ i, w' i) =
+    (QuotientGroup.mk' (Subgroup.square Kˣ)) (∏ i, w' i)
+  rw [map_mul, map_pow, modSquares_sq, one_mul]
+
+/-- The determinant square class does not depend on the diagonal presentation. -/
+theorem DiagonalPresentation.determinantSquareClass_eq
+    {L : FiniteFormCat K K}
+    {hL : LinearMap.SeparatingLeft
+      (finiteFormQuadraticForm K L).associated}
+    (d d' : DiagonalPresentation L hL) :
+    d.determinantSquareClass = d'.determinantSquareClass := by
+  apply determinantSquareClass_eq_of_equivalent_weightedSumSquares
+  exact d.equivalent.symm.trans d'.equivalent
+
+/-- The canonical determinant square class of a nondegenerate finite symmetric form. -/
+noncomputable def finiteFormDeterminantSquareClass
+    (L : FiniteFormCat K K)
+    (hL : LinearMap.SeparatingLeft
+      (finiteFormQuadraticForm K L).associated) : FieldSquareClass K :=
+  (diagonalPresentation L hL).determinantSquareClass
+
+/-- Every diagonal presentation computes the canonical determinant square class. -/
+theorem finiteFormDeterminantSquareClass_eq
+    (L : FiniteFormCat K K)
+    (hL : LinearMap.SeparatingLeft
+      (finiteFormQuadraticForm K L).associated)
+    (d : DiagonalPresentation L hL) :
+    finiteFormDeterminantSquareClass L hL = d.determinantSquareClass :=
+  DiagonalPresentation.determinantSquareClass_eq _ _
 
 /-- The rank, determinant square class, and Hasse--Minkowski value of a diagonal presentation. -/
 structure DiagonalFormProfile (K : Type u) [Field K] where
