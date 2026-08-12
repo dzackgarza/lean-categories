@@ -163,4 +163,23 @@ theorem hilbertSymbol_mul_left_of_eq_one {a b c : K} (ha : a ≠ 0) (hb : b ≠ 
   rw [hilbertSymbol_comm a] at h
   exact hilbertSymbol_mul_right_of_eq_one' hc ha hb h
 
+omit [Invertible (2 : K)] in
+/-- A nonzero square has Hilbert symbol one against every nonzero element. -/
+theorem hilbertSymbol_eq_one_of_isSquare_left {a b : K} (ha : a ≠ 0) (hb : b ≠ 0)
+    (h : IsSquare a) : hilbertSymbol a b = 1 := by
+  classical
+  obtain ⟨s, rfl⟩ := h
+  have hs : s ≠ 0 := by
+    rintro rfl
+    exact ha (mul_zero 0)
+  rw [hilbertSymbol, if_neg (by simp [ha, hb]), if_pos]
+  exact ⟨s, 1, 0, by simp [hs], by ring⟩
+
+omit [Invertible (2 : K)] in
+/-- A nonzero square has Hilbert symbol one in the second entry. -/
+theorem hilbertSymbol_eq_one_of_isSquare_right {a b : K} (ha : a ≠ 0) (hb : b ≠ 0)
+    (h : IsSquare b) : hilbertSymbol a b = 1 := by
+  rw [hilbertSymbol_comm]
+  exact hilbertSymbol_eq_one_of_isSquare_left hb ha h
+
 end LeanCategories.Lattices.Valued
