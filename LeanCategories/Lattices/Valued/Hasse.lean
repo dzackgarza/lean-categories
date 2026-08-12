@@ -224,6 +224,49 @@ noncomputable def negativeCoefficientPairs {n : ℕ} (w : Fin n → ℝˣ) :
     Finset (Fin n × Fin n) :=
   Finset.univ.filter fun p => p.1 < p.2 ∧ (w p.1 : ℝ) < 0 ∧ (w p.2 : ℝ) < 0
 
+/-- The number of negative coefficient pairs depends only on the number of negative coefficients. -/
+theorem negativeCoefficientPairs_card_eq_of_ncard_eq
+    {n m : ℕ} {w : Fin n → ℝˣ} {w' : Fin m → ℝˣ}
+    (hcard : {i | (w i : ℝ) < 0}.ncard = {i | (w' i : ℝ) < 0}.ncard) :
+    (negativeCoefficientPairs w).card = (negativeCoefficientPairs w').card := by
+  classical
+  let s : Finset (Fin n) := Finset.univ.filter fun i => (w i : ℝ) < 0
+  let t : Finset (Fin m) := Finset.univ.filter fun i => (w' i : ℝ) < 0
+  have hst : s.card = t.card := by simpa [s, t, Set.ncard_eq_toFinset_card'] using hcard
+  let e : s ≃o t :=
+    (s.orderIsoOfFin rfl).symm.trans (t.orderIsoOfFin hst.symm)
+  let pairEquiv : ↥(negativeCoefficientPairs w) ≃ ↥(negativeCoefficientPairs w') := {
+    toFun p := by
+      have hp := (Finset.mem_filter.mp p.2).2
+      let i : s := ⟨p.1.1, by simpa [s] using hp.2.1⟩
+      let j : s := ⟨p.1.2, by simpa [s] using hp.2.2⟩
+      exact ⟨(e i, e j), by
+        simp only [negativeCoefficientPairs, Finset.mem_filter, Finset.mem_univ, true_and]
+        have hi : (w' (e i) : ℝ) < 0 :=
+          (Finset.mem_filter.mp (show (e i : Fin m) ∈ t from (e i).2)).2
+        have hj : (w' (e j) : ℝ) < 0 :=
+          (Finset.mem_filter.mp (show (e j : Fin m) ∈ t from (e j).2)).2
+        exact ⟨e.lt_iff_lt.mpr hp.1, hi, hj⟩⟩
+    invFun p := by
+      have hp := (Finset.mem_filter.mp p.2).2
+      let i : t := ⟨p.1.1, by simpa [t] using hp.2.1⟩
+      let j : t := ⟨p.1.2, by simpa [t] using hp.2.2⟩
+      exact ⟨(e.symm i, e.symm j), by
+        simp only [negativeCoefficientPairs, Finset.mem_filter, Finset.mem_univ, true_and]
+        have hi : (w (e.symm i) : ℝ) < 0 :=
+          (Finset.mem_filter.mp (show (e.symm i : Fin n) ∈ s from (e.symm i).2)).2
+        have hj : (w (e.symm j) : ℝ) < 0 :=
+          (Finset.mem_filter.mp (show (e.symm j : Fin n) ∈ s from (e.symm j).2)).2
+        exact ⟨e.symm.lt_iff_lt.mpr hp.1, hi, hj⟩⟩
+    left_inv p := by
+      apply Subtype.ext
+      apply Prod.ext <;> exact congr_arg Subtype.val (e.symm_apply_apply _)
+    right_inv p := by
+      apply Subtype.ext
+      apply Prod.ext <;> exact congr_arg Subtype.val (e.apply_symm_apply _)
+  }
+  simpa using Fintype.card_congr pairEquiv
+
 /-- Cassels's real formula for the Hasse--Minkowski value.
 
 Each pair contributes `-1` exactly when both coefficients are negative. This is the
@@ -334,6 +377,40 @@ def IsHasseMinkowskiInvariant (L : FiniteFormCat K K)
     (hL : LinearMap.SeparatingLeft
       (finiteFormQuadraticForm K L).associated) (c : ℤ) : Prop :=
   ∀ d : DiagonalPresentation L hL, d.hasseMinkowskiValue = c
+
+/-- The canonical Hasse--Minkowski invariant of a real nondegenerate form.
+
+Cassels identifies it with `(-1)^(s(s-1)/2)`, where `s` is the negative index
+[@Cas08a, Theorem 1.2, p. 55]. -/
+noncomputable def realHasseMinkowskiInvariant (L : FiniteFormCat ℝ ℝ)
+    (hL : LinearMap.SeparatingLeft
+      (finiteFormQuadraticForm ℝ L).associated) : ℤ :=
+  (diagonalPresentation L hL).hasseMinkowskiValue
+
+/-- Every real diagonal presentation computes the canonical Hasse--Minkowski invariant. -/
+theorem realHasseMinkowskiInvariant_eq
+    (L : FiniteFormCat ℝ ℝ)
+    (hL : LinearMap.SeparatingLeft
+      (finiteFormQuadraticForm ℝ L).associated)
+    (d : DiagonalPresentation L hL) :
+    d.hasseMinkowskiValue = realHasseMinkowskiInvariant L hL := by
+  let d₀ := diagonalPresentation L hL
+  rw [DiagonalPresentation.hasseMinkowskiValue,
+    realHasseMinkowskiInvariant, DiagonalPresentation.hasseMinkowskiValue,
+    hasseMinkowskiInvariantOfDiagonal_real,
+    hasseMinkowskiInvariantOfDiagonal_real]
+  congr 1
+  apply negativeCoefficientPairs_card_eq_of_ncard_eq
+  rw [← QuadraticForm.sigNeg_of_equiv_weightedSumSquares d.equivalent,
+    ← QuadraticForm.sigNeg_of_equiv_weightedSumSquares d₀.equivalent]
+
+/-- The real Hasse--Minkowski invariant is independent of diagonalization. -/
+theorem real_isHasseMinkowskiInvariant
+    (L : FiniteFormCat ℝ ℝ)
+    (hL : LinearMap.SeparatingLeft
+      (finiteFormQuadraticForm ℝ L).associated) :
+    IsHasseMinkowskiInvariant L hL (realHasseMinkowskiInvariant L hL) :=
+  realHasseMinkowskiInvariant_eq L hL
 
 /-- The determinant square class computed from a diagonal presentation. -/
 noncomputable def DiagonalPresentation.determinantSquareClass
