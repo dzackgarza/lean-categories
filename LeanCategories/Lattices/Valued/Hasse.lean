@@ -412,6 +412,33 @@ theorem real_isHasseMinkowskiInvariant
     IsHasseMinkowskiInvariant L hL (realHasseMinkowskiInvariant L hL) :=
   realHasseMinkowskiInvariant_eq L hL
 
+/-- The real Hasse--Minkowski invariant is preserved by formed-module isomorphisms. -/
+theorem realHasseMinkowskiInvariant_iso
+    {L M : FiniteFormCat ℝ ℝ}
+    (hL : LinearMap.SeparatingLeft
+      (finiteFormQuadraticForm ℝ L).associated)
+    (hM : LinearMap.SeparatingLeft
+      (finiteFormQuadraticForm ℝ M).associated)
+    (e : L ≅ M) :
+    realHasseMinkowskiInvariant L hL =
+      realHasseMinkowskiInvariant M hM := by
+  let dL := diagonalPresentation L hL
+  let dM := diagonalPresentation M hM
+  rw [← realHasseMinkowskiInvariant_eq L hL dL,
+    ← realHasseMinkowskiInvariant_eq M hM dM,
+    DiagonalPresentation.hasseMinkowskiValue,
+    DiagonalPresentation.hasseMinkowskiValue,
+    hasseMinkowskiInvariantOfDiagonal_real,
+    hasseMinkowskiInvariantOfDiagonal_real]
+  congr 1
+  apply negativeCoefficientPairs_card_eq_of_ncard_eq
+  rw [← QuadraticForm.sigNeg_of_equiv_weightedSumSquares dL.equivalent,
+    ← QuadraticForm.sigNeg_of_equiv_weightedSumSquares dM.equivalent]
+  exact QuadraticMap.Equivalent.sigNeg_eq
+    (⟨finiteFormQuadraticIsometryEquiv ℝ e⟩ :
+      QuadraticMap.Equivalent (finiteFormQuadraticForm ℝ L)
+        (finiteFormQuadraticForm ℝ M))
+
 /-- The determinant square class computed from a diagonal presentation. -/
 noncomputable def DiagonalPresentation.determinantSquareClass
     {L : FiniteFormCat K K}
