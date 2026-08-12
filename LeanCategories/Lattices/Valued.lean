@@ -81,6 +81,7 @@ public import LeanCategories.Lattices.Valued.DRootLattice
 public import LeanCategories.Lattices.Valued.SimplyLaced
 public import LeanCategories.Lattices.Valued.RootBase
 public import LeanCategories.Lattices.Valued.RootBaseExists
+public import LeanCategories.Lattices.Valued.DiagramBounds
 public import LeanCategories.Lattices.Valued.Adele
 public import LeanCategories.Lattices.Valued.AdelicClass
 public import LeanCategories.Lattices.Valued.LocalDensity
