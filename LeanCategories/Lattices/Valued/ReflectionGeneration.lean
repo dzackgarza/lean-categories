@@ -331,4 +331,14 @@ theorem reflectionsGenerate (L : FiniteFormCat K K) (hL : L.obj.IsLeftNondegener
     ReflectionsGenerate L :=
   reflectionsGenerate_of_finrank_eq _ L rfl hL
 
+/-- A nondegenerate form carries at most one spinor norm. -/
+theorem spinorNorm_unique_of_nondegenerate (L : FiniteFormCat K K)
+    (hL : L.obj.IsLeftNondegenerate) (ν μ : SpinorNorm L) : ν = μ :=
+  spinorNorm_unique L (reflectionsGenerate L hL) ν μ
+
+/-- Spinor norms on a nondegenerate form form a subsingleton, with no further hypothesis. -/
+theorem subsingleton_spinorNorm_of_nondegenerate (L : FiniteFormCat K K)
+    (hL : L.obj.IsLeftNondegenerate) : Subsingleton (SpinorNorm L) :=
+  subsingleton_spinorNorm L (reflectionsGenerate L hL)
+
 end LeanCategories.Lattices.Valued

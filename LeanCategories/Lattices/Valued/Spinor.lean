@@ -110,10 +110,13 @@ theorem spinorNorm_unique (L : FiniteFormCat K K)
   obtain ⟨v, hv, rfl⟩ := hg
   rw [ν.2 v hv, μ.2 v hv]
 
-/-- Spinor norms form a subsingleton when reflections generate the orthogonal group. -/
-instance (L : FiniteFormCat K K) [hgenerate : Fact (ReflectionsGenerate L)] :
-    Subsingleton (SpinorNorm L) :=
-  ⟨spinorNorm_unique L hgenerate.out⟩
+/-- Spinor norms form a subsingleton when reflections generate the orthogonal group.
+
+`ReflectionGeneration.lean` proves the generation hypothesis for every nondegenerate form, so
+the subsingleton statement there needs no assumption beyond nondegeneracy. -/
+theorem subsingleton_spinorNorm (L : FiniteFormCat K K)
+    (hgenerate : ReflectionsGenerate L) : Subsingleton (SpinorNorm L) :=
+  ⟨spinorNorm_unique L hgenerate⟩
 
 /-- The spinor kernel consists of isometries with trivial spinor norm. -/
 def spinorKernel (L : FiniteFormCat K K) (ν : SpinorNorm L) :
