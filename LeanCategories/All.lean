@@ -25,6 +25,7 @@ public import LeanCategories.Algebra.IdealProfiniteCompletionDedekind
 public import LeanCategories.ForMathlib.AdicCompletionIntegers
 public import LeanCategories.ForMathlib.DenseIntegralCompletion
 public import LeanCategories.ForMathlib.QuadraticReflection
+public import LeanCategories.ForMathlib.WittCancellation
 public import LeanCategories.Names.Standard
 public import LeanCategories.Modules.Framed
 public import LeanCategories.Modules.Bilinear.Valued
