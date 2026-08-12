@@ -176,6 +176,29 @@ noncomputable def binaryRepresentation (a₁ a₂ x y c : K) (hc : c ≠ 0)
     rw [← hcval]
     ring
 
+/-- An isotropic nondegenerate binary diagonal form represents every scalar.
+
+Given an isotropic vector `(u₀, v₀)` with `u₀ ≠ 0`, the pair `(u₀(1 + t), v₀(1 - t))` has
+value `4a₁u₀²t`, so the choice `t = a / (4a₁u₀²)` represents any target `a`. -/
+theorem exists_repr_of_isotropic (a₁ a₂ : K) (ha₁ : a₁ ≠ 0) (u₀ v₀ : K) (hu₀ : u₀ ≠ 0)
+    (hiso : a₁ * (u₀ * u₀) + a₂ * (v₀ * v₀) = 0) (a : K) :
+    ∃ u v : K, a₁ * (u * u) + a₂ * (v * v) = a := by
+  have h2 : (2 : K) ≠ 0 := Invertible.ne_zero (2 : K)
+  have h4 : (4 : K) ≠ 0 := by
+    rw [show (4 : K) = 2 * 2 by norm_num]
+    exact mul_ne_zero h2 h2
+  have hden : 4 * a₁ * (u₀ * u₀) ≠ 0 :=
+    mul_ne_zero (mul_ne_zero h4 ha₁) (mul_ne_zero hu₀ hu₀)
+  obtain ⟨t, hta⟩ : ∃ t : K, 4 * a₁ * (u₀ * u₀) * t = a :=
+    ⟨a / (4 * a₁ * (u₀ * u₀)), by field_simp⟩
+  have hv : a₂ * (v₀ * v₀) = -(a₁ * (u₀ * u₀)) := eq_neg_of_add_eq_zero_right hiso
+  refine ⟨u₀ * (1 + t), v₀ * (1 - t), ?_⟩
+  have expand : a₁ * (u₀ * (1 + t) * (u₀ * (1 + t))) + a₂ * (v₀ * (1 - t) * (v₀ * (1 - t)))
+      = a₁ * (u₀ * u₀) * ((1 + t) * (1 + t)) + a₂ * (v₀ * v₀) * ((1 - t) * (1 - t)) := by
+    ring
+  rw [expand, hv, ← hta]
+  ring
+
 end Binary
 
 section Diagonal

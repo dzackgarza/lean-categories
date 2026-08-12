@@ -321,6 +321,34 @@ theorem hasseMinkowskiInvariantOfDiagonal_cons_prod [HasBilinearHilbertSymbol K]
         hilbertSymbol (a : K) ((∏ i, w i : Kˣ) : K) := by
   rw [hasseMinkowskiInvariantOfDiagonal_cons, hilbertSymbol_prod]
 
+/-- The Hasse--Minkowski value of a diagonal form with two leading coefficients.
+
+The leading pair contributes its own Hilbert symbol and one symbol of its product against
+the determinant of the remaining coefficients. -/
+theorem hasseMinkowskiInvariantOfDiagonal_cons_cons [HasBilinearHilbertSymbol K]
+    {n : ℕ} (a b : Kˣ) (w : Fin n → Kˣ) :
+    hasseMinkowskiInvariantOfDiagonal (Fin.cons a (Fin.cons b w)) =
+      hasseMinkowskiInvariantOfDiagonal w * hilbertSymbol (a : K) (b : K) *
+        hilbertSymbol ((a * b : Kˣ) : K) ((∏ i, w i : Kˣ) : K) := by
+  rw [hasseMinkowskiInvariantOfDiagonal_cons_prod,
+    hasseMinkowskiInvariantOfDiagonal_cons_prod, Fin.prod_cons, Units.val_mul,
+    Units.val_mul, hilbertSymbol_mul_right, HasBilinearHilbertSymbol.map_mul_left]
+  ring
+
+/-- Replacing the two leading coefficients by an equivalent pair preserves the value.
+
+An equivalent binary form has the same Hilbert symbol and the same determinant square
+class, and those are the only two ways the pair enters the product. -/
+theorem hasseMinkowskiInvariantOfDiagonal_cons_cons_congr [HasBilinearHilbertSymbol K]
+    {n : ℕ} (a b a' b' : Kˣ) (w : Fin n → Kˣ)
+    (hsym : hilbertSymbol (a : K) (b : K) = hilbertSymbol (a' : K) (b' : K))
+    (hdet : fieldSquareClass (a * b) = fieldSquareClass (a' * b')) :
+    hasseMinkowskiInvariantOfDiagonal (Fin.cons a (Fin.cons b w)) =
+      hasseMinkowskiInvariantOfDiagonal (Fin.cons a' (Fin.cons b' w)) := by
+  rw [hasseMinkowskiInvariantOfDiagonal_cons_cons,
+    hasseMinkowskiInvariantOfDiagonal_cons_cons, hsym,
+    hilbertSymbol_eq_of_fieldSquareClass_eq_left (a * b) (a' * b') (∏ i, w i) hdet]
+
 /-- A unary diagonal form has Hasse--Minkowski value one.
 
 This is the first case of Cassels's Lemma 2.2 [@Cas08a, p. 56]. -/
