@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Lattices.Valued.Arithmetic
 public import LeanCategories.Lattices.Valued.Framed
+public import LeanCategories.Lattices.Valued.BaseChangeIsometry
 public import LeanCategories.Lattices.Valued.Radical
 public import LeanCategories.Lattices.Valued.Sublattice
 public import LeanCategories.Lattices.Valued.Discriminant
