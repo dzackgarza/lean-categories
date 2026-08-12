@@ -60,10 +60,14 @@ instance compactSpaceAdicCompletionIntegers :
   letI : IsDiscreteValuationRing 𝒪[v.adicCompletion K] := by
     change IsDiscreteValuationRing (v.adicCompletionIntegers K)
     infer_instance
-  exact
-    (Valued.integer.compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField).mpr
-      ⟨completeSpaceAdicCompletionIntegers K v, inferInstance,
-        finiteAdicCompletionResidueField K v⟩
+  have h : CompactSpace 𝒪[v.adicCompletion K] ↔
+      CompleteSpace 𝒪[v.adicCompletion K] ∧
+        IsDiscreteValuationRing 𝒪[v.adicCompletion K] ∧
+          Finite (𝓀[v.adicCompletion K]) :=
+    Valued.integer.compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField
+  rw [h]
+  exact ⟨completeSpaceAdicCompletionIntegers K v, inferInstance,
+    finiteAdicCompletionResidueField K v⟩
 
 /-- A height-one completion of a number field is a proper metric space. -/
 instance properSpaceAdicCompletion : ProperSpace (v.adicCompletion K) :=

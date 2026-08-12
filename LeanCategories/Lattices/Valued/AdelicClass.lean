@@ -202,6 +202,13 @@ abbrev RationalFiniteIntegralAdeleLatticeStabilizer
   MulAction.stabilizer (RationalFiniteAdelicOrthogonalGroup K L)
     (rationalFiniteIntegralAdeleLattice K L)
 
+/-- Haar volume of the integral finite adelic stabilizer. -/
+noncomputable def rationalFiniteIntegralAdeleLatticeStabilizerVolume
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) : ENNReal := by
+  letI : MeasurableSpace (RationalFiniteAdelicOrthogonalGroup K L) := borel _
+  exact rationalFiniteAdelicOrthogonalGroupHaarMeasure K L
+    (RationalFiniteIntegralAdeleLatticeStabilizer K L)
+
 /-- The finite adelic class space `O(V)(K) \ O(V)(𝔸_f) / K_L`. -/
 abbrev FiniteAdelicClassSpace
     (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :=
