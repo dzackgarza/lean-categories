@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Lattices.Valued.LocalInvariants
 public import LeanCategories.Lattices.Valued.Signature
+public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 
 @[expose] public section
@@ -210,6 +211,45 @@ noncomputable def hasseMinkowskiInvariantOfDiagonal
     {n : ℕ} (w : Fin n → Kˣ) : ℤ :=
   ∏ p : Fin n × Fin n with p.1 < p.2,
     hilbertSymbol (w p.1 : K) (w p.2 : K)
+
+/-- A product over increasing pairs is the product over each second index and its predecessors. -/
+theorem prod_increasing_pairs_eq_prod_Iio
+    {n : ℕ} {M : Type*} [CommMonoid M] (f : Fin n → Fin n → M) :
+    (∏ p : Fin n × Fin n with p.1 < p.2, f p.1 p.2) =
+      ∏ j : Fin n, ∏ i ∈ Finset.Iio j, f i j := by
+  classical
+  rw [Finset.prod_sigma']
+  apply Finset.prod_bij
+      (fun p _ ↦ ⟨p.2, ⟨p.1, by simp⟩⟩)
+  · intro p hp
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hp
+    simp [hp]
+  · intro p hp q hq heq
+    have h2 : p.2 = q.2 := by
+      simpa using (congrArg Sigma.fst heq)
+    rcases p with ⟨i, j⟩
+    rcases q with ⟨i', j'⟩
+    simp only at h2
+    subst j'
+    have h1 : i = i' := by
+      apply Fin.ext
+      simpa using congrArg (fun s ↦ s.2.1) heq
+    exact Prod.ext h1 rfl
+  · rintro ⟨j, i⟩ hj
+    refine ⟨(i, j), ?_, ?_⟩
+    · simpa using hj
+    · simp
+  · intro p hp
+    rfl
+
+/-- The Hasse--Minkowski value as an iterated product over earlier coefficients. -/
+theorem hasseMinkowskiInvariantOfDiagonal_eq_prod_Iio
+    {n : ℕ} (w : Fin n → Kˣ) :
+    hasseMinkowskiInvariantOfDiagonal w =
+      ∏ j : Fin n, ∏ i ∈ Finset.Iio j,
+        hilbertSymbol (w i : K) (w j : K) := by
+  exact prod_increasing_pairs_eq_prod_Iio fun i j ↦
+    hilbertSymbol (w i : K) (w j : K)
 
 /-- A unary diagonal form has Hasse--Minkowski value one.
 
