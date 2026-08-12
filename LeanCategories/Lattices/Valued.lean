@@ -19,6 +19,7 @@ public import LeanCategories.Lattices.Valued.DiscriminantQuadratic
 public import LeanCategories.Lattices.Valued.OrthogonalGroup
 public import LeanCategories.Lattices.Valued.DiscriminantAction
 public import LeanCategories.Lattices.Valued.Standard
+public import LeanCategories.Lattices.Valued.Topological
 public import LeanCategories.Lattices.Valued.Signature
 public import LeanCategories.Lattices.Valued.Witt
 public import LeanCategories.Lattices.Valued.Localization
