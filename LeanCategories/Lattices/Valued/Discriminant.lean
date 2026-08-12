@@ -742,4 +742,25 @@ theorem discriminantCarrierEquivDefect_apply (L : IntegralLatticeCat R)
     LinearEquiv.trans_apply, Submodule.quotEquivOfEq_mk]
   exact LinearMap.quotKerEquivOfSurjective_apply_mk _ _ v
 
+/-- The value module of the categorical discriminant is `Frac(R)/R`. -/
+noncomputable def discriminantValueEquiv (L : IntegralLatticeCat R) :
+    (discriminantSymBilWFormObject R L).obj.value ≃ₗ[R] FractionValueQuotient R :=
+  Submodule.quotEquivOfEq _ _ (discriminantValueRelations_eq R L)
+
+/-- The comparison is an isometry: it carries the categorical discriminant form to the
+discriminant form of the adjoint defect. -/
+theorem discriminantValueEquiv_pairing (L : IntegralLatticeCat R)
+    (hL : IsFractionFieldPerfect R L) (v w : metricDual R L) :
+    discriminantValueEquiv R L
+        ((discriminantSymBilWFormObject R L).obj.pairing
+          (discriminantCarrierProjection R L v)
+          (discriminantCarrierProjection R L w)) =
+      (discriminantBilinObject R L hL).pairing
+        (discriminantCarrierEquivDefect R L hL (discriminantCarrierProjection R L v))
+        (discriminantCarrierEquivDefect R L hL
+          (discriminantCarrierProjection R L w)) := by
+  rw [discriminantCarrierEquivDefect_apply, discriminantCarrierEquivDefect_apply,
+    discriminant_pairing_metricDualToDiscriminant R hL]
+  rfl
+
 end LeanCategories.Lattices.Valued
