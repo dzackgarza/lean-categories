@@ -45,6 +45,7 @@ public import LeanCategories.Lattices.Valued.HilbertNorm
 public import LeanCategories.Lattices.Valued.PadicHilbert
 public import LeanCategories.Lattices.Valued.DyadicSquares
 public import LeanCategories.Lattices.Valued.Spinor
+public import LeanCategories.Lattices.Valued.SpinorNormConstruction
 public import LeanCategories.Lattices.Valued.ReflectionTransitivity
 public import LeanCategories.Lattices.Valued.OrthogonalSplitting
 public import LeanCategories.Lattices.Valued.ReflectionGeneration
