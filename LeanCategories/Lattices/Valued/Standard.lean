@@ -330,44 +330,191 @@ theorem dRootLattice_gramMatrix (n : ℕ) (hn : 4 ≤ n) :
       dRootGramMatrix n hn :=
   latticeOfGramMatrix_gramMatrix _ _
 
+/-- The diagonal of the type-`D` Gram matrix is `-2`: each standard type-`D` root has exactly
+two nonzero coordinates, and the matrix is the negative of the coordinate dot product. -/
+theorem dRootGramMatrix_diag (n : ℕ) (hn : 4 ≤ n) (i : Fin n) :
+    dRootGramMatrix n hn i i = -2 := by
+  simp only [dRootGramMatrix]
+  by_cases hnext : i.val + 1 < n
+  · let i₀ : Fin n := i
+    let i₁ : Fin n := ⟨i + 1, hnext⟩
+    have hi : i₀ ≠ i₁ := by
+      intro h
+      have := congrArg Fin.val h
+      simp [i₀, i₁] at this
+    have hvalue (k : Fin n) :
+        dRootVector n hn i k * dRootVector n hn i k =
+          if k = i₀ then 1 else if k = i₁ then 1 else 0 := by
+      simp only [dRootVector, hnext]
+      split_ifs <;> simp_all [i₀, i₁, Fin.ext_iff]
+    simp_rw [hvalue]
+    rw [sum_two_indicators i₀ i₁ hi]
+  · let i₀ : Fin n := ⟨n - 2, by omega⟩
+    let i₁ : Fin n := ⟨n - 1, by omega⟩
+    have hi : i₀ ≠ i₁ := by
+      intro h
+      have := congrArg Fin.val h
+      simp [i₀, i₁] at this
+      omega
+    have hvalue (k : Fin n) :
+        dRootVector n hn i k * dRootVector n hn i k =
+          if k = i₀ then 1 else if k = i₁ then 1 else 0 := by
+      simp only [dRootVector, hnext]
+      split_ifs <;> simp_all [i₀, i₁, Fin.ext_iff] <;> omega
+    simp_rw [hvalue]
+    rw [sum_two_indicators i₀ i₁ hi]
+
 /-- Every negative type-`D` root lattice is even. -/
 theorem dRootLattice_isEven (n : ℕ) (hn : 4 ≤ n) :
     IsEven (dRootLattice n hn) := by
   apply latticeOfGramMatrix_isEven
   intro i
-  have hdiag : dRootGramMatrix n hn i i = -2 := by
-    simp only [dRootGramMatrix]
-    by_cases hnext : i.val + 1 < n
-    · let i₀ : Fin n := i
-      let i₁ : Fin n := ⟨i + 1, hnext⟩
-      have hi : i₀ ≠ i₁ := by
-        intro h
-        have := congrArg Fin.val h
-        simp [i₀, i₁] at this
-      have hvalue (k : Fin n) :
-          dRootVector n hn i k * dRootVector n hn i k =
-            if k = i₀ then 1 else if k = i₁ then 1 else 0 := by
-        simp only [dRootVector, hnext]
-        split_ifs <;> simp_all [i₀, i₁, Fin.ext_iff]
-      simp_rw [hvalue]
-      rw [sum_two_indicators i₀ i₁ hi]
-    · let i₀ : Fin n := ⟨n - 2, by omega⟩
-      let i₁ : Fin n := ⟨n - 1, by omega⟩
-      have hi : i₀ ≠ i₁ := by
-        intro h
-        have := congrArg Fin.val h
-        simp [i₀, i₁] at this
-        omega
-      have hvalue (k : Fin n) :
-          dRootVector n hn i k * dRootVector n hn i k =
-            if k = i₀ then 1 else if k = i₁ then 1 else 0 := by
-        simp only [dRootVector, hnext]
-        split_ifs <;> simp_all [i₀, i₁, Fin.ext_iff] <;> omega
-      simp_rw [hvalue]
-      rw [sum_two_indicators i₀ i₁ hi]
-  rw [hdiag]
+  rw [dRootGramMatrix_diag n hn i]
   exact (Ideal.span {(2 : ℤ)}).neg_mem
     (Ideal.subset_span (Set.mem_singleton 2))
+
+theorem dRootFiniteLattice_gramMatrix (n : ℕ) (hn : 4 ≤ n) :
+    gramMatrix (dRootFiniteLattice n hn).obj (Pi.basisFun ℤ (Fin n)) =
+      dRootGramMatrix n hn :=
+  latticeOfGramMatrix_gramMatrix
+    (dRootGramMatrix n hn) (dRootGramMatrix_isSymm n hn)
+
+/-- The coordinate matrix whose columns are the standard type-`D` roots. -/
+def dRootCoordinateMatrix (n : ℕ) (hn : 4 ≤ n) :
+    Matrix (Fin n) (Fin n) ℝ :=
+  fun k i ↦ dRootVector n hn i k
+
+/-- The coordinates of a standard type-`D` root sum to zero, except for the last root
+`eₙ₋₂ + eₙ₋₁`, whose coordinates sum to `2`. -/
+theorem dRootVector_sum (n : ℕ) (hn : 4 ≤ n) (i : Fin n) :
+    ∑ k, dRootVector n hn i k = if i.val + 1 < n then 0 else 2 := by
+  by_cases hnext : i.val + 1 < n
+  · rw [if_pos hnext]
+    have hvalue (k : Fin n) :
+        dRootVector n hn i k =
+          (if k = i then (1 : ℤ) else 0) +
+            (if k = (⟨i + 1, hnext⟩ : Fin n) then -1 else 0) := by
+      simp only [dRootVector, hnext, if_true]
+      split_ifs <;> simp_all [Fin.ext_iff]
+    simp_rw [hvalue]
+    rw [Finset.sum_add_distrib, Fintype.sum_ite_eq', Fintype.sum_ite_eq']
+    norm_num
+  · rw [if_neg hnext]
+    let i₀ : Fin n := ⟨n - 2, by omega⟩
+    let i₁ : Fin n := ⟨n - 1, by omega⟩
+    have hi : i₀ ≠ i₁ := by
+      intro h
+      have := congrArg Fin.val h
+      simp [i₀, i₁] at this
+      omega
+    have hvalue (k : Fin n) :
+        dRootVector n hn i k =
+          if k = i₀ then 1 else if k = i₁ then 1 else 0 := by
+      simp only [dRootVector, hnext]
+      split_ifs <;> simp_all [i₀, i₁, Fin.ext_iff] <;> omega
+    simp_rw [hvalue]
+    rw [sum_two_indicators i₀ i₁ hi]
+
+/-- Deleting the last standard type-`D` root leaves the standard type-`A` roots. -/
+private theorem dRootVector_castSucc (m : ℕ) (hn : 4 ≤ m + 1) (i : Fin m)
+    (k : Fin (m + 1)) :
+    dRootVector (m + 1) hn i.castSucc k = aRootVector m i k := by
+  have hi : (i : ℕ) + 1 < m + 1 := Nat.succ_lt_succ i.isLt
+  simp only [dRootVector, aRootVector, Fin.val_castSucc, hi, if_true]
+  rfl
+
+/-- The column sums of the type-`D` coordinate matrix: only the last root has a nonzero
+coordinate sum. -/
+private theorem dRootCoordinateMatrix_col_sum (m : ℕ) (hn : 4 ≤ m + 1)
+    (i : Fin (m + 1)) :
+    ∑ k, dRootCoordinateMatrix (m + 1) hn k i =
+      if i = Fin.last m then (2 : ℝ) else 0 := by
+  have hcast : ∑ k, dRootCoordinateMatrix (m + 1) hn k i =
+      ((∑ k, dRootVector (m + 1) hn i k : ℤ) : ℝ) := by
+    simp only [dRootCoordinateMatrix, Int.cast_sum]
+  rw [hcast, dRootVector_sum]
+  by_cases hi : i = Fin.last m
+  · subst hi
+    rw [if_neg (by simp), if_pos rfl]
+    norm_num
+  · rw [if_pos (by have := Fin.val_lt_last hi; omega), if_neg hi]
+    norm_num
+
+/-- The standard type-`D` roots are linearly independent over `ℝ`. The coordinate sum
+vanishes on every type-`D` root but the last, and the other roots are the type-`A` roots,
+which are already known to be independent. -/
+theorem dRootCoordinateMatrix_mulVec_injective (n : ℕ) (hn : 4 ≤ n) :
+    Function.Injective (dRootCoordinateMatrix n hn).mulVec := by
+  obtain ⟨m, rfl⟩ : ∃ m, n = m + 1 := ⟨n - 1, by omega⟩
+  have key : ∀ z : Fin (m + 1) → ℝ,
+      (dRootCoordinateMatrix (m + 1) hn).mulVec z = 0 → z = 0 := by
+    intro z hz
+    have hlast : z (Fin.last m) = 0 := by
+      have hexp : ∑ k, (dRootCoordinateMatrix (m + 1) hn).mulVec z k =
+          ∑ i, (∑ k, dRootCoordinateMatrix (m + 1) hn k i) * z i := by
+        simp only [Matrix.mulVec, dotProduct, Finset.sum_mul]
+        exact Finset.sum_comm
+      have h0 : ∑ k, (dRootCoordinateMatrix (m + 1) hn).mulVec z k = 0 := by
+        rw [hz]
+        simp
+      rw [hexp] at h0
+      simp only [dRootCoordinateMatrix_col_sum, ite_mul, zero_mul,
+        Finset.sum_ite_eq', Finset.mem_univ, if_true] at h0
+      linarith
+    have hA : (aRootCoordinateMatrix m).mulVec (fun i ↦ z i.castSucc) = 0 := by
+      funext k
+      have hk := congrFun hz k
+      calc (aRootCoordinateMatrix m).mulVec (fun i ↦ z i.castSucc) k
+          = (dRootCoordinateMatrix (m + 1) hn).mulVec z k := by
+            simp only [Matrix.mulVec, dotProduct, aRootCoordinateMatrix,
+              dRootCoordinateMatrix]
+            rw [Fin.sum_univ_castSucc, hlast, mul_zero, add_zero]
+            refine Finset.sum_congr rfl fun i _ ↦ ?_
+            rw [dRootVector_castSucc]
+        _ = 0 := hk
+    have hy := aRootCoordinateMatrix_mulVec_injective m
+      (hA.trans (Matrix.mulVec_zero _).symm)
+    funext i
+    refine Fin.lastCases ?_ ?_ i
+    · simpa using hlast
+    · intro j
+      simpa using congrFun hy j
+  intro x y hxy
+  refine sub_eq_zero.mp (key _ ?_)
+  rw [Matrix.mulVec_sub, hxy, sub_self]
+
+/-- The real type-`D` Gram matrix is negative coordinate dot product. -/
+theorem dRootGramMatrix_cast (n : ℕ) (hn : 4 ≤ n) :
+    (dRootGramMatrix n hn).map (Int.castRingHom ℝ) =
+      -((dRootCoordinateMatrix n hn).transpose *
+        dRootCoordinateMatrix n hn) := by
+  ext i j
+  simp only [dRootGramMatrix, Matrix.map_apply, RingHom.map_neg,
+    Matrix.neg_apply, Matrix.mul_apply, Matrix.transpose_apply,
+    dRootCoordinateMatrix]
+  congr 1
+  rw [map_sum]
+  apply Finset.sum_congr rfl
+  intro k _
+  rw [map_mul]
+  rfl
+
+/-- The negative type-`D` lattice has signature `(0,n,0)`. -/
+theorem dRootLattice_signature (n : ℕ) (hn : 4 ≤ n) :
+    integralSignature (dRootFiniteLattice n hn) = (0, n, 0) := by
+  rw [integralSignature_eq_matrixSignature
+    (dRootFiniteLattice n hn) (Pi.basisFun ℤ (Fin n))]
+  rw [dRootFiniteLattice_gramMatrix, dRootGramMatrix_cast,
+    matrixSignature_neg_transpose_mul_self
+      (dRootCoordinateMatrix n hn)
+      (dRootCoordinateMatrix_mulVec_injective n hn)]
+  simp
+
+/-- The type-`D` finite lattice is negative definite. -/
+theorem dRootLattice_isNegativeDefinite (n : ℕ) (hn : 4 ≤ n) :
+    IsNegativeDefiniteLattice (dRootFiniteLattice n hn) := by
+  simp [IsNegativeDefiniteLattice, IsNegativeDefiniteSignature,
+    dRootLattice_signature]
 
 /-- Twice the coordinates of a standard simple-root basis for `E₈`. -/
 def e8RootNumerator : Fin 8 → Fin 8 → ℤ := ![

@@ -54,6 +54,7 @@ public import LeanCategories.Lattices.Valued.HilbertNorm
 public import LeanCategories.Lattices.Valued.PadicHilbert
 public import LeanCategories.Lattices.Valued.PadicUnitSymbol
 public import LeanCategories.Lattices.Valued.PadicMixedSymbol
+public import LeanCategories.Lattices.Valued.DyadicSymbol
 public import LeanCategories.Lattices.Valued.DyadicSquares
 public import LeanCategories.Lattices.Valued.Spinor
 public import LeanCategories.Lattices.Valued.SpinorNormConstruction
@@ -73,6 +74,7 @@ public import LeanCategories.Lattices.Valued.Reflection
 public import LeanCategories.Lattices.Valued.RootSystem
 public import LeanCategories.Lattices.Valued.RootLattice
 public import LeanCategories.Lattices.Valued.DefiniteNondegenerate
+public import LeanCategories.Lattices.Valued.DRootLattice
 public import LeanCategories.Lattices.Valued.Adele
 public import LeanCategories.Lattices.Valued.AdelicClass
 public import LeanCategories.Lattices.Valued.LocalDensity
