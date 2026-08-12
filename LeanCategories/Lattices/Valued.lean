@@ -30,6 +30,7 @@ public import LeanCategories.Lattices.Valued.Theta
 public import LeanCategories.Lattices.Valued.DefiniteIndefinite
 public import LeanCategories.Lattices.Valued.Mass
 public import LeanCategories.Lattices.Valued.ClassFiniteness
+public import LeanCategories.Lattices.Valued.GenusInvariants
 public import LeanCategories.Lattices.Valued.Witt
 public import LeanCategories.Lattices.Valued.Localization
 public import LeanCategories.Lattices.Valued.Completion
@@ -46,6 +47,7 @@ public import LeanCategories.Lattices.Valued.RankOneDual
 public import LeanCategories.Lattices.Valued.JordanComponent
 public import LeanCategories.Lattices.Valued.OrthogonalSummand
 public import LeanCategories.Lattices.Valued.JordanRecursion
+public import LeanCategories.Lattices.Valued.JordanInvariants
 public import LeanCategories.Lattices.Valued.Hasse
 public import LeanCategories.Lattices.Valued.HasseInvariance
 public import LeanCategories.Lattices.Valued.HilbertNorm
@@ -74,5 +76,6 @@ public import LeanCategories.Lattices.Valued.DefiniteNondegenerate
 public import LeanCategories.Lattices.Valued.Adele
 public import LeanCategories.Lattices.Valued.AdelicClass
 public import LeanCategories.Lattices.Valued.LocalDensity
+public import LeanCategories.Lattices.Valued.AdelicSpinorNorm
 
 @[expose] public section
