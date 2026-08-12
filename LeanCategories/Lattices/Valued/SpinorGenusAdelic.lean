@@ -91,6 +91,61 @@ theorem mem_spinorKernelSubgroup_iff (L : FiniteFormCat K K)
     g ∈ spinorKernelSubgroup L ↔ IsSpinorTrivial L g :=
   Iff.rfl
 
+/-! ### Transport of the spinor kernel along an isometry -/
+
+/-- The carrier equivalence of an isometry of finite symmetric forms. -/
+noncomputable abbrev finiteFormEquiv {L M : FiniteFormCat K K} (e : L ≅ M) :
+    L.obj.carrier ≃ₗ[K] M.obj.carrier :=
+  BilinModuleCat.linearEquivOfIso ((ObjectProperty.ι (isFiniteForm K K)).mapIso e)
+
+/-- An isometry identifies the orthogonal groups of its source and target. -/
+noncomputable def orthogonalCongr {L M : FiniteFormCat K K} (e : L ≅ M) :
+    BilinModuleCat.OrthogonalGroup L.obj ≃* BilinModuleCat.OrthogonalGroup M.obj :=
+  BilinModuleCat.OrthogonalGroup.congr ((ObjectProperty.ι (isFiniteForm K K)).mapIso e)
+
+/-- The image of an anisotropic vector under an isometry. -/
+noncomputable def anisotropicCongr {L M : FiniteFormCat K K} (e : L ≅ M)
+    (v : AnisotropicVector L) : AnisotropicVector M :=
+  ⟨finiteFormEquiv e v.1, by
+    rw [BilinModuleCat.linearEquivOfIso_pairing]
+    exact v.2⟩
+
+/-- An isometry preserves the value of an anisotropic vector. -/
+theorem anisotropicValue_congr {L M : FiniteFormCat K K} (e : L ≅ M)
+    (v : AnisotropicVector L) :
+    anisotropicValue M (anisotropicCongr e v) = anisotropicValue L v :=
+  Units.ext (BilinModuleCat.linearEquivOfIso_pairing _ _ _)
+
+/-- An isometry carries a reflection to the reflection in the image vector. -/
+theorem orthogonalCongr_reflectionOf {L M : FiniteFormCat K K} (e : L ≅ M)
+    (v : AnisotropicVector L) :
+    orthogonalCongr e (reflectionOf L v) = reflectionOf M (anisotropicCongr e v) := by
+  refine Subtype.ext (LinearEquiv.ext fun x ↦ ?_)
+  have hφ : ∀ y : L.obj.carrier,
+      reflectionFunctional M (finiteFormEquiv e v.1) (anisotropicCongr e v).2
+          (finiteFormEquiv e y) =
+        reflectionFunctional L v.1 v.2 y := by
+    intro y
+    simp only [reflectionFunctional, LinearMap.smul_apply, BilinModuleCat.bilinMap_apply,
+      smul_eq_mul, BilinModuleCat.linearEquivOfIso_pairing]
+  change finiteFormEquiv e (finiteFormReflection L v.1 v.2 ((finiteFormEquiv e).symm x)) =
+    finiteFormReflection M (finiteFormEquiv e v.1) (anisotropicCongr e v).2 x
+  rw [finiteFormReflection_apply, map_sub, map_smul, LinearEquiv.apply_symm_apply,
+    finiteFormReflection_apply, ← hφ, LinearEquiv.apply_symm_apply]
+
+/-- The spinor kernel is stable under transport along an isometry. -/
+theorem spinorKernelSubgroup_congr {L M : FiniteFormCat K K} (e : L ≅ M)
+    {g : BilinModuleCat.OrthogonalGroup L.obj} (hg : g ∈ spinorKernelSubgroup L) :
+    orthogonalCongr e g ∈ spinorKernelSubgroup M := by
+  obtain ⟨l, rfl, hl⟩ := hg
+  refine ⟨l.map (anisotropicCongr e), ?_, ?_⟩
+  · rw [List.map_map, map_list_prod, List.map_map]
+    exact congrArg List.prod (List.map_congr_left fun v _ ↦ orthogonalCongr_reflectionOf e v)
+  · rw [List.map_map]
+    rw [show (anisotropicValue M ∘ anisotropicCongr e) = anisotropicValue L from
+      funext fun v ↦ anisotropicValue_congr e v]
+    exact hl
+
 /-- A spinor norm sends a product of reflections to the class of the product of the values. -/
 theorem spinorNorm_prod_reflections (L : FiniteFormCat K K) (ν : SpinorNorm L)
     (l : List (AnisotropicVector L)) :
@@ -144,13 +199,77 @@ theorem spinorKernelSubgroup_eq_spinorKernel (L : FiniteFormCat K K)
   rw [← spinorNorm_prod_reflections L ν l, ← hl]
   exact MonoidHom.mem_ker.mp hg
 
-/-! ## The spinor genus of a finite integral lattice
+/-! ### The automorphism element of a composite isometry -/
 
-The declarations below live in `AdelicSpinor` while `SpinorGenus.lean` still exports the
-provisional names.
--/
+omit [Invertible (2 : K)] in
+/-- Transport of an automorphism element along an isometry conjugates the isometry. -/
+theorem orthogonalCongr_finiteFormAutomorphismElement {L M : FiniteFormCat K K} (e : L ≅ M)
+    (X : L ≅ L) :
+    orthogonalCongr e (finiteFormAutomorphismElement L X) =
+      finiteFormAutomorphismElement M (e.symm ≪≫ X ≪≫ e) :=
+  rfl
 
-namespace AdelicSpinor
+omit [Invertible (2 : K)] in
+/-- The inverse automorphism element is the element of the inverse isometry. -/
+theorem finiteFormAutomorphismElement_symm {L : FiniteFormCat K K} (X : L ≅ L) :
+    (finiteFormAutomorphismElement L X)⁻¹ = finiteFormAutomorphismElement L X.symm :=
+  rfl
+
+omit [Invertible (2 : K)] in
+/-- The product of automorphism elements is the element of the composite isometry. -/
+theorem finiteFormAutomorphismElement_mul {L : FiniteFormCat K K} (X Y : L ≅ L) :
+    finiteFormAutomorphismElement L X * finiteFormAutomorphismElement L Y =
+      finiteFormAutomorphismElement L (Y ≪≫ X) :=
+  rfl
+
+/-! ## Scalar extension through an intermediate ring -/
+
+section CancelBaseChange
+
+variable {R A B : Type u} [CommRing R] [CommRing A] [CommRing B]
+  [Algebra R A] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+  {P Q : Type u} [AddCommGroup P] [Module R P] [AddCommGroup Q] [Module R Q]
+
+/-- The comparison of the direct scalar extension with the iterated one. -/
+noncomputable abbrev cancelBaseChangeEquiv (R A B : Type u) [CommRing R] [CommRing A]
+    [CommRing B] [Algebra R A] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+    (P : Type u) [AddCommGroup P] [Module R P] :
+    TensorProduct A B (TensorProduct R A P) ≃ₗ[B] TensorProduct R B P :=
+  TensorProduct.AlgebraTensorModule.cancelBaseChange R A B B P
+
+/-- A map of direct scalar extensions which agrees with an intermediate map on the generators
+`1 ⊗ₜ x` agrees with it on every element of the intermediate extension. -/
+theorem cancelBaseChange_tmul_comm
+    (e : TensorProduct R A P →ₗ[A] TensorProduct R A Q)
+    (f : TensorProduct R B P →ₗ[B] TensorProduct R B Q)
+    (h : ∀ x : P, f (1 ⊗ₜ[R] x) = cancelBaseChangeEquiv R A B Q (1 ⊗ₜ[A] e (1 ⊗ₜ[R] x)))
+    (w : TensorProduct R A P) :
+    f (cancelBaseChangeEquiv R A B P (1 ⊗ₜ[A] w)) =
+      cancelBaseChangeEquiv R A B Q (1 ⊗ₜ[A] e w) := by
+  have key : ∀ (b : B) (u : TensorProduct R A Q),
+      cancelBaseChangeEquiv R A B Q (b ⊗ₜ[A] u) =
+        b • cancelBaseChangeEquiv R A B Q (1 ⊗ₜ[A] u) := by
+    intro b u
+    have hb : (b ⊗ₜ[A] u : TensorProduct A B (TensorProduct R A Q)) = b • (1 ⊗ₜ[A] u) := by
+      rw [TensorProduct.smul_tmul', smul_eq_mul, mul_one]
+    rw [hb, map_smul]
+  induction w using TensorProduct.induction_on with
+  | zero => simp
+  | tmul a x =>
+    have hP : (a ⊗ₜ[R] x : TensorProduct R A P) = a • (1 ⊗ₜ[R] x) := by
+      rw [TensorProduct.smul_tmul', smul_eq_mul, mul_one]
+    have hB : ((a • (1 : B)) ⊗ₜ[R] x : TensorProduct R B P) =
+        (a • (1 : B)) • (1 ⊗ₜ[R] x) := by
+      rw [TensorProduct.smul_tmul', smul_eq_mul, mul_one]
+    rw [TensorProduct.AlgebraTensorModule.cancelBaseChange_tmul, hB, map_smul, h x, hP,
+      map_smul, ← TensorProduct.smul_tmul]
+    conv_rhs => rw [key]
+  | add w₁ w₂ h₁ h₂ => rw [TensorProduct.tmul_add, map_add, map_add, h₁, h₂, map_add,
+      TensorProduct.tmul_add, map_add]
+
+end CancelBaseChange
+
+/-! ## The spinor genus of a finite integral lattice -/
 
 /-- The rational scalar extension of a finite integral lattice. -/
 noncomputable abbrev RationalLattice (L : FiniteProjectiveLatticeCat ℤ ℤ) :=
@@ -284,6 +403,92 @@ theorem isPadicCompletionExtensionOf_refl (p : ℕ) [Fact p.Prime]
   intro x
   simp
 
+/-- Composites of scalar extensions are scalar extensions of composites. -/
+theorem isPadicScalarExtensionOf_trans (p : ℕ) [Fact p.Prime]
+    {L M N : FiniteProjectiveLatticeCat ℤ ℤ}
+    {e₁ : RationalLattice L ≅ RationalLattice M}
+    {f₁ : PadicFieldLattice p L ≅ PadicFieldLattice p M}
+    {e₂ : RationalLattice M ≅ RationalLattice N}
+    {f₂ : PadicFieldLattice p M ≅ PadicFieldLattice p N}
+    (h₁ : IsPadicScalarExtensionOf p e₁ f₁) (h₂ : IsPadicScalarExtensionOf p e₂ f₂) :
+    IsPadicScalarExtensionOf p (e₁ ≪≫ e₂) (f₁ ≪≫ f₂) := by
+  intro x
+  change ((finiteProjectiveForget ℚ_[p] ℚ_[p]).mapIso f₂).toLinearEquiv
+      (((finiteProjectiveForget ℚ_[p] ℚ_[p]).mapIso f₁).toLinearEquiv (1 ⊗ₜ[ℤ] x)) = _
+  rw [h₁ x]
+  exact cancelBaseChange_tmul_comm
+    ((finiteProjectiveForget ℚ ℚ).mapIso e₂).toLinearEquiv.toLinearMap
+    ((finiteProjectiveForget ℚ_[p] ℚ_[p]).mapIso f₂).toLinearEquiv.toLinearMap h₂ _
+
+/-- Composites of completion extensions are completion extensions of composites. -/
+theorem isPadicCompletionExtensionOf_trans (p : ℕ) [Fact p.Prime]
+    {L M N : FiniteProjectiveLatticeCat ℤ ℤ}
+    {e₁ : PadicIntegralLattice p L ≅ PadicIntegralLattice p M}
+    {f₁ : PadicFieldLattice p L ≅ PadicFieldLattice p M}
+    {e₂ : PadicIntegralLattice p M ≅ PadicIntegralLattice p N}
+    {f₂ : PadicFieldLattice p M ≅ PadicFieldLattice p N}
+    (h₁ : IsPadicCompletionExtensionOf p e₁ f₁) (h₂ : IsPadicCompletionExtensionOf p e₂ f₂) :
+    IsPadicCompletionExtensionOf p (e₁ ≪≫ e₂) (f₁ ≪≫ f₂) := by
+  intro x
+  change ((finiteProjectiveForget ℚ_[p] ℚ_[p]).mapIso f₂).toLinearEquiv
+      (((finiteProjectiveForget ℚ_[p] ℚ_[p]).mapIso f₁).toLinearEquiv (1 ⊗ₜ[ℤ] x)) = _
+  rw [h₁ x]
+  exact cancelBaseChange_tmul_comm
+    ((finiteProjectiveForget ℤ_[p] ℤ_[p]).mapIso e₂).toLinearEquiv.toLinearMap
+    ((finiteProjectiveForget ℚ_[p] ℚ_[p]).mapIso f₂).toLinearEquiv.toLinearMap h₂ _
+
+/-- Inverses of scalar extensions are scalar extensions of inverses. -/
+theorem isPadicScalarExtensionOf_symm (p : ℕ) [Fact p.Prime]
+    {L M : FiniteProjectiveLatticeCat ℤ ℤ}
+    {e : RationalLattice L ≅ RationalLattice M}
+    {f : PadicFieldLattice p L ≅ PadicFieldLattice p M}
+    (h : IsPadicScalarExtensionOf p e f) :
+    IsPadicScalarExtensionOf p e.symm f.symm := by
+  intro y
+  have hf : ((finiteProjectiveForget ℚ_[p] ℚ_[p]).mapIso f.symm).toLinearEquiv =
+    ((finiteProjectiveForget ℚ_[p] ℚ_[p]).mapIso f).toLinearEquiv.symm := rfl
+  have he : ((finiteProjectiveForget ℚ ℚ).mapIso e.symm).toLinearEquiv =
+    ((finiteProjectiveForget ℚ ℚ).mapIso e).toLinearEquiv.symm := rfl
+  rw [hf, he, LinearEquiv.symm_apply_eq]
+  refine ((cancelBaseChange_tmul_comm
+    ((finiteProjectiveForget ℚ ℚ).mapIso e).toLinearEquiv.toLinearMap
+    ((finiteProjectiveForget ℚ_[p] ℚ_[p]).mapIso f).toLinearEquiv.toLinearMap h
+    (((finiteProjectiveForget ℚ ℚ).mapIso e).toLinearEquiv.symm (1 ⊗ₜ[ℤ] y))).trans ?_).symm
+  have happ : ((finiteProjectiveForget ℚ ℚ).mapIso e).toLinearEquiv
+      (((finiteProjectiveForget ℚ ℚ).mapIso e).toLinearEquiv.symm (1 ⊗ₜ[ℤ] y)) = 1 ⊗ₜ[ℤ] y :=
+    LinearEquiv.apply_symm_apply _ _
+  change cancelBaseChangeEquiv ℤ ℚ ℚ_[p] M.obj.obj.carrier
+      (1 ⊗ₜ[ℚ] ((finiteProjectiveForget ℚ ℚ).mapIso e).toLinearEquiv
+        (((finiteProjectiveForget ℚ ℚ).mapIso e).toLinearEquiv.symm (1 ⊗ₜ[ℤ] y))) = 1 ⊗ₜ[ℤ] y
+  rw [happ, TensorProduct.AlgebraTensorModule.cancelBaseChange_tmul, one_smul]
+
+/-- Inverses of completion extensions are completion extensions of inverses. -/
+theorem isPadicCompletionExtensionOf_symm (p : ℕ) [Fact p.Prime]
+    {L M : FiniteProjectiveLatticeCat ℤ ℤ}
+    {e : PadicIntegralLattice p L ≅ PadicIntegralLattice p M}
+    {f : PadicFieldLattice p L ≅ PadicFieldLattice p M}
+    (h : IsPadicCompletionExtensionOf p e f) :
+    IsPadicCompletionExtensionOf p e.symm f.symm := by
+  intro y
+  have hf : ((finiteProjectiveForget ℚ_[p] ℚ_[p]).mapIso f.symm).toLinearEquiv =
+    ((finiteProjectiveForget ℚ_[p] ℚ_[p]).mapIso f).toLinearEquiv.symm := rfl
+  have he : ((finiteProjectiveForget ℤ_[p] ℤ_[p]).mapIso e.symm).toLinearEquiv =
+    ((finiteProjectiveForget ℤ_[p] ℤ_[p]).mapIso e).toLinearEquiv.symm := rfl
+  rw [hf, he, LinearEquiv.symm_apply_eq]
+  refine ((cancelBaseChange_tmul_comm
+    ((finiteProjectiveForget ℤ_[p] ℤ_[p]).mapIso e).toLinearEquiv.toLinearMap
+    ((finiteProjectiveForget ℚ_[p] ℚ_[p]).mapIso f).toLinearEquiv.toLinearMap h
+    (((finiteProjectiveForget ℤ_[p] ℤ_[p]).mapIso e).toLinearEquiv.symm (1 ⊗ₜ[ℤ] y))).trans ?_).symm
+  have happ : ((finiteProjectiveForget ℤ_[p] ℤ_[p]).mapIso e).toLinearEquiv
+      (((finiteProjectiveForget ℤ_[p] ℤ_[p]).mapIso e).toLinearEquiv.symm (1 ⊗ₜ[ℤ] y)) =
+      1 ⊗ₜ[ℤ] y :=
+    LinearEquiv.apply_symm_apply _ _
+  change cancelBaseChangeEquiv ℤ ℤ_[p] ℚ_[p] M.obj.obj.carrier
+      (1 ⊗ₜ[ℤ_[p]] ((finiteProjectiveForget ℤ_[p] ℤ_[p]).mapIso e).toLinearEquiv
+        (((finiteProjectiveForget ℤ_[p] ℤ_[p]).mapIso e).toLinearEquiv.symm (1 ⊗ₜ[ℤ] y))) =
+    1 ⊗ₜ[ℤ] y
+  rw [happ, TensorProduct.AlgebraTensorModule.cancelBaseChange_tmul, one_smul]
+
 /-- Comparing an isometry with itself gives the identity. -/
 theorem padicComparison_self (p : ℕ) [Fact p.Prime]
     {L M : FiniteProjectiveLatticeCat ℤ ℤ}
@@ -292,6 +497,32 @@ theorem padicComparison_self (p : ℕ) [Fact p.Prime]
   refine Subtype.ext (LinearEquiv.ext fun x ↦ ?_)
   simp only [padicComparison, finiteFormAutomorphismElement, Iso.self_symm_id, Functor.mapIso_refl]
   rfl
+
+/-- Comparing inverse isometries conjugates the comparison element by the current isometry. -/
+theorem padicComparison_symm (p : ℕ) [Fact p.Prime]
+    {L M : FiniteProjectiveLatticeCat ℤ ℤ}
+    (reference current : PadicFieldLattice p L ≅ PadicFieldLattice p M) :
+    padicComparison p reference.symm current.symm =
+      orthogonalCongr ((finiteProjectiveToFiniteForm ℚ_[p] ℚ_[p]).mapIso current)
+        (padicComparison p reference current)⁻¹ := by
+  simp only [padicComparison, Functor.mapIso_symm, Iso.symm_symm_eq,
+    finiteFormAutomorphismElement_symm, orthogonalCongr_finiteFormAutomorphismElement]
+  congr 1
+  simp [Iso.trans_assoc]
+
+/-- Comparing composite isometries multiplies the comparison elements. -/
+theorem padicComparison_trans (p : ℕ) [Fact p.Prime]
+    {L M N : FiniteProjectiveLatticeCat ℤ ℤ}
+    (reference₁ current₁ : PadicFieldLattice p L ≅ PadicFieldLattice p M)
+    (reference₂ current₂ : PadicFieldLattice p M ≅ PadicFieldLattice p N) :
+    padicComparison p (reference₁ ≪≫ reference₂) (current₁ ≪≫ current₂) =
+      orthogonalCongr ((finiteProjectiveToFiniteForm ℚ_[p] ℚ_[p]).mapIso reference₁).symm
+          (padicComparison p reference₂ current₂) *
+        padicComparison p reference₁ current₁ := by
+  simp only [padicComparison, Functor.mapIso_trans, Iso.trans_symm, Iso.symm_symm_eq,
+    orthogonalCongr_finiteFormAutomorphismElement, finiteFormAutomorphismElement_mul]
+  congr 1
+  simp [Iso.trans_assoc]
 
 /-- Every lattice lies in its own spinor genus. -/
 theorem sameSpinorGenus_refl (L : FiniteProjectiveLatticeCat ℤ ℤ) :
@@ -309,6 +540,64 @@ theorem sameSpinorGenus_refl (L : FiniteProjectiveLatticeCat ℤ ℤ) :
            rw [padicComparison_self]
            exact Subgroup.one_mem _ } }⟩
 
-end AdelicSpinor
+/-- The spinor genus relation is symmetric. -/
+theorem sameSpinorGenus_symm {L M : FiniteProjectiveLatticeCat ℤ ℤ}
+    (h : SameSpinorGenus L M) : SameSpinorGenus M L := by
+  obtain ⟨w⟩ := h
+  refine ⟨{ genus := sameGenus_symm w.genus
+            rational := w.rational.symm
+            atPrime := fun p hp ↦ ?_ }⟩
+  letI : Fact p.Prime := ⟨hp⟩
+  exact
+    { integral := (w.atPrime p hp).integral.symm
+      reference := (w.atPrime p hp).reference.symm
+      current := (w.atPrime p hp).current.symm
+      reference_isScalarExtension :=
+        isPadicScalarExtensionOf_symm p (w.atPrime p hp).reference_isScalarExtension
+      current_isCompletionExtension :=
+        isPadicCompletionExtensionOf_symm p (w.atPrime p hp).current_isCompletionExtension
+      spinorTrivial := by
+        rw [padicComparison_symm]
+        exact spinorKernelSubgroup_congr _
+          (Subgroup.inv_mem _ (w.atPrime p hp).spinorTrivial) }
+
+/-- The spinor genus relation is transitive. -/
+theorem sameSpinorGenus_trans {L M N : FiniteProjectiveLatticeCat ℤ ℤ}
+    (hLM : SameSpinorGenus L M) (hMN : SameSpinorGenus M N) : SameSpinorGenus L N := by
+  obtain ⟨v⟩ := hLM
+  obtain ⟨w⟩ := hMN
+  refine ⟨{ genus := sameGenus_trans v.genus w.genus
+            rational := v.rational ≪≫ w.rational
+            atPrime := fun p hp ↦ ?_ }⟩
+  letI : Fact p.Prime := ⟨hp⟩
+  exact
+    { integral := (v.atPrime p hp).integral ≪≫ (w.atPrime p hp).integral
+      reference := (v.atPrime p hp).reference ≪≫ (w.atPrime p hp).reference
+      current := (v.atPrime p hp).current ≪≫ (w.atPrime p hp).current
+      reference_isScalarExtension := isPadicScalarExtensionOf_trans p
+        (v.atPrime p hp).reference_isScalarExtension
+        (w.atPrime p hp).reference_isScalarExtension
+      current_isCompletionExtension := isPadicCompletionExtensionOf_trans p
+        (v.atPrime p hp).current_isCompletionExtension
+        (w.atPrime p hp).current_isCompletionExtension
+      spinorTrivial := by
+        rw [padicComparison_trans]
+        exact Subgroup.mul_mem _
+          (spinorKernelSubgroup_congr _ (w.atPrime p hp).spinorTrivial)
+          (v.atPrime p hp).spinorTrivial }
+
+/-- The spinor genus as an equivalence relation on finite integral lattices. -/
+noncomputable def spinorGenusSetoid : Setoid (FiniteProjectiveLatticeCat ℤ ℤ) where
+  r := SameSpinorGenus
+  iseqv := ⟨sameSpinorGenus_refl, sameSpinorGenus_symm, sameSpinorGenus_trans⟩
+
+/-- Lattices in the spinor genus of `L`. -/
+noncomputable def spinorGenusProperty (L : FiniteProjectiveLatticeCat ℤ ℤ) :
+    ObjectProperty (FiniteProjectiveLatticeCat ℤ ℤ) :=
+  SameSpinorGenus L
+
+/-- Finite integral lattices in a fixed spinor genus. -/
+noncomputable abbrev SpinorGenusCat (L : FiniteProjectiveLatticeCat ℤ ℤ) :=
+  (spinorGenusProperty L).FullSubcategory
 
 end LeanCategories.Lattices.Valued

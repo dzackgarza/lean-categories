@@ -57,11 +57,11 @@ public import LeanCategories.Lattices.Valued.LipschitzAction
 public import LeanCategories.Lattices.Valued.CliffordCenter
 public import LeanCategories.Lattices.Valued.ContractionScalars
 public import LeanCategories.Lattices.Valued.SpinorNormDescent
+public import LeanCategories.Lattices.Valued.CanonicalSpinorNorm
 public import LeanCategories.Lattices.Valued.ReflectionTransitivity
 public import LeanCategories.Lattices.Valued.OrthogonalSplitting
 public import LeanCategories.Lattices.Valued.ReflectionGeneration
 public import LeanCategories.Lattices.Valued.RestrictForm
-public import LeanCategories.Lattices.Valued.SpinorGenus
 public import LeanCategories.Lattices.Valued.SpinorGenusAdelic
 public import LeanCategories.Lattices.Valued.Involution
 public import LeanCategories.Lattices.Valued.Equivariant
