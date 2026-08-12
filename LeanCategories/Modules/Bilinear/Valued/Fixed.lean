@@ -21,6 +21,23 @@ open CategoryTheory
 open CategoryTheory.Limits
 open Opposite
 
+namespace ModuleCat
+
+universe v
+
+/-- Integer scalars on a `ModuleCat ℤ` carrier elaborate through `SubNegMonoid.toZSMul`, the
+action of the carrier's additive group. Instance search for `Module ℤ` on the same carrier
+returns the object's own field `ModuleCat.isModule`, which shadows `AddCommGroup.toIntModule`.
+The two actions are equal, since `Module ℤ M` is a subsingleton, but they are not definitionally
+equal, so no `Module`-level lemma (`map_smul`, `smul_add`, `add_smul`, `smul_zero`, ...) fires on
+a `zsmul` term. This is the simp normal form that moves a `zsmul` onto the module action. -/
+@[simp]
+theorem zsmul_eq_smul {M : ModuleCat.{v} ℤ} (n : ℤ) (x : M) :
+    n • x = @HSMul.hSMul ℤ M M (@instHSMul ℤ M M.isModule.toSMul) n x :=
+  (Int.cast_smul_eq_zsmul ℤ n x).symm
+
+end ModuleCat
+
 namespace LeanCategories.Modules.Bilinear.Valued
 
 universe u

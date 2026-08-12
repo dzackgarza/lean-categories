@@ -201,15 +201,14 @@ theorem ker_scaledProjection (hL : IsPositiveDefiniteLattice L) {x : L.obj.obj.c
       have hdd : d • (m' • y) = d • (c' • x) := by
         rw [smul_smul, smul_smul, hmd, hcd]
         exact hkey
-      exact smul_right_injective L.obj.obj.carrier hdpos.ne'
-        (by simpa only [← Int.cast_smul_eq_zsmul ℤ, Int.cast_id] using hdd)
+      exact smul_right_injective L.obj.obj.carrier hdpos.ne' (by simpa using hdd)
     obtain ⟨u, v, huv⟩ := hcop
     have hxeq : x = m' • (u • x + v • y) := by
       have h1 : m' • (u • x + v • y) = (m' * u) • x + v • (m' • y) := by
-        simp only [← Int.cast_smul_eq_zsmul ℤ, Int.cast_id]
+        simp only [ModuleCat.zsmul_eq_smul]
         module
       have h2 : (m' * u) • x + v • (c' • x) = (u * m' + v * c') • x := by
-        simp only [← Int.cast_smul_eq_zsmul ℤ, Int.cast_id]
+        simp only [ModuleCat.zsmul_eq_smul]
         module
       rw [h1, hsmul, h2, huv, one_smul]
     have hm'one : m' = 1 := by
@@ -220,7 +219,7 @@ theorem ker_scaledProjection (hL : IsPositiveDefiniteLattice L) {x : L.obj.obj.c
     rw [Submodule.mem_span_singleton]
     refine ⟨c', ?_⟩
     rw [hm'one, one_smul] at hsmul
-    simpa only [← Int.cast_smul_eq_zsmul ℤ, Int.cast_id] using hsmul.symm
+    simpa using hsmul.symm
   · rw [Submodule.span_le]
     rintro _ rfl
     simp
@@ -265,7 +264,7 @@ theorem span_lift (hL : IsPositiveDefiniteLattice L) (hx : L.IsMinimalVector x)
   rw [Submodule.mem_span_range_iff_exists_fun] at hp
   obtain ⟨c, hc⟩ := hp
   have hker : y - ∑ i, c i • w i ∈ LinearMap.ker (L.scaledProjection x) := by
-    simp only [← Int.cast_smul_eq_zsmul ℤ, Int.cast_id, LinearMap.mem_ker, map_sub, map_sum,
+    simp only [ModuleCat.zsmul_eq_smul, LinearMap.mem_ker, map_sub, map_sum,
       LinearMap.map_smul, hw, hc, sub_self]
   rw [L.ker_scaledProjection hL hx, Submodule.mem_span_singleton] at hker
   obtain ⟨a, ha⟩ := hker
@@ -274,7 +273,7 @@ theorem span_lift (hL : IsPositiveDefiniteLattice L) (hx : L.IsMinimalVector x)
   rw [Fintype.sum_sum_type]
   simp only [Sum.elim_inl, Sum.elim_inr, Finset.univ_unique, Finset.sum_singleton]
   rw [ha]
-  simp only [← Int.cast_smul_eq_zsmul ℤ, Int.cast_id, sub_add_cancel]
+  simp only [ModuleCat.zsmul_eq_smul, sub_add_cancel]
 
 /-- **A primitive vector starts a basis.** A basis of the rescaled orthogonal complement lifts to
 a basis of the whole lattice whose first vector is the shortest vector `x`. -/
@@ -388,7 +387,7 @@ theorem coordMatrix_sum_elim {x : L.obj.obj.carrier} {ι : Type*} [DecidableEq �
         L.obj.obj.pairing x (w i) • Finsupp.single (Sum.inl ()) (1 : ℤ) := by
     intro i
     rw [← hw i, scaledProjection_apply]
-    simp only [← Int.cast_smul_eq_zsmul ℤ, Int.cast_id, map_sub, map_smul]
+    simp only [ModuleCat.zsmul_eq_smul, map_sub, map_smul]
     rw [← hew i, ← hex, e.repr_self, e.repr_self]
   have hxrepr : e.repr x = Finsupp.single (Sum.inl ()) (1 : ℤ) := by rw [← hex, e.repr_self]
   ext p i

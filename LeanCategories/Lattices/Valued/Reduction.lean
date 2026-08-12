@@ -194,11 +194,11 @@ def scaledProjection (x : L.obj.obj.carrier) :
     L.obj.obj.carrier →ₗ[ℤ] L.obj.obj.carrier where
   toFun y := L.obj.obj.pairing x x • y - L.obj.obj.pairing x y • x
   map_add' y z := by
-    simp only [BilinModuleCat.pairing_add_right, ← Int.cast_smul_eq_zsmul ℤ, Int.cast_id]
+    simp only [BilinModuleCat.pairing_add_right, ModuleCat.zsmul_eq_smul]
     module
   map_smul' r y := by
     simp only [RingHom.id_apply, BilinModuleCat.pairing_smul_right, smul_eq_mul,
-      ← Int.cast_smul_eq_zsmul ℤ, Int.cast_id]
+      ModuleCat.zsmul_eq_smul]
     module
 
 @[simp]
