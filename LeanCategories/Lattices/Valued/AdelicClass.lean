@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Lattices.Valued.Adele
 public import LeanCategories.Lattices.Valued.TopologicalOrthogonalGroup
+public import LeanCategories.Algebra.IntegralGeneralLinearGroup
 public import LeanCategories.ForMathlib.AdicCompletionLocallyCompact
 public import Mathlib.GroupTheory.DoubleCoset
 
@@ -22,6 +23,7 @@ diagonal rational subgroup without a choice of basis.
 noncomputable section
 
 open IsDedekindDomain NumberField
+open LeanCategories.Algebra
 open LeanCategories.Modules.Bilinear.Valued
 open scoped NumberField
 open scoped Pointwise
@@ -32,6 +34,52 @@ namespace LeanCategories.Lattices.Valued
 universe u
 
 variable (K : Type u) [Field K] [NumberField K]
+
+/-- Integral matrices inside the finite adelic orthogonal group of a Gram matrix. -/
+abbrev FiniteIntegralMatrixOrthogonalSubgroup
+    {I : Type u} [Fintype I] [DecidableEq I]
+    (B : Matrix I I (FiniteAdeleRing (𝓞 K) K)) :
+    Subgroup (MatrixOrthogonalGroup B) :=
+  (FiniteIntegralGeneralLinearSubgroup K I).comap
+    (MatrixOrthogonalGroup B).subtype
+
+/-- Integral matrices form an open subgroup of the finite adelic orthogonal group. -/
+theorem isOpen_finiteIntegralMatrixOrthogonalSubgroup
+    {I : Type u} [Fintype I] [DecidableEq I]
+    (B : Matrix I I (FiniteAdeleRing (𝓞 K) K)) :
+    IsOpen (FiniteIntegralMatrixOrthogonalSubgroup K B :
+      Set (MatrixOrthogonalGroup B)) := by
+  exact (isOpen_finiteIntegralGeneralLinearSubgroup K I).preimage
+    continuous_subtype_val
+
+/-- Integral matrices form a compact subgroup of the finite adelic orthogonal group. -/
+theorem isCompact_finiteIntegralMatrixOrthogonalSubgroup
+    {I : Type u} [Fintype I] [DecidableEq I]
+    (B : Matrix I I (FiniteAdeleRing (𝓞 K) K)) :
+    IsCompact (FiniteIntegralMatrixOrthogonalSubgroup K B :
+      Set (MatrixOrthogonalGroup B)) := by
+  letI : T2Space (FiniteAdeleRing (𝓞 K) K) := by
+    change T2Space (Πʳ v : HeightOneSpectrum (𝓞 K),
+      [v.adicCompletion K, v.adicCompletionIntegers K])
+    infer_instance
+  rw [Topology.IsEmbedding.subtypeVal.isCompact_iff]
+  have hset :
+      ((fun g : MatrixOrthogonalGroup B =>
+          (g : Matrix.GeneralLinearGroup I (FiniteAdeleRing (𝓞 K) K))) ''
+        (FiniteIntegralMatrixOrthogonalSubgroup K B : Set (MatrixOrthogonalGroup B))) =
+      (FiniteIntegralGeneralLinearSubgroup K I :
+          Set (Matrix.GeneralLinearGroup I (FiniteAdeleRing (𝓞 K) K))) ∩
+        (MatrixOrthogonalGroup B :
+          Set (Matrix.GeneralLinearGroup I (FiniteAdeleRing (𝓞 K) K))) := by
+    ext g
+    constructor
+    · rintro ⟨h, hh, rfl⟩
+      exact ⟨hh, h.property⟩
+    · rintro ⟨hg, hB⟩
+      exact ⟨⟨g, hB⟩, hg, rfl⟩
+  rw [hset]
+  exact (isCompact_finiteIntegralGeneralLinearSubgroup K I).inter_right
+    (matrixOrthogonalGroup_isClosed B)
 
 /-- A selected finite place, obtained from a maximal ideal of the number ring. -/
 noncomputable def numberRingFinitePlace : HeightOneSpectrum (𝓞 K) := by
@@ -124,6 +172,45 @@ noncomputable instance rationalFiniteAdelicOrthogonalGroupTopology
     (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
     TopologicalSpace (RationalFiniteAdelicOrthogonalGroup K L) :=
   orthogonalGroupTopology _ (rationalFiniteAdeleBasis K L)
+
+/-- The selected basis gives a homeomorphism to the matrix orthogonal group. -/
+noncomputable def rationalFiniteAdeleOrthogonalHomeomorph
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    RationalFiniteAdelicOrthogonalGroup K L ≃ₜ
+      MatrixOrthogonalGroup
+        (gramMatrix
+          ((baseChangeIntegral K (FiniteAdeleRing (𝓞 K) K)).obj
+            (NumberFieldRationalLattice K L))
+          (rationalFiniteAdeleBasis K L)) :=
+  (orthogonalGroupMatrixEquiv _ (rationalFiniteAdeleBasis K L)).toEquiv
+    |>.toHomeomorphOfIsInducing ⟨rfl⟩
+
+/-- Integral matrices in the selected rational basis. -/
+abbrev RationalBasisIntegralOrthogonalSubgroup
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    Subgroup (RationalFiniteAdelicOrthogonalGroup K L) :=
+  (FiniteIntegralMatrixOrthogonalSubgroup K
+    (gramMatrix
+      ((baseChangeIntegral K (FiniteAdeleRing (𝓞 K) K)).obj
+        (NumberFieldRationalLattice K L))
+      (rationalFiniteAdeleBasis K L))).comap
+        (orthogonalGroupMatrixEquiv _ (rationalFiniteAdeleBasis K L)).toMonoidHom
+
+/-- Basis-integral orthogonal matrices form an open subgroup. -/
+theorem isOpen_rationalBasisIntegralOrthogonalSubgroup
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    IsOpen (RationalBasisIntegralOrthogonalSubgroup K L :
+      Set (RationalFiniteAdelicOrthogonalGroup K L)) := by
+  exact (isOpen_finiteIntegralMatrixOrthogonalSubgroup K _).preimage
+    (rationalFiniteAdeleOrthogonalHomeomorph K L).continuous
+
+/-- Basis-integral orthogonal matrices form a compact subgroup. -/
+theorem isCompact_rationalBasisIntegralOrthogonalSubgroup
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    IsCompact (RationalBasisIntegralOrthogonalSubgroup K L :
+      Set (RationalFiniteAdelicOrthogonalGroup K L)) := by
+  exact (rationalFiniteAdeleOrthogonalHomeomorph K L).isCompact_preimage.mpr
+    (isCompact_finiteIntegralMatrixOrthogonalSubgroup K _)
 
 /-- The finite adelic orthogonal group is a topological group. -/
 noncomputable instance rationalFiniteAdelicOrthogonalGroupIsTopologicalGroup
