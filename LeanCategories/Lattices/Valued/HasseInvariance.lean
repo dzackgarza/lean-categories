@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
+public import LeanCategories.ForMathlib.SymmetricPairProduct
 public import LeanCategories.ForMathlib.WittCancellation
 public import LeanCategories.Lattices.Valued.Hasse
 
@@ -277,6 +278,15 @@ theorem hasseMinkowskiInvariantOfDiagonal_eq_of_equivalent {n : ℕ} (w w' : Fin
       exact hcancel
     refine hvalue.trans ?_
     exact hasseMinkowskiInvariantOfDiagonal_cons_congr b c v (ih c v hcancel) hdetv
+
+omit [Invertible (2 : K)] [HasBilinearHilbertSymbol K] in
+/-- Reordering the coefficients does not change the Hasse--Minkowski value. -/
+theorem hasseMinkowskiInvariantOfDiagonal_comp_perm {n : ℕ} (w : Fin n → Kˣ)
+    (σ : Equiv.Perm (Fin n)) :
+    hasseMinkowskiInvariantOfDiagonal (w ∘ σ) =
+      hasseMinkowskiInvariantOfDiagonal w :=
+  prod_increasing_pairs_comp_perm (fun a b : Kˣ => hilbertSymbol (a : K) (b : K))
+    (fun a b => hilbertSymbol_comm (a : K) (b : K)) w σ
 
 /-- Reindexing the coordinates of a diagonal form is an isometry. -/
 noncomputable def weightedSumSquaresReindex {ι κ : Type*} [Fintype ι] [Fintype κ]
