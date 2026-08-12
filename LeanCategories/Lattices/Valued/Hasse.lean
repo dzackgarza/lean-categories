@@ -321,6 +321,43 @@ theorem hasseMinkowskiInvariantOfDiagonal_cons_prod [HasBilinearHilbertSymbol K]
         hilbertSymbol (a : K) ((∏ i, w i : Kˣ) : K) := by
   rw [hasseMinkowskiInvariantOfDiagonal_cons, hilbertSymbol_prod]
 
+/-- Unit weights and their scalar images give the same diagonal form. -/
+theorem weightedSumSquares_units {n : ℕ} (w : Fin n → Kˣ) :
+    QuadraticMap.weightedSumSquares K (fun i => (w i : K)) =
+      QuadraticMap.weightedSumSquares K w := by
+  ext v
+  simp [QuadraticMap.weightedSumSquares_apply, Units.smul_def]
+
+/-- Rescaling the coordinates by units is an isometry of diagonal forms. -/
+noncomputable def weightedSumSquaresRescale {n : ℕ} (w s : Fin n → Kˣ) :
+    (QuadraticMap.weightedSumSquares K fun i => w i * (s i * s i)).IsometryEquiv
+      (QuadraticMap.weightedSumSquares K w) where
+  toLinearEquiv := LinearEquiv.piCongrRight fun i => LinearEquiv.smulOfUnit (s i)
+  map_app' x := by
+    change (QuadraticMap.weightedSumSquares K w) (fun i => (s i : K) * x i) = _
+    simp only [QuadraticMap.weightedSumSquares_apply, Units.smul_def, Units.val_mul]
+    exact Finset.sum_congr rfl fun i _ => by ring
+
+/-- Diagonal forms whose weights differ by squares are equivalent. -/
+theorem equivalent_weightedSumSquares_rescale {n : ℕ} (w s : Fin n → Kˣ) :
+    QuadraticMap.Equivalent
+      (QuadraticMap.weightedSumSquares K fun i => w i * (s i * s i))
+      (QuadraticMap.weightedSumSquares K w) :=
+  ⟨weightedSumSquaresRescale w s⟩
+
+/-- Prepending a coefficient preserves equality of Hasse--Minkowski values when the
+determinants of the remaining coefficients agree. -/
+theorem hasseMinkowskiInvariantOfDiagonal_cons_congr [HasBilinearHilbertSymbol K]
+    {n : ℕ} (a : Kˣ) (v v' : Fin n → Kˣ)
+    (hvalue : hasseMinkowskiInvariantOfDiagonal v =
+      hasseMinkowskiInvariantOfDiagonal v')
+    (hdet : fieldSquareClass (∏ i, v i) = fieldSquareClass (∏ i, v' i)) :
+    hasseMinkowskiInvariantOfDiagonal (Fin.cons a v) =
+      hasseMinkowskiInvariantOfDiagonal (Fin.cons a v') := by
+  rw [hasseMinkowskiInvariantOfDiagonal_cons_prod,
+    hasseMinkowskiInvariantOfDiagonal_cons_prod, hvalue,
+    hilbertSymbol_eq_of_fieldSquareClass_eq_right a (∏ i, v i) (∏ i, v' i) hdet]
+
 /-- The Hasse--Minkowski value of a diagonal form with two leading coefficients.
 
 The leading pair contributes its own Hilbert symbol and one symbol of its product against

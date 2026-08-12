@@ -45,6 +45,12 @@ theorem modSquares_sq {G : Type u} [CommGroup G]
   apply (QuotientGroup.eq_one_iff _).mpr
   exact Subgroup.mem_square.mpr ⟨g, pow_two g⟩
 
+/-- Multiplying by a square does not change the square class. -/
+theorem fieldSquareClass_mul_sq {K : Type u} [Field K] (u q : Kˣ) :
+    fieldSquareClass (u * (q * q)) = fieldSquareClass u := by
+  rw [fieldSquareClass, fieldSquareClass, QuotientGroup.mk'_eq_mk']
+  exact ⟨q⁻¹ * q⁻¹, Subgroup.mem_square.mpr ⟨q⁻¹, rfl⟩, by group⟩
+
 /-- Square classes of the `p`-adic field. -/
 abbrev PadicSquareClass (p : ℕ) [Fact p.Prime] :=
   FieldSquareClass ℚ_[p]
