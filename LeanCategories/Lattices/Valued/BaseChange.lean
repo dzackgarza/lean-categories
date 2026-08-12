@@ -379,6 +379,30 @@ theorem baseChangeIntegralBilinMap_apply
       ((baseChangeIntegral R S).obj L).obj.pairing x y :=
   rfl
 
+/-- The carrier of integral scalar extension is its tensor-product presentation. -/
+noncomputable def baseChangeIntegralCarrierEquiv
+    (S : Type u) [CommRing S] [Algebra R S]
+    (L : IntegralLatticeCat R) :
+    ((baseChangeIntegral R S).obj L).obj.carrier ≃ₗ[S]
+      TensorProduct R S L.obj.carrier :=
+  LinearEquiv.refl S _
+
+@[simp]
+theorem baseChangeIntegralCarrierEquiv_apply
+    (S : Type u) [CommRing S] [Algebra R S]
+    (L : IntegralLatticeCat R)
+    (x : ((baseChangeIntegral R S).obj L).obj.carrier) :
+    baseChangeIntegralCarrierEquiv R S L x = x :=
+  rfl
+
+@[simp]
+theorem baseChangeIntegralCarrierEquiv_symm_apply
+    (S : Type u) [CommRing S] [Algebra R S]
+    (L : IntegralLatticeCat R)
+    (x : TensorProduct R S L.obj.carrier) :
+    (baseChangeIntegralCarrierEquiv R S L).symm x = x :=
+  rfl
+
 /-- Scalar extension of finite projective integral lattices. -/
 noncomputable def baseChangeFiniteIntegral
     (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] :

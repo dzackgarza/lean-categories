@@ -40,5 +40,6 @@ public import LeanCategories.Lattices.Valued.Equivariant
 public import LeanCategories.Lattices.Valued.Reflection
 public import LeanCategories.Lattices.Valued.RootSystem
 public import LeanCategories.Lattices.Valued.Adele
+public import LeanCategories.Lattices.Valued.AdelicClass
 
 @[expose] public section
