@@ -36,6 +36,8 @@ public import LeanCategories.Lattices.Valued.Jordan
 public import LeanCategories.Lattices.Valued.Hasse
 public import LeanCategories.Lattices.Valued.HasseInvariance
 public import LeanCategories.Lattices.Valued.Spinor
+public import LeanCategories.Lattices.Valued.ReflectionTransitivity
+public import LeanCategories.Lattices.Valued.OrthogonalSplitting
 public import LeanCategories.Lattices.Valued.SpinorGenus
 public import LeanCategories.Lattices.Valued.Involution
 public import LeanCategories.Lattices.Valued.Equivariant
