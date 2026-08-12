@@ -54,6 +54,7 @@ public import LeanCategories.Lattices.Valued.OrthogonalSplitting
 public import LeanCategories.Lattices.Valued.ReflectionGeneration
 public import LeanCategories.Lattices.Valued.RestrictForm
 public import LeanCategories.Lattices.Valued.SpinorGenus
+public import LeanCategories.Lattices.Valued.SpinorGenusAdelic
 public import LeanCategories.Lattices.Valued.Involution
 public import LeanCategories.Lattices.Valued.Equivariant
 public import LeanCategories.Lattices.Valued.Reflection
