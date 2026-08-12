@@ -39,6 +39,47 @@ namespace OrthogonalGroup
 
 variable {M : BilinModuleCat R W}
 
+/-- An isometry identifies the orthogonal groups of its source and target. -/
+noncomputable def congr {N : BilinModuleCat R W} (e : M ≅ N) :
+    OrthogonalGroup M ≃* OrthogonalGroup N where
+  toFun g := by
+    let f := linearEquivOfIso e
+    refine ⟨f.symm.trans (g.1.trans f), ?_⟩
+    intro x y
+    change N.pairing (f (g.1 (f.symm x))) (f (g.1 (f.symm y))) = N.pairing x y
+    rw [linearEquivOfIso_pairing e, g.property]
+    simpa [f] using (linearEquivOfIso_pairing e (f.symm x) (f.symm y)).symm
+  invFun g := by
+    let f := linearEquivOfIso e
+    refine ⟨f.trans (g.1.trans f.symm), ?_⟩
+    intro x y
+    change M.pairing (f.symm (g.1 (f x))) (f.symm (g.1 (f y))) = M.pairing x y
+    calc
+      _ = N.pairing (g.1 (f x)) (g.1 (f y)) := by
+        simpa [f] using (linearEquivOfIso_pairing e
+          (f.symm (g.1 (f x))) (f.symm (g.1 (f y)))).symm
+      _ = N.pairing (f x) (f y) := g.property _ _
+      _ = M.pairing x y := linearEquivOfIso_pairing e x y
+  left_inv g := by
+    let f := linearEquivOfIso e
+    apply Subtype.ext
+    ext x
+    change f.symm (f (g.1 (f.symm (f x)))) = g.1 x
+    simp
+  right_inv g := by
+    let f := linearEquivOfIso e
+    apply Subtype.ext
+    ext x
+    change f (f.symm (g.1 (f (f.symm x)))) = g.1 x
+    simp
+  map_mul' g h := by
+    let f := linearEquivOfIso e
+    apply Subtype.ext
+    ext x
+    change f ((g.1 * h.1) (f.symm x)) =
+      f (g.1 (f.symm (f (h.1 (f.symm x)))))
+    simp
+
 /-- An orthogonal-group element of a scalar-valued form as a Mathlib isometry. -/
 def toMathlibIsometryEquiv {N : BilinModuleCat R R}
     (g : OrthogonalGroup N) :

@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Lattices.Valued.Arithmetic
 public import LeanCategories.Lattices.Valued.ChangeValue
+public import LeanCategories.Modules.Bilinear.Valued.OrthogonalGroup
 public import LeanCategories.Modules.Bilinear.Valued.Properties
 public import Mathlib.RingTheory.Flat.Basic
 
@@ -394,5 +395,41 @@ noncomputable def baseChangeFiniteIntegral
   map_comp f g := by
     apply ObjectProperty.hom_ext
     exact (baseChangeIntegral R S).map_comp f.hom g.hom
+
+/-- Scalar extension induces a homomorphism between orthogonal groups. -/
+noncomputable def orthogonalGroupBaseChangeHom
+    (S : Type u) [CommRing S] [Algebra R S]
+    (L : IntegralLatticeCat R) :
+    BilinModuleCat.OrthogonalGroup L.obj →*
+      BilinModuleCat.OrthogonalGroup ((baseChangeIntegral R S).obj L).obj where
+  toFun g := ⟨g.1.baseChange R S L.obj.carrier L.obj.carrier, by
+    intro x y
+    change TensorProduct R S L.obj.carrier at x y
+    change baseChangeIntegralBilinMap R S L
+        (g.1.baseChange R S L.obj.carrier L.obj.carrier x)
+        (g.1.baseChange R S L.obj.carrier L.obj.carrier y) =
+      baseChangeIntegralBilinMap R S L x y
+    induction x using TensorProduct.induction_on with
+    | zero => simp [baseChangeIntegralBilinMap]
+    | tmul a x =>
+        induction y using TensorProduct.induction_on with
+        | zero => simp [baseChangeIntegralBilinMap]
+        | tmul b y =>
+            simp only [LinearEquiv.baseChange_tmul, baseChangeIntegralBilinMap_tmul]
+            rw [g.property]
+        | add y₁ y₂ hy₁ hy₂ =>
+            simp only [map_add]
+            rw [hy₁, hy₂]
+    | add x₁ x₂ hx₁ hx₂ =>
+        simp only [map_add, LinearMap.add_apply]
+        rw [hx₁, hx₂]⟩
+  map_one' := by
+    apply Subtype.ext
+    change (1 : L.obj.carrier ≃ₗ[R] L.obj.carrier).baseChange R S = 1
+    exact LinearEquiv.baseChange_one (R := R) (A := S) L.obj.carrier
+  map_mul' g h := by
+    apply Subtype.ext
+    change (g.1 * h.1).baseChange R S = g.1.baseChange R S * h.1.baseChange R S
+    exact LinearEquiv.baseChange_mul (R := R) (A := S) (e := g.1) (f := h.1)
 
 end LeanCategories.Lattices.Valued
