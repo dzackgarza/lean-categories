@@ -21,6 +21,7 @@ ring structure then imply compactness of the integer ring and local compactness 
 noncomputable section
 
 open NumberField
+open Valued.integer
 open scoped NumberField
 open scoped Valued
 
@@ -64,7 +65,7 @@ instance compactSpaceAdicCompletionIntegers :
       CompleteSpace 𝒪[v.adicCompletion K] ∧
         IsDiscreteValuationRing 𝒪[v.adicCompletion K] ∧
           Finite (𝓀[v.adicCompletion K]) :=
-    Valued.integer.compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField
+    compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField
   rw [h]
   exact ⟨completeSpaceAdicCompletionIntegers K v, inferInstance,
     finiteAdicCompletionResidueField K v⟩
