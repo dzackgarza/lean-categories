@@ -35,6 +35,7 @@ public import LeanCategories.Lattices.Valued.Dyadic
 public import LeanCategories.Lattices.Valued.Jordan
 public import LeanCategories.Lattices.Valued.Hasse
 public import LeanCategories.Lattices.Valued.HasseInvariance
+public import LeanCategories.Lattices.Valued.PadicHilbert
 public import LeanCategories.Lattices.Valued.Spinor
 public import LeanCategories.Lattices.Valued.ReflectionTransitivity
 public import LeanCategories.Lattices.Valued.OrthogonalSplitting

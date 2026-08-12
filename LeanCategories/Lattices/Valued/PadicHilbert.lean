@@ -165,7 +165,7 @@ theorem isSquare_iff_isSquare_of_eq_p_zpow_mul {x : ℚ_[p]} {u : ℤ_[p]} {n : 
     simp [two_mul]
   calc (u : ℚ_[p]) = (p : ℚ_[p]) ^ (2 * n) * (u : ℚ_[p]) *
         ((p : ℚ_[p]) ^ (-n) * (p : ℚ_[p]) ^ (-n)) := by
-        rw [mul_right_comm, mul_assoc, hpow, mul_one]
+        linear_combination -(u : ℚ_[p]) * hpow
     _ = z * (p : ℚ_[p]) ^ (-n) * (z * (p : ℚ_[p]) ^ (-n)) := by rw [← hx, hz]; ring
 
 /-- The valuation of a nonzero `p`-adic square is even. -/
@@ -177,14 +177,21 @@ theorem even_valuation_of_isSquare {x : ℚ_[p]} (hx : x ≠ 0) (h : IsSquare x)
     exact hx (mul_zero 0)
   exact ⟨z.valuation, Padic.valuation_mul hz hz⟩
 
+/-- For odd `p`, a `p`-adic number of even valuation is a square exactly when the Legendre
+symbol of the residue of its unit part is one. -/
+theorem isSquare_iff_legendreSym_eq_one {x : ℚ_[p]} {u : ℤ_[p]} {n : ℤ} (hp : p ≠ 2)
+    (hu : ‖u‖ = 1) (hx : x = (p : ℚ_[p]) ^ (2 * n) * (u : ℚ_[p])) :
+    IsSquare x ↔ legendreSym p ((toZMod u).val) = 1 := by
+  rw [isSquare_iff_isSquare_of_eq_p_zpow_mul hu hx, ← legendreSym_residue_eq_one_iff hp hu]
+
 /-- The `p`-adic Hilbert symbol is one whenever the first entry has even valuation and
-square unit part, for odd `p`. -/
+its unit part is a residue, for odd `p`. -/
 theorem hilbertSymbol_padic_eq_one_of_eq_p_zpow_mul {x b : ℚ_[p]} {u : ℤ_[p]} {n : ℤ}
     (hp : p ≠ 2) (hb : b ≠ 0) (hx : x ≠ 0) (hu : ‖u‖ = 1)
     (hxu : x = (p : ℚ_[p]) ^ (2 * n) * (u : ℚ_[p]))
     (h : legendreSym p ((toZMod u).val) = 1) : hilbertSymbol x b = 1 :=
   hilbertSymbol_eq_one_of_isSquare_left hx hb
-    (isSquare_of_eq_p_zpow_mul hxu ((legendreSym_residue_eq_one_iff hp hu).mp h))
+    ((isSquare_iff_legendreSym_eq_one hp hu hxu).mpr h)
 
 end Padic
 
