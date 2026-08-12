@@ -191,6 +191,34 @@ noncomputable def hasseMinkowskiInvariantOfDiagonal
   ∏ p : Fin n × Fin n with p.1 < p.2,
     hilbertSymbol (w p.1 : K) (w p.2 : K)
 
+/-- A unary diagonal form has Hasse--Minkowski value one.
+
+This is the first case of Cassels's Lemma 2.2 [@Cas08a, p. 56]. -/
+@[simp]
+theorem hasseMinkowskiInvariantOfDiagonal_one (w : Fin 1 → Kˣ) :
+    hasseMinkowskiInvariantOfDiagonal w = 1 := by
+  rw [hasseMinkowskiInvariantOfDiagonal]
+  exact Finset.prod_eq_one fun p hp => by
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hp
+    have : p.1 = p.2 := Subsingleton.elim _ _
+    exact (lt_irrefl p.2 (this ▸ hp)).elim
+
+/-- A binary diagonal form has Hasse--Minkowski value equal to one Hilbert symbol.
+
+This is the binary case used in Cassels's Lemma 2.2 [@Cas08a, p. 56]. -/
+theorem hasseMinkowskiInvariantOfDiagonal_two (w : Fin 2 → Kˣ) :
+    hasseMinkowskiInvariantOfDiagonal w =
+      hilbertSymbol (w 0 : K) (w 1 : K) := by
+  rw [hasseMinkowskiInvariantOfDiagonal,
+    Finset.prod_eq_single (0, 1) (by grind) (fun h => by simp at h)]
+
+/-- Swapping the two coefficients of a binary diagonal form preserves its value. -/
+theorem hasseMinkowskiInvariantOfDiagonal_two_swap (w : Fin 2 → Kˣ) :
+    hasseMinkowskiInvariantOfDiagonal (fun i => w (Equiv.swap 0 1 i)) =
+      hasseMinkowskiInvariantOfDiagonal w := by
+  rw [hasseMinkowskiInvariantOfDiagonal_two, hasseMinkowskiInvariantOfDiagonal_two]
+  simpa using hilbertSymbol_comm (w 1 : K) (w 0 : K)
+
 /-- Rescaling diagonal coordinates does not change their Hasse--Minkowski value. -/
 theorem hasseMinkowskiInvariantOfDiagonal_squareRescale
     {n : ℕ} (w w' u : Fin n → Kˣ)
