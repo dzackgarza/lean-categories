@@ -26,6 +26,15 @@ universe u
 
 variable {R S : Type u} [CommRing R] [CommRing S]
 
+/-- Isometry in the lattice subcategory is equivalent to isometry of the formed modules. -/
+theorem isIsomorphic_integralLattice_iff_bilin (L M : IntegralLatticeCat R) :
+    IsIsomorphic L M ↔ IsIsomorphic L.obj M.obj := by
+  constructor
+  · rintro ⟨i⟩
+    exact ⟨(isLattice R R).ι.mapIso i⟩
+  · rintro ⟨i⟩
+    exact ⟨ObjectProperty.isoMk (P := isLattice R R) i⟩
+
 local instance ringEquivInvPair (e : R ≃+* S) :
     RingHomInvPair e.toRingHom e.symm.toRingHom :=
   ⟨by ext; simp, by ext; simp⟩
@@ -121,6 +130,13 @@ theorem transportIntegralBilin_pairing (e : R ≃+* S) (L : BilinModuleCat R R)
     (transportIntegralBilin e L).pairing x y = e (L.pairing x y) := by
   rfl
 
+@[simp]
+theorem transportIntegralBilin_smul (e : R ≃+* S) (L : BilinModuleCat R R)
+    (s : S) (x : L.carrier) :
+    (show L.carrier from
+      s • (show (transportIntegralBilin e L).carrier from x)) = e.symm s • x :=
+  rfl
+
 /-- Transport a formed-module morphism along a ring equivalence. -/
 def transportIntegralBilinMap (e : R ≃+* S) {L M : BilinModuleCat R R}
     (f : L ⟶ M) : transportIntegralBilin e L ⟶ transportIntegralBilin e M := by
@@ -159,6 +175,42 @@ def transportIntegralBilinFunctor (e : R ≃+* S) :
     apply ModuleCat.hom_ext
     ext x
     rfl
+
+/-- Transport along a ring equivalence preserves and reflects formed-module isometry. -/
+theorem isIsomorphic_transportIntegralBilin_iff (e : R ≃+* S)
+    (L M : BilinModuleCat R R) :
+    IsIsomorphic (transportIntegralBilin e L) (transportIntegralBilin e M) ↔
+      IsIsomorphic L M := by
+  constructor
+  · rintro ⟨i⟩
+    let g := BilinModuleCat.linearEquivOfIso i
+    let f : L.carrier ≃ₗ[R] M.carrier :=
+      { toFun := fun x ↦ show M.carrier from g x
+        invFun := fun x ↦ show L.carrier from g.symm x
+        left_inv := fun x ↦ g.symm_apply_apply x
+        right_inv := fun x ↦ g.apply_symm_apply x
+        map_add' := g.map_add
+        map_smul' := fun r x ↦ by
+          change (show M.carrier from
+              g (show (transportIntegralBilin e L).carrier from r • x)) =
+            r • (show M.carrier from
+              g (show (transportIntegralBilin e L).carrier from x))
+          have hx : (show (transportIntegralBilin e L).carrier from r • x) =
+              e r • (show (transportIntegralBilin e L).carrier from x) := by
+            change r • x = e.symm (e r) • x
+            simp
+          rw [hx]
+          rw [g.map_smul]
+          change e.symm (e r) • (show M.carrier from g x) =
+            r • (show M.carrier from g x)
+          simp }
+    exact ⟨BilinModuleCat.isoMk f fun x y ↦ by
+      apply e.injective
+      change e (M.pairing (g x) (g y)) = e (L.pairing x y)
+      simpa only [transportIntegralBilin_pairing] using
+        BilinModuleCat.linearEquivOfIso_pairing i x y⟩
+  · rintro ⟨i⟩
+    exact ⟨(transportIntegralBilinFunctor e).mapIso i⟩
 
 /-- Transport integral lattices along a ring equivalence. -/
 noncomputable def transportIntegralLattice (e : R ≃+* S) :
@@ -294,5 +346,35 @@ noncomputable def baseChangeTransportBilinIso
       ((baseChangeIntegral S B).obj ((transportIntegralLattice e).obj L)).obj :=
   BilinModuleCat.isoMk (baseChangeTransportLinearEquiv e f h L)
     (baseChangeTransportLinearEquiv_pairing e f h L)
+
+/-- Compatible changes of the base ring and coefficient ring preserve and reflect isometry. -/
+theorem isIsomorphic_baseChange_transport_iff
+    {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algebra S B]
+    (e : R ≃+* S) (f : A ≃+* B)
+    (h : ∀ r, f (algebraMap R A r) = algebraMap S B (e r))
+    (L M : IntegralLatticeCat R) :
+    IsIsomorphic ((baseChangeIntegral R A).obj L)
+        ((baseChangeIntegral R A).obj M) ↔
+      IsIsomorphic ((baseChangeIntegral S B).obj ((transportIntegralLattice e).obj L))
+        ((baseChangeIntegral S B).obj ((transportIntegralLattice e).obj M)) := by
+  let cL : (transportIntegralLattice f).obj ((baseChangeIntegral R A).obj L) ≅
+      (baseChangeIntegral S B).obj ((transportIntegralLattice e).obj L) :=
+    ObjectProperty.isoMk (P := isLattice B B) (baseChangeTransportBilinIso e f h L)
+  let cM : (transportIntegralLattice f).obj ((baseChangeIntegral R A).obj M) ≅
+      (baseChangeIntegral S B).obj ((transportIntegralLattice e).obj M) :=
+    ObjectProperty.isoMk (P := isLattice B B) (baseChangeTransportBilinIso e f h M)
+  constructor
+  · rintro ⟨i⟩
+    exact ⟨cL.symm ≪≫ (transportIntegralLattice f).mapIso i ≪≫ cM⟩
+  · rintro ⟨i⟩
+    have transported : IsIsomorphic
+        (transportIntegralBilin f ((baseChangeIntegral R A).obj L).obj)
+          (transportIntegralBilin f ((baseChangeIntegral R A).obj M).obj) :=
+      ⟨((isLattice B B).ι.mapIso (cL ≪≫ i ≪≫ cM.symm))⟩
+    have source := (isIsomorphic_transportIntegralBilin_iff f
+      ((baseChangeIntegral R A).obj L).obj
+      ((baseChangeIntegral R A).obj M).obj).mp transported
+    obtain ⟨sourceIso⟩ := source
+    exact ⟨ObjectProperty.isoMk (P := isLattice A A) sourceIso⟩
 
 end LeanCategories.Lattices.Valued

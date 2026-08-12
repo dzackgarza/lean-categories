@@ -49,6 +49,85 @@ noncomputable def rationalIntegerLatticeTransport :
       FiniteProjectiveLatticeCat (𝓞 ℚ) (𝓞 ℚ) :=
   transportFiniteProjectiveLattice (Rat.IsIntegralClosure.intEquiv (𝓞 ℚ)).symm
 
+/-- The coefficient equivalence from `ℤ` to the ring of integers of `ℚ`. -/
+noncomputable abbrev rationalIntegerRingEquiv : ℤ ≃+* 𝓞 ℚ :=
+  (Rat.IsIntegralClosure.intEquiv (𝓞 ℚ)).symm
+
+/-- The real completion is the unique infinite completion of `ℚ`. -/
+noncomputable abbrev realInfiniteAdeleRingEquiv :
+    ℝ ≃+* NumberField.InfiniteAdeleRing ℚ :=
+  LeanCategories.Rat.infiniteAdeleRingContinuousAlgEquivReal.symm.toRingEquiv
+
+theorem realInfiniteAdeleRingEquiv_algebraMap (n : ℤ) :
+    realInfiniteAdeleRingEquiv (algebraMap ℤ ℝ n) =
+      algebraMap (𝓞 ℚ) (NumberField.InfiniteAdeleRing ℚ)
+        (rationalIntegerRingEquiv n) := by
+  apply_fun LeanCategories.Rat.infiniteAdeleRingContinuousAlgEquivReal
+  simp
+
+/-- The `p`-adic integers are the completed local integers at the corresponding place of `ℚ`. -/
+noncomputable abbrev padicIntegerFinitePlaceEquiv (p : Nat.Primes) :
+    letI : Fact p.1.Prime := ⟨p.2⟩
+    ℤ_[p] ≃+* (rationalFinitePlace p).adicCompletionIntegers ℚ :=
+  by
+    letI : Fact p.1.Prime := ⟨p.2⟩
+    exact (PadicInt.adicCompletionIntegersEquiv (𝓞 ℚ) p).toRingEquiv
+
+theorem padicIntegerFinitePlaceEquiv_algebraMap (p : Nat.Primes) (n : ℤ) :
+    letI : Fact p.1.Prime := ⟨p.2⟩
+    padicIntegerFinitePlaceEquiv p (algebraMap ℤ ℤ_[p] n) =
+      algebraMap (𝓞 ℚ) ((rationalFinitePlace p).adicCompletionIntegers ℚ)
+        (rationalIntegerRingEquiv n) := by
+  letI : Fact p.1.Prime := ⟨p.2⟩
+  apply_fun (PadicInt.adicCompletionIntegersEquiv (𝓞 ℚ) p).symm
+  simp
+
+/-- Real scalar extension agrees with the infinite adelic component after transport to `𝓞 ℚ`. -/
+theorem isRealIsometric_iff_isInfinitelyAdelicallyIsometric
+    (L M : FiniteProjectiveLatticeCat ℤ ℤ) :
+    IsRealIsometric L.obj M.obj ↔
+      IsInfinitelyAdelicallyIsometric ℚ
+        (rationalIntegerLatticeTransport.obj L)
+        (rationalIntegerLatticeTransport.obj M) := by
+  let TL := (baseChangeIntegral (𝓞 ℚ) (NumberField.InfiniteAdeleRing ℚ)).obj
+    ((transportIntegralLattice rationalIntegerRingEquiv).obj L.obj)
+  let TM := (baseChangeIntegral (𝓞 ℚ) (NumberField.InfiniteAdeleRing ℚ)).obj
+    ((transportIntegralLattice rationalIntegerRingEquiv).obj M.obj)
+  have h := (isIsomorphic_baseChange_transport_iff
+    rationalIntegerRingEquiv realInfiniteAdeleRingEquiv
+    realInfiniteAdeleRingEquiv_algebraMap L.obj M.obj).trans
+      (isIsomorphic_integralLattice_iff_bilin TL TM)
+  simpa only [IsRealIsometric, IsInfinitelyAdelicallyIsometric,
+    rationalIntegerLatticeTransport, rationalIntegerRingEquiv,
+    transportFiniteProjectiveLattice, CategoryTheory.IsIsomorphic, TL, TM] using h
+
+/-- `p`-adic scalar extension agrees with completion at the corresponding finite place of `ℚ`. -/
+theorem isPadicallyIsometricAt_iff_isometricAtRationalFinitePlace
+    (p : Nat.Primes) (L M : FiniteProjectiveLatticeCat ℤ ℤ) :
+    IsPadicallyIsometricAt p p.2 L.obj M.obj ↔
+      IsIsomorphic
+        (((completeIntegralAtHeightOne (𝓞 ℚ) ℚ
+          (rationalFinitePlace p)).obj
+            (rationalIntegerLatticeTransport.obj L).obj).obj)
+          ((completeIntegralAtHeightOne (𝓞 ℚ) ℚ
+            (rationalFinitePlace p)).obj
+              (rationalIntegerLatticeTransport.obj M).obj).obj := by
+  letI : Fact p.1.Prime := ⟨p.2⟩
+  let TL := (baseChangeIntegral (𝓞 ℚ)
+    ((rationalFinitePlace p).adicCompletionIntegers ℚ)).obj
+      ((transportIntegralLattice rationalIntegerRingEquiv).obj L.obj)
+  let TM := (baseChangeIntegral (𝓞 ℚ)
+    ((rationalFinitePlace p).adicCompletionIntegers ℚ)).obj
+      ((transportIntegralLattice rationalIntegerRingEquiv).obj M.obj)
+  have h := (isIsomorphic_baseChange_transport_iff
+    rationalIntegerRingEquiv (padicIntegerFinitePlaceEquiv p)
+    (padicIntegerFinitePlaceEquiv_algebraMap p) L.obj M.obj).trans
+      (isIsomorphic_integralLattice_iff_bilin TL TM)
+  simpa only [IsPadicallyIsometricAt, completeIntegralAtPrime,
+    completeIntegralAtHeightOne, rationalIntegerLatticeTransport,
+    rationalIntegerRingEquiv, transportFiniteProjectiveLattice,
+    CategoryTheory.IsIsomorphic, TL, TM] using h
+
 /-- Two finite integral lattices have the same genus when their ring-adelic scalar
 extensions are isometric. -/
 noncomputable def SameGenus
@@ -66,6 +145,29 @@ theorem sameGenus_iff_sameAdeleGenus
         (rationalIntegerLatticeTransport.obj L)
         (rationalIntegerLatticeTransport.obj M) :=
   Iff.rfl
+
+/-- The canonical adelic genus agrees with the classical real and `p`-adic criterion. -/
+theorem sameGenus_iff_isClassicallyLocallyIsometric
+    (L M : FiniteProjectiveLatticeCat ℤ ℤ) :
+    SameGenus L M ↔ IsClassicallyLocallyIsometric L M := by
+  rw [sameGenus_iff_sameAdeleGenus,
+    sameAdeleGenus_rat_iff_isometric_at_infinity_and_every_rational_prime,
+    ← isRealIsometric_iff_isInfinitelyAdelicallyIsometric]
+  change
+    IsRealIsometric L.obj M.obj ∧
+        IsIsometricAtEveryRationalPrime
+          (rationalIntegerLatticeTransport.obj L)
+          (rationalIntegerLatticeTransport.obj M) ↔
+      IsRealIsometric L.obj M.obj ∧
+        ∀ p (hp : p.Prime), IsPadicallyIsometricAt p hp L.obj M.obj
+  apply and_congr Iff.rfl
+  constructor
+  · intro h p hp
+    exact (isPadicallyIsometricAt_iff_isometricAtRationalFinitePlace
+      ⟨p, hp⟩ L M).mpr (h ⟨p, hp⟩)
+  · intro h p
+    exact (isPadicallyIsometricAt_iff_isometricAtRationalFinitePlace p L M).mp
+      (h p p.2)
 
 theorem isGloballyIsometric_refl (L : FiniteProjectiveLatticeCat ℤ ℤ) :
     IsGloballyIsometric L L :=
