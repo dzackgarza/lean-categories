@@ -56,4 +56,32 @@ theorem map_anisotropicComplement_le (L : FiniteFormCat K K)
     _ = L.obj.pairing v x := g.property v x
     _ = 0 := hx
 
+/-- A nonzero nondegenerate symmetric form has an anisotropic vector.
+
+If every vector were isotropic then polarization would make the whole form vanish, which a
+nondegenerate form on a nonzero module cannot do. -/
+theorem exists_pairing_self_ne_zero [Invertible (2 : K)] (L : FiniteFormCat K K)
+    (hL : L.obj.IsLeftNondegenerate) {x : L.obj.carrier} (hx : x ≠ 0) :
+    ∃ v : L.obj.carrier, L.obj.pairing v v ≠ 0 := by
+  by_contra hcon
+  push Not at hcon
+  have hzero : ∀ y z : L.obj.carrier, L.obj.pairing y z = 0 := by
+    intro y z
+    have hsum := hcon (y + z)
+    rw [BilinModuleCat.pairing_add_left, BilinModuleCat.pairing_add_right,
+      BilinModuleCat.pairing_add_right, hcon y, hcon z, L.property.2 z y] at hsum
+    have h2 : (2 : K) ≠ 0 := Invertible.ne_zero 2
+    have hdouble : L.obj.pairing y z + L.obj.pairing y z = 0 := by simpa using hsum
+    have : (2 : K) * L.obj.pairing y z = 0 := by
+      rw [two_mul]
+      exact hdouble
+    exact (mul_eq_zero.mp this).resolve_left h2
+  apply hx
+  have hker : x ∈ LinearMap.ker L.obj.adjoint := by
+    simp only [LinearMap.mem_ker]
+    exact LinearMap.ext fun y => hzero x y
+  rw [BilinModuleCat.IsLeftNondegenerate] at hL
+  rw [hL] at hker
+  simpa using hker
+
 end LeanCategories.Lattices.Valued
