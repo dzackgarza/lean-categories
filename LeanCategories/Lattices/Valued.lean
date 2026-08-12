@@ -44,6 +44,7 @@ public import LeanCategories.Lattices.Valued.JordanSplitting
 public import LeanCategories.Lattices.Valued.RankOneDual
 public import LeanCategories.Lattices.Valued.JordanComponent
 public import LeanCategories.Lattices.Valued.OrthogonalSummand
+public import LeanCategories.Lattices.Valued.JordanRecursion
 public import LeanCategories.Lattices.Valued.Hasse
 public import LeanCategories.Lattices.Valued.HasseInvariance
 public import LeanCategories.Lattices.Valued.HilbertNorm

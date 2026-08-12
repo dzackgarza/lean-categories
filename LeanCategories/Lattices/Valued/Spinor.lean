@@ -132,15 +132,4 @@ noncomputable def finiteFormAutomorphismElement (L : FiniteFormCat K K)
   intro x y
   exact BilinModuleCat.map_pairing e.hom.hom x y
 
-/-- The spinor class of one isometry relative to a reference isometry. -/
-noncomputable def relativeSpinorClass {L M : FiniteFormCat K K}
-    (ν : SpinorNorm L) (reference current : L ≅ M) :
-    FieldSquareClass K :=
-  ν.1 (finiteFormAutomorphismElement L (current ≪≫ reference.symm))
-
-/-- Two isometries differ by a spinor-kernel element relative to a reference. -/
-def IsSpinorEquivalentRelative {L M : FiniteFormCat K K}
-    (ν : SpinorNorm L) (reference current : L ≅ M) : Prop :=
-  relativeSpinorClass ν reference current = 1
-
 end LeanCategories.Lattices.Valued
