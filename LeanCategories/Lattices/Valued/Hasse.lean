@@ -577,4 +577,25 @@ noncomputable def DiagonalPresentation.profile
   determinant := d.determinantSquareClass
   hasse := d.hasseMinkowskiValue
 
+/-- The canonical rank, determinant, and Hasse profile of a nondegenerate real form. -/
+noncomputable def realFiniteFormProfile
+    (L : FiniteFormCat ℝ ℝ)
+    (hL : LinearMap.SeparatingLeft
+      (finiteFormQuadraticForm ℝ L).associated) : DiagonalFormProfile ℝ where
+  rank := Module.finrank ℝ L.obj.carrier
+  determinant := finiteFormDeterminantSquareClass L hL
+  hasse := realHasseMinkowskiInvariant L hL
+
+/-- Every real diagonal presentation computes the canonical profile. -/
+theorem realFiniteFormProfile_eq
+    (L : FiniteFormCat ℝ ℝ)
+    (hL : LinearMap.SeparatingLeft
+      (finiteFormQuadraticForm ℝ L).associated)
+    (d : DiagonalPresentation L hL) :
+    realFiniteFormProfile L hL = d.profile := by
+  unfold realFiniteFormProfile DiagonalPresentation.profile
+  congr
+  · exact finiteFormDeterminantSquareClass_eq L hL d
+  · exact (realHasseMinkowskiInvariant_eq L hL d).symm
+
 end LeanCategories.Lattices.Valued
