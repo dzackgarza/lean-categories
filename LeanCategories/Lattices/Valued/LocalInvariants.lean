@@ -45,20 +45,6 @@ theorem modSquares_sq {G : Type u} [CommGroup G]
   apply (QuotientGroup.eq_one_iff _).mpr
   exact Subgroup.mem_square.mpr ⟨g, pow_two g⟩
 
-/-- A natural prime is dyadic exactly when it is two. -/
-def IsDyadicPrime (p : ℕ) : Prop :=
-  p = 2
-
-/-- Every prime is either dyadic or odd. -/
-theorem prime_dyadic_or_odd {p : ℕ} (hp : p.Prime) :
-    IsDyadicPrime p ∨ Odd p :=
-  hp.eq_two_or_odd'
-
-/-- A prime different from two is odd. -/
-theorem prime_odd_of_not_dyadic {p : ℕ} (hp : p.Prime)
-    (h : ¬IsDyadicPrime p) : Odd p :=
-  hp.odd_of_ne_two h
-
 /-- Square classes of the `p`-adic field. -/
 abbrev PadicSquareClass (p : ℕ) [Fact p.Prime] :=
   FieldSquareClass ℚ_[p]
