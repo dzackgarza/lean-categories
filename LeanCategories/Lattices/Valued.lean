@@ -60,5 +60,6 @@ public import LeanCategories.Lattices.Valued.Reflection
 public import LeanCategories.Lattices.Valued.RootSystem
 public import LeanCategories.Lattices.Valued.Adele
 public import LeanCategories.Lattices.Valued.AdelicClass
+public import LeanCategories.Lattices.Valued.LocalDensity
 
 @[expose] public section
