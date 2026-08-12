@@ -75,6 +75,7 @@ public import LeanCategories.Lattices.Valued.RootSystem
 public import LeanCategories.Lattices.Valued.RootLattice
 public import LeanCategories.Lattices.Valued.DefiniteNondegenerate
 public import LeanCategories.Lattices.Valued.DRootLattice
+public import LeanCategories.Lattices.Valued.SimplyLaced
 public import LeanCategories.Lattices.Valued.Adele
 public import LeanCategories.Lattices.Valued.AdelicClass
 public import LeanCategories.Lattices.Valued.LocalDensity
