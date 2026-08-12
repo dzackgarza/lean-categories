@@ -24,12 +24,41 @@ open IsDedekindDomain NumberField
 open LeanCategories.Modules.Bilinear.Valued
 open scoped NumberField
 open scoped Pointwise
+open scoped RestrictedProduct
 
 namespace LeanCategories.Lattices.Valued
 
 universe u
 
 variable (K : Type u) [Field K] [NumberField K]
+
+/-- A selected finite place, obtained from a maximal ideal of the number ring. -/
+noncomputable def numberRingFinitePlace : HeightOneSpectrum (𝓞 K) := by
+  let h := Ring.exists_maximal_of_not_isField (RingOfIntegers.not_isField K)
+  let p := Classical.choose h
+  exact HeightOneSpectrum.mk p (Classical.choose_spec h).2.isPrime
+    (Classical.choose_spec h).1
+
+/-- The finite adele ring of a number field is nontrivial. -/
+instance finiteAdeleRingNontrivial : Nontrivial (FiniteAdeleRing (𝓞 K) K) :=
+  by
+    refine ⟨0, 1, ?_⟩
+    intro h
+    let v : HeightOneSpectrum (𝓞 K) := numberRingFinitePlace K
+    have hv := congrArg (fun a : FiniteAdeleRing (𝓞 K) K => a v) h
+    exact zero_ne_one hv
+
+/-- The finite adele topology is Hausdorff because every local completion is Hausdorff. -/
+instance finiteAdeleRingT2Space : T2Space (FiniteAdeleRing (𝓞 K) K) :=
+  by
+    change T2Space (Πʳ v : HeightOneSpectrum (𝓞 K),
+      [v.adicCompletion K, v.adicCompletionIntegers K])
+    infer_instance
+
+/-- Scalar multiplication by the number field on its finite adeles is faithful. -/
+instance finiteAdeleRingFaithfulSMul : FaithfulSMul K (FiniteAdeleRing (𝓞 K) K) where
+  eq_of_smul_eq_smul h := by
+    simpa [Algebra.smul_def] using h (1 : FiniteAdeleRing (𝓞 K) K)
 
 /-- The rational quadratic space attached to an integral lattice. -/
 abbrev NumberFieldRationalLattice
@@ -93,6 +122,19 @@ noncomputable def rationalFiniteAdeleOrthogonalHom
       RationalFiniteAdelicOrthogonalGroup K L :=
   orthogonalGroupBaseChangeHom (R := K) (FiniteAdeleRing (𝓞 K) K)
     (NumberFieldRationalLattice K L)
+
+/-- The diagonal map on rational orthogonal groups is injective. -/
+theorem rationalFiniteAdeleOrthogonalHom_injective
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    Function.Injective (rationalFiniteAdeleOrthogonalHom K L) := by
+  intro g h hgh
+  apply Subtype.ext
+  apply LinearEquiv.ext
+  intro x
+  have hx := congrArg (fun e => e.1 (1 ⊗ₜ[K] x)) hgh
+  simpa using Module.Flat.tensorProduct_mk_injective K
+    (NumberFieldRationalLattice K L).obj.carrier
+    (FiniteAdeleRing (𝓞 K) K) hx
 
 /-- The image of the rational orthogonal group under the diagonal map. -/
 abbrev RationalFiniteAdeleOrthogonalSubgroup
