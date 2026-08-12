@@ -9,6 +9,7 @@ public import LeanCategories.Lattices.Valued.Framed
 public import LeanCategories.Lattices.Valued.Radical
 public import LeanCategories.Lattices.Valued.Sublattice
 public import LeanCategories.Lattices.Valued.Discriminant
+public import LeanCategories.Lattices.Valued.DeterminantLine
 public import LeanCategories.Lattices.Valued.DiscriminantFunctor
 public import LeanCategories.Lattices.Valued.Gluing
 public import LeanCategories.Lattices.Valued.EvenGluing
