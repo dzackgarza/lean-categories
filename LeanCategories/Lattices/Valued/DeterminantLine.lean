@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Lattices.Valued.Arithmetic
+public import LeanCategories.Lattices.Valued.DiscriminantFunctor
 public import Mathlib.Algebra.Category.ModuleCat.ExteriorPower
 public import Mathlib.RingTheory.PicardGroup
 public import Mathlib.RingTheory.Ideal.Maps
@@ -93,6 +94,71 @@ noncomputable def determinantLineIso {L M : FiniteProjectiveLatticeCat R W}
   rw [determinantLine, determinantLine, hr]
   exact (ModuleCat.exteriorPower.functor R M.genericRank).mapIso
       ((finiteProjectiveForget R W).mapIso e)
+
+/-- Forget the finite-projective property on an isomorphism of lattices. -/
+private noncomputable def integralLatticeIso
+    {L M : FiniteProjectiveLatticeCat R R} (e : L ≅ M) : L.obj ≅ M.obj :=
+  (ObjectProperty.ι (isFiniteProjectiveLattice R R)).mapIso e
+
+omit [IsDomain R] in
+/-- The carrier and contragredient maps commute with the adjoint maps. -/
+private theorem adjoint_naturality
+    {L M : FiniteProjectiveLatticeCat R R} (e : L ≅ M) :
+    ModuleCat.ofHom L.obj.obj.adjoint ≫
+        (discriminantValueDualEquiv (integralLatticeIso e)).toModuleIso.hom =
+      ((finiteProjectiveForget R R).mapIso e).hom ≫
+        ModuleCat.ofHom M.obj.obj.adjoint := by
+  apply ModuleCat.hom_ext
+  apply LinearMap.ext
+  intro x
+  exact discriminantValueDualEquiv_adjoint (integralLatticeIso e) x
+
+/-- The intrinsic discriminant ideal is invariant under lattice isomorphism. -/
+theorem intrinsicDiscriminantIdeal_eq_of_iso
+    {L M : FiniteProjectiveLatticeCat R R} (e : L ≅ M) :
+    L.intrinsicDiscriminantIdeal = M.intrinsicDiscriminantIdeal := by
+  unfold intrinsicDiscriminantIdeal discriminantLineCokernel
+  unfold determinantDualLine determinantAdjoint determinantLine
+  have hr : M.genericRank = L.genericRank := by
+    unfold genericRank
+    exact (congrFun (Module.rankAtStalk_eq_of_equiv
+      ((finiteProjectiveForget R R).mapIso e).toLinearEquiv) ⊥).symm
+  rw [hr]
+  let F := ModuleCat.exteriorPower.functor R L.genericRank
+  let carrierE := F.mapIso ((finiteProjectiveForget R R).mapIso e)
+  let dualE := F.mapIso
+    (discriminantValueDualEquiv (integralLatticeIso e)).toModuleIso
+  have hsquare :
+      F.map (ModuleCat.ofHom L.obj.obj.adjoint) ≫ dualE.hom =
+        carrierE.hom ≫ F.map (ModuleCat.ofHom M.obj.obj.adjoint) := by
+    change F.map (ModuleCat.ofHom L.obj.obj.adjoint) ≫
+        F.map (discriminantValueDualEquiv (integralLatticeIso e)).toModuleIso.hom =
+      F.map ((finiteProjectiveForget R R).mapIso e).hom ≫
+        F.map (ModuleCat.ofHom M.obj.obj.adjoint)
+    rw [← F.map_comp, ← F.map_comp]
+    exact congrArg F.map (adjoint_naturality e)
+  have hrange :
+      (LinearMap.range (F.map (ModuleCat.ofHom L.obj.obj.adjoint)).hom).map
+          dualE.toLinearEquiv.toLinearMap =
+        LinearMap.range (F.map (ModuleCat.ofHom M.obj.obj.adjoint)).hom := by
+    ext y
+    constructor
+    · rintro ⟨_, ⟨x, rfl⟩, rfl⟩
+      refine ⟨carrierE.toLinearEquiv x, ?_⟩
+      exact (ConcreteCategory.congr_hom hsquare x).symm
+    · rintro ⟨y, rfl⟩
+      refine ⟨(F.map (ModuleCat.ofHom L.obj.obj.adjoint)).hom
+          (carrierE.toLinearEquiv.symm y), ⟨carrierE.toLinearEquiv.symm y, rfl⟩, ?_⟩
+      calc
+        dualE.toLinearEquiv
+            ((F.map (ModuleCat.ofHom L.obj.obj.adjoint)).hom
+              (carrierE.toLinearEquiv.symm y)) =
+            (F.map (ModuleCat.ofHom M.obj.obj.adjoint)).hom
+              (carrierE.toLinearEquiv (carrierE.toLinearEquiv.symm y)) :=
+          ConcreteCategory.congr_hom hsquare
+            (carrierE.toLinearEquiv.symm y)
+        _ = (F.map (ModuleCat.ofHom M.obj.obj.adjoint)).hom y := by simp
+  exact (Submodule.Quotient.equiv _ _ dualE.toLinearEquiv hrange).annihilator_eq
 
 /-- The Steinitz class is the Picard class of the determinant line. -/
 noncomputable def steinitzClass (L : FiniteProjectiveLatticeCat R W)
