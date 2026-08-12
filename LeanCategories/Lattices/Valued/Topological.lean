@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Lattices.Valued.Arithmetic
 public import Mathlib.Algebra.Module.ZLattice.Basic
+public import Mathlib.Algebra.Module.ZLattice.Covolume
 
 /-!
 # Topological realizations of integral lattices
@@ -73,6 +74,27 @@ instance realLatticeImageIsZLattice (L : FiniteProjectiveLatticeCat ℤ ℤ)
   span_top := by
     rw [realLatticeImage_eq_span L b c]
     exact ZSpan.span_top c
+
+section Covolume
+
+variable [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
+
+/-- The covolume of an algebraic lattice in a basis-compatible real realization. -/
+noncomputable def realLatticeCovolume (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    {I : Type*} [Finite I]
+    (b : Module.Basis I ℤ L.obj.obj.carrier) (c : Module.Basis I ℝ E)
+    (μ : MeasureTheory.Measure E) : ℝ :=
+  ZLattice.covolume (L.realLatticeImage b c) μ
+
+/-- A realized full lattice has positive covolume for every additive Haar measure. -/
+theorem realLatticeCovolume_pos (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    {I : Type*} [Finite I]
+    (b : Module.Basis I ℤ L.obj.obj.carrier) (c : Module.Basis I ℝ E)
+    (μ : MeasureTheory.Measure E) [μ.IsAddHaarMeasure] :
+    0 < L.realLatticeCovolume b c μ :=
+  ZLattice.covolume_pos (L.realLatticeImage b c) μ
+
+end Covolume
 
 end FiniteProjectiveLatticeCat
 
