@@ -103,6 +103,24 @@ theorem hilbertSymbol_mul_square_right (a b : K) {t : K} (ht : t ≠ 0) :
   nth_rw 1 [← mul_one a]
   rw [← one_pow 2, hilbertSymbol_mul_square a b one_ne_zero ht]
 
+/-- The Hilbert symbol in the second entry depends only on its square class. -/
+theorem hilbertSymbol_eq_of_fieldSquareClass_eq_right
+    (a b c : Kˣ) (h : fieldSquareClass b = fieldSquareClass c) :
+    hilbertSymbol (a : K) (b : K) = hilbertSymbol (a : K) (c : K) := by
+  rw [fieldSquareClass, fieldSquareClass, QuotientGroup.mk'_eq_mk'] at h
+  obtain ⟨z, hz, hbc⟩ := h
+  obtain ⟨q, rfl⟩ := Subgroup.mem_square.mp hz
+  rw [← hbc]
+  simpa [pow_two, mul_assoc] using
+    (hilbertSymbol_mul_square_right (a : K) (b : K) (Units.ne_zero q)).symm
+
+/-- The Hilbert symbol in the first entry depends only on its square class. -/
+theorem hilbertSymbol_eq_of_fieldSquareClass_eq_left
+    (a b c : Kˣ) (h : fieldSquareClass a = fieldSquareClass b) :
+    hilbertSymbol (a : K) (c : K) = hilbertSymbol (b : K) (c : K) := by
+  rw [hilbertSymbol_comm (a : K), hilbertSymbol_comm (b : K)]
+  exact hilbertSymbol_eq_of_fieldSquareClass_eq_right c a b h
+
 /-- The Hilbert symbol of `a` and `-a` is one when `a` is nonzero. -/
 @[simp]
 theorem hilbertSymbol_neg_self (a : K) (ha : a ≠ 0) :
