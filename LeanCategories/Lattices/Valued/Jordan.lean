@@ -29,6 +29,8 @@ structure JordanDecomposition
   /-- Each component is modular for its stated uniformizer power. -/
   component_isModular : ∀ i,
     IsIModular R (component i).obj (Ideal.span {π ^ exponent i})
+  /-- Every component is nonzero, so no exponent is carried by a zero summand. -/
+  component_nontrivial : ∀ i, Nontrivial (component i).obj.obj.carrier
   /-- The exponents list each scale once. -/
   exponent_strictMono : StrictMono exponent
   /-- The orthogonal sum of the components is the original lattice. -/

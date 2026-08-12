@@ -207,13 +207,11 @@ theorem scaleModule_le (J : JordanDecomposition L π (n + 1)) :
 /-- The smallest exponent of a Jordan decomposition is the scale exponent of the lattice.
 
 This is the first invariant of the decomposition: the exponents increase strictly, so the
-component of smallest exponent carries the whole scale of the lattice. Only that component
-has to be nonzero. -/
-theorem scaleModule_eq (J : JordanDecomposition L π (n + 1))
-    (hne : Nontrivial (J.component 0).obj.obj.carrier) :
+component of smallest exponent carries the whole scale of the lattice. -/
+theorem scaleModule_eq (J : JordanDecomposition L π (n + 1)) :
     scaleModule L.obj = Ideal.span {π ^ J.exponent 0} := by
   refine le_antisymm J.scaleModule_le ?_
-  letI := hne
+  letI := J.component_nontrivial 0
   letI : Module.Finite R (J.component 0).obj.obj.carrier := (J.component 0).property
   have h0 : scaleModule (J.component 0).obj = Ideal.span {π ^ J.exponent 0} :=
     scaleModule_of_isIModular (J.component 0).obj π J.uniformizer_isIrreducible
@@ -239,13 +237,11 @@ end JordanDecomposition
 Two Jordan decompositions of the same lattice, with possibly different uniformizers and
 different numbers of components, record the same smallest exponent. -/
 theorem exponent_zero_eq_of_jordanDecomposition {ϖ : R} {m : ℕ}
-    (J : JordanDecomposition L π (n + 1)) (K : JordanDecomposition L ϖ (m + 1))
-    (hJ : Nontrivial (J.component 0).obj.obj.carrier)
-    (hK : Nontrivial (K.component 0).obj.obj.carrier) :
+    (J : JordanDecomposition L π (n + 1)) (K : JordanDecomposition L ϖ (m + 1)) :
     J.exponent 0 = K.exponent 0 := by
   have hπ := J.uniformizer_isIrreducible
   have hspan : Ideal.span {π ^ J.exponent 0} = Ideal.span {ϖ ^ K.exponent 0} := by
-    rw [← J.scaleModule_eq hJ, K.scaleModule_eq hK]
+    rw [← J.scaleModule_eq, K.scaleModule_eq]
   have hassoc : Associated (π ^ J.exponent 0) (π ^ K.exponent 0) :=
     (Ideal.span_singleton_eq_span_singleton.mp hspan).trans
       (Associated.pow_pow (IsDiscreteValuationRing.associated_of_irreducible R hπ
@@ -262,12 +258,10 @@ This is the uniqueness statement for a single Jordan component: the exponent is 
 exponent and the rank is the rank of the lattice, so neither depends on the decomposition
 or on the uniformizer. -/
 theorem invariants_eq_of_single {ϖ : R} (J : JordanDecomposition L π 1)
-    (K : JordanDecomposition L ϖ 1)
-    (hJ : Nontrivial (J.component 0).obj.obj.carrier)
-    (hK : Nontrivial (K.component 0).obj.obj.carrier) :
+    (K : JordanDecomposition L ϖ 1) :
     J.invariants = K.invariants := by
   rw [J.invariants_of_single, K.invariants_of_single,
-    exponent_zero_eq_of_jordanDecomposition J K hJ hK]
+    exponent_zero_eq_of_jordanDecomposition J K]
 
 /-- The total rank recorded by a Jordan decomposition is an invariant of the lattice. -/
 theorem sum_rank_invariants_eq {ϖ : R} {m : ℕ}

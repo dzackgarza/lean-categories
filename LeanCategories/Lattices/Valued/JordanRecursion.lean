@@ -278,6 +278,7 @@ noncomputable def subsingletonJordanDecomposition (L : FiniteProjectiveLatticeCa
   component := fun _ ↦ L
   exponent := fun _ ↦ 0
   component_isModular := fun i ↦ i.elim0
+  component_nontrivial := fun i ↦ i.elim0
   exponent_strictMono := fun i ↦ i.elim0
   decomposition := emptyOrthogonalSumIso L
 
@@ -316,6 +317,15 @@ theorem exists_jordanDecomposition_of_finrank_le (π : R) (hπ : Irreducible π)
     letI := hperp
     letI hfin : Module.Finite R ↥(R ∙ v) :=
       Module.Finite.iff_fg.mpr (Submodule.fg_span_singleton v)
+    have hspan_ne : (R ∙ v) ≠ ⊥ := by
+      intro h0
+      rw [h0] at hrk hcompl
+      have hsup : orthogonalSubmodule L.obj ⊥ = ⊤ := by
+        simpa using hcompl.sup_eq_top
+      rw [hsup, finrank_top] at hrk
+      omega
+    letI hline_nontrivial : Nontrivial ↥(R ∙ v) :=
+      Submodule.nontrivial_iff_ne_bot.mpr hspan_ne
     let A : FiniteProjectiveLatticeCat R R :=
       ⟨formedSublattice L.obj (R ∙ v), hfin⟩
     have hBfin : Module.Finite R ↥(orthogonalSubmodule L.obj (R ∙ v)) := inferInstance
@@ -344,15 +354,20 @@ theorem exists_jordanDecomposition_of_finrank_le (π : R) (hπ : Irreducible π)
             component := Fin.cons A J.component
             exponent := Fin.cons e₀ J.exponent
             component_isModular := ?_
+            component_nontrivial := ?_
             exponent_strictMono :=
               strictMono_fin_cons e₀ J.exponent J.exponent_strictMono hlt
             decomposition :=
               finiteProjectiveIndexedOrthogonalSumConsIso (Fin.cons A J.component) ≪≫
                 finiteProjectiveOrthogonalSumCongr (Iso.refl A) J.decomposition ≪≫ hAB }
-        intro i
-        rcases Fin.eq_zero_or_eq_succ i with rfl | ⟨j, rfl⟩
-        · exact hmod
-        · exact J.component_isModular j
+        · intro i
+          rcases Fin.eq_zero_or_eq_succ i with rfl | ⟨j, rfl⟩
+          · exact hmod
+          · exact J.component_isModular j
+        · intro i
+          rcases Fin.eq_zero_or_eq_succ i with rfl | ⟨j, rfl⟩
+          · exact hline_nontrivial
+          · exact J.component_nontrivial j
       · intro i
         rcases Fin.eq_zero_or_eq_succ i with rfl | ⟨j, rfl⟩
         · exact hee₀
@@ -372,6 +387,7 @@ theorem exists_jordanDecomposition_of_finrank_le (π : R) (hπ : Irreducible π)
               fun i : Fin m ↦ J.component i.succ
             exponent := J.exponent
             component_isModular := ?_
+            component_nontrivial := ?_
             exponent_strictMono := J.exponent_strictMono
             decomposition :=
               finiteProjectiveIndexedOrthogonalSumConsIso _ ≪≫
@@ -381,12 +397,18 @@ theorem exists_jordanDecomposition_of_finrank_le (π : R) (hπ : Irreducible π)
                   finiteProjectiveOrthogonalSumCongr (Iso.refl A)
                     ((finiteProjectiveIndexedOrthogonalSumConsIso J.component).symm ≪≫
                       J.decomposition) ≪≫ hAB }
-        intro i
-        rcases Fin.eq_zero_or_eq_succ i with rfl | ⟨j, rfl⟩
-        · rw [hzero]
-          exact isIModular_orthogonalSum A.obj (J.component 0).obj _ hmod
-            (hzero ▸ J.component_isModular 0)
-        · exact J.component_isModular j.succ
+        · intro i
+          rcases Fin.eq_zero_or_eq_succ i with rfl | ⟨j, rfl⟩
+          · rw [hzero]
+            exact isIModular_orthogonalSum A.obj (J.component 0).obj _ hmod
+              (hzero ▸ J.component_isModular 0)
+          · exact J.component_isModular j.succ
+        · intro i
+          rcases Fin.eq_zero_or_eq_succ i with rfl | ⟨j, rfl⟩
+          · letI := J.component_nontrivial 0
+            change Nontrivial (A.obj.obj.carrier × (J.component 0).obj.obj.carrier)
+            infer_instance
+          · exact J.component_nontrivial j.succ
       · exact fun i ↦ hee₀.trans (hJ i)
 
 /-- Every nondegenerate finite lattice over a discrete valuation ring with `2` invertible
