@@ -24,10 +24,13 @@ public import LeanCategories.Lattices.Valued.Topological
 public import LeanCategories.Lattices.Valued.TopologicalOrthogonalGroup
 public import LeanCategories.Lattices.Valued.Signature
 public import LeanCategories.Lattices.Valued.Theta
+public import LeanCategories.Lattices.Valued.DefiniteIndefinite
+public import LeanCategories.Lattices.Valued.Mass
 public import LeanCategories.Lattices.Valued.Witt
 public import LeanCategories.Lattices.Valued.Localization
 public import LeanCategories.Lattices.Valued.Completion
 public import LeanCategories.Lattices.Valued.ArithmeticPlace
+public import LeanCategories.Lattices.Valued.ArithmeticBase
 public import LeanCategories.Lattices.Valued.RingEquiv
 public import LeanCategories.Lattices.Valued.Residue
 public import LeanCategories.Lattices.Valued.LocalGlobal
