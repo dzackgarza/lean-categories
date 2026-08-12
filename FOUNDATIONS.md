@@ -1726,7 +1726,7 @@ The dual-lattice convention is [@Nik80, §1°].
 
 ### Proposition 24.4 (Comparison with the module dual) {#prop-metric-module-dual}
 
-Generic nondegeneracy of \(b\) induces an isomorphism
+Perfection of \(b\) over the fraction field induces an isomorphism
 \[
 L^{\#}\overset{\sim}{\longrightarrow}L^*,
 \qquad
@@ -1760,6 +1760,12 @@ The two presentations fit into a commutative diagram with exact rows
 \end{CD}
 \]
 This diagram is the natural home of the discriminant module and the comparison isomorphism.
+
+`Discriminant.lean` formalizes the comparison. `discriminantCarrierEquivDefect` is the
+right-hand vertical isomorphism, from the categorical cokernel of \(L\to L^{\#}\) to the
+adjoint defect, and `discriminantValueEquiv_pairing` shows that it carries one
+discriminant form to the other. Both need fraction-field perfection, the hypothesis of
+Proposition 24.4.
 
 ## 25. Discriminant bilinear and quadratic forms
 
