@@ -27,6 +27,7 @@ public import LeanCategories.ForMathlib.AdicCompletionIntegers
 public import LeanCategories.ForMathlib.DenseIntegralCompletion
 public import LeanCategories.ForMathlib.QuadraticReflection
 public import LeanCategories.ForMathlib.QuotientManifold
+public import LeanCategories.ForMathlib.RestrictedProductMeasure
 public import LeanCategories.ForMathlib.WittCancellation
 public import LeanCategories.ForMathlib.SymmetricPairProduct
 public import LeanCategories.Names.Standard

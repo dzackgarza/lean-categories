@@ -90,6 +90,7 @@ public import LeanCategories.Lattices.Valued.DiagramShape
 public import LeanCategories.Lattices.Valued.Adele
 public import LeanCategories.Lattices.Valued.AdelicClass
 public import LeanCategories.Lattices.Valued.LocalDensity
+public import LeanCategories.Lattices.Valued.DensityProduct
 public import LeanCategories.Lattices.Valued.AdelicSpinorNorm
 
 @[expose] public section
