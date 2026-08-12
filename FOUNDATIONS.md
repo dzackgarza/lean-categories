@@ -2267,7 +2267,44 @@ anisotropic vectors generate the orthogonal group. `ReflectionGeneration.lean` p
 induction on the rank, splitting off an anisotropic line at each step.
 
 Consequently a nondegenerate form carries **at most one** spinor norm, with no further
-hypothesis. Existence of the spinor norm is a separate question and belongs to Clifford theory.
+hypothesis.
+
+### Theorem 29b.2b (The canonical spinor norm) {#thm-canonical-spinor-norm}
+
+The spinor norm also **exists**, so it is canonical rather than chosen data. The construction is
+the classical one. The Lipschitz group acts on the module by twisted conjugation; that action is
+onto the orthogonal group because reflections generate it; its kernel is the scalars; and the
+Clifford norm sends a scalar to its square, hence to the trivial square class. So the norm
+descends along the surjection.
+
+The kernel computation rests on the identity
+\[
+\iota(v)z-\operatorname{involute}(z)\iota(v)=\operatorname{contract}_{\,\mathrm{polar}(v)}z ,
+\]
+valid over any commutative ring: moving a vector past an arbitrary Clifford element, with the
+grade twist, costs exactly one contraction. Twisted centrality therefore kills every contraction
+of the element, and contractions detect scalars.
+
+`CanonicalSpinorNorm.lean` states the result; `LipschitzAction.lean`, `CliffordCenter.lean`,
+`ContractionScalars.lean` and `SpinorNormDescent.lean` supply the four steps.
+
+### Theorem 29b.6 (Jordan decomposition exists) {#thm-jordan-existence}
+
+Over a discrete valuation ring with \(2\) invertible, every nondegenerate finite lattice is an
+orthogonal sum of modular components with strictly increasing exponents.
+
+`JordanRecursion.lean` proves it. Two points of the proof are worth recording, because the naive
+statement cannot be proved directly. First, the induction must carry a **lower bound** on the
+exponents: strict monotonicity cannot be re-established after peeling off a line, whereas the
+bound is exactly what scale monotonicity supplies at each step. Second, the bound is what makes
+the merge decidable — either every exponent of the complement exceeds the new one, so the line
+is prepended, or one equals it, and strict monotonicity forces that component to come first, so
+the line is absorbed into it. Absorption needs that an orthogonal sum of \(I\)-modular lattices
+is \(I\)-modular, which follows from the metric dual of an orthogonal sum being the sum of the
+duals.
+
+The degenerate branch is not an exception: nondegeneracy forces a trivial carrier when the scale
+vanishes, and the empty decomposition applies.
 
 ### Definition 29b.3 (Spinor kernel without a chosen norm) {#def-spinor-kernel}
 
