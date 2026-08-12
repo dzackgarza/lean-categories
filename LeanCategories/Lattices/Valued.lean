@@ -54,6 +54,7 @@ public import LeanCategories.Lattices.Valued.Spinor
 public import LeanCategories.Lattices.Valued.SpinorNormConstruction
 public import LeanCategories.Lattices.Valued.LipschitzAction
 public import LeanCategories.Lattices.Valued.CliffordCenter
+public import LeanCategories.Lattices.Valued.SpinorNormDescent
 public import LeanCategories.Lattices.Valued.ReflectionTransitivity
 public import LeanCategories.Lattices.Valued.OrthogonalSplitting
 public import LeanCategories.Lattices.Valued.ReflectionGeneration
