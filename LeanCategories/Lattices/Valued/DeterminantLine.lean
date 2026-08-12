@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Lattices.Valued.Arithmetic
 public import Mathlib.Algebra.Category.ModuleCat.ExteriorPower
+public import Mathlib.RingTheory.PicardGroup
 
 /-!
 # Determinant lines of finite projective lattices
@@ -53,6 +54,19 @@ noncomputable def determinantLineIso {L M : FiniteProjectiveLatticeCat R W}
   rw [determinantLine, determinantLine, hr]
   exact (ModuleCat.exteriorPower.functor R M.genericRank).mapIso
       ((finiteProjectiveForget R W).mapIso e)
+
+/-- The Steinitz class is the Picard class of the determinant line. -/
+noncomputable def steinitzClass (L : FiniteProjectiveLatticeCat R W)
+    [Module.Invertible R L.determinantLine] : CommRing.Pic R :=
+  CommRing.Pic.mk R L.determinantLine
+
+/-- The Steinitz class is invariant under lattice isomorphism. -/
+theorem steinitzClass_eq_of_iso {L M : FiniteProjectiveLatticeCat R W}
+    [Module.Invertible R L.determinantLine]
+    [Module.Invertible R M.determinantLine]
+    (e : L ≅ M) : L.steinitzClass = M.steinitzClass := by
+  rw [steinitzClass, steinitzClass, CommRing.Pic.mk_eq_mk_iff]
+  exact ⟨(determinantLineIso e).toLinearEquiv⟩
 
 end FiniteProjectiveLatticeCat
 
