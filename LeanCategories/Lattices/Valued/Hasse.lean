@@ -251,6 +251,43 @@ theorem hasseMinkowskiInvariantOfDiagonal_eq_prod_Iio
   exact prod_increasing_pairs_eq_prod_Iio fun i j ↦
     hilbertSymbol (w i : K) (w j : K)
 
+/-- The predecessor product at a successor index splits off the zero index. -/
+theorem prod_Iio_fin_succ
+    {n : ℕ} {M : Type*} [CommMonoid M] (j : Fin n) (f : Fin (n + 1) → M) :
+    (∏ i ∈ Finset.Iio j.succ, f i) =
+      f 0 * ∏ i ∈ Finset.Iio j, f i.succ := by
+  rw [show (Finset.Iio j.succ : Finset (Fin (n + 1))) =
+      insert (0 : Fin (n + 1)) (Finset.map (Fin.succEmb n) (Finset.Iio j)) by
+    ext i
+    refine Fin.cases ?_ (fun i ↦ ?_) i <;> simp]
+  rw [Finset.prod_insert]
+  · rw [Finset.prod_map]
+    simp
+  · simp
+
+/-- Appending one diagonal coefficient gives the recursive Hasse product formula.
+
+This is the product form used in Cassels's contiguous-basis proof of Lemma 2.2
+[@Cas08a, p. 56].
+-/
+theorem hasseMinkowskiInvariantOfDiagonal_cons
+    {n : ℕ} (a : Kˣ) (w : Fin n → Kˣ) :
+    hasseMinkowskiInvariantOfDiagonal (Fin.cons a w) =
+      hasseMinkowskiInvariantOfDiagonal w *
+        ∏ i, hilbertSymbol (a : K) (w i : K) := by
+  classical
+  rw [hasseMinkowskiInvariantOfDiagonal_eq_prod_Iio,
+    hasseMinkowskiInvariantOfDiagonal_eq_prod_Iio,
+    Fin.prod_univ_succ]
+  simp only [Fin.cons_zero, Fin.cons_succ]
+  simp_rw [prod_Iio_fin_succ]
+  have hzero : (Finset.Iio (0 : Fin (n + 1))) = ∅ := by
+    ext i
+    simp
+  rw [hzero, Finset.prod_empty, one_mul]
+  simp only [Fin.cons_zero, Fin.cons_succ]
+  rw [Finset.prod_mul_distrib, mul_comm]
+
 /-- A unary diagonal form has Hasse--Minkowski value one.
 
 This is the first case of Cassels's Lemma 2.2 [@Cas08a, p. 56]. -/
