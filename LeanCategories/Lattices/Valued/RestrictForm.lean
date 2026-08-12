@@ -21,7 +21,7 @@ variable {K : Type u} [Field K]
 noncomputable def restrictForm (L : FiniteFormCat K K) (W : Submodule K L.obj.carrier) :
     FiniteFormCat K K :=
   have : Module.Finite K L.obj.carrier := L.property.1
-  ⟨L.obj.restrict W, inferInstance, fun x y ↦ L.property.2 x y⟩
+  ⟨L.obj.restrict W, inferInstanceAs (Module.Finite K W), fun x y ↦ L.property.2 x.1 y.1⟩
 
 /-- The restricted form pairs vectors of the submodule by the ambient form. -/
 @[simp]
