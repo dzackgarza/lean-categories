@@ -2219,6 +2219,56 @@ idele classes, and idele square classes.
 ***
 The adelic and placewise genus descriptions are [@Nik80, §1.9, Cor. 1.9.4].
 
+### Definition 29.9 (Arithmetic base) {#def-arithmetic-base}
+
+A Dedekind domain does not record which places lie outside its spectrum. An **arithmetic base**
+is an integral model \(R\subset K\) together with a distinguished set of places and their local
+coefficient rings. Its places are
+\[
+\operatorname{Place}(R,K)=\operatorname{Ht}_1(R)\sqcup\{\text{distinguished places}\},
+\]
+one index for both kinds. A number ring is the case where the distinguished places are the
+archimedean ones; rings of \(S\)-integers and coordinate rings of affine curves are the cases a
+number-field-only development cannot express.
+
+`ArithmeticBase.lean` states this, and its number-field instance identifies
+\(\operatorname{Place}(\mathcal O_F,F)\) with the `ArithmeticPlace` already in use.
+
+## 29b. Loci of the lattice category
+
+Definiteness, indefiniteness, and root-lattice structure are **properties of one lattice
+category**, not competing definitions of lattice. Each cuts out a full subcategory, and the
+theories built on them diverge downstream: the definite locus owns minima, short vectors, theta
+series, class numbers and masses; the indefinite locus owns isotropic vectors, hyperbolic
+planes, the Witt index and strong approximation.
+
+`DefiniteIndefinite.lean` defines the loci and their full subcategories, together with the
+dichotomy for nondegenerate lattices and the disjointness of the two loci.
+
+### Definition 29b.1 (Representation numbers and theta series) {#def-theta-series}
+
+For a positive-definite integral lattice the level sets
+\[
+\{x\in L\mid b(x,x)=n\}
+\]
+are finite, so the representation numbers \(r_L(n)\) and the theta series
+\[
+\Theta_L=\sum_{n\ge0}r_L(n)q^n
+\]
+are defined. `Theta.lean` proves the finiteness and constructs the series; `Mass.lean` proves
+that the orthogonal group of a definite lattice is finite and defines the mass of a finite
+family of lattices as \(\sum_M 1/|O(M)|\). Finiteness of a genus is not assumed anywhere: the
+family is an explicit input.
+
+### Theorem 29b.2 (Reflections generate) {#thm-reflections-generate}
+
+For a nondegenerate finite symmetric form over a field with \(2\) invertible, the reflections in
+anisotropic vectors generate the orthogonal group. `ReflectionGeneration.lean` proves this by
+induction on the rank, splitting off an anisotropic line at each step.
+
+Consequently a nondegenerate form carries **at most one** spinor norm, with no further
+hypothesis. Existence of the spinor norm is a separate question and belongs to Clifford theory.
+
 # Part VII. Sites, sheaves, stacks, and geometric categories
 
 The preceding constructions are internal to the higher category of categories.  Algebraic
