@@ -16,6 +16,7 @@ public import LeanCategories.Lattices.Valued.EvenGluing
 public import LeanCategories.Lattices.Valued.GluingAction
 public import LeanCategories.Lattices.Valued.SmithNormalForm
 public import LeanCategories.Lattices.Valued.DiscriminantQuadratic
+public import LeanCategories.Lattices.Valued.Elementary
 public import LeanCategories.Lattices.Valued.OrthogonalGroup
 public import LeanCategories.Lattices.Valued.DiscriminantAction
 public import LeanCategories.Lattices.Valued.Standard
