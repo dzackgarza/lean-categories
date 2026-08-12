@@ -283,41 +283,6 @@ noncomputable def subsingletonJordanDecomposition (L : FiniteProjectiveLatticeCa
 
 variable [Invertible (2 : R)]
 
-/-- A lattice with nonzero scale splits off a modular line of the same scale.
-
-This is `exists_orthogonal_decomposition` together with the scale of `L` itself, which the
-Jordan recursion needs to compare exponents. -/
-theorem exists_scale_orthogonal_decomposition (L : IntegralLatticeCat R)
-    [Module.Finite R L.obj.carrier] (hL : scaleModule L ≠ ⊥)
-    (π : R) (hπ : Irreducible π) :
-    ∃ (v : L.obj.carrier) (e : ℕ) (hline : Module.Projective R ↥(R ∙ v))
-      (hperp : Module.Projective R ↥(orthogonalSubmodule L (R ∙ v))),
-      letI := hline
-      letI := hperp
-      Module.Finite R ↥(R ∙ v) ∧
-        scaleModule L = Ideal.span {π ^ e} ∧
-          IsIModular R (formedSublattice L (R ∙ v)) (Ideal.span {π ^ e}) ∧
-            Module.finrank R ↥(orthogonalSubmodule L (R ∙ v)) + 1
-                = Module.finrank R L.obj.carrier ∧
-              IsCompl (R ∙ v) (orthogonalSubmodule L (R ∙ v)) := by
-  obtain ⟨v, hv, hcompl⟩ := exists_generatesScale_isCompl L hL
-  have hne : L.obj.pairing v v ≠ 0 := fun h0 ↦
-    hL (hv.trans (Ideal.span_singleton_eq_bot.mpr h0))
-  obtain ⟨e, u, hvv⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible hne hπ
-  letI hbasis : Module.Basis (Fin 1) R ↥(R ∙ v) := spanSingletonBasis L v hne
-  letI : Module.Free R ↥(R ∙ v) := Module.Free.of_basis hbasis
-  letI : Module.Finite R ↥(R ∙ v) := Module.Finite.of_basis hbasis
-  letI : Module.Projective R ↥(orthogonalSubmodule L (R ∙ v)) :=
-    projective_orthogonalSubmodule_of_isCompl L (R ∙ v) hcompl
-  letI : Module.Free R ↥(orthogonalSubmodule L (R ∙ v)) :=
-    Module.free_of_flat_of_isLocalRing
-  refine ⟨v, e, inferInstance, inferInstance, inferInstance, ?_,
-    isIModular_formedSublattice_span_singleton L v hne π u e hπ.ne_zero hvv, ?_, hcompl⟩
-  · rw [hv, hvv, Ideal.span_singleton_mul_left_unit u.isUnit]
-  · rw [← finrank_orthogonalSubmodule_add L (R ∙ v) hcompl,
-      Module.finrank_eq_card_basis hbasis]
-    simp [add_comm]
-
 /-- The Jordan recursion, with a lower bound on the exponents.
 
 The bound is what keeps the exponents strictly increasing: the line peeled off a lattice
@@ -345,11 +310,12 @@ theorem exists_jordanDecomposition_of_finrank_le (π : R) (hπ : Irreducible π)
         subsingleton_of_scaleModule_eq_bot L.obj hnd hbot
       exact ⟨0, subsingletonJordanDecomposition L π hπ, fun i ↦ i.elim0⟩
     letI : Module.Finite R L.obj.obj.carrier := L.property
-    obtain ⟨v, e₀, hline, hperp, hfin, hscale, hmod, hrk, hcompl⟩ :=
-      exists_scale_orthogonal_decomposition L.obj hbot π hπ
+    obtain ⟨v, e₀, hline, hperp, hscale, hmod, hrk, hcompl⟩ :=
+      exists_orthogonal_decomposition L.obj hbot π hπ
     letI := hline
     letI := hperp
-    letI : Module.Finite R ↥(R ∙ v) := hfin
+    letI hfin : Module.Finite R ↥(R ∙ v) :=
+      Module.Finite.iff_fg.mpr (Submodule.fg_span_singleton v)
     let A : FiniteProjectiveLatticeCat R R :=
       ⟨formedSublattice L.obj (R ∙ v), hfin⟩
     have hBfin : Module.Finite R ↥(orthogonalSubmodule L.obj (R ∙ v)) := inferInstance

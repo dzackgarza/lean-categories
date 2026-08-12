@@ -117,7 +117,8 @@ variable [IsDiscreteValuationRing R] [Invertible (2 : R)]
 splits off a rank-one modular line.
 
 The lattice is isomorphic to the orthogonal sum of a `π ^ e`-modular line and its orthogonal
-complement, whose rank is one less. This is the statement a Jordan induction consumes. -/
+complement, whose rank is one less. The line carries the whole scale of `L`, so `e` is the
+scale exponent of `L`. This is the statement a Jordan induction consumes. -/
 theorem exists_orthogonal_decomposition (L : IntegralLatticeCat R)
     [Module.Finite R L.obj.carrier] (hL : scaleModule L ≠ ⊥)
     (π : R) (hπ : Irreducible π) :
@@ -125,10 +126,11 @@ theorem exists_orthogonal_decomposition (L : IntegralLatticeCat R)
       (hperp : Module.Projective R ↥(orthogonalSubmodule L (R ∙ v))),
       letI := hline
       letI := hperp
-      IsIModular R (formedSublattice L (R ∙ v)) (Ideal.span {π ^ e}) ∧
-        Module.finrank R ↥(orthogonalSubmodule L (R ∙ v)) + 1
-            = Module.finrank R L.obj.carrier ∧
-          IsCompl (R ∙ v) (orthogonalSubmodule L (R ∙ v)) := by
+      scaleModule L = Ideal.span {π ^ e} ∧
+        IsIModular R (formedSublattice L (R ∙ v)) (Ideal.span {π ^ e}) ∧
+          Module.finrank R ↥(orthogonalSubmodule L (R ∙ v)) + 1
+              = Module.finrank R L.obj.carrier ∧
+            IsCompl (R ∙ v) (orthogonalSubmodule L (R ∙ v)) := by
   obtain ⟨v, hv, hcompl⟩ := exists_generatesScale_isCompl L hL
   have hne : L.obj.pairing v v ≠ 0 := fun h0 ↦
     hL (hv.trans (Ideal.span_singleton_eq_bot.mpr h0))
@@ -140,11 +142,12 @@ theorem exists_orthogonal_decomposition (L : IntegralLatticeCat R)
     projective_orthogonalSubmodule_of_isCompl L (R ∙ v) hcompl
   letI : Module.Free R ↥(orthogonalSubmodule L (R ∙ v)) :=
     Module.free_of_flat_of_isLocalRing
-  refine ⟨v, e, inferInstance, inferInstance,
+  refine ⟨v, e, inferInstance, inferInstance, ?_,
     isIModular_formedSublattice_span_singleton L v hne π u e hπ.ne_zero hvv, ?_, hcompl⟩
-  rw [← finrank_orthogonalSubmodule_add L (R ∙ v) hcompl,
-    Module.finrank_eq_card_basis hbasis]
-  simp [add_comm]
+  · rw [hv, hvv, Ideal.span_singleton_mul_left_unit u.isUnit]
+  · rw [← finrank_orthogonalSubmodule_add L (R ∙ v) hcompl,
+      Module.finrank_eq_card_basis hbasis]
+    simp [add_comm]
 
 end Decomposition
 
