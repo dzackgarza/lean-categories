@@ -138,6 +138,13 @@ theorem hilbertSymbol_one_sub_self (a : K) (ha0 : a ≠ 0) (ha1 : a ≠ 1) :
   rw [hilbertSymbol, if_neg (by simp [ha0, sub_ne_zero.mpr ha1.symm]), if_pos]
   exact ⟨1, 1, 1, by simp, by ring⟩
 
+/-- The Hilbert symbol of a nonzero element against one is one. -/
+theorem hilbertSymbol_one_right (a : K) (ha : a ≠ 0) :
+    hilbertSymbol a 1 = 1 := by
+  classical
+  rw [hilbertSymbol, if_neg (by simp [ha]), if_pos]
+  exact ⟨1, 0, 1, by simp, by ring⟩
+
 /-- A field has a bilinear Hilbert symbol when the symbol is multiplicative in one entry.
 
 By symmetry, this is equivalent to multiplicativity in both entries. Milne proves this for
@@ -160,6 +167,19 @@ theorem hilbertSymbol_neg_mul [HasBilinearHilbertSymbol K] (a b : K) :
   · simp [ha, hilbertSymbol]
   rw [← neg_mul, hilbertSymbol_mul_right, hilbertSymbol_neg_self a ha]
   simp
+
+/-- A bilinear Hilbert symbol carries a product of units in its second entry to a product
+of symbols. -/
+theorem hilbertSymbol_prod [HasBilinearHilbertSymbol K] {ι : Type*} (s : Finset ι)
+    (a : Kˣ) (f : ι → Kˣ) :
+    (∏ i ∈ s, hilbertSymbol (a : K) (f i : K)) =
+      hilbertSymbol (a : K) ((∏ i ∈ s, f i : Kˣ) : K) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp [hilbertSymbol_one_right (a : K) (Units.ne_zero a)]
+  | insert i s hi ih =>
+    rw [Finset.prod_insert hi, Finset.prod_insert hi, Units.val_mul,
+      hilbertSymbol_mul_right, ih]
 
 /-- Over `ℝ`, the Hilbert symbol is `-1` precisely when both entries are negative. -/
 theorem hilbertSymbol_real {a b : ℝ} (ha : a ≠ 0) (hb : b ≠ 0) :
@@ -287,6 +307,19 @@ theorem hasseMinkowskiInvariantOfDiagonal_cons
   rw [hzero, Finset.prod_empty, one_mul]
   simp only [Fin.cons_zero, Fin.cons_succ]
   rw [Finset.prod_mul_distrib, mul_comm]
+
+/-- Appending one diagonal coefficient multiplies the Hasse--Minkowski value by the
+symbol of that coefficient against the determinant of the remaining ones.
+
+This is the form of Cassels's recursion used in his induction on the rank
+[@Cas08a, p. 56].
+-/
+theorem hasseMinkowskiInvariantOfDiagonal_cons_prod [HasBilinearHilbertSymbol K]
+    {n : ℕ} (a : Kˣ) (w : Fin n → Kˣ) :
+    hasseMinkowskiInvariantOfDiagonal (Fin.cons a w) =
+      hasseMinkowskiInvariantOfDiagonal w *
+        hilbertSymbol (a : K) ((∏ i, w i : Kˣ) : K) := by
+  rw [hasseMinkowskiInvariantOfDiagonal_cons, hilbertSymbol_prod]
 
 /-- A unary diagonal form has Hasse--Minkowski value one.
 
