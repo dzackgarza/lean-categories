@@ -2099,6 +2099,72 @@ where \(E=\mathbf{Lat}_{\mathbb Z}^{\simeq}\) and \(B=\prod_v\mathbf{Lat}_{\math
 
 The distinction exemplifies the general rule that truncation level is mathematical content. The groupoid of local identifications, the homotopy fiber, and the set of global isometry classes in the genus are related but not identical.
 
+### Definition 29.5 (Adelic orthogonal classes) {#def-adelic-orthogonal-classes}
+
+Let \(V=L\otimes_RK\). The finite adelic orthogonal group is
+
+\[
+O(V)(\mathbb A_{K,f}).
+\]
+
+The diagonal map \(O(V)(K)\to O(V)(\mathbb A_{K,f})\) is injective. Let
+
+\[
+K_L=\operatorname{Stab}_{O(V)(\mathbb A_{K,f})}(\widehat L).
+\]
+
+Then the finite adelic class space is the double-coset set
+
+\[
+O(V)(K)\backslash O(V)(\mathbb A_{K,f})/K_L.
+\]
+
+The finite adelic orthogonal group is locally compact and has a Haar measure. In a
+matrix presentation, integral orthogonal matrices form a compact open subgroup. The
+intrinsic stabilizer requires comparison with local integral bases when \(L\) is
+projective but not free.
+
+### Definition 29.6 (Ideles and idele square classes) {#def-ideles}
+
+The idele group is
+
+\[
+\mathbb A_K^\times=
+\left(\prod_{v\mid\infty}K_v^\times\right)
+\times
+\prod_{v<\infty}'K_v^\times,
+\]
+
+where the finite restricted product uses \(R_v^\times\). Its topology is the
+restricted-product topology. It is not the subspace topology inherited from the units
+of the adele ring. The idele group is locally compact and has a Haar measure.
+
+The diagonal embedding \(K^\times\hookrightarrow\mathbb A_K^\times\) defines the idele
+class group
+
+\[
+K^\times\backslash\mathbb A_K^\times.
+\]
+
+The quotient
+
+\[
+\mathbb A_K^\times/(\mathbb A_K^\times)^2
+\]
+
+is the natural target for an adelic spinor norm.
+
+**Lean realization status (2026-08-12).** `IntegralAdeleRing.lean` defines the
+coefficient rings, their injections, and both pullback comparisons.
+`IdealProfiniteCompletionDedekind.lean` proves the profinite comparison.
+`Modules/TensorProduct/Pi.lean` proves the finite-projective tensor-product comparison.
+`Lattices/Valued/Adele.lean` defines adelization, local components, the lattice
+intersection, and adelic genus. `LocalGlobal.lean` identifies the integral
+\(\mathbb Z\)-lattice genus with this definition. `AdelicClass.lean` defines the adelic
+orthogonal group, Haar measure, integral matrix compact-open subgroups, and the double
+coset. `IdeleGroup.lean` defines the locally compact idele group, principal ideles,
+idele classes, and idele square classes.
+
 ***
 The adelic and placewise genus descriptions are [@Nik80, §1.9, Cor. 1.9.4].
 
