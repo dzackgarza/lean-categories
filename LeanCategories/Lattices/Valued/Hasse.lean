@@ -214,6 +214,87 @@ theorem hasseMinkowskiInvariantOfDiagonal_two (w : Fin 2 → Kˣ) :
   rw [hasseMinkowskiInvariantOfDiagonal,
     Finset.prod_eq_single (0, 1) (by grind) (fun h => by simp at h)]
 
+/-- Equivalent nonsingular binary diagonal forms have equal Hilbert symbols.
+
+This is Cassels's corollary to Lemma 2.1 [@Cas08a, p. 56]. The proof transports
+the defining isotropic vector through the isometry.
+-/
+theorem hilbertSymbol_eq_of_equivalent_weightedSumSquares_two
+    (w w' : Fin 2 → Kˣ)
+    (h : QuadraticMap.Equivalent
+      (QuadraticMap.weightedSumSquares K w)
+      (QuadraticMap.weightedSumSquares K w')) :
+    hilbertSymbol (w 0 : K) (w 1 : K) =
+      hilbertSymbol (w' 0 : K) (w' 1 : K) := by
+  classical
+  simp only [hilbertSymbol, Units.ne_zero, or_false, ↓reduceIte]
+  congr 1
+  apply propext
+  let e := Classical.choice h
+  constructor
+  · rintro ⟨z, x, y, hne, heq⟩
+    let v : Fin 2 → K := ![x, y]
+    let v' := e v
+    refine ⟨z, v' 0, v' 1, ?_, ?_⟩
+    · intro hzero
+      have hz : z = 0 := congrArg Prod.fst hzero
+      have hv'0 : v' 0 = 0 := congrArg (fun p ↦ p.2.1) hzero
+      have hv'1 : v' 1 = 0 := congrArg (fun p ↦ p.2.2) hzero
+      have hv' : v' = 0 := by
+        funext i
+        fin_cases i <;> simp [hv'0, hv'1]
+      have hv : v = 0 := e.injective (by simpa [v'] using hv')
+      apply hne
+      ext <;> simp_all [v]
+    · have hmap := e.map_app v
+      change QuadraticMap.weightedSumSquares K w' v' =
+        QuadraticMap.weightedSumSquares K w v at hmap
+      simp [QuadraticMap.weightedSumSquares_apply, v] at hmap
+      simp [Units.smul_def] at hmap
+      simp only [← pow_two] at hmap
+      calc
+        z ^ 2 - (w' 0 : K) * v' 0 ^ 2 - (w' 1 : K) * v' 1 ^ 2 =
+            z ^ 2 - ((w' 0 : K) * v' 0 ^ 2 + (w' 1 : K) * v' 1 ^ 2) := by ring
+        _ = z ^ 2 - ((w 0 : K) * x ^ 2 + (w 1 : K) * y ^ 2) := by rw [hmap]
+        _ = 0 := by linear_combination heq
+  · rintro ⟨z, x, y, hne, heq⟩
+    let v : Fin 2 → K := ![x, y]
+    let v' := e.symm v
+    refine ⟨z, v' 0, v' 1, ?_, ?_⟩
+    · intro hzero
+      have hz : z = 0 := congrArg Prod.fst hzero
+      have hv'0 : v' 0 = 0 := congrArg (fun p ↦ p.2.1) hzero
+      have hv'1 : v' 1 = 0 := congrArg (fun p ↦ p.2.2) hzero
+      have hv' : v' = 0 := by
+        funext i
+        fin_cases i <;> simp [hv'0, hv'1]
+      have hv : v = 0 := e.symm.injective (by simpa [v'] using hv')
+      apply hne
+      ext <;> simp_all [v]
+    · have hmap := e.symm.map_app v
+      change QuadraticMap.weightedSumSquares K w v' =
+        QuadraticMap.weightedSumSquares K w' v at hmap
+      simp [QuadraticMap.weightedSumSquares_apply, v] at hmap
+      simp [Units.smul_def] at hmap
+      simp only [← pow_two] at hmap
+      calc
+        z ^ 2 - (w 0 : K) * v' 0 ^ 2 - (w 1 : K) * v' 1 ^ 2 =
+            z ^ 2 - ((w 0 : K) * v' 0 ^ 2 + (w 1 : K) * v' 1 ^ 2) := by ring
+        _ = z ^ 2 - ((w' 0 : K) * x ^ 2 + (w' 1 : K) * y ^ 2) := by rw [hmap]
+        _ = 0 := by linear_combination heq
+
+/-- Equivalent nonsingular binary diagonal forms have equal Hasse--Minkowski values. -/
+theorem hasseMinkowskiInvariantOfDiagonal_two_eq_of_equivalent
+    (w w' : Fin 2 → Kˣ)
+    (h : QuadraticMap.Equivalent
+      (QuadraticMap.weightedSumSquares K w)
+      (QuadraticMap.weightedSumSquares K w')) :
+    hasseMinkowskiInvariantOfDiagonal w =
+      hasseMinkowskiInvariantOfDiagonal w' := by
+  rw [hasseMinkowskiInvariantOfDiagonal_two,
+    hasseMinkowskiInvariantOfDiagonal_two]
+  exact hilbertSymbol_eq_of_equivalent_weightedSumSquares_two w w' h
+
 /-- Swapping the two coefficients of a binary diagonal form preserves its value. -/
 theorem hasseMinkowskiInvariantOfDiagonal_two_swap (w : Fin 2 → Kˣ) :
     hasseMinkowskiInvariantOfDiagonal (fun i => w (Equiv.swap 0 1 i)) =
