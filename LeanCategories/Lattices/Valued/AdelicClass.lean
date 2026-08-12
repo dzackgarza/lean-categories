@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Lattices.Valued.Adele
+public import LeanCategories.Lattices.Valued.TopologicalOrthogonalGroup
 public import Mathlib.GroupTheory.DoubleCoset
 
 /-!
@@ -35,6 +36,14 @@ abbrev NumberFieldRationalLattice
     (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :=
   (baseChangeIntegral (𝓞 K) K).obj L.obj
 
+/-- Rationalization preserves finite generation. -/
+noncomputable instance numberFieldRationalLatticeFinite
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    Module.Finite K (NumberFieldRationalLattice K L).obj.carrier := by
+  letI : Module.Finite (𝓞 K) L.obj.obj.carrier := L.property
+  change Module.Finite K (TensorProduct (𝓞 K) K L.obj.obj.carrier)
+  infer_instance
+
 /-- The rational orthogonal group of an integral lattice. -/
 abbrev RationalOrthogonalGroup
     (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :=
@@ -46,6 +55,36 @@ abbrev RationalFiniteAdelicOrthogonalGroup
   BilinModuleCat.OrthogonalGroup
     ((baseChangeIntegral K (FiniteAdeleRing (𝓞 K) K)).obj
       (NumberFieldRationalLattice K L)).obj
+
+/-- A basis of the rational quadratic space. -/
+noncomputable def rationalLatticeBasis
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    Module.Basis
+      (Module.Free.ChooseBasisIndex K (NumberFieldRationalLattice K L).obj.carrier)
+      K (NumberFieldRationalLattice K L).obj.carrier :=
+  Module.Free.chooseBasis K _
+
+/-- The induced basis of the finite adelic quadratic space. -/
+noncomputable def rationalFiniteAdeleBasis
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    Module.Basis
+      (Module.Free.ChooseBasisIndex K (NumberFieldRationalLattice K L).obj.carrier)
+      (FiniteAdeleRing (𝓞 K) K)
+      ((baseChangeIntegral K (FiniteAdeleRing (𝓞 K) K)).obj
+        (NumberFieldRationalLattice K L)).obj.carrier :=
+  (rationalLatticeBasis K L).baseChange (FiniteAdeleRing (𝓞 K) K)
+
+/-- The finite adelic orthogonal-group topology from a basis presentation. -/
+noncomputable instance rationalFiniteAdelicOrthogonalGroupTopology
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    TopologicalSpace (RationalFiniteAdelicOrthogonalGroup K L) :=
+  orthogonalGroupTopology _ (rationalFiniteAdeleBasis K L)
+
+/-- The finite adelic orthogonal group is a topological group. -/
+noncomputable instance rationalFiniteAdelicOrthogonalGroupIsTopologicalGroup
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    IsTopologicalGroup (RationalFiniteAdelicOrthogonalGroup K L) :=
+  orthogonalGroup_isTopologicalGroup _ (rationalFiniteAdeleBasis K L)
 
 /-- Scalar extension gives the diagonal rational subgroup in the finite adelic group. -/
 noncomputable def rationalFiniteAdeleOrthogonalHom
