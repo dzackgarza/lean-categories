@@ -2029,6 +2029,51 @@ An involution is the case \(G=C_2\); equivalently, it is an isometry \(\sigma:L\
 
 The primitive-embedding convention is [@Nik80, §§1°, 5°–6°].
 
+### Definition 28.5 (Invariant and coinvariant lattices) {#def-invariant-coinvariant-lattice}
+
+For a \(G\)-action on a lattice \(L\), the **invariant lattice** is
+\[
+L^G=\{x\in L\mid gx=x\ \ \forall g\in G\},
+\]
+and the **coinvariant lattice** is its orthogonal complement inside \(L\),
+\[
+L_G:=(L^G)^{\perp L}.
+\]
+Both are saturated: torsion-freeness gives \(rx\in L^G\Rightarrow x\in L^G\), and
+\(r\,b(x,L^G)=0\) with \(r\ne0\) gives \(b(x,L^G)=0\).
+
+The module-theoretic coinvariants \(L/I_GL\), where \(I_G=(g-1:g\in G)\), are a **different
+object**: the quotient can have torsion and the form does not descend to it, so it is not a
+lattice. Only \(I_GL\subseteq L_G\) holds in general, with equality after saturation under the
+usual nondegeneracy hypotheses.
+
+Representation-theoretically \(L^G\) is the trivial-isotypic part and \(L_G\) collects the
+nontrivial ones. There is an inclusion of an underlattice
+\[
+L^G\oplus L_G\hookrightarrow L
+\]
+with torsion cokernel; that cokernel is the gluing data, and it is generally nonzero.
+
+### Remark 28.6 (Saturated constituents are not isotypic summands) {#rmk-saturated-constituent}
+
+Decomposition of an \(R[G]\)-lattice is intrinsic to \(R[G]\) and needs neither \(\operatorname{Frac}(R)\)
+nor semisimplicity: a complete orthogonal family of central idempotents \(1=\sum_ie_i\) of
+\(R[G]\) gives \(M=\bigoplus_ie_iM\) for every \(R[G]\)-module \(M\).
+
+When \(R\) is a domain with \(K[G]\) semisimple, one may also form \(V_i=e_i(K\otimes_RL)\) and
+\[
+L_i:=L\cap V_i=\ker\!\left(L\to V/V_i\right),
+\]
+the largest submodule of \(L\) with generic fiber in \(V_i\). These are **saturated constituent
+lattices, not isotypic summands**: only
+\[
+\bigoplus_iL_i\ \subseteq\ L\ \subseteq\ \bigoplus_ie_iL
+\]
+holds, both cokernels torsion. For \(L=\mathbb Z[C_2]\) the first inclusion has index two. Over
+\(\mathbb Z[G]\) with \(G\) finite there are no nontrivial idempotents at all, so the global block
+decomposition is trivial and genuine decomposition appears only after localizing; the defect is
+supported at primes dividing \(|G|\).
+
 ## 29. Ring adeles and genera
 
 ### Definition 29.1 (Integral finite and full ring adeles) {#def-ring-adeles}
