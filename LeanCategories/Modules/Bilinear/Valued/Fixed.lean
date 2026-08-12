@@ -106,6 +106,22 @@ theorem pairing_smul_right (L : BilinModuleCat R W) (r : R) (x y : L.carrier) :
   rw [pairing, TensorProduct.tmul_smul, map_smul]
   rfl
 
+/-- The pairing is homogeneous on the left for the integer action of the carrier group.
+Integer scalars on a carrier elaborate through `zsmul`, not through the `R`-action, so
+`pairing_smul_left` does not fire on them. -/
+@[simp]
+theorem pairing_zsmul_left (L : BilinModuleCat R W) (n : ℤ) (x y : L.carrier) :
+    L.pairing (n • x) y = n • L.pairing x y := by
+  rw [← Int.cast_smul_eq_zsmul R n x, pairing_smul_left, Int.cast_smul_eq_zsmul]
+
+/-- The pairing is homogeneous on the right for the integer action of the carrier group.
+Integer scalars on a carrier elaborate through `zsmul`, not through the `R`-action, so
+`pairing_smul_right` does not fire on them. -/
+@[simp]
+theorem pairing_zsmul_right (L : BilinModuleCat R W) (n : ℤ) (x y : L.carrier) :
+    L.pairing x (n • y) = n • L.pairing x y := by
+  rw [← Int.cast_smul_eq_zsmul R n y, pairing_smul_right, Int.cast_smul_eq_zsmul]
+
 /-- The underlying linear map of a morphism. -/
 def underlyingMap {L M : BilinModuleCat R W} (f : L ⟶ M) :
     L.carrier →ₗ[R] M.carrier :=

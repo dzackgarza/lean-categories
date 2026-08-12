@@ -97,18 +97,6 @@ variable (L : FiniteProjectiveLatticeCat ℤ ℤ)
 
 section Pairing
 
-/-- The pairing is homogeneous on the right for the integer action of the carrier group. -/
-theorem pairing_intSmul_right (r : ℤ) (x y : L.obj.obj.carrier) :
-    L.obj.obj.pairing x (r • y) = r * L.obj.obj.pairing x y := by
-  rw [← Int.cast_smul_eq_zsmul ℤ r y, BilinModuleCat.pairing_smul_right, smul_eq_mul,
-    Int.cast_id]
-
-/-- The pairing is homogeneous on the left for the integer action of the carrier group. -/
-theorem pairing_intSmul_left (r : ℤ) (x y : L.obj.obj.carrier) :
-    L.obj.obj.pairing (r • x) y = r * L.obj.obj.pairing x y := by
-  rw [← Int.cast_smul_eq_zsmul ℤ r x, BilinModuleCat.pairing_smul_left, smul_eq_mul,
-    Int.cast_id]
-
 /-- The pairing negates on the right. -/
 theorem pairing_neg_right (x y : L.obj.obj.carrier) :
     L.obj.obj.pairing x (-y) = -L.obj.obj.pairing x y := by
@@ -138,7 +126,7 @@ theorem pairing_sub_left (x y z : L.obj.obj.carrier) :
 theorem pairing_sub_smul_right (x y : L.obj.obj.carrier) (k : ℤ) :
     L.obj.obj.pairing x (y - k • x) =
       L.obj.obj.pairing x y - k * L.obj.obj.pairing x x := by
-  rw [L.pairing_sub_right, L.pairing_intSmul_right]
+  simp [L.pairing_sub_right]
 
 /-- Every vector of a positive definite lattice has a nonnegative value. -/
 theorem pairing_self_nonneg (hL : IsPositiveDefiniteLattice L) (x : L.obj.obj.carrier) :
@@ -184,7 +172,9 @@ theorem eq_one_or_neg_one_of_isMinimalVector (hL : IsPositiveDefiniteLattice L)
     exact hx0 (by simp [hxk])
   have hwpos : 0 < L.obj.obj.pairing w w := L.pairing_self_pos hL hw0
   have hval : L.obj.obj.pairing x x = k ^ 2 * L.obj.obj.pairing w w := by
-    rw [hxk, L.pairing_intSmul_left, L.pairing_intSmul_right]
+    rw [hxk]
+    simp only [BilinModuleCat.pairing_zsmul_left, BilinModuleCat.pairing_zsmul_right,
+      zsmul_eq_mul, Int.cast_id]
     ring
   have hle : k ^ 2 * L.obj.obj.pairing w w ≤ L.obj.obj.pairing w w := hval ▸ hmin w hw0
   have hksq : k ^ 2 ≤ 1 := by nlinarith
@@ -227,7 +217,8 @@ theorem smul_eq_add_scaledProjection (x y : L.obj.obj.carrier) :
 -- not a simp lemma: `scaledProjection_apply` rewrites the left-hand side first
 theorem pairing_scaledProjection_left (x y : L.obj.obj.carrier) :
     L.obj.obj.pairing x (L.scaledProjection x y) = 0 := by
-  simp only [scaledProjection_apply, L.pairing_sub_right, L.pairing_intSmul_right]
+  simp only [scaledProjection_apply, L.pairing_sub_right,
+    BilinModuleCat.pairing_zsmul_right, zsmul_eq_mul, Int.cast_id]
   ring
 
 /-- The cleared projection vanishes exactly on the rational line through `x`. -/
@@ -245,7 +236,8 @@ theorem pairing_scaledProjection_self (x y : L.obj.obj.carrier) :
         (L.obj.obj.pairing x x * L.obj.obj.pairing y y - L.obj.obj.pairing x y ^ 2) := by
   have hsymm : L.obj.obj.pairing y x = L.obj.obj.pairing x y := L.obj.property.2 y x
   simp only [scaledProjection_apply, L.pairing_sub_left, L.pairing_sub_right,
-    L.pairing_intSmul_left, L.pairing_intSmul_right, hsymm]
+    BilinModuleCat.pairing_zsmul_left, BilinModuleCat.pairing_zsmul_right, zsmul_eq_mul,
+    Int.cast_id, hsymm]
   ring
 
 /-- **Cauchy-Schwarz over the integers.** A positive definite pairing satisfies

@@ -128,7 +128,6 @@ theorem dyadicSquareClassHom_unitsCoeHom (u : ℤ_[2]ˣ) :
     rw [coe_dyadicResidue, unitPartInt_unitsCoeHom, coe_dyadicUnitClass]
 
 /-- The square-class invariants of two: odd valuation and trivial residue. -/
-
 theorem dyadicSquareClassHom_pUnit :
     dyadicSquareClassHom (pUnit 2) = (Multiplicative.ofAdd 1, 1) := by
   rw [dyadicSquareClassHom_apply]
