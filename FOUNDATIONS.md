@@ -1372,12 +1372,17 @@ It is **perfect** if \(\widetilde b\) is an isomorphism, equivalently if
 \quad\text{and}\quad
 \operatorname{Def}(M,b)=0.
 \]
-For an integral lattice, perfectness is also called unimodularity.
-The strong nondegeneracy and unimodularity terminology follows [@MH73, §I.1, Def. 1.1].
+For an integral lattice, perfectness is distinct from metric unimodularity. Metric
+unimodularity means (L^{\#R}=L). Their equivalence requires the applicable Riesz and
+projectivity hypotheses.
 
 ### Remark 18.4 (Terminology “nondegenerate”)
 
-The literature uses “nondegenerate” for several related conditions: trivial radical, injective adjoint, perfect pairing, or nondegeneracy after extension to a fraction field. This report always names the precise condition. In the arithmetic lattice category below, **generically nondegenerate** means nondegenerate after extending scalars to the fraction field.
+The literature uses “nondegenerate” for several related conditions: trivial radicals,
+injective adjoint, perfect pairing, or a condition after fraction-field extension. This
+report names each condition precisely. Fraction-field nondegeneracy means that both
+radicals vanish after scalar extension. Fraction-field perfection means that the
+scalar-extended correlation maps are isomorphisms.
 
 ***
 
@@ -1421,11 +1426,19 @@ For an intrinsic lattice, the adjoint
 \]
 is injective and has a finitely generated torsion cokernel.
 
-**Proof sketch.** After tensoring with \(K\), \(\widetilde b\) becomes an isomorphism by generic nondegeneracy. Since \(L\) is projective and therefore torsion-free, the kernel vanishes. The cokernel is finitely generated and becomes zero after tensoring with \(K\), hence is a finite-length torsion module. Its underlying set is finite only under additional arithmetic hypotheses, for example when the relevant residue rings are finite. \(\square\)
+**Proof sketch.** Assume fraction-field perfection. After tensoring with \(K\),
+\(\widetilde b\) becomes an isomorphism. Since \(L\) is projective and therefore
+torsion-free, the kernel vanishes. The cokernel is finitely generated and becomes zero
+after tensoring with \(K\), hence is a finite-length torsion module. Its underlying set
+is finite only under additional arithmetic hypotheses, for example when the relevant
+residue rings are finite. \(\square\)
 
 ### Definition 19.5 (Even and unimodular lattices) {#def-even-unimodular-lattice}
 
-For \(R=\mathbb Z\), an intrinsic lattice is **even** if its bilinear form is even in the sense of Definition 17.5. It is **unimodular** if the adjoint \(L\to L^*\) is an isomorphism.
+For \(R=\mathbb Z\), an intrinsic lattice is **even** if its bilinear form is even in the
+sense of Definition 17.5. It is **unimodular** if (L^{\#\mathbb Z}=L). For finite
+projective scalar-valued lattices, this condition is equivalent to perfection of the
+adjoint (L\to L^*).
 
 The corresponding categories are reindexings of the evenness and perfectness classifiers along \(\mathbf{Lat}_{\mathbb Z}\to\mathbf{SymBil}_{\mathbb Z,\mathbb Z}\).
 
@@ -1597,7 +1610,7 @@ For \(a\in R\), define
 \[
 L(a):=(L,a\,b_L).
 \]
-When \(a\ne0\), generic nondegeneracy is preserved. The sign reversal is
+When \(a\ne0\), fraction-field nondegeneracy is preserved. The sign reversal is
 \[
 -L:=L(-1).
 \]
@@ -1770,7 +1783,7 @@ A_L\longrightarrow\operatorname{Hom}_R(A_L,K/R)
 \]
 is an isomorphism.
 
-This is the finite-length torsion counterpart of generic nondegeneracy of \(L\).
+This is the finite-length torsion counterpart of fraction-field perfection of \(L\).
 
 ### Definition 25.3 (Category of discriminant bilinear forms) {#def-discbil-category}
 
@@ -2010,36 +2023,56 @@ An involution is the case \(G=C_2\); equivalently, it is an isometry \(\sigma:L\
 
 The primitive-embedding convention is [@Nik80, §§1°, 5°–6°].
 
-## 29. Localizations and genera
+## 29. Ring adeles and genera
 
-### Definition 29.1 (Local profile) {#def-local-profile}
+### Definition 29.1 (Integral finite and full ring adeles) {#def-ring-adeles}
 
-For an integral lattice \(L\), let \(L_v\) denote its scalar extension to the appropriate completion at a place \(v\), including the real place. The local-profile functor is
+Let (K) be a number field and let (R=\mathcal O_K). Define
 \[
-\operatorname{Loc}:
-\mathbf{Lat}_{\mathbb Z}^{\simeq}
-\longrightarrow
-\prod_v\mathbf{Lat}_{\mathbb Z_v}^{\simeq},
+\widehat R=\prod_{v<\infty}R_v,
+\qquad
+\mathbb A_R=
+\left(\prod_{v\mid\infty}K_v\right)\times\widehat R.
 \]
-with a restricted product used when the arithmetic setting requires it.
-The local-profile convention is [@Nik80, §1.9].
-
-### Definition 29.2 (Genus) {#def-genus}
-
-The genus of \(L\) is the fiber of the map of sets
+The finite factor uses completed valuation rings. It is not the finite field-adele ring.
+There are canonical continuous injections
 \[
-\pi_0(\operatorname{Loc}):
-\pi_0(\mathbf{Lat}_{\mathbb Z}^{\simeq})
-\longrightarrow
-\pi_0\!\left(\prod_v\mathbf{Lat}_{\mathbb Z_v}^{\simeq}\right)
+\widehat R\hookrightarrow\mathbb A_{K,f},
+\qquad
+\mathbb A_R\hookrightarrow\mathbb A_K.
 \]
-over the point \([\operatorname{Loc}(L)]\). Thus
+The first image consists of field adeles integral at every finite place. The second map
+is the corresponding pullback along the finite projection.
+
+The integral finite adele ring also has the profinite presentation
 \[
-\operatorname{genus}(L)
-=
-\{[M]\mid M_v\simeq L_v\text{ for every }v\}.
+\widehat R\cong\varprojlim_{0\ne I\triangleleft R}R/I.
 \]
-It is a pointed set, pointed by \([L]\).
+For (R=\mathbb Z), the full coefficient ring satisfies
+\[
+\mathbb A_{\mathbb Z}\cong\mathbb R\times\prod_p\mathbb Z_p.
+\]
+
+### Definition 29.2 (Adelic genus) {#def-genus}
+
+For a finite projective (R)-lattice (L), define its adelization by scalar extension:
+\[
+L_{\mathbb A_R}=L\otimes_R\mathbb A_R.
+\]
+Two lattices have the same genus when their adelizations are isometric:
+\[
+L\sim_{\mathrm{gen}}M
+\quad\Longleftrightarrow\quad
+L_{\mathbb A_R}\simeq M_{\mathbb A_R}.
+\]
+The genus of \(L\) is the pointed set of global isometry classes satisfying this
+relation. The placewise formula is a characterization theorem. It follows from the
+component decomposition and the finite-projective comparison
+\[
+L\otimes_R\widehat R
+\cong
+\prod_{v<\infty}(L\otimes_RR_v).
+\]
 The genus convention is [@Nik80, §1.9, Cor. 1.9.4].
 
 ### Proposition 29.3 (Genus is not \(\pi_0\) of the homotopy fiber) {#prop-genus-not-hofib}
@@ -2067,7 +2100,7 @@ where \(E=\mathbf{Lat}_{\mathbb Z}^{\simeq}\) and \(B=\prod_v\mathbf{Lat}_{\math
 The distinction exemplifies the general rule that truncation level is mathematical content. The groupoid of local identifications, the homotopy fiber, and the set of global isometry classes in the genus are related but not identical.
 
 ***
-The local-profile and genus invariants are [@Nik80, §1.9, Cor. 1.9.4].
+The adelic and placewise genus descriptions are [@Nik80, §1.9, Cor. 1.9.4].
 
 # Part VII. Sites, sheaves, stacks, and geometric categories
 
@@ -4185,8 +4218,9 @@ radical, defect module, and discriminant are derived objects in named exact sequ
 ### Convention 64.8 (Lattices)
 
 An intrinsic arithmetic lattice is a finite projective module over a Dedekind domain with a
-symmetric generically nondegenerate form.  Freeness, bases, generators, Gram matrices, and
-enumerations are additional mathematical structures or constructors.
+symmetric form. Fraction-field nondegeneracy or perfection is an explicit additional
+property. Freeness, bases, generators, Gram matrices, and enumerations are additional
+mathematical structures or constructors.
 
 ### Convention 64.9 (Signs)
 
