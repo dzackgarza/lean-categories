@@ -29,6 +29,7 @@ public import LeanCategories.Lattices.Valued.Signature
 public import LeanCategories.Lattices.Valued.Theta
 public import LeanCategories.Lattices.Valued.DefiniteIndefinite
 public import LeanCategories.Lattices.Valued.Mass
+public import LeanCategories.Lattices.Valued.ClassFiniteness
 public import LeanCategories.Lattices.Valued.Witt
 public import LeanCategories.Lattices.Valued.Localization
 public import LeanCategories.Lattices.Valued.Completion
@@ -68,6 +69,7 @@ public import LeanCategories.Lattices.Valued.Involution
 public import LeanCategories.Lattices.Valued.Equivariant
 public import LeanCategories.Lattices.Valued.Reflection
 public import LeanCategories.Lattices.Valued.RootSystem
+public import LeanCategories.Lattices.Valued.RootLattice
 public import LeanCategories.Lattices.Valued.Adele
 public import LeanCategories.Lattices.Valued.AdelicClass
 public import LeanCategories.Lattices.Valued.LocalDensity
