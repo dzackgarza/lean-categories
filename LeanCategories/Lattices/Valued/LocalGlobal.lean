@@ -4,14 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Lattices.Valued.Arithmetic
-public import LeanCategories.Lattices.Valued.Completion
+public import LeanCategories.Lattices.Valued.Adele
+public import LeanCategories.Lattices.Valued.RingEquiv
 public import Mathlib.Data.Real.Basic
 public import Mathlib.NumberTheory.Padics.PadicIntegers
 
 @[expose] public section
 
 open CategoryTheory
+open NumberField
+open scoped NumberField
 
 namespace LeanCategories.Lattices.Valued
 
@@ -35,11 +37,35 @@ noncomputable def IsPadicallyIsometricAt (p : ℕ) (hp : p.Prime)
     (((completeIntegralAtPrime p).obj L) ≅
       ((completeIntegralAtPrime p).obj M))
 
-/-- Two finite integral lattices have the same genus. -/
-noncomputable def SameGenus
+/-- The classical real and `p`-adic local isometry condition. -/
+noncomputable def IsClassicallyLocallyIsometric
     (L M : FiniteProjectiveLatticeCat ℤ ℤ) : Prop :=
   IsRealIsometric L.obj M.obj ∧
     ∀ p (hp : p.Prime), IsPadicallyIsometricAt p hp L.obj M.obj
+
+/-- Transport a finite projective `ℤ`-lattice to the ring of integers of `ℚ`. -/
+noncomputable def rationalIntegerLatticeTransport :
+    FiniteProjectiveLatticeCat ℤ ℤ ⥤
+      FiniteProjectiveLatticeCat (𝓞 ℚ) (𝓞 ℚ) :=
+  transportFiniteProjectiveLattice (Rat.IsIntegralClosure.intEquiv (𝓞 ℚ)).symm
+
+/-- Two finite integral lattices have the same genus when their ring-adelic scalar
+extensions are isometric. -/
+noncomputable def SameGenus
+    (L M : FiniteProjectiveLatticeCat ℤ ℤ) : Prop :=
+  SameAdeleGenus ℚ
+    (rationalIntegerLatticeTransport.obj L)
+    (rationalIntegerLatticeTransport.obj M)
+
+/-- The integral `ℤ`-lattice genus is the ring-adelic genus after transport across
+`𝓞 ℚ ≃ ℤ`. -/
+theorem sameGenus_iff_sameAdeleGenus
+    (L M : FiniteProjectiveLatticeCat ℤ ℤ) :
+    SameGenus L M ↔
+      SameAdeleGenus ℚ
+        (rationalIntegerLatticeTransport.obj L)
+        (rationalIntegerLatticeTransport.obj M) :=
+  Iff.rfl
 
 theorem isGloballyIsometric_refl (L : FiniteProjectiveLatticeCat ℤ ℤ) :
     IsGloballyIsometric L L :=
@@ -58,44 +84,24 @@ theorem isGloballyIsometric_trans {L M N : FiniteProjectiveLatticeCat ℤ ℤ}
   exact ⟨e ≪≫ f⟩
 
 theorem sameGenus_refl (L : FiniteProjectiveLatticeCat ℤ ℤ) :
-    SameGenus L L := by
-  constructor
-  · exact ⟨Iso.refl _⟩
-  · intro p hp
-    exact ⟨Iso.refl _⟩
+    SameGenus L L :=
+  sameAdeleGenus_refl ℚ _
 
 theorem sameGenus_symm {L M : FiniteProjectiveLatticeCat ℤ ℤ}
-    (h : SameGenus L M) : SameGenus M L := by
-  constructor
-  · obtain ⟨e⟩ := h.1
-    exact ⟨e.symm⟩
-  · intro p hp
-    obtain ⟨e⟩ := h.2 p hp
-    exact ⟨e.symm⟩
+    (h : SameGenus L M) : SameGenus M L :=
+  sameAdeleGenus_symm ℚ h
 
 theorem sameGenus_trans {L M N : FiniteProjectiveLatticeCat ℤ ℤ}
-    (hLM : SameGenus L M) (hMN : SameGenus M N) : SameGenus L N := by
-  constructor
-  · obtain ⟨e⟩ := hLM.1
-    obtain ⟨f⟩ := hMN.1
-    exact ⟨e ≪≫ f⟩
-  · intro p hp
-    obtain ⟨e⟩ := hLM.2 p hp
-    obtain ⟨f⟩ := hMN.2 p hp
-    exact ⟨e ≪≫ f⟩
+    (hLM : SameGenus L M) (hMN : SameGenus M N) : SameGenus L N :=
+  sameAdeleGenus_trans ℚ hLM hMN
 
 /-- A global isometry induces every real and p-adic local isometry. -/
 theorem sameGenus_of_isGloballyIsometric
     {L M : FiniteProjectiveLatticeCat ℤ ℤ}
     (h : IsGloballyIsometric L M) : SameGenus L M := by
   obtain ⟨e⟩ := h
-  let latticeIso : L.obj ≅ M.obj :=
-    (ObjectProperty.ι (isFiniteProjectiveLattice ℤ ℤ)).mapIso e
-  constructor
-  · exact ⟨(baseChangeIntegral ℤ ℝ).mapIso latticeIso⟩
-  · intro p hp
-    letI : Fact p.Prime := ⟨hp⟩
-    exact ⟨(completeIntegralAtPrime p).mapIso latticeIso⟩
+  exact ⟨(finiteRingAdeleBaseChange ℚ).mapIso
+    (rationalIntegerLatticeTransport.mapIso e)⟩
 
 /-- Global isometry as an equivalence relation on finite integral lattices. -/
 def globalIsometrySetoid : Setoid (FiniteProjectiveLatticeCat ℤ ℤ) where

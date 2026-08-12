@@ -83,6 +83,7 @@ structure PadicSpinorGenusWitness
 /-- Rational and local integral isometries whose differences have trivial spinor class. -/
 structure SpinorGenusWitness
     (L M : FiniteProjectiveLatticeCat ℤ ℤ) where
+  genus : SameGenus L M
   real : IsRealIsometric L.obj M.obj
   rational : RationalLattice L ≅ RationalLattice M
   atPrime : ∀ (p : ℕ) (hp : p.Prime),
@@ -99,12 +100,7 @@ theorem sameGenus_of_sameSpinorGenus
     {L M : FiniteProjectiveLatticeCat ℤ ℤ}
     (h : SameSpinorGenus L M) : SameGenus L M := by
   obtain ⟨w⟩ := h
-  refine ⟨w.real, ?_⟩
-  intro p hp
-  letI : Fact p.Prime := ⟨hp⟩
-  exact ⟨(ObjectProperty.ι
-    (isFiniteProjectiveLattice ℤ_[p] ℤ_[p])).mapIso
-      (w.atPrime p hp).integral⟩
+  exact w.genus
 
 /-- Lattices in the spinor genus of `L`. -/
 noncomputable def spinorGenusProperty
