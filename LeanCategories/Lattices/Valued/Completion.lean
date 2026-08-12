@@ -5,16 +5,54 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Lattices.Valued.BaseChange
+public import Mathlib.NumberTheory.NumberField.AdeleRing
+public import Mathlib.NumberTheory.Padics.HeightOneSpectrum
 public import Mathlib.NumberTheory.Padics.PadicIntegers
 public import Mathlib.RingTheory.Flat.TorsionFree
 
 @[expose] public section
 
 open CategoryTheory
+open IsDedekindDomain
 
 namespace LeanCategories.Lattices.Valued
 
 universe u
+
+section HeightOne
+
+variable (R K : Type u)
+variable [CommRing R] [IsDedekindDomain R]
+variable [Field K] [Algebra R K] [IsFractionRing R K]
+
+/-- Integral lattice completion at a height-one place. -/
+noncomputable def completeIntegralAtHeightOne
+    (v : HeightOneSpectrum R) :
+    IntegralLatticeCat R ⥤ IntegralLatticeCat (v.adicCompletionIntegers K) :=
+  baseChangeIntegral R (v.adicCompletionIntegers K)
+
+/-- Finite projective integral lattice completion at a height-one place. -/
+noncomputable def completeFiniteIntegralAtHeightOne
+    (v : HeightOneSpectrum R) :
+    FiniteProjectiveLatticeCat R R ⥤
+      FiniteProjectiveLatticeCat
+        (v.adicCompletionIntegers K) (v.adicCompletionIntegers K) :=
+  baseChangeFiniteIntegral R (v.adicCompletionIntegers K)
+
+/-- Integral lattice extension to the completed fraction field at a height-one place. -/
+noncomputable def extendIntegralToHeightOneField
+    (v : HeightOneSpectrum R) :
+    IntegralLatticeCat R ⥤ IntegralLatticeCat (v.adicCompletion K) :=
+  baseChangeIntegral R (v.adicCompletion K)
+
+/-- Finite projective integral lattice extension to a completed fraction field. -/
+noncomputable def extendFiniteIntegralToHeightOneField
+    (v : HeightOneSpectrum R) :
+    FiniteProjectiveLatticeCat R R ⥤
+      FiniteProjectiveLatticeCat (v.adicCompletion K) (v.adicCompletion K) :=
+  baseChangeFiniteIntegral R (v.adicCompletion K)
+
+end HeightOne
 
 /-- Extension to the `p`-adic integers preserves exact linear sequences. -/
 theorem completeAtPrime_exact

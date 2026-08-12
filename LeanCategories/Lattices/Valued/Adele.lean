@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Algebra.IntegralAdeleRing
 public import LeanCategories.Lattices.Valued.BaseChange
+public import LeanCategories.Lattices.Valued.Completion
 public import LeanCategories.Lattices.Valued.OrthogonalGroup
 public import LeanCategories.Modules.Pi
 public import LeanCategories.Modules.ProdRing
@@ -472,10 +473,10 @@ theorem finiteAdeleLocalLinearEquivOfIso_pairing
       (finiteIntegralAdeleBaseChange K).obj M)
     (v : HeightOneSpectrum (𝓞 K))
     (x y : TensorProduct (𝓞 K) (v.adicCompletionIntegers K) L.obj.obj.carrier) :
-    ((baseChangeIntegral (𝓞 K) (v.adicCompletionIntegers K)).obj M.obj).obj.pairing
+    ((completeIntegralAtHeightOne (𝓞 K) K v).obj M.obj).obj.pairing
         (finiteAdeleLocalLinearEquivOfIso K e v x)
         (finiteAdeleLocalLinearEquivOfIso K e v y) =
-      ((baseChangeIntegral (𝓞 K) (v.adicCompletionIntegers K)).obj L.obj).obj.pairing x y := by
+      ((completeIntegralAtHeightOne (𝓞 K) K v).obj L.obj).obj.pairing x y := by
   let xA := (finiteAdeleLocalCarrierAlgEquiv K L).symm (Pi.single v x)
   let yA := (finiteAdeleLocalCarrierAlgEquiv K L).symm (Pi.single v y)
   have h := BilinModuleCat.linearEquivOfIso_pairing
@@ -483,6 +484,11 @@ theorem finiteAdeleLocalLinearEquivOfIso_pairing
   have hv := congrArg (fun z : FiniteIntegralAdeleRing (𝓞 K) K ↦ z v) h
   rw [finiteIntegralAdeleBaseChange_pairing_apply K M,
     finiteIntegralAdeleBaseChange_pairing_apply K L] at hv
+  change
+    ((baseChangeIntegral (𝓞 K) (v.adicCompletionIntegers K)).obj M.obj).obj.pairing
+        (finiteAdeleLocalLinearEquivOfIso K e v x)
+        (finiteAdeleLocalLinearEquivOfIso K e v y) =
+      ((baseChangeIntegral (𝓞 K) (v.adicCompletionIntegers K)).obj L.obj).obj.pairing x y
   simpa [xA, yA] using hv
 
 /-- Restrict an integral finite adelic isomorphism to a local formed-module isomorphism. -/
@@ -491,8 +497,8 @@ noncomputable def finiteAdeleLocalIsoOfIso
     (e : (finiteIntegralAdeleBaseChange K).obj L ≅
       (finiteIntegralAdeleBaseChange K).obj M)
     (v : HeightOneSpectrum (𝓞 K)) :
-    ((baseChangeIntegral (𝓞 K) (v.adicCompletionIntegers K)).obj L.obj).obj ≅
-      ((baseChangeIntegral (𝓞 K) (v.adicCompletionIntegers K)).obj M.obj).obj :=
+    ((completeIntegralAtHeightOne (𝓞 K) K v).obj L.obj).obj ≅
+      ((completeIntegralAtHeightOne (𝓞 K) K v).obj M.obj).obj :=
   BilinModuleCat.isoMk (finiteAdeleLocalLinearEquivOfIso K e v)
     (finiteAdeleLocalLinearEquivOfIso_pairing K e v)
 
@@ -506,8 +512,8 @@ def IsFiniteIntegrallyAdelicallyIsometric
 def IsIsometricAtEveryFinitePlace
     (L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) : Prop :=
   ∀ v : HeightOneSpectrum (𝓞 K),
-    Nonempty (((baseChangeIntegral (𝓞 K) (v.adicCompletionIntegers K)).obj L.obj).obj ≅
-      ((baseChangeIntegral (𝓞 K) (v.adicCompletionIntegers K)).obj M.obj).obj)
+    Nonempty (((completeIntegralAtHeightOne (𝓞 K) K v).obj L.obj).obj ≅
+      ((completeIntegralAtHeightOne (𝓞 K) K v).obj M.obj).obj)
 
 /-- Integral finite adelic isometry is equivalent to isometry at every finite place. -/
 theorem isFiniteIntegrallyAdelicallyIsometric_iff_isIsometricAtEveryFinitePlace
@@ -912,11 +918,11 @@ noncomputable def IsIsometricAtEveryRationalPrime
     (L M : FiniteProjectiveLatticeCat (𝓞 ℚ) (𝓞 ℚ)) : Prop :=
   ∀ p : Nat.Primes,
     Nonempty
-      (((baseChangeIntegral (𝓞 ℚ)
-        ((rationalFinitePlace p).adicCompletionIntegers ℚ)).obj
+      (((completeIntegralAtHeightOne (𝓞 ℚ) ℚ
+        (rationalFinitePlace p)).obj
           L.obj).obj ≅
-        ((baseChangeIntegral (𝓞 ℚ)
-          ((rationalFinitePlace p).adicCompletionIntegers ℚ)).obj
+        ((completeIntegralAtHeightOne (𝓞 ℚ) ℚ
+          (rationalFinitePlace p)).obj
             M.obj).obj)
 
 /-- For rational lattices, the finite-place condition can be indexed by rational primes. -/
