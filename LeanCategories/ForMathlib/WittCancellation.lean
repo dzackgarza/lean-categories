@@ -120,6 +120,64 @@ noncomputable def isometryEquivOfProdLineForm {a : K} (ha : a ≠ 0)
   restrictComplement ha (h.trans hex.choose)
     (show hex.choose (h (1, 0)) = (1, 0) from hex.choose_spec)
 
+section Binary
+
+/-- A linear map of the plane given by a two-by-two coefficient array. -/
+def planeMap (p q r s : K) : (K × K) →ₗ[K] (K × K) where
+  toFun z := (p * z.1 + q * z.2, r * z.1 + s * z.2)
+  map_add' z z' := by
+    simp only [Prod.fst_add, Prod.snd_add, Prod.mk_add_mk, Prod.mk.injEq]
+    exact ⟨by ring, by ring⟩
+  map_smul' c z := by
+    simp only [Prod.smul_fst, Prod.smul_snd, Prod.smul_mk, RingHom.id_apply,
+      smul_eq_mul, Prod.mk.injEq]
+    exact ⟨by ring, by ring⟩
+
+omit [Invertible (2 : K)] in
+@[simp]
+theorem planeMap_apply (p q r s : K) (z : K × K) :
+    planeMap p q r s z = (p * z.1 + q * z.2, r * z.1 + s * z.2) := rfl
+
+/-- A binary form is diagonalized by any nonzero value it represents.
+
+If `b = a₁x² + a₂y²` is nonzero then `⟨a₁, a₂⟩ ≅ ⟨b, a₁a₂b⟩`, by taking `(x, y)` as the
+first basis vector and its orthogonal partner `(-a₂y, a₁x)` as the second. -/
+noncomputable def planeEquiv (a₁ a₂ x y c : K) (hc : c ≠ 0)
+    (hcval : a₁ * (x * x) + a₂ * (y * y) = c) : (K × K) ≃ₗ[K] (K × K) :=
+  LinearEquiv.ofLinear (planeMap x (-(a₂ * y)) y (a₁ * x))
+    (planeMap (c⁻¹ * (a₁ * x)) (c⁻¹ * (a₂ * y)) (c⁻¹ * (-y)) (c⁻¹ * x))
+    (LinearMap.ext fun z => by
+      simp only [LinearMap.coe_comp, Function.comp_apply, planeMap_apply,
+        LinearMap.id_coe, id_eq]
+      refine Prod.ext ?_ ?_ <;> (field_simp; rw [← hcval]; ring))
+    (LinearMap.ext fun z => by
+      simp only [LinearMap.coe_comp, Function.comp_apply, planeMap_apply,
+        LinearMap.id_coe, id_eq]
+      refine Prod.ext ?_ ?_ <;> (field_simp; rw [← hcval]; ring))
+
+omit [Invertible (2 : K)] in
+@[simp]
+theorem planeEquiv_apply (a₁ a₂ x y c : K) (hc : c ≠ 0)
+    (hcval : a₁ * (x * x) + a₂ * (y * y) = c) (z : K × K) :
+    planeEquiv a₁ a₂ x y c hc hcval z =
+      (x * z.1 + -(a₂ * y) * z.2, y * z.1 + a₁ * x * z.2) :=
+  rfl
+
+/-- The value `c` and the discriminant partner `a₁a₂c` diagonalize the binary form. -/
+noncomputable def binaryRepresentation (a₁ a₂ x y c : K) (hc : c ≠ 0)
+    (hcval : a₁ * (x * x) + a₂ * (y * y) = c) :
+    ((lineForm c).prod (lineForm (a₁ * a₂ * c))).IsometryEquiv
+      ((lineForm a₁).prod (lineForm a₂)) where
+  toLinearEquiv := planeEquiv a₁ a₂ x y c hc hcval
+  map_app' z := by
+    change ((lineForm a₁).prod (lineForm a₂))
+      (planeEquiv a₁ a₂ x y c hc hcval z) = _
+    simp only [QuadraticMap.prod_apply, lineForm_apply, planeEquiv_apply]
+    rw [← hcval]
+    ring
+
+end Binary
+
 section Diagonal
 
 /-- Splitting the first coefficient off a diagonal form. -/
