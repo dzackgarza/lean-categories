@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Lattices.Valued.Rationalization
+public import LeanCategories.Algebra.FractionalIdeals
 
 @[expose] public section
 
@@ -22,18 +23,18 @@ variable (W : Type u) [AddCommGroup W] [Module R W]
 
 variable [IsDomain R]
 
-/-- The image of an ideal of `R` inside its fraction field. -/
-def idealInFractionRing (I : Ideal R) : Submodule R (FractionRing R) :=
-  Submodule.map (Algebra.linearMap R (FractionRing R)) I
+/-- A fractional ideal of `R` in its fraction field. -/
+abbrev FractionalRIdeal :=
+  FractionalIdeal (nonZeroDivisors R) (FractionRing R)
 
-/-- The value module `Frac(R) / I`. -/
-abbrev IdealValueQuotient (I : Ideal R) :=
-  FractionRing R ⧸ idealInFractionRing R I
+/-- The value module `Frac(R) / I` for a fractional ideal `I`. -/
+abbrev FractionalIdealValueQuotient (I : FractionalRIdeal R) :=
+  FractionRing R ⧸ (I : Submodule R (FractionRing R))
 
-/-- The quotient map `Frac(R) → Frac(R) / I`. -/
-def idealValueProjection (I : Ideal R) :
-    FractionRing R →ₗ[R] IdealValueQuotient R I :=
-  Submodule.mkQ (idealInFractionRing R I)
+/-- The quotient map `Frac(R) → Frac(R) / I` for a fractional ideal `I`. -/
+def fractionalIdealValueProjection (I : FractionalRIdeal R) :
+    FractionRing R →ₗ[R] FractionalIdealValueQuotient R I :=
+  Submodule.mkQ (I : Submodule R (FractionRing R))
 
 /-- Pair a rational vector with the original lattice. -/
 noncomputable def rationalPairingMap (L : IntegralLatticeCat R) :
@@ -47,11 +48,12 @@ noncomputable def rationalPairingMap (L : IntegralLatticeCat R) :
     ext z
     simp [Algebra.smul_def]
 
-/-- The map whose kernel is the metric `I`-dual. -/
-noncomputable def idealDualMap (L : IntegralLatticeCat R) (I : Ideal R) :
+/-- The map whose kernel is the metric fractional-`I`-dual. -/
+noncomputable def fractionalIdealDualMap
+    (L : IntegralLatticeCat R) (I : FractionalRIdeal R) :
     RationalSpan R L →ₗ[R]
-      (L.obj.carrier →ₗ[R] IdealValueQuotient R I) where
-  toFun x := (idealValueProjection R I).comp (rationalPairingMap R L x)
+      (L.obj.carrier →ₗ[R] FractionalIdealValueQuotient R I) where
+  toFun x := (fractionalIdealValueProjection R I).comp (rationalPairingMap R L x)
   map_add' x y := by
     ext z
     simp
@@ -59,68 +61,112 @@ noncomputable def idealDualMap (L : IntegralLatticeCat R) (I : Ideal R) :
     ext z
     simp
 
-/-- The metric `I`-dual, defined as a kernel without generators. -/
-noncomputable def idealDual (L : IntegralLatticeCat R) (I : Ideal R) :
+/-- The metric fractional-`I`-dual, defined as a kernel without generators. -/
+noncomputable def fractionalIdealDual
+    (L : IntegralLatticeCat R) (I : FractionalRIdeal R) :
     Submodule R (RationalSpan R L) :=
-  LinearMap.ker (idealDualMap R L I)
+  LinearMap.ker (fractionalIdealDualMap R L I)
 
-/-- A lattice is `I`-modular when it equals its metric `I`-dual. -/
-noncomputable def IsIModular (L : IntegralLatticeCat R) (I : Ideal R) : Prop :=
-  idealDual R L I = integralImage R L
+/-- A lattice is fractional-`I`-modular when it equals its metric `I`-dual. -/
+noncomputable def IsFractionalIModular
+    (L : IntegralLatticeCat R) (I : FractionalRIdeal R) : Prop :=
+  fractionalIdealDual R L I = integralImage R L
 
-/-- `I`-modularity as a property of finite projective integral lattices. -/
-noncomputable def isIModularFiniteProjectiveLattice (I : Ideal R) :
+/-- Fractional-`I`-modularity as a property of finite projective integral lattices. -/
+noncomputable def isFractionalIModularFiniteProjectiveLattice
+    (I : FractionalRIdeal R) :
     ObjectProperty (FiniteProjectiveLatticeCat R R) :=
-  fun L ↦ IsIModular R L.obj I
+  fun L ↦ IsFractionalIModular R L.obj I
 
-/-- The full category of finite projective `I`-modular lattices. -/
+/-- The full category of finite projective fractional-`I`-modular lattices. -/
+noncomputable abbrev FractionalIModularLatticeCat (I : FractionalRIdeal R) :=
+  (isFractionalIModularFiniteProjectiveLattice R I).FullSubcategory
+
+noncomputable def fractionalIdealDualInclusion
+    (L : IntegralLatticeCat R) (I : FractionalRIdeal R) :
+    fractionalIdealDual R L I →ₗ[R] RationalSpan R L :=
+  (fractionalIdealDual R L I).subtype
+
+omit [IsDomain R] in
+theorem exact_fractionalIdealDual
+    (L : IntegralLatticeCat R) (I : FractionalRIdeal R) :
+    Function.Exact (fractionalIdealDualInclusion R L I)
+      (fractionalIdealDualMap R L I) :=
+  LinearMap.exact_subtype_ker_map (fractionalIdealDualMap R L I)
+
+omit [IsDomain R] in
+theorem toRationalSpan_mem_fractionalIdealDual_iff
+    (L : IntegralLatticeCat R) (I : FractionalRIdeal R)
+    (x : L.obj.carrier) :
+    toRationalSpan R L x ∈ fractionalIdealDual R L I ↔
+      ∀ y, algebraMap R (FractionRing R) (L.obj.pairing x y) ∈ I := by
+  constructor
+  · intro hx y
+    rw [fractionalIdealDual, LinearMap.mem_ker] at hx
+    have hy := LinearMap.congr_fun hx y
+    change fractionalIdealValueProjection R I
+      (rationalizedForm R L (toRationalSpan R L x)
+        (toRationalSpan R L y)) = 0 at hy
+    change fractionalIdealValueProjection R I
+      (rationalizedForm R L (1 ⊗ₜ[R] x) (1 ⊗ₜ[R] y)) = 0 at hy
+    rw [rationalizedForm_tmul] at hy
+    simp only [one_mul] at hy
+    simpa [fractionalIdealValueProjection] using hy
+  · intro h
+    rw [fractionalIdealDual, LinearMap.mem_ker]
+    apply LinearMap.ext
+    intro y
+    change fractionalIdealValueProjection R I
+      (rationalizedForm R L (toRationalSpan R L x)
+        (toRationalSpan R L y)) = 0
+    change fractionalIdealValueProjection R I
+      (rationalizedForm R L (1 ⊗ₜ[R] x) (1 ⊗ₜ[R] y)) = 0
+    rw [rationalizedForm_tmul]
+    simp only [one_mul]
+    simpa [fractionalIdealValueProjection] using h y
+
+/-- The integral ideal `I` as a fractional ideal in `Frac(R)`. -/
+abbrev integralFractionalIdeal (I : Ideal R) : FractionalRIdeal R := I
+
+/-- The metric dual for an integral ideal is the fractional ideal dual of its image. -/
+noncomputable abbrev idealDual (L : IntegralLatticeCat R) (I : Ideal R) :=
+  fractionalIdealDual R L (integralFractionalIdeal R I)
+
+/-- Integral `I`-modularity is fractional modularity for the image of `I`. -/
+noncomputable abbrev IsIModular (L : IntegralLatticeCat R) (I : Ideal R) : Prop :=
+  IsFractionalIModular R L (integralFractionalIdeal R I)
+
+/-- Integral `I`-modularity as a property of finite projective lattices. -/
+noncomputable abbrev isIModularFiniteProjectiveLattice (I : Ideal R) :=
+  isFractionalIModularFiniteProjectiveLattice R (integralFractionalIdeal R I)
+
+/-- The integral-ideal specialization of the fractional modular lattice category. -/
 noncomputable abbrev IModularLatticeCat (I : Ideal R) :=
-  (isIModularFiniteProjectiveLattice R I).FullSubcategory
+  FractionalIModularLatticeCat R (integralFractionalIdeal R I)
 
-noncomputable def idealDualInclusion (L : IntegralLatticeCat R) (I : Ideal R) :
-    idealDual R L I →ₗ[R] RationalSpan R L :=
-  (idealDual R L I).subtype
+noncomputable abbrev idealDualMap (L : IntegralLatticeCat R) (I : Ideal R) :=
+  fractionalIdealDualMap R L (integralFractionalIdeal R I)
+
+noncomputable abbrev idealDualInclusion (L : IntegralLatticeCat R) (I : Ideal R) :=
+  fractionalIdealDualInclusion R L (integralFractionalIdeal R I)
 
 omit [IsDomain R] in
 theorem exact_idealDual (L : IntegralLatticeCat R) (I : Ideal R) :
     Function.Exact (idealDualInclusion R L I) (idealDualMap R L I) :=
-  LinearMap.exact_subtype_ker_map (idealDualMap R L I)
+  exact_fractionalIdealDual R L (integralFractionalIdeal R I)
 
 theorem toRationalSpan_mem_idealDual_iff (L : IntegralLatticeCat R)
     (I : Ideal R) (x : L.obj.carrier) :
     toRationalSpan R L x ∈ idealDual R L I ↔
       ∀ y, L.obj.pairing x y ∈ I := by
+  rw [toRationalSpan_mem_fractionalIdealDual_iff]
   constructor
-  · intro hx y
-    rw [idealDual, LinearMap.mem_ker] at hx
-    have hy := LinearMap.congr_fun hx y
-    change idealValueProjection R I
-      (rationalizedForm R L (toRationalSpan R L x)
-        (toRationalSpan R L y)) = 0 at hy
-    change idealValueProjection R I
-      (rationalizedForm R L (1 ⊗ₜ[R] x) (1 ⊗ₜ[R] y)) = 0 at hy
-    rw [rationalizedForm_tmul] at hy
-    simp only [one_mul] at hy
-    rw [idealValueProjection, Submodule.mkQ_apply,
-      Submodule.Quotient.mk_eq_zero, idealInFractionRing] at hy
-    rcases hy with ⟨a, ha, hEq⟩
-    have : a = L.obj.pairing x y :=
-      (FaithfulSMul.algebraMap_injective R (FractionRing R)) hEq
-    simpa [this] using ha
-  · intro h
-    rw [idealDual, LinearMap.mem_ker]
-    apply LinearMap.ext
-    intro y
-    change idealValueProjection R I
-      (rationalizedForm R L (toRationalSpan R L x)
-        (toRationalSpan R L y)) = 0
-    change idealValueProjection R I
-      (rationalizedForm R L (1 ⊗ₜ[R] x) (1 ⊗ₜ[R] y)) = 0
-    rw [rationalizedForm_tmul]
-    simp only [one_mul]
-    rw [idealValueProjection, Submodule.mkQ_apply,
-      Submodule.Quotient.mk_eq_zero, idealInFractionRing]
-    exact ⟨L.obj.pairing x y, h y, rfl⟩
+  · intro h y
+    rcases (FractionalIdeal.mem_coeIdeal (nonZeroDivisors R)).mp (h y) with
+      ⟨z, hz, hzy⟩
+    exact (FaithfulSMul.algebraMap_injective R (FractionRing R)) hzy ▸ hz
+  · intro h y
+    exact FractionalIdeal.mem_coeIdeal_of_mem (nonZeroDivisors R) (h y)
 
 /-- The canonical map to the rational span factors through the metric `I`-dual. -/
 def CanonicalMapLiftsToIdealDual (L : IntegralLatticeCat R) (I : Ideal R) : Prop :=
