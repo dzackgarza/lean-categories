@@ -44,6 +44,20 @@ theorem localRank_eq_genericRank (L : FiniteProjectiveLatticeCat R W)
 noncomputable def determinantLine (L : FiniteProjectiveLatticeCat R W) : ModuleCat R :=
   ((finiteProjectiveForget R W).obj L).exteriorPower L.genericRank
 
+/-- The top exterior power of the value dual, in the rank of the lattice carrier. -/
+noncomputable def determinantDualLine (L : FiniteProjectiveLatticeCat R R) : ModuleCat R :=
+  (ModuleCat.of R L.obj.obj.valueDual).exteriorPower L.genericRank
+
+/-- The determinant of the adjoint map. This is intrinsic and uses no basis. -/
+noncomputable def determinantAdjoint (L : FiniteProjectiveLatticeCat R R) :
+    L.determinantLine ⟶ L.determinantDualLine :=
+  (ModuleCat.exteriorPower.functor R L.genericRank).map
+    (ModuleCat.ofHom L.obj.obj.adjoint)
+
+/-- The determinant-level cokernel of the adjoint map. -/
+abbrev discriminantLineCokernel (L : FiniteProjectiveLatticeCat R R) :=
+  L.determinantDualLine ⧸ LinearMap.range L.determinantAdjoint.hom
+
 /-- An isomorphism of lattices induces an isomorphism of their determinant lines. -/
 noncomputable def determinantLineIso {L M : FiniteProjectiveLatticeCat R W}
     (e : L ≅ M) : L.determinantLine ≅ M.determinantLine := by
