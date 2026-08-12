@@ -334,6 +334,16 @@ theorem isHasseMinkowskiInvariant_hasseMinkowskiInvariant :
     IsHasseMinkowskiInvariant L hL (hasseMinkowskiInvariant L hL) :=
   fun d => hasseMinkowskiInvariant_eq d
 
+/-- The real Hasse--Minkowski invariant is the general one.
+
+`Hasse.lean` justifies the real invariant by the signature computation, which needs the ordered
+field. The general theorem supersedes that argument: choice independence now holds over every
+field with a bilinear Hilbert symbol, and the real value is its specialization. -/
+theorem realHasseMinkowskiInvariant_eq_hasseMinkowskiInvariant (M : FiniteFormCat ℝ ℝ)
+    (hM : LinearMap.SeparatingLeft (finiteFormQuadraticForm ℝ M).associated) :
+    realHasseMinkowskiInvariant M hM = hasseMinkowskiInvariant M hM :=
+  rfl
+
 /-- The Hasse--Minkowski invariant is preserved by isomorphisms of formed modules. -/
 theorem hasseMinkowskiInvariant_iso {M : FiniteFormCat K K}
     (hM : LinearMap.SeparatingLeft (finiteFormQuadraticForm K M).associated)
