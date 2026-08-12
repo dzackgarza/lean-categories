@@ -43,6 +43,7 @@ public import LeanCategories.Lattices.Valued.Hasse
 public import LeanCategories.Lattices.Valued.HasseInvariance
 public import LeanCategories.Lattices.Valued.HilbertNorm
 public import LeanCategories.Lattices.Valued.PadicHilbert
+public import LeanCategories.Lattices.Valued.PadicUnitSymbol
 public import LeanCategories.Lattices.Valued.DyadicSquares
 public import LeanCategories.Lattices.Valued.Spinor
 public import LeanCategories.Lattices.Valued.SpinorNormConstruction
