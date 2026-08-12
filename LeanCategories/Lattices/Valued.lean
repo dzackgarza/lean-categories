@@ -30,6 +30,7 @@ public import LeanCategories.Lattices.Valued.Theta
 public import LeanCategories.Lattices.Valued.DefiniteIndefinite
 public import LeanCategories.Lattices.Valued.Mass
 public import LeanCategories.Lattices.Valued.ClassFiniteness
+public import LeanCategories.Lattices.Valued.Reduction
 public import LeanCategories.Lattices.Valued.GenusInvariants
 public import LeanCategories.Lattices.Valued.Witt
 public import LeanCategories.Lattices.Valued.Localization
