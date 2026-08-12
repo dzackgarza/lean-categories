@@ -278,6 +278,25 @@ theorem hasseMinkowskiInvariantOfDiagonal_eq_of_equivalent {n : ℕ} (w w' : Fin
     refine hvalue.trans ?_
     exact hasseMinkowskiInvariantOfDiagonal_cons_congr b c v (ih c v hcancel) hdetv
 
+/-- Reindexing the coordinates of a diagonal form is an isometry. -/
+noncomputable def weightedSumSquaresReindex {ι κ : Type*} [Fintype ι] [Fintype κ]
+    (w : ι → Kˣ) (σ : κ ≃ ι) :
+    (weightedSumSquares K (w ∘ σ)).IsometryEquiv (weightedSumSquares K w) where
+  toLinearEquiv := (LinearEquiv.funCongrLeft K K σ).symm
+  map_app' x := by
+    change (weightedSumSquares K w) (fun i => x (σ.symm i)) = _
+    simp only [QuadraticMap.weightedSumSquares_apply]
+    refine (Fintype.sum_equiv σ _ _ fun k => ?_).symm
+    simp
+
+omit [Invertible (2 : K)] [HasBilinearHilbertSymbol K] in
+/-- Reindexing along an equality of ranks does not change the Hasse--Minkowski value. -/
+theorem hasseMinkowskiInvariantOfDiagonal_cast {n m : ℕ} (h : n = m) (w : Fin m → Kˣ) :
+    hasseMinkowskiInvariantOfDiagonal (fun i => w (Fin.cast h i)) =
+      hasseMinkowskiInvariantOfDiagonal w := by
+  subst h
+  rfl
+
 section Presentation
 
 variable {L : FiniteFormCat K K}
@@ -304,6 +323,23 @@ theorem hasseMinkowskiInvariant_eq (d : DiagonalPresentation L hL) :
 theorem isHasseMinkowskiInvariant_hasseMinkowskiInvariant :
     IsHasseMinkowskiInvariant L hL (hasseMinkowskiInvariant L hL) :=
   fun d => hasseMinkowskiInvariant_eq d
+
+/-- The Hasse--Minkowski invariant is preserved by isomorphisms of formed modules. -/
+theorem hasseMinkowskiInvariant_iso {M : FiniteFormCat K K}
+    (hM : LinearMap.SeparatingLeft (finiteFormQuadraticForm K M).associated)
+    (e : L ≅ M) :
+    hasseMinkowskiInvariant L hL = hasseMinkowskiInvariant M hM := by
+  have hiso := finiteFormQuadraticIsometryEquiv K e
+  have hrank : Module.finrank K L.obj.carrier = Module.finrank K M.obj.carrier :=
+    hiso.toLinearEquiv.finrank_eq
+  let dM := diagonalPresentation M hM
+  let dL : DiagonalPresentation L hL :=
+    { weights := fun i => dM.weights (Fin.cast hrank i)
+      equivalent := by
+        refine (QuadraticMap.Equivalent.trans ⟨hiso⟩ dM.equivalent).trans ?_
+        exact ⟨(weightedSumSquaresReindex dM.weights (finCongr hrank)).symm⟩ }
+  rw [← hasseMinkowskiInvariant_eq dL, ← hasseMinkowskiInvariant_eq dM]
+  exact hasseMinkowskiInvariantOfDiagonal_cast hrank dM.weights
 
 end Presentation
 
