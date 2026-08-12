@@ -10,6 +10,7 @@ public import Mathlib.NumberTheory.Padics.HeightOneSpectrum
 public import Mathlib.RingTheory.LocalRing.Pullback
 public import Mathlib.Topology.Homeomorph.Lemmas
 public import LeanCategories.Modules.TensorProduct.Pi
+public import LeanCategories.ForMathlib.AdicCompletionLocallyCompact
 
 /-!
 # Integral adele rings
@@ -83,6 +84,27 @@ theorem inclusion_apply (x : FiniteIntegralAdeleRing R K) (v : HeightOneSpectrum
 /-- The integral finite adele inclusion is injective. -/
 theorem inclusion_injective : Function.Injective (inclusion R K) :=
   RestrictedProduct.isEmbedding_structureMap.injective
+
+/-- The everywhere-integral finite adeles form an open subset of the finite adeles. -/
+theorem isOpen_range_inclusion : IsOpen (Set.range (inclusion R K)) := by
+  letI : Fact (∀ v : HeightOneSpectrum R,
+      IsOpen (v.adicCompletionIntegers K : Set (v.adicCompletion K))) :=
+    ⟨fun _ => Valued.isOpen_valuationSubring _⟩
+  exact (RestrictedProduct.isOpenEmbedding_structureMap
+    (R := fun v : HeightOneSpectrum R => v.adicCompletion K)
+    (A := fun v : HeightOneSpectrum R =>
+      (v.adicCompletionIntegers K : Set (v.adicCompletion K)))
+    (fun _ => Valued.isOpen_valuationSubring _)).isOpen_range
+
+/-- For a number ring, the everywhere-integral finite adeles form a compact subset. -/
+theorem isCompact_range_inclusion_numberField
+    (K : Type u) [Field K] [NumberField K] :
+    IsCompact (Set.range (inclusion (𝓞 K) K)) := by
+  letI (v : HeightOneSpectrum (𝓞 K)) :
+      CompactSpace (v.adicCompletionIntegers K) := by
+    exact HeightOneSpectrum.compactSpaceAdicCompletionIntegers K v
+  rw [← Set.image_univ]
+  exact isCompact_univ.image (inclusion (𝓞 K) K).continuous
 
 /-- A finite field adele is in the integral image exactly when every coordinate is integral. -/
 theorem mem_range_inclusion_iff (x : FiniteAdeleRing R K) :
