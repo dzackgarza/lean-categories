@@ -39,6 +39,7 @@ public import LeanCategories.Lattices.Valued.LocalInvariants
 public import LeanCategories.Lattices.Valued.Dyadic
 public import LeanCategories.Lattices.Valued.Jordan
 public import LeanCategories.Lattices.Valued.JordanSplitting
+public import LeanCategories.Lattices.Valued.RankOneDual
 public import LeanCategories.Lattices.Valued.Hasse
 public import LeanCategories.Lattices.Valued.HasseInvariance
 public import LeanCategories.Lattices.Valued.HilbertNorm
