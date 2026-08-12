@@ -671,4 +671,75 @@ theorem discriminantCarrierModuleSequenceExact (L : IntegralLatticeCat R)
     exact_toMetricDual_discriminantCarrier R L,
     discriminantCarrierProjection_surjective R L⟩
 
+/-- The carrier map of the discriminant projection `L♯ → A_L`. -/
+noncomputable abbrev discriminantCarrierProjection (L : IntegralLatticeCat R) :
+    ↥(metricDual R L) →ₗ[R] (discriminantSymBilWFormObject R L).obj.carrier :=
+  (BilWFormCat.carrierMap (discriminantSymBilWFormProjection R L).hom).hom
+
+/-- The metric-dual realization of the defect quotient is surjective. -/
+theorem metricDualToDiscriminant_surjective (L : IntegralLatticeCat R)
+    (hL : IsFractionFieldPerfect R L) :
+    Function.Surjective (metricDualToDiscriminant R L) := by
+  refine L.obj.defectProjection_surjective.comp ?_
+  intro f
+  exact ⟨rieszToMetricDual R L hL f, metricDualToValueDual_rieszToMetricDual R L hL f⟩
+
+/-- The defect realization of `L♯` kills exactly the image of `L`. -/
+theorem ker_metricDualToDiscriminant (L : IntegralLatticeCat R)
+    (hL : IsFractionFieldPerfect R L) :
+    LinearMap.ker (metricDualToDiscriminant R L) =
+      LinearMap.range (toMetricDual R L) := by
+  have hdefect : LinearMap.ker L.obj.defectProjection =
+      LinearMap.range L.obj.adjoint :=
+    LinearMap.exact_iff.mp L.obj.exact_adjoint_defect
+  ext v
+  constructor
+  · intro hv
+    have hmem : metricDualToValueDual R L v ∈ LinearMap.range L.obj.adjoint := by
+      rw [← hdefect]
+      exact hv
+    obtain ⟨x, hx⟩ := hmem
+    refine ⟨x, ?_⟩
+    rw [← rieszMetricDualEquiv_adjoint R L hL, hx]
+    exact rieszToMetricDual_metricDualToValueDual R L hL v
+  · rintro ⟨x, rfl⟩
+    change L.obj.defectProjection (metricDualToValueDual R L (toMetricDual R L x)) = 0
+    rw [metricDualToValueDual_toMetricDual R hL x]
+    exact L.obj.exact_adjoint_defect.apply_apply_eq_zero x
+
+/-- Both discriminant presentations kill exactly the image of `L` in `L♯`. -/
+theorem ker_discriminantCarrierProjection (L : IntegralLatticeCat R)
+    (hL : IsFractionFieldPerfect R L) :
+    LinearMap.ker (discriminantCarrierProjection R L) =
+      LinearMap.ker (metricDualToDiscriminant R L) := by
+  rw [LinearMap.exact_iff.mp (exact_toMetricDual_discriminantCarrier R L),
+    ker_metricDualToDiscriminant R L hL]
+
+/-- The categorical discriminant `A_L = L♯/L` is the adjoint defect `L*/b♯(L)`.
+
+`FOUNDATIONS.md` owns `A_L = L♯/L` as the definition of the discriminant module; this
+comparison is what makes the adjoint-cokernel presentation a realization of it rather
+than a second definition. It needs fraction-field perfection, which supplies the Riesz
+identification of `L♯` with `Hom_R(L,R)`. -/
+noncomputable def discriminantCarrierEquivDefect (L : IntegralLatticeCat R)
+    (hL : IsFractionFieldPerfect R L) :
+    (discriminantSymBilWFormObject R L).obj.carrier ≃ₗ[R] L.obj.defect :=
+  (LinearMap.quotKerEquivOfSurjective (discriminantCarrierProjection R L)
+      (discriminantCarrierProjection_surjective R L)).symm.trans <|
+    (Submodule.quotEquivOfEq _ _
+        (ker_discriminantCarrierProjection R L hL)).trans
+      (LinearMap.quotKerEquivOfSurjective (metricDualToDiscriminant R L)
+        (metricDualToDiscriminant_surjective R L hL))
+
+/-- The comparison sends the class of a metric-dual element to its defect class. -/
+@[simp]
+theorem discriminantCarrierEquivDefect_apply (L : IntegralLatticeCat R)
+    (hL : IsFractionFieldPerfect R L) (v : metricDual R L) :
+    discriminantCarrierEquivDefect R L hL (discriminantCarrierProjection R L v) =
+      metricDualToDiscriminant R L v := by
+  rw [discriminantCarrierEquivDefect]
+  rw [LinearEquiv.trans_apply, LinearMap.quotKerEquivOfSurjective_symm_apply,
+    LinearEquiv.trans_apply, Submodule.quotEquivOfEq_mk]
+  exact LinearMap.quotKerEquivOfSurjective_apply_mk _ _ v
+
 end LeanCategories.Lattices.Valued
