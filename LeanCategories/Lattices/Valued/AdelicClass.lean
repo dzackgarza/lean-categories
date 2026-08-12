@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Lattices.Valued.Adele
 public import LeanCategories.Lattices.Valued.TopologicalOrthogonalGroup
+public import LeanCategories.ForMathlib.AdicCompletionLocallyCompact
 public import Mathlib.GroupTheory.DoubleCoset
 
 /-!
@@ -54,6 +55,21 @@ instance finiteAdeleRingT2Space : T2Space (FiniteAdeleRing (𝓞 K) K) :=
     change T2Space (Πʳ v : HeightOneSpectrum (𝓞 K),
       [v.adicCompletion K, v.adicCompletionIntegers K])
     infer_instance
+
+/-- The finite adele ring of a number field is locally compact. -/
+instance finiteAdeleRingLocallyCompactSpace :
+    LocallyCompactSpace (FiniteAdeleRing (𝓞 K) K) := by
+  change LocallyCompactSpace
+    (Πʳ v : HeightOneSpectrum (𝓞 K),
+      [v.adicCompletion K, v.adicCompletionIntegers K])
+  letI : Fact (∀ v : HeightOneSpectrum (𝓞 K),
+      IsOpen (v.adicCompletionIntegers K : Set (v.adicCompletion K))) :=
+    ⟨fun _ => Valued.isOpen_valuationSubring _⟩
+  apply RestrictedProduct.locallyCompactSpace_of_addGroup
+    (fun v : HeightOneSpectrum (𝓞 K) => v.adicCompletion K)
+  filter_upwards [] with v
+  exact isCompact_iff_compactSpace.mpr
+    (HeightOneSpectrum.compactSpaceAdicCompletionIntegers K v)
 
 /-- Scalar multiplication by the number field on its finite adeles is faithful. -/
 instance finiteAdeleRingFaithfulSMul : FaithfulSMul K (FiniteAdeleRing (𝓞 K) K) where
@@ -114,6 +130,22 @@ noncomputable instance rationalFiniteAdelicOrthogonalGroupIsTopologicalGroup
     (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
     IsTopologicalGroup (RationalFiniteAdelicOrthogonalGroup K L) :=
   orthogonalGroup_isTopologicalGroup _ (rationalFiniteAdeleBasis K L)
+
+/-- The finite adelic orthogonal group is locally compact. -/
+noncomputable instance rationalFiniteAdelicOrthogonalGroupLocallyCompactSpace
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    LocallyCompactSpace (RationalFiniteAdelicOrthogonalGroup K L) :=
+  orthogonalGroupLocallyCompactSpace _ (rationalFiniteAdeleBasis K L)
+
+/-- Haar measure on the finite adelic orthogonal group. -/
+noncomputable def rationalFiniteAdelicOrthogonalGroupHaarMeasure
+    (L : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)) :
+    @MeasureTheory.Measure (RationalFiniteAdelicOrthogonalGroup K L)
+      (@borel (RationalFiniteAdelicOrthogonalGroup K L)
+        (rationalFiniteAdelicOrthogonalGroupTopology K L)) := by
+  letI : MeasurableSpace (RationalFiniteAdelicOrthogonalGroup K L) := borel _
+  letI : BorelSpace (RationalFiniteAdelicOrthogonalGroup K L) := ⟨rfl⟩
+  exact MeasureTheory.Measure.haar
 
 /-- Scalar extension gives the diagonal rational subgroup in the finite adelic group. -/
 noncomputable def rationalFiniteAdeleOrthogonalHom
