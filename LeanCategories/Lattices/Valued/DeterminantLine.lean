@@ -7,6 +7,7 @@ module
 public import LeanCategories.Lattices.Valued.Arithmetic
 public import Mathlib.Algebra.Category.ModuleCat.ExteriorPower
 public import Mathlib.RingTheory.PicardGroup
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # Determinant lines of finite projective lattices
@@ -57,6 +58,30 @@ noncomputable def determinantAdjoint (L : FiniteProjectiveLatticeCat R R) :
 /-- The determinant-level cokernel of the adjoint map. -/
 abbrev discriminantLineCokernel (L : FiniteProjectiveLatticeCat R R) :=
   L.determinantDualLine ⧸ LinearMap.range L.determinantAdjoint.hom
+
+/-- The intrinsic discriminant ideal is the annihilator of the determinant-line cokernel. -/
+noncomputable def intrinsicDiscriminantIdeal
+    (L : FiniteProjectiveLatticeCat R R) : Ideal R :=
+  Module.annihilator R L.discriminantLineCokernel
+
+/-- The intrinsic discriminant ideal is trivial exactly when the determinant adjoint is
+surjective. -/
+theorem intrinsicDiscriminantIdeal_eq_top_iff
+    (L : FiniteProjectiveLatticeCat R R) :
+    L.intrinsicDiscriminantIdeal = ⊤ ↔
+      Function.Surjective L.determinantAdjoint.hom := by
+  rw [intrinsicDiscriminantIdeal, Module.annihilator_eq_top_iff]
+  constructor
+  · intro h y
+    have hy : (Submodule.Quotient.mk y : L.discriminantLineCokernel) = 0 :=
+      Subsingleton.elim _ _
+    exact LinearMap.mem_range.mp <| (Submodule.Quotient.mk_eq_zero _).mp hy
+  · intro h
+    have hz (x : L.discriminantLineCokernel) : x = 0 := by
+      refine Quotient.inductionOn' x fun y => ?_
+      exact (Submodule.Quotient.mk_eq_zero _).mpr <|
+        LinearMap.mem_range.mpr (h y)
+    exact ⟨fun x y => (hz x).trans (hz y).symm⟩
 
 /-- An isomorphism of lattices induces an isomorphism of their determinant lines. -/
 noncomputable def determinantLineIso {L M : FiniteProjectiveLatticeCat R W}
