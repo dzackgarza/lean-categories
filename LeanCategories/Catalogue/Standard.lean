@@ -3,6 +3,9 @@ module
 public import LeanCategories.Foundation.CatalogueRegistration
 public import LeanCategories.Algebra.CatalogueRegistration
 public import LeanCategories.Modules.CatalogueRegistration
+public import LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration
+public import LeanCategories.Modules.Quadratic.Valued.CatalogueRegistration
+public import LeanCategories.Lattices.Valued.CatalogueRegistration
 public import LeanCategories.Exceptional.CatalogueRegistration
 
 @[expose] public section
