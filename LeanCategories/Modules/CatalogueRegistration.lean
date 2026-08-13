@@ -15,8 +15,13 @@ open LeanCategories
 
 universe u
 
+noncomputable def modulesFamilyRealization :
+    CategoryFamilyRealization.{u + 1, u, u + 1, u} CategoryFamilyId.modules where
+  Parameters := RingCat.{u}
+  transport := Modules.Mathlib.moduleCatRestrictScalarsPseudofunctor
+
 noncomputable def modulesRealization (R : RingCat.{u}) :
-    CategoryRealization Modules.Modules (Modules.Mathlib.ModulesOf R) := ⟨⟩
+    CategoryRealization Modules.Modules (modulesFamilyRealization.fibre R) := ⟨⟩
 noncomputable def freeModulesRealization (R : RingCat.{u}) :
     CategoryRealization Modules.FreeModules (Modules.Mathlib.free R).total := ⟨⟩
 noncomputable def finitelyGeneratedModulesRealization (R : RingCat.{u}) :
@@ -25,12 +30,6 @@ noncomputable def finitelyGeneratedModulesRealization (R : RingCat.{u}) :
 noncomputable def finiteRankModulesRealization (R : RingCat.{u}) :
     CategoryRealization Modules.FiniteRankModules
       (Modules.Mathlib.finiteRank R).total := ⟨⟩
-
-noncomputable def modulesFamilyRealization :
-    CategoryFamilyRealization.{u + 1, u, u + 1, u} CategoryFamilyId.modules where
-  Parameters := RingCat.{u}
-  fibre := Modules.Mathlib.ModulesOf
-  transport := Modules.Mathlib.moduleCatRestrictScalarsPseudofunctor
 
 noncomputable def freeRealization (R : RingCat.{u}) :
     ClassifierRealization Modules.Modules ClassifierId.modulesFree

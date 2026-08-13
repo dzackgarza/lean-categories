@@ -257,12 +257,23 @@ def ensureCategoryFamilyRealization (realization : Name) : MetaM Unit := do
     throwError
       "registry realization {realization} must return CategoryFamilyRealization ..., but returns {result}"
 
-/-- Require a family transport declaration to return a pseudofunctor. -/
-def ensureCategoryFamilyTransport (transport : Name) : MetaM Unit := do
-  let result ← whnf (← declarationResultType transport)
-  unless result.isAppOfArity ``CategoryTheory.Pseudofunctor 4 do
+/-- Validate a family transport against the typed realization and contravariant variance. -/
+def validateCategoryFamilyTransportDecl (realization transport : Name) (variance : VarianceId) :
+    MetaM Unit := do
+  if variance.raw != "variance.restriction-of-scalars-contravariant" then
+    throwError "registry family {realization} must declare contravariant restriction-of-scalars variance"
+  let realizationValue ← mkConstWithFreshMVarLevels realization
+  let transportValue ← mkConstWithFreshMVarLevels transport
+  let realizationTransport ←
+    mkAppM ``LeanCategories.CategoryFamilyRealization.transport #[realizationValue]
+  let realizationTransportType ← inferType realizationTransport
+  let transportType ← inferType transportValue
+  unless ← isDefEq realizationTransportType transportType do
     throwError
-      "registry family transport {transport} must return a pseudofunctor, but returns {result}"
+      "registry family transport {transport} does not have the realization's exact pseudofunctor type"
+  unless ← isDefEq realizationTransport transportValue do
+    throwError
+      "registry family transport {transport} is not the transport used by realization {realization}"
 
 /-- Require a declaration to return a typed classifier realization. -/
 def ensureClassifierRealization (realization : Name) : MetaM Unit := do
@@ -293,7 +304,7 @@ def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
       ensureCategoryRealization e.realization
   | .categoryFamily e => do
       ensureCategoryFamilyRealization e.realization
-      ensureCategoryFamilyTransport e.transport
+      validateCategoryFamilyTransportDecl e.realization e.transport e.variance
   | .classifier e => do
       ensureClassifierDeclaration e.declaration
       ensureClassifierRealization e.realization

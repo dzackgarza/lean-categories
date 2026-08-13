@@ -28,9 +28,15 @@ structure CategoryRealization (expression : CategoryExpr)
 structure CategoryFamilyRealization (identifier : CategoryFamilyId) where
   Parameters : Type uParam
   [parameterCategory : Category.{uParamHom} Parameters]
-  fibre : Parameters → ObjCat.{uObj, uHom}
   transport :
     Pseudofunctor (LocallyDiscrete Parametersᵒᵖ) (Cat.{uHom, max uObj uHom})
+
+/-- The selected fibre is the pseudofunctor value at the opposite parameter. -/
+def CategoryFamilyRealization.fibre {identifier : CategoryFamilyId}
+    (realization : CategoryFamilyRealization identifier)
+    (parameter : realization.Parameters) : ObjCat.{uObj, uHom} :=
+  letI := realization.parameterCategory
+  realization.transport.obj (.mk (Opposite.op parameter))
 
 /-- An actual classifier assigned to a symbolic host and classifier identifier. -/
 structure ClassifierRealization (host : CategoryExpr) (identifier : ClassifierId)
