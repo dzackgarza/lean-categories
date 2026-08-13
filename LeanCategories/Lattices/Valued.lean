@@ -88,6 +88,7 @@ public import LeanCategories.Lattices.Valued.RootBaseExists
 public import LeanCategories.Lattices.Valued.DiagramBounds
 public import LeanCategories.Lattices.Valued.ArmBounds
 public import LeanCategories.Lattices.Valued.DiagramShape
+public import LeanCategories.Lattices.Valued.ADERealization
 public import LeanCategories.Lattices.Valued.Adele
 public import LeanCategories.Lattices.Valued.AdelicClass
 public import LeanCategories.Lattices.Valued.LocalDensity
