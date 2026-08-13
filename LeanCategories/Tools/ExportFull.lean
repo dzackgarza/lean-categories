@@ -114,6 +114,9 @@ def validate (j : Json) : Except String Unit := do
   let variance ← family.getObjValAs? String "variance"
   if variance != "variance.restriction-of-scalars-contravariant" then
     throw s!"Modules family variance must be contravariant restriction of scalars, got {variance}"
+  let transport ← family.getObjValAs? String "transport"
+  if transport != "LeanCategories.Modules.Mathlib.moduleCatRestrictScalarsPseudofunctor" then
+    throw s!"Modules family transport must be Mathlib's restriction-of-scalars pseudofunctor, got {transport}"
   pure ()
 
 def run : IO UInt32 := do

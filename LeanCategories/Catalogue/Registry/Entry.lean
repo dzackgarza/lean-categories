@@ -47,6 +47,7 @@ structure CategoryFamilyEntry where
   canonicalName : String
   parameters : Array CategoryFamilyParameter
   realization : Lean.Name
+  transport : Lean.Name
   variance : VarianceId
   deriving Repr, Inhabited
 

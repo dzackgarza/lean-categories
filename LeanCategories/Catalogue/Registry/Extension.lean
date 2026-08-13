@@ -54,7 +54,7 @@ def RegistryEntry.stableId : RegistryEntry → String
 /-- Lean declarations that must resolve before this row can be persisted. -/
 def RegistryEntry.declarations : RegistryEntry → Array Name
   | .category e => #[e.declaration, e.realization]
-  | .categoryFamily e => #[e.realization]
+  | .categoryFamily e => #[e.realization, e.transport]
   | .classifier e => #[e.declaration, e.realization]
   | .functor e => #[e.declaration, e.realization]
   | .constructor e => #[e.declaration]
@@ -257,6 +257,13 @@ def ensureCategoryFamilyRealization (realization : Name) : MetaM Unit := do
     throwError
       "registry realization {realization} must return CategoryFamilyRealization ..., but returns {result}"
 
+/-- Require a family transport declaration to return a pseudofunctor. -/
+def ensureCategoryFamilyTransport (transport : Name) : MetaM Unit := do
+  let result ← whnf (← declarationResultType transport)
+  unless result.isAppOfArity ``CategoryTheory.Pseudofunctor 4 do
+    throwError
+      "registry family transport {transport} must return a pseudofunctor, but returns {result}"
+
 /-- Require a declaration to return a typed classifier realization. -/
 def ensureClassifierRealization (realization : Name) : MetaM Unit := do
   let result ← declarationResultType realization
@@ -284,7 +291,9 @@ def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
   | .category e => do
       ensureCategoryDeclaration e.declaration
       ensureCategoryRealization e.realization
-  | .categoryFamily e => ensureCategoryFamilyRealization e.realization
+  | .categoryFamily e => do
+      ensureCategoryFamilyRealization e.realization
+      ensureCategoryFamilyTransport e.transport
   | .classifier e => do
       ensureClassifierDeclaration e.declaration
       ensureClassifierRealization e.realization

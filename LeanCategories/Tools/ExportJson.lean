@@ -137,6 +137,7 @@ def categoryFamilyJson (e : CategoryFamilyEntry) : Json :=
     ("id", e.id.raw),
     ("canonicalName", e.canonicalName),
     ("realization", e.realization.toString),
+    ("transport", e.transport.toString),
     ("parameters", Json.arr <| e.parameters.map fun parameter => object [
       ("name", parameter.name),
       ("kind", parameterKindJson parameter.kind),

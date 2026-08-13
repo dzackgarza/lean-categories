@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Pseudofunctor
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.RingTheory.Finiteness.Basic
@@ -44,8 +45,14 @@ def RingObjects : ObjCat.{u + 1, u} := Cat.of RingCat.{u}
 noncomputable def ModulesOf (R : RingCat.{u}) : ObjCat.{u + 1, u} :=
   Cat.of (ModuleCat.{u} R)
 
+/-- Mathlib's contravariant module-family transport, with identity and composition comparison. -/
+noncomputable def moduleCatRestrictScalarsPseudofunctor :
+    Pseudofunctor (LocallyDiscrete RingCat.{u}ᵒᵖ) (Cat.{u, u + 1}) :=
+  RingCat.moduleCatRestrictScalarsPseudofunctor
+
 /-- The family value; this is not a covariant functor `RingCat ⥤ Cat`. -/
-noncomputable def modulesFamilyValue : RingCat.{u} → ObjCat.{u + 1, u} := ModulesOf
+noncomputable def modulesFamilyValue (R : RingCat.{u}) : ObjCat.{u + 1, u} :=
+  (moduleCatRestrictScalarsPseudofunctor).obj (.mk (Opposite.op R))
 
 example (R : RingCat.{u}) : modulesFamilyValue R = ModulesOf R := rfl
 
@@ -103,7 +110,7 @@ noncomputable def oppositeRing (R : RingCat.{u}) : RingCat.{u} := RingCat.of R�
 
 /-- Right `R`-modules, represented as left modules over the opposite ring. -/
 noncomputable def RightModulesOf (R : RingCat.{u}) : ObjCat.{u + 1, u} :=
-  ModulesOf (oppositeRing R)
+  modulesFamilyValue (oppositeRing R)
 
 example (R : RingCat.{u}) : RightModulesOf R = ModulesOf (oppositeRing R) := rfl
 
