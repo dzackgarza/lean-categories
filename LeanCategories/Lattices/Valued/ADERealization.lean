@@ -66,6 +66,82 @@ def pathGramMatrix (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
 theorem pathGramMatrix_diag (n : ℕ) (i : Fin n) : pathGramMatrix n i i = -2 := by
   simp [pathGramMatrix]
 
+theorem pathGramMatrix_eq_aRootGramMatrix (n : ℕ) :
+    pathGramMatrix n = aRootGramMatrix n := by
+  classical
+  ext i j
+  have hvec (r : Fin n) (k : Fin (n + 1)) :
+      aRootVector n r k =
+        (if k = r.castSucc then (1 : ℤ) else 0) -
+          (if k = r.succ then 1 else 0) := by
+    by_cases hcast : k = r.castSucc
+    · subst k
+      have hne : r.castSucc ≠ r.succ := by simp [Fin.ext_iff]
+      simp [aRootVector, hne]
+    · by_cases hsucc : k = r.succ
+      · subst k
+        have hne : r.succ ≠ r.castSucc := by simpa using hcast
+        simp [aRootVector, hcast, hne]
+      · have hcast' : k.val ≠ r.val := by
+          intro h
+          exact hcast (Fin.ext h)
+        have hsucc' : k.val ≠ r.val + 1 := by
+          intro h
+          exact hsucc (Fin.ext h)
+        simp [aRootVector, hcast, hsucc, hcast', hsucc', Fin.ext_iff]
+  simp only [aRootGramMatrix]
+  simp_rw [hvec i, hvec j]
+  simp only [mul_sub, sub_mul, Finset.sum_sub_distrib, neg_sub]
+  by_cases hij : i = j
+  · subst j
+    have hne : i.succ ≠ i.castSucc := by
+      intro h
+      have hv := congrArg Fin.val h
+      simp at hv
+    simp [pathGramMatrix, hne, hne.symm]
+  · have hij' : i.val ≠ j.val := by
+      intro h
+      exact hij (Fin.ext h)
+    have hji : j ≠ i := Ne.symm hij
+    have hne_i : i.succ ≠ i.castSucc := by
+      intro h
+      have hv := congrArg Fin.val h
+      simp at hv
+    by_cases hnext : i.val + 1 = j.val
+    · have hprev : ¬j.val + 1 = i.val := by omega
+      have hleft : j.succ ≠ i.castSucc := by
+        intro h
+        have hv := congrArg Fin.val h
+        simp at hv
+        omega
+      have hright : j.castSucc = i.succ := by
+        apply Fin.ext
+        simp [hnext]
+      simp [pathGramMatrix, hnext, hprev, hij, hji, hij', hleft, hright, hne_i]
+    · by_cases hprev : j.val + 1 = i.val
+      · have hnext' : ¬i.val + 1 = j.val := by omega
+        have hleft : j.succ = i.castSucc := by
+          apply Fin.ext
+          simp [hprev]
+        have hright : j.castSucc ≠ i.succ := by
+          intro h
+          have hv := congrArg Fin.val h
+          simp at hv
+          omega
+        simp [pathGramMatrix, hnext', hprev, hij, hji, hij', hleft, hright, hne_i,
+          hne_i.symm]
+      · have hleft : j.succ ≠ i.castSucc := by
+          intro h
+          have hv := congrArg Fin.val h
+          simp at hv
+          omega
+        have hright : j.castSucc ≠ i.succ := by
+          intro h
+          have hv := congrArg Fin.val h
+          simp at hv
+          omega
+        simp [pathGramMatrix, hnext, hprev, hij, hji, hij', hleft, hright, hne_i]
+
 /-- The reindexed basis of a path has its graph Gram matrix. -/
 theorem gramMatrix_pathBasis {u v : B} {q : (rootBaseGraph L B).Walk u v}
     (hL : IsNegativeDefiniteLattice L) (hB : IsRootBase L B) (hq : q.IsPath)
@@ -108,6 +184,18 @@ theorem gramMatrix_pathBasis {u v : B} {q : (rootBaseGraph L B).Walk u v}
             (a := (j : ℕ)) (b := (i : ℕ)) (by omega) hi hadj.symm
       rw [pairing_eq_zero_of_notAdj hvertices_ne hnotadj]
       simp [pathGramMatrix, hij, hsucc]
+
+/-- A path-shaped root base presents the standard type-`A` lattice of the same rank. -/
+noncomputable def isoARootFiniteLatticeOfPathBasis {u v : B}
+    {q : (rootBaseGraph L B).Walk u v}
+    (hL : IsNegativeDefiniteLattice L) (hB : IsRootBase L B) (hq : q.IsPath)
+    (hcover : ∀ w : B, w ∈ q.support) :
+    aRootFiniteLattice (q.length + 1) ≅ L := by
+  have hiso := L.isoFiniteLatticeOfGramMatrix (hB.pathBasis hq hcover)
+  have hmatrix : gramMatrix L.obj (hB.pathBasis hq hcover) =
+      aRootGramMatrix (q.length + 1) :=
+    (gramMatrix_pathBasis hL hB hq hcover).trans (pathGramMatrix_eq_aRootGramMatrix _)
+  simpa [aRootFiniteLattice, hmatrix] using hiso
 
 end IsRootBase
 
