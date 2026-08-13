@@ -347,9 +347,30 @@ Before writing any construct, in order:
    - **Search [Lean Reservoir](https://reservoir.lean-lang.org/) before a general GitHub search.** Reservoir indexes public Lake packages across the Lean ecosystem. Search package names, descriptions, dependencies, and source repositories for the mathematical term and its standard synonyms.
    - **Search every registry repository whose subject intersects the requested term, and always the statement banks.** Record the exact repository, declaration, and file used. External definitions remain reference implementations until their types, hypotheses, and mathematical meaning agree with this project's required object.
 
-3. **Only then write new — and relate it to what exists.** A new construct with no stated relationship to a standard one is a red flag (§4.1, §4.4). Every new definition must, in the same PR, carry its tie to the existing world: an equivalence, comparison functor, or forgetful/instance relationship to the Mathlib **or in-repo** construction it specializes, generalizes, or sits beside. Build for **integration compatibility** — reuse Mathlib's typeclasses, category conventions, and morphism classes so the result composes with the library instead of shadowing it. (An equivalence to a standard object does not by itself legitimize a bespoke parallel hierarchy — §4.6 — but its *absence* is worse: the new object then floats free of the mathematics it claims to model.)
+3. **Catalogue a standard source before greenfield theory.** If no suitable catalogue
+   exists, assign a subagent to create one before new mathematical authorship. Prefer a
+   standard source in the live Zotero library. An arXiv paper or internet source is
+   acceptable when the catalogue gives a careful bibliographic citation. Catalogue the
+   names of fundamental definitions by chapter or section. Give a usable Markdown line,
+   section, definition number, or PDF page for each term. Do not copy statements or
+   proofs. Store the result in the project vault.
 
-4. **Record the search.** When you do write new, state what you searched and why the existing pieces did not suffice — in the PR, and in the owning issue if the fact is durable. "Not found in Mathlib / formal-conjectures / a reference project" is a negative finding: report the searched scope, never "does not exist." A later agent must be able to see the reuse gate was actually run.
+   Existing catalogues:
+
+   - [Dummit and Foote: abstract algebra](.agents/references/dummit-and-foote-definition-catalogue.md)
+   - [Folland: real analysis](.agents/references/folland-real-analysis-definition-catalogue.md)
+   - [Ahlfors: complex analysis](.agents/references/ahlfors-complex-analysis-definition-catalogue.md)
+   - [Atiyah and Macdonald: commutative algebra](.agents/references/atiyah-and-macdonald-definition-catalogue.md)
+   - [Shafarevich: algebraic varieties](.agents/references/shafarevich-varieties-definition-catalogue.md)
+   - [Hartshorne: schemes](.agents/references/hartshorne-schemes-definition-catalogue.md)
+   - [Weibel: homological algebra](.agents/references/weibel-homological-algebra-definition-catalogue.md)
+   - [Hatcher: algebraic topology](.agents/references/hatcher-algebraic-topology-definition-catalogue.md)
+   - [Whitehead: homotopy theory](.agents/references/whitehead-homotopy-theory-definition-catalogue.md)
+   - [Apostol: analytic number theory](.agents/references/apostol-analytic-number-theory-definition-catalogue.md)
+
+4. **Only then write new — and relate it to what exists.** A new construct with no stated relationship to a standard one is a red flag (§4.1, §4.4). Every new definition must, in the same PR, carry its tie to the existing world: an equivalence, comparison functor, or forgetful/instance relationship to the Mathlib **or in-repo** construction it specializes, generalizes, or sits beside. Build for **integration compatibility** — reuse Mathlib's typeclasses, category conventions, and morphism classes so the result composes with the library instead of shadowing it. (An equivalence to a standard object does not by itself legitimize a bespoke parallel hierarchy — §4.6 — but its *absence* is worse: the new object then floats free of the mathematics it claims to model.)
+
+5. **Record the search.** When you do write new, state what you searched and why the existing pieces did not suffice — in the PR, and in the owning issue if the fact is durable. "Not found in Mathlib / formal-conjectures / a reference project" is a negative finding: report the searched scope, never "does not exist." A later agent must be able to see the reuse gate was actually run.
 
 The failure this gate prevents is §4.3 and §4.4: writing a plausible new definition is faster and *feels* more productive than finding the three-line composition of existing constructions that already says it. That is not progress — it is a new maintenance surface and an avoidable comparison theorem later.
 
