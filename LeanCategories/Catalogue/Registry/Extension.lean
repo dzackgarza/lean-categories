@@ -320,6 +320,9 @@ def validateCategoryDeclarationRealization (expression : CategoryExpr)
     let realizationArgs := realizationResult.getAppArgs
     unless realizationArgs.size == 2 do
       throwError "registry realization {realization} has malformed CategoryRealization parameters"
+    unless ← withTransparency .all <| isDefEq (Lean.toExpr expression) realizationArgs[0]! do
+      throwError
+        "registry category expression does not match realization {realization}"
     let declarationValue ← mkConstWithFreshMVarLevels _declaration
     let declarationValue := mkAppN declarationValue arguments
     unless ← isDefEq declarationValue realizationArgs[1]! do
@@ -365,13 +368,26 @@ def ensureFunctorRealization (realization : Name) : MetaM Unit := do
     throwError
       "registry realization {realization} must return FunctorRealization ..., but returns {result}"
 
-def validateFunctorDeclarationRealization (declaration realization : Name) : MetaM Unit := do
+def validateFunctorDeclarationRealization {source target : CategoryExpr}
+    (expression : FunctorExpr source target)
+    (declaration realization : Name) : MetaM Unit := do
   let realizationValue ← mkConstWithFreshMVarLevels realization
   let realizationType ← inferType realizationValue
   forallTelescopeReducing realizationType fun arguments realizationResult => do
     let realizationArgs := realizationResult.getAppArgs
     unless realizationArgs.size == 6 do
       throwError "registry realization {realization} has malformed FunctorRealization parameters"
+    let expressionValue := Lean.toExpr expression
+    let expressionType ← inferType expressionValue
+    let expressionTypeArgs := expressionType.getAppArgs
+    unless expressionTypeArgs.size == 2 do
+      throwError "registry functor expression has malformed endpoints"
+    unless ← withTransparency .all <| isDefEq expressionTypeArgs[0]! realizationArgs[0]! do
+      throwError "registry functor source does not match realization {realization}"
+    unless ← withTransparency .all <| isDefEq expressionTypeArgs[1]! realizationArgs[1]! do
+      throwError "registry functor target does not match realization {realization}"
+    unless ← withTransparency .all <| isDefEq expressionValue realizationArgs[2]! do
+      throwError "registry functor expression does not match realization {realization}"
     let declarationValue ← mkConstWithFreshMVarLevels declaration
     let declarationValue := mkAppN declarationValue arguments
     let declarationType ← whnf (← inferType declarationValue)
@@ -466,7 +482,7 @@ def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
       | _ => pure ()
       ensureFunctorDeclaration e.declaration
       ensureFunctorRealization e.realization
-      validateFunctorDeclarationRealization e.declaration e.realization
+      validateFunctorDeclarationRealization e.expression e.declaration e.realization
   | .constructor e => ensureFunctorDeclaration e.declaration
   | .finiteLimitCone _ => pure ()
   | .coherence _ => pure ()

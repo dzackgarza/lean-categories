@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Catalogue.Id
+public import Lean
 
 @[expose] public section
 
@@ -18,6 +19,26 @@ expressions via the registry.
 
 namespace LeanCategories
 
+deriving instance Lean.ToExpr for CategoryId
+deriving instance Lean.ToExpr for ClassifierId
+deriving instance Lean.ToExpr for CategoryFamilyId
+deriving instance Lean.ToExpr for ParameterId
+deriving instance Lean.ToExpr for ParameterOperationId
+deriving instance Lean.ToExpr for ParameterKindId
+deriving instance Lean.ToExpr for VarianceId
+deriving instance Lean.ToExpr for ConstructorId
+deriving instance Lean.ToExpr for FunctorId
+deriving instance Lean.ToExpr for PortId
+deriving instance Lean.ToExpr for AliasId
+deriving instance Lean.ToExpr for RouteId
+deriving instance Lean.ToExpr for RefinementId
+deriving instance Lean.ToExpr for StructuralTheoremId
+deriving instance Lean.ToExpr for OpaquePortId
+deriving instance Lean.ToExpr for ConeCertificateId
+deriving instance Lean.ToExpr for CoherenceId
+deriving instance Lean.ToExpr for PresentationId
+deriving instance Lean.ToExpr for ClusterId
+
 /-- Parameter expression for family applications (symbolic). -/
 inductive ParameterExpr
   | variable (id : ParameterId)
@@ -25,7 +46,7 @@ inductive ParameterExpr
   | apply2 (operation : ParameterOperationId) (left right : ParameterExpr)
   | apply3 (operation : ParameterOperationId)
       (first second third : ParameterExpr)
-  deriving DecidableEq, Repr
+  deriving DecidableEq, Repr, Lean.ToExpr
 
 /-- Normalized symbolic category language. -/
 inductive CategoryExpr
@@ -38,14 +59,14 @@ inductive CategoryExpr
   | constructor (constructor : ConstructorId) (args : Array CategoryExpr)
   | opaque (id : CategoryId)
   | reference (id : CategoryId)
-  deriving Repr
+  deriving Repr, Lean.ToExpr
 
 /-- A refinement occurrence with source, base, and classifier-total indices. -/
 inductive RefinementExpr : CategoryExpr → CategoryExpr → CategoryExpr → Type
   | mk (id : RefinementId) (base : CategoryExpr) (classifier : ClassifierId)
       (route : Option RouteId) :
       RefinementExpr (.refine base classifier route) base (.classifierTotal classifier)
-  deriving Repr
+  deriving Repr, Lean.ToExpr
 
 /--
 Typed symbolic functor language.  Composition is legal only when the middle
@@ -74,7 +95,7 @@ inductive FunctorExpr : CategoryExpr → CategoryExpr → Type
   | constructorMap {source target : CategoryExpr} (constructor : ConstructorId) : FunctorExpr source target
   | compose {source middle target : CategoryExpr} (first : FunctorExpr source middle)
       (second : FunctorExpr middle target) : FunctorExpr source target
-  deriving Repr
+  deriving Repr, Lean.ToExpr
 
 /-- A typed functor expression with existential source and target indices. -/
 structure SomeFunctorExpr where
