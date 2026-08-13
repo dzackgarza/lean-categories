@@ -144,7 +144,7 @@ partial def projectNormalized
             else
               none
         | none => none
-    | .pullback .. | .constructor .. => none
+    | .pullback .. => none
 
 /-- Compute a typed structural projection between normalized category expressions. -/
 def project

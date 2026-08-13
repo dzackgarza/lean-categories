@@ -51,8 +51,6 @@ partial def normalizeCategory
   | .familyApp f args => .familyApp f args
   | .classifierTotal c => .classifierTotal c
   | .pullback left right over => .pullback left right (normalizeCategory hosts aliases over)
-  | .constructor k args =>
-      .constructor k (args.map (normalizeCategory hosts aliases))
   | .refine base clf route =>
       let base' := normalizeCategory hosts aliases base
       -- Exact-host: refine(host(A), A) ↦ total(A)

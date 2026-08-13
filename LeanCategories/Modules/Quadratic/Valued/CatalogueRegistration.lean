@@ -92,7 +92,6 @@ normalized_registry .functor
     admissibility := .generated
     port := none
     origin := "existing quadratic-module forgetful functor"
-    coherenceClass := none
     preferredPresentation := false }
 
 end LeanCategories.Modules.Quadratic.Valued.CatalogueRegistration

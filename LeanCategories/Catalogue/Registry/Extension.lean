@@ -28,10 +28,6 @@ inductive RegistryEntry
   | categoryFamily (e : CategoryFamilyEntry)
   | classifier (e : ClassifierEntry)
   | functor (e : FunctorEntry)
-  | constructor (e : ConstructorEntry)
-  | finiteLimitCone (e : FiniteLimitConeEntry)
-  | coherence (e : CoherenceEntry)
-  | theoremInclusion (e : TheoremInclusionEntry)
   | alias (e : AliasEntry)
   | opaque (e : OpaqueCategoryEntry)
   | presentation (e : PresentationMetadataEntry)
@@ -43,10 +39,6 @@ def RegistryEntry.stableId : RegistryEntry → String
   | .categoryFamily e => e.id.raw
   | .classifier e => e.id.raw
   | .functor e => e.id.raw
-  | .constructor e => e.id.raw
-  | .finiteLimitCone e => e.id.raw
-  | .coherence e => e.id.raw
-  | .theoremInclusion e => e.id.raw
   | .alias e => e.id.raw
   | .opaque e => e.id.raw
   | .presentation e => e.id.raw
@@ -57,10 +49,6 @@ def RegistryEntry.declarations : RegistryEntry → Array Name
   | .categoryFamily e => #[e.realization, e.transport]
   | .classifier e => #[e.declaration, e.realization]
   | .functor e => #[e.declaration, e.realization]
-  | .constructor e => #[e.declaration]
-  | .finiteLimitCone e => #[e.declaration]
-  | .coherence e => #[e.declaration]
-  | .theoremInclusion e => #[e.declaration, e.realization]
   | .alias e => #[e.declaration]
   | .opaque e => #[e.declaration] ++ e.ports.map (·.declaration)
   | .presentation e => #[e.declaration]
@@ -70,10 +58,6 @@ structure RegistryState where
   categoryFamilies : Array CategoryFamilyEntry := #[]
   classifiers : Array ClassifierEntry := #[]
   functors : Array FunctorEntry := #[]
-  constructors : Array ConstructorEntry := #[]
-  finiteLimitCones : Array FiniteLimitConeEntry := #[]
-  coherences : Array CoherenceEntry := #[]
-  theoremInclusions : Array TheoremInclusionEntry := #[]
   aliases : Array AliasEntry := #[]
   opaqueCategories : Array OpaqueCategoryEntry := #[]
   presentations : Array PresentationMetadataEntry := #[]
@@ -103,20 +87,6 @@ def RegistryState.opaquePort? (state : RegistryState) (id : OpaquePortId) : Opti
     | some _ => found
     | none => category.ports.find? fun port => port.id == id) none
 
-/-- Theorem-backed inclusion lookup by stable ID. -/
-def RegistryState.theoremInclusion? (state : RegistryState) (id : StructuralTheoremId) :
-    Option TheoremInclusionEntry :=
-  state.theoremInclusions.find? fun entry => entry.id == id
-
-/-- Finite-limit cone lookup by stable ID. -/
-def RegistryState.finiteLimitCone? (state : RegistryState) (id : ConeCertificateId) :
-    Option FiniteLimitConeEntry :=
-  state.finiteLimitCones.find? fun entry => entry.id == id
-
-/-- Constructor lookup by stable ID. -/
-def RegistryState.constructor? (state : RegistryState) (id : ConstructorId) : Option ConstructorEntry :=
-  state.constructors.find? fun entry => entry.id == id
-
 /-- Whether two symbolic category endpoints are syntactically identical. -/
 def sameEndpoint (left right : CategoryExpr) : Bool :=
   left.syntacticEq right
@@ -138,8 +108,6 @@ partial def CategoryExpr.isRegistered (state : RegistryState) : CategoryExpr →
       base.isRegistered state && (state.classifier? classifier).isSome
   | .pullback left right over =>
       over.isRegistered state && (state.functor? left).isSome && (state.functor? right).isSome
-  | .constructor ctor args =>
-      (state.constructor? ctor).isSome && (args.map (·.isRegistered state)).all id
   | .opaque id => state.opaqueCategories.any (·.id == id)
   | .reference _ => false
 
@@ -166,18 +134,6 @@ partial def FunctorExpr.referencesValid (state : RegistryState)
       match state.opaquePort? id with
       | some entry => denotesCategory source entry.source && denotesCategory target entry.target
       | none => false
-  | .theoremInclusion id =>
-      match state.theoremInclusion? id with
-      | some entry => sameEndpoint entry.source source && sameEndpoint entry.target target
-      | none => false
-  | .finiteLimitLift id =>
-      match state.finiteLimitCone? id with
-      | some entry => sameEndpoint entry.source source && sameEndpoint entry.target target
-      | none => false
-  | .constructorMap id =>
-      match state.constructor? id with
-      | some entry => sameEndpoint entry.source source && sameEndpoint entry.target target
-      | none => false
   | .compose first second => first.referencesValid state && second.referencesValid state
 
 /-- Validate the cospan references of a pullback category before it is persisted. -/
@@ -188,7 +144,6 @@ partial def CategoryExpr.referencesValid (state : RegistryState) : CategoryExpr 
       | some entry => CategoryFamilySchema.parameterArgsValid args entry.schema
       | none => false
   | .refine base _ _ => base.referencesValid state
-  | .constructor _ args => (args.map (·.referencesValid state)).all id
   | .pullback left right over =>
       match state.functor? left, state.functor? right with
       | some leftEntry, some rightEntry =>
@@ -201,10 +156,6 @@ def RegistryState.apply : RegistryState → RegistryEntry → RegistryState
   | s, .categoryFamily e => { s with categoryFamilies := s.categoryFamilies.push e }
   | s, .classifier e => { s with classifiers := s.classifiers.push e }
   | s, .functor e => { s with functors := s.functors.push e }
-  | s, .constructor e => { s with constructors := s.constructors.push e }
-  | s, .finiteLimitCone e => { s with finiteLimitCones := s.finiteLimitCones.push e }
-  | s, .coherence e => { s with coherences := s.coherences.push e }
-  | s, .theoremInclusion e => { s with theoremInclusions := s.theoremInclusions.push e }
   | s, .alias e => { s with aliases := s.aliases.push e }
   | s, .opaque e => { s with opaqueCategories := s.opaqueCategories.push e }
   | s, .presentation e => { s with presentations := s.presentations.push e }
@@ -215,10 +166,6 @@ def RegistryState.hasEntryId : RegistryState → RegistryEntry → Bool
   | state, .categoryFamily e => state.categoryFamilies.any (·.id == e.id)
   | state, .classifier e => state.classifiers.any (·.id == e.id)
   | state, .functor e => state.functors.any (·.id == e.id)
-  | state, .constructor e => state.constructors.any (·.id == e.id)
-  | state, .finiteLimitCone e => state.finiteLimitCones.any (·.id == e.id)
-  | state, .coherence e => state.coherences.any (·.id == e.id)
-  | state, .theoremInclusion e => state.theoremInclusions.any (·.id == e.id)
   | state, .alias e => state.aliases.any (·.id == e.id)
   | state, .opaque e => state.opaqueCategories.any (·.id == e.id)
   | state, .presentation e => state.presentations.any (·.id == e.id)
@@ -247,19 +194,6 @@ def addRegistryEntry (e : RegistryEntry) : CoreM Unit := do
           !entry.source.referencesValid state || !entry.target.referencesValid state ||
           !entry.expression.referencesValid state then
         throwError "functor entry {entry.id.raw} has an unresolved or unregistered endpoint"
-  | .constructor entry =>
-      if !entry.source.referencesValid state || !entry.target.referencesValid state then
-        throwError "constructor entry {entry.id.raw} has an unresolved category endpoint"
-  | .finiteLimitCone entry =>
-      if !entry.source.referencesValid state || !entry.target.referencesValid state ||
-          !entry.apex.referencesValid state then
-        throwError "finite-limit cone entry {entry.id.raw} has an unresolved category endpoint"
-  | .theoremInclusion entry =>
-      if !entry.source.referencesValid state || !entry.target.referencesValid state then
-        throwError "theorem inclusion entry {entry.id.raw} has an unresolved category endpoint"
-  | .coherence entry =>
-      if (state.functor? entry.source).isNone || (state.functor? entry.target).isNone then
-        throwError "coherence entry {entry.id.raw} refers to an unregistered functor"
   | _ => pure ()
   for declaration in e.declarations do
     if declaration.isAnonymous then
@@ -286,18 +220,96 @@ def ensureCategoryRealization (realization : Name) : MetaM Unit := do
     throwError
       "registry realization {realization} must return CategoryRealization ..., but returns {result}"
 
-def validateCategoryEndpointRealization (_state : RegistryState) (expression : CategoryExpr)
-    (_category : Expr) (realization : Expr) : MetaM Unit := do
+def validateRegisteredCategoryEndpointRealization (state : RegistryState) (expression : CategoryExpr)
+    (category realization : Expr) : MetaM Unit := do
+  let realizationType ← withTransparency .all <| whnf (← inferType realization)
+  unless realizationType.isAppOf ``LeanCategories.CategoryRealization do
+    throwError "category endpoint realization is not a CategoryRealization"
+  let realizationArgs := realizationType.getAppArgs
+  unless realizationArgs.size == 2 do
+    throwError "category endpoint realization has malformed parameters"
+  unless ← withTransparency .all <| isDefEq (Lean.toExpr expression) realizationArgs[0]! do
+    throwError "category endpoint realization has the wrong expression"
+  unless ← withTransparency .all <| isDefEq category realizationArgs[1]! do
+    throwError "category endpoint realization has the wrong category"
   let familyFibre ← withTransparency .all do
     mkAppM ``LeanCategories.CategoryRealization.familyFibre #[realization]
   let familyFibre ← withTransparency .all <| whnf familyFibre
   match expression with
-  | .familyApp .. =>
+  | .familyApp family familyArgs =>
+      let familyEntry ← match state.categoryFamily? family with
+        | some entry => pure entry
+        | none => throwError "family endpoint has no registered family"
+      unless CategoryFamilySchema.parameterArgsValid familyArgs familyEntry.schema do
+        throwError "family endpoint has invalid parameter quotations"
       unless familyFibre.isAppOf ``Option.some do
         throwError "family endpoint realization has no typed fibre witness"
+      let packed := familyFibre.getAppArgs.back!
+      let witness := packed.getAppArgs.back!
+      let witnessType ← withTransparency .all <| inferType witness
+      let witnessTypeArgs := witnessType.getAppArgs
+      unless witnessTypeArgs.size >= 4 do
+        throwError "family endpoint realization has a malformed fibre witness"
+      let witnessIdentifier := witnessTypeArgs[1]!
+      let witnessRealization := witnessTypeArgs[3]!
+      let familyValue ← mkAppM ``LeanCategories.CategoryFamilyId.mk #[mkStrLit family.raw]
+      unless ← withTransparency .all <| isDefEq witnessIdentifier familyValue do
+        throwError "family endpoint realization has the wrong family witness"
+      let registeredRealization ← mkConstWithFreshMVarLevels familyEntry.realization
+      unless ← withTransparency .all <| isDefEq witnessRealization registeredRealization do
+        throwError "family endpoint realization is not the exact registered family realization"
+      let witnessArguments ← withTransparency .all do
+        mkAppM ``LeanCategories.CategoryFamilyFibreWitness.arguments #[witness]
+      unless ← withTransparency .all <| isDefEq (Lean.toExpr familyArgs) witnessArguments do
+        throwError "family endpoint realization has unrelated symbolic arguments"
+      let categoryEq ← withTransparency .all do
+        mkAppM ``LeanCategories.CategoryFamilyFibreWitness.category_eq #[witness]
+      let categoryEqType ← withTransparency .all <| inferType categoryEq
+      unless categoryEqType.isEq do
+        throwError "family endpoint realization has no category equality witness"
+      unless ← withTransparency .all <| isDefEq categoryEqType.getAppArgs[1]! category do
+        throwError "family endpoint realization has the wrong category witness"
   | _ =>
+      let entry ← match state.category? expression with
+        | some entry => pure entry
+        | none => throwError "category endpoint has no registered category realization"
+      let registeredRealization ← mkConstWithFreshMVarLevels entry.realization
+      let registeredType ← inferType registeredRealization
+      let (parameters, _, _) ← forallMetaTelescopeReducing registeredType
+      let registeredValue := mkAppN registeredRealization parameters
+      unless ← withTransparency .all <| isDefEq realization registeredValue do
+        throwError
+          "category endpoint realization is not the exact registered realization {entry.realization}"
       unless familyFibre.isAppOfArity ``Option.none 1 do
         throwError "non-family endpoint realization has a family fibre witness"
+
+def validateClassifierTotalEndpointRealization (state : RegistryState)
+    (classifier : ClassifierId) (category realization : Expr) : MetaM Unit := do
+  unless (state.classifier? classifier).isSome do
+    throwError "classifier endpoint {classifier.raw} has no registered classifier"
+  let realizationType ← withTransparency .all <| whnf (← inferType realization)
+  unless realizationType.isAppOf ``LeanCategories.CategoryRealization do
+    throwError "classifier total realization is not a CategoryRealization"
+  let realizationArgs := realizationType.getAppArgs
+  unless realizationArgs.size == 2 do
+    throwError "classifier total realization has malformed parameters"
+  let expression : CategoryExpr := .classifierTotal classifier
+  unless ← withTransparency .all <| isDefEq (Lean.toExpr expression) realizationArgs[0]! do
+    throwError "classifier total realization has the wrong expression"
+  unless ← withTransparency .all <| isDefEq category realizationArgs[1]! do
+    throwError "classifier total realization has the wrong category"
+  let familyFibre ← withTransparency .all do
+    mkAppM ``LeanCategories.CategoryRealization.familyFibre #[realization]
+  let familyFibre ← withTransparency .all <| whnf familyFibre
+  unless familyFibre.isAppOfArity ``Option.none 1 do
+    throwError "non-family classifier total realization has a family fibre witness"
+
+def validateCategoryEndpointRealization (state : RegistryState) (expression : CategoryExpr)
+    (category realization : Expr) : MetaM Unit :=
+  match expression with
+  | .classifierTotal classifier =>
+      validateClassifierTotalEndpointRealization state classifier category realization
+  | _ => validateRegisteredCategoryEndpointRealization state expression category realization
 
 def validateCategoryDeclarationRealization (expression : CategoryExpr)
     (declaration realization : Name) (familyRealization : Option Name) : MetaM Unit := do
@@ -408,10 +420,18 @@ def validateFunctorDeclarationRealization (_state : RegistryState) {source targe
     unless ← withTransparency .all <| isDefEq declarationValue realizationArgs[5]! do
       throwError
           "registry functor declaration {declaration} is not the realized functor {realization}"
-    let _sourceRealization ← withTransparency .all do
+    let sourceRealization ← withTransparency .all do
       mkAppM ``LeanCategories.FunctorRealization.sourceRealization #[realizationValue]
-    let _targetRealization ← withTransparency .all do
+    let targetRealization ← withTransparency .all do
       mkAppM ``LeanCategories.FunctorRealization.targetRealization #[realizationValue]
+    let sourceType ← withTransparency .all <| whnf (← inferType sourceRealization)
+    let targetType ← withTransparency .all <| whnf (← inferType targetRealization)
+    let sourceArgs := sourceType.getAppArgs
+    let targetArgs := targetType.getAppArgs
+    unless sourceArgs.size == 2 && targetArgs.size == 2 do
+      throwError "registry functor endpoint realization has malformed parameters"
+    validateCategoryEndpointRealization _state source sourceArgs[1]! sourceRealization
+    validateCategoryEndpointRealization _state target targetArgs[1]! targetRealization
     let realizationFunctorType ← whnf (← inferType realizationArgs[5]!)
     let declarationArgs := declarationType.getAppArgs
     let realizationArgs' := realizationFunctorType.getAppArgs
@@ -514,12 +534,26 @@ def validateClassifierDeclarationRealization (_state : RegistryState) (entry : C
     let declarationValue := mkAppN declarationConstant arguments
     unless ← withTransparency .all <| isDefEq declarationValue realizationArgs[3]! do
       throwError "classifier declaration {entry.declaration} is not the realized classifier"
-    let _hostRealization ← withTransparency .all do
+    let hostRealization ← withTransparency .all do
       mkAppM ``LeanCategories.ClassifierRealization.hostRealization #[realizationValue]
-    let _totalRealization ← withTransparency .all do
+    let totalRealization ← withTransparency .all do
       mkAppM ``LeanCategories.ClassifierRealization.totalRealization #[realizationValue]
-    let _classifierTotal ← withTransparency .all do
+    let classifierTotal ← withTransparency .all do
       mkAppM ``LeanCategories.Classifier.total #[declarationValue]
+    let hostType ← withTransparency .all <| whnf (← inferType hostRealization)
+    let hostArgs := hostType.getAppArgs
+    unless hostArgs.size == 2 do
+      throwError "classifier host realization has malformed parameters"
+    let totalType ← withTransparency .all <| whnf (← inferType totalRealization)
+    let totalArgs := totalType.getAppArgs
+    unless totalArgs.size == 2 do
+      throwError "classifier total realization has malformed parameters"
+    validateCategoryEndpointRealization _state entry.host hostArgs[1]! hostRealization
+    let stateWithClassifier := _state.apply (.classifier entry)
+    validateClassifierTotalEndpointRealization stateWithClassifier entry.id totalArgs[1]!
+      totalRealization
+    unless ← withTransparency .all <| isDefEq classifierTotal totalArgs[1]! do
+      throwError "classifier total realization is not the registered classifier total"
 
 /-- Require a declaration to elaborate to an actual functor between categories. -/
 def ensureFunctorDeclaration (declaration : Name) : MetaM Unit := do
@@ -562,14 +596,6 @@ def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
       ensureFunctorDeclaration e.declaration
       ensureFunctorRealization e.realization
       validateFunctorDeclarationRealization state e.expression e.declaration e.realization
-  | .constructor e => ensureFunctorDeclaration e.declaration
-  | .finiteLimitCone _ => pure ()
-  | .coherence _ => pure ()
-  | .theoremInclusion e => do
-      ensureFunctorDeclaration e.declaration
-      ensureFunctorRealization e.realization
-      let expression : FunctorExpr e.source e.target := .theoremInclusion e.id
-      validateFunctorDeclarationRealization state expression e.declaration e.realization
   | .alias _ => pure ()
   | .opaque e => do
       ensureCategoryDeclaration e.declaration
@@ -605,10 +631,6 @@ def RegistryState.snapshot (state : RegistryState) (schemaVersion : String) : Re
   categoryFamilies := state.categoryFamilies
   classifiers := state.classifiers
   functors := state.functors
-  constructors := state.constructors
-  finiteLimitCones := state.finiteLimitCones
-  coherences := state.coherences
-  theoremInclusions := state.theoremInclusions
   aliases := state.aliases
   opaqueCategories := state.opaqueCategories
   equivalences := #[]

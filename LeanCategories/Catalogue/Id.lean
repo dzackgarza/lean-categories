@@ -51,11 +51,6 @@ structure VarianceId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 
-/-- Stable constructor id, e.g. `ctor.hom_categories`. -/
-structure ConstructorId where
-  raw : String
-  deriving DecidableEq, Repr, Hashable
-
 /-- Stable functor id. -/
 structure FunctorId where
   raw : String
@@ -81,23 +76,8 @@ structure RefinementId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 
-/-- Stable structural theorem id. -/
-structure StructuralTheoremId where
-  raw : String
-  deriving DecidableEq, Repr, Hashable
-
 /-- Stable opaque structural port id. -/
 structure OpaquePortId where
-  raw : String
-  deriving DecidableEq, Repr, Hashable
-
-/-- Stable cone / finite-limit certificate id. -/
-structure ConeCertificateId where
-  raw : String
-  deriving DecidableEq, Repr, Hashable
-
-/-- Stable coherence-witness id. -/
-structure CoherenceId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 

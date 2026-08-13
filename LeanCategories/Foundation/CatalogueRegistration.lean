@@ -91,7 +91,6 @@ normalized_registry .functor
     admissibility := .generated
     port := none
     origin := "identity"
-    coherenceClass := none
     preferredPresentation := false }
 
 end LeanCategories.Foundation.CatalogueRegistration

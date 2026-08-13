@@ -82,16 +82,12 @@ deriving instance Lean.ToExpr for ParameterId
 deriving instance Lean.ToExpr for ParameterOperationId
 deriving instance Lean.ToExpr for ParameterKindId
 deriving instance Lean.ToExpr for VarianceId
-deriving instance Lean.ToExpr for ConstructorId
 deriving instance Lean.ToExpr for FunctorId
 deriving instance Lean.ToExpr for PortId
 deriving instance Lean.ToExpr for AliasId
 deriving instance Lean.ToExpr for RouteId
 deriving instance Lean.ToExpr for RefinementId
-deriving instance Lean.ToExpr for StructuralTheoremId
 deriving instance Lean.ToExpr for OpaquePortId
-deriving instance Lean.ToExpr for ConeCertificateId
-deriving instance Lean.ToExpr for CoherenceId
 deriving instance Lean.ToExpr for PresentationId
 deriving instance Lean.ToExpr for ClusterId
 
@@ -180,8 +176,9 @@ def parameterSortAt (schema : CategoryFamilySchema) (args : Array ParameterExpr)
       let parameter ← schema.parameterMetadata.find?
         (fun parameter => parameter.ids.contains id)
       if parameter.kind == ParameterKindId.moduleObject then
-        let base ← dependencyParameterId schema parameter
-        some (.module (.variable base))
+        let dependency ← parameter.dependency
+        let base ← args[dependency]?
+        some (.module base)
       else if parameter.kind == ParameterKindId.ringObject then
         some .ring
       else
@@ -205,7 +202,6 @@ inductive CategoryExpr
   | refine (base : CategoryExpr) (classifier : ClassifierId) (route : Option RouteId)
   /-- Pullback legs are typed functor declarations resolved from the registry. -/
   | pullback (left right : FunctorId) (over : CategoryExpr)
-  | constructor (constructor : ConstructorId) (args : Array CategoryExpr)
   | opaque (id : CategoryId)
   | reference (id : CategoryId)
   deriving Repr, Lean.ToExpr
@@ -238,10 +234,6 @@ inductive FunctorExpr : CategoryExpr → CategoryExpr → Type
   | unfoldReference (id : CategoryId) (body : CategoryExpr) :
       FunctorExpr (.reference id) body
   | opaquePort {source target : CategoryExpr} (port : OpaquePortId) : FunctorExpr source target
-  | theoremInclusion {source target : CategoryExpr} (theoremId : StructuralTheoremId) :
-      FunctorExpr source target
-  | finiteLimitLift {source target : CategoryExpr} (cone : ConeCertificateId) : FunctorExpr source target
-  | constructorMap {source target : CategoryExpr} (constructor : ConstructorId) : FunctorExpr source target
   | compose {source middle target : CategoryExpr} (first : FunctorExpr source middle)
       (second : FunctorExpr middle target) : FunctorExpr source target
   deriving Repr, Lean.ToExpr
@@ -263,9 +255,6 @@ partial def CategoryExpr.syntacticEq : CategoryExpr → CategoryExpr → Bool
   | .pullback leftLeg rightLeg leftOver, .pullback rightLeftLeg rightRightLeg rightOver =>
       leftLeg == rightLeftLeg && rightLeg == rightRightLeg &&
         leftOver.syntacticEq rightOver
-  | .constructor leftConstructor leftArgs, .constructor rightConstructor rightArgs =>
-      leftConstructor == rightConstructor && leftArgs.size == rightArgs.size &&
-        (leftArgs.zipWith (·.syntacticEq ·) rightArgs).all id
   | .opaque left, .opaque right => left == right
   | .reference left, .reference right => left == right
   | _, _ => false

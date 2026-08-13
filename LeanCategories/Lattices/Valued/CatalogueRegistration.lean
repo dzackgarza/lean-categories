@@ -294,7 +294,6 @@ normalized_registry .functor
     admissibility := .declared
     port := none
     origin := "existing lattice value change"
-    coherenceClass := none
     preferredPresentation := false }
 
 normalized_registry .functor
@@ -315,7 +314,6 @@ normalized_registry .functor
     admissibility := .declared
     port := none
     origin := "existing lattice scalar extension"
-    coherenceClass := none
     preferredPresentation := false }
 
 normalized_registry .functor
@@ -332,7 +330,6 @@ normalized_registry .functor
     admissibility := .generated
     port := none
     origin := "existing finite-projective lattice forgetful functor"
-    coherenceClass := none
     preferredPresentation := false }
 
 end LeanCategories.Lattices.Valued.CatalogueRegistration

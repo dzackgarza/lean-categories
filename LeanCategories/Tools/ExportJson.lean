@@ -72,12 +72,6 @@ def categoryExprJson : CategoryExpr → Json
         ("right", right.raw),
         ("over", categoryExprJson over),
       ]
-  | .constructor constructor args =>
-      object [
-        ("tag", "constructor"),
-        ("constructor", constructor.raw),
-        ("args", .arr (args.map categoryExprJson)),
-      ]
   | .opaque id => object [("tag", "opaque"), ("id", id.raw)]
   | .reference id => object [("tag", "reference"), ("id", id.raw)]
 
@@ -101,8 +95,6 @@ def varianceJson (variance : VarianceId) : Json := variance.raw
 def functorRoleJson : FunctorRole → Json
   | .generatedStructural => "generatedStructural"
   | .opaqueStructuralPort => "opaqueStructuralPort"
-  | .theoremBacked => "theoremBacked"
-  | .finiteLimit => "finiteLimit"
   | .constructorAction => "constructorAction"
   | .presentationOnly => "presentationOnly"
 
@@ -130,9 +122,6 @@ def functorExprJson {source target : CategoryExpr} : FunctorExpr source target �
       object [("tag", "unfoldReference"), ("id", id.raw),
         ("body", categoryExprJson body)]
   | .opaquePort id => object [("tag", "opaquePort"), ("id", id.raw)]
-  | .theoremInclusion id => object [("tag", "theoremInclusion"), ("id", id.raw)]
-  | .finiteLimitLift id => object [("tag", "finiteLimitLift"), ("id", id.raw)]
-  | .constructorMap id => object [("tag", "constructorMap"), ("id", id.raw)]
   | .compose first second =>
       object [("tag", "compose"), ("first", functorExprJson first),
         ("second", functorExprJson second)]
@@ -196,43 +185,7 @@ def functorJson (e : FunctorEntry) : Json :=
     ("admissibility", admissibilityJson e.admissibility),
     ("port", match e.port with | some port => port.raw | none => Json.null),
     ("origin", e.origin),
-    ("coherenceClass", match e.coherenceClass with | some id => id.raw | none => Json.null),
     ("preferredPresentation", e.preferredPresentation),
-  ]
-
-def constructorJson (e : ConstructorEntry) : Json :=
-  object [
-    ("id", e.id.raw),
-    ("canonicalName", e.canonicalName),
-    ("declaration", e.declaration.toString),
-    ("sourcePosition", e.sourcePosition),
-  ]
-
-def finiteLimitConeJson (e : FiniteLimitConeEntry) : Json :=
-  object [
-    ("id", e.id.raw),
-    ("apex", categoryExprJson e.apex),
-    ("declaration", e.declaration.toString),
-    ("sourcePosition", e.sourcePosition),
-  ]
-
-def coherenceJson (e : CoherenceEntry) : Json :=
-  object [
-    ("id", e.id.raw),
-    ("source", e.source.raw),
-    ("target", e.target.raw),
-    ("declaration", e.declaration.toString),
-    ("sourcePosition", e.sourcePosition),
-  ]
-
-def theoremInclusionJson (e : TheoremInclusionEntry) : Json :=
-  object [
-    ("id", e.id.raw),
-    ("source", categoryExprJson e.source),
-    ("target", categoryExprJson e.target),
-    ("declaration", e.declaration.toString),
-    ("realization", e.realization.toString),
-    ("sourcePosition", e.sourcePosition),
   ]
 
 def presentationJson (e : PresentationMetadataEntry) : Json :=
@@ -266,10 +219,6 @@ def snapshotManifestJson (snap : RegistrySnapshot) : Json :=
   let families := snap.categoryFamilies.qsort (fun a b => a.id.raw < b.id.raw)
   let clfs := snap.classifiers.qsort (fun a b => a.id.raw < b.id.raw)
   let functors := snap.functors.qsort (fun a b => a.id.raw < b.id.raw)
-  let constructors := snap.constructors.qsort (fun a b => a.id.raw < b.id.raw)
-  let cones := snap.finiteLimitCones.qsort (fun a b => a.id.raw < b.id.raw)
-  let coherences := snap.coherences.qsort (fun a b => a.id.raw < b.id.raw)
-  let inclusions := snap.theoremInclusions.qsort (fun a b => a.id.raw < b.id.raw)
   let als := snap.aliases.qsort (fun a b => a.id.raw < b.id.raw)
   let ops := snap.opaqueCategories.qsort (fun a b => a.id.raw < b.id.raw)
   let presentations := snap.presentations.qsort (fun a b => a.id.raw < b.id.raw)
@@ -279,10 +228,6 @@ def snapshotManifestJson (snap : RegistrySnapshot) : Json :=
     ("categories", .arr (cats.map categoryJson)),
     ("classifiers", .arr (clfs.map classifierJson)),
     ("functors", .arr (functors.map functorJson)),
-    ("constructors", .arr (constructors.map constructorJson)),
-    ("finiteLimitCones", .arr (cones.map finiteLimitConeJson)),
-    ("coherences", .arr (coherences.map coherenceJson)),
-    ("theoremInclusions", .arr (inclusions.map theoremInclusionJson)),
     ("aliases", .arr (als.map aliasJson)),
     ("opaqueCategories", .arr (ops.map opaqueJson)),
     ("categoryFamilies", .arr (families.map categoryFamilyJson)),

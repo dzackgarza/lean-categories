@@ -4,10 +4,12 @@ public import LeanCategories.Algebra.Concrete.Magmas
 public import LeanCategories.Algebra.Concrete.Rings
 public import LeanCategories.Algebra.Catalogue.Magmas
 public import LeanCategories.Algebra.Catalogue.Rings
+public import LeanCategories.Foundation.CatalogueRegistration
 public import LeanCategories.Catalogue.Registry.Extension
 public meta import LeanCategories.Catalogue.Registry.Extension
 public meta import LeanCategories.Algebra.Catalogue.Magmas
 public meta import LeanCategories.Algebra.Catalogue.Rings
+public meta import LeanCategories.Foundation.CatalogueRegistration
 public meta import LeanCategories.Algebra.Catalogue
 
 @[expose] public section
@@ -72,7 +74,7 @@ noncomputable def multiplicativeRealization :
       Algebra.Magmas Algebra.multiplicative :=
   { hostRealization := magmasRealization, totalRealization := {} }
 noncomputable def divisionRealization :
-    ClassifierRealization (.atom CategoryId.rings) ClassifierId.ringsDivision
+    ClassifierRealization Algebra.Catalogue.Rings.Rings ClassifierId.ringsDivision
       Algebra.Rings Algebra.divisionOnRings :=
   { hostRealization := { familyFibre := none }, totalRealization := {} }
 
@@ -184,7 +186,7 @@ normalized_registry .classifier
 normalized_registry .classifier
   { id := ClassifierId.ringsDivision, canonicalName := "Division"
     declaration := `LeanCategories.Algebra.divisionOnRings
-    host := .atom CategoryId.rings
+    host := Algebra.Catalogue.Rings.Rings
     realization := `LeanCategories.Algebra.CatalogueRegistration.divisionRealization
     visibility := .present }
 

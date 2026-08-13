@@ -190,7 +190,6 @@ normalized_registry .functor
     admissibility := .generated
     port := none
     origin := "existing formed-module forgetful functor"
-    coherenceClass := none
     preferredPresentation := false }
 
 normalized_registry .functor
@@ -209,7 +208,6 @@ normalized_registry .functor
     admissibility := .declared
     port := none
     origin := "existing formed-module value change"
-    coherenceClass := none
     preferredPresentation := false }
 
 normalized_registry .functor
@@ -230,7 +228,6 @@ normalized_registry .functor
     admissibility := .declared
     port := none
     origin := "existing formed-module scalar extension"
-    coherenceClass := none
     preferredPresentation := false }
 
 normalized_registry .functor
@@ -247,7 +244,6 @@ normalized_registry .functor
     admissibility := .declared
     port := none
     origin := "existing variable-value scalar extension"
-    coherenceClass := none
     preferredPresentation := false }
 
 end LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration
