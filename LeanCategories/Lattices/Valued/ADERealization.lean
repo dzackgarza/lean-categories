@@ -197,6 +197,98 @@ noncomputable def isoARootFiniteLatticeOfPathBasis {u v : B}
     (gramMatrix_pathBasis hL hB hq hcover).trans (pathGramMatrix_eq_aRootGramMatrix _)
   simpa [aRootFiniteLattice, hmatrix] using hiso
 
+/-! ## Three-arm stars -/
+
+/-- Indices for a branch vertex and the vertices on three finite arms. -/
+inductive StarIndex (k : Fin 3 → ℕ)
+  | branch
+  | arm (t : Fin 3) (i : Fin (k t))
+  deriving DecidableEq, Fintype
+
+/-- The vertex of a star indexed by `StarIndex`. -/
+def starVertex {c : B} (x : Fin 3 → ℕ → B) (a : StarIndex k) : B :=
+  match a with
+  | .branch => c
+  | .arm t i => x t i
+
+theorem starVertex_injective {c : B} {x : Fin 3 → ℕ → B} {k : Fin 3 → ℕ}
+    (hstar : IsThreeArmStar L B c x k) :
+    Function.Injective (starVertex (c := c) (k := k) x) := by
+  intro a b hab
+  cases a with
+  | branch =>
+      cases b with
+      | branch => rfl
+      | arm t i =>
+          exfalso
+          exact hstar.ne_branch t i (by exact i.isLt) hab.symm
+  | arm t i =>
+      cases b with
+      | branch =>
+          exfalso
+          exact hstar.ne_branch t i (by exact i.isLt) hab
+      | arm u j =>
+          change x t i = x u j at hab
+          by_cases htu : t = u
+          · subst u
+            by_cases hij : i = j
+            · subst j
+              rfl
+            · have hself := hstar.isArm t |>.pairing_self i i.isLt
+              have hlt : i.val < j.val ∨ j.val < i.val := by omega
+              rcases hlt with hlt | hlt
+              · by_cases hnext : i.val + 1 = j.val
+                · have hadj := hstar.isArm t |>.pairing_succ i (by omega)
+                  have hsame : L.obj.obj.pairing (x t i : L.obj.obj.carrier)
+                      (x t i : L.obj.obj.carrier) = 1 := by
+                    simpa [hnext, hab] using hadj
+                  omega
+                · have hfar := hstar.isArm t |>.pairing_far i j (by omega) j.isLt
+                  have hsame : L.obj.obj.pairing (x t i : L.obj.obj.carrier)
+                      (x t i : L.obj.obj.carrier) = 0 := by
+                    simpa [hab] using hfar
+                  omega
+              · by_cases hnext : j.val + 1 = i.val
+                · have hadj := hstar.isArm t |>.pairing_succ j (by omega)
+                  have hsame : L.obj.obj.pairing (x t j : L.obj.obj.carrier)
+                      (x t j : L.obj.obj.carrier) = 1 := by
+                    simpa [hnext, hab] using hadj
+                  have hselfj := hstar.isArm t |>.pairing_self j j.isLt
+                  omega
+                · have hfar := hstar.isArm t |>.pairing_far j i (by omega) i.isLt
+                  have hsame : L.obj.obj.pairing (x t j : L.obj.obj.carrier)
+                      (x t j : L.obj.obj.carrier) = 0 := by
+                    simpa [hab] using hfar
+                  have hselfj := hstar.isArm t |>.pairing_self j j.isLt
+                  omega
+          · have hcross := hstar.pairing_arm t u htu i i.isLt j j.isLt
+            have hself := hstar.isArm t |>.pairing_self i i.isLt
+            have hsame : L.obj.obj.pairing (x t i : L.obj.obj.carrier)
+                (x t i : L.obj.obj.carrier) = 0 := by
+              simpa [hab] using hcross
+            omega
+
+/-- A covering star gives an equivalence between its finite index type and the root base. -/
+noncomputable def starIndexEquiv {c : B} {x : Fin 3 → ℕ → B} {k : Fin 3 → ℕ}
+    (hstar : IsThreeArmStar L B c x k)
+    (hcover : ∀ w : B, w = c ∨ ∃ t, ∃ i < k t, x t i = w) :
+    StarIndex k ≃ B := by
+  refine Equiv.ofBijective (starVertex (c := c) (k := k) x) ?_
+  constructor
+  · exact starVertex_injective hstar
+  · intro w
+    rcases hcover w with rfl | ⟨t, i, hi, rfl⟩
+    · exact ⟨.branch, rfl⟩
+    · exact ⟨.arm t ⟨i, hi⟩, rfl⟩
+
+/-- Reindex the root-base basis by the vertices of a covering star. -/
+noncomputable def starBasis {c : B} {x : Fin 3 → ℕ → B} {k : Fin 3 → ℕ}
+    (hB : IsRootBase L B)
+    (hstar : IsThreeArmStar L B c x k)
+    (hcover : ∀ w : B, w = c ∨ ∃ t, ∃ i < k t, x t i = w) :
+    Module.Basis (StarIndex k) ℤ L.obj.obj.carrier :=
+  hB.basis.reindex (starIndexEquiv hstar hcover).symm
+
 end IsRootBase
 
 end FiniteProjectiveLatticeCat
