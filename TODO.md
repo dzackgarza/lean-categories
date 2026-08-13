@@ -11,7 +11,6 @@ to that plan and remove it here.
 
 ## Divided powers and quadratic maps
 
-- [ ] Free divided-power algebra `Γ_R(M)`
 - [ ] Free divided-power algebra functor `Γ_R : ModuleCat R ⥤ CommAlgCat R`
 - [ ] Degree-`n` divided power `Γ_R^n(M)`
 - [ ] Grading `Γ_R(M) = ⨁_n Γ_R^n(M)`
