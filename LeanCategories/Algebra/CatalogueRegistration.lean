@@ -49,25 +49,32 @@ noncomputable def divisionRingsRealization :
 
 noncomputable def associativeRealization :
     ClassifierRealization Algebra.Catalogue.Magmas.Magmas ClassifierId.magmasAssociative
-      Algebra.Magmas Algebra.associative := ⟨⟩
+      Algebra.Magmas Algebra.associative :=
+  { hostRealization := magmasRealization, totalRealization := {} }
 noncomputable def commutativeRealization :
     ClassifierRealization Algebra.Catalogue.Magmas.Magmas ClassifierId.magmasCommutative
-      Algebra.Magmas Algebra.commutative := ⟨⟩
+      Algebra.Magmas Algebra.commutative :=
+  { hostRealization := magmasRealization, totalRealization := {} }
 noncomputable def unitalRealization :
     ClassifierRealization Algebra.Catalogue.Magmas.Magmas ClassifierId.magmasUnital
-      Algebra.Magmas Algebra.unital := ⟨⟩
+      Algebra.Magmas Algebra.unital :=
+  { hostRealization := magmasRealization, totalRealization := {} }
 noncomputable def inverseRealization :
     ClassifierRealization (.classifierTotal ClassifierId.magmasUnital)
-      ClassifierId.magmasInverse Algebra.UnitalMagmas Algebra.inverse := ⟨⟩
+      ClassifierId.magmasInverse Algebra.UnitalMagmas Algebra.inverse :=
+  { hostRealization := {}, totalRealization := {} }
 noncomputable def additiveRealization :
     ClassifierRealization Algebra.Catalogue.Magmas.Magmas ClassifierId.magmasAdditive
-      Algebra.Magmas Algebra.additive := ⟨⟩
+      Algebra.Magmas Algebra.additive :=
+  { hostRealization := magmasRealization, totalRealization := {} }
 noncomputable def multiplicativeRealization :
     ClassifierRealization Algebra.Catalogue.Magmas.Magmas ClassifierId.magmasMultiplicative
-      Algebra.Magmas Algebra.multiplicative := ⟨⟩
+      Algebra.Magmas Algebra.multiplicative :=
+  { hostRealization := magmasRealization, totalRealization := {} }
 noncomputable def divisionRealization :
     ClassifierRealization (.atom CategoryId.rings) ClassifierId.ringsDivision
-      Algebra.Rings Algebra.divisionOnRings := ⟨⟩
+      Algebra.Rings Algebra.divisionOnRings :=
+  { hostRealization := { familyFibre := none }, totalRealization := {} }
 
 abbrev CRings := Algebra.CommutativeRings
 

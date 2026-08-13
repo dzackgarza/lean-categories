@@ -28,7 +28,9 @@ noncomputable def crystalsRealization :
 noncomputable def distributiveRealization :
     ClassifierRealization Algebra.Catalogue.Rings.MagmasWithTwoOperations
       ClassifierId.m2oDistributive Exceptional.Mathlib.MagmasWithTwoOperations
-      Exceptional.Mathlib.distributive := ⟨⟩
+      Exceptional.Mathlib.distributive :=
+  { hostRealization := m2oRealization
+    totalRealization := { familyFibre := none } }
 
 normalized_registry .category
   { id := CategoryId.magmasWithTwoOperations

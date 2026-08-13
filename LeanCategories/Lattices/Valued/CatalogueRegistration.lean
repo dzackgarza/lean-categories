@@ -97,35 +97,31 @@ noncomputable def latticeRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :
     CategoryRealization Lattice (latticeCategory R W) where
   familyFibre := some (.mk latticeFamilyRealization {
-    quotedArguments := #[.variable ParameterId.r, .variable ParameterId.w]
     parameter := ⟨CommRingCat.of R, ModuleCat.of R W⟩
-    parameterQuotation := .commRingModule (CommRingCat.of R) (ModuleCat.of R W)
+    parameterQuotation := .commRingModuleRW (CommRingCat.of R) (ModuleCat.of R W)
     category_eq := by rfl })
 
 noncomputable def finiteProjectiveLatticeRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :
     CategoryRealization FiniteProjectiveLattice (finiteProjectiveLatticeCategory R W) where
   familyFibre := some (.mk finiteProjectiveLatticeFamilyRealization {
-    quotedArguments := #[.variable ParameterId.r, .variable ParameterId.w]
     parameter := ⟨CommRingCat.of R, ModuleCat.of R W⟩
-    parameterQuotation := .commRingModule (CommRingCat.of R) (ModuleCat.of R W)
+    parameterQuotation := .commRingModuleRW (CommRingCat.of R) (ModuleCat.of R W)
     category_eq := by rfl })
 
 noncomputable def finiteFreeLatticeRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :
     CategoryRealization FiniteFreeLattice (finiteFreeLatticeCategory R W) where
   familyFibre := some (.mk finiteFreeLatticeFamilyRealization {
-    quotedArguments := #[.variable ParameterId.r, .variable ParameterId.w]
     parameter := ⟨CommRingCat.of R, ModuleCat.of R W⟩
-    parameterQuotation := .commRingModule (CommRingCat.of R) (ModuleCat.of R W)
+    parameterQuotation := .commRingModuleRW (CommRingCat.of R) (ModuleCat.of R W)
     category_eq := by rfl })
 
 noncomputable def evenLatticeRealization (R : Type u) [CommRing R] :
     CategoryRealization EvenLattice (evenLatticeCategory R) where
   familyFibre := some (.mk evenLatticeFamilyRealization {
-    quotedArguments := #[.variable ParameterId.r]
     parameter := ⟨CommRingCat.of R⟩
-    parameterQuotation := .commRing (CommRingCat.of R)
+    parameterQuotation := .commRingR (CommRingCat.of R)
     category_eq := by rfl })
 
 noncomputable def definiteLatticeRealization :
@@ -139,20 +135,34 @@ noncomputable def latticeChangeValueRealization (R : Type u) [CommRing R]
     [AddCommGroup W'] [Module R W'] (f : W →ₗ[R] W') :
     FunctorRealization LatticeChangeValue (latticeCategory R W)
       (latticeCategory R W')
-      (LeanCategories.Lattices.Valued.changeValue R W f).toCatHom := ⟨⟩
+      (LeanCategories.Lattices.Valued.changeValue R W f).toCatHom :=
+  { sourceRealization := latticeRealization R W
+    targetRealization :=
+       { familyFibre := some (.mk latticeFamilyRealization {
+          parameter := ⟨CommRingCat.of R, ModuleCat.of R W'⟩
+          parameterQuotation := .commRingModuleRWPrime (CommRingCat.of R) (ModuleCat.of R W')
+          category_eq := by rfl }) } }
 
 noncomputable def latticeBaseChangeRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W]
     (S : Type u) [CommRing S] [Algebra R S] :
     FunctorRealization LatticeBaseChange (latticeCategory R W)
       (latticeCategory S (TensorProduct R S W))
-      (LeanCategories.Lattices.Valued.baseChange R W S).toCatHom := ⟨⟩
+      (LeanCategories.Lattices.Valued.baseChange R W S).toCatHom :=
+  { sourceRealization := latticeRealization R W
+    targetRealization :=
+       { familyFibre := some (.mk latticeFamilyRealization {
+          parameter := ⟨CommRingCat.of S, ModuleCat.of S (TensorProduct R S W)⟩
+          parameterQuotation := .commRingModuleTensorProduct R S W
+          category_eq := by rfl }) } }
 
 noncomputable def finiteProjectiveForgetRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :
     FunctorRealization FiniteProjectiveForget (finiteProjectiveLatticeCategory R W)
       (Modules.Mathlib.ModulesOf (RingCat.of R))
-      (LeanCategories.Lattices.Valued.finiteProjectiveForget R W).toCatHom := ⟨⟩
+      (LeanCategories.Lattices.Valued.finiteProjectiveForget R W).toCatHom :=
+  { sourceRealization := finiteProjectiveLatticeRealization R W
+    targetRealization := LeanCategories.Modules.CatalogueRegistration.modulesRealization (RingCat.of R) }
 
 noncomputable def latticeChangeValueDeclaration (R : Type u) [CommRing R]
     (W W' : Type u) [AddCommGroup W] [Module R W]

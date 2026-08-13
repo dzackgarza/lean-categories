@@ -41,16 +41,17 @@ noncomputable def quadModuleRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :
     CategoryRealization QuadModule (quadModuleCategory R W) where
   familyFibre := some (.mk quadModuleFamilyRealization {
-    quotedArguments := #[.variable ParameterId.r, .variable ParameterId.w]
     parameter := ⟨CommRingCat.of R, ModuleCat.of R W⟩
-    parameterQuotation := .commRingModule (CommRingCat.of R) (ModuleCat.of R W)
+    parameterQuotation := .commRingModuleRW (CommRingCat.of R) (ModuleCat.of R W)
     category_eq := by rfl })
 
 noncomputable def quadModuleForgetRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :
     FunctorRealization QuadModuleForget (quadModuleCategory R W)
       (Modules.Mathlib.ModulesOf (RingCat.of R))
-      (LeanCategories.Modules.Quadratic.Valued.forget R W).toCatHom := ⟨⟩
+      (LeanCategories.Modules.Quadratic.Valued.forget R W).toCatHom :=
+  { sourceRealization := quadModuleRealization R W
+    targetRealization := LeanCategories.Modules.CatalogueRegistration.modulesRealization (RingCat.of R) }
 
 noncomputable def quadModuleForgetDeclaration (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :

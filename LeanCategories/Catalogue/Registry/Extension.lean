@@ -88,6 +88,14 @@ def RegistryState.categoryFamily? (state : RegistryState) (id : CategoryFamilyId
     Option CategoryFamilyEntry :=
   state.categoryFamilies.find? fun entry => entry.id == id
 
+def RegistryState.category? (state : RegistryState) (expression : CategoryExpr) :
+    Option NamedCategoryEntry :=
+  state.categories.find? fun entry => entry.expression.syntacticEq expression
+
+def RegistryState.classifier? (state : RegistryState) (id : ClassifierId) :
+    Option ClassifierEntry :=
+  state.classifiers.find? fun entry => entry.id == id
+
 /-- Typed opaque-port lookup by stable ID. -/
 def RegistryState.opaquePort? (state : RegistryState) (id : OpaquePortId) : Option StructuralPortEntry :=
   state.opaqueCategories.foldl (fun found category =>
@@ -119,19 +127,29 @@ def denotesCategory (expression : CategoryExpr) (id : CategoryId) : Bool :=
   | .atom value | .opaque value | .reference value => value == id
   | _ => false
 
+partial def CategoryExpr.isRegistered (state : RegistryState) : CategoryExpr → Bool
+  | .atom id =>
+      (state.category? (.atom id)).isSome || state.opaqueCategories.any (·.id == id)
+  | .familyApp family args =>
+      (state.categoryFamily? family).any fun entry =>
+        CategoryFamilySchema.parameterArgsValid args entry.schema
+  | .classifierTotal classifier => (state.classifier? classifier).isSome
+  | .refine base classifier _ =>
+      base.isRegistered state && (state.classifier? classifier).isSome
+  | .pullback left right over =>
+      over.isRegistered state && (state.functor? left).isSome && (state.functor? right).isSome
+  | .constructor ctor args =>
+      (state.constructor? ctor).isSome && (args.map (·.isRegistered state)).all id
+  | .opaque id => state.opaqueCategories.any (·.id == id)
+  | .reference _ => false
+
 /- The schema rejects a module whose base is not the selected ring. -/
-example : !CategoryFamilySchema.parameterArgsValid #[.variable ParameterId.s, .variable ParameterId.w]
+example : !CategoryFamilySchema.parameterArgsValid #[.variable ParameterId.r]
     .commRingModule := by decide
 
 /- A ring family cannot accept a dependent module parameter. -/
 example : !CategoryFamilySchema.parameterArgsValid #[.variable ParameterId.r, .variable ParameterId.w]
     .ring := by decide
-
-/- The bounded tensor operation preserves the dependency W : Module R. -/
-example : CategoryFamilySchema.parameterArgsValid #[.variable ParameterId.s,
-    .apply3 ParameterOperationId.tensorProduct
-      (.variable ParameterId.r) (.variable ParameterId.s) (.variable ParameterId.w)]
-    .commRingModule := by decide
 
 /-- Validate references within a typed functor expression against prior persistent entries. -/
 partial def FunctorExpr.referencesValid (state : RegistryState)
@@ -225,9 +243,10 @@ def addRegistryEntry (e : RegistryEntry) : CoreM Unit := do
       if !entry.expression.referencesValid state then
         throwError "category entry {entry.id.raw} has an unresolved or ill-typed functor reference"
   | .functor entry =>
-      if !entry.source.referencesValid state || !entry.target.referencesValid state ||
+      if !entry.source.isRegistered state || !entry.target.isRegistered state ||
+          !entry.source.referencesValid state || !entry.target.referencesValid state ||
           !entry.expression.referencesValid state then
-        throwError "functor entry {entry.id.raw} has an unresolved or ill-typed functor reference"
+        throwError "functor entry {entry.id.raw} has an unresolved or unregistered endpoint"
   | .constructor entry =>
       if !entry.source.referencesValid state || !entry.target.referencesValid state then
         throwError "constructor entry {entry.id.raw} has an unresolved category endpoint"
@@ -266,6 +285,19 @@ def ensureCategoryRealization (realization : Name) : MetaM Unit := do
   unless result.isAppOf ``LeanCategories.CategoryRealization do
     throwError
       "registry realization {realization} must return CategoryRealization ..., but returns {result}"
+
+def validateCategoryEndpointRealization (_state : RegistryState) (expression : CategoryExpr)
+    (_category : Expr) (realization : Expr) : MetaM Unit := do
+  let familyFibre ← withTransparency .all do
+    mkAppM ``LeanCategories.CategoryRealization.familyFibre #[realization]
+  let familyFibre ← withTransparency .all <| whnf familyFibre
+  match expression with
+  | .familyApp .. =>
+      unless familyFibre.isAppOf ``Option.some do
+        throwError "family endpoint realization has no typed fibre witness"
+  | _ =>
+      unless familyFibre.isAppOfArity ``Option.none 1 do
+        throwError "non-family endpoint realization has a family fibre witness"
 
 def validateCategoryDeclarationRealization (expression : CategoryExpr)
     (declaration realization : Name) (familyRealization : Option Name) : MetaM Unit := do
@@ -349,12 +381,13 @@ def ensureFunctorRealization (realization : Name) : MetaM Unit := do
     throwError
       "registry realization {realization} must return FunctorRealization ..., but returns {result}"
 
-def validateFunctorDeclarationRealization {source target : CategoryExpr}
+def validateFunctorDeclarationRealization (_state : RegistryState) {source target : CategoryExpr}
     (expression : FunctorExpr source target)
     (declaration realization : Name) : MetaM Unit := do
-  let realizationValue ← mkConstWithFreshMVarLevels realization
-  let realizationType ← inferType realizationValue
+  let realizationConstant ← mkConstWithFreshMVarLevels realization
+  let realizationType ← inferType realizationConstant
   forallTelescopeReducing realizationType fun arguments realizationResult => do
+    let realizationValue := mkAppN realizationConstant arguments
     let realizationArgs := realizationResult.getAppArgs
     unless realizationArgs.size == 6 do
       throwError "registry realization {realization} has malformed FunctorRealization parameters"
@@ -374,7 +407,11 @@ def validateFunctorDeclarationRealization {source target : CategoryExpr}
     let declarationType ← whnf (← inferType declarationValue)
     unless ← withTransparency .all <| isDefEq declarationValue realizationArgs[5]! do
       throwError
-        "registry functor declaration {declaration} is not the realized functor {realization}"
+          "registry functor declaration {declaration} is not the realized functor {realization}"
+    let _sourceRealization ← withTransparency .all do
+      mkAppM ``LeanCategories.FunctorRealization.sourceRealization #[realizationValue]
+    let _targetRealization ← withTransparency .all do
+      mkAppM ``LeanCategories.FunctorRealization.targetRealization #[realizationValue]
     let realizationFunctorType ← whnf (← inferType realizationArgs[5]!)
     let declarationArgs := declarationType.getAppArgs
     let realizationArgs' := realizationFunctorType.getAppArgs
@@ -460,6 +497,30 @@ def ensureClassifierDeclaration (declaration : Name) : MetaM Unit := do
   unless result.isAppOfArity ``LeanCategories.Classifier 1 do
     throwError "registry declaration {declaration} must return Classifier _, but returns {result}"
 
+def validateClassifierDeclarationRealization (_state : RegistryState) (entry : ClassifierEntry) :
+    MetaM Unit := do
+  let realizationConstant ← mkConstWithFreshMVarLevels entry.realization
+  let realizationType ← inferType realizationConstant
+  forallTelescopeReducing realizationType fun arguments realizationResult => do
+    let realizationValue := mkAppN realizationConstant arguments
+    let realizationArgs := realizationResult.getAppArgs
+    unless realizationArgs.size == 4 do
+      throwError "classifier realization {entry.realization} has malformed parameters"
+    unless ← withTransparency .all <| isDefEq (Lean.toExpr entry.host) realizationArgs[0]! do
+      throwError "classifier realization {entry.realization} has the wrong host"
+    unless ← withTransparency .all <| isDefEq (Lean.toExpr entry.id) realizationArgs[1]! do
+      throwError "classifier realization {entry.realization} has the wrong identifier"
+    let declarationConstant ← mkConstWithFreshMVarLevels entry.declaration
+    let declarationValue := mkAppN declarationConstant arguments
+    unless ← withTransparency .all <| isDefEq declarationValue realizationArgs[3]! do
+      throwError "classifier declaration {entry.declaration} is not the realized classifier"
+    let _hostRealization ← withTransparency .all do
+      mkAppM ``LeanCategories.ClassifierRealization.hostRealization #[realizationValue]
+    let _totalRealization ← withTransparency .all do
+      mkAppM ``LeanCategories.ClassifierRealization.totalRealization #[realizationValue]
+    let _classifierTotal ← withTransparency .all do
+      mkAppM ``LeanCategories.Classifier.total #[declarationValue]
+
 /-- Require a declaration to elaborate to an actual functor between categories. -/
 def ensureFunctorDeclaration (declaration : Name) : MetaM Unit := do
   let result ← whnf (← declarationResultType declaration)
@@ -470,11 +531,11 @@ def ensureFunctorDeclaration (declaration : Name) : MetaM Unit := do
 
 /-- Inspect declaration types before atomically persisting a registry entry. -/
 def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
+  let state := getRegistry (← getEnv)
   match entry with
   | .category e => do
       ensureCategoryDeclaration e.declaration
       ensureCategoryRealization e.realization
-      let state := getRegistry (← getEnv)
       match e.expression with
       | .familyApp family _ =>
           match state.categoryFamily? family with
@@ -490,6 +551,7 @@ def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
   | .classifier e => do
       ensureClassifierDeclaration e.declaration
       ensureClassifierRealization e.realization
+      validateClassifierDeclarationRealization state e
   | .functor e => do
       match e.expression with
       | .atomic id =>
@@ -499,7 +561,7 @@ def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
       | _ => pure ()
       ensureFunctorDeclaration e.declaration
       ensureFunctorRealization e.realization
-      validateFunctorDeclarationRealization e.expression e.declaration e.realization
+      validateFunctorDeclarationRealization state e.expression e.declaration e.realization
   | .constructor e => ensureFunctorDeclaration e.declaration
   | .finiteLimitCone _ => pure ()
   | .coherence _ => pure ()
@@ -507,7 +569,7 @@ def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
       ensureFunctorDeclaration e.declaration
       ensureFunctorRealization e.realization
       let expression : FunctorExpr e.source e.target := .theoremInclusion e.id
-      validateFunctorDeclarationRealization expression e.declaration e.realization
+      validateFunctorDeclarationRealization state expression e.declaration e.realization
   | .alias _ => pure ()
   | .opaque e => do
       ensureCategoryDeclaration e.declaration

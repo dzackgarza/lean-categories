@@ -5,6 +5,7 @@ public import LeanCategories.Catalogue.Syntax
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Pseudofunctor
 public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
 public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 public import Mathlib.CategoryTheory.Discrete.Basic
@@ -28,6 +29,8 @@ namespace CategoryFamilySchema
 end CategoryFamilySchema
 
 universe uObj uHom uParam uParamHom
+universe uHostParam uHostParamHom uTotalParam uTotalParamHom
+universe uSourceParam uSourceParamHom uTargetParam uTargetParamHom
 
 attribute [local simp] Bicategory.Strict.leftUnitor_eqToIso
   Bicategory.Strict.rightUnitor_eqToIso Bicategory.Strict.associator_eqToIso
@@ -68,20 +71,39 @@ def CategoryFamilyRealization.fibre {identifier : CategoryFamilyId}
 /-- Typed quotation of the concrete parameter represented by a family application. -/
 inductive CategoryFamilyParameterQuotation :
     (schema : CategoryFamilySchema) → Array ParameterExpr → schema.Parameters → Prop
-  | ring (R : RingCat.{u}) :
+  | ringR (R : RingCat.{u}) :
       CategoryFamilyParameterQuotation .ring #[.variable ParameterId.r] R
-  | commRing (R : CommRingCat.{u}) :
+  | ringS (S : RingCat.{u}) :
+      CategoryFamilyParameterQuotation .ring #[.variable ParameterId.s] S
+  | commRingR (R : CommRingCat.{u}) :
       CategoryFamilyParameterQuotation .commRing #[.variable ParameterId.r] ⟨R⟩
-  | commRingModule (R : CommRingCat.{u}) (W : ModuleCat.{u} R) :
+  | commRingS (S : CommRingCat.{u}) :
+      CategoryFamilyParameterQuotation .commRing #[.variable ParameterId.s] ⟨S⟩
+  | commRingModuleRW (R : CommRingCat.{u}) (W : ModuleCat.{u} R) :
       CategoryFamilyParameterQuotation .commRingModule
         #[.variable ParameterId.r, .variable ParameterId.w] ⟨R, W⟩
+  | commRingModuleSW (S : CommRingCat.{u}) (W : ModuleCat.{u} S) :
+      CategoryFamilyParameterQuotation .commRingModule
+        #[.variable ParameterId.s, .variable ParameterId.w] ⟨S, W⟩
+  | commRingModuleRWPrime (R : CommRingCat.{u}) (W : ModuleCat.{u} R) :
+      CategoryFamilyParameterQuotation .commRingModule
+        #[.variable ParameterId.r, .variable ParameterId.wPrime] ⟨R, W⟩
+  | commRingModuleSWPrime (S : CommRingCat.{u}) (W : ModuleCat.{u} S) :
+      CategoryFamilyParameterQuotation .commRingModule
+        #[.variable ParameterId.s, .variable ParameterId.wPrime] ⟨S, W⟩
+  | commRingModuleTensorProduct (R S W : Type u) [CommRing R] [CommRing S]
+      [Algebra R S] [AddCommGroup W] [Module R W] :
+      CategoryFamilyParameterQuotation .commRingModule
+        #[.variable ParameterId.s,
+          .apply3 ParameterOperationId.tensorProduct
+            (.variable ParameterId.r) (.variable ParameterId.s) (.variable ParameterId.w)]
+        ⟨CommRingCat.of S, ModuleCat.of S (TensorProduct R S W)⟩
 
 /-- A typed witness that a named category is a selected fibre of a family. -/
 structure CategoryFamilyFibreWitness (category : ObjCat.{uObj, uHom})
     {identifier : CategoryFamilyId} {schema : CategoryFamilySchema}
     (realization : CategoryFamilyRealization.{uObj, uHom, uParam, uParamHom} identifier schema)
     {arguments : Array ParameterExpr} where
-  quotedArguments : Array ParameterExpr := arguments
   parameter : schema.Parameters
   parameterQuotation : CategoryFamilyParameterQuotation schema arguments parameter
   category_eq : category = realization.fibre parameter
@@ -90,8 +112,8 @@ def CategoryFamilyFibreWitness.arguments {category : ObjCat.{uObj, uHom}}
     {identifier : CategoryFamilyId} {schema : CategoryFamilySchema}
     {realization : CategoryFamilyRealization.{uObj, uHom, uParam, uParamHom} identifier schema}
     {arguments : Array ParameterExpr}
-    (witness : CategoryFamilyFibreWitness category realization (arguments := arguments)) :
-    Array ParameterExpr := witness.quotedArguments
+    (_witness : CategoryFamilyFibreWitness category realization (arguments := arguments)) :
+    Array ParameterExpr := arguments
 
 /-- Existential package for a fibre witness with its exact realization index. -/
 inductive SomeCategoryFamilyFibreWitness (category : ObjCat.{uObj, uHom}) where
@@ -109,11 +131,20 @@ structure CategoryRealization (expression : CategoryExpr)
 /-- An actual classifier assigned to a symbolic host and classifier identifier. -/
 structure ClassifierRealization (host : CategoryExpr) (identifier : ClassifierId)
     (category : ObjCat.{uObj, uHom}) (classifier : Classifier category) where
+  hostRealization :
+    CategoryRealization.{uObj, uHom, uHostParam, uHostParamHom} host category
+  totalRealization :
+    CategoryRealization.{uObj, uHom, uTotalParam, uTotalParamHom}
+      (.classifierTotal identifier) classifier.total
 
 /-- An actual functor assigned to a typed symbolic functor expression. -/
 structure FunctorRealization {source target : CategoryExpr}
     (expression : FunctorExpr source target)
     (sourceCategory targetCategory : ObjCat.{uObj, uHom})
     (functor : sourceCategory ⟶ targetCategory) where
+  sourceRealization :
+    CategoryRealization.{uObj, uHom, uSourceParam, uSourceParamHom} source sourceCategory
+  targetRealization :
+    CategoryRealization.{uObj, uHom, uTargetParam, uTargetParamHom} target targetCategory
 
 end LeanCategories

@@ -22,15 +22,18 @@ noncomputable def setsRealization :
 
 noncomputable def finiteRealization :
     ClassifierRealization Foundation.Sets ClassifierId.setsFinite
-      Foundation.Mathlib.Sets Foundation.Mathlib.finite := ⟨⟩
+      Foundation.Mathlib.Sets Foundation.Mathlib.finite :=
+  { hostRealization := setsRealization, totalRealization := {} }
 
 noncomputable def gradedRealization :
     ClassifierRealization Foundation.Sets ClassifierId.setsGraded
-      Foundation.Mathlib.Sets Foundation.Mathlib.graded := ⟨⟩
+      Foundation.Mathlib.Sets Foundation.Mathlib.graded :=
+  { hostRealization := setsRealization, totalRealization := {} }
 
 noncomputable def binaryOperationRealization :
     ClassifierRealization Foundation.Sets ClassifierId.setsBinaryOperation
-      Foundation.Mathlib.Sets Foundation.Mathlib.binaryOperation := ⟨⟩
+      Foundation.Mathlib.Sets Foundation.Mathlib.binaryOperation :=
+  { hostRealization := setsRealization, totalRealization := {} }
 
 noncomputable def setsIdentity : Foundation.Mathlib.Sets ⟶ Foundation.Mathlib.Sets :=
   CategoryStruct.id _
@@ -40,7 +43,8 @@ def setsIdentityExpr : FunctorExpr Foundation.Sets Foundation.Sets :=
 
 noncomputable def setsIdentityRealization :
     FunctorRealization setsIdentityExpr Foundation.Mathlib.Sets
-      Foundation.Mathlib.Sets setsIdentity := ⟨⟩
+      Foundation.Mathlib.Sets setsIdentity :=
+  { sourceRealization := setsRealization, targetRealization := setsRealization }
 
 normalized_registry .category
   { id := CategoryId.sets

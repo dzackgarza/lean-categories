@@ -23,9 +23,8 @@ noncomputable def modulesFamilyRealization :
 noncomputable def modulesRealization (R : RingCat.{u}) :
     CategoryRealization Modules.Modules (modulesFamilyRealization.fibre R) where
   familyFibre := some (.mk modulesFamilyRealization {
-    quotedArguments := #[.variable ParameterId.r]
     parameter := R
-    parameterQuotation := .ring R
+    parameterQuotation := .ringR R
     category_eq := by rfl })
 noncomputable def freeModulesRealization (R : RingCat.{u}) :
     CategoryRealization Modules.FreeModules (Modules.Mathlib.free R).total :=
@@ -39,13 +38,16 @@ noncomputable def finiteRankModulesRealization (R : RingCat.{u}) :
 
 noncomputable def freeRealization (R : RingCat.{u}) :
     ClassifierRealization Modules.Modules ClassifierId.modulesFree
-      (Modules.Mathlib.ModulesOf R) (Modules.Mathlib.free R) := ⟨⟩
+      (Modules.Mathlib.ModulesOf R) (Modules.Mathlib.free R) :=
+  { hostRealization := modulesRealization R, totalRealization := {} }
 noncomputable def finitelyGeneratedRealization (R : RingCat.{u}) :
     ClassifierRealization Modules.Modules ClassifierId.modulesFinitelyGenerated
-      (Modules.Mathlib.ModulesOf R) (Modules.Mathlib.finitelyGenerated R) := ⟨⟩
+      (Modules.Mathlib.ModulesOf R) (Modules.Mathlib.finitelyGenerated R) :=
+  { hostRealization := modulesRealization R, totalRealization := {} }
 noncomputable def finiteRankRealization (R : RingCat.{u}) :
     ClassifierRealization Modules.Modules ClassifierId.modulesFiniteRank
-      (Modules.Mathlib.ModulesOf R) (Modules.Mathlib.finiteRank R) := ⟨⟩
+      (Modules.Mathlib.ModulesOf R) (Modules.Mathlib.finiteRank R) :=
+  { hostRealization := modulesRealization R, totalRealization := {} }
 
 normalized_registry .categoryFamily
   { id := CategoryFamilyId.modules, canonicalName := "Modules(R)"
