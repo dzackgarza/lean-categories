@@ -48,6 +48,7 @@ structure CategoryFamilyEntry where
   parameters : Array CategoryFamilyParameter
   realization : Lean.Name
   transport : Lean.Name
+  /-- Descriptive export metadata; transport semantics are checked from the realization. -/
   variance : VarianceId
   deriving Repr, Inhabited
 

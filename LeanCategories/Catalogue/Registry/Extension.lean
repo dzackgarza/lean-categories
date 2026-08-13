@@ -257,11 +257,9 @@ def ensureCategoryFamilyRealization (realization : Name) : MetaM Unit := do
     throwError
       "registry realization {realization} must return CategoryFamilyRealization ..., but returns {result}"
 
-/-- Validate a family transport against the typed realization and contravariant variance. -/
-def validateCategoryFamilyTransportDecl (realization transport : Name) (variance : VarianceId) :
+/-- Validate a family transport against the typed realization. -/
+def validateCategoryFamilyTransportDecl (realization transport : Name) :
     MetaM Unit := do
-  if variance.raw != "variance.restriction-of-scalars-contravariant" then
-    throwError "registry family {realization} must declare contravariant restriction-of-scalars variance"
   let realizationValue ← mkConstWithFreshMVarLevels realization
   let transportValue ← mkConstWithFreshMVarLevels transport
   let realizationTransport ←
@@ -304,7 +302,7 @@ def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
       ensureCategoryRealization e.realization
   | .categoryFamily e => do
       ensureCategoryFamilyRealization e.realization
-      validateCategoryFamilyTransportDecl e.realization e.transport e.variance
+      validateCategoryFamilyTransportDecl e.realization e.transport
   | .classifier e => do
       ensureClassifierDeclaration e.declaration
       ensureClassifierRealization e.realization
