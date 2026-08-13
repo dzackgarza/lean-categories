@@ -7,6 +7,7 @@ public import LeanCategories.Modules.Bilinear.Valued.ChangeValue
 public import LeanCategories.Modules.Bilinear.Valued.Expressions
 public import LeanCategories.Modules.Bilinear.Valued.Total
 public import LeanCategories.Modules.Mathlib
+public import LeanCategories.Modules.CatalogueRegistration
 public import LeanCategories.Modules.Expressions
 public meta import LeanCategories.Catalogue.Registry.Extension
 public meta import LeanCategories.Modules.Bilinear.Valued.Catalogue
@@ -23,6 +24,29 @@ open LeanCategories.Modules.Bilinear.Valued.Catalogue
 
 universe u
 
+noncomputable def bilinModuleFamilyTransport :=
+  discreteFamilyTransport.{u + 1, u, u + 1}
+    (P := Σ R : CommRingCat.{u}, ModuleCat.{u} R)
+    (fun (parameter : Σ R : CommRingCat.{u}, ModuleCat.{u} R) =>
+    letI := parameter.1.commRing
+    (Cat.of (BilinModuleCat parameter.1 parameter.2) : ObjCat.{u + 1, u}))
+
+noncomputable def bilinModuleFamilyRealization :
+    CategoryFamilyRealization.{u + 1, u, u + 1, u + 1} CategoryFamilyId.bilinModule where
+  Parameters := Discrete (Σ R : CommRingCat.{u}, ModuleCat.{u} R)
+  transport := bilinModuleFamilyTransport
+
+noncomputable def bilWFormFamilyTransport :=
+  discreteFamilyTransport.{u + 1, u, u + 1} (P := CommRingCat.{u})
+    (fun (R : CommRingCat.{u}) =>
+    letI := R.commRing
+    (Cat.of (BilWFormCat R) : ObjCat.{u + 1, u}))
+
+noncomputable def bilWFormFamilyRealization :
+    CategoryFamilyRealization.{u + 1, u, u + 1, u + 1} CategoryFamilyId.bilWForm where
+  Parameters := Discrete (CommRingCat.{u})
+  transport := bilWFormFamilyTransport
+
 noncomputable def bilinModuleCategory (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] : ObjCat.{u + 1, u} :=
   Cat.of (BilinModuleCat R W)
@@ -36,6 +60,27 @@ noncomputable def bilinModuleRealization (R : Type u) [CommRing R]
 
 noncomputable def bilWFormRealization (R : Type u) [CommRing R] :
     CategoryRealization BilWForm (bilWFormCategory R) := ⟨⟩
+
+normalized_registry .categoryFamily
+  { id := CategoryFamilyId.bilinModule
+    canonicalName := "BilinModuleCat(R, W)"
+    parameters := #[{ name := "R", kind := ParameterKindId.commRingObject },
+      { name := "W", kind := ParameterKindId.moduleObject }]
+    realization :=
+      `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleFamilyRealization
+    transport :=
+      `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleFamilyTransport
+    variance := VarianceId.discrete }
+
+normalized_registry .categoryFamily
+  { id := CategoryFamilyId.bilWForm
+    canonicalName := "BilWFormCat(R)"
+    parameters := #[{ name := "R", kind := ParameterKindId.commRingObject }]
+    realization :=
+      `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilWFormFamilyRealization
+    transport :=
+      `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilWFormFamilyTransport
+    variance := VarianceId.discrete }
 
 noncomputable def bilinModuleForgetRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :

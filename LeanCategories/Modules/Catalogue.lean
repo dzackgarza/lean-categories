@@ -37,11 +37,14 @@ end ParameterOperationId
 
 namespace ParameterKindId
 def ringObject : ParameterKindId := ⟨"parameter-kind.ring-object"⟩
+def commRingObject : ParameterKindId := ⟨"parameter-kind.comm-ring-object"⟩
+def moduleObject : ParameterKindId := ⟨"parameter-kind.module-object"⟩
 end ParameterKindId
 
 namespace VarianceId
 def restrictionOfScalarsContravariant : VarianceId :=
   ⟨"variance.restriction-of-scalars-contravariant"⟩
+def discrete : VarianceId := ⟨"variance.discrete"⟩
 end VarianceId
 
 end LeanCategories

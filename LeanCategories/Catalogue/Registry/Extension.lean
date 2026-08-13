@@ -83,6 +83,11 @@ structure RegistryState where
 def RegistryState.functor? (state : RegistryState) (id : FunctorId) : Option FunctorEntry :=
   state.functors.find? fun entry => entry.id == id
 
+/-- Registered category-family lookup by stable ID. -/
+def RegistryState.categoryFamily? (state : RegistryState) (id : CategoryFamilyId) :
+    Option CategoryFamilyEntry :=
+  state.categoryFamilies.find? fun entry => entry.id == id
+
 /-- Typed opaque-port lookup by stable ID. -/
 def RegistryState.opaquePort? (state : RegistryState) (id : OpaquePortId) : Option StructuralPortEntry :=
   state.opaqueCategories.foldl (fun found category =>
@@ -145,7 +150,11 @@ partial def FunctorExpr.referencesValid (state : RegistryState)
 
 /-- Validate the cospan references of a pullback category before it is persisted. -/
 partial def CategoryExpr.referencesValid (state : RegistryState) : CategoryExpr → Bool
-  | .atom _ | .familyApp _ _ | .classifierTotal _ | .opaque _ | .reference _ => true
+  | .atom _ | .classifierTotal _ | .opaque _ | .reference _ => true
+  | .familyApp family args =>
+      match state.categoryFamily? family with
+      | some entry => args.size == entry.parameters.size
+      | none => false
   | .refine base _ _ => base.referencesValid state
   | .constructor _ args => (args.map (·.referencesValid state)).all id
   | .pullback left right over =>

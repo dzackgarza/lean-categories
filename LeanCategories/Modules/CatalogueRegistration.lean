@@ -41,6 +41,13 @@ noncomputable def finiteRankRealization (R : RingCat.{u}) :
     ClassifierRealization Modules.Modules ClassifierId.modulesFiniteRank
       (Modules.Mathlib.ModulesOf R) (Modules.Mathlib.finiteRank R) := ⟨⟩
 
+normalized_registry .categoryFamily
+  { id := CategoryFamilyId.modules, canonicalName := "Modules(R)"
+    parameters := #[{ name := "R", kind := ParameterKindId.ringObject }]
+    realization := `LeanCategories.Modules.CatalogueRegistration.modulesFamilyRealization
+    transport := `LeanCategories.Modules.Mathlib.moduleCatRestrictScalarsPseudofunctor
+    variance := VarianceId.restrictionOfScalarsContravariant }
+
 normalized_registry .category
   { id := CategoryId.modulesR, canonicalName := "Modules(R)"
     declaration := `LeanCategories.Modules.Mathlib.ModulesOf
@@ -66,13 +73,6 @@ normalized_registry .category
     expression := Modules.FiniteRankModules
     realization := `LeanCategories.Modules.CatalogueRegistration.finiteRankModulesRealization
     origin := .derivedNamed, visibility := .present }
-
-normalized_registry .categoryFamily
-  { id := CategoryFamilyId.modules, canonicalName := "Modules(R)"
-    parameters := #[{ name := "R", kind := ParameterKindId.ringObject }]
-    realization := `LeanCategories.Modules.CatalogueRegistration.modulesFamilyRealization
-    transport := `LeanCategories.Modules.Mathlib.moduleCatRestrictScalarsPseudofunctor
-    variance := VarianceId.restrictionOfScalarsContravariant }
 
 normalized_registry .classifier
   { id := ClassifierId.modulesFree, canonicalName := "Free"

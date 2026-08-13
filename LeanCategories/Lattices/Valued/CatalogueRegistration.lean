@@ -9,6 +9,7 @@ public import LeanCategories.Lattices.Valued.DefiniteIndefinite
 public import LeanCategories.Lattices.Valued.Expressions
 public import LeanCategories.Lattices.Valued.ScaleAndEvenness
 public import LeanCategories.Modules.Mathlib
+public import LeanCategories.Modules.CatalogueRegistration
 public import LeanCategories.Modules.Expressions
 public meta import LeanCategories.Catalogue.Registry.Extension
 public meta import LeanCategories.Lattices.Valued.Catalogue
@@ -24,6 +25,54 @@ open LeanCategories
 open LeanCategories.Lattices.Valued.Catalogue
 
 universe u
+
+noncomputable def latticeFamilyTransport :=
+  discreteFamilyTransport.{u + 1, u, u + 1}
+    (P := Σ R : CommRingCat.{u}, ModuleCat.{u} R)
+    (fun (parameter : Σ R : CommRingCat.{u}, ModuleCat.{u} R) =>
+    letI := parameter.1.commRing
+    (Cat.of (LatticeCat parameter.1 parameter.2) : ObjCat.{u + 1, u}))
+
+noncomputable def latticeFamilyRealization :
+    CategoryFamilyRealization.{u + 1, u, u + 1, u + 1} CategoryFamilyId.lattice where
+  Parameters := Discrete (Σ R : CommRingCat.{u}, ModuleCat.{u} R)
+  transport := latticeFamilyTransport
+
+noncomputable def finiteProjectiveLatticeFamilyTransport :=
+  discreteFamilyTransport.{u + 1, u, u + 1}
+    (P := Σ R : CommRingCat.{u}, ModuleCat.{u} R)
+    (fun (parameter : Σ R : CommRingCat.{u}, ModuleCat.{u} R) =>
+      letI := parameter.1.commRing
+      (Cat.of (FiniteProjectiveLatticeCat parameter.1 parameter.2) : ObjCat.{u + 1, u}))
+
+noncomputable def finiteProjectiveLatticeFamilyRealization :
+    CategoryFamilyRealization.{u + 1, u, u + 1, u + 1}
+      CategoryFamilyId.finiteProjectiveLattice where
+  Parameters := Discrete (Σ R : CommRingCat.{u}, ModuleCat.{u} R)
+  transport := finiteProjectiveLatticeFamilyTransport
+
+noncomputable def finiteFreeLatticeFamilyTransport :=
+  discreteFamilyTransport.{u + 1, u, u + 1}
+    (P := Σ R : CommRingCat.{u}, ModuleCat.{u} R)
+    (fun (parameter : Σ R : CommRingCat.{u}, ModuleCat.{u} R) =>
+      letI := parameter.1.commRing
+      (Cat.of (FiniteFreeLatticeCat parameter.1 parameter.2) : ObjCat.{u + 1, u}))
+
+noncomputable def finiteFreeLatticeFamilyRealization :
+    CategoryFamilyRealization.{u + 1, u, u + 1, u + 1} CategoryFamilyId.finiteFreeLattice where
+  Parameters := Discrete (Σ R : CommRingCat.{u}, ModuleCat.{u} R)
+  transport := finiteFreeLatticeFamilyTransport
+
+noncomputable def evenLatticeFamilyTransport :=
+  discreteFamilyTransport.{u + 1, u, u + 1} (P := CommRingCat.{u})
+    (fun (R : CommRingCat.{u}) =>
+    letI := R.commRing
+    (Cat.of (EvenLatticeCat (R := R)) : ObjCat.{u + 1, u}))
+
+noncomputable def evenLatticeFamilyRealization :
+    CategoryFamilyRealization.{u + 1, u, u + 1, u + 1} CategoryFamilyId.evenLattice where
+  Parameters := Discrete (CommRingCat.{u})
+  transport := evenLatticeFamilyTransport
 
 noncomputable def latticeCategory (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] : ObjCat.{u + 1, u} :=
@@ -101,6 +150,49 @@ noncomputable def finiteProjectiveForgetDeclaration (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :
     finiteProjectiveLatticeCategory R W ⟶ Modules.Mathlib.ModulesOf (RingCat.of R) :=
   (LeanCategories.Lattices.Valued.finiteProjectiveForget R W).toCatHom
+
+normalized_registry .categoryFamily
+  { id := CategoryFamilyId.lattice
+    canonicalName := "LatticeCat(R, W)"
+    parameters := #[{ name := "R", kind := ParameterKindId.commRingObject },
+      { name := "W", kind := ParameterKindId.moduleObject }]
+    realization :=
+      `LeanCategories.Lattices.Valued.CatalogueRegistration.latticeFamilyRealization
+    transport :=
+      `LeanCategories.Lattices.Valued.CatalogueRegistration.latticeFamilyTransport
+    variance := VarianceId.discrete }
+
+normalized_registry .categoryFamily
+  { id := CategoryFamilyId.finiteProjectiveLattice
+    canonicalName := "FiniteProjectiveLatticeCat(R, W)"
+    parameters := #[{ name := "R", kind := ParameterKindId.commRingObject },
+      { name := "W", kind := ParameterKindId.moduleObject }]
+    realization :=
+      `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteProjectiveLatticeFamilyRealization
+    transport :=
+      `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteProjectiveLatticeFamilyTransport
+    variance := VarianceId.discrete }
+
+normalized_registry .categoryFamily
+  { id := CategoryFamilyId.finiteFreeLattice
+    canonicalName := "FiniteFreeLatticeCat(R, W)"
+    parameters := #[{ name := "R", kind := ParameterKindId.commRingObject },
+      { name := "W", kind := ParameterKindId.moduleObject }]
+    realization :=
+      `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteFreeLatticeFamilyRealization
+    transport :=
+      `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteFreeLatticeFamilyTransport
+    variance := VarianceId.discrete }
+
+normalized_registry .categoryFamily
+  { id := CategoryFamilyId.evenLattice
+    canonicalName := "EvenLatticeCat(R)"
+    parameters := #[{ name := "R", kind := ParameterKindId.commRingObject }]
+    realization :=
+      `LeanCategories.Lattices.Valued.CatalogueRegistration.evenLatticeFamilyRealization
+    transport :=
+      `LeanCategories.Lattices.Valued.CatalogueRegistration.evenLatticeFamilyTransport
+    variance := VarianceId.discrete }
 
 normalized_registry .category
   { id := CategoryId.lattice
