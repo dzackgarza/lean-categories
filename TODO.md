@@ -10,6 +10,11 @@ repository, or another formalization, then expose the required route through the
 The vault plan `PLAN-MATHEMATICAL-LEXICON-ROUTING` owns exact package routes. Write new
 theory only for the repository-specific or unmatched items stated below.
 
+The vault plan `PLAN-LATER-THEOREM-PHASES` owns comparison, coherence, descent,
+local-global, modularity, and formula theorems. These are later work. The active
+milestones below establish the objects, categories, functors, and natural transformations
+that those theorems use.
+
 ## 1. Foundation 0.1 and CAS DSL
 
 Current work: `#50`, `#54`, `#55`, `#56`, and `#58`.
@@ -39,8 +44,6 @@ Current work: `#50`, `#54`, `#55`, `#56`, and `#58`.
 - [ ] Determinant, trace, characteristic polynomial, and derivative as natural
   transformations
 - [ ] Cartesian lifts and base-change functors for each fibred family
-- [ ] Comparison between concrete subobjects and categorical subobjects
-- [ ] Comparison between matrices and maps of framed free modules
 - [ ] Category, functor, and natural-transformation expressions
 - [ ] Evaluation of expressions in a selected realization
 - [ ] Proof-carrying category and functor registry entries
@@ -78,7 +81,6 @@ Current work: `#33` through `#36`, and milestone `#51`.
 - [ ] `GenFrame_n(R)`, `BasisFrame_n(R)`, and `Coord_n(R)`
 - [ ] Framed, coordinatized, and presented module categories
 - [ ] Framed and coordinatized bilinear and quadratic module categories
-- [ ] Matrix descent through generating frames
 - [ ] Equivalence relation on matrices presenting the same module map
 - [ ] Gram-matrix and quadratic Gram-data functors
 - [ ] Change-of-frame and presentation-comparison functors
@@ -120,7 +122,7 @@ Current work: `#22`, `#38`, and the scheme part of `#56`.
 - [ ] Schemes over a base as a standard slice or structured-arrow category
 - [ ] Base-change functors and fibers of scheme morphisms
 - [ ] Full replete subcategories of varieties, curves, surfaces, and algebraic surfaces
-- [ ] Base-change-stable subcategories cut out by required morphism properties
+- [ ] Subcategories cut out by required scheme-morphism properties
 - [ ] Quasi-coherent and coherent sheaf categories
 - [ ] Divisor, dualizing, and reflexive-sheaf categories
 - [ ] Relative spectrum of a quasi-coherent algebra
@@ -170,7 +172,6 @@ Run the full reuse search again before new authorship.
 - [ ] Free divided-power algebra functor `Γ_R : ModuleCat R ⥤ CommAlgCat R`
 - [ ] Degree-`n` divided power `Γ_R^n(M)`
 - [ ] Grading `Γ_R(M) = ⨁_n Γ_R^n(M)`
-- [ ] Natural comparison between quadratic maps and linear maps from `Γ_R^2(M)`
 
 ### Variable-value quadratic formed modules
 
@@ -187,4 +188,14 @@ Run the full reuse search again before new authorship.
 - [ ] Classifier as a 1-morphism in the selected higher-categorical model
 - [ ] Lift, fiber, reindexing, and truncation of classifier fibers
 - [ ] Comparison 2-cell for classifier reindexing
-- [ ] Identity and composition coherence for classifier reindexing
+
+## Later theorem plans
+
+- `PLAN-LATER-THEOREM-PHASES` — comparison, coherence, descent, and base-change
+  theorems arising from this lexicon
+- `TASK-CANONICAL-FORMED-CATEGORY-COMPARISONS` — comparisons among formed-module
+  presentations
+- `TASK-IDEAL-DUAL-DISCRIMINANT-COMPARISON` — ideal-dual and discriminant comparisons
+- `PHASE-LOCAL-GENUS-FOUNDATION` — local and double-coset presentations of genus
+- `PLAN-SIEGEL-MASS-FORMULA` — the mass formula
+- `PLAN-THETA-SERIES-MODULARITY` — modularity of lattice theta series
