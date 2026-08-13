@@ -413,10 +413,10 @@ The pinned checkout owns these; search them by path before any external source.
 
 | Repository | Content |
 | --- | --- |
-| [`ImperialCollegeLondon/FLT`](https://github.com/ImperialCollegeLondon/FLT) | Ongoing Fermat's Last Theorem formalization; substantial reusable commutative algebra, dimension theory, and number theory beyond the headline target. |
+| [`ImperialCollegeLondon/FLT`](https://github.com/ImperialCollegeLondon/FLT) | Ongoing Fermat's Last Theorem formalization; substantial reusable commutative algebra, dimension theory, and number theory beyond the headline target. Its `FLT/Mathlib/` staging tree holds small upstream-bound files (integral adeles, tensor-versus-restricted-product equivalences); toolchain and Mathlib pin run ahead of this repo, so port those files rather than depend. Contains no quadratic-form or lattice theory. |
 | [`leanprover-community/flt-regular`](https://github.com/leanprover-community/flt-regular) | FLT for regular primes; cyclotomic-field material. |
-| [`kbuzzard/ClassFieldTheory`](https://github.com/kbuzzard/ClassFieldTheory) | 2025 Clay Summer School project on class field theory. |
-| [`mariainesdff/LocalClassFieldTheory`](https://github.com/mariainesdff/LocalClassFieldTheory) | Local fields, toward local class field theory. |
+| [`kbuzzard/ClassFieldTheory`](https://github.com/kbuzzard/ClassFieldTheory) | 2025 Clay Summer School project on class field theory. Consumes Mathlib's local-field classes rather than building completion infrastructure; no higher unit groups. |
+| [`mariainesdff/LocalClassFieldTheory`](https://github.com/mariainesdff/LocalClassFieldTheory) | Local fields, toward local class field theory. Best external DVR/uniformizer API for completions at height-one primes, but *(no LICENSE file — proof-strategy reference only)*, stale toolchain, and a `sorry` inside its `isDiscrete` instance. |
 | [`AntoineChambert-Loir/DividedPowers4`](https://github.com/AntoineChambert-Loir/DividedPowers4) | Divided power structures and the divided-power algebra. The core construction is upstreamed in Mathlib `RingTheory/DividedPowerAlgebra/Init`; the grading and polynomial-law layers are not. No LICENSE file and a partially built source tree: reference only, do not copy code from it. |
 | [`YaelDillies/toric`](https://github.com/YaelDillies/toric) | Toric varieties over Mathlib's schemes. |
 | [`MichaelStollBayreuth/EulerProducts`](https://github.com/MichaelStollBayreuth/EulerProducts) | Euler products and L-series. |
