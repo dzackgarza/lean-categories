@@ -32,8 +32,7 @@ noncomputable def bilinModuleFamilyTransport :=
     (Cat.of (BilinModuleCat parameter.1 parameter.2) : ObjCat.{u + 1, u}))
 
 noncomputable def bilinModuleFamilyRealization :
-    CategoryFamilyRealization.{u + 1, u, u + 1, u + 1} CategoryFamilyId.bilinModule where
-  Parameters := Discrete (Σ R : CommRingCat.{u}, ModuleCat.{u} R)
+    CategoryFamilyRealization.{u + 1, u, u, u + 1} CategoryFamilyId.bilinModule .commRingModule where
   transport := bilinModuleFamilyTransport
 
 noncomputable def bilWFormFamilyTransport :=
@@ -43,8 +42,7 @@ noncomputable def bilWFormFamilyTransport :=
     (Cat.of (BilWFormCat R) : ObjCat.{u + 1, u}))
 
 noncomputable def bilWFormFamilyRealization :
-    CategoryFamilyRealization.{u + 1, u, u + 1, u + 1} CategoryFamilyId.bilWForm where
-  Parameters := Discrete (CommRingCat.{u})
+    CategoryFamilyRealization.{u + 1, u, u, u + 1} CategoryFamilyId.bilWForm .commRing where
   transport := bilWFormFamilyTransport
 
 noncomputable def bilinModuleCategory (R : Type u) [CommRing R]
@@ -57,25 +55,20 @@ noncomputable def bilWFormCategory (R : Type u) [CommRing R] : ObjCat.{u + 1, u}
 noncomputable def bilinModuleRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :
     CategoryRealization BilinModule (bilinModuleCategory R W) where
-  familyFibre := some {
-    identifier := CategoryFamilyId.bilinModule
-    realization := bilinModuleFamilyRealization
+  familyFibre := some (.mk bilinModuleFamilyRealization {
     parameter := ⟨CommRingCat.of R, ModuleCat.of R W⟩
-    category_eq := by rfl }
+    category_eq := by rfl })
 
 noncomputable def bilWFormRealization (R : Type u) [CommRing R] :
     CategoryRealization BilWForm (bilWFormCategory R) where
-  familyFibre := some {
-    identifier := CategoryFamilyId.bilWForm
-    realization := bilWFormFamilyRealization
+  familyFibre := some (.mk bilWFormFamilyRealization {
     parameter := ⟨CommRingCat.of R⟩
-    category_eq := by rfl }
+    category_eq := by rfl })
 
 normalized_registry .categoryFamily
   { id := CategoryFamilyId.bilinModule
     canonicalName := "BilinModuleCat(R, W)"
-    parameters := #[{ name := "R", kind := ParameterKindId.commRingObject },
-      { name := "W", kind := ParameterKindId.moduleObject }]
+    schema := .commRingModule
     realization :=
       `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleFamilyRealization
     transport :=
@@ -85,7 +78,7 @@ normalized_registry .categoryFamily
 normalized_registry .categoryFamily
   { id := CategoryFamilyId.bilWForm
     canonicalName := "BilWFormCat(R)"
-    parameters := #[{ name := "R", kind := ParameterKindId.commRingObject }]
+    schema := .commRing
     realization :=
       `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilWFormFamilyRealization
     transport :=

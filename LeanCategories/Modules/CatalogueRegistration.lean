@@ -16,17 +16,14 @@ open LeanCategories
 universe u
 
 noncomputable def modulesFamilyRealization :
-    CategoryFamilyRealization.{u + 1, u, u + 1, u} CategoryFamilyId.modules where
-  Parameters := RingCat.{u}
+    CategoryFamilyRealization.{u + 1, u, u, u} CategoryFamilyId.modules .ring where
   transport := Modules.Mathlib.moduleCatRestrictScalarsPseudofunctor
 
 noncomputable def modulesRealization (R : RingCat.{u}) :
     CategoryRealization Modules.Modules (modulesFamilyRealization.fibre R) where
-  familyFibre := some {
-    identifier := CategoryFamilyId.modules
-    realization := modulesFamilyRealization
+  familyFibre := some (.mk modulesFamilyRealization {
     parameter := R
-    category_eq := by rfl }
+    category_eq := by rfl })
 noncomputable def freeModulesRealization (R : RingCat.{u}) :
     CategoryRealization Modules.FreeModules (Modules.Mathlib.free R).total :=
   { familyFibre := none }
@@ -49,7 +46,7 @@ noncomputable def finiteRankRealization (R : RingCat.{u}) :
 
 normalized_registry .categoryFamily
   { id := CategoryFamilyId.modules, canonicalName := "Modules(R)"
-    parameters := #[{ name := "R", kind := ParameterKindId.ringObject }]
+    schema := .ring
     realization := `LeanCategories.Modules.CatalogueRegistration.modulesFamilyRealization
     transport := `LeanCategories.Modules.Mathlib.moduleCatRestrictScalarsPseudofunctor
     variance := VarianceId.restrictionOfScalarsContravariant }

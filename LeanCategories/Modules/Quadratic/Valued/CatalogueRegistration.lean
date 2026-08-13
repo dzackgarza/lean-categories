@@ -29,8 +29,7 @@ noncomputable def quadModuleFamilyTransport :=
     (Cat.of (QuadModuleCat parameter.1 parameter.2) : ObjCat.{u + 1, u}))
 
 noncomputable def quadModuleFamilyRealization :
-    CategoryFamilyRealization.{u + 1, u, u + 1, u + 1} CategoryFamilyId.quadModule where
-  Parameters := Discrete (Σ R : CommRingCat.{u}, ModuleCat.{u} R)
+    CategoryFamilyRealization.{u + 1, u, u, u + 1} CategoryFamilyId.quadModule .commRingModule where
   transport := quadModuleFamilyTransport
 
 noncomputable def quadModuleCategory (R : Type u) [CommRing R]
@@ -40,11 +39,9 @@ noncomputable def quadModuleCategory (R : Type u) [CommRing R]
 noncomputable def quadModuleRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :
     CategoryRealization QuadModule (quadModuleCategory R W) where
-  familyFibre := some {
-    identifier := CategoryFamilyId.quadModule
-    realization := quadModuleFamilyRealization
+  familyFibre := some (.mk quadModuleFamilyRealization {
     parameter := ⟨CommRingCat.of R, ModuleCat.of R W⟩
-    category_eq := by rfl }
+    category_eq := by rfl })
 
 noncomputable def quadModuleForgetRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :
@@ -60,8 +57,7 @@ noncomputable def quadModuleForgetDeclaration (R : Type u) [CommRing R]
 normalized_registry .categoryFamily
   { id := CategoryFamilyId.quadModule
     canonicalName := "QuadModuleCat(R, W)"
-    parameters := #[{ name := "R", kind := ParameterKindId.commRingObject },
-      { name := "W", kind := ParameterKindId.moduleObject }]
+    schema := .commRingModule
     realization :=
       `LeanCategories.Modules.Quadratic.Valued.CatalogueRegistration.quadModuleFamilyRealization
     transport :=

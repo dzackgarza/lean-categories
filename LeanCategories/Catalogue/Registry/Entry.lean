@@ -30,12 +30,6 @@ structure NamedCategoryEntry where
   visibility : Visibility
   deriving Repr, Inhabited
 
-/-- A bound parameter of a category family. -/
-structure CategoryFamilyParameter where
-  name : String
-  kind : ParameterKindId
-  deriving Repr, Inhabited
-
 /--
 A parameterized category family, distinct from any selected category node.
 
@@ -45,7 +39,7 @@ The registry records transport orientation separately.
 structure CategoryFamilyEntry where
   id : CategoryFamilyId
   canonicalName : String
-  parameters : Array CategoryFamilyParameter
+  schema : CategoryFamilySchema
   realization : Lean.Name
   transport : Lean.Name
   /-- Descriptive export metadata; transport semantics are checked from the realization. -/

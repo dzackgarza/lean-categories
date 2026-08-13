@@ -19,6 +19,29 @@ expressions via the registry.
 
 namespace LeanCategories
 
+/-- The bounded dependent parameter schemas used by registered families. -/
+inductive CategoryFamilySchema
+  | ring
+  | commRing
+  | commRingModule
+  deriving DecidableEq, Repr, Inhabited, Lean.ToExpr
+
+/-- Export metadata owned by a family schema. -/
+structure CategoryFamilyParameter where
+  name : String
+  kind : ParameterKindId
+  deriving Repr, Inhabited
+
+namespace CategoryFamilySchema
+
+def parameterMetadata : CategoryFamilySchema → Array CategoryFamilyParameter
+  | .ring => #[{ name := "R", kind := ParameterKindId.ringObject }]
+  | .commRing => #[{ name := "R", kind := ParameterKindId.commRingObject }]
+  | .commRingModule => #[{ name := "R", kind := ParameterKindId.commRingObject },
+      { name := "W", kind := ParameterKindId.moduleObject }]
+
+end CategoryFamilySchema
+
 deriving instance Lean.ToExpr for CategoryId
 deriving instance Lean.ToExpr for ClassifierId
 deriving instance Lean.ToExpr for CategoryFamilyId

@@ -2,6 +2,8 @@ module
 
 public import LeanCategories.CategoryTheory.OneCat.Classifier
 public import LeanCategories.Catalogue.Syntax
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 public import Mathlib.CategoryTheory.Discrete.Basic
@@ -19,17 +21,29 @@ namespace LeanCategories
 
 open CategoryTheory
 
+universe u
+
+namespace CategoryFamilySchema
+
+@[reducible] def Parameters : CategoryFamilySchema → Type (u + 1)
+  | .ring => RingCat.{u}
+  | .commRing => Discrete (CommRingCat.{u})
+  | .commRingModule => Discrete (Σ R : CommRingCat.{u}, ModuleCat.{u} R)
+
+end CategoryFamilySchema
+
 universe uObj uHom uParam uParamHom
 
 attribute [local simp] Bicategory.Strict.leftUnitor_eqToIso
   Bicategory.Strict.rightUnitor_eqToIso Bicategory.Strict.associator_eqToIso
 
 /-- An actual parameterized family assigned to a family identifier. -/
-structure CategoryFamilyRealization (identifier : CategoryFamilyId) where
-  Parameters : Type uParam
-  [parameterCategory : Category.{uParamHom} Parameters]
+structure CategoryFamilyRealization (identifier : CategoryFamilyId)
+    (schema : CategoryFamilySchema) where
+  [parameterCategory : Category.{uParamHom} schema.Parameters.{uParam}]
   transport :
-    Pseudofunctor (LocallyDiscrete Parametersᵒᵖ) (Cat.{uHom, max uObj uHom})
+    Pseudofunctor (LocallyDiscrete schema.Parameters.{uParam}ᵒᵖ)
+      (Cat.{uHom, max uObj uHom})
 
 /-- A family indexed by a discrete parameter object, with no transport beyond equality. -/
 noncomputable def discreteFamilyTransport {P : Type uParam}
@@ -48,23 +62,30 @@ noncomputable def discreteFamilyTransport {P : Type uParam}
 
 /-- The selected fibre is the pseudofunctor value at the opposite parameter. -/
 def CategoryFamilyRealization.fibre {identifier : CategoryFamilyId}
-    (realization : CategoryFamilyRealization identifier)
-    (parameter : realization.Parameters) : ObjCat.{uObj, uHom} :=
+    {schema : CategoryFamilySchema}
+    (realization : CategoryFamilyRealization identifier schema)
+    (parameter : schema.Parameters) : ObjCat.{uObj, uHom} :=
   letI := realization.parameterCategory
   realization.transport.obj (.mk (Opposite.op parameter))
 
 /-- A typed witness that a named category is a selected fibre of a family. -/
-structure CategoryFamilyFibreWitness (category : ObjCat.{uObj, uHom}) where
-  identifier : CategoryFamilyId
-  realization : CategoryFamilyRealization.{uObj, uHom, uParam, uParamHom} identifier
-  parameter : realization.Parameters
+structure CategoryFamilyFibreWitness (category : ObjCat.{uObj, uHom})
+    {identifier : CategoryFamilyId} {schema : CategoryFamilySchema}
+    (realization : CategoryFamilyRealization.{uObj, uHom, uParam, uParamHom} identifier schema) where
+  parameter : schema.Parameters
   category_eq : category = realization.fibre parameter
+
+/-- Existential package for a fibre witness with its exact realization index. -/
+inductive SomeCategoryFamilyFibreWitness (category : ObjCat.{uObj, uHom}) where
+  | mk {identifier : CategoryFamilyId} {schema : CategoryFamilySchema}
+      (realization : CategoryFamilyRealization.{uObj, uHom, uParam, uParamHom} identifier schema)
+      (witness : CategoryFamilyFibreWitness category realization)
 
 /-- An actual category assigned to a symbolic category expression. -/
 structure CategoryRealization (expression : CategoryExpr)
     (category : ObjCat.{uObj, uHom}) where
   familyFibre : Option
-      (CategoryFamilyFibreWitness.{uObj, uHom, uParam, uParamHom} category) := none
+      (SomeCategoryFamilyFibreWitness.{uObj, uHom, uParam, uParamHom} category) := none
 
 /-- An actual classifier assigned to a symbolic host and classifier identifier. -/
 structure ClassifierRealization (host : CategoryExpr) (identifier : ClassifierId)
