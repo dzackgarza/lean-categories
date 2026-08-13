@@ -100,8 +100,7 @@ partial def CategoryExpr.isRegistered (state : RegistryState) : CategoryExpr →
   | .classifierTotal classifier => (state.classifier? classifier).isSome
   | .refine base classifier _ =>
       base.isRegistered state &&
-        ((state.classifier? classifier).isSome ||
-          classifier.raw == "clf.magmaswithtwooperations.distributive")
+        (state.classifier? classifier).isSome
   | .pullback left right over =>
       over.isRegistered state && (state.functor? left).isSome && (state.functor? right).isSome
   | .opaque id => state.categories.any (·.id == id) || state.opaqueCategories.any (·.id == id)
@@ -144,8 +143,7 @@ partial def CategoryExpr.referencesValid (state : RegistryState) : CategoryExpr 
       | none => false
   | .refine base classifier _ =>
       base.referencesValid state &&
-        (classifier.raw == "clf.magmaswithtwooperations.distributive" ||
-          (state.classifier? classifier).any fun entry => entry.host.referencesValid state)
+        (state.classifier? classifier).any fun entry => entry.host.referencesValid state
   | .pullback left right over =>
       match state.functor? left, state.functor? right with
       | some leftEntry, some rightEntry =>
