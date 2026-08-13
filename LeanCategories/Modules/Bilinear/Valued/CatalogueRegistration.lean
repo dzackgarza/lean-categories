@@ -34,6 +34,7 @@ noncomputable def bilinModuleFamilyTransport :=
 noncomputable def bilinModuleFamilyRealization :
     CategoryFamilyRealization.{u + 1, u, u, u + 1} CategoryFamilyId.bilinModule .commRingModule where
   transport := bilinModuleFamilyTransport
+  transportSemantics := .discrete
 
 noncomputable def bilWFormFamilyTransport :=
   discreteFamilyTransport.{u + 1, u, u + 1} (P := CommRingCat.{u})
@@ -44,6 +45,7 @@ noncomputable def bilWFormFamilyTransport :=
 noncomputable def bilWFormFamilyRealization :
     CategoryFamilyRealization.{u + 1, u, u, u + 1} CategoryFamilyId.bilWForm .commRing where
   transport := bilWFormFamilyTransport
+  transportSemantics := .discrete
 
 noncomputable def bilinModuleCategory (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] : ObjCat.{u + 1, u} :=
@@ -56,13 +58,17 @@ noncomputable def bilinModuleRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :
     CategoryRealization BilinModule (bilinModuleCategory R W) where
   familyFibre := some (.mk bilinModuleFamilyRealization {
+    quotedArguments := #[.variable ParameterId.r, .variable ParameterId.w]
     parameter := ⟨CommRingCat.of R, ModuleCat.of R W⟩
+    parameterQuotation := .commRingModule (CommRingCat.of R) (ModuleCat.of R W)
     category_eq := by rfl })
 
 noncomputable def bilWFormRealization (R : Type u) [CommRing R] :
     CategoryRealization BilWForm (bilWFormCategory R) where
   familyFibre := some (.mk bilWFormFamilyRealization {
+    quotedArguments := #[.variable ParameterId.r]
     parameter := ⟨CommRingCat.of R⟩
+    parameterQuotation := .commRing (CommRingCat.of R)
     category_eq := by rfl })
 
 normalized_registry .categoryFamily
@@ -73,7 +79,7 @@ normalized_registry .categoryFamily
       `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleFamilyRealization
     transport :=
       `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleFamilyTransport
-    variance := VarianceId.discrete }
+    transportSemantics := .discrete }
 
 normalized_registry .categoryFamily
   { id := CategoryFamilyId.bilWForm
@@ -83,7 +89,7 @@ normalized_registry .categoryFamily
       `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilWFormFamilyRealization
     transport :=
       `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilWFormFamilyTransport
-    variance := VarianceId.discrete }
+    transportSemantics := .discrete }
 
 noncomputable def bilinModuleForgetRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :

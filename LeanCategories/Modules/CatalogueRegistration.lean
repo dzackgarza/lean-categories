@@ -18,11 +18,14 @@ universe u
 noncomputable def modulesFamilyRealization :
     CategoryFamilyRealization.{u + 1, u, u, u} CategoryFamilyId.modules .ring where
   transport := Modules.Mathlib.moduleCatRestrictScalarsPseudofunctor
+  transportSemantics := .restrictionOfScalars
 
 noncomputable def modulesRealization (R : RingCat.{u}) :
     CategoryRealization Modules.Modules (modulesFamilyRealization.fibre R) where
   familyFibre := some (.mk modulesFamilyRealization {
+    quotedArguments := #[.variable ParameterId.r]
     parameter := R
+    parameterQuotation := .ring R
     category_eq := by rfl })
 noncomputable def freeModulesRealization (R : RingCat.{u}) :
     CategoryRealization Modules.FreeModules (Modules.Mathlib.free R).total :=
@@ -49,7 +52,7 @@ normalized_registry .categoryFamily
     schema := .ring
     realization := `LeanCategories.Modules.CatalogueRegistration.modulesFamilyRealization
     transport := `LeanCategories.Modules.Mathlib.moduleCatRestrictScalarsPseudofunctor
-    variance := VarianceId.restrictionOfScalarsContravariant }
+    transportSemantics := .restrictionOfScalars }
 
 normalized_registry .category
   { id := CategoryId.modulesR, canonicalName := "Modules(R)"

@@ -3,6 +3,7 @@ module
 public import LeanCategories.CategoryTheory.OneCat.Classifier
 public import LeanCategories.Catalogue.Syntax
 public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Pseudofunctor
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
@@ -31,14 +32,6 @@ universe uObj uHom uParam uParamHom
 attribute [local simp] Bicategory.Strict.leftUnitor_eqToIso
   Bicategory.Strict.rightUnitor_eqToIso Bicategory.Strict.associator_eqToIso
 
-/-- An actual parameterized family assigned to a family identifier. -/
-structure CategoryFamilyRealization (identifier : CategoryFamilyId)
-    (schema : CategoryFamilySchema) where
-  [parameterCategory : Category.{uParamHom} schema.Parameters.{uParam}]
-  transport :
-    Pseudofunctor (LocallyDiscrete schema.Parameters.{uParam}ᵒᵖ)
-      (Cat.{uHom, max uObj uHom})
-
 /-- A family indexed by a discrete parameter object, with no transport beyond equality. -/
 noncomputable def discreteFamilyTransport {P : Type uParam}
     (fibre : P → ObjCat.{uObj, uHom}) :
@@ -54,6 +47,16 @@ noncomputable def discreteFamilyTransport {P : Type uParam}
     (by intros; simp)
     (by intros; simp)
 
+/-- An actual parameterized family assigned to a family identifier. -/
+structure CategoryFamilyRealization (identifier : CategoryFamilyId)
+    (schema : CategoryFamilySchema) where
+  [parameterCategory : Category.{uParamHom} schema.Parameters.{uParam}]
+  transport :
+    Pseudofunctor (LocallyDiscrete schema.Parameters.{uParam}ᵒᵖ)
+      (Cat.{uHom, max uObj uHom})
+  /-- The registered semantic kind of this transport. -/
+  transportSemantics : CategoryFamilyTransportSemantics
+
 /-- The selected fibre is the pseudofunctor value at the opposite parameter. -/
 def CategoryFamilyRealization.fibre {identifier : CategoryFamilyId}
     {schema : CategoryFamilySchema}
@@ -62,18 +65,40 @@ def CategoryFamilyRealization.fibre {identifier : CategoryFamilyId}
   letI := realization.parameterCategory
   realization.transport.obj (.mk (Opposite.op parameter))
 
+/-- Typed quotation of the concrete parameter represented by a family application. -/
+inductive CategoryFamilyParameterQuotation :
+    (schema : CategoryFamilySchema) → Array ParameterExpr → schema.Parameters → Prop
+  | ring (R : RingCat.{u}) :
+      CategoryFamilyParameterQuotation .ring #[.variable ParameterId.r] R
+  | commRing (R : CommRingCat.{u}) :
+      CategoryFamilyParameterQuotation .commRing #[.variable ParameterId.r] ⟨R⟩
+  | commRingModule (R : CommRingCat.{u}) (W : ModuleCat.{u} R) :
+      CategoryFamilyParameterQuotation .commRingModule
+        #[.variable ParameterId.r, .variable ParameterId.w] ⟨R, W⟩
+
 /-- A typed witness that a named category is a selected fibre of a family. -/
 structure CategoryFamilyFibreWitness (category : ObjCat.{uObj, uHom})
     {identifier : CategoryFamilyId} {schema : CategoryFamilySchema}
-    (realization : CategoryFamilyRealization.{uObj, uHom, uParam, uParamHom} identifier schema) where
+    (realization : CategoryFamilyRealization.{uObj, uHom, uParam, uParamHom} identifier schema)
+    {arguments : Array ParameterExpr} where
+  quotedArguments : Array ParameterExpr := arguments
   parameter : schema.Parameters
+  parameterQuotation : CategoryFamilyParameterQuotation schema arguments parameter
   category_eq : category = realization.fibre parameter
+
+def CategoryFamilyFibreWitness.arguments {category : ObjCat.{uObj, uHom}}
+    {identifier : CategoryFamilyId} {schema : CategoryFamilySchema}
+    {realization : CategoryFamilyRealization.{uObj, uHom, uParam, uParamHom} identifier schema}
+    {arguments : Array ParameterExpr}
+    (witness : CategoryFamilyFibreWitness category realization (arguments := arguments)) :
+    Array ParameterExpr := witness.quotedArguments
 
 /-- Existential package for a fibre witness with its exact realization index. -/
 inductive SomeCategoryFamilyFibreWitness (category : ObjCat.{uObj, uHom}) where
   | mk {identifier : CategoryFamilyId} {schema : CategoryFamilySchema}
       (realization : CategoryFamilyRealization.{uObj, uHom, uParam, uParamHom} identifier schema)
-      (witness : CategoryFamilyFibreWitness category realization)
+      {arguments : Array ParameterExpr}
+      (witness : CategoryFamilyFibreWitness category realization (arguments := arguments))
 
 /-- An actual category assigned to a symbolic category expression. -/
 structure CategoryRealization (expression : CategoryExpr)

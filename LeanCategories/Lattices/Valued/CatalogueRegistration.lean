@@ -36,6 +36,7 @@ noncomputable def latticeFamilyTransport :=
 noncomputable def latticeFamilyRealization :
     CategoryFamilyRealization.{u + 1, u, u, u + 1} CategoryFamilyId.lattice .commRingModule where
   transport := latticeFamilyTransport
+  transportSemantics := .discrete
 
 noncomputable def finiteProjectiveLatticeFamilyTransport :=
   discreteFamilyTransport.{u + 1, u, u + 1}
@@ -48,6 +49,7 @@ noncomputable def finiteProjectiveLatticeFamilyRealization :
     CategoryFamilyRealization.{u + 1, u, u, u + 1}
       CategoryFamilyId.finiteProjectiveLattice .commRingModule where
   transport := finiteProjectiveLatticeFamilyTransport
+  transportSemantics := .discrete
 
 noncomputable def finiteFreeLatticeFamilyTransport :=
   discreteFamilyTransport.{u + 1, u, u + 1}
@@ -59,6 +61,7 @@ noncomputable def finiteFreeLatticeFamilyTransport :=
 noncomputable def finiteFreeLatticeFamilyRealization :
     CategoryFamilyRealization.{u + 1, u, u, u + 1} CategoryFamilyId.finiteFreeLattice .commRingModule where
   transport := finiteFreeLatticeFamilyTransport
+  transportSemantics := .discrete
 
 noncomputable def evenLatticeFamilyTransport :=
   discreteFamilyTransport.{u + 1, u, u + 1} (P := CommRingCat.{u})
@@ -69,6 +72,7 @@ noncomputable def evenLatticeFamilyTransport :=
 noncomputable def evenLatticeFamilyRealization :
     CategoryFamilyRealization.{u + 1, u, u, u + 1} CategoryFamilyId.evenLattice .commRing where
   transport := evenLatticeFamilyTransport
+  transportSemantics := .discrete
 
 noncomputable def latticeCategory (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] : ObjCat.{u + 1, u} :=
@@ -93,27 +97,35 @@ noncomputable def latticeRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :
     CategoryRealization Lattice (latticeCategory R W) where
   familyFibre := some (.mk latticeFamilyRealization {
+    quotedArguments := #[.variable ParameterId.r, .variable ParameterId.w]
     parameter := ⟨CommRingCat.of R, ModuleCat.of R W⟩
+    parameterQuotation := .commRingModule (CommRingCat.of R) (ModuleCat.of R W)
     category_eq := by rfl })
 
 noncomputable def finiteProjectiveLatticeRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :
     CategoryRealization FiniteProjectiveLattice (finiteProjectiveLatticeCategory R W) where
   familyFibre := some (.mk finiteProjectiveLatticeFamilyRealization {
+    quotedArguments := #[.variable ParameterId.r, .variable ParameterId.w]
     parameter := ⟨CommRingCat.of R, ModuleCat.of R W⟩
+    parameterQuotation := .commRingModule (CommRingCat.of R) (ModuleCat.of R W)
     category_eq := by rfl })
 
 noncomputable def finiteFreeLatticeRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :
     CategoryRealization FiniteFreeLattice (finiteFreeLatticeCategory R W) where
   familyFibre := some (.mk finiteFreeLatticeFamilyRealization {
+    quotedArguments := #[.variable ParameterId.r, .variable ParameterId.w]
     parameter := ⟨CommRingCat.of R, ModuleCat.of R W⟩
+    parameterQuotation := .commRingModule (CommRingCat.of R) (ModuleCat.of R W)
     category_eq := by rfl })
 
 noncomputable def evenLatticeRealization (R : Type u) [CommRing R] :
     CategoryRealization EvenLattice (evenLatticeCategory R) where
   familyFibre := some (.mk evenLatticeFamilyRealization {
+    quotedArguments := #[.variable ParameterId.r]
     parameter := ⟨CommRingCat.of R⟩
+    parameterQuotation := .commRing (CommRingCat.of R)
     category_eq := by rfl })
 
 noncomputable def definiteLatticeRealization :
@@ -167,7 +179,7 @@ normalized_registry .categoryFamily
       `LeanCategories.Lattices.Valued.CatalogueRegistration.latticeFamilyRealization
     transport :=
       `LeanCategories.Lattices.Valued.CatalogueRegistration.latticeFamilyTransport
-    variance := VarianceId.discrete }
+    transportSemantics := .discrete }
 
 normalized_registry .categoryFamily
   { id := CategoryFamilyId.finiteProjectiveLattice
@@ -177,7 +189,7 @@ normalized_registry .categoryFamily
       `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteProjectiveLatticeFamilyRealization
     transport :=
       `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteProjectiveLatticeFamilyTransport
-    variance := VarianceId.discrete }
+    transportSemantics := .discrete }
 
 normalized_registry .categoryFamily
   { id := CategoryFamilyId.finiteFreeLattice
@@ -187,7 +199,7 @@ normalized_registry .categoryFamily
       `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteFreeLatticeFamilyRealization
     transport :=
       `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteFreeLatticeFamilyTransport
-    variance := VarianceId.discrete }
+    transportSemantics := .discrete }
 
 normalized_registry .categoryFamily
   { id := CategoryFamilyId.evenLattice
@@ -197,7 +209,7 @@ normalized_registry .categoryFamily
       `LeanCategories.Lattices.Valued.CatalogueRegistration.evenLatticeFamilyRealization
     transport :=
       `LeanCategories.Lattices.Valued.CatalogueRegistration.evenLatticeFamilyTransport
-    variance := VarianceId.discrete }
+    transportSemantics := .discrete }
 
 normalized_registry .category
   { id := CategoryId.lattice

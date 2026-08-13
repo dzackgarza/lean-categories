@@ -162,7 +162,7 @@ def categoryFamilyJson (e : CategoryFamilyEntry) : Json :=
         | some index => Json.num index
         | none => Json.null),
     ]),
-    ("variance", varianceJson e.variance),
+    ("variance", varianceJson e.transportSemantics.variance),
   ]
 
 def aliasJson (e : AliasEntry) : Json :=
@@ -231,6 +231,7 @@ def theoremInclusionJson (e : TheoremInclusionEntry) : Json :=
     ("source", categoryExprJson e.source),
     ("target", categoryExprJson e.target),
     ("declaration", e.declaration.toString),
+    ("realization", e.realization.toString),
     ("sourcePosition", e.sourcePosition),
   ]
 

@@ -60,7 +60,7 @@ def RegistryEntry.declarations : RegistryEntry → Array Name
   | .constructor e => #[e.declaration]
   | .finiteLimitCone e => #[e.declaration]
   | .coherence e => #[e.declaration]
-  | .theoremInclusion e => #[e.declaration]
+  | .theoremInclusion e => #[e.declaration, e.realization]
   | .alias e => #[e.declaration]
   | .opaque e => #[e.declaration] ++ e.ports.map (·.declaration)
   | .presentation e => #[e.declaration]
@@ -268,7 +268,7 @@ def ensureCategoryRealization (realization : Name) : MetaM Unit := do
       "registry realization {realization} must return CategoryRealization ..., but returns {result}"
 
 def validateCategoryDeclarationRealization (expression : CategoryExpr)
-    (_declaration realization familyRealization : Name) : MetaM Unit := do
+    (declaration realization : Name) (familyRealization : Option Name) : MetaM Unit := do
   let realizationConstant ← mkConstWithFreshMVarLevels realization
   let realizationValue := realizationConstant
   let realizationType ← inferType realizationValue
@@ -279,13 +279,16 @@ def validateCategoryDeclarationRealization (expression : CategoryExpr)
     unless ← withTransparency .all <| isDefEq (Lean.toExpr expression) realizationArgs[0]! do
       throwError
         "registry category expression does not match realization {realization}"
-    let declarationValue ← mkConstWithFreshMVarLevels _declaration
+    let declarationValue ← mkConstWithFreshMVarLevels declaration
     let declarationValue := mkAppN declarationValue arguments
     unless ← isDefEq declarationValue realizationArgs[1]! do
       throwError
-        "registry category declaration {_declaration} does not match realization {realization}"
-    match expression with
-    | .familyApp family _ => do
+        "registry category declaration {declaration} does not match realization {realization}"
+    let familyFibre ← withTransparency .all do
+      mkAppM ``LeanCategories.CategoryRealization.familyFibre #[mkAppN realizationConstant arguments]
+    let familyFibre ← withTransparency .all <| whnf familyFibre
+    match expression, familyRealization with
+    | .familyApp family familyArgs, some familyRealization => do
         let realizationValue := mkAppN realizationConstant arguments
         let witnessOption ← withTransparency .all do
           let witnessOption ←
@@ -293,41 +296,51 @@ def validateCategoryDeclarationRealization (expression : CategoryExpr)
           whnf witnessOption
         unless witnessOption.isAppOf ``Option.some do
           throwError
-            "registry family category {_declaration} lacks a typed fibre witness"
+            "registry family category {declaration} lacks a typed fibre witness"
         let packedArgs := witnessOption.getAppArgs
         let packed := packedArgs.back!
         let packedFields := packed.getAppArgs
         unless packedFields.size >= 2 do
-          throwError "registry family category {_declaration} has malformed fibre witness"
+          throwError "registry family category {declaration} has malformed fibre witness"
         let witness := packedFields.back!
-        let witnessRealization := packedFields[packedFields.size - 2]!
-        let witnessType ← withTransparency .all <| inferType witnessRealization
+        let witnessType ← withTransparency .all <| inferType witness
         let witnessTypeArgs := witnessType.getAppArgs
-        unless witnessTypeArgs.size >= 2 do
-          throwError "registry family category {_declaration} has malformed realization type"
-        let witnessIdentifier := witnessTypeArgs[0]!
+        unless witnessTypeArgs.size >= 4 do
+          throwError "registry family category {declaration} has malformed realization type"
+        let witnessIdentifier := witnessTypeArgs[1]!
+        let witnessRealization := witnessTypeArgs[3]!
         let familyValue ← mkAppM ``LeanCategories.CategoryFamilyId.mk #[mkStrLit family.raw]
         unless ← withTransparency .all <| isDefEq witnessIdentifier familyValue do
-          throwError "registry family category {_declaration} has the wrong family witness"
+          throwError "registry family category {declaration} has the wrong family witness"
         let familyConstant ← mkConstWithFreshMVarLevels familyRealization
         let registeredRealization := mkAppN familyConstant #[]
         unless ← withTransparency .all <| isDefEq witnessRealization registeredRealization do
-          throwError "registry family category {_declaration} has a non-registered family realization"
+          throwError "registry family category {declaration} has a non-registered family realization"
+        let witnessArguments ← withTransparency .all do
+          mkAppM ``LeanCategories.CategoryFamilyFibreWitness.arguments #[witness]
+        unless ← withTransparency .all <| isDefEq (Lean.toExpr familyArgs) witnessArguments do
+          throwError "registry family category {declaration} has symbolic arguments unrelated to its fibre parameter"
         let categoryEq ← withTransparency .all do
           mkAppM ``LeanCategories.CategoryFamilyFibreWitness.category_eq #[witness]
         let categoryEqType ← withTransparency .all <| inferType categoryEq
         unless categoryEqType.isEq do
-          throwError "registry family category {_declaration} has no category equality witness"
+          throwError "registry family category {declaration} has no category equality witness"
         unless ← withTransparency .all <| isDefEq categoryEqType.getAppArgs[1]! realizationArgs[1]! do
-          throwError "registry family category {_declaration} witness has the wrong category"
+          throwError "registry family category {declaration} witness has the wrong category"
         let familyValue := witnessRealization
         let parameter ← withTransparency .all do
           mkAppM ``LeanCategories.CategoryFamilyFibreWitness.parameter #[witness]
         let fibre ← withTransparency .all do
           mkAppM ``LeanCategories.CategoryFamilyRealization.fibre #[familyValue, parameter]
         unless ← withTransparency .all <| isDefEq categoryEqType.getAppArgs[2]! fibre do
-          throwError "registry family category {_declaration} is not its selected family fibre"
-    | _ => pure ()
+          throwError "registry family category {declaration} is not its selected family fibre"
+    | .familyApp _ _, none =>
+        throwError "registry family category {declaration} has no registered family realization"
+    | _, some _ =>
+        throwError "non-family category {declaration} carries a family fibre witness"
+    | _, none =>
+        unless familyFibre.isAppOfArity ``Option.none 1 do
+          throwError "non-family category {declaration} has a non-empty family fibre witness"
 
 /-- Require a functor-realization declaration to have the typed witness form. -/
 def ensureFunctorRealization (realization : Name) : MetaM Unit := do
@@ -403,7 +416,7 @@ def ensureCategoryFamilyRealization (identifier : CategoryFamilyId) (schema : Ca
 /-- Validate a family transport against the typed realization. -/
 def validateCategoryFamilyTransportDecl (_identifier : CategoryFamilyId)
     (schema : CategoryFamilySchema)
-    (realization transport : Name) (variance : VarianceId) :
+    (realization transport : Name) (semantics : CategoryFamilyTransportSemantics) :
     MetaM Unit := do
   let realizationValue ← mkConstWithFreshMVarLevels realization
   let transportValue ← mkConstWithFreshMVarLevels transport
@@ -417,12 +430,22 @@ def validateCategoryFamilyTransportDecl (_identifier : CategoryFamilyId)
   unless ← isDefEq realizationTransport transportValue do
     throwError
       "registry family transport {transport} is not the transport used by realization {realization}"
-  let expectedVariance := CategoryFamilySchema.transportVariance schema
-  if variance != expectedVariance then
-    throwError ("registry family exports variance {variance.raw}, but its typed " ++
-      "transport has the {expectedVariance.raw} parameter-domain variance")
-  else
-    pure ()
+  let realizationSemantics ←
+    mkAppM ``LeanCategories.CategoryFamilyRealization.transportSemantics #[realizationValue]
+  unless ← isDefEq (Lean.toExpr semantics) realizationSemantics do
+    throwError "registry family transport semantics do not match its typed realization"
+  match semantics, schema with
+  | .restrictionOfScalars, .ring =>
+      let mathlibTransport ← mkConstWithFreshMVarLevels
+        ``RingCat.moduleCatRestrictScalarsPseudofunctor
+      unless ← isDefEq transportValue mathlibTransport do
+        throwError "registry restriction-of-scalars transport is not Mathlib's pseudofunctor"
+  | .restrictionOfScalars, _ =>
+      throwError "restriction-of-scalars semantics require a RingCat family"
+  | .discrete, .ring =>
+      throwError "RingCat families cannot register equality-only transport semantics"
+  | .discrete, _ =>
+      pure ()
 
 /-- Require a declaration to return a typed classifier realization. -/
 def ensureClassifierRealization (realization : Name) : MetaM Unit := do
@@ -457,12 +480,13 @@ def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
           match state.categoryFamily? family with
           | some familyEntry =>
               validateCategoryDeclarationRealization e.expression e.declaration e.realization
-                familyEntry.realization
+                (some familyEntry.realization)
           | none => throwError "category entry {e.id.raw} refers to an unregistered family"
-      | _ => pure ()
+      | _ => validateCategoryDeclarationRealization e.expression e.declaration e.realization none
   | .categoryFamily e => do
       ensureCategoryFamilyRealization e.id e.schema e.realization
-      validateCategoryFamilyTransportDecl e.id e.schema e.realization e.transport e.variance
+      validateCategoryFamilyTransportDecl e.id e.schema e.realization e.transport
+        e.transportSemantics
   | .classifier e => do
       ensureClassifierDeclaration e.declaration
       ensureClassifierRealization e.realization
@@ -479,7 +503,11 @@ def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
   | .constructor e => ensureFunctorDeclaration e.declaration
   | .finiteLimitCone _ => pure ()
   | .coherence _ => pure ()
-  | .theoremInclusion e => ensureFunctorDeclaration e.declaration
+  | .theoremInclusion e => do
+      ensureFunctorDeclaration e.declaration
+      ensureFunctorRealization e.realization
+      let expression : FunctorExpr e.source e.target := .theoremInclusion e.id
+      validateFunctorDeclarationRealization expression e.declaration e.realization
   | .alias _ => pure ()
   | .opaque e => do
       ensureCategoryDeclaration e.declaration

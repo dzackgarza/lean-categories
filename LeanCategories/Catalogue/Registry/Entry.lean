@@ -42,8 +42,7 @@ structure CategoryFamilyEntry where
   schema : CategoryFamilySchema
   realization : Lean.Name
   transport : Lean.Name
-  /-- Descriptive export metadata; transport semantics are checked from the realization. -/
-  variance : VarianceId
+  transportSemantics : CategoryFamilyTransportSemantics
   deriving Repr, Inhabited
 
 /-- Classifier registry row. -/
@@ -125,6 +124,8 @@ structure TheoremInclusionEntry where
   source : CategoryExpr
   target : CategoryExpr
   declaration : Lean.Name
+  /-- Typed witness for the concrete functor and its exact endpoints. -/
+  realization : Lean.Name
   sourcePosition : String
   deriving Repr
 

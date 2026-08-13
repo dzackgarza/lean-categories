@@ -31,6 +31,7 @@ noncomputable def quadModuleFamilyTransport :=
 noncomputable def quadModuleFamilyRealization :
     CategoryFamilyRealization.{u + 1, u, u, u + 1} CategoryFamilyId.quadModule .commRingModule where
   transport := quadModuleFamilyTransport
+  transportSemantics := .discrete
 
 noncomputable def quadModuleCategory (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] : ObjCat.{u + 1, u} :=
@@ -40,7 +41,9 @@ noncomputable def quadModuleRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :
     CategoryRealization QuadModule (quadModuleCategory R W) where
   familyFibre := some (.mk quadModuleFamilyRealization {
+    quotedArguments := #[.variable ParameterId.r, .variable ParameterId.w]
     parameter := ⟨CommRingCat.of R, ModuleCat.of R W⟩
+    parameterQuotation := .commRingModule (CommRingCat.of R) (ModuleCat.of R W)
     category_eq := by rfl })
 
 noncomputable def quadModuleForgetRealization (R : Type u) [CommRing R]
@@ -62,7 +65,7 @@ normalized_registry .categoryFamily
       `LeanCategories.Modules.Quadratic.Valued.CatalogueRegistration.quadModuleFamilyRealization
     transport :=
       `LeanCategories.Modules.Quadratic.Valued.CatalogueRegistration.quadModuleFamilyTransport
-    variance := VarianceId.discrete }
+    transportSemantics := .discrete }
 
 normalized_registry .category
   { id := CategoryId.quadModule

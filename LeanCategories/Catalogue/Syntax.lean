@@ -62,14 +62,16 @@ def parameterMetadata : CategoryFamilySchema → Array CategoryFamilyParameter
   | .commRing => #[commRingParameter]
   | .commRingModule => #[commRingParameter, moduleParameter]
 
+def dependencyParameterId (schema : CategoryFamilySchema)
+    (parameter : CategoryFamilyParameter) : Option ParameterId := do
+  let dependency ← parameter.dependency
+  let dependencyParameter ← schema.parameterMetadata[dependency]?
+  dependencyParameter.ids.head?
+
 @[reducible] def Parameters : CategoryFamilySchema → Type (u + 1)
   | .ring => RingCat.{u}
   | .commRing => Discrete (CommRingCat.{u})
   | .commRingModule => Discrete (Σ R : CommRingCat.{u}, ModuleCat.{u} R)
-
-def transportVariance : CategoryFamilySchema → VarianceId
-  | .ring => VarianceId.restrictionOfScalarsContravariant
-  | .commRing | .commRingModule => VarianceId.discrete
 
 end CategoryFamilySchema
 
@@ -93,6 +95,20 @@ deriving instance Lean.ToExpr for CoherenceId
 deriving instance Lean.ToExpr for PresentationId
 deriving instance Lean.ToExpr for ClusterId
 
+/-- The semantic kind of a registered family transport. -/
+inductive CategoryFamilyTransportSemantics
+  | restrictionOfScalars
+  | discrete
+  deriving DecidableEq, Repr, Inhabited, Lean.ToExpr
+
+namespace CategoryFamilyTransportSemantics
+
+def variance : CategoryFamilyTransportSemantics → VarianceId
+  | .restrictionOfScalars => VarianceId.restrictionOfScalarsContravariant
+  | .discrete => VarianceId.discrete
+
+end CategoryFamilyTransportSemantics
+
 /-- Parameter expression for family applications (symbolic). -/
 inductive ParameterExpr
   | variable (id : ParameterId)
@@ -109,17 +125,20 @@ inductive ParameterSort
   | commRing
   | module (base : ParameterExpr)
 
-def parameterSort (schema : CategoryFamilySchema) : ParameterExpr → Option ParameterSort
+def parameterSort (schema : CategoryFamilySchema) (args : Array ParameterExpr) :
+    ParameterExpr → Option ParameterSort
   | .variable id =>
       match schema.parameterMetadata.find? (fun parameter => parameter.ids.contains id) with
       | some parameter =>
           if parameter.kind == ParameterKindId.ringObject then some .ring
           else if parameter.kind == ParameterKindId.commRingObject then some .commRing
-          else some (.module (.variable ParameterId.r))
+          else do
+            let base ← dependencyParameterId schema parameter
+            some (.module (.variable base))
       | none => none
   | .apply operation argument =>
       if operation == ParameterOperationId.opposite then
-        match parameterSort schema argument with
+        match parameterSort schema args argument with
         | some (.ring) => some .ring
         | some (.commRing) => some .commRing
         | _ => none
@@ -128,8 +147,8 @@ def parameterSort (schema : CategoryFamilySchema) : ParameterExpr → Option Par
   | .apply2 _ _ _ => none
   | .apply3 operation first second third =>
       if schema == .commRingModule && operation == ParameterOperationId.tensorProduct then
-        match parameterSort schema first, parameterSort schema second,
-            parameterSort schema third with
+        match parameterSort schema args first, parameterSort schema args second,
+            parameterSort schema args third with
         | some (.commRing), some (.commRing), some (.module base) =>
             if base == first then some (.module second) else none
         | _, _, _ => none
@@ -161,12 +180,13 @@ def parameterSortAt (schema : CategoryFamilySchema) (args : Array ParameterExpr)
       let parameter ← schema.parameterMetadata.find?
         (fun parameter => parameter.ids.contains id)
       if parameter.kind == ParameterKindId.moduleObject then
-        some (.module (.variable ParameterId.r))
+        let base ← dependencyParameterId schema parameter
+        some (.module (.variable base))
       else if parameter.kind == ParameterKindId.ringObject then
         some .ring
       else
         some .commRing
-  | _ => parameterSort schema argument
+  | _ => parameterSort schema args argument
 
 def parameterArgsValid (args : Array ParameterExpr) (schema : CategoryFamilySchema) : Bool :=
   args.size == schema.parameterMetadata.size &&
