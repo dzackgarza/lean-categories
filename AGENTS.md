@@ -403,8 +403,8 @@ The pinned checkout owns these; search them by path before any external source.
 | [`emilyriehl/infinity-cosmos`](https://github.com/emilyriehl/infinity-cosmos) | ∞-cosmos theory over Mathlib's quasicategories; formal ∞-category theory. |
 | [`sinhp/HoTTLean`](https://github.com/sinhp/HoTTLean) | Groupoid and natural models of HoTT; semantics of type theory. |
 | [`sinhp/Poly`](https://github.com/sinhp/Poly) | Polynomial functors and universes. |
-| [`sinhp/LeanFibredCategories`](https://github.com/sinhp/LeanFibredCategories) | Fibred categories *(stale)*. |
-| [`sinhp/displayed_categories`](https://github.com/sinhp/displayed_categories) | Displayed categories *(stale)*. |
+| [`sinhp/LeanFibredCategories`](https://github.com/sinhp/LeanFibredCategories) | Fibred categories — the standard home for structure over a base, the shape of this programme's classifier constructions *(stale)*. |
+| [`sinhp/displayed_categories`](https://github.com/sinhp/displayed_categories) | Displayed categories — the equivalent algebraic presentation of structure over a base *(stale)*. |
 | [`kim-em/lean-category-theory`](https://github.com/kim-em/lean-category-theory) | Early category-theory experiments, upstreamed into Mathlib *(archived)*. |
 | [`rzrn/ground_zero`](https://github.com/rzrn/ground_zero) | HoTT library in Lean 4 *(archived)*. |
 | [`gebner/hott3`](https://github.com/gebner/hott3) | HoTT *(Lean 3)*. |
@@ -417,7 +417,7 @@ The pinned checkout owns these; search them by path before any external source.
 | [`leanprover-community/flt-regular`](https://github.com/leanprover-community/flt-regular) | FLT for regular primes; cyclotomic-field material. |
 | [`kbuzzard/ClassFieldTheory`](https://github.com/kbuzzard/ClassFieldTheory) | 2025 Clay Summer School project on class field theory. |
 | [`mariainesdff/LocalClassFieldTheory`](https://github.com/mariainesdff/LocalClassFieldTheory) | Local fields, toward local class field theory. |
-| [`AntoineChambert-Loir/DividedPowers4`](https://github.com/AntoineChambert-Loir/DividedPowers4) | Divided power structures. |
+| [`AntoineChambert-Loir/DividedPowers4`](https://github.com/AntoineChambert-Loir/DividedPowers4) | Divided power structures, including the free divided-power algebra (`DividedPowers/DPAlgebra/Free.lean`) with grading and base change. |
 | [`YaelDillies/toric`](https://github.com/YaelDillies/toric) | Toric varieties over Mathlib's schemes. |
 | [`MichaelStollBayreuth/EulerProducts`](https://github.com/MichaelStollBayreuth/EulerProducts) | Euler products and L-series. |
 | [`MichaelStollBayreuth/Heights`](https://github.com/MichaelStollBayreuth/Heights) | Theory of heights. |
