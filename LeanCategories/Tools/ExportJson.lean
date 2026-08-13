@@ -155,8 +155,12 @@ def categoryFamilyJson (e : CategoryFamilyEntry) : Json :=
     ("realization", e.realization.toString),
     ("transport", e.transport.toString),
     ("parameters", Json.arr <| e.schema.parameterMetadata.map fun parameter => object [
+      ("variables", Json.arr <| parameter.ids.toArray.map (·.raw)),
       ("name", parameter.name),
       ("kind", parameterKindJson parameter.kind),
+      ("dependency", match parameter.dependency with
+        | some index => Json.num index
+        | none => Json.null),
     ]),
     ("variance", varianceJson e.variance),
   ]

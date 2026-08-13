@@ -24,12 +24,6 @@ open CategoryTheory
 universe u
 
 namespace CategoryFamilySchema
-
-@[reducible] def Parameters : CategoryFamilySchema → Type (u + 1)
-  | .ring => RingCat.{u}
-  | .commRing => Discrete (CommRingCat.{u})
-  | .commRingModule => Discrete (Σ R : CommRingCat.{u}, ModuleCat.{u} R)
-
 end CategoryFamilySchema
 
 universe uObj uHom uParam uParamHom
