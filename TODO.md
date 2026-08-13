@@ -33,7 +33,6 @@ to that plan and remove it here.
 - [ ] Fixed-value fiber over an `R`-module `W`
 - [ ] Change-of-value functor for quadratic modules
 - [ ] Scalar-extension functor for variable-value quadratic modules
-- [ ] Quadratic radical
 - [ ] Quadratic defect module
 
 ## Quadratic formed-module subcategories

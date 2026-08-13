@@ -401,10 +401,10 @@ The pinned checkout owns these; search them by path before any external source.
 | Repository | Content |
 | --- | --- |
 | [`emilyriehl/infinity-cosmos`](https://github.com/emilyriehl/infinity-cosmos) | ∞-cosmos theory over Mathlib's quasicategories; formal ∞-category theory. |
-| [`sinhp/HoTTLean`](https://github.com/sinhp/HoTTLean) | Groupoid and natural models of HoTT; semantics of type theory. |
-| [`sinhp/Poly`](https://github.com/sinhp/Poly) | Polynomial functors and universes. |
-| [`sinhp/LeanFibredCategories`](https://github.com/sinhp/LeanFibredCategories) | Fibred categories — the standard home for structure over a base, the shape of this programme's classifier constructions *(stale)*. |
-| [`sinhp/displayed_categories`](https://github.com/sinhp/displayed_categories) | Displayed categories — the equivalent algebraic presentation of structure over a base *(stale)*. |
+| [`sinhp/HoTTLean`](https://github.com/sinhp/HoTTLean) | Groupoid and natural models of HoTT; semantics of type theory. `Groupoids/ClovenIsofibration.lean` holds a complete split-classifier story for groupoids: cloven isofibrations, fiber reindexing, `Γ ⥤ Grpd`, Grothendieck reconstruction. |
+| [`sinhp/Poly`](https://github.com/sinhp/Poly) | Polynomial functors and locally cartesian closed categories. |
+| [`sinhp/LeanFibredCategories`](https://github.com/sinhp/LeanFibredCategories) | Fibred categories *(stale; superseded by Mathlib's `FiberedCategory` tree and `displayed_categories`)*. |
+| [`sinhp/displayed_categories`](https://github.com/sinhp/displayed_categories) | Displayed categories — the algebraic presentation of structure over a base; iso-level fibers (`EFiber`), cartesian lifts, Street fibrations *(stale; no LICENSE file — reference only, do not copy)*. |
 | [`kim-em/lean-category-theory`](https://github.com/kim-em/lean-category-theory) | Early category-theory experiments, upstreamed into Mathlib *(archived)*. |
 | [`rzrn/ground_zero`](https://github.com/rzrn/ground_zero) | HoTT library in Lean 4 *(archived)*. |
 | [`gebner/hott3`](https://github.com/gebner/hott3) | HoTT *(Lean 3)*. |
@@ -437,8 +437,10 @@ The pinned checkout owns these; search them by path before any external source.
 | Repository | Content |
 | --- | --- |
 | [`thefundamentaltheor3m/Sphere-Packing-Lean`](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean) | Viazovska's dimension-8 sphere packing; E8 lattice. Already integrated here under `Integration/SpherePacking` and `LeanCategoriesSpherePacking/E8`. |
-| [`jonhanke/quadratic_forms_in_lean`](https://github.com/jonhanke/quadratic_forms_in_lean) | Quadratic forms development by Jonathan Hanke. |
-| [`MichaelStollBayreuth/LegendreQF`](https://github.com/MichaelStollBayreuth/LegendreQF) | Legendre's theorem on diagonal ternary quadratic forms. |
+| [`mariainesdff/HassePrinciple`](https://github.com/mariainesdff/HassePrinciple) | Hilbert symbols and the Hasse–Minkowski invariant over general fields (Women in Numbers 7). Definitions in place; the key choice-independence proofs are still `sorry`. Apache 2.0, but the team accepts no outside contributions — copy with attribution. |
+| [`roed-math/gq2-lean`](https://github.com/roed-math/gq2-lean) | Dyadic Hilbert symbol over ℚ₂ with Serre's evaluation formula and 2-adic square-class facts, sorry-free and self-contained inside a profinite `G_{ℚ₂}` presentation. Apache 2.0. |
+| [`MichaelStollBayreuth/LegendreQF`](https://github.com/MichaelStollBayreuth/LegendreQF) | Legendre's theorem on diagonal ternary quadratic forms; complete but defines no Hilbert symbol, Hasse invariant, or lattice notion. |
+| [`jonhanke/quadratic_forms_in_lean`](https://github.com/jonhanke/quadratic_forms_in_lean) | Skeleton only: the library files carry reference comments (Cassels) and a few thin definitions, no theorems; no LICENSE file. Do not mine. |
 
 ### Analysis, probability, geometry, dynamics
 
