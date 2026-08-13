@@ -72,9 +72,9 @@ noncomputable def latticeChangeValueRealization (R : Type u) [CommRing R]
       (latticeCategory R W')
       (LeanCategories.Lattices.Valued.changeValue R W f).toCatHom := ⟨⟩
 
-noncomputable def latticeBaseChangeRealization (R S : Type u)
-    [CommRing R] [CommRing S] [Algebra R S]
-    (W : Type u) [AddCommGroup W] [Module R W] :
+noncomputable def latticeBaseChangeRealization (R : Type u) [CommRing R]
+    (W : Type u) [AddCommGroup W] [Module R W]
+    (S : Type u) [CommRing S] [Algebra R S] :
     FunctorRealization LatticeBaseChange (latticeCategory R W)
       (latticeCategory S (TensorProduct R S W))
       (LeanCategories.Lattices.Valued.baseChange R W S).toCatHom := ⟨⟩
@@ -84,6 +84,23 @@ noncomputable def finiteProjectiveForgetRealization (R : Type u) [CommRing R]
     FunctorRealization FiniteProjectiveForget (finiteProjectiveLatticeCategory R W)
       (Modules.Mathlib.ModulesOf (RingCat.of R))
       (LeanCategories.Lattices.Valued.finiteProjectiveForget R W).toCatHom := ⟨⟩
+
+noncomputable def latticeChangeValueDeclaration (R : Type u) [CommRing R]
+    (W W' : Type u) [AddCommGroup W] [Module R W]
+    [AddCommGroup W'] [Module R W'] (f : W →ₗ[R] W') :
+    latticeCategory R W ⟶ latticeCategory R W' :=
+  (LeanCategories.Lattices.Valued.changeValue R W f).toCatHom
+
+noncomputable def latticeBaseChangeDeclaration (R : Type u) [CommRing R]
+    (W : Type u) [AddCommGroup W] [Module R W]
+    (S : Type u) [CommRing S] [Algebra R S] :
+    latticeCategory R W ⟶ latticeCategory S (TensorProduct R S W) :=
+  (LeanCategories.Lattices.Valued.baseChange R W S).toCatHom
+
+noncomputable def finiteProjectiveForgetDeclaration (R : Type u) [CommRing R]
+    (W : Type u) [AddCommGroup W] [Module R W] :
+    finiteProjectiveLatticeCategory R W ⟶ Modules.Mathlib.ModulesOf (RingCat.of R) :=
+  (LeanCategories.Lattices.Valued.finiteProjectiveForget R W).toCatHom
 
 normalized_registry .category
   { id := CategoryId.lattice
@@ -146,8 +163,11 @@ normalized_registry .functor
   { id := FunctorId.latticeChangeValue
     canonicalName := "LatticeCat.changeValue"
     source := Lattice
-    target := Lattice
-    declaration := `LeanCategories.Lattices.Valued.changeValue
+    target :=
+      .familyApp CategoryFamilyId.lattice
+        #[.variable ParameterId.r, .variable ParameterId.wPrime]
+    declaration :=
+      `LeanCategories.Lattices.Valued.CatalogueRegistration.latticeChangeValueDeclaration
     realization :=
       `LeanCategories.Lattices.Valued.CatalogueRegistration.latticeChangeValueRealization
     expression := LatticeChangeValue
@@ -162,8 +182,13 @@ normalized_registry .functor
   { id := FunctorId.latticeBaseChange
     canonicalName := "LatticeCat.baseChange"
     source := Lattice
-    target := Lattice
-    declaration := `LeanCategories.Lattices.Valued.baseChange
+    target :=
+      .familyApp CategoryFamilyId.lattice
+        #[.variable ParameterId.s,
+          .apply3 ParameterOperationId.tensorProduct
+            (.variable ParameterId.r) (.variable ParameterId.s) (.variable ParameterId.w)]
+    declaration :=
+      `LeanCategories.Lattices.Valued.CatalogueRegistration.latticeBaseChangeDeclaration
     realization :=
       `LeanCategories.Lattices.Valued.CatalogueRegistration.latticeBaseChangeRealization
     expression := LatticeBaseChange
@@ -179,7 +204,8 @@ normalized_registry .functor
     canonicalName := "FiniteProjectiveLatticeCat.forget"
     source := FiniteProjectiveLattice
     target := Modules.Modules
-    declaration := `LeanCategories.Lattices.Valued.finiteProjectiveForget
+    declaration :=
+      `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteProjectiveForgetDeclaration
     realization :=
       `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteProjectiveForgetRealization
     expression := FiniteProjectiveForget

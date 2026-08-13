@@ -10,20 +10,31 @@ namespace LeanCategories.Lattices.Valued.Catalogue
 
 open LeanCategories
 
-def Lattice : CategoryExpr := .opaque CategoryId.lattice
-def FiniteProjectiveLattice : CategoryExpr := .opaque CategoryId.finiteProjectiveLattice
-def FiniteFreeLattice : CategoryExpr := .opaque CategoryId.finiteFreeLattice
-def EvenLattice : CategoryExpr := .opaque CategoryId.evenLattice
-def DefiniteLattice : CategoryExpr := .opaque CategoryId.definiteLattice
-def IndefiniteLattice : CategoryExpr := .opaque CategoryId.indefiniteLattice
+def Lattice : CategoryExpr :=
+  .familyApp CategoryFamilyId.lattice #[.variable ParameterId.r, .variable ParameterId.w]
+def FiniteProjectiveLattice : CategoryExpr :=
+  .familyApp CategoryFamilyId.finiteProjectiveLattice
+    #[.variable ParameterId.r, .variable ParameterId.w]
+def FiniteFreeLattice : CategoryExpr :=
+  .familyApp CategoryFamilyId.finiteFreeLattice #[.variable ParameterId.r, .variable ParameterId.w]
+def EvenLattice : CategoryExpr :=
+  .familyApp CategoryFamilyId.evenLattice #[.variable ParameterId.r]
+def DefiniteLattice : CategoryExpr := .atom CategoryId.definiteLattice
+def IndefiniteLattice : CategoryExpr := .atom CategoryId.indefiniteLattice
 
-def LatticeChangeValue : FunctorExpr Lattice Lattice :=
-  .normalizedIdentity Lattice Lattice
+def LatticeChangeValue : FunctorExpr Lattice
+    (.familyApp CategoryFamilyId.lattice
+      #[.variable ParameterId.r, .variable ParameterId.wPrime]) :=
+  .atomic FunctorId.latticeChangeValue
 
-def LatticeBaseChange : FunctorExpr Lattice Lattice :=
-  .normalizedIdentity Lattice Lattice
+def LatticeBaseChange : FunctorExpr Lattice
+    (.familyApp CategoryFamilyId.lattice
+      #[.variable ParameterId.s,
+        .apply3 ParameterOperationId.tensorProduct
+          (.variable ParameterId.r) (.variable ParameterId.s) (.variable ParameterId.w)]) :=
+  .atomic FunctorId.latticeBaseChange
 
 def FiniteProjectiveForget : FunctorExpr FiniteProjectiveLattice Modules.Modules :=
-  .normalizedIdentity FiniteProjectiveLattice Modules.Modules
+  .atomic FunctorId.finiteProjectiveForget
 
 end LeanCategories.Lattices.Valued.Catalogue

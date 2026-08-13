@@ -10,9 +10,10 @@ namespace LeanCategories.Modules.Quadratic.Valued.Catalogue
 
 open LeanCategories
 
-def QuadModule : CategoryExpr := .opaque CategoryId.quadModule
+def QuadModule : CategoryExpr :=
+  .familyApp CategoryFamilyId.quadModule #[.variable ParameterId.r, .variable ParameterId.w]
 
 def QuadModuleForget : FunctorExpr QuadModule Modules.Modules :=
-  .normalizedIdentity QuadModule Modules.Modules
+  .atomic FunctorId.quadModuleForget
 
 end LeanCategories.Modules.Quadratic.Valued.Catalogue

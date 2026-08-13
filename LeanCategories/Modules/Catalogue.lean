@@ -25,10 +25,14 @@ end CategoryFamilyId
 
 namespace ParameterId
 def r : ParameterId := ⟨"R"⟩
+def s : ParameterId := ⟨"S"⟩
+def w : ParameterId := ⟨"W"⟩
+def wPrime : ParameterId := ⟨"W'"⟩
 end ParameterId
 
 namespace ParameterOperationId
 def opposite : ParameterOperationId := ⟨"parameter.opposite"⟩
+def tensorProduct : ParameterOperationId := ⟨"parameter.tensor_product"⟩
 end ParameterOperationId
 
 namespace ParameterKindId

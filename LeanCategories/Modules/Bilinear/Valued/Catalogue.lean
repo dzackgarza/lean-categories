@@ -13,6 +13,13 @@ def bilWForm : CategoryId := ⟨"cat.bil_wform"⟩
 
 end CategoryId
 
+namespace CategoryFamilyId
+
+def bilinModule : CategoryFamilyId := ⟨"fam.bilin_module"⟩
+def bilWForm : CategoryFamilyId := ⟨"fam.bil_wform"⟩
+
+end CategoryFamilyId
+
 namespace FunctorId
 
 def bilinModuleForget : FunctorId := ⟨"fun.bilin_module.forget"⟩

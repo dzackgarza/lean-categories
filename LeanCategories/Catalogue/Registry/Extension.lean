@@ -118,6 +118,7 @@ def denotesCategory (expression : CategoryExpr) (id : CategoryId) : Bool :=
 partial def FunctorExpr.referencesValid (state : RegistryState)
     {source target : CategoryExpr} : FunctorExpr source target → Bool
   | .identity _ | .normalizedIdentity _ _ => true
+  | .atomic _ => true
   | .named id =>
       match state.functor? id with
       | some entry => sameEndpoint entry.source source && sameEndpoint entry.target target
@@ -243,12 +244,56 @@ def ensureCategoryRealization (realization : Name) : MetaM Unit := do
     throwError
       "registry realization {realization} must return CategoryRealization ..., but returns {result}"
 
+def validateCategoryDeclarationRealization (_declaration realization : Name) : MetaM Unit := do
+  let realizationValue ← mkConstWithFreshMVarLevels realization
+  let realizationType ← inferType realizationValue
+  forallTelescopeReducing realizationType fun arguments realizationResult => do
+    let realizationArgs := realizationResult.getAppArgs
+    unless realizationArgs.size == 2 do
+      throwError "registry realization {realization} has malformed CategoryRealization parameters"
+    let declarationValue ← mkConstWithFreshMVarLevels _declaration
+    let declarationValue := mkAppN declarationValue arguments
+    unless ← isDefEq declarationValue realizationArgs[1]! do
+      throwError
+        "registry category declaration {_declaration} does not match realization {realization}"
+
 /-- Require a functor-realization declaration to have the typed witness form. -/
 def ensureFunctorRealization (realization : Name) : MetaM Unit := do
   let result ← declarationResultType realization
   unless result.isAppOf ``LeanCategories.FunctorRealization do
     throwError
       "registry realization {realization} must return FunctorRealization ..., but returns {result}"
+
+def validateFunctorDeclarationRealization (declaration realization : Name) : MetaM Unit := do
+  let realizationValue ← mkConstWithFreshMVarLevels realization
+  let realizationType ← inferType realizationValue
+  forallTelescopeReducing realizationType fun arguments realizationResult => do
+    let realizationArgs := realizationResult.getAppArgs
+    unless realizationArgs.size == 6 do
+      throwError "registry realization {realization} has malformed FunctorRealization parameters"
+    let declarationValue ← mkConstWithFreshMVarLevels declaration
+    let declarationType ← whnf (← inferType (mkAppN declarationValue arguments))
+    let realizationFunctorType ← whnf (← inferType realizationArgs[5]!)
+    let declarationArgs := declarationType.getAppArgs
+    let realizationArgs' := realizationFunctorType.getAppArgs
+    unless declarationArgs.size >= 2 && realizationArgs'.size >= 2 do
+      throwError "registry functor declaration {declaration} has malformed endpoints"
+    if declarationType.isAppOfArity ``CategoryTheory.Functor 4 then
+      let source ← mkAppM ``CategoryTheory.Cat.of #[declarationArgs[0]!]
+      let target ← mkAppM ``CategoryTheory.Cat.of #[declarationArgs[1]!]
+      unless ← isDefEq source realizationArgs'[0]! do
+        throwError
+          "registry functor declaration {declaration} source does not match realization {realization}"
+      unless ← isDefEq target realizationArgs'[1]! do
+        throwError
+          "registry functor declaration {declaration} target does not match realization {realization}"
+    else
+      unless ← isDefEq declarationArgs[0]! realizationArgs'[0]! do
+        throwError
+          "registry functor declaration {declaration} source does not match realization {realization}"
+      unless ← isDefEq declarationArgs[1]! realizationArgs'[1]! do
+        throwError
+          "registry functor declaration {declaration} target does not match realization {realization}"
 
 /-- Require a declaration to return a typed family realization. -/
 def ensureCategoryFamilyRealization (realization : Name) : MetaM Unit := do
@@ -300,6 +345,7 @@ def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
   | .category e => do
       ensureCategoryDeclaration e.declaration
       ensureCategoryRealization e.realization
+      validateCategoryDeclarationRealization e.declaration e.realization
   | .categoryFamily e => do
       ensureCategoryFamilyRealization e.realization
       validateCategoryFamilyTransportDecl e.realization e.transport
@@ -307,8 +353,15 @@ def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
       ensureClassifierDeclaration e.declaration
       ensureClassifierRealization e.realization
   | .functor e => do
+      match e.expression with
+      | .atomic id =>
+          unless id == e.id do
+            throwError
+              "registry functor {e.id.raw} has an atomic expression for {id.raw}"
+      | _ => pure ()
       ensureFunctorDeclaration e.declaration
       ensureFunctorRealization e.realization
+      validateFunctorDeclarationRealization e.declaration e.realization
   | .constructor e => ensureFunctorDeclaration e.declaration
   | .finiteLimitCone _ => pure ()
   | .coherence _ => pure ()

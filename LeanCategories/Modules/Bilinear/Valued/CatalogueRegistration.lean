@@ -50,18 +50,40 @@ noncomputable def bilinModuleChangeValueRealization (R : Type u) [CommRing R]
       (bilinModuleCategory R W')
       (LeanCategories.Modules.Bilinear.Valued.changeValue R W f).toCatHom := ⟨⟩
 
-noncomputable def bilinModuleBaseChangeRealization (R S : Type u)
-    [CommRing R] [CommRing S] [Algebra R S]
-    (W : Type u) [AddCommGroup W] [Module R W] :
+noncomputable def bilinModuleBaseChangeRealization (R : Type u) [CommRing R]
+    (W : Type u) [AddCommGroup W] [Module R W]
+    (S : Type u) [CommRing S] [Algebra R S] :
     FunctorRealization BilinModuleBaseChange (bilinModuleCategory R W)
       (bilinModuleCategory S (TensorProduct R S W))
       (LeanCategories.Lattices.Valued.baseChangeBilin R W S).toCatHom := ⟨⟩
 
-noncomputable def bilWFormBaseChangeRealization (R S : Type u)
-    [CommRing R] [CommRing S] [Algebra R S] :
+noncomputable def bilWFormBaseChangeRealization (R : Type u) [CommRing R]
+    (S : Type u) [CommRing S] [Algebra R S] :
     FunctorRealization BilWFormBaseChange (bilWFormCategory R)
       (bilWFormCategory S)
       (LeanCategories.Lattices.Valued.baseChangeBilWForm R S).toCatHom := ⟨⟩
+
+noncomputable def bilinModuleForgetDeclaration (R : Type u) [CommRing R]
+    (W : Type u) [AddCommGroup W] [Module R W] :
+    bilinModuleCategory R W ⟶ Modules.Mathlib.ModulesOf (RingCat.of R) :=
+  (LeanCategories.Modules.Bilinear.Valued.forget R W).toCatHom
+
+noncomputable def bilinModuleChangeValueDeclaration (R : Type u) [CommRing R]
+    (W W' : Type u) [AddCommGroup W] [Module R W]
+    [AddCommGroup W'] [Module R W'] (f : W →ₗ[R] W') :
+    bilinModuleCategory R W ⟶ bilinModuleCategory R W' :=
+  (LeanCategories.Modules.Bilinear.Valued.changeValue R W f).toCatHom
+
+noncomputable def bilinModuleBaseChangeDeclaration (R : Type u) [CommRing R]
+    (W : Type u) [AddCommGroup W] [Module R W]
+    (S : Type u) [CommRing S] [Algebra R S] :
+    bilinModuleCategory R W ⟶ bilinModuleCategory S (TensorProduct R S W) :=
+  (LeanCategories.Lattices.Valued.baseChangeBilin R W S).toCatHom
+
+noncomputable def bilWFormBaseChangeDeclaration (R : Type u) [CommRing R]
+    (S : Type u) [CommRing S] [Algebra R S] :
+    bilWFormCategory R ⟶ bilWFormCategory S :=
+  (LeanCategories.Lattices.Valued.baseChangeBilWForm R S).toCatHom
 
 normalized_registry .category
   { id := CategoryId.bilinModule
@@ -87,7 +109,8 @@ normalized_registry .functor
     canonicalName := "BilinModuleCat.forget"
     source := BilinModule
     target := Modules.Modules
-    declaration := `LeanCategories.Modules.Bilinear.Valued.forget
+    declaration :=
+      `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleForgetDeclaration
     realization :=
       `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleForgetRealization
     expression := BilinModuleForget
@@ -102,8 +125,11 @@ normalized_registry .functor
   { id := FunctorId.bilinModuleChangeValue
     canonicalName := "BilinModuleCat.changeValue"
     source := BilinModule
-    target := BilinModule
-    declaration := `LeanCategories.Modules.Bilinear.Valued.changeValue
+    target :=
+      .familyApp CategoryFamilyId.bilinModule
+        #[.variable ParameterId.r, .variable ParameterId.wPrime]
+    declaration :=
+      `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleChangeValueDeclaration
     realization :=
       `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleChangeValueRealization
     expression := BilinModuleChangeValue
@@ -118,8 +144,13 @@ normalized_registry .functor
   { id := FunctorId.bilinModuleBaseChange
     canonicalName := "BilinModuleCat.baseChangeBilin"
     source := BilinModule
-    target := BilinModule
-    declaration := `LeanCategories.Lattices.Valued.baseChangeBilin
+    target :=
+      .familyApp CategoryFamilyId.bilinModule
+        #[.variable ParameterId.s,
+          .apply3 ParameterOperationId.tensorProduct
+            (.variable ParameterId.r) (.variable ParameterId.s) (.variable ParameterId.w)]
+    declaration :=
+      `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleBaseChangeDeclaration
     realization :=
       `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleBaseChangeRealization
     expression := BilinModuleBaseChange
@@ -134,8 +165,9 @@ normalized_registry .functor
   { id := FunctorId.bilWFormBaseChange
     canonicalName := "BilWFormCat.baseChangeBilWForm"
     source := BilWForm
-    target := BilWForm
-    declaration := `LeanCategories.Lattices.Valued.baseChangeBilWForm
+    target := .familyApp CategoryFamilyId.bilWForm #[.variable ParameterId.s]
+    declaration :=
+      `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilWFormBaseChangeDeclaration
     realization :=
       `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilWFormBaseChangeRealization
     expression := BilWFormBaseChange

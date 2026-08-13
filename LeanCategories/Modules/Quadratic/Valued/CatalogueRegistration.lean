@@ -34,6 +34,11 @@ noncomputable def quadModuleForgetRealization (R : Type u) [CommRing R]
       (Modules.Mathlib.ModulesOf (RingCat.of R))
       (LeanCategories.Modules.Quadratic.Valued.forget R W).toCatHom := ⟨⟩
 
+noncomputable def quadModuleForgetDeclaration (R : Type u) [CommRing R]
+    (W : Type u) [AddCommGroup W] [Module R W] :
+    quadModuleCategory R W ⟶ Modules.Mathlib.ModulesOf (RingCat.of R) :=
+  (LeanCategories.Modules.Quadratic.Valued.forget R W).toCatHom
+
 normalized_registry .category
   { id := CategoryId.quadModule
     canonicalName := "QuadModuleCat"
@@ -49,7 +54,8 @@ normalized_registry .functor
     canonicalName := "QuadModuleCat.forget"
     source := QuadModule
     target := Modules.Modules
-    declaration := `LeanCategories.Modules.Quadratic.Valued.forget
+    declaration :=
+      `LeanCategories.Modules.Quadratic.Valued.CatalogueRegistration.quadModuleForgetDeclaration
     realization :=
       `LeanCategories.Modules.Quadratic.Valued.CatalogueRegistration.quadModuleForgetRealization
     expression := QuadModuleForget

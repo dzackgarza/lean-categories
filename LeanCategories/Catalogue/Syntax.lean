@@ -22,6 +22,9 @@ namespace LeanCategories
 inductive ParameterExpr
   | variable (id : ParameterId)
   | apply (operation : ParameterOperationId) (argument : ParameterExpr)
+  | apply2 (operation : ParameterOperationId) (left right : ParameterExpr)
+  | apply3 (operation : ParameterOperationId)
+      (first second third : ParameterExpr)
   deriving DecidableEq, Repr
 
 /-- Normalized symbolic category language. -/
@@ -51,6 +54,8 @@ category is literally shared by the two legs.
 inductive FunctorExpr : CategoryExpr → CategoryExpr → Type
   | identity (category : CategoryExpr) : FunctorExpr category category
   | normalizedIdentity (source target : CategoryExpr) : FunctorExpr source target
+  /-- A named functor whose endpoints are supplied by the dependent indices. -/
+  | atomic {source target : CategoryExpr} (id : FunctorId) : FunctorExpr source target
   | named {source target : CategoryExpr} (id : FunctorId) : FunctorExpr source target
   | baseProjection {refined base total : CategoryExpr}
       (refinement : RefinementExpr refined base total) : FunctorExpr refined base

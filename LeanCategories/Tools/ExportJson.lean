@@ -32,6 +32,21 @@ def parameterJson : ParameterExpr → Json
         ("operation", operation.raw),
         ("argument", parameterJson argument),
       ]
+  | .apply2 operation left right =>
+      object [
+        ("tag", "apply2"),
+        ("operation", operation.raw),
+        ("left", parameterJson left),
+        ("right", parameterJson right),
+      ]
+  | .apply3 operation first second third =>
+      object [
+        ("tag", "apply3"),
+        ("operation", operation.raw),
+        ("first", parameterJson first),
+        ("second", parameterJson second),
+        ("third", parameterJson third),
+      ]
 
 def categoryExprJson : CategoryExpr → Json
   | .atom id => object [("tag", "atom"), ("id", id.raw)]
@@ -101,6 +116,7 @@ def functorExprJson {source target : CategoryExpr} : FunctorExpr source target �
   | .normalizedIdentity source target =>
       object [("tag", "normalizedIdentity"), ("source", categoryExprJson source),
         ("target", categoryExprJson target)]
+  | .atomic id => object [("tag", "atomic"), ("id", id.raw)]
   | .named id => object [("tag", "named"), ("id", id.raw)]
   | .baseProjection (.mk id _ _ _) => object [("tag", "baseProjection"), ("id", id.raw)]
   | .classifierProjection (.mk id _ _ _) =>
