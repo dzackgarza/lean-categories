@@ -21,9 +21,10 @@ nondegenerate lattice. This file joins the two.
 * `rootPairingOfDefinite` feeds a definite lattice to `reflectiveRootPairing`, so the Mathlib
   root pairing API applies to every definite lattice, and in particular to every object of
   `RootLatticeCat`.
-* The standard lattices `A_n` and `E_8` of `Standard.lean` satisfy `isRootLattice`. Both are
-  presented by a Gram matrix with constant diagonal `-2`, so each vector of the presenting basis
-  is a root, and a basis spans.
+* The standard lattices `A_n`, `E₆`, `E₇` and `E₈` of `Standard.lean` satisfy `isRootLattice`.
+  Each is presented by a Gram matrix with constant diagonal `-2`, so every vector of the
+  presenting basis is a root, and a basis spans. `DRootLattice.lean` does the same for `Dₙ`, so
+  every simply-laced type has an object of `RootLatticeCat`.
 -/
 
 @[expose] public section
@@ -141,5 +142,45 @@ theorem e8DefiniteLattice_isRootLattice : isRootLattice e8DefiniteLattice := by
 /-- The `E₈` root lattice as an object of `RootLatticeCat`. -/
 noncomputable def e8RootLatticeObject : RootLatticeCat :=
   ⟨e8DefiniteLattice, e8DefiniteLattice_isRootLattice⟩
+
+/-- The diagonal of the `E₇` Gram matrix is `-2`. -/
+theorem e7GramMatrix_diag (i : Fin 7) : e7GramMatrix i i = -2 := by
+  rw [e7GramMatrix_eq]
+  fin_cases i <;> norm_num
+
+/-- The `E₇` lattice as an object of the definite category. -/
+noncomputable def e7DefiniteLattice : DefiniteLatticeCat :=
+  ⟨e7FiniteLattice, Or.inr e7Lattice_isNegativeDefinite⟩
+
+/-- The simple roots of `E₇` span, so `E₇` is a root lattice. -/
+theorem e7DefiniteLattice_isRootLattice : isRootLattice e7DefiniteLattice := by
+  refine span_isRoot_eq_top_of_basis e7FiniteLattice (Pi.basisFun ℤ (Fin 7)) fun i ↦ ?_
+  rw [pairing_basis_self_eq_gramMatrix_diag]
+  change gramMatrix e7Lattice (Pi.basisFun ℤ (Fin 7)) i i = -2
+  rw [e7Lattice_gramMatrix, e7GramMatrix_diag]
+
+/-- The `E₇` root lattice as an object of `RootLatticeCat`. -/
+noncomputable def e7RootLatticeObject : RootLatticeCat :=
+  ⟨e7DefiniteLattice, e7DefiniteLattice_isRootLattice⟩
+
+/-- The diagonal of the `E₆` Gram matrix is `-2`. -/
+theorem e6GramMatrix_diag (i : Fin 6) : e6GramMatrix i i = -2 := by
+  rw [e6GramMatrix_eq]
+  fin_cases i <;> norm_num
+
+/-- The `E₆` lattice as an object of the definite category. -/
+noncomputable def e6DefiniteLattice : DefiniteLatticeCat :=
+  ⟨e6FiniteLattice, Or.inr e6Lattice_isNegativeDefinite⟩
+
+/-- The simple roots of `E₆` span, so `E₆` is a root lattice. -/
+theorem e6DefiniteLattice_isRootLattice : isRootLattice e6DefiniteLattice := by
+  refine span_isRoot_eq_top_of_basis e6FiniteLattice (Pi.basisFun ℤ (Fin 6)) fun i ↦ ?_
+  rw [pairing_basis_self_eq_gramMatrix_diag]
+  change gramMatrix e6Lattice (Pi.basisFun ℤ (Fin 6)) i i = -2
+  rw [e6Lattice_gramMatrix, e6GramMatrix_diag]
+
+/-- The `E₆` root lattice as an object of `RootLatticeCat`. -/
+noncomputable def e6RootLatticeObject : RootLatticeCat :=
+  ⟨e6DefiniteLattice, e6DefiniteLattice_isRootLattice⟩
 
 end LeanCategories.Lattices.Valued
