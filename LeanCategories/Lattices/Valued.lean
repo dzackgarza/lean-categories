@@ -23,9 +23,9 @@ public import LeanCategories.Lattices.Valued.OrthogonalGroup
 public import LeanCategories.Lattices.Valued.DiscriminantAction
 public import LeanCategories.Lattices.Valued.Standard
 public import LeanCategories.Lattices.Valued.Topological
-public import LeanCategories.Lattices.Valued.ComplexTorus
+public import LeanCategories.Lattices.Valued.RealTorus
 public import LeanCategories.Lattices.Valued.ComplexStructure
-public import LeanCategories.Lattices.Valued.ComplexTorusManifold
+public import LeanCategories.Lattices.Valued.ComplexTorus
 public import LeanCategories.Lattices.Valued.TopologicalOrthogonalGroup
 public import LeanCategories.Lattices.Valued.Signature
 public import LeanCategories.Lattices.Valued.Theta

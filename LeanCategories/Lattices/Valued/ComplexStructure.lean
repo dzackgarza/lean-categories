@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Lattices.Valued.ComplexTorus
+public import LeanCategories.Lattices.Valued.RealTorus
 public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.LinearAlgebra.BilinearForm.Properties
 
 /-!
 # Complex structures and Riemann forms
 
-`LeanCategories.Lattices.Valued.ComplexTorus` builds the real torus `L_ℝ / L` of a realized
+`LeanCategories.Lattices.Valued.RealTorus` builds the real torus `L_ℝ / L` of a realized
 integral lattice and stops there, because a real torus is not yet a complex torus. This file
 supplies the two missing pieces of data named in that file.
 
