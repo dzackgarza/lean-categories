@@ -1,212 +1,356 @@
-# Current work
+# Mathematical lexicon
 
-This repository first completes the mathematical language required by GitHub issue
-[#1](https://github.com/dzackgarza/lean-categories/issues/1). The requirement is
-definitional. Hard classification, automorphic, and projectivity theorems do not control
-the foundation queue.
+Each checkbox means that the repository exposes the named mathematical term at its
+standard generality. Reuse the Mathlib owner when one exists.
 
-GitHub issues own public requirements and execution state. The central agent-memory vault
-owns private plans and prerequisite analysis. This file is a short entry point, not a
-second tracker.
+## Rings and algebras
 
-## Missing or incomplete definition layer
+- [ ] Category of rings
+- [ ] Category of commutative rings
+- [ ] Category of `R`-algebras
+- [ ] Category of commutative `R`-algebras
+- [ ] Underlying-ring functor from `R`-algebras
+- [ ] Underlying-`R`-module functor from `R`-algebras
+- [ ] Restriction of scalars for algebras
+- [ ] Extension of scalars for algebras
+- [ ] Base change of algebras
+- [ ] Tensor product of `R`-algebras
+- [ ] Opposite algebra
+- [ ] Quotient algebra
+- [ ] Product of algebras
+- [ ] Polynomial algebra `R[X]`
+- [ ] Multivariate polynomial algebra `R[X_i]`
+- [ ] Laurent polynomial algebra `R[X,X⁻¹]`
+- [ ] Formal power-series algebra `R⟦X⟧`
+- [ ] Multivariate formal power-series algebra
+- [ ] Laurent-series algebra `R((X))`
+- [ ] Monoid algebra `R[M]`
+- [ ] Graded ring
+- [ ] Graded `R`-algebra
+- [ ] Graded algebra morphism
+- [ ] Homogeneous component
+- [ ] Associated graded ring
+- [ ] Associated graded module
 
-This is the declaration-level work queue. Each item states the current gap verbatim,
-then states the mathematical result required to close it.
+## Free algebra constructions
 
-- **No general categories of projective, torsion, or torsion-free `R`-modules exist.**
-  - Define each category as the appropriate full subcategory of `ModuleCat R`.
-  - Define its inclusion into `ModuleCat R` and its change-of-scalars functors where
-    the property is preserved.
-  - Relate these categories to `FreeModules R`, `FinitelyGeneratedModules R`, and
-    `FiniteRankModules R`.
-  - Express projective lattices and finite torsion form modules through these module
-    categories instead of repeating carrier predicates.
+- [ ] Tensor algebra `T_R(M)`
+- [ ] Tensor algebra functor
+- [ ] Tensor algebra grading
+- [ ] Symmetric algebra `Sym_R(M)`
+- [ ] Symmetric algebra functor
+- [ ] Symmetric powers `Sym_R^n(M)`
+- [ ] Symmetric algebra grading
+- [ ] Exterior algebra `Λ_R(M)`
+- [ ] Exterior algebra functor
+- [ ] Exterior powers `Λ_R^n(M)`
+- [ ] Exterior algebra grading
+- [ ] Divided-power algebra `Γ_R(M)`
+- [ ] Divided-power algebra functor
+- [ ] Divided powers `Γ_R^n(M)`
+- [ ] Divided-power algebra grading
+- [ ] Polynomial algebra as the free commutative `R`-algebra
+- [ ] Tensor algebra as the free associative `R`-algebra
+- [ ] Symmetric algebra as the free commutative `R`-algebra on an `R`-module
+- [ ] Exterior algebra as the free alternating `R`-algebra on an `R`-module
+- [ ] Quadratic maps `M → N` as linear maps `Γ_R^2(M) → N`
 
-- **`RingAdeleRing K` is tied to `\mathcal O_K`. It is not the requested `AA_R` for a
-  general number ring `R`.**
-  - Define the ring adeles relative to an arithmetic base `(R, K)`.
-  - Use the finite integral adeles of `R`, the archimedean completions of `K`, and the
-    diagonal `R`-algebra map.
-  - Recover the existing `RingAdeleRing K` when `R = \mathcal O_K`.
-  - State the comparison with the full adele ring of `K`.
+## Modules
 
-- **No class-number definition exists, despite the finite genus class set.**
-  - Define the class number as the cardinality of the finite set of global isometry
-    classes in a genus.
-  - Prove invariance under replacement of the base lattice by a lattice in the same
-    genus.
-  - Relate class number one to uniqueness of the global isometry class in the genus.
+- [x] Category of left `R`-modules
+- [x] Category of right `R`-modules
+- [x] Category of free `R`-modules
+- [x] Category of finitely generated `R`-modules
+- [x] Category of finite-rank free `R`-modules
+- [ ] Category of projective `R`-modules
+- [ ] Category of finitely generated projective `R`-modules
+- [ ] Category of finitely presented `R`-modules
+- [ ] Category of torsion `R`-modules
+- [ ] Category of finite torsion `R`-modules
+- [ ] Category of torsion-free `R`-modules
+- [ ] Category of finite-length `R`-modules
+- [ ] Category of graded `R`-modules
+- [ ] Category of chain complexes of `R`-modules
+- [ ] Category of cochain complexes of `R`-modules
+- [ ] Restriction of scalars for modules
+- [ ] Extension of scalars for modules
+- [ ] Tensor product functor for modules
+- [ ] Internal Hom for modules
+- [ ] Dual module `M* = Hom_R(M,R)`
+- [ ] Evaluation map `M → M**`
+- [ ] Tensor-Hom adjunction
+- [ ] Homology of a chain complex
+- [ ] Cohomology of a cochain complex
+- [ ] Shift of a chain complex
+- [ ] Shift of a cochain complex
 
-- **`O(L)` is not defined as `Aut L` in the formed-module category.**
-  - Make the categorical automorphism group the canonical definition of `O(L)`.
-  - Prove its group equivalence with the existing subgroup of form-preserving linear
-    equivalences.
-  - Transport the actions on sublattices, duals, and discriminant forms through this
-    equivalence.
-  - Remove the duplicate orthogonal-group authority after dependent code uses the
-    categorical definition.
+## Local algebra
 
-- **No equivalence between the current `O(L)` and that categorical automorphism group
-  exists.**
-  - Construct the equivalence from formed-module morphisms and form-preserving linear
-    equivalences.
-  - Prove both composites are identities.
-  - Prove compatibility with multiplication, inverse, and the action on the lattice.
+- [ ] Multiplicative subset of a commutative ring
+- [ ] Localization `S⁻¹R`
+- [ ] Canonical localization map `R → S⁻¹R`
+- [ ] Localization of an `R`-module `S⁻¹M`
+- [ ] Module localization map `M → S⁻¹M`
+- [ ] Localization functor for modules
+- [ ] Localization of an `R`-algebra
+- [ ] Localization at a prime ideal `R_𝔭`
+- [ ] Localization of a module at a prime ideal `M_𝔭`
+- [ ] Localization at an element `R_f`
+- [ ] Localization of a module at an element `M_f`
+- [ ] Local ring
+- [ ] Local homomorphism
+- [ ] Category of local rings and local homomorphisms
+- [ ] Local `R`-algebra
+- [ ] Maximal ideal of a local ring
+- [ ] Residue ring `R/I`
+- [ ] Residue field `κ(𝔭)`
+- [ ] Fraction ring `Frac(R)`
+- [ ] Total quotient ring
+- [ ] Support of a module
+- [ ] Annihilator of a module
+- [ ] Local support of a module
+- [ ] `I`-adic filtration on a ring
+- [ ] `I`-adic filtration on a module
+- [ ] `I`-adic topology on a ring
+- [ ] `I`-adic topology on a module
+- [ ] `I`-adic completion `R̂_I`
+- [ ] `I`-adic completion `M̂_I`
+- [ ] Completion map `R → R̂_I`
+- [ ] Completion map `M → M̂_I`
+- [ ] Separated `I`-adic ring
+- [ ] Complete `I`-adic ring
+- [ ] Separated `I`-adic module
+- [ ] Complete `I`-adic module
+- [ ] Completed tensor product
+- [ ] Henselian local ring
+- [ ] Strictly Henselian local ring
+- [ ] Henselization
+- [ ] Strict Henselization
 
-- **No finite-generation theorem for `O(L)` exists.**
-  - For positive-definite integral lattices, derive finite generation from finiteness of
-    `O(L)`.
-  - State the arithmetic hypotheses required for indefinite lattices over number rings.
-  - Formalize a sourced finite-generation theorem only at that natural generality.
-  - Keep finite generation separate from generation by reflections.
+## Prime spectra and affine local algebra
 
-- **No Siegel mass formula exists. Only the mass itself exists.**
-  - State the global mass formula for a positive-definite genus.
-  - Define every archimedean factor, local density, measure normalization, and volume
-    term used by the formula.
-  - Compare the formula's mass with the existing finite sum over genus classes.
-  - Prove the comparison after all normalization conventions agree.
+- [ ] Prime spectrum `Spec(R)`
+- [ ] Zariski closed subset `V(I)`
+- [ ] Principal open subset `D(f)`
+- [ ] Basic-open localization `R_f`
+- [ ] Residue field at a point of `Spec(R)`
+- [ ] Local ring at a point of `Spec(R)`
+- [ ] Specialization of prime ideals
+- [ ] Contraction of prime ideals
+- [ ] Extension of prime ideals
+- [ ] Induced map on prime spectra
 
-- **No theta modularity theorem exists.**
-  - Define the analytic theta function attached to a positive-definite integral
-    lattice.
-  - Compare its Fourier expansion with the existing formal power series.
-  - State the exact evenness, level, character, weight, and congruence-subgroup
-    hypotheses.
-  - Prove the required transformation laws before claiming modularity.
+## Bilinear formed modules
 
-- **No signed-discriminant definition exists.**
-  - Define the signed discriminant from rank and Gram determinant with one explicit
-    sign convention.
-  - Prove independence from the chosen basis.
-  - Prove compatibility with isometry, orthogonal sum, scalar extension, and the
-    discriminant module.
-  - Relate it to the existing determinant and signature invariants.
+- [x] Category of `W`-valued bilinear `R`-modules
+- [x] Category of variable-value bilinear `R`-modules
+- [x] Category of symmetric `W`-valued bilinear `R`-modules
+- [x] Category of skew-symmetric `W`-valued bilinear `R`-modules
+- [x] Category of alternating `W`-valued bilinear `R`-modules
+- [x] Category of radical-free symmetric bilinear `R`-modules
+- [x] Category of perfect symmetric bilinear `R`-modules
+- [x] Category of finite torsion bilinear `R`-modules
+- [x] Category of finite torsion symmetric bilinear `R`-modules
+- [x] Category of nonsingular finite torsion bilinear `R`-modules
+- [ ] Category of projective bilinear `R`-modules
+- [ ] Category of finitely generated projective bilinear `R`-modules
+- [ ] Category of free bilinear `R`-modules
+- [ ] Category of torsion-free bilinear `R`-modules
+- [x] Form-preserving morphism
+- [x] Form-preserving isomorphism
+- [x] Underlying-module functor
+- [x] Value-module functor
+- [x] Change of value module
+- [x] Scalar extension of a bilinear module
+- [x] Left adjoint map `M → Hom_R(M,W)`
+- [x] Right adjoint map `M → Hom_R(M,W)`
+- [x] Left radical
+- [x] Right radical
+- [x] Bilinear defect module
+- [x] Left nondegeneracy
+- [x] Right nondegeneracy
+- [x] Nondegeneracy
+- [x] Left perfectness
+- [x] Right perfectness
+- [x] Perfectness
+- [x] Restriction of a bilinear form to a submodule
+- [x] Orthogonal complement
+- [x] Orthogonal direct sum
+- [x] Orthogonal summand
+- [x] Radical quotient
 
-- **No named `\mathbb Q/\mathbb Z` module exists. Only the general fraction-field
-  quotient machinery exists.**
-  - Define `Frac(R) / R` as the standard value module for a domain `R`.
-  - Define `\mathbb Q/\mathbb Z` as its specialization at `R = \mathbb Z`.
-  - Register both objects in the module family and formed-module value families.
-  - Compare them with the existing fractional-ideal quotient at the unit ideal.
+## Quadratic formed modules
 
-- **No quadratic-form interpretation through a divided-power algebra exists.**
-  - Define or reuse the degree-two divided-power object `\Gamma^2_R(M)`.
-  - State quadratic maps `M \to N` as linear morphisms `\Gamma^2_R(M) \to N`.
-  - Prove the universal correspondence and its naturality in `M` and `N`.
-  - Compare this representation with the current `QuadraticMap` category.
+- [x] Category of `W`-valued quadratic `R`-modules
+- [ ] Category of variable-value quadratic `R`-modules
+- [x] Category of finite torsion quadratic `R`-modules
+- [x] Category of nonsingular finite torsion quadratic `R`-modules
+- [ ] Category of projective quadratic `R`-modules
+- [ ] Category of finitely generated projective quadratic `R`-modules
+- [ ] Category of free quadratic `R`-modules
+- [ ] Category of torsion-free quadratic `R`-modules
+- [x] Quadratic-form-preserving morphism
+- [x] Quadratic-form-preserving isomorphism
+- [x] Underlying-module functor for quadratic modules
+- [ ] Value-module functor for quadratic modules
+- [ ] Change of value module for quadratic modules
+- [ ] Scalar extension of a quadratic module
+- [x] Polar bilinear form
+- [x] Polar adjoint map
+- [x] Nondegenerate quadratic module
+- [x] Perfect quadratic module
+- [ ] Quadratic radical
+- [ ] Quadratic defect module
+- [ ] Comparison between `QuadraticMap R M W` and `Hom_R(Γ_R^2(M),W)`
 
-- **No repository-level category of `R`-algebras exists.**
-  - Expose Mathlib's `AlgCat R` as the category of `R`-algebras.
-  - Define the family of algebra categories over commutative rings.
-  - Register restriction and extension of scalars, underlying rings, and underlying
-    modules.
-  - Record the relevant adjunctions and comparison isomorphisms.
+## Lattices
 
-- **Tensor, symmetric, exterior, polynomial, power-series, Laurent-series, and graded
-  algebras are not exposed as the required categorical constructions.**
-  - Reuse the Mathlib constructions and expose their functors at the correct source and
-    target categories.
-  - Record the tensor, symmetric, exterior, and polynomial universal properties.
-  - Define power-series and Laurent-series rings as `R`-algebras with their coefficient
-    and substitution morphisms.
-  - Expose graded algebras and the gradings carried by the free algebra constructions.
-  - Register all structural and forgetful functors without creating parallel algebra
-    definitions.
+- [x] Category of projective symmetric `W`-valued `R`-lattices
+- [x] Category of integral `R`-lattices
+- [x] Category of finite projective integral `R`-lattices
+- [x] Category of finite symmetric form modules
+- [ ] Category of free integral `R`-lattices
+- [ ] Category of finite free integral `R`-lattices
+- [ ] Category of nondegenerate integral `R`-lattices
+- [ ] Category of even integral lattices
+- [ ] Category of unimodular integral lattices
+- [ ] Category of positive-definite integral lattices
+- [ ] Category of negative-definite integral lattices
+- [ ] Category of indefinite integral lattices
+- [x] Rational span `K ⊗_R L`
+- [x] Algebraic dual `L* = Hom_R(L,R)`
+- [x] Adjoint map `L → L*`
+- [x] Metric dual `L#`
+- [x] Fractional-ideal dual `L^{#I}`
+- [x] Integral-ideal dual `L^{#I}`
+- [x] Inclusion `L^{#I} → K ⊗_R L`
+- [ ] Pairing map `L^{#I} → L*`
+- [x] Integral image `L → K ⊗_R L`
+- [x] Discriminant module `A_L = L#/L`
+- [x] Discriminant bilinear form
+- [x] Discriminant quadratic form of an even lattice
+- [x] Discriminant projection
+- [x] Discriminant exact sequence
+- [x] Unimodular lattice
+- [x] Fractional-`I`-modular lattice
+- [x] `I`-modular lattice
+- [x] `I`-elementary lattice
+- [ ] `p`-elementary lattice
+- [x] Determinant of a based lattice
+- [ ] Determinant invariant of an unbased lattice
+- [ ] Signed discriminant
+- [x] Signature
+- [x] Scale ideal
+- [x] Norm ideal
+- [x] Evenness
+- [ ] Level of an integral lattice
+- [ ] Exponent of the discriminant module
+- [x] Hasse invariant
+- [x] Local Jordan decomposition data
+- [x] Genus invariants
 
-- **Chain complexes of `R`-modules are not exposed through the project language.**
-  - Expose chain and cochain complexes in `ModuleCat R`.
-  - Register evaluation, shift, homology, forgetful, and scalar-change functors where
-    Mathlib supplies them.
-  - State the differential and square-zero condition through the standard Mathlib
-    category.
-  - Keep complexes distinct from graded modules with a chosen differential.
+## Orthogonal groups and roots
 
-- **Mathlib owns many underlying constructions. The repository does not integrate their
-  categories, functors, and universal properties.**
-  - Build a declaration-level reuse inventory for every item above.
-  - Import the Mathlib owner when its formulation has the required generality.
-  - Add only the missing categorical family, classifier, realization, or comparison.
-  - Record the universal property that identifies each exposed construction.
+- [x] Orthogonal group as form-preserving linear automorphisms
+- [ ] Orthogonal group `O(L) = Aut(L)` in the category of integral lattices
+- [ ] Comparison between categorical `Aut(L)` and form-preserving linear automorphisms
+- [x] Action of `O(L)` on sublattices
+- [x] Action of `O(L)` on `L*`
+- [x] Action of `O(L)` on `L#`
+- [x] Action of `O(L)` on `A_L`
+- [x] Stable orthogonal group
+- [x] Reflective vector
+- [x] Integral reflection
+- [x] Root as a vector whose reflection preserves the lattice
+- [x] Root pairing
+- [x] Root system of reflective vectors
+- [x] Weyl group
+- [x] Reflection subgroup `W(L) ≤ O(L)`
+- [ ] Finite-generation predicate for `O(L)`
+- [ ] Finite-generation predicate for `W(L)`
+- [ ] Reflection-generated lattice
 
-- **Localization, completion, local rings, and residue fields occur in specialized
-  files.**
-  - Expose localization of rings and modules at submonoids and prime ideals.
-  - Expose adic completion with its canonical map and universal property.
-  - Expose local rings, maximal ideals, residue fields, and induced local morphisms.
-  - Relate the existing lattice-localization, completion, and residue constructions to
-    these general owners.
+## Quotient value modules and discriminant forms
 
-- **The general local algebra needed for schemes is not present as a coherent definition
-  layer.**
-  - Complete the ring, algebra, module, localization, completion, and residue-field
-    categories before the scheme layer depends on them.
-  - Define the functors and natural transformations used by stalks and affine-local
-    constructions.
-  - State all base-change and comparison isomorphisms needed to pass between global,
-    localized, completed, and residue objects.
-  - Require the scheme foundation to reuse this layer rather than introduce local
-    algebra inside geometric files.
+- [x] `Frac(R)/I` for a fractional ideal `I`
+- [ ] Standard value module `Frac(R)/R`
+- [ ] Standard value module `ℚ/ℤ`
+- [ ] Category of `Frac(R)/R`-valued bilinear forms
+- [ ] Category of `Frac(R)/R`-valued quadratic forms
+- [ ] Category of `ℚ/ℤ`-valued finite bilinear forms
+- [ ] Category of `ℚ/2ℤ`-valued finite quadratic forms
+- [x] Radical-free finite torsion bilinear form
+- [x] Nonsingular finite torsion bilinear form
+- [x] Nonsingular finite torsion quadratic form
+- [x] Anti-isometry of discriminant forms
+- [x] Discriminant representation `O(L) → O(A_L)`
+- [x] Stable orthogonal group as the kernel of `O(L) → O(A_L)`
 
-## Foundation 0.1
+## Adeles and local-global lattice objects
 
-GitHub issue [#50](https://github.com/dzackgarza/lean-categories/issues/50) owns the
-ordered Foundation 0.1 work. The active vault plan is
-`PLAN-DEFINITION-FIRST-FOUNDATION-EXECUTION`.
+- [x] Arithmetic base `(R,K)`
+- [x] Finite adele ring of `K`
+- [x] Finite integral adele ring of `(R,K)`
+- [x] Infinite adele ring of a number field
+- [x] Full adele ring of a number field
+- [x] Ring adeles for `R = 𝓞_K`
+- [ ] Adele ring `𝔸_R` of a general number ring `R`
+- [x] Idele group
+- [x] Prime-adic completion of `R`
+- [x] Completion of `K` at a finite place
+- [x] Completion of `K` at an infinite place
+- [x] Integral subring at a finite place
+- [x] Restricted product of local fields
+- [x] Restricted product of local unit groups
+- [x] Adelic scalar extension of a lattice
+- [x] Finite-integral adelic scalar extension of a lattice
+- [x] Local lattice at a finite place
+- [x] Local lattice at an infinite place
+- [x] Adelic orthogonal group
+- [x] Finite-integral adelic orthogonal group
+- [x] Adelic genus relation
+- [x] Local-isometry genus relation
+- [x] Global isometry class
+- [x] Genus class set
+- [ ] Class number of a genus
+- [x] Mass of a genus
+- [x] Representation number
+- [x] Theta series of a positive-definite integral lattice
 
-1. [#30 Higher classifier foundation and algebraic testbed](https://github.com/dzackgarza/lean-categories/issues/30)
-   - Select the model-independent higher-categorical interface.
-   - Make the current strict `Cat` code a realization of that interface.
-   - Derive property, structure, and stuff from classifying fibers and truncation.
-   - Prove reindexing universal properties and coherent comparison cells.
+## Standard categorical constructions
 
-2. [#31 Proof-carrying expressions, registry, and generic interpretation](https://github.com/dzackgarza/lean-categories/issues/31)
-   - Make expressions and interpretation relative to a selected realization.
-   - Replace unconditional partial normalization with certified convergence boundaries.
-   - Record actual equivalences and coherent comparisons between presentations.
-
-3. [#28 Operation and section registry](https://github.com/dzackgarza/lean-categories/issues/28)
-   and [#53 functorial method resolution](https://github.com/dzackgarza/lean-categories/issues/53)
-   - Register mathematical operations, constructors, sections, and invariants on the one
-     semantic diagram.
-   - Derive inherited methods by composition along structural functors.
-   - Keep backend realizations separate from mathematical ownership.
-
-4. [#41 Standard categorical vocabulary](https://github.com/dzackgarza/lean-categories/issues/41)
-   - Expose adjunctions, universal arrows, essential images, restrictions,
-     corestrictions, mates, and reflective localizations through existing Mathlib owners.
-   - Register the standard free-algebra constructions and their universal properties.
-
-5. [#29 Coordinatized finite symmetric bilinear space over F2](https://github.com/dzackgarza/lean-categories/issues/29)
-   - Exercise category definitions, structural projection, operation resolution, and
-     computation in one end-to-end example.
-   - Keep intrinsic invariants distinct from coordinate-dependent calculations.
-
-6. [#33 Module-valued forms and intrinsic lattices](https://github.com/dzackgarza/lean-categories/issues/33)
-   - Complete arbitrary-index frames, the matrix presentation category, and the Gram
-     comparison functor at their general mathematical owners.
-
-## Definition work after Foundation 0.1
-
-The issue tree remains authoritative for later branches:
-
-- [#38 Scheme and relative-geometry foundation](https://github.com/dzackgarza/lean-categories/issues/38)
-- [#39 Fibred categories, stacks, and KSBA moduli](https://github.com/dzackgarza/lean-categories/issues/39)
-- [#40 Manifolds, Hodge theory, and period constructions](https://github.com/dzackgarza/lean-categories/issues/40)
-- [#54 Typed category constructors and parameterized family applications](https://github.com/dzackgarza/lean-categories/issues/54)
-- [#56 Complete category surface required by the CAS DSL](https://github.com/dzackgarza/lean-categories/issues/56)
-
-## Downstream theorem programmes
-
-The former TODO items remain preserved as vault plans. They are not current foundation
-work:
-
-- `PLAN-SIEGEL-MASS-FORMULA`
-- `PLAN-THETA-SERIES-MODULARITY`
-- `PLAN-ADE-REALIZATION-UNIQUENESS`
-- `PLAN-INDEFINITE-LATTICE-CLASSIFICATION`
-- `PLAN-ABELIAN-PROJECTIVITY`
-
-Promote one of these plans only after its definition layer exists and the project selects
-that theorem programme for active work.
+- [ ] Category of elements
+- [ ] Grothendieck construction
+- [ ] Slice category
+- [ ] Coslice category
+- [ ] Comma category
+- [ ] Full subcategory
+- [ ] Essential image
+- [ ] Core of a category
+- [ ] Category of structured objects
+- [ ] Category of costructured objects
+- [ ] Category of sections of a functor
+- [ ] Restriction of a functor
+- [ ] Corestriction of a functor
+- [ ] Left adjoint
+- [ ] Right adjoint
+- [ ] Unit of an adjunction
+- [ ] Counit of an adjunction
+- [ ] Universal arrow
+- [ ] Reflective subcategory
+- [ ] Coreflective subcategory
+- [ ] Categorical localization
+- [ ] Pullback category
+- [ ] Homotopy pullback category
+- [ ] Natural transformation
+- [ ] Natural isomorphism
+- [ ] Mate of a natural transformation
+- [ ] Limit of categories
+- [ ] Colimit of categories
+- [ ] Classifier of a property
+- [ ] Classifier of structure
+- [ ] Classifier of stuff
+- [ ] Lift through a classifier
+- [ ] Reindexing of a classifier
+- [ ] Fiber of a classifier
+- [ ] Truncation of a classifier fiber
