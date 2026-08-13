@@ -342,22 +342,208 @@ Before writing any construct, in order:
    - A missing *exact name* is not a missing construction (§4.4). Standard mathematics is usually a composition of what Mathlib already has: categories of elements, comma/slice categories, full subcategories, pullbacks, cores, sections, equivalences, adjunctions, essential images. Build from those.
    - Every work-unit issue carries a verified **"Mathlib reuse"** comment (reuse / extend / genuinely-absent, each with `Namespace.Decl` + file path, checked against the pinned version). That is your starting inventory: reuse the "reuse" tier directly, extend the "extend" tier, and only the "genuinely-absent" tier is new authorship. Keep those comments current as Mathlib moves.
 
-2. **Then search prior formalizations on the web.** If Mathlib lacks it, check whether it has been formalized elsewhere *before* writing your own: Lean-community projects on GitHub, in-flight Mathlib PRs, and other proof-assistant developments. When a reference implementation exists, **use it** — import if it is packaged and licensed, otherwise port/adapt it and cite the source — rather than reinventing.
-   - **Search [`google-deepmind/formal-conjectures`](https://github.com/google-deepmind/formal-conjectures) specifically.** It holds Lean formalizations of many statements and constructions this programme touches. When it has a relevant one, **import, reuse, or rewrite/extend it** — do not restate it from scratch. It is also the sanctioned home for genuinely-unproved deep statements (conjecture ledger, issue #21).
-   - **Search [`facebookresearch/atlas-lean`](https://github.com/facebookresearch/atlas-lean) specifically.** It is the ATLAS Autoformalized Textbook Library At Scale. Search it for textbook definitions, statements, and dependency chains before reconstructing standard mathematics from prose.
-   - **Search [`ImperialCollegeLondon/FLT`](https://github.com/ImperialCollegeLondon/FLT) specifically.** It contains substantial reusable algebra and number theory developed for the Lean formalization of Fermat's Last Theorem, including commutative-algebra and dimension-theory material beyond a search for exact project names.
+2. **Then search prior formalizations — the [Formalization source registry](#formalization-source-registry) below is the mandatory search surface.** If Mathlib lacks it, check whether it has been formalized elsewhere *before* writing your own: in-flight Mathlib PRs, the registry's repositories, and other proof-assistant developments. When a reference implementation exists, **use it** — import if it is packaged and licensed, otherwise port/adapt it and cite the source — rather than reinventing.
    - **Treat [`leanprover-community/mathlib4`](https://github.com/leanprover-community/mathlib4) as the canonical upstream repository.** The pinned `.lake/packages/mathlib` checkout remains the version that controls imports and available declarations. Use the GitHub repository to inspect current upstream work, pull requests, and source history.
    - **Search [Lean Reservoir](https://reservoir.lean-lang.org/) before a general GitHub search.** Reservoir indexes public Lake packages across the Lean ecosystem. Search package names, descriptions, dependencies, and source repositories for the mathematical term and its standard synonyms.
-   - **Search the Meta formalization repositories individually.** [`facebookresearch/atlas-lean`](https://github.com/facebookresearch/atlas-lean) contains the large textbook library. [`facebookresearch/algebraic-combinatorics`](https://github.com/facebookresearch/algebraic-combinatorics) contains the automatic formalization of Grinberg's *Algebraic Combinatorics*. [`facebookresearch/autoform-bot`](https://github.com/facebookresearch/autoform-bot) contains the ATLAS formalization pipeline. [`facebookresearch/repoprover`](https://github.com/facebookresearch/repoprover) contains the automatic textbook formalization research code. [`facebookresearch/LeanUniverse`](https://github.com/facebookresearch/LeanUniverse) indexes and manages Lean libraries and datasets. [`facebookresearch/abel`](https://github.com/facebookresearch/abel) and [`facebookresearch/Evariste`](https://github.com/facebookresearch/Evariste) contain Lean proof-search systems and their corpora. Search the mathematical libraries first; use the pipeline and prover repositories to locate generated corpora and source projects.
-   - **Search the reference projects named by [`leanprover-community/LeanProject`](https://github.com/leanprover-community/LeanProject).** Its selected collaborative projects are [`teorth/pfr`](https://github.com/teorth/pfr), [`fpvandoorn/BonnAnalysis`](https://github.com/fpvandoorn/BonnAnalysis), [`AlexKontorovich/PrimeNumberTheoremAnd`](https://github.com/AlexKontorovich/PrimeNumberTheoremAnd), [`emilyriehl/infinity-cosmos`](https://github.com/emilyriehl/infinity-cosmos), [`teorth/expdb`](https://github.com/teorth/expdb), [`sinhp/GroupoidModelofHoTTinLean4`](https://github.com/sinhp/GroupoidModelofHoTTinLean4), [`teorth/equational_theories`](https://github.com/teorth/equational_theories), and [`thefundamentaltheor3m/Sphere-Packing-Lean`](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean).
-   - The additional projects listed by `LeanProject` are [`BoltonBailey/FRISoundness`](https://github.com/BoltonBailey/FRISoundness), [`CBirkbeck/WeilConverse`](https://github.com/CBirkbeck/WeilConverse), [`mo271/FormalBook`](https://github.com/mo271/FormalBook), [`shetzl/autth`](https://github.com/shetzl/autth), [`CBirkbeck/DirichletNonvanishing`](https://github.com/CBirkbeck/DirichletNonvanishing), [`Ivan-Sergeyev/seymour`](https://github.com/Ivan-Sergeyev/seymour), [`oliver-butterley/SpectralThm`](https://github.com/oliver-butterley/SpectralThm), [`or4nge19/NeuralNetworks`](https://github.com/or4nge19/NeuralNetworks), [`b-mehta/ABC-Exceptions`](https://github.com/b-mehta/ABC-Exceptions), and [`CBirkbeck/LeanBridge`](https://github.com/CBirkbeck/LeanBridge). Search the relevant repository when its mathematical subject intersects the requested term.
-   - These sources are mandatory search targets for this programme: the pinned Mathlib tree, upstream `mathlib4`, Lean Reservoir, `atlas-lean`, the other Meta formalization repositories above, `formal-conjectures`, `FLT`, and the subject-relevant `LeanProject` references. Record the exact repository, declaration, and file used. External definitions remain reference implementations until their types, hypotheses, and mathematical meaning agree with this project's required object.
+   - **Search every registry repository whose subject intersects the requested term, and always the statement banks.** Record the exact repository, declaration, and file used. External definitions remain reference implementations until their types, hypotheses, and mathematical meaning agree with this project's required object.
 
 3. **Only then write new — and relate it to what exists.** A new construct with no stated relationship to a standard one is a red flag (§4.1, §4.4). Every new definition must, in the same PR, carry its tie to the existing world: an equivalence, comparison functor, or forgetful/instance relationship to the Mathlib **or in-repo** construction it specializes, generalizes, or sits beside. Build for **integration compatibility** — reuse Mathlib's typeclasses, category conventions, and morphism classes so the result composes with the library instead of shadowing it. (An equivalence to a standard object does not by itself legitimize a bespoke parallel hierarchy — §4.6 — but its *absence* is worse: the new object then floats free of the mathematics it claims to model.)
 
 4. **Record the search.** When you do write new, state what you searched and why the existing pieces did not suffice — in the PR, and in the owning issue if the fact is durable. "Not found in Mathlib / formal-conjectures / a reference project" is a negative finding: report the searched scope, never "does not exist." A later agent must be able to see the reuse gate was actually run.
 
 The failure this gate prevents is §4.3 and §4.4: writing a plausible new definition is faster and *feels* more productive than finding the three-line composition of existing constructions that already says it. That is not progress — it is a new maintenance surface and an avoidable comparison theorem later.
+
+---
+
+## Formalization source registry
+
+**The highest priority of this programme is minimizing the lines of Lean owned by this repository.** Re-defining or re-proving mathematics that is already formalized anywhere online is the primary failure mode: every re-derived line is a permanent maintenance surface and an avoidable comparison theorem later. Exhaust this registry before authoring anything.
+
+Strict preference order:
+
+1. **Use the pinned Mathlib declaration** (`.lake/packages/mathlib`) whenever it is at least as general.
+2. **Import a packaged library** as a Lake dependency (via Reservoir or a direct git dependency) when the construction lives in an active Lean 4 library.
+3. **Copy or port the reference implementation** when the source is unpackaged, toolchain-incompatible, Lean 3, or in another proof assistant. Cite the origin at the ported site: repository, file, and commit or tag.
+4. **Author new Lean only after 1–3 fail**, under step 3 of the reuse gate, relating the new construct to what exists in the same PR.
+
+Every repository below resolved on GitHub on 2026-08-14. Entries flagged *(Lean 3)*, *(archived)*, or *(stale)* are port or citation sources, never dependencies. Two repositories named in earlier revisions of this document no longer resolve and were removed: `BoltonBailey/FRISoundness`, and `sinhp/GroupoidModelofHoTTinLean4` (its subject now lives in [`sinhp/HoTTLean`](https://github.com/sinhp/HoTTLean)). GitHub also hosts autogenerated repository farms (for example the `*-canonical-lane-mathlib` pattern); a repository enters a plan, an import, or this registry only after a provenance check of its authors and history.
+
+### Indexes and search surfaces
+
+| Surface | Use |
+| --- | --- |
+| [Lean Reservoir](https://reservoir.lean-lang.org/) | Index of public Lake packages. Search before any general GitHub search. |
+| [Loogle](https://loogle.lean-lang.org/) ([`nomeata/loogle`](https://github.com/nomeata/loogle)) | Type-pattern search over Mathlib; also the `lean_loogle` MCP tool. |
+| [LeanSearch](https://leansearch.net/) | Natural-language search over Mathlib; also the `lean_leansearch` MCP tool. |
+| [Mathlib docs](https://leanprover-community.github.io/mathlib4_docs/) | Declaration-level documentation for current Mathlib. |
+| [100 theorems](https://leanprover-community.github.io/100.html), [1000+ theorems](https://leanprover-community.github.io/1000.html) ([`1000-plus/1000-plus.github.io`](https://github.com/1000-plus/1000-plus.github.io)) | Which named theorems already have a formalization, in which system, and where. |
+| [Undergrad math in Mathlib](https://leanprover-community.github.io/undergrad.html) | Coverage map of standard undergraduate material. |
+| [Lean community projects page](https://leanprover-community.github.io/lean_projects.html) | Curated list of active formalization projects. |
+| [Lean Zulip](https://leanprover.zulipchat.com/) | Search it before concluding nonexistence; in-progress formalizations are announced and discussed there. |
+| [`CBirkbeck/LeanBridge`](https://github.com/CBirkbeck/LeanBridge) | Links LMFDB objects to Lean declarations. |
+
+### Mathlib subtrees closest to this programme
+
+The pinned checkout owns these; search them by path before any external source.
+
+| Path | Content |
+| --- | --- |
+| `Mathlib/CategoryTheory/` | 1-categories, limits, adjunctions, monads, comma and elements constructions, abelian categories, monoidal and enriched categories, bicategories, sites, sheaves, topoi, localization, triangulated categories. |
+| `Mathlib/AlgebraicTopology/` | Simplicial sets, nerves, quasicategories, simplicial homotopy theory. |
+| `Mathlib/Condensed/` | Condensed sets and condensed abelian groups. |
+| `Mathlib/AlgebraicGeometry/` | Schemes, morphism classes, gluing, Spec and Proj. |
+| `Mathlib/LinearAlgebra/QuadraticForm/`, `Mathlib/LinearAlgebra/BilinearForm/` | Quadratic and bilinear forms, isometries, orthogonality. |
+| `Mathlib/LinearAlgebra/RootSystem/` | Root pairings, root systems, Weyl groups. |
+| `Mathlib/NumberTheory/`, `Mathlib/RepresentationTheory/` | Number fields, modular forms, L-series, group representations. |
+
+### Category theory, higher structures, type-theory semantics
+
+| Repository | Content |
+| --- | --- |
+| [`emilyriehl/infinity-cosmos`](https://github.com/emilyriehl/infinity-cosmos) | ∞-cosmos theory over Mathlib's quasicategories; formal ∞-category theory. |
+| [`sinhp/HoTTLean`](https://github.com/sinhp/HoTTLean) | Groupoid and natural models of HoTT; semantics of type theory. |
+| [`sinhp/Poly`](https://github.com/sinhp/Poly) | Polynomial functors and universes. |
+| [`sinhp/LeanFibredCategories`](https://github.com/sinhp/LeanFibredCategories) | Fibred categories *(stale)*. |
+| [`sinhp/displayed_categories`](https://github.com/sinhp/displayed_categories) | Displayed categories *(stale)*. |
+| [`kim-em/lean-category-theory`](https://github.com/kim-em/lean-category-theory) | Early category-theory experiments, upstreamed into Mathlib *(archived)*. |
+| [`rzrn/ground_zero`](https://github.com/rzrn/ground_zero) | HoTT library in Lean 4 *(archived)*. |
+| [`gebner/hott3`](https://github.com/gebner/hott3) | HoTT *(Lean 3)*. |
+
+### Algebra, number theory, algebraic geometry
+
+| Repository | Content |
+| --- | --- |
+| [`ImperialCollegeLondon/FLT`](https://github.com/ImperialCollegeLondon/FLT) | Ongoing Fermat's Last Theorem formalization; substantial reusable commutative algebra, dimension theory, and number theory beyond the headline target. |
+| [`leanprover-community/flt-regular`](https://github.com/leanprover-community/flt-regular) | FLT for regular primes; cyclotomic-field material. |
+| [`kbuzzard/ClassFieldTheory`](https://github.com/kbuzzard/ClassFieldTheory) | 2025 Clay Summer School project on class field theory. |
+| [`mariainesdff/LocalClassFieldTheory`](https://github.com/mariainesdff/LocalClassFieldTheory) | Local fields, toward local class field theory. |
+| [`AntoineChambert-Loir/DividedPowers4`](https://github.com/AntoineChambert-Loir/DividedPowers4) | Divided power structures. |
+| [`YaelDillies/toric`](https://github.com/YaelDillies/toric) | Toric varieties over Mathlib's schemes. |
+| [`MichaelStollBayreuth/EulerProducts`](https://github.com/MichaelStollBayreuth/EulerProducts) | Euler products and L-series. |
+| [`MichaelStollBayreuth/Heights`](https://github.com/MichaelStollBayreuth/Heights) | Theory of heights. |
+| [`CBirkbeck/AINTLIB`](https://github.com/CBirkbeck/AINTLIB) | Atlas of formalized number theory. |
+| [`ANR-FALSE/PadicModForms`](https://github.com/ANR-FALSE/PadicModForms) | p-adic modular forms. |
+| [`loefflerd/ModularFormDimensions`](https://github.com/loefflerd/ModularFormDimensions) | Finite-dimensionality of modular-form spaces. |
+| [`CBirkbeck/ModularForms_Lean4`](https://github.com/CBirkbeck/ModularForms_Lean4) | Modular forms, largely upstreamed into Mathlib *(stale)*. |
+| [`CBirkbeck/DirichletNonvanishing`](https://github.com/CBirkbeck/DirichletNonvanishing) | Nonvanishing of Dirichlet L-functions *(archived)*. |
+| [`CBirkbeck/WeilConverse`](https://github.com/CBirkbeck/WeilConverse) | Weil converse theorem. |
+| [`AlexKontorovich/PrimeNumberTheoremAnd`](https://github.com/AlexKontorovich/PrimeNumberTheoremAnd) | Prime Number Theorem and related analytic number theory. |
+| [`math-inc/strongpnt`](https://github.com/math-inc/strongpnt) | Strong PNT with complex-analysis infrastructure; AI-generated, human-reviewed. |
+| [`teorth/expdb`](https://github.com/teorth/expdb) | Exponent-pair database for analytic number theory. |
+| [`b-mehta/ABC-Exceptions`](https://github.com/b-mehta/ABC-Exceptions) | Exceptions to the ABC conjecture. |
+
+### Quadratic forms, lattices, sphere packing
+
+| Repository | Content |
+| --- | --- |
+| [`thefundamentaltheor3m/Sphere-Packing-Lean`](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean) | Viazovska's dimension-8 sphere packing; E8 lattice. Already integrated here under `Integration/SpherePacking` and `LeanCategoriesSpherePacking/E8`. |
+| [`jonhanke/quadratic_forms_in_lean`](https://github.com/jonhanke/quadratic_forms_in_lean) | Quadratic forms development by Jonathan Hanke. |
+| [`MichaelStollBayreuth/LegendreQF`](https://github.com/MichaelStollBayreuth/LegendreQF) | Legendre's theorem on diagonal ternary quadratic forms. |
+
+### Analysis, probability, geometry, dynamics
+
+| Repository | Content |
+| --- | --- |
+| [`teorth/analysis`](https://github.com/teorth/analysis) | Lean companion to Tao's *Analysis I*. |
+| [`fpvandoorn/carleson`](https://github.com/fpvandoorn/carleson) | Carleson's theorem. |
+| [`fpvandoorn/BonnAnalysis`](https://github.com/fpvandoorn/BonnAnalysis) | Bonn collaborative analysis seminar (distributions, duality). |
+| [`leanprover-community/sphere-eversion`](https://github.com/leanprover-community/sphere-eversion) | Sphere eversion via convex integration; h-principle. |
+| [`RemyDegenne/brownian-motion`](https://github.com/RemyDegenne/brownian-motion) | Construction of Brownian motion. |
+| [`RemyDegenne/testing-lower-bounds`](https://github.com/RemyDegenne/testing-lower-bounds) | Information theory and hypothesis-testing bounds. |
+| [`oliver-butterley/SpectralThm`](https://github.com/oliver-butterley/SpectralThm) | Spectral theorem. |
+| [`girving/ray`](https://github.com/girving/ray) | Mandelbrot-set results. |
+| [`girving/interval`](https://github.com/girving/interval) | Verified floating-point interval arithmetic. |
+| [`leanprover-community/lean-liquid`](https://github.com/leanprover-community/lean-liquid) | Liquid Tensor Experiment *(Lean 3; condensed foundations now in Mathlib)*. |
+| [`leanprover-community/lean-perfectoid-spaces`](https://github.com/leanprover-community/lean-perfectoid-spaces) | Perfectoid spaces *(Lean 3)*. |
+| [`dagurtomas/lean-solid`](https://github.com/dagurtomas/lean-solid) | Solid abelian groups *(stale)*. |
+| [`ImperialCollegeLondon/condensed-sets`](https://github.com/ImperialCollegeLondon/condensed-sets) | Early condensed mathematics *(Lean 3)*. |
+
+### Combinatorics, discrete mathematics, logic, foundations
+
+| Repository | Content |
+| --- | --- |
+| [`teorth/equational_theories`](https://github.com/teorth/equational_theories) | Implication graph between magma equational laws. |
+| [`teorth/pfr`](https://github.com/teorth/pfr) | Polynomial Freiman–Ruzsa conjecture and related additive combinatorics. |
+| [`YaelDillies/cam-combi`](https://github.com/YaelDillies/cam-combi) (formerly `LeanCamCombi`) | Cambridge graph theory and combinatorics courses. |
+| [`YaelDillies/apap`](https://github.com/YaelDillies/apap) (formerly `LeanAPAP`) | Kelley–Meka bound on Roth numbers. |
+| [`apnelson1/Matroid`](https://github.com/apnelson1/Matroid) | Matroid theory over Mathlib. |
+| [`Ivan-Sergeyev/seymour`](https://github.com/Ivan-Sergeyev/seymour) | Seymour's decomposition theorem for regular matroids. |
+| [`madvorak/vcsp`](https://github.com/madvorak/vcsp) | General-valued constraint satisfaction. |
+| [`madvorak/duality`](https://github.com/madvorak/duality) | Linear-programming duality. |
+| [`siddhartha-gadgil/Polylean`](https://github.com/siddhartha-gadgil/Polylean) | Group extensions and torsion-freeness with computational proofs. |
+| [`leanprover-community/con-nf`](https://github.com/leanprover-community/con-nf) | Consistency of Quine's New Foundations. |
+| [`flypitch/flypitch`](https://github.com/flypitch/flypitch) | Independence of the continuum hypothesis *(Lean 3)*. |
+| [`FormalizedFormalLogic/Foundation`](https://github.com/FormalizedFormalLogic/Foundation) | Mathematical logic: completeness, incompleteness, provability logic. |
+| [`avigad/lamr`](https://github.com/avigad/lamr) | *Logic and Mechanized Reasoning* textbook and code. |
+
+### Computational and applied mathematics
+
+| Repository | Content |
+| --- | --- |
+| [`lecopivo/SciLean`](https://github.com/lecopivo/SciLean) | Scientific computing. |
+| [`leanprover-community/physlib`](https://github.com/leanprover-community/physlib) (formerly PhysLean/HepLean) | Physics results in Lean. |
+| [`Timeroot/Lean-QuantumInfo`](https://github.com/Timeroot/Lean-QuantumInfo) | Quantum information theory. |
+| [`optsuite/optlib`](https://github.com/optsuite/optlib) | Optimization algorithms and convergence proofs. |
+| [`verified-optimization/CvxLean`](https://github.com/verified-optimization/CvxLean) | Convex optimization modeling *(stale)*. |
+| [`ufmg-smite/lean-smt`](https://github.com/ufmg-smite/lean-smt) | SMT-solver tactics. |
+| [`eric-wieser/lean-matrix-cookbook`](https://github.com/eric-wieser/lean-matrix-cookbook) | The Matrix Cookbook, proved. |
+| [`leanprover/cslib`](https://github.com/leanprover/cslib) | Computer science library. |
+| [`leanprover-community/iris-lean`](https://github.com/leanprover-community/iris-lean) | Iris separation logic port. |
+| [`or4nge19/NeuralNetworks`](https://github.com/or4nge19/NeuralNetworks) | Neural networks. |
+| [`shetzl/autth`](https://github.com/shetzl/autth) | Automata theory. |
+
+### Statement banks and generated corpora — always search these
+
+| Repository | Content |
+| --- | --- |
+| [`google-deepmind/formal-conjectures`](https://github.com/google-deepmind/formal-conjectures) | Formalized conjecture statements. When it has a relevant one, import, reuse, or extend it — never restate it from scratch. Sanctioned home for genuinely-unproved deep statements (conjecture ledger, issue #21). |
+| [`facebookresearch/atlas-lean`](https://github.com/facebookresearch/atlas-lean) | ATLAS Autoformalized Textbook Library At Scale. Search for textbook definitions, statements, and dependency chains before reconstructing standard mathematics from prose. |
+| [`facebookresearch/algebraic-combinatorics`](https://github.com/facebookresearch/algebraic-combinatorics) | Automatic formalization of Grinberg's *Algebraic Combinatorics*. |
+| [`facebookresearch/autoform-bot`](https://github.com/facebookresearch/autoform-bot), [`facebookresearch/repoprover`](https://github.com/facebookresearch/repoprover) | ATLAS formalization pipeline and textbook-formalization research code; use to locate generated corpora and source projects. |
+| [`facebookresearch/LeanUniverse`](https://github.com/facebookresearch/LeanUniverse) | Index and manager of Lean libraries and datasets. |
+| [`facebookresearch/abel`](https://github.com/facebookresearch/abel), [`facebookresearch/Evariste`](https://github.com/facebookresearch/Evariste) | Proof-search systems and their corpora. |
+| [`dwrensha/compfiles`](https://github.com/dwrensha/compfiles) | Catalog of formalized competition problems. |
+| [`ShouqiaoW/erdos`](https://github.com/ShouqiaoW/erdos) | Erdős problems: checked proofs, partially formalized in Lean. |
+| [`trishullab/PutnamBench`](https://github.com/trishullab/PutnamBench) | Putnam problems in Lean 4, Isabelle, and Coq. |
+| [`google-deepmind/alphaproof-nexus-results`](https://github.com/google-deepmind/alphaproof-nexus-results) | AlphaProof-generated Lean proofs with prose companions. |
+| [`TauCetiProject/TauCeti`](https://github.com/TauCetiProject/TauCeti) | AI-implemented, human-directed library downstream of Mathlib. |
+| [`mo271/FormalBook`](https://github.com/mo271/FormalBook) | Aigner–Ziegler, *Proofs from THE BOOK*. |
+
+### Textbook companions and worked proof corpora
+
+| Repository | Content |
+| --- | --- |
+| [`leanprover-community/mathematics_in_lean`](https://github.com/leanprover-community/mathematics_in_lean) | *Mathematics in Lean* tutorial. |
+| [`hrmacbeth/math2001`](https://github.com/hrmacbeth/math2001) | Proof-writing course, paper and Lean. |
+| [`djvelleman/HTPILeanPackage`](https://github.com/djvelleman/HTPILeanPackage) | *How To Prove It* companion. |
+| [`PatrickMassot/GlimpseOfLean`](https://github.com/PatrickMassot/GlimpseOfLean) | Fast introduction to theorem proving. |
+| [`leanprover-community/NNG4`](https://github.com/leanprover-community/NNG4) | Natural Number Game. |
+
+### Core libraries and infrastructure
+
+| Repository | Content |
+| --- | --- |
+| [`leanprover-community/batteries`](https://github.com/leanprover-community/batteries) | Extended standard library. |
+| [`leanprover-community/aesop`](https://github.com/leanprover-community/aesop) | White-box proof automation. |
+| [`leanprover-community/duper`](https://github.com/leanprover-community/duper), [`leanprover-community/lean-auto`](https://github.com/leanprover-community/lean-auto) | Automated theorem proving in Lean. |
+| [`leanprover-community/plausible`](https://github.com/leanprover-community/plausible) | Property-based counterexample search. |
+| [`leanprover-community/repl`](https://github.com/leanprover-community/repl) | Programmatic proof checking. |
+| [`PatrickMassot/leanblueprint`](https://github.com/PatrickMassot/leanblueprint) | Formalization blueprint infrastructure. |
+| [`siddhartha-gadgil/LeanAide`](https://github.com/siddhartha-gadgil/LeanAide) | AI aids for autoformalization. |
+
+### Other proof assistants — porting sources only
+
+| Repository | Content |
+| --- | --- |
+| [`UniMath/UniMath`](https://github.com/UniMath/UniMath) | Univalent mathematics in Rocq/Coq; large formal category-theory corpus. |
+| [`HoTT/Coq-HoTT`](https://github.com/HoTT/Coq-HoTT) | Homotopy type theory in Rocq/Coq. |
+| [`math-comp/math-comp`](https://github.com/math-comp/math-comp), [`math-comp/odd-order`](https://github.com/math-comp/odd-order) | Mathematical Components; the Odd Order Theorem. |
+| [`rocq-community/corn`](https://github.com/rocq-community/corn) | Constructive mathematics repository at Nijmegen. |
+| [`UniMath/agda-unimath`](https://github.com/UniMath/agda-unimath) | Univalent mathematics in Agda, including extensive category theory. |
+| [`agda/cubical`](https://github.com/agda/cubical) | Cubical Agda library. |
+| [`the1lab/1lab`](https://github.com/the1lab/1lab) | Cross-linked HoTT reference in cubical Agda. |
+| [`martinescardo/TypeTopology`](https://github.com/martinescardo/TypeTopology) | Topology and logic from the univalent point of view, in Agda. |
+| [Isabelle Archive of Formal Proofs](https://www.isa-afp.org/) | Searchable archive of Isabelle developments by topic. |
 
 ---
 
