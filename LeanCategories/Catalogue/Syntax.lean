@@ -88,7 +88,6 @@ deriving instance Lean.ToExpr for AliasId
 deriving instance Lean.ToExpr for RouteId
 deriving instance Lean.ToExpr for RefinementId
 deriving instance Lean.ToExpr for OpaquePortId
-deriving instance Lean.ToExpr for PresentationId
 deriving instance Lean.ToExpr for ClusterId
 
 /-- The semantic kind of a registered family transport. -/

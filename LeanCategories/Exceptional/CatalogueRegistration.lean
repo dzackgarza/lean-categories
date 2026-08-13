@@ -1,6 +1,8 @@
 module
 
 public import LeanCategories.Algebra.Catalogue.Rings
+public import LeanCategories.Algebra.CatalogueRegistration
+public import LeanCategories.Foundation.CatalogueRegistration
 public import LeanCategories.Catalogue.Registry.Extension
 public import LeanCategories.Exceptional.Mathlib
 public import LeanCategories.Foundation.Expressions
@@ -8,6 +10,8 @@ public import LeanCategories.Exceptional.Catalogue
 public meta import LeanCategories.Catalogue.Registry.Extension
 public meta import LeanCategories.Exceptional.Catalogue
 public meta import LeanCategories.Algebra.Catalogue.Rings
+public meta import LeanCategories.Algebra.CatalogueRegistration
+public meta import LeanCategories.Foundation.CatalogueRegistration
 
 @[expose] public section
 
@@ -31,6 +35,35 @@ noncomputable def distributiveRealization :
       Exceptional.Mathlib.distributive :=
   { hostRealization := m2oRealization
     totalRealization := { familyFibre := none } }
+
+def multiplicativePortId : OpaquePortId := ⟨"oport.m2o.multiplicative"⟩
+def additivePortId : OpaquePortId := ⟨"oport.m2o.additive"⟩
+def crystalsPortId : OpaquePortId := ⟨"oport.crystals.sets"⟩
+
+def multiplicativePortExpr :
+    FunctorExpr Algebra.Catalogue.Rings.MagmasWithTwoOperations
+      Algebra.Catalogue.Magmas.Magmas := .opaquePort multiplicativePortId
+noncomputable def multiplicativePortRealization :
+    FunctorRealization multiplicativePortExpr Exceptional.Mathlib.MagmasWithTwoOperations
+      Algebra.Magmas Exceptional.Mathlib.multiplicativePort where
+  sourceRealization := m2oRealization
+  targetRealization := LeanCategories.Algebra.CatalogueRegistration.magmasRealization
+
+def additivePortExpr :
+    FunctorExpr Algebra.Catalogue.Rings.MagmasWithTwoOperations
+      Algebra.Catalogue.Magmas.Magmas := .opaquePort additivePortId
+noncomputable def additivePortRealization :
+    FunctorRealization additivePortExpr Exceptional.Mathlib.MagmasWithTwoOperations
+      Algebra.Magmas Exceptional.Mathlib.additivePort where
+  sourceRealization := m2oRealization
+  targetRealization := LeanCategories.Algebra.CatalogueRegistration.magmasRealization
+
+def crystalsPortExpr : FunctorExpr CrystalsExpr Foundation.Sets := .opaquePort crystalsPortId
+noncomputable def crystalsPortRealization :
+    FunctorRealization crystalsPortExpr Exceptional.Mathlib.Crystals Foundation.Mathlib.Sets
+      Exceptional.Mathlib.crystalsToSets where
+  sourceRealization := crystalsRealization
+  targetRealization := LeanCategories.Foundation.CatalogueRegistration.setsRealization
 
 normalized_registry .category
   { id := CategoryId.magmasWithTwoOperations
@@ -57,15 +90,19 @@ normalized_registry .opaque
   { id := CategoryId.magmasWithTwoOperations
     declaration := `LeanCategories.Exceptional.Mathlib.MagmasWithTwoOperations
     ports := #[
-      { id := ⟨"oport.m2o.multiplicative"⟩
-        source := CategoryId.magmasWithTwoOperations, target := CategoryId.magmas
+      { id := multiplicativePortId
+        source := Algebra.Catalogue.Rings.MagmasWithTwoOperations
+        target := Algebra.Catalogue.Magmas.Magmas
         role := PortId.multiplicative
         declaration := `LeanCategories.Exceptional.Mathlib.multiplicativePort
+        realization := `LeanCategories.Exceptional.CatalogueRegistration.multiplicativePortRealization
         provenance := "authored opaque interface" },
-      { id := ⟨"oport.m2o.additive"⟩
-        source := CategoryId.magmasWithTwoOperations, target := CategoryId.magmas
+      { id := additivePortId
+        source := Algebra.Catalogue.Rings.MagmasWithTwoOperations
+        target := Algebra.Catalogue.Magmas.Magmas
         role := PortId.additive
         declaration := `LeanCategories.Exceptional.Mathlib.additivePort
+        realization := `LeanCategories.Exceptional.CatalogueRegistration.additivePortRealization
         provenance := "authored opaque interface" }]
     reason := "two-operation host; distributivity is a separate classifier"
     visibility := .semanticOnly }
@@ -74,12 +111,43 @@ normalized_registry .opaque
   { id := CategoryId.crystals
     declaration := `LeanCategories.Exceptional.Mathlib.Crystals
     ports := #[
-      { id := ⟨"oport.crystals.sets"⟩
-        source := CategoryId.crystals, target := CategoryId.sets
+      { id := crystalsPortId
+        source := CrystalsExpr, target := Foundation.Sets
         role := PortId.underlyingSet
         declaration := `LeanCategories.Exceptional.Mathlib.crystalsToSets
+        realization := `LeanCategories.Exceptional.CatalogueRegistration.crystalsPortRealization
         provenance := "authored opaque interface" }]
     reason := "exceptional combinatorial host"
     visibility := .semanticOnly }
+
+normalized_registry .category
+  { id := CategoryId.rings, canonicalName := "Rings"
+    declaration := `LeanCategories.Algebra.Rings
+    expression := Algebra.Catalogue.Rings.Rings
+    realization := `LeanCategories.Algebra.CatalogueRegistration.ringsRealization
+    origin := .derivedNamed, visibility := .present }
+normalized_registry .category
+  { id := CategoryId.commutativeRings, canonicalName := "CommutativeRings"
+    declaration := `LeanCategories.Algebra.CommutativeRings
+    expression := Algebra.Catalogue.Rings.CommutativeRings
+    realization := `LeanCategories.Algebra.CatalogueRegistration.commutativeRingsRealization
+    origin := .derivedNamed, visibility := .present }
+normalized_registry .classifier
+  { id := ClassifierId.ringsDivision, canonicalName := "Division"
+    declaration := `LeanCategories.Algebra.divisionOnRings
+    host := Algebra.Catalogue.Rings.Rings
+    realization := `LeanCategories.Algebra.CatalogueRegistration.divisionRealization
+    visibility := .present }
+normalized_registry .category
+  { id := CategoryId.divisionRings, canonicalName := "DivisionRings"
+    declaration := `LeanCategories.Algebra.DivisionRings
+    expression := Algebra.Catalogue.Rings.DivisionRings
+    realization := `LeanCategories.Algebra.CatalogueRegistration.divisionRingsRealization
+    origin := .derivedNamed, visibility := .present }
+normalized_registry .alias
+  { id := AliasId.crings, spelling := "CRings"
+    aliasOf := CategoryId.commutativeRings
+    declaration := `LeanCategories.Algebra.CatalogueRegistration.CRings
+    realization := `LeanCategories.Algebra.CatalogueRegistration.commutativeRingsRealization }
 
 end LeanCategories.Exceptional.CatalogueRegistration

@@ -160,6 +160,7 @@ def aliasJson (e : AliasEntry) : Json :=
     ("spelling", e.spelling),
     ("aliasOf", e.aliasOf.raw),
     ("declaration", e.declaration.toString),
+    ("realization", e.realization.toString),
   ]
 
 def classifierJson (e : ClassifierEntry) : Json :=
@@ -188,15 +189,6 @@ def functorJson (e : FunctorEntry) : Json :=
     ("preferredPresentation", e.preferredPresentation),
   ]
 
-def presentationJson (e : PresentationMetadataEntry) : Json :=
-  object [
-    ("id", e.id.raw),
-    ("category", e.category.raw),
-    ("declaration", e.declaration.toString),
-    ("visibility", visibilityJson e.visibility),
-    ("sourcePosition", e.sourcePosition),
-  ]
-
 def opaqueJson (e : OpaqueCategoryEntry) : Json :=
   object [
     ("id", e.id.raw),
@@ -205,10 +197,11 @@ def opaqueJson (e : OpaqueCategoryEntry) : Json :=
     ("reason", e.reason),
     ("ports", .arr <| e.ports.map fun p => object [
       ("id", p.id.raw),
-      ("source", p.source.raw),
-      ("target", p.target.raw),
+      ("source", categoryExprJson p.source),
+      ("target", categoryExprJson p.target),
       ("role", p.role.raw),
       ("declaration", p.declaration.toString),
+      ("realization", p.realization.toString),
       ("provenance", p.provenance),
     ]),
   ]
@@ -221,7 +214,6 @@ def snapshotManifestJson (snap : RegistrySnapshot) : Json :=
   let functors := snap.functors.qsort (fun a b => a.id.raw < b.id.raw)
   let als := snap.aliases.qsort (fun a b => a.id.raw < b.id.raw)
   let ops := snap.opaqueCategories.qsort (fun a b => a.id.raw < b.id.raw)
-  let presentations := snap.presentations.qsort (fun a b => a.id.raw < b.id.raw)
   object [
     ("schemaVersion", snap.schemaVersion),
     ("universes", object []),
@@ -233,7 +225,6 @@ def snapshotManifestJson (snap : RegistrySnapshot) : Json :=
     ("categoryFamilies", .arr (families.map categoryFamilyJson)),
     ("namedExpressions", .arr #[]),
     ("structuralPorts", .arr #[]),
-    ("presentationDispositions", .arr (presentations.map presentationJson)),
     ("source", "lean-registry"),
   ]
 

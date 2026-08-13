@@ -78,6 +78,43 @@ noncomputable def divisionRealization :
       Algebra.Rings Algebra.divisionOnRings :=
   { hostRealization := { familyFibre := none }, totalRealization := {} }
 
+normalized_registry .classifier
+  { id := ClassifierId.magmasAssociative, canonicalName := "Associative"
+    declaration := `LeanCategories.Algebra.associative
+    host := Algebra.Catalogue.Magmas.Magmas
+    realization := `LeanCategories.Algebra.CatalogueRegistration.associativeRealization
+    visibility := .present }
+normalized_registry .classifier
+  { id := ClassifierId.magmasCommutative, canonicalName := "Commutative"
+    declaration := `LeanCategories.Algebra.commutative
+    host := Algebra.Catalogue.Magmas.Magmas
+    realization := `LeanCategories.Algebra.CatalogueRegistration.commutativeRealization
+    visibility := .present }
+normalized_registry .classifier
+  { id := ClassifierId.magmasUnital, canonicalName := "Unital"
+    declaration := `LeanCategories.Algebra.unital
+    host := Algebra.Catalogue.Magmas.Magmas
+    realization := `LeanCategories.Algebra.CatalogueRegistration.unitalRealization
+    visibility := .present }
+normalized_registry .classifier
+  { id := ClassifierId.magmasInverse, canonicalName := "Inverse"
+    declaration := `LeanCategories.Algebra.inverse
+    host := .classifierTotal ClassifierId.magmasUnital
+    realization := `LeanCategories.Algebra.CatalogueRegistration.inverseRealization
+    visibility := .present }
+normalized_registry .classifier
+  { id := ClassifierId.magmasAdditive, canonicalName := "Additive"
+    declaration := `LeanCategories.Algebra.additive
+    host := Algebra.Catalogue.Magmas.Magmas
+    realization := `LeanCategories.Algebra.CatalogueRegistration.additiveRealization
+    visibility := .present }
+normalized_registry .classifier
+  { id := ClassifierId.magmasMultiplicative, canonicalName := "Multiplicative"
+    declaration := `LeanCategories.Algebra.multiplicative
+    host := Algebra.Catalogue.Magmas.Magmas
+    realization := `LeanCategories.Algebra.CatalogueRegistration.multiplicativeRealization
+    visibility := .present }
+
 abbrev CRings := Algebra.CommutativeRings
 
 normalized_registry .category
@@ -128,71 +165,4 @@ normalized_registry .category
     expression := Algebra.Catalogue.Magmas.AdditiveGroups
     realization := `LeanCategories.Algebra.CatalogueRegistration.additiveGroupsRealization
     origin := .derivedNamed, visibility := .present }
-normalized_registry .category
-  { id := CategoryId.rings, canonicalName := "Rings"
-    declaration := `LeanCategories.Algebra.Rings
-    expression := Algebra.Catalogue.Rings.Rings
-    realization := `LeanCategories.Algebra.CatalogueRegistration.ringsRealization
-    origin := .derivedNamed, visibility := .present }
-normalized_registry .category
-  { id := CategoryId.commutativeRings, canonicalName := "CommutativeRings"
-    declaration := `LeanCategories.Algebra.CommutativeRings
-    expression := Algebra.Catalogue.Rings.CommutativeRings
-    realization := `LeanCategories.Algebra.CatalogueRegistration.commutativeRingsRealization
-    origin := .derivedNamed, visibility := .present }
-normalized_registry .category
-  { id := CategoryId.divisionRings, canonicalName := "DivisionRings"
-    declaration := `LeanCategories.Algebra.DivisionRings
-    expression := Algebra.Catalogue.Rings.DivisionRings
-    realization := `LeanCategories.Algebra.CatalogueRegistration.divisionRingsRealization
-    origin := .derivedNamed, visibility := .present }
-
-normalized_registry .classifier
-  { id := ClassifierId.magmasAssociative, canonicalName := "Associative"
-    declaration := `LeanCategories.Algebra.associative
-    host := Algebra.Catalogue.Magmas.Magmas
-    realization := `LeanCategories.Algebra.CatalogueRegistration.associativeRealization
-    visibility := .present }
-normalized_registry .classifier
-  { id := ClassifierId.magmasCommutative, canonicalName := "Commutative"
-    declaration := `LeanCategories.Algebra.commutative
-    host := Algebra.Catalogue.Magmas.Magmas
-    realization := `LeanCategories.Algebra.CatalogueRegistration.commutativeRealization
-    visibility := .present }
-normalized_registry .classifier
-  { id := ClassifierId.magmasUnital, canonicalName := "Unital"
-    declaration := `LeanCategories.Algebra.unital
-    host := Algebra.Catalogue.Magmas.Magmas
-    realization := `LeanCategories.Algebra.CatalogueRegistration.unitalRealization
-    visibility := .present }
-normalized_registry .classifier
-  { id := ClassifierId.magmasInverse, canonicalName := "Inverse"
-    declaration := `LeanCategories.Algebra.inverse
-    host := .classifierTotal ClassifierId.magmasUnital
-    realization := `LeanCategories.Algebra.CatalogueRegistration.inverseRealization
-    visibility := .present }
-normalized_registry .classifier
-  { id := ClassifierId.magmasAdditive, canonicalName := "Additive"
-    declaration := `LeanCategories.Algebra.additive
-    host := Algebra.Catalogue.Magmas.Magmas
-    realization := `LeanCategories.Algebra.CatalogueRegistration.additiveRealization
-    visibility := .present }
-normalized_registry .classifier
-  { id := ClassifierId.magmasMultiplicative, canonicalName := "Multiplicative"
-    declaration := `LeanCategories.Algebra.multiplicative
-    host := Algebra.Catalogue.Magmas.Magmas
-    realization := `LeanCategories.Algebra.CatalogueRegistration.multiplicativeRealization
-    visibility := .present }
-normalized_registry .classifier
-  { id := ClassifierId.ringsDivision, canonicalName := "Division"
-    declaration := `LeanCategories.Algebra.divisionOnRings
-    host := Algebra.Catalogue.Rings.Rings
-    realization := `LeanCategories.Algebra.CatalogueRegistration.divisionRealization
-    visibility := .present }
-
-normalized_registry .alias
-  { id := AliasId.crings, spelling := "CRings"
-    aliasOf := CategoryId.commutativeRings
-    declaration := `LeanCategories.Algebra.CatalogueRegistration.CRings }
-
 end LeanCategories.Algebra.CatalogueRegistration

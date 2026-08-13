@@ -92,15 +92,17 @@ structure AliasEntry where
   spelling : String
   aliasOf : CategoryId
   declaration : Lean.Name
+  realization : Lean.Name
   deriving Repr, Inhabited
 
 /-- Opaque category with typed structural ports. -/
 structure StructuralPortEntry where
   id : OpaquePortId
-  source : CategoryId
-  target : CategoryId
+  source : CategoryExpr
+  target : CategoryExpr
   role : PortId
   declaration : Lean.Name
+  realization : Lean.Name
   provenance : String
   deriving Repr, Inhabited
 
@@ -112,22 +114,6 @@ structure OpaqueCategoryEntry where
   visibility : Visibility
   deriving Repr, Inhabited
 
-/-- Alternative presentation equivalence (not an alias). -/
-structure PresentationEquivalenceEntry where
-  source : CategoryId
-  target : CategoryId
-  declaration : Lean.Name
-  deriving Repr, Inhabited
-
-/-- Curated presentation metadata; it does not alter semantic registry entries. -/
-structure PresentationMetadataEntry where
-  id : PresentationId
-  category : CategoryId
-  declaration : Lean.Name
-  visibility : Visibility
-  sourcePosition : String
-  deriving Repr
-
 /-- Aggregate registry snapshot for export (specimen / compiled). -/
 structure RegistrySnapshot where
   schemaVersion : String
@@ -137,8 +123,6 @@ structure RegistrySnapshot where
   functors : Array FunctorEntry
   aliases : Array AliasEntry
   opaqueCategories : Array OpaqueCategoryEntry
-  equivalences : Array PresentationEquivalenceEntry
-  presentations : Array PresentationMetadataEntry
   deriving Repr, Inhabited
 
 end LeanCategories
