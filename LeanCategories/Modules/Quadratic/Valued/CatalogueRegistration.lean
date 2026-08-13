@@ -39,7 +39,12 @@ noncomputable def quadModuleCategory (R : Type u) [CommRing R]
 
 noncomputable def quadModuleRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :
-    CategoryRealization QuadModule (quadModuleCategory R W) := ⟨⟩
+    CategoryRealization QuadModule (quadModuleCategory R W) where
+  familyFibre := some {
+    identifier := CategoryFamilyId.quadModule
+    realization := quadModuleFamilyRealization
+    parameter := ⟨CommRingCat.of R, ModuleCat.of R W⟩
+    category_eq := by rfl }
 
 noncomputable def quadModuleForgetRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :

@@ -21,9 +21,10 @@ def CrystalsExpr : CategoryExpr := .opaque CategoryId.crystals
 
 noncomputable def m2oRealization :
     CategoryRealization Algebra.Catalogue.Rings.MagmasWithTwoOperations
-      Exceptional.Mathlib.MagmasWithTwoOperations := ⟨⟩
+      Exceptional.Mathlib.MagmasWithTwoOperations := { familyFibre := none }
 noncomputable def crystalsRealization :
-    CategoryRealization CrystalsExpr Exceptional.Mathlib.Crystals := ⟨⟩
+    CategoryRealization CrystalsExpr Exceptional.Mathlib.Crystals :=
+  { familyFibre := none }
 noncomputable def distributiveRealization :
     ClassifierRealization Algebra.Catalogue.Rings.MagmasWithTwoOperations
       ClassifierId.m2oDistributive Exceptional.Mathlib.MagmasWithTwoOperations

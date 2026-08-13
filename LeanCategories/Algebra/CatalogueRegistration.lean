@@ -19,29 +19,33 @@ open LeanCategories
 universe u
 
 noncomputable def magmasRealization :
-    CategoryRealization Algebra.Catalogue.Magmas.Magmas Algebra.Magmas := ⟨⟩
+    CategoryRealization Algebra.Catalogue.Magmas.Magmas Algebra.Magmas := { familyFibre := none }
 noncomputable def semigroupsRealization :
-    CategoryRealization Algebra.Catalogue.Magmas.Semigroups Algebra.Semigroups := ⟨⟩
+    CategoryRealization Algebra.Catalogue.Magmas.Semigroups Algebra.Semigroups := { familyFibre := none }
 noncomputable def monoidsRealization :
-    CategoryRealization Algebra.Catalogue.Magmas.Monoids Algebra.Monoids := ⟨⟩
+    CategoryRealization Algebra.Catalogue.Magmas.Monoids Algebra.Monoids := { familyFibre := none }
 noncomputable def groupsRealization :
-    CategoryRealization Algebra.Catalogue.Magmas.Groups Algebra.Groups := ⟨⟩
+    CategoryRealization Algebra.Catalogue.Magmas.Groups Algebra.Groups := { familyFibre := none }
 noncomputable def additiveMagmasRealization :
-    CategoryRealization Algebra.Catalogue.Magmas.AdditiveMagmas Algebra.AdditiveMagmas := ⟨⟩
+    CategoryRealization Algebra.Catalogue.Magmas.AdditiveMagmas Algebra.AdditiveMagmas :=
+  { familyFibre := none }
 noncomputable def additiveSemigroupsRealization :
     CategoryRealization Algebra.Catalogue.Magmas.AdditiveSemigroups
-      Algebra.AdditiveSemigroups := ⟨⟩
+      Algebra.AdditiveSemigroups := { familyFibre := none }
 noncomputable def additiveMonoidsRealization :
-    CategoryRealization Algebra.Catalogue.Magmas.AdditiveMonoids Algebra.AdditiveMonoids := ⟨⟩
+    CategoryRealization Algebra.Catalogue.Magmas.AdditiveMonoids Algebra.AdditiveMonoids :=
+  { familyFibre := none }
 noncomputable def additiveGroupsRealization :
-    CategoryRealization Algebra.Catalogue.Magmas.AdditiveGroups Algebra.AdditiveGroups := ⟨⟩
+    CategoryRealization Algebra.Catalogue.Magmas.AdditiveGroups Algebra.AdditiveGroups :=
+  { familyFibre := none }
 noncomputable def ringsRealization :
-    CategoryRealization Algebra.Catalogue.Rings.Rings Algebra.Rings := ⟨⟩
+    CategoryRealization Algebra.Catalogue.Rings.Rings Algebra.Rings := { familyFibre := none }
 noncomputable def commutativeRingsRealization :
     CategoryRealization Algebra.Catalogue.Rings.CommutativeRings
-      Algebra.CommutativeRings := ⟨⟩
+      Algebra.CommutativeRings := { familyFibre := none }
 noncomputable def divisionRingsRealization :
-    CategoryRealization Algebra.Catalogue.Rings.DivisionRings Algebra.DivisionRings := ⟨⟩
+    CategoryRealization Algebra.Catalogue.Rings.DivisionRings Algebra.DivisionRings :=
+  { familyFibre := none }
 
 noncomputable def associativeRealization :
     ClassifierRealization Algebra.Catalogue.Magmas.Magmas ClassifierId.magmasAssociative

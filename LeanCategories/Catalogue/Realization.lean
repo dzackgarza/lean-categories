@@ -21,10 +21,6 @@ open CategoryTheory
 
 universe uObj uHom uParam uParamHom
 
-/-- An actual category assigned to a symbolic category expression. -/
-structure CategoryRealization (expression : CategoryExpr)
-    (category : ObjCat.{uObj, uHom}) where
-
 attribute [local simp] Bicategory.Strict.leftUnitor_eqToIso
   Bicategory.Strict.rightUnitor_eqToIso Bicategory.Strict.associator_eqToIso
 
@@ -56,6 +52,19 @@ def CategoryFamilyRealization.fibre {identifier : CategoryFamilyId}
     (parameter : realization.Parameters) : ObjCat.{uObj, uHom} :=
   letI := realization.parameterCategory
   realization.transport.obj (.mk (Opposite.op parameter))
+
+/-- A typed witness that a named category is a selected fibre of a family. -/
+structure CategoryFamilyFibreWitness (category : ObjCat.{uObj, uHom}) where
+  identifier : CategoryFamilyId
+  realization : CategoryFamilyRealization.{uObj, uHom, uParam, uParamHom} identifier
+  parameter : realization.Parameters
+  category_eq : category = realization.fibre parameter
+
+/-- An actual category assigned to a symbolic category expression. -/
+structure CategoryRealization (expression : CategoryExpr)
+    (category : ObjCat.{uObj, uHom}) where
+  familyFibre : Option
+      (CategoryFamilyFibreWitness.{uObj, uHom, uParam, uParamHom} category) := none
 
 /-- An actual classifier assigned to a symbolic host and classifier identifier. -/
 structure ClassifierRealization (host : CategoryExpr) (identifier : ClassifierId)

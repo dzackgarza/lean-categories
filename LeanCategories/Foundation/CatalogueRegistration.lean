@@ -17,7 +17,8 @@ open LeanCategories
 universe u
 
 noncomputable def setsRealization :
-    CategoryRealization Foundation.Sets Foundation.Mathlib.Sets := ⟨⟩
+    CategoryRealization Foundation.Sets Foundation.Mathlib.Sets :=
+  { familyFibre := none }
 
 noncomputable def finiteRealization :
     ClassifierRealization Foundation.Sets ClassifierId.setsFinite

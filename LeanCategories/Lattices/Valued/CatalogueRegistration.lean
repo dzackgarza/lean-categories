@@ -95,24 +95,44 @@ noncomputable def indefiniteLatticeCategory : ObjCat := Cat.of IndefiniteLattice
 
 noncomputable def latticeRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :
-    CategoryRealization Lattice (latticeCategory R W) := ⟨⟩
+    CategoryRealization Lattice (latticeCategory R W) where
+  familyFibre := some {
+    identifier := CategoryFamilyId.lattice
+    realization := latticeFamilyRealization
+    parameter := ⟨CommRingCat.of R, ModuleCat.of R W⟩
+    category_eq := by rfl }
 
 noncomputable def finiteProjectiveLatticeRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :
-    CategoryRealization FiniteProjectiveLattice (finiteProjectiveLatticeCategory R W) := ⟨⟩
+    CategoryRealization FiniteProjectiveLattice (finiteProjectiveLatticeCategory R W) where
+  familyFibre := some {
+    identifier := CategoryFamilyId.finiteProjectiveLattice
+    realization := finiteProjectiveLatticeFamilyRealization
+    parameter := ⟨CommRingCat.of R, ModuleCat.of R W⟩
+    category_eq := by rfl }
 
 noncomputable def finiteFreeLatticeRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :
-    CategoryRealization FiniteFreeLattice (finiteFreeLatticeCategory R W) := ⟨⟩
+    CategoryRealization FiniteFreeLattice (finiteFreeLatticeCategory R W) where
+  familyFibre := some {
+    identifier := CategoryFamilyId.finiteFreeLattice
+    realization := finiteFreeLatticeFamilyRealization
+    parameter := ⟨CommRingCat.of R, ModuleCat.of R W⟩
+    category_eq := by rfl }
 
 noncomputable def evenLatticeRealization (R : Type u) [CommRing R] :
-    CategoryRealization EvenLattice (evenLatticeCategory R) := ⟨⟩
+    CategoryRealization EvenLattice (evenLatticeCategory R) where
+  familyFibre := some {
+    identifier := CategoryFamilyId.evenLattice
+    realization := evenLatticeFamilyRealization
+    parameter := ⟨CommRingCat.of R⟩
+    category_eq := by rfl }
 
 noncomputable def definiteLatticeRealization :
-    CategoryRealization DefiniteLattice definiteLatticeCategory := ⟨⟩
+    CategoryRealization DefiniteLattice definiteLatticeCategory := { familyFibre := none }
 
 noncomputable def indefiniteLatticeRealization :
-    CategoryRealization IndefiniteLattice indefiniteLatticeCategory := ⟨⟩
+    CategoryRealization IndefiniteLattice indefiniteLatticeCategory := { familyFibre := none }
 
 noncomputable def latticeChangeValueRealization (R : Type u) [CommRing R]
     (W W' : Type u) [AddCommGroup W] [Module R W]

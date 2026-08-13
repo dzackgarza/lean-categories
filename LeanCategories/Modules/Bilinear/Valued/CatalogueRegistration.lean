@@ -56,10 +56,20 @@ noncomputable def bilWFormCategory (R : Type u) [CommRing R] : ObjCat.{u + 1, u}
 
 noncomputable def bilinModuleRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :
-    CategoryRealization BilinModule (bilinModuleCategory R W) := ⟨⟩
+    CategoryRealization BilinModule (bilinModuleCategory R W) where
+  familyFibre := some {
+    identifier := CategoryFamilyId.bilinModule
+    realization := bilinModuleFamilyRealization
+    parameter := ⟨CommRingCat.of R, ModuleCat.of R W⟩
+    category_eq := by rfl }
 
 noncomputable def bilWFormRealization (R : Type u) [CommRing R] :
-    CategoryRealization BilWForm (bilWFormCategory R) := ⟨⟩
+    CategoryRealization BilWForm (bilWFormCategory R) where
+  familyFibre := some {
+    identifier := CategoryFamilyId.bilWForm
+    realization := bilWFormFamilyRealization
+    parameter := ⟨CommRingCat.of R⟩
+    category_eq := by rfl }
 
 normalized_registry .categoryFamily
   { id := CategoryFamilyId.bilinModule

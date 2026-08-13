@@ -119,6 +119,64 @@ def denotesCategory (expression : CategoryExpr) (id : CategoryId) : Bool :=
   | .atom value | .opaque value | .reference value => value == id
   | _ => false
 
+def ringKind (kind : ParameterKindId) : Bool :=
+  kind == ParameterKindId.ringObject || kind == ParameterKindId.commRingObject
+
+def parameterKindOf : ParameterExpr → Option ParameterKindId
+  | .variable id =>
+      if id == ParameterId.r || id == ParameterId.s then
+        some ParameterKindId.ringObject
+      else if id == ParameterId.w || id == ParameterId.wPrime then
+        some ParameterKindId.moduleObject
+      else
+        none
+  | .apply operation argument =>
+      if operation == ParameterOperationId.opposite then
+        match parameterKindOf argument with
+        | some kind => if ringKind kind then some kind else none
+        | none => none
+      else
+        none
+  | .apply2 _ _ _ => none
+  | .apply3 operation first second third =>
+      if operation == ParameterOperationId.tensorProduct then
+        if (parameterKindOf first).any ringKind && (parameterKindOf second).any ringKind then
+          if parameterKindOf third == some ParameterKindId.moduleObject then
+            some ParameterKindId.moduleObject
+          else
+            none
+        else
+          none
+      else
+        none
+
+def parameterExprReferencesValid : ParameterExpr → Bool
+  | .variable id => id == ParameterId.r || id == ParameterId.s ||
+      id == ParameterId.w || id == ParameterId.wPrime
+  | .apply operation argument =>
+      operation == ParameterOperationId.opposite && parameterExprReferencesValid argument
+  | .apply2 _ _ _ => false
+  | .apply3 operation first second third =>
+        operation == ParameterOperationId.tensorProduct && parameterExprReferencesValid first &&
+        parameterExprReferencesValid second && parameterExprReferencesValid third
+
+def parameterKindCompatible (actual expected : ParameterKindId) : Bool :=
+  actual == expected || actual == ParameterKindId.ringObject &&
+    expected == ParameterKindId.commRingObject
+
+def parameterArgsValid (args : Array ParameterExpr)
+    (parameters : Array CategoryFamilyParameter) : Bool :=
+  if args.size != parameters.size then
+    false
+  else
+    (List.range args.size).all fun index =>
+      match args[index]?, parameters[index]? with
+      | some argument, some parameter => parameterExprReferencesValid argument &&
+          match parameterKindOf argument with
+          | some kind => parameterKindCompatible kind parameter.kind
+          | none => false
+      | _, _ => false
+
 /-- Validate references within a typed functor expression against prior persistent entries. -/
 partial def FunctorExpr.referencesValid (state : RegistryState)
     {source target : CategoryExpr} : FunctorExpr source target → Bool
@@ -153,7 +211,7 @@ partial def CategoryExpr.referencesValid (state : RegistryState) : CategoryExpr 
   | .atom _ | .classifierTotal _ | .opaque _ | .reference _ => true
   | .familyApp family args =>
       match state.categoryFamily? family with
-      | some entry => args.size == entry.parameters.size
+      | some entry => parameterArgsValid args entry.parameters
       | none => false
   | .refine base _ _ => base.referencesValid state
   | .constructor _ args => (args.map (·.referencesValid state)).all id
@@ -253,8 +311,10 @@ def ensureCategoryRealization (realization : Name) : MetaM Unit := do
     throwError
       "registry realization {realization} must return CategoryRealization ..., but returns {result}"
 
-def validateCategoryDeclarationRealization (_declaration realization : Name) : MetaM Unit := do
-  let realizationValue ← mkConstWithFreshMVarLevels realization
+def validateCategoryDeclarationRealization (expression : CategoryExpr)
+    (_declaration realization : Name) : MetaM Unit := do
+  let realizationConstant ← mkConstWithFreshMVarLevels realization
+  let realizationValue := realizationConstant
   let realizationType ← inferType realizationValue
   forallTelescopeReducing realizationType fun arguments realizationResult => do
     let realizationArgs := realizationResult.getAppArgs
@@ -265,6 +325,38 @@ def validateCategoryDeclarationRealization (_declaration realization : Name) : M
     unless ← isDefEq declarationValue realizationArgs[1]! do
       throwError
         "registry category declaration {_declaration} does not match realization {realization}"
+    match expression with
+    | .familyApp family _ => do
+        let realizationValue := mkAppN realizationConstant arguments
+        let witnessOption ← withTransparency .all do
+          let witnessOption ←
+            mkAppM ``LeanCategories.CategoryRealization.familyFibre #[realizationValue]
+          whnf witnessOption
+        unless witnessOption.isAppOf ``Option.some do
+          throwError
+            "registry family category {_declaration} lacks a typed fibre witness"
+        let witness := witnessOption.getAppArgs.back!
+        let witnessIdentifier ← withTransparency .all do
+          mkAppM ``LeanCategories.CategoryFamilyFibreWitness.identifier #[witness]
+        let familyValue ← mkAppM ``LeanCategories.CategoryFamilyId.mk #[mkStrLit family.raw]
+        unless ← withTransparency .all <| isDefEq witnessIdentifier familyValue do
+          throwError "registry family category {_declaration} has the wrong family witness"
+        let categoryEq ← withTransparency .all do
+          mkAppM ``LeanCategories.CategoryFamilyFibreWitness.category_eq #[witness]
+        let categoryEqType ← withTransparency .all <| inferType categoryEq
+        unless categoryEqType.isEq do
+          throwError "registry family category {_declaration} has no category equality witness"
+        unless ← withTransparency .all <| isDefEq categoryEqType.getAppArgs[1]! realizationArgs[1]! do
+          throwError "registry family category {_declaration} witness has the wrong category"
+        let familyValue ← withTransparency .all do
+          mkAppM ``LeanCategories.CategoryFamilyFibreWitness.realization #[witness]
+        let parameter ← withTransparency .all do
+          mkAppM ``LeanCategories.CategoryFamilyFibreWitness.parameter #[witness]
+        let fibre ← withTransparency .all do
+          mkAppM ``LeanCategories.CategoryFamilyRealization.fibre #[familyValue, parameter]
+        unless ← withTransparency .all <| isDefEq categoryEqType.getAppArgs[2]! fibre do
+          throwError "registry family category {_declaration} is not its selected family fibre"
+    | _ => pure ()
 
 /-- Require a functor-realization declaration to have the typed witness form. -/
 def ensureFunctorRealization (realization : Name) : MetaM Unit := do
@@ -281,7 +373,11 @@ def validateFunctorDeclarationRealization (declaration realization : Name) : Met
     unless realizationArgs.size == 6 do
       throwError "registry realization {realization} has malformed FunctorRealization parameters"
     let declarationValue ← mkConstWithFreshMVarLevels declaration
-    let declarationType ← whnf (← inferType (mkAppN declarationValue arguments))
+    let declarationValue := mkAppN declarationValue arguments
+    let declarationType ← whnf (← inferType declarationValue)
+    unless ← withTransparency .all <| isDefEq declarationValue realizationArgs[5]! do
+      throwError
+        "registry functor declaration {declaration} is not the realized functor {realization}"
     let realizationFunctorType ← whnf (← inferType realizationArgs[5]!)
     let declarationArgs := declarationType.getAppArgs
     let realizationArgs' := realizationFunctorType.getAppArgs
@@ -354,7 +450,7 @@ def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
   | .category e => do
       ensureCategoryDeclaration e.declaration
       ensureCategoryRealization e.realization
-      validateCategoryDeclarationRealization e.declaration e.realization
+      validateCategoryDeclarationRealization e.expression e.declaration e.realization
   | .categoryFamily e => do
       ensureCategoryFamilyRealization e.realization
       validateCategoryFamilyTransportDecl e.realization e.transport

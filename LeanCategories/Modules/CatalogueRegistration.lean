@@ -21,15 +21,21 @@ noncomputable def modulesFamilyRealization :
   transport := Modules.Mathlib.moduleCatRestrictScalarsPseudofunctor
 
 noncomputable def modulesRealization (R : RingCat.{u}) :
-    CategoryRealization Modules.Modules (modulesFamilyRealization.fibre R) := ⟨⟩
+    CategoryRealization Modules.Modules (modulesFamilyRealization.fibre R) where
+  familyFibre := some {
+    identifier := CategoryFamilyId.modules
+    realization := modulesFamilyRealization
+    parameter := R
+    category_eq := by rfl }
 noncomputable def freeModulesRealization (R : RingCat.{u}) :
-    CategoryRealization Modules.FreeModules (Modules.Mathlib.free R).total := ⟨⟩
+    CategoryRealization Modules.FreeModules (Modules.Mathlib.free R).total :=
+  { familyFibre := none }
 noncomputable def finitelyGeneratedModulesRealization (R : RingCat.{u}) :
     CategoryRealization Modules.FinitelyGeneratedModules
-      (Modules.Mathlib.finitelyGenerated R).total := ⟨⟩
+      (Modules.Mathlib.finitelyGenerated R).total := { familyFibre := none }
 noncomputable def finiteRankModulesRealization (R : RingCat.{u}) :
     CategoryRealization Modules.FiniteRankModules
-      (Modules.Mathlib.finiteRank R).total := ⟨⟩
+      (Modules.Mathlib.finiteRank R).total := { familyFibre := none }
 
 noncomputable def freeRealization (R : RingCat.{u}) :
     ClassifierRealization Modules.Modules ClassifierId.modulesFree
