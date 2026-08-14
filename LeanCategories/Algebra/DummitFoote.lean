@@ -7,6 +7,7 @@ module
 public import LeanCategories.Algebra.Concrete.Rings
 public import LeanCategories.Algebra.GroupTheory
 public import LeanCategories.Algebra.Ideals
+public import LeanCategories.Algebra.JordanCanonical
 public import LeanCategories.Algebra.Polynomial
 public import LeanCategories.Algebra.StandardConstructions
 public import LeanCategories.Modules.Foundations
