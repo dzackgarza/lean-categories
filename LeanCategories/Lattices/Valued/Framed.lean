@@ -10,6 +10,8 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.Basic
 
 @[expose] public section
 
+noncomputable section
+
 open CategoryTheory
 open CategoryTheory.Limits
 open LeanCategories.Modules.Bilinear.Valued
@@ -27,14 +29,14 @@ def integralLatticeForget : IntegralLatticeCat R ⥤ ModuleCat R :=
 
 /-- Rank-`n` coordinatized lattices form the categorical pullback of coordinates
 and intrinsic lattices over their carrier modules. -/
-abbrev CoordLatticeCat :=
+abbrev CoordLatticeCat (n : ℕ) :=
   CategoricalPullback
-    (LeanCategories.Modules.Coord.forget R n)
+    (LeanCategories.Modules.Coord.forget R (Fin n))
     (integralLatticeForget R)
 
 /-- Forget a coordinatized lattice to its coordinatized carrier module. -/
 def coordLatticeToCoord :
-    CoordLatticeCat R n ⥤ LeanCategories.Modules.Coord R n :=
+    CoordLatticeCat R n ⥤ LeanCategories.Modules.Coord R (Fin n) :=
   CategoricalPullback.π₁ _ _
 
 /-- Compare a coordinatized lattice with its intrinsic lattice. -/
@@ -46,10 +48,11 @@ namespace CoordLatticeCat
 /-- Equip an intrinsic lattice with coordinates from a selected finite basis. -/
 noncomputable def ofBasis (L : IntegralLatticeCat R)
     (b : Module.Basis (Fin n) R L.obj.carrier) : CoordLatticeCat R n := by
-  let e : LeanCategories.Modules.StandardFreeModule R n ≅ L.obj.carrierObj :=
-    LinearEquiv.toModuleIso b.equivFun.symm
+  let e : LeanCategories.Modules.StandardFreeModule R (Fin n) ≅ L.obj.carrierObj :=
+    LinearEquiv.toModuleIso
+      ((Finsupp.linearEquivFunOnFinite R R (Fin n)).trans b.equivFun.symm)
   exact
-    { fst := LeanCategories.Modules.Coord.ofIso R n e
+    { fst := LeanCategories.Modules.Coord.ofIso R (Fin n) e
       snd := L
       iso := Iso.refl _ }
 

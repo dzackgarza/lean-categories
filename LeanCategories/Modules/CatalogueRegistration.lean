@@ -33,7 +33,7 @@ noncomputable def genFrameFamilyTransport :=
     (P := Σ _R : CommRingCat.{u}, Nat)
     (fun (parameter : Σ _R : CommRingCat.{u}, Nat) =>
       letI := parameter.1.commRing
-      (Cat.of (GenFrame parameter.1 parameter.2) : ObjCat.{u + 1, u}))
+      (Cat.of (GenFrame parameter.1 (Fin parameter.2)) : ObjCat.{u + 1, u}))
 
 noncomputable def genFrameFamilyRealization :
     CategoryFamilyRealization.{u + 1, u, u, u + 1}
@@ -46,7 +46,7 @@ noncomputable def basisFrameFamilyTransport :=
     (P := Σ _R : CommRingCat.{u}, Nat)
     (fun (parameter : Σ _R : CommRingCat.{u}, Nat) =>
       letI := parameter.1.commRing
-      (Cat.of (BasisFrame parameter.1 parameter.2) : ObjCat.{u + 1, u}))
+      (Cat.of (BasisFrame parameter.1 (Fin parameter.2)) : ObjCat.{u + 1, u}))
 
 noncomputable def basisFrameFamilyRealization :
     CategoryFamilyRealization.{u + 1, u, u, u + 1}
@@ -59,7 +59,7 @@ noncomputable def coordFamilyTransport :=
     (P := Σ _R : CommRingCat.{u}, Nat)
     (fun (parameter : Σ _R : CommRingCat.{u}, Nat) =>
       letI := parameter.1.commRing
-      (Cat.of (Coord parameter.1 parameter.2) : ObjCat.{u + 1, u}))
+      (Cat.of (Coord parameter.1 (Fin parameter.2)) : ObjCat.{u + 1, u}))
 
 noncomputable def coordFamilyRealization :
     CategoryFamilyRealization.{u + 1, u, u, u + 1}
@@ -68,13 +68,13 @@ noncomputable def coordFamilyRealization :
   transportSemantics := .discrete
 
 noncomputable def genFrameCategory (R : Type u) [CommRing R] (n : Nat) : ObjCat.{u + 1, u} :=
-  Cat.of (GenFrame R n)
+  Cat.of (GenFrame R (Fin n))
 
 noncomputable def basisFrameCategory (R : Type u) [CommRing R] (n : Nat) : ObjCat.{u + 1, u} :=
-  Cat.of (BasisFrame R n)
+  Cat.of (BasisFrame R (Fin n))
 
 noncomputable def coordCategory (R : Type u) [CommRing R] (n : Nat) : ObjCat.{u + 1, u} :=
-  Cat.of (Coord R n)
+  Cat.of (Coord R (Fin n))
 
 noncomputable def genFrameRealization (R : Type u) [CommRing R] (n : Nat) :
     CategoryRealization Modules.GenFrameExpr (genFrameCategory R n) where
@@ -109,35 +109,35 @@ noncomputable def finiteRankModulesRealization (R : RingCat.{u}) :
 noncomputable def basisFrameToGenFrameRealization (R : Type u) [CommRing R] (n : Nat) :
     FunctorRealization Modules.BasisFrameToGenFrameExpr
       (basisFrameCategory R n) (genFrameCategory R n)
-      (basisFrameToGenFrame R n).toCatHom :=
+      (basisFrameToGenFrame R (Fin n)).toCatHom :=
   { sourceRealization := basisFrameRealization R n
     targetRealization := genFrameRealization R n }
 
 noncomputable def fromBasisFrameRealization (R : Type u) [CommRing R] (n : Nat) :
     FunctorRealization Modules.FromBasisFrameExpr
       (basisFrameCategory R n) (coordCategory R n)
-      (Coord.fromBasisFrame R n).toCatHom :=
+      (Coord.fromBasisFrame R (Fin n)).toCatHom :=
   { sourceRealization := basisFrameRealization R n
     targetRealization := coordRealization R n }
 
 noncomputable def coordForgetRealization (R : Type u) [CommRing R] (n : Nat) :
     FunctorRealization Modules.CoordForgetExpr
       (coordCategory R n) (Modules.Mathlib.ModulesOf (RingCat.of R))
-      (Coord.forget R n).toCatHom :=
+      (Coord.forget R (Fin n)).toCatHom :=
   { sourceRealization := coordRealization R n
     targetRealization := modulesRealization (RingCat.of R) }
 
 noncomputable def basisFrameToGenFrameDeclaration (R : Type u) [CommRing R] (n : Nat) :
     basisFrameCategory R n ⟶ genFrameCategory R n :=
-  (basisFrameToGenFrame R n).toCatHom
+  (basisFrameToGenFrame R (Fin n)).toCatHom
 
 noncomputable def fromBasisFrameDeclaration (R : Type u) [CommRing R] (n : Nat) :
     basisFrameCategory R n ⟶ coordCategory R n :=
-  (Coord.fromBasisFrame R n).toCatHom
+  (Coord.fromBasisFrame R (Fin n)).toCatHom
 
 noncomputable def coordForgetDeclaration (R : Type u) [CommRing R] (n : Nat) :
     coordCategory R n ⟶ Modules.Mathlib.ModulesOf (RingCat.of R) :=
-  (Coord.forget R n).toCatHom
+  (Coord.forget R (Fin n)).toCatHom
 
 noncomputable def freeRealization (R : RingCat.{u}) :
     ClassifierRealization Modules.Modules ClassifierId.modulesFree
