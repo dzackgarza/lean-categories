@@ -81,7 +81,7 @@ Current work: `#33` through `#36`, and milestone `#51`.
 - [x] `GenFrame_n(R)`, `BasisFrame_n(R)`, and `Coord_n(R)`
 - [ ] Framed, coordinatized, and presented module categories
 - [ ] Framed and coordinatized bilinear and quadratic module categories
-- [ ] Equivalence relation on matrices presenting the same module map
+- [x] Equivalence relation on matrices presenting the same module map
 - [x] Gram-matrix and quadratic Gram-data functors
 - [ ] Change-of-frame and presentation-comparison functors
 
