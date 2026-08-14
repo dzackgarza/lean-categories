@@ -97,7 +97,7 @@ noncomputable def CategoryFamilyRealization.canonicalDiscreteCommRingNatTranspor
     (realization : CategoryFamilyRealization.{uObj, uHom, uParam, uParam + 1}
       identifier .commRingNat) :
     Pseudofunctor
-      (LocallyDiscrete (Discrete (Σ R : CommRingCat.{uParam}, Nat))ᵒᵖ)
+      (LocallyDiscrete (Discrete (Σ _R : CommRingCat.{uParam}, Nat))ᵒᵖ)
       (Cat.{uHom, max uObj uHom}) :=
   discreteFamilyTransport.{uObj, uHom, uParam + 1}
     (fun parameter => realization.fibre ⟨parameter⟩)

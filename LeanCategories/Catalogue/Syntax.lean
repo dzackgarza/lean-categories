@@ -83,8 +83,8 @@ def dependencyParameterId (schema : CategoryFamilySchema)
   | .ring => RingCat.{u}
   | .commRing => Discrete (CommRingCat.{u})
   | .commRingModule => Discrete (Σ R : CommRingCat.{u}, ModuleCat.{u} R)
-  | .commRingNat => Discrete (Σ R : CommRingCat.{u}, Nat)
-  | .domain => Discrete (PSigma fun R : CommRingCat.{u} => IsDomain R)
+  | .commRingNat => Discrete (Σ _R : CommRingCat.{u}, Nat)
+  | .domain => Discrete (PSigma fun _R : CommRingCat.{u} => IsDomain _R)
 
 end CategoryFamilySchema
 

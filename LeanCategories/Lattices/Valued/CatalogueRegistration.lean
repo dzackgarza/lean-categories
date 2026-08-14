@@ -87,8 +87,8 @@ noncomputable def integralLatticeFamilyRealization :
 
 noncomputable def coordLatticeFamilyTransport :=
   discreteFamilyTransport.{u + 1, u, u + 1}
-    (P := Σ R : CommRingCat.{u}, Nat)
-    (fun (parameter : Σ R : CommRingCat.{u}, Nat) =>
+    (P := Σ _R : CommRingCat.{u}, Nat)
+    (fun (parameter : Σ _R : CommRingCat.{u}, Nat) =>
       letI := parameter.1.commRing
       (Cat.of (CoordLatticeCat parameter.1 parameter.2) : ObjCat.{u + 1, u}))
 

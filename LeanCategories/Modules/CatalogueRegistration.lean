@@ -30,8 +30,8 @@ noncomputable def modulesRealization (R : RingCat.{u}) :
 
 noncomputable def genFrameFamilyTransport :=
   discreteFamilyTransport.{u + 1, u, u + 1}
-    (P := Σ R : CommRingCat.{u}, Nat)
-    (fun (parameter : Σ R : CommRingCat.{u}, Nat) =>
+    (P := Σ _R : CommRingCat.{u}, Nat)
+    (fun (parameter : Σ _R : CommRingCat.{u}, Nat) =>
       letI := parameter.1.commRing
       (Cat.of (GenFrame parameter.1 parameter.2) : ObjCat.{u + 1, u}))
 
@@ -43,8 +43,8 @@ noncomputable def genFrameFamilyRealization :
 
 noncomputable def basisFrameFamilyTransport :=
   discreteFamilyTransport.{u + 1, u, u + 1}
-    (P := Σ R : CommRingCat.{u}, Nat)
-    (fun (parameter : Σ R : CommRingCat.{u}, Nat) =>
+    (P := Σ _R : CommRingCat.{u}, Nat)
+    (fun (parameter : Σ _R : CommRingCat.{u}, Nat) =>
       letI := parameter.1.commRing
       (Cat.of (BasisFrame parameter.1 parameter.2) : ObjCat.{u + 1, u}))
 
@@ -56,8 +56,8 @@ noncomputable def basisFrameFamilyRealization :
 
 noncomputable def coordFamilyTransport :=
   discreteFamilyTransport.{u + 1, u, u + 1}
-    (P := Σ R : CommRingCat.{u}, Nat)
-    (fun (parameter : Σ R : CommRingCat.{u}, Nat) =>
+    (P := Σ _R : CommRingCat.{u}, Nat)
+    (fun (parameter : Σ _R : CommRingCat.{u}, Nat) =>
       letI := parameter.1.commRing
       (Cat.of (Coord parameter.1 parameter.2) : ObjCat.{u + 1, u}))
 
