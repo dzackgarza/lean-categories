@@ -27,4 +27,12 @@ abbrev ReducedSchemeCat : Type (u + 1) :=
 abbrev reducedSchemeIncl : ReducedSchemeCat.{u} ⥤ Scheme.{u} :=
   ObjectProperty.ι (C := Scheme.{u}) (fun X : Scheme.{u} => IsReduced X)
 
+/-- Affine schemes as the full subcategory cut out by Mathlib's `IsAffine` predicate. -/
+abbrev AffineSchemeCat : Type (u + 1) :=
+  ObjectProperty.FullSubcategory (C := Scheme.{u}) (fun X : Scheme.{u} => IsAffine X)
+
+/-- The inclusion of affine schemes into all schemes. -/
+abbrev affineSchemeIncl : AffineSchemeCat.{u} ⥤ Scheme.{u} :=
+  ObjectProperty.ι (C := Scheme.{u}) (fun X : Scheme.{u} => IsAffine X)
+
 end LeanCategories.Schemes
