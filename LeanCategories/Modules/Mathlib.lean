@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Category.ModuleCat.Pseudofunctor
 public import Mathlib.RingTheory.SimpleModule.Basic
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.Projective
-public import Mathlib.RingTheory.SimpleModule.Basic
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.RingTheory.Noetherian.Defs
