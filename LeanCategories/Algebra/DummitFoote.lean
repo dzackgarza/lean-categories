@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Algebra.Concrete.Rings
 public import LeanCategories.Algebra.FractionalIdeals
+public import Mathlib.RingTheory.Valuation.Discrete.Basic
 public import LeanCategories.Algebra.GroupTheory
 public import LeanCategories.Algebra.Ideals
 public import LeanCategories.Algebra.JordanCanonical
@@ -257,13 +258,17 @@ variable (K : Type u) [Field K]
 /** A valuation of a field with the standard multiplicative integer values. */
 abbrev DiscreteValuation : Type u := Valuation K ℤᵐ⁰
 
+/** The discreteness predicate for the valuation. */
+abbrev IsDiscreteValuation (v : DiscreteValuation K) : Prop :=
+  Valuation.IsRankOneDiscrete v
+
 end Valuations
 
 section FractionalIdeals
 
 variable (R : Type u) [CommRing R]
 
-/** Fractional ideals in a localization of a domain. */
+/** Mathlib fractional ideals in an `R`-algebra. */
 abbrev FractionalIdeal (S : Submonoid R) (P : Type v) [CommRing P]
     [Algebra R P] : Type _ := _root_.FractionalIdeal S P
 
