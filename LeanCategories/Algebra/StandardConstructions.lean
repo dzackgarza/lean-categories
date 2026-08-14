@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.AdicCompletion.Algebra
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.LinearAlgebra.TensorProduct.Basic
 public import Mathlib.RingTheory.TensorProduct.Basic
 public import Mathlib.LinearAlgebra.TensorAlgebra.Grading
@@ -59,6 +60,19 @@ This is the project name for Mathlib's canonical `AlgCat` category. -/
 abbrev AlgebraCat := AlgCat
 
 namespace AlgebraCat
+
+section AlgebraicClosure
+
+variable (K : Type u) [Field K]
+
+/-- Mathlib's canonical algebraic closure of a field, viewed as a `K`-algebra. -/
+abbrev algebraicClosure : AlgebraCat K := .of K (AlgebraicClosure K)
+
+/-- The canonical structure morphism into `AlgebraicClosure K`. -/
+abbrev algebraicClosureMap : AlgebraCat.of K K ⟶ algebraicClosure K :=
+  AlgCat.ofHom (Algebra.ofId K (AlgebraicClosure K)).toAlgHom
+
+end AlgebraicClosure
 
 section TensorProduct
 
