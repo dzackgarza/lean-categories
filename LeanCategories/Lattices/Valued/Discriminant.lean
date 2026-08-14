@@ -8,6 +8,7 @@ public import LeanCategories.Lattices.Valued.MetricDual
 public import LeanCategories.Modules.Bilinear.Valued.Torsion
 public import LeanCategories.Modules.Bilinear.Valued.Cokernel
 public import LeanCategories.Modules.FractionRingQuotient
+public import Mathlib.GroupTheory.Exponent
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
 
 @[expose] public section
@@ -33,6 +34,10 @@ noncomputable def discriminantSymBilWFormObject (L : IntegralLatticeCat R) : Sym
 /-- The discriminant group `A_L`. -/
 noncomputable abbrev discriminantGroup (L : IntegralLatticeCat R) :=
   (discriminantSymBilWFormObject R L).obj.carrier
+
+/-- The exponent of the additive discriminant group `A_L`. -/
+noncomputable abbrev discriminantExponent (L : IntegralLatticeCat R) : ℕ :=
+  AddMonoid.exponent (discriminantGroup R L)
 
 /-- The formed quotient map from the metric dual to the discriminant module. -/
 noncomputable def discriminantSymBilWFormProjection (L : IntegralLatticeCat R) :
