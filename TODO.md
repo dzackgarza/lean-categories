@@ -87,7 +87,7 @@ Current work: `#33` through `#36`, and milestone `#51`.
 
 ### Lattice categories and invariants
 
-- [ ] Free, finite-free, finite-projective, generically nondegenerate, even,
+- [x] Free, finite-free, finite-projective, generically nondegenerate, even,
   unimodular, definite, and indefinite lattice subcategories
 - [x] Algebraic dual, metric dual, and ideal dual
 - [x] Pairing map `L^{#I} → Hom_R(L,I)`
@@ -175,12 +175,12 @@ Run the full reuse search again before new authorship.
 
 ### Variable-value quadratic formed modules
 
-- [ ] Category of variable-value quadratic `R`-modules
-- [ ] Carrier-module functor and value-module functor
-- [ ] Fixed-value fiber over an `R`-module `W`
-- [ ] Change-of-value functor
-- [ ] Scalar-extension functor
-- [ ] Quadratic defect module
+- [x] Category of variable-value quadratic `R`-modules
+- [x] Carrier-module functor and value-module functor
+- [x] Fixed-value fiber over an `R`-module `W`
+- [x] Change-of-value functor
+- [x] Scalar-extension functor
+- [x] Quadratic defect module
 
 ### Higher classifier foundations
 
