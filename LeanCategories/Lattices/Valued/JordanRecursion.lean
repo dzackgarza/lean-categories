@@ -250,7 +250,12 @@ theorem isNondegenerate_orthogonalComplement (L : IntegralLatticeCat R)
     rw [BilinModuleCat.pairing_add_right, L.property.2 x.1 p,
       (mem_orthogonalSubmodule_iff L P x.1).mp x.2 p hp, hx' ⟨q, hq⟩, add_zero]
   have hmem : x.1 ∈ LinearMap.ker L.obj.adjoint := LinearMap.ext hzero
-  exact Subtype.ext (Submodule.eq_bot_iff _ |>.mp hL.1 x.1 hmem)
+  have hxadj : L.obj.adjoint x.1 = 0 := LinearMap.mem_ker.mp hmem
+  have hxzero : (x.1 : L.obj.carrier) = 0 :=
+    (L.obj.isNondegenerate_iff_adjoint_injective_of_isSymmetric L.property.2).mp hL (by
+      rw [map_zero]
+      exact hxadj)
+  exact Subtype.ext hxzero
 
 /-- A nondegenerate lattice with trivial scale has no nonzero vectors. -/
 theorem subsingleton_of_scaleModule_eq_bot (L : IntegralLatticeCat R)
@@ -258,10 +263,12 @@ theorem subsingleton_of_scaleModule_eq_bot (L : IntegralLatticeCat R)
     Subsingleton L.obj.carrier := by
   have hzero : ∀ z : L.obj.carrier, z = 0 := by
     intro z
-    refine (Submodule.eq_bot_iff _).mp hL.1 z (LinearMap.ext fun w ↦ ?_)
+    refine (L.obj.isNondegenerate_iff_adjoint_injective_of_isSymmetric L.property.2).mp hL
+      (LinearMap.ext fun w ↦ ?_)
     have hmem : L.obj.pairing z w ∈ scaleModule L := pairing_mem_scaleModule L z w
     rw [h] at hmem
-    exact hmem
+    have hpair : L.obj.pairing z w = 0 := hmem
+    simpa using hpair
   exact ⟨fun x y ↦ by rw [hzero x, hzero y]⟩
 
 end Nondegeneracy
