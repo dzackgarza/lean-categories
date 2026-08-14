@@ -48,7 +48,7 @@ Current work: `#50`, `#54`, `#55`, `#56`, and `#58`.
 - [x] Evaluation of expressions in a selected realization
 - [x] Proof-carrying category and functor registry entries
 - [x] Stable exported identifiers for categories, functors, and standard objects
-- [ ] Audit each file named `Functors`: define an honest functor or relocate it
+- [x] Audit each file named `Functors`: define an honest functor or relocate it
 
 ## 2. Formed modules and lattice arithmetic
 
