@@ -82,7 +82,7 @@ Current work: `#33` through `#36`, and milestone `#51`.
 - [ ] Framed, coordinatized, and presented module categories
 - [ ] Framed and coordinatized bilinear and quadratic module categories
 - [ ] Equivalence relation on matrices presenting the same module map
-- [ ] Gram-matrix and quadratic Gram-data functors
+- [x] Gram-matrix and quadratic Gram-data functors
 - [ ] Change-of-frame and presentation-comparison functors
 
 ### Lattice categories and invariants
