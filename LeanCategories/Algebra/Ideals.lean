@@ -31,11 +31,11 @@ variable (R : Type u) [CommSemiring R]
 
 /-! ### Extended and contracted ideals in rings of fractions -/
 
-/** The extension of an ideal to the ring of fractions at `S`. */
+/-- The extension of an ideal to the ring of fractions at `S`. -/
 abbrev extendedIdeal (I : Ideal R) (S : Submonoid R) : Ideal (Localization S) :=
   I.map (algebraMap R (Localization S))
 
-/** The contraction of an ideal from the ring of fractions at `S`. */
+/-- The contraction of an ideal from the ring of fractions at `S`. -/
 abbrev contractedIdeal (S : Submonoid R) (J : Ideal (Localization S)) : Ideal R :=
   J.under R
 
