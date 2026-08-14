@@ -7,6 +7,7 @@ module
 public import Mathlib.Algebra.Category.CommAlgCat.Basic
 public import Mathlib.RingTheory.RingHom.FinitePresentation
 public import Mathlib.RingTheory.RingHom.FiniteType
+public import Mathlib.RingTheory.Algebraic.Integral
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 /-!
@@ -33,6 +34,22 @@ variable (R : Type u) [CommRing R]
 abbrev ModuleFinite (R : Type u) [CommRing R] : Type _ :=
   ObjectProperty.FullSubcategory (C := CommAlgCat.{v} R)
     (fun A : CommAlgCat.{v} R => Module.Finite R A)
+
+/-- Commutative `R`-algebras integral over `R`.
+
+This uses Mathlib's unrestricted `Algebra.IsIntegral` predicate. -/
+abbrev Integral (R : Type u) [CommRing R] : Type _ :=
+  ObjectProperty.FullSubcategory (C := CommAlgCat.{v} R)
+    (fun A : CommAlgCat.{v} R => Algebra.IsIntegral R A)
+
+/-- The inclusion of integral commutative `R`-algebras. -/
+abbrev integralIncl (R : Type u) [CommRing R] : Integral R ⥤ CommAlgCat.{v} R :=
+  ObjectProperty.ι (C := CommAlgCat.{v} R)
+    (fun A : CommAlgCat.{v} R => Algebra.IsIntegral R A)
+
+/-- The forgetful functor from integral algebras to commutative rings. -/
+abbrev integralToCommRing : Integral R ⥤ CommRingCat.{v} :=
+  integralIncl R ⋙ (forget₂ (CommAlgCat.{v} R) CommRingCat.{v})
 
 /-- The inclusion of module-finite commutative `R`-algebras. -/
 abbrev moduleFiniteIncl (R : Type u) [CommRing R] : ModuleFinite R ⥤ CommAlgCat.{v} R :=
