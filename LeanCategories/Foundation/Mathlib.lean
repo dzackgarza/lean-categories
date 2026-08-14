@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.CategoryTheory.GradedObject
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.Data.Countable.Defs
 public import LeanCategories.CategoryTheory.OneCat.Classifier
 
 @[expose] public section
