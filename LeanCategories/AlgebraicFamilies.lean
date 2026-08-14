@@ -32,6 +32,15 @@ namespace LeanCategories.AlgebraicFamilies
 
 universe u
 
+/-! ## Commutative algebras -/
+
+/** The total category of commutative algebra arrows over varying bases. */
+abbrev CommAlgTotal := CategoryTheory.Arrow CommRingCat.{u}
+
+/** The projection from commutative algebra arrows to their coefficient rings. */
+abbrev commAlgProjection : CommAlgTotal.{u} ⥤ CommRingCat.{u} :=
+  CategoryTheory.Arrow.leftFunc
+
 /-! ## Ideals -/
 
 /** The strict fiber functor of all ideals under ideal extension. */
@@ -142,18 +151,58 @@ abbrev primeIdealBaseChange {R S : CommRingCat.{u}} (f : R ⟶ S) :
     primeIdealFiber S ⥤ primeIdealFiber R :=
   primeIdealComapFunctor f
 
-/-! ## Commutative algebras -/
+/** The canonical CoGrothendieck morphism for prime-ideal contraction. */
+def primeIdealBaseChangeHom (X : PrimeIdealTotal.{u})
+    {R : CommRingCat.{u}} (f : R ⟶ X.base) :
+    ⟨R, (primeIdealFamily.map f.op.toLoc).toFunctor.obj X.fiber⟩ ⟶ X :=
+  { base := f, fiber := 𝟙 _ }
 
 /** The category of commutative algebras over a fixed commutative ring. */
 abbrev commAlgFiber (R : CommRingCat.{u}) := CommRingCat.Under R
+
+/** Include a fixed-base algebra fiber into the total arrow category. */
+def commAlgFiberInclusion (R : CommRingCat.{u}) :
+    commAlgFiber R ⥤ CommAlgTotal :=
+  { obj A := CategoryTheory.Arrow.mk A.hom
+    map f := CategoryTheory.Arrow.homMk (𝟙 R) f.right }
 
 /** The standard tensor-product base-change functor for commutative algebras. */
 abbrev commAlgBaseChange {R S : CommRingCat.{u}} (f : R ⟶ S) :
     commAlgFiber R ⥤ commAlgFiber S :=
   CommRingCat.tensorProd R S
 
+/** The total-category object obtained by extending a commutative algebra. */
+abbrev commAlgBaseChangeObject {R S : CommRingCat.{u}}
+    (A : commAlgFiber R) (f : R ⟶ S) : CommAlgTotal :=
+  CategoryTheory.Arrow.mk (commAlgBaseChange f |>.obj A).hom
+
+/** The canonical base-change square for a commutative algebra arrow. */
+def commAlgBaseChangeHom {R S : CommRingCat.{u}}
+    (A : commAlgFiber R) (f : R ⟶ S) :
+    CategoryTheory.Arrow.mk A.hom ⟶ commAlgBaseChangeObject A f :=
+  CategoryTheory.Arrow.homMk' f
+    (CommRingCat.ofHom Algebra.TensorProduct.includeRight)
+
 /** The underlying algebra object of a commutative-algebra fiber object. */
 abbrev commAlgCarrier {R : CommRingCat.{u}} (A : commAlgFiber R) : Type u := A.right
 
-end LeanCategories.AlgebraicFamilies
+/-! ## Cartesian lifts for covariant pseudofamilies -/
 
+/** The canonical Grothendieck morphism to transport along a base map. */
+def covariantFamilyBaseChangeHom
+    (F : LocallyDiscrete CommRingCat.{u} ⥤ᵖ Cat.{u, u + 1})
+    (X : ∫ F) {S : CommRingCat.{u}} (f : X.base ⟶ S) :
+    X ⟶ ⟨S, (F.map f.toLoc).toFunctor.obj X.fiber⟩ :=
+  { base := f, fiber := 𝟙 _ }
+
+abbrev idealBaseChangeHom (X : IdealTotal.{u})
+    {S : CommRingCat.{u}} (f : X.base ⟶ S) :
+    X ⟶ ⟨S, (idealFamily.map f.toLoc).toFunctor.obj X.fiber⟩ :=
+  covariantFamilyBaseChangeHom idealFamily X f
+
+abbrev moduleBaseChangeHom (X : ModuleTotal.{u})
+    {S : CommRingCat.{u}} (f : X.base ⟶ S) :
+    X ⟶ ⟨S, (moduleFamily.map f.toLoc).toFunctor.obj X.fiber⟩ :=
+  covariantFamilyBaseChangeHom moduleFamily X f
+
+end LeanCategories.AlgebraicFamilies

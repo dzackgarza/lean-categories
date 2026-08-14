@@ -38,12 +38,12 @@ Current work: `#50`, `#54`, `#55`, `#56`, and `#58`.
 - [x] Integral-domain refinement tower from fields to commutative rings
 - [x] One-object category `{R}` and membership functor `{R} ⟶ C`
 - [x] Categories of elements for element-level method attachment
-- [ ] Fibred families of polynomial rings, power-series rings, matrices, vectors,
+- [x] Fibred families of polynomial rings, power-series rings, matrices, vectors,
   ideals, modules, and algebras over commutative rings
-- [ ] Prime-ideal and general-linear-group subfibrations
-- [ ] Determinant, trace, characteristic polynomial, and derivative as natural
+- [x] Prime-ideal and general-linear-group subfibrations
+- [x] Determinant, trace, characteristic polynomial, and derivative as natural
   transformations
-- [ ] Cartesian lifts and base-change functors for each fibred family
+- [x] Cartesian lifts and base-change functors for each fibred family
 - [ ] Category, functor, and natural-transformation expressions
 - [ ] Evaluation of expressions in a selected realization
 - [ ] Proof-carrying category and functor registry entries

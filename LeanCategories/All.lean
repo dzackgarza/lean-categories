@@ -34,6 +34,7 @@ public import LeanCategories.Algebra.GroupTheory
 public import LeanCategories.Algebra.DummitFoote
 public import LeanCategories.Algebra.Polynomial
 public import LeanCategories.Algebra.PolynomialPowerSeries
+public import LeanCategories.Algebra.MatrixFamilies
 public import LeanCategories.ForMathlib.AdicCompletionIntegers
 public import LeanCategories.ForMathlib.DenseIntegralCompletion
 public import LeanCategories.ForMathlib.QuadraticReflection

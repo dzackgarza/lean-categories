@@ -26,8 +26,12 @@ universe u w
 abbrev commRingFamily : CommRingCat.{u} ⥤ Type u :=
   CategoryTheory.forget CommRingCat
 
-/-- The covariant family of polynomial rings. -/
-noncomputable def polynomialFamily : CommRingCat.{u} ⥤ Type u where
+/-- The covariant family of polynomial-ring elements.
+
+The category-valued polynomial family is `LeanCategories.Algebra.polynomialFamily` in
+`PolynomialPowerSeries`; this value-valued family is kept separate so both routes can
+be exported together. -/
+noncomputable def polynomialValueFamily : CommRingCat.{u} ⥤ Type u where
   obj R := Polynomial R
   map f := ↾fun p => Polynomial.map f.hom p
   map_id R := by
@@ -147,6 +151,11 @@ def familyFiberBaseChange {R S : CommRingCat} (f : R ⟶ S)
   map_id := by
     intro X
     apply Subsingleton.elim
+
+/-- The canonical morphism from a family element to its transport along a base map. -/
+def familyBaseChangeHom (F : CommRingCat.{u} ⥤ Type w) (X : F.Elements)
+    {S : CommRingCat} (f : X.1 ⟶ S) : X ⟶ ⟨S, F.map f X.2⟩ :=
+  CategoryOfElements.homMk _ _ f rfl
   map_comp := by
     intro X Y Z f g
     apply Subsingleton.elim
@@ -186,6 +195,22 @@ abbrev generalLinearBaseChange {R S : CommRingCat} (f : R ⟶ S) (ι : Type u)
     [Fintype ι] [DecidableEq ι] :
     generalLinearFiber R ι ⥤ generalLinearFiber S ι :=
   familyFiberBaseChange f (generalLinearFamily ι)
+
+/-- The canonical matrix-family base-change morphism. -/
+abbrev matrixBaseChangeHom (X : MatrixFamilyCat ι κ)
+    {S : CommRingCat} (f : X.1 ⟶ S) : X ⟶ ⟨S, matrixFamily ι κ |>.map f X.2⟩ :=
+  familyBaseChangeHom (matrixFamily ι κ) X f
+
+/-- The canonical vector-family base-change morphism. -/
+abbrev vectorBaseChangeHom (X : VectorFamilyCat ι)
+    {S : CommRingCat} (f : X.1 ⟶ S) : X ⟶ ⟨S, vectorFamily ι |>.map f X.2⟩ :=
+  familyBaseChangeHom (vectorFamily ι) X f
+
+/-- The canonical general-linear base-change morphism. -/
+abbrev generalLinearBaseChangeHom (X : GeneralLinearFamilyCat ι)
+    {S : CommRingCat} (f : X.1 ⟶ S) :
+    X ⟶ ⟨S, generalLinearFamily ι |>.map f X.2⟩ :=
+  familyBaseChangeHom (generalLinearFamily ι) X f
 
 /-! ## The general-linear subfamily -/
 
@@ -235,7 +260,7 @@ noncomputable def traceNatTrans (ι : Type u) [Fintype ι] :
 
 /-- Characteristic polynomial as a natural transformation of matrix families. -/
 noncomputable def characteristicPolynomialNatTrans (ι : Type u) [Fintype ι] [DecidableEq ι] :
-    matrixFamily ι ι ⟶ polynomialFamily :=
+    matrixFamily ι ι ⟶ polynomialValueFamily :=
   { app := fun R =>
       letI := R.commRing
       ↾(fun A : Matrix ι ι (R : Type u) => Matrix.charpoly A)
@@ -246,7 +271,7 @@ noncomputable def characteristicPolynomialNatTrans (ι : Type u) [Fintype ι] [D
       exact Matrix.charpoly_map A f.hom }
 
 /-- Formal derivative as a natural transformation of polynomial families. -/
-noncomputable def derivativeNatTrans : polynomialFamily ⟶ polynomialFamily :=
+noncomputable def derivativeNatTrans : polynomialValueFamily ⟶ polynomialValueFamily :=
   { app := fun R =>
       letI := R.commRing
       ↾(fun p : Polynomial (R : Type u) => Polynomial.derivative p)
@@ -268,12 +293,12 @@ noncomputable abbrev traceFunctor (ι : Type u) [Fintype ι] :
 
 /-- The characteristic-polynomial functor between total element categories. -/
 noncomputable abbrev characteristicPolynomialFunctor (ι : Type u) [Fintype ι] [DecidableEq ι] :
-    MatrixFamilyCat ι ι ⥤ (polynomialFamily).Elements :=
+    MatrixFamilyCat ι ι ⥤ (polynomialValueFamily).Elements :=
   NatTrans.mapElements (characteristicPolynomialNatTrans ι)
 
 /-- The derivative functor between total polynomial element categories. -/
 noncomputable abbrev derivativeFunctor :
-    (polynomialFamily).Elements ⥤ (polynomialFamily).Elements :=
+    (polynomialValueFamily).Elements ⥤ (polynomialValueFamily).Elements :=
   NatTrans.mapElements (derivativeNatTrans)
 
 end LeanCategories.Algebra
