@@ -1134,6 +1134,20 @@ def validateCategoryFamilyTransportDecl (_identifier : CategoryFamilyId)
       unless ← withTransparency .all <| isDefEq transportValue canonicalTransport do
         throwError
           "registry equality-only transport is not the canonical discrete family transport"
+  | .discrete, .commRingNat => do
+      let canonicalTransport ← withTransparency .all do
+        mkAppM ``LeanCategories.CategoryFamilyRealization.canonicalDiscreteCommRingNatTransport
+          #[realizationValue]
+      unless ← withTransparency .all <| isDefEq transportValue canonicalTransport do
+        throwError
+          "registry equality-only transport is not the canonical discrete family transport"
+  | .discrete, .domain => do
+      let canonicalTransport ← withTransparency .all do
+        mkAppM ``LeanCategories.CategoryFamilyRealization.canonicalDiscreteDomainTransport
+          #[realizationValue]
+      unless ← withTransparency .all <| isDefEq transportValue canonicalTransport do
+        throwError
+          "registry equality-only transport is not the canonical discrete family transport"
 
 /-- Require a declaration to return a typed classifier realization. -/
 def ensureClassifierRealization (realization : Name) : MetaM Unit := do
@@ -1542,6 +1556,8 @@ private def registryManifestSchema : CategoryFamilySchema → String
   | .ring => "ring"
   | .commRing => "commRing"
   | .commRingModule => "commRingModule"
+  | .commRingNat => "commRingNat"
+  | .domain => "domain"
 
 private def registryManifest (state : RegistryState) : RegistryManifest :=
   let cats := state.categories.qsort (fun a b => a.id.raw < b.id.raw)

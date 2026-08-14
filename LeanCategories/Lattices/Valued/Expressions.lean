@@ -21,6 +21,17 @@ def EvenLattice : CategoryExpr :=
   .familyApp CategoryFamilyId.evenLattice #[.variable ParameterId.r]
 def DefiniteLattice : CategoryExpr := .atom CategoryId.definiteLattice
 def IndefiniteLattice : CategoryExpr := .atom CategoryId.indefiniteLattice
+def IntegralLattice : CategoryExpr :=
+  .familyApp CategoryFamilyId.integralLattice #[.variable ParameterId.r]
+def CoordLattice : CategoryExpr :=
+  .familyApp CategoryFamilyId.coordLattice
+    #[.variable ParameterId.r, .variable ParameterId.n]
+def FractionFieldPerfectFiniteProjectiveLattice : CategoryExpr :=
+  .familyApp CategoryFamilyId.fractionFieldPerfectFiniteProjectiveLattice
+    #[.variable ParameterId.r, .variable ParameterId.domain]
+def UnimodularLattice : CategoryExpr :=
+  .familyApp CategoryFamilyId.unimodularLattice
+    #[.variable ParameterId.r, .variable ParameterId.domain]
 
 def LatticeChangeValue : FunctorExpr Lattice
     (.familyApp CategoryFamilyId.lattice
@@ -36,5 +47,18 @@ def LatticeBaseChange : FunctorExpr Lattice
 
 def FiniteProjectiveForget : FunctorExpr FiniteProjectiveLattice Modules.Modules :=
   .atomic FunctorId.finiteProjectiveForget
+
+def IntegralLatticeForget : FunctorExpr IntegralLattice Modules.Modules :=
+  .atomic FunctorId.integralLatticeForget
+
+def CoordLatticeToCoord : FunctorExpr CoordLattice Modules.CoordExpr :=
+  .atomic FunctorId.coordLatticeToCoord
+
+def CoordLatticeToIntegral : FunctorExpr CoordLattice IntegralLattice :=
+  .atomic FunctorId.coordLatticeToIntegral
+
+def FractionFieldPerfectFiniteProjectiveForget :
+    FunctorExpr FractionFieldPerfectFiniteProjectiveLattice IntegralLattice :=
+  .atomic FunctorId.fractionFieldPerfectFiniteProjectiveForget
 
 end LeanCategories.Lattices.Valued.Catalogue

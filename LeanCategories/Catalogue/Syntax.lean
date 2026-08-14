@@ -31,6 +31,8 @@ inductive CategoryFamilySchema
   | ring
   | commRing
   | commRingModule
+  | commRingNat
+  | domain
   deriving DecidableEq, Repr, Inhabited, Lean.ToExpr
 
 /-- Export metadata owned by a family schema. -/
@@ -57,10 +59,19 @@ def moduleParameter : CategoryFamilyParameter :=
   { name := "W", kind := ParameterKindId.moduleObject, ids := moduleParameterIds,
     dependency := some 0 }
 
+def natParameter : CategoryFamilyParameter :=
+  { name := "n", kind := ParameterKindId.nat, ids := [ParameterId.n] }
+
+def domainParameter : CategoryFamilyParameter :=
+  { name := "domain", kind := ParameterKindId.domain, ids := [ParameterId.domain],
+    dependency := some 0 }
+
 def parameterMetadata : CategoryFamilySchema → Array CategoryFamilyParameter
   | .ring => #[ringParameter]
   | .commRing => #[commRingParameter]
   | .commRingModule => #[commRingParameter, moduleParameter]
+  | .commRingNat => #[commRingParameter, natParameter]
+  | .domain => #[commRingParameter, domainParameter]
 
 def dependencyParameterId (schema : CategoryFamilySchema)
     (parameter : CategoryFamilyParameter) : Option ParameterId := do
@@ -72,6 +83,8 @@ def dependencyParameterId (schema : CategoryFamilySchema)
   | .ring => RingCat.{u}
   | .commRing => Discrete (CommRingCat.{u})
   | .commRingModule => Discrete (Σ R : CommRingCat.{u}, ModuleCat.{u} R)
+  | .commRingNat => Discrete (Σ R : CommRingCat.{u}, Nat)
+  | .domain => Discrete (PSigma fun R : CommRingCat.{u} => IsDomain R)
 
 end CategoryFamilySchema
 
@@ -116,6 +129,8 @@ inductive ParameterSort
   | ring
   | commRing
   | module (base : ParameterExpr)
+  | nat
+  | domain (base : ParameterExpr)
 
 def parameterSort (schema : CategoryFamilySchema) (args : Array ParameterExpr) :
     ParameterExpr → Option ParameterSort
@@ -124,9 +139,13 @@ def parameterSort (schema : CategoryFamilySchema) (args : Array ParameterExpr) :
       | some parameter =>
           if parameter.kind == ParameterKindId.ringObject then some .ring
           else if parameter.kind == ParameterKindId.commRingObject then some .commRing
+          else if parameter.kind == ParameterKindId.nat then some .nat
           else do
             let base ← dependencyParameterId schema parameter
-            some (.module (.variable base))
+            if parameter.kind == ParameterKindId.domain then
+              some (.domain (.variable base))
+            else
+              some (.module (.variable base))
       | none => none
   | .apply operation argument =>
       if operation == ParameterOperationId.opposite then
@@ -149,7 +168,9 @@ def parameterSort (schema : CategoryFamilySchema) (args : Array ParameterExpr) :
 
 def parameterSortCompatible : ParameterSort → ParameterSort → Bool
   | .ring, .ring | .commRing, .commRing => true
+  | .nat, .nat => true
   | .module actual, .module expected => actual == expected
+  | .domain actual, .domain expected => actual == expected
   | _, _ => false
 
 def parameterExpectedSort (schema : CategoryFamilySchema) (args : Array ParameterExpr)
@@ -159,10 +180,15 @@ def parameterExpectedSort (schema : CategoryFamilySchema) (args : Array Paramete
     some .ring
   else if parameter.kind == ParameterKindId.commRingObject then
     some .commRing
+  else if parameter.kind == ParameterKindId.nat then
+    some .nat
   else
     let dependency ← parameter.dependency
     let base ← args[dependency]?
-    some (.module base)
+    if parameter.kind == ParameterKindId.domain then
+      some (.domain base)
+    else
+      some (.module base)
 
 def parameterSortAt (schema : CategoryFamilySchema) (args : Array ParameterExpr)
     (index : Nat) : Option ParameterSort := do
@@ -175,8 +201,14 @@ def parameterSortAt (schema : CategoryFamilySchema) (args : Array ParameterExpr)
         let dependency ← parameter.dependency
         let base ← args[dependency]?
         some (.module base)
+      else if parameter.kind == ParameterKindId.domain then
+        let dependency ← parameter.dependency
+        let base ← args[dependency]?
+        some (.domain base)
       else if parameter.kind == ParameterKindId.ringObject then
         some .ring
+      else if parameter.kind == ParameterKindId.nat then
+        some .nat
       else
         some .commRing
   | _ => parameterSort schema args argument

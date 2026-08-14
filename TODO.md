@@ -78,7 +78,9 @@ Current work: `#33` through `#36`, and milestone `#51`.
 
 ### Frames and presentations
 
-- [ ] `GenFrame_n(R)`, `BasisFrame_n(R)`, and `Coord_n(R)`
+- [x] `GenFrame_n(R)`, `BasisFrame_n(R)`, and `Coord_n(R)`
+- [x] `IntegralLatticeCat(R)`, `CoordLatticeCat(R, n)`,
+  `FractionFieldPerfectFiniteProjectiveLatticeCat(R)`, and `UnimodularLatticeCat(R)`
 - [ ] Framed, coordinatized, and presented module categories
 - [ ] Framed and coordinatized bilinear and quadratic module categories
 - [ ] Equivalence relation on matrices presenting the same module map

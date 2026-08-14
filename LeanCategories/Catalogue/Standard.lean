@@ -25,6 +25,7 @@ def expectedCategoryIds : Array CategoryId := #[
   CategoryId.commutativeRings,
   CategoryId.crystals,
   CategoryId.definiteLattice,
+  CategoryId.fractionFieldPerfectFiniteProjectiveLattice,
   CategoryId.divisionRings,
   CategoryId.evenLattice,
   CategoryId.finiteFreeLattice,
@@ -34,28 +35,41 @@ def expectedCategoryIds : Array CategoryId := #[
   CategoryId.freeModules,
   CategoryId.groups,
   CategoryId.indefiniteLattice,
+  CategoryId.integralLattice,
   CategoryId.lattice,
   CategoryId.magmas,
   CategoryId.magmasWithTwoOperations,
   CategoryId.modulesR,
+  CategoryId.genFrame,
+  CategoryId.basisFrame,
+  CategoryId.coord,
+  CategoryId.coordLattice,
   CategoryId.monoids,
   CategoryId.quadModule,
   CategoryId.quadWForm,
   CategoryId.rings,
   CategoryId.semigroups,
-  CategoryId.sets]
+  CategoryId.sets,
+  CategoryId.unimodularLattice]
 
 /-- Stable category-family rows owned by the standard catalogue. -/
 def expectedCategoryFamilyIds : Array CategoryFamilyId := #[
   CategoryFamilyId.bilWForm,
   CategoryFamilyId.bilinModule,
   CategoryFamilyId.evenLattice,
+  CategoryFamilyId.fractionFieldPerfectFiniteProjectiveLattice,
   CategoryFamilyId.finiteFreeLattice,
   CategoryFamilyId.finiteProjectiveLattice,
   CategoryFamilyId.lattice,
   CategoryFamilyId.modules,
+  CategoryFamilyId.genFrame,
+  CategoryFamilyId.basisFrame,
+  CategoryFamilyId.coord,
+  CategoryFamilyId.coordLattice,
+  CategoryFamilyId.integralLattice,
   CategoryFamilyId.quadModule,
-  CategoryFamilyId.quadWForm]
+  CategoryFamilyId.quadWForm,
+  CategoryFamilyId.unimodularLattice]
 
 /-- Stable classifier rows owned by the standard catalogue. -/
 def expectedClassifierIds : Array ClassifierId := #[
@@ -81,6 +95,13 @@ def expectedFunctorIds : Array FunctorId := #[
   FunctorId.bilinModuleChangeValue,
   FunctorId.bilinModuleForget,
   FunctorId.finiteProjectiveForget,
+  FunctorId.basisFrameToGenFrame,
+  FunctorId.fromBasisFrame,
+  FunctorId.coordForget,
+  FunctorId.integralLatticeForget,
+  FunctorId.coordLatticeToCoord,
+  FunctorId.coordLatticeToIntegral,
+  FunctorId.fractionFieldPerfectFiniteProjectiveForget,
   FunctorId.latticeBaseChange,
   FunctorId.latticeChangeValue,
   FunctorId.quadModuleForget,

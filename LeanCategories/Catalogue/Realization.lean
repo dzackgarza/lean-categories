@@ -91,6 +91,29 @@ noncomputable def CategoryFamilyRealization.canonicalDiscreteCommRingModuleTrans
   discreteFamilyTransport.{uObj, uHom, uParam + 1}
     (fun parameter => realization.fibre ⟨parameter⟩)
 
+/-- The canonical equality-only transport for commutative-ring natural-number fibres. -/
+noncomputable def CategoryFamilyRealization.canonicalDiscreteCommRingNatTransport
+    {identifier : CategoryFamilyId}
+    (realization : CategoryFamilyRealization.{uObj, uHom, uParam, uParam + 1}
+      identifier .commRingNat) :
+    Pseudofunctor
+      (LocallyDiscrete (Discrete (Σ R : CommRingCat.{uParam}, Nat))ᵒᵖ)
+      (Cat.{uHom, max uObj uHom}) :=
+  discreteFamilyTransport.{uObj, uHom, uParam + 1}
+    (fun parameter => realization.fibre ⟨parameter⟩)
+
+/-- The canonical equality-only transport for domain-refined commutative-ring fibres. -/
+noncomputable def CategoryFamilyRealization.canonicalDiscreteDomainTransport
+    {identifier : CategoryFamilyId}
+    (realization : CategoryFamilyRealization.{uObj, uHom, uParam, uParam + 1}
+      identifier .domain) :
+    Pseudofunctor
+      (LocallyDiscrete
+        (Discrete (PSigma fun R : CommRingCat.{uParam} => IsDomain R))ᵒᵖ)
+      (Cat.{uHom, max uObj uHom}) :=
+  discreteFamilyTransport.{uObj, uHom, uParam + 1}
+    (fun parameter => realization.fibre ⟨parameter⟩)
+
 /-- Typed quotation of the concrete parameter represented by a family application. -/
 inductive CategoryFamilyParameterQuotation :
     (schema : CategoryFamilySchema) → Array ParameterExpr → schema.Parameters → Prop
@@ -121,6 +144,12 @@ inductive CategoryFamilyParameterQuotation :
           .apply3 ParameterOperationId.tensorProduct
             (.variable ParameterId.r) (.variable ParameterId.s) (.variable ParameterId.w)]
         ⟨CommRingCat.of S, ModuleCat.of S (TensorProduct R S W)⟩
+  | commRingNat (R : CommRingCat.{u}) (n : Nat) :
+      CategoryFamilyParameterQuotation .commRingNat
+        #[.variable ParameterId.r, .variable ParameterId.n] ⟨R, n⟩
+  | domain (R : CommRingCat.{u}) (hR : IsDomain R) :
+      CategoryFamilyParameterQuotation .domain
+        #[.variable ParameterId.r, .variable ParameterId.domain] ⟨R, hR⟩
 
 /-- A typed witness that a named category is a selected fibre of a family. -/
 structure CategoryFamilyFibreWitness (category : ObjCat.{uObj, uHom})

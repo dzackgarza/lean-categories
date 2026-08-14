@@ -88,6 +88,8 @@ def r : ParameterId := ⟨"R"⟩
 def s : ParameterId := ⟨"S"⟩
 def w : ParameterId := ⟨"W"⟩
 def wPrime : ParameterId := ⟨"W'"⟩
+def n : ParameterId := ⟨"n"⟩
+def domain : ParameterId := ⟨"domain"⟩
 end ParameterId
 
 namespace ParameterOperationId
@@ -99,6 +101,8 @@ namespace ParameterKindId
 def ringObject : ParameterKindId := ⟨"parameter-kind.ring-object"⟩
 def commRingObject : ParameterKindId := ⟨"parameter-kind.comm-ring-object"⟩
 def moduleObject : ParameterKindId := ⟨"parameter-kind.module-object"⟩
+def nat : ParameterKindId := ⟨"parameter-kind.nat"⟩
+def domain : ParameterKindId := ⟨"parameter-kind.domain"⟩
 end ParameterKindId
 
 namespace VarianceId
