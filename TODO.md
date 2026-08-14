@@ -47,10 +47,7 @@ Current work: `#50`, `#54`, `#55`, `#56`, and `#58`.
 - [ ] Category, functor, and natural-transformation expressions
 - [ ] Evaluation of expressions in a selected realization
 - [ ] Proof-carrying category and functor registry entries
-- [x] Stable exported identifiers for categories, functors, and standard objects
-  (checked typed manifest and exact expected stable-ID contract in
-  [`ExportFull.validate`](LeanCategories/Tools/ExportFull.lean) and
-  [`Standard.validateStandardManifest`](LeanCategories/Catalogue/Standard.lean))
+- [ ] Stable exported identifiers for categories, functors, and standard objects
 - [ ] Audit each file named `Functors`: define an honest functor or relocate it
 
 ## 2. Formed modules and lattice arithmetic
@@ -81,16 +78,10 @@ Current work: `#33` through `#36`, and milestone `#51`.
 
 ### Frames and presentations
 
-- [x] Arbitrary-index `GenFrame R I`, `BasisFrame R I`, and `Coord R I` core definitions and
-  their forgetful, inclusion, and coordinate functors
-- [x] Existing `commRingNat` catalogue rows are finite specializations at `I := Fin n`
-- [x] Arbitrary-index catalogue families, categories, and frame forgetful functors
-- [x] `IntegralLatticeCat(R)`, `CoordLatticeCat(R, n)`,
-  `FractionFieldPerfectFiniteProjectiveLatticeCat(R)`, and `UnimodularLatticeCat(R)`
-- [ ] Arbitrary-index lattice-coordinate categories
-- [ ] Framed and presented module categories beyond the arbitrary-index frame core
+- [ ] `GenFrame_n(R)`, `BasisFrame_n(R)`, and `Coord_n(R)`
+- [ ] Framed, coordinatized, and presented module categories
 - [ ] Framed and coordinatized bilinear and quadratic module categories
-- [ ] General matrix/presentation equivalence
+- [ ] Equivalence relation on matrices presenting the same module map
 - [ ] Gram-matrix and quadratic Gram-data functors
 - [ ] Change-of-frame and presentation-comparison functors
 
@@ -178,11 +169,9 @@ Run the full reuse search again before new authorship.
 
 ### Divided powers and quadratic maps
 
-- [ ] Divided-power algebra functor `Γ_R : ModuleCat R ⥤ CommAlgCat R`
-  - [x] Fixed-base underlying commutative-algebra functor `dividedPowerAlgebraFunctor R : ModuleCat R ⥤ CommAlgCat R` in `LeanCategories/Modules/DividedPowers/Basic.lean`
-  - [ ] Honest parameterized `CommAlgCat` family transport, registry, and export
-  - [ ] Degree-`n` divided power `Γ_R^n(M)`
-  - [ ] Grading `Γ_R(M) = ⨁_n Γ_R^n(M)`
+- [ ] Free divided-power algebra functor `Γ_R : ModuleCat R ⥤ CommAlgCat R`
+- [ ] Degree-`n` divided power `Γ_R^n(M)`
+- [ ] Grading `Γ_R(M) = ⨁_n Γ_R^n(M)`
 
 ### Variable-value quadratic formed modules
 
