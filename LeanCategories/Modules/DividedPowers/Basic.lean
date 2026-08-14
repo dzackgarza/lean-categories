@@ -14,7 +14,7 @@ open CategoryTheory
 
 namespace LeanCategories.Modules.DividedPowers
 
-universe u
+universe u v
 
 variable (R : Type u) [CommRing R]
 
@@ -29,8 +29,8 @@ quadratic comparison belong to separate files.
 
 /-- The universal divided-power algebra as a functor of its module. -/
 noncomputable def dividedPowerAlgebraFunctor :
-    ModuleCat.{u} R ⥤ CommAlgCat.{u} R where
-  obj M := CommAlgCat.of R (DividedPowerAlgebra R (M : Type u))
+    ModuleCat.{v} R ⥤ CommAlgCat.{max u v} R where
+  obj M := CommAlgCat.of R (DividedPowerAlgebra R (M : Type v))
   map f := CommAlgCat.ofHom (DividedPowerAlgebra.map R f.hom)
   map_id M := by
     apply CommAlgCat.hom_ext
@@ -41,7 +41,7 @@ noncomputable def dividedPowerAlgebraFunctor :
 
 @[simp]
 theorem dividedPowerAlgebraFunctor_map_dp
-    {M N : ModuleCat.{u} R} (f : M ⟶ N) (n : ℕ) (m : M) :
+    {M N : ModuleCat.{v} R} (f : M ⟶ N) (n : ℕ) (m : M) :
     (dividedPowerAlgebraFunctor R).map f
         (DividedPowerAlgebra.dp R n m) =
       DividedPowerAlgebra.dp R n (f.hom m) := by
@@ -50,7 +50,7 @@ theorem dividedPowerAlgebraFunctor_map_dp
 
 @[simp]
 theorem dividedPowerAlgebraFunctor_map_embed
-    {M N : ModuleCat.{u} R} (f : M ⟶ N) (m : M) :
+    {M N : ModuleCat.{v} R} (f : M ⟶ N) (m : M) :
     (dividedPowerAlgebraFunctor R).map f
         (DividedPowerAlgebra.embed R M m) =
       DividedPowerAlgebra.embed R N (f.hom m) := by
