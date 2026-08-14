@@ -33,7 +33,7 @@ the mathematical formed module while making its coordinates explicit.
 abbrev CoordBilinModuleCat :=
   CategoricalPullback
     (LeanCategories.Modules.Coord.forget R (Fin n))
-    (BilinModuleCat.forget R W)
+    (forget R W)
 
 /-- Forget the formed-module structure and retain the selected coordinates. -/
 def coordBilinModuleToCoord :
@@ -58,7 +58,7 @@ noncomputable def changeFrameCoord
         { obj := StructuredArrow.mk (e.inv ≫ X.frame.obj.hom)
           property := by
             change IsIso (e.inv ≫ X.frame.obj.hom)
-            infer_instance } }
+            exact IsIso.comp_isIso' inferInstance X.frame.property } }
   map f := f
   map_id _ := rfl
   map_comp _ _ := rfl
@@ -78,7 +78,8 @@ noncomputable def changeFrameFunctor
       iso := X.iso }
   map f :=
     { fst := f.fst
-      snd := f.snd }
+      snd := f.snd
+      w := by exact f.w }
   map_id _ := rfl
   map_comp _ _ := rfl
 
@@ -95,7 +96,7 @@ noncomputable def standardIso (X : CoordBilinModuleCat R R n) :
 noncomputable def standardForm (X : CoordBilinModuleCat R R n) :
     LinearMap.BilinForm R (Fin n → R) := by
   let e := (standardIso R n X).toLinearEquiv
-  exact X.snd.bilinMap.comp e.toLinearMap e.toLinearMap
+  exact X.snd.bilinMap.compl₁₂ e.toLinearMap e.toLinearMap
 
 /-- The Gram matrix in the selected coordinates. -/
 noncomputable def gramMatrix (X : CoordBilinModuleCat R R n) :
@@ -129,7 +130,7 @@ coordinate forms, and its morphisms retain the form-preserving coordinate maps. 
 noncomputable def gramMatrixFunctor :
     CoordBilinModuleCat R R n ⥤ BilinModuleCat R R where
   obj X := BilinModuleCat.ofBilinMap (Matrix.toBilin' (gramMatrix R n X))
-  map f := BilinModuleCat.homMk (standardMap R n f) (by
+  map {X Y} f := BilinModuleCat.homMk (standardMap R n f) (by
     intro x y
     change Matrix.toBilin' (gramMatrix R n Y) (standardMap R n f x)
         (standardMap R n f y) = Matrix.toBilin' (gramMatrix R n X) x y
@@ -141,14 +142,23 @@ noncomputable def gramMatrixFunctor :
     apply Quiver.Hom.unop_inj
     apply ModuleCat.hom_ext
     ext x
-    simp [standardMap, BilinModuleCat.underlyingMap]
-  map_comp f g := by
+    change (standardIso R n X).toLinearEquiv.symm
+      ((standardIso R n X).toLinearEquiv x) = x
+    exact (standardIso R n X).toLinearEquiv.symm_apply_apply x
+  map_comp {X Y Z} f g := by
     apply Quiver.Hom.unop_inj
     apply CategoryOfElements.ext
     apply Quiver.Hom.unop_inj
     apply ModuleCat.hom_ext
     ext x
-    simp [standardMap, BilinModuleCat.underlyingMap]
+    let eX := (standardIso R n X).toLinearEquiv
+    let eY := (standardIso R n Y).toLinearEquiv
+    let eZ := (standardIso R n Z).toLinearEquiv
+    change eZ.symm (BilinModuleCat.underlyingMap g.snd
+        (BilinModuleCat.underlyingMap f.snd (eX x))) =
+      eZ.symm (BilinModuleCat.underlyingMap g.snd
+        (eY (eY.symm (BilinModuleCat.underlyingMap f.snd (eX x)))))
+    rw [eY.apply_symm_apply]
 
 end CoordBilinModuleCat
 
