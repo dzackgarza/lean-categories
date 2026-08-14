@@ -32,6 +32,10 @@ abbrev ChainComplexOverRing (R : Type u) [Ring R] :=
 abbrev CochainComplexOverRing (R : Type u) [Ring R] :=
   CochainComplex (ModuleCat.{v} R) ℤ
 
+/-- A filtered cochain complex of `R`-modules indexed by a preorder `ι`. -/
+abbrev FilteredComplexOverRing (R : Type u) [Ring R] (ι : Type w) [Preorder ι] :=
+  ι ⥤ CochainComplexOverRing R
+
 /-- The degree-`n` homology functor for integral-indexed cochain complexes over `R`. -/
 abbrev HomologyFunctorOverRing (R : Type u) [Ring R] (n : ℤ) :
     CochainComplexOverRing R ⥤ ModuleCat.{v} R :=
