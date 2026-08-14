@@ -20,6 +20,7 @@ public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Basic
 public import Mathlib.RingTheory.LaurentSeries
 public import Mathlib.RingTheory.Localization.Basic
+public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.AdicCompletion.Algebra
 public import Mathlib.LinearAlgebra.TensorProduct.Basic
@@ -85,6 +86,20 @@ abbrev localizationAtPrime (P : Ideal R) [P.IsPrime] : AlgebraCat R :=
 abbrev localizationAtPrimeMap (P : Ideal R) [P.IsPrime] :
     R →ₐ[R] (localizationAtPrime R P).carrier :=
   algebraMap R (Localization.AtPrime P)
+
+section FractionRing
+
+variable [IsDomain R]
+
+/-- The fraction ring of an integral domain, as an `R`-algebra. -/
+abbrev fractionRing : AlgebraCat R :=
+  .of R (FractionRing R)
+
+/-- The canonical structure morphism into the fraction ring. -/
+abbrev fractionRingMap : R →ₐ[R] (fractionRing R).carrier :=
+  algebraMap R (FractionRing R)
+
+end FractionRing
 
 /-- The `I`-adic completion of `R`, as an `R`-algebra. -/
 abbrev adicCompletion (I : Ideal R) : AlgebraCat R :=
