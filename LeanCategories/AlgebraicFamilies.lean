@@ -181,7 +181,10 @@ def commAlgBaseChangeHom {R S : CommRingCat.{u}}
     (A : commAlgFiber R) (f : R ⟶ S) :
     CategoryTheory.Arrow.mk A.hom ⟶ commAlgBaseChangeObject A f :=
   CategoryTheory.Arrow.homMk' f
-    (CommRingCat.ofHom Algebra.TensorProduct.includeRight)
+    (CommRingCat.ofHom Algebra.TensorProduct.includeRight) (by
+      apply CommRingCat.hom_ext
+      ext x
+      simp [CommRingCat.comp_apply])
 
 /** The underlying algebra object of a commutative-algebra fiber object. */
 abbrev commAlgCarrier {R : CommRingCat.{u}} (A : commAlgFiber R) : Type u := A.right
