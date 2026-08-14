@@ -5,11 +5,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 public import Mathlib.Algebra.Category.ModuleCat.Pseudofunctor
 public import Mathlib.RingTheory.SimpleModule.Basic
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Injective
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.Algebra.Module.Torsion.Free
@@ -140,6 +142,13 @@ abbrev FlatModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
   ObjectProperty.FullSubcategory
     (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.Flat R M)
 
+/-! ### Faithfully flat modules -/
+
+/-- Faithfully flat `R`-modules, using Mathlib's unrestricted predicate. -/
+abbrev FaithfullyFlatModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
+  ObjectProperty.FullSubcategory
+    (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.FaithfullyFlat R M)
+
 /-! ### Noetherian and Artinian modules -/
 
 /-- Noetherian `R`-modules, using Mathlib's unrestricted `IsNoetherian` predicate. -/
@@ -206,6 +215,12 @@ def flatInclusion (R : RingCat.{u}) : FlatModuleCat R ⥤ ModuleCat.{w} R :=
   ObjectProperty.ι (C := ModuleCat.{w} R)
     (fun M : ModuleCat.{w} R => Module.Flat R M)
 
+/-- Inclusion of faithfully flat `R`-modules into all `R`-modules. -/
+def faithfullyFlatInclusion (R : RingCat.{u}) :
+    FaithfullyFlatModuleCat R ⥤ ModuleCat.{w} R :=
+  ObjectProperty.ι (C := ModuleCat.{w} R)
+    (fun M : ModuleCat.{w} R => Module.FaithfullyFlat R M)
+
 /-- Inclusion of Noetherian `R`-modules into all `R`-modules. -/
 def noetherianInclusion (R : RingCat.{u}) :
     NoetherianModuleCat R ⥤ ModuleCat.{w} R :=
@@ -268,6 +283,45 @@ noncomputable def FiniteRankModules (R : RingCat.{u}) :
 /-- Forgetful `Modules(R) → Sets`. -/
 noncomputable def modulesToSets (R : RingCat.{u}) : ModulesOf R ⟶ Sets.{u} :=
   (forget (ModuleCat.{u} R)).toCatHom
+
+/-! ### Change of rings -/
+
+section ChangeOfRings
+
+variable {R S : Type*} [Ring R] [Ring S]
+
+/-- Restriction of scalars along a ring homomorphism, via Mathlib's canonical functor. -/
+noncomputable abbrev restrictScalars (f : R →+* S) :
+    ModuleCat S ⥤ ModuleCat R :=
+  ModuleCat.restrictScalars f
+
+/-- Coextension of scalars, the right adjoint to restriction of scalars. -/
+noncomputable abbrev coextendScalars (f : R →+* S) :
+    ModuleCat R ⥤ ModuleCat S :=
+  ModuleCat.coextendScalars f
+
+/-- Restriction of scalars is left adjoint to coextension of scalars. -/
+noncomputable abbrev restrictCoextendScalarsAdj (f : R →+* S) :
+    restrictScalars f ⊣ coextendScalars f :=
+  ModuleCat.restrictCoextendScalarsAdj f
+
+end ChangeOfRings
+
+section CommutativeChangeOfRings
+
+variable {R S : Type*} [CommRing R] [CommRing S]
+
+/-- Extension of scalars along a commutative-ring homomorphism, via tensor product. -/
+noncomputable abbrev extendScalars (f : R →+* S) :
+    ModuleCat R ⥤ ModuleCat S :=
+  ModuleCat.extendScalars f
+
+/-- Extension of scalars is left adjoint to restriction of scalars. -/
+noncomputable abbrev extendRestrictScalarsAdj (f : R →+* S) :
+    extendScalars f ⊣ restrictScalars f :=
+  ModuleCat.extendRestrictScalarsAdj f
+
+end CommutativeChangeOfRings
 
 /-- Opposite-ring substitution for right-module family expressions. -/
 noncomputable def oppositeRing (R : RingCat.{u}) : RingCat.{u} := RingCat.of Rᵐᵒᵖ
