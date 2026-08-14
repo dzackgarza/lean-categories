@@ -169,9 +169,11 @@ Run the full reuse search again before new authorship.
 
 ### Divided powers and quadratic maps
 
-- [x] Free divided-power algebra functor `Γ_R : ModuleCat R ⥤ CommAlgCat R` — fixed-base functor `dividedPowerAlgebraFunctor` in `LeanCategories/Modules/DividedPowers/Basic.lean`.
-- [ ] Degree-`n` divided power `Γ_R^n(M)`
-- [ ] Grading `Γ_R(M) = ⨁_n Γ_R^n(M)`
+- [ ] Divided-power algebra functor `Γ_R : ModuleCat R ⥤ CommAlgCat R`
+  - [x] Fixed-base underlying commutative-algebra functor `dividedPowerAlgebraFunctor R : ModuleCat R ⥤ CommAlgCat R` in `LeanCategories/Modules/DividedPowers/Basic.lean`
+  - [ ] Honest parameterized `CommAlgCat` family transport, registry, and export
+  - [ ] Degree-`n` divided power `Γ_R^n(M)`
+  - [ ] Grading `Γ_R(M) = ⨁_n Γ_R^n(M)`
 
 ### Variable-value quadratic formed modules
 
