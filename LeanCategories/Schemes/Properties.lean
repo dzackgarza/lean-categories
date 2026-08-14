@@ -14,6 +14,7 @@ public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.AlgebraicGeometry.QuasiAffine
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
+public import Mathlib.AlgebraicGeometry.Morphisms.Integral
 public import Mathlib.AlgebraicGeometry.Morphisms.Proper
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
@@ -136,6 +137,15 @@ abbrev FiniteSchemeMorphismCat : Type (u + 1) :=
 abbrev finiteSchemeMorphismIncl :
     FiniteSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
   MorphismProperty.Arrow.forget @IsFinite ⊤ ⊤
+
+/-- Scheme morphisms whose structural arrow is integral. -/
+abbrev IntegralSchemeMorphismCat : Type (u + 1) :=
+  MorphismProperty.Arrow (T := Scheme.{u}) @IsIntegralHom ⊤ ⊤
+
+/-- The canonical inclusion of integral scheme morphisms into all scheme arrows. -/
+abbrev integralSchemeMorphismIncl :
+    IntegralSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
+  MorphismProperty.Arrow.forget @IsIntegralHom ⊤ ⊤
 
 /-- Scheme morphisms whose structural arrow is proper. -/
 abbrev ProperSchemeMorphismCat : Type (u + 1) :=
