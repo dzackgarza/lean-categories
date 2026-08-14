@@ -15,6 +15,7 @@ public import LeanCategories.CategoryTheory.StandardConstructions
 public import LeanCategories.Algebra.Concrete.Magmas
 public import LeanCategories.Algebra.Concrete.Rings
 public import LeanCategories.Algebra.FractionalIdeals
+public import LeanCategories.Algebra.AtiyahMacdonald
 public import LeanCategories.Algebra.Ideals
 public import LeanCategories.Algebra.FreeAlgebras
 public import LeanCategories.Algebra.IntegralAdeleRing
