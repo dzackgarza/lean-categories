@@ -17,6 +17,7 @@ public import LeanCategories.Algebra.FractionalIdeals
 public import LeanCategories.Algebra.IntegralAdeleRing
 public import LeanCategories.Algebra.IntegralGeneralLinearGroup
 public import LeanCategories.Algebra.IdeleGroup
+public import LeanCategories.Algebra.Local
 public import LeanCategories.Algebra.StandardConstructions
 public import LeanCategories.Algebra.IdealProfiniteCompletion
 public import LeanCategories.Algebra.IdealProfiniteCompletionDedekind
