@@ -165,8 +165,7 @@ structure RefinementRealization (expression : CategoryExpr)
     (category : ObjCat.{uObj, uHom}) where
   base : CategoryExpr
   classifierId : ClassifierId
-  route : Option RouteId
-  expression_eq : expression = .refine base classifierId route
+  expression_eq : expression = .refine base classifierId
   baseCategory : ObjCat.{uObj, uHom}
   host : CategoryExpr
   hostCategory : ObjCat.{uObj, uHom}

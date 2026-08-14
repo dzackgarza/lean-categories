@@ -85,7 +85,6 @@ deriving instance Lean.ToExpr for VarianceId
 deriving instance Lean.ToExpr for FunctorId
 deriving instance Lean.ToExpr for PortId
 deriving instance Lean.ToExpr for AliasId
-deriving instance Lean.ToExpr for RouteId
 deriving instance Lean.ToExpr for OpaquePortId
 
 /-- The semantic kind of a registered family transport. -/
@@ -196,7 +195,7 @@ inductive CategoryExpr
   | atom (id : CategoryId)
   | familyApp (family : CategoryFamilyId) (args : Array ParameterExpr)
   | classifierTotal (classifier : ClassifierId)
-  | refine (base : CategoryExpr) (classifier : ClassifierId) (route : Option RouteId)
+  | refine (base : CategoryExpr) (classifier : ClassifierId)
   | opaque (id : CategoryId)
   deriving Repr, Lean.ToExpr
 
@@ -218,8 +217,8 @@ partial def CategoryExpr.syntacticEq : CategoryExpr → CategoryExpr → Bool
   | .familyApp leftFamily leftArgs, .familyApp rightFamily rightArgs =>
       leftFamily == rightFamily && leftArgs == rightArgs
   | .classifierTotal left, .classifierTotal right => left == right
-  | .refine leftBase leftClassifier leftRoute, .refine rightBase rightClassifier rightRoute =>
-      leftBase.syntacticEq rightBase && leftClassifier == rightClassifier && leftRoute == rightRoute
+  | .refine leftBase leftClassifier, .refine rightBase rightClassifier =>
+      leftBase.syntacticEq rightBase && leftClassifier == rightClassifier
   | .opaque left, .opaque right => left == right
   | _, _ => false
 
@@ -227,9 +226,9 @@ namespace CategoryExpr
 
 instance : Inhabited CategoryExpr := ⟨.atom ⟨""⟩⟩
 
-/-- Convenience: refine without a route. -/
+/-- Convenience: refine a category by a classifier. -/
 def refine' (base : CategoryExpr) (classifier : ClassifierId) : CategoryExpr :=
-  .refine base classifier none
+  .refine base classifier
 
 /-- Convenience: atom. -/
 def ofId (id : CategoryId) : CategoryExpr :=

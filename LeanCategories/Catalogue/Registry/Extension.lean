@@ -189,7 +189,7 @@ def denotesCategory (expression : CategoryExpr) (endpoint : CategoryExpr) : Bool
   expression.syntacticEq endpoint
 
 def refinementDepth : CategoryExpr → Nat
-  | .refine parent _ _ => refinementDepth parent + 1
+  | .refine parent _ => refinementDepth parent + 1
   | _ => 0
 
 def refinementHostInChainFuel (_state : RegistryState) (target : CategoryExpr) :
@@ -198,7 +198,7 @@ def refinementHostInChainFuel (_state : RegistryState) (target : CategoryExpr) :
   | fuel + 1, expression =>
       if sameEndpoint target expression then true
       else match expression with
-        | .refine parent classifier _ =>
+        | .refine parent classifier =>
             (_state.classifier? classifier).any fun entry =>
               refinementHostInChainFuel _state entry.host fuel parent &&
                 (refinementHostInChainFuel _state target fuel parent ||
@@ -232,11 +232,11 @@ private def ancestryProbeState : RegistryState :=
         realization := ``sameEndpoint,}] }
 
 example : refinementHostInChain ancestryProbeState (.atom ⟨"cat.host"⟩)
-    (.refine (.refine (.atom ⟨"cat.host"⟩) ⟨"clf.first"⟩ none) ⟨"clf.second"⟩ none) := by
+    (.refine (.refine (.atom ⟨"cat.host"⟩) ⟨"clf.first"⟩) ⟨"clf.second"⟩) := by
   native_decide
 
 example : !refinementHostInChain ancestryProbeState (.atom ⟨"cat.host"⟩)
-    (.refine (.atom ⟨"cat.other"⟩) ⟨"clf.latest"⟩ none) := by
+    (.refine (.atom ⟨"cat.other"⟩) ⟨"clf.latest"⟩) := by
   native_decide
 
 example : !categoryIdMatchesExpression ⟨"cat.host"⟩ (.atom ⟨"cat.other"⟩) := by
@@ -256,7 +256,7 @@ partial def CategoryExpr.isRegistered (state : RegistryState) : CategoryExpr →
       (state.categoryFamily? family).any fun entry =>
         CategoryFamilySchema.parameterArgsValid args entry.schema
   | .classifierTotal classifier => (state.classifier? classifier).isSome
-  | .refine base classifier _ =>
+  | .refine base classifier =>
       base.isRegistered state &&
         (state.classifier? classifier).isSome
   | .opaque id => state.categories.any (·.id == id) || state.opaqueCategories.any (·.id == id)
@@ -290,7 +290,7 @@ partial def CategoryExpr.referencesValid (state : RegistryState) : CategoryExpr 
       match state.categoryFamily? family with
       | some entry => CategoryFamilySchema.parameterArgsValid args entry.schema
       | none => false
-  | .refine base classifier _ =>
+  | .refine base classifier =>
       base.referencesValid state &&
         (state.classifier? classifier).any fun entry =>
           refinementHostInChain state entry.host base && entry.host.referencesValid state
@@ -691,8 +691,8 @@ def validateCategoryEndpointRealization (state : RegistryState) (expression : Ca
 
 def validateRefinementDeclarationRealization (state : RegistryState)
     (expression : CategoryExpr) (declaration refinement : Name) : MetaM Unit := do
-  let (expectedBase, expectedClassifier, expectedRoute) ← match expression with
-    | .refine base classifier route => pure (base, classifier, route)
+  let (expectedBase, expectedClassifier) ← match expression with
+    | .refine base classifier => pure (base, classifier)
     | _ => throwError "refinement realization is attached to a non-refinement expression"
   let refinementConstant ← mkConstWithFreshMVarLevels refinement
   let refinementType ← inferType refinementConstant
@@ -711,14 +711,10 @@ def validateRefinementDeclarationRealization (state : RegistryState)
       mkAppM ``LeanCategories.RefinementRealization.base #[refinementValue]
     let classifierId ← withTransparency .all do
       mkAppM ``LeanCategories.RefinementRealization.classifierId #[refinementValue]
-    let route ← withTransparency .all do
-      mkAppM ``LeanCategories.RefinementRealization.route #[refinementValue]
     unless ← withTransparency .all <| isDefEq base (Lean.toExpr expectedBase) do
       throwError "refinement realization {refinement} has the wrong base"
     unless ← withTransparency .all <| isDefEq classifierId (Lean.toExpr expectedClassifier) do
       throwError "refinement realization {refinement} has the wrong classifier"
-    unless ← withTransparency .all <| isDefEq route (Lean.toExpr expectedRoute) do
-      throwError "refinement realization {refinement} has unrelated base or classifier"
     let classifier ← withTransparency .all do
       mkAppM ``LeanCategories.RefinementRealization.classifier #[refinementValue]
     let classifierEntry ← match state.classifier? expectedClassifier with
@@ -830,7 +826,7 @@ def validateCategoryDeclarationRealization (state : RegistryState) (expression :
     | .classifierTotal classifier =>
         validateClassifierTotalEndpointRealization state classifier realizationArgs[1]!
           realizationValue
-    | .refine base classifier _ =>
+    | .refine base classifier =>
         validateRefinementEndpointRealization state base classifier
     | .atom _ | .familyApp .. | .opaque _ => pure ()
     let familyFibre ← withTransparency .all do
@@ -1337,111 +1333,268 @@ elab_rules : command
 
 private def registryObject (fields : List (String × Json)) : Json := Json.mkObj fields
 
-private def registryParameterJson : ParameterExpr → Json
-  | .variable id => registryObject [("tag", "variable"), ("id", id.raw)]
+structure RegistryManifestParameter where
+  ids : Array String
+  name : String
+  kind : String
+  dependency : Option Nat
+  deriving DecidableEq, Repr, ToJson, FromJson
+
+inductive RegistryManifestParameterExpr
+  | variable (id : String)
+  | apply (operation : String) (argument : RegistryManifestParameterExpr)
+  | apply2 (operation : String) (left right : RegistryManifestParameterExpr)
+  | apply3 (operation : String)
+      (first second third : RegistryManifestParameterExpr)
+  deriving DecidableEq, Repr
+
+private def registryManifestParameterExprJson : RegistryManifestParameterExpr → Json
+  | .variable id => registryObject [("tag", "variable"), ("id", id)]
   | .apply operation argument => registryObject [
-      ("tag", "apply"), ("operation", operation.raw),
-      ("argument", registryParameterJson argument)]
+      ("tag", "apply"), ("operation", operation),
+      ("argument", registryManifestParameterExprJson argument)]
   | .apply2 operation left right => registryObject [
-      ("tag", "apply2"), ("operation", operation.raw),
-      ("left", registryParameterJson left), ("right", registryParameterJson right)]
+      ("tag", "apply2"), ("operation", operation),
+      ("left", registryManifestParameterExprJson left),
+      ("right", registryManifestParameterExprJson right)]
   | .apply3 operation first second third => registryObject [
-      ("tag", "apply3"), ("operation", operation.raw),
-      ("first", registryParameterJson first), ("second", registryParameterJson second),
-      ("third", registryParameterJson third)]
+      ("tag", "apply3"), ("operation", operation),
+      ("first", registryManifestParameterExprJson first),
+      ("second", registryManifestParameterExprJson second),
+      ("third", registryManifestParameterExprJson third)]
 
-private def registryCategoryExprJson : CategoryExpr → Json
-  | .atom id => registryObject [("tag", "atom"), ("id", id.raw)]
+instance : ToJson RegistryManifestParameterExpr where
+  toJson := registryManifestParameterExprJson
+
+private partial def registryManifestParameterExprOfJson : Json → Except String RegistryManifestParameterExpr :=
+  fun j => do
+    let tag ← j.getObjValAs? String "tag"
+    match tag with
+    | "variable" => .variable <$> j.getObjValAs? String "id"
+    | "apply" => .apply <$> j.getObjValAs? String "operation" <*> registryManifestParameterExprOfJson (← j.getObjValAs? Json "argument")
+    | "apply2" => .apply2 <$> j.getObjValAs? String "operation" <*> registryManifestParameterExprOfJson (← j.getObjValAs? Json "left") <*> registryManifestParameterExprOfJson (← j.getObjValAs? Json "right")
+    | "apply3" => .apply3 <$> j.getObjValAs? String "operation" <*> registryManifestParameterExprOfJson (← j.getObjValAs? Json "first") <*> registryManifestParameterExprOfJson (← j.getObjValAs? Json "second") <*> registryManifestParameterExprOfJson (← j.getObjValAs? Json "third")
+    | _ => throw s!"unknown parameter expression tag: {tag}"
+
+instance : FromJson RegistryManifestParameterExpr where
+  fromJson? := registryManifestParameterExprOfJson
+
+inductive RegistryManifestCategoryExpr
+  | atom (id : String)
+  | familyApp (family : String) (args : Array RegistryManifestParameterExpr)
+  | classifierTotal (classifier : String)
+  | refine (base : RegistryManifestCategoryExpr) (classifier : String)
+  | opaque (id : String)
+  deriving DecidableEq, Repr
+
+private def registryManifestCategoryExprJson : RegistryManifestCategoryExpr → Json
+  | .atom id => registryObject [("tag", "atom"), ("id", id)]
   | .familyApp family args => registryObject [
-      ("tag", "familyApp"), ("family", family.raw),
-      ("args", .arr (args.map registryParameterJson))]
-  | .classifierTotal classifier =>
-      registryObject [("tag", "classifierTotal"), ("classifier", classifier.raw)]
-  | .refine base classifier route => registryObject [
-      ("tag", "refine"), ("base", registryCategoryExprJson base),
-      ("classifier", classifier.raw),
-      ("route", match route with | some route => route.raw | none => Json.null)]
-  | .opaque id => registryObject [("tag", "opaque"), ("id", id.raw)]
+      ("tag", "familyApp"), ("family", family), ("args", toJson args)]
+  | .classifierTotal classifier => registryObject [
+      ("tag", "classifierTotal"), ("classifier", classifier)]
+  | .refine base classifier => registryObject [
+      ("tag", "refine"), ("base", registryManifestCategoryExprJson base),
+      ("classifier", classifier)]
+  | .opaque id => registryObject [("tag", "opaque"), ("id", id)]
 
-private def registryCategoryFamilySchemaJson : CategoryFamilySchema → Json
+instance : ToJson RegistryManifestCategoryExpr where
+  toJson := registryManifestCategoryExprJson
+
+private partial def registryManifestCategoryExprOfJson : Json → Except String RegistryManifestCategoryExpr :=
+  fun j => do
+    let tag ← j.getObjValAs? String "tag"
+    match tag with
+    | "atom" => .atom <$> j.getObjValAs? String "id"
+    | "familyApp" => .familyApp <$> j.getObjValAs? String "family" <*> j.getObjValAs? _ "args"
+    | "classifierTotal" => .classifierTotal <$> j.getObjValAs? String "classifier"
+    | "refine" => .refine <$> registryManifestCategoryExprOfJson (← j.getObjValAs? Json "base") <*> j.getObjValAs? String "classifier"
+    | "opaque" => .opaque <$> j.getObjValAs? String "id"
+    | _ => throw s!"unknown category expression tag: {tag}"
+
+instance : FromJson RegistryManifestCategoryExpr where
+  fromJson? := registryManifestCategoryExprOfJson
+
+inductive RegistryManifestFunctorExpr
+  | identity (category : RegistryManifestCategoryExpr)
+  | atomic (id : String)
+  | classifierForget (classifier : String) (host : RegistryManifestCategoryExpr)
+  | opaquePort (id : String)
+  deriving DecidableEq, Repr
+
+instance : ToJson RegistryManifestFunctorExpr where
+  toJson
+    | .identity category => registryObject [("tag", "identity"), ("category", toJson category)]
+    | .atomic id => registryObject [("tag", "atomic"), ("id", id)]
+    | .classifierForget classifier host => registryObject [
+        ("tag", "classifierForget"), ("classifier", classifier), ("host", toJson host)]
+    | .opaquePort id => registryObject [("tag", "opaquePort"), ("id", id)]
+
+instance : FromJson RegistryManifestFunctorExpr where
+  fromJson? j := do
+    let tag ← j.getObjValAs? String "tag"
+    match tag with
+    | "identity" => .identity <$> j.getObjValAs? _ "category"
+    | "atomic" => .atomic <$> j.getObjValAs? String "id"
+    | "classifierForget" =>
+        .classifierForget <$> j.getObjValAs? String "classifier" <*> j.getObjValAs? _ "host"
+    | "opaquePort" => .opaquePort <$> j.getObjValAs? String "id"
+    | _ => throw s!"unknown functor expression tag: {tag}"
+
+structure RegistryManifestCategory where
+  id : String
+  canonicalName : String
+  declaration : String
+  realization : String
+  refinementRealization : String
+  expression : RegistryManifestCategoryExpr
+  deriving DecidableEq, Repr, ToJson, FromJson
+
+structure RegistryManifestFamily where
+  id : String
+  canonicalName : String
+  schema : String
+  realization : String
+  transport : String
+  parameters : Array RegistryManifestParameter
+  variance : String
+  deriving DecidableEq, Repr, ToJson, FromJson
+
+structure RegistryManifestAlias where
+  id : String
+  spelling : String
+  aliasOf : String
+  declaration : String
+  realization : String
+  deriving DecidableEq, Repr, ToJson, FromJson
+
+structure RegistryManifestClassifier where
+  id : String
+  canonicalName : String
+  host : RegistryManifestCategoryExpr
+  declaration : String
+  realization : String
+  deriving DecidableEq, Repr, ToJson, FromJson
+
+structure RegistryManifestFunctor where
+  id : String
+  canonicalName : String
+  source : RegistryManifestCategoryExpr
+  target : RegistryManifestCategoryExpr
+  declaration : String
+  realization : String
+  expression : RegistryManifestFunctorExpr
+  deriving DecidableEq, Repr, ToJson, FromJson
+
+structure RegistryManifestPort where
+  id : String
+  source : RegistryManifestCategoryExpr
+  target : RegistryManifestCategoryExpr
+  declaration : String
+  realization : String
+  provenance : String
+  deriving DecidableEq, Repr, ToJson, FromJson
+
+structure RegistryManifestOpaque where
+  id : String
+  declaration : String
+  realization : String
+  reason : String
+  ports : Array RegistryManifestPort
+  deriving DecidableEq, Repr, ToJson, FromJson
+
+structure RegistryManifest where
+  schemaVersion : String
+  categories : Array RegistryManifestCategory
+  classifiers : Array RegistryManifestClassifier
+  functors : Array RegistryManifestFunctor
+  aliases : Array RegistryManifestAlias
+  opaqueCategories : Array RegistryManifestOpaque
+  categoryFamilies : Array RegistryManifestFamily
+  source : String
+  deriving DecidableEq, Repr, ToJson, FromJson
+
+private def registryManifestParameterExpr : ParameterExpr → RegistryManifestParameterExpr
+  | .variable id => .variable id.raw
+  | .apply operation argument => .apply operation.raw (registryManifestParameterExpr argument)
+  | .apply2 operation left right =>
+      .apply2 operation.raw (registryManifestParameterExpr left) (registryManifestParameterExpr right)
+  | .apply3 operation first second third =>
+      .apply3 operation.raw (registryManifestParameterExpr first)
+        (registryManifestParameterExpr second) (registryManifestParameterExpr third)
+
+private def registryManifestCategoryExpr : CategoryExpr → RegistryManifestCategoryExpr
+  | .atom id => .atom id.raw
+  | .familyApp family args => .familyApp family.raw (args.map registryManifestParameterExpr)
+  | .classifierTotal classifier => .classifierTotal classifier.raw
+  | .refine base classifier => .refine (registryManifestCategoryExpr base) classifier.raw
+  | .opaque id => .opaque id.raw
+
+private def registryManifestFunctorExpr {source target : CategoryExpr} :
+    FunctorExpr source target → RegistryManifestFunctorExpr
+  | .identity category => .identity (registryManifestCategoryExpr category)
+  | .atomic id => .atomic id.raw
+  | .classifierForget classifier host =>
+      .classifierForget classifier.raw (registryManifestCategoryExpr host)
+  | .opaquePort id => .opaquePort id.raw
+
+private def registryManifestSchema : CategoryFamilySchema → String
   | .ring => "ring"
   | .commRing => "commRing"
   | .commRingModule => "commRingModule"
 
-private def registryFunctorExprJson {source target : CategoryExpr} :
-    FunctorExpr source target → Json
-  | .identity category =>
-      registryObject [("tag", "identity"), ("category", registryCategoryExprJson category)]
-  | .atomic id => registryObject [("tag", "atomic"), ("id", id.raw)]
-  | .classifierForget classifier host => registryObject [
-      ("tag", "classifierForget"), ("classifier", classifier.raw),
-      ("host", registryCategoryExprJson host)]
-  | .opaquePort id => registryObject [("tag", "opaquePort"), ("id", id.raw)]
-
-private def registryCategoryJson (e : NamedCategoryEntry) : Json := registryObject [
-    ("id", e.id.raw), ("canonicalName", e.canonicalName),
-    ("declaration", e.declaration.toString), ("realization", e.realization.toString),
-    ("refinementRealization", match e.refinementRealization with
-      | some realization => realization.toString | none => ""),
-    ("expression", registryCategoryExprJson e.expression)]
-
-private def registryCategoryFamilyJson (e : CategoryFamilyEntry) : Json := registryObject [
-    ("id", e.id.raw), ("canonicalName", e.canonicalName),
-    ("schema", registryCategoryFamilySchemaJson e.schema),
-    ("realization", e.realization.toString), ("transport", e.transport.toString),
-    ("parameters", Json.arr <| e.schema.parameterMetadata.map fun parameter => registryObject [
-      ("variables", Json.arr <| parameter.ids.toArray.map (·.raw)),
-      ("name", parameter.name), ("kind", parameter.kind.raw),
-      ("dependency", match parameter.dependency with
-        | some index => Json.num index | none => Json.null)]),
-    ("variance", e.transportSemantics.variance.raw)]
-
-private def registryAliasJson (e : AliasEntry) : Json := registryObject [
-    ("id", e.id.raw), ("spelling", e.spelling), ("aliasOf", e.aliasOf.raw),
-    ("declaration", e.declaration.toString), ("realization", e.realization.toString)]
-
-private def registryClassifierJson (e : ClassifierEntry) : Json := registryObject [
-    ("id", e.id.raw), ("canonicalName", e.canonicalName),
-    ("host", registryCategoryExprJson e.host),
-    ("declaration", e.declaration.toString), ("realization", e.realization.toString)]
-
-private def registryFunctorJson (e : FunctorEntry) : Json := registryObject [
-    ("id", e.id.raw), ("canonicalName", e.canonicalName),
-    ("source", registryCategoryExprJson e.source), ("target", registryCategoryExprJson e.target),
-    ("declaration", e.declaration.toString), ("realization", e.realization.toString),
-    ("expression", registryFunctorExprJson e.expression)]
-
-private def registryOpaqueJson (e : OpaqueCategoryEntry) : Json := registryObject [
-    ("id", e.id.raw), ("declaration", e.declaration.toString),
-    ("realization", e.realization.toString), ("reason", e.reason),
-    ("ports", .arr <| e.ports.map fun p => registryObject [
-      ("id", p.id.raw), ("source", registryCategoryExprJson p.source),
-      ("target", registryCategoryExprJson p.target),
-      ("declaration", p.declaration.toString), ("realization", p.realization.toString),
-      ("provenance", p.provenance)])]
-
-private def registryManifestJson (state : RegistryState) : Json :=
+private def registryManifest (state : RegistryState) : RegistryManifest :=
   let cats := state.categories.qsort (fun a b => a.id.raw < b.id.raw)
   let families := state.categoryFamilies.qsort (fun a b => a.id.raw < b.id.raw)
   let clfs := state.classifiers.qsort (fun a b => a.id.raw < b.id.raw)
   let functors := state.functors.qsort (fun a b => a.id.raw < b.id.raw)
   let aliases := state.aliases.qsort (fun a b => a.id.raw < b.id.raw)
   let opaqueEntries := state.opaqueCategories.qsort (fun a b => a.id.raw < b.id.raw)
-  registryObject [
-    ("schemaVersion", "0.1.0-specimen"),
-    ("categories", .arr (cats.map registryCategoryJson)),
-    ("classifiers", .arr (clfs.map registryClassifierJson)),
-    ("functors", .arr (functors.map registryFunctorJson)),
-    ("aliases", .arr (aliases.map registryAliasJson)),
-    ("opaqueCategories", .arr (opaqueEntries.map registryOpaqueJson)),
-    ("categoryFamilies", .arr (families.map registryCategoryFamilyJson)),
-    ("source", "lean-registry")]
+  { schemaVersion := "0.1.0-specimen"
+    categories := cats.map fun e => {
+      id := e.id.raw, canonicalName := e.canonicalName, declaration := e.declaration.toString,
+      realization := e.realization.toString,
+      refinementRealization := e.refinementRealization.map Lean.Name.toString |>.getD "",
+      expression := registryManifestCategoryExpr e.expression }
+    classifiers := clfs.map fun e => {
+      id := e.id.raw, canonicalName := e.canonicalName,
+      host := registryManifestCategoryExpr e.host, declaration := e.declaration.toString,
+      realization := e.realization.toString }
+    functors := functors.map fun e => {
+      id := e.id.raw, canonicalName := e.canonicalName,
+      source := registryManifestCategoryExpr e.source, target := registryManifestCategoryExpr e.target,
+      declaration := e.declaration.toString, realization := e.realization.toString,
+      expression := registryManifestFunctorExpr e.expression }
+    aliases := aliases.map fun e => {
+      id := e.id.raw, spelling := e.spelling, aliasOf := e.aliasOf.raw,
+      declaration := e.declaration.toString, realization := e.realization.toString }
+    opaqueCategories := opaqueEntries.map fun e => {
+      id := e.id.raw, declaration := e.declaration.toString, realization := e.realization.toString,
+      reason := e.reason,
+      ports := e.ports.map fun p => {
+        id := p.id.raw, source := registryManifestCategoryExpr p.source,
+        target := registryManifestCategoryExpr p.target, declaration := p.declaration.toString,
+        realization := p.realization.toString, provenance := p.provenance } }
+    categoryFamilies := families.map fun e => {
+      id := e.id.raw, canonicalName := e.canonicalName,
+      schema := registryManifestSchema e.schema,
+      realization := e.realization.toString, transport := e.transport.toString,
+      parameters := e.schema.parameterMetadata.map fun parameter => {
+        ids := parameter.ids.toArray.map (·.raw), name := parameter.name,
+        kind := parameter.kind.raw, dependency := parameter.dependency },
+      variance := e.transportSemantics.variance.raw }
+    source := "lean-registry" }
+
+private def registryManifestJson (state : RegistryState) : Json := toJson (registryManifest state)
 
 /-- Return the manifest produced from the checked persistent registry state. -/
-def checkedRegistryManifest : CoreM Json := do
+def checkedRegistryManifestDTO : CoreM RegistryManifest := do
   let state := registryExt.getState (← getEnv)
   match validatePersistedRegistryState state with
   | .error message => throwError message
-  | .ok () => pure (registryManifestJson state)
+  | .ok () => pure (registryManifest state)
+
+def checkedRegistryManifest : CoreM Json := do
+  return toJson (← checkedRegistryManifestDTO)
 
 end LeanCategories

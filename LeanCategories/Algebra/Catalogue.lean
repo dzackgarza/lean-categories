@@ -38,11 +38,6 @@ def multiplicative : PortId := ⟨"port.multiplicative"⟩
 def underlyingSet : PortId := ⟨"port.underlying_set"⟩
 end PortId
 
-namespace RouteId
-def multiplicative : RouteId := ⟨"route.multiplicative"⟩
-def additive : RouteId := ⟨"route.additive"⟩
-end RouteId
-
 namespace AliasId
 def crings : AliasId := ⟨"alias.crings"⟩
 end AliasId

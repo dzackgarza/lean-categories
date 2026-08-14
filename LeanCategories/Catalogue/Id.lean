@@ -66,11 +66,6 @@ structure AliasId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 
-/-- Stable route selector for multi-port refinements. -/
-structure RouteId where
-  raw : String
-  deriving DecidableEq, Repr, Hashable
-
 /-- Stable opaque structural port id. -/
 structure OpaquePortId where
   raw : String
@@ -86,7 +81,6 @@ instance : Inhabited ParameterKindId := ⟨⟨""⟩⟩
 instance : Inhabited VarianceId := ⟨⟨""⟩⟩
 instance : Inhabited PortId := ⟨⟨""⟩⟩
 instance : Inhabited AliasId := ⟨⟨""⟩⟩
-instance : Inhabited RouteId := ⟨⟨""⟩⟩
 instance : Inhabited OpaquePortId := ⟨⟨""⟩⟩
 
 namespace ParameterId
