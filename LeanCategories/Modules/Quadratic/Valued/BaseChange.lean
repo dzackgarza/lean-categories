@@ -45,7 +45,7 @@ def baseChangeQuadModule :
         (baseChangeForm R W S P).comp
             (LinearMap.baseChange S (QuadModuleCat.underlyingMap f)) =
           baseChangeForm R W S Q := by
-      apply QuadraticMap.baseChange_ext
+      apply baseChange_ext
       intro x
       simp only [baseChangeForm, QuadraticMap.comp_apply, LinearMap.baseChange_tmul,
         QuadraticMap.tensorDistrib_tmul]
@@ -82,11 +82,15 @@ def baseChangeQuadWForm : QuadWFormCat R ⥤ QuadWFormCat S where
             (baseChangeForm R X.value S X.formed) =
           (baseChangeForm R Y.value S Y.formed).comp
             (LinearMap.baseChange S (QuadWFormCat.carrierMap f).hom) := by
-      apply QuadraticMap.baseChange_ext
+      apply baseChange_ext
       intro x
-      simp only [baseChangeForm, LinearMap.compQuadraticMap, QuadraticMap.comp_apply,
-        LinearMap.baseChange_tmul, QuadraticMap.tensorDistrib_tmul]
-      rw [QuadWFormCat.map_form f]
+      change
+        (LinearMap.baseChange S (QuadWFormCat.valueMap f).hom)
+            ((baseChangeForm R X.value S X.formed) (1 ⊗ₜ[R] x)) =
+          (baseChangeForm R Y.value S Y.formed)
+            ((LinearMap.baseChange S (QuadWFormCat.carrierMap f).hom) (1 ⊗ₜ[R] x))
+      simp only [baseChangeForm, LinearMap.baseChange_tmul,
+        QuadraticMap.tensorDistrib_tmul, QuadWFormCat.map_form]
     exact fun x => QuadraticMap.congr_fun hq x
   map_id X := by
     apply QuadWFormCat.hom_ext
@@ -97,9 +101,17 @@ def baseChangeQuadWForm : QuadWFormCat R ⥤ QuadWFormCat S where
   map_comp f g := by
     apply QuadWFormCat.hom_ext
     · apply ModuleCat.hom_ext
-      exact LinearMap.baseChange_comp
+      change LinearMap.baseChange S
+          ((QuadWFormCat.valueMap g).hom ∘ₗ (QuadWFormCat.valueMap f).hom) =
+        LinearMap.baseChange S (QuadWFormCat.valueMap g).hom ∘ₗ
+          LinearMap.baseChange S (QuadWFormCat.valueMap f).hom
+      rw [LinearMap.baseChange_comp]
     · apply ModuleCat.hom_ext
-      exact LinearMap.baseChange_comp
+      change LinearMap.baseChange S
+          ((QuadWFormCat.carrierMap g).hom ∘ₗ (QuadWFormCat.carrierMap f).hom) =
+        LinearMap.baseChange S (QuadWFormCat.carrierMap g).hom ∘ₗ
+          LinearMap.baseChange S (QuadWFormCat.carrierMap f).hom
+      rw [LinearMap.baseChange_comp]
 
 end BaseChange
 
