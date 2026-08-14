@@ -15,6 +15,7 @@ public import Mathlib.AlgebraicGeometry.QuasiAffine
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 public import Mathlib.AlgebraicGeometry.Morphisms.Proper
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
+public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
@@ -151,5 +152,14 @@ abbrev QuasiCompactSchemeMorphismCat : Type (u + 1) :=
 abbrev quasiCompactSchemeMorphismIncl :
     QuasiCompactSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
   MorphismProperty.Arrow.forget @QuasiCompact ⊤ ⊤
+
+/-- Scheme morphisms whose structural arrow is quasi-separated. -/
+abbrev QuasiSeparatedSchemeMorphismCat : Type (u + 1) :=
+  MorphismProperty.Arrow (T := Scheme.{u}) @QuasiSeparated ⊤ ⊤
+
+/-- The canonical inclusion of quasi-separated scheme morphisms into all scheme arrows. -/
+abbrev quasiSeparatedSchemeMorphismIncl :
+    QuasiSeparatedSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
+  MorphismProperty.Arrow.forget @QuasiSeparated ⊤ ⊤
 
 end LeanCategories.Schemes
