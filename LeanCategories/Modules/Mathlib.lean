@@ -6,8 +6,10 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Pseudofunctor
+public import Mathlib.RingTheory.SimpleModule.Basic
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.Projective
+public import Mathlib.RingTheory.SimpleModule.Basic
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.RingTheory.Noetherian.Defs
@@ -107,6 +109,11 @@ abbrev ProjectiveModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
   ObjectProperty.FullSubcategory
     (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.Projective R M)
 
+/-- Simple `R`-modules, with no restriction on cardinality. -/
+abbrev SimpleModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
+  ObjectProperty.FullSubcategory
+    (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => IsSimpleModule R M)
+
 /-- Torsion `R`-modules. -/
 abbrev TorsionModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
   ObjectProperty.FullSubcategory
@@ -134,6 +141,11 @@ abbrev ArtinianModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
   ObjectProperty.FullSubcategory
     (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => IsArtinian R M)
 
+/-- Semisimple `R`-modules, using Mathlib's unrestricted `IsSemisimpleModule` predicate. -/
+abbrev SemisimpleModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
+  ObjectProperty.FullSubcategory
+    (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => IsSemisimpleModule R M)
+
 /-- Inclusion of free `R`-modules into all `R`-modules. -/
 def freeInclusion (R : RingCat.{u}) : FreeModuleCat R ⥤ ModuleCat.{w} R :=
   ObjectProperty.ι (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.Free R M)
@@ -146,6 +158,10 @@ def finitelyGeneratedInclusion (R : RingCat.{u}) :
 /-- Inclusion of projective `R`-modules into all `R`-modules. -/
 def projectiveInclusion (R : RingCat.{u}) : ProjectiveModuleCat R ⥤ ModuleCat.{w} R :=
   ObjectProperty.ι (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.Projective R M)
+
+/-- Inclusion of simple `R`-modules into all `R`-modules. -/
+def simpleInclusion (R : RingCat.{u}) : SimpleModuleCat R ⥤ ModuleCat.{w} R :=
+  ObjectProperty.ι (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => IsSimpleModule R M)
 
 /-- Inclusion of torsion `R`-modules into all `R`-modules. -/
 def torsionInclusion (R : RingCat.{u}) : TorsionModuleCat R ⥤ ModuleCat.{w} R :=
@@ -174,6 +190,12 @@ def artinianInclusion (R : RingCat.{u}) :
     ArtinianModuleCat R ⥤ ModuleCat.{w} R :=
   ObjectProperty.ι (C := ModuleCat.{w} R)
     (fun M : ModuleCat.{w} R => IsArtinian R M)
+
+/-- Inclusion of semisimple `R`-modules into all `R`-modules. -/
+def semisimpleInclusion (R : RingCat.{u}) :
+    SemisimpleModuleCat R ⥤ ModuleCat.{w} R :=
+  ObjectProperty.ι (C := ModuleCat.{w} R)
+    (fun M : ModuleCat.{w} R => IsSemisimpleModule R M)
 
 /-- Finite free rank: free with a finite basis index. Not `Module.Finite`. -/
 def IsFiniteRank (R : RingCat.{u}) (M : ModuleCat.{w} R) : Prop :=
