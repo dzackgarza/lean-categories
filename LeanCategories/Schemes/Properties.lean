@@ -9,6 +9,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 public import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.AlgebraicGeometry.QuasiAffine
+public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
@@ -82,5 +83,14 @@ abbrev ClosedImmersionSchemeMorphismCat : Type (u + 1) :=
 abbrev closedImmersionSchemeMorphismIncl :
     ClosedImmersionSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
   MorphismProperty.Arrow.forget @IsClosedImmersion ⊤ ⊤
+
+/-- Scheme morphisms whose structural arrow is finite. -/
+abbrev FiniteSchemeMorphismCat : Type (u + 1) :=
+  MorphismProperty.Arrow (T := Scheme.{u}) @IsFinite ⊤ ⊤
+
+/-- The canonical inclusion of finite scheme morphisms into all scheme arrows. -/
+abbrev finiteSchemeMorphismIncl :
+    FiniteSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
+  MorphismProperty.Arrow.forget @IsFinite ⊤ ⊤
 
 end LeanCategories.Schemes
