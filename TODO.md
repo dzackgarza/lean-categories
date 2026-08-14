@@ -92,13 +92,13 @@ Current work: `#33` through `#36`, and milestone `#51`.
 - [x] Algebraic dual, metric dual, and ideal dual
 - [x] Pairing map `L^{#I} → Hom_R(L,I)`
 - [x] Discriminant module `A_L = L^#/L` with its bilinear and quadratic forms
-- [ ] Determinant, signed discriminant, level, scale, norm, and parity
+- [x] Determinant, signed discriminant, level, scale, norm, and parity
 - [x] Exponent, elementary-divisor data, and `p`-elementary discriminant data
 - [x] Orthogonal group `O(L) = Aut(L)` in the lattice category
 - [x] Reflection, root, Weyl group, and `W(L) ⊆ O(L)`
 - [x] Local lattice, genus, genus class, class number, mass, representation number,
   and theta series
-- [ ] Adele ring `𝔸_R`, integral finite adeles, diagonal map, and adelic scalar
+- [x] Adele ring `𝔸_R`, integral finite adeles, diagonal map, and adelic scalar
   extension for a general number ring `R`
 
 ## 3. Affine algebra, varieties, and schemes
