@@ -28,6 +28,11 @@ abbrev ChainComplexOverRing (R : Type u) [Ring R] :=
 abbrev CochainComplexOverRing (R : Type u) [Ring R] :=
   CochainComplex (ModuleCat.{v} R) ℤ
 
+/-- The degree-`n` homology functor for integral-indexed cochain complexes over `R`. -/
+abbrev HomologyFunctorOverRing (R : Type u) [Ring R] (n : ℤ) :
+    CochainComplexOverRing R ⥤ ModuleCat.{v} R :=
+  HomologicalComplex.homologyFunctor (ModuleCat.{v} R) (ComplexShape.up ℤ) n
+
 /-- The homotopy category of integral-indexed chain complexes over `R`. -/
 abbrev HomotopyCategoryOverRing (R : Type u) [Ring R] :=
   HomotopyCategory (ModuleCat.{v} R) (ComplexShape.down ℤ)
