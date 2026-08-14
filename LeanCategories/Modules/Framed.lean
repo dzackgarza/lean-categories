@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.Finsupp.Pi
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
@@ -59,6 +60,13 @@ def forget : FramedModules R I ⥤ ModuleCat.{max u v} R :=
   GenFrame.forget R I
 
 end FramedModules
+
+/-- Free modules carrying a specified generating frame. -/
+def isFramedFreeModule : ObjectProperty (GenFrame R I) :=
+  fun X => Module.Free R X.obj.right
+
+/-- The full subcategory of free modules with a selected generating frame. -/
+abbrev FramedFreeModules := (isFramedFreeModule R I).FullSubcategory
 
 /-- Basis frames are the invertible frame arrows. -/
 def isBasisFrame : ObjectProperty (FrameArrow R I) :=
