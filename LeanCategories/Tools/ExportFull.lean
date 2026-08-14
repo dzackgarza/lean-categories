@@ -17,7 +17,9 @@ public meta import LeanCategories.Tools.ExportJson
 # Registry export (`lean-categories-export`)
 
 Emits JSON from the Lean registry. The executable reloads the module that owns
-the viability declarations and serializes its persistent environment extension.
+the private persistent extension `LeanCategories.registryExt` from
+`LeanCategories.Catalogue.Registry.Extension`, then calls the checked manifest
+path `LeanCategories.checkedRegistryManifest`.
 
 Does **not** read external semantic-seed artifacts.
 -/
@@ -70,6 +72,8 @@ def validate (j : Json) : Except String Unit := do
   let cats ← j.getObjValAs? (Array Json) "categories"
   let aliases ← j.getObjValAs? (Array Json) "aliases"
   let functors ← j.getObjValAs? (Array Json) "functors"
+  let families ← j.getObjValAs? (Array Json) "categoryFamilies"
+  let classifiers ← j.getObjValAs? (Array Json) "classifiers"
   let some functor := functors.find? fun candidate =>
     (candidate.getObjValAs? String "id").toOption == some "fun.sets.identity"
     | throw "registered Sets identity functor is absent"
@@ -80,12 +84,16 @@ def validate (j : Json) : Except String Unit := do
   let expressionTag ← expression.getObjValAs? String "tag"
   if expressionTag != "identity" then
     throw s!"expected identity expression for Sets identity functor, got {expressionTag}"
-  let names := cats.filterMap fun c => (c.getObjValAs? String "canonicalName").toOption
-  for a in aliases do
-    let spelling ← a.getObjValAs? String "spelling"
-    if names.contains spelling then
-      throw s!"alias spelling collides with category node: {spelling}"
-  let families ← j.getObjValAs? (Array Json) "categoryFamilies"
+  let categoryNames := cats.filterMap fun c => (c.getObjValAs? String "canonicalName").toOption
+  let familyNames := families.filterMap fun f => (f.getObjValAs? String "canonicalName").toOption
+  let classifierNames := classifiers.filterMap fun c =>
+    (c.getObjValAs? String "canonicalName").toOption
+  let functorNames := functors.filterMap fun f => (f.getObjValAs? String "canonicalName").toOption
+  let aliasSpellings := aliases.filterMap fun a => (a.getObjValAs? String "spelling").toOption
+  let publicSpellings :=
+    categoryNames ++ familyNames ++ classifierNames ++ functorNames ++ aliasSpellings
+  if let some spelling := duplicateCanonicalNameList publicSpellings.toList then
+    throw s!"duplicate normalized-category public lookup spelling: {spelling}"
   let some family := families.find? fun candidate =>
     (candidate.getObjValAs? String "id").toOption == some "fam.modules"
     | throw "registered Modules family is absent"
