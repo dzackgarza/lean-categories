@@ -6,11 +6,11 @@ module
 
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.CategoryTheory.Discrete.Basic
-public import Mathlib.CategoryTheory.Elements
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.LinearAlgebra.Matrix.Trace
 public import Mathlib.Algebra.Polynomial.Derivative
+public import LeanCategories.ForMathlib.CategoryOfElementsCocartesian
 
 @[expose] public section
 
@@ -159,6 +159,14 @@ def familyFiberBaseChange {R S : CommRingCat} (f : R ⟶ S)
 def familyBaseChangeHom (F : CommRingCat.{u} ⥤ Type w) (X : F.Elements)
     {S : CommRingCat} (f : X.1 ⟶ S) : X ⟶ ⟨S, F.map f X.2⟩ :=
   CategoryOfElements.homMk _ _ f rfl
+
+/-- The canonical family base-change morphism is strongly co-Cartesian over its base map. -/
+instance familyBaseChangeHom_isStronglyCocartesian (F : CommRingCat.{u} ⥤ Type w)
+    (X : F.Elements) {S : CommRingCat} (f : X.1 ⟶ S) :
+    Functor.IsStronglyCocartesian (CategoryOfElements.π F) f
+      (familyBaseChangeHom F X f) := by
+  rcases X with ⟨R, x⟩
+  exact CategoryOfElements.homMk_map_isStronglyCocartesian F x f
 
 abbrev matrixFiber (R : CommRingCat) (ι κ : Type u) [Fintype ι] [Fintype κ] :=
   familyFiber (matrixFamily ι κ) R
