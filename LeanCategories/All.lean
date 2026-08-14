@@ -54,6 +54,7 @@ public import LeanCategories.Foundation.Sets
 public import LeanCategories.Modules.Mathlib
 public import LeanCategories.Modules.Foundations
 public import LeanCategories.Modules.Graded
+public import LeanCategories.Modules.FiniteLength
 public import LeanCategories.Exceptional.Mathlib
 public import LeanCategories.Tools.ExportJson
 public import LeanCategories.Tools.ExportBoundaryProbe
