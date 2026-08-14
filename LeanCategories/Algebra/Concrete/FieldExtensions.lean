@@ -137,6 +137,13 @@ hypothesis is not part of the automorphism-group definition.
 abbrev galoisGroup (K : Type u) (L : Type v) [Field K] [Field L] [Algebra K L] : Type _ :=
   L ≃ₐ[K] L
 
+/-- The preorder category of subgroups of the `K`-algebra automorphism group of `L`.
+
+Its objects are all subgroups, and its morphisms are inclusions.
+-/
+abbrev GaloisSubgroupCat (K : Type u) (L : Type v) [Field K] [Field L] [Algebra K L] : Type _ :=
+  Cat.of (Subgroup (galoisGroup K L))
+
 /-- The intermediate field of `L` fixed by a subgroup of its `K`-algebra automorphisms. -/
 abbrev fixedField (K : Type u) (L : Type v) [Field K] [Field L] [Algebra K L]
     (H : Subgroup (galoisGroup K L)) : IntermediateField K L :=
