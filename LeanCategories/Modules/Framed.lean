@@ -6,6 +6,7 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.LinearAlgebra.Finsupp.Pi
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
@@ -207,6 +208,21 @@ def toFreeModuleCat : Coord R I ⥤
     LeanCategories.Modules.Mathlib.FreeModuleCat (RingCat.of R) where
   obj X := ⟨X.carrierObj,
     Module.Free.of_basis (Module.Basis.ofRepr (frameIso R I X).toLinearEquiv.symm)⟩
+  map f := ObjectProperty.homMk ((forget R I).map f)
+  map_id _ := rfl
+  map_comp _ _ := rfl
+
+/-! A coordinatized module of finite index has finite rank. -/
+
+def toFiniteRankModuleCat [Finite I] : Coord R I ⥤
+    LeanCategories.Modules.Mathlib.FiniteRankModuleCat (RingCat.of R) where
+  obj X := by
+    let b : Module.Basis I R X.carrierObj :=
+      Module.Basis.ofRepr (frameIso R I X).toLinearEquiv.symm
+    letI : Module.Free R X.carrierObj := Module.Free.of_basis b
+    letI : Module.Finite R X.carrierObj := Module.Finite.of_basis b
+    exact ⟨X.carrierObj, ⟨inferInstance,
+      Finite.of_fintype (Module.Free.ChooseBasisIndex R X.carrierObj)⟩⟩
   map f := ObjectProperty.homMk ((forget R I).map f)
   map_id _ := rfl
   map_comp _ _ := rfl
