@@ -947,10 +947,13 @@ The change-of-basis and Gram-matrix comparison is the classical free-module calc
 There is a faithful identity-on-objects functor from framed bases to coordinatized modules,
 but the two categories are not identified.
 
-**Lean realization status (2026-08-11).** `LeanCategories.Modules.Framed` defines
-`GenFrame R n`, `BasisFrame R n`, and `Coord R n`. It also defines the faithful functor
-`Coord.fromBasisFrame`. These declarations use the standard free module indexed by
-`Fin n`. The arbitrary-index version with source \(F_R(S)\) remains open.
+**Lean realization status (2026-08-14).** `LeanCategories.Modules.Framed` defines the
+arbitrary-index core declarations `GenFrame R I`, `BasisFrame R I`, and `Coord R I`,
+using the standard free module `Finsupp I R`. It also defines the faithful functor
+`Coord.fromBasisFrame`. The current catalogue rows use the finite specialization
+`I := Fin n`, as does `CoordLatticeCat R n`. The arbitrary-index catalogue schema and
+arbitrary-index lattice-coordinate category remain open because of the index-parameter/
+universe boundary.
 
 ### Remark 13.7 (Freeness versus a chosen basis)
 
@@ -1503,12 +1506,13 @@ Its objects also carry ordered bases, but its morphisms are arbitrary form-prese
 represented by matrices relative to the chosen bases. The framed and coordinatized categories
 must not be conflated.
 
-**Lean realization status (2026-08-11).** `CoordLatticeCat R n` realizes the
-coordinatized pullback. `coordLatticeToIntegral` is its comparison with intrinsic integral
-lattices. The source also defines `coordLatticeToCoord` and the constructor
-`CoordLatticeCat.ofBasis`. The generating-frame and basis-frame lattice pullbacks above do
-not yet have separate named Lean declarations. The coordinate and Gram-matrix convention
-is [@MH73, §I.2].
+**Lean realization status (2026-08-14).** `CoordLatticeCat R n` realizes the finite
+specialization `I := Fin n` of the coordinatized pullback. `coordLatticeToIntegral` is its
+comparison with intrinsic integral lattices. The source also defines `coordLatticeToCoord`
+and the constructor `CoordLatticeCat.ofBasis`. The generating-frame and basis-frame
+lattice pullbacks above do not yet have separate named Lean declarations. The arbitrary-
+index lattice-coordinate category remains open because of the index-parameter/universe
+boundary. The coordinate and Gram-matrix convention is [@MH73, §I.2].
 
 ### Definition 21.2 (Symmetric matrix category) {#def-symmetric-matrix-category}
 
@@ -1563,9 +1567,9 @@ form-preserving linear maps; a matrix is obtained from a morphism by applying th
 source and target bases, and represents it by the basis-case comparison of Corollary 74.5.
 The basis-preserving framed category has a different, stricter morphism convention.
 
-**Lean realization status (2026-08-11).** The repository has coordinate extraction and
+**Lean realization status (2026-08-14).** The repository has coordinate extraction and
 bounded matrix constructors. It does not yet define `SymMat_n`, `Gram_n`, or the stated
-equivalence theorem.
+equivalence theorem. This status does not claim matrix, Gram, or determinant work complete.
 The matrix presentation and its change-of-basis law are [@MH73, §I.2].
 
 For the named ADE lattices the Gram constructor is used only after the root-presentation
