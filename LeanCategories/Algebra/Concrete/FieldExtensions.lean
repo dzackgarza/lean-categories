@@ -115,5 +115,15 @@ abbrev galoisIncl : Galois K ⥤ Cat K :=
   ObjectProperty.ι (C := Cat K)
     (fun A : Cat K => _root_.IsGalois K A.1.1)
 
+/-! ### Automorphism groups -/
+
+/-- The automorphism group of a field extension, as `K`-algebra automorphisms.
+
+This is defined for every field extension.  A Galois, finite, or separable
+hypothesis is not part of the automorphism-group definition.
+-/
+abbrev galoisGroup (K : Type u) (L : Type v) [Field K] [Field L] [Algebra K L] : Type _ :=
+  L ≃ₐ[K] L
+
 end FieldExtension
 end LeanCategories.Algebra
