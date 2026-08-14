@@ -105,7 +105,8 @@ def duplicateOpaqueCategoryId : List CategoryId → Option CategoryId
 def opaqueCategoryMatchesCategory (category : NamedCategoryEntry)
     (opaqueEntry : OpaqueCategoryEntry) : Bool :=
   category.id == opaqueEntry.id && category.declaration == opaqueEntry.declaration &&
-    category.expression.syntacticEq (.opaque opaqueEntry.id)
+    category.realization == opaqueEntry.realization &&
+    category.expression.syntacticEq (.opaque category.id)
 
 def atomCategoryIdMatchesExpression (id : CategoryId) (expression : CategoryExpr) : Bool :=
   match expression with
@@ -248,6 +249,45 @@ def RegistryState.apply : RegistryState → RegistryEntry → RegistryState
   | s, .alias e => { s with aliases := s.aliases.push e }
   | s, .opaque e => { s with opaqueCategories := s.opaqueCategories.push e }
 
+def RegistryState.registryEntries (state : RegistryState) : List RegistryEntry :=
+  state.categories.toList.map RegistryEntry.category ++
+    state.categoryFamilies.toList.map RegistryEntry.categoryFamily ++
+    state.classifiers.toList.map RegistryEntry.classifier ++
+    state.functors.toList.map RegistryEntry.functor ++
+    state.aliases.toList.map RegistryEntry.alias ++
+    state.opaqueCategories.toList.map RegistryEntry.opaque
+
+def registryEntryPairAllowed : RegistryEntry → RegistryEntry → Bool
+  | .category category, right =>
+      match right with
+      | .opaque opaqueEntry => opaqueCategoryMatchesCategory category opaqueEntry
+      | _ => false
+  | .opaque opaqueEntry, right =>
+      match right with
+      | .category category => opaqueCategoryMatchesCategory category opaqueEntry
+      | _ => false
+  | _, _ => false
+
+def duplicateRegistryEntryId : List RegistryEntry → Option String
+  | [] => none
+  | entry :: entries =>
+      if entries.any fun other =>
+          other.stableId == entry.stableId && !registryEntryPairAllowed entry other then
+        some entry.stableId
+      else duplicateRegistryEntryId entries
+
+def RegistryState.duplicateEntryId (state : RegistryState) : Option String :=
+  duplicateRegistryEntryId state.registryEntries
+
+/-- Whether this entry's typed stable ID has already been registered. -/
+def RegistryState.hasEntryId : RegistryState → RegistryEntry → Bool
+  | state, .category e => state.categories.any (·.id == e.id)
+  | state, .categoryFamily e => state.categoryFamilies.any (·.id == e.id)
+  | state, .classifier e => state.classifiers.any (·.id == e.id)
+  | state, .functor e => state.functors.any (·.id == e.id)
+  | state, .alias e => state.aliases.any (·.id == e.id)
+  | state, .opaque e => state.opaqueCategories.any (·.id == e.id)
+
 def duplicateImportedOpaquePortId (as : Array (Array RegistryEntry)) : Option OpaquePortId :=
   duplicateOpaquePortId
     (RegistryState.opaquePortIds (mkStateFromImportedEntries RegistryState.apply {} as))
@@ -272,22 +312,67 @@ example : duplicateImportedOpaquePortId importedOpaquePortProbeEntries =
     some ⟨"port.imported"⟩ := by
   native_decide
 
-/-- Whether this entry's typed stable ID has already been registered. -/
-def RegistryState.hasEntryId : RegistryState → RegistryEntry → Bool
-  | state, .category e => state.categories.any (·.id == e.id)
-  | state, .categoryFamily e => state.categoryFamilies.any (·.id == e.id)
-  | state, .classifier e => state.classifiers.any (·.id == e.id)
-  | state, .functor e => state.functors.any (·.id == e.id)
-  | state, .alias e => state.aliases.any (·.id == e.id)
-  | state, .opaque e => state.opaqueCategories.any (·.id == e.id)
+def duplicateImportedStableIdProbeEntries : Array (Array RegistryEntry) := #[
+  #[RegistryEntry.category {
+    id := ⟨"probe.duplicate"⟩, canonicalName := "probe.duplicate",
+    declaration := ``sameEndpoint, expression := .atom ⟨"probe.duplicate"⟩,
+    realization := ``sameEndpoint, origin := .root, visibility := .present }],
+  #[RegistryEntry.classifier {
+    id := ⟨"probe.duplicate"⟩, canonicalName := "probe.duplicate",
+    declaration := ``sameEndpoint, host := .atom ⟨"probe.duplicate"⟩,
+    realization := ``sameEndpoint, visibility := .present }]]
+
+example : RegistryState.duplicateEntryId
+    (mkStateFromImportedEntries RegistryState.apply {} duplicateImportedStableIdProbeEntries) =
+    some "probe.duplicate" := by
+  native_decide
+
+def allRegistryKindsDuplicateProbeState : RegistryState :=
+  { categories := #[{
+      id := ⟨"probe.all-kinds"⟩, canonicalName := "probe.all-kinds",
+      declaration := ``sameEndpoint, expression := .atom ⟨"probe.all-kinds"⟩,
+      realization := ``sameEndpoint, origin := .root, visibility := .present }]
+    categoryFamilies := #[{
+      id := ⟨"probe.all-kinds"⟩, canonicalName := "probe.all-kinds", schema := .ring,
+      realization := ``sameEndpoint, transport := ``sameEndpoint,
+      transportSemantics := .restrictionOfScalars }]
+    classifiers := #[{
+      id := ⟨"probe.all-kinds"⟩, canonicalName := "probe.all-kinds",
+      declaration := ``sameEndpoint, host := .atom ⟨"probe.all-kinds"⟩,
+      realization := ``sameEndpoint, visibility := .present }]
+    functors := #[{
+      id := ⟨"probe.all-kinds"⟩, canonicalName := "probe.all-kinds",
+      source := .atom ⟨"probe.all-kinds"⟩, target := .atom ⟨"probe.all-kinds"⟩,
+      declaration := ``sameEndpoint, realization := ``sameEndpoint,
+      expression := .atomic ⟨"probe.all-kinds"⟩ }]
+    aliases := #[{
+      id := ⟨"probe.all-kinds"⟩, spelling := "probe.all-kinds", aliasOf := ⟨"probe.all-kinds"⟩,
+      declaration := ``sameEndpoint, realization := ``sameEndpoint }]
+    opaqueCategories := #[{
+      id := ⟨"probe.all-kinds"⟩, declaration := ``sameEndpoint,
+      realization := ``sameEndpoint, ports := #[], reason := "probe", visibility := .present }] }
+
+example : allRegistryKindsDuplicateProbeState.duplicateEntryId = some "probe.all-kinds" := by
+  decide
+
+example : !opaqueCategoryMatchesCategory
+    { id := ⟨"cat.fake.opaque"⟩, canonicalName := "cat.fake.opaque",
+      declaration := ``sameEndpoint, expression := .opaque ⟨"existing"⟩,
+      realization := ``sameEndpoint, origin := .opaqueCategory, visibility := .present }
+    { id := ⟨"cat.fake.opaque"⟩, declaration := ``sameEndpoint,
+      realization := ``sameEndpoint, ports := #[], reason := "probe", visibility := .present } := by
+  have differentIds : !((.opaque ⟨"existing"⟩ : CategoryExpr).syntacticEq
+      (.opaque ⟨"cat.fake.opaque"⟩)) := by
+    native_decide
+  simp [opaqueCategoryMatchesCategory, differentIds]
 
 initialize registryExt : SimplePersistentEnvExtension RegistryEntry RegistryState ←
   registerSimplePersistentEnvExtension {
     addEntryFn := RegistryState.apply
     addImportedFn := fun as =>
       let state := mkStateFromImportedEntries RegistryState.apply {} as
-      match duplicateOpaqueCategoryId (state.opaqueCategories.toList.map (·.id)) with
-      | some id => panic! s!"duplicate opaque category ID {id.raw} in imported registry modules"
+      match state.duplicateEntryId with
+      | some id => panic! s!"duplicate normalized-category registry ID {id} in imported registry modules"
       | none =>
           match duplicateOpaquePortId state.opaquePortIds with
           | some id => panic! s!"duplicate opaque port ID {id.raw} in imported registry modules"
