@@ -17,6 +17,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 public import Mathlib.AlgebraicGeometry.Morphisms.Integral
 public import Mathlib.AlgebraicGeometry.Morphisms.Proper
+public import Mathlib.AlgebraicGeometry.Morphisms.QuasiFinite
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
@@ -105,6 +106,16 @@ abbrev surjectiveSchemeMorphismIncl :
   MorphismProperty.Arrow.forget @Surjective ⊤ ⊤
 
 /-- Scheme morphisms whose structural arrow is a closed immersion. -/
+/- Scheme morphisms whose structural arrow is dominant. -/
+abbrev DominantSchemeMorphismCat : Type (u + 1) :=
+  MorphismProperty.Arrow (T := Scheme.{u}) @IsDominant ⊤ ⊤
+
+/- The canonical inclusion of dominant scheme morphisms into all scheme arrows. -/
+abbrev dominantSchemeMorphismIncl :
+    DominantSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
+  MorphismProperty.Arrow.forget @IsDominant ⊤ ⊤
+
+/- Scheme morphisms whose structural arrow is a closed immersion. -/
 abbrev ClosedImmersionSchemeMorphismCat : Type (u + 1) :=
   MorphismProperty.Arrow (T := Scheme.{u}) @IsClosedImmersion ⊤ ⊤
 
@@ -148,6 +159,15 @@ abbrev LocallyOfFinitePresentationSchemeMorphismCat : Type (u + 1) :=
 abbrev locallyOfFinitePresentationSchemeMorphismIncl :
     LocallyOfFinitePresentationSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
   MorphismProperty.Arrow.forget @LocallyOfFinitePresentation ⊤ ⊤
+
+/-- Scheme morphisms that are locally quasi-finite. -/
+abbrev LocallyQuasiFiniteSchemeMorphismCat : Type (u + 1) :=
+  MorphismProperty.Arrow (T := Scheme.{u}) @LocallyQuasiFinite ⊤ ⊤
+
+/-- The canonical inclusion of locally quasi-finite scheme morphisms into all scheme arrows. -/
+abbrev locallyQuasiFiniteSchemeMorphismIncl :
+    LocallyQuasiFiniteSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
+  MorphismProperty.Arrow.forget @LocallyQuasiFinite ⊤ ⊤
 
 /-- Scheme morphisms whose structural arrow is finite. -/
 abbrev FiniteSchemeMorphismCat : Type (u + 1) :=
