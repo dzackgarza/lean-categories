@@ -12,6 +12,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.AlgebraicGeometry.QuasiAffine
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
+public import Mathlib.AlgebraicGeometry.Morphisms.Proper
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
@@ -103,6 +104,15 @@ abbrev FiniteSchemeMorphismCat : Type (u + 1) :=
 abbrev finiteSchemeMorphismIncl :
     FiniteSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
   MorphismProperty.Arrow.forget @IsFinite ⊤ ⊤
+
+/-- Scheme morphisms whose structural arrow is proper. -/
+abbrev ProperSchemeMorphismCat : Type (u + 1) :=
+  MorphismProperty.Arrow (T := Scheme.{u}) @IsProper ⊤ ⊤
+
+/-- The canonical inclusion of proper scheme morphisms into all scheme arrows. -/
+abbrev properSchemeMorphismIncl :
+    ProperSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
+  MorphismProperty.Arrow.forget @IsProper ⊤ ⊤
 
 /-- Scheme morphisms whose structural arrow is smooth. -/
 abbrev SmoothSchemeMorphismCat : Type (u + 1) :=
