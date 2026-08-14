@@ -32,7 +32,6 @@ noncomputable def quadModuleFamilyRealization :
     CategoryFamilyRealization.{u + 1, u, u, u + 1} CategoryFamilyId.quadModule .commRingModule where
   transport := quadModuleFamilyTransport
   transportSemantics := .discrete
-
 noncomputable def quadModuleCategory (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] : ObjCat.{u + 1, u} :=
   Cat.of (QuadModuleCat R W)
@@ -87,11 +86,6 @@ normalized_registry .functor
       `LeanCategories.Modules.Quadratic.Valued.CatalogueRegistration.quadModuleForgetDeclaration
     realization :=
       `LeanCategories.Modules.Quadratic.Valued.CatalogueRegistration.quadModuleForgetRealization
-    expression := QuadModuleForget
-    role := .generatedStructural
-    admissibility := .generated
-    port := none
-    origin := "existing quadratic-module forgetful functor"
-    preferredPresentation := false }
+    expression := QuadModuleForget }
 
 end LeanCategories.Modules.Quadratic.Valued.CatalogueRegistration

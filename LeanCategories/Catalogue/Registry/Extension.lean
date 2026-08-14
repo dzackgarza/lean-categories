@@ -84,6 +84,17 @@ def RegistryState.opaquePort? (state : RegistryState) (id : OpaquePortId) : Opti
     | some _ => found
     | none => category.ports.find? fun port => port.id == id) none
 
+def duplicateOpaquePortId : List OpaquePortId → Option OpaquePortId
+  | [] => none
+  | port :: ports =>
+      if ports.any fun other => other == port then some port
+      else duplicateOpaquePortId ports
+
+def atomCategoryIdMatchesExpression (id : CategoryId) (expression : CategoryExpr) : Bool :=
+  match expression with
+  | .atom expressionId => expressionId == id
+  | _ => true
+
 /-- Whether two symbolic category endpoints are syntactically identical. -/
 def sameEndpoint (left right : CategoryExpr) : Bool :=
   left.syntacticEq right
@@ -92,34 +103,63 @@ def sameEndpoint (left right : CategoryExpr) : Bool :=
 def denotesCategory (expression : CategoryExpr) (endpoint : CategoryExpr) : Bool :=
   expression.syntacticEq endpoint
 
-/-- Whether a registered refinement chain descends from a classifier host. -/
-partial def refinementHostInChain (state : RegistryState) (host : CategoryExpr) :
-    CategoryExpr → Bool
-  | expression =>
-      if sameEndpoint host expression then
-        true
-      else
-        match expression with
+def refinementDepth : CategoryExpr → Nat
+  | .refine parent _ _ => refinementDepth parent + 1
+  | _ => 0
+
+def refinementHostInChainFuel (_state : RegistryState) (target : CategoryExpr) :
+    Nat → CategoryExpr → Bool
+  | 0, _ => false
+  | fuel + 1, expression =>
+      if sameEndpoint target expression then true
+      else match expression with
         | .refine parent classifier _ =>
-            (state.classifier? classifier).any fun entry =>
-              sameEndpoint entry.host host ||
-                sameEndpoint (.classifierTotal classifier) host ||
-                refinementHostInChain state host parent
+            (_state.classifier? classifier).any fun entry =>
+              refinementHostInChainFuel _state entry.host fuel parent &&
+                (refinementHostInChainFuel _state target fuel parent ||
+                  refinementHostInChainFuel _state target fuel (.classifierTotal classifier))
         | .atom id =>
-            match state.categories.find? (·.id == id) with
+            match _state.categories.find? (·.id == id) with
             | some entry =>
                 if sameEndpoint entry.expression expression then
                   false
                 else
-                  refinementHostInChain state host entry.expression
+                  refinementHostInChainFuel _state target fuel entry.expression
             | none => false
         | .opaque id =>
-            state.opaqueCategories.any fun entry =>
-              entry.id == id && entry.ports.any fun port => sameEndpoint port.target host
+            _state.opaqueCategories.any fun entry =>
+              entry.id == id && entry.ports.any fun port => sameEndpoint port.target target
         | _ => false
 
-#eval refinementHostInChain {} (.atom ⟨"cat.sets"⟩)
-  (.familyApp ⟨"fam.modules"⟩ #[])
+/-- A refinement descends from both its parent and its classifier total. -/
+def refinementHostInChain (state : RegistryState) (target : CategoryExpr)
+    (expression : CategoryExpr) : Bool :=
+  refinementHostInChainFuel state target
+    (refinementDepth expression + state.categories.size + state.opaqueCategories.size + 1) expression
+
+def ancestryProbeState : RegistryState :=
+  { classifiers := #[
+      { id := ⟨"clf.first"⟩, canonicalName := "first"
+        declaration := ``sameEndpoint, host := .atom ⟨"cat.host"⟩
+        realization := ``sameEndpoint, visibility := .present },
+      { id := ⟨"clf.second"⟩, canonicalName := "second"
+        declaration := ``sameEndpoint, host := .atom ⟨"cat.host"⟩
+        realization := ``sameEndpoint, visibility := .present }] }
+
+example : refinementHostInChain ancestryProbeState (.atom ⟨"cat.host"⟩)
+    (.refine (.refine (.atom ⟨"cat.host"⟩) ⟨"clf.first"⟩ none) ⟨"clf.second"⟩ none) := by
+  native_decide
+
+example : !refinementHostInChain ancestryProbeState (.atom ⟨"cat.host"⟩)
+    (.refine (.atom ⟨"cat.other"⟩) ⟨"clf.latest"⟩ none) := by
+  native_decide
+
+example : !atomCategoryIdMatchesExpression ⟨"cat.host"⟩ (.atom ⟨"cat.other"⟩) := by
+  native_decide
+
+example : duplicateOpaquePortId
+    [⟨"port.same"⟩, ⟨"port.same"⟩] = some ⟨"port.same"⟩ := by
+  native_decide
 
 partial def CategoryExpr.isRegistered (state : RegistryState) : CategoryExpr → Bool
   | .atom id =>
@@ -216,6 +256,8 @@ def addRegistryEntry (e : RegistryEntry) : CoreM Unit := do
     throwError "duplicate normalized-category registry ID: {e.stableId}"
   match e with
   | .category entry =>
+      unless atomCategoryIdMatchesExpression entry.id entry.expression do
+        throwError "category atom {entry.id.raw} does not use its own category expression"
       let isSelf := match entry.expression with
         | .atom id | .opaque id => id == entry.id
         | _ => false
@@ -239,6 +281,13 @@ def addRegistryEntry (e : RegistryEntry) : CoreM Unit := do
       for port in entry.ports do
         unless port.source.isRegistered state && port.target.isRegistered state do
           throwError "opaque port {port.id.raw} has an unregistered endpoint"
+      match duplicateOpaquePortId (entry.ports.toList.map (·.id)) with
+      | some id => throwError "duplicate opaque port ID {id.raw}"
+      | none => pure ()
+      for category in state.opaqueCategories do
+        for port in entry.ports do
+          unless !category.ports.any fun registered => registered.id == port.id do
+            throwError "duplicate opaque port ID {port.id.raw}"
   | _ => pure ()
   for declaration in e.declarations do
     if declaration.isAnonymous then

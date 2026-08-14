@@ -93,14 +93,12 @@ normalized_registry .opaque
       { id := multiplicativePortId
         source := Algebra.Catalogue.Rings.MagmasWithTwoOperations
         target := Algebra.Catalogue.Magmas.Magmas
-        role := PortId.multiplicative
         declaration := `LeanCategories.Exceptional.Mathlib.multiplicativePort
         realization := `LeanCategories.Exceptional.CatalogueRegistration.multiplicativePortRealization
         provenance := "authored opaque interface" },
       { id := additivePortId
         source := Algebra.Catalogue.Rings.MagmasWithTwoOperations
         target := Algebra.Catalogue.Magmas.Magmas
-        role := PortId.additive
         declaration := `LeanCategories.Exceptional.Mathlib.additivePort
         realization := `LeanCategories.Exceptional.CatalogueRegistration.additivePortRealization
         provenance := "authored opaque interface" }]
@@ -113,7 +111,6 @@ normalized_registry .opaque
     ports := #[
       { id := crystalsPortId
         source := CrystalsExpr, target := Foundation.Sets
-        role := PortId.underlyingSet
         declaration := `LeanCategories.Exceptional.Mathlib.crystalsToSets
         realization := `LeanCategories.Exceptional.CatalogueRegistration.crystalsPortRealization
         provenance := "authored opaque interface" }]

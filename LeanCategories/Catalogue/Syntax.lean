@@ -226,8 +226,8 @@ inductive FunctorExpr : CategoryExpr → CategoryExpr → Type
       (refinement : RefinementExpr refined base total) : FunctorExpr refined base
   | classifierProjection {refined base total : CategoryExpr}
       (refinement : RefinementExpr refined base total) : FunctorExpr refined total
-  | classifierForget (classifier : ClassifierId) (host : CategoryId) :
-      FunctorExpr (.classifierTotal classifier) (.atom host)
+  | classifierForget (classifier : ClassifierId) (host : CategoryExpr) :
+      FunctorExpr (.classifierTotal classifier) host
   | unfoldAtom (id : CategoryId) (body : CategoryExpr) :
       FunctorExpr (.atom id) body
   | unfoldReference (id : CategoryId) (body : CategoryExpr) :

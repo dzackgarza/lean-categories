@@ -35,7 +35,6 @@ noncomputable def bilinModuleFamilyRealization :
     CategoryFamilyRealization.{u + 1, u, u, u + 1} CategoryFamilyId.bilinModule .commRingModule where
   transport := bilinModuleFamilyTransport
   transportSemantics := .discrete
-
 noncomputable def bilWFormFamilyTransport :=
   discreteFamilyTransport.{u + 1, u, u + 1} (P := CommRingCat.{u})
     (fun (R : CommRingCat.{u}) =>
@@ -46,7 +45,6 @@ noncomputable def bilWFormFamilyRealization :
     CategoryFamilyRealization.{u + 1, u, u, u + 1} CategoryFamilyId.bilWForm .commRing where
   transport := bilWFormFamilyTransport
   transportSemantics := .discrete
-
 noncomputable def bilinModuleCategory (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] : ObjCat.{u + 1, u} :=
   Cat.of (BilinModuleCat R W)
@@ -185,12 +183,7 @@ normalized_registry .functor
       `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleForgetDeclaration
     realization :=
       `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleForgetRealization
-    expression := BilinModuleForget
-    role := .generatedStructural
-    admissibility := .generated
-    port := none
-    origin := "existing formed-module forgetful functor"
-    preferredPresentation := false }
+    expression := BilinModuleForget }
 
 normalized_registry .functor
   { id := FunctorId.bilinModuleChangeValue
@@ -203,12 +196,7 @@ normalized_registry .functor
       `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleChangeValueDeclaration
     realization :=
       `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleChangeValueRealization
-    expression := BilinModuleChangeValue
-    role := .constructorAction
-    admissibility := .declared
-    port := none
-    origin := "existing formed-module value change"
-    preferredPresentation := false }
+    expression := BilinModuleChangeValue }
 
 normalized_registry .functor
   { id := FunctorId.bilinModuleBaseChange
@@ -223,12 +211,7 @@ normalized_registry .functor
       `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleBaseChangeDeclaration
     realization :=
       `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleBaseChangeRealization
-    expression := BilinModuleBaseChange
-    role := .constructorAction
-    admissibility := .declared
-    port := none
-    origin := "existing formed-module scalar extension"
-    preferredPresentation := false }
+    expression := BilinModuleBaseChange }
 
 normalized_registry .functor
   { id := FunctorId.bilWFormBaseChange
@@ -239,11 +222,6 @@ normalized_registry .functor
       `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilWFormBaseChangeDeclaration
     realization :=
       `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilWFormBaseChangeRealization
-    expression := BilWFormBaseChange
-    role := .constructorAction
-    admissibility := .declared
-    port := none
-    origin := "existing variable-value scalar extension"
-    preferredPresentation := false }
+    expression := BilWFormBaseChange }
 
 end LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration

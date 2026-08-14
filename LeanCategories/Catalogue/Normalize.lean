@@ -24,7 +24,7 @@ namespace LeanCategories
 
 /-- Classifier host table used by the normalizer (least-host ownership). -/
 structure ClassifierHostTable where
-  hostOf : ClassifierId → Option CategoryId
+  hostOf : ClassifierId → Option CategoryExpr
 
 /-- Alias table: spelling aliases resolve to a canonical category id. -/
 structure AliasTable where
@@ -55,17 +55,10 @@ partial def normalizeCategory
       let base' := normalizeCategory hosts aliases base
       -- Exact-host: refine(host(A), A) ↦ total(A)
       match base', hosts.hostOf clf with
-      | .atom hid, some host =>
-          if hid == host then .classifierTotal clf
+      | _, some host =>
+          if base'.syntacticEq host then .classifierTotal clf
           else .refine base' clf route
-      | .classifierTotal c, some host =>
-          -- refining the total of a classifier whose host matches is rare; keep
-          if hosts.hostOf c == some host && c == clf then .classifierTotal clf
-          else .refine base' clf route
-      | .reference hid, some host =>
-          if hid == host then .classifierTotal clf
-          else .refine base' clf route
-      | _, _ => .refine base' clf route
+      | _, none => .refine base' clf route
 
 /-- After alias canonicalization, equal source/target is identity (no edge). -/
 def isIdentityEdge (src tgt : CategoryId) (aliases : AliasTable) : Bool :=

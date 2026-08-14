@@ -92,17 +92,6 @@ def parameterKindJson (kind : ParameterKindId) : Json := kind.raw
 
 def varianceJson (variance : VarianceId) : Json := variance.raw
 
-def functorRoleJson : FunctorRole → Json
-  | .generatedStructural => "generatedStructural"
-  | .opaqueStructuralPort => "opaqueStructuralPort"
-  | .constructorAction => "constructorAction"
-  | .presentationOnly => "presentationOnly"
-
-def admissibilityJson : StructuralAdmissibility → Json
-  | .generated => "generated"
-  | .declared => "declared"
-  | .excluded => "excluded"
-
 def functorExprJson {source target : CategoryExpr} : FunctorExpr source target → Json
   | .identity category => object [("tag", "identity"), ("category", categoryExprJson category)]
   | .normalizedIdentity source target =>
@@ -115,7 +104,7 @@ def functorExprJson {source target : CategoryExpr} : FunctorExpr source target �
       object [("tag", "classifierProjection"), ("id", id.raw)]
   | .classifierForget classifier host =>
       object [("tag", "classifierForget"), ("classifier", classifier.raw),
-        ("host", host.raw)]
+        ("host", categoryExprJson host)]
   | .unfoldAtom id body =>
       object [("tag", "unfoldAtom"), ("id", id.raw), ("body", categoryExprJson body)]
   | .unfoldReference id body =>
@@ -182,11 +171,6 @@ def functorJson (e : FunctorEntry) : Json :=
     ("declaration", e.declaration.toString),
     ("realization", e.realization.toString),
     ("expression", functorExprJson e.expression),
-    ("role", functorRoleJson e.role),
-    ("admissibility", admissibilityJson e.admissibility),
-    ("port", match e.port with | some port => port.raw | none => Json.null),
-    ("origin", e.origin),
-    ("preferredPresentation", e.preferredPresentation),
   ]
 
 def opaqueJson (e : OpaqueCategoryEntry) : Json :=
@@ -199,7 +183,6 @@ def opaqueJson (e : OpaqueCategoryEntry) : Json :=
       ("id", p.id.raw),
       ("source", categoryExprJson p.source),
       ("target", categoryExprJson p.target),
-      ("role", p.role.raw),
       ("declaration", p.declaration.toString),
       ("realization", p.realization.toString),
       ("provenance", p.provenance),

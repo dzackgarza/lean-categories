@@ -37,7 +37,6 @@ noncomputable def latticeFamilyRealization :
     CategoryFamilyRealization.{u + 1, u, u, u + 1} CategoryFamilyId.lattice .commRingModule where
   transport := latticeFamilyTransport
   transportSemantics := .discrete
-
 noncomputable def finiteProjectiveLatticeFamilyTransport :=
   discreteFamilyTransport.{u + 1, u, u + 1}
     (P := Σ R : CommRingCat.{u}, ModuleCat.{u} R)
@@ -50,7 +49,6 @@ noncomputable def finiteProjectiveLatticeFamilyRealization :
       CategoryFamilyId.finiteProjectiveLattice .commRingModule where
   transport := finiteProjectiveLatticeFamilyTransport
   transportSemantics := .discrete
-
 noncomputable def finiteFreeLatticeFamilyTransport :=
   discreteFamilyTransport.{u + 1, u, u + 1}
     (P := Σ R : CommRingCat.{u}, ModuleCat.{u} R)
@@ -62,7 +60,6 @@ noncomputable def finiteFreeLatticeFamilyRealization :
     CategoryFamilyRealization.{u + 1, u, u, u + 1} CategoryFamilyId.finiteFreeLattice .commRingModule where
   transport := finiteFreeLatticeFamilyTransport
   transportSemantics := .discrete
-
 noncomputable def evenLatticeFamilyTransport :=
   discreteFamilyTransport.{u + 1, u, u + 1} (P := CommRingCat.{u})
     (fun (R : CommRingCat.{u}) =>
@@ -73,7 +70,6 @@ noncomputable def evenLatticeFamilyRealization :
     CategoryFamilyRealization.{u + 1, u, u, u + 1} CategoryFamilyId.evenLattice .commRing where
   transport := evenLatticeFamilyTransport
   transportSemantics := .discrete
-
 noncomputable def latticeCategory (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] : ObjCat.{u + 1, u} :=
   Cat.of (LatticeCat R W)
@@ -289,12 +285,7 @@ normalized_registry .functor
       `LeanCategories.Lattices.Valued.CatalogueRegistration.latticeChangeValueDeclaration
     realization :=
       `LeanCategories.Lattices.Valued.CatalogueRegistration.latticeChangeValueRealization
-    expression := LatticeChangeValue
-    role := .constructorAction
-    admissibility := .declared
-    port := none
-    origin := "existing lattice value change"
-    preferredPresentation := false }
+    expression := LatticeChangeValue }
 
 normalized_registry .functor
   { id := FunctorId.latticeBaseChange
@@ -309,12 +300,7 @@ normalized_registry .functor
       `LeanCategories.Lattices.Valued.CatalogueRegistration.latticeBaseChangeDeclaration
     realization :=
       `LeanCategories.Lattices.Valued.CatalogueRegistration.latticeBaseChangeRealization
-    expression := LatticeBaseChange
-    role := .constructorAction
-    admissibility := .declared
-    port := none
-    origin := "existing lattice scalar extension"
-    preferredPresentation := false }
+    expression := LatticeBaseChange }
 
 normalized_registry .functor
   { id := FunctorId.finiteProjectiveForget
@@ -325,11 +311,6 @@ normalized_registry .functor
       `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteProjectiveForgetDeclaration
     realization :=
       `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteProjectiveForgetRealization
-    expression := FiniteProjectiveForget
-    role := .generatedStructural
-    admissibility := .generated
-    port := none
-    origin := "existing finite-projective lattice forgetful functor"
-    preferredPresentation := false }
+    expression := FiniteProjectiveForget }
 
 end LeanCategories.Lattices.Valued.CatalogueRegistration

@@ -19,7 +19,6 @@ noncomputable def modulesFamilyRealization :
     CategoryFamilyRealization.{u + 1, u, u, u} CategoryFamilyId.modules .ring where
   transport := Modules.Mathlib.moduleCatRestrictScalarsPseudofunctor
   transportSemantics := .restrictionOfScalars
-
 noncomputable def modulesRealization (R : RingCat.{u}) :
     CategoryRealization Modules.Modules (modulesFamilyRealization.fibre R) where
   familyFibre := some (.mk modulesFamilyRealization {

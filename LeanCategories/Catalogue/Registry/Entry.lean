@@ -55,21 +55,6 @@ structure ClassifierEntry where
   visibility : Visibility
   deriving Repr, Inhabited
 
-/-- Semantic role of a registered functor. -/
-inductive FunctorRole
-  | generatedStructural
-  | opaqueStructuralPort
-  | constructorAction
-  | presentationOnly
-  deriving DecidableEq, Repr, Inhabited
-
-/-- Whether a functor may participate in automatic structural projection. -/
-inductive StructuralAdmissibility
-  | generated
-  | declared
-  | excluded
-  deriving DecidableEq, Repr, Inhabited
-
 /-- A typed functor declaration, with expression endpoints checked by Lean. -/
 structure FunctorEntry where
   id : FunctorId
@@ -79,11 +64,6 @@ structure FunctorEntry where
   declaration : Lean.Name
   realization : Lean.Name
   expression : FunctorExpr source target
-  role : FunctorRole
-  admissibility : StructuralAdmissibility
-  port : Option PortId
-  origin : String
-  preferredPresentation : Bool
   deriving Repr
 
 /-- Spelling alias — does not create a semantic node. -/
@@ -100,7 +80,6 @@ structure StructuralPortEntry where
   id : OpaquePortId
   source : CategoryExpr
   target : CategoryExpr
-  role : PortId
   declaration : Lean.Name
   realization : Lean.Name
   provenance : String

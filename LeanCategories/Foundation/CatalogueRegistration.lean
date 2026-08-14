@@ -86,11 +86,6 @@ normalized_registry .functor
     target := Foundation.Sets
     declaration := `LeanCategories.Foundation.CatalogueRegistration.setsIdentity
     realization := `LeanCategories.Foundation.CatalogueRegistration.setsIdentityRealization
-    expression := setsIdentityExpr
-    role := .generatedStructural
-    admissibility := .generated
-    port := none
-    origin := "identity"
-    preferredPresentation := false }
+    expression := setsIdentityExpr }
 
 end LeanCategories.Foundation.CatalogueRegistration

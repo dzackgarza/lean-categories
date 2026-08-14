@@ -8,7 +8,6 @@ public import LeanCategories
 public import LeanCategories.Catalogue.Id
 public import LeanCategories.Catalogue.Syntax
 public import LeanCategories.Catalogue.Normalize
-public import LeanCategories.Catalogue.StructuralMap
 public import LeanCategories.Catalogue.Registry.Entry
 public import LeanCategories.Catalogue.Registry.Extension
 public import LeanCategories.Catalogue.Realization
