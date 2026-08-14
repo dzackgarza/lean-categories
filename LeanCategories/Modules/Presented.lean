@@ -55,4 +55,60 @@ instance : (forget (R := R)).Full where
 
 end PresentedModules
 
+/-!
+### Presentation comparison
+
+Fixing the generators and relations gives a category in which a morphism is
+the target solution of those relations.  Mathlib's universal property then
+turns that solution into the unique map between the presented modules.
+-/
+
+universe u'
+
+variable {R : Type u'} [Ring R]
+
+/-- Presented modules over one fixed system of generators and relations. -/
+structure PresentedModuleOver
+    (relations : Module.Relations.{u', u'} R) where
+  carrier : ModuleCat.{u'} R
+  solution : relations.Solution (carrier : Type u')
+  isPresentation : solution.IsPresentation
+
+namespace PresentedModuleOver
+
+variable {relations : Module.Relations.{u', u'} R}
+
+instance : Category (PresentedModuleOver R relations) where
+  Hom X Y := relations.Solution (Y.carrier : Type u')
+  id X := X.solution
+  comp _ g := g
+  id_comp _ := rfl
+  comp_id _ := rfl
+  assoc _ _ _ := rfl
+
+/-- Compare fixed-relations presentations with `PresentedModules`.
+
+The map on morphisms is Mathlib's canonical map induced by the target
+solution, rather than an arbitrary map between the underlying carriers.
+-/
+def comparison :
+    PresentedModuleOver R relations ⥤ PresentedModules.{u', u', u', u'} R where
+  obj X :=
+    { carrier := X.carrier
+      presentation := Module.Presentation.ofIsPresentation X.isPresentation }
+  map {X Y} f := ModuleCat.ofHom (X.isPresentation.desc f)
+  map_id X := by
+    apply ModuleCat.hom_ext
+    change X.isPresentation.desc X.solution = LinearMap.id
+    apply X.isPresentation.postcomp_injective
+    simp
+  map_comp {X Y Z} f g := by
+    apply ModuleCat.hom_ext
+    change X.isPresentation.desc g =
+      (Y.isPresentation.desc g).comp (X.isPresentation.desc f)
+    apply X.isPresentation.postcomp_injective
+    simp
+
+end PresentedModuleOver
+
 end LeanCategories.Modules
