@@ -27,7 +27,7 @@ Current work: `#50`, `#54`, `#55`, `#56`, and `#58`.
 - [ ] [Atiyah and Macdonald, Chapters 1-3 and 5-10](.agents/references/atiyah-and-macdonald-definition-catalogue.md)
   — rings, ideals, modules, localization, integral dependence, valuations,
   finiteness conditions, graded objects, and completions.
-- [ ] [Weibel, Appendix A](.agents/references/weibel-homological-algebra-definition-catalogue.md)
+- [x] [Weibel, Appendix A](.agents/references/weibel-homological-algebra-definition-catalogue.md)
   — categories, functors, natural transformations, abelian categories, limits,
   colimits, and adjunctions.
 
