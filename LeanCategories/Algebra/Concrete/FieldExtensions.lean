@@ -125,5 +125,10 @@ hypothesis is not part of the automorphism-group definition.
 abbrev galoisGroup (K : Type u) (L : Type v) [Field K] [Field L] [Algebra K L] : Type _ :=
   L ≃ₐ[K] L
 
+/-- The intermediate field of `L` fixed by a subgroup of its `K`-algebra automorphisms. -/
+abbrev fixedField (K : Type u) (L : Type v) [Field K] [Field L] [Algebra K L]
+    (H : Subgroup (galoisGroup K L)) : IntermediateField K L :=
+  IntermediateField.fixedField H
+
 end FieldExtension
 end LeanCategories.Algebra
