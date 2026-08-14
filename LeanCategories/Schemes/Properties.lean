@@ -5,8 +5,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.AlgebraicGeometry.Properties
+public import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.AlgebraicGeometry.QuasiAffine
+public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 @[expose] public section
@@ -61,5 +63,14 @@ abbrev QuasiAffineSchemeCat : Type (u + 1) :=
 /-- The inclusion of quasi-affine schemes into all schemes. -/
 abbrev quasiAffineSchemeIncl : QuasiAffineSchemeCat.{u} ⥤ Scheme.{u} :=
   ObjectProperty.ι (C := Scheme.{u}) (fun X : Scheme.{u} => Scheme.IsQuasiAffine X)
+
+/-- Scheme morphisms whose structural arrow is an open immersion. -/
+abbrev OpenImmersionSchemeMorphismCat : Type (u + 1) :=
+  MorphismProperty.Arrow (T := Scheme.{u}) @IsOpenImmersion ⊤ ⊤
+
+/-- The canonical inclusion of open-immersion scheme morphisms into all scheme arrows. -/
+abbrev openImmersionSchemeMorphismIncl :
+    OpenImmersionSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
+  MorphismProperty.Arrow.forget @IsOpenImmersion ⊤ ⊤
 
 end LeanCategories.Schemes
