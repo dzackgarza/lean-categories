@@ -38,7 +38,8 @@ test: build
     @just _lean-axiom-audit
 
 [private]
-test-commit: test
+test-commit:
+	@just -f ~/ai-review-ci/justfiles/lean.just -d . test-commit
 
 # Run the CI quality gate
 test-ci: test
