@@ -78,7 +78,7 @@ Current work: `#33` through `#36`, and milestone `#51`.
 
 ### Frames and presentations
 
-- [ ] `GenFrame_n(R)`, `BasisFrame_n(R)`, and `Coord_n(R)`
+- [x] `GenFrame_n(R)`, `BasisFrame_n(R)`, and `Coord_n(R)`
 - [ ] Framed, coordinatized, and presented module categories
 - [ ] Framed and coordinatized bilinear and quadratic module categories
 - [ ] Equivalence relation on matrices presenting the same module map
@@ -119,11 +119,11 @@ Current work: `#22`, `#38`, and the scheme part of `#56`.
 
 ### Repository-specific geometric surface
 
-- [ ] Schemes over a base as a standard slice or structured-arrow category
-- [ ] Base-change functors and fibers of scheme morphisms
+- [x] Schemes over a base as a standard slice or structured-arrow category
+- [x] Base-change functors and fibers of scheme morphisms
 - [ ] Full replete subcategories of varieties, curves, surfaces, and algebraic surfaces
-- [ ] Subcategories cut out by required scheme-morphism properties
-- [ ] Quasi-coherent and coherent sheaf categories
+- [x] Subcategories cut out by required scheme-morphism properties
+- [x] Quasi-coherent and coherent sheaf categories
 - [ ] Divisor, dualizing, and reflexive-sheaf categories
 - [ ] Relative spectrum of a quasi-coherent algebra
 - [ ] Relative Proj of a graded quasi-coherent algebra
