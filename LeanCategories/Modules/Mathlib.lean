@@ -6,6 +6,10 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Pseudofunctor
+public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.RingTheory.Finiteness.Basic
@@ -69,6 +73,55 @@ abbrev FreeModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
 abbrev FinitelyGeneratedModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
   ObjectProperty.FullSubcategory
     (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.Finite R M)
+
+/-- Projective `R`-modules. -/
+abbrev ProjectiveModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
+  ObjectProperty.FullSubcategory
+    (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.Projective R M)
+
+/-- Torsion `R`-modules. -/
+abbrev TorsionModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
+  ObjectProperty.FullSubcategory
+    (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.IsTorsion R M)
+
+/-- Torsion-free `R`-modules. -/
+abbrev TorsionFreeModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
+  ObjectProperty.FullSubcategory
+    (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.IsTorsionFree R M)
+
+/-- Finitely presented `R`-modules. -/
+abbrev FinitelyPresentedModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
+  ObjectProperty.FullSubcategory
+    (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.FinitePresentation R M)
+
+/-- Inclusion of free `R`-modules into all `R`-modules. -/
+def freeInclusion (R : RingCat.{u}) : FreeModuleCat R ⥤ ModuleCat.{w} R :=
+  ObjectProperty.ι (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.Free R M)
+
+/-- Inclusion of finitely generated `R`-modules into all `R`-modules. -/
+def finitelyGeneratedInclusion (R : RingCat.{u}) :
+    FinitelyGeneratedModuleCat R ⥤ ModuleCat.{w} R :=
+  ObjectProperty.ι (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.Finite R M)
+
+/-- Inclusion of projective `R`-modules into all `R`-modules. -/
+def projectiveInclusion (R : RingCat.{u}) : ProjectiveModuleCat R ⥤ ModuleCat.{w} R :=
+  ObjectProperty.ι (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.Projective R M)
+
+/-- Inclusion of torsion `R`-modules into all `R`-modules. -/
+def torsionInclusion (R : RingCat.{u}) : TorsionModuleCat R ⥤ ModuleCat.{w} R :=
+  ObjectProperty.ι (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.IsTorsion R M)
+
+/-- Inclusion of torsion-free `R`-modules into all `R`-modules. -/
+def torsionFreeInclusion (R : RingCat.{u}) :
+    TorsionFreeModuleCat R ⥤ ModuleCat.{w} R :=
+  ObjectProperty.ι (C := ModuleCat.{w} R)
+    (fun M : ModuleCat.{w} R => Module.IsTorsionFree R M)
+
+/-- Inclusion of finitely presented `R`-modules into all `R`-modules. -/
+def finitelyPresentedInclusion (R : RingCat.{u}) :
+    FinitelyPresentedModuleCat R ⥤ ModuleCat.{w} R :=
+  ObjectProperty.ι (C := ModuleCat.{w} R)
+    (fun M : ModuleCat.{w} R => Module.FinitePresentation R M)
 
 /-- Finite free rank: free with a finite basis index. Not `Module.Finite`. -/
 def IsFiniteRank (R : RingCat.{u}) (M : ModuleCat.{w} R) : Prop :=
