@@ -108,9 +108,9 @@ def opaqueCategoryMatchesCategory (category : NamedCategoryEntry)
     category.realization == opaqueEntry.realization &&
     category.expression.syntacticEq (.opaque category.id)
 
-def atomCategoryIdMatchesExpression (id : CategoryId) (expression : CategoryExpr) : Bool :=
+def categoryIdMatchesExpression (id : CategoryId) (expression : CategoryExpr) : Bool :=
   match expression with
-  | .atom expressionId => expressionId == id
+  | .atom expressionId | .opaque expressionId => expressionId == id
   | _ => true
 
 /-- Whether two symbolic category endpoints are syntactically identical. -/
@@ -172,7 +172,10 @@ example : !refinementHostInChain ancestryProbeState (.atom ⟨"cat.host"⟩)
     (.refine (.atom ⟨"cat.other"⟩) ⟨"clf.latest"⟩ none) := by
   native_decide
 
-example : !atomCategoryIdMatchesExpression ⟨"cat.host"⟩ (.atom ⟨"cat.other"⟩) := by
+example : !categoryIdMatchesExpression ⟨"cat.host"⟩ (.atom ⟨"cat.other"⟩) := by
+  native_decide
+
+example : !categoryIdMatchesExpression ⟨"cat.named"⟩ (.opaque ⟨"cat.other"⟩) := by
   native_decide
 
 example : duplicateOpaquePortId
@@ -279,14 +282,10 @@ def duplicateRegistryEntryId : List RegistryEntry → Option String
 def RegistryState.duplicateEntryId (state : RegistryState) : Option String :=
   duplicateRegistryEntryId state.registryEntries
 
-/-- Whether this entry's typed stable ID has already been registered. -/
+/-- Whether this entry's stable ID conflicts with a retained registry entry. -/
 def RegistryState.hasEntryId : RegistryState → RegistryEntry → Bool
-  | state, .category e => state.categories.any (·.id == e.id)
-  | state, .categoryFamily e => state.categoryFamilies.any (·.id == e.id)
-  | state, .classifier e => state.classifiers.any (·.id == e.id)
-  | state, .functor e => state.functors.any (·.id == e.id)
-  | state, .alias e => state.aliases.any (·.id == e.id)
-  | state, .opaque e => state.opaqueCategories.any (·.id == e.id)
+  | state, entry => state.registryEntries.any fun existing =>
+      existing.stableId == entry.stableId && !registryEntryPairAllowed existing entry
 
 def duplicateImportedOpaquePortId (as : Array (Array RegistryEntry)) : Option OpaquePortId :=
   duplicateOpaquePortId
@@ -355,6 +354,34 @@ def allRegistryKindsDuplicateProbeState : RegistryState :=
 example : allRegistryKindsDuplicateProbeState.duplicateEntryId = some "probe.all-kinds" := by
   decide
 
+def localCrossKindDuplicateProbeState : RegistryState :=
+  { categories := #[{
+      id := ⟨"probe.local-duplicate"⟩, canonicalName := "probe.local-duplicate",
+      declaration := ``sameEndpoint, expression := .atom ⟨"probe.local-duplicate"⟩,
+      realization := ``sameEndpoint, origin := .root, visibility := .present }] }
+
+def localCrossKindDuplicateProbeEntry : RegistryEntry := .classifier {
+  id := ⟨"probe.local-duplicate"⟩, canonicalName := "probe.local-duplicate",
+  declaration := ``sameEndpoint, host := .atom ⟨"probe.local-duplicate"⟩,
+  realization := ``sameEndpoint, visibility := .present }
+
+example : localCrossKindDuplicateProbeState.hasEntryId localCrossKindDuplicateProbeEntry := by
+  native_decide
+
+def localNamedOpaqueCompanionProbeState : RegistryState :=
+  { categories := #[{
+      id := ⟨"probe.local-companion"⟩, canonicalName := "probe.local-companion",
+      declaration := ``sameEndpoint, expression := .opaque ⟨"probe.local-companion"⟩,
+      realization := ``sameEndpoint, origin := .opaqueCategory, visibility := .present }] }
+
+def localNamedOpaqueCompanionProbeEntry : RegistryEntry := .opaque {
+  id := ⟨"probe.local-companion"⟩, declaration := ``sameEndpoint,
+  realization := ``sameEndpoint, ports := #[], reason := "probe", visibility := .present }
+
+example : !localNamedOpaqueCompanionProbeState.hasEntryId
+    localNamedOpaqueCompanionProbeEntry := by
+  native_decide
+
 example : !opaqueCategoryMatchesCategory
     { id := ⟨"cat.fake.opaque"⟩, canonicalName := "cat.fake.opaque",
       declaration := ``sameEndpoint, expression := .opaque ⟨"existing"⟩,
@@ -389,8 +416,8 @@ def addRegistryEntry (e : RegistryEntry) : CoreM Unit := do
     throwError "duplicate normalized-category registry ID: {e.stableId}"
   match e with
   | .category entry =>
-      unless atomCategoryIdMatchesExpression entry.id entry.expression do
-        throwError "category atom {entry.id.raw} does not use its own category expression"
+      unless categoryIdMatchesExpression entry.id entry.expression do
+        throwError "category entry {entry.id.raw} does not use its own category expression ID"
       let isSelf := match entry.expression with
         | .atom id | .opaque id => id == entry.id
         | _ => false
