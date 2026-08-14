@@ -147,6 +147,48 @@ noncomputable abbrev IModularLatticeCat (I : Ideal R) :=
 noncomputable abbrev idealDualMap (L : IntegralLatticeCat R) (I : Ideal R) :=
   fractionalIdealDualMap R L (integralFractionalIdeal R I)
 
+/-- The pairing map from the metric `I`-dual to the `I`-valued module dual. -/
+noncomputable def idealDualPairingMap (L : IntegralLatticeCat R) (I : Ideal R) :
+    idealDual R L I →ₗ[R] (L.obj.carrier →ₗ[R] I) where
+  toFun x := by
+    let e := Submodule.equivMapOfInjective
+      (Algebra.linearMap R (FractionRing R))
+      (FaithfulSMul.algebraMap_injective R (FractionRing R)) I
+    let f := rationalPairingMap R L (x : RationalSpan R L)
+    have hx (y : L.obj.carrier) : f y ∈ (integralFractionalIdeal R I : FractionalRIdeal R) := by
+      have hx' : (x : RationalSpan R L) ∈
+          fractionalIdealDual R L (integralFractionalIdeal R I) := x.property
+      rw [fractionalIdealDual, LinearMap.mem_ker] at hx'
+      have hxy := LinearMap.congr_fun hx' y
+      change fractionalIdealValueProjection R I (f y) = 0 at hxy
+      simpa [fractionalIdealValueProjection] using hxy
+    exact
+      { toFun := fun y => e.symm ⟨f y, hx y⟩
+        map_add' := by
+          intro y z
+          apply e.injective
+          simp [e, f]
+        map_smul' := by
+          intro r y
+          apply e.injective
+          simp [e, f] }
+  map_add' x y := by
+    apply LinearMap.ext
+    intro z
+    let e := Submodule.equivMapOfInjective
+      (Algebra.linearMap R (FractionRing R))
+      (FaithfulSMul.algebraMap_injective R (FractionRing R)) I
+    apply e.injective
+    simp [e, rationalPairingMap]
+  map_smul' r x := by
+    apply LinearMap.ext
+    intro y
+    let e := Submodule.equivMapOfInjective
+      (Algebra.linearMap R (FractionRing R))
+      (FaithfulSMul.algebraMap_injective R (FractionRing R)) I
+    apply e.injective
+    simp [e, rationalPairingMap]
+
 noncomputable abbrev idealDualInclusion (L : IntegralLatticeCat R) (I : Ideal R) :=
   fractionalIdealDualInclusion R L (integralFractionalIdeal R I)
 
