@@ -47,6 +47,41 @@ def coordBilinModuleToBilin :
 
 namespace CoordBilinModuleCat
 
+/-! Change of presentation by precomposition of the selected basis frame. -/
+
+noncomputable def changeFrameCoord
+    (e : LeanCategories.Modules.StandardFreeModule R (Fin n) ≅
+      LeanCategories.Modules.StandardFreeModule R (Fin n)) :
+    LeanCategories.Modules.Coord R (Fin n) ⥤ LeanCategories.Modules.Coord R (Fin n) where
+  obj X :=
+    { frame :=
+        { obj := StructuredArrow.mk (e.inv ≫ X.frame.obj.hom)
+          property := by
+            change IsIso (e.inv ≫ X.frame.obj.hom)
+            infer_instance } }
+  map f := f
+  map_id _ := rfl
+  map_comp _ _ := rfl
+
+/-- Change the selected coordinates while retaining the intrinsic bilinear module.
+
+The new frame is `e.inv` followed by the old frame.  Since the carrier is unchanged,
+the pullback comparison is unchanged and every form-preserving morphism maps to itself.
+-/
+noncomputable def changeFrameFunctor
+    (e : LeanCategories.Modules.StandardFreeModule R (Fin n) ≅
+      LeanCategories.Modules.StandardFreeModule R (Fin n)) :
+    CoordBilinModuleCat R R n ⥤ CoordBilinModuleCat R R n where
+  obj X :=
+    { fst := (changeFrameCoord R n e).obj X.fst
+      snd := X.snd
+      iso := X.iso }
+  map f :=
+    { fst := f.fst
+      snd := f.snd }
+  map_id _ := rfl
+  map_comp _ _ := rfl
+
 /-! A coordinate form is represented on the standard function module. -/
 
 noncomputable def standardIso (X : CoordBilinModuleCat R R n) :
