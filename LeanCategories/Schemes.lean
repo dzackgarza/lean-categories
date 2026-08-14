@@ -4,14 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-/-!
-# Scheme routes
-
-Mathlib owns schemes over a base, pullback base change, scheme-theoretic fibers,
-residue fields, module sheaves, and quasi-coherent module sheaves. This module
-exposes those declarations without a parallel namespace or wrapper layer.
--/
-
 public import Mathlib.AlgebraicGeometry.Over
 public import Mathlib.AlgebraicGeometry.Limits
 public import Mathlib.AlgebraicGeometry.Fiber
@@ -27,5 +19,13 @@ public import LeanCategories.Schemes.Divisors
 public import LeanCategories.Schemes.Properties
 public import LeanCategories.Schemes.Spectra
 public import LeanCategories.Schemes.Varieties
+
+/-!
+# Scheme routes
+
+Mathlib owns schemes over a base, pullback base change, scheme-theoretic fibers,
+residue fields, module sheaves, and quasi-coherent module sheaves. This module
+exposes those declarations without a parallel namespace or wrapper layer.
+-/
 
 @[expose] public section
