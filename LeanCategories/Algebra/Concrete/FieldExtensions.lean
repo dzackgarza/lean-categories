@@ -9,7 +9,6 @@ public import Mathlib.FieldTheory.Normal.Basic
 public import Mathlib.FieldTheory.Normal.Closure
 public import Mathlib.FieldTheory.Galois.Basic
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
-public import Mathlib.RingTheory.FiniteDimensional
 public import Mathlib.RingTheory.RingHom.FiniteType
 public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
@@ -35,7 +34,7 @@ variable (K : Type u) [Field K]
 
 /-! ### Intermediate fields -/
 
-/** The category of intermediate fields of `L/K`.
+/-- The category of intermediate fields of `L/K`.
 
 This is the canonical preorder category on Mathlib's `IntermediateField K L`.
 Its morphisms are the order relations given by field inclusion.
@@ -91,12 +90,16 @@ abbrev separableIncl : Separable K ⥤ Cat K :=
 /-- Field extensions which are normal over `K`. -/
 abbrev Normal : Type _ :=
   ObjectProperty.FullSubcategory (C := Cat K)
-    (fun A : Cat K => _root_.Normal K A.1.1)
+    (fun A : Cat K =>
+      letI : Field A.1.1 := A.2.toField
+      _root_.Normal K A.1.1)
 
 /-- The inclusion of normal field extensions. -/
 abbrev normalIncl : Normal K ⥤ Cat K :=
   ObjectProperty.ι (C := Cat K)
-    (fun A : Cat K => _root_.Normal K A.1.1)
+    (fun A : Cat K =>
+      letI : Field A.1.1 := A.2.toField
+      _root_.Normal K A.1.1)
 
 /-- Field extensions which are purely inseparable over `K`.
 
@@ -121,12 +124,16 @@ includes the required algebraicity through separability.
 /-- Field extensions which are Galois over `K`. -/
 abbrev Galois : Type _ :=
   ObjectProperty.FullSubcategory (C := Cat K)
-    (fun A : Cat K => _root_.IsGalois K A.1.1)
+    (fun A : Cat K =>
+      letI : Field A.1.1 := A.2.toField
+      _root_.IsGalois K A.1.1)
 
 /-- The inclusion of Galois field extensions into field extensions. -/
 abbrev galoisIncl : Galois K ⥤ Cat K :=
   ObjectProperty.ι (C := Cat K)
-    (fun A : Cat K => _root_.IsGalois K A.1.1)
+    (fun A : Cat K =>
+      letI : Field A.1.1 := A.2.toField
+      _root_.IsGalois K A.1.1)
 
 /-! ### Automorphism groups -/
 
@@ -189,7 +196,7 @@ abbrev adjoin (K : Type u) (L : Type v) [Field K] [Field L] [Algebra K L]
 This is Mathlib's `IntermediateField.normalClosure`; the project adds no
 alternative closure construction.
 -/
-abbrev normalClosure (K : Type u) (L E : Type v) [Field K] [Field L] [Field E]
+noncomputable abbrev normalClosure (K : Type u) (L E : Type v) [Field K] [Field L] [Field E]
     [Algebra K L] [Algebra K E] : IntermediateField K E :=
   IntermediateField.normalClosure K L E
 
