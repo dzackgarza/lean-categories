@@ -8,6 +8,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.LinearAlgebra.Finsupp.Pi
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
@@ -25,6 +26,13 @@ universe u v
 
 variable (R : Type u) [CommRing R]
 variable (I : Type v)
+
+/-- Two matrices present isomorphic maps between finite free modules when they lie in the
+same left-right orbit of the target and source general linear groups. -/
+def Matrix.Equivalent {m n : Type*} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n]
+    {R : Type*} [Semiring R] (A B : Matrix m n R) : Prop :=
+  ∃ P : Matrix.GeneralLinearGroup m R, ∃ Q : Matrix.GeneralLinearGroup n R,
+    B = (P : Matrix m m R) * A * (Q : Matrix n n R)
 
 /-- The standard free `R`-module on the indexing type `I`. -/
 abbrev StandardFreeModule := ModuleCat.of R (I →₀ R)
