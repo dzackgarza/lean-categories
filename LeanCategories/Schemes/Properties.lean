@@ -13,6 +13,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.AlgebraicGeometry.QuasiAffine
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
+public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 public import Mathlib.AlgebraicGeometry.Morphisms.Proper
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
@@ -107,6 +108,15 @@ abbrev FormallyUnramifiedSchemeMorphismCat : Type (u + 1) :=
 abbrev formallyUnramifiedSchemeMorphismIncl :
     FormallyUnramifiedSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
   MorphismProperty.Arrow.forget @FormallyUnramified ⊤ ⊤
+
+/-- Scheme morphisms that are locally of finite type. -/
+abbrev LocallyOfFiniteTypeSchemeMorphismCat : Type (u + 1) :=
+  MorphismProperty.Arrow (T := Scheme.{u}) @LocallyOfFiniteType ⊤ ⊤
+
+/-- The canonical inclusion of locally finite-type scheme morphisms into all scheme arrows. -/
+abbrev locallyOfFiniteTypeSchemeMorphismIncl :
+    LocallyOfFiniteTypeSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
+  MorphismProperty.Arrow.forget @LocallyOfFiniteType ⊤ ⊤
 
 /-- Scheme morphisms whose structural arrow is finite. -/
 abbrev FiniteSchemeMorphismCat : Type (u + 1) :=
