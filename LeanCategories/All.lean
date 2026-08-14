@@ -15,6 +15,7 @@ public import LeanCategories.CategoryTheory.StandardConstructions
 public import LeanCategories.Algebra.Concrete.Magmas
 public import LeanCategories.Algebra.Concrete.Rings
 public import LeanCategories.Algebra.FractionalIdeals
+public import LeanCategories.Algebra.FreeAlgebras
 public import LeanCategories.Algebra.IntegralAdeleRing
 public import LeanCategories.Algebra.IntegralGeneralLinearGroup
 public import LeanCategories.Algebra.IdeleGroup
@@ -32,6 +33,7 @@ public import LeanCategories.ForMathlib.WittCancellation
 public import LeanCategories.ForMathlib.SymmetricPairProduct
 public import LeanCategories.Names.Standard
 public import LeanCategories.Modules.Framed
+public import LeanCategories.Modules.Localization
 public import LeanCategories.Modules.Presented
 public import LeanCategories.Modules.FractionRingQuotient
 public import LeanCategories.Modules.QuotientValuedForms
