@@ -102,6 +102,48 @@ noncomputable def standardQuadraticFunctor :
     ext x
     simp [standardMap, QuadModuleCat.underlyingMap]
 
+/-! Change the selected standard frame by a fixed linear automorphism. -/
+
+noncomputable def changeFrameMap
+    (e : (Fin n → R) ≃ₗ[R] (Fin n → R))
+    {X Y : CoordQuadModuleCat R W n} (f : X ⟶ Y) :
+    (Fin n → R) →ₗ[R] Fin n → R :=
+  e.symm.toLinearMap.comp
+    ((QuadModuleCat.underlyingMap ((standardQuadraticFunctor R W n).map f)).comp
+      e.toLinearMap)
+
+/-- Reparameterize the standard quadratic realization by a fixed change of frame. -/
+noncomputable def changeFrameQuadraticFunctor
+    (e : (Fin n → R) ≃ₗ[R] (Fin n → R)) :
+    CoordQuadModuleCat R W n ⥤ QuadModuleCat R W where
+  obj X :=
+    QuadModuleCat.ofQuadraticMap
+      (((standardQuadraticFunctor R W n).obj X).form.comp e.toLinearMap)
+  map f := QuadModuleCat.homMk (changeFrameMap R W n e f) (by
+    intro x
+    change ((standardQuadraticFunctor R W n).obj Y).form
+        (e (e.symm (QuadModuleCat.underlyingMap
+          ((standardQuadraticFunctor R W n).map f) (e x)))) =
+      ((standardQuadraticFunctor R W n).obj X).form (e x)
+    rw [e.apply_symm_apply]
+    exact QuadModuleCat.map_form ((standardQuadraticFunctor R W n).map f) (e x))
+  map_id X := by
+    apply Quiver.Hom.unop_inj
+    apply CategoryOfElements.ext
+    apply Quiver.Hom.unop_inj
+    apply ModuleCat.hom_ext
+    ext x
+    simp [changeFrameMap, standardQuadraticFunctor, standardMap,
+      QuadModuleCat.underlyingMap]
+  map_comp f g := by
+    apply Quiver.Hom.unop_inj
+    apply CategoryOfElements.ext
+    apply Quiver.Hom.unop_inj
+    apply ModuleCat.hom_ext
+    ext x
+    simp [changeFrameMap, standardQuadraticFunctor, standardMap,
+      QuadModuleCat.underlyingMap]
+
 end CoordQuadModuleCat
 
 end LeanCategories.Modules.Quadratic.Valued
