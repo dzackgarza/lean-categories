@@ -23,9 +23,41 @@ namespace LeanCategories.Algebra
 
 open CategoryTheory
 
-universe u
+universe u v
 
 variable (R : Type u) [CommSemiring R]
+
+section RingHom
+
+variable {S : Type v} [CommSemiring S]
+
+/-- The order homomorphism on ideals induced by extension along `f`. -/
+def idealMapOrderHom (f : R →+* S) : Ideal R →o Ideal S where
+  toFun I := I.map f
+  monotone' _ _ h := Ideal.map_mono h
+
+/-- The functor on ideal preorders induced by extension along `f`. -/
+abbrev idealMapFunctor (f : R →+* S) : Ideals R ⥤ Ideals S :=
+  (idealMapOrderHom f).toFunctor
+
+/-- The order homomorphism on ideals induced by contraction along `f`. -/
+def idealComapOrderHom (f : R →+* S) : Ideal S →o Ideal R where
+  toFun I := I.comap f
+  monotone' _ _ h := Ideal.comap_mono h
+
+/-- The functor on ideal preorders induced by contraction along `f`. -/
+abbrev idealComapFunctor (f : R →+* S) : Ideals S ⥤ Ideals R :=
+  (idealComapOrderHom f).toFunctor
+
+@[simp]
+theorem idealMapFunctor_obj (f : R →+* S) (I : Ideal R) :
+    (idealMapFunctor f).obj I = I.map f := rfl
+
+@[simp]
+theorem idealComapFunctor_obj (f : R →+* S) (I : Ideal S) :
+    (idealComapFunctor f).obj I = I.comap f := rfl
+
+end RingHom
 
 /-- The category of ideals of `R`, ordered by inclusion. -/
 def Ideals := Cat.of (Ideal R)
