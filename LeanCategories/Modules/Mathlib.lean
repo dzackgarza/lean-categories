@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Pseudofunctor
 public import Mathlib.RingTheory.SimpleModule.Basic
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.Projective
+public import Mathlib.Algebra.Category.ModuleCat.Injective
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.RingTheory.Noetherian.Defs
@@ -108,6 +109,11 @@ abbrev ProjectiveModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
   ObjectProperty.FullSubcategory
     (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.Projective R M)
 
+/-- Injective `R`-modules. -/
+abbrev InjectiveModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
+  ObjectProperty.FullSubcategory
+    (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.Injective R M)
+
 /-- Simple `R`-modules, with no restriction on cardinality. -/
 abbrev SimpleModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
   ObjectProperty.FullSubcategory
@@ -157,6 +163,10 @@ def finitelyGeneratedInclusion (R : RingCat.{u}) :
 /-- Inclusion of projective `R`-modules into all `R`-modules. -/
 def projectiveInclusion (R : RingCat.{u}) : ProjectiveModuleCat R ⥤ ModuleCat.{w} R :=
   ObjectProperty.ι (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.Projective R M)
+
+/-- Inclusion of injective `R`-modules into all `R`-modules. -/
+def injectiveInclusion (R : RingCat.{u}) : InjectiveModuleCat R ⥤ ModuleCat.{w} R :=
+  ObjectProperty.ι (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.Injective R M)
 
 /-- Inclusion of simple `R`-modules into all `R`-modules. -/
 def simpleInclusion (R : RingCat.{u}) : SimpleModuleCat R ⥤ ModuleCat.{w} R :=
