@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.AlgebraicGeometry.Properties
+public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 public import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.AlgebraicGeometry.QuasiAffine
@@ -72,5 +73,14 @@ abbrev OpenImmersionSchemeMorphismCat : Type (u + 1) :=
 abbrev openImmersionSchemeMorphismIncl :
     OpenImmersionSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
   MorphismProperty.Arrow.forget @IsOpenImmersion ⊤ ⊤
+
+/-- Scheme morphisms whose structural arrow is a closed immersion. -/
+abbrev ClosedImmersionSchemeMorphismCat : Type (u + 1) :=
+  MorphismProperty.Arrow (T := Scheme.{u}) @IsClosedImmersion ⊤ ⊤
+
+/-- The canonical inclusion of closed-immersion scheme morphisms into all scheme arrows. -/
+abbrev closedImmersionSchemeMorphismIncl :
+    ClosedImmersionSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
+  MorphismProperty.Arrow.forget @IsClosedImmersion ⊤ ⊤
 
 end LeanCategories.Schemes
