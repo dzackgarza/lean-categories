@@ -21,6 +21,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.QuasiFinite
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
+public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
 public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
@@ -196,6 +197,15 @@ abbrev ProperSchemeMorphismCat : Type (u + 1) :=
 abbrev properSchemeMorphismIncl :
     ProperSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
   MorphismProperty.Arrow.forget @IsProper ⊤ ⊤
+
+/-- Scheme morphisms that are universally injective (radicial). -/
+abbrev UniversallyInjectiveSchemeMorphismCat : Type (u + 1) :=
+  MorphismProperty.Arrow (T := Scheme.{u}) @UniversallyInjective ⊤ ⊤
+
+/-- The canonical inclusion of universally injective scheme morphisms into all scheme arrows. -/
+abbrev universallyInjectiveSchemeMorphismIncl :
+    UniversallyInjectiveSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
+  MorphismProperty.Arrow.forget @UniversallyInjective ⊤ ⊤
 
 /-- Scheme morphisms whose structural arrow is universally closed. -/
 abbrev UniversallyClosedSchemeMorphismCat : Type (u + 1) :=
