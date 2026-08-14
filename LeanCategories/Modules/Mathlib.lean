@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Pseudofunctor
 public import Mathlib.RingTheory.SimpleModule.Basic
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.Projective
+public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Injective
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.Algebra.Module.Torsion.Free
@@ -134,6 +135,11 @@ abbrev FinitelyPresentedModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
   ObjectProperty.FullSubcategory
     (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.FinitePresentation R M)
 
+/-- Flat `R`-modules, with no finiteness or cardinality restriction. -/
+abbrev FlatModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
+  ObjectProperty.FullSubcategory
+    (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.Flat R M)
+
 /-! ### Noetherian and Artinian modules -/
 
 /-- Noetherian `R`-modules, using Mathlib's unrestricted `IsNoetherian` predicate. -/
@@ -194,6 +200,11 @@ def finitelyPresentedInclusion (R : RingCat.{u}) :
     FinitelyPresentedModuleCat R ⥤ ModuleCat.{w} R :=
   ObjectProperty.ι (C := ModuleCat.{w} R)
     (fun M : ModuleCat.{w} R => Module.FinitePresentation R M)
+
+/-- Inclusion of flat `R`-modules into all `R`-modules. -/
+def flatInclusion (R : RingCat.{u}) : FlatModuleCat R ⥤ ModuleCat.{w} R :=
+  ObjectProperty.ι (C := ModuleCat.{w} R)
+    (fun M : ModuleCat.{w} R => Module.Flat R M)
 
 /-- Inclusion of Noetherian `R`-modules into all `R`-modules. -/
 def noetherianInclusion (R : RingCat.{u}) :
