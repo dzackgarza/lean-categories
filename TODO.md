@@ -47,7 +47,10 @@ Current work: `#50`, `#54`, `#55`, `#56`, and `#58`.
 - [ ] Category, functor, and natural-transformation expressions
 - [ ] Evaluation of expressions in a selected realization
 - [ ] Proof-carrying category and functor registry entries
-- [ ] Stable exported identifiers for categories, functors, and standard objects
+- [x] Stable exported identifiers for categories, functors, and standard objects
+  (checked typed manifest and exact expected stable-ID contract in
+  [`ExportFull.validate`](LeanCategories/Tools/ExportFull.lean) and
+  [`Standard.validateStandardManifest`](LeanCategories/Catalogue/Standard.lean))
 - [ ] Audit each file named `Functors`: define an honest functor or relocate it
 
 ## 2. Formed modules and lattice arithmetic
