@@ -388,6 +388,37 @@ An abstract entry remains explicitly abstract until that realization exists.
 Do not let registry metadata become a second mathematical authority.
 The formalized categories and functors determine the realized catalogue.
 
+### Mathlib owns its vocabulary
+
+The textbook catalogues list mathematical terms and source locations. They do not request
+project-local synonyms for declarations that already exist in Mathlib or another dependency.
+
+Use the canonical declaration from its owning package directly. A Mathlib term keeps its
+Mathlib `Lean.Name`. An external-package term keeps that package's declaration name. Create a
+`LeanCategories` name only for mathematics that this repository genuinely defines.
+
+The CAS DSL and registry must point directly to those canonical declaration names. Never put a
+project vocabulary, compatibility layer, synonym table, or translation map between the DSL and
+Mathlib. Stable identifiers identify the owning Lean declarations; they do not rename them.
+
+If an existing declaration is already reachable, add nothing. If it is not reachable, import its
+owner. If the mathematics is absent after the reuse search, implement the missing object,
+category, functor, natural transformation, or universal construction from a cited standard
+source. Do not create a wrapper whose only purpose is to change a name.
+
+These architectures are prohibited:
+
+- chapter route modules consisting only of aliases to reachable declarations;
+- registry entries that translate project names into Mathlib names;
+- duplicate project names for package-owned mathematical objects;
+- compatibility vocabularies or public-API facades over Mathlib;
+- per-search notes, residue ledgers, or route cards that duplicate textbook catalogues or
+  `TODO.md`.
+
+Search before authorship is an internal implementation step, not a deliverable. The catalogue
+owns term names and source locations. `TODO.md` owns active work. Record a dependency route only
+when a consumer needs information not recoverable from the canonical declaration or import.
+
 ### Treat compilation as a structural check
 
 A successful build proves that all imported declarations typecheck together.
@@ -436,7 +467,7 @@ Before writing any construct, in order:
 
 4. **Only then write new — and relate it to what exists.** A new construct with no stated relationship to a standard one is a red flag (§4.1, §4.4). Every new definition must, in the same PR, carry its tie to the existing world: an equivalence, comparison functor, or forgetful/instance relationship to the Mathlib **or in-repo** construction it specializes, generalizes, or sits beside. Build for **integration compatibility** — reuse Mathlib's typeclasses, category conventions, and morphism classes so the result composes with the library instead of shadowing it. (An equivalence to a standard object does not by itself legitimize a bespoke parallel hierarchy — §4.6 — but its *absence* is worse: the new object then floats free of the mathematics it claims to model.)
 
-5. **Record the search.** When you do write new, state what you searched and why the existing pieces did not suffice — in the PR, and in the owning issue if the fact is durable. "Not found in Mathlib / formal-conjectures / a reference project" is a negative finding: report the searched scope, never "does not exist." A later agent must be able to see the reuse gate was actually run.
+5. **Record the search only where review requires it.** When you write new mathematics, state what you searched and why existing pieces did not suffice in the PR or owning issue. Do not create repository files, vault notes, route cards, residue ledgers, or catalogue entries merely to prove that a search occurred. "Not found in Mathlib / formal-conjectures / a reference project" is a scoped negative finding, never a claim that the mathematics does not exist.
 
 The failure this gate prevents is §4.3 and §4.4: writing a plausible new definition is faster and *feels* more productive than finding the three-line composition of existing constructions that already says it. That is not progress — it is a new maintenance surface and an avoidable comparison theorem later.
 
