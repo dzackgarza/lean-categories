@@ -10,6 +10,7 @@ public import Mathlib.FieldTheory.Galois.Basic
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
 public import Mathlib.RingTheory.FiniteDimensional
 public import Mathlib.RingTheory.RingHom.FiniteType
+public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 /-!
@@ -30,6 +31,17 @@ universe u v
 namespace FieldExtension
 
 variable (K : Type u) [Field K]
+
+/-! ### Intermediate fields -/
+
+/** The category of intermediate fields of `L/K`.
+
+This is the canonical preorder category on Mathlib's `IntermediateField K L`.
+Its morphisms are the order relations given by field inclusion.
+-/
+abbrev IntermediateFieldCat (K : Type u) (L : Type v) [Field K] [Field L]
+    [Algebra K L] : Type _ :=
+  Cat.of (IntermediateField K L)
 
 /-- Commutative `K`-algebras whose carriers are fields. -/
 abbrev Cat : Type _ :=
