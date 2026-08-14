@@ -8,6 +8,7 @@ public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.RingTheory.PrincipalIdealDomain
+public import Mathlib.RingTheory.Ideal.IsPrimary
 
 @[expose] public section
 
@@ -41,6 +42,14 @@ abbrev MaximalIdealCat (R : Type u) [CommSemiring R] :=
 abbrev PrimeIdealCat (R : Type u) [CommSemiring R] :=
   ObjectProperty.FullSubcategory (C := Ideal R) (fun I => I.IsPrime)
 
+/-- The full subcategory of radical ideals. -/
+abbrev RadicalIdealCat (R : Type u) [CommSemiring R] :=
+  ObjectProperty.FullSubcategory (C := Ideal R) (fun I => I.IsRadical)
+
+/-- The full subcategory of primary ideals. -/
+abbrev PrimaryIdealCat (R : Type u) [CommSemiring R] :=
+  ObjectProperty.FullSubcategory (C := Ideal R) (fun I => I.IsPrimary)
+
 /-- The canonical inclusion of principal ideals into all ideals. -/
 abbrev principalIdealIncl : PrincipalIdealCat R ⥤ Ideal R :=
   ObjectProperty.ι (C := Ideal R) (fun I => I.IsPrincipal)
@@ -52,5 +61,13 @@ abbrev maximalIdealIncl : MaximalIdealCat R ⥤ Ideal R :=
 /-- The canonical inclusion of prime ideals into all ideals. -/
 abbrev primeIdealIncl : PrimeIdealCat R ⥤ Ideal R :=
   ObjectProperty.ι (C := Ideal R) (fun I => I.IsPrime)
+
+/-- The canonical inclusion of radical ideals into all ideals. -/
+abbrev radicalIdealIncl : RadicalIdealCat R ⥤ Ideal R :=
+  ObjectProperty.ι (C := Ideal R) (fun I => I.IsRadical)
+
+/-- The canonical inclusion of primary ideals into all ideals. -/
+abbrev primaryIdealIncl : PrimaryIdealCat R ⥤ Ideal R :=
+  ObjectProperty.ι (C := Ideal R) (fun I => I.IsPrimary)
 
 end LeanCategories.Algebra
