@@ -8,6 +8,7 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.Algebra.Homology.HomologicalBicomplex
 public import Mathlib.Algebra.Homology.SpectralSequence.Basic
 public import Mathlib.CategoryTheory.Monoidal.Tor
 
@@ -31,6 +32,10 @@ abbrev ChainComplexOverRing (R : Type u) [Ring R] :=
 /-- Integral-indexed cochain complexes of modules over `R`. -/
 abbrev CochainComplexOverRing (R : Type u) [Ring R] :=
   CochainComplex (ModuleCat.{v} R) ℤ
+
+/-- Integral-indexed cochain bicomplexes of modules over `R`. -/
+abbrev CochainBicomplexOverRing (R : Type u) [Ring R] :=
+  HomologicalComplex₂ (ModuleCat.{v} R) (ComplexShape.up ℤ) (ComplexShape.up ℤ)
 
 /-- A filtered cochain complex of `R`-modules indexed by a preorder `ι`. -/
 abbrev FilteredComplexOverRing (R : Type u) [Ring R] (ι : Type w) [Preorder ι] :=
