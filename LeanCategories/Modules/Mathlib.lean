@@ -151,6 +151,13 @@ abbrev SemisimpleModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
   ObjectProperty.FullSubcategory
     (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => IsSemisimpleModule R M)
 
+/-! ### Faithful modules -/
+
+/-- Modules whose scalar action is faithful, using Mathlib's `FaithfulSMul` class. -/
+abbrev FaithfulModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
+  ObjectProperty.FullSubcategory
+    (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => FaithfulSMul R M)
+
 /-- Inclusion of free `R`-modules into all `R`-modules. -/
 def freeInclusion (R : RingCat.{u}) : FreeModuleCat R ⥤ ModuleCat.{w} R :=
   ObjectProperty.ι (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.Free R M)
@@ -205,6 +212,11 @@ def semisimpleInclusion (R : RingCat.{u}) :
     SemisimpleModuleCat R ⥤ ModuleCat.{w} R :=
   ObjectProperty.ι (C := ModuleCat.{w} R)
     (fun M : ModuleCat.{w} R => IsSemisimpleModule R M)
+
+/-- Inclusion of faithful `R`-modules into all `R`-modules. -/
+def faithfulInclusion (R : RingCat.{u}) : FaithfulModuleCat R ⥤ ModuleCat.{w} R :=
+  ObjectProperty.ι (C := ModuleCat.{w} R)
+    (fun M : ModuleCat.{w} R => FaithfulSMul R M)
 
 /-- Finite free rank: free with a finite basis index. Not `Module.Finite`. -/
 def IsFiniteRank (R : RingCat.{u}) (M : ModuleCat.{w} R) : Prop :=
