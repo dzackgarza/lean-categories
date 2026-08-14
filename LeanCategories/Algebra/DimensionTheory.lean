@@ -5,9 +5,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.RingTheory.AlgebraicIndependent.Basic
+public import Mathlib.AlgebraicGeometry.FunctionField
 public import Mathlib.RingTheory.Ideal.Height
 public import Mathlib.RingTheory.KrullDimension.Basic
 public import Mathlib.RingTheory.KrullDimension.Module
+public import Mathlib.RingTheory.Polynomial.HilbertPoly
 public import Mathlib.RingTheory.RegularLocalRing.Defs
 
 /-!
@@ -85,6 +87,31 @@ def IsSystemOfParameters (x : Fin n → R) : Prop :=
   (Ideal.span (Set.range x)).radical = IsLocalRing.maximalIdeal R
 
 end LocalRings
+
+section Hilbert
+
+variable (F : Type u) [Field F]
+
+/** The Hilbert polynomial route supplied by Mathlib. */
+abbrev HilbertPolynomial (p : Polynomial F) (d : ℕ) : Polynomial F :=
+  Polynomial.hilbertPoly p d
+
+end Hilbert
+
+section Schemes
+
+open AlgebraicGeometry
+
+variable (X : Scheme.{u})
+
+/** The function field of an irreducible scheme. */
+noncomputable abbrev SchemeFunctionField [IrreducibleSpace X] : CommRingCat.{u} :=
+  X.functionField
+
+/** The local dimension of a scheme at a point, via its stalk dimension. */
+abbrev SchemeLocalDimension (x : X) : ℕ∞ := Order.coheight x
+
+end Schemes
 
 section Transcendence
 

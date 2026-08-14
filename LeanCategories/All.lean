@@ -20,6 +20,8 @@ public import LeanCategories.Algebra.Concrete.Rings
 public import LeanCategories.Algebra.AssociatedGraded
 public import LeanCategories.Algebra.FractionalIdeals
 public import LeanCategories.Algebra.AtiyahMacdonald
+public import LeanCategories.Algebra.AtiyahMacdonald.PrimaryDecomposition
+public import LeanCategories.Algebra.DimensionTheory
 public import LeanCategories.Algebra.Ideals
 public import LeanCategories.AlgebraicFamilies
 public import LeanCategories.Algebra.FreeAlgebras
