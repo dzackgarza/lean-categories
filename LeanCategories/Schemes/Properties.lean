@@ -9,6 +9,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 public import Mathlib.AlgebraicGeometry.Morphisms.Etale
 public import Mathlib.AlgebraicGeometry.Morphisms.Flat
 public import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
+public import Mathlib.AlgebraicGeometry.Morphisms.Affine
 public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.AlgebraicGeometry.QuasiAffine
@@ -19,6 +20,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Proper
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
+public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
@@ -75,6 +77,15 @@ abbrev QuasiAffineSchemeCat : Type (u + 1) :=
 abbrev quasiAffineSchemeIncl : QuasiAffineSchemeCat.{u} ⥤ Scheme.{u} :=
   ObjectProperty.ι (C := Scheme.{u}) (fun X : Scheme.{u} => Scheme.IsQuasiAffine X)
 
+/- Scheme morphisms whose structural arrow is affine. -/
+abbrev AffineSchemeMorphismCat : Type (u + 1) :=
+  MorphismProperty.Arrow (T := Scheme.{u}) @IsAffineHom ⊤ ⊤
+
+/- The canonical inclusion of affine scheme morphisms into all scheme arrows. -/
+abbrev affineSchemeMorphismIncl :
+    AffineSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
+  MorphismProperty.Arrow.forget @IsAffineHom ⊤ ⊤
+
 /-- Scheme morphisms whose structural arrow is an open immersion. -/
 abbrev OpenImmersionSchemeMorphismCat : Type (u + 1) :=
   MorphismProperty.Arrow (T := Scheme.{u}) @IsOpenImmersion ⊤ ⊤
@@ -83,6 +94,15 @@ abbrev OpenImmersionSchemeMorphismCat : Type (u + 1) :=
 abbrev openImmersionSchemeMorphismIncl :
     OpenImmersionSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
   MorphismProperty.Arrow.forget @IsOpenImmersion ⊤ ⊤
+
+/- Scheme morphisms whose structural arrow is surjective. -/
+abbrev SurjectiveSchemeMorphismCat : Type (u + 1) :=
+  MorphismProperty.Arrow (T := Scheme.{u}) @Surjective ⊤ ⊤
+
+/- The canonical inclusion of surjective scheme morphisms into all scheme arrows. -/
+abbrev surjectiveSchemeMorphismIncl :
+    SurjectiveSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
+  MorphismProperty.Arrow.forget @Surjective ⊤ ⊤
 
 /-- Scheme morphisms whose structural arrow is a closed immersion. -/
 abbrev ClosedImmersionSchemeMorphismCat : Type (u + 1) :=
