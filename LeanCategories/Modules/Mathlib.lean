@@ -10,6 +10,8 @@ public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.RingTheory.Noetherian.Defs
+public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.RingTheory.Finiteness.Basic
@@ -120,6 +122,18 @@ abbrev FinitelyPresentedModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
   ObjectProperty.FullSubcategory
     (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.FinitePresentation R M)
 
+/-! ### Noetherian and Artinian modules -/
+
+/-- Noetherian `R`-modules, using Mathlib's unrestricted `IsNoetherian` predicate. -/
+abbrev NoetherianModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
+  ObjectProperty.FullSubcategory
+    (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => IsNoetherian R M)
+
+/-- Artinian `R`-modules, using Mathlib's unrestricted `IsArtinian` predicate. -/
+abbrev ArtinianModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
+  ObjectProperty.FullSubcategory
+    (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => IsArtinian R M)
+
 /-- Inclusion of free `R`-modules into all `R`-modules. -/
 def freeInclusion (R : RingCat.{u}) : FreeModuleCat R ⥤ ModuleCat.{w} R :=
   ObjectProperty.ι (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.Free R M)
@@ -148,6 +162,18 @@ def finitelyPresentedInclusion (R : RingCat.{u}) :
     FinitelyPresentedModuleCat R ⥤ ModuleCat.{w} R :=
   ObjectProperty.ι (C := ModuleCat.{w} R)
     (fun M : ModuleCat.{w} R => Module.FinitePresentation R M)
+
+/-- Inclusion of Noetherian `R`-modules into all `R`-modules. -/
+def noetherianInclusion (R : RingCat.{u}) :
+    NoetherianModuleCat R ⥤ ModuleCat.{w} R :=
+  ObjectProperty.ι (C := ModuleCat.{w} R)
+    (fun M : ModuleCat.{w} R => IsNoetherian R M)
+
+/-- Inclusion of Artinian `R`-modules into all `R`-modules. -/
+def artinianInclusion (R : RingCat.{u}) :
+    ArtinianModuleCat R ⥤ ModuleCat.{w} R :=
+  ObjectProperty.ι (C := ModuleCat.{w} R)
+    (fun M : ModuleCat.{w} R => IsArtinian R M)
 
 /-- Finite free rank: free with a finite basis index. Not `Module.Finite`. -/
 def IsFiniteRank (R : RingCat.{u}) (M : ModuleCat.{w} R) : Prop :=
