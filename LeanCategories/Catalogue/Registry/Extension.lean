@@ -280,6 +280,7 @@ partial def FunctorExpr.referencesValid (state : RegistryState)
       match state.opaquePort? id with
       | some entry => denotesCategory source entry.source && denotesCategory target entry.target
       | none => false
+  | .comp left right => left.referencesValid state && right.referencesValid state
 
 /-- Validate the cospan references of a pullback category before it is persisted. -/
 partial def CategoryExpr.referencesValid (state : RegistryState) : CategoryExpr → Bool
@@ -914,6 +915,7 @@ inductive FunctorExpr.RegistrationKind
   | atomic
   | classifierForget (classifier : ClassifierId) (host : CategoryExpr)
   | opaquePort (port : OpaquePortId)
+  | comp
 
 def FunctorExpr.registrationKind {source target : CategoryExpr} :
     FunctorExpr source target → FunctorExpr.RegistrationKind
@@ -921,6 +923,7 @@ def FunctorExpr.registrationKind {source target : CategoryExpr} :
   | .atomic _ => .atomic
   | .classifierForget classifier host => .classifierForget classifier host
   | .opaquePort port => .opaquePort port
+  | .comp _ _ => .comp
 
 def validateFunctorDeclarationRealization (state : RegistryState) {source target : CategoryExpr}
     (expression : FunctorExpr source target)
@@ -973,6 +976,7 @@ def validateFunctorDeclarationRealization (state : RegistryState) {source target
         unless ← withTransparency .all <| isDefEq declarationValue expectedIdentity do
           throwError "identity functor declaration is not the endpoint identity"
     | .atomic => pure ()
+    | .comp => pure ()
     | .classifierForget classifier host => do
         let classifierEntry ← match state.classifier? classifier with
           | some entry => pure entry
@@ -1443,18 +1447,24 @@ inductive RegistryManifestFunctorExpr
   | atomic (id : String)
   | classifierForget (classifier : String) (host : RegistryManifestCategoryExpr)
   | opaquePort (id : String)
+  | comp (left right : RegistryManifestFunctorExpr)
   deriving DecidableEq, Repr
 
-instance : ToJson RegistryManifestFunctorExpr where
-  toJson
-    | .identity category => registryObject [("tag", "identity"), ("category", toJson category)]
-    | .atomic id => registryObject [("tag", "atomic"), ("id", id)]
-    | .classifierForget classifier host => registryObject [
-        ("tag", "classifierForget"), ("classifier", classifier), ("host", toJson host)]
-    | .opaquePort id => registryObject [("tag", "opaquePort"), ("id", id)]
+private partial def registryManifestFunctorExprJson : RegistryManifestFunctorExpr → Json
+  | .identity category => registryObject [("tag", "identity"), ("category", toJson category)]
+  | .atomic id => registryObject [("tag", "atomic"), ("id", id)]
+  | .classifierForget classifier host => registryObject [
+      ("tag", "classifierForget"), ("classifier", classifier), ("host", toJson host)]
+  | .opaquePort id => registryObject [("tag", "opaquePort"), ("id", id)]
+  | .comp left right => registryObject [
+      ("tag", "comp"), ("left", registryManifestFunctorExprJson left),
+      ("right", registryManifestFunctorExprJson right)]
 
-instance : FromJson RegistryManifestFunctorExpr where
-  fromJson? j := do
+instance : ToJson RegistryManifestFunctorExpr where
+  toJson := registryManifestFunctorExprJson
+
+private partial def registryManifestFunctorExprOfJson : Json → Except String RegistryManifestFunctorExpr
+  | j => do
     let tag ← j.getObjValAs? String "tag"
     match tag with
     | "identity" => .identity <$> j.getObjValAs? _ "category"
@@ -1462,7 +1472,12 @@ instance : FromJson RegistryManifestFunctorExpr where
     | "classifierForget" =>
         .classifierForget <$> j.getObjValAs? String "classifier" <*> j.getObjValAs? _ "host"
     | "opaquePort" => .opaquePort <$> j.getObjValAs? String "id"
+    | "comp" => .comp <$> (registryManifestFunctorExprOfJson (← j.getObjValAs? _ "left")) <*>
+        (registryManifestFunctorExprOfJson (← j.getObjValAs? _ "right"))
     | _ => throw s!"unknown functor expression tag: {tag}"
+
+instance : FromJson RegistryManifestFunctorExpr where
+  fromJson? := registryManifestFunctorExprOfJson
 
 structure RegistryManifestCategory where
   id : String
@@ -1560,6 +1575,7 @@ private def registryManifestFunctorExpr {source target : CategoryExpr} :
   | .classifierForget classifier host =>
       .classifierForget classifier.raw (registryManifestCategoryExpr host)
   | .opaquePort id => .opaquePort id.raw
+  | .comp left right => .comp (registryManifestFunctorExpr left) (registryManifestFunctorExpr right)
 
 private def registryManifestSchema : CategoryFamilySchema → String
   | .ring => "ring"

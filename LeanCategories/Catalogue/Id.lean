@@ -56,6 +56,13 @@ structure FunctorId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 
+/-! Stable identities for natural transformations. -/
+
+/-- Stable natural-transformation id. -/
+structure NaturalTransformationId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
 /-- Stable structural port id, e.g. `port.multiplicative`. -/
 structure PortId where
   raw : String
@@ -79,6 +86,7 @@ instance : Inhabited ParameterId := ⟨⟨""⟩⟩
 instance : Inhabited ParameterOperationId := ⟨⟨""⟩⟩
 instance : Inhabited ParameterKindId := ⟨⟨""⟩⟩
 instance : Inhabited VarianceId := ⟨⟨""⟩⟩
+instance : Inhabited NaturalTransformationId := ⟨⟨""⟩⟩
 instance : Inhabited PortId := ⟨⟨""⟩⟩
 instance : Inhabited AliasId := ⟨⟨""⟩⟩
 instance : Inhabited OpaquePortId := ⟨⟨""⟩⟩

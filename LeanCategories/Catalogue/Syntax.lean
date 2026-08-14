@@ -107,6 +107,7 @@ deriving instance Lean.ToExpr for ParameterOperationId
 deriving instance Lean.ToExpr for ParameterKindId
 deriving instance Lean.ToExpr for VarianceId
 deriving instance Lean.ToExpr for FunctorId
+deriving instance Lean.ToExpr for NaturalTransformationId
 deriving instance Lean.ToExpr for PortId
 deriving instance Lean.ToExpr for AliasId
 deriving instance Lean.ToExpr for OpaquePortId
@@ -260,6 +261,34 @@ inductive FunctorExpr : CategoryExpr → CategoryExpr → Type
   | classifierForget (classifier : ClassifierId) (host : CategoryExpr) :
       FunctorExpr (.classifierTotal classifier) host
   | opaquePort {source target : CategoryExpr} (port : OpaquePortId) : FunctorExpr source target
+  | comp {source middle target : CategoryExpr}
+      (left : FunctorExpr source middle) (right : FunctorExpr middle target) :
+      FunctorExpr source target
+  deriving Repr, Lean.ToExpr
+
+/-!
+Typed natural-transformation expressions.
+
+The functor indices enforce parallel endpoints for vertical composition and
+the middle-category match for horizontal composition.  These constructors
+mirror Mathlib's `NatTrans.id`, `NatTrans.vcomp`, and horizontal composition
+(`◫`), without introducing a second semantic category-theory API.
+-/
+inductive NatTransExpr : {source target : CategoryExpr} →
+    FunctorExpr source target → FunctorExpr source target → Type
+  | identity {source target : CategoryExpr} (functor : FunctorExpr source target) :
+      NatTransExpr functor functor
+  | atomic {source target : CategoryExpr}
+      {left right : FunctorExpr source target} (id : NaturalTransformationId) :
+      NatTransExpr left right
+  | vcomp {source target : CategoryExpr}
+      {left middle right : FunctorExpr source target}
+      (first : NatTransExpr left middle) (second : NatTransExpr middle right) :
+      NatTransExpr left right
+  | hcomp {source middle target : CategoryExpr}
+      {left right : FunctorExpr source middle} {top bottom : FunctorExpr middle target}
+      (first : NatTransExpr left right) (second : NatTransExpr top bottom) :
+      NatTransExpr (.comp left top) (.comp right bottom)
   deriving Repr, Lean.ToExpr
 
 /-- Syntactic equality of normalized category expressions, independent of rendered syntax. -/
