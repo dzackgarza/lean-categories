@@ -8,6 +8,7 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.Algebra.Homology.SpectralSequence.Basic
 public import Mathlib.CategoryTheory.Monoidal.Tor
 
 /-!
@@ -39,6 +40,11 @@ abbrev HomologyFunctorOverRing (R : Type u) [Ring R] (n : ℤ) :
 /-- The homotopy category of integral-indexed chain complexes over `R`. -/
 abbrev HomotopyCategoryOverRing (R : Type u) [Ring R] :=
   HomotopyCategory (ModuleCat.{v} R) (ComplexShape.down ℤ)
+
+/-- Spectral sequences in `R`-modules with a prescribed page shape. -/
+abbrev SpectralSequenceOverRing (R : Type u) [Ring R] {κ : Type w}
+    (c : ℤ → ComplexShape κ) (r₀ : ℤ) :=
+  CategoryTheory.SpectralSequence (ModuleCat.{v} R) c r₀
 
 /-- The derived category of modules over `R`. -/
 abbrev DerivedCategoryOverRing (R : Type u) [Ring R]
