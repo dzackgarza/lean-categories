@@ -7,10 +7,13 @@ module
 public import LeanCategories.Catalogue.Registry.Entry
 public import LeanCategories.CategoryTheory.OneCat.Classifier
 public import LeanCategories.Catalogue.Realization
+public import Lean.Data.Json
 public import Lean
 public meta import LeanCategories.Catalogue.Syntax
 
 @[expose] public section
+
+set_option backward.privateInPublic true
 
 /-!
 # Persistent registry extension
@@ -62,49 +65,6 @@ structure RegistryState where
   aliases : Array AliasEntry := #[]
   opaqueCategories : Array OpaqueCategoryEntry := #[]
   deriving Inhabited
-
-/- A snapshot can only come from the checked persistent registry. -/
-structure RegistrySnapshotData where
-  schemaVersion : String
-  categories : Array NamedCategoryEntry
-  categoryFamilies : Array CategoryFamilyEntry
-  classifiers : Array ClassifierEntry
-  functors : Array FunctorEntry
-  aliases : Array AliasEntry
-  opaqueCategories : Array OpaqueCategoryEntry
-
-private inductive RegistrySnapshotProof : Prop
-  | checked
-
-set_option backward.privateInPublic true in
-structure RegistrySnapshot where
-  data : RegistrySnapshotData
-  proof : RegistrySnapshotProof
-
-namespace RegistrySnapshot
-
-def schemaVersion (snapshot : RegistrySnapshot) : String :=
-  RegistrySnapshotData.schemaVersion snapshot.data
-
-def categories (snapshot : RegistrySnapshot) : Array NamedCategoryEntry :=
-  RegistrySnapshotData.categories snapshot.data
-
-def categoryFamilies (snapshot : RegistrySnapshot) : Array CategoryFamilyEntry :=
-  RegistrySnapshotData.categoryFamilies snapshot.data
-
-def classifiers (snapshot : RegistrySnapshot) : Array ClassifierEntry :=
-  RegistrySnapshotData.classifiers snapshot.data
-
-def functors (snapshot : RegistrySnapshot) : Array FunctorEntry :=
-  RegistrySnapshotData.functors snapshot.data
-
-def aliases (snapshot : RegistrySnapshot) : Array AliasEntry :=
-  RegistrySnapshotData.aliases snapshot.data
-
-def opaqueCategories (snapshot : RegistrySnapshot) : Array OpaqueCategoryEntry :=
-  RegistrySnapshotData.opaqueCategories snapshot.data
-
-end RegistrySnapshot
 
 def RegistryState.opaquePortIds (state : RegistryState) : List OpaquePortId :=
   state.opaqueCategories.toList.flatMap fun category => category.ports.toList.map (·.id)
@@ -471,7 +431,7 @@ example : !opaqueCategoryMatchesCategory
     native_decide
   simp [opaqueCategoryMatchesCategory, differentIds]
 
-initialize registryExt : SimplePersistentEnvExtension RegistryEntry RegistryState ←
+private initialize registryExt : SimplePersistentEnvExtension RegistryEntry RegistryState ←
   registerSimplePersistentEnvExtension {
     addEntryFn := RegistryState.apply
     addImportedFn := fun as =>
@@ -1260,13 +1220,152 @@ elab_rules : command
           addRegistryEntryChecked $entry)
       elabCommand command
 
-/- Public snapshots are replayed from the persistent checked registry. -/
-set_option backward.privateInPublic true in
-def getRegistrySnapshot (env : Environment) (schemaVersion : String) : RegistrySnapshot :=
-  { data := RegistrySnapshotData.mk schemaVersion (registryExt.getState env).categories
-      (registryExt.getState env).categoryFamilies (registryExt.getState env).classifiers
-      (registryExt.getState env).functors (registryExt.getState env).aliases
-      (registryExt.getState env).opaqueCategories
-    proof := .checked }
+private def validatePersistedRegistryState (state : RegistryState) : Except String Unit := do
+  if let some id := state.duplicateEntryId then
+    throw s!"duplicate normalized-category registry ID {id}"
+  if let some _ := state.duplicateCategoryExpression then
+    throw "duplicate normalized-category registry expression"
+  if let some name := state.duplicateCategoryCanonicalName then
+    throw s!"duplicate normalized-category canonical name {name}"
+  if let some id := duplicateOpaquePortId state.opaquePortIds then
+    throw s!"duplicate opaque port ID {id.raw}"
+  for category in state.categories do
+    let isSelf := match category.expression with
+      | .atom id | .opaque id => id == category.id
+      | _ => false
+    unless categoryIdMatchesExpression category.id category.expression do
+      throw s!"category entry {category.id.raw} does not use its own category expression ID"
+    unless isSelf ||
+        (category.expression.isRegistered state && category.expression.referencesValid state) do
+      throw s!"category entry {category.id.raw} has an unresolved registry reference"
+  for functor in state.functors do
+    unless functor.source.isRegistered state && functor.target.isRegistered state &&
+        functor.source.referencesValid state && functor.target.referencesValid state &&
+        functor.expression.referencesValid state do
+      throw s!"functor entry {functor.id.raw} has an unresolved registry reference"
+  for classifier in state.classifiers do
+    unless classifier.host.isRegistered state && classifier.host.referencesValid state do
+      throw s!"classifier entry {classifier.id.raw} has an unresolved registry reference"
+  for aliasEntry in state.aliases do
+    unless state.categories.any (·.id == aliasEntry.aliasOf) do
+      throw s!"alias entry {aliasEntry.id.raw} refers to an unregistered category"
+  for opaqueEntry in state.opaqueCategories do
+    let some category := state.categories.find? (·.id == opaqueEntry.id)
+      | throw s!"opaque category entry {opaqueEntry.id.raw} has no registered category"
+    unless opaqueCategoryMatchesCategory category opaqueEntry do
+      throw s!"opaque category entry {opaqueEntry.id.raw} does not match its registered category"
+    unless opaqueEntry.ports.toList.all fun port =>
+        port.source.isRegistered state && port.target.isRegistered state do
+      throw s!"opaque category entry {opaqueEntry.id.raw} has an unresolved port endpoint"
+  pure ()
+
+private def registryObject (fields : List (String × Json)) : Json := Json.mkObj fields
+
+private def registryParameterJson : ParameterExpr → Json
+  | .variable id => registryObject [("tag", "variable"), ("id", id.raw)]
+  | .apply operation argument => registryObject [
+      ("tag", "apply"), ("operation", operation.raw),
+      ("argument", registryParameterJson argument)]
+  | .apply2 operation left right => registryObject [
+      ("tag", "apply2"), ("operation", operation.raw),
+      ("left", registryParameterJson left), ("right", registryParameterJson right)]
+  | .apply3 operation first second third => registryObject [
+      ("tag", "apply3"), ("operation", operation.raw),
+      ("first", registryParameterJson first), ("second", registryParameterJson second),
+      ("third", registryParameterJson third)]
+
+private def registryCategoryExprJson : CategoryExpr → Json
+  | .atom id => registryObject [("tag", "atom"), ("id", id.raw)]
+  | .familyApp family args => registryObject [
+      ("tag", "familyApp"), ("family", family.raw),
+      ("args", .arr (args.map registryParameterJson))]
+  | .classifierTotal classifier =>
+      registryObject [("tag", "classifierTotal"), ("classifier", classifier.raw)]
+  | .refine base classifier route => registryObject [
+      ("tag", "refine"), ("base", registryCategoryExprJson base),
+      ("classifier", classifier.raw),
+      ("route", match route with | some route => route.raw | none => Json.null)]
+  | .opaque id => registryObject [("tag", "opaque"), ("id", id.raw)]
+
+private def registryCategoryFamilySchemaJson : CategoryFamilySchema → Json
+  | .ring => "ring"
+  | .commRing => "commRing"
+  | .commRingModule => "commRingModule"
+
+private def registryFunctorExprJson {source target : CategoryExpr} :
+    FunctorExpr source target → Json
+  | .identity category =>
+      registryObject [("tag", "identity"), ("category", registryCategoryExprJson category)]
+  | .atomic id => registryObject [("tag", "atomic"), ("id", id.raw)]
+  | .classifierForget classifier host => registryObject [
+      ("tag", "classifierForget"), ("classifier", classifier.raw),
+      ("host", registryCategoryExprJson host)]
+  | .opaquePort id => registryObject [("tag", "opaquePort"), ("id", id.raw)]
+
+private def registryCategoryJson (e : NamedCategoryEntry) : Json := registryObject [
+    ("id", e.id.raw), ("canonicalName", e.canonicalName),
+    ("declaration", e.declaration.toString), ("realization", e.realization.toString),
+    ("refinementRealization", match e.refinementRealization with
+      | some realization => realization.toString | none => ""),
+    ("expression", registryCategoryExprJson e.expression)]
+
+private def registryCategoryFamilyJson (e : CategoryFamilyEntry) : Json := registryObject [
+    ("id", e.id.raw), ("canonicalName", e.canonicalName),
+    ("schema", registryCategoryFamilySchemaJson e.schema),
+    ("realization", e.realization.toString), ("transport", e.transport.toString),
+    ("parameters", Json.arr <| e.schema.parameterMetadata.map fun parameter => registryObject [
+      ("variables", Json.arr <| parameter.ids.toArray.map (·.raw)),
+      ("name", parameter.name), ("kind", parameter.kind.raw),
+      ("dependency", match parameter.dependency with
+        | some index => Json.num index | none => Json.null)]),
+    ("variance", e.transportSemantics.variance.raw)]
+
+private def registryAliasJson (e : AliasEntry) : Json := registryObject [
+    ("id", e.id.raw), ("spelling", e.spelling), ("aliasOf", e.aliasOf.raw),
+    ("declaration", e.declaration.toString), ("realization", e.realization.toString)]
+
+private def registryClassifierJson (e : ClassifierEntry) : Json := registryObject [
+    ("id", e.id.raw), ("canonicalName", e.canonicalName),
+    ("host", registryCategoryExprJson e.host),
+    ("declaration", e.declaration.toString), ("realization", e.realization.toString)]
+
+private def registryFunctorJson (e : FunctorEntry) : Json := registryObject [
+    ("id", e.id.raw), ("canonicalName", e.canonicalName),
+    ("source", registryCategoryExprJson e.source), ("target", registryCategoryExprJson e.target),
+    ("declaration", e.declaration.toString), ("realization", e.realization.toString),
+    ("expression", registryFunctorExprJson e.expression)]
+
+private def registryOpaqueJson (e : OpaqueCategoryEntry) : Json := registryObject [
+    ("id", e.id.raw), ("declaration", e.declaration.toString),
+    ("realization", e.realization.toString), ("reason", e.reason),
+    ("ports", .arr <| e.ports.map fun p => registryObject [
+      ("id", p.id.raw), ("source", registryCategoryExprJson p.source),
+      ("target", registryCategoryExprJson p.target),
+      ("declaration", p.declaration.toString), ("realization", p.realization.toString),
+      ("provenance", p.provenance)])]
+
+private def registryManifestJson (state : RegistryState) : Json :=
+  let cats := state.categories.qsort (fun a b => a.id.raw < b.id.raw)
+  let families := state.categoryFamilies.qsort (fun a b => a.id.raw < b.id.raw)
+  let clfs := state.classifiers.qsort (fun a b => a.id.raw < b.id.raw)
+  let functors := state.functors.qsort (fun a b => a.id.raw < b.id.raw)
+  let aliases := state.aliases.qsort (fun a b => a.id.raw < b.id.raw)
+  let opaqueEntries := state.opaqueCategories.qsort (fun a b => a.id.raw < b.id.raw)
+  registryObject [
+    ("schemaVersion", "0.1.0-specimen"),
+    ("categories", .arr (cats.map registryCategoryJson)),
+    ("classifiers", .arr (clfs.map registryClassifierJson)),
+    ("functors", .arr (functors.map registryFunctorJson)),
+    ("aliases", .arr (aliases.map registryAliasJson)),
+    ("opaqueCategories", .arr (opaqueEntries.map registryOpaqueJson)),
+    ("categoryFamilies", .arr (families.map registryCategoryFamilyJson)),
+    ("source", "lean-registry")]
+
+/-- Return the manifest produced from the checked persistent registry state. -/
+def checkedRegistryManifest : CoreM Json := do
+  let state := registryExt.getState (← getEnv)
+  match validatePersistedRegistryState state with
+  | .error message => throwError message
+  | .ok () => pure (registryManifestJson state)
 
 end LeanCategories

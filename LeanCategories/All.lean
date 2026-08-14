@@ -36,6 +36,7 @@ public import LeanCategories.Foundation.Mathlib
 public import LeanCategories.Modules.Mathlib
 public import LeanCategories.Exceptional.Mathlib
 public import LeanCategories.Tools.ExportJson
+public import LeanCategories.Tools.ExportBoundaryProbe
 public import LeanCategories.Tools.ExportFull
 
 @[expose] public section

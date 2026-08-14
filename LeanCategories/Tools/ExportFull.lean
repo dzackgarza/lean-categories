@@ -7,6 +7,7 @@ module
 public import LeanCategories.Tools.ExportJson
 public import LeanCategories.Catalogue.Standard
 public import Lean.Data.Json
+public import Lean.CoreM
 
 public meta import LeanCategories.Tools.ExportJson
 
@@ -25,23 +26,14 @@ open Lean Elab Command
 
 -- Compile-time: Register must have populated getRegistry with the specimen.
 run_cmd
-  let env ← getEnv
-  let s := LeanCategories.getRegistrySnapshot env "0.1.0-specimen"
-  if s.categories.isEmpty then
-    throwError "getRegistry empty after importing Catalogue.Standard"
-  if !(s.categories.any fun category => category.id == LeanCategories.CategoryId.sets) then
-    throwError "getRegistry is missing the registered Sets category"
-  if !(s.categoryFamilies.any fun family =>
-      family.id == LeanCategories.CategoryFamilyId.modules) then
-    throwError "getRegistry is missing the registered Modules family"
-  if !(s.functors.any fun functor => functor.id == ⟨"fun.sets.identity"⟩) then
-    throwError "getRegistry is missing the registered Sets identity functor"
-  let baseline := LeanCategories.Tools.snapshotManifestString
-    s
+  let manifest ← liftCoreM LeanCategories.checkedRegistryManifest
+  let baseline := manifest.compress
+  if !(baseline.contains "cat.sets") then
+    throwError "checked registry manifest is missing the registered Sets category"
   if !baseline.contains "fam.modules" then
-    throwError "registered Modules family is absent from the exported manifest"
+    throwError "checked registry manifest is missing the registered Modules family"
   if !baseline.contains "fun.sets.identity" then
-    throwError "registered Sets identity functor is absent from the exported manifest"
+    throwError "checked registry manifest is missing the registered Sets identity functor"
 
 namespace LeanCategories.Tools.ExportFull
 
@@ -49,7 +41,7 @@ open LeanCategories
 open Tools
 
 /-- Reload the compiled registry extension; this is the exporter data source. -/
-def loadRegisteredSnapshot : IO RegistrySnapshot := do
+def loadRegisteredManifest : IO Json := do
   let appDir ← IO.appDir
   let buildOleanRoot := appDir.parent.get! / "lib" / "lean"
   let workspaceRoot := appDir.parent.get!.parent.get!.parent.get!
@@ -63,7 +55,9 @@ def loadRegisteredSnapshot : IO RegistrySnapshot := do
   let env ← Lean.importModules
     #[{ module := `LeanCategories.Catalogue.Standard }] {}
     (loadExts := true)
-  pure (getRegistrySnapshot env "0.1.0-specimen")
+  let result ← Lean.Core.CoreM.toIO LeanCategories.checkedRegistryManifest
+    { fileName := "", options := {}, fileMap := default } { env }
+  pure result.1
 
 /-- Validate Lean-authored registry JSON. -/
 def validate (j : Json) : Except String Unit := do
@@ -118,9 +112,8 @@ def validate (j : Json) : Except String Unit := do
   pure ()
 
 def run : IO UInt32 := do
-  let snapshot ← loadRegisteredSnapshot
-  let manifest := snapshotManifestString snapshot
-  match Json.parse manifest with
+  let manifest ← loadRegisteredManifest
+  match Json.parse manifest.compress with
   | .error e =>
       IO.eprintln s!"JSON parse failed: {e}"
       return 1
@@ -130,7 +123,7 @@ def run : IO UInt32 := do
           IO.eprintln e
           return 1
       | .ok () =>
-          IO.println manifest
+          IO.println manifest.compress
           pure 0
 
 def main : IO UInt32 :=
