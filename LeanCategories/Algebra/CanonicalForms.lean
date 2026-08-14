@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import Mathlib.Algebra.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import Mathlib.RingTheory.Polynomial.Basic
 public import LeanCategories.Algebra.Polynomial
@@ -61,7 +61,7 @@ structure InvariantFactorData (r : ℕ) where
   divisibility : ∀ ⦃i j : Fin r⦄, i ≤ j → factor i ∣ factor j
 
 /-- The index type of the companion blocks in a rational canonical matrix. -/
-abbrev invariantFactorIndex {r : ℕ} (d : InvariantFactorData R r) : Type u :=
+abbrev invariantFactorIndex {r : ℕ} (d : InvariantFactorData R r) : Type :=
   Σ i : Fin r, Fin (d.factor i).natDegree
 
 /-- The total dimension of a rational canonical matrix. -/

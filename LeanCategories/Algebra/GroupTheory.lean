@@ -8,6 +8,7 @@ public import Mathlib.Algebra.Category.Grp.Basic
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.CategoryTheory.Action
+public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.GroupTheory.Coset.Basic
 public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.GroupTheory.Index
@@ -19,7 +20,8 @@ public import Mathlib.GroupTheory.PresentedGroup
 public import Mathlib.GroupTheory.QuotientGroup.Basic
 public import Mathlib.GroupTheory.Solvable
 public import Mathlib.GroupTheory.Subgroup.Simple
-public import Mathlib.GroupTheory.SpecificGroups.Alternating.Basic
+public import Mathlib.GroupTheory.SpecificGroups.Alternating
+public import Mathlib.GroupTheory.Torsion
 public import Mathlib.GroupTheory.SpecificGroups.Dihedral
 public import Mathlib.GroupTheory.SpecificGroups.Quaternion
 public import Mathlib.GroupTheory.SemidirectProduct
@@ -44,6 +46,7 @@ Mathlib objects.
 namespace LeanCategories.Algebra
 
 open CategoryTheory
+open scoped Pointwise
 
 universe u v
 
@@ -53,35 +56,35 @@ variable (G : Type u) [Group G]
 
 /-! ### Subgroups and quotient groups -/
 
-/** The subgroup lattice, regarded as its canonical preorder category. */
-abbrev SubgroupCat : Type (u + 1) := Cat.of (Subgroup G)
+/-- The subgroup lattice, regarded as its canonical preorder category. -/
+abbrev SubgroupCat (G : Type u) [Group G] : Cat.{u, u} := Cat.of (Subgroup G)
 
-/** The canonical subgroup inclusion morphism. */
+/-- The canonical subgroup inclusion morphism. -/
 abbrev subgroupInclusion {H K : Subgroup G} (h : H ≤ K) :
-    (H : SubgroupCat G) ⟶ K := h
+    (H : SubgroupCat G) ⟶ K := CategoryTheory.homOfLE h
 
-/** The quotient group by a normal subgroup. */
+/-- The quotient group by a normal subgroup. -/
 abbrev quotientGroup (N : Subgroup G) [N.Normal] : Type u := G ⧸ N
 
-/** The canonical quotient homomorphism. */
+/-- The canonical quotient homomorphism. -/
 abbrev quotientGroupMap (N : Subgroup G) [N.Normal] : G →* quotientGroup G N :=
   QuotientGroup.mk' N
 
-/** The centralizer of a set. */
+/-- The centralizer of a set. -/
 abbrev centralizer (s : Set G) : Subgroup G := Subgroup.centralizer s
 
-/** The normalizer of a set. */
+/-- The normalizer of a set. -/
 abbrev normalizer (s : Set G) : Subgroup G := Subgroup.normalizer s
 
-/** The left coset of a subgroup. */
+/-- The left coset of a subgroup. -/
 abbrev leftCoset (H : Subgroup G) (g : G) : Set G := g • (H : Set G)
 
-/** The right coset of a subgroup. */
+/-- The right coset of a subgroup. -/
 abbrev rightCoset (H : Subgroup G) (g : G) : Set G :=
   MulOpposite.op g • (H : Set G)
 
-/** The index of a subgroup, with zero denoting infinite index. */
-abbrev subgroupIndex (H : Subgroup G) : ℕ := H.index
+/-- The index of a subgroup, with zero denoting infinite index. -/
+noncomputable abbrev subgroupIndex (H : Subgroup G) : ℕ := H.index
 
 end Subgroups
 
@@ -91,37 +94,37 @@ variable (G : Type u) [Group G]
 
 /-! ### Basic group invariants and properties -/
 
-/** The cardinality of a group, when finite. */
-abbrev groupOrder : ℕ := Nat.card G
+/-- The cardinality of a group, when finite. -/
+noncomputable abbrev groupOrder : ℕ := Nat.card G
 
-/** The order of an element, with zero denoting infinite order. */
-abbrev elementOrder (g : G) : ℕ := orderOf g
+/-- The order of an element, with zero denoting infinite order. -/
+noncomputable abbrev elementOrder (g : G) : ℕ := orderOf g
 
-/** The cyclic-group predicate. */
+/-- The cyclic-group predicate. -/
 abbrev isCyclicGroup : Prop := IsCyclic G
 
-/** The simple-group predicate. */
+/-- The simple-group predicate. -/
 abbrev isSimpleGroup : Prop := IsSimpleGroup G
 
-/** The finitely-generated-group predicate. */
+/-- The finitely-generated-group predicate. -/
 abbrev isFinitelyGeneratedGroup : Prop := Group.FG G
 
-/** The torsion-group predicate. */
+/-- The torsion-group predicate. -/
 abbrev isTorsionGroup : Prop := Monoid.IsTorsion G
 
-/** The p-group predicate. */
+/-- The p-group predicate. -/
 abbrev isPGroup (p : ℕ) : Prop := IsPGroup p G
 
-/** The nilpotent-group predicate. */
+/-- The nilpotent-group predicate. -/
 abbrev isNilpotentGroup : Prop := Group.IsNilpotent G
 
-/** The solvable-group predicate. */
+/-- The solvable-group predicate. -/
 abbrev isSolvableGroup : Prop := IsSolvable G
 
-/** The upper central series of a group. */
+/-- The upper central series of a group. -/
 abbrev upperCentralSeriesOfGroup (n : ℕ) : Subgroup G := upperCentralSeries G n
 
-/** The derived series of a group. */
+/-- The derived series of a group. -/
 abbrev derivedSeriesOfGroup (n : ℕ) : Subgroup G := derivedSeries G n
 
 end GroupInvariants
@@ -132,17 +135,17 @@ variable (M : Type u) [Monoid M] (X : Type v) [MulAction M X]
 
 /-! ### Actions -/
 
-/** The functor represented by an action. */
+/-- The functor represented by an action. -/
 abbrev actionFunctor : SingleObj M ⥤ Type v :=
   CategoryTheory.actionAsFunctor M X
 
-/** The category of elements of an action. */
+/-- The category of elements of an action. -/
 abbrev actionCategory : Type v :=
   CategoryTheory.ActionCategory M X
 
 variable {X}
 
-/** The orbit of a point under an action. */
+/-- The orbit of a point under an action. -/
 abbrev orbit (x : X) : Set X := MulAction.orbit M x
 
 end Actions
@@ -151,14 +154,14 @@ section GroupActions
 
 variable (G : Type u) [Group G] (X : Type v) [MulAction G X]
 
-/** The action groupoid for a group action. */
+/-- The action groupoid for a group action. -/
 abbrev actionGroupoid : Type v :=
   CategoryTheory.ActionCategory G X
 
-/** The stabilizer of a point. */
+/-- The stabilizer of a point. -/
 abbrev stabilizer (x : X) : Subgroup G := MulAction.stabilizer G x
 
-/** The permutation representation associated to a group action. */
+/-- The permutation representation associated to a group action. -/
 abbrev permutationRepresentation : G →* Equiv.Perm X := MulAction.toPermHom G X
 
 end GroupActions
@@ -169,10 +172,10 @@ variable (G : Type u) [Group G]
 
 /-! ### Automorphisms and standard actions -/
 
-/** The automorphism group of a group. */
+/-- The automorphism group of a group. -/
 abbrev groupAutomorphism : Type u := MulAut G
 
-/** The canonical inner-automorphism homomorphism. */
+/-- The canonical inner-automorphism homomorphism. -/
 abbrev innerAutomorphism : G →* groupAutomorphism G := MulAut.conj
 
 instance innerAutomorphismRangeNormal : (innerAutomorphism G).range.Normal := by
@@ -202,14 +205,14 @@ instance innerAutomorphismRangeNormal : (innerAutomorphism G).range.Normal := by
     rw [hconj]
     simp
 
-/** The outer automorphism group `Aut(G) / Inn(G)`. */
+/-- The outer automorphism group `Aut(G) / Inn(G)`. -/
 abbrev outerAutomorphismGroup : Type u :=
   groupAutomorphism G ⧸ (innerAutomorphism G).range
 
-/** The canonical quotient map to the outer automorphism group. */
+/-- The canonical quotient map to the outer automorphism group. -/
 abbrev outerAutomorphismGroupMap :
     groupAutomorphism G →* outerAutomorphismGroup G :=
-  quotientGroupMap (innerAutomorphism G).range
+  QuotientGroup.mk' (innerAutomorphism G).range
 
 end Automorphisms
 
@@ -219,10 +222,10 @@ variable (G : Type u) [Group G] (H : Type v) [Group H]
 
 /-! ### Products -/
 
-/** The direct product of two groups. */
+/-- The direct product of two groups. -/
 abbrev directProduct : Type (max u v) := G × H
 
-/** The canonical direct-product homomorphism. */
+/-- The canonical direct-product homomorphism. -/
 abbrev directProductMap {K : Type*} [Group K] (f : K →* G) (g : K →* H) :
     K →* directProduct G H := MonoidHom.prod f g
 
@@ -232,9 +235,9 @@ section SemidirectProducts
 
 variable (G : Type u) [Group G] (N : Type v) [Group N]
 
-/** The semidirect product determined by an action homomorphism. */
+/-- The semidirect product determined by an action homomorphism. -/
 abbrev semidirectProduct (phi : G →* MulAut N) : Type (max u v) :=
-  SemidirectProduct phi
+  SemidirectProduct N G phi
 
 end SemidirectProducts
 
@@ -244,14 +247,14 @@ variable (alpha : Type u)
 
 /-! ### Free groups and group presentations -/
 
-/** The free group on a type of generators. */
+/-- The free group on a type of generators. -/
 abbrev freeGroup : Type u := FreeGroup alpha
 
-/** The group presented by generators `alpha` and free-group relations `rels`. */
+/-- The group presented by generators `alpha` and free-group relations `rels`. -/
 abbrev presentedGroup (rels : Set (FreeGroup alpha)) : Type u :=
   PresentedGroup rels
 
-/** The canonical generator map into a presented group. */
+/-- The canonical generator map into a presented group. -/
 abbrev presentedGenerator (rels : Set (FreeGroup alpha)) :
     alpha → presentedGroup alpha rels := PresentedGroup.of
 
@@ -261,13 +264,13 @@ section StandardExamples
 
 /-! ### Standard examples -/
 
-/** The symmetric group on a type. */
+/-- The symmetric group on a type. -/
 abbrev symmetricGroup (alpha : Type u) : Type u := Equiv.Perm alpha
 
-/** The dihedral group of parameter `n`. */
+/-- The dihedral group of parameter `n`. -/
 abbrev dihedralGroup (n : ℕ) : Type := DihedralGroup n
 
-/** The quaternion group of parameter `n`. */
+/-- The quaternion group of parameter `n`. -/
 abbrev quaternionGroup (n : ℕ) : Type := QuaternionGroup n
 
 end StandardExamples
@@ -278,7 +281,7 @@ variable (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-! ### General linear groups -/
 
-/** The general linear group of an `R`-module. */
+/-- The general linear group of an `R`-module. -/
 abbrev generalLinearGroup : Type v := LinearMap.GeneralLinearGroup R M
 
 end LinearGroups
