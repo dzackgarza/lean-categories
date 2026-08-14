@@ -8,13 +8,23 @@ public import Mathlib.Algebra.Category.Grp.Basic
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.CategoryTheory.Action
+public import Mathlib.GroupTheory.Coset.Basic
+public import Mathlib.GroupTheory.Finiteness
+public import Mathlib.GroupTheory.Index
+public import Mathlib.GroupTheory.Nilpotent
+public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.GroupTheory.PGroup
 public import Mathlib.GroupTheory.FreeGroup.Basic
 public import Mathlib.GroupTheory.PresentedGroup
 public import Mathlib.GroupTheory.QuotientGroup.Basic
+public import Mathlib.GroupTheory.Solvable
+public import Mathlib.GroupTheory.Subgroup.Simple
 public import Mathlib.GroupTheory.SpecificGroups.Alternating.Basic
 public import Mathlib.GroupTheory.SpecificGroups.Dihedral
 public import Mathlib.GroupTheory.SpecificGroups.Quaternion
 public import Mathlib.GroupTheory.SemidirectProduct
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
 /-!
 # Standard group-theory routes
@@ -63,7 +73,58 @@ abbrev centralizer (s : Set G) : Subgroup G := Subgroup.centralizer s
 /** The normalizer of a set. */
 abbrev normalizer (s : Set G) : Subgroup G := Subgroup.normalizer s
 
+/** The left coset of a subgroup. */
+abbrev leftCoset (H : Subgroup G) (g : G) : Set G := g • (H : Set G)
+
+/** The right coset of a subgroup. */
+abbrev rightCoset (H : Subgroup G) (g : G) : Set G :=
+  MulOpposite.op g • (H : Set G)
+
+/** The index of a subgroup, with zero denoting infinite index. */
+abbrev subgroupIndex (H : Subgroup G) : ℕ := H.index
+
 end Subgroups
+
+section GroupInvariants
+
+variable (G : Type u) [Group G]
+
+/-! ### Basic group invariants and properties -/
+
+/** The cardinality of a group, when finite. */
+abbrev groupOrder : ℕ := Nat.card G
+
+/** The order of an element, with zero denoting infinite order. */
+abbrev elementOrder (g : G) : ℕ := orderOf g
+
+/** The cyclic-group predicate. */
+abbrev isCyclicGroup : Prop := IsCyclic G
+
+/** The simple-group predicate. */
+abbrev isSimpleGroup : Prop := IsSimpleGroup G
+
+/** The finitely-generated-group predicate. */
+abbrev isFinitelyGeneratedGroup : Prop := Group.FG G
+
+/** The torsion-group predicate. */
+abbrev isTorsionGroup : Prop := Monoid.IsTorsion G
+
+/** The p-group predicate. */
+abbrev isPGroup (p : ℕ) : Prop := IsPGroup p G
+
+/** The nilpotent-group predicate. */
+abbrev isNilpotentGroup : Prop := Group.IsNilpotent G
+
+/** The solvable-group predicate. */
+abbrev isSolvableGroup : Prop := IsSolvable G
+
+/** The upper central series of a group. */
+abbrev upperCentralSeriesOfGroup (n : ℕ) : Subgroup G := upperCentralSeries G n
+
+/** The derived series of a group. */
+abbrev derivedSeriesOfGroup (n : ℕ) : Subgroup G := derivedSeries G n
+
+end GroupInvariants
 
 section Actions
 
@@ -96,6 +157,9 @@ abbrev actionGroupoid : Type v :=
 
 /** The stabilizer of a point. */
 abbrev stabilizer (x : X) : Subgroup G := MulAction.stabilizer G x
+
+/** The permutation representation associated to a group action. */
+abbrev permutationRepresentation : G →* Equiv.Perm X := MulAction.toPermHom G X
 
 end GroupActions
 
@@ -171,5 +235,16 @@ abbrev dihedralGroup (n : ℕ) : Type := DihedralGroup n
 abbrev quaternionGroup (n : ℕ) : Type := QuaternionGroup n
 
 end StandardExamples
+
+section LinearGroups
+
+variable (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M]
+
+/-! ### General linear groups -/
+
+/** The general linear group of an `R`-module. */
+abbrev generalLinearGroup : Type v := LinearMap.GeneralLinearGroup R M
+
+end LinearGroups
 
 end LeanCategories.Algebra
