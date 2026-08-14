@@ -4,14 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-/-!
-# Homological algebra routes
-
-Mathlib owns homological complexes, homotopy categories, localization at
-quasi-isomorphisms, derived categories, `Ext`, sheafification, and sheaf
-cohomology. This module exposes those declarations without duplicate names.
--/
-
 public import Mathlib.Algebra.Homology.HomologicalComplex
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
@@ -23,5 +15,13 @@ public import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 public import Mathlib.CategoryTheory.Sites.Sheafification
 public import LeanCategories.Homological.Basic
 public import LeanCategories.Homological.DerivedFunctors
+
+/-!
+# Homological algebra routes
+
+Mathlib owns homological complexes, homotopy categories, localization at
+quasi-isomorphisms, derived categories, `Ext`, sheafification, and sheaf
+cohomology. This module exposes those declarations without duplicate names.
+-/
 
 @[expose] public section
