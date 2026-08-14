@@ -18,6 +18,7 @@ public import LeanCategories.Algebra.AssociatedGraded
 public import LeanCategories.Algebra.FractionalIdeals
 public import LeanCategories.Algebra.AtiyahMacdonald
 public import LeanCategories.Algebra.Ideals
+public import LeanCategories.AlgebraicFamilies
 public import LeanCategories.Algebra.FreeAlgebras
 public import LeanCategories.Algebra.IntegralAdeleRing
 public import LeanCategories.Algebra.IntegralDependence
@@ -32,6 +33,7 @@ public import LeanCategories.Algebra.BlockDecomposition
 public import LeanCategories.Algebra.GroupTheory
 public import LeanCategories.Algebra.DummitFoote
 public import LeanCategories.Algebra.Polynomial
+public import LeanCategories.Algebra.PolynomialPowerSeries
 public import LeanCategories.ForMathlib.AdicCompletionIntegers
 public import LeanCategories.ForMathlib.DenseIntegralCompletion
 public import LeanCategories.ForMathlib.QuadraticReflection
