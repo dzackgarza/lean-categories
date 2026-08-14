@@ -1550,7 +1550,7 @@ private def registryManifest (state : RegistryState) : RegistryManifest :=
   let functors := state.functors.qsort (fun a b => a.id.raw < b.id.raw)
   let aliases := state.aliases.qsort (fun a b => a.id.raw < b.id.raw)
   let opaqueEntries := state.opaqueCategories.qsort (fun a b => a.id.raw < b.id.raw)
-  { schemaVersion := "0.1.0-specimen"
+  { schemaVersion := "0.2.0-ids"
     categories := cats.map fun e => {
       id := e.id.raw, canonicalName := e.canonicalName, declaration := e.declaration.toString,
       realization := e.realization.toString,

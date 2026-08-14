@@ -55,6 +55,7 @@ def loadRegisteredManifest : IO Json := do
 
 /-- Validate Lean-authored registry JSON. -/
 def validate (expected : LeanCategories.RegistryManifest) (j : Json) : Except String Unit := do
+  LeanCategories.Catalogue.Standard.validateStandardManifest expected
   let actual ← fromJson? j
   unless actual == expected do
     throw "exported registry manifest does not match the checked registry state"
