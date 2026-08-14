@@ -25,6 +25,14 @@ variable (W : Type u) [AddCommGroup W] [Module R W]
 def isFiniteProjectiveLattice : ObjectProperty (LatticeCat R W) :=
   fun L ↦ Module.Finite R L.obj.carrier
 
+/-- Free lattices form a full subcategory of the general lattice category. -/
+def isFreeLattice : ObjectProperty (LatticeCat R W) :=
+  fun L ↦ Module.Free R L.obj.carrier
+
+/-- The category of free `W`-valued `R`-lattices. -/
+abbrev FreeLatticeCat :=
+  (isFreeLattice R W).FullSubcategory
+
 /-- The category of finite projective `W`-valued `R`-lattices. -/
 abbrev FiniteProjectiveLatticeCat :=
   (isFiniteProjectiveLattice R W).FullSubcategory
@@ -36,6 +44,18 @@ def isFiniteFreeLattice : ObjectProperty (LatticeCat R W) :=
 /-- The category of finite free `W`-valued `R`-lattices. -/
 abbrev FiniteFreeLatticeCat :=
   (isFiniteFreeLattice R W).FullSubcategory
+
+/-- Forget the free-carrier condition. -/
+def freeToLattice : FreeLatticeCat R W ⥤ LatticeCat R W :=
+  (isFreeLattice R W).ι
+
+/-- Forget the finite-free condition. -/
+def finiteFreeToLattice : FiniteFreeLatticeCat R W ⥤ LatticeCat R W :=
+  (isFiniteFreeLattice R W).ι
+
+/-- Forget the finite-projective condition. -/
+def finiteProjectiveToLattice : FiniteProjectiveLatticeCat R W ⥤ LatticeCat R W :=
+  (isFiniteProjectiveLattice R W).ι
 
 namespace FiniteProjectiveLatticeCat
 

@@ -126,6 +126,25 @@ def isFractionFieldPerfectFiniteProjectiveLattice :
 abbrev FractionFieldPerfectFiniteProjectiveLatticeCat :=
   (isFractionFieldPerfectFiniteProjectiveLattice R).FullSubcategory
 
+/-- Finite projective integral lattices whose generic-fiber form is nondegenerate. -/
+def isGenericallyNondegenerateLattice :
+    ObjectProperty (FiniteProjectiveLatticeCat R R) :=
+  fun L ↦ IsFractionFieldNondegenerate R L.obj
+
+/-- The full category of generically nondegenerate finite projective lattices. -/
+abbrev GenericallyNondegenerateLatticeCat :=
+  (isGenericallyNondegenerateLattice R).FullSubcategory
+
+/-- Forget generic-fiber nondegeneracy. -/
+def genericallyNondegenerateForget :
+    GenericallyNondegenerateLatticeCat R ⥤ FiniteProjectiveLatticeCat R R :=
+  (isGenericallyNondegenerateLattice R).ι
+
+/-- Forget generic-fiber perfection while retaining finite projectivity. -/
+def fractionFieldPerfectFiniteProjectiveToFiniteProjective :
+    FractionFieldPerfectFiniteProjectiveLatticeCat R ⥤ FiniteProjectiveLatticeCat R R :=
+  (isFractionFieldPerfectFiniteProjectiveLattice R).ι
+
 /-- Unimodular finite projective lattices whose fraction-field form is perfect. -/
 noncomputable def isUnimodularFiniteProjectiveLattice :
     ObjectProperty (FractionFieldPerfectFiniteProjectiveLatticeCat R) :=
@@ -134,6 +153,11 @@ noncomputable def isUnimodularFiniteProjectiveLattice :
 /-- The full category of unimodular finite projective lattices. -/
 noncomputable abbrev UnimodularLatticeCat :=
   (isUnimodularFiniteProjectiveLattice R).FullSubcategory
+
+/-- Forget unimodularity while retaining generic-fiber perfection. -/
+def unimodularForget :
+    UnimodularLatticeCat R ⥤ FractionFieldPerfectFiniteProjectiveLatticeCat R :=
+  (isUnimodularFiniteProjectiveLattice R).ι
 
 /-- Forget finiteness and fraction-field perfection while retaining the integral lattice. -/
 def fractionFieldPerfectFiniteProjectiveForget :

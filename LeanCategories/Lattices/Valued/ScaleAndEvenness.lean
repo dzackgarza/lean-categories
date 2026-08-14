@@ -267,6 +267,10 @@ def isEvenLattice : ObjectProperty (IntegralLatticeCat R) :=
 /-- Even integral lattices and all form-preserving morphisms between them. -/
 abbrev EvenLatticeCat := (isEvenLattice (R := R)).FullSubcategory
 
+/-- Forget evenness while retaining the integral lattice. -/
+def evenForget : EvenLatticeCat R ⥤ IntegralLatticeCat R :=
+  (isEvenLattice (R := R)).ι
+
 /-- An integral lattice is odd when it is not even. -/
 abbrev IsOdd (L : IntegralLatticeCat ℤ) : Prop := ¬ IsEven L
 
