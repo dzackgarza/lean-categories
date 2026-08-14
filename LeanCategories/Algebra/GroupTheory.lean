@@ -175,6 +175,42 @@ abbrev groupAutomorphism : Type u := MulAut G
 /** The canonical inner-automorphism homomorphism. */
 abbrev innerAutomorphism : G →* groupAutomorphism G := MulAut.conj
 
+instance innerAutomorphismRangeNormal : (innerAutomorphism G).range.Normal := by
+  rw [Subgroup.normal_iff_map_conj_eq]
+  intro φ
+  apply le_antisymm
+  · intro ψ hψ
+    rw [Subgroup.mem_map] at hψ
+    rcases hψ with ⟨θ, hθ, rfl⟩
+    rw [MonoidHom.mem_range] at hθ
+    rcases hθ with ⟨g, rfl⟩
+    change φ * MulAut.conj g * φ⁻¹ ∈ _
+    have hconj : φ * MulAut.conj g * φ⁻¹ = MulAut.conj (φ g) := by
+      ext h
+      simp [MulAut.mul_apply, MulAut.conj_apply, mul_assoc]
+    rw [hconj]
+    exact MonoidHom.mem_range.mpr ⟨φ g, rfl⟩
+  · intro ψ hψ
+    rw [Subgroup.mem_map]
+    rw [MonoidHom.mem_range] at hψ
+    rcases hψ with ⟨g, rfl⟩
+    refine ⟨MulAut.conj (φ⁻¹ g), MonoidHom.mem_range.mpr ⟨φ⁻¹ g, rfl⟩, ?_⟩
+    change φ * MulAut.conj (φ⁻¹ g) * φ⁻¹ = _
+    have hconj : φ * MulAut.conj (φ⁻¹ g) * φ⁻¹ = MulAut.conj (φ (φ⁻¹ g)) := by
+      ext h
+      simp [MulAut.mul_apply, MulAut.conj_apply, mul_assoc]
+    rw [hconj]
+    simp
+
+/** The outer automorphism group `Aut(G) / Inn(G)`. */
+abbrev outerAutomorphismGroup : Type u :=
+  groupAutomorphism G ⧸ (innerAutomorphism G).range
+
+/** The canonical quotient map to the outer automorphism group. */
+abbrev outerAutomorphismGroupMap :
+    groupAutomorphism G →* outerAutomorphismGroup G :=
+  quotientGroupMap (innerAutomorphism G).range
+
 end Automorphisms
 
 section Products
