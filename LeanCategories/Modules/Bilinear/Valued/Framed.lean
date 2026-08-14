@@ -7,6 +7,7 @@ module
 public import LeanCategories.Modules.Bilinear.Valued.Fixed
 public import LeanCategories.Modules.Framed
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.Basic
+public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 
 @[expose] public section
 
@@ -43,5 +44,77 @@ def coordBilinModuleToCoord :
 def coordBilinModuleToBilin :
     CoordBilinModuleCat R W n ⥤ BilinModuleCat R W :=
   CategoricalPullback.π₂ _ _
+
+namespace CoordBilinModuleCat
+
+/-! A coordinate form is represented on the standard function module. -/
+
+noncomputable def standardIso (X : CoordBilinModuleCat R R n) :
+    ModuleCat.of R (Fin n → R) ≅ X.snd.carrierObj := by
+  let e : LeanCategories.Modules.StandardFreeModule R (Fin n) ≅ X.snd.carrierObj :=
+    (LeanCategories.Modules.Coord.frameIso R (Fin n) X.fst).trans X.iso
+  let b : Module.Basis (Fin n) R X.snd.carrier :=
+    Module.Basis.ofRepr e.toLinearEquiv.symm
+  exact LinearEquiv.toModuleIso b.equivFun.symm
+
+noncomputable def standardForm (X : CoordBilinModuleCat R R n) :
+    LinearMap.BilinForm R (Fin n → R) := by
+  let e := (standardIso R n X).toLinearEquiv
+  exact X.snd.bilinMap.comp e.toLinearMap e.toLinearMap
+
+/-- The Gram matrix in the selected coordinates. -/
+noncomputable def gramMatrix (X : CoordBilinModuleCat R R n) :
+    Matrix (Fin n) (Fin n) R :=
+  LinearMap.BilinForm.toMatrix' (standardForm R n X)
+
+noncomputable def standardMap {X Y : CoordBilinModuleCat R R n} (f : X ⟶ Y) :
+    (Fin n → R) →ₗ[R] Fin n → R := by
+  let eX := (standardIso R n X).toLinearEquiv
+  let eY := (standardIso R n Y).toLinearEquiv
+  exact eY.symm.toLinearMap.comp
+    ((BilinModuleCat.underlyingMap f.snd).comp eX.toLinearMap)
+
+theorem standardMap_preserves_form {X Y : CoordBilinModuleCat R R n}
+    (f : X ⟶ Y) (x y : Fin n → R) :
+    standardForm R n Y (standardMap R n f x) (standardMap R n f y) =
+      standardForm R n X x y := by
+  let eX := (standardIso R n X).toLinearEquiv
+  let eY := (standardIso R n Y).toLinearEquiv
+  change Y.snd.pairing
+      (eY (eY.symm (BilinModuleCat.underlyingMap f.snd (eX x))))
+      (eY (eY.symm (BilinModuleCat.underlyingMap f.snd (eX y)))) =
+    X.snd.pairing (eX x) (eX y)
+  rw [eY.apply_symm_apply, eY.apply_symm_apply]
+  exact BilinModuleCat.map_pairing f.snd (eX x) (eX y)
+
+/-- Extract a Gram matrix and regard it as the corresponding standard formed module.
+
+The codomain is the existing fixed-value formed-module category.  Its objects are standard
+coordinate forms, and its morphisms retain the form-preserving coordinate maps. -/
+noncomputable def gramMatrixFunctor :
+    CoordBilinModuleCat R R n ⥤ BilinModuleCat R R where
+  obj X := BilinModuleCat.ofBilinMap (Matrix.toBilin' (gramMatrix R n X))
+  map f := BilinModuleCat.homMk (standardMap R n f) (by
+    intro x y
+    change Matrix.toBilin' (gramMatrix R n Y) (standardMap R n f x)
+        (standardMap R n f y) = Matrix.toBilin' (gramMatrix R n X) x y
+    simpa only [gramMatrix, Matrix.toBilin'_toMatrix'] using
+      standardMap_preserves_form R n f x y)
+  map_id X := by
+    apply Quiver.Hom.unop_inj
+    apply CategoryOfElements.ext
+    apply Quiver.Hom.unop_inj
+    apply ModuleCat.hom_ext
+    ext x
+    simp [standardMap, BilinModuleCat.underlyingMap]
+  map_comp f g := by
+    apply Quiver.Hom.unop_inj
+    apply CategoryOfElements.ext
+    apply Quiver.Hom.unop_inj
+    apply ModuleCat.hom_ext
+    ext x
+    simp [standardMap, BilinModuleCat.underlyingMap]
+
+end CoordBilinModuleCat
 
 end LeanCategories.Modules.Bilinear.Valued
