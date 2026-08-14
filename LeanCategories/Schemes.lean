@@ -22,5 +22,6 @@ public import Mathlib.RingTheory.LocalRing.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.DedekindDomain.Basic
+public import LeanCategories.Schemes.Coherent
 
 @[expose] public section
