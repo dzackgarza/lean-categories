@@ -25,11 +25,11 @@ variable (R : Type u) [CommRing R] [IsDomain R]
 
 /-- Bilinear modules whose form takes values in `Frac(R) / R`. -/
 abbrev FractionQuotientBilinModuleCat :=
-  BilinModuleCat R (FractionRingQuotient R)
+  Bilinear.Valued.BilinModuleCat R (FractionRingQuotient R)
 
 /-- Quadratic modules whose form takes values in `Frac(R) / R`. -/
 abbrev FractionQuotientQuadModuleCat :=
-  QuadModuleCat R (FractionRingQuotient R)
+  Quadratic.Valued.QuadModuleCat R (FractionRingQuotient R)
 
 /-- Bilinear abelian groups whose form takes values in `ℚ / ℤ`. -/
 abbrev RationalQuotientBilinModuleCat :=
