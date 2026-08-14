@@ -44,4 +44,26 @@ noncomputable def residue (R : LocalRingCat.{u}) :
   letI : IsLocalRing (R.1 : Type u) := R.2
   IsLocalRing.residue R.1
 
+/- The residue-field map is functorial on the category of local homomorphisms.
+
+This uses Mathlib's `IsLocalRing.ResidueField.map`, `map_id`, and `map_comp`.
+-/
+noncomputable def residueFieldHomFunctor :
+    LocalRingHomCat.{u} ⥤ CategoryTheory.Arrow CommRingCat.{u} where
+  obj f := CategoryTheory.Arrow.mk
+    (CommRingCat.ofHom (IsLocalRing.ResidueField.map f.hom.hom))
+  map g := CategoryTheory.Arrow.homMk
+    (CommRingCat.ofHom (IsLocalRing.ResidueField.map g.left.hom))
+    (CommRingCat.ofHom (IsLocalRing.ResidueField.map g.right.hom)) (by
+      apply CommRingCat.hom_ext
+      ext x
+      simpa only [CategoryTheory.Arrow.comp_right, CategoryTheory.Arrow.comp_left,
+        CategoryTheory.CategoryStruct.comp, CommRingCat.comp_ofHom,
+        IsLocalRing.ResidueField.map_comp] using congrArg DFunLike.coe g.w)
+  map_id f := by
+    apply CategoryTheory.Arrow.Hom.ext <;> simp
+  map_comp f g := by
+    apply CategoryTheory.Arrow.Hom.ext <;> simp [CategoryTheory.Arrow.comp_right,
+      CategoryTheory.Arrow.comp_left]
+
 end LeanCategories.Algebra
