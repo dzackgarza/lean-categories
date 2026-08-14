@@ -44,8 +44,8 @@ Current work: `#50`, `#54`, `#55`, `#56`, and `#58`.
 - [x] Determinant, trace, characteristic polynomial, and derivative as natural
   transformations
 - [x] Cartesian lifts and base-change functors for each fibred family
-- [ ] Category, functor, and natural-transformation expressions
-- [ ] Evaluation of expressions in a selected realization
+- [x] Category, functor, and natural-transformation expressions
+- [x] Evaluation of expressions in a selected realization
 - [ ] Proof-carrying category and functor registry entries
 - [ ] Stable exported identifiers for categories, functors, and standard objects
 - [ ] Audit each file named `Functors`: define an honest functor or relocate it
