@@ -17,15 +17,12 @@ universe u
 
 variable (X : Scheme.{u})
 
-/-- Sheaves of modules that admit finite-presentation quasi-coherent data. -/
-def isCoherentModule : ObjectProperty X.Modules :=
-  fun M => ∃ q : M.QuasicoherentData, q.IsFinitePresentation
-
 /-- Coherent sheaves of modules on `X`. -/
-abbrev CoherentModuleCat := (isCoherentModule X).FullSubcategory
+abbrev CoherentModuleCat :=
+  (SheafOfModules.isFinitePresentation X.ringCatSheaf).FullSubcategory
 
 /-- The inclusion of coherent modules into all sheaves of modules. -/
 abbrev coherentModuleIncl : CoherentModuleCat X ⥤ X.Modules :=
-  (isCoherentModule X).ι
+  (SheafOfModules.isFinitePresentation X.ringCatSheaf).ι
 
 end LeanCategories.Schemes
