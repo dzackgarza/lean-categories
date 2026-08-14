@@ -17,6 +17,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 public import Mathlib.AlgebraicGeometry.Morphisms.Proper
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
+public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
@@ -144,6 +145,15 @@ abbrev ProperSchemeMorphismCat : Type (u + 1) :=
 abbrev properSchemeMorphismIncl :
     ProperSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
   MorphismProperty.Arrow.forget @IsProper ⊤ ⊤
+
+/-- Scheme morphisms whose structural arrow is universally closed. -/
+abbrev UniversallyClosedSchemeMorphismCat : Type (u + 1) :=
+  MorphismProperty.Arrow (T := Scheme.{u}) @UniversallyClosed ⊤ ⊤
+
+/-- The canonical inclusion of universally closed scheme morphisms into all scheme arrows. -/
+abbrev universallyClosedSchemeMorphismIncl :
+    UniversallyClosedSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
+  MorphismProperty.Arrow.forget @UniversallyClosed ⊤ ⊤
 
 /-- Scheme morphisms whose structural arrow is smooth. -/
 abbrev SmoothSchemeMorphismCat : Type (u + 1) :=
