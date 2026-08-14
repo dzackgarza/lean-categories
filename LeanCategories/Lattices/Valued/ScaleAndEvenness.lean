@@ -267,6 +267,15 @@ def isEvenLattice : ObjectProperty (IntegralLatticeCat R) :=
 /-- Even integral lattices and all form-preserving morphisms between them. -/
 abbrev EvenLatticeCat := (isEvenLattice (R := R)).FullSubcategory
 
+/-- An integral lattice is odd when it is not even. -/
+abbrev IsOdd (L : IntegralLatticeCat ℤ) : Prop := ¬ IsEven L
+
+/-- The property of an integral lattice over `ℤ` being odd. -/
+def isOddLattice : ObjectProperty (IntegralLatticeCat ℤ) := IsOdd
+
+/-- Odd integral lattices and all form-preserving morphisms between them. -/
+abbrev OddLatticeCat := isOddLattice.FullSubcategory
+
 /-- The polar form of `x ↦ b(x,x)` is twice the symmetric pairing. -/
 theorem quadraticMap_polar (L : IntegralLatticeCat R)
     (x y : L.obj.carrier) :
