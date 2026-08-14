@@ -4,6 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
+public import Mathlib.Algebra.Category.AlgCat.TensorAlgebra
+public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
+public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basic
+
 /-!
 # Standard free algebras on modules
 
@@ -11,10 +15,6 @@ This file exposes Mathlib's tensor, symmetric, and exterior algebras as
 functors from modules to algebras.  The tensor algebra functor is imported
 from Mathlib; the other two use their canonical universal constructions.
 -/
-
-public import Mathlib.Algebra.Category.AlgCat.TensorAlgebra
-public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
-public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basic
 
 @[expose] public section
 
@@ -34,7 +34,7 @@ abbrev tensorAlgebra : ModuleCat.{v} R ⥤ AlgCat.{max u v} R :=
 @[simps]
 noncomputable def symmetricAlgebra : ModuleCat.{v} R ⥤ AlgCat.{max u v} R where
   obj M := AlgCat.of R (SymmetricAlgebra R M)
-  map f := AlgCat.ofHom <| SymmetricAlgebra.lift R
+  map f := AlgCat.ofHom <| SymmetricAlgebra.lift
     (SymmetricAlgebra.ι R _ ∘ₗ f.hom)
   map_id M := by
     apply AlgCat.hom_ext
@@ -55,6 +55,6 @@ noncomputable def exteriorAlgebra : ModuleCat.{v} R ⥤ AlgCat.{max u v} R where
     exact ExteriorAlgebra.map_id
   map_comp f g := by
     apply AlgCat.hom_ext
-    exact ExteriorAlgebra.map_comp_map f.hom g.hom
+    exact (ExteriorAlgebra.map_comp_map f.hom g.hom).symm
 
 end LeanCategories.Algebra.AlgebraCat
