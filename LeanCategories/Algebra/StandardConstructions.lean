@@ -16,6 +16,7 @@ public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.AdicCompletion.Algebra
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.FieldTheory.IsSepClosed
 public import Mathlib.LinearAlgebra.TensorProduct.Basic
 public import Mathlib.RingTheory.TensorProduct.Basic
 public import Mathlib.LinearAlgebra.TensorAlgebra.Grading
@@ -73,6 +74,22 @@ abbrev algebraicClosureMap : AlgebraCat.of K K ⟶ algebraicClosure K :=
   AlgCat.ofHom (Algebra.ofId K (AlgebraicClosure K)).toAlgHom
 
 end AlgebraicClosure
+
+section SeparableClosure
+
+variable (K : Type u) [Field K]
+
+/-! Mathlib's absolute separable closure, with its canonical `K`-algebra
+structure and structure morphism. -/
+
+/-- Mathlib's canonical separable closure of a field, viewed as a `K`-algebra. -/
+abbrev separableClosure : AlgebraCat K := .of K (SeparableClosure K)
+
+/-- The canonical structure morphism into `SeparableClosure K`. -/
+abbrev separableClosureMap : AlgebraCat.of K K ⟶ separableClosure K :=
+  AlgCat.ofHom (Algebra.ofId K (SeparableClosure K)).toAlgHom
+
+end SeparableClosure
 
 section TensorProduct
 
