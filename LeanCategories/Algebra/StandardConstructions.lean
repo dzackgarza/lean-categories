@@ -67,8 +67,14 @@ end TensorProduct
 /-- The polynomial algebra over `R`. -/
 abbrev polynomial : AlgebraCat R := .of R (Polynomial R)
 
+/-- The multivariate polynomial algebra over `R`, with variables indexed by `σ`. -/
+abbrev mvPolynomial (σ : Type v) : AlgebraCat R := .of R (MvPolynomial σ R)
+
 /-- The formal power-series algebra over `R`. -/
 abbrev powerSeries : AlgebraCat R := .of R (PowerSeries R)
+
+/-- The multivariate formal power-series algebra over `R`, with variables indexed by `σ`. -/
+abbrev mvPowerSeries (σ : Type v) : AlgebraCat R := .of R (MvPowerSeries σ R)
 
 /- Laurent series have a canonical constant-term embedding of `R`. -/
 instance : Algebra R (LaurentSeries R) :=
