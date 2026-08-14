@@ -107,10 +107,9 @@ Current work: `#22`, `#38`, and the scheme part of `#56`.
 
 ### Standard lexicon
 
-- [ ] [Atiyah and Macdonald, Chapters 1-11](.agents/references/atiyah-and-macdonald-definition-catalogue.md)
-  — route the complete commutative-algebra catalogue. The remaining source terms
-  without exact public routes are Poincare series, Hilbert functions, and the
-  affine-variety and local-variety dimension terms.
+- [x] [Atiyah and Macdonald, Chapters 1-11](.agents/references/atiyah-and-macdonald-definition-catalogue.md)
+  — route the complete commutative-algebra catalogue through the existing
+  Foundation 0.1 modules and `LeanCategories.Algebra.DimensionTheory`.
 - [x] [Dummit and Foote, Chapters 15-16](.agents/references/dummit-and-foote-definition-catalogue.md)
   — affine algebraic sets, varieties, localization, spectra, local rings, discrete
   valuation rings, and Dedekind domains.
