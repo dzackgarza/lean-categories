@@ -4,14 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-/-!
-# Standard algebra-construction routes
-
-Mathlib owns the standard polynomial, power-series, Laurent-series, tensor,
-tensor-algebra, exterior-algebra, and symmetric-algebra constructions. This
-module exposes their canonical definitions and algebra structures directly.
--/
-
 public import Mathlib.Algebra.Category.CommAlgCat.Basic
 public import Mathlib.Algebra.Category.AlgCat.Basic
 public import Mathlib.Algebra.Polynomial.Basic
@@ -24,10 +16,19 @@ public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.AdicCompletion.Algebra
 public import Mathlib.LinearAlgebra.TensorProduct.Basic
+public import Mathlib.RingTheory.TensorProduct.Basic
 public import Mathlib.LinearAlgebra.TensorAlgebra.Grading
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basic
 public import LeanCategories.Algebra.FreeAlgebras
+
+/-!
+# Standard algebra-construction routes
+
+Mathlib owns the standard polynomial, power-series, Laurent-series, tensor,
+tensor-algebra, exterior-algebra, and symmetric-algebra constructions. This
+module exposes their canonical definitions and algebra structures directly.
+-/
 
 @[expose] public section
 
@@ -45,6 +46,23 @@ This is the project name for Mathlib's canonical `AlgCat` category. -/
 abbrev AlgebraCat := AlgCat
 
 namespace AlgebraCat
+
+section TensorProduct
+
+variable (A B : Type v) [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+
+/** The tensor product of two commutative `R`-algebras, as an `R`-algebra. */
+abbrev tensorProduct : AlgebraCat R := .of R (TensorProduct R A B)
+
+/** The canonical left algebra morphism into the tensor product algebra. */
+abbrev tensorProductIncludeLeft : AlgebraCat.of R A ⟶ tensorProduct R A B :=
+  AlgCat.ofHom Algebra.TensorProduct.includeLeft
+
+/** The canonical right algebra morphism into the tensor product algebra. */
+abbrev tensorProductIncludeRight : AlgebraCat.of R B ⟶ tensorProduct R A B :=
+  AlgCat.ofHom Algebra.TensorProduct.includeRight
+
+end TensorProduct
 
 /-- The polynomial algebra over `R`. -/
 abbrev polynomial : AlgebraCat R := .of R (Polynomial R)
