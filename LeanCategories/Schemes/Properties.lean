@@ -153,6 +153,15 @@ abbrev quasiCompactSchemeMorphismIncl :
     QuasiCompactSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
   MorphismProperty.Arrow.forget @QuasiCompact ⊤ ⊤
 
+/-- Scheme morphisms whose structural arrow is separated. -/
+abbrev SeparatedSchemeMorphismCat : Type (u + 1) :=
+  MorphismProperty.Arrow (T := Scheme.{u}) @IsSeparated ⊤ ⊤
+
+/-- The canonical inclusion of separated scheme morphisms into all scheme arrows. -/
+abbrev separatedSchemeMorphismIncl :
+    SeparatedSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
+  MorphismProperty.Arrow.forget @IsSeparated ⊤ ⊤
+
 /-- Scheme morphisms whose structural arrow is quasi-separated. -/
 abbrev QuasiSeparatedSchemeMorphismCat : Type (u + 1) :=
   MorphismProperty.Arrow (T := Scheme.{u}) @QuasiSeparated ⊤ ⊤
