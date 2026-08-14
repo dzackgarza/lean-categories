@@ -40,6 +40,19 @@ universe u v
 
 variable (R : Type u) [CommRing R]
 
+section BaseChange
+
+variable (S : Type u) [CommRing S] [Algebra R S]
+
+/-- Base change of commutative algebras along `R ⟶ S`, via Mathlib's
+`CommRingCat.tensorProd` and the equivalences with under-categories. -/
+abbrev commAlgBaseChange : CommAlgCat R ⥤ CommAlgCat S :=
+  (commAlgCatEquivUnder (CommRingCat.of R)).functor ⋙
+    CommRingCat.tensorProd R S ⋙
+      (commAlgCatEquivUnder (CommRingCat.of S)).inverse
+
+end BaseChange
+
 /-- The category of (not necessarily commutative) algebras over `R`.
 
 This is the project name for Mathlib's canonical `AlgCat` category. -/
