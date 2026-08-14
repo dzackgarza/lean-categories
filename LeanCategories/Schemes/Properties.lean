@@ -14,6 +14,7 @@ public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.AlgebraicGeometry.QuasiAffine
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 public import Mathlib.AlgebraicGeometry.Morphisms.Proper
+public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
@@ -141,5 +142,14 @@ abbrev FlatSchemeMorphismCat : Type (u + 1) :=
 abbrev flatSchemeMorphismIncl :
     FlatSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
   MorphismProperty.Arrow.forget @Flat ⊤ ⊤
+
+/-- Scheme morphisms whose structural arrow is quasi-compact. -/
+abbrev QuasiCompactSchemeMorphismCat : Type (u + 1) :=
+  MorphismProperty.Arrow (T := Scheme.{u}) @QuasiCompact ⊤ ⊤
+
+/-- The canonical inclusion of quasi-compact scheme morphisms into all scheme arrows. -/
+abbrev quasiCompactSchemeMorphismIncl :
+    QuasiCompactSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
+  MorphismProperty.Arrow.forget @QuasiCompact ⊤ ⊤
 
 end LeanCategories.Schemes
