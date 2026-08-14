@@ -8,6 +8,7 @@ public import Mathlib.AlgebraicGeometry.Properties
 public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 public import Mathlib.AlgebraicGeometry.Morphisms.Etale
 public import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
+public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.AlgebraicGeometry.QuasiAffine
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
@@ -102,5 +103,14 @@ abbrev FiniteSchemeMorphismCat : Type (u + 1) :=
 abbrev finiteSchemeMorphismIncl :
     FiniteSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
   MorphismProperty.Arrow.forget @IsFinite ⊤ ⊤
+
+/-- Scheme morphisms whose structural arrow is smooth. -/
+abbrev SmoothSchemeMorphismCat : Type (u + 1) :=
+  MorphismProperty.Arrow (T := Scheme.{u}) @Smooth ⊤ ⊤
+
+/-- The canonical inclusion of smooth scheme morphisms into all scheme arrows. -/
+abbrev smoothSchemeMorphismIncl :
+    SmoothSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
+  MorphismProperty.Arrow.forget @Smooth ⊤ ⊤
 
 end LeanCategories.Schemes
