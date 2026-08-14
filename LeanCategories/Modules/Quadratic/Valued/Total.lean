@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Modules.Quadratic.Valued.ChangeValue
 public import Mathlib.CategoryTheory.Grothendieck
+public import Mathlib.LinearAlgebra.QuadraticForm.Radical
 
 @[expose] public section
 
@@ -45,6 +46,33 @@ abbrev carrier (X : QuadWFormCat R) : ModuleCat R := X.formed.carrierObj
 /-- The quadratic form of an object in the total category. -/
 abbrev form (X : QuadWFormCat R) : QuadraticMap R (X.carrier : Type u) X.value :=
   X.formed.form
+
+/-- The polarized bilinear form of a total quadratic formed module. -/
+abbrev polarBilin (X : QuadWFormCat R) := X.formed.polarBilin
+
+/-- The adjoint of the polarized form of a total quadratic formed module. -/
+abbrev adjoint (X : QuadWFormCat R) := X.form.polarBilin
+
+/-- The left radical of the polarized form of a total quadratic formed module. -/
+abbrev leftRadical (X : QuadWFormCat R) := X.form.polarBilin.ker
+
+/-- The right radical of the polarized form of a total quadratic formed module. -/
+abbrev rightRadical (X : QuadWFormCat R) := X.form.polarBilin.flip.ker
+
+/-- The radical of a total quadratic formed module. -/
+abbrev radical (X : QuadWFormCat R) := X.form.radical
+
+/-- Left nondegeneracy of the polarized form of a total quadratic formed module. -/
+def IsLeftNondegenerate (X : QuadWFormCat R) : Prop :=
+  X.formed.polarBilin.SeparatingLeft
+
+/-- Right nondegeneracy of the polarized form of a total quadratic formed module. -/
+def IsRightNondegenerate (X : QuadWFormCat R) : Prop :=
+  X.formed.polarBilin.SeparatingRight
+
+/-- Nondegeneracy of the quadratic map of a total formed module. -/
+def IsNondegenerate (X : QuadWFormCat R) : Prop :=
+  X.form.Nondegenerate
 
 /-- The map between value modules underlying a total morphism. -/
 abbrev valueMap {X Y : QuadWFormCat R} (f : X ⟶ Y) : X.value ⟶ Y.value :=

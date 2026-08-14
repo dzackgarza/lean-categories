@@ -51,6 +51,30 @@ abbrev form (X : BilWFormCat R) :
 abbrev pairing (X : BilWFormCat R) (x y : X.carrier) : X.value :=
   X.formed.pairing x y
 
+/-- The left adjoint of a formed module in the total category. -/
+abbrev adjoint (X : BilWFormCat R) := X.formed.adjoint
+
+/-- The right adjoint of a formed module in the total category. -/
+abbrev rightAdjoint (X : BilWFormCat R) := X.formed.rightAdjoint
+
+/-- The left radical of a formed module in the total category. -/
+abbrev leftRadical (X : BilWFormCat R) := X.formed.leftRadical
+
+/-- The right radical of a formed module in the total category. -/
+abbrev rightRadical (X : BilWFormCat R) := X.formed.rightRadical
+
+/-- Left nondegeneracy of a formed module in the total category. -/
+def IsLeftNondegenerate (X : BilWFormCat R) : Prop :=
+  X.formed.bilinMap.SeparatingLeft
+
+/-- Right nondegeneracy of a formed module in the total category. -/
+def IsRightNondegenerate (X : BilWFormCat R) : Prop :=
+  X.formed.bilinMap.SeparatingRight
+
+/-- Nondegeneracy of a formed module in the total category. -/
+def IsNondegenerate (X : BilWFormCat R) : Prop :=
+  X.formed.bilinMap.Nondegenerate
+
 /-- Symmetry of a formed module in the total category. -/
 def IsSymmetric (X : BilWFormCat R) : Prop :=
   X.formed.IsSymmetric

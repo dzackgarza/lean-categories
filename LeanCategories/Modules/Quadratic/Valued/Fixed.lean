@@ -6,7 +6,7 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.CategoryTheory.Elements
-public import Mathlib.LinearAlgebra.QuadraticForm.Basic
+public import Mathlib.LinearAlgebra.QuadraticForm.Radical
 
 @[expose] public section
 
@@ -86,17 +86,40 @@ def polarBilin (Q : QuadModuleCat R W) :
   Q.form.polarBilin
 
 /-- The adjoint of the polarized bilinear form. -/
-def polarAdjoint (Q : QuadModuleCat R W) :
+def adjoint (Q : QuadModuleCat R W) :
     Q.carrier →ₗ[R] (Q.carrier →ₗ[R] W) :=
   Q.polarBilin
 
-/-- A quadratic module is nondegenerate when its polar adjoint is injective. -/
+/-- The adjoint of the polarized bilinear form. -/
+abbrev polarAdjoint (Q : QuadModuleCat R W) := Q.adjoint
+
+/-- The left radical of the polarized bilinear form. -/
+def leftRadical (Q : QuadModuleCat R W) : Submodule R Q.carrier :=
+  Q.polarBilin.ker
+
+/-- The right radical of the polarized bilinear form. -/
+def rightRadical (Q : QuadModuleCat R W) : Submodule R Q.carrier :=
+  Q.polarBilin.flip.ker
+
+/-- The radical of the quadratic map. -/
+def radical (Q : QuadModuleCat R W) : Submodule R Q.carrier :=
+  Q.form.radical
+
+/-- Left nondegeneracy of the polarized bilinear form. -/
+def IsLeftNondegenerate (Q : QuadModuleCat R W) : Prop :=
+  Q.polarBilin.SeparatingLeft
+
+/-- Right nondegeneracy of the polarized bilinear form. -/
+def IsRightNondegenerate (Q : QuadModuleCat R W) : Prop :=
+  Q.polarBilin.SeparatingRight
+
+/-- Nondegeneracy of the quadratic map. -/
 def IsNondegenerate (Q : QuadModuleCat R W) : Prop :=
-  Function.Injective Q.polarAdjoint
+  Q.form.Nondegenerate
 
 /-- A quadratic module is perfect when its polar adjoint is bijective. -/
 def IsPerfect (Q : QuadModuleCat R W) : Prop :=
-  Function.Bijective Q.polarAdjoint
+  Function.Bijective Q.adjoint
 
 end QuadModuleCat
 

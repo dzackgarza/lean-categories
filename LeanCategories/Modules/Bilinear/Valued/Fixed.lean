@@ -282,11 +282,11 @@ theorem underlyingMap_restrictInclusion
 
 /-- The left radical is the kernel of `x ↦ b(x,-)`. -/
 def leftRadical (L : BilinModuleCat R W) : Submodule R L.carrier :=
-  LinearMap.ker L.adjoint
+  L.bilinMap.ker
 
 /-- The right radical is the kernel of `y ↦ b(-,y)`. -/
 def rightRadical (L : BilinModuleCat R W) : Submodule R L.carrier :=
-  LinearMap.ker L.rightAdjoint
+  L.bilinMap.flip.ker
 
 /-- The module of `W`-valued linear maps. It has no canonical induced form. -/
 abbrev valueDual (L : BilinModuleCat R W) := L.carrier →ₗ[R] W
@@ -333,23 +333,23 @@ theorem defectProjection_surjective (L : BilinModuleCat R W) :
 
 /-- A form is left-nondegenerate when `b(x,-) = 0` implies `x = 0`. -/
 def IsLeftNondegenerate (L : BilinModuleCat R W) : Prop :=
-  LinearMap.ker L.adjoint = ⊥
+  L.bilinMap.SeparatingLeft
 
 /-- A form is right-nondegenerate when `b(-,y) = 0` implies `y = 0`. -/
 def IsRightNondegenerate (L : BilinModuleCat R W) : Prop :=
-  LinearMap.ker L.rightAdjoint = ⊥
+  L.bilinMap.SeparatingRight
 
 /-- A form is nondegenerate when it is both left- and right-nondegenerate. -/
 def IsNondegenerate (L : BilinModuleCat R W) : Prop :=
-  L.IsLeftNondegenerate ∧ L.IsRightNondegenerate
+  L.bilinMap.Nondegenerate
 
 theorem isLeftNondegenerate_iff_leftRadical_eq_bot (L : BilinModuleCat R W) :
     L.IsLeftNondegenerate ↔ L.leftRadical = ⊥ :=
-  Iff.rfl
+  LinearMap.separatingLeft_iff_ker_eq_bot
 
 theorem isRightNondegenerate_iff_rightRadical_eq_bot (L : BilinModuleCat R W) :
     L.IsRightNondegenerate ↔ L.rightRadical = ⊥ :=
-  Iff.rfl
+  LinearMap.separatingRight_iff_flip_ker_eq_bot
 
 theorem isLeftNondegenerate_iff_adjoint_injective (L : BilinModuleCat R W) :
     L.IsLeftNondegenerate ↔ Function.Injective L.adjoint := by
