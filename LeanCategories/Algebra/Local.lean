@@ -24,3 +24,24 @@ public import Mathlib.RingTheory.AdicCompletion.Functoriality
 public import Mathlib.RingTheory.AdicCompletion.LocalRing
 
 @[expose] public section
+
+open CategoryTheory
+
+namespace LeanCategories.Algebra
+
+universe u
+
+/-- The residue field of a commutative local ring, using Mathlib's canonical quotient.
+
+The local-ring hypothesis is carried by the object of `LocalRingCat`. -/
+noncomputable def residueField (R : LocalRingCat.{u}) : CommRingCat.{u} :=
+  letI : IsLocalRing (R.1 : Type u) := R.2
+  CommRingCat.of (IsLocalRing.ResidueField R.1)
+
+/-- The canonical quotient map from a local ring to its residue field. -/
+noncomputable def residue (R : LocalRingCat.{u}) :
+    (R.1 : Type u) →+* (residueField R : Type u) :=
+  letI : IsLocalRing (R.1 : Type u) := R.2
+  IsLocalRing.residue R.1
+
+end LeanCategories.Algebra
