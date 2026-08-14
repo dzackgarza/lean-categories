@@ -78,12 +78,15 @@ Current work: `#33` through `#36`, and milestone `#51`.
 
 ### Frames and presentations
 
-- [x] `GenFrame_n(R)`, `BasisFrame_n(R)`, and `Coord_n(R)`
+- [x] Arbitrary-index `GenFrame R I`, `BasisFrame R I`, and `Coord R I` core definitions and
+  their forgetful, inclusion, and coordinate functors
+- [x] Existing `commRingNat` catalogue rows are finite specializations at `I := Fin n`
 - [x] `IntegralLatticeCat(R)`, `CoordLatticeCat(R, n)`,
   `FractionFieldPerfectFiniteProjectiveLatticeCat(R)`, and `UnimodularLatticeCat(R)`
-- [ ] Framed, coordinatized, and presented module categories
+- [ ] Arbitrary-index lattice-coordinate categories
+- [ ] Framed and presented module categories beyond the arbitrary-index frame core
 - [ ] Framed and coordinatized bilinear and quadratic module categories
-- [ ] Equivalence relation on matrices presenting the same module map
+- [ ] General matrix/presentation equivalence
 - [ ] Gram-matrix and quadratic Gram-data functors
 - [ ] Change-of-frame and presentation-comparison functors
 
