@@ -6,6 +6,7 @@ module
 
 public import Mathlib.Algebra.Category.CommAlgCat.Basic
 public import Mathlib.FieldTheory.Normal.Basic
+public import Mathlib.FieldTheory.Galois.Basic
 public import Mathlib.RingTheory.FiniteDimensional
 public import Mathlib.RingTheory.RingHom.FiniteType
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
@@ -82,6 +83,23 @@ abbrev Normal : Type _ :=
 abbrev normalIncl : Normal K ⥤ Cat K :=
   ObjectProperty.ι (C := Cat K)
     (fun A : Cat K => _root_.Normal K A.1.1)
+
+/-! ### Galois extensions
+
+`IsGalois` is Mathlib's standard predicate.  In particular, this category
+does not add a finite-dimensional hypothesis: Mathlib's definition already
+includes the required algebraicity through separability.
+-/
+
+/-- Field extensions which are Galois over `K`. -/
+abbrev Galois : Type _ :=
+  ObjectProperty.FullSubcategory (C := Cat K)
+    (fun A : Cat K => _root_.IsGalois K A.1.1)
+
+/-- The inclusion of Galois field extensions into field extensions. -/
+abbrev galoisIncl : Galois K ⥤ Cat K :=
+  ObjectProperty.ι (C := Cat K)
+    (fun A : Cat K => _root_.IsGalois K A.1.1)
 
 end FieldExtension
 end LeanCategories.Algebra
