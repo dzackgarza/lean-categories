@@ -10,12 +10,12 @@ namespace LeanCategories.Modules
 def Modules : CategoryExpr :=
   .familyApp CategoryFamilyId.modules #[.variable ParameterId.r]
 
-def FreeModules : CategoryExpr := .refine Modules ClassifierId.modulesFree none
+def FreeModules : CategoryExpr := .atom CategoryId.freeModules
 
 def FinitelyGeneratedModules : CategoryExpr :=
-  .refine Modules ClassifierId.modulesFinitelyGenerated none
+  .atom CategoryId.finitelyGeneratedModules
 
 def FiniteRankModules : CategoryExpr :=
-  .refine Modules ClassifierId.modulesFiniteRank none
+  .atom CategoryId.finiteRankModules
 
 end LeanCategories.Modules

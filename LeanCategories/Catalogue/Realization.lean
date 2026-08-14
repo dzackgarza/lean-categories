@@ -1,6 +1,7 @@
 module
 
 public import LeanCategories.CategoryTheory.OneCat.Classifier
+public import LeanCategories.CategoryTheory.OneCat.CategoricalPullback
 public import LeanCategories.Catalogue.Syntax
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Pseudofunctor
@@ -158,6 +159,29 @@ structure ClassifierRealization (host : CategoryExpr) (identifier : ClassifierId
   totalRealization :
     CategoryRealization.{uObj, uHom, uTotalParam, uTotalParamHom}
       (.classifierTotal identifier) classifier.total
+
+/-- A typed realization of a refinement by the actual classifier pullback. -/
+structure RefinementRealization (expression : CategoryExpr)
+    (category : ObjCat.{uObj, uHom}) where
+  base : CategoryExpr
+  classifierId : ClassifierId
+  route : Option RouteId
+  expression_eq : expression = .refine base classifierId route
+  baseCategory : ObjCat.{uObj, uHom}
+  host : CategoryExpr
+  hostCategory : ObjCat.{uObj, uHom}
+  baseRealization : CategoryRealization.{uObj, uHom, uObj, uHom} base baseCategory
+  classifier : Classifier hostCategory
+  classifierRealization :
+    ClassifierRealization.{uObj, uHom, uObj, uHom, uObj, uHom}
+      host classifierId hostCategory classifier
+  baseToHost : baseCategory ⟶ hostCategory
+  reindexed : Reindexed baseToHost classifier
+  equivalence : category ≌ reindexed.total
+  baseProjection : reindexed.total ⟶ baseCategory
+  baseProjection_eq : baseProjection = reindexed.baseProjection
+  classifierProjection : reindexed.total ⟶ classifier.total
+  classifierProjection_eq : classifierProjection = reindexed.axiomProjection
 
 /-- An actual functor assigned to a typed symbolic functor expression. -/
 structure FunctorRealization {source target : CategoryExpr}

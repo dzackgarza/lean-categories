@@ -94,14 +94,8 @@ def varianceJson (variance : VarianceId) : Json := variance.raw
 
 def functorExprJson {source target : CategoryExpr} : FunctorExpr source target → Json
   | .identity category => object [("tag", "identity"), ("category", categoryExprJson category)]
-  | .normalizedIdentity source target =>
-      object [("tag", "normalizedIdentity"), ("source", categoryExprJson source),
-        ("target", categoryExprJson target)]
   | .atomic id => object [("tag", "atomic"), ("id", id.raw)]
   | .named id => object [("tag", "named"), ("id", id.raw)]
-  | .baseProjection (.mk id _ _ _) => object [("tag", "baseProjection"), ("id", id.raw)]
-  | .classifierProjection (.mk id _ _ _) =>
-      object [("tag", "classifierProjection"), ("id", id.raw)]
   | .classifierForget classifier host =>
       object [("tag", "classifierForget"), ("classifier", classifier.raw),
         ("host", categoryExprJson host)]
@@ -121,6 +115,9 @@ def categoryJson (e : NamedCategoryEntry) : Json :=
     ("canonicalName", e.canonicalName),
     ("declaration", e.declaration.toString),
     ("realization", e.realization.toString),
+    ("refinementRealization", match e.refinementRealization with
+      | some realization => realization.toString
+      | none => ""),
     ("origin", originJson e.origin),
     ("visibility", visibilityJson e.visibility),
     ("expression", categoryExprJson e.expression),
@@ -177,6 +174,7 @@ def opaqueJson (e : OpaqueCategoryEntry) : Json :=
   object [
     ("id", e.id.raw),
     ("declaration", e.declaration.toString),
+    ("realization", e.realization.toString),
     ("visibility", visibilityJson e.visibility),
     ("reason", e.reason),
     ("ports", .arr <| e.ports.map fun p => object [

@@ -44,12 +44,15 @@ def RegistryEntry.stableId : RegistryEntry → String
 
 /-- Lean declarations that must resolve before this row can be persisted. -/
 def RegistryEntry.declarations : RegistryEntry → Array Name
-  | .category e => #[e.declaration, e.realization]
+  | .category e => #[e.declaration, e.realization] ++ match e.refinementRealization with
+      | some realization => #[realization]
+      | none => #[]
   | .categoryFamily e => #[e.realization, e.transport]
   | .classifier e => #[e.declaration, e.realization]
   | .functor e => #[e.declaration, e.realization]
   | .alias e => #[e.declaration, e.realization]
-  | .opaque e => #[e.declaration] ++ e.ports.flatMap fun p => #[p.declaration, p.realization]
+  | .opaque e => #[e.declaration, e.realization] ++
+      e.ports.flatMap fun p => #[p.declaration, p.realization]
 
 structure RegistryState where
   categories : Array NamedCategoryEntry := #[]
@@ -92,6 +95,17 @@ def duplicateOpaquePortId : List OpaquePortId → Option OpaquePortId
   | port :: ports =>
       if ports.any fun other => other == port then some port
       else duplicateOpaquePortId ports
+
+def duplicateOpaqueCategoryId : List CategoryId → Option CategoryId
+  | [] => none
+  | category :: categories =>
+      if categories.any fun other => other == category then some category
+      else duplicateOpaqueCategoryId categories
+
+def opaqueCategoryMatchesCategory (category : NamedCategoryEntry)
+    (opaqueEntry : OpaqueCategoryEntry) : Bool :=
+  category.id == opaqueEntry.id && category.declaration == opaqueEntry.declaration &&
+    category.expression.syntacticEq (.opaque opaqueEntry.id)
 
 def atomCategoryIdMatchesExpression (id : CategoryId) (expression : CategoryExpr) : Bool :=
   match expression with
@@ -190,13 +204,13 @@ example : !CategoryFamilySchema.parameterArgsValid #[.variable ParameterId.r, .v
 /-- Validate references within a typed functor expression against prior persistent entries. -/
 partial def FunctorExpr.referencesValid (state : RegistryState)
     {source target : CategoryExpr} : FunctorExpr source target → Bool
-  | .identity _ | .normalizedIdentity _ _ => true
+  | .identity _ => true
   | .atomic _ => true
   | .named id =>
       match state.functor? id with
       | some entry => sameEndpoint entry.source source && sameEndpoint entry.target target
       | none => false
-  | .baseProjection _ | .classifierProjection _ | .classifierForget _ _ => true
+  | .classifierForget _ _ => true
   | .unfoldAtom _ _ | .unfoldReference _ _ => true
   | .opaquePort id =>
       match state.opaquePort? id with
@@ -237,15 +251,21 @@ def duplicateImportedOpaquePortId (as : Array (Array RegistryEntry)) : Option Op
   duplicateOpaquePortId
     (RegistryState.opaquePortIds (mkStateFromImportedEntries RegistryState.apply {} as))
 
+def duplicateImportedOpaqueCategoryId (as : Array (Array RegistryEntry)) : Option CategoryId :=
+  duplicateOpaqueCategoryId
+    ((mkStateFromImportedEntries RegistryState.apply {} as).opaqueCategories.toList.map (·.id))
+
 def importedOpaquePortProbeEntries : Array (Array RegistryEntry) := #[
-  #[RegistryEntry.opaque (OpaqueCategoryEntry.mk ⟨"cat.first"⟩ ``sameEndpoint #[
-    StructuralPortEntry.mk ⟨"port.imported"⟩ (.atom ⟨"cat.first"⟩)
-      (.atom ⟨"cat.first"⟩) ``sameEndpoint ``sameEndpoint "probe" ]
-    "probe" .present)],
-  #[RegistryEntry.opaque (OpaqueCategoryEntry.mk ⟨"cat.second"⟩ ``sameEndpoint #[
-    StructuralPortEntry.mk ⟨"port.imported"⟩ (.atom ⟨"cat.second"⟩)
-      (.atom ⟨"cat.second"⟩) ``sameEndpoint ``sameEndpoint "probe" ]
-    "probe" .present)] ]
+  #[RegistryEntry.opaque {
+    id := ⟨"cat.first"⟩, declaration := ``sameEndpoint, realization := ``sameEndpoint,
+    ports := #[StructuralPortEntry.mk ⟨"port.imported"⟩ (.atom ⟨"cat.first"⟩)
+      (.atom ⟨"cat.first"⟩) ``sameEndpoint ``sameEndpoint "probe"],
+    reason := "probe", visibility := .present }],
+  #[RegistryEntry.opaque {
+    id := ⟨"cat.second"⟩, declaration := ``sameEndpoint, realization := ``sameEndpoint,
+    ports := #[StructuralPortEntry.mk ⟨"port.imported"⟩ (.atom ⟨"cat.second"⟩)
+      (.atom ⟨"cat.second"⟩) ``sameEndpoint ``sameEndpoint "probe"],
+    reason := "probe", visibility := .present }] ]
 
 example : duplicateImportedOpaquePortId importedOpaquePortProbeEntries =
     some ⟨"port.imported"⟩ := by
@@ -265,9 +285,12 @@ initialize registryExt : SimplePersistentEnvExtension RegistryEntry RegistryStat
     addEntryFn := RegistryState.apply
     addImportedFn := fun as =>
       let state := mkStateFromImportedEntries RegistryState.apply {} as
-      match duplicateOpaquePortId state.opaquePortIds with
-      | some id => panic! s!"duplicate opaque port ID {id.raw} in imported registry modules"
-      | none => state
+      match duplicateOpaqueCategoryId (state.opaqueCategories.toList.map (·.id)) with
+      | some id => panic! s!"duplicate opaque category ID {id.raw} in imported registry modules"
+      | none =>
+          match duplicateOpaquePortId state.opaquePortIds with
+          | some id => panic! s!"duplicate opaque port ID {id.raw} in imported registry modules"
+          | none => state
   }
 
 def getRegistry (env : Environment) : RegistryState :=
@@ -300,8 +323,13 @@ def addRegistryEntry (e : RegistryEntry) : CoreM Unit := do
       unless state.categories.any (·.id == entry.aliasOf) do
         throwError "alias entry {entry.id.raw} refers to an unregistered category"
   | .opaque entry =>
-      unless state.categories.any (·.id == entry.id) do
-        throwError "opaque category entry {entry.id.raw} has no registered category"
+      let category ← match state.categories.find? (·.id == entry.id) with
+        | some category => pure category
+        | none => throwError "opaque category entry {entry.id.raw} has no registered category"
+      unless opaqueCategoryMatchesCategory category entry do
+        throwError "opaque category entry {entry.id.raw} does not match its registered category"
+      unless entry.realization == category.realization do
+        throwError "opaque category entry {entry.id.raw} does not use its registered realization"
       for port in entry.ports do
         unless port.source.isRegistered state && port.target.isRegistered state do
           throwError "opaque port {port.id.raw} has an unregistered endpoint"
@@ -445,6 +473,79 @@ def validateCategoryEndpointRealization (state : RegistryState) (expression : Ca
   | .classifierTotal classifier =>
       validateClassifierTotalEndpointRealization state classifier category realization
   | _ => validateRegisteredCategoryEndpointRealization state expression category realization
+
+def validateRefinementDeclarationRealization (state : RegistryState)
+    (expression : CategoryExpr) (declaration refinement : Name) : MetaM Unit := do
+  let (expectedBase, expectedClassifier, expectedRoute) ← match expression with
+    | .refine base classifier route => pure (base, classifier, route)
+    | _ => throwError "refinement realization is attached to a non-refinement expression"
+  let refinementConstant ← mkConstWithFreshMVarLevels refinement
+  let refinementType ← inferType refinementConstant
+  forallTelescopeReducing refinementType fun arguments refinementResult => do
+    let refinementArgs := refinementResult.getAppArgs
+    unless refinementArgs.size == 2 do
+      throwError "refinement realization {refinement} has malformed parameters"
+    unless ← withTransparency .all <| isDefEq (Lean.toExpr expression) refinementArgs[0]! do
+      throwError "refinement realization {refinement} has the wrong expression"
+    let declarationValue ← mkConstWithFreshMVarLevels declaration
+    let declarationValue := mkAppN declarationValue arguments
+    unless ← withTransparency .all <| isDefEq declarationValue refinementArgs[1]! do
+      throwError "refinement declaration {declaration} has the wrong category"
+    let refinementValue := mkAppN refinementConstant arguments
+    let base ← withTransparency .all do
+      mkAppM ``LeanCategories.RefinementRealization.base #[refinementValue]
+    let classifierId ← withTransparency .all do
+      mkAppM ``LeanCategories.RefinementRealization.classifierId #[refinementValue]
+    let route ← withTransparency .all do
+      mkAppM ``LeanCategories.RefinementRealization.route #[refinementValue]
+    unless ← withTransparency .all <| isDefEq base (Lean.toExpr expectedBase) do
+      throwError "refinement realization {refinement} has the wrong base"
+    unless ← withTransparency .all <| isDefEq classifierId (Lean.toExpr expectedClassifier) do
+      throwError "refinement realization {refinement} has the wrong classifier"
+    unless ← withTransparency .all <| isDefEq route (Lean.toExpr expectedRoute) do
+      throwError "refinement realization {refinement} has unrelated base or classifier"
+    let classifier ← withTransparency .all do
+      mkAppM ``LeanCategories.RefinementRealization.classifier #[refinementValue]
+    let classifierEntry ← match state.classifier? expectedClassifier with
+      | some entry => pure entry
+      | none => throwError "refinement realization {refinement} has an unregistered classifier"
+    let classifierRealization ← withTransparency .all do
+      mkAppM ``LeanCategories.RefinementRealization.classifierRealization #[refinementValue]
+    let classifierRealizationType ← withTransparency .all <| inferType classifierRealization
+    let classifierArgs := classifierRealizationType.getAppArgs
+    unless classifierArgs.size == 4 do
+      throwError "refinement realization {refinement} has malformed classifier data"
+    unless ← withTransparency .all <| isDefEq classifierArgs[0]! (Lean.toExpr classifierEntry.host) do
+      throwError "refinement realization {refinement} has the wrong classifier host"
+    unless ← withTransparency .all <| isDefEq classifierArgs[1]! (Lean.toExpr expectedClassifier) do
+      throwError "refinement realization {refinement} has the wrong classifier ID"
+    let registeredConstant ← mkConstWithFreshMVarLevels classifierEntry.realization
+    let registeredType ← inferType registeredConstant
+    let (registeredParameters, _, _) ← forallMetaTelescopeReducing registeredType
+    let registeredValue := mkAppN registeredConstant registeredParameters
+    unless ← withTransparency .all <| isDefEq classifierRealization registeredValue do
+      throwError "refinement realization {refinement} is not the exact registered classifier realization"
+    let baseCategory ← withTransparency .all do
+      mkAppM ``LeanCategories.RefinementRealization.baseCategory #[refinementValue]
+    let baseRealization ← withTransparency .all do
+      mkAppM ``LeanCategories.RefinementRealization.baseRealization #[refinementValue]
+    validateCategoryEndpointRealization state expectedBase baseCategory baseRealization
+    let hostRealization ← withTransparency .all do
+      mkAppM ``LeanCategories.ClassifierRealization.hostRealization #[classifierRealization]
+    validateCategoryEndpointRealization state classifierEntry.host classifierArgs[2]!
+      hostRealization
+    let totalRealization ← withTransparency .all do
+      mkAppM ``LeanCategories.ClassifierRealization.totalRealization #[classifierRealization]
+    validateClassifierTotalEndpointRealization state expectedClassifier classifierArgs[3]!
+      totalRealization
+    let baseToHost ← withTransparency .all do
+      mkAppM ``LeanCategories.RefinementRealization.baseToHost #[refinementValue]
+    let reindexed ← withTransparency .all do
+      mkAppM ``LeanCategories.RefinementRealization.reindexed #[refinementValue]
+    let expectedReindexed ← withTransparency .all do
+      mkAppM ``LeanCategories.Classifier.reindex #[baseToHost, classifier]
+    unless ← withTransparency .all <| isDefEq reindexed expectedReindexed do
+      throwError "refinement realization {refinement} does not use Classifier.reindex"
 
 def validateAliasDeclarationRealization (state : RegistryState) (entry : AliasEntry) : MetaM Unit := do
   let target ← match state.categories.find? (fun category => category.id == entry.aliasOf) with
@@ -802,6 +903,14 @@ def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
                 (some familyEntry.realization)
           | none => throwError "category entry {e.id.raw} refers to an unregistered family"
       | _ => validateCategoryDeclarationRealization state e.expression e.declaration e.realization none
+      match e.expression, e.refinementRealization with
+      | .refine .., some refinement =>
+          validateRefinementDeclarationRealization state e.expression e.declaration refinement
+      | .refine .., none =>
+          throwError "refinement category {e.id.raw} has no typed RefinementRealization"
+      | _, some _ =>
+          throwError "non-refinement category {e.id.raw} carries a refinement realization"
+      | _, none => pure ()
   | .categoryFamily e => do
       ensureCategoryFamilyRealization e.id e.schema e.realization
       validateCategoryFamilyTransportDecl e.id e.schema e.realization e.transport
@@ -826,6 +935,8 @@ def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
       validateAliasDeclarationRealization state e
   | .opaque e => do
       ensureCategoryDeclaration e.declaration
+      ensureCategoryRealization e.realization
+      validateCategoryDeclarationRealization state (.opaque e.id) e.declaration e.realization none
       for port in e.ports do
         ensureFunctorDeclaration port.declaration
         ensureFunctorRealization port.realization

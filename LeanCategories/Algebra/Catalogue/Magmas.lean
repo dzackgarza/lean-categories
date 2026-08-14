@@ -28,20 +28,21 @@ def Commutative : ClassifierId := ClassifierId.magmasCommutative
 def Unital : ClassifierId := ClassifierId.magmasUnital
 def Inverse : ClassifierId := ClassifierId.magmasInverse
 
-def Semigroups : CategoryExpr := .refine Magmas Associative none
-def Monoids : CategoryExpr := .refine Semigroups Unital none
-def Groups : CategoryExpr := .refine Monoids Inverse none
+/- These named categories remain atoms until their pullback realizations exist. -/
+def Semigroups : CategoryExpr := .atom CategoryId.semigroups
+def Monoids : CategoryExpr := .atom CategoryId.monoids
+def Groups : CategoryExpr := .atom CategoryId.groups
 
 def AdditiveMagmas : CategoryExpr :=
-  .refine Magmas ClassifierId.magmasAdditive none
+  .atom CategoryId.additiveMagmas
 
 def AdditiveSemigroups : CategoryExpr :=
-  .refine AdditiveMagmas Associative (some RouteId.additive)
+  .atom CategoryId.additiveSemigroups
 
 def AdditiveMonoids : CategoryExpr :=
-  .refine AdditiveSemigroups Unital (some RouteId.additive)
+  .atom CategoryId.additiveMonoids
 
 def AdditiveGroups : CategoryExpr :=
-  .refine AdditiveMonoids Inverse (some RouteId.additive)
+  .atom CategoryId.additiveGroups
 
 end LeanCategories.Algebra.Catalogue.Magmas

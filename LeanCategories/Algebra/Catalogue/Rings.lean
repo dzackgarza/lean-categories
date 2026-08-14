@@ -25,21 +25,13 @@ open Algebra.Catalogue.Magmas
 /-- The two-operation host is intentionally opaque at this presentation layer. -/
 def MagmasWithTwoOperations : CategoryExpr := .opaque CategoryId.magmasWithTwoOperations
 
-/-- Rings are the refined two-operation tower. -/
-def Rings : CategoryExpr :=
-  let addAssoc := .refine MagmasWithTwoOperations Associative (some RouteId.additive)
-  let addComm := .refine addAssoc Commutative (some RouteId.additive)
-  let addUnital := .refine addComm Unital (some RouteId.additive)
-  let addInv := .refine addUnital Inverse (some RouteId.additive)
-  let mulAssoc := .refine addInv Associative (some RouteId.multiplicative)
-  let dist := .refine mulAssoc ClassifierId.m2oDistributive none
-  .refine dist Unital (some RouteId.multiplicative)
+/-- Rings remain an atom until the complete multi-port pullback is realized. -/
+def Rings : CategoryExpr := .atom CategoryId.rings
 
-/-- CommutativeRings := Rings.Commutative[via := multiplicative]. -/
-def CommutativeRings : CategoryExpr :=
-  .refine (.atom CategoryId.rings) Commutative (some RouteId.multiplicative)
+/-- Commutative rings remain an atom until their pullback realization exists. -/
+def CommutativeRings : CategoryExpr := .atom CategoryId.commutativeRings
 
 def DivisionRings : CategoryExpr :=
-  .refine (.atom CategoryId.rings) ClassifierId.ringsDivision none
+  .atom CategoryId.divisionRings
 
 end LeanCategories.Algebra.Catalogue.Rings

@@ -26,6 +26,8 @@ structure NamedCategoryEntry where
   expression : CategoryExpr
   /-- Elaborated witness tying this expression to the declared category. -/
   realization : Lean.Name
+  /-- Typed pullback witness required when the expression is a refinement. -/
+  refinementRealization : Option Lean.Name := none
   origin : CategoryOrigin
   visibility : Visibility
   deriving Repr, Inhabited
@@ -88,6 +90,7 @@ structure StructuralPortEntry where
 structure OpaqueCategoryEntry where
   id : CategoryId
   declaration : Lean.Name
+  realization : Lean.Name
   ports : Array StructuralPortEntry
   reason : String
   visibility : Visibility

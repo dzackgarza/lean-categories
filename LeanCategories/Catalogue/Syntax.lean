@@ -218,14 +218,9 @@ category is literally shared by the two legs.
 -/
 inductive FunctorExpr : CategoryExpr → CategoryExpr → Type
   | identity (category : CategoryExpr) : FunctorExpr category category
-  | normalizedIdentity (source target : CategoryExpr) : FunctorExpr source target
   /-- A named functor whose endpoints are supplied by the dependent indices. -/
   | atomic {source target : CategoryExpr} (id : FunctorId) : FunctorExpr source target
   | named {source target : CategoryExpr} (id : FunctorId) : FunctorExpr source target
-  | baseProjection {refined base total : CategoryExpr}
-      (refinement : RefinementExpr refined base total) : FunctorExpr refined base
-  | classifierProjection {refined base total : CategoryExpr}
-      (refinement : RefinementExpr refined base total) : FunctorExpr refined total
   | classifierForget (classifier : ClassifierId) (host : CategoryExpr) :
       FunctorExpr (.classifierTotal classifier) host
   | unfoldAtom (id : CategoryId) (body : CategoryExpr) :

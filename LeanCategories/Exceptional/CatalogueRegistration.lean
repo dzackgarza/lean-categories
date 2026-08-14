@@ -89,6 +89,7 @@ normalized_registry .classifier
 normalized_registry .opaque
   { id := CategoryId.magmasWithTwoOperations
     declaration := `LeanCategories.Exceptional.Mathlib.MagmasWithTwoOperations
+    realization := `LeanCategories.Exceptional.CatalogueRegistration.m2oRealization
     ports := #[
       { id := multiplicativePortId
         source := Algebra.Catalogue.Rings.MagmasWithTwoOperations
@@ -108,6 +109,7 @@ normalized_registry .opaque
 normalized_registry .opaque
   { id := CategoryId.crystals
     declaration := `LeanCategories.Exceptional.Mathlib.Crystals
+    realization := `LeanCategories.Exceptional.CatalogueRegistration.crystalsRealization
     ports := #[
       { id := crystalsPortId
         source := CrystalsExpr, target := Foundation.Sets
