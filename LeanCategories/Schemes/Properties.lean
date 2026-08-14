@@ -97,6 +97,15 @@ abbrev etaleSchemeMorphismIncl :
     EtaleSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
   MorphismProperty.Arrow.forget @Etale ⊤ ⊤
 
+/-- Scheme morphisms whose structural arrow is formally unramified. -/
+abbrev FormallyUnramifiedSchemeMorphismCat : Type (u + 1) :=
+  MorphismProperty.Arrow (T := Scheme.{u}) @FormallyUnramified ⊤ ⊤
+
+/-- The canonical inclusion of formally unramified scheme morphisms into all scheme arrows. -/
+abbrev formallyUnramifiedSchemeMorphismIncl :
+    FormallyUnramifiedSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
+  MorphismProperty.Arrow.forget @FormallyUnramified ⊤ ⊤
+
 /-- Scheme morphisms whose structural arrow is finite. -/
 abbrev FiniteSchemeMorphismCat : Type (u + 1) :=
   MorphismProperty.Arrow (T := Scheme.{u}) @IsFinite ⊤ ⊤
