@@ -68,6 +68,14 @@ def isFramedFreeModule : ObjectProperty (GenFrame R I) :=
 /-- The full subcategory of free modules with a selected generating frame. -/
 abbrev FramedFreeModules := (isFramedFreeModule R I).FullSubcategory
 
+namespace FramedFreeModules
+
+/-- Forget the selected generating frame and retain the carrier module. -/
+def forget : FramedFreeModules R I ⥤ ModuleCat.{max u v} R :=
+  ObjectProperty.ι (isFramedFreeModule R I) ⋙ GenFrame.forget R I
+
+end FramedFreeModules
+
 /-- Basis frames are the invertible frame arrows. -/
 def isBasisFrame : ObjectProperty (FrameArrow R I) :=
   (MorphismProperty.isomorphisms (ModuleCat.{max u v} R)).structuredArrowObj
