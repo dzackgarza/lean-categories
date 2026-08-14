@@ -18,16 +18,28 @@ public import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
 /-!
 # Derived-functor routes
 
-This module exposes the pinned Mathlib constructions without local aliases.
+This module exposes the pinned Mathlib constructions and one exact local alias.
 
 * `CategoryTheory.Tor` is the left-derived tensor product.
 * `Functor.totalLeftDerived` and `Functor.totalRightDerived` provide derived
   functors by localization.
 * `ihom` and `Functor.sheafPushforwardContinuous` are the source functors for
   derived internal Hom and derived pushforward.
-* `Limits.FormalCoproduct.cechComplexFunctor` and derived-category homology
-  provide the available Cech and hypercohomology ingredients.
+* `CategoryTheory.cechComplexFunctor` and derived-category homology provide the
+  available Cech-complex ingredients.
 
 Mathlib has no named derived internal-Hom, derived-pushforward, or
 hypercohomology functor in the pinned version. This route does not invent one.
 -/
+
+universe w v v' u u'
+
+namespace LeanCategories.Homological
+
+/-- The Cech complex functor supplied by Mathlib, under the Homological namespace. -/
+abbrev CechComplexFunctor {C : Type u} [Category.{v} C] {A : Type u'} [Category.{v'} A]
+    [HasFiniteProducts C] [Preadditive A] [HasProducts.{w} A] {ι : Type w} (U : ι → C) :
+    (Cᵒᵖ ⥤ A) ⥤ CochainComplex A ℕ :=
+  CategoryTheory.cechComplexFunctor U
+
+end LeanCategories.Homological
