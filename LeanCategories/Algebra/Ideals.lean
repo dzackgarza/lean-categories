@@ -50,6 +50,10 @@ abbrev RadicalIdealCat (R : Type u) [CommSemiring R] :=
 abbrev PrimaryIdealCat (R : Type u) [CommSemiring R] :=
   ObjectProperty.FullSubcategory (C := Ideal R) (fun I => I.IsPrimary)
 
+/-- The full subcategory of finitely generated ideals. -/
+abbrev FinitelyGeneratedIdealCat (R : Type u) [CommSemiring R] :=
+  ObjectProperty.FullSubcategory (C := Ideal R) (fun I => I.FG)
+
 /-- The canonical inclusion of principal ideals into all ideals. -/
 abbrev principalIdealIncl : PrincipalIdealCat R ⥤ Ideal R :=
   ObjectProperty.ι (C := Ideal R) (fun I => I.IsPrincipal)
@@ -69,5 +73,9 @@ abbrev radicalIdealIncl : RadicalIdealCat R ⥤ Ideal R :=
 /-- The canonical inclusion of primary ideals into all ideals. -/
 abbrev primaryIdealIncl : PrimaryIdealCat R ⥤ Ideal R :=
   ObjectProperty.ι (C := Ideal R) (fun I => I.IsPrimary)
+
+/-- The canonical inclusion of finitely generated ideals into all ideals. -/
+abbrev finitelyGeneratedIdealIncl : FinitelyGeneratedIdealCat R ⥤ Ideal R :=
+  ObjectProperty.ι (C := Ideal R) (fun I => I.FG)
 
 end LeanCategories.Algebra
