@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.CategoryTheory.Category.GaloisConnection
 public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.RingTheory.PrincipalIdealDomain
@@ -27,6 +28,9 @@ universe u v
 
 variable (R : Type u) [CommSemiring R]
 
+ /-- The category of ideals of `R`, ordered by inclusion. -/
+def Ideals := Cat.of (Ideal R)
+
 section RingHom
 
 variable {S : Type v} [CommSemiring S]
@@ -38,7 +42,7 @@ def idealMapOrderHom (f : R →+* S) : Ideal R →o Ideal S where
 
 /-- The functor on ideal preorders induced by extension along `f`. -/
 abbrev idealMapFunctor (f : R →+* S) : Ideals R ⥤ Ideals S :=
-  (idealMapOrderHom f).toFunctor
+  (idealMapOrderHom R f).toFunctor
 
 /-- The order homomorphism on ideals induced by contraction along `f`. -/
 def idealComapOrderHom (f : R →+* S) : Ideal S →o Ideal R where
@@ -47,20 +51,22 @@ def idealComapOrderHom (f : R →+* S) : Ideal S →o Ideal R where
 
 /-- The functor on ideal preorders induced by contraction along `f`. -/
 abbrev idealComapFunctor (f : R →+* S) : Ideals S ⥤ Ideals R :=
-  (idealComapOrderHom f).toFunctor
+  (idealComapOrderHom R f).toFunctor
+
+/-- Ideal extension is left adjoint to ideal contraction on the ideal preorders. -/
+def idealMapComapAdjunction (f : R →+* S) : idealMapFunctor R f ⊣ idealComapFunctor R f :=
+  (show GaloisConnection (fun I : Ideal R => I.map f) (fun J : Ideal S => J.comap f) from
+    fun I J => Ideal.map_le_iff_le_comap).adjunction
 
 @[simp]
 theorem idealMapFunctor_obj (f : R →+* S) (I : Ideal R) :
-    (idealMapFunctor f).obj I = I.map f := rfl
+    (idealMapFunctor R f).obj I = I.map f := rfl
 
 @[simp]
 theorem idealComapFunctor_obj (f : R →+* S) (I : Ideal S) :
-    (idealComapFunctor f).obj I = I.comap f := rfl
+    (idealComapFunctor R f).obj I = I.comap f := rfl
 
 end RingHom
-
-/-- The category of ideals of `R`, ordered by inclusion. -/
-def Ideals := Cat.of (Ideal R)
 
 /-- The full subcategory of principal ideals. -/
 abbrev PrincipalIdealCat (R : Type u) [CommSemiring R] :=
