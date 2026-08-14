@@ -210,7 +210,8 @@ partial def FunctorExpr.referencesValid (state : RegistryState)
       match state.functor? id with
       | some entry => sameEndpoint entry.source source && sameEndpoint entry.target target
       | none => false
-  | .classifierForget _ _ => true
+  | .classifierForget classifier host =>
+      (state.classifier? classifier).any fun entry => sameEndpoint entry.host host
   | .unfoldAtom _ _ | .unfoldReference _ _ => true
   | .opaquePort id =>
       match state.opaquePort? id with
@@ -617,7 +618,12 @@ def validateCategoryDeclarationRealization (state : RegistryState) (expression :
           realizationValue
     | .refine base classifier _ =>
         validateRefinementEndpointRealization state base classifier
-    | _ => pure ()
+    | .pullback .. =>
+        throwError
+          "registry category pullback has no typed categorical-pullback realization"
+    | .reference _ =>
+        throwError "registry category reference expressions are not registrable"
+    | .atom _ | .familyApp .. | .opaque _ => pure ()
     let familyFibre ← withTransparency .all do
       mkAppM ``LeanCategories.CategoryRealization.familyFibre #[mkAppN realizationConstant arguments]
     let familyFibre ← withTransparency .all <| whnf familyFibre
@@ -688,7 +694,33 @@ def FunctorExpr.classifierForget? {source target : CategoryExpr}
   | .classifierForget classifier host => some (classifier, host)
   | _ => none
 
-def validateFunctorDeclarationRealization (_state : RegistryState) {source target : CategoryExpr}
+def FunctorExpr.identity? {source target : CategoryExpr}
+    : FunctorExpr source target → Option CategoryExpr
+  | .identity category => some category
+  | _ => none
+
+inductive FunctorExpr.RegistrationKind
+  | identity
+  | atomic
+  | classifierForget (classifier : ClassifierId) (host : CategoryExpr)
+  | opaquePort (port : OpaquePortId)
+  | named (id : FunctorId)
+  | unfoldAtom (id : CategoryId)
+  | unfoldReference (id : CategoryId)
+  | compose
+
+def FunctorExpr.registrationKind {source target : CategoryExpr} :
+    FunctorExpr source target → FunctorExpr.RegistrationKind
+  | .identity _ => .identity
+  | .atomic _ => .atomic
+  | .classifierForget classifier host => .classifierForget classifier host
+  | .unfoldAtom id _ => .unfoldAtom id
+  | .unfoldReference id _ => .unfoldReference id
+  | .opaquePort port => .opaquePort port
+  | .named id => .named id
+  | .compose _ _ => .compose
+
+def validateFunctorDeclarationRealization (state : RegistryState) {source target : CategoryExpr}
     (expression : FunctorExpr source target)
     (declaration realization : Name) : MetaM Unit := do
   let realizationConstant ← mkConstWithFreshMVarLevels realization
@@ -725,9 +757,17 @@ def validateFunctorDeclarationRealization (_state : RegistryState) {source targe
     let targetArgs := targetType.getAppArgs
     unless sourceArgs.size == 2 && targetArgs.size == 2 do
       throwError "registry functor endpoint realization has malformed parameters"
-    match expression.classifierForget? with
-    | some (classifier, host) => do
-        let classifierEntry ← match _state.classifier? classifier with
+    match expression.registrationKind with
+    | .identity => do
+        unless ← withTransparency .all <| isDefEq sourceArgs[1]! targetArgs[1]! do
+          throwError "identity functor has distinct realized endpoint categories"
+        let expectedIdentity ← withTransparency .all do
+          mkAppM ``CategoryTheory.CategoryStruct.id #[sourceArgs[1]!]
+        unless ← withTransparency .all <| isDefEq declarationValue expectedIdentity do
+          throwError "identity functor declaration is not the endpoint identity"
+    | .atomic => pure ()
+    | .classifierForget classifier host => do
+        let classifierEntry ← match state.classifier? classifier with
           | some entry => pure entry
           | none => throwError "classifier forget {classifier.raw} has no registered classifier"
         unless host.syntacticEq classifierEntry.host do
@@ -736,14 +776,30 @@ def validateFunctorDeclarationRealization (_state : RegistryState) {source targe
         let classifierType ← inferType classifierConstant
         let (parameters, _, _) ← forallMetaTelescopeReducing classifierType
         let classifierValue := mkAppN classifierConstant parameters
-        let registeredHostRealization ← withTransparency .all do
-          mkAppM ``LeanCategories.ClassifierRealization.hostRealization #[classifierValue]
-        unless ← withTransparency .all <| isDefEq targetRealization registeredHostRealization do
+        let registeredForgetfulRealization ← withTransparency .all do
+          mkAppM ``LeanCategories.ClassifierRealization.forgetfulRealization #[classifierValue]
+        unless ← withTransparency .all <| isDefEq realizationValue registeredForgetfulRealization do
           throwError
-            "classifier forget {classifier.raw} is not the exact registered host realization"
-    | none => pure ()
-    validateCategoryEndpointRealization _state source sourceArgs[1]! sourceRealization
-    validateCategoryEndpointRealization _state target targetArgs[1]! targetRealization
+            "classifier forget {classifier.raw} is not the exact registered classifier forgetful realization"
+    | .opaquePort port => do
+            let portEntry ← match state.opaquePort? port with
+          | some entry => pure entry
+          | none => throwError "opaque port {port.raw} has no registered port declaration"
+            unless portEntry.source.syntacticEq source && portEntry.target.syntacticEq target do
+              throwError "opaque port {port.raw} has the wrong symbolic endpoints"
+            unless declaration == portEntry.declaration && realization == portEntry.realization do
+              throwError "opaque port {port.raw} is not its exact registered declaration and realization"
+            validateOpaquePortRealization state portEntry
+    | .named id =>
+        throwError "named functor {id.raw} has no typed registry evaluator"
+    | .unfoldAtom id =>
+        throwError "unfolded atom functor {id.raw} has no typed registry evaluator"
+    | .unfoldReference id =>
+        throwError "unfolded reference functor {id.raw} has no typed registry evaluator"
+    | .compose =>
+        throwError "composite functors have no typed registry evaluator"
+    validateCategoryEndpointRealization state source sourceArgs[1]! sourceRealization
+    validateCategoryEndpointRealization state target targetArgs[1]! targetRealization
     let realizationFunctorType ← whnf (← inferType realizationArgs[5]!)
     let declarationArgs := declarationType.getAppArgs
     let realizationArgs' := realizationFunctorType.getAppArgs
@@ -763,8 +819,72 @@ def validateFunctorDeclarationRealization (_state : RegistryState) {source targe
         throwError
           "registry functor declaration {declaration} source does not match realization {realization}"
       unless ← isDefEq declarationArgs[1]! realizationArgs'[1]! do
-        throwError
-          "registry functor declaration {declaration} target does not match realization {realization}"
+          throwError
+            "registry functor declaration {declaration} target does not match realization {realization}"
+
+private def classifierForgetConstantProbeHost : CategoryExpr := .atom ⟨"probe.classifier.host"⟩
+private def classifierForgetConstantProbeId : ClassifierId := ⟨"probe.classifier"⟩
+
+private noncomputable def classifierForgetConstantProbeCategory : ObjCat :=
+  CategoryTheory.Cat.of (CategoryTheory.Discrete Bool)
+
+private noncomputable def classifierForgetConstantProbeHostRealization :
+    CategoryRealization classifierForgetConstantProbeHost
+      classifierForgetConstantProbeCategory := {}
+
+private noncomputable def classifierForgetConstantProbeClassifier :
+    Classifier classifierForgetConstantProbeCategory :=
+  { total := classifierForgetConstantProbeCategory
+    forget := CategoryTheory.CategoryStruct.id _ }
+
+private noncomputable def classifierForgetConstantProbeClassifierRealization :
+    ClassifierRealization classifierForgetConstantProbeHost classifierForgetConstantProbeId
+      classifierForgetConstantProbeCategory classifierForgetConstantProbeClassifier :=
+  { hostRealization := classifierForgetConstantProbeHostRealization
+    totalRealization := {} }
+
+private noncomputable def classifierForgetConstantProbeFunctor :
+    classifierForgetConstantProbeCategory ⟶ classifierForgetConstantProbeCategory :=
+  (CategoryTheory.Functor.const (CategoryTheory.Discrete Bool)).obj
+    (CategoryTheory.Discrete.mk true)
+    |>.toCatHom
+
+private noncomputable def classifierForgetConstantProbeFunctorRealization :
+    FunctorRealization
+      (.classifierForget classifierForgetConstantProbeId classifierForgetConstantProbeHost)
+      classifierForgetConstantProbeCategory classifierForgetConstantProbeCategory
+      classifierForgetConstantProbeFunctor :=
+  { sourceRealization := {}
+    targetRealization := classifierForgetConstantProbeHostRealization }
+
+private def classifierForgetConstantProbeState : RegistryState :=
+  { categories := #[{
+      id := ⟨"probe.classifier.host"⟩
+      canonicalName := "probe.classifier.host"
+      declaration := ``classifierForgetConstantProbeCategory
+      expression := classifierForgetConstantProbeHost
+      realization := ``classifierForgetConstantProbeHostRealization
+      origin := .root
+      visibility := .present }]
+    classifiers := #[{
+      id := classifierForgetConstantProbeId
+      canonicalName := "probe.classifier"
+      declaration := ``classifierForgetConstantProbeClassifier
+      host := classifierForgetConstantProbeHost
+      realization := ``classifierForgetConstantProbeClassifierRealization
+      visibility := .present }] }
+
+run_cmd
+  liftTermElabM do
+    let accepted ← try
+        validateFunctorDeclarationRealization classifierForgetConstantProbeState
+          (.classifierForget classifierForgetConstantProbeId classifierForgetConstantProbeHost)
+          ``classifierForgetConstantProbeFunctor
+          ``classifierForgetConstantProbeFunctorRealization
+        pure true
+      catch _ => pure false
+    if accepted then
+      throwError "constant classifier-forget probe was accepted"
 
 /-- Require a declaration to return a typed family realization. -/
 def ensureCategoryFamilyRealization (identifier : CategoryFamilyId) (schema : CategoryFamilySchema)

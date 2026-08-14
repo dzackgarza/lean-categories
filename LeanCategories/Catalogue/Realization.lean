@@ -193,4 +193,18 @@ structure FunctorRealization {source target : CategoryExpr}
   targetRealization :
     CategoryRealization.{uObj, uHom, uTargetParam, uTargetParamHom} target targetCategory
 
+/-- The forgetful functor is part of the typed classifier realization.
+
+This witness fixes both endpoint realizations and the concrete functor.  A
+registry row for `classifierForget` must use this exact witness.
+-/
+def ClassifierRealization.forgetfulRealization
+    {host : CategoryExpr} {identifier : ClassifierId}
+    {category : ObjCat.{uObj, uHom}} {classifier : Classifier category}
+    (realization : ClassifierRealization host identifier category classifier) :
+    FunctorRealization (.classifierForget identifier host)
+      classifier.total category classifier.forget :=
+  { sourceRealization := realization.totalRealization
+    targetRealization := realization.hostRealization }
+
 end LeanCategories
