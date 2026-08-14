@@ -8,6 +8,7 @@ public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.EuclideanDomain.Defs
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
@@ -50,6 +51,18 @@ abbrev localRingIncl : LocalRingCat.{u} ⥤ CommRingCat.{u} :=
 
 /-- The forgetful functor from local commutative rings to commutative rings. -/
 abbrev localRingForgetful : LocalRingCat.{u} ⥤ CommRingCat.{u} := localRingIncl
+
+/- Local homomorphisms between commutative local rings. -/
+abbrev LocalRingHomProperty : MorphismProperty LocalRingCat.{u} :=
+  fun f => IsLocalHom f.hom.hom
+
+/-- The category of local homomorphisms between commutative local rings. -/
+abbrev LocalRingHomCat : Type (u + 1) :=
+  MorphismProperty.Arrow LocalRingHomProperty ⊤ ⊤
+
+/-- The canonical inclusion of local-ring homomorphisms into local-ring arrows. -/
+abbrev localRingHomIncl : LocalRingHomCat.{u} ⥤ CategoryTheory.Arrow LocalRingCat.{u} :=
+  MorphismProperty.Arrow.forget LocalRingHomProperty ⊤ ⊤
 
 abbrev DedekindDomainCat : Type (u + 1) :=
   ObjectProperty.FullSubcategory (C := CommRingCat.{u}) (fun R => IsDedekindDomain R)
