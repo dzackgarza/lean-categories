@@ -8,6 +8,9 @@ public import Mathlib.Algebra.Category.CommAlgCat.Basic
 public import Mathlib.Algebra.Category.AlgCat.Basic
 public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.Algebra.MvPolynomial.Basic
+public import Mathlib.Algebra.MonoidAlgebra.Basic
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Basic
 public import Mathlib.RingTheory.LaurentSeries
@@ -124,6 +127,29 @@ end TensorProduct
 
 /-- The polynomial algebra over `R`. -/
 abbrev polynomial : AlgebraCat R := .of R (Polynomial R)
+
+section PolynomialEvaluation
+
+variable {R : Type u} [CommRing R]
+
+/** Evaluation of a polynomial at an element of its coefficient ring. */
+abbrev polynomialEvaluation (x : R) : polynomial R ⟶ AlgCat.of R R :=
+  AlgCat.ofHom (Polynomial.aeval x)
+
+end PolynomialEvaluation
+
+section GroupRing
+
+variable {R : Type u} [CommRing R] {G : Type v} [Group G]
+
+/** The group ring `R[G]`, using Mathlib's monoid-algebra construction. */
+abbrev groupRing : AlgebraCat R := .of R (MonoidAlgebra R G)
+
+/** The canonical coefficient embedding `R ⟶ R[G]`. */
+abbrev groupRingCoefficient : AlgCat.of R R ⟶ groupRing (R := R) (G := G) :=
+  AlgCat.ofHom (MonoidAlgebra.singleOneAlgHom (R := R) (A := R) (M := G))
+
+end GroupRing
 
 /-- The multivariate polynomial algebra over `R`, with variables indexed by `σ`. -/
 abbrev mvPolynomial (σ : Type v) : AlgebraCat R := .of R (MvPolynomial σ R)
