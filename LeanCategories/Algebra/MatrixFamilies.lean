@@ -197,17 +197,19 @@ abbrev generalLinearBaseChange {R S : CommRingCat} (f : R ⟶ S) (ι : Type u)
   familyFiberBaseChange f (generalLinearFamily ι)
 
 /-- The canonical matrix-family base-change morphism. -/
-abbrev matrixBaseChangeHom (X : MatrixFamilyCat ι κ)
+abbrev matrixBaseChangeHom {ι κ : Type u} [Fintype ι] [Fintype κ]
+    (X : MatrixFamilyCat ι κ)
     {S : CommRingCat} (f : X.1 ⟶ S) : X ⟶ ⟨S, matrixFamily ι κ |>.map f X.2⟩ :=
   familyBaseChangeHom (matrixFamily ι κ) X f
 
 /-- The canonical vector-family base-change morphism. -/
-abbrev vectorBaseChangeHom (X : VectorFamilyCat ι)
+abbrev vectorBaseChangeHom {ι : Type u} [Fintype ι] (X : VectorFamilyCat ι)
     {S : CommRingCat} (f : X.1 ⟶ S) : X ⟶ ⟨S, vectorFamily ι |>.map f X.2⟩ :=
   familyBaseChangeHom (vectorFamily ι) X f
 
 /-- The canonical general-linear base-change morphism. -/
-abbrev generalLinearBaseChangeHom (X : GeneralLinearFamilyCat ι)
+abbrev generalLinearBaseChangeHom {ι : Type u} [Fintype ι] [DecidableEq ι]
+    (X : GeneralLinearFamilyCat ι)
     {S : CommRingCat} (f : X.1 ⟶ S) :
     X ⟶ ⟨S, generalLinearFamily ι |>.map f X.2⟩ :=
   familyBaseChangeHom (generalLinearFamily ι) X f
