@@ -7,6 +7,7 @@ module
 public import Mathlib.Algebra.Homology.DerivedCategory.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
 public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.CategoryTheory.Monoidal.Tor
 
 /-!
 # Homological categories over a ring
@@ -47,5 +48,10 @@ abbrev DerivedCategoryOverRing (R : Type u) [Ring R]
 abbrev ExtOverRing (R : Type u) [Ring R] [Small.{v} R]
     (M N : ModuleCat.{v} R) (n : ℕ) : Type v :=
   CategoryTheory.Abelian.Ext M N n
+
+/-- The degree-`n` Tor-group of `R`-modules. -/
+abbrev TorOverRing (R : Type u) [CommRing R] [Small.{v} R]
+    (M N : ModuleCat.{v} R) (n : ℕ) : Type v :=
+  ((CategoryTheory.Tor (ModuleCat.{v} R) n).obj M).obj N
 
 end LeanCategories.Homological
