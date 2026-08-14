@@ -37,7 +37,7 @@ abbrev of (X : Type u) [Countable X] : CountableSetCat.{u} :=
   ⟨X, inferInstance⟩
 
 /-- The canonical inclusion of countable sets into sets. -/
-abbrev incl : CountableSetCat.{u} ⟶ Type u :=
+abbrev incl : CountableSetCat.{u} ⥤ Type u :=
   ObjectProperty.ι _
 
 end CountableSetCat
@@ -61,23 +61,25 @@ abbrev of (X : Type u) [Encodable X] : EnumeratedSetCat.{u} :=
   ⟨X⟩
 
 instance : Category EnumeratedSetCat.{u} :=
-  InducedCategory.category carrier
+  inferInstanceAs (Category (InducedCategory (Type u) carrier))
 
 /-- Forget the chosen enumeration. -/
-def forget : EnumeratedSetCat.{u} ⟶ Type u :=
-  inducedFunctor carrier
+def forget : EnumeratedSetCat.{u} ⥤ Type u where
+  obj X := X.carrier
+  map f := f.hom
 
 end EnumeratedSetCat
 
 /-- Every finite set is countable. -/
-def finiteToCountable : FintypeCat.{u} ⟶ CountableSetCat.{u} :=
-  (Countable : ObjectProperty (Type u)).lift FintypeCat.incl fun X ↦
-    letI : Finite X := X.property
-    inferInstance
+def finiteToCountable : FintypeCat.{u} ⥤ CountableSetCat.{u} :=
+  ObjectProperty.lift (Countable : ObjectProperty (Type u)) FintypeCat.incl fun X ↦ by
+    change Countable X.obj
+    exact @Finite.to_countable X.obj X.property
 
 /-- Forget the chosen enumeration and retain the induced countability proof. -/
-def enumeratedToCountable : EnumeratedSetCat.{u} ⟶ CountableSetCat.{u} :=
-  (Countable : ObjectProperty (Type u)).lift EnumeratedSetCat.forget fun X ↦
-    Encodable.toCountable X
+def enumeratedToCountable : EnumeratedSetCat.{u} ⥤ CountableSetCat.{u} :=
+  ObjectProperty.lift (Countable : ObjectProperty (Type u)) EnumeratedSetCat.forget fun X ↦ by
+    change Countable X.carrier
+    exact @Encodable.countable X.carrier X.enumeration
 
 end LeanCategories.Foundation
