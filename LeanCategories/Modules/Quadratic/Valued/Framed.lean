@@ -82,7 +82,7 @@ map; no matrix presentation is silently substituted for the quadratic object. -/
 noncomputable def standardQuadraticFunctor :
     CoordQuadModuleCat R W n ⥤ QuadModuleCat R W where
   obj X := QuadModuleCat.ofQuadraticMap (standardForm R W n X)
-  map f := QuadModuleCat.homMk (standardMap R W n f) (by
+  map {X Y} f := QuadModuleCat.homMk (standardMap R W n f) (by
     intro x
     change standardForm R W n Y (standardMap R W n f x) =
       standardForm R W n X x
@@ -93,14 +93,26 @@ noncomputable def standardQuadraticFunctor :
     apply Quiver.Hom.unop_inj
     apply ModuleCat.hom_ext
     ext x
-    simp [standardMap, QuadModuleCat.underlyingMap]
-  map_comp f g := by
+    let eX := (standardIso R W n X).toLinearEquiv
+    change standardMap R W n (𝟙 X) x = x
+    change eX.symm (eX x) = x
+    exact eX.symm_apply_apply x
+  map_comp {X Y Z} f g := by
     apply Quiver.Hom.unop_inj
     apply CategoryOfElements.ext
     apply Quiver.Hom.unop_inj
     apply ModuleCat.hom_ext
     ext x
-    simp [standardMap, QuadModuleCat.underlyingMap]
+    let eX := (standardIso R W n X).toLinearEquiv
+    let eY := (standardIso R W n Y).toLinearEquiv
+    let eZ := (standardIso R W n Z).toLinearEquiv
+    change eZ.symm
+        (QuadModuleCat.underlyingMap g.snd
+          (QuadModuleCat.underlyingMap f.snd (eX x))) =
+      eZ.symm
+        (QuadModuleCat.underlyingMap g.snd
+          (eY (eY.symm (QuadModuleCat.underlyingMap f.snd (eX x)))))
+    rw [eY.apply_symm_apply]
 
 /-! Change the selected standard frame by a fixed linear automorphism. -/
 
@@ -109,8 +121,7 @@ noncomputable def changeFrameMap
     {X Y : CoordQuadModuleCat R W n} (f : X ⟶ Y) :
     (Fin n → R) →ₗ[R] Fin n → R :=
   e.symm.toLinearMap.comp
-    ((QuadModuleCat.underlyingMap ((standardQuadraticFunctor R W n).map f)).comp
-      e.toLinearMap)
+    ((standardMap R W n f).comp e.toLinearMap)
 
 /-- Reparameterize the standard quadratic realization by a fixed change of frame. -/
 noncomputable def changeFrameQuadraticFunctor
@@ -118,31 +129,41 @@ noncomputable def changeFrameQuadraticFunctor
     CoordQuadModuleCat R W n ⥤ QuadModuleCat R W where
   obj X :=
     QuadModuleCat.ofQuadraticMap
-      (((standardQuadraticFunctor R W n).obj X).form.comp e.toLinearMap)
-  map f := QuadModuleCat.homMk (changeFrameMap R W n e f) (by
+      ((standardForm R W n X).comp e.toLinearMap)
+  map {X Y} f := QuadModuleCat.homMk (changeFrameMap R W n e f) (by
     intro x
-    change ((standardQuadraticFunctor R W n).obj Y).form
-        (e (e.symm (QuadModuleCat.underlyingMap
-          ((standardQuadraticFunctor R W n).map f) (e x)))) =
-      ((standardQuadraticFunctor R W n).obj X).form (e x)
+    change standardForm R W n Y
+        (e (e.symm (standardMap R W n f (e x)))) =
+      standardForm R W n X (e x)
     rw [e.apply_symm_apply]
-    exact QuadModuleCat.map_form ((standardQuadraticFunctor R W n).map f) (e x))
+    exact standardMap_preserves_form R W n f (e x))
   map_id X := by
     apply Quiver.Hom.unop_inj
     apply CategoryOfElements.ext
     apply Quiver.Hom.unop_inj
     apply ModuleCat.hom_ext
     ext x
-    simp [changeFrameMap, standardQuadraticFunctor, standardMap,
-      QuadModuleCat.underlyingMap]
-  map_comp f g := by
+    change changeFrameMap R W n e (𝟙 X) x = x
+    let eX := (standardIso R W n X).toLinearEquiv
+    change e.symm (eX.symm (eX (e x))) = x
+    simp
+  map_comp {X Y Z} f g := by
     apply Quiver.Hom.unop_inj
     apply CategoryOfElements.ext
     apply Quiver.Hom.unop_inj
     apply ModuleCat.hom_ext
     ext x
-    simp [changeFrameMap, standardQuadraticFunctor, standardMap,
-      QuadModuleCat.underlyingMap]
+    change changeFrameMap R W n e (f ≫ g) x =
+      changeFrameMap R W n e g (changeFrameMap R W n e f x)
+    simp only [changeFrameMap, LinearMap.comp_apply]
+    simp [standardMap, QuadModuleCat.underlyingMap]
+    let eY := (standardIso R W n Y).toLinearEquiv
+    have hY (z : Y.snd.carrier) :
+        (standardIso R W n Y).hom.hom (eY.symm z) = z := by
+      change eY (eY.symm z) = z
+      exact eY.apply_symm_apply z
+    rw [hY]
+    rfl
 
 end CoordQuadModuleCat
 
