@@ -8,6 +8,7 @@ public import LeanCategories.Algebra.Ideals
 public import LeanCategories.CategoryTheory.StandardConstructions
 public import Mathlib.Algebra.Category.ModuleCat.Pseudofunctor
 public import Mathlib.Algebra.Category.Ring.Under.Basic
+public import Mathlib.CategoryTheory.FiberedCategory.Cocartesian
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 /-!
@@ -25,6 +26,7 @@ Commutative algebra base change uses Mathlib's tensor-product functor on `Under`
 @[expose] public section
 
 open CategoryTheory
+open CategoryTheory.Functor
 open CategoryTheory.Pseudofunctor
 open Opposite
 
@@ -157,6 +159,13 @@ def primeIdealBaseChangeHom (X : PrimeIdealTotal.{u})
     ⟨R, (primeIdealFamily.map f.op.toLoc).toFunctor.obj X.fiber⟩ ⟶ X :=
   { base := f, fiber := 𝟙 _ }
 
+instance primeIdealBaseChangeHom_isStronglyCartesian (X : PrimeIdealTotal.{u})
+    {R : CommRingCat.{u}} (f : R ⟶ X.base) :
+    IsStronglyCartesian primeIdealProjection f (primeIdealBaseChangeHom X f) := by
+  change IsStronglyCartesian primeIdealProjection f
+    (Pseudofunctor.CoGrothendieck.cartesianLift X.fiber f)
+  infer_instance
+
 /** The category of commutative algebras over a fixed commutative ring. */
 abbrev commAlgFiber (R : CommRingCat.{u}) := CommRingCat.Under R
 
@@ -189,7 +198,7 @@ def commAlgBaseChangeHom {R S : CommRingCat.{u}}
 /** The underlying algebra object of a commutative-algebra fiber object. */
 abbrev commAlgCarrier {R : CommRingCat.{u}} (A : commAlgFiber R) : Type u := A.right
 
-/-! ## Cartesian lifts for covariant pseudofamilies -/
+/-! ## Base-change morphisms for covariant pseudofamilies -/
 
 /** The canonical Grothendieck morphism to transport along a base map. */
 def covariantFamilyBaseChangeHom

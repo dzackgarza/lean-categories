@@ -151,14 +151,14 @@ def familyFiberBaseChange {R S : CommRingCat} (f : R ⟶ S)
   map_id := by
     intro X
     apply Subsingleton.elim
+  map_comp := by
+    intro X Y Z f g
+    apply Subsingleton.elim
 
 /-- The canonical morphism from a family element to its transport along a base map. -/
 def familyBaseChangeHom (F : CommRingCat.{u} ⥤ Type w) (X : F.Elements)
     {S : CommRingCat} (f : X.1 ⟶ S) : X ⟶ ⟨S, F.map f X.2⟩ :=
   CategoryOfElements.homMk _ _ f rfl
-  map_comp := by
-    intro X Y Z f g
-    apply Subsingleton.elim
 
 abbrev matrixFiber (R : CommRingCat) (ι κ : Type u) [Fintype ι] [Fintype κ] :=
   familyFiber (matrixFamily ι κ) R

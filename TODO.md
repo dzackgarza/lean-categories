@@ -43,7 +43,9 @@ Current work: `#50`, `#54`, `#55`, `#56`, and `#58`.
 - [x] Prime-ideal and general-linear-group subfibrations
 - [x] Determinant, trace, characteristic polynomial, and derivative as natural
   transformations
-- [x] Cartesian lifts and base-change functors for each fibred family
+- [ ] Co-Cartesian/cartesian lifts and base-change functors for each fibred family
+  Existing base-change morphisms are transport maps; the required universal properties
+  remain open, including the tensor-product algebra arrow family.
 - [x] Category, functor, and natural-transformation expressions
 - [x] Evaluation of expressions in a selected realization
 - [x] Proof-carrying category and functor registry entries
