@@ -135,7 +135,7 @@ theorem isReflective_of_isRoot (L : FiniteProjectiveLatticeCat ℤ ℤ)
 
 /-- The root set of a lattice sits inside its reflective vectors. -/
 theorem rootSet_subset_reflectiveRoot (L : FiniteProjectiveLatticeCat ℤ ℤ) :
-    L.rootSet ⊆ (ReflectiveRoot L.obj : Set L.obj.obj.carrier) :=
+    L.rootSet ⊆ {x | IsReflectiveRoot L.obj x} :=
   fun _ hx => L.isReflective_of_isRoot hx
 
 /-- The reflection step of the classification. Two vectors of the same value `n` whose pairing
