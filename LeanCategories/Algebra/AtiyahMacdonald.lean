@@ -4,6 +4,22 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
+public import Mathlib.RingTheory.Ideal.Colon
+public import Mathlib.RingTheory.Ideal.Operations
+public import Mathlib.RingTheory.Jacobson.Ideal
+public import Mathlib.RingTheory.Jacobson.Radical
+public import Mathlib.RingTheory.LocalProperties.Semilocal
+public import Mathlib.RingTheory.Nilpotent.Lemmas
+public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
+public import Mathlib.RingTheory.Spectrum.Maximal.Basic
+public import Mathlib.RingTheory.FinitePresentation
+public import Mathlib.RingTheory.RingHom.FaithfullyFlat
+public import Mathlib.Algebra.Category.CommAlgCat.Basic
+public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+public import LeanCategories.Algebra.Concrete.CommAlgebras
+public import LeanCategories.Algebra.Concrete.Rings
+public import LeanCategories.Modules.Mathlib
+
 /-!
 # Atiyah--Macdonald commutative-algebra routes
 
@@ -14,21 +30,6 @@ The pinned Mathlib source uses `Finite (MaximalSpectrum R)` for semilocality.
 The source has no separate `Semilocal` class, so this file exposes that exact
 predicate and its full subcategory.
 -/
-
-public import Mathlib.RingTheory.Ideal.Colon
-public import Mathlib.RingTheory.Ideal.Operations
-public import Mathlib.RingTheory.Jacobson.Ideal
-public import Mathlib.RingTheory.Jacobson.Radical
-public import Mathlib.RingTheory.LocalProperties.Semilocal
-public import Mathlib.RingTheory.Nilpotent.Lemmas
-public import Mathlib.RingTheory.Spectrum.Maximal.Basic
-public import Mathlib.RingTheory.FinitePresentation
-public import Mathlib.RingTheory.RingHom.FaithfullyFlat
-public import Mathlib.Algebra.Category.CommAlgCat.Basic
-public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
-public import LeanCategories.Algebra.Concrete.CommAlgebras
-public import LeanCategories.Algebra.Concrete.Rings
-public import LeanCategories.Modules.Mathlib
 
 @[expose] public section
 
@@ -60,6 +61,27 @@ abbrev nilradical : Ideal R := _root_.nilradical R
 
 /** The Jacobson radical of a commutative ring. */
 abbrev ringJacobsonRadical : Ideal R := Ring.jacobson R
+
+section Zariski
+
+variable [TopologicalSpace R] [IsTopologicalRing R]
+
+/-
+Atiyah--Macdonald, Chapter 10, p. 114: a Zariski ring is a Noetherian
+topological ring whose topology is defined by an ideal contained in the
+Jacobson radical. The ideal is the chosen ideal of definition.
+
+This uses Mathlib's `IsAdic` predicate for the topology and `Ring.jacobson`
+for the Jacobson radical. It is parameterized by the ideal because the
+topological structure is not part of `CommRingCat`.
+-/
+def IsZariskiRing (I : Ideal R) : Prop :=
+  IsNoetherianRing R ∧ IsAdic I ∧ I ≤ Ring.jacobson R
+
+/- A topological commutative ring that admits an ideal of definition. -/
+def ZariskiRing : Prop := ∃ I : Ideal R, IsZariskiRing R I
+
+end Zariski
 
 end Rings
 
@@ -139,4 +161,3 @@ abbrev faithfullyFlatAlgebraIncl :
 end AlgebraFiniteness
 
 end LeanCategories.Algebra
-
