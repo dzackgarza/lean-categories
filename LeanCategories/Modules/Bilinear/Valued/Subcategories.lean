@@ -88,6 +88,20 @@ def torsionFreeBilinModuleForget :
     TorsionFreeBilinModuleCat R W ⥤ ModuleCat R :=
   torsionFreeBilinModuleInclusion R W ⋙ forget R W
 
+def isTorsionBilinModule : ObjectProperty (BilinModuleCat R W) :=
+  fun L => Module.IsTorsion R L.carrier
+
+abbrev TorsionBilinModuleCat :=
+  (isTorsionBilinModule R W).FullSubcategory
+
+def torsionBilinModuleInclusion :
+    TorsionBilinModuleCat R W ⥤ BilinModuleCat R W :=
+  (isTorsionBilinModule R W).ι
+
+def torsionBilinModuleForget :
+    TorsionBilinModuleCat R W ⥤ ModuleCat R :=
+  torsionBilinModuleInclusion R W ⋙ forget R W
+
 def finiteTorsionBilinModuleInclusion :
     FiniteTorsionBilinModuleCat R W ⥤ BilinModuleCat R W :=
   (isFiniteTorsionBilinModule R W).ι
@@ -169,6 +183,18 @@ def torsionFreeBilWFormInclusion :
 
 def torsionFreeBilWFormForget : TorsionFreeBilWFormCat R ⥤ ModuleCat R :=
   torsionFreeBilWFormInclusion R ⋙ carrierProjection R
+
+def isTorsionBilWForm : ObjectProperty (BilWFormCat R) :=
+  fun X => Module.IsTorsion R X.carrier
+
+abbrev TorsionBilWFormCat :=
+  (isTorsionBilWForm R).FullSubcategory
+
+def torsionBilWFormInclusion : TorsionBilWFormCat R ⥤ BilWFormCat R :=
+  (isTorsionBilWForm R).ι
+
+def torsionBilWFormForget : TorsionBilWFormCat R ⥤ ModuleCat R :=
+  torsionBilWFormInclusion R ⋙ carrierProjection R
 
 def isFiniteTorsionBilWForm : ObjectProperty (BilWFormCat R) :=
   fun X => Module.Finite R X.carrier ∧ Module.IsTorsion R X.carrier

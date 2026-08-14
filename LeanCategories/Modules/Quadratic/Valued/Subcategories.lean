@@ -88,6 +88,20 @@ def torsionFreeQuadModuleForget :
     TorsionFreeQuadModuleCat R W ⥤ ModuleCat R :=
   torsionFreeQuadModuleInclusion R W ⋙ forget R W
 
+def isTorsionQuadModule : ObjectProperty (QuadModuleCat R W) :=
+  fun Q => Module.IsTorsion R Q.carrier
+
+abbrev TorsionQuadModuleCat :=
+  (isTorsionQuadModule R W).FullSubcategory
+
+def torsionQuadModuleInclusion :
+    TorsionQuadModuleCat R W ⥤ QuadModuleCat R W :=
+  (isTorsionQuadModule R W).ι
+
+def torsionQuadModuleForget :
+    TorsionQuadModuleCat R W ⥤ ModuleCat R :=
+  torsionQuadModuleInclusion R W ⋙ forget R W
+
 def finiteTorsionQuadModuleInclusion :
     FiniteTorsionQuadModuleCat R W ⥤ QuadModuleCat R W :=
   (isFiniteTorsionQuadModule R W).ι
@@ -163,6 +177,18 @@ def torsionFreeQuadWFormInclusion :
 
 def torsionFreeQuadWFormForget : TorsionFreeQuadWFormCat R ⥤ ModuleCat R :=
   torsionFreeQuadWFormInclusion R ⋙ carrierProjection R
+
+def isTorsionQuadWForm : ObjectProperty (QuadWFormCat R) :=
+  fun X => Module.IsTorsion R X.carrier
+
+abbrev TorsionQuadWFormCat :=
+  (isTorsionQuadWForm R).FullSubcategory
+
+def torsionQuadWFormInclusion : TorsionQuadWFormCat R ⥤ QuadWFormCat R :=
+  (isTorsionQuadWForm R).ι
+
+def torsionQuadWFormForget : TorsionQuadWFormCat R ⥤ ModuleCat R :=
+  torsionQuadWFormInclusion R ⋙ carrierProjection R
 
 def isFiniteTorsionQuadWForm : ObjectProperty (QuadWFormCat R) :=
   fun X => Module.Finite R X.carrier ∧ Module.IsTorsion R X.carrier
