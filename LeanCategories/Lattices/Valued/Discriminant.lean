@@ -7,6 +7,7 @@ module
 public import LeanCategories.Lattices.Valued.MetricDual
 public import LeanCategories.Modules.Bilinear.Valued.Torsion
 public import LeanCategories.Modules.Bilinear.Valued.Cokernel
+public import LeanCategories.Modules.FractionRingQuotient
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
 
 @[expose] public section
@@ -105,7 +106,7 @@ theorem rieszDualBilinMap_adjoint_right (L : IntegralLatticeCat R)
 
 /-- The value module `Frac(R) / R`. -/
 abbrev FractionValueQuotient :=
-  FractionRing R ⧸ LinearMap.range (Algebra.linearMap R (FractionRing R))
+  LeanCategories.Modules.FractionRingQuotient R
 
 /-- The quotient map `Frac(R) → Frac(R) / R`. -/
 def fractionValueProjection :
