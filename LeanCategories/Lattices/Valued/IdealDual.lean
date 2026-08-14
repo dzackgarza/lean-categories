@@ -161,16 +161,20 @@ noncomputable def idealDualPairingMap (L : IntegralLatticeCat R) (I : Ideal R) :
       rw [fractionalIdealDual, LinearMap.mem_ker] at hx'
       have hxy := LinearMap.congr_fun hx' y
       change fractionalIdealValueProjection R I (f y) = 0 at hxy
-      simpa [fractionalIdealValueProjection] using hxy
+      rw [fractionalIdealValueProjection, Submodule.mkQ_apply,
+        Submodule.Quotient.mk_eq_zero] at hxy
+      exact hxy
     exact
       { toFun := fun y => e.symm ⟨f y, hx y⟩
         map_add' := by
           intro y z
           apply e.injective
+          apply Subtype.ext
           simp [e, f]
         map_smul' := by
           intro r y
           apply e.injective
+          apply Subtype.ext
           simp [e, f] }
   map_add' x y := by
     apply LinearMap.ext
