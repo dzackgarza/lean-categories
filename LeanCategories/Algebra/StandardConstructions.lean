@@ -19,6 +19,7 @@ public import Mathlib.Algebra.MvPolynomial.Basic
 public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Basic
 public import Mathlib.RingTheory.LaurentSeries
+public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Basic
 public import Mathlib.LinearAlgebra.TensorAlgebra.Grading
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
@@ -54,6 +55,13 @@ instance : Algebra R (LaurentSeries R) :=
 
 /-- The formal Laurent-series algebra over `R`. -/
 abbrev laurentSeries : AlgebraCat R := .of R (LaurentSeries R)
+
+/-- The localization of `R` at a submonoid, as an `R`-algebra. -/
+abbrev localization (M : Submonoid R) : AlgebraCat R := .of R (Localization M)
+
+/-- The canonical structure morphism into the localization algebra. -/
+abbrev localizationMap (M : Submonoid R) : R →ₐ[R] (localization R M).carrier :=
+  algebraMap R (Localization M)
 
 end AlgebraCat
 end LeanCategories.Algebra
