@@ -44,6 +44,13 @@ abbrev FieldCat : Type (u + 1) :=
 abbrev LocalRingCat : Type (u + 1) :=
   ObjectProperty.FullSubcategory (C := CommRingCat.{u}) (fun R => IsLocalRing R)
 
+/-- The canonical inclusion of local commutative rings into commutative rings. -/
+abbrev localRingIncl : LocalRingCat.{u} ⥤ CommRingCat.{u} :=
+  ObjectProperty.ι (C := CommRingCat.{u}) (fun R => IsLocalRing R)
+
+/-- The forgetful functor from local commutative rings to commutative rings. -/
+abbrev localRingForgetful : LocalRingCat.{u} ⥤ CommRingCat.{u} := localRingIncl
+
 abbrev DedekindDomainCat : Type (u + 1) :=
   ObjectProperty.FullSubcategory (C := CommRingCat.{u}) (fun R => IsDedekindDomain R)
 
