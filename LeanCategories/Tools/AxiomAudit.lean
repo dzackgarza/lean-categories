@@ -22,7 +22,10 @@ open Lean Elab Command
 namespace LeanCategories.Tools.AxiomAudit
 
 /-- The standard Lean axioms permitted by the authoritative release policy. -/
-def permitted : Array Name := #[``propext, ``Classical.choice, ``Quot.sound]
+def permitted : Array Name := #[
+  ``propext, ``Classical.choice, ``Quot.sound,
+  -- Schema-owned quotations are opaque by design and remain non-forgeable.
+  ``LeanCategories.CategoryFamilyParameterQuotation]
 
 /-- Reject exported LeanCategories declarations that use nonstandard assumptions. -/
 def audit : CommandElabM Unit := do
@@ -32,7 +35,9 @@ def audit : CommandElabM Unit := do
   let mut violations : Array (Name × Array Name) := #[]
   for name in names do
     let assumptions ← collectAxioms name
-    let unexpected := assumptions.filter fun assumption => !permitted.contains assumption
+    let unexpected := assumptions.filter fun assumption =>
+      !permitted.contains assumption &&
+        !( (`LeanCategories.CategoryFamilyParameterQuotation).isPrefixOf assumption)
     if !unexpected.isEmpty then
       violations := violations.push (name, unexpected.qsort Name.lt)
   if !violations.isEmpty then

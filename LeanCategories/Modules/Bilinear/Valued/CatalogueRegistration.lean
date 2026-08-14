@@ -32,7 +32,8 @@ noncomputable def bilinModuleFamilyTransport :=
     (Cat.of (BilinModuleCat parameter.1 parameter.2) : ObjCat.{u + 1, u}))
 
 noncomputable def bilinModuleFamilyRealization :
-    CategoryFamilyRealization.{u + 1, u, u, u + 1} CategoryFamilyId.bilinModule .commRingModule where
+    CategoryFamilyRealization.{u + 1, u, u + 1, u + 1} CategoryFamilyId.bilinModule .commRingModule
+      (P := Discrete (Σ R : CommRingCat.{u}, ModuleCat.{u} R)) where
   transport := bilinModuleFamilyTransport
   transportSemantics := .discrete
 noncomputable def bilWFormFamilyTransport :=
@@ -42,7 +43,8 @@ noncomputable def bilWFormFamilyTransport :=
     (Cat.of (BilWFormCat R) : ObjCat.{u + 1, u}))
 
 noncomputable def bilWFormFamilyRealization :
-    CategoryFamilyRealization.{u + 1, u, u, u + 1} CategoryFamilyId.bilWForm .commRing where
+    CategoryFamilyRealization.{u + 1, u, u + 1, u + 1} CategoryFamilyId.bilWForm .commRing
+      (P := Discrete (CommRingCat.{u})) where
   transport := bilWFormFamilyTransport
   transportSemantics := .discrete
 noncomputable def bilinModuleCategory (R : Type u) [CommRing R]
@@ -91,7 +93,7 @@ noncomputable def bilinModuleForgetRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :
     FunctorRealization BilinModuleForget (bilinModuleCategory R W)
       (Modules.Mathlib.ModulesOf (RingCat.of R))
-      (LeanCategories.Modules.Bilinear.Valued.forget R W).toCatHom :=
+      (LeanCategories.Modules.Bilinear.Valued.forget R W) :=
   { sourceRealization := bilinModuleRealization R W
     targetRealization := LeanCategories.Modules.CatalogueRegistration.modulesRealization (RingCat.of R) }
 
@@ -100,7 +102,7 @@ noncomputable def bilinModuleChangeValueRealization (R : Type u) [CommRing R]
     [AddCommGroup W'] [Module R W'] (f : W →ₗ[R] W') :
     FunctorRealization BilinModuleChangeValue (bilinModuleCategory R W)
       (bilinModuleCategory R W')
-      (LeanCategories.Modules.Bilinear.Valued.changeValue R W f).toCatHom :=
+      (LeanCategories.Modules.Bilinear.Valued.changeValue R W f) :=
   { sourceRealization := bilinModuleRealization R W
     targetRealization :=
        { familyFibre := some (.mk bilinModuleFamilyRealization {
@@ -113,7 +115,7 @@ noncomputable def bilinModuleBaseChangeRealization (R : Type u) [CommRing R]
     (S : Type u) [CommRing S] [Algebra R S] :
     FunctorRealization BilinModuleBaseChange (bilinModuleCategory R W)
       (bilinModuleCategory S (TensorProduct R S W))
-      (LeanCategories.Lattices.Valued.baseChangeBilin R W S).toCatHom :=
+      (LeanCategories.Lattices.Valued.baseChangeBilin R W S) :=
   { sourceRealization := bilinModuleRealization R W
     targetRealization :=
        { familyFibre := some (.mk bilinModuleFamilyRealization {
@@ -125,7 +127,7 @@ noncomputable def bilWFormBaseChangeRealization (R : Type u) [CommRing R]
     (S : Type u) [CommRing S] [Algebra R S] :
     FunctorRealization BilWFormBaseChange (bilWFormCategory R)
       (bilWFormCategory S)
-      (LeanCategories.Lattices.Valued.baseChangeBilWForm R S).toCatHom :=
+      (LeanCategories.Lattices.Valued.baseChangeBilWForm R S) :=
   { sourceRealization := bilWFormRealization R
     targetRealization :=
        { familyFibre := some (.mk bilWFormFamilyRealization {

@@ -609,10 +609,10 @@ def validateRegisteredCategoryEndpointRealization (state : RegistryState) (expre
       let witness := packed.getAppArgs.back!
       let witnessType ← withTransparency .all <| inferType witness
       let witnessTypeArgs := witnessType.getAppArgs
-      unless witnessTypeArgs.size >= 4 do
+      unless witnessTypeArgs.size >= 5 do
         throwError "family endpoint realization has a malformed fibre witness"
       let witnessIdentifier := witnessTypeArgs[1]!
-      let witnessRealization := witnessTypeArgs[3]!
+      let witnessRealization := witnessTypeArgs[4]!
       let familyValue ← mkAppM ``LeanCategories.CategoryFamilyId.mk #[mkStrLit family.raw]
       unless ← withTransparency .all <| isDefEq witnessIdentifier familyValue do
         throwError "family endpoint realization has the wrong family witness"
@@ -789,7 +789,12 @@ def validateOpaquePortRealization (state : RegistryState) (entry : StructuralPor
       throwError "opaque port realization {entry.realization} has the wrong expression"
     let declarationValue ← mkConstWithFreshMVarLevels entry.declaration
     let declarationValue := mkAppN declarationValue arguments
-    unless ← withTransparency .all <| isDefEq declarationValue realizationArgs[5]! do
+    let declarationType ← whnf (← inferType declarationValue)
+    let realizedDeclarationValue ← if declarationType.isAppOf ``CategoryTheory.Cat.Hom then
+        mkAppM ``CategoryTheory.Cat.Hom.toFunctor #[declarationValue]
+      else
+        pure declarationValue
+    unless ← withTransparency .all <| isDefEq realizedDeclarationValue realizationArgs[5]! do
       throwError "opaque port declaration {entry.declaration} is not its realization"
     let sourceRealization ← withTransparency .all do
       mkAppM ``LeanCategories.FunctorRealization.sourceRealization #[realizationValue]
@@ -850,10 +855,10 @@ def validateCategoryDeclarationRealization (state : RegistryState) (expression :
         let witness := packedFields.back!
         let witnessType ← withTransparency .all <| inferType witness
         let witnessTypeArgs := witnessType.getAppArgs
-        unless witnessTypeArgs.size >= 4 do
+        unless witnessTypeArgs.size >= 5 do
           throwError "registry family category {declaration} has malformed realization type"
         let witnessIdentifier := witnessTypeArgs[1]!
-        let witnessRealization := witnessTypeArgs[3]!
+        let witnessRealization := witnessTypeArgs[4]!
         let familyValue ← mkAppM ``LeanCategories.CategoryFamilyId.mk #[mkStrLit family.raw]
         unless ← withTransparency .all <| isDefEq witnessIdentifier familyValue do
           throwError "registry family category {declaration} has the wrong family witness"
@@ -941,7 +946,12 @@ def validateFunctorDeclarationRealization (state : RegistryState) {source target
     let declarationValue ← mkConstWithFreshMVarLevels declaration
     let declarationValue := mkAppN declarationValue arguments
     let declarationType ← whnf (← inferType declarationValue)
-    unless ← withTransparency .all <| isDefEq declarationValue realizationArgs[5]! do
+    let declarationIsCatHom := declarationType.isAppOf ``CategoryTheory.Cat.Hom
+    let realizedDeclarationValue ← if declarationIsCatHom then
+        mkAppM ``CategoryTheory.Cat.Hom.toFunctor #[declarationValue]
+      else
+        pure declarationValue
+    unless ← withTransparency .all <| isDefEq realizedDeclarationValue realizationArgs[5]! do
       throwError
           "registry functor declaration {declaration} is not the realized functor {realization}"
     let sourceRealization ← withTransparency .all do
@@ -990,26 +1000,17 @@ def validateFunctorDeclarationRealization (state : RegistryState) {source target
     validateCategoryEndpointRealization state source sourceArgs[1]! sourceRealization
     validateCategoryEndpointRealization state target targetArgs[1]! targetRealization
     let realizationFunctorType ← whnf (← inferType realizationArgs[5]!)
-    let declarationArgs := declarationType.getAppArgs
     let realizationArgs' := realizationFunctorType.getAppArgs
-    unless declarationArgs.size >= 2 && realizationArgs'.size >= 2 do
+    let declarationFunctorType ← whnf (← inferType realizedDeclarationValue)
+    let declarationFunctorArgs := declarationFunctorType.getAppArgs
+    unless declarationFunctorArgs.size >= 2 && realizationArgs'.size >= 2 do
       throwError "registry functor declaration {declaration} has malformed endpoints"
-    if declarationType.isAppOfArity ``CategoryTheory.Functor 4 then
-      let source ← mkAppM ``CategoryTheory.Cat.of #[declarationArgs[0]!]
-      let target ← mkAppM ``CategoryTheory.Cat.of #[declarationArgs[1]!]
-      unless ← isDefEq source realizationArgs'[0]! do
-        throwError
-          "registry functor declaration {declaration} source does not match realization {realization}"
-      unless ← isDefEq target realizationArgs'[1]! do
-        throwError
-          "registry functor declaration {declaration} target does not match realization {realization}"
-    else
-      unless ← isDefEq declarationArgs[0]! realizationArgs'[0]! do
-        throwError
-          "registry functor declaration {declaration} source does not match realization {realization}"
-      unless ← isDefEq declarationArgs[1]! realizationArgs'[1]! do
-          throwError
-            "registry functor declaration {declaration} target does not match realization {realization}"
+    unless ← isDefEq declarationFunctorArgs[0]! realizationArgs'[0]! do
+      throwError
+        "registry functor declaration {declaration} source does not match realization {realization}"
+    unless ← isDefEq declarationFunctorArgs[1]! realizationArgs'[1]! do
+      throwError
+        "registry functor declaration {declaration} target does not match realization {realization}"
 
 private def classifierForgetConstantProbeHost : CategoryExpr := .atom ⟨"probe.classifier.host"⟩
 private def classifierForgetConstantProbeId : ClassifierId := ⟨"probe.classifier"⟩
@@ -1042,7 +1043,7 @@ private noncomputable def classifierForgetConstantProbeFunctorRealization :
     FunctorRealization
       (.classifierForget classifierForgetConstantProbeId classifierForgetConstantProbeHost)
       classifierForgetConstantProbeCategory classifierForgetConstantProbeCategory
-      classifierForgetConstantProbeFunctor :=
+      classifierForgetConstantProbeFunctor.toFunctor :=
   { sourceRealization := {}
     targetRealization := classifierForgetConstantProbeHostRealization }
 
@@ -1080,7 +1081,7 @@ def ensureCategoryFamilyRealization (identifier : CategoryFamilyId) (schema : Ca
     throwError
       "registry realization {realization} must return CategoryFamilyRealization ..., but returns {result}"
   let arguments := result.getAppArgs
-  unless arguments.size == 2 do
+  unless arguments.size == 3 do
     throwError "registry realization {realization} has malformed schema parameters"
   let registeredIdentifier := Lean.toExpr identifier
   unless ← withTransparency .all <| isDefEq registeredIdentifier arguments[0]! do
@@ -1137,6 +1138,14 @@ def validateCategoryFamilyTransportDecl (_identifier : CategoryFamilyId)
   | .discrete, .commRingNat => do
       let canonicalTransport ← withTransparency .all do
         mkAppM ``LeanCategories.CategoryFamilyRealization.canonicalDiscreteCommRingNatTransport
+          #[realizationValue]
+      unless ← withTransparency .all <| isDefEq transportValue canonicalTransport do
+        throwError
+          "registry equality-only transport is not the canonical discrete family transport"
+  | .discrete, .commRingIndexType => do
+      let canonicalTransport ← withTransparency .all do
+        mkAppM
+          ``LeanCategories.CategoryFamilyRealization.canonicalDiscreteCommRingIndexTypeTransport
           #[realizationValue]
       unless ← withTransparency .all <| isDefEq transportValue canonicalTransport do
         throwError
@@ -1557,6 +1566,7 @@ private def registryManifestSchema : CategoryFamilySchema → String
   | .commRing => "commRing"
   | .commRingModule => "commRingModule"
   | .commRingNat => "commRingNat"
+  | .commRingIndexType => "commRingIndexType"
   | .domain => "domain"
 
 private def registryManifest (state : RegistryState) : RegistryManifest :=

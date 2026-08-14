@@ -32,7 +32,8 @@ noncomputable def quadModuleFamilyTransport :=
     (Cat.of (QuadModuleCat parameter.1 parameter.2) : ObjCat.{u + 1, u}))
 
 noncomputable def quadModuleFamilyRealization :
-    CategoryFamilyRealization.{u + 1, u, u, u + 1} CategoryFamilyId.quadModule .commRingModule where
+    CategoryFamilyRealization.{u + 1, u, u + 1, u + 1} CategoryFamilyId.quadModule .commRingModule
+      (P := Discrete (Σ R : CommRingCat.{u}, ModuleCat.{u} R)) where
   transport := quadModuleFamilyTransport
   transportSemantics := .discrete
 
@@ -43,7 +44,8 @@ noncomputable def quadWFormFamilyTransport :=
     (Cat.of (QuadWFormCat R) : ObjCat.{u + 1, u}))
 
 noncomputable def quadWFormFamilyRealization :
-    CategoryFamilyRealization.{u + 1, u, u, u + 1} CategoryFamilyId.quadWForm .commRing where
+    CategoryFamilyRealization.{u + 1, u, u + 1, u + 1} CategoryFamilyId.quadWForm .commRing
+      (P := Discrete (CommRingCat.{u})) where
   transport := quadWFormFamilyTransport
   transportSemantics := .discrete
 noncomputable def quadModuleCategory (R : Type u) [CommRing R]
@@ -72,7 +74,7 @@ noncomputable def quadModuleForgetRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :
     FunctorRealization QuadModuleForget (quadModuleCategory R W)
       (Modules.Mathlib.ModulesOf (RingCat.of R))
-      (LeanCategories.Modules.Quadratic.Valued.forget R W).toCatHom :=
+      (LeanCategories.Modules.Quadratic.Valued.forget R W) :=
   { sourceRealization := quadModuleRealization R W
     targetRealization := LeanCategories.Modules.CatalogueRegistration.modulesRealization (RingCat.of R) }
 
@@ -86,7 +88,7 @@ noncomputable def quadModuleChangeValueRealization (R : Type u) [CommRing R]
     [AddCommGroup W'] [Module R W'] (f : W →ₗ[R] W') :
     FunctorRealization QuadModuleChangeValue (quadModuleCategory R W)
       (quadModuleCategory R W')
-      (LeanCategories.Modules.Quadratic.Valued.changeValue R W f).toCatHom :=
+      (LeanCategories.Modules.Quadratic.Valued.changeValue R W f) :=
   { sourceRealization := quadModuleRealization R W
     targetRealization :=
        { familyFibre := some (.mk quadModuleFamilyRealization {
@@ -97,7 +99,7 @@ noncomputable def quadModuleChangeValueRealization (R : Type u) [CommRing R]
 noncomputable def quadWFormValueRealization (R : Type u) [CommRing R] :
     FunctorRealization QuadWFormValue (quadWFormCategory R)
       (Modules.Mathlib.ModulesOf (RingCat.of R))
-      (LeanCategories.Modules.Quadratic.Valued.valueProjection R).toCatHom :=
+      (LeanCategories.Modules.Quadratic.Valued.valueProjection R) :=
   { sourceRealization := quadWFormRealization R
     targetRealization := LeanCategories.Modules.CatalogueRegistration.modulesRealization
       (RingCat.of R) }
@@ -105,7 +107,7 @@ noncomputable def quadWFormValueRealization (R : Type u) [CommRing R] :
 noncomputable def quadWFormCarrierRealization (R : Type u) [CommRing R] :
     FunctorRealization QuadWFormCarrier (quadWFormCategory R)
       (Modules.Mathlib.ModulesOf (RingCat.of R))
-      (LeanCategories.Modules.Quadratic.Valued.carrierProjection R).toCatHom :=
+      (LeanCategories.Modules.Quadratic.Valued.carrierProjection R) :=
   { sourceRealization := quadWFormRealization R
     targetRealization := LeanCategories.Modules.CatalogueRegistration.modulesRealization
       (RingCat.of R) }

@@ -43,7 +43,7 @@ def setsIdentityExpr : FunctorExpr Foundation.Sets Foundation.Sets :=
 
 noncomputable def setsIdentityRealization :
     FunctorRealization setsIdentityExpr Foundation.Mathlib.Sets
-      Foundation.Mathlib.Sets setsIdentity :=
+      Foundation.Mathlib.Sets setsIdentity.toFunctor :=
   { sourceRealization := setsRealization, targetRealization := setsRealization }
 
 normalized_registry .category

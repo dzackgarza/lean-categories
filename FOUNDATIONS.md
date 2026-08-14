@@ -949,11 +949,10 @@ but the two categories are not identified.
 
 **Lean realization status (2026-08-14).** `LeanCategories.Modules.Framed` defines the
 arbitrary-index core declarations `GenFrame R I`, `BasisFrame R I`, and `Coord R I`,
-using the standard free module `Finsupp I R`. It also defines the faithful functor
-`Coord.fromBasisFrame`. The current catalogue rows use the finite specialization
-`I := Fin n`, as does `CoordLatticeCat R n`. The arbitrary-index catalogue schema and
-arbitrary-index lattice-coordinate category remain open because of the index-parameter/
-universe boundary.
+using the standard free module `Finsupp I R`. The catalogue registers their arbitrary-index
+families, categories, and forgetful functors with independent ring, index, object, and hom
+universes. The finite rows remain the `I := Fin n` specializations. The arbitrary-index
+lattice-coordinate category remains open.
 
 ### Remark 13.7 (Freeness versus a chosen basis)
 

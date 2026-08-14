@@ -35,10 +35,10 @@ includes even integral lattices as a full subcategory. It also includes coordina
 integral lattices as a categorical pullback. The comparison functor forgets the selected
 coordinates and returns the intrinsic lattice.
 
-The current catalogue rows and `CoordLatticeCat R n` are finite specializations with
-`I := Fin n`. The arbitrary-index catalogue schema and arbitrary-index lattice-coordinate
-category remain open because of the index-parameter/universe boundary. No matrix, Gram,
-or determinant comparison is claimed complete.
+The current finite catalogue rows remain the `I := Fin n` specializations. The catalogue
+also registers the arbitrary-index `GenFrame(R, I)`, `BasisFrame(R, I)`, and `Coord(R, I)`
+families, categories, and forgetful functors. The arbitrary-index lattice-coordinate
+category remains open. No matrix, Gram, or determinant comparison is claimed complete.
 
 Scheme theory, stacks, manifolds, and period constructions remain roadmap targets.
 Issues #38, #39, and #40 own their prerequisite order. No placeholder source represents

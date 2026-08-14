@@ -45,7 +45,7 @@ def multiplicativePortExpr :
       Algebra.Catalogue.Magmas.Magmas := .opaquePort multiplicativePortId
 noncomputable def multiplicativePortRealization :
     FunctorRealization multiplicativePortExpr Exceptional.Mathlib.MagmasWithTwoOperations
-      Algebra.Magmas Exceptional.Mathlib.multiplicativePort where
+      Algebra.Magmas Exceptional.Mathlib.multiplicativePort.toFunctor where
   sourceRealization := m2oRealization
   targetRealization := LeanCategories.Algebra.CatalogueRegistration.magmasRealization
 
@@ -54,14 +54,14 @@ def additivePortExpr :
       Algebra.Catalogue.Magmas.Magmas := .opaquePort additivePortId
 noncomputable def additivePortRealization :
     FunctorRealization additivePortExpr Exceptional.Mathlib.MagmasWithTwoOperations
-      Algebra.Magmas Exceptional.Mathlib.additivePort where
+      Algebra.Magmas Exceptional.Mathlib.additivePort.toFunctor where
   sourceRealization := m2oRealization
   targetRealization := LeanCategories.Algebra.CatalogueRegistration.magmasRealization
 
 def crystalsPortExpr : FunctorExpr CrystalsExpr Foundation.Sets := .opaquePort crystalsPortId
 noncomputable def crystalsPortRealization :
     FunctorRealization crystalsPortExpr Exceptional.Mathlib.Crystals Foundation.Mathlib.Sets
-      Exceptional.Mathlib.crystalsToSets where
+      Exceptional.Mathlib.crystalsToSets.toFunctor where
   sourceRealization := crystalsRealization
   targetRealization := LeanCategories.Foundation.CatalogueRegistration.setsRealization
 

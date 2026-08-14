@@ -24,7 +24,7 @@ namespace LeanCategories
 
 open CategoryTheory
 
-universe u
+universe u v
 
 /-- The bounded dependent parameter schemas used by registered families. -/
 inductive CategoryFamilySchema
@@ -32,6 +32,7 @@ inductive CategoryFamilySchema
   | commRing
   | commRingModule
   | commRingNat
+  | commRingIndexType
   | domain
   deriving DecidableEq, Repr, Inhabited, Lean.ToExpr
 
@@ -62,6 +63,9 @@ def moduleParameter : CategoryFamilyParameter :=
 def natParameter : CategoryFamilyParameter :=
   { name := "n", kind := ParameterKindId.nat, ids := [ParameterId.n] }
 
+def indexTypeParameter : CategoryFamilyParameter :=
+  { name := "I", kind := ParameterKindId.indexType, ids := [ParameterId.i] }
+
 def domainParameter : CategoryFamilyParameter :=
   { name := "domain", kind := ParameterKindId.domain, ids := [ParameterId.domain],
     dependency := some 0 }
@@ -71,6 +75,7 @@ def parameterMetadata : CategoryFamilySchema → Array CategoryFamilyParameter
   | .commRing => #[commRingParameter]
   | .commRingModule => #[commRingParameter, moduleParameter]
   | .commRingNat => #[commRingParameter, natParameter]
+  | .commRingIndexType => #[commRingParameter, indexTypeParameter]
   | .domain => #[commRingParameter, domainParameter]
 
 def dependencyParameterId (schema : CategoryFamilySchema)
@@ -79,12 +84,18 @@ def dependencyParameterId (schema : CategoryFamilySchema)
   let dependencyParameter ← schema.parameterMetadata[dependency]?
   dependencyParameter.ids.head?
 
-@[reducible] def Parameters : CategoryFamilySchema → Type (u + 1)
-  | .ring => RingCat.{u}
-  | .commRing => Discrete (CommRingCat.{u})
-  | .commRingModule => Discrete (Σ R : CommRingCat.{u}, ModuleCat.{u} R)
-  | .commRingNat => Discrete (Σ _R : CommRingCat.{u}, Nat)
-  | .domain => Discrete (PSigma fun _R : CommRingCat.{u} => IsDomain _R)
+@[reducible] def Parameters : CategoryFamilySchema → Type (max (u + 1) (v + 1))
+  | .ring => ULift.{v + 1} (RingCat.{u})
+  | .commRing => ULift.{v + 1} (Discrete (CommRingCat.{u}))
+  | .commRingModule =>
+      ULift.{v + 1} (Discrete (Σ R : CommRingCat.{u}, ModuleCat.{u} R))
+  | .commRingNat => ULift.{v + 1} (Discrete (Σ _R : CommRingCat.{u}, Nat))
+  | .commRingIndexType => Discrete (Σ _R : CommRingCat.{u}, Type v)
+  | .domain => ULift.{v + 1} (Discrete (PSigma fun _R : CommRingCat.{u} => IsDomain _R))
+
+/-- Independent-universe carrier for `commRingIndexType` family parameters. -/
+def indexTypeParameters : Type (max (u + 1) (v + 1)) :=
+  Discrete (Σ _R : CommRingCat.{u}, Type v)
 
 end CategoryFamilySchema
 
@@ -130,6 +141,7 @@ inductive ParameterSort
   | commRing
   | module (base : ParameterExpr)
   | nat
+  | indexType
   | domain (base : ParameterExpr)
 
 def parameterSort (schema : CategoryFamilySchema) (args : Array ParameterExpr) :
@@ -140,6 +152,7 @@ def parameterSort (schema : CategoryFamilySchema) (args : Array ParameterExpr) :
           if parameter.kind == ParameterKindId.ringObject then some .ring
           else if parameter.kind == ParameterKindId.commRingObject then some .commRing
           else if parameter.kind == ParameterKindId.nat then some .nat
+          else if parameter.kind == ParameterKindId.indexType then some .indexType
           else do
             let base ← dependencyParameterId schema parameter
             if parameter.kind == ParameterKindId.domain then
@@ -169,6 +182,7 @@ def parameterSort (schema : CategoryFamilySchema) (args : Array ParameterExpr) :
 def parameterSortCompatible : ParameterSort → ParameterSort → Bool
   | .ring, .ring | .commRing, .commRing => true
   | .nat, .nat => true
+  | .indexType, .indexType => true
   | .module actual, .module expected => actual == expected
   | .domain actual, .domain expected => actual == expected
   | _, _ => false
@@ -182,6 +196,8 @@ def parameterExpectedSort (schema : CategoryFamilySchema) (args : Array Paramete
     some .commRing
   else if parameter.kind == ParameterKindId.nat then
     some .nat
+  else if parameter.kind == ParameterKindId.indexType then
+    some .indexType
   else
     let dependency ← parameter.dependency
     let base ← args[dependency]?
@@ -195,9 +211,10 @@ def parameterSortAt (schema : CategoryFamilySchema) (args : Array ParameterExpr)
   let argument ← args[index]?
   match argument with
   | .variable id =>
-      let parameter ← schema.parameterMetadata.find?
-        (fun parameter => parameter.ids.contains id)
-      if parameter.kind == ParameterKindId.moduleObject then
+      let parameter ← schema.parameterMetadata[index]?
+      if !parameter.ids.contains id then
+        none
+      else if parameter.kind == ParameterKindId.moduleObject then
         let dependency ← parameter.dependency
         let base ← args[dependency]?
         some (.module base)
@@ -209,6 +226,8 @@ def parameterSortAt (schema : CategoryFamilySchema) (args : Array ParameterExpr)
         some .ring
       else if parameter.kind == ParameterKindId.nat then
         some .nat
+      else if parameter.kind == ParameterKindId.indexType then
+        some .indexType
       else
         some .commRing
   | _ => parameterSort schema args argument

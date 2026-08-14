@@ -81,6 +81,7 @@ Current work: `#33` through `#36`, and milestone `#51`.
 - [x] Arbitrary-index `GenFrame R I`, `BasisFrame R I`, and `Coord R I` core definitions and
   their forgetful, inclusion, and coordinate functors
 - [x] Existing `commRingNat` catalogue rows are finite specializations at `I := Fin n`
+- [x] Arbitrary-index catalogue families, categories, and frame forgetful functors
 - [x] `IntegralLatticeCat(R)`, `CoordLatticeCat(R, n)`,
   `FractionFieldPerfectFiniteProjectiveLatticeCat(R)`, and `UnimodularLatticeCat(R)`
 - [ ] Arbitrary-index lattice-coordinate categories

@@ -89,6 +89,7 @@ def s : ParameterId := ⟨"S"⟩
 def w : ParameterId := ⟨"W"⟩
 def wPrime : ParameterId := ⟨"W'"⟩
 def n : ParameterId := ⟨"n"⟩
+def i : ParameterId := ⟨"I"⟩
 def domain : ParameterId := ⟨"domain"⟩
 end ParameterId
 
@@ -102,6 +103,7 @@ def ringObject : ParameterKindId := ⟨"parameter-kind.ring-object"⟩
 def commRingObject : ParameterKindId := ⟨"parameter-kind.comm-ring-object"⟩
 def moduleObject : ParameterKindId := ⟨"parameter-kind.module-object"⟩
 def nat : ParameterKindId := ⟨"parameter-kind.nat"⟩
+def indexType : ParameterKindId := ⟨"parameter-kind.index-type"⟩
 def domain : ParameterKindId := ⟨"parameter-kind.domain"⟩
 end ParameterKindId
 

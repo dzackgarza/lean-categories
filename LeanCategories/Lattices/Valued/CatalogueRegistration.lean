@@ -36,7 +36,8 @@ noncomputable def latticeFamilyTransport :=
     (Cat.of (LatticeCat parameter.1 parameter.2) : ObjCat.{u + 1, u}))
 
 noncomputable def latticeFamilyRealization :
-    CategoryFamilyRealization.{u + 1, u, u, u + 1} CategoryFamilyId.lattice .commRingModule where
+    CategoryFamilyRealization.{u + 1, u, u + 1, u + 1} CategoryFamilyId.lattice .commRingModule
+      (P := Discrete (Σ R : CommRingCat.{u}, ModuleCat.{u} R)) where
   transport := latticeFamilyTransport
   transportSemantics := .discrete
 noncomputable def finiteProjectiveLatticeFamilyTransport :=
@@ -47,8 +48,9 @@ noncomputable def finiteProjectiveLatticeFamilyTransport :=
       (Cat.of (FiniteProjectiveLatticeCat parameter.1 parameter.2) : ObjCat.{u + 1, u}))
 
 noncomputable def finiteProjectiveLatticeFamilyRealization :
-    CategoryFamilyRealization.{u + 1, u, u, u + 1}
-      CategoryFamilyId.finiteProjectiveLattice .commRingModule where
+    CategoryFamilyRealization.{u + 1, u, u + 1, u + 1}
+      CategoryFamilyId.finiteProjectiveLattice .commRingModule
+      (P := Discrete (Σ R : CommRingCat.{u}, ModuleCat.{u} R)) where
   transport := finiteProjectiveLatticeFamilyTransport
   transportSemantics := .discrete
 noncomputable def finiteFreeLatticeFamilyTransport :=
@@ -59,7 +61,8 @@ noncomputable def finiteFreeLatticeFamilyTransport :=
       (Cat.of (FiniteFreeLatticeCat parameter.1 parameter.2) : ObjCat.{u + 1, u}))
 
 noncomputable def finiteFreeLatticeFamilyRealization :
-    CategoryFamilyRealization.{u + 1, u, u, u + 1} CategoryFamilyId.finiteFreeLattice .commRingModule where
+    CategoryFamilyRealization.{u + 1, u, u + 1, u + 1} CategoryFamilyId.finiteFreeLattice .commRingModule
+      (P := Discrete (Σ R : CommRingCat.{u}, ModuleCat.{u} R)) where
   transport := finiteFreeLatticeFamilyTransport
   transportSemantics := .discrete
 noncomputable def evenLatticeFamilyTransport :=
@@ -69,7 +72,8 @@ noncomputable def evenLatticeFamilyTransport :=
     (Cat.of (EvenLatticeCat (R := R)) : ObjCat.{u + 1, u}))
 
 noncomputable def evenLatticeFamilyRealization :
-    CategoryFamilyRealization.{u + 1, u, u, u + 1} CategoryFamilyId.evenLattice .commRing where
+    CategoryFamilyRealization.{u + 1, u, u + 1, u + 1} CategoryFamilyId.evenLattice .commRing
+      (P := Discrete (CommRingCat.{u})) where
   transport := evenLatticeFamilyTransport
   transportSemantics := .discrete
 
@@ -80,8 +84,8 @@ noncomputable def integralLatticeFamilyTransport :=
       (Cat.of (IntegralLatticeCat R) : ObjCat.{u + 1, u}))
 
 noncomputable def integralLatticeFamilyRealization :
-    CategoryFamilyRealization.{u + 1, u, u, u + 1}
-      CategoryFamilyId.integralLattice .commRing where
+    CategoryFamilyRealization.{u + 1, u, u + 1, u + 1}
+      CategoryFamilyId.integralLattice .commRing (P := Discrete (CommRingCat.{u})) where
   transport := integralLatticeFamilyTransport
   transportSemantics := .discrete
 
@@ -93,8 +97,9 @@ noncomputable def coordLatticeFamilyTransport :=
       (Cat.of (CoordLatticeCat parameter.1 parameter.2) : ObjCat.{u + 1, u}))
 
 noncomputable def coordLatticeFamilyRealization :
-    CategoryFamilyRealization.{u + 1, u, u, u + 1}
-      CategoryFamilyId.coordLattice .commRingNat where
+    CategoryFamilyRealization.{u + 1, u, u + 1, u + 1}
+      CategoryFamilyId.coordLattice .commRingNat
+      (P := Discrete (Σ _R : CommRingCat.{u}, Nat)) where
   transport := coordLatticeFamilyTransport
   transportSemantics := .discrete
 
@@ -108,8 +113,9 @@ noncomputable def fractionFieldPerfectFiniteProjectiveLatticeFamilyTransport :=
         ObjCat.{u + 1, u}))
 
 noncomputable def fractionFieldPerfectFiniteProjectiveLatticeFamilyRealization :
-    CategoryFamilyRealization.{u + 1, u, u, u + 1}
-      CategoryFamilyId.fractionFieldPerfectFiniteProjectiveLattice .domain where
+    CategoryFamilyRealization.{u + 1, u, u + 1, u + 1}
+      CategoryFamilyId.fractionFieldPerfectFiniteProjectiveLattice .domain
+      (P := Discrete (PSigma fun R : CommRingCat.{u} => IsDomain R)) where
   transport := fractionFieldPerfectFiniteProjectiveLatticeFamilyTransport
   transportSemantics := .discrete
 
@@ -122,8 +128,9 @@ noncomputable def unimodularLatticeFamilyTransport :=
       (Cat.of (UnimodularLatticeCat parameter.1) : ObjCat.{u + 1, u}))
 
 noncomputable def unimodularLatticeFamilyRealization :
-    CategoryFamilyRealization.{u + 1, u, u, u + 1}
-      CategoryFamilyId.unimodularLattice .domain where
+    CategoryFamilyRealization.{u + 1, u, u + 1, u + 1}
+      CategoryFamilyId.unimodularLattice .domain
+      (P := Discrete (PSigma fun R : CommRingCat.{u} => IsDomain R)) where
   transport := unimodularLatticeFamilyTransport
   transportSemantics := .discrete
 noncomputable def latticeCategory (R : Type u) [CommRing R]
@@ -233,7 +240,7 @@ noncomputable def latticeChangeValueRealization (R : Type u) [CommRing R]
     [AddCommGroup W'] [Module R W'] (f : W →ₗ[R] W') :
     FunctorRealization LatticeChangeValue (latticeCategory R W)
       (latticeCategory R W')
-      (LeanCategories.Lattices.Valued.changeValue R W f).toCatHom :=
+      (LeanCategories.Lattices.Valued.changeValue R W f) :=
   { sourceRealization := latticeRealization R W
     targetRealization :=
        { familyFibre := some (.mk latticeFamilyRealization {
@@ -246,7 +253,7 @@ noncomputable def latticeBaseChangeRealization (R : Type u) [CommRing R]
     (S : Type u) [CommRing S] [Algebra R S] :
     FunctorRealization LatticeBaseChange (latticeCategory R W)
       (latticeCategory S (TensorProduct R S W))
-      (LeanCategories.Lattices.Valued.baseChange R W S).toCatHom :=
+      (LeanCategories.Lattices.Valued.baseChange R W S) :=
   { sourceRealization := latticeRealization R W
     targetRealization :=
        { familyFibre := some (.mk latticeFamilyRealization {
@@ -258,14 +265,14 @@ noncomputable def finiteProjectiveForgetRealization (R : Type u) [CommRing R]
     (W : Type u) [AddCommGroup W] [Module R W] :
     FunctorRealization FiniteProjectiveForget (finiteProjectiveLatticeCategory R W)
       (Modules.Mathlib.ModulesOf (RingCat.of R))
-    (LeanCategories.Lattices.Valued.finiteProjectiveForget R W).toCatHom :=
+    (LeanCategories.Lattices.Valued.finiteProjectiveForget R W) :=
   { sourceRealization := finiteProjectiveLatticeRealization R W
     targetRealization := LeanCategories.Modules.CatalogueRegistration.modulesRealization (RingCat.of R) }
 
 noncomputable def integralLatticeForgetRealization (R : Type u) [CommRing R] :
     FunctorRealization IntegralLatticeForget (integralLatticeCategory R)
       (Modules.Mathlib.ModulesOf (RingCat.of R))
-      (integralLatticeForget R).toCatHom :=
+      (integralLatticeForget R) :=
   { sourceRealization := integralLatticeRealization R
     targetRealization := LeanCategories.Modules.CatalogueRegistration.modulesRealization
       (RingCat.of R) }
@@ -273,14 +280,14 @@ noncomputable def integralLatticeForgetRealization (R : Type u) [CommRing R] :
 noncomputable def coordLatticeToCoordRealization (R : Type u) [CommRing R] (n : Nat) :
     FunctorRealization CoordLatticeToCoord (coordLatticeCategory R n)
       (LeanCategories.Modules.CatalogueRegistration.coordCategory R n)
-      (coordLatticeToCoord R n).toCatHom :=
+      (coordLatticeToCoord R n) :=
   { sourceRealization := coordLatticeRealization R n
     targetRealization := LeanCategories.Modules.CatalogueRegistration.coordRealization R n }
 
 noncomputable def coordLatticeToIntegralRealization (R : Type u) [CommRing R] (n : Nat) :
     FunctorRealization CoordLatticeToIntegral (coordLatticeCategory R n)
       (integralLatticeCategory R)
-      (coordLatticeToIntegral R n).toCatHom :=
+      (coordLatticeToIntegral R n) :=
   { sourceRealization := coordLatticeRealization R n
     targetRealization := integralLatticeRealization R }
 
@@ -289,7 +296,7 @@ noncomputable def fractionFieldPerfectFiniteProjectiveForgetRealization
     FunctorRealization FractionFieldPerfectFiniteProjectiveForget
       (fractionFieldPerfectFiniteProjectiveLatticeCategory R)
       (integralLatticeCategory R)
-      (fractionFieldPerfectFiniteProjectiveForget R).toCatHom :=
+      (fractionFieldPerfectFiniteProjectiveForget R) :=
   { sourceRealization := fractionFieldPerfectFiniteProjectiveLatticeRealization R
     targetRealization := integralLatticeRealization R }
 
