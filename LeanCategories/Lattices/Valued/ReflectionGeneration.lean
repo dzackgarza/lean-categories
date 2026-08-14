@@ -261,7 +261,8 @@ nondegenerate. -/
 theorem isLeftNondegenerate_restrictForm (L : FiniteFormCat K K)
     (hL : L.obj.IsLeftNondegenerate) (v : L.obj.carrier) (hv : L.obj.pairing v v ≠ 0) :
     (restrictForm L (anisotropicComplement L v)).obj.IsLeftNondegenerate := by
-  rw [BilinModuleCat.IsLeftNondegenerate, Submodule.eq_bot_iff]
+  rw [BilinModuleCat.IsLeftNondegenerate,
+    LinearMap.separatingLeft_iff_ker_eq_bot, Submodule.eq_bot_iff]
   rintro (b : anisotropicComplement L v) hb
   have hb' : ∀ d : anisotropicComplement L v,
       L.obj.pairing (b : L.obj.carrier) (d : L.obj.carrier) = 0 := fun d ↦
@@ -272,7 +273,10 @@ theorem isLeftNondegenerate_restrictForm (L : FiniteFormCat K K)
       pairing_complement_line L v b _, hb', add_zero]
   have hmem : (b : L.obj.carrier) ∈ LinearMap.ker L.obj.adjoint :=
     LinearMap.mem_ker.mpr (LinearMap.ext hzero)
-  rw [hL] at hmem
+  have hker_eq : LinearMap.ker L.obj.adjoint = ⊥ :=
+    (LinearMap.separatingLeft_iff_ker_eq_bot (B := L.obj.bilinMap)).mp
+      (by simpa [BilinModuleCat.IsLeftNondegenerate] using hL)
+  rw [hker_eq] at hmem
   exact Submodule.coe_eq_zero.mp (by simpa using hmem)
 
 /-- Reflections generate the orthogonal group, by induction on the rank. -/
