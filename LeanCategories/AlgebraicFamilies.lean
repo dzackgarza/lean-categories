@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Algebra.Ideals
 public import LeanCategories.CategoryTheory.StandardConstructions
+public import LeanCategories.ForMathlib.GrothendieckCocartesian
 public import Mathlib.Algebra.Category.ModuleCat.Pseudofunctor
 public import Mathlib.Algebra.Category.Ring.Under.Basic
 public import Mathlib.CategoryTheory.FiberedCategory.Cocartesian
@@ -328,16 +329,35 @@ def covariantFamilyBaseChangeHom
     (F : LocallyDiscrete CommRingCat.{u} ⥤ᵖ Cat.{v, w})
     (X : Pseudofunctor.Grothendieck F) {S : CommRingCat.{u}} (f : X.base ⟶ S) :
     X ⟶ ⟨S, (F.map f.toLoc).toFunctor.obj X.fiber⟩ :=
-  { base := f, fiber := 𝟙 _ }
+  Pseudofunctor.Grothendieck.cocartesianLift X.fiber f
+
+instance covariantFamilyBaseChangeHom_isStronglyCocartesian
+    (F : LocallyDiscrete CommRingCat.{u} ⥤ᵖ Cat.{v, w})
+    (X : Pseudofunctor.Grothendieck F) {S : CommRingCat.{u}} (f : X.base ⟶ S) :
+    IsStronglyCocartesian (Pseudofunctor.Grothendieck.forget F) f
+      (covariantFamilyBaseChangeHom F X f) := by
+  change IsStronglyCocartesian (Pseudofunctor.Grothendieck.forget F) f
+    (Pseudofunctor.Grothendieck.cocartesianLift X.fiber f)
+  exact Pseudofunctor.Grothendieck.isStronglyCocartesian_cocartesianLift X.fiber f
 
 abbrev idealBaseChangeHom (X : IdealTotal.{u})
     {S : CommRingCat.{u}} (f : X.base ⟶ S) :
     X ⟶ ⟨S, (idealFamily.map f.toLoc).toFunctor.obj X.fiber⟩ :=
   covariantFamilyBaseChangeHom idealFamily X f
 
+instance idealBaseChangeHom_isStronglyCocartesian (X : IdealTotal.{u})
+    {S : CommRingCat.{u}} (f : X.base ⟶ S) :
+    IsStronglyCocartesian idealProjection f (idealBaseChangeHom X f) :=
+  covariantFamilyBaseChangeHom_isStronglyCocartesian idealFamily X f
+
 noncomputable abbrev moduleBaseChangeHom (X : ModuleTotal.{u})
     {S : CommRingCat.{u}} (f : X.base ⟶ S) :
     X ⟶ ⟨S, (moduleFamily.map f.toLoc).toFunctor.obj X.fiber⟩ :=
   covariantFamilyBaseChangeHom moduleFamily X f
+
+noncomputable instance moduleBaseChangeHom_isStronglyCocartesian (X : ModuleTotal.{u})
+    {S : CommRingCat.{u}} (f : X.base ⟶ S) :
+    IsStronglyCocartesian moduleProjection f (moduleBaseChangeHom X f) :=
+  covariantFamilyBaseChangeHom_isStronglyCocartesian moduleFamily X f
 
 end LeanCategories.AlgebraicFamilies
