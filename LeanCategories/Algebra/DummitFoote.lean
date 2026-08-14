@@ -13,6 +13,7 @@ public import LeanCategories.Modules.Foundations
 public import LeanCategories.Modules.Mathlib
 public import LeanCategories.Foundation.Sets
 public import Mathlib.Algebra.Group.Conj
+public import Mathlib.Data.Setoid.Partition
 public import Mathlib.GroupTheory.GroupAction.ConjAct
 public import Mathlib.GroupTheory.Sylow
 public import Mathlib.GroupTheory.Torsion
