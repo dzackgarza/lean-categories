@@ -21,6 +21,14 @@ variable {R : Type u} [CommRing R]
 abbrev OrthogonalGroup (L : IntegralLatticeCat R) :=
   BilinModuleCat.OrthogonalGroup L.obj
 
+/-- The automorphism group of `L` in the category of integral lattices. -/
+abbrev LatticeAutomorphismGroup (L : IntegralLatticeCat R) := Aut L
+
+/-- The canonical identification `Aut(L) ≃ O(L)`. -/
+noncomputable def latticeAutEquivOrthogonalGroup (L : IntegralLatticeCat R) :
+    LatticeAutomorphismGroup L ≃* OrthogonalGroup L :=
+  (ObjectProperty.fullyFaithfulι (isLattice R R)).autMulEquivOfFullyFaithful L
+
 /-- The orbit of a sublattice carrier under `O(L)`. -/
 abbrev submoduleOrbit (L : IntegralLatticeCat R)
     (P : Submodule R L.obj.carrier) :=
