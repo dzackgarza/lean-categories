@@ -6,11 +6,13 @@ module
 
 public import Mathlib.RingTheory.AlgebraicIndependent.Basic
 public import Mathlib.AlgebraicGeometry.FunctionField
+public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.Ideal.Height
 public import Mathlib.RingTheory.KrullDimension.Basic
 public import Mathlib.RingTheory.KrullDimension.Module
 public import Mathlib.RingTheory.Polynomial.HilbertPoly
 public import Mathlib.RingTheory.RegularLocalRing.Defs
+public import LeanCategories.Algebra.DummitFooteChapter15
 
 /-!
 # Atiyah--Macdonald, Chapter 11: dimension theory
@@ -90,13 +92,74 @@ end LocalRings
 
 section Hilbert
 
-variable (F : Type u) [Field F]
+variable {R : Type u} [Semiring R]
+variable (lambda : ∀ {N : Type v} [AddCommMonoid N] [Module R N], ℤ)
+variable (M : ℕ → Type v) [∀ n, AddCommMonoid (M n)] [∀ n, Module R (M n)]
+
+/-- The Hilbert function of a graded module, relative to an additive invariant
+on the degree-zero module category.
+
+This is the function `n ↦ lambda (M n)` in Atiyah--Macdonald, Chapter 11,
+``Hilbert functions'', p. 118. The finite-generation and additivity
+hypotheses belong to the supplied graded module and invariant. -/
+def HilbertFunction : ℕ → ℤ :=
+  fun n => @lambda (M n) (inferInstance : AddCommMonoid (M n))
+    (inferInstance : Module R (M n))
+
+/-- The Poincare series of a graded module.
+
+This is the formal power series `Σ n, lambda (M n) t^n` from
+Atiyah--Macdonald, Chapter 11, ``Hilbert functions'', p. 116. It uses
+Mathlib's `PowerSeries.mk`; no Hilbert--Serre theorem is asserted here. -/
+def PoincareSeries : PowerSeries ℤ :=
+  PowerSeries.mk (HilbertFunction lambda M)
 
 /** The Hilbert polynomial route supplied by Mathlib. */
-abbrev HilbertPolynomial (p : Polynomial F) (d : ℕ) : Polynomial F :=
+abbrev HilbertPolynomial (F : Type u) [Field F] (p : Polynomial F) (d : ℕ) : Polynomial F :=
   Polynomial.hilbertPoly p d
 
 end Hilbert
+
+section AffineVarieties
+
+open LeanCategories.Algebra.DummitFoote.Chapter15
+
+variable {k K : Type u} [Field k] [Field K] [Algebra k K]
+variable {σ : Type v}
+
+/-- The field of rational functions of a prime-presented affine variety.
+
+For `P : Ideal (MvPolynomial σ k)` prime, this is the fraction field of the
+coordinate ring `k[X]/P`, as in Atiyah--Macdonald, Chapter 11,
+``Transcendental dimension'', p. 124. -/
+noncomputable abbrev AffineVarietyFunctionField
+    (P : AffineVarietyPrimeIdeal (k := k) (K := K)) : Type u :=
+  FractionRing (varietyCoordinateRing P)
+
+/-- The dimension of a prime-presented affine variety.
+
+This is the transcendence degree of its rational function field over `k`.
+The fraction-field and transcendence-degree constructions are Mathlib's
+`FractionRing` and `Algebra.trdeg`; no dimension comparison theorem is added. -/
+noncomputable def AffineVarietyDimension
+    (P : AffineVarietyPrimeIdeal (k := k) (K := K)) : Cardinal.{u} := by
+  letI : P.1.IsPrime := P.2
+  let A := varietyCoordinateRing P
+  letI : Algebra k (FractionRing A) :=
+    RingHom.toAlgebra ((algebraMap A (FractionRing A)).comp (algebraMap k A))
+  exact Algebra.trdeg k (FractionRing A)
+
+/-- The local dimension of a prime-presented affine variety at a maximal
+ideal of its coordinate ring.
+
+This is the Krull dimension of the corresponding local ring, represented by
+Mathlib's `Localization.AtPrime` and `ringKrullDim`. -/
+noncomputable abbrev AffineVarietyLocalDimension
+    (P : AffineVarietyPrimeIdeal (k := k) (K := K))
+    (m : Ideal (varietyCoordinateRing P)) [m.IsMaximal] : WithBot ℕ∞ :=
+  ringKrullDim (Localization.AtPrime m)
+
+end AffineVarieties
 
 section Schemes
 
