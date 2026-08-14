@@ -65,6 +65,17 @@ abbrev localization (M : Submonoid R) : AlgebraCat R := .of R (Localization M)
 abbrev localizationMap (M : Submonoid R) : R →ₐ[R] (localization R M).carrier :=
   algebraMap R (Localization M)
 
+/-- The localization of `R` at the prime ideal `P`, as an `R`-algebra.
+
+This is Mathlib's canonical `Localization.AtPrime` construction. -/
+abbrev localizationAtPrime (P : Ideal R) [P.IsPrime] : AlgebraCat R :=
+  .of R (Localization.AtPrime P)
+
+/-- The canonical structure morphism into the localization at a prime ideal. -/
+abbrev localizationAtPrimeMap (P : Ideal R) [P.IsPrime] :
+    R →ₐ[R] (localizationAtPrime R P).carrier :=
+  algebraMap R (Localization.AtPrime P)
+
 /-- The `I`-adic completion of `R`, as an `R`-algebra. -/
 abbrev adicCompletion (I : Ideal R) : AlgebraCat R :=
   .of R (AdicCompletion I R)
