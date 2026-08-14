@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 public import Mathlib.CategoryTheory.FiberedCategory.Fiber
 public import Mathlib.CategoryTheory.FiberedCategory.Fibered
 public import Mathlib.CategoryTheory.FiberedCategory.Grothendieck
+public import LeanCategories.ForMathlib.GrothendieckCocartesian
 
 /-!
 # Standard categorical constructions
