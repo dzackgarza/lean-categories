@@ -6,6 +6,7 @@ module
 
 public import Mathlib.Algebra.Category.CommAlgCat.Basic
 public import Mathlib.FieldTheory.Normal.Basic
+public import Mathlib.FieldTheory.Normal.Closure
 public import Mathlib.FieldTheory.Galois.Basic
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
 public import Mathlib.RingTheory.FiniteDimensional
@@ -180,6 +181,17 @@ abbrev fieldClosure (K : Type u) (L : Type v) [Field K] [Field L] [Algebra K L]
 abbrev adjoin (K : Type u) (L : Type v) [Field K] [Field L] [Algebra K L]
     (S : Set L) : IntermediateField K L :=
   IntermediateField.adjoin K S
+
+/-! ### Normal closures -/
+
+/-- The normal closure of `L/K` inside an ambient field extension `E/K`.
+
+This is Mathlib's `IntermediateField.normalClosure`; the project adds no
+alternative closure construction.
+-/
+abbrev normalClosure (K : Type u) (L E : Type v) [Field K] [Field L] [Field E]
+    [Algebra K L] [Algebra K E] : IntermediateField K E :=
+  IntermediateField.normalClosure K L E
 
 end FieldExtension
 end LeanCategories.Algebra
