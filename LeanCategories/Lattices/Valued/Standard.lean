@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Lattices.Valued.Arithmetic
 public import LeanCategories.Lattices.Valued.Constructions
+public import LeanCategories.Lattices.Valued.DiscriminantQuadratic
 public import LeanCategories.Lattices.Valued.MetricDual
 public import LeanCategories.Lattices.Valued.ScaleAndEvenness
 public import LeanCategories.Lattices.Valued.Signature
@@ -1721,6 +1722,6 @@ which `N q_A` is zero in `Frac(ℤ) / 2ℤ`, rather than the exponent of `A_L`.
 noncomputable def level
     (L : IntegralLatticeCat ℤ) [Module.Finite ℤ L.obj.carrier]
     (hL : IsFractionFieldPerfect ℤ L) (hEven : IsEven L) : ℕ :=
-  Int.natAbs (IsPrincipal.generator (levelIdeal L hL hEven))
+  Int.natAbs (Submodule.IsPrincipal.generator (levelIdeal L hL hEven))
 
 end LeanCategories.Lattices.Valued
