@@ -13,6 +13,9 @@ public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.IntegralDomain
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+public import Mathlib.RingTheory.Noetherian.Defs
+public import Mathlib.RingTheory.Artinian.Ring
 public import Mathlib.RingTheory.LocalRing.Defs
 public import Mathlib.RingTheory.PrincipalIdealDomain
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
@@ -45,12 +48,38 @@ abbrev FieldCat : Type (u + 1) :=
 abbrev LocalRingCat : Type (u + 1) :=
   ObjectProperty.FullSubcategory (C := CommRingCat.{u}) (fun R => IsLocalRing R)
 
+/-- Noetherian commutative rings, using Mathlib's `IsNoetherianRing` predicate. -/
+abbrev NoetherianRingCat : Type (u + 1) :=
+  ObjectProperty.FullSubcategory (C := CommRingCat.{u}) (fun R => IsNoetherianRing R)
+
+/-- Artinian commutative rings, using Mathlib's `IsArtinianRing` predicate. -/
+abbrev ArtinianRingCat : Type (u + 1) :=
+  ObjectProperty.FullSubcategory (C := CommRingCat.{u}) (fun R => IsArtinianRing R)
+
+/-- Integrally closed domains, using Mathlib's `IsIntegrallyClosed` predicate. -/
+abbrev IntegrallyClosedDomainCat : Type (u + 1) :=
+  ObjectProperty.FullSubcategory (C := DomainCat.{u})
+    (fun R => @IsIntegrallyClosed R.1 inferInstance R.property)
+
 /-- The canonical inclusion of local commutative rings into commutative rings. -/
 abbrev localRingIncl : LocalRingCat.{u} ⥤ CommRingCat.{u} :=
   ObjectProperty.ι (C := CommRingCat.{u}) (fun R => IsLocalRing R)
 
 /-- The forgetful functor from local commutative rings to commutative rings. -/
 abbrev localRingForgetful : LocalRingCat.{u} ⥤ CommRingCat.{u} := localRingIncl
+
+/-- The canonical inclusion of Noetherian commutative rings. -/
+abbrev noetherianRingIncl : NoetherianRingCat.{u} ⥤ CommRingCat.{u} :=
+  ObjectProperty.ι (C := CommRingCat.{u}) (fun R => IsNoetherianRing R)
+
+/-- The canonical inclusion of Artinian commutative rings. -/
+abbrev artinianRingIncl : ArtinianRingCat.{u} ⥤ CommRingCat.{u} :=
+  ObjectProperty.ι (C := CommRingCat.{u}) (fun R => IsArtinianRing R)
+
+/-- The canonical inclusion of integrally closed domains. -/
+abbrev integrallyClosedDomainIncl : IntegrallyClosedDomainCat.{u} ⥤ DomainCat.{u} :=
+  ObjectProperty.ι (C := DomainCat.{u})
+    (fun R => @IsIntegrallyClosed R.1 inferInstance R.property)
 
 /- Local homomorphisms between commutative local rings. -/
 abbrev LocalRingHomProperty : MorphismProperty LocalRingCat.{u} :=
