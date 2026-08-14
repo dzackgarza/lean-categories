@@ -10,6 +10,7 @@ public import Mathlib.LinearAlgebra.Finsupp.Pi
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+public import LeanCategories.Modules.Mathlib
 
 @[expose] public section
 
@@ -73,6 +74,14 @@ namespace FramedFreeModules
 /-- Forget the selected generating frame and retain the carrier module. -/
 def forget : FramedFreeModules R I ⥤ ModuleCat.{max u v} R :=
   ObjectProperty.ι (isFramedFreeModule R I) ⋙ GenFrame.forget R I
+
+/-- Retain the free-module property after forgetting the selected frame. -/
+def toFreeModuleCat : FramedFreeModules R I ⥤
+    LeanCategories.Modules.Mathlib.FreeModuleCat (RingCat.of R) where
+  obj X := ⟨(forget R I).obj X, X.property⟩
+  map f := ObjectProperty.homMk ((forget R I).map f)
+  map_id _ := rfl
+  map_comp _ _ := rfl
 
 end FramedFreeModules
 
