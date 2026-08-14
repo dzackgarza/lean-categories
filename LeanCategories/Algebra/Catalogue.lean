@@ -8,7 +8,6 @@ namespace LeanCategories
 
 namespace CategoryId
 def magmas : CategoryId := ⟨"cat.magmas"⟩
-def unitalMagmas : CategoryId := ⟨"cat.unital_magmas"⟩
 def semigroups : CategoryId := ⟨"cat.semigroups"⟩
 def monoids : CategoryId := ⟨"cat.monoids"⟩
 def groups : CategoryId := ⟨"cat.groups"⟩

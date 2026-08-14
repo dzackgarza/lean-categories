@@ -8,6 +8,7 @@ public import LeanCategories.Catalogue.Registry.Entry
 public import LeanCategories.CategoryTheory.OneCat.Classifier
 public import LeanCategories.Catalogue.Realization
 public import Lean
+public meta import LeanCategories.Catalogue.Syntax
 
 @[expose] public section
 
@@ -91,6 +92,35 @@ def sameEndpoint (left right : CategoryExpr) : Bool :=
 def denotesCategory (expression : CategoryExpr) (endpoint : CategoryExpr) : Bool :=
   expression.syntacticEq endpoint
 
+/-- Whether a registered refinement chain descends from a classifier host. -/
+partial def refinementHostInChain (state : RegistryState) (host : CategoryExpr) :
+    CategoryExpr → Bool
+  | expression =>
+      if sameEndpoint host expression then
+        true
+      else
+        match expression with
+        | .refine parent classifier _ =>
+            (state.classifier? classifier).any fun entry =>
+              sameEndpoint entry.host host ||
+                sameEndpoint (.classifierTotal classifier) host ||
+                refinementHostInChain state host parent
+        | .atom id =>
+            match state.categories.find? (·.id == id) with
+            | some entry =>
+                if sameEndpoint entry.expression expression then
+                  false
+                else
+                  refinementHostInChain state host entry.expression
+            | none => false
+        | .opaque id =>
+            state.opaqueCategories.any fun entry =>
+              entry.id == id && entry.ports.any fun port => sameEndpoint port.target host
+        | _ => false
+
+#eval refinementHostInChain {} (.atom ⟨"cat.sets"⟩)
+  (.familyApp ⟨"fam.modules"⟩ #[])
+
 partial def CategoryExpr.isRegistered (state : RegistryState) : CategoryExpr → Bool
   | .atom id =>
       state.categories.any (·.id == id) || state.opaqueCategories.any (·.id == id)
@@ -143,7 +173,8 @@ partial def CategoryExpr.referencesValid (state : RegistryState) : CategoryExpr 
       | none => false
   | .refine base classifier _ =>
       base.referencesValid state &&
-        (state.classifier? classifier).any fun entry => entry.host.referencesValid state
+        (state.classifier? classifier).any fun entry =>
+          refinementHostInChain state entry.host base && entry.host.referencesValid state
   | .pullback left right over =>
       match state.functor? left, state.functor? right with
       | some leftEntry, some rightEntry =>
@@ -327,6 +358,14 @@ def validateClassifierTotalEndpointRealization (state : RegistryState)
   unless familyFibre.isAppOfArity ``Option.none 1 do
     throwError "non-family classifier total realization has a family fibre witness"
 
+def validateRefinementEndpointRealization (state : RegistryState)
+    (base : CategoryExpr) (classifier : ClassifierId) : MetaM Unit := do
+  let classifierEntry ← match state.classifier? classifier with
+    | some entry => pure entry
+    | none => throwError "refinement classifier {classifier.raw} has no registered classifier"
+  unless refinementHostInChain state classifierEntry.host base do
+    throwError "refinement classifier {classifier.raw} has no registered host ancestry"
+
 def validateCategoryEndpointRealization (state : RegistryState) (expression : CategoryExpr)
     (category realization : Expr) : MetaM Unit :=
   match expression with
@@ -380,7 +419,7 @@ def validateOpaquePortRealization (state : RegistryState) (entry : StructuralPor
     validateCategoryEndpointRealization state entry.source sourceArgs[1]! sourceRealization
     validateCategoryEndpointRealization state entry.target targetArgs[1]! targetRealization
 
-def validateCategoryDeclarationRealization (expression : CategoryExpr)
+def validateCategoryDeclarationRealization (state : RegistryState) (expression : CategoryExpr)
     (declaration realization : Name) (familyRealization : Option Name) : MetaM Unit := do
   let realizationConstant ← mkConstWithFreshMVarLevels realization
   let realizationValue := realizationConstant
@@ -397,6 +436,14 @@ def validateCategoryDeclarationRealization (expression : CategoryExpr)
     unless ← isDefEq declarationValue realizationArgs[1]! do
       throwError
         "registry category declaration {declaration} does not match realization {realization}"
+    let realizationValue := mkAppN realizationConstant arguments
+    match expression with
+    | .classifierTotal classifier =>
+        validateClassifierTotalEndpointRealization state classifier realizationArgs[1]!
+          realizationValue
+    | .refine base classifier _ =>
+        validateRefinementEndpointRealization state base classifier
+    | _ => pure ()
     let familyFibre ← withTransparency .all do
       mkAppM ``LeanCategories.CategoryRealization.familyFibre #[mkAppN realizationConstant arguments]
     let familyFibre ← withTransparency .all <| whnf familyFibre
@@ -643,10 +690,10 @@ def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
       | .familyApp family _ =>
           match state.categoryFamily? family with
           | some familyEntry =>
-              validateCategoryDeclarationRealization e.expression e.declaration e.realization
+              validateCategoryDeclarationRealization state e.expression e.declaration e.realization
                 (some familyEntry.realization)
           | none => throwError "category entry {e.id.raw} refers to an unregistered family"
-      | _ => validateCategoryDeclarationRealization e.expression e.declaration e.realization none
+      | _ => validateCategoryDeclarationRealization state e.expression e.declaration e.realization none
   | .categoryFamily e => do
       ensureCategoryFamilyRealization e.id e.schema e.realization
       validateCategoryFamilyTransportDecl e.id e.schema e.realization e.transport

@@ -10,10 +10,6 @@ namespace LeanCategories.Modules
 def Modules : CategoryExpr :=
   .familyApp CategoryFamilyId.modules #[.variable ParameterId.r]
 
-def RightModules : CategoryExpr :=
-  .familyApp CategoryFamilyId.modules
-    #[.apply ParameterOperationId.opposite (.variable ParameterId.r)]
-
 def FreeModules : CategoryExpr := .refine Modules ClassifierId.modulesFree none
 
 def FinitelyGeneratedModules : CategoryExpr :=
