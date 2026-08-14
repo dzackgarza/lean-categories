@@ -102,6 +102,21 @@ def forget : BasisFrame R I ⥤ ModuleCat.{max u v} R where
   map_id _ := rfl
   map_comp _ _ := rfl
 
+/-- Expose a basis frame as a free module while retaining its carrier basis property. -/
+def toFreeModuleCat : BasisFrame R I ⥤
+    LeanCategories.Modules.Mathlib.FreeModuleCat (RingCat.of R) where
+  obj X := by
+    letI : IsIso X.obj.hom := X.property
+    let e : StandardFreeModule R I ≅ X.obj.right :=
+      @asIso (ModuleCat R) _ _ _ X.obj.hom (by
+        change IsIso X.obj.hom
+        exact X.property)
+    exact ⟨X.obj.right,
+      Module.Free.of_basis (Module.Basis.ofRepr e.toLinearEquiv.symm)⟩
+  map f := ObjectProperty.homMk ((forget R I).map f)
+  map_id _ := rfl
+  map_comp _ _ := rfl
+
 end BasisFrame
 
 /-- Forget that an invertible frame is generating. -/
