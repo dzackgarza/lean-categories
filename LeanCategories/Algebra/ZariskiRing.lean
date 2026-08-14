@@ -6,6 +6,7 @@ module
 
 public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.Jacobson.Radical
+public import Mathlib.RingTheory.Noetherian.Defs
 public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
 
 @[expose] public section
@@ -22,7 +23,7 @@ namespace LeanCategories.Algebra
 
 universe u
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
 
 /-- An ideal witnessing that `R` is a Zariski ring. -/
 def IsZariskiRing (I : Ideal R) : Prop :=
