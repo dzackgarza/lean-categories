@@ -6,6 +6,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.Properties
 public import Mathlib.AlgebraicGeometry.Noetherian
+public import Mathlib.AlgebraicGeometry.QuasiAffine
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 @[expose] public section
@@ -51,5 +52,14 @@ abbrev NoetherianSchemeCat : Type (u + 1) :=
 /-- The inclusion of Noetherian schemes into all schemes. -/
 abbrev noetherianSchemeIncl : NoetherianSchemeCat.{u} ⥤ Scheme.{u} :=
   ObjectProperty.ι (C := Scheme.{u}) (fun X : Scheme.{u} => IsNoetherian X)
+
+/-- Quasi-affine schemes as the full subcategory cut out by Mathlib's `IsQuasiAffine` predicate. -/
+abbrev QuasiAffineSchemeCat : Type (u + 1) :=
+  ObjectProperty.FullSubcategory (C := Scheme.{u})
+    (fun X : Scheme.{u} => Scheme.IsQuasiAffine X)
+
+/-- The inclusion of quasi-affine schemes into all schemes. -/
+abbrev quasiAffineSchemeIncl : QuasiAffineSchemeCat.{u} ⥤ Scheme.{u} :=
+  ObjectProperty.ι (C := Scheme.{u}) (fun X : Scheme.{u} => Scheme.IsQuasiAffine X)
 
 end LeanCategories.Schemes
