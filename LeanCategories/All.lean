@@ -32,6 +32,7 @@ public import LeanCategories.ForMathlib.WittCancellation
 public import LeanCategories.ForMathlib.SymmetricPairProduct
 public import LeanCategories.Names.Standard
 public import LeanCategories.Modules.Framed
+public import LeanCategories.Modules.Presented
 public import LeanCategories.Modules.FractionRingQuotient
 public import LeanCategories.Modules.QuotientValuedForms
 public import LeanCategories.Modules.DividedPowers
