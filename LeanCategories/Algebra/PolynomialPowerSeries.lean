@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.CategoryTheory.StandardConstructions
 public import Mathlib.Algebra.Polynomial.Eval.Coeff
+public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.RingTheory.PowerSeries.Basic
 
 @[expose] public section
@@ -71,6 +72,30 @@ abbrev polynomialBaseChangeObject {R S : CommRingCat.{u}}
 abbrev polynomialBaseChangeHom (X : PolynomialTotalCat.{u})
     {S : CommRingCat.{u}} (f : X.base ⟶ S) : X ⟶ Grothendieck.transport X f :=
   Grothendieck.toTransport X f
+
+/-! ### Polynomial differentiation -/
+
+/-- Formal differentiation as a natural transformation of polynomial fibers.
+
+This is the categorical form of `Polynomial.derivative_map`: differentiation
+commutes with coefficient-ring maps. -/
+def polynomialDerivativeNatTrans : polynomialFamily ⟶ polynomialFamily where
+  app R :=
+    (Discrete.functor (fun p : PolynomialFiber R =>
+      (⟨Polynomial.derivative p.as⟩ : PolynomialFiber R))).toCatHom
+  naturality := by
+    intro R S f
+    apply Cat.Hom.ext
+    apply Functor.ext
+    · intro p
+      apply congrArg Discrete.mk
+      exact (Polynomial.derivative_map p.as f.hom).symm
+    · intro p q h
+      apply Subsingleton.elim
+
+/-- The induced differentiation functor on the total polynomial category. -/
+abbrev polynomialDerivativeFunctor : PolynomialTotalCat.{u} ⥤ PolynomialTotalCat.{u} :=
+  Grothendieck.map polynomialDerivativeNatTrans
 
 /-! ### Formal power-series rings over varying commutative rings -/
 
