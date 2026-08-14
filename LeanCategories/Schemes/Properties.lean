@@ -7,6 +7,7 @@ module
 public import Mathlib.AlgebraicGeometry.Properties
 public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 public import Mathlib.AlgebraicGeometry.Morphisms.Etale
+public import Mathlib.AlgebraicGeometry.Morphisms.Flat
 public import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 public import Mathlib.AlgebraicGeometry.Noetherian
@@ -122,5 +123,14 @@ abbrev SmoothSchemeMorphismCat : Type (u + 1) :=
 abbrev smoothSchemeMorphismIncl :
     SmoothSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
   MorphismProperty.Arrow.forget @Smooth ⊤ ⊤
+
+/-- Scheme morphisms whose structural arrow is flat. -/
+abbrev FlatSchemeMorphismCat : Type (u + 1) :=
+  MorphismProperty.Arrow (T := Scheme.{u}) @Flat ⊤ ⊤
+
+/-- The canonical inclusion of flat scheme morphisms into all scheme arrows. -/
+abbrev flatSchemeMorphismIncl :
+    FlatSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
+  MorphismProperty.Arrow.forget @Flat ⊤ ⊤
 
 end LeanCategories.Schemes
