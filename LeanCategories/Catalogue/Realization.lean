@@ -68,6 +68,28 @@ def CategoryFamilyRealization.fibre {identifier : CategoryFamilyId}
   letI := realization.parameterCategory
   realization.transport.obj (.mk (Opposite.op parameter))
 
+/-- The canonical equality-only transport for commutative-ring fibres. -/
+noncomputable def CategoryFamilyRealization.canonicalDiscreteCommRingTransport
+    {identifier : CategoryFamilyId}
+    (realization : CategoryFamilyRealization.{uObj, uHom, uParam, uParam + 1}
+      identifier .commRing) :
+    Pseudofunctor (LocallyDiscrete (Discrete (CommRingCat.{uParam}))ᵒᵖ)
+      (Cat.{uHom, max uObj uHom}) :=
+  discreteFamilyTransport.{uObj, uHom, uParam + 1}
+    (fun parameter => realization.fibre ⟨parameter⟩)
+
+/-- The canonical equality-only transport for commutative-ring module fibres. -/
+noncomputable def CategoryFamilyRealization.canonicalDiscreteCommRingModuleTransport
+    {identifier : CategoryFamilyId}
+    (realization : CategoryFamilyRealization.{uObj, uHom, uParam, uParam + 1}
+      identifier .commRingModule) :
+    Pseudofunctor
+      (LocallyDiscrete
+        (Discrete (Σ R : CommRingCat.{uParam}, ModuleCat.{uParam} R))ᵒᵖ)
+      (Cat.{uHom, max uObj uHom}) :=
+  discreteFamilyTransport.{uObj, uHom, uParam + 1}
+    (fun parameter => realization.fibre ⟨parameter⟩)
+
 /-- Typed quotation of the concrete parameter represented by a family application. -/
 inductive CategoryFamilyParameterQuotation :
     (schema : CategoryFamilySchema) → Array ParameterExpr → schema.Parameters → Prop

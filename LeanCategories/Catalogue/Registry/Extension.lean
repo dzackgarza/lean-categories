@@ -60,6 +60,9 @@ structure RegistryState where
   opaqueCategories : Array OpaqueCategoryEntry := #[]
   deriving Inhabited
 
+def RegistryState.opaquePortIds (state : RegistryState) : List OpaquePortId :=
+  state.opaqueCategories.toList.flatMap fun category => category.ports.toList.map (·.id)
+
 /-- Registered functor lookup by stable ID. -/
 def RegistryState.functor? (state : RegistryState) (id : FunctorId) : Option FunctorEntry :=
   state.functors.find? fun entry => entry.id == id
@@ -230,6 +233,24 @@ def RegistryState.apply : RegistryState → RegistryEntry → RegistryState
   | s, .alias e => { s with aliases := s.aliases.push e }
   | s, .opaque e => { s with opaqueCategories := s.opaqueCategories.push e }
 
+def duplicateImportedOpaquePortId (as : Array (Array RegistryEntry)) : Option OpaquePortId :=
+  duplicateOpaquePortId
+    (RegistryState.opaquePortIds (mkStateFromImportedEntries RegistryState.apply {} as))
+
+def importedOpaquePortProbeEntries : Array (Array RegistryEntry) := #[
+  #[RegistryEntry.opaque (OpaqueCategoryEntry.mk ⟨"cat.first"⟩ ``sameEndpoint #[
+    StructuralPortEntry.mk ⟨"port.imported"⟩ (.atom ⟨"cat.first"⟩)
+      (.atom ⟨"cat.first"⟩) ``sameEndpoint ``sameEndpoint "probe" ]
+    "probe" .present)],
+  #[RegistryEntry.opaque (OpaqueCategoryEntry.mk ⟨"cat.second"⟩ ``sameEndpoint #[
+    StructuralPortEntry.mk ⟨"port.imported"⟩ (.atom ⟨"cat.second"⟩)
+      (.atom ⟨"cat.second"⟩) ``sameEndpoint ``sameEndpoint "probe" ]
+    "probe" .present)] ]
+
+example : duplicateImportedOpaquePortId importedOpaquePortProbeEntries =
+    some ⟨"port.imported"⟩ := by
+  native_decide
+
 /-- Whether this entry's typed stable ID has already been registered. -/
 def RegistryState.hasEntryId : RegistryState → RegistryEntry → Bool
   | state, .category e => state.categories.any (·.id == e.id)
@@ -243,7 +264,10 @@ initialize registryExt : SimplePersistentEnvExtension RegistryEntry RegistryStat
   registerSimplePersistentEnvExtension {
     addEntryFn := RegistryState.apply
     addImportedFn := fun as =>
-      mkStateFromImportedEntries RegistryState.apply {} as
+      let state := mkStateFromImportedEntries RegistryState.apply {} as
+      match duplicateOpaquePortId state.opaquePortIds with
+      | some id => panic! s!"duplicate opaque port ID {id.raw} in imported registry modules"
+      | none => state
   }
 
 def getRegistry (env : Environment) : RegistryState :=
@@ -558,6 +582,11 @@ def ensureFunctorRealization (realization : Name) : MetaM Unit := do
     throwError
       "registry realization {realization} must return FunctorRealization ..., but returns {result}"
 
+def FunctorExpr.classifierForget? {source target : CategoryExpr}
+    : FunctorExpr source target → Option (ClassifierId × CategoryExpr)
+  | .classifierForget classifier host => some (classifier, host)
+  | _ => none
+
 def validateFunctorDeclarationRealization (_state : RegistryState) {source target : CategoryExpr}
     (expression : FunctorExpr source target)
     (declaration realization : Name) : MetaM Unit := do
@@ -595,6 +624,23 @@ def validateFunctorDeclarationRealization (_state : RegistryState) {source targe
     let targetArgs := targetType.getAppArgs
     unless sourceArgs.size == 2 && targetArgs.size == 2 do
       throwError "registry functor endpoint realization has malformed parameters"
+    match expression.classifierForget? with
+    | some (classifier, host) => do
+        let classifierEntry ← match _state.classifier? classifier with
+          | some entry => pure entry
+          | none => throwError "classifier forget {classifier.raw} has no registered classifier"
+        unless host.syntacticEq classifierEntry.host do
+          throwError "classifier forget {classifier.raw} has the wrong symbolic host"
+        let classifierConstant ← mkConstWithFreshMVarLevels classifierEntry.realization
+        let classifierType ← inferType classifierConstant
+        let (parameters, _, _) ← forallMetaTelescopeReducing classifierType
+        let classifierValue := mkAppN classifierConstant parameters
+        let registeredHostRealization ← withTransparency .all do
+          mkAppM ``LeanCategories.ClassifierRealization.hostRealization #[classifierValue]
+        unless ← withTransparency .all <| isDefEq targetRealization registeredHostRealization do
+          throwError
+            "classifier forget {classifier.raw} is not the exact registered host realization"
+    | none => pure ()
     validateCategoryEndpointRealization _state source sourceArgs[1]! sourceRealization
     validateCategoryEndpointRealization _state target targetArgs[1]! targetRealization
     let realizationFunctorType ← whnf (← inferType realizationArgs[5]!)
@@ -666,8 +712,21 @@ def validateCategoryFamilyTransportDecl (_identifier : CategoryFamilyId)
       throwError "restriction-of-scalars semantics require a RingCat family"
   | .discrete, .ring =>
       throwError "RingCat families cannot register equality-only transport semantics"
-  | .discrete, _ =>
-      pure ()
+  | .discrete, .commRing => do
+      let canonicalTransport ← withTransparency .all do
+        mkAppM ``LeanCategories.CategoryFamilyRealization.canonicalDiscreteCommRingTransport
+          #[realizationValue]
+      unless ← withTransparency .all <| isDefEq transportValue canonicalTransport do
+        throwError
+          "registry equality-only transport is not the canonical discrete family transport"
+  | .discrete, .commRingModule => do
+      let canonicalTransport ← withTransparency .all do
+        mkAppM
+          ``LeanCategories.CategoryFamilyRealization.canonicalDiscreteCommRingModuleTransport
+          #[realizationValue]
+      unless ← withTransparency .all <| isDefEq transportValue canonicalTransport do
+        throwError
+          "registry equality-only transport is not the canonical discrete family transport"
 
 /-- Require a declaration to return a typed classifier realization. -/
 def ensureClassifierRealization (realization : Name) : MetaM Unit := do
