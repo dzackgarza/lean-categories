@@ -60,4 +60,12 @@ abbrev TorOverRing (R : Type u) [CommRing R] [Small.{v} R]
     (M N : ModuleCat.{v} R) (n : ℕ) : Type v :=
   ((CategoryTheory.Tor (ModuleCat.{v} R) n).obj M).obj N
 
+/-- The degree-`n` sheaf cohomology functor on abelian sheaves. -/
+abbrev SheafCohomologyFunctor {C : Type u} [Category.{v} C]
+    (J : GrothendieckTopology C) (n : ℕ)
+    [HasSheafify J AddCommGrpCat.{v}]
+    [HasExt.{w} (Sheaf J AddCommGrpCat.{v})] :
+    Sheaf J AddCommGrpCat.{v} ⥤ AddCommGrpCat.{w} :=
+  CategoryTheory.Sheaf.functorH J n
+
 end LeanCategories.Homological
