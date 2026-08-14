@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Catalogue.Registry.Entry
+public import LeanCategories.Catalogue.Registry.Typed
 public import LeanCategories.CategoryTheory.OneCat.Classifier
 public import LeanCategories.Catalogue.Realization
 public import Lean.Data.Json
