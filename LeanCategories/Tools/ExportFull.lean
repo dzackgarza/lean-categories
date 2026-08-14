@@ -26,7 +26,7 @@ open Lean Elab Command
 -- Compile-time: Register must have populated getRegistry with the specimen.
 run_cmd
   let env ← getEnv
-  let s := LeanCategories.getRegistry env
+  let s := LeanCategories.getRegistrySnapshot env "0.1.0-specimen"
   if s.categories.isEmpty then
     throwError "getRegistry empty after importing Catalogue.Standard"
   if !(s.categories.any fun category => category.id == LeanCategories.CategoryId.sets) then
@@ -37,7 +37,7 @@ run_cmd
   if !(s.functors.any fun functor => functor.id == ⟨"fun.sets.identity"⟩) then
     throwError "getRegistry is missing the registered Sets identity functor"
   let baseline := LeanCategories.Tools.snapshotManifestString
-    (s.snapshot "0.1.0-specimen")
+    s
   if !baseline.contains "fam.modules" then
     throwError "registered Modules family is absent from the exported manifest"
   if !baseline.contains "fun.sets.identity" then
@@ -63,7 +63,7 @@ def loadRegisteredSnapshot : IO RegistrySnapshot := do
   let env ← Lean.importModules
     #[{ module := `LeanCategories.Catalogue.Standard }] {}
     (loadExts := true)
-  pure ((getRegistry env).snapshot "0.1.0-specimen")
+  pure (getRegistrySnapshot env "0.1.0-specimen")
 
 /-- Validate Lean-authored registry JSON. -/
 def validate (j : Json) : Except String Unit := do

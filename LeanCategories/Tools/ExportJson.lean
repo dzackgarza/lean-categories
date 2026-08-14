@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Catalogue.Registry.Entry
+public import LeanCategories.Catalogue.Registry.Extension
 public import Lean.Data.Json
 
 @[expose] public section
@@ -169,15 +169,12 @@ def snapshotManifestJson (snap : RegistrySnapshot) : Json :=
   let ops := snap.opaqueCategories.qsort (fun a b => a.id.raw < b.id.raw)
   object [
     ("schemaVersion", snap.schemaVersion),
-    ("universes", object []),
     ("categories", .arr (cats.map categoryJson)),
     ("classifiers", .arr (clfs.map classifierJson)),
     ("functors", .arr (functors.map functorJson)),
     ("aliases", .arr (als.map aliasJson)),
     ("opaqueCategories", .arr (ops.map opaqueJson)),
     ("categoryFamilies", .arr (families.map categoryFamilyJson)),
-    ("namedExpressions", .arr #[]),
-    ("structuralPorts", .arr #[]),
     ("source", "lean-registry"),
 ]
 

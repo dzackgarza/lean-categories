@@ -86,9 +86,7 @@ deriving instance Lean.ToExpr for FunctorId
 deriving instance Lean.ToExpr for PortId
 deriving instance Lean.ToExpr for AliasId
 deriving instance Lean.ToExpr for RouteId
-deriving instance Lean.ToExpr for RefinementId
 deriving instance Lean.ToExpr for OpaquePortId
-deriving instance Lean.ToExpr for ClusterId
 
 /-- The semantic kind of a registered family transport. -/
 inductive CategoryFamilyTransportSemantics
@@ -193,20 +191,13 @@ def parameterArgsValid (args : Array ParameterExpr) (schema : CategoryFamilySche
 
 end CategoryFamilySchema
 
-/-- Normalized symbolic category language. -/
+/-- Registered symbolic category language. -/
 inductive CategoryExpr
   | atom (id : CategoryId)
   | familyApp (family : CategoryFamilyId) (args : Array ParameterExpr)
   | classifierTotal (classifier : ClassifierId)
   | refine (base : CategoryExpr) (classifier : ClassifierId) (route : Option RouteId)
   | opaque (id : CategoryId)
-  deriving Repr, Lean.ToExpr
-
-/-- A refinement occurrence with source, base, and classifier-total indices. -/
-inductive RefinementExpr : CategoryExpr → CategoryExpr → CategoryExpr → Type
-  | mk (id : RefinementId) (base : CategoryExpr) (classifier : ClassifierId)
-      (route : Option RouteId) :
-      RefinementExpr (.refine base classifier route) base (.classifierTotal classifier)
   deriving Repr, Lean.ToExpr
 
 /--
@@ -221,12 +212,6 @@ inductive FunctorExpr : CategoryExpr → CategoryExpr → Type
   | opaquePort {source target : CategoryExpr} (port : OpaquePortId) : FunctorExpr source target
   deriving Repr, Lean.ToExpr
 
-/-- A typed functor expression with existential source and target indices. -/
-structure SomeFunctorExpr where
-  source : CategoryExpr
-  target : CategoryExpr
-  expression : FunctorExpr source target
-
 /-- Syntactic equality of normalized category expressions, independent of rendered syntax. -/
 partial def CategoryExpr.syntacticEq : CategoryExpr → CategoryExpr → Bool
   | .atom left, .atom right => left == right
@@ -237,13 +222,6 @@ partial def CategoryExpr.syntacticEq : CategoryExpr → CategoryExpr → Bool
       leftBase.syntacticEq rightBase && leftClassifier == rightClassifier && leftRoute == rightRoute
   | .opaque left, .opaque right => left == right
   | _, _ => false
-
-/-- Route selector for multi-port projection / refine. -/
-inductive RouteSelector
-  | none
-  | port (id : PortId)
-  | route (id : RouteId)
-  deriving DecidableEq, Repr, Inhabited
 
 namespace CategoryExpr
 

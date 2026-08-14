@@ -7,12 +7,10 @@ module
 public import LeanCategories
 public import LeanCategories.Catalogue.Id
 public import LeanCategories.Catalogue.Syntax
-public import LeanCategories.Catalogue.Normalize
 public import LeanCategories.Catalogue.Registry.Entry
 public import LeanCategories.Catalogue.Registry.Extension
 public import LeanCategories.Catalogue.Realization
 public import LeanCategories.Catalogue.Standard
-public import LeanCategories.Catalogue.Presentation.Nodes
 public import LeanCategories.Algebra.Concrete.Magmas
 public import LeanCategories.Algebra.Concrete.Rings
 public import LeanCategories.Algebra.FractionalIdeals

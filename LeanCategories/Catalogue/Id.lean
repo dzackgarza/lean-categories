@@ -71,20 +71,11 @@ structure RouteId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 
-/-- Stable refinement occurrence id (for projection certificates). -/
-structure RefinementId where
-  raw : String
-  deriving DecidableEq, Repr, Hashable
-
 /-- Stable opaque structural port id. -/
 structure OpaquePortId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 
-/-- Stable cluster id for presentation overlay only. -/
-structure ClusterId where
-  raw : String
-  deriving DecidableEq, Repr, Hashable
 
 instance : Inhabited CategoryId := ⟨⟨""⟩⟩
 instance : Inhabited ClassifierId := ⟨⟨""⟩⟩

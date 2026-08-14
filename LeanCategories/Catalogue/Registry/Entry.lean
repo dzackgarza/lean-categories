@@ -92,15 +92,4 @@ structure OpaqueCategoryEntry where
   reason : String
   deriving Repr, Inhabited
 
-/-- Aggregate registry snapshot for export (specimen / compiled). -/
-structure RegistrySnapshot where
-  schemaVersion : String
-  categories : Array NamedCategoryEntry
-  categoryFamilies : Array CategoryFamilyEntry
-  classifiers : Array ClassifierEntry
-  functors : Array FunctorEntry
-  aliases : Array AliasEntry
-  opaqueCategories : Array OpaqueCategoryEntry
-  deriving Repr, Inhabited
-
 end LeanCategories

@@ -63,6 +63,49 @@ structure RegistryState where
   opaqueCategories : Array OpaqueCategoryEntry := #[]
   deriving Inhabited
 
+/- A snapshot can only come from the checked persistent registry. -/
+structure RegistrySnapshotData where
+  schemaVersion : String
+  categories : Array NamedCategoryEntry
+  categoryFamilies : Array CategoryFamilyEntry
+  classifiers : Array ClassifierEntry
+  functors : Array FunctorEntry
+  aliases : Array AliasEntry
+  opaqueCategories : Array OpaqueCategoryEntry
+
+private inductive RegistrySnapshotProof : Prop
+  | checked
+
+set_option backward.privateInPublic true in
+structure RegistrySnapshot where
+  data : RegistrySnapshotData
+  proof : RegistrySnapshotProof
+
+namespace RegistrySnapshot
+
+def schemaVersion (snapshot : RegistrySnapshot) : String :=
+  RegistrySnapshotData.schemaVersion snapshot.data
+
+def categories (snapshot : RegistrySnapshot) : Array NamedCategoryEntry :=
+  RegistrySnapshotData.categories snapshot.data
+
+def categoryFamilies (snapshot : RegistrySnapshot) : Array CategoryFamilyEntry :=
+  RegistrySnapshotData.categoryFamilies snapshot.data
+
+def classifiers (snapshot : RegistrySnapshot) : Array ClassifierEntry :=
+  RegistrySnapshotData.classifiers snapshot.data
+
+def functors (snapshot : RegistrySnapshot) : Array FunctorEntry :=
+  RegistrySnapshotData.functors snapshot.data
+
+def aliases (snapshot : RegistrySnapshot) : Array AliasEntry :=
+  RegistrySnapshotData.aliases snapshot.data
+
+def opaqueCategories (snapshot : RegistrySnapshot) : Array OpaqueCategoryEntry :=
+  RegistrySnapshotData.opaqueCategories snapshot.data
+
+end RegistrySnapshot
+
 def RegistryState.opaquePortIds (state : RegistryState) : List OpaquePortId :=
   state.opaqueCategories.toList.flatMap fun category => category.ports.toList.map (·.id)
 
@@ -139,7 +182,7 @@ def RegistryState.duplicateCategoryCanonicalName (state : RegistryState) : Optio
     (state.categories.toList.map (·.canonicalName) ++
       state.categoryFamilies.toList.map (·.canonicalName))
 
-def duplicateCategoryExpressionProbeState : RegistryState :=
+private def duplicateCategoryExpressionProbeState : RegistryState :=
   { categories := #[
       { id := ⟨"probe.expression.first"⟩, canonicalName := "probe.expression.first",
         declaration := ``sameEndpoint, expression := .atom ⟨"probe.expression"⟩,
@@ -154,7 +197,7 @@ example : duplicateCategoryExpressionProbeState.duplicateCategoryExpression.isSo
 example : duplicateCategoryExpressionProbeState.category? (.atom ⟨"probe.expression"⟩) = none := by
   native_decide
 
-def duplicateCategoryCanonicalNameProbeState : RegistryState :=
+private def duplicateCategoryCanonicalNameProbeState : RegistryState :=
   { categories := #[{
       id := ⟨"probe.canonical.category"⟩, canonicalName := "probe.same-name",
       declaration := ``sameEndpoint, expression := .atom ⟨"probe.canonical.category"⟩,
@@ -206,7 +249,7 @@ def refinementHostInChain (state : RegistryState) (target : CategoryExpr)
   refinementHostInChainFuel state target
     (refinementDepth expression + state.categories.size + state.opaqueCategories.size + 1) expression
 
-def ancestryProbeState : RegistryState :=
+private def ancestryProbeState : RegistryState :=
   { classifiers := #[
       { id := ⟨"clf.first"⟩, canonicalName := "first"
         declaration := ``sameEndpoint, host := .atom ⟨"cat.host"⟩
@@ -279,7 +322,7 @@ partial def CategoryExpr.referencesValid (state : RegistryState) : CategoryExpr 
         (state.classifier? classifier).any fun entry =>
           refinementHostInChain state entry.host base && entry.host.referencesValid state
 
-def RegistryState.apply : RegistryState → RegistryEntry → RegistryState
+private def RegistryState.apply : RegistryState → RegistryEntry → RegistryState
   | s, .category e => { s with categories := s.categories.push e }
   | s, .categoryFamily e => { s with categoryFamilies := s.categoryFamilies.push e }
   | s, .classifier e => { s with classifiers := s.classifiers.push e }
@@ -322,15 +365,15 @@ def RegistryState.hasEntryId : RegistryState → RegistryEntry → Bool
   | state, entry => state.registryEntries.any fun existing =>
       existing.stableId == entry.stableId && !registryEntryPairAllowed existing entry
 
-def duplicateImportedOpaquePortId (as : Array (Array RegistryEntry)) : Option OpaquePortId :=
+private def duplicateImportedOpaquePortId (as : Array (Array RegistryEntry)) : Option OpaquePortId :=
   duplicateOpaquePortId
     (RegistryState.opaquePortIds (mkStateFromImportedEntries RegistryState.apply {} as))
 
-def duplicateImportedOpaqueCategoryId (as : Array (Array RegistryEntry)) : Option CategoryId :=
+private def duplicateImportedOpaqueCategoryId (as : Array (Array RegistryEntry)) : Option CategoryId :=
   duplicateOpaqueCategoryId
     ((mkStateFromImportedEntries RegistryState.apply {} as).opaqueCategories.toList.map (·.id))
 
-def importedOpaquePortProbeEntries : Array (Array RegistryEntry) := #[
+private def importedOpaquePortProbeEntries : Array (Array RegistryEntry) := #[
   #[RegistryEntry.opaque {
     id := ⟨"cat.first"⟩, declaration := ``sameEndpoint, realization := ``sameEndpoint,
     ports := #[StructuralPortEntry.mk ⟨"port.imported"⟩ (.atom ⟨"cat.first"⟩)
@@ -346,7 +389,7 @@ example : duplicateImportedOpaquePortId importedOpaquePortProbeEntries =
     some ⟨"port.imported"⟩ := by
   native_decide
 
-def duplicateImportedStableIdProbeEntries : Array (Array RegistryEntry) := #[
+private def duplicateImportedStableIdProbeEntries : Array (Array RegistryEntry) := #[
   #[RegistryEntry.category {
     id := ⟨"probe.duplicate"⟩, canonicalName := "probe.duplicate",
     declaration := ``sameEndpoint, expression := .atom ⟨"probe.duplicate"⟩,
@@ -361,7 +404,7 @@ example : RegistryState.duplicateEntryId
     some "probe.duplicate" := by
   native_decide
 
-def allRegistryKindsDuplicateProbeState : RegistryState :=
+private def allRegistryKindsDuplicateProbeState : RegistryState :=
   { categories := #[{
       id := ⟨"probe.all-kinds"⟩, canonicalName := "probe.all-kinds",
       declaration := ``sameEndpoint, expression := .atom ⟨"probe.all-kinds"⟩,
@@ -389,13 +432,13 @@ def allRegistryKindsDuplicateProbeState : RegistryState :=
 example : allRegistryKindsDuplicateProbeState.duplicateEntryId = some "probe.all-kinds" := by
   decide
 
-def localCrossKindDuplicateProbeState : RegistryState :=
+private def localCrossKindDuplicateProbeState : RegistryState :=
   { categories := #[{
       id := ⟨"probe.local-duplicate"⟩, canonicalName := "probe.local-duplicate",
       declaration := ``sameEndpoint, expression := .atom ⟨"probe.local-duplicate"⟩,
       realization := ``sameEndpoint,}] }
 
-def localCrossKindDuplicateProbeEntry : RegistryEntry := .classifier {
+private def localCrossKindDuplicateProbeEntry : RegistryEntry := .classifier {
   id := ⟨"probe.local-duplicate"⟩, canonicalName := "probe.local-duplicate",
   declaration := ``sameEndpoint, host := .atom ⟨"probe.local-duplicate"⟩,
   realization := ``sameEndpoint,}
@@ -403,13 +446,13 @@ def localCrossKindDuplicateProbeEntry : RegistryEntry := .classifier {
 example : localCrossKindDuplicateProbeState.hasEntryId localCrossKindDuplicateProbeEntry := by
   native_decide
 
-def localNamedOpaqueCompanionProbeState : RegistryState :=
+private def localNamedOpaqueCompanionProbeState : RegistryState :=
   { categories := #[{
       id := ⟨"probe.local-companion"⟩, canonicalName := "probe.local-companion",
       declaration := ``sameEndpoint, expression := .opaque ⟨"probe.local-companion"⟩,
       realization := ``sameEndpoint,}] }
 
-def localNamedOpaqueCompanionProbeEntry : RegistryEntry := .opaque {
+private def localNamedOpaqueCompanionProbeEntry : RegistryEntry := .opaque {
   id := ⟨"probe.local-companion"⟩, declaration := ``sameEndpoint,
   realization := ``sameEndpoint, ports := #[], reason := "probe",}
 
@@ -446,72 +489,6 @@ initialize registryExt : SimplePersistentEnvExtension RegistryEntry RegistryStat
                   | some id => panic! s!"duplicate opaque port ID {id.raw} in imported registry modules"
                   | none => state
 }
-
-def getRegistry (env : Environment) : RegistryState :=
-  registryExt.getState env
-
-def addRegistryEntry (e : RegistryEntry) : CoreM Unit := do
-  let env ← getEnv
-  let state := getRegistry env
-  if state.hasEntryId e then
-    throwError "duplicate normalized-category registry ID: {e.stableId}"
-  match e with
-  | .category entry =>
-      if state.categories.any fun existing =>
-          existing.expression.syntacticEq entry.expression then
-        throwError "duplicate normalized-category registry expression"
-      if state.duplicateCategoryCanonicalName.any (· == entry.canonicalName) then
-        throwError "duplicate normalized-category canonical name: {entry.canonicalName}"
-  | .categoryFamily entry =>
-      if state.duplicateCategoryCanonicalName.any (· == entry.canonicalName) then
-        throwError "duplicate normalized-category canonical name: {entry.canonicalName}"
-  | _ => pure ()
-  match e with
-  | .category entry =>
-      unless categoryIdMatchesExpression entry.id entry.expression do
-        throwError "category entry {entry.id.raw} does not use its own category expression ID"
-      let isSelf := match entry.expression with
-        | .atom id | .opaque id => id == entry.id
-        | _ => false
-      if (!entry.expression.isRegistered state && !isSelf) ||
-          !entry.expression.referencesValid state then
-        throwError "category entry {entry.id.raw} has an unresolved or ill-typed functor reference"
-  | .functor entry =>
-      if !entry.source.isRegistered state || !entry.target.isRegistered state ||
-          !entry.source.referencesValid state || !entry.target.referencesValid state ||
-          !entry.expression.referencesValid state then
-        throwError "functor entry {entry.id.raw} has an unresolved or unregistered endpoint"
-  | .classifier entry =>
-      unless entry.host.isRegistered state && entry.host.referencesValid state do
-        throwError "classifier entry {entry.id.raw} has an unresolved or unregistered host"
-  | .alias entry =>
-      unless state.categories.any (·.id == entry.aliasOf) do
-        throwError "alias entry {entry.id.raw} refers to an unregistered category"
-  | .opaque entry =>
-      let category ← match state.categories.find? (·.id == entry.id) with
-        | some category => pure category
-        | none => throwError "opaque category entry {entry.id.raw} has no registered category"
-      unless opaqueCategoryMatchesCategory category entry do
-        throwError "opaque category entry {entry.id.raw} does not match its registered category"
-      unless entry.realization == category.realization do
-        throwError "opaque category entry {entry.id.raw} does not use its registered realization"
-      for port in entry.ports do
-        unless port.source.isRegistered state && port.target.isRegistered state do
-          throwError "opaque port {port.id.raw} has an unregistered endpoint"
-      match duplicateOpaquePortId (entry.ports.toList.map (·.id)) with
-      | some id => throwError "duplicate opaque port ID {id.raw}"
-      | none => pure ()
-      for category in state.opaqueCategories do
-        for port in entry.ports do
-          unless !category.ports.any fun registered => registered.id == port.id do
-            throwError "duplicate opaque port ID {port.id.raw}"
-  | _ => pure ()
-  for declaration in e.declarations do
-    if declaration.isAnonymous then
-      throwError "registry entry {e.stableId} has no declaration name"
-    if (env.find? declaration).isNone then
-      throwError "registry entry {e.stableId} refers to unknown declaration {declaration}"
-  modifyEnv (registryExt.addEntry · e)
 
 /-- The result type of a declaration after exposing all of its parameters. -/
 def declarationResultType (declaration : Name) : MetaM Expr := do
@@ -1134,7 +1111,8 @@ def validateClassifierDeclarationRealization (_state : RegistryState) (entry : C
     unless totalArgs.size == 2 do
       throwError "classifier total realization has malformed parameters"
     validateCategoryEndpointRealization _state entry.host hostArgs[1]! hostRealization
-    let stateWithClassifier := _state.apply (.classifier entry)
+    let stateWithClassifier :=
+      { _state with classifiers := _state.classifiers.push entry }
     validateClassifierTotalEndpointRealization stateWithClassifier entry.id totalArgs[1]!
       totalRealization
     unless ← withTransparency .all <| isDefEq classifierTotal totalArgs[1]! do
@@ -1150,7 +1128,7 @@ def ensureFunctorDeclaration (declaration : Name) : MetaM Unit := do
 
 /-- Inspect declaration types before atomically persisting a registry entry. -/
 def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
-  let state := getRegistry (← getEnv)
+  let state := registryExt.getState (← getEnv)
   match entry with
   | .category e => do
       ensureCategoryDeclaration e.declaration
@@ -1202,10 +1180,69 @@ def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
         ensureFunctorRealization port.realization
         validateOpaquePortRealization state port
 
-/-- Validate the elaborated declaration and persist exactly one registry entry. -/
+/- Validate the elaborated declaration and persist exactly one registry entry. -/
 def addRegistryEntryChecked (entry : RegistryEntry) : MetaM Unit := do
   validateRegistryEntryDeclaration entry
-  addRegistryEntry entry
+  let env ← getEnv
+  let state := registryExt.getState env
+  if state.hasEntryId entry then
+    throwError "duplicate normalized-category registry ID: {entry.stableId}"
+  match entry with
+  | .category e =>
+      if state.categories.any fun existing =>
+          existing.expression.syntacticEq e.expression then
+        throwError "duplicate normalized-category registry expression"
+      if state.duplicateCategoryCanonicalName.any (· == e.canonicalName) then
+        throwError "duplicate normalized-category canonical name: {e.canonicalName}"
+  | .categoryFamily e =>
+      if state.duplicateCategoryCanonicalName.any (· == e.canonicalName) then
+        throwError "duplicate normalized-category canonical name: {e.canonicalName}"
+  | _ => pure ()
+  match entry with
+  | .category e =>
+      unless categoryIdMatchesExpression e.id e.expression do
+        throwError "category entry {e.id.raw} does not use its own category expression ID"
+      let isSelf := match e.expression with
+        | .atom id | .opaque id => id == e.id
+        | _ => false
+      if (!e.expression.isRegistered state && !isSelf) || !e.expression.referencesValid state then
+        throwError "category entry {e.id.raw} has an unresolved or ill-typed functor reference"
+  | .functor e =>
+      if !e.source.isRegistered state || !e.target.isRegistered state ||
+          !e.source.referencesValid state || !e.target.referencesValid state ||
+          !e.expression.referencesValid state then
+        throwError "functor entry {e.id.raw} has an unresolved or unregistered endpoint"
+  | .classifier e =>
+      unless e.host.isRegistered state && e.host.referencesValid state do
+        throwError "classifier entry {e.id.raw} has an unresolved or unregistered host"
+  | .alias e =>
+      unless state.categories.any (·.id == e.aliasOf) do
+        throwError "alias entry {e.id.raw} refers to an unregistered category"
+  | .opaque e =>
+      let category ← match state.categories.find? (·.id == e.id) with
+        | some category => pure category
+        | none => throwError "opaque category entry {e.id.raw} has no registered category"
+      unless opaqueCategoryMatchesCategory category e do
+        throwError "opaque category entry {e.id.raw} does not match its registered category"
+      unless e.realization == category.realization do
+        throwError "opaque category entry {e.id.raw} does not use its registered realization"
+      for port in e.ports do
+        unless port.source.isRegistered state && port.target.isRegistered state do
+          throwError "opaque port {port.id.raw} has an unregistered endpoint"
+      match duplicateOpaquePortId (e.ports.toList.map (·.id)) with
+      | some id => throwError "duplicate opaque port ID {id.raw}"
+      | none => pure ()
+      for category in state.opaqueCategories do
+        for port in e.ports do
+          unless !category.ports.any fun registered => registered.id == port.id do
+            throwError "duplicate opaque port ID {port.id.raw}"
+  | _ => pure ()
+  for declaration in entry.declarations do
+    if declaration.isAnonymous then
+      throwError "registry entry {entry.stableId} has no declaration name"
+    if (env.find? declaration).isNone then
+      throwError "registry entry {entry.stableId} refers to unknown declaration {declaration}"
+  modifyEnv (registryExt.addEntry · entry)
 
 /--
 Atomically elaborate and register one authored registry declaration.
@@ -1223,14 +1260,13 @@ elab_rules : command
           addRegistryEntryChecked $entry)
       elabCommand command
 
-/-- Materialize the registered state for a Lean-authored export. -/
-def RegistryState.snapshot (state : RegistryState) (schemaVersion : String) : RegistrySnapshot where
-  schemaVersion
-  categories := state.categories
-  categoryFamilies := state.categoryFamilies
-  classifiers := state.classifiers
-  functors := state.functors
-  aliases := state.aliases
-  opaqueCategories := state.opaqueCategories
+/- Public snapshots are replayed from the persistent checked registry. -/
+set_option backward.privateInPublic true in
+def getRegistrySnapshot (env : Environment) (schemaVersion : String) : RegistrySnapshot :=
+  { data := RegistrySnapshotData.mk schemaVersion (registryExt.getState env).categories
+      (registryExt.getState env).categoryFamilies (registryExt.getState env).classifiers
+      (registryExt.getState env).functors (registryExt.getState env).aliases
+      (registryExt.getState env).opaqueCategories
+    proof := .checked }
 
 end LeanCategories
