@@ -17,6 +17,7 @@ public import Mathlib.RingTheory.Localization.Module
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.LocalRing.Basic
+public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.AdicCompletion.Basic
 public import Mathlib.RingTheory.AdicCompletion.Algebra
@@ -30,6 +31,27 @@ open CategoryTheory
 namespace LeanCategories.Algebra
 
 universe u
+
+/** The local-ring property, under its standard Mathlib name. */
+abbrev localRingProperty (R : Type u) [CommRing R] : Prop := IsLocalRing R
+
+/** The local-homomorphism property, under its standard Mathlib name. */
+abbrev localHomProperty {R : Type u} [CommRing R] {S : Type v} [CommRing S]
+    (f : R →+* S) : Prop := IsLocalHom f
+
+/** The category of local rings. */
+abbrev LocalRingCategory := LocalRingCat
+
+/** The category of local ring homomorphisms. */
+abbrev LocalRingHomCategory := LocalRingHomCat
+
+/** The maximal ideal of a local ring. */
+abbrev localMaximalIdeal (R : Type u) [CommRing R] [IsLocalRing R] : Ideal R :=
+  IsLocalRing.maximalIdeal R
+
+/** The nonunits of a local ring. */
+abbrev localNonunits (R : Type u) [CommRing R] [IsLocalRing R] : AddSubmonoid R :=
+  IsLocalRing.nonunitsAddSubmonoid R
 
 /-- The residue field of a commutative local ring, using Mathlib's canonical quotient.
 

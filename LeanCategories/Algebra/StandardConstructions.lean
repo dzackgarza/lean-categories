@@ -46,6 +46,20 @@ universe u v
 
 variable (R : Type u) [CommRing R]
 
+/-! ### Rings of fractions -/
+
+/** A multiplicatively closed subset of `R`, in Mathlib's bundled form. */
+abbrev multiplicativelyClosedSet : Type u := Submonoid R
+
+/** The ring of fractions of `R` at a multiplicatively closed set. */
+abbrev ringOfFractions (M : multiplicativelyClosedSet R) : CommRingCat :=
+  CommRingCat.of (Localization M)
+
+/** The canonical map from `R` to its ring of fractions. */
+abbrev ringOfFractionsMap (M : multiplicativelyClosedSet R) :
+    R →+* (ringOfFractions R M : Type u) :=
+  algebraMap R (Localization M)
+
 section BaseChange
 
 variable (S : Type u) [CommRing S] [Algebra R S]

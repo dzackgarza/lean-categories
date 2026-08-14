@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.RingTheory.PrincipalIdealDomain
 public import Mathlib.RingTheory.Ideal.IsPrimary
+public import Mathlib.RingTheory.Localization.Ideal
 
 @[expose] public section
 
@@ -27,6 +28,16 @@ open CategoryTheory
 universe u v
 
 variable (R : Type u) [CommSemiring R]
+
+/-! ### Extended and contracted ideals in rings of fractions -/
+
+/** The extension of an ideal to the ring of fractions at `S`. */
+abbrev extendedIdeal (I : Ideal R) (S : Submonoid R) : Ideal (Localization S) :=
+  I.map (algebraMap R (Localization S))
+
+/** The contraction of an ideal from the ring of fractions at `S`. */
+abbrev contractedIdeal (S : Submonoid R) (J : Ideal (Localization S)) : Ideal R :=
+  J.under R
 
  /-- The category of ideals of `R`, ordered by inclusion. -/
 def Ideals := Cat.of (Ideal R)
