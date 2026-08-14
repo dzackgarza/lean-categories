@@ -118,6 +118,15 @@ abbrev locallyOfFiniteTypeSchemeMorphismIncl :
     LocallyOfFiniteTypeSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
   MorphismProperty.Arrow.forget @LocallyOfFiniteType ⊤ ⊤
 
+/-- Scheme morphisms that are locally of finite presentation. -/
+abbrev LocallyOfFinitePresentationSchemeMorphismCat : Type (u + 1) :=
+  MorphismProperty.Arrow (T := Scheme.{u}) @LocallyOfFinitePresentation ⊤ ⊤
+
+/-- The canonical inclusion of locally finite-presentation scheme morphisms into all scheme arrows. -/
+abbrev locallyOfFinitePresentationSchemeMorphismIncl :
+    LocallyOfFinitePresentationSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
+  MorphismProperty.Arrow.forget @LocallyOfFinitePresentation ⊤ ⊤
+
 /-- Scheme morphisms whose structural arrow is finite. -/
 abbrev FiniteSchemeMorphismCat : Type (u + 1) :=
   MorphismProperty.Arrow (T := Scheme.{u}) @IsFinite ⊤ ⊤
