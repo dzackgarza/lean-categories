@@ -20,6 +20,7 @@ public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Basic
 public import Mathlib.RingTheory.LaurentSeries
 public import Mathlib.RingTheory.Localization.Basic
+public import Mathlib.RingTheory.AdicCompletion.Algebra
 public import Mathlib.LinearAlgebra.TensorProduct.Basic
 public import Mathlib.LinearAlgebra.TensorAlgebra.Grading
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
@@ -62,6 +63,14 @@ abbrev localization (M : Submonoid R) : AlgebraCat R := .of R (Localization M)
 /-- The canonical structure morphism into the localization algebra. -/
 abbrev localizationMap (M : Submonoid R) : R →ₐ[R] (localization R M).carrier :=
   algebraMap R (Localization M)
+
+/-- The `I`-adic completion of `R`, as an `R`-algebra. -/
+abbrev adicCompletion (I : Ideal R) : AlgebraCat R :=
+  .of R (AdicCompletion I R)
+
+/-- The canonical map from `R` into its `I`-adic completion. -/
+abbrev adicCompletionMap (I : Ideal R) : R →ₐ[R] (adicCompletion R I).carrier :=
+  algebraMap R (AdicCompletion I R)
 
 end AlgebraCat
 end LeanCategories.Algebra
