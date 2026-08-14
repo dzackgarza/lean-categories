@@ -33,6 +33,7 @@ public import LeanCategories.Modules.DividedPowers
 public import LeanCategories.Modules.Bilinear.Valued
 public import LeanCategories.Modules.Quadratic.Valued
 public import LeanCategories.Lattices.Valued
+public import LeanCategories.Orders
 public import LeanCategories.Schemes
 public import LeanCategories.Homological
 public import LeanCategories.Foundation.Mathlib
