@@ -65,16 +65,16 @@ Current work: `#33` through `#36`, and milestone `#51`.
 
 ### Formed-module categories and functors
 
-- [ ] Categories of fixed-value and variable-value bilinear modules
-- [ ] Categories of fixed-value and variable-value quadratic modules
-- [ ] Carrier-module and value-module functors
-- [ ] Fixed-value fibers and change-of-value functors
-- [ ] Scalar-extension functors for bilinear and quadratic modules
-- [ ] Projective, finite-projective, free, finite-free, torsion-free, and finite-torsion
+- [x] Categories of fixed-value and variable-value bilinear modules
+- [x] Categories of fixed-value and variable-value quadratic modules
+- [x] Carrier-module and value-module functors
+- [x] Fixed-value fibers and change-of-value functors
+- [x] Scalar-extension functors for bilinear and quadratic modules
+- [x] Projective, finite-projective, free, finite-free, torsion-free, and finite-torsion
   formed-module subcategories
-- [ ] Left radical, right radical, adjoint map, defect module, nondegeneracy, and
+- [x] Left radical, right radical, adjoint map, defect module, nondegeneracy, and
   perfectness
-- [ ] Bilinear and quadratic forms on `Frac(R)/R` and `QQ/ZZ`
+- [x] Bilinear and quadratic forms on `Frac(R)/R` and `QQ/ZZ`
 
 ### Frames and presentations
 
