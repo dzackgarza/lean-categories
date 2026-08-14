@@ -111,7 +111,7 @@ Current work: `#22`, `#38`, and the scheme part of `#56`.
   — route the complete commutative-algebra catalogue. The remaining source terms
   without exact public routes are Poincare series, Hilbert functions, and the
   affine-variety and local-variety dimension terms.
-- [ ] [Dummit and Foote, Chapters 15-16](.agents/references/dummit-and-foote-definition-catalogue.md)
+- [x] [Dummit and Foote, Chapters 15-16](.agents/references/dummit-and-foote-definition-catalogue.md)
   — affine algebraic sets, varieties, localization, spectra, local rings, discrete
   valuation rings, and Dedekind domains.
 - [ ] [Shafarevich, all catalogued chapters](.agents/references/shafarevich-varieties-definition-catalogue.md)
