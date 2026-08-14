@@ -40,6 +40,7 @@ def expectedCategoryIds : Array CategoryId := #[
   CategoryId.modulesR,
   CategoryId.monoids,
   CategoryId.quadModule,
+  CategoryId.quadWForm,
   CategoryId.rings,
   CategoryId.semigroups,
   CategoryId.sets]
@@ -53,7 +54,8 @@ def expectedCategoryFamilyIds : Array CategoryFamilyId := #[
   CategoryFamilyId.finiteProjectiveLattice,
   CategoryFamilyId.lattice,
   CategoryFamilyId.modules,
-  CategoryFamilyId.quadModule]
+  CategoryFamilyId.quadModule,
+  CategoryFamilyId.quadWForm]
 
 /-- Stable classifier rows owned by the standard catalogue. -/
 def expectedClassifierIds : Array ClassifierId := #[
@@ -82,6 +84,9 @@ def expectedFunctorIds : Array FunctorId := #[
   FunctorId.latticeBaseChange,
   FunctorId.latticeChangeValue,
   FunctorId.quadModuleForget,
+  FunctorId.quadModuleChangeValue,
+  FunctorId.quadWFormCarrier,
+  FunctorId.quadWFormValue,
   FunctorId.setsIdentity]
 
 /-- Stable spelling-alias rows owned by the standard catalogue. -/
