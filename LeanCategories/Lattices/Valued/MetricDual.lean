@@ -22,6 +22,14 @@ variable (W : Type u) [AddCommGroup W] [Module R W]
 
 variable [IsDomain R]
 
+/-- The algebraic dual `Hom_R(L,R)` of an integral lattice. -/
+abbrev algebraicDual (L : IntegralLatticeCat R) := L.obj.valueDual
+
+/-- The pairing map from an integral lattice to its algebraic dual. -/
+abbrev toAlgebraicDual (L : IntegralLatticeCat R) :
+    L.obj.carrier →ₗ[R] algebraicDual R L :=
+  L.obj.adjoint
+
 /-- The metric dual as a submodule of the rational span. -/
 noncomputable abbrev metricDual (L : IntegralLatticeCat R) :
     Submodule R (RationalSpan R L) :=
