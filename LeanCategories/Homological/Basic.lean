@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
 public import Mathlib.Algebra.Homology.HomotopyCategory
 
 /-!
@@ -41,5 +42,10 @@ abbrev HomotopyCategoryOverRing (R : Type u) [Ring R] :=
 abbrev DerivedCategoryOverRing (R : Type u) [Ring R]
     [HasDerivedCategory.{w} (ModuleCat.{v} R)] :=
   DerivedCategory (ModuleCat.{v} R)
+
+/-- The degree-`n` Ext-group of `R`-modules. -/
+abbrev ExtOverRing (R : Type u) [Ring R] [Small.{v} R]
+    (M N : ModuleCat.{v} R) (n : ℕ) : Type v :=
+  CategoryTheory.Abelian.Ext M N n
 
 end LeanCategories.Homological
