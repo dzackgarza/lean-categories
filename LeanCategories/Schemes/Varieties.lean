@@ -4,6 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
+public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Proper
+public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
+public import Mathlib.AlgebraicGeometry.OpenImmersion
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+
 /-!
 # Projective and quasi-projective varieties
 
@@ -16,11 +21,6 @@ Mathlib supplies the graded polynomial ring, `Proj`, and the closed- and
 open-immersion predicates.  These definitions combine those existing objects.
 No projectivity theorem or variety-specific proxy is introduced here.
 -/
-
-public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Proper
-public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
-public import Mathlib.AlgebraicGeometry.OpenImmersion
-public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 noncomputable section
 
