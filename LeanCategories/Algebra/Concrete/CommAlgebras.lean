@@ -13,7 +13,8 @@ public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 # Finiteness subcategories of commutative algebras
 
 This file exposes the full subcategories cut out by Mathlib's unrestricted
-`Algebra.FiniteType` and `Algebra.FinitePresentation` predicates.
+`Module.Finite`, `Algebra.FiniteType`, and `Algebra.FinitePresentation`
+predicates.
 -/
 
 @[expose] public section
@@ -27,6 +28,20 @@ universe u v
 namespace CommAlgCat
 
 variable (R : Type u) [CommRing R]
+
+/-- Commutative `R`-algebras which are finite as `R`-modules. -/
+abbrev ModuleFinite (R : Type u) [CommRing R] : Type _ :=
+  ObjectProperty.FullSubcategory (C := CommAlgCat.{v} R)
+    (fun A : CommAlgCat.{v} R => Module.Finite R A)
+
+/-- The inclusion of module-finite commutative `R`-algebras. -/
+abbrev moduleFiniteIncl (R : Type u) [CommRing R] : ModuleFinite R ⥤ CommAlgCat.{v} R :=
+  ObjectProperty.ι (C := CommAlgCat.{v} R)
+    (fun A : CommAlgCat.{v} R => Module.Finite R A)
+
+/-- The forgetful functor from module-finite algebras to commutative rings. -/
+abbrev moduleFiniteToCommRing : ModuleFinite R ⥤ CommRingCat.{v} :=
+  moduleFiniteIncl R ⋙ (forget₂ (CommAlgCat.{v} R) CommRingCat.{v})
 
 /-- Commutative `R`-algebras of finite type. -/
 abbrev FiniteType (R : Type u) [CommRing R] : Type _ :=
