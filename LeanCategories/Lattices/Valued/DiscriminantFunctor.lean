@@ -292,7 +292,13 @@ theorem underlyingMap_integralDiscriminantFormIso_hom
       (discriminantCarrierEquiv (integralLatticeIso e)).toLinearMap :=
   rfl
 
-/-- The nonsingular discriminant form as a functor on integral-lattice isomorphisms. -/
+/--
+The nonsingular discriminant form as a functor on the isomorphism core.
+
+The source and target are `Core` categories on purpose.  The construction
+transports a lattice isometry to an isomorphism of discriminant forms; this
+declaration does not claim an extension to arbitrary lattice morphisms.
+-/
 noncomputable def integralDiscriminantFormFunctor :
     Core (FractionFieldPerfectFiniteProjectiveLatticeCat ℤ) ⥤
       Core (NonsingularDiscriminantFormCat ℤ) where
