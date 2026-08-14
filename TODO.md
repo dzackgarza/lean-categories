@@ -47,7 +47,7 @@ Current work: `#50`, `#54`, `#55`, `#56`, and `#58`.
 - [x] Category, functor, and natural-transformation expressions
 - [x] Evaluation of expressions in a selected realization
 - [x] Proof-carrying category and functor registry entries
-- [ ] Stable exported identifiers for categories, functors, and standard objects
+- [x] Stable exported identifiers for categories, functors, and standard objects
 - [ ] Audit each file named `Functors`: define an honest functor or relocate it
 
 ## 2. Formed modules and lattice arithmetic

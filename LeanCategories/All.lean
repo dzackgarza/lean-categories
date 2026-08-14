@@ -10,6 +10,7 @@ public import LeanCategories.Catalogue.Syntax
 public import LeanCategories.Catalogue.Registry.Entry
 public import LeanCategories.Catalogue.Registry.Extension
 public import LeanCategories.Catalogue.Registry.Typed
+public import LeanCategories.Catalogue.Registry.Identifiers
 public import LeanCategories.Catalogue.Realization
 public import LeanCategories.Catalogue.Interpretation
 public import LeanCategories.Catalogue.Standard
