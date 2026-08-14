@@ -35,4 +35,12 @@ abbrev AffineSchemeCat : Type (u + 1) :=
 abbrev affineSchemeIncl : AffineSchemeCat.{u} ⥤ Scheme.{u} :=
   ObjectProperty.ι (C := Scheme.{u}) (fun X : Scheme.{u} => IsAffine X)
 
+/-- Integral schemes as the full subcategory cut out by Mathlib's `IsIntegral` predicate. -/
+abbrev IntegralSchemeCat : Type (u + 1) :=
+  ObjectProperty.FullSubcategory (C := Scheme.{u}) (fun X : Scheme.{u} => IsIntegral X)
+
+/-- The inclusion of integral schemes into all schemes. -/
+abbrev integralSchemeIncl : IntegralSchemeCat.{u} ⥤ Scheme.{u} :=
+  ObjectProperty.ι (C := Scheme.{u}) (fun X : Scheme.{u} => IsIntegral X)
+
 end LeanCategories.Schemes
