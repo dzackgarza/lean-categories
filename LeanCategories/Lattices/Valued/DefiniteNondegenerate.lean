@@ -61,7 +61,7 @@ the only hypothesis `reflectiveRootPairing` needs beyond regularity of `2`, and 
 supplies it. -/
 noncomputable def rootPairingOfDefinite (L : FiniteProjectiveLatticeCat ℤ ℤ)
     (hL : isDefiniteLattice L) :
-    RootPairing (ReflectiveRoot L) ℤ L.obj.obj.carrier
+    RootPairing (ReflectiveRoot L.obj) ℤ L.obj.obj.carrier
       (Module.Dual ℤ L.obj.obj.carrier) :=
   reflectiveRootPairing L (isNondegenerate_of_isDefiniteLattice L hL)
     (IsRegular.of_ne_zero two_ne_zero)
@@ -74,7 +74,7 @@ noncomputable def weylSubgroupOfDefinite (L : FiniteProjectiveLatticeCat ℤ ℤ
 
 /-- The root pairing of a definite root lattice. -/
 noncomputable def rootLatticeRootPairing (L : RootLatticeCat) :
-    RootPairing (ReflectiveRoot L.obj.obj) ℤ L.obj.obj.obj.obj.carrier
+    RootPairing (ReflectiveRoot L.obj.obj.obj) ℤ L.obj.obj.obj.obj.carrier
       (Module.Dual ℤ L.obj.obj.obj.obj.carrier) :=
   rootPairingOfDefinite L.obj.obj L.obj.property
 
