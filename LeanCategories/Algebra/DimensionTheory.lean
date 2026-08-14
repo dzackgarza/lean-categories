@@ -51,7 +51,8 @@ def HilbertFunction : ℕ → ℤ :=
 
 /-- The Poincare series of a graded module. -/
 def PoincareSeries : PowerSeries ℤ :=
-  PowerSeries.mk (HilbertFunction lambda M)
+  PowerSeries.mk (R := ℤ) (fun n => @lambda (M n) (inferInstance : AddCommMonoid (M n))
+    (inferInstance : Module R (M n)))
 
 end Hilbert
 
