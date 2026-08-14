@@ -6,6 +6,7 @@ module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 public import Mathlib.Algebra.Homology.HomotopyCategory
 public import Mathlib.CategoryTheory.Monoidal.Tor
 
@@ -43,6 +44,11 @@ abbrev HomotopyCategoryOverRing (R : Type u) [Ring R] :=
 abbrev DerivedCategoryOverRing (R : Type u) [Ring R]
     [HasDerivedCategory.{w} (ModuleCat.{v} R)] :=
   DerivedCategory (ModuleCat.{v} R)
+
+/-- The internal-Hom functor on `R`-modules. -/
+abbrev InternalHomOverRing (R : Type u) [CommRing R] (M : ModuleCat.{u} R) :
+    ModuleCat.{u} R ⥤ ModuleCat.{u} R :=
+  CategoryTheory.ihom M
 
 /-- The degree-`n` Ext-group of `R`-modules. -/
 abbrev ExtOverRing (R : Type u) [Ring R] [Small.{v} R]
