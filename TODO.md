@@ -142,8 +142,8 @@ Current work: `#38`, `#39`, and `#40`.
 
 ### Repository-specific homological surface
 
-- [ ] Categories of chain and cochain complexes over each required abelian category
-- [ ] Homotopy and derived categories with their localization functors
+- [x] Categories of chain and cochain complexes over each required abelian category
+- [x] Homotopy and derived categories with their localization functors
 - [ ] Derived tensor product and derived internal Hom
 - [ ] Sheaf cohomology and derived pushforward
 - [ ] Hypercohomology and spectral-sequence functors needed by geometry
