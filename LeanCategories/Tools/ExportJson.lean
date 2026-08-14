@@ -31,14 +31,14 @@ def parameterJson : ParameterExpr → Json
         ("tag", "apply"),
         ("operation", operation.raw),
         ("argument", parameterJson argument),
-      ]
+]
   | .apply2 operation left right =>
       object [
         ("tag", "apply2"),
         ("operation", operation.raw),
         ("left", parameterJson left),
         ("right", parameterJson right),
-      ]
+]
   | .apply3 operation first second third =>
       object [
         ("tag", "apply3"),
@@ -46,7 +46,7 @@ def parameterJson : ParameterExpr → Json
         ("first", parameterJson first),
         ("second", parameterJson second),
         ("third", parameterJson third),
-      ]
+]
 
 def categoryExprJson : CategoryExpr → Json
   | .atom id => object [("tag", "atom"), ("id", id.raw)]
@@ -55,7 +55,7 @@ def categoryExprJson : CategoryExpr → Json
         ("tag", "familyApp"),
         ("family", family.raw),
         ("args", .arr (args.map parameterJson)),
-      ]
+]
   | .classifierTotal classifier =>
       object [("tag", "classifierTotal"), ("classifier", classifier.raw)]
   | .refine base classifier route =>
@@ -64,50 +64,25 @@ def categoryExprJson : CategoryExpr → Json
         ("base", categoryExprJson base),
         ("classifier", classifier.raw),
         ("route", match route with | some r => r.raw | none => Json.null),
-      ]
-  | .pullback left right over =>
-      object [
-        ("tag", "pullback"),
-        ("left", left.raw),
-        ("right", right.raw),
-        ("over", categoryExprJson over),
-      ]
+]
   | .opaque id => object [("tag", "opaque"), ("id", id.raw)]
-  | .reference id => object [("tag", "reference"), ("id", id.raw)]
-
-def originJson : CategoryOrigin → Json
-  | .root => "root"
-  | .atomicClassifierTotal => "atomicClassifierTotal"
-  | .derivedNamed => "derivedNamed"
-  | .constructorValue => "constructorValue"
-  | .opaqueCategory => "opaqueCategory"
-  | .alias => "alias"
-
-def visibilityJson : Visibility → Json
-  | .present => "present"
-  | .semanticOnly => "semanticOnly"
-  | .presentationHidden => "presentationHidden"
 
 def parameterKindJson (kind : ParameterKindId) : Json := kind.raw
 
 def varianceJson (variance : VarianceId) : Json := variance.raw
 
+def categoryFamilySchemaJson : CategoryFamilySchema → Json
+  | .ring => "ring"
+  | .commRing => "commRing"
+  | .commRingModule => "commRingModule"
+
 def functorExprJson {source target : CategoryExpr} : FunctorExpr source target → Json
   | .identity category => object [("tag", "identity"), ("category", categoryExprJson category)]
   | .atomic id => object [("tag", "atomic"), ("id", id.raw)]
-  | .named id => object [("tag", "named"), ("id", id.raw)]
   | .classifierForget classifier host =>
       object [("tag", "classifierForget"), ("classifier", classifier.raw),
         ("host", categoryExprJson host)]
-  | .unfoldAtom id body =>
-      object [("tag", "unfoldAtom"), ("id", id.raw), ("body", categoryExprJson body)]
-  | .unfoldReference id body =>
-      object [("tag", "unfoldReference"), ("id", id.raw),
-        ("body", categoryExprJson body)]
   | .opaquePort id => object [("tag", "opaquePort"), ("id", id.raw)]
-  | .compose first second =>
-      object [("tag", "compose"), ("first", functorExprJson first),
-        ("second", functorExprJson second)]
 
 def categoryJson (e : NamedCategoryEntry) : Json :=
   object [
@@ -118,15 +93,14 @@ def categoryJson (e : NamedCategoryEntry) : Json :=
     ("refinementRealization", match e.refinementRealization with
       | some realization => realization.toString
       | none => ""),
-    ("origin", originJson e.origin),
-    ("visibility", visibilityJson e.visibility),
     ("expression", categoryExprJson e.expression),
-  ]
+]
 
 def categoryFamilyJson (e : CategoryFamilyEntry) : Json :=
   object [
     ("id", e.id.raw),
     ("canonicalName", e.canonicalName),
+    ("schema", categoryFamilySchemaJson e.schema),
     ("realization", e.realization.toString),
     ("transport", e.transport.toString),
     ("parameters", Json.arr <| e.schema.parameterMetadata.map fun parameter => object [
@@ -136,9 +110,9 @@ def categoryFamilyJson (e : CategoryFamilyEntry) : Json :=
       ("dependency", match parameter.dependency with
         | some index => Json.num index
         | none => Json.null),
-    ]),
+]),
     ("variance", varianceJson e.transportSemantics.variance),
-  ]
+]
 
 def aliasJson (e : AliasEntry) : Json :=
   object [
@@ -147,7 +121,7 @@ def aliasJson (e : AliasEntry) : Json :=
     ("aliasOf", e.aliasOf.raw),
     ("declaration", e.declaration.toString),
     ("realization", e.realization.toString),
-  ]
+]
 
 def classifierJson (e : ClassifierEntry) : Json :=
   object [
@@ -156,8 +130,7 @@ def classifierJson (e : ClassifierEntry) : Json :=
     ("host", categoryExprJson e.host),
     ("declaration", e.declaration.toString),
     ("realization", e.realization.toString),
-    ("visibility", visibilityJson e.visibility),
-  ]
+]
 
 def functorJson (e : FunctorEntry) : Json :=
   object [
@@ -168,14 +141,13 @@ def functorJson (e : FunctorEntry) : Json :=
     ("declaration", e.declaration.toString),
     ("realization", e.realization.toString),
     ("expression", functorExprJson e.expression),
-  ]
+]
 
 def opaqueJson (e : OpaqueCategoryEntry) : Json :=
   object [
     ("id", e.id.raw),
     ("declaration", e.declaration.toString),
     ("realization", e.realization.toString),
-    ("visibility", visibilityJson e.visibility),
     ("reason", e.reason),
     ("ports", .arr <| e.ports.map fun p => object [
       ("id", p.id.raw),
@@ -184,8 +156,8 @@ def opaqueJson (e : OpaqueCategoryEntry) : Json :=
       ("declaration", p.declaration.toString),
       ("realization", p.realization.toString),
       ("provenance", p.provenance),
-    ]),
-  ]
+]),
+]
 
 /-- Deterministic manifest JSON from a registry snapshot. -/
 def snapshotManifestJson (snap : RegistrySnapshot) : Json :=
@@ -207,7 +179,7 @@ def snapshotManifestJson (snap : RegistrySnapshot) : Json :=
     ("namedExpressions", .arr #[]),
     ("structuralPorts", .arr #[]),
     ("source", "lean-registry"),
-  ]
+]
 
 /-- Serialize a snapshot using Lean's JSON printer. -/
 def snapshotManifestString (snap : RegistrySnapshot) : String :=

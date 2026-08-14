@@ -73,9 +73,7 @@ normalized_registry .category
     declaration := `LeanCategories.Modules.Quadratic.Valued.CatalogueRegistration.quadModuleCategory
     expression := QuadModule
     realization :=
-      `LeanCategories.Modules.Quadratic.Valued.CatalogueRegistration.quadModuleRealization
-    origin := .opaqueCategory
-    visibility := .present }
+      `LeanCategories.Modules.Quadratic.Valued.CatalogueRegistration.quadModuleRealization}
 
 normalized_registry .functor
   { id := FunctorId.quadModuleForget

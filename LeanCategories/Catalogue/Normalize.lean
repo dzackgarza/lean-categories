@@ -47,10 +47,8 @@ partial def normalizeCategory
     CategoryExpr → CategoryExpr
   | .atom id => .atom (aliases.canonicalize id)
   | .opaque id => .opaque (aliases.canonicalize id)
-  | .reference id => .reference (aliases.canonicalize id)
   | .familyApp f args => .familyApp f args
   | .classifierTotal c => .classifierTotal c
-  | .pullback left right over => .pullback left right (normalizeCategory hosts aliases over)
   | .refine base clf route =>
       let base' := normalizeCategory hosts aliases base
       -- Exact-host: refine(host(A), A) ↦ total(A)

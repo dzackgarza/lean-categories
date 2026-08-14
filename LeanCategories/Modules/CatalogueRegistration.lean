@@ -49,7 +49,7 @@ noncomputable def finiteRankRealization (R : RingCat.{u}) :
   { hostRealization := modulesRealization R, totalRealization := {} }
 
 normalized_registry .categoryFamily
-  { id := CategoryFamilyId.modules, canonicalName := "Modules(R)"
+  { id := CategoryFamilyId.modules, canonicalName := "Modules"
     schema := .ring
     realization := `LeanCategories.Modules.CatalogueRegistration.modulesFamilyRealization
     transport := `LeanCategories.Modules.Mathlib.moduleCatRestrictScalarsPseudofunctor
@@ -59,45 +59,38 @@ normalized_registry .classifier
   { id := ClassifierId.modulesFree, canonicalName := "Free"
     declaration := `LeanCategories.Modules.Mathlib.free
     host := Modules.Modules
-    realization := `LeanCategories.Modules.CatalogueRegistration.freeRealization
-    visibility := .present }
+    realization := `LeanCategories.Modules.CatalogueRegistration.freeRealization}
 normalized_registry .classifier
   { id := ClassifierId.modulesFinitelyGenerated, canonicalName := "FinitelyGenerated"
     declaration := `LeanCategories.Modules.Mathlib.finitelyGenerated
     host := Modules.Modules
-    realization := `LeanCategories.Modules.CatalogueRegistration.finitelyGeneratedRealization
-    visibility := .present }
+    realization := `LeanCategories.Modules.CatalogueRegistration.finitelyGeneratedRealization}
 normalized_registry .classifier
   { id := ClassifierId.modulesFiniteRank, canonicalName := "FiniteRank"
     declaration := `LeanCategories.Modules.Mathlib.finiteRank
     host := Modules.Modules
-    realization := `LeanCategories.Modules.CatalogueRegistration.finiteRankRealization
-    visibility := .present }
+    realization := `LeanCategories.Modules.CatalogueRegistration.finiteRankRealization}
 
 normalized_registry .category
   { id := CategoryId.modulesR, canonicalName := "Modules(R)"
     declaration := `LeanCategories.Modules.Mathlib.ModulesOf
     expression := Modules.Modules
-    realization := `LeanCategories.Modules.CatalogueRegistration.modulesRealization
-    origin := .root, visibility := .present }
+    realization := `LeanCategories.Modules.CatalogueRegistration.modulesRealization}
 normalized_registry .category
   { id := CategoryId.freeModules, canonicalName := "FreeModules(R)"
     declaration := `LeanCategories.Modules.Mathlib.FreeModules
     expression := Modules.FreeModules
-    realization := `LeanCategories.Modules.CatalogueRegistration.freeModulesRealization
-    origin := .derivedNamed, visibility := .present }
+    realization := `LeanCategories.Modules.CatalogueRegistration.freeModulesRealization}
 normalized_registry .category
   { id := CategoryId.finitelyGeneratedModules
     canonicalName := "FinitelyGeneratedModules(R)"
     declaration := `LeanCategories.Modules.Mathlib.FinitelyGeneratedModules
     expression := Modules.FinitelyGeneratedModules
-    realization := `LeanCategories.Modules.CatalogueRegistration.finitelyGeneratedModulesRealization
-    origin := .derivedNamed, visibility := .present }
+    realization := `LeanCategories.Modules.CatalogueRegistration.finitelyGeneratedModulesRealization}
 normalized_registry .category
   { id := CategoryId.finiteRankModules, canonicalName := "FiniteRankModules(R)"
     declaration := `LeanCategories.Modules.Mathlib.FiniteRankModules
     expression := Modules.FiniteRankModules
-    realization := `LeanCategories.Modules.CatalogueRegistration.finiteRankModulesRealization
-    origin := .derivedNamed, visibility := .present }
+    realization := `LeanCategories.Modules.CatalogueRegistration.finiteRankModulesRealization}
 
 end LeanCategories.Modules.CatalogueRegistration

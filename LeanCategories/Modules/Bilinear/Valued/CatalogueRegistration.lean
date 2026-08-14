@@ -161,18 +161,14 @@ normalized_registry .category
     declaration := `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleCategory
     expression := BilinModule
     realization :=
-      `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleRealization
-    origin := .opaqueCategory
-    visibility := .present }
+      `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleRealization}
 
 normalized_registry .category
   { id := CategoryId.bilWForm
     canonicalName := "BilWFormCat"
     declaration := `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilWFormCategory
     expression := BilWForm
-    realization := `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilWFormRealization
-    origin := .opaqueCategory
-    visibility := .present }
+    realization := `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilWFormRealization}
 
 normalized_registry .functor
   { id := FunctorId.bilinModuleForget

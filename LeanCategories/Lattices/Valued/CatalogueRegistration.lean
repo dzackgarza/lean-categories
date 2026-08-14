@@ -222,9 +222,7 @@ normalized_registry .category
     canonicalName := "LatticeCat"
     declaration := `LeanCategories.Lattices.Valued.CatalogueRegistration.latticeCategory
     expression := Lattice
-    realization := `LeanCategories.Lattices.Valued.CatalogueRegistration.latticeRealization
-    origin := .opaqueCategory
-    visibility := .present }
+    realization := `LeanCategories.Lattices.Valued.CatalogueRegistration.latticeRealization}
 
 normalized_registry .category
   { id := CategoryId.finiteProjectiveLattice
@@ -233,36 +231,28 @@ normalized_registry .category
       `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteProjectiveLatticeCategory
     expression := FiniteProjectiveLattice
     realization :=
-      `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteProjectiveLatticeRealization
-    origin := .opaqueCategory
-    visibility := .present }
+      `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteProjectiveLatticeRealization}
 
 normalized_registry .category
   { id := CategoryId.finiteFreeLattice
     canonicalName := "FiniteFreeLatticeCat"
     declaration := `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteFreeLatticeCategory
     expression := FiniteFreeLattice
-    realization := `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteFreeLatticeRealization
-    origin := .opaqueCategory
-    visibility := .present }
+    realization := `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteFreeLatticeRealization}
 
 normalized_registry .category
   { id := CategoryId.evenLattice
     canonicalName := "EvenLatticeCat"
     declaration := `LeanCategories.Lattices.Valued.CatalogueRegistration.evenLatticeCategory
     expression := EvenLattice
-    realization := `LeanCategories.Lattices.Valued.CatalogueRegistration.evenLatticeRealization
-    origin := .opaqueCategory
-    visibility := .present }
+    realization := `LeanCategories.Lattices.Valued.CatalogueRegistration.evenLatticeRealization}
 
 normalized_registry .category
   { id := CategoryId.definiteLattice
     canonicalName := "DefiniteLatticeCat"
     declaration := `LeanCategories.Lattices.Valued.CatalogueRegistration.definiteLatticeCategory
     expression := DefiniteLattice
-    realization := `LeanCategories.Lattices.Valued.CatalogueRegistration.definiteLatticeRealization
-    origin := .opaqueCategory
-    visibility := .present }
+    realization := `LeanCategories.Lattices.Valued.CatalogueRegistration.definiteLatticeRealization}
 
 normalized_registry .category
   { id := CategoryId.indefiniteLattice
@@ -270,9 +260,7 @@ normalized_registry .category
     declaration := `LeanCategories.Lattices.Valued.CatalogueRegistration.indefiniteLatticeCategory
     expression := IndefiniteLattice
     realization :=
-      `LeanCategories.Lattices.Valued.CatalogueRegistration.indefiniteLatticeRealization
-    origin := .opaqueCategory
-    visibility := .present }
+      `LeanCategories.Lattices.Valued.CatalogueRegistration.indefiniteLatticeRealization}
 
 normalized_registry .functor
   { id := FunctorId.latticeChangeValue

@@ -82,38 +82,32 @@ normalized_registry .classifier
   { id := ClassifierId.magmasAssociative, canonicalName := "Associative"
     declaration := `LeanCategories.Algebra.associative
     host := Algebra.Catalogue.Magmas.Magmas
-    realization := `LeanCategories.Algebra.CatalogueRegistration.associativeRealization
-    visibility := .present }
+    realization := `LeanCategories.Algebra.CatalogueRegistration.associativeRealization}
 normalized_registry .classifier
   { id := ClassifierId.magmasCommutative, canonicalName := "Commutative"
     declaration := `LeanCategories.Algebra.commutative
     host := Algebra.Catalogue.Magmas.Magmas
-    realization := `LeanCategories.Algebra.CatalogueRegistration.commutativeRealization
-    visibility := .present }
+    realization := `LeanCategories.Algebra.CatalogueRegistration.commutativeRealization}
 normalized_registry .classifier
   { id := ClassifierId.magmasUnital, canonicalName := "Unital"
     declaration := `LeanCategories.Algebra.unital
     host := Algebra.Catalogue.Magmas.Magmas
-    realization := `LeanCategories.Algebra.CatalogueRegistration.unitalRealization
-    visibility := .present }
+    realization := `LeanCategories.Algebra.CatalogueRegistration.unitalRealization}
 normalized_registry .classifier
   { id := ClassifierId.magmasInverse, canonicalName := "Inverse"
     declaration := `LeanCategories.Algebra.inverse
     host := .classifierTotal ClassifierId.magmasUnital
-    realization := `LeanCategories.Algebra.CatalogueRegistration.inverseRealization
-    visibility := .present }
+    realization := `LeanCategories.Algebra.CatalogueRegistration.inverseRealization}
 normalized_registry .classifier
   { id := ClassifierId.magmasAdditive, canonicalName := "Additive"
     declaration := `LeanCategories.Algebra.additive
     host := Algebra.Catalogue.Magmas.Magmas
-    realization := `LeanCategories.Algebra.CatalogueRegistration.additiveRealization
-    visibility := .present }
+    realization := `LeanCategories.Algebra.CatalogueRegistration.additiveRealization}
 normalized_registry .classifier
   { id := ClassifierId.magmasMultiplicative, canonicalName := "Multiplicative"
     declaration := `LeanCategories.Algebra.multiplicative
     host := Algebra.Catalogue.Magmas.Magmas
-    realization := `LeanCategories.Algebra.CatalogueRegistration.multiplicativeRealization
-    visibility := .present }
+    realization := `LeanCategories.Algebra.CatalogueRegistration.multiplicativeRealization}
 
 abbrev CRings := Algebra.CommutativeRings
 
@@ -121,48 +115,40 @@ normalized_registry .category
   { id := CategoryId.magmas, canonicalName := "Magmas"
     declaration := `LeanCategories.Algebra.Magmas
     expression := Algebra.Catalogue.Magmas.Magmas
-    realization := `LeanCategories.Algebra.CatalogueRegistration.magmasRealization
-    origin := .atomicClassifierTotal, visibility := .present }
+    realization := `LeanCategories.Algebra.CatalogueRegistration.magmasRealization}
 normalized_registry .category
   { id := CategoryId.semigroups, canonicalName := "Semigroups"
     declaration := `LeanCategories.Algebra.Semigroups
     expression := Algebra.Catalogue.Magmas.Semigroups
-    realization := `LeanCategories.Algebra.CatalogueRegistration.semigroupsRealization
-    origin := .derivedNamed, visibility := .present }
+    realization := `LeanCategories.Algebra.CatalogueRegistration.semigroupsRealization}
 normalized_registry .category
   { id := CategoryId.monoids, canonicalName := "Monoids"
     declaration := `LeanCategories.Algebra.Monoids
     expression := Algebra.Catalogue.Magmas.Monoids
-    realization := `LeanCategories.Algebra.CatalogueRegistration.monoidsRealization
-    origin := .derivedNamed, visibility := .present }
+    realization := `LeanCategories.Algebra.CatalogueRegistration.monoidsRealization}
 normalized_registry .category
   { id := CategoryId.groups, canonicalName := "Groups"
     declaration := `LeanCategories.Algebra.Groups
     expression := Algebra.Catalogue.Magmas.Groups
-    realization := `LeanCategories.Algebra.CatalogueRegistration.groupsRealization
-    origin := .derivedNamed, visibility := .present }
+    realization := `LeanCategories.Algebra.CatalogueRegistration.groupsRealization}
 normalized_registry .category
   { id := CategoryId.additiveMagmas, canonicalName := "AdditiveMagmas"
     declaration := `LeanCategories.Algebra.AdditiveMagmas
     expression := Algebra.Catalogue.Magmas.AdditiveMagmas
-    realization := `LeanCategories.Algebra.CatalogueRegistration.additiveMagmasRealization
-    origin := .derivedNamed, visibility := .present }
+    realization := `LeanCategories.Algebra.CatalogueRegistration.additiveMagmasRealization}
 normalized_registry .category
   { id := CategoryId.additiveSemigroups, canonicalName := "AdditiveSemigroups"
     declaration := `LeanCategories.Algebra.AdditiveSemigroups
     expression := Algebra.Catalogue.Magmas.AdditiveSemigroups
-    realization := `LeanCategories.Algebra.CatalogueRegistration.additiveSemigroupsRealization
-    origin := .derivedNamed, visibility := .present }
+    realization := `LeanCategories.Algebra.CatalogueRegistration.additiveSemigroupsRealization}
 normalized_registry .category
   { id := CategoryId.additiveMonoids, canonicalName := "AdditiveMonoids"
     declaration := `LeanCategories.Algebra.AdditiveMonoids
     expression := Algebra.Catalogue.Magmas.AdditiveMonoids
-    realization := `LeanCategories.Algebra.CatalogueRegistration.additiveMonoidsRealization
-    origin := .derivedNamed, visibility := .present }
+    realization := `LeanCategories.Algebra.CatalogueRegistration.additiveMonoidsRealization}
 normalized_registry .category
   { id := CategoryId.additiveGroups, canonicalName := "AdditiveGroups"
     declaration := `LeanCategories.Algebra.AdditiveGroups
     expression := Algebra.Catalogue.Magmas.AdditiveGroups
-    realization := `LeanCategories.Algebra.CatalogueRegistration.additiveGroupsRealization
-    origin := .derivedNamed, visibility := .present }
+    realization := `LeanCategories.Algebra.CatalogueRegistration.additiveGroupsRealization}
 end LeanCategories.Algebra.CatalogueRegistration

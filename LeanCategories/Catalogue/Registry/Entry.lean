@@ -28,8 +28,6 @@ structure NamedCategoryEntry where
   realization : Lean.Name
   /-- Typed pullback witness required when the expression is a refinement. -/
   refinementRealization : Option Lean.Name := none
-  origin : CategoryOrigin
-  visibility : Visibility
   deriving Repr, Inhabited
 
 /--
@@ -54,7 +52,6 @@ structure ClassifierEntry where
   declaration : Lean.Name
   host : CategoryExpr
   realization : Lean.Name
-  visibility : Visibility
   deriving Repr, Inhabited
 
 /-- A typed functor declaration, with expression endpoints checked by Lean. -/
@@ -93,7 +90,6 @@ structure OpaqueCategoryEntry where
   realization : Lean.Name
   ports : Array StructuralPortEntry
   reason : String
-  visibility : Visibility
   deriving Repr, Inhabited
 
 /-- Aggregate registry snapshot for export (specimen / compiled). -/

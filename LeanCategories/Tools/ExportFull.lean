@@ -56,7 +56,7 @@ def loadRegisteredSnapshot : IO RegistrySnapshot := do
   let packageOleanRoots := [
     "mathlib", "batteries", "Qq", "aesop", "plausible", "LeanSearchClient",
     "proofwidgets", "importGraph",
-  ].map fun package =>
+].map fun package =>
     workspaceRoot / ".lake" / "packages" / package / ".lake" / "build" / "lib" / "lean"
   Lean.initSearchPath (← Lean.findSysroot) (buildOleanRoot :: packageOleanRoots)
   unsafe Lean.enableInitializersExecution
@@ -91,11 +91,6 @@ def validate (j : Json) : Except String Unit := do
     let spelling ← a.getObjValAs? String "spelling"
     if names.contains spelling then
       throw s!"alias spelling collides with category node: {spelling}"
-  let opaques ← j.getObjValAs? (Array Json) "opaqueCategories"
-  for o in opaques do
-    let vis ← o.getObjValAs? String "visibility"
-    if !vis.endsWith "semanticOnly" then
-      throw s!"opaque host must be semanticOnly, got {vis}"
   let families ← j.getObjValAs? (Array Json) "categoryFamilies"
   let some family := families.find? fun candidate =>
     (candidate.getObjValAs? String "id").toOption == some "fam.modules"
@@ -103,6 +98,9 @@ def validate (j : Json) : Except String Unit := do
   let familyId ← family.getObjValAs? String "id"
   if familyId != "fam.modules" then
     throw s!"expected the Modules family, got {familyId}"
+  let familySchema ← family.getObjValAs? String "schema"
+  if familySchema != "ring" then
+    throw s!"expected the Modules family schema to be ring, got {familySchema}"
   let parameters ← family.getObjValAs? (Array Json) "parameters"
   if parameters.size != 1 then
     throw s!"Modules family must have one parameter, got {parameters.size}"

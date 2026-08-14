@@ -51,33 +51,28 @@ normalized_registry .category
     canonicalName := "Sets"
     declaration := `LeanCategories.Foundation.Mathlib.Sets
     expression := Foundation.Sets
-    realization := `LeanCategories.Foundation.CatalogueRegistration.setsRealization
-    origin := .root
-    visibility := .present }
+    realization := `LeanCategories.Foundation.CatalogueRegistration.setsRealization}
 
 normalized_registry .classifier
   { id := ClassifierId.setsFinite
     canonicalName := "Finite"
     declaration := `LeanCategories.Foundation.Mathlib.finite
     host := Foundation.Sets
-    realization := `LeanCategories.Foundation.CatalogueRegistration.finiteRealization
-    visibility := .present }
+    realization := `LeanCategories.Foundation.CatalogueRegistration.finiteRealization}
 
 normalized_registry .classifier
   { id := ClassifierId.setsGraded
     canonicalName := "Graded"
     declaration := `LeanCategories.Foundation.Mathlib.graded
     host := Foundation.Sets
-    realization := `LeanCategories.Foundation.CatalogueRegistration.gradedRealization
-    visibility := .present }
+    realization := `LeanCategories.Foundation.CatalogueRegistration.gradedRealization}
 
 normalized_registry .classifier
   { id := ClassifierId.setsBinaryOperation
     canonicalName := "BinaryOperation"
     declaration := `LeanCategories.Foundation.Mathlib.binaryOperation
     host := Foundation.Sets
-    realization := `LeanCategories.Foundation.CatalogueRegistration.binaryOperationRealization
-    visibility := .present }
+    realization := `LeanCategories.Foundation.CatalogueRegistration.binaryOperationRealization}
 
 normalized_registry .functor
   { id := FunctorId.setsIdentity

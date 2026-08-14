@@ -199,10 +199,7 @@ inductive CategoryExpr
   | familyApp (family : CategoryFamilyId) (args : Array ParameterExpr)
   | classifierTotal (classifier : ClassifierId)
   | refine (base : CategoryExpr) (classifier : ClassifierId) (route : Option RouteId)
-  /-- Pullback legs are typed functor declarations resolved from the registry. -/
-  | pullback (left right : FunctorId) (over : CategoryExpr)
   | opaque (id : CategoryId)
-  | reference (id : CategoryId)
   deriving Repr, Lean.ToExpr
 
 /-- A refinement occurrence with source, base, and classifier-total indices. -/
@@ -218,18 +215,10 @@ category is literally shared by the two legs.
 -/
 inductive FunctorExpr : CategoryExpr → CategoryExpr → Type
   | identity (category : CategoryExpr) : FunctorExpr category category
-  /-- A named functor whose endpoints are supplied by the dependent indices. -/
   | atomic {source target : CategoryExpr} (id : FunctorId) : FunctorExpr source target
-  | named {source target : CategoryExpr} (id : FunctorId) : FunctorExpr source target
   | classifierForget (classifier : ClassifierId) (host : CategoryExpr) :
       FunctorExpr (.classifierTotal classifier) host
-  | unfoldAtom (id : CategoryId) (body : CategoryExpr) :
-      FunctorExpr (.atom id) body
-  | unfoldReference (id : CategoryId) (body : CategoryExpr) :
-      FunctorExpr (.reference id) body
   | opaquePort {source target : CategoryExpr} (port : OpaquePortId) : FunctorExpr source target
-  | compose {source middle target : CategoryExpr} (first : FunctorExpr source middle)
-      (second : FunctorExpr middle target) : FunctorExpr source target
   deriving Repr, Lean.ToExpr
 
 /-- A typed functor expression with existential source and target indices. -/
@@ -246,32 +235,8 @@ partial def CategoryExpr.syntacticEq : CategoryExpr → CategoryExpr → Bool
   | .classifierTotal left, .classifierTotal right => left == right
   | .refine leftBase leftClassifier leftRoute, .refine rightBase rightClassifier rightRoute =>
       leftBase.syntacticEq rightBase && leftClassifier == rightClassifier && leftRoute == rightRoute
-  | .pullback leftLeg rightLeg leftOver, .pullback rightLeftLeg rightRightLeg rightOver =>
-      leftLeg == rightLeftLeg && rightLeg == rightRightLeg &&
-        leftOver.syntacticEq rightOver
   | .opaque left, .opaque right => left == right
-  | .reference left, .reference right => left == right
   | _, _ => false
-
-/-- How a named node relates to its expression body. -/
-inductive CategoryOrigin
-  | root
-  | atomicClassifierTotal
-  | derivedNamed
-  | constructorValue
-  | opaqueCategory
-  | alias
-  deriving DecidableEq, Repr, Inhabited
-
-/-- Visibility for semantic vs presentation layers. -/
-inductive Visibility
-  /-- Present in semantic export and eligible for presentation. -/
-  | present
-  /-- Semantic-only (opaque hosts excluded from presentation). -/
-  | semanticOnly
-  /-- Explicitly excluded from presentation. -/
-  | presentationHidden
-  deriving DecidableEq, Repr, Inhabited
 
 /-- Route selector for multi-port projection / refine. -/
 inductive RouteSelector
