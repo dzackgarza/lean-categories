@@ -19,18 +19,23 @@ namespace LeanCategories.Lattices.Valued
 
 universe u
 
-variable {R : Type u} [CommRing R] [IsDomain R]
-  [IsPrincipalIdealRing R]
+variable {R : Type u} [CommRing R]
 
-/-- Reflective vectors of a finite projective integral lattice. -/
-abbrev ReflectiveRoot (L : FiniteProjectiveLatticeCat R R) :=
-  {x : L.obj.obj.carrier | LinearMap.IsReflective L.obj.obj.bilinMap x}
+/-- A lattice root is a vector whose reflection is integral. -/
+def IsReflectiveRoot (L : IntegralLatticeCat R) (x : L.obj.carrier) : Prop :=
+  LinearMap.IsReflective L.obj.bilinMap x
+
+/-- The roots whose reflections are integral. -/
+abbrev ReflectiveRoot (L : IntegralLatticeCat R) :=
+  {x : L.obj.carrier // IsReflectiveRoot L x}
+
+variable [IsDomain R] [IsPrincipalIdealRing R]
 
 /-- The Mathlib root pairing formed by all reflective lattice vectors. -/
 noncomputable def reflectiveRootPairing
     (L : FiniteProjectiveLatticeCat R R)
     (hL : L.obj.obj.IsNondegenerate) (h2 : IsRegular (2 : R)) :
-    RootPairing (ReflectiveRoot L) R L.obj.obj.carrier
+    RootPairing (ReflectiveRoot L.obj) R L.obj.obj.carrier
       (Module.Dual R L.obj.obj.carrier) := by
   letI : Module.Projective R L.obj.obj.carrier := L.obj.property.1
   letI : Module.Finite R L.obj.obj.carrier := L.property

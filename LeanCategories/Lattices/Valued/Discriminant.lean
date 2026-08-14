@@ -30,6 +30,10 @@ variable [IsDomain R]
 noncomputable def discriminantSymBilWFormObject (L : IntegralLatticeCat R) : SymBilWFormCat R :=
   SymBilWFormCat.cokernelObject (toMetricDualSymBilWForm R L)
 
+/-- The discriminant group `A_L`. -/
+noncomputable abbrev discriminantGroup (L : IntegralLatticeCat R) :=
+  (discriminantSymBilWFormObject R L).obj.carrier
+
 /-- The formed quotient map from the metric dual to the discriminant module. -/
 noncomputable def discriminantSymBilWFormProjection (L : IntegralLatticeCat R) :
     metricDualSymBilWFormObject R L ⟶ discriminantSymBilWFormObject R L :=

@@ -115,6 +115,11 @@ noncomputable def determinant {I : Type*} [Fintype I] [DecidableEq I]
     (L : IntegralLatticeCat R) (b : Module.Basis I R L.obj.carrier) : R :=
   (gramMatrix L b).det
 
+/-- The signed discriminant of a lattice with a selected finite basis. -/
+noncomputable def signedDiscriminant {I : Type*} [Fintype I] [DecidableEq I]
+    (L : IntegralLatticeCat R) (b : Module.Basis I R L.obj.carrier) : R :=
+  (-1 : R) ^ Nat.choose (Fintype.card I) 2 * determinant L b
+
 /-- Gram determinants from two bases with the same index are associated. -/
 theorem determinant_associated {I : Type*} [Fintype I] [DecidableEq I]
     (L : IntegralLatticeCat R)

@@ -19,7 +19,7 @@ variable (R : Type u) [CommRing R] [IsDomain R]
 
 /-- The carrier of the discriminant module `A_L = L♯/L`. -/
 abbrev discriminantModule (L : IntegralLatticeCat R) : Type u :=
-  (discriminantSymBilWFormObject R L).obj.carrier
+  discriminantGroup R L
 
 /-- A lattice is `I`-elementary when the ideal `I` annihilates its discriminant module.
 
@@ -27,6 +27,10 @@ At a height-one prime this is `𝔭`-elementarity; over `ℤ` the ideal `(p)` gi
 classical `p`-elementary lattices. -/
 def IsIElementary (L : IntegralLatticeCat R) (I : Ideal R) : Prop :=
   Module.IsTorsionBySet R (discriminantModule R L) I
+
+/-- A lattice is `p`-elementary when `p` annihilates its discriminant group. -/
+def IsPElementary (L : IntegralLatticeCat R) (p : R) : Prop :=
+  IsIElementary R L (Ideal.span {p})
 
 /-- Elementarity is containment of the ideal in the annihilator of the discriminant
 module. -/

@@ -93,6 +93,15 @@ def genusClassSet (L : FiniteProjectiveLatticeCat ℤ ℤ) : Set IntegralLattice
   {q : IntegralLatticeIsometryClass | ∃ M : FiniteProjectiveLatticeCat ℤ ℤ,
     Quotient.mk globalIsometrySetoid M = q ∧ SameGenus L M}
 
+/-- The global isometry classes in the genus of `L`. -/
+abbrev GenusClass (L : FiniteProjectiveLatticeCat ℤ ℤ) :=
+  {q // q ∈ genusClassSet L}
+
+/-- The class number of the genus of `L`. -/
+noncomputable def classNumber (L : FiniteProjectiveLatticeCat ℤ ℤ)
+    [Finite (GenusClass L)] : ℕ :=
+  Nat.card (GenusClass L)
+
 /-- A lattice lies in the class set of its own genus. -/
 theorem mk_mem_genusClassSet (L : FiniteProjectiveLatticeCat ℤ ℤ) :
     Quotient.mk globalIsometrySetoid L ∈ genusClassSet L :=
