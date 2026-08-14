@@ -83,19 +83,19 @@ module-family surface without adding a second definition.
 abbrev annihilator (R : RingCat.{u}) (M : ModuleCat.{w} R) : Ideal R :=
   Module.annihilator R M
 
-/-- The prime-spectrum support of an arbitrary `R`-module.
+/-- The prime-spectrum support of an `R`-module for a commutative ring `R`.
 
 This is Mathlib's `Module.support`, defined by nontrivial localization.
 -/
-abbrev support (R : RingCat.{u}) (M : ModuleCat.{w} R) : Set (PrimeSpectrum R) :=
+abbrev support (R : CommRingCat.{u}) (M : ModuleCat.{w} R) : Set (PrimeSpectrum R) :=
   Module.support R M
 
-/-- The associated-prime set of an arbitrary `R`-module.
+/-- The associated-prime set of an `R`-module for a commutative ring `R`.
 
 This is Mathlib's `associatedPrimes`; no finiteness hypothesis is imposed.
 -/
-abbrev associatedPrimes (R : RingCat.{u}) (M : ModuleCat.{w} R) : Set (Ideal R) :=
-  Module.associatedPrimes R M
+abbrev associatedPrimes (R : CommRingCat.{u}) (M : ModuleCat.{w} R) : Set (Ideal R) :=
+  _root_.associatedPrimes R M
 
 /-- Free `R`-modules. -/
 abbrev FreeModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
@@ -138,14 +138,14 @@ abbrev FinitelyPresentedModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
     (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.FinitePresentation R M)
 
 /-- Flat `R`-modules, with no finiteness or cardinality restriction. -/
-abbrev FlatModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
+abbrev FlatModuleCat (R : CommRingCat.{u}) : Type (max u (w + 1)) :=
   ObjectProperty.FullSubcategory
     (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.Flat R M)
 
 /-! ### Faithfully flat modules -/
 
 /-- Faithfully flat `R`-modules, using Mathlib's unrestricted predicate. -/
-abbrev FaithfullyFlatModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
+abbrev FaithfullyFlatModuleCat (R : CommRingCat.{u}) : Type (max u (w + 1)) :=
   ObjectProperty.FullSubcategory
     (C := ModuleCat.{w} R) (fun M : ModuleCat.{w} R => Module.FaithfullyFlat R M)
 
@@ -211,12 +211,12 @@ def finitelyPresentedInclusion (R : RingCat.{u}) :
     (fun M : ModuleCat.{w} R => Module.FinitePresentation R M)
 
 /-- Inclusion of flat `R`-modules into all `R`-modules. -/
-def flatInclusion (R : RingCat.{u}) : FlatModuleCat R ⥤ ModuleCat.{w} R :=
+def flatInclusion (R : CommRingCat.{u}) : FlatModuleCat R ⥤ ModuleCat.{w} R :=
   ObjectProperty.ι (C := ModuleCat.{w} R)
     (fun M : ModuleCat.{w} R => Module.Flat R M)
 
 /-- Inclusion of faithfully flat `R`-modules into all `R`-modules. -/
-def faithfullyFlatInclusion (R : RingCat.{u}) :
+def faithfullyFlatInclusion (R : CommRingCat.{u}) :
     FaithfullyFlatModuleCat R ⥤ ModuleCat.{w} R :=
   ObjectProperty.ι (C := ModuleCat.{w} R)
     (fun M : ModuleCat.{w} R => Module.FaithfullyFlat R M)
