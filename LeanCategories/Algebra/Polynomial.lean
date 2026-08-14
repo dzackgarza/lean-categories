@@ -18,7 +18,7 @@ public import Mathlib.Algebra.Matrix.Basic
 # Polynomial-ring lexicon
 
 This file routes the Chapter 7--9 polynomial and ring terms to Mathlib's
-existing objects. It adds no polynomial algorithms or Groebner-basis notion.
+existing objects. It adds no polynomial algorithms.
 Mathlib has the relevant polynomial invariants, monomial orders, leading terms,
 and division construction already.
 -/
@@ -120,6 +120,11 @@ abbrev multivariatePolynomialLeadingTerm (m : polynomialMonomialOrder)
     (p : multivariatePolynomialRing R) : multivariatePolynomialRing R :=
   m.leadingTerm p
 
+/** The S-polynomial for a monomial order. */
+abbrev multivariatePolynomialSPolynomial (m : polynomialMonomialOrder)
+    (f g : multivariatePolynomialRing R) : multivariatePolynomialRing R :=
+  m.sPolynomial f g
+
 /** The standard lexicographic monomial order. */
 noncomputable abbrev lexicographicMonomialOrder [WellFoundedGT σ] :
     polynomialMonomialOrder :=
@@ -142,3 +147,21 @@ abbrev multivariatePolynomialDivision {ι : Type*} (m : polynomialMonomialOrder)
   m.div hb f
 
 end LeanCategories.Algebra
+
+namespace MonomialOrder
+
+/-!
+The following definition is adapted from the reference implementation in
+`WuProver/groebner_proj`, `Groebner/Groebner.lean`:
+https://github.com/WuProver/groebner_proj/blob/42910339be485d279407382576e767223898c543/Groebner/Groebner.lean
+
+That project credits Junyu Guo and Hao Shen and is released under the Apache
+License 2.0. This port carries only the definition. Its reduction and
+S-polynomial operations remain Mathlib's pinned implementations.
+-/
+def IsGroebnerBasis {σ : Type*} {m : MonomialOrder σ} {R : Type*}
+    [CommSemiring R] (G : Set (MvPolynomial σ R)) (I : Ideal (MvPolynomial σ R)) : Prop :=
+  G ⊆ I ∧ Ideal.span (m.leadingTerm '' (I : Set (MvPolynomial σ R))) =
+    Ideal.span (m.leadingTerm '' G)
+
+end MonomialOrder
