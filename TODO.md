@@ -21,10 +21,10 @@ Current work: `#50`, `#54`, `#55`, `#56`, and `#58`.
 
 ### Standard lexicon
 
-- [ ] [Dummit and Foote, Preliminary Chapter and Chapters 1-12](.agents/references/dummit-and-foote-definition-catalogue.md)
+- [x] [Dummit and Foote, Preliminary Chapter and Chapters 1-12](.agents/references/dummit-and-foote-definition-catalogue.md)
   — sets, functions, groups, rings, ideals, factorization, polynomials, modules,
   vector spaces, tensor constructions, torsion modules, and matrices.
-- [ ] [Atiyah and Macdonald, Chapters 1-3 and 5-10](.agents/references/atiyah-and-macdonald-definition-catalogue.md)
+- [x] [Atiyah and Macdonald, Chapters 1-3 and 5-10](.agents/references/atiyah-and-macdonald-definition-catalogue.md)
   — rings, ideals, modules, localization, integral dependence, valuations,
   finiteness conditions, graded objects, and completions.
 - [x] [Weibel, Appendix A](.agents/references/weibel-homological-algebra-definition-catalogue.md)
