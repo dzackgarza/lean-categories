@@ -11,6 +11,7 @@ public import LeanCategories.Catalogue.Registry.Entry
 public import LeanCategories.Catalogue.Registry.Extension
 public import LeanCategories.Catalogue.Realization
 public import LeanCategories.Catalogue.Standard
+public import LeanCategories.CategoryTheory.StandardConstructions
 public import LeanCategories.Algebra.Concrete.Magmas
 public import LeanCategories.Algebra.Concrete.Rings
 public import LeanCategories.Algebra.FractionalIdeals
