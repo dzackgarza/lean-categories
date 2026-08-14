@@ -5,7 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Modules.Bilinear.Valued.ChangeValue
-public import Mathlib.CategoryTheory.Grothendieck
+public import LeanCategories.ForMathlib.GrothendieckCocartesian
 
 @[expose] public section
 
@@ -226,6 +226,26 @@ end BilWFormCat
 abbrev fixedValueInclusion (W : ModuleCat.{u} R) :
     BilinModuleCat R W ⥤ BilWFormCat R :=
   Grothendieck.ι (valueFibers R) W
+
+/-- Project a total bilinear formed module to its value module. -/
+def valueProjection : BilWFormCat R ⥤ ModuleCat R :=
+  Grothendieck.forget (valueFibers R)
+
+/-- Change the value module of a bilinear formed module along a linear map. -/
+def valueBaseChangeObject (X : BilWFormCat R) {W : ModuleCat R}
+    (f : X.value ⟶ W) : BilWFormCat R :=
+  Grothendieck.codomainCocartesianLift X.fiber f
+
+/-- The canonical morphism to the change-of-value object. -/
+def valueBaseChangeHom (X : BilWFormCat R) {W : ModuleCat R}
+    (f : X.value ⟶ W) : X ⟶ valueBaseChangeObject R X f :=
+  Grothendieck.cocartesianLift X.fiber f
+
+/-- Change of values is strongly co-Cartesian over the value-module projection. -/
+instance valueBaseChangeHom_isStronglyCocartesian (X : BilWFormCat R)
+    {W : ModuleCat R} (f : X.value ⟶ W) :
+    Functor.IsStronglyCocartesian (valueProjection R) f (valueBaseChangeHom R X f) :=
+  Grothendieck.isStronglyCocartesian_cocartesianLift X.fiber f
 
 @[simp]
 theorem fixedValueInclusion_value (W : ModuleCat.{u} R)

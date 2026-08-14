@@ -5,7 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Modules.Quadratic.Valued.ChangeValue
-public import Mathlib.CategoryTheory.Grothendieck
+public import LeanCategories.ForMathlib.GrothendieckCocartesian
 public import Mathlib.LinearAlgebra.QuadraticForm.Radical
 
 @[expose] public section
@@ -179,6 +179,22 @@ def carrierProjection : QuadWFormCat R ⥤ ModuleCat R where
   map := QuadWFormCat.carrierMap
   map_id _ := rfl
   map_comp _ _ := rfl
+
+/-- Change the value module of a quadratic formed module along a linear map. -/
+def valueBaseChangeObject (X : QuadWFormCat R) {W : ModuleCat R}
+    (f : X.value ⟶ W) : QuadWFormCat R :=
+  Grothendieck.codomainCocartesianLift X.fiber f
+
+/-- The canonical morphism to the change-of-value object. -/
+def valueBaseChangeHom (X : QuadWFormCat R) {W : ModuleCat R}
+    (f : X.value ⟶ W) : X ⟶ valueBaseChangeObject R X f :=
+  Grothendieck.cocartesianLift X.fiber f
+
+/-- Change of values is strongly co-Cartesian over the value-module projection. -/
+instance valueBaseChangeHom_isStronglyCocartesian (X : QuadWFormCat R)
+    {W : ModuleCat R} (f : X.value ⟶ W) :
+    Functor.IsStronglyCocartesian (valueProjection R) f (valueBaseChangeHom R X f) :=
+  Grothendieck.isStronglyCocartesian_cocartesianLift X.fiber f
 
 @[simp]
 theorem fixedValueInclusion_value (W : ModuleCat.{u} R)
