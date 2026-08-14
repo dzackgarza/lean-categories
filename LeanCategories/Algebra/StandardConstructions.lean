@@ -65,6 +65,16 @@ abbrev localization (M : Submonoid R) : AlgebraCat R := .of R (Localization M)
 abbrev localizationMap (M : Submonoid R) : R →ₐ[R] (localization R M).carrier :=
   algebraMap R (Localization M)
 
+/-- The localization of `R` away from one element, as an `R`-algebra.
+
+This is Mathlib's canonical `Localization.Away` construction. -/
+abbrev localizationAway (r : R) : AlgebraCat R :=
+  .of R (Localization.Away r)
+
+/-- The canonical structure morphism into the localization away from `r`. -/
+abbrev localizationAwayMap (r : R) : R →ₐ[R] (localizationAway R r).carrier :=
+  algebraMap R (Localization.Away r)
+
 /-- The localization of `R` at the prime ideal `P`, as an `R`-algebra.
 
 This is Mathlib's canonical `Localization.AtPrime` construction. -/
