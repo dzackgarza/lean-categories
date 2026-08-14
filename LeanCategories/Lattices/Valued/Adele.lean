@@ -35,6 +35,22 @@ universe u
 
 variable (K : Type u) [Field K] [NumberField K]
 
+variable (R : Type u) [CommRing R] [IsDedekindDomain R] [Algebra R K]
+  [IsFractionRing R K]
+
+/-- Scalar extension of integral lattices from `R` to its full ring adele ring. -/
+def ringAdeleBaseChangeOf :
+    IntegralLatticeCat R ⥤ IntegralLatticeCat (RingAdeleRingOf R K) :=
+  baseChangeIntegral R (RingAdeleRingOf R K)
+
+/-- Scalar extension of finite projective `R`-lattices to the full ring adele ring. -/
+def finiteRingAdeleBaseChangeOf :
+    FiniteProjectiveLatticeCat R R ⥤
+      FiniteProjectiveLatticeCat (RingAdeleRingOf R K) (RingAdeleRingOf R K) :=
+  baseChangeFiniteIntegral R (RingAdeleRingOf R K)
+
+variable {R}
+
 /-- Scalar extension of integral lattices from `𝓞 K` to its ring adele ring. -/
 def ringAdeleBaseChange :
     IntegralLatticeCat (𝓞 K) ⥤ IntegralLatticeCat (RingAdeleRing K) :=

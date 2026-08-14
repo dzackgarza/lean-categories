@@ -253,6 +253,38 @@ field completions, and its finite factors are completed integer rings. -/
 abbrev RingAdeleRing (K : Type u) [Field K] [NumberField K] :=
   NumberField.InfiniteAdeleRing K × FiniteIntegralAdeleRing (𝓞 K) K
 
+/-- The full ring adele ring attached to a Dedekind domain `R` in a number field `K`.
+
+The finite factor is the product of completed integral local rings.  This is the
+integral ring-adelic coefficient object, not Mathlib's field adele ring.
+-/
+abbrev RingAdeleRingOf (R K : Type u) [CommRing R] [IsDedekindDomain R] [Field K]
+    [Algebra R K] [IsFractionRing R K] [NumberField K] :=
+  NumberField.InfiniteAdeleRing K × FiniteIntegralAdeleRing R K
+
+namespace RingAdeleRingOf
+
+variable (R K : Type u) [CommRing R] [IsDedekindDomain R] [Field K]
+  [Algebra R K] [IsFractionRing R K] [NumberField K]
+
+/-- The diagonal embedding of `R` into its full ring adele ring. -/
+protected def diagonalRingHom : R →+* RingAdeleRingOf R K where
+  toFun r :=
+    (algebraMap K (NumberField.InfiniteAdeleRing K) (algebraMap R K r),
+      algebraMap R (FiniteIntegralAdeleRing R K) r)
+  map_one' := by change (_, _) = (_, _); simp
+  map_mul' _ _ := by change (_, _) = (_, _); simp
+  map_zero' := by change (_, _) = (_, _); simp
+  map_add' _ _ := by change (_, _) = (_, _); simp
+
+instance : Algebra R (RingAdeleRingOf R K) := by
+  letI : Algebra R (NumberField.InfiniteAdeleRing K) :=
+    Algebra.compHom (NumberField.InfiniteAdeleRing K) (algebraMap R K)
+  exact Prod.algebra R (NumberField.InfiniteAdeleRing K)
+    (FiniteIntegralAdeleRing R K)
+
+end RingAdeleRingOf
+
 /-- The ring adeles of `ℚ` have the standard presentation `ℝ × ∏_p ℤ_p`. -/
 def Rat.ringAdeleRingEquivModel : RingAdeleRing ℚ ≃+* Rat.RingAdeleModel :=
   RingEquiv.prodCongr Rat.infiniteAdeleRingEquivReal
