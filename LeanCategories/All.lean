@@ -16,7 +16,6 @@ public import LeanCategories.Catalogue.Standard
 public import LeanCategories.CategoryTheory.StandardConstructions
 public import LeanCategories.Algebra.Concrete.Magmas
 public import LeanCategories.Algebra.Concrete.Rings
-public import LeanCategories.Algebra.AssociatedGraded
 public import LeanCategories.Algebra.FractionalIdeals
 public import LeanCategories.Algebra.AtiyahMacdonald.PrimaryDecomposition
 public import LeanCategories.Algebra.DimensionTheory
