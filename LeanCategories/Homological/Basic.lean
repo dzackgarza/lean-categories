@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Homology.HomotopyCategory
 public import Mathlib.Algebra.Homology.HomologicalBicomplex
 public import Mathlib.Algebra.Homology.SpectralSequence.Basic
 public import Mathlib.CategoryTheory.Monoidal.Tor
+public import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 
 /-!
 # Homological categories over a ring
@@ -20,6 +21,8 @@ of modules over a ring without introducing alternatives to Mathlib's types.
 -/
 
 @[expose] public section
+
+open CategoryTheory
 
 universe u v w
 
@@ -46,7 +49,7 @@ abbrev FilteredCochainComplexOverRing (R : Type u) [Ring R] (ι : Type w) [Preor
   ι ⥤ CochainComplexOverRing R
 
 /-- The degree-`n` homology functor for integral-indexed cochain complexes over `R`. -/
-abbrev HomologyFunctorOverRing (R : Type u) [Ring R] (n : ℤ) :
+noncomputable abbrev HomologyFunctorOverRing (R : Type u) [Ring R] (n : ℤ) :
     CochainComplexOverRing R ⥤ ModuleCat.{v} R :=
   HomologicalComplex.homologyFunctor (ModuleCat.{v} R) (ComplexShape.up ℤ) n
 
@@ -75,15 +78,15 @@ abbrev ExtOverRing (R : Type u) [Ring R] [Small.{v} R]
   CategoryTheory.Abelian.Ext M N n
 
 /-- The degree-`n` Tor-group of `R`-modules. -/
-abbrev TorOverRing (R : Type u) [CommRing R] [Small.{v} R]
-    (M N : ModuleCat.{v} R) (n : ℕ) : Type v :=
-  ((CategoryTheory.Tor (ModuleCat.{v} R) n).obj M).obj N
+abbrev TorOverRing (R : Type u) [CommRing R] [Small.{u} R]
+    (M N : ModuleCat.{u} R) (n : ℕ) : Type u :=
+  ((CategoryTheory.Tor (ModuleCat.{u} R) n).obj M).obj N
 
 /-- The degree-`n` sheaf cohomology functor on abelian sheaves. -/
-abbrev SheafCohomologyFunctor {C : Type u} [Category.{v} C]
+noncomputable abbrev SheafCohomologyFunctor {C : Type u} [Category.{v} C]
     (J : GrothendieckTopology C) (n : ℕ)
-    [HasSheafify J AddCommGrpCat.{v}]
-    [HasExt.{w} (Sheaf J AddCommGrpCat.{v})] :
+    [CategoryTheory.HasSheafify J AddCommGrpCat.{v}]
+    [CategoryTheory.HasExt.{w} (Sheaf J AddCommGrpCat.{v})] :
     Sheaf J AddCommGrpCat.{v} ⥤ AddCommGrpCat.{w} :=
   CategoryTheory.Sheaf.functorH J n
 

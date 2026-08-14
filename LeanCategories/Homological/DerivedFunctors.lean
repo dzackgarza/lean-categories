@@ -15,6 +15,9 @@ public import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
 
 @[expose] public section
 
+open CategoryTheory
+open CategoryTheory.Limits
+
 /-!
 # Derived-functor routes
 
@@ -37,7 +40,7 @@ universe w v v' u u'
 namespace LeanCategories.Homological
 
 /-- The Cech complex functor supplied by Mathlib, under the Homological namespace. -/
-abbrev CechComplexFunctor {C : Type u} [Category.{v} C] {A : Type u'} [Category.{v'} A]
+noncomputable abbrev CechComplexFunctor {C : Type u} [Category.{v} C] {A : Type u'} [Category.{v'} A]
     [HasFiniteProducts C] [Preadditive A] [HasProducts.{w} A] {ι : Type w} (U : ι → C) :
     (Cᵒᵖ ⥤ A) ⥤ CochainComplex A ℕ :=
   CategoryTheory.cechComplexFunctor U
