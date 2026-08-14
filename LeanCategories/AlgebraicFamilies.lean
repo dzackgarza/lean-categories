@@ -234,6 +234,90 @@ noncomputable def commAlgBaseChangeHom {R S : CommRingCat.{u}}
           (Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap
             (R := R) (A := S) (B := A.right)))
 
+/-- Algebra base change is strongly co-Cartesian because its defining square is Mathlib's
+tensor-product pushout. -/
+noncomputable instance commAlgBaseChangeHom_isStronglyCocartesian
+    {R S : CommRingCat.{u}} (A : commAlgFiber R) (f : R ⟶ S) :
+    IsStronglyCocartesian commAlgProjection f (commAlgBaseChangeHom A f) := by
+  letI : Algebra R S := f.hom.toAlgebra
+  have hbaseleft : (commAlgBaseChangeHom A f).left = f := CommRingCat.hom_ext rfl
+  have hp : IsPushout f A.hom (commAlgBaseChangeObject A f).hom
+      (commAlgBaseChangeHom A f).right := by
+    convert (CommRingCat.isPushout_tensorProduct R S A.right) using 1 <;> rfl
+  refine { toIsHomLift := ?_, universal_property' := ?_ }
+  · change IsHomLift commAlgProjection
+      (commAlgProjection.map (commAlgBaseChangeHom A f)) (commAlgBaseChangeHom A f)
+    exact .map _
+  · intro B g φ hφ
+    letI : IsHomLift commAlgProjection (f ≫ g) φ := hφ
+    have hleft : f ≫ g = φ.left := by
+      apply CommRingCat.hom_ext
+      ext x
+      have hx : (eqToHom
+          (IsHomLift.domain_eq commAlgProjection (f ≫ g) φ).symm).hom x = x := by
+        rw [Subsingleton.elim
+          (IsHomLift.domain_eq commAlgProjection (f ≫ g) φ).symm rfl]
+        rfl
+      have hy (y : B.left) : (eqToHom
+          (IsHomLift.codomain_eq commAlgProjection (f ≫ g) φ)).hom y = y := by
+        rw [Subsingleton.elim
+          (IsHomLift.codomain_eq commAlgProjection (f ≫ g) φ) rfl]
+        rfl
+      have hfac := congrArg (fun k : R ⟶ commAlgProjection.obj B => k.hom x)
+        (IsHomLift.fac commAlgProjection (f ≫ g) φ)
+      simp only [CommRingCat.comp_apply, hx, hy] at hfac
+      change (f ≫ g).hom x = (commAlgProjection.map φ).hom x
+      exact hfac
+    have hw : f ≫ (g ≫ B.hom) = A.hom ≫ φ.right := by
+      rw [← Category.assoc, hleft]
+      exact φ.w
+    let right := hp.desc (g ≫ B.hom) φ.right hw
+    let χ : commAlgBaseChangeObject A f ⟶ B :=
+      CategoryTheory.Arrow.homMk g right (hp.inl_desc _ _ _).symm
+    refine ⟨χ, ?_, ?_⟩
+    · constructor
+      · exact .map χ
+      · apply CategoryTheory.Arrow.hom_ext
+        · dsimp [χ]
+          rw [hbaseleft]
+          exact hleft
+        · change (commAlgBaseChangeHom A f).right ≫ right = φ.right
+          exact hp.inr_desc (g ≫ B.hom) φ.right hw
+    · intro ψ hψ
+      letI : IsHomLift commAlgProjection g ψ := hψ.1
+      have hψleft : g = ψ.left := by
+        apply CommRingCat.hom_ext
+        ext x
+        have hx : (eqToHom
+            (IsHomLift.domain_eq commAlgProjection g ψ).symm).hom x = x := by
+          rw [Subsingleton.elim
+            (IsHomLift.domain_eq commAlgProjection g ψ).symm rfl]
+          rfl
+        have hy (y : B.left) : (eqToHom
+            (IsHomLift.codomain_eq commAlgProjection g ψ)).hom y = y := by
+          rw [Subsingleton.elim
+            (IsHomLift.codomain_eq commAlgProjection g ψ) rfl]
+          rfl
+        have hfac := congrArg (fun k : S ⟶ commAlgProjection.obj B => k.hom x)
+          (IsHomLift.fac commAlgProjection g ψ)
+        simp only [CommRingCat.comp_apply, hx, hy] at hfac
+        change g.hom x = (commAlgProjection.map ψ).hom x
+        exact hfac
+      apply CategoryTheory.Arrow.hom_ext
+      · dsimp [χ]
+        exact hψleft.symm
+      · apply hp.hom_ext
+        · change (commAlgBaseChangeObject A f).hom ≫ ψ.right =
+            (commAlgBaseChangeObject A f).hom ≫ right
+          rw [← ψ.w, ← hψleft]
+          exact (hp.inl_desc (g ≫ B.hom) φ.right hw).symm
+        · change (commAlgBaseChangeHom A f).right ≫ ψ.right =
+            (commAlgBaseChangeHom A f).right ≫ right
+          have hψright : (commAlgBaseChangeHom A f).right ≫ ψ.right = φ.right := by
+            simpa using congrArg CategoryTheory.Arrow.Hom.right hψ.2
+          rw [hψright]
+          exact (hp.inr_desc (g ≫ B.hom) φ.right hw).symm
+
 /-- The underlying algebra object of a commutative-algebra fiber object. -/
 abbrev commAlgCarrier {R : CommRingCat.{u}} (A : commAlgFiber R) : Type u := A.right
 
