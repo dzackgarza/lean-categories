@@ -81,7 +81,9 @@ theorem exists_pairing_self_ne_zero [Invertible (2 : K)] (L : FiniteFormCat K K)
     simp only [LinearMap.mem_ker]
     exact LinearMap.ext fun y => hzero x y
   rw [BilinModuleCat.IsLeftNondegenerate] at hL
-  rw [hL] at hker
+  have hker_eq : LinearMap.ker L.obj.adjoint = ⊥ :=
+    (LinearMap.separatingLeft_iff_ker_eq_bot (B := L.obj.bilinMap)).mp hL
+  rw [hker_eq] at hker
   simpa using hker
 
 end LeanCategories.Lattices.Valued
