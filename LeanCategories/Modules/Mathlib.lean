@@ -13,6 +13,8 @@ public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.RingTheory.Support
+public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 public import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
@@ -63,6 +65,30 @@ noncomputable def modulesFamilyValue (R : RingCat.{u}) :
 example (R : RingCat.{u}) : modulesFamilyValue R = ModulesOf R := rfl
 
 /-! ## Fibrewise classifiers -/
+
+/-! ## Module invariants -/
+
+/-- The annihilator ideal of an arbitrary `R`-module.
+
+This is Mathlib's `Module.annihilator`; the alias keeps the invariant on the
+module-family surface without adding a second definition.
+-/
+abbrev annihilator (R : RingCat.{u}) (M : ModuleCat.{w} R) : Ideal R :=
+  Module.annihilator R M
+
+/-- The prime-spectrum support of an arbitrary `R`-module.
+
+This is Mathlib's `Module.support`, defined by nontrivial localization.
+-/
+abbrev support (R : RingCat.{u}) (M : ModuleCat.{w} R) : Set (PrimeSpectrum R) :=
+  Module.support R M
+
+/-- The associated-prime set of an arbitrary `R`-module.
+
+This is Mathlib's `associatedPrimes`; no finiteness hypothesis is imposed.
+-/
+abbrev associatedPrimes (R : RingCat.{u}) (M : ModuleCat.{w} R) : Set (Ideal R) :=
+  Module.associatedPrimes R M
 
 /-- Free `R`-modules. -/
 abbrev FreeModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
