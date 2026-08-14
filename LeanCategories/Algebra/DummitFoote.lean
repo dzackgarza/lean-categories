@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Algebra.Concrete.Rings
+public import LeanCategories.Algebra.FractionalIdeals
 public import LeanCategories.Algebra.GroupTheory
 public import LeanCategories.Algebra.Ideals
 public import LeanCategories.Algebra.JordanCanonical
@@ -211,6 +212,79 @@ abbrev DualBasis (R : Type u) (ι : Type v) (M : Type w) [CommSemiring R]
 abbrev MinimalPolynomial (K : Type u) (A : Type v) [Field K] [Semiring A]
     [Algebra K A] (x : A) : Polynomial K :=
   minpoly K x
+
+end LeanCategories.Algebra.DummitFoote
+
+namespace LeanCategories.Algebra.DummitFoote
+
+universe u v
+
+/-! ## Chapter 16: Artinian rings, discrete valuations, and Dedekind domains
+
+These names route the Chapter 16 catalogue directly to the pinned Mathlib
+definitions and to the existing `LeanCategories.Algebra` owners. They do not
+introduce a second ring, valuation, fractional-ideal, or class-group theory.
+-/
+
+section Rings
+
+variable (R : Type u) [CommRing R]
+
+/** The Artinian-ring predicate. */
+abbrev ArtinianRing : Prop := IsArtinianRing R
+
+/** The category of Artinian commutative rings. */
+abbrev ArtinianRingCategory : Type (u + 1) := ArtinianRingCat.{u}
+
+/** The discrete-valuation-ring predicate. */
+abbrev DiscreteValuationRing : Prop := IsDiscreteValuationRing R
+
+/** The category of discrete valuation rings. */
+abbrev DiscreteValuationRingCategory : Type (u + 1) := DiscreteValuationRingCat.{u}
+
+/** The Dedekind-domain predicate. */
+abbrev DedekindDomain : Prop := IsDedekindDomain R
+
+/** The category of Dedekind domains. */
+abbrev DedekindDomainCategory : Type (u + 1) := DedekindDomainCat.{u}
+
+end Rings
+
+section Valuations
+
+variable (K : Type u) [Field K]
+
+/** A valuation of a field with the standard multiplicative integer values. */
+abbrev DiscreteValuation : Type u := Valuation K ℤᵐ⁰
+
+end Valuations
+
+section FractionalIdeals
+
+variable (R : Type u) [CommRing R]
+
+/** Fractional ideals in a localization of a domain. */
+abbrev FractionalIdeal (S : Submonoid R) (P : Type v) [CommRing P]
+    [Algebra R P] : Type _ := _root_.FractionalIdeal S P
+
+section Domain
+
+variable [IsDomain R]
+
+/** Invertible fractional ideals in the fraction ring. */
+abbrev InvertibleFractionalIdeal : Type u :=
+  FractionalIdeals.InvertibleFractionalIdeal R
+
+/** The ideal class group of a domain. */
+abbrev IdealClassGroup : Type u := ClassGroup R
+
+/** The canonical class map from invertible fractional ideals. */
+abbrev IdealClass : InvertibleFractionalIdeal R →* IdealClassGroup R :=
+  FractionalIdeals.idealClass R
+
+end Domain
+
+end FractionalIdeals
 
 end LeanCategories.Algebra.DummitFoote
 
