@@ -7,6 +7,7 @@ module
 public import Mathlib.Algebra.Category.CommAlgCat.Basic
 public import Mathlib.FieldTheory.Normal.Basic
 public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
 public import Mathlib.RingTheory.FiniteDimensional
 public import Mathlib.RingTheory.RingHom.FiniteType
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
@@ -83,6 +84,19 @@ abbrev Normal : Type _ :=
 abbrev normalIncl : Normal K ⥤ Cat K :=
   ObjectProperty.ι (C := Cat K)
     (fun A : Cat K => _root_.Normal K A.1.1)
+
+/-- Field extensions which are purely inseparable over `K`.
+
+This uses Mathlib's unrestricted `IsPurelyInseparable` predicate.
+-/
+abbrev PurelyInseparable : Type _ :=
+  ObjectProperty.FullSubcategory (C := Cat K)
+    (fun A : Cat K => IsPurelyInseparable K A.1.1)
+
+/-- The inclusion of purely inseparable field extensions into field extensions. -/
+abbrev purelyInseparableIncl : PurelyInseparable K ⥤ Cat K :=
+  ObjectProperty.ι (C := Cat K)
+    (fun A : Cat K => IsPurelyInseparable K A.1.1)
 
 /-! ### Galois extensions
 
