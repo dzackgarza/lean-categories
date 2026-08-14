@@ -25,7 +25,6 @@ public import Mathlib.RingTheory.DedekindDomain.Basic
 public import LeanCategories.Schemes.Coherent
 public import LeanCategories.Schemes.Divisors
 public import LeanCategories.Schemes.Properties
-public import LeanCategories.Schemes.Projective
 public import LeanCategories.Schemes.Spectra
 public import LeanCategories.Schemes.Varieties
 

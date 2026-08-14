@@ -1,6 +1,5 @@
 module
 
-public import LeanCategories.CategoryTheory.AppendixA
 public import LeanCategories.CategoryTheory.OneCat.Universes
 public import LeanCategories.CategoryTheory.OneCat.Singleton
 public import LeanCategories.CategoryTheory.OneCat.Classifier
