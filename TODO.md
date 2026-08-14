@@ -33,11 +33,11 @@ Current work: `#50`, `#54`, `#55`, `#56`, and `#58`.
 
 ### Repository-specific categorical surface
 
-- [ ] Categories of finite sets, countable sets, and enumerated sets
-- [ ] Categories of preorders, partial orders, linear orders, and lattices
-- [ ] Integral-domain refinement tower from fields to commutative rings
-- [ ] One-object category `{R}` and membership functor `{R} ⟶ C`
-- [ ] Categories of elements for element-level method attachment
+- [x] Categories of finite sets, countable sets, and enumerated sets
+- [x] Categories of preorders, partial orders, linear orders, and lattices
+- [x] Integral-domain refinement tower from fields to commutative rings
+- [x] One-object category `{R}` and membership functor `{R} ⟶ C`
+- [x] Categories of elements for element-level method attachment
 - [ ] Fibred families of polynomial rings, power-series rings, matrices, vectors,
   ideals, modules, and algebras over commutative rings
 - [ ] Prime-ideal and general-linear-group subfibrations
