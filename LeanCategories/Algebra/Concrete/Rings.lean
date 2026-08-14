@@ -43,7 +43,7 @@ abbrev DomainCat : Type (u + 1) :=
   ObjectProperty.FullSubcategory (C := CommRingCat.{u}) (fun R => IsDomain R)
 
 abbrev FieldCat : Type (u + 1) :=
-  ObjectProperty.FullSubcategory (C := CommRingCat.{u}) (fun R => Field R)
+  ObjectProperty.FullSubcategory (C := CommRingCat.{u}) (fun R => Nonempty (Field R))
 
 abbrev LocalRingCat : Type (u + 1) :=
   ObjectProperty.FullSubcategory (C := CommRingCat.{u}) (fun R => IsLocalRing R)
@@ -59,7 +59,7 @@ abbrev ArtinianRingCat : Type (u + 1) :=
 /-- Integrally closed domains, using Mathlib's `IsIntegrallyClosed` predicate. -/
 abbrev IntegrallyClosedDomainCat : Type (u + 1) :=
   ObjectProperty.FullSubcategory (C := DomainCat.{u})
-    (fun R => @IsIntegrallyClosed R.1 inferInstance R.property)
+    (fun R => IsIntegrallyClosed R.1)
 
 /-- The canonical inclusion of local commutative rings into commutative rings. -/
 abbrev localRingIncl : LocalRingCat.{u} ⥤ CommRingCat.{u} :=
@@ -79,11 +79,11 @@ abbrev artinianRingIncl : ArtinianRingCat.{u} ⥤ CommRingCat.{u} :=
 /-- The canonical inclusion of integrally closed domains. -/
 abbrev integrallyClosedDomainIncl : IntegrallyClosedDomainCat.{u} ⥤ DomainCat.{u} :=
   ObjectProperty.ι (C := DomainCat.{u})
-    (fun R => @IsIntegrallyClosed R.1 inferInstance R.property)
+    (fun R => IsIntegrallyClosed R.1)
 
 /- Local homomorphisms between commutative local rings. -/
 abbrev LocalRingHomProperty : MorphismProperty LocalRingCat.{u} :=
-  fun f => IsLocalHom f.hom.hom
+  fun {_ _} f => IsLocalHom f.hom.hom
 
 /-- The category of local homomorphisms between commutative local rings. -/
 abbrev LocalRingHomCat : Type (u + 1) :=
@@ -105,15 +105,16 @@ abbrev UniqueFactorizationDomainCat : Type (u + 1) :=
     (fun R => IsDomain R ∧ UniqueFactorizationMonoid R)
 
 abbrev EuclideanDomainCat : Type (u + 1) :=
-  ObjectProperty.FullSubcategory (C := CommRingCat.{u}) (fun R => EuclideanDomain R)
+  ObjectProperty.FullSubcategory (C := CommRingCat.{u})
+    (fun R => Nonempty (EuclideanDomain R))
 
 abbrev ValuationRingCat : Type (u + 1) :=
   ObjectProperty.FullSubcategory (C := DomainCat.{u})
-    (fun R => @ValuationRing R inferInstance R.property)
+    (fun R => @ValuationRing R.1 inferInstance R.property)
 
 abbrev DiscreteValuationRingCat : Type (u + 1) :=
   ObjectProperty.FullSubcategory (C := DomainCat.{u})
-    (fun R => @IsDiscreteValuationRing R inferInstance R.property)
+    (fun R => @IsDiscreteValuationRing R.1 inferInstance R.property)
 
 def IsDivisionRing (R : RingCat.{u}) : Prop := Nonempty (DivisionRing R)
 
