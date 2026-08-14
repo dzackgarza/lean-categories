@@ -13,6 +13,7 @@ These abbreviations place those existing spaces in `TopCat`.
 
 public import Mathlib.RingTheory.Spectrum.Maximal.Topology
 public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.AlgebraicGeometry.Spec
 
 @[expose] public section
 
@@ -29,5 +30,9 @@ abbrev PrimeSpectrumTopCat (R : Type u) [CommRing R] : TopCat.{u} :=
 /-- The maximal spectrum of a commutative ring as an object of `TopCat`. -/
 abbrev MaximalSpectrumTopCat (R : Type u) [CommRing R] : TopCat.{u} :=
   TopCat.of (MaximalSpectrum R)
+
+/-- The prime spectrum as Mathlib's contravariant functor on commutative rings. -/
+abbrev PrimeSpectrumFunctor : CommRingCat.{u}ᵒᵖ ⥤ TopCat.{u} :=
+  AlgebraicGeometry.Spec.toTop
 
 end LeanCategories.Schemes
