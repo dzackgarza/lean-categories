@@ -268,7 +268,7 @@ def isEvenLattice : ObjectProperty (IntegralLatticeCat R) :=
 abbrev EvenLatticeCat := (isEvenLattice (R := R)).FullSubcategory
 
 /-- Forget evenness while retaining the integral lattice. -/
-def evenForget : EvenLatticeCat R ⥤ IntegralLatticeCat R :=
+def evenForget : EvenLatticeCat (R := R) ⥤ IntegralLatticeCat R :=
   (isEvenLattice (R := R)).ι
 
 /-- An integral lattice is odd when it is not even. -/
