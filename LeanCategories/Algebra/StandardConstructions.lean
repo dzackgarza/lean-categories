@@ -20,6 +20,7 @@ public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Basic
 public import Mathlib.RingTheory.LaurentSeries
 public import Mathlib.RingTheory.Localization.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.AdicCompletion.Algebra
 public import Mathlib.LinearAlgebra.TensorProduct.Basic
 public import Mathlib.LinearAlgebra.TensorAlgebra.Grading
@@ -71,6 +72,15 @@ abbrev adicCompletion (I : Ideal R) : AlgebraCat R :=
 /-- The canonical map from `R` into its `I`-adic completion. -/
 abbrev adicCompletionMap (I : Ideal R) : R →ₐ[R] (adicCompletion R I).carrier :=
   algebraMap R (AdicCompletion I R)
+
+/-- The quotient of an `R`-algebra by a two-sided ideal. -/
+abbrev quotient (A : AlgebraCat R) (I : Ideal A.carrier) [I.IsTwoSided] : AlgebraCat R :=
+  .of R (A.carrier ⧸ I)
+
+/-- The canonical quotient morphism of `R`-algebras. -/
+abbrev quotientMap (A : AlgebraCat R) (I : Ideal A.carrier) [I.IsTwoSided] :
+    A ⟶ quotient R A I :=
+  AlgCat.ofHom (Ideal.Quotient.mkₐ R I)
 
 end AlgebraCat
 end LeanCategories.Algebra
