@@ -59,11 +59,12 @@ abbrev EuclideanDomainCat : Type (u + 1) :=
   ObjectProperty.FullSubcategory (C := CommRingCat.{u}) (fun R => EuclideanDomain R)
 
 abbrev ValuationRingCat : Type (u + 1) :=
-  ObjectProperty.FullSubcategory (C := CommRingCat.{u}) (fun R => ValuationRing R)
+  ObjectProperty.FullSubcategory (C := DomainCat.{u})
+    (fun R => @ValuationRing R inferInstance R.property)
 
 abbrev DiscreteValuationRingCat : Type (u + 1) :=
-  ObjectProperty.FullSubcategory (C := CommRingCat.{u})
-    (fun R => IsDiscreteValuationRing R)
+  ObjectProperty.FullSubcategory (C := DomainCat.{u})
+    (fun R => @IsDiscreteValuationRing R inferInstance R.property)
 
 def IsDivisionRing (R : RingCat.{u}) : Prop := Nonempty (DivisionRing R)
 
