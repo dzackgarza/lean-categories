@@ -17,6 +17,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.AdicCompletion.Algebra
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.FieldTheory.IsSepClosed
+public import Mathlib.FieldTheory.SplittingField.Construction
 public import Mathlib.LinearAlgebra.TensorProduct.Basic
 public import Mathlib.RingTheory.TensorProduct.Basic
 public import Mathlib.LinearAlgebra.TensorAlgebra.Grading
@@ -90,6 +91,19 @@ abbrev separableClosureMap : AlgebraCat.of K K ⟶ separableClosure K :=
   AlgCat.ofHom (Algebra.ofId K (SeparableClosure K)).toAlgHom
 
 end SeparableClosure
+
+section SplittingField
+
+variable (K : Type u) [Field K]
+
+/-- Mathlib's canonical splitting field of a polynomial, viewed as a `K`-algebra. -/
+abbrev splittingField (f : Polynomial K) : AlgebraCat K := .of K f.SplittingField
+
+/-- The canonical structure morphism into the splitting field of `f`. -/
+abbrev splittingFieldMap (f : Polynomial K) : AlgebraCat.of K K ⟶ splittingField K f :=
+  AlgCat.ofHom (algebraMap K f.SplittingField)
+
+end SplittingField
 
 section TensorProduct
 
