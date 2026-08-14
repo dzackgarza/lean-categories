@@ -6,6 +6,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.Properties
 public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
+public import Mathlib.AlgebraicGeometry.Morphisms.Etale
 public import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.AlgebraicGeometry.QuasiAffine
@@ -83,6 +84,15 @@ abbrev ClosedImmersionSchemeMorphismCat : Type (u + 1) :=
 abbrev closedImmersionSchemeMorphismIncl :
     ClosedImmersionSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
   MorphismProperty.Arrow.forget @IsClosedImmersion ⊤ ⊤
+
+/-- Scheme morphisms whose structural arrow is étale. -/
+abbrev EtaleSchemeMorphismCat : Type (u + 1) :=
+  MorphismProperty.Arrow (T := Scheme.{u}) @Etale ⊤ ⊤
+
+/-- The canonical inclusion of étale scheme morphisms into all scheme arrows. -/
+abbrev etaleSchemeMorphismIncl :
+    EtaleSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
+  MorphismProperty.Arrow.forget @Etale ⊤ ⊤
 
 /-- Scheme morphisms whose structural arrow is finite. -/
 abbrev FiniteSchemeMorphismCat : Type (u + 1) :=
