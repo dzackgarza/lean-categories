@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.CategoryTheory.StandardConstructions
+public import LeanCategories.ForMathlib.GrothendieckCocartesian
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.Algebra.Polynomial.Eval.Coeff
 public import Mathlib.Algebra.Polynomial.Derivative
@@ -81,6 +82,12 @@ noncomputable abbrev polynomialBaseChangeObject {R S : CommRingCat.{u}}
 noncomputable abbrev polynomialBaseChangeHom (X : PolynomialTotalCat.{u})
     {S : CommRingCat.{u}} (f : X.base ⟶ S) : X ⟶ Grothendieck.transport X f :=
   Grothendieck.toTransport X f
+
+/-- Polynomial base change is the canonical strongly co-Cartesian Grothendieck lift. -/
+noncomputable instance polynomialBaseChangeHom_isStronglyCocartesian
+    (X : PolynomialTotalCat.{u}) {S : CommRingCat.{u}} (f : X.base ⟶ S) :
+    Functor.IsStronglyCocartesian polynomialBaseProjection f (polynomialBaseChangeHom X f) :=
+  Grothendieck.isStronglyCocartesian_cocartesianLift X.fiber f
 
 /-! ### Polynomial differentiation -/
 
@@ -173,5 +180,11 @@ noncomputable abbrev powerSeriesBaseChangeObject {R S : CommRingCat.{u}}
 noncomputable abbrev powerSeriesBaseChangeHom (X : PowerSeriesTotalCat.{u})
     {S : CommRingCat.{u}} (f : X.base ⟶ S) : X ⟶ Grothendieck.transport X f :=
   Grothendieck.toTransport X f
+
+/-- Power-series base change is the canonical strongly co-Cartesian Grothendieck lift. -/
+noncomputable instance powerSeriesBaseChangeHom_isStronglyCocartesian
+    (X : PowerSeriesTotalCat.{u}) {S : CommRingCat.{u}} (f : X.base ⟶ S) :
+    Functor.IsStronglyCocartesian powerSeriesBaseProjection f (powerSeriesBaseChangeHom X f) :=
+  Grothendieck.isStronglyCocartesian_cocartesianLift X.fiber f
 
 end LeanCategories.Algebra
