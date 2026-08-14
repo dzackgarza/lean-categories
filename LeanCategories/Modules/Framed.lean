@@ -201,6 +201,16 @@ noncomputable def frameIso (X : Coord R I) :
     change IsIso X.frame.obj.hom
     exact X.frame.property)
 
+/-! A coordinatized module is free because its selected frame is a basis. -/
+
+def toFreeModuleCat : Coord R I ⥤
+    LeanCategories.Modules.Mathlib.FreeModuleCat (RingCat.of R) where
+  obj X := ⟨X.carrierObj,
+    Module.Free.of_basis (Module.Basis.ofRepr (frameIso R I X).toLinearEquiv.symm)⟩
+  map f := ObjectProperty.homMk ((forget R I).map f)
+  map_id _ := rfl
+  map_comp _ _ := rfl
+
 end Coord
 
 end LeanCategories.Modules
