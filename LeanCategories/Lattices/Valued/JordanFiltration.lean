@@ -131,8 +131,8 @@ theorem smul_top_le_layerSubmodule (L : IntegralLatticeCat R) (π : R) (e j : �
   rw [BilinModuleCat.pairing_smul_left, smul_eq_mul, Ideal.mem_span_singleton, pow_add,
     mul_comm (π ^ e)]
   exact mul_dvd_mul (Ideal.mem_span_singleton.mp hr)
-    (Ideal.mem_span_singleton.mp (scaleModule_le_of_isIModular L _ hmod
-      (pairing_mem_scaleModule L m y)))
+    (Ideal.mem_span_singleton.mp (scaleIdeal_le_of_isIModular L _ hmod
+      (pairing_mem_scaleIdeal L m y)))
 
 /-- The layer of a `π ^ e`-modular lattice at `π ^ (e + j)` is the `π ^ j` multiple.
 
@@ -145,7 +145,7 @@ theorem layerSubmodule_add_of_isIModular (L : IntegralLatticeCat R) (π : R)
   induction j with
   | zero =>
     rw [add_zero, pow_zero, one_smul]
-    exact layerSubmodule_eq_top_of_scaleModule_le L _ (scaleModule_le_of_isIModular L _ hmod)
+    exact layerSubmodule_eq_top_of_scaleIdeal_le L _ (scaleIdeal_le_of_isIModular L _ hmod)
   | succ j ih =>
     refine le_antisymm (fun x hx ↦ ?_) (smul_top_le_layerSubmodule L π e (j + 1) hmod)
     have hx1 : x ∈ layerSubmodule L (Ideal.span {π ^ (e + 1)}) :=
@@ -175,8 +175,8 @@ theorem layerSubmodule_pow_of_isIModular (L : IntegralLatticeCat R) (π : R)
       (π ^ (k - e)) • (⊤ : Submodule R L.obj.carrier) := by
   rcases le_or_gt k e with hke | hke
   · rw [Nat.sub_eq_zero_of_le hke, pow_zero, one_smul]
-    refine layerSubmodule_eq_top_of_scaleModule_le L _
-      ((scaleModule_le_of_isIModular L _ hmod).trans ?_)
+    refine layerSubmodule_eq_top_of_scaleIdeal_le L _
+      ((scaleIdeal_le_of_isIModular L _ hmod).trans ?_)
     exact Ideal.span_singleton_le_span_singleton.mpr (pow_dvd_pow π hke)
   · have h := layerSubmodule_add_of_isIModular L π hπ e hmod (k - e)
     rwa [show e + (k - e) = k by omega] at h
