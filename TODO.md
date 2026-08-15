@@ -36,7 +36,11 @@ These lexica follow the algebraic, homological, and scheme foundations.
 ## 4. Project-specific foundational residue
 
 - [ ] Degree-`n` homogeneous component `Γ_R^n(M)` of the divided-power algebra.
+  Source: Qingyuan Jiang, *Derived projectivizations of complexes*, Definition 2.5,
+  p. 13 [@Jia23]; Zotero `K69A3P2A`; [arXiv:2202.11636](https://arxiv.org/abs/2202.11636).
 - [ ] Direct-sum grading `Γ_R(M) = ⨁_n Γ_R^n(M)`.
+  Source: Qingyuan Jiang, *Derived projectivizations of complexes*, Definition 2.5,
+  p. 13 [@Jia23]; Zotero `K69A3P2A`; [arXiv:2202.11636](https://arxiv.org/abs/2202.11636).
 
 ## Later theorem plans
 
