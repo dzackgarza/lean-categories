@@ -65,9 +65,6 @@ abbrev IntegrallyClosedDomainCat : Type (u + 1) :=
 abbrev localRingIncl : LocalRingCat.{u} ⥤ CommRingCat.{u} :=
   ObjectProperty.ι (C := CommRingCat.{u}) (fun R => IsLocalRing R)
 
-/-- The forgetful functor from local commutative rings to commutative rings. -/
-abbrev localRingForgetful : LocalRingCat.{u} ⥤ CommRingCat.{u} := localRingIncl
-
 /-- The canonical inclusion of Noetherian commutative rings. -/
 abbrev noetherianRingIncl : NoetherianRingCat.{u} ⥤ CommRingCat.{u} :=
   ObjectProperty.ι (C := CommRingCat.{u}) (fun R => IsNoetherianRing R)
