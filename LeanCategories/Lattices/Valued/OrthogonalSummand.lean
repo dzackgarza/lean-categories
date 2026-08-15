@@ -120,13 +120,13 @@ The lattice is isomorphic to the orthogonal sum of a `π ^ e`-modular line and i
 complement, whose rank is one less. The line carries the whole scale of `L`, so `e` is the
 scale exponent of `L`. This is the statement a Jordan induction consumes. -/
 theorem exists_orthogonal_decomposition (L : IntegralLatticeCat R)
-    [Module.Finite R L.obj.carrier] (hL : scaleModule L ≠ ⊥)
+    [Module.Finite R L.obj.carrier] (hL : scaleIdeal L ≠ ⊥)
     (π : R) (hπ : Irreducible π) :
     ∃ (v : L.obj.carrier) (e : ℕ) (hline : Module.Projective R ↥(R ∙ v))
       (hperp : Module.Projective R ↥(orthogonalSubmodule L (R ∙ v))),
       letI := hline
       letI := hperp
-      scaleModule L = Ideal.span {π ^ e} ∧
+      scaleIdeal L = Ideal.span {π ^ e} ∧
         IsIModular R (formedSublattice L (R ∙ v)) (Ideal.span {π ^ e}) ∧
           Module.finrank R ↥(orthogonalSubmodule L (R ∙ v)) + 1
               = Module.finrank R L.obj.carrier ∧

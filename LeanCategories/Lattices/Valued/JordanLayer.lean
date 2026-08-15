@@ -34,10 +34,10 @@ theorem mem_layerSubmodule_iff (L : IntegralLatticeCat R) (I : Ideal R) (x : L.o
   simp [layerSubmodule]
 
 /-- A lattice whose scale is inside `I` is its own layer at `I`. -/
-theorem layerSubmodule_eq_top_of_scaleModule_le (L : IntegralLatticeCat R) (I : Ideal R)
-    (h : scaleModule L ≤ I) : layerSubmodule L I = ⊤ :=
+theorem layerSubmodule_eq_top_of_scaleIdeal_le (L : IntegralLatticeCat R) (I : Ideal R)
+    (h : scaleIdeal L ≤ I) : layerSubmodule L I = ⊤ :=
   eq_top_iff.mpr fun x _ ↦
-    (mem_layerSubmodule_iff L I x).mpr fun y ↦ h (pairing_mem_scaleModule L x y)
+    (mem_layerSubmodule_iff L I x).mpr fun y ↦ h (pairing_mem_scaleIdeal L x y)
 
 end Layer
 
@@ -168,8 +168,8 @@ theorem layerSubmodule_of_isIModular (L : IntegralLatticeCat R)
   · refine (mem_layerSubmodule_iff L _ _).mpr fun y ↦ ?_
     rw [BilinModuleCat.pairing_smul_left, smul_eq_mul, Ideal.mem_span_singleton, pow_succ']
     exact mul_dvd_mul (Ideal.mem_span_singleton.mp hr)
-      (Ideal.mem_span_singleton.mp (scaleModule_le_of_isIModular L _ hmod
-        (pairing_mem_scaleModule L m y)))
+      (Ideal.mem_span_singleton.mp (scaleIdeal_le_of_isIModular L _ hmod
+        (pairing_mem_scaleIdeal L m y)))
 
 end LayerOfModular
 
@@ -231,13 +231,13 @@ namespace JordanDecomposition
 
 omit [IsDiscreteValuationRing R] in
 /-- The components above the first pair one power deeper than the smallest exponent. -/
-theorem scaleModule_tail_le (J : JordanDecomposition L π (n + 1)) :
-    scaleModule (finiteProjectiveIndexedOrthogonalSum
+theorem scaleIdeal_tail_le (J : JordanDecomposition L π (n + 1)) :
+    scaleIdeal (finiteProjectiveIndexedOrthogonalSum
         fun i : Fin n ↦ J.component i.succ).obj ≤
       Ideal.span {π ^ (J.exponent 0 + 1)} := by
-  rw [scaleModule_finiteProjectiveIndexedOrthogonalSum]
+  rw [scaleIdeal_finiteProjectiveIndexedOrthogonalSum]
   refine iSup_le fun i ↦
-    (scaleModule_le_of_isIModular _ _ (J.component_isModular i.succ)).trans ?_
+    (scaleIdeal_le_of_isIModular _ _ (J.component_isModular i.succ)).trans ?_
   exact Ideal.span_singleton_le_span_singleton.mpr
     (pow_dvd_pow π (J.exponent_strictMono (Fin.succ_pos i)))
 
@@ -253,7 +253,7 @@ theorem layerSubmodule_split_eq (J : JordanDecomposition L π (n + 1)) :
       (π • (⊤ : Submodule R (J.component 0).obj.obj.carrier)).prod ⊤ := by
   rw [layerSubmodule_finiteProjectiveOrthogonalSum,
     layerSubmodule_of_isIModular _ π J.uniformizer_isIrreducible _ (J.component_isModular 0),
-    layerSubmodule_eq_top_of_scaleModule_le _ _ J.scaleModule_tail_le]
+    layerSubmodule_eq_top_of_scaleIdeal_le _ _ J.scaleIdeal_tail_le]
 
 /-- The quotient of the lattice by its layer is the residue reduction of the smallest
 Jordan component.

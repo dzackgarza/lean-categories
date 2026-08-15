@@ -13,8 +13,6 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Basic
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 public import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 public import Mathlib.CategoryTheory.Sites.Sheafification
-public import LeanCategories.Homological.Basic
-public import LeanCategories.Homological.DerivedFunctors
 
 /-!
 # Homological algebra routes

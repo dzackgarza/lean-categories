@@ -20,38 +20,38 @@ universe u
 variable {R : Type u} [CommRing R]
 
 /-- Every pairing value lies in the scale ideal. -/
-theorem pairing_mem_scaleModule (L : IntegralLatticeCat R) (x y : L.obj.carrier) :
-    L.obj.pairing x y ∈ scaleModule L :=
+theorem pairing_mem_scaleIdeal (L : IntegralLatticeCat R) (x y : L.obj.carrier) :
+    L.obj.pairing x y ∈ scaleIdeal L :=
   ⟨x ⊗ₜ[R] y, rfl⟩
 
 /-- The self-pairing of `v` generates every pairing value of the lattice. -/
 def GeneratesScale (L : IntegralLatticeCat R) (v : L.obj.carrier) : Prop :=
-  scaleModule L = Ideal.span {L.obj.pairing v v}
+  scaleIdeal L = Ideal.span {L.obj.pairing v v}
 
 /-- A maximal-scale vector divides every pairing value. -/
 theorem dvd_pairing_of_generatesScale (L : IntegralLatticeCat R) (v : L.obj.carrier)
     (hv : GeneratesScale L v) (x y : L.obj.carrier) :
     L.obj.pairing v v ∣ L.obj.pairing x y := by
   rw [← Ideal.mem_span_singleton, ← hv]
-  exact pairing_mem_scaleModule L x y
+  exact pairing_mem_scaleIdeal L x y
 
 section Existence
 
 /-- The value ideal is contained in the scale ideal. -/
-theorem valueModule_le_scaleModule (L : IntegralLatticeCat R) :
-    valueModule L ≤ scaleModule L := by
-  rw [valueModule, Ideal.span_le]
+theorem normIdeal_le_scaleIdeal (L : IntegralLatticeCat R) :
+    normIdeal L ≤ scaleIdeal L := by
+  rw [normIdeal, Ideal.span_le]
   rintro _ ⟨x, rfl⟩
-  exact pairing_mem_scaleModule L x x
+  exact pairing_mem_scaleIdeal L x x
 
 /-- With `2` invertible, polarization identifies the scale ideal with the value ideal. -/
-theorem scaleModule_eq_valueModule [Invertible (2 : R)] (L : IntegralLatticeCat R) :
-    scaleModule L = valueModule L :=
+theorem scaleIdeal_eq_normIdeal [Invertible (2 : R)] (L : IntegralLatticeCat R) :
+    scaleIdeal L = normIdeal L :=
   le_antisymm
-    ((isIIntegral_iff_scaleModule_le L (valueModule L)).mp
-      (isIIntegral_of_isIEven_of_invertible_two L (valueModule L)
-        ((isIEven_iff_valueModule_le L (valueModule L)).mpr le_rfl)))
-    (valueModule_le_scaleModule L)
+    ((isIIntegral_iff_scaleIdeal_le L (normIdeal L)).mp
+      (isIIntegral_of_isIEven_of_invertible_two L (normIdeal L)
+        ((isIEven_iff_normIdeal_le L (normIdeal L)).mpr le_rfl)))
+    (normIdeal_le_scaleIdeal L)
 
 variable [IsDomain R] [IsDiscreteValuationRing R]
 
@@ -68,7 +68,7 @@ theorem exists_generatesScale [Invertible (2 : R)] (L : IntegralLatticeCat R) :
     intro x
     rw [← IsDiscreteValuationRing.addVal_le_iff_dvd]
     exact not_lt.mp (hmin _ ⟨x, rfl⟩)
-  rw [GeneratesScale, scaleModule_eq_valueModule, valueModule]
+  rw [GeneratesScale, scaleIdeal_eq_normIdeal, normIdeal]
   refine le_antisymm (Ideal.span_le.mpr ?_) (Ideal.span_le.mpr ?_)
   · rintro _ ⟨x, rfl⟩
     exact Ideal.mem_span_singleton.mpr (hdvd x)
@@ -191,7 +191,7 @@ off the line of a maximal-scale vector.
 This is the engine of the Jordan decomposition: the complement carries the restricted form,
 and its scale ideal is strictly smaller. -/
 theorem exists_generatesScale_isCompl (L : IntegralLatticeCat R)
-    (hL : scaleModule L ≠ ⊥) :
+    (hL : scaleIdeal L ≠ ⊥) :
     ∃ v : L.obj.carrier, GeneratesScale L v ∧
       IsCompl (R ∙ v) (orthogonalSubmodule L (R ∙ v)) := by
   obtain ⟨v, hv⟩ := exists_generatesScale L

@@ -35,9 +35,6 @@ noncomputable abbrev metricDual (L : IntegralLatticeCat R) :
     Submodule R (RationalSpan R L) :=
   (rationalizedForm R L).dualSubmodule (integralImage R L)
 
-/-- The dual lattice, also called the metric dual. -/
-noncomputable abbrev dualLattice (L : IntegralLatticeCat R) := metricDual R L
-
 /-- The specified inclusion `L♯ → L ⊗_R Frac(R)`. -/
 noncomputable def metricDualInclusion (L : IntegralLatticeCat R) :
     metricDual R L →ₗ[R] RationalSpan R L :=

@@ -21,19 +21,19 @@ variable {R : Type u} [CommRing R]
 section ScaleOfSum
 
 /-- An isomorphism transports every pairing value, so it can only shrink the scale. -/
-theorem scaleModule_le_of_iso {L M : FiniteProjectiveLatticeCat R R} (e : L ≅ M) :
-    scaleModule M.obj ≤ scaleModule L.obj := by
-  rw [← isIIntegral_iff_scaleModule_le, isIIntegral_iff_pairing_mem]
+theorem scaleIdeal_le_of_iso {L M : FiniteProjectiveLatticeCat R R} (e : L ≅ M) :
+    scaleIdeal M.obj ≤ scaleIdeal L.obj := by
+  rw [← isIIntegral_iff_scaleIdeal_le, isIIntegral_iff_pairing_mem]
   intro x y
   obtain ⟨a, rfl⟩ := (finiteProjectiveLatticeLinearEquiv e).surjective x
   obtain ⟨b, rfl⟩ := (finiteProjectiveLatticeLinearEquiv e).surjective y
   rw [finiteProjectiveLatticeLinearEquiv_pairing]
-  exact pairing_mem_scaleModule L.obj a b
+  exact pairing_mem_scaleIdeal L.obj a b
 
 /-- The scale ideal is an isomorphism invariant of a lattice. -/
-theorem scaleModule_eq_of_iso {L M : FiniteProjectiveLatticeCat R R} (e : L ≅ M) :
-    scaleModule M.obj = scaleModule L.obj :=
-  le_antisymm (scaleModule_le_of_iso e) (scaleModule_le_of_iso e.symm)
+theorem scaleIdeal_eq_of_iso {L M : FiniteProjectiveLatticeCat R R} (e : L ≅ M) :
+    scaleIdeal M.obj = scaleIdeal L.obj :=
+  le_antisymm (scaleIdeal_le_of_iso e) (scaleIdeal_le_of_iso e.symm)
 
 /-- A pair of vectors supported on one summand pairs inside that summand. -/
 theorem pairing_indexedOrthogonalSum_single {n : ℕ}
@@ -49,20 +49,20 @@ theorem pairing_indexedOrthogonalSum_single {n : ℕ}
   · simp [U, V]
 
 /-- The scale of an indexed orthogonal sum is the supremum of the scales of the summands. -/
-theorem scaleModule_finiteProjectiveIndexedOrthogonalSum {n : ℕ}
+theorem scaleIdeal_finiteProjectiveIndexedOrthogonalSum {n : ℕ}
     (D : Fin n → FiniteProjectiveLatticeCat R R) :
-    scaleModule (finiteProjectiveIndexedOrthogonalSum D).obj =
-      ⨆ i, scaleModule (D i).obj := by
+    scaleIdeal (finiteProjectiveIndexedOrthogonalSum D).obj =
+      ⨆ i, scaleIdeal (D i).obj := by
   refine le_antisymm ?_ (iSup_le fun i ↦ ?_)
-  · rw [← isIIntegral_iff_scaleModule_le, isIIntegral_iff_pairing_mem]
+  · rw [← isIIntegral_iff_scaleIdeal_le, isIIntegral_iff_pairing_mem]
     intro x y
     change (∑ i, (D i).obj.obj.pairing (x i) (y i)) ∈ _
     exact Submodule.sum_mem _ fun i _ ↦
-      le_iSup (fun i ↦ scaleModule (D i).obj) i (pairing_mem_scaleModule (D i).obj (x i) (y i))
-  · rw [← isIIntegral_iff_scaleModule_le, isIIntegral_iff_pairing_mem]
+      le_iSup (fun i ↦ scaleIdeal (D i).obj) i (pairing_mem_scaleIdeal (D i).obj (x i) (y i))
+  · rw [← isIIntegral_iff_scaleIdeal_le, isIIntegral_iff_pairing_mem]
     intro x y
     rw [← pairing_indexedOrthogonalSum_single D i x y]
-    exact pairing_mem_scaleModule _ _ _
+    exact pairing_mem_scaleIdeal _ _ _
 
 end ScaleOfSum
 
@@ -73,11 +73,11 @@ variable [IsDomain R]
 /-- A modular lattice is integral for its modularity ideal.
 
 The lattice lies in its own metric dual, so every pairing value lies in the ideal. -/
-theorem scaleModule_le_of_isIModular (L : IntegralLatticeCat R) (I : Ideal R)
-    (hmod : IsIModular R L I) : scaleModule L ≤ I := by
+theorem scaleIdeal_le_of_isIModular (L : IntegralLatticeCat R) (I : Ideal R)
+    (hmod : IsIModular R L I) : scaleIdeal L ≤ I := by
   have hdual : fractionalIdealDual R L (integralFractionalIdeal R I) = integralImage R L :=
     hmod
-  rw [← isIIntegral_iff_scaleModule_le, isIIntegral_iff_pairing_mem]
+  rw [← isIIntegral_iff_scaleIdeal_le, isIIntegral_iff_pairing_mem]
   intro x y
   refine (toRationalSpan_mem_idealDual_iff R L I x).mp ?_ y
   rw [idealDual, hdual]
@@ -95,7 +95,7 @@ Dividing a vector by the uniformizer stays in the metric dual, hence in the latt
 theorem exists_smul_of_isIModular (L : IntegralLatticeCat R)
     (π : R) (hπ : Irreducible π) (e : ℕ)
     (hmod : IsIModular R L (Ideal.span {π ^ e}))
-    (hs : scaleModule L ≤ Ideal.span {π ^ (e + 1)}) (x : L.obj.carrier) :
+    (hs : scaleIdeal L ≤ Ideal.span {π ^ (e + 1)}) (x : L.obj.carrier) :
     ∃ w, x = π • w := by
   have hdual : fractionalIdealDual R L (integralFractionalIdeal R (Ideal.span {π ^ e}))
       = integralImage R L := hmod
@@ -105,7 +105,7 @@ theorem exists_smul_of_isIModular (L : IntegralLatticeCat R)
       fractionalIdealDual R L (integralFractionalIdeal R (Ideal.span {π ^ e})) := by
     rw [mem_fractionalIdealDual_iff]
     intro y
-    obtain ⟨d, hd⟩ := Ideal.mem_span_singleton.mp (hs (pairing_mem_scaleModule L x y))
+    obtain ⟨d, hd⟩ := Ideal.mem_span_singleton.mp (hs (pairing_mem_scaleIdeal L x y))
     have hval : rationalizedForm R L ((algebraMap R (FractionRing R) π)⁻¹ ⊗ₜ[R] x)
         (toRationalSpan R L y) = algebraMap R (FractionRing R) (π ^ e * d) := by
       rw [toRationalSpan_apply, rationalizedForm_tmul, mul_one, hd,
@@ -125,16 +125,16 @@ theorem exists_smul_of_isIModular (L : IntegralLatticeCat R)
 
 The scale is contained in the ideal because the lattice lies in its own metric dual. It is
 not smaller: otherwise the lattice would be divisible by the uniformizer, hence zero. -/
-theorem scaleModule_of_isIModular (L : IntegralLatticeCat R)
+theorem scaleIdeal_of_isIModular (L : IntegralLatticeCat R)
     [Module.Finite R L.obj.carrier] [Nontrivial L.obj.carrier]
     (π : R) (hπ : Irreducible π) (e : ℕ)
     (hmod : IsIModular R L (Ideal.span {π ^ e})) :
-    scaleModule L = Ideal.span {π ^ e} := by
-  have hle : scaleModule L ≤ Ideal.span {π ^ e} := scaleModule_le_of_isIModular L _ hmod
+    scaleIdeal L = Ideal.span {π ^ e} := by
+  have hle : scaleIdeal L ≤ Ideal.span {π ^ e} := scaleIdeal_le_of_isIModular L _ hmod
   refine le_antisymm hle ?_
   by_contra hcon
-  have hs : scaleModule L ≤ Ideal.span {π ^ (e + 1)} := by
-    by_cases hbot : scaleModule L = ⊥
+  have hs : scaleIdeal L ≤ Ideal.span {π ^ (e + 1)} := by
+    by_cases hbot : scaleIdeal L = ⊥
     · rw [hbot]
       exact bot_le
     obtain ⟨k, hk⟩ := IsDiscreteValuationRing.ideal_eq_span_pow_irreducible hbot hπ
@@ -197,10 +197,10 @@ omit [IsDiscreteValuationRing R] in
 decomposition of it.
 
 Every component pairs inside its own ideal, and the exponents increase. -/
-theorem scaleModule_le (J : JordanDecomposition L π (n + 1)) :
-    scaleModule L.obj ≤ Ideal.span {π ^ J.exponent 0} := by
-  rw [scaleModule_eq_of_iso J.decomposition, scaleModule_finiteProjectiveIndexedOrthogonalSum]
-  refine iSup_le fun i ↦ (scaleModule_le_of_isIModular _ _ (J.component_isModular i)).trans ?_
+theorem scaleIdeal_le (J : JordanDecomposition L π (n + 1)) :
+    scaleIdeal L.obj ≤ Ideal.span {π ^ J.exponent 0} := by
+  rw [scaleIdeal_eq_of_iso J.decomposition, scaleIdeal_finiteProjectiveIndexedOrthogonalSum]
+  refine iSup_le fun i ↦ (scaleIdeal_le_of_isIModular _ _ (J.component_isModular i)).trans ?_
   exact Ideal.span_singleton_le_span_singleton.mpr
     (pow_dvd_pow π (J.exponent_strictMono.monotone (Fin.zero_le i)))
 
@@ -208,17 +208,17 @@ theorem scaleModule_le (J : JordanDecomposition L π (n + 1)) :
 
 This is the first invariant of the decomposition: the exponents increase strictly, so the
 component of smallest exponent carries the whole scale of the lattice. -/
-theorem scaleModule_eq (J : JordanDecomposition L π (n + 1)) :
-    scaleModule L.obj = Ideal.span {π ^ J.exponent 0} := by
-  refine le_antisymm J.scaleModule_le ?_
+theorem scaleIdeal_eq (J : JordanDecomposition L π (n + 1)) :
+    scaleIdeal L.obj = Ideal.span {π ^ J.exponent 0} := by
+  refine le_antisymm J.scaleIdeal_le ?_
   letI := J.component_nontrivial 0
   letI : Module.Finite R (J.component 0).obj.obj.carrier := (J.component 0).property
-  have h0 : scaleModule (J.component 0).obj = Ideal.span {π ^ J.exponent 0} :=
-    scaleModule_of_isIModular (J.component 0).obj π J.uniformizer_isIrreducible
+  have h0 : scaleIdeal (J.component 0).obj = Ideal.span {π ^ J.exponent 0} :=
+    scaleIdeal_of_isIModular (J.component 0).obj π J.uniformizer_isIrreducible
       (J.exponent 0) (J.component_isModular 0)
-  rw [scaleModule_eq_of_iso J.decomposition, scaleModule_finiteProjectiveIndexedOrthogonalSum,
+  rw [scaleIdeal_eq_of_iso J.decomposition, scaleIdeal_finiteProjectiveIndexedOrthogonalSum,
     ← h0]
-  exact le_iSup (fun i ↦ scaleModule (J.component i).obj) 0
+  exact le_iSup (fun i ↦ scaleIdeal (J.component i).obj) 0
 
 /-- A Jordan decomposition with one component records the exponent and the rank of the
 lattice. -/
@@ -241,7 +241,7 @@ theorem exponent_zero_eq_of_jordanDecomposition {ϖ : R} {m : ℕ}
     J.exponent 0 = K.exponent 0 := by
   have hπ := J.uniformizer_isIrreducible
   have hspan : Ideal.span {π ^ J.exponent 0} = Ideal.span {ϖ ^ K.exponent 0} := by
-    rw [← J.scaleModule_eq, K.scaleModule_eq]
+    rw [← J.scaleIdeal_eq, K.scaleIdeal_eq]
   have hassoc : Associated (π ^ J.exponent 0) (π ^ K.exponent 0) :=
     (Ideal.span_singleton_eq_span_singleton.mp hspan).trans
       (Associated.pow_pow (IsDiscreteValuationRing.associated_of_irreducible R hπ

@@ -90,7 +90,7 @@ rank-one modular orthogonal direct summand.
 The vector of maximal scale spans a `π ^ e`-modular line, and the lattice is the direct sum
 of that line and its orthogonal complement. This is the first step of the Jordan
 decomposition. -/
-theorem exists_isIModular_component (L : IntegralLatticeCat R) (hL : scaleModule L ≠ ⊥)
+theorem exists_isIModular_component (L : IntegralLatticeCat R) (hL : scaleIdeal L ≠ ⊥)
     (π : R) (hπ : Irreducible π) :
     ∃ (v : L.obj.carrier) (hproj : Module.Projective R ↥(R ∙ v)) (e : ℕ),
       IsCompl (R ∙ v) (orthogonalSubmodule L (R ∙ v)) ∧

@@ -25,22 +25,22 @@ section Scale
 
 Every pairing of two elements of the sublattice is a pairing in `L`, and the scale is the
 span of all pairings. -/
-theorem scaleModule_formedSublattice_le (L : IntegralLatticeCat R)
+theorem scaleIdeal_formedSublattice_le (L : IntegralLatticeCat R)
     (P : Submodule R L.obj.carrier) [Module.Projective R ↥P] :
-    scaleModule (formedSublattice L P) ≤ scaleModule L := by
-  rw [← isIIntegral_iff_scaleModule_le, isIIntegral_iff_pairing_mem]
+    scaleIdeal (formedSublattice L P) ≤ scaleIdeal L := by
+  rw [← isIIntegral_iff_scaleIdeal_le, isIIntegral_iff_pairing_mem]
   intro x y
-  exact pairing_mem_scaleModule L x.1 y.1
+  exact pairing_mem_scaleIdeal L x.1 y.1
 
 /-- The scale of an orthogonal complement is contained in the scale of the lattice.
 
 This is the ordering input of the Jordan recursion: peeling a line off `L` can only shrink
 the scale, so the exponents produced by repeated splitting do not decrease. -/
-theorem scaleModule_orthogonalComplement_le (L : IntegralLatticeCat R)
+theorem scaleIdeal_orthogonalComplement_le (L : IntegralLatticeCat R)
     (P : Submodule R L.obj.carrier)
     [Module.Projective R ↥(orthogonalSubmodule L P)] :
-    scaleModule (orthogonalComplement L P) ≤ scaleModule L :=
-  scaleModule_formedSublattice_le L (orthogonalSubmodule L P)
+    scaleIdeal (orthogonalComplement L P) ≤ scaleIdeal L :=
+  scaleIdeal_formedSublattice_le L (orthogonalSubmodule L P)
 
 end Scale
 
@@ -258,14 +258,14 @@ theorem isNondegenerate_orthogonalComplement (L : IntegralLatticeCat R)
   exact Subtype.ext hxzero
 
 /-- A nondegenerate lattice with trivial scale has no nonzero vectors. -/
-theorem subsingleton_of_scaleModule_eq_bot (L : IntegralLatticeCat R)
-    (hL : L.obj.IsNondegenerate) (h : scaleModule L = ⊥) :
+theorem subsingleton_of_scaleIdeal_eq_bot (L : IntegralLatticeCat R)
+    (hL : L.obj.IsNondegenerate) (h : scaleIdeal L = ⊥) :
     Subsingleton L.obj.carrier := by
   have hzero : ∀ z : L.obj.carrier, z = 0 := by
     intro z
     refine (L.obj.isNondegenerate_iff_adjoint_injective_of_isSymmetric L.property.2).mp hL
       (LinearMap.ext fun w ↦ ?_)
-    have hmem : L.obj.pairing z w ∈ scaleModule L := pairing_mem_scaleModule L z w
+    have hmem : L.obj.pairing z w ∈ scaleIdeal L := pairing_mem_scaleIdeal L z w
     rw [h] at hmem
     have hpair : L.obj.pairing z w = 0 := hmem
     simpa using hpair
@@ -300,7 +300,7 @@ theorem exists_jordanDecomposition_of_finrank_le (π : R) (hπ : Irreducible π)
     ∀ (k : ℕ) (L : FiniteProjectiveLatticeCat R R),
       Module.finrank R L.obj.obj.carrier ≤ k →
       L.obj.obj.IsNondegenerate →
-      ∀ e : ℕ, scaleModule L.obj ≤ Ideal.span {π ^ e} →
+      ∀ e : ℕ, scaleIdeal L.obj ≤ Ideal.span {π ^ e} →
         ∃ (n : ℕ) (J : JordanDecomposition L π n), ∀ i, e ≤ J.exponent i := by
   intro k
   induction k with
@@ -313,9 +313,9 @@ theorem exists_jordanDecomposition_of_finrank_le (π : R) (hπ : Irreducible π)
     exact ⟨0, subsingletonJordanDecomposition L π hπ, fun i ↦ i.elim0⟩
   | succ k ih =>
     intro L hrank hnd e he
-    by_cases hbot : scaleModule L.obj = ⊥
+    by_cases hbot : scaleIdeal L.obj = ⊥
     · letI : Subsingleton L.obj.obj.carrier :=
-        subsingleton_of_scaleModule_eq_bot L.obj hnd hbot
+        subsingleton_of_scaleIdeal_eq_bot L.obj hnd hbot
       exact ⟨0, subsingletonJordanDecomposition L π hπ, fun i ↦ i.elim0⟩
     letI : Module.Finite R L.obj.obj.carrier := L.property
     obtain ⟨v, e₀, hline, hperp, hscale, hmod, hrk, hcompl⟩ :=
@@ -350,9 +350,9 @@ theorem exists_jordanDecomposition_of_finrank_le (π : R) (hπ : Irreducible π)
       omega
     have hBnd : B.obj.obj.IsNondegenerate :=
       isNondegenerate_orthogonalComplement L.obj (R ∙ v) hcompl hnd
-    have hBscale : scaleModule B.obj ≤ Ideal.span {π ^ e₀} := by
+    have hBscale : scaleIdeal B.obj ≤ Ideal.span {π ^ e₀} := by
       rw [← hscale]
-      exact scaleModule_orthogonalComplement_le L.obj (R ∙ v)
+      exact scaleIdeal_orthogonalComplement_le L.obj (R ∙ v)
     obtain ⟨n, J, hJ⟩ := ih B hBrank hBnd e₀ hBscale
     by_cases hlt : ∀ i, e₀ < J.exponent i
     · refine ⟨n + 1, ?_, ?_⟩
