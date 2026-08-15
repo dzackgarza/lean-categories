@@ -32,21 +32,3 @@ These lexica follow the algebraic, homological, and scheme foundations.
   [Whitehead catalogue](.agents/references/whitehead-homotopy-theory-definition-catalogue.md).
 - [ ] Implement the unchecked entries in the
   [Apostol catalogue](.agents/references/apostol-analytic-number-theory-definition-catalogue.md).
-
-## 4. Project-specific foundational residue
-
-- [ ] Degree-`n` homogeneous component `Γ_R^n(M)` of the divided-power algebra.
-  Source: Qingyuan Jiang, *Derived projectivizations of complexes*, Definition 2.5,
-  p. 13 [@Jia23]; Zotero `K69A3P2A`; [arXiv:2202.11636](https://arxiv.org/abs/2202.11636).
-- [ ] Direct-sum grading `Γ_R(M) = ⨁_n Γ_R^n(M)`.
-  Source: Qingyuan Jiang, *Derived projectivizations of complexes*, Definition 2.5,
-  p. 13 [@Jia23]; Zotero `K69A3P2A`; [arXiv:2202.11636](https://arxiv.org/abs/2202.11636).
-
-## Later theorem plans
-
-- `PLAN-LATER-THEOREM-PHASES`
-- `TASK-CANONICAL-FORMED-CATEGORY-COMPARISONS`
-- `TASK-IDEAL-DUAL-DISCRIMINANT-COMPARISON`
-- `PHASE-LOCAL-GENUS-FOUNDATION`
-- `PLAN-SIEGEL-MASS-FORMULA`
-- `PLAN-THETA-SERIES-MODULARITY`
