@@ -20,8 +20,6 @@ public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.RingTheory.Finiteness.Basic
-public import Mathlib.RingTheory.Support
-public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 public import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
@@ -72,30 +70,6 @@ noncomputable def modulesFamilyValue (R : RingCat.{u}) :
 example (R : RingCat.{u}) : modulesFamilyValue R = ModulesOf R := rfl
 
 /-! ## Fibrewise classifiers -/
-
-/-! ## Module invariants -/
-
-/-- The annihilator ideal of an arbitrary `R`-module.
-
-This is Mathlib's `Module.annihilator`; the alias keeps the invariant on the
-module-family surface without adding a second definition.
--/
-abbrev annihilator (R : RingCat.{u}) (M : ModuleCat.{w} R) : Ideal R :=
-  Module.annihilator R M
-
-/-- The prime-spectrum support of an `R`-module for a commutative ring `R`.
-
-This is Mathlib's `Module.support`, defined by nontrivial localization.
--/
-abbrev support (R : CommRingCat.{u}) (M : ModuleCat.{w} R) : Set (PrimeSpectrum R) :=
-  Module.support R M
-
-/-- The associated-prime set of an `R`-module for a commutative ring `R`.
-
-This is Mathlib's `associatedPrimes`; no finiteness hypothesis is imposed.
--/
-abbrev associatedPrimes (R : CommRingCat.{u}) (M : ModuleCat.{w} R) : Set (Ideal R) :=
-  _root_.associatedPrimes R M
 
 /-- Free `R`-modules. -/
 abbrev FreeModuleCat (R : RingCat.{u}) : Type (max u (w + 1)) :=
@@ -283,45 +257,6 @@ noncomputable def FiniteRankModules (R : RingCat.{u}) :
 /-- Forgetful `Modules(R) → Sets`. -/
 noncomputable def modulesToSets (R : RingCat.{u}) : ModulesOf R ⟶ Sets.{u} :=
   (forget (ModuleCat.{u} R)).toCatHom
-
-/-! ### Change of rings -/
-
-section ChangeOfRings
-
-variable {R S : Type*} [Ring R] [Ring S]
-
-/-- Restriction of scalars along a ring homomorphism, via Mathlib's canonical functor. -/
-noncomputable abbrev restrictScalars (f : R →+* S) :
-    ModuleCat S ⥤ ModuleCat R :=
-  ModuleCat.restrictScalars f
-
-/-- Coextension of scalars, the right adjoint to restriction of scalars. -/
-noncomputable abbrev coextendScalars (f : R →+* S) :
-    ModuleCat R ⥤ ModuleCat S :=
-  ModuleCat.coextendScalars f
-
-/-- Restriction of scalars is left adjoint to coextension of scalars. -/
-noncomputable abbrev restrictCoextendScalarsAdj (f : R →+* S) :
-    restrictScalars f ⊣ coextendScalars f :=
-  ModuleCat.restrictCoextendScalarsAdj f
-
-end ChangeOfRings
-
-section CommutativeChangeOfRings
-
-variable {R S : Type*} [CommRing R] [CommRing S]
-
-/-- Extension of scalars along a commutative-ring homomorphism, via tensor product. -/
-noncomputable abbrev extendScalars (f : R →+* S) :
-    ModuleCat R ⥤ ModuleCat S :=
-  ModuleCat.extendScalars f
-
-/-- Extension of scalars is left adjoint to restriction of scalars. -/
-noncomputable abbrev extendRestrictScalarsAdj (f : R →+* S) :
-    extendScalars f ⊣ restrictScalars f :=
-  ModuleCat.extendRestrictScalarsAdj f
-
-end CommutativeChangeOfRings
 
 /-- Opposite-ring substitution for right-module family expressions. -/
 noncomputable def oppositeRing (R : RingCat.{u}) : RingCat.{u} := RingCat.of Rᵐᵒᵖ

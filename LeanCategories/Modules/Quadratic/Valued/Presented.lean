@@ -23,12 +23,12 @@ variable (W : Type u) [AddCommGroup W] [Module R W]
 /-- Quadratic modules equipped with a chosen presentation of their carrier module. -/
 abbrev PresentedQuadModuleCat :=
   CategoricalPullback
-    (LeanCategories.Modules.PresentedModules.forget (R := R))
+    (LeanCategories.Modules.PresentedModule.forget (R := R))
     (LeanCategories.Modules.Quadratic.Valued.forget R W)
 
 /-- Forget the quadratic structure and retain the chosen module presentation. -/
 def presentedQuadModuleToPresented :
-    PresentedQuadModuleCat R W ⥤ LeanCategories.Modules.PresentedModules R :=
+    PresentedQuadModuleCat R W ⥤ LeanCategories.Modules.PresentedModule R :=
   CategoricalPullback.π₁ _ _
 
 /-- Forget the chosen module presentation and retain the quadratic module. -/

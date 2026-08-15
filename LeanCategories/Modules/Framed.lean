@@ -49,9 +49,6 @@ def isGenFrame : ObjectProperty (FrameArrow R I) :=
 /-- Modules with a selected generating frame. -/
 abbrev GenFrame := (isGenFrame R I).FullSubcategory
 
-/-- Modules carrying a specified generating frame. -/
-abbrev FramedModules := GenFrame
-
 namespace GenFrame
 
 /-- Forget a generating frame and retain its carrier module. -/
@@ -62,14 +59,6 @@ def forget : GenFrame R I ⥤ ModuleCat.{max u v} R where
   map_comp _ _ := rfl
 
 end GenFrame
-
-namespace FramedModules
-
-/-- Forget the specified generating frame and retain the carrier module. -/
-def forget : FramedModules R I ⥤ ModuleCat.{max u v} R :=
-  GenFrame.forget R I
-
-end FramedModules
 
 /-- Free modules carrying a specified generating frame. -/
 def isFramedFreeModule : ObjectProperty (GenFrame R I) :=

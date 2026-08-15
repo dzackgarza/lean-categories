@@ -22,17 +22,14 @@ structure PresentedModule where
   carrier : ModuleCat.{v} R
   presentation : Module.Presentation.{w₀, w₁} R carrier
 
-/-- Modules carrying a chosen presentation, with abstract module maps as morphisms. -/
-abbrev PresentedModules := PresentedModule
-
-namespace PresentedModules
+namespace PresentedModule
 
 variable {R}
 
 /-- The carrier module of a presented-module object. -/
-abbrev carrierObj (X : PresentedModules R) : ModuleCat.{v} R := X.carrier
+abbrev carrierObj (X : PresentedModule R) : ModuleCat.{v} R := X.carrier
 
-instance : Category.{v} (PresentedModules R) where
+instance : Category.{v} (PresentedModule R) where
   Hom X Y := X.carrierObj ⟶ Y.carrierObj
   id X := 𝟙 X.carrierObj
   comp f g := f ≫ g
@@ -41,7 +38,7 @@ instance : Category.{v} (PresentedModules R) where
   assoc := Category.assoc
 
 /-- Forget the chosen presentation and retain the carrier module. -/
-def forget : PresentedModules R ⥤ ModuleCat.{v} R where
+def forget : PresentedModule R ⥤ ModuleCat.{v} R where
   obj X := X.carrierObj
   map f := f
   map_id _ := rfl
@@ -53,7 +50,7 @@ instance : (forget (R := R)).Faithful where
 instance : (forget (R := R)).Full where
   map_surjective f := ⟨f, rfl⟩
 
-end PresentedModules
+end PresentedModule
 
 /-!
 ### Presentation comparison
@@ -96,13 +93,13 @@ noncomputable instance : Category (PresentedModuleOver relations) where
       simp
     rw [h', Module.Relations.Solution.postcomp_comp]
 
-/-- Compare fixed-relations presentations with `PresentedModules`.
+/-- Compare fixed-relations presentations with `PresentedModule`.
 
 The map on morphisms is Mathlib's canonical map induced by the target
 solution, rather than an arbitrary map between the underlying carriers.
 -/
 noncomputable def comparison :
-    PresentedModuleOver relations ⥤ PresentedModules.{u', u', u', u'} R where
+    PresentedModuleOver relations ⥤ PresentedModule.{u', u', u', u'} R where
   obj X :=
     { carrier := X.carrier
       presentation := Module.Presentation.ofIsPresentation X.isPresentation }

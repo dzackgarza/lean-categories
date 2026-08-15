@@ -30,12 +30,12 @@ modules, so the presentation and bilinear form are retained as separate data.
 -/
 abbrev PresentedBilinModuleCat :=
   CategoricalPullback
-    (LeanCategories.Modules.PresentedModules.forget (R := R))
+    (LeanCategories.Modules.PresentedModule.forget (R := R))
     (LeanCategories.Modules.Bilinear.Valued.forget R W)
 
 /-- Forget the bilinear structure and retain the chosen presentation. -/
 def presentedBilinModuleToPresented :
-    PresentedBilinModuleCat R W ⥤ LeanCategories.Modules.PresentedModules R :=
+    PresentedBilinModuleCat R W ⥤ LeanCategories.Modules.PresentedModule R :=
   CategoricalPullback.π₁ _ _
 
 /-- Forget the chosen presentation and retain the bilinear module. -/
