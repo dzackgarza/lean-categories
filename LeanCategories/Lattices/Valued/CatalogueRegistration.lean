@@ -336,7 +336,6 @@ noncomputable def fractionFieldPerfectFiniteProjectiveForgetDeclaration
 
 normalized_registry .categoryFamily
   { id := CategoryFamilyId.lattice
-    canonicalName := "LatticeCat(R, W)"
     schema := .commRingModule
     realization :=
       `LeanCategories.Lattices.Valued.CatalogueRegistration.latticeFamilyRealization
@@ -346,7 +345,6 @@ normalized_registry .categoryFamily
 
 normalized_registry .categoryFamily
   { id := CategoryFamilyId.finiteProjectiveLattice
-    canonicalName := "FiniteProjectiveLatticeCat(R, W)"
     schema := .commRingModule
     realization :=
       `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteProjectiveLatticeFamilyRealization
@@ -356,7 +354,6 @@ normalized_registry .categoryFamily
 
 normalized_registry .categoryFamily
   { id := CategoryFamilyId.finiteFreeLattice
-    canonicalName := "FiniteFreeLatticeCat(R, W)"
     schema := .commRingModule
     realization :=
       `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteFreeLatticeFamilyRealization
@@ -366,7 +363,6 @@ normalized_registry .categoryFamily
 
 normalized_registry .categoryFamily
   { id := CategoryFamilyId.evenLattice
-    canonicalName := "EvenLatticeCat(R)"
     schema := .commRing
     realization :=
       `LeanCategories.Lattices.Valued.CatalogueRegistration.evenLatticeFamilyRealization
@@ -374,7 +370,7 @@ normalized_registry .categoryFamily
       `LeanCategories.Lattices.Valued.CatalogueRegistration.evenLatticeFamilyTransport
     transportSemantics := .discrete }
 normalized_registry .categoryFamily
-  { id := CategoryFamilyId.integralLattice, canonicalName := "IntegralLatticeCat(R)"
+  { id := CategoryFamilyId.integralLattice,
     schema := .commRing
     realization :=
       `LeanCategories.Lattices.Valued.CatalogueRegistration.integralLatticeFamilyRealization
@@ -382,7 +378,7 @@ normalized_registry .categoryFamily
       `LeanCategories.Lattices.Valued.CatalogueRegistration.integralLatticeFamilyTransport
     transportSemantics := .discrete }
 normalized_registry .categoryFamily
-  { id := CategoryFamilyId.coordLattice, canonicalName := "CoordLatticeCat(R, n)"
+  { id := CategoryFamilyId.coordLattice,
     schema := .commRingNat
     realization :=
       `LeanCategories.Lattices.Valued.CatalogueRegistration.coordLatticeFamilyRealization
@@ -391,7 +387,6 @@ normalized_registry .categoryFamily
     transportSemantics := .discrete }
 normalized_registry .categoryFamily
   { id := CategoryFamilyId.fractionFieldPerfectFiniteProjectiveLattice
-    canonicalName := "FractionFieldPerfectFiniteProjectiveLatticeCat(R)"
     schema := .domain
     realization :=
       `LeanCategories.Lattices.Valued.CatalogueRegistration.fractionFieldPerfectFiniteProjectiveLatticeFamilyRealization
@@ -399,7 +394,7 @@ normalized_registry .categoryFamily
       `LeanCategories.Lattices.Valued.CatalogueRegistration.fractionFieldPerfectFiniteProjectiveLatticeFamilyTransport
     transportSemantics := .discrete }
 normalized_registry .categoryFamily
-  { id := CategoryFamilyId.unimodularLattice, canonicalName := "UnimodularLatticeCat(R)"
+  { id := CategoryFamilyId.unimodularLattice,
     schema := .domain
     realization :=
       `LeanCategories.Lattices.Valued.CatalogueRegistration.unimodularLatticeFamilyRealization
@@ -409,14 +404,12 @@ normalized_registry .categoryFamily
 
 normalized_registry .category
   { id := CategoryId.lattice
-    canonicalName := "LatticeCat"
     declaration := `LeanCategories.Lattices.Valued.CatalogueRegistration.latticeCategory
     expression := Lattice
     realization := `LeanCategories.Lattices.Valued.CatalogueRegistration.latticeRealization}
 
 normalized_registry .category
   { id := CategoryId.finiteProjectiveLattice
-    canonicalName := "FiniteProjectiveLatticeCat"
     declaration :=
       `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteProjectiveLatticeCategory
     expression := FiniteProjectiveLattice
@@ -425,52 +418,47 @@ normalized_registry .category
 
 normalized_registry .category
   { id := CategoryId.finiteFreeLattice
-    canonicalName := "FiniteFreeLatticeCat"
     declaration := `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteFreeLatticeCategory
     expression := FiniteFreeLattice
     realization := `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteFreeLatticeRealization}
 
 normalized_registry .category
   { id := CategoryId.evenLattice
-    canonicalName := "EvenLatticeCat"
     declaration := `LeanCategories.Lattices.Valued.CatalogueRegistration.evenLatticeCategory
     expression := EvenLattice
     realization := `LeanCategories.Lattices.Valued.CatalogueRegistration.evenLatticeRealization}
 
 normalized_registry .category
   { id := CategoryId.definiteLattice
-    canonicalName := "DefiniteLatticeCat"
     declaration := `LeanCategories.Lattices.Valued.CatalogueRegistration.definiteLatticeCategory
     expression := DefiniteLattice
     realization := `LeanCategories.Lattices.Valued.CatalogueRegistration.definiteLatticeRealization}
 
 normalized_registry .category
   { id := CategoryId.indefiniteLattice
-    canonicalName := "IndefiniteLatticeCat"
     declaration := `LeanCategories.Lattices.Valued.CatalogueRegistration.indefiniteLatticeCategory
     expression := IndefiniteLattice
     realization :=
       `LeanCategories.Lattices.Valued.CatalogueRegistration.indefiniteLatticeRealization}
 normalized_registry .category
-  { id := CategoryId.integralLattice, canonicalName := "IntegralLatticeCat"
+  { id := CategoryId.integralLattice,
     declaration := `LeanCategories.Lattices.Valued.CatalogueRegistration.integralLatticeCategory
     expression := IntegralLattice
     realization := `LeanCategories.Lattices.Valued.CatalogueRegistration.integralLatticeRealization }
 normalized_registry .category
-  { id := CategoryId.coordLattice, canonicalName := "CoordLatticeCat"
+  { id := CategoryId.coordLattice,
     declaration := `LeanCategories.Lattices.Valued.CatalogueRegistration.coordLatticeCategory
     expression := CoordLattice
     realization := `LeanCategories.Lattices.Valued.CatalogueRegistration.coordLatticeRealization }
 normalized_registry .category
   { id := CategoryId.fractionFieldPerfectFiniteProjectiveLattice
-    canonicalName := "FractionFieldPerfectFiniteProjectiveLatticeCat"
     declaration :=
       `LeanCategories.Lattices.Valued.CatalogueRegistration.fractionFieldPerfectFiniteProjectiveLatticeCategory
     expression := FractionFieldPerfectFiniteProjectiveLattice
     realization :=
       `LeanCategories.Lattices.Valued.CatalogueRegistration.fractionFieldPerfectFiniteProjectiveLatticeRealization }
 normalized_registry .category
-  { id := CategoryId.unimodularLattice, canonicalName := "UnimodularLatticeCat"
+  { id := CategoryId.unimodularLattice,
     declaration :=
       `LeanCategories.Lattices.Valued.CatalogueRegistration.unimodularLatticeCategory
     expression := UnimodularLattice
@@ -479,7 +467,6 @@ normalized_registry .category
 
 normalized_registry .functor
   { id := FunctorId.latticeChangeValue
-    canonicalName := "LatticeCat.changeValue"
     source := Lattice
     target :=
       .familyApp CategoryFamilyId.lattice
@@ -492,7 +479,6 @@ normalized_registry .functor
 
 normalized_registry .functor
   { id := FunctorId.latticeBaseChange
-    canonicalName := "LatticeCat.baseChange"
     source := Lattice
     target :=
       .familyApp CategoryFamilyId.lattice
@@ -507,7 +493,6 @@ normalized_registry .functor
 
 normalized_registry .functor
   { id := FunctorId.finiteProjectiveForget
-    canonicalName := "FiniteProjectiveLatticeCat.forget"
     source := FiniteProjectiveLattice
     target := Modules.Modules
     declaration :=
@@ -516,7 +501,7 @@ normalized_registry .functor
       `LeanCategories.Lattices.Valued.CatalogueRegistration.finiteProjectiveForgetRealization
     expression := FiniteProjectiveForget }
 normalized_registry .functor
-  { id := FunctorId.integralLatticeForget, canonicalName := "IntegralLatticeCat.forget"
+  { id := FunctorId.integralLatticeForget,
     source := IntegralLattice
     target := Modules.Modules
     declaration :=
@@ -525,7 +510,7 @@ normalized_registry .functor
       `LeanCategories.Lattices.Valued.CatalogueRegistration.integralLatticeForgetRealization
     expression := IntegralLatticeForget }
 normalized_registry .functor
-  { id := FunctorId.coordLatticeToCoord, canonicalName := "CoordLatticeCat.toCoord"
+  { id := FunctorId.coordLatticeToCoord,
     source := CoordLattice
     target := Modules.CoordExpr
     declaration :=
@@ -534,7 +519,7 @@ normalized_registry .functor
       `LeanCategories.Lattices.Valued.CatalogueRegistration.coordLatticeToCoordRealization
     expression := CoordLatticeToCoord }
 normalized_registry .functor
-  { id := FunctorId.coordLatticeToIntegral, canonicalName := "CoordLatticeCat.toIntegral"
+  { id := FunctorId.coordLatticeToIntegral,
     source := CoordLattice
     target := IntegralLattice
     declaration :=
@@ -544,7 +529,6 @@ normalized_registry .functor
     expression := CoordLatticeToIntegral }
 normalized_registry .functor
   { id := FunctorId.fractionFieldPerfectFiniteProjectiveForget
-    canonicalName := "FractionFieldPerfectFiniteProjectiveLatticeCat.forget"
     source := FractionFieldPerfectFiniteProjectiveLattice
     target := IntegralLattice
     declaration :=

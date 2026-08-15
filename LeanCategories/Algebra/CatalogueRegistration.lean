@@ -79,75 +79,73 @@ noncomputable def divisionRealization :
   { hostRealization := { familyFibre := none }, totalRealization := {} }
 
 normalized_registry .classifier
-  { id := ClassifierId.magmasAssociative, canonicalName := "Associative"
+  { id := ClassifierId.magmasAssociative,
     declaration := `LeanCategories.Algebra.associative
     host := Algebra.Catalogue.Magmas.Magmas
     realization := `LeanCategories.Algebra.CatalogueRegistration.associativeRealization}
 normalized_registry .classifier
-  { id := ClassifierId.magmasCommutative, canonicalName := "Commutative"
+  { id := ClassifierId.magmasCommutative,
     declaration := `LeanCategories.Algebra.commutative
     host := Algebra.Catalogue.Magmas.Magmas
     realization := `LeanCategories.Algebra.CatalogueRegistration.commutativeRealization}
 normalized_registry .classifier
-  { id := ClassifierId.magmasUnital, canonicalName := "Unital"
+  { id := ClassifierId.magmasUnital,
     declaration := `LeanCategories.Algebra.unital
     host := Algebra.Catalogue.Magmas.Magmas
     realization := `LeanCategories.Algebra.CatalogueRegistration.unitalRealization}
 normalized_registry .classifier
-  { id := ClassifierId.magmasInverse, canonicalName := "Inverse"
+  { id := ClassifierId.magmasInverse,
     declaration := `LeanCategories.Algebra.inverse
     host := .classifierTotal ClassifierId.magmasUnital
     realization := `LeanCategories.Algebra.CatalogueRegistration.inverseRealization}
 normalized_registry .classifier
-  { id := ClassifierId.magmasAdditive, canonicalName := "Additive"
+  { id := ClassifierId.magmasAdditive,
     declaration := `LeanCategories.Algebra.additive
     host := Algebra.Catalogue.Magmas.Magmas
     realization := `LeanCategories.Algebra.CatalogueRegistration.additiveRealization}
 normalized_registry .classifier
-  { id := ClassifierId.magmasMultiplicative, canonicalName := "Multiplicative"
+  { id := ClassifierId.magmasMultiplicative,
     declaration := `LeanCategories.Algebra.multiplicative
     host := Algebra.Catalogue.Magmas.Magmas
     realization := `LeanCategories.Algebra.CatalogueRegistration.multiplicativeRealization}
 
-abbrev CRings := Algebra.CommutativeRings
-
 normalized_registry .category
-  { id := CategoryId.magmas, canonicalName := "Magmas"
+  { id := CategoryId.magmas,
     declaration := `LeanCategories.Algebra.Magmas
     expression := Algebra.Catalogue.Magmas.Magmas
     realization := `LeanCategories.Algebra.CatalogueRegistration.magmasRealization}
 normalized_registry .category
-  { id := CategoryId.semigroups, canonicalName := "Semigroups"
+  { id := CategoryId.semigroups,
     declaration := `LeanCategories.Algebra.Semigroups
     expression := Algebra.Catalogue.Magmas.Semigroups
     realization := `LeanCategories.Algebra.CatalogueRegistration.semigroupsRealization}
 normalized_registry .category
-  { id := CategoryId.monoids, canonicalName := "Monoids"
+  { id := CategoryId.monoids,
     declaration := `LeanCategories.Algebra.Monoids
     expression := Algebra.Catalogue.Magmas.Monoids
     realization := `LeanCategories.Algebra.CatalogueRegistration.monoidsRealization}
 normalized_registry .category
-  { id := CategoryId.groups, canonicalName := "Groups"
+  { id := CategoryId.groups,
     declaration := `LeanCategories.Algebra.Groups
     expression := Algebra.Catalogue.Magmas.Groups
     realization := `LeanCategories.Algebra.CatalogueRegistration.groupsRealization}
 normalized_registry .category
-  { id := CategoryId.additiveMagmas, canonicalName := "AdditiveMagmas"
+  { id := CategoryId.additiveMagmas,
     declaration := `LeanCategories.Algebra.AdditiveMagmas
     expression := Algebra.Catalogue.Magmas.AdditiveMagmas
     realization := `LeanCategories.Algebra.CatalogueRegistration.additiveMagmasRealization}
 normalized_registry .category
-  { id := CategoryId.additiveSemigroups, canonicalName := "AdditiveSemigroups"
+  { id := CategoryId.additiveSemigroups,
     declaration := `LeanCategories.Algebra.AdditiveSemigroups
     expression := Algebra.Catalogue.Magmas.AdditiveSemigroups
     realization := `LeanCategories.Algebra.CatalogueRegistration.additiveSemigroupsRealization}
 normalized_registry .category
-  { id := CategoryId.additiveMonoids, canonicalName := "AdditiveMonoids"
+  { id := CategoryId.additiveMonoids,
     declaration := `LeanCategories.Algebra.AdditiveMonoids
     expression := Algebra.Catalogue.Magmas.AdditiveMonoids
     realization := `LeanCategories.Algebra.CatalogueRegistration.additiveMonoidsRealization}
 normalized_registry .category
-  { id := CategoryId.additiveGroups, canonicalName := "AdditiveGroups"
+  { id := CategoryId.additiveGroups,
     declaration := `LeanCategories.Algebra.AdditiveGroups
     expression := Algebra.Catalogue.Magmas.AdditiveGroups
     realization := `LeanCategories.Algebra.CatalogueRegistration.additiveGroupsRealization}

@@ -128,7 +128,6 @@ noncomputable def quadWFormCarrierDeclaration (R : Type u) [CommRing R] :
 
 normalized_registry .categoryFamily
   { id := CategoryFamilyId.quadModule
-    canonicalName := "QuadModuleCat(R, W)"
     schema := .commRingModule
     realization :=
       `LeanCategories.Modules.Quadratic.Valued.CatalogueRegistration.quadModuleFamilyRealization
@@ -138,7 +137,6 @@ normalized_registry .categoryFamily
 
 normalized_registry .categoryFamily
   { id := CategoryFamilyId.quadWForm
-    canonicalName := "QuadWFormCat(R)"
     schema := .commRing
     realization :=
       `LeanCategories.Modules.Quadratic.Valued.CatalogueRegistration.quadWFormFamilyRealization
@@ -148,7 +146,6 @@ normalized_registry .categoryFamily
 
 normalized_registry .category
   { id := CategoryId.quadModule
-    canonicalName := "QuadModuleCat"
     declaration := `LeanCategories.Modules.Quadratic.Valued.CatalogueRegistration.quadModuleCategory
     expression := QuadModule
     realization :=
@@ -156,14 +153,12 @@ normalized_registry .category
 
 normalized_registry .category
   { id := CategoryId.quadWForm
-    canonicalName := "QuadWFormCat"
     declaration := `LeanCategories.Modules.Quadratic.Valued.CatalogueRegistration.quadWFormCategory
     expression := QuadWForm
     realization := `LeanCategories.Modules.Quadratic.Valued.CatalogueRegistration.quadWFormRealization}
 
 normalized_registry .functor
   { id := FunctorId.quadModuleForget
-    canonicalName := "QuadModuleCat.forget"
     source := QuadModule
     target := Modules.Modules
     declaration :=
@@ -174,7 +169,6 @@ normalized_registry .functor
 
 normalized_registry .functor
   { id := FunctorId.quadModuleChangeValue
-    canonicalName := "QuadModuleCat.changeValue"
     source := QuadModule
     target :=
       .familyApp CategoryFamilyId.quadModule
@@ -187,7 +181,6 @@ normalized_registry .functor
 
 normalized_registry .functor
   { id := FunctorId.quadWFormValue
-    canonicalName := "QuadWFormCat.valueProjection"
     source := QuadWForm
     target := Modules.Modules
     declaration :=
@@ -198,7 +191,6 @@ normalized_registry .functor
 
 normalized_registry .functor
   { id := FunctorId.quadWFormCarrier
-    canonicalName := "QuadWFormCat.carrierProjection"
     source := QuadWForm
     target := Modules.Modules
     declaration :=

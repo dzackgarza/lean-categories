@@ -302,120 +302,119 @@ noncomputable def finiteRankRealization (R : RingCat.{u}) :
   { hostRealization := modulesRealization R, totalRealization := {} }
 
 normalized_registry .categoryFamily
-  { id := CategoryFamilyId.modules, canonicalName := "Modules"
+  { id := CategoryFamilyId.modules,
     schema := .ring
     realization := `LeanCategories.Modules.CatalogueRegistration.modulesFamilyRealization
     transport := `LeanCategories.Modules.Mathlib.moduleCatRestrictScalarsPseudofunctor
     transportSemantics := .restrictionOfScalars }
 
 normalized_registry .categoryFamily
-  { id := CategoryFamilyId.genFrame, canonicalName := "GenFrame(R, n)"
+  { id := CategoryFamilyId.genFrame,
     schema := .commRingNat
     realization := `LeanCategories.Modules.CatalogueRegistration.genFrameFamilyRealization
     transport := `LeanCategories.Modules.CatalogueRegistration.genFrameFamilyTransport
     transportSemantics := .discrete }
 normalized_registry .categoryFamily
-  { id := CategoryFamilyId.basisFrame, canonicalName := "BasisFrame(R, n)"
+  { id := CategoryFamilyId.basisFrame,
     schema := .commRingNat
     realization := `LeanCategories.Modules.CatalogueRegistration.basisFrameFamilyRealization
     transport := `LeanCategories.Modules.CatalogueRegistration.basisFrameFamilyTransport
     transportSemantics := .discrete }
 normalized_registry .categoryFamily
-  { id := CategoryFamilyId.coord, canonicalName := "Coord(R, n)"
+  { id := CategoryFamilyId.coord,
     schema := .commRingNat
     realization := `LeanCategories.Modules.CatalogueRegistration.coordFamilyRealization
     transport := `LeanCategories.Modules.CatalogueRegistration.coordFamilyTransport
     transportSemantics := .discrete }
 normalized_registry .categoryFamily
-  { id := CategoryFamilyId.genFrameIndexed, canonicalName := "GenFrame(R, I)"
+  { id := CategoryFamilyId.genFrameIndexed,
     schema := .commRingIndexType
     realization := `LeanCategories.Modules.CatalogueRegistration.genFrameIndexedFamilyRealization
     transport := `LeanCategories.Modules.CatalogueRegistration.genFrameIndexedFamilyTransport
     transportSemantics := .discrete }
 normalized_registry .categoryFamily
-  { id := CategoryFamilyId.basisFrameIndexed, canonicalName := "BasisFrame(R, I)"
+  { id := CategoryFamilyId.basisFrameIndexed,
     schema := .commRingIndexType
     realization := `LeanCategories.Modules.CatalogueRegistration.basisFrameIndexedFamilyRealization
     transport := `LeanCategories.Modules.CatalogueRegistration.basisFrameIndexedFamilyTransport
     transportSemantics := .discrete }
 normalized_registry .categoryFamily
-  { id := CategoryFamilyId.coordIndexed, canonicalName := "Coord(R, I)"
+  { id := CategoryFamilyId.coordIndexed,
     schema := .commRingIndexType
     realization := `LeanCategories.Modules.CatalogueRegistration.coordIndexedFamilyRealization
     transport := `LeanCategories.Modules.CatalogueRegistration.coordIndexedFamilyTransport
     transportSemantics := .discrete }
 
 normalized_registry .classifier
-  { id := ClassifierId.modulesFree, canonicalName := "Free"
+  { id := ClassifierId.modulesFree,
     declaration := `LeanCategories.Modules.Mathlib.free
     host := Modules.Modules
     realization := `LeanCategories.Modules.CatalogueRegistration.freeRealization}
 normalized_registry .classifier
-  { id := ClassifierId.modulesFinitelyGenerated, canonicalName := "FinitelyGenerated"
+  { id := ClassifierId.modulesFinitelyGenerated,
     declaration := `LeanCategories.Modules.Mathlib.finitelyGenerated
     host := Modules.Modules
     realization := `LeanCategories.Modules.CatalogueRegistration.finitelyGeneratedRealization}
 normalized_registry .classifier
-  { id := ClassifierId.modulesFiniteRank, canonicalName := "FiniteRank"
+  { id := ClassifierId.modulesFiniteRank,
     declaration := `LeanCategories.Modules.Mathlib.finiteRank
     host := Modules.Modules
     realization := `LeanCategories.Modules.CatalogueRegistration.finiteRankRealization}
 
 normalized_registry .category
-  { id := CategoryId.modulesR, canonicalName := "Modules(R)"
+  { id := CategoryId.modulesR,
     declaration := `LeanCategories.Modules.Mathlib.ModulesOf
     expression := Modules.Modules
     realization := `LeanCategories.Modules.CatalogueRegistration.modulesRealization}
 normalized_registry .category
-  { id := CategoryId.freeModules, canonicalName := "FreeModules(R)"
+  { id := CategoryId.freeModules,
     declaration := `LeanCategories.Modules.Mathlib.FreeModules
     expression := Modules.FreeModules
     realization := `LeanCategories.Modules.CatalogueRegistration.freeModulesRealization}
 normalized_registry .category
   { id := CategoryId.finitelyGeneratedModules
-    canonicalName := "FinitelyGeneratedModules(R)"
     declaration := `LeanCategories.Modules.Mathlib.FinitelyGeneratedModules
     expression := Modules.FinitelyGeneratedModules
     realization := `LeanCategories.Modules.CatalogueRegistration.finitelyGeneratedModulesRealization}
 normalized_registry .category
-  { id := CategoryId.finiteRankModules, canonicalName := "FiniteRankModules(R)"
+  { id := CategoryId.finiteRankModules,
     declaration := `LeanCategories.Modules.Mathlib.FiniteRankModules
     expression := Modules.FiniteRankModules
     realization := `LeanCategories.Modules.CatalogueRegistration.finiteRankModulesRealization}
 
 normalized_registry .category
-  { id := CategoryId.genFrame, canonicalName := "GenFrame"
+  { id := CategoryId.genFrame,
     declaration := `LeanCategories.Modules.CatalogueRegistration.genFrameCategory
     expression := Modules.GenFrameExpr
     realization := `LeanCategories.Modules.CatalogueRegistration.genFrameRealization }
 normalized_registry .category
-  { id := CategoryId.basisFrame, canonicalName := "BasisFrame"
+  { id := CategoryId.basisFrame,
     declaration := `LeanCategories.Modules.CatalogueRegistration.basisFrameCategory
     expression := Modules.BasisFrameExpr
     realization := `LeanCategories.Modules.CatalogueRegistration.basisFrameRealization }
 normalized_registry .category
-  { id := CategoryId.coord, canonicalName := "Coord"
+  { id := CategoryId.coord,
     declaration := `LeanCategories.Modules.CatalogueRegistration.coordCategory
     expression := Modules.CoordExpr
     realization := `LeanCategories.Modules.CatalogueRegistration.coordRealization }
 normalized_registry .category
-  { id := CategoryId.genFrameIndexed, canonicalName := "GenFrameIndexed"
+  { id := CategoryId.genFrameIndexed,
     declaration := `LeanCategories.Modules.CatalogueRegistration.genFrameIndexedCategory
     expression := Modules.GenFrameIndexedExpr
     realization := `LeanCategories.Modules.CatalogueRegistration.genFrameIndexedRealization }
 normalized_registry .category
-  { id := CategoryId.basisFrameIndexed, canonicalName := "BasisFrameIndexed"
+  { id := CategoryId.basisFrameIndexed,
     declaration := `LeanCategories.Modules.CatalogueRegistration.basisFrameIndexedCategory
     expression := Modules.BasisFrameIndexedExpr
     realization := `LeanCategories.Modules.CatalogueRegistration.basisFrameIndexedRealization }
 normalized_registry .category
-  { id := CategoryId.coordIndexed, canonicalName := "CoordIndexed"
+  { id := CategoryId.coordIndexed,
     declaration := `LeanCategories.Modules.CatalogueRegistration.coordIndexedCategory
     expression := Modules.CoordIndexedExpr
     realization := `LeanCategories.Modules.CatalogueRegistration.coordIndexedRealization }
 
 normalized_registry .functor
-  { id := FunctorId.basisFrameToGenFrame, canonicalName := "BasisFrame.toGenFrame"
+  { id := FunctorId.basisFrameToGenFrame,
     source := Modules.BasisFrameExpr
     target := Modules.GenFrameExpr
     declaration := `LeanCategories.Modules.CatalogueRegistration.basisFrameToGenFrameDeclaration
@@ -423,21 +422,21 @@ normalized_registry .functor
       `LeanCategories.Modules.CatalogueRegistration.basisFrameToGenFrameRealization
     expression := Modules.BasisFrameToGenFrameExpr }
 normalized_registry .functor
-  { id := FunctorId.fromBasisFrame, canonicalName := "Coord.fromBasisFrame"
+  { id := FunctorId.fromBasisFrame,
     source := Modules.BasisFrameExpr
     target := Modules.CoordExpr
     declaration := `LeanCategories.Modules.CatalogueRegistration.fromBasisFrameDeclaration
     realization := `LeanCategories.Modules.CatalogueRegistration.fromBasisFrameRealization
     expression := Modules.FromBasisFrameExpr }
 normalized_registry .functor
-  { id := FunctorId.coordForget, canonicalName := "Coord.forget"
+  { id := FunctorId.coordForget,
     source := Modules.CoordExpr
     target := Modules.Modules
     declaration := `LeanCategories.Modules.CatalogueRegistration.coordForgetDeclaration
     realization := `LeanCategories.Modules.CatalogueRegistration.coordForgetRealization
     expression := Modules.CoordForgetExpr }
 normalized_registry .functor
-  { id := FunctorId.genFrameForget, canonicalName := "GenFrame.forget"
+  { id := FunctorId.genFrameForget,
     source := Modules.GenFrameIndexedExpr
     target := Modules.Modules
     declaration := `LeanCategories.Modules.CatalogueRegistration.genFrameForgetIndexedDeclaration
@@ -445,7 +444,7 @@ normalized_registry .functor
       `LeanCategories.Modules.CatalogueRegistration.genFrameForgetIndexedRealization
     expression := Modules.GenFrameForgetExpr }
 normalized_registry .functor
-  { id := FunctorId.basisFrameForget, canonicalName := "BasisFrame.forget"
+  { id := FunctorId.basisFrameForget,
     source := Modules.BasisFrameIndexedExpr
     target := Modules.Modules
     declaration := `LeanCategories.Modules.CatalogueRegistration.basisFrameForgetIndexedDeclaration

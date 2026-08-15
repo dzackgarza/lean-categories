@@ -44,7 +44,6 @@ public import LeanCategories.ForMathlib.QuotientManifold
 public import LeanCategories.ForMathlib.RestrictedProductMeasure
 public import LeanCategories.ForMathlib.WittCancellation
 public import LeanCategories.ForMathlib.SymmetricPairProduct
-public import LeanCategories.Names.Standard
 public import LeanCategories.Modules.Framed
 public import LeanCategories.Modules.Localization
 public import LeanCategories.Modules.Presented

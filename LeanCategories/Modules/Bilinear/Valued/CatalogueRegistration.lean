@@ -71,7 +71,6 @@ noncomputable def bilWFormRealization (R : Type u) [CommRing R] :
 
 normalized_registry .categoryFamily
   { id := CategoryFamilyId.bilinModule
-    canonicalName := "BilinModuleCat(R, W)"
     schema := .commRingModule
     realization :=
       `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleFamilyRealization
@@ -81,7 +80,6 @@ normalized_registry .categoryFamily
 
 normalized_registry .categoryFamily
   { id := CategoryFamilyId.bilWForm
-    canonicalName := "BilWFormCat(R)"
     schema := .commRing
     realization :=
       `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilWFormFamilyRealization
@@ -159,7 +157,6 @@ noncomputable def bilWFormBaseChangeDeclaration (R : Type u) [CommRing R]
 
 normalized_registry .category
   { id := CategoryId.bilinModule
-    canonicalName := "BilinModuleCat"
     declaration := `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleCategory
     expression := BilinModule
     realization :=
@@ -167,14 +164,12 @@ normalized_registry .category
 
 normalized_registry .category
   { id := CategoryId.bilWForm
-    canonicalName := "BilWFormCat"
     declaration := `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilWFormCategory
     expression := BilWForm
     realization := `LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration.bilWFormRealization}
 
 normalized_registry .functor
   { id := FunctorId.bilinModuleForget
-    canonicalName := "BilinModuleCat.forget"
     source := BilinModule
     target := Modules.Modules
     declaration :=
@@ -185,7 +180,6 @@ normalized_registry .functor
 
 normalized_registry .functor
   { id := FunctorId.bilinModuleChangeValue
-    canonicalName := "BilinModuleCat.changeValue"
     source := BilinModule
     target :=
       .familyApp CategoryFamilyId.bilinModule
@@ -198,7 +192,6 @@ normalized_registry .functor
 
 normalized_registry .functor
   { id := FunctorId.bilinModuleBaseChange
-    canonicalName := "BilinModuleCat.baseChangeBilin"
     source := BilinModule
     target :=
       .familyApp CategoryFamilyId.bilinModule
@@ -213,7 +206,6 @@ normalized_registry .functor
 
 normalized_registry .functor
   { id := FunctorId.bilWFormBaseChange
-    canonicalName := "BilWFormCat.baseChangeBilWForm"
     source := BilWForm
     target := .familyApp CategoryFamilyId.bilWForm #[.variable ParameterId.s]
     declaration :=

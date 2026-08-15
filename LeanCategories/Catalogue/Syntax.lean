@@ -109,7 +109,6 @@ deriving instance Lean.ToExpr for VarianceId
 deriving instance Lean.ToExpr for FunctorId
 deriving instance Lean.ToExpr for NaturalTransformationId
 deriving instance Lean.ToExpr for PortId
-deriving instance Lean.ToExpr for AliasId
 deriving instance Lean.ToExpr for OpaquePortId
 
 /-- The semantic kind of a registered family transport. -/

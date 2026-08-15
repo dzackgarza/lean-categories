@@ -118,9 +118,6 @@ def expectedFunctorIds : Array FunctorId := #[
   FunctorId.quadWFormValue,
   FunctorId.setsIdentity]
 
-/-- Stable spelling-alias rows owned by the standard catalogue. -/
-def expectedAliasIds : Array AliasId := #[AliasId.crings]
-
 /-- Stable opaque-category rows owned by the standard catalogue. -/
 def expectedOpaqueCategoryIds : Array CategoryId := #[
   CategoryId.crystals,
@@ -157,8 +154,6 @@ def validateStandardManifest (manifest : RegistryManifest) : Except String Unit 
     (rawIds expectedClassifierIds (·.raw))
   validateStableIdSet "functors" (manifest.functors.map (·.id))
     (rawIds expectedFunctorIds (·.raw))
-  validateStableIdSet "aliases" (manifest.aliases.map (·.id))
-    (rawIds expectedAliasIds (·.raw))
   validateStableIdSet "opaque categories" (manifest.opaqueCategories.map (·.id))
     (rawIds expectedOpaqueCategoryIds (·.raw))
   validateStableIdSet "opaque ports"

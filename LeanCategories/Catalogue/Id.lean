@@ -68,11 +68,6 @@ structure PortId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 
-/-- Stable alias id, e.g. `alias.crings`. -/
-structure AliasId where
-  raw : String
-  deriving DecidableEq, Repr, Hashable
-
 /-- Stable opaque structural port id. -/
 structure OpaquePortId where
   raw : String
@@ -88,7 +83,6 @@ instance : Inhabited ParameterKindId := ⟨⟨""⟩⟩
 instance : Inhabited VarianceId := ⟨⟨""⟩⟩
 instance : Inhabited NaturalTransformationId := ⟨⟨""⟩⟩
 instance : Inhabited PortId := ⟨⟨""⟩⟩
-instance : Inhabited AliasId := ⟨⟨""⟩⟩
 instance : Inhabited OpaquePortId := ⟨⟨""⟩⟩
 
 namespace ParameterId

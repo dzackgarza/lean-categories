@@ -67,18 +67,17 @@ noncomputable def crystalsPortRealization :
 
 normalized_registry .category
   { id := CategoryId.magmasWithTwoOperations
-    canonicalName := "MagmasWithTwoOperations"
     declaration := `LeanCategories.Exceptional.Mathlib.MagmasWithTwoOperations
     expression := Algebra.Catalogue.Rings.MagmasWithTwoOperations
     realization := `LeanCategories.Exceptional.CatalogueRegistration.m2oRealization}
 normalized_registry .category
-  { id := CategoryId.crystals, canonicalName := "Crystals"
+  { id := CategoryId.crystals,
     declaration := `LeanCategories.Exceptional.Mathlib.Crystals
     expression := CrystalsExpr
     realization := `LeanCategories.Exceptional.CatalogueRegistration.crystalsRealization}
 
 normalized_registry .classifier
-  { id := ClassifierId.m2oDistributive, canonicalName := "Distributive"
+  { id := ClassifierId.m2oDistributive,
     declaration := `LeanCategories.Exceptional.Mathlib.distributive
     host := Algebra.Catalogue.Rings.MagmasWithTwoOperations
     realization := `LeanCategories.Exceptional.CatalogueRegistration.distributiveRealization}
@@ -115,29 +114,23 @@ normalized_registry .opaque
     reason := "exceptional combinatorial host"}
 
 normalized_registry .category
-  { id := CategoryId.rings, canonicalName := "Rings"
+  { id := CategoryId.rings,
     declaration := `LeanCategories.Algebra.Rings
     expression := Algebra.Catalogue.Rings.Rings
     realization := `LeanCategories.Algebra.CatalogueRegistration.ringsRealization}
 normalized_registry .category
-  { id := CategoryId.commutativeRings, canonicalName := "CommutativeRings"
+  { id := CategoryId.commutativeRings,
     declaration := `LeanCategories.Algebra.CommutativeRings
     expression := Algebra.Catalogue.Rings.CommutativeRings
     realization := `LeanCategories.Algebra.CatalogueRegistration.commutativeRingsRealization}
 normalized_registry .classifier
-  { id := ClassifierId.ringsDivision, canonicalName := "Division"
+  { id := ClassifierId.ringsDivision,
     declaration := `LeanCategories.Algebra.divisionOnRings
     host := Algebra.Catalogue.Rings.Rings
     realization := `LeanCategories.Algebra.CatalogueRegistration.divisionRealization}
 normalized_registry .category
-  { id := CategoryId.divisionRings, canonicalName := "DivisionRings"
+  { id := CategoryId.divisionRings,
     declaration := `LeanCategories.Algebra.DivisionRings
     expression := Algebra.Catalogue.Rings.DivisionRings
     realization := `LeanCategories.Algebra.CatalogueRegistration.divisionRingsRealization}
-normalized_registry .alias
-  { id := AliasId.crings, spelling := "CRings"
-    aliasOf := CategoryId.commutativeRings
-    declaration := `LeanCategories.Algebra.CatalogueRegistration.CRings
-    realization := `LeanCategories.Algebra.CatalogueRegistration.commutativeRingsRealization }
-
 end LeanCategories.Exceptional.CatalogueRegistration

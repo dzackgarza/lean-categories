@@ -38,8 +38,4 @@ def multiplicative : PortId := ⟨"port.multiplicative"⟩
 def underlyingSet : PortId := ⟨"port.underlying_set"⟩
 end PortId
 
-namespace AliasId
-def crings : AliasId := ⟨"alias.crings"⟩
-end AliasId
-
 end LeanCategories

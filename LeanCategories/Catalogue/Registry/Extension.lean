@@ -33,7 +33,6 @@ inductive RegistryEntry
   | categoryFamily (e : CategoryFamilyEntry)
   | classifier (e : ClassifierEntry)
   | functor (e : FunctorEntry)
-  | alias (e : AliasEntry)
   | opaque (e : OpaqueCategoryEntry)
   deriving Repr
 
@@ -43,7 +42,6 @@ def RegistryEntry.stableId : RegistryEntry → String
   | .categoryFamily e => e.id.raw
   | .classifier e => e.id.raw
   | .functor e => e.id.raw
-  | .alias e => e.id.raw
   | .opaque e => e.id.raw
 
 /-- Lean declarations that must resolve before this row can be persisted. -/
@@ -54,7 +52,6 @@ def RegistryEntry.declarations : RegistryEntry → Array Name
   | .categoryFamily e => #[e.realization, e.transport]
   | .classifier e => #[e.declaration, e.realization]
   | .functor e => #[e.declaration, e.realization]
-  | .alias e => #[e.declaration, e.realization]
   | .opaque e => #[e.declaration, e.realization] ++
       e.ports.flatMap fun p => #[p.declaration, p.realization]
 
@@ -63,7 +60,6 @@ structure RegistryState where
   categoryFamilies : Array CategoryFamilyEntry := #[]
   classifiers : Array ClassifierEntry := #[]
   functors : Array FunctorEntry := #[]
-  aliases : Array AliasEntry := #[]
   opaqueCategories : Array OpaqueCategoryEntry := #[]
   deriving Inhabited
 
@@ -114,30 +110,6 @@ def duplicateCategoryExpressionList : List NamedCategoryEntry → Option Categor
         some category.expression
       else duplicateCategoryExpressionList categories
 
-def duplicateCanonicalNameList : List String → Option String
-  | [] => none
-  | name :: names =>
-      if names.any (· == name) then some name
-      else duplicateCanonicalNameList names
-
-def RegistryState.publicLookupSpellings (state : RegistryState) : List String :=
-  state.categories.toList.map (·.canonicalName) ++
-    state.categoryFamilies.toList.map (·.canonicalName) ++
-    state.classifiers.toList.map (·.canonicalName) ++
-    state.functors.toList.map (·.canonicalName) ++
-    state.aliases.toList.map (·.spelling)
-
-def RegistryState.duplicatePublicLookupSpelling (state : RegistryState) : Option String :=
-  duplicateCanonicalNameList state.publicLookupSpellings
-
-def RegistryEntry.publicLookupSpelling : RegistryEntry → Option String
-  | .category e => some e.canonicalName
-  | .categoryFamily e => some e.canonicalName
-  | .classifier e => some e.canonicalName
-  | .functor e => some e.canonicalName
-  | .alias e => some e.spelling
-  | .opaque _ => none
-
 def opaqueCategoryMatchesCategory (category : NamedCategoryEntry)
     (opaqueEntry : OpaqueCategoryEntry) : Bool :=
   category.id == opaqueEntry.id && category.declaration == opaqueEntry.declaration &&
@@ -158,10 +130,10 @@ def RegistryState.duplicateCategoryExpression (state : RegistryState) : Option C
 
 private def duplicateCategoryExpressionProbeState : RegistryState :=
   { categories := #[
-      { id := ⟨"probe.expression.first"⟩, canonicalName := "probe.expression.first",
+      { id := ⟨"probe.expression.first"⟩,
         declaration := ``sameEndpoint, expression := .atom ⟨"probe.expression"⟩,
         realization := ``sameEndpoint },
-      { id := ⟨"probe.expression.second"⟩, canonicalName := "probe.expression.second",
+      { id := ⟨"probe.expression.second"⟩,
         declaration := ``sameEndpoint, expression := .atom ⟨"probe.expression"⟩,
         realization := ``sameEndpoint }] }
 
@@ -169,20 +141,6 @@ example : duplicateCategoryExpressionProbeState.duplicateCategoryExpression.isSo
   native_decide
 
 example : duplicateCategoryExpressionProbeState.category? (.atom ⟨"probe.expression"⟩) = none := by
-  native_decide
-
-private def duplicateCategoryCanonicalNameProbeState : RegistryState :=
-  { categories := #[{
-      id := ⟨"probe.canonical.category"⟩, canonicalName := "probe.same-name",
-      declaration := ``sameEndpoint, expression := .atom ⟨"probe.canonical.category"⟩,
-      realization := ``sameEndpoint }]
-    categoryFamilies := #[{
-      id := ⟨"probe.canonical.family"⟩, canonicalName := "probe.same-name", schema := .ring,
-      realization := ``sameEndpoint, transport := ``sameEndpoint,
-      transportSemantics := .restrictionOfScalars }] }
-
-example : duplicateCategoryCanonicalNameProbeState.duplicatePublicLookupSpelling =
-    some "probe.same-name" := by
   native_decide
 
 /-- Whether an expression denotes the stable category ID of an opaque port endpoint. -/
@@ -225,10 +183,10 @@ def refinementHostInChain (state : RegistryState) (target : CategoryExpr)
 
 private def ancestryProbeState : RegistryState :=
   { classifiers := #[
-      { id := ⟨"clf.first"⟩, canonicalName := "first"
+      { id := ⟨"clf.first"⟩,
         declaration := ``sameEndpoint, host := .atom ⟨"cat.host"⟩
         realization := ``sameEndpoint,},
-      { id := ⟨"clf.second"⟩, canonicalName := "second"
+      { id := ⟨"clf.second"⟩,
         declaration := ``sameEndpoint, host := .atom ⟨"cat.host"⟩
         realization := ``sameEndpoint,}] }
 
@@ -302,7 +260,6 @@ private def RegistryState.apply : RegistryState → RegistryEntry → RegistrySt
   | s, .categoryFamily e => { s with categoryFamilies := s.categoryFamilies.push e }
   | s, .classifier e => { s with classifiers := s.classifiers.push e }
   | s, .functor e => { s with functors := s.functors.push e }
-  | s, .alias e => { s with aliases := s.aliases.push e }
   | s, .opaque e => { s with opaqueCategories := s.opaqueCategories.push e }
 
 def RegistryState.registryEntries (state : RegistryState) : List RegistryEntry :=
@@ -310,7 +267,6 @@ def RegistryState.registryEntries (state : RegistryState) : List RegistryEntry :
     state.categoryFamilies.toList.map RegistryEntry.categoryFamily ++
     state.classifiers.toList.map RegistryEntry.classifier ++
     state.functors.toList.map RegistryEntry.functor ++
-    state.aliases.toList.map RegistryEntry.alias ++
     state.opaqueCategories.toList.map RegistryEntry.opaque
 
 def registryEntryPairAllowed : RegistryEntry → RegistryEntry → Bool
@@ -366,11 +322,11 @@ example : duplicateImportedOpaquePortId importedOpaquePortProbeEntries =
 
 private def duplicateImportedStableIdProbeEntries : Array (Array RegistryEntry) := #[
   #[RegistryEntry.category {
-    id := ⟨"probe.duplicate"⟩, canonicalName := "probe.duplicate",
+    id := ⟨"probe.duplicate"⟩,
     declaration := ``sameEndpoint, expression := .atom ⟨"probe.duplicate"⟩,
     realization := ``sameEndpoint,}],
   #[RegistryEntry.classifier {
-    id := ⟨"probe.duplicate"⟩, canonicalName := "probe.duplicate",
+    id := ⟨"probe.duplicate"⟩,
     declaration := ``sameEndpoint, host := .atom ⟨"probe.duplicate"⟩,
     realization := ``sameEndpoint,}]]
 
@@ -381,25 +337,22 @@ example : RegistryState.duplicateEntryId
 
 private def allRegistryKindsDuplicateProbeState : RegistryState :=
   { categories := #[{
-      id := ⟨"probe.all-kinds"⟩, canonicalName := "probe.all-kinds",
+      id := ⟨"probe.all-kinds"⟩,
       declaration := ``sameEndpoint, expression := .atom ⟨"probe.all-kinds"⟩,
       realization := ``sameEndpoint,}]
     categoryFamilies := #[{
-      id := ⟨"probe.all-kinds"⟩, canonicalName := "probe.all-kinds", schema := .ring,
+      id := ⟨"probe.all-kinds"⟩, schema := .ring,
       realization := ``sameEndpoint, transport := ``sameEndpoint,
       transportSemantics := .restrictionOfScalars }]
     classifiers := #[{
-      id := ⟨"probe.all-kinds"⟩, canonicalName := "probe.all-kinds",
+      id := ⟨"probe.all-kinds"⟩,
       declaration := ``sameEndpoint, host := .atom ⟨"probe.all-kinds"⟩,
       realization := ``sameEndpoint,}]
     functors := #[{
-      id := ⟨"probe.all-kinds"⟩, canonicalName := "probe.all-kinds",
+      id := ⟨"probe.all-kinds"⟩,
       source := .atom ⟨"probe.all-kinds"⟩, target := .atom ⟨"probe.all-kinds"⟩,
       declaration := ``sameEndpoint, realization := ``sameEndpoint,
       expression := .atomic ⟨"probe.all-kinds"⟩ }]
-    aliases := #[{
-      id := ⟨"probe.all-kinds"⟩, spelling := "probe.all-kinds", aliasOf := ⟨"probe.all-kinds"⟩,
-      declaration := ``sameEndpoint, realization := ``sameEndpoint }]
     opaqueCategories := #[{
       id := ⟨"probe.all-kinds"⟩, declaration := ``sameEndpoint,
       realization := ``sameEndpoint, ports := #[], reason := "probe",}] }
@@ -409,12 +362,12 @@ example : allRegistryKindsDuplicateProbeState.duplicateEntryId = some "probe.all
 
 private def localCrossKindDuplicateProbeState : RegistryState :=
   { categories := #[{
-      id := ⟨"probe.local-duplicate"⟩, canonicalName := "probe.local-duplicate",
+      id := ⟨"probe.local-duplicate"⟩,
       declaration := ``sameEndpoint, expression := .atom ⟨"probe.local-duplicate"⟩,
       realization := ``sameEndpoint,}] }
 
 private def localCrossKindDuplicateProbeEntry : RegistryEntry := .classifier {
-  id := ⟨"probe.local-duplicate"⟩, canonicalName := "probe.local-duplicate",
+  id := ⟨"probe.local-duplicate"⟩,
   declaration := ``sameEndpoint, host := .atom ⟨"probe.local-duplicate"⟩,
   realization := ``sameEndpoint,}
 
@@ -423,7 +376,7 @@ example : localCrossKindDuplicateProbeState.hasEntryId localCrossKindDuplicatePr
 
 private def localNamedOpaqueCompanionProbeState : RegistryState :=
   { categories := #[{
-      id := ⟨"probe.local-companion"⟩, canonicalName := "probe.local-companion",
+      id := ⟨"probe.local-companion"⟩,
       declaration := ``sameEndpoint, expression := .opaque ⟨"probe.local-companion"⟩,
       realization := ``sameEndpoint,}] }
 
@@ -435,22 +388,8 @@ example : !localNamedOpaqueCompanionProbeState.hasEntryId
     localNamedOpaqueCompanionProbeEntry := by
   native_decide
 
-private def duplicatePublicLookupSpellingProbeState : RegistryState :=
-  { classifiers := #[{
-      id := ⟨"probe.lookup.classifier"⟩, canonicalName := "probe.same-spelling",
-      declaration := ``sameEndpoint, host := .atom ⟨"probe.lookup.host"⟩,
-      realization := ``sameEndpoint }]
-    aliases := #[{
-      id := ⟨"probe.lookup.alias"⟩, spelling := "probe.same-spelling",
-      aliasOf := ⟨"probe.lookup.host"⟩, declaration := ``sameEndpoint,
-      realization := ``sameEndpoint }] }
-
-example : duplicatePublicLookupSpellingProbeState.duplicatePublicLookupSpelling =
-    some "probe.same-spelling" := by
-  decide
-
 example : !opaqueCategoryMatchesCategory
-    { id := ⟨"cat.fake.opaque"⟩, canonicalName := "cat.fake.opaque",
+    { id := ⟨"cat.fake.opaque"⟩,
       declaration := ``sameEndpoint, expression := .opaque ⟨"existing"⟩,
       realization := ``sameEndpoint,}
     { id := ⟨"cat.fake.opaque"⟩, declaration := ``sameEndpoint,
@@ -465,8 +404,6 @@ private def validatePersistedRegistryState (state : RegistryState) : Except Stri
     throw s!"duplicate normalized-category registry ID {id}"
   if let some _ := state.duplicateCategoryExpression then
     throw "duplicate normalized-category registry expression"
-  if let some spelling := state.duplicatePublicLookupSpelling then
-    throw s!"duplicate normalized-category public lookup spelling {spelling}"
   if let some id := duplicateOpaquePortId state.opaquePortIds then
     throw s!"duplicate opaque port ID {id.raw}"
   for category in state.categories do
@@ -491,9 +428,6 @@ private def validatePersistedRegistryState (state : RegistryState) : Except Stri
   for classifier in state.classifiers do
     unless classifier.host.isRegistered state && classifier.host.referencesValid state do
       throw s!"classifier entry {classifier.id.raw} has an unresolved registry reference"
-  for aliasEntry in state.aliases do
-    unless state.categories.any (·.id == aliasEntry.aliasOf) do
-      throw s!"alias entry {aliasEntry.id.raw} refers to an unregistered category"
   for opaqueEntry in state.opaqueCategories do
     let some category := state.categories.find? (·.id == opaqueEntry.id)
       | throw s!"opaque category entry {opaqueEntry.id.raw} has no registered category"
@@ -512,7 +446,7 @@ private def registryValidationFailed (result : Except String Unit) : Bool :=
 
 private def persistedOrphanOpaqueExpressionProbeState : RegistryState :=
   { categories := #[{
-      id := ⟨"probe.persisted.orphan"⟩, canonicalName := "probe.persisted.orphan",
+      id := ⟨"probe.persisted.orphan"⟩,
       declaration := ``sameEndpoint, expression := .opaque ⟨"probe.persisted.orphan"⟩,
       realization := ``sameEndpoint }] }
 
@@ -522,7 +456,7 @@ example : registryValidationFailed
 
 private def persistedWrongOpaquePortOwnerProbeState : RegistryState :=
   { categories := #[{
-      id := ⟨"probe.persisted.owner"⟩, canonicalName := "probe.persisted.owner",
+      id := ⟨"probe.persisted.owner"⟩,
       declaration := ``sameEndpoint, expression := .opaque ⟨"probe.persisted.owner"⟩,
       realization := ``sameEndpoint }]
     opaqueCategories := #[{
@@ -539,7 +473,7 @@ example : registryValidationFailed
 
 private def importedWrongOpaquePortOwnerProbeEntries : Array (Array RegistryEntry) := #[
   #[RegistryEntry.category {
-    id := ⟨"probe.imported.owner"⟩, canonicalName := "probe.imported.owner",
+    id := ⟨"probe.imported.owner"⟩,
     declaration := ``sameEndpoint, expression := .opaque ⟨"probe.imported.owner"⟩,
     realization := ``sameEndpoint }],
   #[RegistryEntry.opaque {
@@ -759,20 +693,6 @@ def validateRefinementDeclarationRealization (state : RegistryState)
       mkAppM ``LeanCategories.Classifier.reindex #[baseToHost, classifier]
     unless ← withTransparency .all <| isDefEq reindexed expectedReindexed do
       throwError "refinement realization {refinement} does not use Classifier.reindex"
-
-def validateAliasDeclarationRealization (state : RegistryState) (entry : AliasEntry) : MetaM Unit := do
-  let target ← match state.categories.find? (fun category => category.id == entry.aliasOf) with
-    | some target => pure target
-    | none => throwError "alias entry {entry.id.raw} has no registered target category"
-  let targetValue ← mkConstWithFreshMVarLevels target.declaration
-  let targetType ← inferType targetValue
-  let (targetParameters, _, _) ← forallMetaTelescopeReducing targetType
-  let targetValue := mkAppN targetValue targetParameters
-  let aliasValue ← mkConstWithFreshMVarLevels entry.declaration
-  unless ← withTransparency .all <| isDefEq aliasValue targetValue do
-    throwError "alias entry {entry.id.raw} declaration is not its target category"
-  let aliasRealization ← mkConstWithFreshMVarLevels entry.realization
-  validateRegisteredCategoryEndpointRealization state target.expression targetValue aliasRealization
 
 def validateOpaquePortRealization (state : RegistryState) (entry : StructuralPortEntry) : MetaM Unit := do
   let realizationConstant ← mkConstWithFreshMVarLevels entry.realization
@@ -1055,13 +975,11 @@ private noncomputable def classifierForgetConstantProbeFunctorRealization :
 private def classifierForgetConstantProbeState : RegistryState :=
   { categories := #[{
       id := ⟨"probe.classifier.host"⟩
-      canonicalName := "probe.classifier.host"
       declaration := ``classifierForgetConstantProbeCategory
       expression := classifierForgetConstantProbeHost
       realization := ``classifierForgetConstantProbeHostRealization}]
     classifiers := #[{
       id := classifierForgetConstantProbeId
-      canonicalName := "probe.classifier"
       declaration := ``classifierForgetConstantProbeClassifier
       host := classifierForgetConstantProbeHost
       realization := ``classifierForgetConstantProbeClassifierRealization}] }
@@ -1264,10 +1182,6 @@ def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
       ensureFunctorDeclaration e.declaration
       ensureFunctorRealization e.realization
       validateFunctorDeclarationRealization state e.expression e.declaration e.realization
-  | .alias e => do
-      ensureCategoryDeclaration e.declaration
-      ensureCategoryRealization e.realization
-      validateAliasDeclarationRealization state e
   | .opaque e => do
       ensureCategoryDeclaration e.declaration
       ensureCategoryRealization e.realization
@@ -1290,11 +1204,6 @@ def addRegistryEntryChecked (entry : RegistryEntry) : MetaM Unit := do
           existing.expression.syntacticEq e.expression then
         throwError "duplicate normalized-category registry expression"
   | _ => pure ()
-  match entry.publicLookupSpelling with
-  | some spelling =>
-      if state.publicLookupSpellings.any (· == spelling) then
-        throwError "duplicate normalized-category public lookup spelling: {spelling}"
-  | none => pure ()
   match entry with
   | .category e =>
       unless categoryIdMatchesExpression e.id e.expression do
@@ -1312,9 +1221,6 @@ def addRegistryEntryChecked (entry : RegistryEntry) : MetaM Unit := do
   | .classifier e =>
       unless e.host.isRegistered state && e.host.referencesValid state do
         throwError "classifier entry {e.id.raw} has an unresolved or unregistered host"
-  | .alias e =>
-      unless state.categories.any (·.id == e.aliasOf) do
-        throwError "alias entry {e.id.raw} refers to an unregistered category"
   | .opaque e =>
       let category ← match state.categories.find? (·.id == e.id) with
         | some category => pure category
@@ -1482,7 +1388,6 @@ instance : FromJson RegistryManifestFunctorExpr where
 
 structure RegistryManifestCategory where
   id : String
-  canonicalName : String
   declaration : String
   realization : String
   refinementRealization : String
@@ -1491,7 +1396,6 @@ structure RegistryManifestCategory where
 
 structure RegistryManifestFamily where
   id : String
-  canonicalName : String
   schema : String
   realization : String
   transport : String
@@ -1499,17 +1403,8 @@ structure RegistryManifestFamily where
   variance : String
   deriving DecidableEq, Repr, ToJson, FromJson
 
-structure RegistryManifestAlias where
-  id : String
-  spelling : String
-  aliasOf : String
-  declaration : String
-  realization : String
-  deriving DecidableEq, Repr, ToJson, FromJson
-
 structure RegistryManifestClassifier where
   id : String
-  canonicalName : String
   host : RegistryManifestCategoryExpr
   declaration : String
   realization : String
@@ -1517,7 +1412,6 @@ structure RegistryManifestClassifier where
 
 structure RegistryManifestFunctor where
   id : String
-  canonicalName : String
   source : RegistryManifestCategoryExpr
   target : RegistryManifestCategoryExpr
   declaration : String
@@ -1547,7 +1441,6 @@ structure RegistryManifest where
   categories : Array RegistryManifestCategory
   classifiers : Array RegistryManifestClassifier
   functors : Array RegistryManifestFunctor
-  aliases : Array RegistryManifestAlias
   opaqueCategories : Array RegistryManifestOpaque
   categoryFamilies : Array RegistryManifestFamily
   source : String
@@ -1591,26 +1484,22 @@ private def registryManifest (state : RegistryState) : RegistryManifest :=
   let families := state.categoryFamilies.qsort (fun a b => a.id.raw < b.id.raw)
   let clfs := state.classifiers.qsort (fun a b => a.id.raw < b.id.raw)
   let functors := state.functors.qsort (fun a b => a.id.raw < b.id.raw)
-  let aliases := state.aliases.qsort (fun a b => a.id.raw < b.id.raw)
   let opaqueEntries := state.opaqueCategories.qsort (fun a b => a.id.raw < b.id.raw)
   { schemaVersion := "0.2.0-ids"
     categories := cats.map fun e => {
-      id := e.id.raw, canonicalName := e.canonicalName, declaration := e.declaration.toString,
+      id := e.id.raw, declaration := e.declaration.toString,
       realization := e.realization.toString,
       refinementRealization := e.refinementRealization.map Lean.Name.toString |>.getD "",
       expression := registryManifestCategoryExpr e.expression }
     classifiers := clfs.map fun e => {
-      id := e.id.raw, canonicalName := e.canonicalName,
+      id := e.id.raw,
       host := registryManifestCategoryExpr e.host, declaration := e.declaration.toString,
       realization := e.realization.toString }
     functors := functors.map fun e => {
-      id := e.id.raw, canonicalName := e.canonicalName,
+      id := e.id.raw,
       source := registryManifestCategoryExpr e.source, target := registryManifestCategoryExpr e.target,
       declaration := e.declaration.toString, realization := e.realization.toString,
       expression := registryManifestFunctorExpr e.expression }
-    aliases := aliases.map fun e => {
-      id := e.id.raw, spelling := e.spelling, aliasOf := e.aliasOf.raw,
-      declaration := e.declaration.toString, realization := e.realization.toString }
     opaqueCategories := opaqueEntries.map fun e => {
       id := e.id.raw, declaration := e.declaration.toString, realization := e.realization.toString,
       reason := e.reason,
@@ -1619,7 +1508,7 @@ private def registryManifest (state : RegistryState) : RegistryManifest :=
         target := registryManifestCategoryExpr p.target, declaration := p.declaration.toString,
         realization := p.realization.toString, provenance := p.provenance } }
     categoryFamilies := families.map fun e => {
-      id := e.id.raw, canonicalName := e.canonicalName,
+      id := e.id.raw,
       schema := registryManifestSchema e.schema,
       realization := e.realization.toString, transport := e.transport.toString,
       parameters := e.schema.parameterMetadata.map fun parameter => {
