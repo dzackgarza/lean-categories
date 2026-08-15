@@ -58,6 +58,19 @@ Current work: `#33` through `#36`, and milestone `#51`.
 ### Standard lexicon
 
 - [ ] [Dummit and Foote, Chapters 10-12 and 16](.agents/references/dummit-and-foote-definition-catalogue.md)
+  - [ ] Chapter 10: modules and submodules — `Module`, `Submodule`
+  - [ ] Chapter 10: quotient modules — `Submodule.Quotient`
+  - [ ] Chapter 10: linear maps and linear equivalences — `LinearMap`, `LinearEquiv`
+  - [ ] Chapter 10: generated and finitely generated modules — `Submodule.span`,
+    `Module.Finite`
+  - [ ] Chapter 10: direct sums and products — `DirectSum`, `ModuleCat` limits and colimits
+  - [ ] Chapter 10: free modules and bases — `Module.Free`, `Basis`
+  - [ ] Chapter 10: tensor products — `TensorProduct`, `ModuleCat.Monoidal`
+  - [ ] Chapter 10: exact sequences — `Function.Exact`, homological-complex exactness
+  - [ ] Chapter 10: projective, injective, and flat modules — `Module.Projective`,
+    `Module.Injective`, `Module.Flat`
+  - [ ] Implement only unmatched mathematical residue needed by repository declarations;
+    use the canonical Mathlib declarations directly for every matched term
   — modules, tensor products, exact sequences, bases, duals, determinants, torsion
   modules, discrete valuation rings, Dedekind domains, and fractional ideals.
 - [ ] [Atiyah and Macdonald, Chapters 2-3, 5, and 9-10](.agents/references/atiyah-and-macdonald-definition-catalogue.md)
