@@ -38,7 +38,7 @@ namespace IsRightHereditary
 division ring is right hereditary (Weibel p. 95: "any principal ideal domain ...
 is hereditary, as is any commutative Dedekind domain", and a fortiori any
 division ring). -/
-instance (priority := 100) of_divisionRing (R : Type*) [DivisionRing R] : IsRightHereditary R := by
+theorem of_divisionRing (R : Type*) [DivisionRing R] : IsRightHereditary R := by
   intro I
   exact Module.Projective.of_basis (Module.Basis.ofVectorSpace Rᵐᵒᵖ I)
 
