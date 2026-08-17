@@ -59,6 +59,7 @@ public import LeanCategories.Homological
 public import LeanCategories.Homological.IsHereditary
 public import LeanCategories.Homological.IsQuasiFrobenius
 public import LeanCategories.Homological.GlobalDimension
+public import LeanCategories.Homological.Extensions
 public import LeanCategories.Foundation.Mathlib
 public import LeanCategories.Foundation.Sets
 public import LeanCategories.Modules.Mathlib
