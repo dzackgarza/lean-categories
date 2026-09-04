@@ -42,7 +42,17 @@ category remains open. No matrix, Gram, or determinant comparison is claimed com
 
 Scheme theory, stacks, manifolds, and period constructions remain roadmap targets.
 Issues #38, #39, and #40 own their prerequisite order. No placeholder source represents
-those domains.
+those domains. Foundational corpus v1 is frozen in mathematical dependency order and developed
+in four separate passes: catalogue every formal source unit; exhaustively map every unit against
+Mathlib and the broader Lean ecosystem; realize the remaining definitional layer at its correct
+categorical owners; then formalize the remaining source lemmas and theorems. Only units that
+survive the mapping sweep as genuinely unmatched are greenfield formalization. The theorem pass
+is deliberately independent so long proof programmes do not freeze growth of the mathematical
+DSL. [`TODO.md`](TODO.md), the
+[frozen source/extraction manifest](.agents/references/foundational-source-corpus.md), the
+[central four-phase status ledger](.agents/references/foundational-corpus-status.md), and
+[FEATURE-FOUNDATIONAL-CORPUS](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/FEATURE-FOUNDATIONAL-CORPUS.md)
+own the current corpus execution state.
 
 Sage observation, method exposure, backend routing, and runnable parity belong to
 [`dzackgarza/lean-cas-dsl`](https://github.com/dzackgarza/lean-cas-dsl). Sage labels and

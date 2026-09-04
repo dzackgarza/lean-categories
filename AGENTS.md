@@ -254,6 +254,42 @@ Keep a high-level plan as a horizon when useful. Add prerequisite plans below it
 
 A floating declaration with an advanced name is not a partial formalization. It is an unsupported assertion about an undefined object.
 
+### Sweep a fixed standard corpus four times
+
+Do not discover the foundational curriculum one downstream consumer at a time. Freeze a finite,
+dependency-ordered source corpus first, with exact editions/scopes and a chosen topological order
+of the mathematical prerequisite graph. Then traverse the **same source-unit IDs** in four
+independent sequential plans.
+
+1. **Catalogue sweep.** Inventory every formal mathematical unit in every admitted source:
+   definitions, constructions, notation/conventions, lemmas, propositions, theorems,
+   corollaries, and reusable named examples/comparisons. Record exact source location, kind,
+   hypotheses/data, and source-unit dependencies. Do not consult Lean coverage to decide whether
+   a mathematical unit deserves a row.
+2. **Lean-ecosystem mapping sweep.** Only after the catalogue is complete, search every unit
+   against pinned and upstream Mathlib, open Mathlib work, Loogle/LeanSearch, Reservoir, the local
+   source atlas, **broad GitHub search across all discoverable Lean repositories**, local mirrors,
+   and statement banks. Inspect actual declarations and hypotheses. Classify the unit as
+   `mathlib`, `project-existing`, `package-import`, `reference-port`, or `unmatched`, recording
+   exact repo/commit/path/declaration/license/toolchain provenance. Import usable packages; when
+   Lean code exists but is not directly importable, preserve it as a reference implementation to
+   port/adapt. Only `unmatched` units are greenfield mathematics.
+3. **Definition sweep.** Traverse every definitional unit using its mapping. Reuse canonical
+   owners directly, port reference implementations rather than rederive them, and author new
+   mathematics only for unmatched units. Place every notion at its correct categorical owner,
+   defining any missing categories, morphism classes, functors, or universal constructions.
+   Prove only what is intrinsic to well-definedness and categorical laws.
+4. **Theorem sweep.** Only after the definitional sweep, traverse the catalogue's non-definitional
+   units, again reusing the mapping first. This is an independent, potentially very long
+   programme. It must not shrink the definition sweep or delay unrelated vocabulary merely
+   because a proof is hard.
+
+The corpus order itself is part of the architecture: for example modules precede localization of
+modules, generic category/functor language precedes later categorical placement, and generic
+homological objects precede subject-specific instances. Completion of the definition sweep is
+what establishes the reusable DSL vocabulary. A consumer that genuinely uses an unproved theorem
+must depend on that theorem specifically; the entire theorem corpus is not its prerequisite.
+
 ### Unfold compressed mathematical insight
 
 An advisor can express a large structure through one short question. Treat the question as mathematical evidence, not patch instructions.
@@ -415,9 +451,10 @@ These architectures are prohibited:
 - per-search notes, residue ledgers, or route cards that duplicate textbook catalogues or
   `TODO.md`.
 
-Search before authorship is an internal implementation step, not a deliverable. The catalogue
-owns term names and source locations. `TODO.md` owns active work. Record a dependency route only
-when a consumer needs information not recoverable from the canonical declaration or import.
+For foundational-corpus work, search is a **corpus-wide Sweep-II deliverable**, not a private
+per-consumer action. Sweep I owns mathematical source units; Sweep II owns the reproducible Lean
+mapping/provenance for every unit; `TODO.md` owns active execution. Do not create extra local
+route notes that compete with those two canonical records.
 
 ### Treat compilation as a structural check
 
@@ -433,41 +470,36 @@ Also identify its predicates, universal properties, and relationship to existing
 
 Sections 4.3–4.4 and 10.2 give the *principle* (novelty bias, false gaps, mathematical home); this is the *procedure*, and it is a hard gate. **Do not author a new definition, structure, class, or instance until you have searched for an existing one, and if you still write your own, related it to what exists.** The measure of good foundational work is accidental freedom removed (§0); the cheapest way to remove it is to not re-derive what Mathlib or a prior formalization already owns. Minimal reinvention, maximal integration-compatibility with Mathlib, is the standing default — reinvention is the failure mode, never the first move.
 
-Before writing any construct, in order:
+Before writing any **foundational-corpus** construct, in order:
 
-1. **Search Mathlib first — it is the default home.** The repo pins Mathlib in `.lake/packages/mathlib`; that tree is ground truth for the exact version we build against. Search it directly (`rg` the source) and via Loogle / LeanSearch / the Mathlib docs before concluding anything is missing. **Prefer Mathlib's formulation whenever it is at least as general** (ledger #1 ruling) — do not fork a narrower parallel definition.
-   - A missing *exact name* is not a missing construction (§4.4). Standard mathematics is usually a composition of what Mathlib already has: categories of elements, comma/slice categories, full subcategories, pullbacks, cores, sections, equivalences, adjunctions, essential images. Build from those.
-   - Every work-unit issue carries a verified **"Mathlib reuse"** comment (reuse / extend / genuinely-absent, each with `Namespace.Decl` + file path, checked against the pinned version). That is your starting inventory: reuse the "reuse" tier directly, extend the "extend" tier, and only the "genuinely-absent" tier is new authorship. Keep those comments current as Mathlib moves.
+1. **Require a Sweep-I source unit.** The mathematical unit must already belong to the frozen
+   corpus catalogue with a stable ID, source location, kind, hypotheses/data, and dependencies.
+   Do not invent scope from implementation searches or downstream demand.
 
-2. **Then search prior formalizations — the [Formalization source registry](#formalization-source-registry) below is the mandatory search surface.** If Mathlib lacks it, check whether it has been formalized elsewhere *before* writing your own: in-flight Mathlib PRs, the registry's repositories, and other proof-assistant developments. When a reference implementation exists, **use it** — import if it is packaged and licensed, otherwise port/adapt it and cite the source — rather than reinventing.
-   - **Treat [`leanprover-community/mathlib4`](https://github.com/leanprover-community/mathlib4) as the canonical upstream repository.** The pinned `.lake/packages/mathlib` checkout remains the version that controls imports and available declarations. Use the GitHub repository to inspect current upstream work, pull requests, and source history.
-   - **Search [Lean Reservoir](https://reservoir.lean-lang.org/) before a general GitHub search.** Reservoir indexes public Lake packages across the Lean ecosystem. Search package names, descriptions, dependencies, and source repositories for the mathematical term and its standard synonyms.
-   - **Search every registry repository whose subject intersects the requested term, and always the statement banks.** Record the exact repository, declaration, and file used. External definitions remain reference implementations until their types, hypotheses, and mathematical meaning agree with this project's required object.
+2. **Require its Sweep-II mapping.** Search pinned Mathlib first, then current upstream Mathlib
+   and open work, Loogle/LeanSearch/docs, Lean Reservoir, and the formalization source atlas.
+   Then search GitHub broadly across all discoverable Lean repositories rather than stopping at
+   the curated registry. Search names, synonyms, source theorem names, and expected type shapes.
+   Open candidate code and compare mathematical generality and hypotheses.
 
-3. **Catalogue a standard source before greenfield theory.** If no suitable catalogue
-   exists, assign a subagent to create one before new mathematical authorship. Prefer a
-   standard source in the live Zotero library. An arXiv paper or internet source is
-   acceptable when the catalogue gives a careful bibliographic citation. Catalogue the
-   names of fundamental definitions by chapter or section. Give a usable Markdown line,
-   section, definition number, or PDF page for each term. Do not copy statements or
-   proofs. Store the result in the project vault.
+3. **Reuse before authorship.** A Mathlib or existing project route is used directly. An
+   importable external package is imported. A non-importable Lean implementation is preserved
+   with exact repository/commit/path/license provenance and ported/adapted from that reference.
+   Only a unit with a completed `unmatched` mapping record is eligible for genuinely new Lean
+   mathematics.
 
-   Existing catalogues:
+4. **Then realize the definition at its mathematical owner.** A new construct with no stated
+   relationship to the standard/source notion is a red flag. Reuse Mathlib's typeclasses,
+   category conventions, and morphism classes so the result composes with the library instead of
+   shadowing it. Do not create project-local aliases merely to rename dependency declarations.
 
-   - [Dummit and Foote: abstract algebra](.agents/references/dummit-and-foote-definition-catalogue.md)
-   - [Folland: real analysis](.agents/references/folland-real-analysis-definition-catalogue.md)
-   - [Ahlfors: complex analysis](.agents/references/ahlfors-complex-analysis-definition-catalogue.md)
-   - [Atiyah and Macdonald: commutative algebra](.agents/references/atiyah-and-macdonald-definition-catalogue.md)
-   - [Shafarevich: algebraic varieties](.agents/references/shafarevich-varieties-definition-catalogue.md)
-   - [Hartshorne: schemes](.agents/references/hartshorne-schemes-definition-catalogue.md)
-   - [Weibel: homological algebra](.agents/references/weibel-homological-algebra-definition-catalogue.md)
-   - [Hatcher: algebraic topology](.agents/references/hatcher-algebraic-topology-definition-catalogue.md)
-   - [Whitehead: homotopy theory](.agents/references/whitehead-homotopy-theory-definition-catalogue.md)
-   - [Apostol: analytic number theory](.agents/references/apostol-analytic-number-theory-definition-catalogue.md)
+5. **Keep search evidence in the mapping record.** The corpus catalogue owns mathematical
+   source content; Sweep II owns implementation provenance. Do not create separate ad hoc route
+   notes per downstream consumer. `unmatched` is a dated scoped negative search result, never a
+   timeless claim that no formalization exists anywhere.
 
-4. **Only then write new — and relate it to what exists.** A new construct with no stated relationship to a standard one is a red flag (§4.1, §4.4). Every new definition must, in the same PR, carry its tie to the existing world: an equivalence, comparison functor, or forgetful/instance relationship to the Mathlib **or in-repo** construction it specializes, generalizes, or sits beside. Build for **integration compatibility** — reuse Mathlib's typeclasses, category conventions, and morphism classes so the result composes with the library instead of shadowing it. (An equivalence to a standard object does not by itself legitimize a bespoke parallel hierarchy — §4.6 — but its *absence* is worse: the new object then floats free of the mathematics it claims to model.)
-
-5. **Record the search only where review requires it.** When you write new mathematics, state what you searched and why existing pieces did not suffice in the PR or owning issue. Do not create repository files, vault notes, route cards, residue ledgers, or catalogue entries merely to prove that a search occurred. "Not found in Mathlib / formal-conjectures / a reference project" is a scoped negative finding, never a claim that the mathematics does not exist.
+For genuinely new work outside the frozen corpus, the same reuse search applies, but first make
+an explicit source/corpus-scope decision rather than silently extending corpus v1.
 
 The failure this gate prevents is §4.3 and §4.4: writing a plausible new definition is faster and *feels* more productive than finding the three-line composition of existing constructions that already says it. That is not progress — it is a new maintenance surface and an avoidable comparison theorem later.
 
