@@ -290,6 +290,17 @@ homological objects precede subject-specific instances. Completion of the defini
 what establishes the reusable DSL vocabulary. A consumer that genuinely uses an unproved theorem
 must depend on that theorem specifically; the entire theorem corpus is not its prerequisite.
 
+Canonical execution records:
+
+- [.agents/references/foundational-source-corpus.md](.agents/references/foundational-source-corpus.md)
+  freezes FC01–FC12, their prerequisite order, exact editions/scopes, and verified local Markdown
+  extraction paths.
+- [.agents/references/foundational-corpus-status.md](.agents/references/foundational-corpus-status.md)
+  is the single whole-source completion ledger for Catalogue, Mapping, Definitions, and Theorems.
+- [.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/)
+  owns the four sequential plans and their handoff/output conventions. Do not maintain competing
+  per-source progress ledgers elsewhere.
+
 ### Unfold compressed mathematical insight
 
 An advisor can express a large structure through one short question. Treat the question as mathematical evidence, not patch instructions.
