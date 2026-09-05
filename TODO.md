@@ -1,5 +1,45 @@
 # Active mathematical work
 
+## Where the plans live
+
+Plans are not stored in this repository. `.agents/` is a symlink to this project's directory in
+the central agent memory vault at `/home/dzack/.agent-memory-vault`, so every `.agents/...` link
+below resolves in a local checkout and resolves nowhere on GitHub. `.hermes/` points at the same
+directory.
+
+The plan tree has three levels:
+
+```
+.agents/plans/
+├── index.md          concept index
+├── plan-dag.md       every feature, plan, phase, and task, with its dependency graph
+└── features/
+    └── FEATURE-<NAME>/
+        ├── FEATURE-<NAME>.md          the feature: scope, ordered plans, execution records
+        └── plans/
+            └── PLAN-<NAME>/
+                └── PLAN-<NAME>.md     one plan: status, dependencies, success criteria
+```
+
+To find plans:
+
+- Read [plan-dag.md](.agents/plans/plan-dag.md) for the full inventory and dependency edges.
+- List the features: `ls .agents/plans/features`.
+- Each plan file's frontmatter carries `status`, `dependsOn`, `parents`, and `successCriteria`.
+  Status is one of `unstarted`, `in-progress`, or `complete`.
+- Search the vault by name or content:
+
+  ```bash
+  agent-memory search --scope project "<plan or subsystem>"
+  ```
+
+Progress belongs to two surfaces and no others: a plan's own `status`, and the whole-source
+[corpus status ledger](.agents/references/foundational-corpus-status.md) for the four sweeps
+below. Reference material — source catalogues, mapping records, the Lean source atlas — lives in
+`.agents/references/`.
+
+## The foundational programme
+
 The foundational programme is source-based and corpus v1 is frozen. The exact editions,
 source dependencies, prerequisite rationale, and verified Markdown extraction paths live in
 [the foundational source index](.agents/references/foundational-source-corpus.md). Whole-source
@@ -56,9 +96,13 @@ Traverse `FC01` through `FC12` completely, in the frozen order. Record every for
 - admitted named examples/comparison statements;
 - exact source location, hypotheses/data, and source-unit dependencies.
 
-- [ ] Upgrade existing definition-only catalogues into complete source-unit catalogues.
-- [ ] Catalogue every source without consulting Lean coverage to decide whether a row belongs.
-- [ ] Assign stable source-unit IDs used unchanged by all later sweeps.
+- [x] Upgrade existing definition-only catalogues into complete source-unit catalogues.
+- [x] Catalogue every source without consulting Lean coverage to decide whether a row belongs.
+- [x] Assign stable source-unit IDs used unchanged by all later sweeps.
+
+Sweep I is complete for FC01–FC12: about 9,700 source units, one catalogue file per source in
+`.agents/references/foundational-corpus-units-fc*.md`. Each catalogue is faithful to its frozen
+Markdown extraction, which no phase has yet compared against the printed source.
 
 A source is not fully catalogued merely because all of its definitions have existing Lean
 routes; its theorem/lemma content still belongs to Sweep I.
@@ -67,8 +111,12 @@ routes; its theorem/lemma content still belongs to Sweep I.
 
 Plan: [PLAN-FOUNDATIONAL-CORPUS-MAPPING-SWEEP](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/plans/PLAN-FOUNDATIONAL-CORPUS-MAPPING-SWEEP/PLAN-FOUNDATIONAL-CORPUS-MAPPING-SWEEP.md).
 
-Start only after Sweep I is complete for corpus v1. For **every** source-unit ID, search existing
-Lean work before constructing any local formalization queue.
+Underway. FC01 is mapped: all 1,203 units carry a verdict in
+[the FC01 mapping record](.agents/references/foundational-corpus-mapping-fc01-dummit-foote.md).
+FC02–FC12 are unmapped.
+
+For **every** source-unit ID, search existing Lean work before constructing any local
+formalization queue.
 
 The mandatory search surface includes:
 
@@ -145,16 +193,11 @@ Sweep IV may be very long-running. Unproved theorem units remain open theorem wo
 encoded as axioms, theorem-shaped structure fields, weakened definitions, or reasons to narrow
 Sweep III.
 
-## 5. Legacy catalogue migration
+## 5. Legacy definition catalogues
 
-Existing definition catalogues are partial Sweep-I artifacts:
-
-- Dummit–Foote and Atiyah–Macdonald currently have their definition rows routed, but still need
-  complete unit catalogues.
-- Hartshorne, Weibel, Hatcher, and other existing catalogues retain useful source and preliminary
-  mapping data.
-- Munkres, Riehl, Lee, Neukirch, Serre, Peters–Sterk, and Beauville require complete Sweep-I
-  treatment where a full unit catalogue does not yet exist.
+The older per-source definition catalogues in `.agents/references/definition-catalogue-*.md` are
+superseded by the Sweep-I unit catalogues. They stay as cross-checks and mapping hints. They do
+not define source scope, and they never enlarge corpus v1.
 
 The four sweep plans, frozen source manifest, and central status ledger are collected under
 [FEATURE-FOUNDATIONAL-CORPUS](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/FEATURE-FOUNDATIONAL-CORPUS.md).
