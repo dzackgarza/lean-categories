@@ -105,12 +105,9 @@ abbrev ModuleTotal := Pseudofunctor.Grothendieck moduleFamily
 noncomputable abbrev moduleProjection : ModuleTotal.{u} ⥤ CommRingCat.{u} :=
   Pseudofunctor.Grothendieck.forget moduleFamily
 
-/-- The fixed-base module fiber. -/
-abbrev moduleFiber (R : CommRingCat.{u}) := ModuleCat.{u} R
-
 /-- Scalar extension of modules along a commutative-ring morphism. -/
 noncomputable abbrev moduleBaseChange {R S : CommRingCat.{u}} (f : R ⟶ S) :
-    moduleFiber R ⥤ moduleFiber S :=
+    ModuleCat.{u} R ⥤ ModuleCat.{u} S :=
   ModuleCat.extendScalars f.hom
 
 /-! ## Prime ideals -/
@@ -187,12 +184,9 @@ instance primeIdealBaseChangeHom_isStronglyCartesian (X : PrimeIdealTotal.{u})
     (Pseudofunctor.CoGrothendieck.cartesianLift X.fiber f)
   exact Pseudofunctor.CoGrothendieck.isStronglyCartesian_homCartesianLift X.fiber f
 
-/-- The category of commutative algebras over a fixed commutative ring. -/
-abbrev commAlgFiber (R : CommRingCat.{u}) := Under R
-
 /-- Include a fixed-base algebra fiber into the total arrow category. -/
 def commAlgFiberInclusion (R : CommRingCat.{u}) :
-    commAlgFiber R ⥤ CommAlgTotal :=
+    Under R ⥤ CommAlgTotal :=
   { obj A := CategoryTheory.Arrow.mk A.hom
     map f := CategoryTheory.Arrow.homMk (𝟙 R) f.right (by
       change Under.hom _ = Under.hom _ ≫ f.right
@@ -208,18 +202,18 @@ def commAlgFiberInclusion (R : CommRingCat.{u}) :
 
 /-- The standard tensor-product base-change functor for commutative algebras. -/
 noncomputable def commAlgBaseChange {R S : CommRingCat.{u}} (f : R ⟶ S) :
-    commAlgFiber R ⥤ commAlgFiber S :=
+    Under R ⥤ Under S :=
   letI : Algebra R S := f.hom.toAlgebra
   CommRingCat.tensorProd R S
 
 /-- The total-category object obtained by extending a commutative algebra. -/
 noncomputable abbrev commAlgBaseChangeObject {R S : CommRingCat.{u}}
-    (A : commAlgFiber R) (f : R ⟶ S) : CommAlgTotal :=
+    (A : Under R) (f : R ⟶ S) : CommAlgTotal :=
   CategoryTheory.Arrow.mk (commAlgBaseChange f |>.obj A).hom
 
 /-- The canonical base-change square for a commutative algebra arrow. -/
 noncomputable def commAlgBaseChangeHom {R S : CommRingCat.{u}}
-    (A : commAlgFiber R) (f : R ⟶ S) :
+    (A : Under R) (f : R ⟶ S) :
     CategoryTheory.Arrow.mk A.hom ⟶ commAlgBaseChangeObject A f :=
   letI : Algebra R S := f.hom.toAlgebra
   CategoryTheory.Arrow.homMk' f
@@ -241,7 +235,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- Algebra base change is strongly co-Cartesian because its defining square is Mathlib's
 tensor-product pushout. -/
 noncomputable instance commAlgBaseChangeHom_isStronglyCocartesian
-    {R S : CommRingCat.{u}} (A : commAlgFiber R) (f : R ⟶ S) :
+    {R S : CommRingCat.{u}} (A : Under R) (f : R ⟶ S) :
     IsStronglyCocartesian commAlgProjection f (commAlgBaseChangeHom A f) := by
   letI : Algebra R S := f.hom.toAlgebra
   have hbaseleft : (commAlgBaseChangeHom A f).left = f := CommRingCat.hom_ext rfl
@@ -323,7 +317,7 @@ noncomputable instance commAlgBaseChangeHom_isStronglyCocartesian
           exact (hp.inr_desc (g ≫ B.hom) φ.right hw).symm
 
 /-- The underlying algebra object of a commutative-algebra fiber object. -/
-abbrev commAlgCarrier {R : CommRingCat.{u}} (A : commAlgFiber R) : Type u := A.right
+abbrev commAlgCarrier {R : CommRingCat.{u}} (A : Under R) : Type u := A.right
 
 /-! ## Base-change morphisms for covariant pseudofamilies -/
 
