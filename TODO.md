@@ -111,7 +111,7 @@ routes; its theorem/lemma content still belongs to Sweep I.
 
 Plan: [PLAN-FOUNDATIONAL-CORPUS-MAPPING-SWEEP](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/plans/PLAN-FOUNDATIONAL-CORPUS-MAPPING-SWEEP/PLAN-FOUNDATIONAL-CORPUS-MAPPING-SWEEP.md).
 
-Underway. FC01 is mapped: all 1,203 units carry a verdict in
+Underway. FC01 is mapped: all 1,234 units carry a verdict in
 [the FC01 mapping record](.agents/references/foundational-corpus-mapping-fc01-dummit-foote.md).
 FC02–FC12 are unmapped.
 
