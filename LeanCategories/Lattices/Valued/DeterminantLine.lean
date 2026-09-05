@@ -113,6 +113,7 @@ private theorem adjoint_naturality
   intro x
   exact discriminantValueDualEquiv_adjoint (integralLatticeIso e) x
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The intrinsic discriminant ideal is invariant under lattice isomorphism. -/
 theorem intrinsicDiscriminantIdeal_eq_of_iso
     {L M : FiniteProjectiveLatticeCat R R} (e : L ≅ M) :

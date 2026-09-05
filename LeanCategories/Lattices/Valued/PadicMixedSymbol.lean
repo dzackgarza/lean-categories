@@ -61,6 +61,7 @@ theorem norm_one_sub_mul_sq_eq_one (hp : p ≠ 2) {u : ℤ_[p]} (hu : ‖u‖ = 
   field_simp
   linear_combination -h
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- For odd `p` and a non-square `p`-adic unit `u`, every value `a ² - u b ²` of the norm
 form of `ℚ_[p](√u)`, with `a` and `b` not both zero, is a square times a unit. -/
 theorem exists_sq_mul_unit_eq_normForm (hp : p ≠ 2) {u : ℤ_[p]} (hu : ‖u‖ = 1)

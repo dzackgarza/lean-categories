@@ -348,6 +348,7 @@ noncomputable def finiteAdeleCarrierIsometryLinearEquiv
     (finiteAdeleLocalIsometryLinearEquiv K e).trans
       (finiteAdeleLocalCarrierAlgEquiv K M).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem finiteAdeleLocalCarrierAlgEquiv_apply_carrierIsometry
     {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
@@ -482,6 +483,7 @@ theorem finiteAdeleLocalCarrierEquiv_map_globalIso_single_apply
       finiteAdeleLocalLinearEquivOfIso K e v x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The restriction of an integral finite adelic isomorphism preserves the local form. -/
 theorem finiteAdeleLocalLinearEquivOfIso_pairing
     {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
@@ -701,6 +703,7 @@ noncomputable def ringAdeleIntegralFiniteLinearEquivOfIso
   LinearEquiv.prodRingRight _ _ _ _ _ _
     (ringAdeleComponentCarrierLinearEquivOfIso K e)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The infinite restriction preserves the scalar-extended form. -/
 theorem ringAdeleInfiniteLinearEquivOfIso_pairing
     {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}
@@ -728,6 +731,7 @@ theorem ringAdeleInfiniteLinearEquivOfIso_pairing
     BilinModuleCat.linearEquivOfIso_apply] using
       congrArg Prod.fst h
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The integral finite restriction preserves the scalar-extended form. -/
 theorem ringAdeleIntegralFiniteLinearEquivOfIso_pairing
     {L M : FiniteProjectiveLatticeCat (𝓞 K) (𝓞 K)}

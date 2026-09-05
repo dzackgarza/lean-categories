@@ -384,6 +384,7 @@ def toIntegralImage (L : IntegralLatticeCat R) :
     L.obj.carrier →ₗ[R] integralImage R L :=
   (toRationalSpan R L).rangeRestrict
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A metric-dual vector defines an `R`-linear functional by integral pairing. -/
 noncomputable def metricDualToValueDual (L : IntegralLatticeCat R) :
     metricDual R L →ₗ[R] L.obj.valueDual where
@@ -522,6 +523,7 @@ noncomputable def metricDualLattice (L : IntegralLatticeCat R)
   exact ⟨Module.Projective.of_equiv' (rieszMetricDualEquiv R L hL),
     metricDualBilinObject_isSymmetric R L⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The inclusion `L → L♯` preserves the `Frac(R)`-valued forms. -/
 noncomputable def toMetricDualBilin (L : IntegralLatticeCat R) :
     (fractionValuedLattice R L).obj ⟶ metricDualBilinObject R L := by
@@ -549,6 +551,7 @@ noncomputable def metricDualSymBilWFormObject (L : IntegralLatticeCat R) : SymBi
   ⟨⟨ModuleCat.of R (FractionRing R), metricDualBilinObject R L⟩,
     metricDualBilinObject_isSymmetric R L⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The inclusion into the metric dual, with values changed from `R` to `Frac(R)`. -/
 noncomputable def toMetricDualSymBilWForm (L : IntegralLatticeCat R) :
     integralSymBilWFormObject R L ⟶ metricDualSymBilWFormObject R L :=

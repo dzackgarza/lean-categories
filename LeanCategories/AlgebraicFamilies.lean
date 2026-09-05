@@ -51,6 +51,7 @@ abbrev commAlgProjection : CommAlgTotal.{u} ⥤ CommRingCat.{u} :=
 
 /-! ## Ideals -/
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The strict fiber functor of all ideals under ideal extension. -/
 def idealFamilyFunctor : CommRingCat.{u} ⥤ Cat.{u, u} where
   obj R := LeanCategories.Algebra.Ideals R
@@ -123,6 +124,7 @@ def primeIdealComapFunctor {R S : CommRingCat.{u}} (f : R ⟶ S) :
     letI : ((LeanCategories.Algebra.primeIdealIncl S).obj I).IsPrime := I.2
     exact Ideal.IsPrime.comap f.hom
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The strict contravariant fiber functor of prime ideals. -/
 def primeIdealFamilyFunctor : CommRingCat.{u}ᵒᵖ ⥤ Cat.{u, u} where
   obj R := Cat.of (LeanCategories.Algebra.PrimeIdealCat R.unop)
@@ -235,6 +237,7 @@ noncomputable def commAlgBaseChangeHom {R S : CommRingCat.{u}}
           (Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap
             (R := R) (A := S) (B := A.right)))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Algebra base change is strongly co-Cartesian because its defining square is Mathlib's
 tensor-product pushout. -/
 noncomputable instance commAlgBaseChangeHom_isStronglyCocartesian

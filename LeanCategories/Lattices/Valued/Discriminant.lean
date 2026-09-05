@@ -56,6 +56,7 @@ noncomputable def discriminantSymBilWFormIsCokernel (L : IntegralLatticeCat R) :
     IsColimit (SymBilWFormCat.cokernelCofork (toMetricDualSymBilWForm R L)) :=
   SymBilWFormCat.cokernelIsColimit (toMetricDualSymBilWForm R L)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The value relations in the discriminant cokernel are exactly the image of `R`. -/
 theorem discriminantValueRelations_eq (L : IntegralLatticeCat R) :
     BilWFormCat.cokernelValueRelations (toMetricDualSymBilWForm R L).hom =
@@ -741,6 +742,7 @@ noncomputable def discriminantCarrierEquivDefect (L : IntegralLatticeCat R)
       (LinearMap.quotKerEquivOfSurjective (metricDualToDiscriminant R L)
         (metricDualToDiscriminant_surjective R L hL))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The comparison sends the class of a metric-dual element to its defect class. -/
 @[simp]
 theorem discriminantCarrierEquivDefect_apply (L : IntegralLatticeCat R)

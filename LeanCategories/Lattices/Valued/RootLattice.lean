@@ -98,6 +98,7 @@ theorem isPositiveDefiniteLattice_opposite (L : FiniteProjectiveLatticeCat ℤ �
   simp only [IsPositiveDefiniteSignature, IsNegativeDefiniteSignature]
   tauto
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Negating the form negates the value that a level set records. -/
 theorem representationSet_opposite (L : FiniteProjectiveLatticeCat ℤ ℤ) (n : ℤ) :
     (oppositeFiniteProjectiveLattice L).representationSet n = L.representationSet (-n) := by

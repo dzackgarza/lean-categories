@@ -162,6 +162,7 @@ noncomputable def glueSubgroup (M : Overlattice R L) :
     Submodule R L.obj.defect :=
   LinearMap.range ((metricDualToDiscriminant R L).comp M.toMetricDual)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem glueSubgroup_isTotallyIsotropic (M : Overlattice R L) :
     (discriminantBilinObject R L hL).IsTotallyIsotropic
       M.glueSubgroup := by

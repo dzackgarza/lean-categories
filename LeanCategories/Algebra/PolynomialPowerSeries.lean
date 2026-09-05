@@ -24,6 +24,7 @@ universe u
 /-- The discrete fiber of polynomial elements over a commutative ring. -/
 abbrev PolynomialFiber (R : CommRingCat.{u}) := Discrete (Polynomial R)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The polynomial-element family over `CommRingCat`, using `Polynomial.map`. -/
 noncomputable def polynomialFamily : CommRingCat.{u} ⥤ Cat.{u, u} where
   obj R := Cat.of (PolynomialFiber R)
@@ -122,6 +123,7 @@ noncomputable abbrev polynomialDerivativeFunctor : PolynomialTotalCat.{u} ⥤ Po
 /-- The discrete fiber of power-series elements over a commutative ring. -/
 abbrev PowerSeriesFiber (R : CommRingCat.{u}) := Discrete (PowerSeries R)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The power-series-element family over `CommRingCat`, using `PowerSeries.map`. -/
 noncomputable def powerSeriesFamily : CommRingCat.{u} ⥤ Cat.{u, u} where
   obj R := Cat.of (PowerSeriesFiber R)

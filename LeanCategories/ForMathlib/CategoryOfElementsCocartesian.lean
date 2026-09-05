@@ -17,6 +17,7 @@ universe w v u
 
 variable {C : Type u} [Category.{v} C]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The morphism from an element to its image under `F.map f` is strongly co-Cartesian
 over `f` for the category-of-elements projection.
 

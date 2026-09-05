@@ -101,6 +101,7 @@ noncomputable def gramMatrix {I : Type*} [Fintype I] [DecidableEq I]
     (b : Module.Basis I R L.obj.carrier) : Matrix I I R :=
   LinearMap.BilinForm.toMatrix b L.obj.bilinMap
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem gramMatrix_opposite {I : Type*} [Fintype I] [DecidableEq I]
     (L : IntegralLatticeCat R)
@@ -277,6 +278,7 @@ theorem orthogonalSum_pairing (L₁ L₂ : LatticeCat R W)
       L₁.obj.pairing x.1 y.1 + L₂.obj.pairing x.2 y.2 :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The product basis gives a block Gram matrix for an orthogonal sum. -/
 theorem gramMatrix_orthogonalSum
     {I J : Type*} [Fintype I] [Fintype J]
@@ -293,6 +295,7 @@ theorem gramMatrix_orthogonalSum
   cases i <;> cases j <;>
     simp [gramMatrix, LinearMap.BilinForm.toMatrix_apply]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Gram determinants multiply under orthogonal sums. -/
 theorem determinant_orthogonalSum
     {I J : Type*} [Fintype I] [Fintype J]
@@ -306,6 +309,7 @@ theorem determinant_orthogonalSum
     Matrix.det_fromBlocks_zero₂₁]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Determinant ideals multiply under orthogonal sums. -/
 theorem determinantIdeal_orthogonalSum
     {I J : Type*} [Fintype I] [Fintype J]
@@ -504,6 +508,7 @@ noncomputable def finiteProjectiveOrthogonalPowerSuccIso
   exact ObjectProperty.isoMk
     (P := isFiniteProjectiveLattice R W) eLattice
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A finite indexed orthogonal sum of perfect lattices is perfect. -/
 theorem isPerfect_indexedOrthogonalSum {I : Type} [Fintype I]
     (L : I → IntegralLatticeCat R) (hL : ∀ i, (L i).obj.IsPerfect) :

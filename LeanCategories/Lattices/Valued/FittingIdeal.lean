@@ -61,6 +61,7 @@ private theorem fitting_adjoint_naturality
   intro x
   exact discriminantValueDualEquiv_adjoint (fittingLatticeIso e) x
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- One half of the invariance of the Fitting ideal under lattice isomorphism. -/
 private theorem fittingDiscriminantIdeal_le_of_iso
     {L M : FiniteProjectiveLatticeCat R R} (e : L ≅ M) :

@@ -42,15 +42,7 @@ noncomputable def discreteFamilyTransport {P : Type uParam}
     (fibre : P → ObjCat.{uObj, uHom}) :
     Pseudofunctor (LocallyDiscrete (Discrete P)ᵒᵖ)
       (Cat.{uHom, max uObj uHom}) :=
-  LocallyDiscrete.mkPseudofunctor
-    (fun parameter => fibre parameter.unop.as)
-    (fun {source target} map => eqToHom
-      (congrArg fibre (Discrete.eq_of_hom map.unop).symm))
-    (fun _ => eqToIso (by simp))
-    (fun _ _ => eqToIso (by simp))
-    (by intros; simp)
-    (by intros; simp)
-    (by intros; simp)
+  Functor.toPseudofunctor' ((Discrete.opposite P).functor ⋙ Discrete.functor fibre)
 
 /-- An actual parameterized family assigned to a family identifier. -/
 structure CategoryFamilyRealization (identifier : CategoryFamilyId)

@@ -112,10 +112,8 @@ theorem hilbertSymbol_units_eq_one {p : ℕ} [Fact p.Prime] (hp : p ≠ 2) (u v 
     exact zero_ne_one hz
   rw [hilbertSymbol, if_neg (by simp [hu0, hv0]), if_pos]
   refine ⟨(z : ℚ_[p]), (x : ℚ_[p]), (y : ℚ_[p]), by simp [hz0], ?_⟩
-  have hcast : ((z ^ 2 : ℤ_[p]) : ℚ_[p]) =
-      ((⟨u, le_of_eq hu⟩ * x ^ 2 + ⟨v, le_of_eq hv⟩ * y ^ 2 : ℤ_[p]) : ℚ_[p]) := by
-    rw [hsq]
-  push_cast at hcast
+  have hcast : (z : ℚ_[p]) ^ 2 = u * (x : ℚ_[p]) ^ 2 + v * (y : ℚ_[p]) ^ 2 :=
+    congrArg (fun t : ℤ_[p] => (t : ℚ_[p])) hsq
   linear_combination hcast
 
 namespace Padic

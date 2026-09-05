@@ -92,6 +92,7 @@ theorem mem_hyperbolicLagrangian_iff
     x ∈ hyperbolicLagrangian K M ↔ x.2 = 0 :=
   Iff.rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The standard hyperbolic submodule is Lagrangian. -/
 theorem hyperbolicLagrangian_isLagrangian :
     (hyperbolicBilinModule K M).IsLagrangian

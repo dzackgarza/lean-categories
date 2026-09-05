@@ -173,6 +173,7 @@ theorem lipschitzAction_eq_reflection (L : FiniteFormCat K K)
   rw [show g = ⟨cliffordVectorUnit L v hv, cliffordVectorUnit_mem_lipschitzGroup L v hv⟩ from
     Subtype.ext hg, lipschitzAction_cliffordVectorUnit]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The Lipschitz action preserves the pairing.
 
 The isometries form a subgroup, so it is enough to check the vector generators, where the

@@ -38,6 +38,7 @@ instance isHomLift_cocartesianLift :
     IsHomLift (forget F) f (cocartesianLift a f) :=
   IsHomLift.map (forget F) (cocartesianLift a f)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable {a} in
 /-- The canonical factorization through a cocartesian lift. -/
@@ -48,6 +49,7 @@ abbrev homCocartesianLift {b' : ∫ F} (g : S ⟶ b'.base) (φ' : ⟨R, a⟩ ⟶
     have : φ'.base = f ≫ g := by simpa using IsHomLift.fac' (forget F) (f ≫ g) φ'
     (F.mapComp f.toLoc g.toLoc).inv.toNatTrans.app a ≫ eqToHom (by simp [this]) ≫ φ'.fiber
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance isHomLift_homCocartesianLift {b' : ∫ F} {g : S ⟶ b'.base}
     {φ' : ⟨R, a⟩ ⟶ b'} [IsHomLift (forget F) (f ≫ g) φ'] :
     IsHomLift (forget F) g (homCocartesianLift f g φ') :=
@@ -89,6 +91,7 @@ instance isHomLift_cocartesianLift :
     IsHomLift (forget F) f (cocartesianLift a f) :=
   IsHomLift.map (forget F) (cocartesianLift a f)
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {a} in
 /-- The canonical factorization through a strict Grothendieck cocartesian lift. -/
 abbrev homCocartesianLift {b' : Grothendieck F} (g : S ⟶ b'.base)
@@ -100,6 +103,7 @@ abbrev homCocartesianLift {b' : Grothendieck F} (g : S ⟶ b'.base)
       simpa [forget] using IsHomLift.fac' (forget F) (f ≫ g) φ'
     eqToHom (by rw [h, ← Cat.Hom.comp_obj, ← F.map_comp]) ≫ φ'.fiber
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance isHomLift_homCocartesianLift {b' : Grothendieck F} {g : S ⟶ b'.base}
     {φ' : (⟨R, a⟩ : Grothendieck F) ⟶ b'} [IsHomLift (forget F) (f ≫ g) φ'] :
     IsHomLift (forget F) g (homCocartesianLift f g φ') :=

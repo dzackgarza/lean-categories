@@ -116,6 +116,7 @@ theorem anisotropicValue_congr {L M : FiniteFormCat K K} (e : L ≅ M)
     anisotropicValue M (anisotropicCongr e v) = anisotropicValue L v :=
   Units.ext (BilinModuleCat.linearEquivOfIso_pairing _ _ _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An isometry carries a reflection to the reflection in the image vector. -/
 theorem orthogonalCongr_reflectionOf {L M : FiniteFormCat K K} (e : L ≅ M)
     (v : AnisotropicVector L) :
@@ -387,6 +388,7 @@ theorem padicComparison_spinorNorm_eq_one {L M : FiniteProjectiveLatticeCat ℤ 
   MonoidHom.mem_ker.mp
     (spinorKernelSubgroup_le_spinorKernel (PadicFieldForm p L) ν w.spinorTrivial)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The identity is the scalar extension of the identity. -/
 theorem isPadicScalarExtensionOf_refl (p : ℕ) [Fact p.Prime]
     (L : FiniteProjectiveLatticeCat ℤ ℤ) :
@@ -395,6 +397,7 @@ theorem isPadicScalarExtensionOf_refl (p : ℕ) [Fact p.Prime]
   intro x
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The identity is the completion extension of the identity. -/
 theorem isPadicCompletionExtensionOf_refl (p : ℕ) [Fact p.Prime]
     (L : FiniteProjectiveLatticeCat ℤ ℤ) :
@@ -437,6 +440,7 @@ theorem isPadicCompletionExtensionOf_trans (p : ℕ) [Fact p.Prime]
     ((finiteProjectiveForget ℤ_[p] ℤ_[p]).mapIso e₂).toLinearEquiv.toLinearMap
     ((finiteProjectiveForget ℚ_[p] ℚ_[p]).mapIso f₂).toLinearEquiv.toLinearMap h₂ _
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Inverses of scalar extensions are scalar extensions of inverses. -/
 theorem isPadicScalarExtensionOf_symm (p : ℕ) [Fact p.Prime]
     {L M : FiniteProjectiveLatticeCat ℤ ℤ}
@@ -462,6 +466,7 @@ theorem isPadicScalarExtensionOf_symm (p : ℕ) [Fact p.Prime]
         (((finiteProjectiveForget ℚ ℚ).mapIso e).toLinearEquiv.symm (1 ⊗ₜ[ℤ] y))) = 1 ⊗ₜ[ℤ] y
   rw [happ, TensorProduct.AlgebraTensorModule.cancelBaseChange_tmul, one_smul]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Inverses of completion extensions are completion extensions of inverses. -/
 theorem isPadicCompletionExtensionOf_symm (p : ℕ) [Fact p.Prime]
     {L M : FiniteProjectiveLatticeCat ℤ ℤ}

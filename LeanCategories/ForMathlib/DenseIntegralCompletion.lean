@@ -137,7 +137,7 @@ theorem comap_pow_maximalIdeal_adicCompletionIntegers (n : ℕ) :
       ⟨(ϖ : v.adicCompletion K), hϖval⟩
   have hϖ : (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).IsUniformizer ϖ := by
     rw [Valuation.IsUniformizer.iff, hgen]
-    simpa only [Units.val_mk0] using hϖval
+    exact hϖval
   change ((IsLocalRing.maximalIdeal
     (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).valuationSubring ^ n).comap
       f) = v.asIdeal ^ n
@@ -150,7 +150,7 @@ theorem comap_pow_maximalIdeal_adicCompletionIntegers (n : ℕ) :
           (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).valuationSubring) :
             v.adicCompletion K) := by
     change f x ∈ (Ideal.span {ϖ ^ n} : Set _) ↔ _
-    exact Set.ext_iff.mp (Valuation.integer.coe_span_singleton_eq_setOf_le_v_coe
+    exact Set.ext_iff.mp (Valuation.integer.coe_span_singleton_eq_setOfPred_le_v_coe
       (ϖ ^ n)) (f x)
   rw [hspan]
   rw [show Valued.v (f x : v.adicCompletion K) = v.intValuation x by

@@ -470,6 +470,7 @@ theorem integralSignature_eq_matrixSignature {I : Type*} [Fintype I]
   rw [signature_eq_matrixSignature ℝ M bℝ]
   exact congrArg (matrixSignature ℝ) hMatrix
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The product basis gives the block Gram matrix of an orthogonal sum. -/
 theorem gramMatrix_finiteProjectiveOrthogonalSum
     {I J : Type*} [Fintype I] [Fintype J]

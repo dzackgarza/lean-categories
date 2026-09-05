@@ -368,6 +368,7 @@ theorem primaryComponent_isNondegenerate [IsDedekindDomain R]
   change (A.obj.adjoint x.1) z - (A.obj.adjoint y.1) z = 0 at hz
   exact sub_eq_zero.mp hz
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A height-one primary restriction of a perfect torsion form is perfect. -/
 theorem primaryComponent_isPerfect [IsDedekindDomain R]
     (A : FiniteTorsionSymBilinModuleCat R W)

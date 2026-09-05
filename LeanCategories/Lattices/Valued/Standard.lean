@@ -16,6 +16,7 @@ public import Mathlib.LinearAlgebra.Basis.Prod
 public import Mathlib.LinearAlgebra.Matrix.Notation
 
 @[expose] public section
+set_option backward.isDefEq.respectTransparency.types false
 
 open LeanCategories.Modules.Bilinear.Valued
 
@@ -207,7 +208,7 @@ private theorem aRootLeadingMatrix_lowerTriangular (n : ℕ) :
 
 theorem aRootLeadingMatrix_det (n : ℕ) :
     (aRootLeadingMatrix n).det = 1 := by
-  rw [Matrix.det_of_lowerTriangular _
+  rw [Matrix.det_of_isLowerTriangular _
     (aRootLeadingMatrix_lowerTriangular n)]
   simp [aRootLeadingMatrix, aRootCoordinateMatrix, aRootVector]
 
@@ -422,7 +423,6 @@ private theorem dRootVector_castSucc (m : ℕ) (hn : 4 ≤ m + 1) (i : Fin m)
     dRootVector (m + 1) hn i.castSucc k = aRootVector m i k := by
   have hi : (i : ℕ) + 1 < m + 1 := Nat.succ_lt_succ i.isLt
   simp only [dRootVector, aRootVector, Fin.val_castSucc, hi, if_true]
-  rfl
 
 /-- The column sums of the type-`D` coordinate matrix: only the last root has a nonzero
 coordinate sum. -/

@@ -108,6 +108,7 @@ theorem factorPow_evalₐ (v : HeightOneSpectrum R) {m n : ℕ} (hmn : m ≤ n)
   rw [← hraw]
   simp [AdicCompletion.transitionMap, Ideal.Quotient.factorPow]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem eval_toPrimeAdicComponent (v : HeightOneSpectrum R) (n : ℕ)
     (x : Completion R) :

@@ -410,6 +410,7 @@ def pullbackAlgEquiv : RingAdeleRing K ≃ₐ[𝓞 K] Pullback K where
     · exact (inclusion K).commutes _
     · rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The intrinsic pullback presentation has the same topology as the product presentation. -/
 def pullbackContinuousAlgEquiv : RingAdeleRing K ≃A[𝓞 K] Pullback K where
   toAlgEquiv := pullbackAlgEquiv K
@@ -449,6 +450,7 @@ def integerIntersectionMap :
   map_add' _ _ := by apply Subtype.ext; apply Prod.ext <;> simp
   commutes' _ := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The ring of integers is the intersection of the number field with the integral finite
 adeles inside the finite field adeles. -/
 def integerIntersectionAlgEquiv :

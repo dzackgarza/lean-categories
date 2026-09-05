@@ -66,6 +66,7 @@ theorem rationalSpanProdEquiv_tmul (a : FractionRing R)
     rationalSpanProdEquiv L₁ L₂ (a ⊗ₜ[R] x) = (a ⊗ₜ[R] x.1, a ⊗ₜ[R] x.2) :=
   TensorProduct.prodRight_tmul R R (FractionRing R) L₁.obj.carrier L₂.obj.carrier a x
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The rationalized form of an orthogonal sum is the sum of the rationalized forms. -/
 theorem rationalizedForm_orthogonalSum (z : RationalSpan R (orthogonalSum L₁ L₂))
     (y : (orthogonalSum L₁ L₂).obj.carrier) :
@@ -84,6 +85,7 @@ theorem rationalizedForm_orthogonalSum (z : RationalSpan R (orthogonalSum L₁ L
     simp only [map_add, LinearMap.add_apply, Prod.fst_add, Prod.snd_add, hz, hw]
     ring
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The metric dual of an orthogonal sum is the orthogonal sum of the metric duals. -/
 theorem fractionalIdealDual_orthogonalSum (I : FractionalRIdeal R) :
     fractionalIdealDual R (orthogonalSum L₁ L₂) I =
@@ -105,6 +107,7 @@ theorem fractionalIdealDual_orthogonalSum (I : FractionalRIdeal R) :
     exact Submodule.add_mem _ (FractionalIdeal.mem_coe.mpr (h₁ y.1))
       (FractionalIdeal.mem_coe.mpr (h₂ y.2))
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The integral image of an orthogonal sum is the product of the integral images. -/
 theorem integralImage_orthogonalSum :
     integralImage R (orthogonalSum L₁ L₂) =

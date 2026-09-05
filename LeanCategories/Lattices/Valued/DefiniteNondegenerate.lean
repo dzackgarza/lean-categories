@@ -113,6 +113,7 @@ theorem aRootGramMatrix_diag (n : ℕ) (i : Fin n) : aRootGramMatrix n i i = -2 
 def aDefiniteLattice (n : ℕ) : DefiniteLatticeCat :=
   ⟨aRootFiniteLattice n, Or.inr (aRootLattice_isNegativeDefinite n)⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The standard type-`A` roots span, so `A_n` is a root lattice. -/
 theorem aDefiniteLattice_isRootLattice (n : ℕ) : isRootLattice (aDefiniteLattice n) := by
   refine span_isRoot_eq_top_of_basis (aRootFiniteLattice n) (Pi.basisFun ℤ (Fin n)) fun i ↦ ?_
@@ -132,6 +133,7 @@ theorem e8GramMatrix_diag (i : Fin 8) : e8GramMatrix i i = -2 := by
 noncomputable def e8DefiniteLattice : DefiniteLatticeCat :=
   ⟨e8FiniteLattice, Or.inr e8Lattice_isNegativeDefinite⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The simple roots of `E₈` span, so `E₈` is a root lattice. -/
 theorem e8DefiniteLattice_isRootLattice : isRootLattice e8DefiniteLattice := by
   refine span_isRoot_eq_top_of_basis e8FiniteLattice (Pi.basisFun ℤ (Fin 8)) fun i ↦ ?_
@@ -152,6 +154,7 @@ theorem e7GramMatrix_diag (i : Fin 7) : e7GramMatrix i i = -2 := by
 noncomputable def e7DefiniteLattice : DefiniteLatticeCat :=
   ⟨e7FiniteLattice, Or.inr e7Lattice_isNegativeDefinite⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The simple roots of `E₇` span, so `E₇` is a root lattice. -/
 theorem e7DefiniteLattice_isRootLattice : isRootLattice e7DefiniteLattice := by
   refine span_isRoot_eq_top_of_basis e7FiniteLattice (Pi.basisFun ℤ (Fin 7)) fun i ↦ ?_
@@ -172,6 +175,7 @@ theorem e6GramMatrix_diag (i : Fin 6) : e6GramMatrix i i = -2 := by
 noncomputable def e6DefiniteLattice : DefiniteLatticeCat :=
   ⟨e6FiniteLattice, Or.inr e6Lattice_isNegativeDefinite⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The simple roots of `E₆` span, so `E₆` is a root lattice. -/
 theorem e6DefiniteLattice_isRootLattice : isRootLattice e6DefiniteLattice := by
   refine span_isRoot_eq_top_of_basis e6FiniteLattice (Pi.basisFun ℤ (Fin 6)) fun i ↦ ?_

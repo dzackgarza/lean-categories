@@ -387,8 +387,9 @@ theorem baseChangeIntegral_quadraticMap_add (L : IntegralLatticeCat R)
   rw [baseChangeIntegral_pairing_add_left (R := R) S L,
     baseChangeIntegral_pairing_add_right (R := R) S L,
     baseChangeIntegral_pairing_add_right (R := R) S L]
-  simp only [quadraticMap, LinearMap.BilinMap.toQuadraticMap_apply,
-    BilinModuleCat.bilinMap_apply]
+  simp only [quadraticMap]
+  show _ = ((baseChangeIntegral R S).obj L).obj.pairing x x +
+      ((baseChangeIntegral R S).obj L).obj.pairing y y + _
   abel
 
 theorem symmetrized_pairing_mem_of_isIEven

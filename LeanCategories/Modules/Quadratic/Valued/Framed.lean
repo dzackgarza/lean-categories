@@ -123,6 +123,7 @@ noncomputable def changeFrameMap
   e.symm.toLinearMap.comp
     ((standardMap R W n f).comp e.toLinearMap)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Reparameterize the standard quadratic realization by a fixed change of frame. -/
 noncomputable def changeFrameQuadraticFunctor
     (e : (Fin n → R) ≃ₗ[R] (Fin n → R)) :

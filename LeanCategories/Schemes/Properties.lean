@@ -82,192 +82,192 @@ abbrev quasiAffineSchemeIncl : QuasiAffineSchemeCat.{u} ⥤ Scheme.{u} :=
 
 /- Scheme morphisms whose structural arrow is affine. -/
 abbrev AffineSchemeMorphismCat : Type (u + 1) :=
-  MorphismProperty.Arrow (T := Scheme.{u}) @IsAffineHom ⊤ ⊤
+  MorphismProperty.Arrow (show MorphismProperty Scheme.{u} from @IsAffineHom) ⊤ ⊤
 
 /- The canonical inclusion of affine scheme morphisms into all scheme arrows. -/
 abbrev affineSchemeMorphismIncl :
     AffineSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
-  MorphismProperty.Arrow.forget @IsAffineHom ⊤ ⊤
+  MorphismProperty.Arrow.forget (show MorphismProperty Scheme.{u} from @IsAffineHom) ⊤ ⊤
 
 /-- Scheme morphisms whose structural arrow is an open immersion. -/
 abbrev OpenImmersionSchemeMorphismCat : Type (u + 1) :=
-  MorphismProperty.Arrow (T := Scheme.{u}) @IsOpenImmersion ⊤ ⊤
+  MorphismProperty.Arrow (show MorphismProperty Scheme.{u} from @IsOpenImmersion) ⊤ ⊤
 
 /-- The canonical inclusion of open-immersion scheme morphisms into all scheme arrows. -/
 abbrev openImmersionSchemeMorphismIncl :
     OpenImmersionSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
-  MorphismProperty.Arrow.forget @IsOpenImmersion ⊤ ⊤
+  MorphismProperty.Arrow.forget (show MorphismProperty Scheme.{u} from @IsOpenImmersion) ⊤ ⊤
 
 /- Scheme morphisms whose structural arrow is surjective. -/
 abbrev SurjectiveSchemeMorphismCat : Type (u + 1) :=
-  MorphismProperty.Arrow (T := Scheme.{u}) @Surjective ⊤ ⊤
+  MorphismProperty.Arrow (show MorphismProperty Scheme.{u} from @Surjective) ⊤ ⊤
 
 /- The canonical inclusion of surjective scheme morphisms into all scheme arrows. -/
 abbrev surjectiveSchemeMorphismIncl :
     SurjectiveSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
-  MorphismProperty.Arrow.forget @Surjective ⊤ ⊤
+  MorphismProperty.Arrow.forget (show MorphismProperty Scheme.{u} from @Surjective) ⊤ ⊤
 
 /-- Scheme morphisms whose structural arrow is a closed immersion. -/
 /- Scheme morphisms whose structural arrow is dominant. -/
 abbrev DominantSchemeMorphismCat : Type (u + 1) :=
-  MorphismProperty.Arrow (T := Scheme.{u}) @IsDominant ⊤ ⊤
+  MorphismProperty.Arrow (show MorphismProperty Scheme.{u} from @IsDominant) ⊤ ⊤
 
 /- The canonical inclusion of dominant scheme morphisms into all scheme arrows. -/
 abbrev dominantSchemeMorphismIncl :
     DominantSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
-  MorphismProperty.Arrow.forget @IsDominant ⊤ ⊤
+  MorphismProperty.Arrow.forget (show MorphismProperty Scheme.{u} from @IsDominant) ⊤ ⊤
 
 /- Scheme morphisms whose structural arrow is a closed immersion. -/
 abbrev ClosedImmersionSchemeMorphismCat : Type (u + 1) :=
-  MorphismProperty.Arrow (T := Scheme.{u}) @IsClosedImmersion ⊤ ⊤
+  MorphismProperty.Arrow (show MorphismProperty Scheme.{u} from @IsClosedImmersion) ⊤ ⊤
 
 /-- The canonical inclusion of closed-immersion scheme morphisms into all scheme arrows. -/
 abbrev closedImmersionSchemeMorphismIncl :
     ClosedImmersionSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
-  MorphismProperty.Arrow.forget @IsClosedImmersion ⊤ ⊤
+  MorphismProperty.Arrow.forget (show MorphismProperty Scheme.{u} from @IsClosedImmersion) ⊤ ⊤
 
 /-- Scheme morphisms whose structural arrow is étale. -/
 abbrev EtaleSchemeMorphismCat : Type (u + 1) :=
-  MorphismProperty.Arrow (T := Scheme.{u}) @Etale ⊤ ⊤
+  MorphismProperty.Arrow (show MorphismProperty Scheme.{u} from @Etale) ⊤ ⊤
 
 /-- The canonical inclusion of étale scheme morphisms into all scheme arrows. -/
 abbrev etaleSchemeMorphismIncl :
     EtaleSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
-  MorphismProperty.Arrow.forget @Etale ⊤ ⊤
+  MorphismProperty.Arrow.forget (show MorphismProperty Scheme.{u} from @Etale) ⊤ ⊤
 
 /-- Scheme morphisms whose structural arrow is formally unramified. -/
 abbrev FormallyUnramifiedSchemeMorphismCat : Type (u + 1) :=
-  MorphismProperty.Arrow (T := Scheme.{u}) @FormallyUnramified ⊤ ⊤
+  MorphismProperty.Arrow (show MorphismProperty Scheme.{u} from @FormallyUnramified) ⊤ ⊤
 
 /-- The canonical inclusion of formally unramified scheme morphisms into all scheme arrows. -/
 abbrev formallyUnramifiedSchemeMorphismIncl :
     FormallyUnramifiedSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
-  MorphismProperty.Arrow.forget @FormallyUnramified ⊤ ⊤
+  MorphismProperty.Arrow.forget (show MorphismProperty Scheme.{u} from @FormallyUnramified) ⊤ ⊤
 
 /-- Scheme morphisms that are locally of finite type. -/
 abbrev LocallyOfFiniteTypeSchemeMorphismCat : Type (u + 1) :=
-  MorphismProperty.Arrow (T := Scheme.{u}) @LocallyOfFiniteType ⊤ ⊤
+  MorphismProperty.Arrow (show MorphismProperty Scheme.{u} from @LocallyOfFiniteType) ⊤ ⊤
 
 /-- The canonical inclusion of locally finite-type scheme morphisms into all scheme arrows. -/
 abbrev locallyOfFiniteTypeSchemeMorphismIncl :
     LocallyOfFiniteTypeSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
-  MorphismProperty.Arrow.forget @LocallyOfFiniteType ⊤ ⊤
+  MorphismProperty.Arrow.forget (show MorphismProperty Scheme.{u} from @LocallyOfFiniteType) ⊤ ⊤
 
 /-- Scheme morphisms that are locally of finite presentation. -/
 abbrev LocallyOfFinitePresentationSchemeMorphismCat : Type (u + 1) :=
-  MorphismProperty.Arrow (T := Scheme.{u}) @LocallyOfFinitePresentation ⊤ ⊤
+  MorphismProperty.Arrow (show MorphismProperty Scheme.{u} from @LocallyOfFinitePresentation) ⊤ ⊤
 
 /-- The canonical inclusion of locally finite-presentation scheme morphisms into all scheme arrows. -/
 abbrev locallyOfFinitePresentationSchemeMorphismIncl :
     LocallyOfFinitePresentationSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
-  MorphismProperty.Arrow.forget @LocallyOfFinitePresentation ⊤ ⊤
+  MorphismProperty.Arrow.forget (show MorphismProperty Scheme.{u} from @LocallyOfFinitePresentation) ⊤ ⊤
 
 /-- Scheme morphisms that are locally quasi-finite. -/
 abbrev LocallyQuasiFiniteSchemeMorphismCat : Type (u + 1) :=
-  MorphismProperty.Arrow (T := Scheme.{u}) @LocallyQuasiFinite ⊤ ⊤
+  MorphismProperty.Arrow (show MorphismProperty Scheme.{u} from @LocallyQuasiFinite) ⊤ ⊤
 
 /-- The canonical inclusion of locally quasi-finite scheme morphisms into all scheme arrows. -/
 abbrev locallyQuasiFiniteSchemeMorphismIncl :
     LocallyQuasiFiniteSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
-  MorphismProperty.Arrow.forget @LocallyQuasiFinite ⊤ ⊤
+  MorphismProperty.Arrow.forget (show MorphismProperty Scheme.{u} from @LocallyQuasiFinite) ⊤ ⊤
 
 /-- Scheme morphisms whose structural arrow is finite. -/
 abbrev FiniteSchemeMorphismCat : Type (u + 1) :=
-  MorphismProperty.Arrow (T := Scheme.{u}) @IsFinite ⊤ ⊤
+  MorphismProperty.Arrow (show MorphismProperty Scheme.{u} from @IsFinite) ⊤ ⊤
 
 /-- The canonical inclusion of finite scheme morphisms into all scheme arrows. -/
 abbrev finiteSchemeMorphismIncl :
     FiniteSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
-  MorphismProperty.Arrow.forget @IsFinite ⊤ ⊤
+  MorphismProperty.Arrow.forget (show MorphismProperty Scheme.{u} from @IsFinite) ⊤ ⊤
 
 /-- Scheme morphisms whose structural arrow is integral. -/
 abbrev IntegralSchemeMorphismCat : Type (u + 1) :=
-  MorphismProperty.Arrow (T := Scheme.{u}) @IsIntegralHom ⊤ ⊤
+  MorphismProperty.Arrow (show MorphismProperty Scheme.{u} from @IsIntegralHom) ⊤ ⊤
 
 /-- The canonical inclusion of integral scheme morphisms into all scheme arrows. -/
 abbrev integralSchemeMorphismIncl :
     IntegralSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
-  MorphismProperty.Arrow.forget @IsIntegralHom ⊤ ⊤
+  MorphismProperty.Arrow.forget (show MorphismProperty Scheme.{u} from @IsIntegralHom) ⊤ ⊤
 
 /-- Scheme morphisms whose structural arrow is proper. -/
 abbrev ProperSchemeMorphismCat : Type (u + 1) :=
-  MorphismProperty.Arrow (T := Scheme.{u}) @IsProper ⊤ ⊤
+  MorphismProperty.Arrow (show MorphismProperty Scheme.{u} from @IsProper) ⊤ ⊤
 
 /-- The canonical inclusion of proper scheme morphisms into all scheme arrows. -/
 abbrev properSchemeMorphismIncl :
     ProperSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
-  MorphismProperty.Arrow.forget @IsProper ⊤ ⊤
+  MorphismProperty.Arrow.forget (show MorphismProperty Scheme.{u} from @IsProper) ⊤ ⊤
 
 /-- Scheme morphisms that are universally injective (radicial). -/
 abbrev UniversallyInjectiveSchemeMorphismCat : Type (u + 1) :=
-  MorphismProperty.Arrow (T := Scheme.{u}) @UniversallyInjective ⊤ ⊤
+  MorphismProperty.Arrow (show MorphismProperty Scheme.{u} from @UniversallyInjective) ⊤ ⊤
 
 /-- The canonical inclusion of universally injective scheme morphisms into all scheme arrows. -/
 abbrev universallyInjectiveSchemeMorphismIncl :
     UniversallyInjectiveSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
-  MorphismProperty.Arrow.forget @UniversallyInjective ⊤ ⊤
+  MorphismProperty.Arrow.forget (show MorphismProperty Scheme.{u} from @UniversallyInjective) ⊤ ⊤
 
 /-- Scheme morphisms whose structural arrow is universally closed. -/
 abbrev UniversallyClosedSchemeMorphismCat : Type (u + 1) :=
-  MorphismProperty.Arrow (T := Scheme.{u}) @UniversallyClosed ⊤ ⊤
+  MorphismProperty.Arrow (show MorphismProperty Scheme.{u} from @UniversallyClosed) ⊤ ⊤
 
 /-- The canonical inclusion of universally closed scheme morphisms into all scheme arrows. -/
 abbrev universallyClosedSchemeMorphismIncl :
     UniversallyClosedSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
-  MorphismProperty.Arrow.forget @UniversallyClosed ⊤ ⊤
+  MorphismProperty.Arrow.forget (show MorphismProperty Scheme.{u} from @UniversallyClosed) ⊤ ⊤
 
 /- Scheme morphisms whose structural arrow is universally open. -/
 abbrev UniversallyOpenSchemeMorphismCat : Type (u + 1) :=
-  MorphismProperty.Arrow (T := Scheme.{u}) @UniversallyOpen ⊤ ⊤
+  MorphismProperty.Arrow (show MorphismProperty Scheme.{u} from @UniversallyOpen) ⊤ ⊤
 
 /- The canonical inclusion of universally open scheme morphisms into all scheme arrows. -/
 abbrev universallyOpenSchemeMorphismIncl :
     UniversallyOpenSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
-  MorphismProperty.Arrow.forget @UniversallyOpen ⊤ ⊤
+  MorphismProperty.Arrow.forget (show MorphismProperty Scheme.{u} from @UniversallyOpen) ⊤ ⊤
 
 /-- Scheme morphisms whose structural arrow is smooth. -/
 abbrev SmoothSchemeMorphismCat : Type (u + 1) :=
-  MorphismProperty.Arrow (T := Scheme.{u}) @Smooth ⊤ ⊤
+  MorphismProperty.Arrow (show MorphismProperty Scheme.{u} from @Smooth) ⊤ ⊤
 
 /-- The canonical inclusion of smooth scheme morphisms into all scheme arrows. -/
 abbrev smoothSchemeMorphismIncl :
     SmoothSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
-  MorphismProperty.Arrow.forget @Smooth ⊤ ⊤
+  MorphismProperty.Arrow.forget (show MorphismProperty Scheme.{u} from @Smooth) ⊤ ⊤
 
 /-- Scheme morphisms whose structural arrow is flat. -/
 abbrev FlatSchemeMorphismCat : Type (u + 1) :=
-  MorphismProperty.Arrow (T := Scheme.{u}) @Flat ⊤ ⊤
+  MorphismProperty.Arrow (show MorphismProperty Scheme.{u} from @Flat) ⊤ ⊤
 
 /-- The canonical inclusion of flat scheme morphisms into all scheme arrows. -/
 abbrev flatSchemeMorphismIncl :
     FlatSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
-  MorphismProperty.Arrow.forget @Flat ⊤ ⊤
+  MorphismProperty.Arrow.forget (show MorphismProperty Scheme.{u} from @Flat) ⊤ ⊤
 
 /-- Scheme morphisms whose structural arrow is quasi-compact. -/
 abbrev QuasiCompactSchemeMorphismCat : Type (u + 1) :=
-  MorphismProperty.Arrow (T := Scheme.{u}) @QuasiCompact ⊤ ⊤
+  MorphismProperty.Arrow (show MorphismProperty Scheme.{u} from @QuasiCompact) ⊤ ⊤
 
 /-- The canonical inclusion of quasi-compact scheme morphisms into all scheme arrows. -/
 abbrev quasiCompactSchemeMorphismIncl :
     QuasiCompactSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
-  MorphismProperty.Arrow.forget @QuasiCompact ⊤ ⊤
+  MorphismProperty.Arrow.forget (show MorphismProperty Scheme.{u} from @QuasiCompact) ⊤ ⊤
 
 /-- Scheme morphisms whose structural arrow is separated. -/
 abbrev SeparatedSchemeMorphismCat : Type (u + 1) :=
-  MorphismProperty.Arrow (T := Scheme.{u}) @IsSeparated ⊤ ⊤
+  MorphismProperty.Arrow (show MorphismProperty Scheme.{u} from @IsSeparated) ⊤ ⊤
 
 /-- The canonical inclusion of separated scheme morphisms into all scheme arrows. -/
 abbrev separatedSchemeMorphismIncl :
     SeparatedSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
-  MorphismProperty.Arrow.forget @IsSeparated ⊤ ⊤
+  MorphismProperty.Arrow.forget (show MorphismProperty Scheme.{u} from @IsSeparated) ⊤ ⊤
 
 /-- Scheme morphisms whose structural arrow is quasi-separated. -/
 abbrev QuasiSeparatedSchemeMorphismCat : Type (u + 1) :=
-  MorphismProperty.Arrow (T := Scheme.{u}) @QuasiSeparated ⊤ ⊤
+  MorphismProperty.Arrow (show MorphismProperty Scheme.{u} from @QuasiSeparated) ⊤ ⊤
 
 /-- The canonical inclusion of quasi-separated scheme morphisms into all scheme arrows. -/
 abbrev quasiSeparatedSchemeMorphismIncl :
     QuasiSeparatedSchemeMorphismCat.{u} ⥤ CategoryTheory.Arrow (Scheme.{u}) :=
-  MorphismProperty.Arrow.forget @QuasiSeparated ⊤ ⊤
+  MorphismProperty.Arrow.forget (show MorphismProperty Scheme.{u} from @QuasiSeparated) ⊤ ⊤
 
 end LeanCategories.Schemes

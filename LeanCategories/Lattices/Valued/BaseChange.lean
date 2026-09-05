@@ -101,6 +101,7 @@ def baseChangeBilin : BilinModuleCat R W ⥤ BilinModuleCat S (TensorProduct R S
           LinearMap.baseChange S (BilinModuleCat.underlyingMap f)) z
     rw [LinearMap.baseChange_comp]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Scalar extension on the total category of variable-valued forms. -/
 def baseChangeBilWForm : BilWFormCat R ⥤ BilWFormCat S where
   obj X := by
@@ -147,6 +148,7 @@ def baseChangeBilWForm : BilWFormCat R ⥤ BilWFormCat S where
 
 section IdentityComparison
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Scalar extension along the identity ring map changes no formed object. -/
 noncomputable def baseChangeBilWFormIdentityIsoObj
     (X : BilWFormCat R) :
@@ -218,6 +220,7 @@ section CompositionComparison
 variable (T : Type u) [CommRing T]
 variable [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Direct and iterated scalar extension give isomorphic formed objects. -/
 noncomputable def baseChangeBilWFormCompositionIsoObj
     (X : BilWFormCat R) :

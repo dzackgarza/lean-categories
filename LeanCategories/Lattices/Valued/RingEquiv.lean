@@ -39,6 +39,10 @@ local instance ringEquivInvPair (e : R ≃+* S) :
     RingHomInvPair e.toRingHom e.symm.toRingHom :=
   ⟨by ext; simp, by ext; simp⟩
 
+local instance ringEquivInvPairSymm (e : R ≃+* S) :
+    RingHomInvPair e.symm.toRingHom e.toRingHom :=
+  ⟨by ext; simp, by ext; simp⟩
+
 /-- A compatible equivalence of coefficient algebras as a semilinear equivalence. -/
 def compatibleAlgebraSemilinearEquiv
     {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algebra S B]
@@ -64,6 +68,7 @@ def moduleTransportSemilinearEquiv (e : R ≃+* S)
         change r • x = e.symm (e r) • x
         exact congrArg (fun q : R ↦ q • x) (e.symm_apply_apply r).symm }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Tensor products commute with compatible semilinear equivalences. -/
 noncomputable def tensorProductSemilinearEquiv
     {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algebra S B]
@@ -137,6 +142,7 @@ theorem transportIntegralBilin_smul (e : R ≃+* S) (L : BilinModuleCat R R)
       s • (show (transportIntegralBilin e L).carrier from x)) = e.symm s • x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Transport a formed-module morphism along a ring equivalence. -/
 def transportIntegralBilinMap (e : R ≃+* S) {L M : BilinModuleCat R R}
     (f : L ⟶ M) : transportIntegralBilin e L ⟶ transportIntegralBilin e M := by
@@ -176,6 +182,7 @@ def transportIntegralBilinFunctor (e : R ≃+* S) :
     ext x
     rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Transport along a ring equivalence preserves and reflects formed-module isometry. -/
 theorem isIsomorphic_transportIntegralBilin_iff (e : R ≃+* S)
     (L M : BilinModuleCat R R) :

@@ -30,6 +30,7 @@ namespace LeanCategories.Lattices.Valued
 def dDefiniteLattice (n : ℕ) (hn : 4 ≤ n) : DefiniteLatticeCat :=
   ⟨dRootFiniteLattice n hn, Or.inr (dRootLattice_isNegativeDefinite n hn)⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The standard type-`D` roots span, so `Dₙ` is a root lattice. -/
 theorem dDefiniteLattice_isRootLattice (n : ℕ) (hn : 4 ≤ n) :
     isRootLattice (dDefiniteLattice n hn) := by

@@ -135,7 +135,7 @@ theorem symm_eq_mk_of_mem_atlas {e : OpenPartialHomeomorph (E ⧸ L) E}
     (he : e ∈ atlas E (E ⧸ L)) :
     ⇑e.symm = (Submodule.Quotient.mk : E → E ⧸ L) := by
   obtain ⟨q, rfl⟩ := he
-  simp
+  simp [chartAt_self_eq]
 
 /-- A chart of `E ⧸ L` composed with the projection is the identity on its source. -/
 theorem mk_chart_apply {e : OpenPartialHomeomorph (E ⧸ L) E} (he : e ∈ atlas E (E ⧸ L))

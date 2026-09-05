@@ -49,6 +49,7 @@ noncomputable abbrev EvenDiscriminantMetabolizer
     (evenDiscriminantQuadraticObject L hL hEven).IsTotallyIsotropic H ∧
       (discriminantBilinObject R L hL).IsLagrangian H}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A quadratic-isotropic subgroup is isotropic for the discriminant pairing. -/
 noncomputable def EvenDiscriminantIsotropicSubgroup.toBilinear
     [NeZero (2 : R)]

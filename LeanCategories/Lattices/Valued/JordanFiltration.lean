@@ -241,6 +241,7 @@ theorem layerSubmodule_decomposition (J : JordanDecomposition L π n) (k : ℕ) 
     layerSubmodule_pow_of_isIModular _ π J.uniformizer_isIrreducible _
       (J.component_isModular i) k)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The layer jump counts the ranks of the components of exponent below the cut.
 
 This is the successive-quotient computation: a component of exponent `e` contributes its

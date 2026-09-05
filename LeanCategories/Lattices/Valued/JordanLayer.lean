@@ -255,6 +255,7 @@ theorem layerSubmodule_split_eq (J : JordanDecomposition L π (n + 1)) :
     layerSubmodule_of_isIModular _ π J.uniformizer_isIrreducible _ (J.component_isModular 0),
     layerSubmodule_eq_top_of_scaleIdeal_le _ _ J.scaleIdeal_tail_le]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The quotient of the lattice by its layer is the residue reduction of the smallest
 Jordan component.
 

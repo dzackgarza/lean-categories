@@ -1009,6 +1009,8 @@ theorem not_isNormFromSqrt_negOne_negOne : ¬ IsNormFromSqrt (-1 : ℚ_[2]) (-1 
       rw [norm_div]
       exact (div_le_one hypos).mpr h
     refine not_neg_one_eq_sq_mul y hy ⟨x / y, hw⟩ ?_
+    have hcoe : ((⟨x / y, hw⟩ * ⟨x / y, hw⟩ + 1 : ℤ_[2]) : ℚ_[2]) = (x / y) * (x / y) + 1 := rfl
+    rw [hcoe]
     push_cast
     field_simp
     linear_combination hxy
@@ -1023,6 +1025,8 @@ theorem not_isNormFromSqrt_negOne_negOne : ¬ IsNormFromSqrt (-1 : ℚ_[2]) (-1 
       rw [norm_div]
       exact (div_le_one hxpos).mpr h
     refine not_neg_one_eq_sq_mul x hx ⟨y / x, hw⟩ ?_
+    have hcoe : ((⟨y / x, hw⟩ * ⟨y / x, hw⟩ + 1 : ℤ_[2]) : ℚ_[2]) = (y / x) * (y / x) + 1 := rfl
+    rw [hcoe]
     push_cast
     field_simp
     linear_combination hxy
