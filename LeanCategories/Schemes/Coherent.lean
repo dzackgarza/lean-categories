@@ -17,6 +17,14 @@ universe u
 
 variable (X : Scheme.{u})
 
+/-- Quasi-coherent sheaves of modules on `X`. -/
+abbrev QuasicoherentModuleCat :=
+  (SheafOfModules.isQuasicoherent X.ringCatSheaf).FullSubcategory
+
+/-- The inclusion of quasi-coherent modules into all sheaves of modules. -/
+abbrev quasicoherentModuleIncl : QuasicoherentModuleCat X ⥤ X.Modules :=
+  (SheafOfModules.isQuasicoherent X.ringCatSheaf).ι
+
 /-- Coherent sheaves of modules on `X`. -/
 abbrev CoherentModuleCat :=
   (SheafOfModules.isFinitePresentation X.ringCatSheaf).FullSubcategory
