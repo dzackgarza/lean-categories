@@ -111,10 +111,11 @@ routes; its theorem/lemma content still belongs to Sweep I.
 
 Plan: [PLAN-FOUNDATIONAL-CORPUS-MAPPING-SWEEP](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/plans/PLAN-FOUNDATIONAL-CORPUS-MAPPING-SWEEP/PLAN-FOUNDATIONAL-CORPUS-MAPPING-SWEEP.md).
 
-Underway. FC01 and FC02 are mapped: all 1,234 FC01 units and all 844 FC02 units carry verdicts in
-[the FC01 mapping record](.agents/references/foundational-corpus-mapping-fc01-dummit-foote.md) and
-[the FC02 mapping record](.agents/references/foundational-corpus-mapping-fc02-munkres.md).
-FC03–FC12 are unmapped.
+Underway. FC01 through FC03 are mapped: all 1,234 FC01 units, all 844 FC02 units, and all 434
+FC03 units carry verdicts in [the FC01 mapping record](.agents/references/foundational-corpus-mapping-fc01-dummit-foote.md),
+[the FC02 mapping record](.agents/references/foundational-corpus-mapping-fc02-munkres.md), and
+[the FC03 mapping record](.agents/references/foundational-corpus-mapping-fc03-riehl-category-theory-in-context.md).
+FC04–FC12 are unmapped.
 
 For **every** source-unit ID, search existing Lean work before constructing any local
 formalization queue.
