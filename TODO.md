@@ -82,14 +82,54 @@ Hatcher instantiate them; and Neukirch/Serre supply local arithmetic before Pete
 p-adic lattice theory.
 
 Changing corpus membership, order, edition, or bounded scope requires a new explicit corpus
-version/amendment. Existing Folland/Ahlfors/Shafarevich/Whitehead/Apostol/Lam/Gerstein/etc.
-catalogues remain supplementary and do not silently enlarge v1.
+version/amendment. Amendment v2 below is the only such change so far. Existing
+Folland/Ahlfors/Shafarevich/Whitehead/Apostol/Lam/Gerstein/etc. catalogues remain supplementary
+and do not silently enlarge the corpus.
+
+## 0a. Corpus v2 amendment — four admitted sources
+
+Amendment v2 admits four sources. It does not renumber, re-edition or rescope `FC01`–`FC12`, so
+every existing source-unit ID stays valid:
+
+13. `FC13` Matsumura, *Commutative Ring Theory*;
+14. `FC14` Humphreys, *Introduction to Lie Algebras and Representation Theory*;
+15. `FC15` Humphreys, *Reflection Groups and Coxeter Groups*;
+16. `FC16` Humphreys, *Linear Algebraic Groups*.
+
+Each closes a gap in the v1 dependency spine. None is admitted for subject breadth:
+
+- `FC13` sits between `FC04` and `FC06`. Atiyah–Macdonald is deliberately slim, and Hartshorne
+  assumes the homological commutative algebra it omits: regular sequences and depth,
+  Cohen–Macaulay and regular local rings, Koszul complexes, completion, and flatness criteria.
+  Matsumura owns that material instead of letting scheme theory reinvent it locally.
+- `FC14` owns semisimple Lie algebras, root systems, weights, and their representation theory.
+  No v1 source defines a root system.
+- `FC15` owns reflection groups, Coxeter systems, and their geometric representations. The
+  reflection and orbit applications in the research programme use these as primitives.
+- `FC16` owns linear algebraic groups and their actions, so group actions on varieties and
+  schemes reuse one owner rather than a local stand-in.
+
+`FC13` is a prerequisite of `FC06`, so numeric ID order is no longer the traversal order. Corpus
+v2 traverses:
+
+`FC01`, `FC02`, `FC03`, `FC04`, `FC05`, `FC13`, `FC06`, `FC07`, `FC08`, `FC09`, `FC10`, `FC11`,
+`FC12`, `FC14`, `FC15`, `FC16`.
+
+Two further sources are admitted as **supplementary only**, not as corpus members: Folland,
+*Real Analysis: Modern Techniques and Their Applications*, and Conway, *A Course in Functional
+Analysis*. No corpus source's dependency spine passes through measure theory or functional
+analysis, so neither enters the denominator of the four sweeps. Supplementary formalization
+against them stays valid.
+
+All four v2 sources have local PDFs but no verified Markdown extraction. Each needs source
+acquisition before Sweep I can traverse it.
 
 ## 1. Sweep I — catalogue every corpus unit
 
 Plan: [PLAN-FOUNDATIONAL-CORPUS-CATALOGUE-SWEEP](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/plans/PLAN-FOUNDATIONAL-CORPUS-CATALOGUE-SWEEP/PLAN-FOUNDATIONAL-CORPUS-CATALOGUE-SWEEP.md).
 
-Traverse `FC01` through `FC12` completely, in the frozen order. Record every formal unit:
+Traverse every corpus source completely, in the v2 traversal order above. Record every formal
+unit:
 
 - definitions, constructions, conventions, and notation;
 - lemmas, propositions, theorems, and corollaries;
@@ -100,7 +140,8 @@ Traverse `FC01` through `FC12` completely, in the frozen order. Record every for
 - [x] Catalogue every source without consulting Lean coverage to decide whether a row belongs.
 - [x] Assign stable source-unit IDs used unchanged by all later sweeps.
 
-Sweep I is complete for FC01–FC12: about 9,700 source units, one catalogue file per source in
+Sweep I is complete for FC01–FC12 and unstarted for the four v2 sources FC13–FC16: about 9,700
+source units, one catalogue file per source in
 `.agents/references/foundational-corpus-units-fc*.md`. Each catalogue is faithful to its frozen
 Markdown extraction, which no phase has yet compared against the printed source.
 
@@ -118,7 +159,7 @@ units, all 433 FC04 units, and all FC05 Weibel units carry verdicts in
 [the FC03 mapping record](.agents/references/foundational-corpus-mapping-fc03-riehl-category-theory-in-context.md),
 [the FC04 mapping record](.agents/references/foundational-corpus-mapping-fc04-atiyah-macdonald.md), and
 [the FC05 mapping record](.agents/references/foundational-corpus-mapping-fc05-weibel.md).
-FC06–FC12 are unmapped.
+FC06–FC12 are unmapped, and FC13–FC16 are not yet catalogued.
 
 For **every** source-unit ID, search existing Lean work before constructing any local
 formalization queue.
