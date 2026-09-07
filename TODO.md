@@ -140,8 +140,9 @@ unit:
 - [x] Catalogue every source without consulting Lean coverage to decide whether a row belongs.
 - [x] Assign stable source-unit IDs used unchanged by all later sweeps.
 
-Sweep I is complete for FC01–FC12 and unstarted for the four v2 sources FC13–FC16: about 9,700
-source units, one catalogue file per source in
+Which sources are catalogued is stated only in
+[the corpus status ledger](.agents/references/foundational-corpus-status.md). The catalogues
+themselves are one file per source in
 `.agents/references/foundational-corpus-units-fc*.md`. Each catalogue is faithful to its frozen
 Markdown extraction, which no phase has yet compared against the printed source.
 
@@ -152,14 +153,15 @@ routes; its theorem/lemma content still belongs to Sweep I.
 
 Plan: [PLAN-FOUNDATIONAL-CORPUS-MAPPING-SWEEP](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/plans/PLAN-FOUNDATIONAL-CORPUS-MAPPING-SWEEP/PLAN-FOUNDATIONAL-CORPUS-MAPPING-SWEEP.md).
 
-Underway. FC01 through FC05 are mapped: all 1,234 FC01 units, all 844 FC02 units, all 434 FC03
-units, all 433 FC04 units, and all FC05 Weibel units carry verdicts in
-[the FC01 mapping record](.agents/references/foundational-corpus-mapping-fc01-dummit-foote.md),
-[the FC02 mapping record](.agents/references/foundational-corpus-mapping-fc02-munkres.md),
-[the FC03 mapping record](.agents/references/foundational-corpus-mapping-fc03-riehl-category-theory-in-context.md),
-[the FC04 mapping record](.agents/references/foundational-corpus-mapping-fc04-atiyah-macdonald.md), and
-[the FC05 mapping record](.agents/references/foundational-corpus-mapping-fc05-weibel.md).
-FC06–FC12 are unmapped, and FC13–FC16 are not yet catalogued.
+Underway. Which sources are mapped is stated only in
+[the corpus status ledger](.agents/references/foundational-corpus-status.md); the per-source
+verdicts live in the mapping records beside it, one file per source,
+`.agents/references/foundational-corpus-mapping-fc*.md`.
+
+Take a source, not a chapter. Choose the first source in the v2 traversal order whose Mapping box
+is unticked and that no other agent has named as in progress, name it at the head of its mapping
+record, then map it straight through to the end and tick its box yourself. Do not stop between
+chapters to be told to continue, and do not wait to be given a source.
 
 For **every** source-unit ID, search existing Lean work before constructing any local
 formalization queue.

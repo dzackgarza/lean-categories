@@ -284,6 +284,15 @@ independent sequential plans.
    programme. It must not shrink the definition sweep or delay unrelated vocabulary merely
    because a proof is hard.
 
+A sweep is claimed and finished by whole source, never dispatched one chapter at a time. Take the
+first source in traversal order whose ledger box for this sweep is unticked and which no other
+agent has named as in progress; name it in that sweep's record before you start, so a second
+agent working the same sweep takes a different source. Then work it through to the end, chapter
+after chapter, without pausing between chapters to be told to continue, and tick its ledger box
+yourself when the whole source is done. Take the next source the same way. Nothing outside this
+repository knows which chapter comes next, and no agent needs to be handed one: the ledger, the
+traversal order, and the mapping records already say it.
+
 The corpus order itself is part of the architecture: for example modules precede localization of
 modules, generic category/functor language precedes later categorical placement, and generic
 homological objects precede subject-specific instances. Completion of the definition sweep is
