@@ -14,6 +14,7 @@ public import LeanCategories.Catalogue.Realization
 public import LeanCategories.Catalogue.Interpretation
 public import LeanCategories.Catalogue.Standard
 public import LeanCategories.CategoryTheory.StandardConstructions
+public import LeanCategories.Combinatorics.Configuration
 public import LeanCategories.Algebra.Concrete.Magmas
 public import LeanCategories.Algebra.Concrete.Rings
 public import LeanCategories.Algebra.FractionalIdeals
@@ -33,7 +34,9 @@ public import LeanCategories.Algebra.IdealProfiniteCompletionDedekind
 public import LeanCategories.Algebra.BlockDecomposition
 public import LeanCategories.Algebra.CanonicalForms
 public import LeanCategories.Algebra.GroupTheory
+public import LeanCategories.Algebra.SubgroupIncidence
 public import LeanCategories.Algebra.FiniteAbelian
+public import LeanCategories.Algebra.SquarefreePart
 public import LeanCategories.Algebra.Polynomial
 public import LeanCategories.Algebra.ZariskiRing
 public import LeanCategories.Algebra.PolynomialPowerSeries
