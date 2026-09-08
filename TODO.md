@@ -153,7 +153,7 @@ routes; its theorem/lemma content still belongs to Sweep I.
 
 Plan: [PLAN-FOUNDATIONAL-CORPUS-MAPPING-SWEEP](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/plans/PLAN-FOUNDATIONAL-CORPUS-MAPPING-SWEEP/PLAN-FOUNDATIONAL-CORPUS-MAPPING-SWEEP.md).
 
-Underway. Which sources are mapped is stated only in
+Complete. Which sources are mapped is stated only in
 [the corpus status ledger](.agents/references/foundational-corpus-status.md); the per-source
 verdicts live in the mapping records beside it, one file per source,
 `.agents/references/foundational-corpus-mapping-fc*.md`.
@@ -189,12 +189,12 @@ Each unit must end in exactly one route class:
   implementation with repo/commit/path/license provenance and port/adapt it later;
 - `unmatched` — no acceptable Lean implementation was found after the exhaustive search.
 
-- [ ] Record declaration names, repository/package, commit/tag, path, license,
+- [x] Record declaration names, repository/package, commit/tag, path, license,
   toolchain/Mathlib compatibility, and mathematical generality for every mapping.
-- [ ] Import usable packages rather than reimplement them.
-- [ ] Preserve non-importable Lean implementations as reference implementations rather than
+- [x] Import usable packages rather than reimplement them.
+- [x] Preserve non-importable Lean implementations as reference implementations rather than
   re-derive their mathematics.
-- [ ] Put **only** `unmatched` units into a greenfield formalization queue.
+- [x] Put **only** `unmatched` units into a greenfield formalization queue.
 
 ## 3. Sweep III — realize the complete definitional layer
 
