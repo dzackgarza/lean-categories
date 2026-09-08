@@ -33,6 +33,7 @@ public import LeanCategories.Algebra.IdealProfiniteCompletionDedekind
 public import LeanCategories.Algebra.BlockDecomposition
 public import LeanCategories.Algebra.CanonicalForms
 public import LeanCategories.Algebra.GroupTheory
+public import LeanCategories.Algebra.FiniteAbelian
 public import LeanCategories.Algebra.Polynomial
 public import LeanCategories.Algebra.ZariskiRing
 public import LeanCategories.Algebra.PolynomialPowerSeries
