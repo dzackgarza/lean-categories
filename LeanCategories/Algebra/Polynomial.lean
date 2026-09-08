@@ -41,6 +41,35 @@ def IsRemainder {σ : Type*} (m : MonomialOrder σ) {R : Type*} [CommRing R]
       ∀ b : B, m.degree ((b : MvPolynomial σ R) * g b) ≼[m] m.degree f) ∧
     ∀ c ∈ r.support, ∀ b ∈ B, ¬m.degree b ≤ c
 
+/-- One deterministic step of multivariate division by an ordered finite family.
+The first divisor whose leading monomial divides the current leading monomial
+is used; if no divisor applies, the current leading term is moved to the
+remainder accumulator. -/
+def OrderedDivisionStep {σ : Type*} (m : MonomialOrder σ) {k : Type*} [Field k]
+    {n : ℕ} (b : Fin n → MvPolynomial σ k) :
+    (MvPolynomial σ k × MvPolynomial σ k) →
+      (MvPolynomial σ k × MvPolynomial σ k) → Prop :=
+  fun state next =>
+    (∃ i : Fin n,
+      b i ≠ 0 ∧ m.degree (b i) ≤ m.degree state.1 ∧
+      (∀ j : Fin n, j < i → b j = 0 ∨ ¬m.degree (b j) ≤ m.degree state.1) ∧
+      next =
+        (state.1 -
+          monomial (m.degree state.1 - m.degree (b i))
+            ((m.leadingCoeff (b i))⁻¹ * m.leadingCoeff state.1) * b i, state.2)) ∨
+    (state.1 ≠ 0 ∧
+      (∀ i : Fin n, b i = 0 ∨ ¬m.degree (b i) ≤ m.degree state.1) ∧
+      next = (state.1 - m.leadingTerm state.1, state.2 + m.leadingTerm state.1))
+
+/-- `r` is the remainder produced by the textbook ordered multivariate-division
+procedure applied to `f` and the ordered divisor family `b`.  This realizes the
+order-sensitive relation denoted `f ≡ r mod G` in Dummit--Foote FC01-C09-U057.
+Termination and comparison with Gröbner normal forms are theorem-level facts. -/
+def IsOrderedRemainder {σ : Type*} (m : MonomialOrder σ) {k : Type*} [Field k]
+    {n : ℕ} (b : Fin n → MvPolynomial σ k)
+    (f r : MvPolynomial σ k) : Prop :=
+  Relation.ReflTransGen (m.OrderedDivisionStep b) (f, 0) (0, r)
+
 namespace IsGroebnerBasis
 
 variable {σ R : Type*} [CommRing R] {m : MonomialOrder σ}
@@ -56,6 +85,15 @@ def IsMinimal (_hG : m.IsGroebnerBasis G I) : Prop :=
 already a remainder modulo the other basis elements. -/
 def IsReduced (_hG : m.IsGroebnerBasis G I) : Prop :=
   (∀ p ∈ G, m.Monic p) ∧ ∀ p ∈ G, m.IsRemainder p (G \ {p}) p
+
+/-- Replace each element of a minimal Gröbner basis by a chosen remainder on
+division by the other basis elements.  The reference implementation proves
+that this image is a reduced Gröbner basis; that theorem belongs to Sweep IV.
+This is the construction in Dummit--Foote FC01-C09-U062. -/
+def IsMinimal.reduceByRemainders {hG : m.IsGroebnerBasis G I}
+    (_hmin : hG.IsMinimal) (r : G → MvPolynomial σ R)
+    (_hr : ∀ g : G, m.IsRemainder g.1 (G \ {g.1}) (r g)) : Set (MvPolynomial σ R) :=
+  Set.range r
 
 end IsGroebnerBasis
 
