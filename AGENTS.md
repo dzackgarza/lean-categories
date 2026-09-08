@@ -102,6 +102,31 @@ one-message report explaining exactly why that is impossible.
   to do the same.** From inside, organizing the work feels like progress on
   it. Perform the reground act before continuing.
 
+# Corpus work: required entry and acceptance rules
+
+Before selecting corpus work, accepting a reuse mapping, or introducing a definition
+that another construction will consume, load `llm-failure-modes` and its
+`coverage-and-semantic-drift.md` lesson. It teaches the reasoning errors through worked
+examples and transfer cases. Apply the repository-specific
+[corpus acceptance workflow](#corpus-acceptance-workflow) below at each decision.
+
+The original source determines the obligation. The catalogue identifies it, the
+mapping records implementation evidence, and Lean realizes it. A filtered worklist,
+a mapping label, or a passing build cannot take over the preceding owner's authority.
+
+Read the source statement before inspecting the proposed implementation as a solution.
+Compare the actual types and laws before treating a route as exact. Test a new
+definition against the source's intended and excluded examples before exporting it
+or using it as a premise. Reconcile all source identities before whole-source closure.
+One omitted unit invalidates the completeness claim that missed it; one separating
+counterexample invalidates the semantic claim it contradicts. Revisit dependent
+claims without discarding independently correct work.
+
+These are execution conditions for the existing four sweeps. They do not create a
+fifth sweep, another ledger, a permanent review queue, or a requirement to repeat
+unchanged source comparisons on every commit. Record evidence at the existing owner
+and continue the substantive mathematics once the affected obligation is satisfied.
+
 # Mathematical Simplicity as Architecture
 
 ## A long-horizon orientation document for agents working on the Lean foundations, Sage bridge, and mathematical DSL
@@ -265,20 +290,25 @@ independent sequential plans.
    definitions, constructions, notation/conventions, lemmas, propositions, theorems,
    corollaries, and reusable named examples/comparisons. Record exact source location, kind,
    hypotheses/data, and source-unit dependencies. Do not consult Lean coverage to decide whether
-   a mathematical unit deserves a row.
+   a mathematical unit deserves a row. Establish coverage of the admitted source before
+   deriving filtered worklists; unrecognized sections or metadata remain unresolved inputs.
 2. **Lean-ecosystem mapping sweep.** Only after the catalogue is complete, search every unit
    against pinned and upstream Mathlib, open Mathlib work, Loogle/LeanSearch, Reservoir, the local
    source atlas, **broad GitHub search across all discoverable Lean repositories**, local mirrors,
    and statement banks. Inspect actual declarations and hypotheses. Classify the unit as
    `mathlib`, `project-existing`, `package-import`, `reference-port`, or `unmatched`, recording
-   exact repo/commit/path/declaration/license/toolchain provenance. Import usable packages; when
-   Lean code exists but is not directly importable, preserve it as a reference implementation to
-   port/adapt. Only `unmatched` units are greenfield mathematics.
+   exact repo/commit/path/declaration/license/toolchain provenance. Before accepting a route,
+   compare the entire source obligation with the actual candidate declarations using the
+   [mapping acceptance boundary](#accept-a-mapping-against-the-whole-source-obligation).
+   Import usable packages; when Lean code exists but is not directly importable, preserve it
+   as a reference implementation to port/adapt. Only `unmatched` units are greenfield mathematics.
 3. **Definition sweep.** Traverse every definitional unit using its mapping. Reuse canonical
    owners directly, port reference implementations rather than rederive them, and author new
    mathematics only for unmatched units. Place every notion at its correct categorical owner,
    defining any missing categories, morphism classes, functors, or universal constructions.
-   Prove only what is intrinsic to well-definedness and categorical laws.
+   Prove what is intrinsic to well-definedness and categorical laws. Establish the
+   [definition's source meaning](#establish-the-definition-before-dependent-use) before
+   exporting it or building another construction on it.
 4. **Theorem sweep.** Only after the definitional sweep, traverse the catalogue's non-definitional
    units, again reusing the mapping first. This is an independent, potentially very long
    programme. It must not shrink the definition sweep or delay unrelated vocabulary merely
@@ -289,9 +319,11 @@ first source in traversal order whose ledger box for this sweep is unticked and 
 agent has named as in progress; name it in that sweep's record before you start, so a second
 agent working the same sweep takes a different source. Then work it through to the end, chapter
 after chapter, without pausing between chapters to be told to continue, and tick its ledger box
-yourself when the whole source is done. Take the next source the same way. Nothing outside this
-repository knows which chapter comes next, and no agent needs to be handed one: the ledger, the
-traversal order, and the mapping records already say it.
+yourself only after the [whole-source closure check](#close-a-source-from-its-complete-obligations)
+establishes that the current sweep's obligations are discharged for every required unit.
+Take the next source the same way. Nothing outside this repository knows which chapter comes
+next, and no agent needs to be handed one: the ledger, the traversal order, and the mapping
+records already say it.
 
 The corpus order itself is part of the architecture: for example modules precede localization of
 modules, generic category/functor language precedes later categorical placement, and generic
@@ -309,6 +341,163 @@ Canonical execution records:
 - [.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/)
   owns the four sequential plans and their handoff/output conventions. Do not maintain competing
   per-source progress ledgers elsewhere.
+
+### Corpus acceptance workflow
+
+The user gesture is “continue the TODOs.” The object being advanced is the admitted
+mathematical source, realized through the current sweep. Use the existing catalogue,
+mapping records, Lean owners, and whole-source ledger. Apply the following checks
+before the corresponding acceptance decision, not as a retrospective explanation of
+a completed batch.
+
+#### Establish the population before selecting the work
+
+Read the complete catalogue for the source being claimed, including appendices,
+tables, notation, terminology, named examples, and mixed definition/theorem units.
+The source manifest determines the admitted edition and scope. Use the source-reading
+gate to resolve ambiguous statements or evidence that the catalogue omitted source
+content. A complete catalogue traversal does not by itself prove that its source
+extraction was complete.
+
+Identify all source-unit IDs before filtering by kind or route. Inspect actual
+heading levels, metadata spellings, and table forms. A parser that accepts only
+`### FCxx-` and `- **Kind:**` cannot certify a catalogue containing `#### FCxx-` or
+`- **kind:**`. A whitelist containing “Definition” but excluding definitional
+terminology or named constructions cannot determine Sweep III's scope.
+
+Classify actual mathematical content. A mixed unit keeps its source ID and contributes
+its definitional and theorem obligations to the appropriate sweeps. Unknown kinds,
+missing metadata, duplicate IDs, unparsed records, and unread regions must be resolved
+before claiming exhaustive coverage. An empty result is not proof that nothing is owed.
+
+Reconcile source identities with classified and mapped identities. Equal counts do
+not establish equal sets, and a checker that consumes only the selector's output
+cannot detect the selector's omissions. Prefer existing source-aware tooling; for a
+bounded source, complete direct inspection is also valid. Do not replace failed
+coverage with a sample or introduce another private residue ledger.
+
+#### Accept a mapping against the whole source obligation
+
+For each unit, read its full statement, hypotheses, and source context needed to
+interpret it. Open the candidate declarations at the recorded revision. Compare:
+
+- the supplied data, ambient objects, hypotheses, and quantifier domains;
+- the object, map, structure, or proposition the source asks to obtain;
+- defining laws, universal properties, choices, and relevant generality;
+- each separate clause when the source unit bundles several obligations.
+
+The existing mapping row must identify which declarations supply those clauses and
+which comparison makes the route valid. A predicate about an already supplied object
+does not construct that object. A necessary condition, special case, or collection
+of ingredients is not an exact realization of the whole unit. Conversely, a generic
+construction can realize a named example without a declaration with that exact name.
+
+For calibration, compare an explicit root-system construction with
+`RootPairing.IsG2`: a property of a supplied root pairing is not the construction of
+the source's vectors and pairing. If a separate generic construction supplies that
+model, record and use it. Do not reimplement valid library mathematics merely because
+the original mapping cited the wrong declaration.
+
+A route label or completed Mapping box is a claim to inspect, not permission to skip
+the comparison. Evidence already established for unchanged pinned declarations may
+be reused. If the comparison fails, repair the factual mapping at its existing owner
+and preserve the original source obligation. Retain useful reference implementations
+with exact provenance. Do not turn an inconvenient port or a partial match into a
+greenfield task without the required reuse search.
+
+#### Establish the definition before dependent use
+
+Before writing a new definition, derive its data, laws, hypotheses, and quantified
+conditions from the source independently of the prospective Lean encoding. Ground this
+in the catalogue's source unit and its mapping record; do not create a second local
+account of the source.
+
+After implementation, compare the actual declaration with that derivation. Run the
+[wrong-model test](#apply-the-wrong-model-test) and the
+[positive and separating examples](#require-one-positive-and-one-separating-example)
+before adding the definition to `LeanCategories.All` or using it in another named
+construction. Inspect mixed boundary cases, not only conditions within each part of
+a partition. The examples supplement the full clause comparison and intrinsic proofs;
+they do not establish equivalence by themselves.
+
+For a simple loop, injectivity on `(0,1)` plus endpoint equality leaves endpoint/interior
+collisions unchecked. A traversal of two circles meeting at the basepoint passes that
+weaker predicate. The source's equality condition must reject it before orientation
+or curve theory uses the predicate. For a polygonal region, containing a polygon's
+boundary alone also permits the entire plane or just the boundary; compare the source's
+actual region condition before forming the intended surface quotient.
+
+Read each imported project-owned definition whose meaning is a premise of the new
+construction, or inspect its still-valid source comparison. A standard name and a
+successful dependency build do not establish that meaning. Reuse canonical dependency
+declarations directly once the mapping comparison establishes the match.
+
+Complete construction laws in Sweep III: existence where required, representative
+independence, closure, category/functor laws, and the properties needed for the output
+to inhabit its claimed mathematical class. An arbitrary output is not a normal-form
+construction until the required normal-form property is established. A source-defined
+predicate expressing that property is a different, legitimate obligation.
+
+General classification and other theorems may remain in Sweep IV when the definition
+does not depend on them. If a source theorem is required to construct or use the named
+object, record its exact source-unit dependency and discharge that prerequisite.
+Neither deferral of intrinsic laws nor expansion into an unrelated theorem programme
+satisfies the definition sweep.
+
+Only after semantic acceptance should aggregate builds, exporters, and existing QC
+be used as integration evidence. Targeted elaboration during implementation remains
+appropriate. A build failure can require a representation repair; a build success
+cannot override a failed source comparison.
+
+#### Close a source from its complete obligations
+
+Return to the complete source-unit population, not the last residual worklist. For
+every unit carrying content required by the current sweep, identify the evidence that
+discharges that phase's obligation. Reuse the existing catalogue and mapping records.
+Do not create aliases or a parallel completion table to make this check easy.
+
+Catalogue closure requires complete admitted source coverage, identities, statements,
+hypotheses/data, and source-unit dependencies. Mapping closure requires an inspected
+route and supporting comparison or a scoped, dated negative search for every unit;
+an admissible `unmatched` mapping does not require a Lean implementation in Sweep II.
+Definition closure requires usable realizations of all definitional content. Theorem
+closure requires the remaining source results with their original hypotheses and
+conclusions proved. Do not apply a later phase's acceptance burden to an earlier one.
+
+In Sweep III, direct Mathlib/project routes need the accepted semantic match and
+required reachability. Package routes need the actual accepted dependency. Reference
+ports need the integrated implementation and comparison, not a downloaded file or a
+citation. New mathematics needs its source-grounded definition and intrinsic laws.
+For later mixed or terminology units, classification must follow their content even
+when their metadata spelling differs from early chapters.
+
+Check the source's Definitions box only when every such obligation is discharged,
+required integration checks apply to the delivered revision, and no known invalidated
+mapping or definition remains among those claims. This check does not require proving
+the independent Sweep-IV theorem corpus. Do not infer closure from a clean worktree,
+absence of `sorry`, export success, counts, or completion of the selected batch.
+
+#### Repair the defeated assumption and its affected uses
+
+When an omitted unit disproves an exhaustive selection, stop using that selection to
+justify closure. Identify the failed assumption and revisit all previous closure
+claims that relied on it. Resolve the affected population before declaring a new
+exhaustive residue. Adding only the newly noticed unit leaves the selection failure
+unrepaired. Preserve already correct mathematics while implementing the actual gaps.
+
+When a source comparison or separating example disproves a definition, suspend
+acceptance of its affected dependents. Trace semantic uses through definitions,
+theorems, aliases, instances, exports, and mapping claims. Repair the mathematical
+owner, then reconcile the dependent claims. Changing a comment, renaming the object,
+or patching each consumer around the same faulty owner does not discharge the source
+obligation. Do not delete or overwrite other workers' artifacts.
+
+Continue independent work under the existing traversal rules. Ask the mathematician
+only if repair requires choosing different mathematics or resolving conflicting
+authorities. A failed whole-source claim does not erase valid definitions, and a
+single bad definition does not make every unrelated file suspect. Restoration of a
+checkbox or a passing build is not the stopping condition; restoration of the
+affected source obligations is.
 
 ### Unfold compressed mathematical insight
 
@@ -457,10 +646,12 @@ The CAS DSL and registry must point directly to those canonical declaration name
 project vocabulary, compatibility layer, synonym table, or translation map between the DSL and
 Mathlib. Stable identifiers identify the owning Lean declarations; they do not rename them.
 
-If an existing declaration is already reachable, add nothing. If it is not reachable, import its
-owner. If the mathematics is absent after the reuse search, implement the missing object,
-category, functor, natural transformation, or universal construction from a cited standard
-source. Do not create a wrapper whose only purpose is to change a name.
+After the mapping acceptance boundary establishes that the existing declaration supplies the
+source obligation, add nothing if it is already reachable. If it is not reachable, import its
+owner. Reachability alone does not establish the match. If the mathematics is absent after
+the reuse search, implement the missing object, category, functor, natural transformation,
+or universal construction from a cited standard source. Do not create a wrapper whose
+only purpose is to change a name.
 
 These architectures are prohibited:
 
@@ -483,6 +674,9 @@ It does not prove unique ownership, semantic agreement, or correct categorical p
 
 Before adding a foundation to the root surface, identify its exact category and functors.
 Also identify its predicates, universal properties, and relationship to existing foundations.
+Apply the source comparison and separating-example check in the
+[corpus acceptance workflow](#establish-the-definition-before-dependent-use) before the
+root import makes that foundation available to later constructions.
 
 ---
 
@@ -501,6 +695,8 @@ Before writing any **foundational-corpus** construct, in order:
    Then search GitHub broadly across all discoverable Lean repositories rather than stopping at
    the curated registry. Search names, synonyms, source theorem names, and expected type shapes.
    Open candidate code and compare mathematical generality and hypotheses.
+   Apply the [mapping acceptance boundary](#accept-a-mapping-against-the-whole-source-obligation)
+   to the actual declarations; a completed mapping row is not its own semantic evidence.
 
 3. **Reuse before authorship.** A Mathlib or existing project route is used directly. An
    importable external package is imported. A non-importable Lean implementation is preserved
@@ -512,6 +708,8 @@ Before writing any **foundational-corpus** construct, in order:
    relationship to the standard/source notion is a red flag. Reuse Mathlib's typeclasses,
    category conventions, and morphism classes so the result composes with the library instead of
    shadowing it. Do not create project-local aliases merely to rename dependency declarations.
+   Establish the source comparison and intrinsic laws before exporting the definition or
+   allowing another construction to consume it.
 
 5. **Keep search evidence in the mapping record.** The corpus catalogue owns mathematical
    source content; Sweep II owns implementation provenance. Do not create separate ad hoc route
