@@ -1,5 +1,41 @@
 # Active mathematical work
 
+## Begin each continuation here
+
+Read [AGENTS.md — Start here: corpus execution](AGENTS.md#start-here-corpus-execution)
+before selecting work. Its execution sequence and worked failure cases apply to all
+four sweep plans below. Then:
+
+1. Read the current sweep's plan and the existing source handoff. Resume your claimed
+   source or claim the next available source in the admitted traversal order. Start
+   from the latest delivered mathematics and the next unresolved source unit.
+2. In Sweep I, catalogue the complete admitted source independently of Lean availability.
+   In later sweeps, read that complete catalogue before filtering by kind or route.
+   Include terminology, named constructions, mixed definition/theorem units, and later
+   heading and metadata formats. Reconcile source-unit identities with the selected
+   work; an empty filtered list is not whole-source completion.
+3. In Sweeps II–IV, read each unit's source statement and the actual candidate
+   declarations before accepting a route. Compare supplied data, requested output,
+   hypotheses, and laws. Treat “verified” mappings in the plans as claims to check at
+   this point; reuse an existing still-valid comparison, and repair a false match in
+   its current mapping record.
+4. In Sweeps III–IV, implement the unit at its canonical owner. Before a definition is
+   exported or consumed, compare it with the source, check intended and excluded examples, and
+   finish the laws needed for the construction. Inspect the meaning of project-owned
+   premises before extending them. Repair an incorrect owner and affected uses before
+   continuing that dependency chain; proceed with independent work when another agent
+   owns the repair.
+5. Commit coherent work through the existing repository checks and continue through the
+   source. Before ticking its box, return to every source unit required by this sweep,
+   using the phase-specific closure rules in `AGENTS.md`. Record completion in the
+   existing ledger and handoff, then take the next source without waiting for another prompt.
+
+If an omitted unit exposes a faulty selector, revisit the coverage claims made with
+that selector before declaring a new exhaustive residue. Keep the already-correct
+mathematics. Apply the current sweep's own obligations: mapping can end in a supported
+`unmatched` route, definitions include intrinsic laws, and independent source theorems
+remain in Sweep IV.
+
 ## Where the plans live
 
 Plans are not stored in this repository. `.agents/` is a symlink to this project's directory in

@@ -1,3 +1,136 @@
+# Start here: corpus execution
+
+For every request to continue the TODOs, apply this workflow before selecting or
+resuming mathematical work. These instructions govern execution of the linked sweep
+plans, including plans that describe their input mappings as “verified.”
+
+1. Read `TODO.md`, the current sweep plan, the source manifest, and the whole-source
+   ledger. Resume your claimed source; otherwise claim the first available source in
+   the admitted dependency order. Read its existing handoff and delivered declarations
+   so you continue from the latest mathematical result rather than repeat a completed
+   search, implementation, or integration check.
+2. Establish the source's complete unit population before filtering it for the sweep.
+   In Catalogue, traverse the admitted source without consulting Lean availability.
+   In later sweeps, read the complete catalogue, including later heading levels,
+   terminology, named examples, and mixed units. Classify mathematical content, then
+   reconcile source IDs with the mapping and worklist. Resolve unparsed or ambiguous
+   entries before treating the selected list as exhaustive.
+3. In Mapping, Definitions, and Theorems, read the next unit's source statement before
+   choosing its Lean encoding. Compare the candidate's actual inputs, output,
+   hypotheses, and laws with every clause of that statement. A “verified” or “exact”
+   mapping is usable only when that comparison holds. Reuse an established comparison
+   for unchanged declarations; correct a defeated mapping at its existing owner and
+   preserve useful prior art. Catalogue establishes the obligation independently.
+4. In Definitions and Theorems, implement the actual obligation at its mathematical
+   owner. Check the meaning of project definitions used as premises. Before exporting
+   a new definition or building on it, compare its clauses to the source, try an
+   intended example and a nearby excluded example, and complete its intrinsic
+   construction laws. Repair a faulty owner and affected uses before extending that
+   dependency chain. Continue independent mathematics while another worker owns the
+   repair.
+5. Commit coherent work using the repository's existing checks. Continue
+   through the source without waiting for another “continue.” At whole-source closure,
+   return to the complete population and discharge every obligation of the current
+   sweep. Update the existing ledger and handoff, then take the next source. A handoff
+   names the actual declarations, checks already run, and next unresolved source units
+   in the existing execution record so the next worker can continue directly.
+
+The [corpus acceptance workflow](#corpus-acceptance-workflow) gives the detailed checks
+at each of these decisions. Keep source content in the catalogue, implementation
+provenance in the mapping, and completion in the existing ledger. Apply the checks as
+part of doing the mathematics; they do not require a separate review programme.
+
+## Reasoning traps to catch while executing
+
+### A filtered list silently changes what “all” means
+
+A catalogue contains `### U001` with `Kind: Definition`, `#### U002` with
+`kind: Definition`, and U003 labeled `Terminology`. If each introduces required
+vocabulary, a selector accepting only the first format omits two obligations. Finishing
+its output proves completion of U001, not completion of the source.
+
+The tempting inference is that an empty residual list means no work remains. The
+mistake happened earlier, when formatting and labels became the authority for scope.
+Changing a heading level does not change the mathematics. Establish all identities
+first, classify their content second, and select work third. Equal totals cannot detect
+different sets of IDs; another check over the same filtered input cannot recover what
+that filter discarded.
+
+### A declaration's subject is not its mathematical role
+
+`RootPairing.IsG2` describes a supplied root pairing. It does not produce the source's
+explicit G2 root-system model. Accepting it as that construction reverses the data
+dependency: the missing object has become an input rather than an output.
+
+Read the candidate's type, not just its name or nearby theory. A property can correctly
+realize a source predicate. A generic construction can realize a named example without
+sharing its name. An existence theorem can support a permitted choice when the required
+properties and independence hold. Identify which case the source actually asks for;
+reuse the complete construction when it exists and retain partial references when it
+does not. Neither a familiar name nor a route label settles that comparison.
+
+### Familiar shorthand can drop a quantified condition
+
+A simple loop identifies its two endpoints and no other distinct parameters. Endpoint
+equality plus injectivity on `(0,1)` leaves endpoint/interior collisions unchecked.
+Trace two circles meeting at a basepoint: visit that point at times 0, 1/2, and 1.
+Interior injectivity can hold, yet the loop is not simple. This is the missing case to
+check in `LeanCategories/Topology/LinearGraph.lean` before its `IsSimpleLoop` predicate
+supports `PlanarLoop.IsSimple` and orientations in `WindingNumber.lean`.
+
+Likewise, a carrier containing a polygon's boundary may be the whole plane or just that
+boundary. The containment field alone does not define the filled region needed by a
+surface quotient. Read the source's region condition before relying on
+`PolygonalRegion` in `LeanCategories/Topology/SurfaceSchemes.lean`.
+
+Write the source condition with explicit quantifiers before formalizing it. Examine
+relations between parts of a partition as well as relations within each part. Choose
+examples from the source, so a weakened implementation cannot choose its own favourable
+cases. Include an intended example to catch accidental strengthening as well as an
+excluded example to catch weakening. The examples accompany the full clause comparison.
+
+### Internal consistency can displace the source question
+
+Lean checks the declarations supplied to it. Lemmas, imports, exports, and successful
+builds can all accumulate around the wrong definition. Those successes make the current
+encoding easier to trust without answering whether it expresses the source.
+
+Keep the questions separate: first determine the source's object and laws, then check
+the actual declaration against them, then use compilation and integration checks for
+the delivered encoding. When a check fails, repair the representation while preserving
+the obligation. When it passes, continue the mathematics from the accepted result.
+
+### An omission can defeat a method, and a bad premise can spread
+
+Finding one omitted terminology unit is evidence against the selection method's
+completeness. Adding just that unit and resuming the same residual list preserves the
+cause. Identify the failed assumption and revisit earlier closure claims that relied
+on it. Preserve correct implementations while recovering the omitted obligations.
+
+A wrong definition has a different repair boundary: its owner and semantic dependents,
+including aliases, instances, exports, and mapping claims. A downstream build cannot
+restore a missing condition. Repair that owner and affected uses instead of adding
+consumer-specific compensations. Unrelated work remains usable and can continue.
+
+### Phase labels do not decide what a construction owes
+
+A quotient needs representative independence to define its map. A category needs its
+composition laws. A normal-form construction needs the property making its output
+normal. These are intrinsic definition work even when Lean expresses them as theorems.
+General classification results can remain in Sweep IV. Discharge an exact prerequisite
+theorem when a construction needs it, without absorbing the surrounding theorem corpus.
+Conversely, an admissible unmatched route can finish a Mapping obligation without yet
+implementing it. Apply each sweep's own completion condition.
+
+### Judge progress by what later mathematics can safely use
+
+Follow the sequence from the previous handoff through delivered mathematics to its next
+consumer. Preserve correct work, repair defeated assumptions, and extend sound owners.
+Necessary build waits are part of delivery. Commit counts, checkbox totals, and the
+proportion of administrative commits do not measure mathematical progress over time.
+Repeated searches or status edits need a changed input or a concrete unresolved
+obligation; otherwise resume the next mathematical unit.
+
 <!-- agent-memory:start -->
 # Agent memory
 
@@ -101,31 +234,6 @@ one-message report explaining exactly why that is impossible.
   status edits, registries, validation of validation) and this turn is about
   to do the same.** From inside, organizing the work feels like progress on
   it. Perform the reground act before continuing.
-
-# Corpus work: required entry and acceptance rules
-
-Before selecting corpus work, accepting a reuse mapping, or introducing a definition
-that another construction will consume, load `llm-failure-modes` and its
-`coverage-and-semantic-drift.md` lesson. It teaches the reasoning errors through worked
-examples and transfer cases. Apply the repository-specific
-[corpus acceptance workflow](#corpus-acceptance-workflow) below at each decision.
-
-The original source determines the obligation. The catalogue identifies it, the
-mapping records implementation evidence, and Lean realizes it. A filtered worklist,
-a mapping label, or a passing build cannot take over the preceding owner's authority.
-
-Read the source statement before inspecting the proposed implementation as a solution.
-Compare the actual types and laws before treating a route as exact. Test a new
-definition against the source's intended and excluded examples before exporting it
-or using it as a premise. Reconcile all source identities before whole-source closure.
-One omitted unit invalidates the completeness claim that missed it; one separating
-counterexample invalidates the semantic claim it contradicts. Revisit dependent
-claims without discarding independently correct work.
-
-These are execution conditions for the existing four sweeps. They do not create a
-fifth sweep, another ledger, a permanent review queue, or a requirement to repeat
-unchanged source comparisons on every commit. Record evidence at the existing owner
-and continue the substantive mathematics once the affected obligation is satisfied.
 
 # Mathematical Simplicity as Architecture
 
