@@ -1,5 +1,35 @@
 # Active mathematical work
 
+## Execution DAG
+
+The nodes below reference the full sweep obligations in this file. `Needs`
+lists immediate prerequisites; an entry `A` on node `B` means `A -> B`.
+These edges express the existing sweep order, not new completion claims.
+The linked whole-source ledger remains the sole source of sweep completion.
+
+| ID | Obligation | Needs |
+| --- | --- | --- |
+| `corpus` | [Admitted sources, editions, scope and source acquisition](#0a-corpus-v2-amendment--four-admitted-sources) | none |
+| `catalogue` | [Sweep I: every source unit](#1-sweep-i--catalogue-every-corpus-unit) | `corpus` |
+| `mapping` | [Sweep II: every unit's Lean route](#2-sweep-ii--map-every-unit-onto-existing-lean) | `catalogue` |
+| `definitions` | [Sweep III: definitions and intrinsic laws](#3-sweep-iii--realize-the-complete-definitional-layer) | `mapping` |
+| `theorems` | [Sweep IV: remaining theorem obligations](#4-sweep-iv--formalize-the-remaining-lemmas-and-theorems) | `definitions` |
+
+Within a sweep, source dependencies and traversal order come from the existing
+[source manifest](.agents/references/foundational-source-corpus.md); unit IDs and
+their mathematical prerequisites come from the complete source catalogues.
+Use `(sweep, source-unit ID)` to distinguish a unit's successive obligations.
+A theorem needed for a definition's construction is an intrinsic prerequisite
+of that construction, not a back-edge requiring all of Sweep IV first.
+Legacy catalogues are references, not another execution branch.
+
+Preserve task identities and full obligations when recording dependencies.
+Before changing edges, check that every ID resolves and the graph has no cycle;
+select work only when its required inputs are delivered, retaining active claims.
+Read [contribution policies](CONTRIBUTING.md) and record newly observed issues in
+[COMPLAINTS.md](COMPLAINTS.md), linking the affected unit rather than duplicating
+its worklist or completion state.
+
 ## Begin each continuation here
 
 Read [AGENTS.md — Start here: corpus execution](AGENTS.md#start-here-corpus-execution)

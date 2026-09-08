@@ -1,3 +1,11 @@
+# Repository work documents
+
+Read [TODO.md](TODO.md) for the execution DAG and existing sweep records,
+[CONTRIBUTING.md](CONTRIBUTING.md) for named policies, and
+[COMPLAINTS.md](COMPLAINTS.md) for observed mathematical issues and papercuts.
+Record new issues when encountered under `LC-05`; logging never discharges the
+mathematical obligation. Continue independent work whose prerequisites hold.
+
 # Start here: corpus execution
 
 For every request to continue the TODOs, apply this workflow before selecting or
