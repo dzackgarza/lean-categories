@@ -67,6 +67,7 @@ public import LeanCategories.Topology.LocallyMetrizable
 public import LeanCategories.Topology.LinearGraph
 public import LeanCategories.Topology.ManifoldTerminology
 public import LeanCategories.Topology.OrderExamples
+public import LeanCategories.Topology.RealProjectivePlane
 public import LeanCategories.Topology.UniformMetric
 public import LeanCategories.Schemes
 public import LeanCategories.Homological
