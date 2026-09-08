@@ -85,6 +85,37 @@ def ofInvariantFactors : List ℕ → FiniteAbelianElementaryDivisors
   | [] => ⟨0, by simp⟩
   | n :: factors => append (ofInvariantFactor n) (ofInvariantFactors factors)
 
+/-- Prime/exponent coordinates of the elementary divisors.  The exponent is
+stored as a positive natural number. -/
+noncomputable def primeExponentCoordinates (d : FiniteAbelianElementaryDivisors) :
+    Multiset (Nat.Primes × ℕ) :=
+  d.factors.attach.map fun n =>
+    let q : {m : ℕ // IsPrimePow m} := ⟨n.1, d.primePower n.1 n.2⟩
+    let pe := Nat.Primes.prodNatEquiv.symm q
+    (pe.1, pe.2 + 1)
+
+/-- The primes occurring among the elementary divisors. -/
+noncomputable def primes (d : FiniteAbelianElementaryDivisors) : Finset Nat.Primes :=
+  (d.primeExponentCoordinates.map Prod.fst).toFinset
+
+/-- Exponents of the elementary divisors belonging to `p`, sorted in decreasing
+order. -/
+noncomputable def exponentsAt (d : FiniteAbelianElementaryDivisors) (p : Nat.Primes) : List ℕ :=
+  ((d.primeExponentCoordinates.filter fun pe => pe.1 = p).map Prod.snd).sort (fun a b => b ≤ a)
+
+/-- The number of invariant factors produced by elementary-divisor alignment:
+the maximum number of elementary divisors belonging to any one prime. -/
+noncomputable def invariantFactorRank (d : FiniteAbelianElementaryDivisors) : ℕ :=
+  d.primes.sup fun p => (d.exponentsAt p).length
+
+/-- The invariant-factor list recovered from elementary divisors by the
+Dummit--Foote alignment algorithm: for each prime, sort its prime-power
+exponents decreasingly, pad the shorter exponent lists on the right by zeros,
+and multiply columnwise across primes. -/
+noncomputable def alignedInvariantFactors (d : FiniteAbelianElementaryDivisors) : List ℕ :=
+  List.ofFn fun j : Fin d.invariantFactorRank =>
+    ∏ p ∈ d.primes, (p : ℕ) ^ (d.exponentsAt p).getD j.1 0
+
 end FiniteAbelianElementaryDivisors
 
 namespace FiniteAbelianType

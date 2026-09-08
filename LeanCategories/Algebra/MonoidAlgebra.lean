@@ -53,3 +53,20 @@ theorem mem_augmentationIdeal {K : Type v} [Monoid K] (x : MonoidAlgebra R K) :
   RingHom.mem_ker
 
 end MonoidAlgebra
+
+namespace MonoidAlgebra
+
+universe u v
+
+variable (R : Type u) [Ring R]
+
+/-- The standard augmentation generators `g - 1`, represented in a monoid
+algebra as `single g 1 - 1`.
+
+This is the definition-level construction in Dummit--Foote FC01-C07-U068.
+TauCeti proves that these elements span `augmentationIdeal`; that equality and
+the cyclic-principal specialization belong to Sweep IV. -/
+def augmentationGenerators (K : Type v) [Monoid K] : Set (MonoidAlgebra R K) :=
+  Set.range fun k : K => single k 1 - 1
+
+end MonoidAlgebra
