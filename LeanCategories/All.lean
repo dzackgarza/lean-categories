@@ -62,6 +62,7 @@ public import LeanCategories.Lattices.Valued
 public import LeanCategories.Orders
 public import LeanCategories.Topology.Box
 public import LeanCategories.Topology.LocallyMetrizable
+public import LeanCategories.Topology.ManifoldTerminology
 public import LeanCategories.Topology.OrderExamples
 public import LeanCategories.Topology.UniformMetric
 public import LeanCategories.Schemes
