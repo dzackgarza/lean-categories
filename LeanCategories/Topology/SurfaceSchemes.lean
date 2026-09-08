@@ -317,4 +317,32 @@ def projectiveCrosscapBlock {m : ℕ} (i : Fin m) :
 def mFoldProjectivePlaneScheme (m : ℕ) : LabellingScheme (ProjectiveSurfaceLabel m) :=
   (List.ofFn fun i : Fin m => projectiveCrosscapBlock i).flatten
 
+
+/-- One-face polygon pasting determined by a signed labelling scheme. -/
+def schemePasting {α : Type*} (w : LabellingScheme α)
+    (P : PolygonalRegion w.length) : PolygonPasting PUnit α where
+  sideCount _ := w.length
+  region _ := P
+  direction _ i :=
+    match (w.get i).sign with
+    | .pos => .forward
+    | .neg => .reverse
+  label _ i := (w.get i).label
+
+/-- The quotient space obtained by pasting a polygon according to a signed labelling scheme. -/
+abbrev schemeRealization {α : Type*} (w : LabellingScheme α)
+    (P : PolygonalRegion w.length) :=
+  (schemePasting w P).Realization
+
+/-- The `n`-fold torus as the quotient space defined by its canonical commutator scheme
+(FC02-C12-U013). -/
+abbrev nFoldTorus (n : ℕ) (P : PolygonalRegion (nFoldTorusScheme n).length) :=
+  schemeRealization (nFoldTorusScheme n) P
+
+/-- The `m`-fold projective plane as the quotient space defined by its canonical crosscap scheme
+(FC02-C12-U015). -/
+abbrev mFoldProjectivePlane (m : ℕ)
+    (P : PolygonalRegion (mFoldProjectivePlaneScheme m).length) :=
+  schemeRealization (mFoldProjectivePlaneScheme m) P
+
 end LeanCategories.Topology

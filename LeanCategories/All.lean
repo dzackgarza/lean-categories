@@ -68,6 +68,7 @@ public import LeanCategories.Topology.DunceCap
 public import LeanCategories.Topology.LocallyMetrizable
 public import LeanCategories.Topology.LinearGraph
 public import LeanCategories.Topology.GraphReduction
+public import LeanCategories.Topology.GraphRealization
 public import LeanCategories.Topology.ManifoldTerminology
 public import LeanCategories.Topology.OrderExamples
 public import LeanCategories.Topology.RealProjectivePlane
