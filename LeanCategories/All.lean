@@ -63,9 +63,11 @@ public import LeanCategories.Lattices.Valued
 public import LeanCategories.Orders
 public import LeanCategories.Topology.Box
 public import LeanCategories.Topology.CoveringDimension
+public import LeanCategories.Topology.CoveringTerminology
 public import LeanCategories.Topology.DunceCap
 public import LeanCategories.Topology.LocallyMetrizable
 public import LeanCategories.Topology.LinearGraph
+public import LeanCategories.Topology.GraphReduction
 public import LeanCategories.Topology.ManifoldTerminology
 public import LeanCategories.Topology.OrderExamples
 public import LeanCategories.Topology.RealProjectivePlane
