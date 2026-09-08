@@ -20,6 +20,7 @@ public import LeanCategories.Algebra.Concrete.Rings
 public import LeanCategories.Algebra.FractionalIdeals
 public import LeanCategories.Algebra.AtiyahMacdonald.PrimaryDecomposition
 public import LeanCategories.Algebra.DimensionTheory
+public import LeanCategories.Algebra.Euclidean
 public import LeanCategories.Algebra.Ideals
 public import LeanCategories.AlgebraicFamilies
 public import LeanCategories.Algebra.FreeAlgebras
@@ -41,6 +42,7 @@ public import LeanCategories.Algebra.Polynomial
 public import LeanCategories.Algebra.ZariskiRing
 public import LeanCategories.Algebra.PolynomialPowerSeries
 public import LeanCategories.Algebra.MatrixFamilies
+public import LeanCategories.Algebra.MonoidAlgebra
 public import LeanCategories.ForMathlib.AdicCompletionIntegers
 public import LeanCategories.ForMathlib.DenseIntegralCompletion
 public import LeanCategories.ForMathlib.QuadraticReflection
