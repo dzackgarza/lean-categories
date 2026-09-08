@@ -35,6 +35,7 @@ public import LeanCategories.Algebra.IdealProfiniteCompletionDedekind
 public import LeanCategories.Algebra.BlockDecomposition
 public import LeanCategories.Algebra.CanonicalForms
 public import LeanCategories.Algebra.GroupTheory
+public import LeanCategories.Algebra.GroupGeneration
 public import LeanCategories.Algebra.SubgroupIncidence
 public import LeanCategories.Algebra.FiniteAbelian
 public import LeanCategories.Algebra.SquarefreePart
@@ -61,6 +62,7 @@ public import LeanCategories.Modules.Quadratic.Valued
 public import LeanCategories.Lattices.Valued
 public import LeanCategories.Orders
 public import LeanCategories.Topology.Box
+public import LeanCategories.Topology.CoveringDimension
 public import LeanCategories.Topology.LocallyMetrizable
 public import LeanCategories.Topology.ManifoldTerminology
 public import LeanCategories.Topology.OrderExamples
