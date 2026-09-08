@@ -63,11 +63,14 @@ public import LeanCategories.Lattices.Valued
 public import LeanCategories.Orders
 public import LeanCategories.Topology.Box
 public import LeanCategories.Topology.CoveringDimension
+public import LeanCategories.Topology.DunceCap
 public import LeanCategories.Topology.LocallyMetrizable
 public import LeanCategories.Topology.LinearGraph
 public import LeanCategories.Topology.ManifoldTerminology
 public import LeanCategories.Topology.OrderExamples
 public import LeanCategories.Topology.RealProjectivePlane
+public import LeanCategories.Topology.SurfaceSchemes
+public import LeanCategories.Topology.SurfaceTriangulation
 public import LeanCategories.Topology.UniformMetric
 public import LeanCategories.Topology.WindingNumber
 public import LeanCategories.Schemes
