@@ -69,6 +69,7 @@ public import LeanCategories.Topology.ManifoldTerminology
 public import LeanCategories.Topology.OrderExamples
 public import LeanCategories.Topology.RealProjectivePlane
 public import LeanCategories.Topology.UniformMetric
+public import LeanCategories.Topology.WindingNumber
 public import LeanCategories.Schemes
 public import LeanCategories.Homological
 public import LeanCategories.Homological.IsHereditary
