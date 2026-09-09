@@ -13,6 +13,7 @@ public import LeanCategories.CategoryTheory.Subcategory
 public import LeanCategories.CategoryTheory.RiehlPointwiseKan
 public import LeanCategories.CategoryTheory.StrictlyCreates
 public import LeanCategories.CategoryTheory.Homotopical
+public import LeanCategories.CategoryTheory.Deformation
 public import LeanCategories.Topology.SmashProduct
 public import LeanCategories.Catalogue.Id
 public import LeanCategories.Catalogue.Syntax
