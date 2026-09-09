@@ -568,7 +568,7 @@ The pinned checkout owns these; search them by path before any external source.
 | `Mathlib/AlgebraicTopology/` | Simplicial sets, nerves, quasicategories, simplicial homotopy theory. |
 | `Mathlib/Condensed/` | Condensed sets and condensed abelian groups. |
 | `Mathlib/AlgebraicGeometry/` | Schemes, morphism classes, gluing, Spec and Proj. |
-| `Mathlib/Geometry/Manifold/`, `.../Manifold/Riemannian/`, `.../Manifold/VectorBundle/` | Manifolds with corners, immersions, submersions, bordism, Whitney embedding; Riemannian bundles, `IsRiemannianManifold`, path length and Riemannian distance; vector bundles, local frames, covariant derivatives, tensoriality. Upstream Mathlib is adding metric connections, the Koszul formula, and the Levi-Civita pipeline, and Physlib carries pseudo-Riemannian metrics on top of these classes. Dormant external Riemannian-geometry repositories predate this tree and are superseded by it. |
+| `Mathlib/Geometry/Manifold/`, `.../Manifold/Riemannian/`, `.../Manifold/VectorBundle/` | Manifolds with corners, immersions, submersions, bordism, Whitney embedding; Riemannian bundles, `IsRiemannianManifold`, path length and Riemannian distance; vector bundles, local frames, covariant derivatives, tensoriality. Upstream Mathlib is adding metric connections, the Koszul formula, and the Levi-Civita pipeline, and [`leanprover-community/physlib`](https://github.com/leanprover-community/physlib) (see the computational table) carries pseudo-Riemannian metrics on top of these classes. Dormant external Riemannian-geometry repositories predate this tree and are superseded by it. |
 | `Mathlib/LinearAlgebra/QuadraticForm/`, `Mathlib/LinearAlgebra/BilinearForm/` | Quadratic and bilinear forms, isometries, orthogonality. |
 | `Mathlib/LinearAlgebra/RootSystem/` | Root pairings, root systems, Weyl groups. |
 | `Mathlib/NumberTheory/`, `Mathlib/RepresentationTheory/` | Number fields, modular forms, L-series, group representations. |
@@ -747,7 +747,7 @@ The pinned checkout owns these; search them by path before any external source.
 | Repository | Content |
 | --- | --- |
 | [`lecopivo/SciLean`](https://github.com/lecopivo/SciLean) | Scientific computing. |
-| [`leanprover-community/physlib`](https://github.com/leanprover-community/physlib) (formerly PhysLean/HepLean) | Physics results in Lean. |
+| [`leanprover-community/physlib`](https://github.com/leanprover-community/physlib) (formerly PhysLean/HepLean) | Physics results in Lean; active, over 700 stars. Reusable mathematics under `Physlib/Mathematics/`: pseudo-Riemannian and Riemannian metrics built on Mathlib's Riemannian bundles, with chart-coordinate transformation laws; Levi-Civita symbol; variational calculus; distributions; SO(3) and one-parameter subgroups. Under `Physlib/Relativity/`: a tensor-species framework with index notation, contraction, and conjugation for real and complex tensors; the Lorentz group, its algebra, and SL(2,C). Also crystal lattices, topological field theory, and lattice QFT. Its `Meta/Informal` layer records informal definitions and lemmas as Lean declarations, a reference pattern for statement banks. |
 | [`Timeroot/Lean-QuantumInfo`](https://github.com/Timeroot/Lean-QuantumInfo) | Quantum information theory. |
 | [`optsuite/optlib`](https://github.com/optsuite/optlib) | Optimization algorithms and convergence proofs. |
 | [`verified-optimization/CvxLean`](https://github.com/verified-optimization/CvxLean) | Convex optimization modeling *(stale)*. |
