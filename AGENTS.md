@@ -269,7 +269,7 @@ independent sequential plans.
    hypotheses/data, and source-unit dependencies. Do not consult Lean coverage to decide whether
    a mathematical unit deserves a row.
 2. **Lean-ecosystem mapping sweep.** Only after the catalogue is complete, search every unit
-   against pinned and upstream Mathlib, open Mathlib work, Loogle/LeanSearch, Reservoir, the local
+   against pinned and upstream Mathlib, open Mathlib work, [Loogle](https://loogle.lean-lang.org/)/[LeanSearch](https://leansearch.net/), [Reservoir](https://reservoir.lean-lang.org/), the local
    source atlas, **broad GitHub search across all discoverable Lean repositories**, local mirrors,
    and statement banks. Inspect actual declarations and hypotheses. Classify the unit as
    `mathlib`, `project-existing`, `package-import`, `reference-port`, or `unmatched`, recording
@@ -499,7 +499,7 @@ Before writing any **foundational-corpus** construct, in order:
    Do not invent scope from implementation searches or downstream demand.
 
 2. **Require its Sweep-II mapping.** Search pinned Mathlib first, then current upstream Mathlib
-   and open work, Loogle/LeanSearch/docs, Lean Reservoir, and the formalization source atlas.
+   and open work, [Loogle](https://loogle.lean-lang.org/)/[LeanSearch](https://leansearch.net/)/docs, [Lean Reservoir](https://reservoir.lean-lang.org/), and the formalization source atlas.
    Then search GitHub broadly across all discoverable Lean repositories rather than stopping at
    the curated registry. Search names, synonyms, source theorem names, and expected type shapes.
    Open candidate code and compare mathematical generality and hypotheses.
@@ -534,7 +534,7 @@ The failure this gate prevents is §4.3 and §4.4: writing a plausible new defin
 Strict preference order:
 
 1. **Use the pinned Mathlib declaration** (`.lake/packages/mathlib`) whenever it is at least as general.
-2. **Import a packaged library** as a Lake dependency (via Reservoir or a direct git dependency) when the construction lives in an active Lean 4 library.
+2. **Import a packaged library** as a Lake dependency (via [Reservoir](https://reservoir.lean-lang.org/) or a direct git dependency) when the construction lives in an active Lean 4 library.
 3. **Copy or port the reference implementation** when the source is unpackaged, toolchain-incompatible, Lean 3, or in another proof assistant. Cite the origin at the ported site: repository, file, and commit or tag.
 4. **Author new Lean only after 1–3 fail**, under step 3 of the reuse gate, relating the new construct to what exists in the same PR.
 
@@ -542,7 +542,7 @@ Every repository below resolved on GitHub on 2026-08-14. *(Lean 3)* entries are 
 
 ### Refreshing this registry
 
-Recall is not a source. The registry is refreshed by sweeping three machine-readable indexes and diffing them against the repositories linked here: the [Reservoir index](https://github.com/leanprover/reservoir-index) (every public Lake package with its dependency list, so packages that require Mathlib can be isolated), Lean Pool's `LeanPool/projects.yml` (curated, subject-labelled, provenance-labelled), and the [Lean community projects page](https://leanprover-community.github.io/lean_projects.html). `just source-sweep` runs the Reservoir diff and prints the Mathlib-dependent packages not yet linked from this file, with stars and descriptions; judge relevance by hand and add rows in the domain tables. Reservoir names packages, not repositories, so take the URL from each package's `sources[0].repoUrl`, and resolve every new link before committing it.
+Recall is not a source. The registry is refreshed by sweeping three machine-readable indexes and diffing them against the repositories linked here: the [Reservoir index](https://github.com/leanprover/reservoir-index) (every public Lake package with its dependency list, so packages that require Mathlib can be isolated), [Lean Pool](https://github.com/Vilin97/lean-pool)'s `LeanPool/projects.yml` (curated, subject-labelled, provenance-labelled), and the [Lean community projects page](https://leanprover-community.github.io/lean_projects.html). `just source-sweep` runs the [Reservoir](https://reservoir.lean-lang.org/) diff and prints the Mathlib-dependent packages not yet linked from this file, with stars and descriptions; judge relevance by hand and add rows in the domain tables. [Reservoir](https://reservoir.lean-lang.org/) names packages, not repositories, so take the URL from each package's `sources[0].repoUrl`, and resolve every new link before committing it.
 
 ### Indexes and search surfaces
 
@@ -556,7 +556,7 @@ Recall is not a source. The registry is refreshed by sweeping three machine-read
 | [Undergrad math in Mathlib](https://leanprover-community.github.io/undergrad.html) | Coverage map of standard undergraduate material. |
 | [Lean community projects page](https://leanprover-community.github.io/lean_projects.html) | Curated list of active formalization projects. |
 | [Lean Zulip](https://leanprover.zulipchat.com/) | Search it before concluding nonexistence; in-progress formalizations are announced and discussed there. |
-| [`CBirkbeck/LeanBridge`](https://github.com/CBirkbeck/LeanBridge) | Links LMFDB objects to Lean declarations. |
+| [`CBirkbeck/LeanBridge`](https://github.com/CBirkbeck/LeanBridge) | Links [LMFDB](https://www.lmfdb.org/) objects to Lean declarations. |
 
 ### Mathlib subtrees closest to this programme
 
@@ -588,15 +588,15 @@ The pinned checkout owns these; search them by path before any external source.
 | [`rkirov/category-theory-in-context-lean`](https://github.com/rkirov/category-theory-in-context-lean) | Lean companion to Riehl's *Category Theory in Context*. |
 | [`awodey/joyal`](https://github.com/awodey/joyal) | Joyal's representation theorem. |
 | [`mariovagomarzal/higher_category_theory`](https://github.com/mariovagomarzal/higher_category_theory) | Higher-order categories after Cosme Llópez. |
-| [`ivankobe/FactorizationSystems`](https://github.com/ivankobe/FactorizationSystems) | Factorization systems. *(in Lean Pool)* |
-| [`zilberstein/domain-theory`](https://github.com/zilberstein/domain-theory) | Domain theory. *(in Lean Pool)* |
+| [`ivankobe/FactorizationSystems`](https://github.com/ivankobe/FactorizationSystems) | Factorization systems. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
+| [`zilberstein/domain-theory`](https://github.com/zilberstein/domain-theory) | Domain theory. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
 | [`Verified-zkEVM/PolyFun`](https://github.com/Verified-zkEVM/PolyFun) | Polynomial functors and interaction trees. |
 | [`alexkeizer/QPFTypes`](https://github.com/alexkeizer/QPFTypes) | Quotients of polynomial functors; definitional (co)datatypes. |
 | [`dagurtomas/LeanCondensed`](https://github.com/dagurtomas/LeanCondensed) | Condensed mathematics beyond Mathlib's `Condensed/` tree, by the author of that tree. |
 | [`mattrobball/BridgelandStability`](https://github.com/mattrobball/BridgelandStability) | Bridgeland stability conditions on triangulated categories. |
-| [`YijunYuan/HarderNarasimhan`](https://github.com/YijunYuan/HarderNarasimhan) | Harder–Narasimhan theory. *(in Lean Pool)* |
+| [`YijunYuan/HarderNarasimhan`](https://github.com/YijunYuan/HarderNarasimhan) | Harder–Narasimhan theory. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
 | [`Paul-Lez/PersistentDecomp`](https://github.com/Paul-Lez/PersistentDecomp) | Structure theorem for persistence modules. |
-| [`Dominique-Lawson/Directed-Topology-Lean-4`](https://github.com/Dominique-Lawson/Directed-Topology-Lean-4) | Directed topology. *(in Lean Pool)* |
+| [`Dominique-Lawson/Directed-Topology-Lean-4`](https://github.com/Dominique-Lawson/Directed-Topology-Lean-4) | Directed topology. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
 | [`peabrainiac/lean-catdg`](https://github.com/peabrainiac/lean-catdg) | Categorical differential geometry. |
 | [`riccardobrasca/SDG`](https://github.com/riccardobrasca/SDG) | Synthetic differential geometry. |
 
@@ -623,36 +623,36 @@ The pinned checkout owns these; search them by path before any external source.
 | [`teorth/expdb`](https://github.com/teorth/expdb) | Exponent-pair database for analytic number theory. |
 | [`b-mehta/ABC-Exceptions`](https://github.com/b-mehta/ABC-Exceptions) | Exceptions to the ABC conjecture. |
 | [`yawara/odd-order`](https://github.com/yawara/odd-order) | Feit–Thompson odd order theorem in Lean 4, with the finite group theory library it required. |
-| [`JobPetrovcic/ArtinWedderburn`](https://github.com/JobPetrovcic/ArtinWedderburn) | Artin–Wedderburn theorem. *(in Lean Pool)* |
-| [`Whysoserioushah/BrauerGroup`](https://github.com/Whysoserioushah/BrauerGroup) | Brauer groups. *(in Lean Pool)* |
+| [`JobPetrovcic/ArtinWedderburn`](https://github.com/JobPetrovcic/ArtinWedderburn) | Artin–Wedderburn theorem. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
+| [`Whysoserioushah/BrauerGroup`](https://github.com/Whysoserioushah/BrauerGroup) | Brauer groups. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
 | [`kckennylau/EllipticCurve`](https://github.com/kckennylau/EllipticCurve) | Toward a general definition of elliptic curves over schemes. |
-| [`KisaraBlue/ec-tate-lean`](https://github.com/KisaraBlue/ec-tate-lean) | Tate's algorithm for elliptic curves, executable. *(in Lean Pool)* |
+| [`KisaraBlue/ec-tate-lean`](https://github.com/KisaraBlue/ec-tate-lean) | Tate's algorithm for elliptic curves, executable. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
 | [`acmepjz/lean-iwasawa`](https://github.com/acmepjz/lean-iwasawa) | Iwasawa theory. |
 | [`riccardobrasca/FLT3`](https://github.com/riccardobrasca/FLT3) | Fermat's Last Theorem for exponent 3. |
 | [`riccardobrasca/KummerCriterion`](https://github.com/riccardobrasca/KummerCriterion) | Kummer's criterion for regular primes. |
 | [`riccardobrasca/kaplanski4`](https://github.com/riccardobrasca/kaplanski4) | Kaplansky's criterion for unique factorization domains. |
-| [`chrisflav/bruhat-tits`](https://github.com/chrisflav/bruhat-tits) | The Bruhat–Tits tree. *(in Lean Pool)* |
+| [`chrisflav/bruhat-tits`](https://github.com/chrisflav/bruhat-tits) | The Bruhat–Tits tree. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
 | [`smmercuri/adele-ring_locally-compact`](https://github.com/smmercuri/adele-ring_locally-compact) | Local compactness of the adele ring of a number field. |
 | [`pitmonticone/QuadraticIntegers`](https://github.com/pitmonticone/QuadraticIntegers) | Rings of integers of quadratic fields. |
 | [`MichaelStollBayreuth/Weights`](https://github.com/MichaelStollBayreuth/Weights) | Minimization of hypersurfaces (Elsenhans–Stoll). |
 | [`CBirkbeck/uniform-sheafy-tate-domains-lean`](https://github.com/CBirkbeck/uniform-sheafy-tate-domains-lean) | Uniform sheafy Tate rings that are not stably uniform; Huber/Tate ring examples. |
-| [`BochaoKong/nullstellensatz`](https://github.com/BochaoKong/nullstellensatz) | Local complex-analytic geometry: Rückert Nullstellensatz and foundations. *(in Lean Pool)* |
+| [`BochaoKong/nullstellensatz`](https://github.com/BochaoKong/nullstellensatz) | Local complex-analytic geometry: Rückert Nullstellensatz and foundations. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
 | [`Mathias-Stout/Many-sorted-model-theory`](https://github.com/Mathias-Stout/Many-sorted-model-theory) | Many-sorted logic toward the model theory of valued fields. |
 | [`WuProver/groebner_proj`](https://github.com/WuProver/groebner_proj) | Gröbner basis theory; companions [`WuProver/MonomialOrderedPolynomial`](https://github.com/WuProver/MonomialOrderedPolynomial) and [`WuProver/GroebnerTactic`](https://github.com/WuProver/GroebnerTactic). |
 | [`Hagb/lean-groebner`](https://github.com/Hagb/lean-groebner) | Gröbner bases, independent development. |
 | [`JJYYY-JJY/lean-normal-forms`](https://github.com/JJYYY-JJY/lean-normal-forms) | Executable Hermite and Smith normal forms over Euclidean domains with a PID bridge to Mathlib. Direct reference for lattice coordinate normalization. |
-| [`LieLean/LowDimSolvClassification`](https://github.com/LieLean/LowDimSolvClassification) | Classification of solvable Lie algebras of dimension at most three. *(in Lean Pool)* |
+| [`LieLean/LowDimSolvClassification`](https://github.com/LieLean/LowDimSolvClassification) | Classification of solvable Lie algebras of dimension at most three. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
 | [`kkytola/VirasoroProject`](https://github.com/kkytola/VirasoroProject) | Witt algebra cohomology and the Virasoro algebra. |
 | [`singerng/steinberg-formalization`](https://github.com/singerng/steinberg-formalization) | Steinberg groups. |
-| [`npflueger/demazure`](https://github.com/npflueger/demazure) | Demazure products. *(in Lean Pool)* |
-| [`Antoine-dSG/frieze_patterns`](https://github.com/Antoine-dSG/frieze_patterns) | Coxeter's frieze patterns. *(in Lean Pool)* |
-| [`wupr/order-p-q`](https://github.com/wupr/order-p-q) | Classification of groups of order pq. *(in Lean Pool)* |
-| [`Luka-O/polya-enumeration-theorem`](https://github.com/Luka-O/polya-enumeration-theorem) | Pólya enumeration theorem. *(in Lean Pool)* |
-| [`wwylele/PentagonalNumberTheorem`](https://github.com/wwylele/PentagonalNumberTheorem) | Euler's pentagonal number theorem. *(in Lean Pool)* |
+| [`npflueger/demazure`](https://github.com/npflueger/demazure) | Demazure products. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
+| [`Antoine-dSG/frieze_patterns`](https://github.com/Antoine-dSG/frieze_patterns) | Coxeter's frieze patterns. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
+| [`wupr/order-p-q`](https://github.com/wupr/order-p-q) | Classification of groups of order pq. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
+| [`Luka-O/polya-enumeration-theorem`](https://github.com/Luka-O/polya-enumeration-theorem) | Pólya enumeration theorem. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
+| [`wwylele/PentagonalNumberTheorem`](https://github.com/wwylele/PentagonalNumberTheorem) | Euler's pentagonal number theorem. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
 | [`b-mehta/PrimeCert`](https://github.com/b-mehta/PrimeCert) | Formal prime certificates. |
 | [`hanwenzhu/miller-rabin`](https://github.com/hanwenzhu/miller-rabin) | Miller–Rabin primality test. |
 | [`amellendijk/selberg-sieve4`](https://github.com/amellendijk/selberg-sieve4) | The Selberg sieve. |
-| [`samuelborza/IsTranscendentalPi`](https://github.com/samuelborza/IsTranscendentalPi) | Transcendence of π. *(in Lean Pool)* |
+| [`samuelborza/IsTranscendentalPi`](https://github.com/samuelborza/IsTranscendentalPi) | Transcendence of π. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
 | [`ahhwuhu/zeta_3_irrational`](https://github.com/ahhwuhu/zeta_3_irrational) | Irrationality of ζ(3). |
 | [`teorth/sendov`](https://github.com/teorth/sendov) | Sendov's conjecture work. |
 | [`AxiomMath/fel-polynomial`](https://github.com/AxiomMath/fel-polynomial) | Fel's conjecture on syzygies of numerical semigroups; AI-formalized paper companion. Sibling companions: [`AxiomMath/lattice-triangle`](https://github.com/AxiomMath/lattice-triangle), [`AxiomMath/partial-regularity`](https://github.com/AxiomMath/partial-regularity), [`AxiomMath/PartitionPolynomial`](https://github.com/AxiomMath/PartitionPolynomial). |
@@ -667,11 +667,11 @@ The pinned checkout owns these; search them by path before any external source.
 | [`roed-math/gq2-lean`](https://github.com/roed-math/gq2-lean) | Dyadic Hilbert symbol over ℚ₂ with Serre's evaluation formula and 2-adic square-class facts, sorry-free and self-contained inside a profinite `G_{ℚ₂}` presentation. Apache 2.0. |
 | [`MichaelStollBayreuth/LegendreQF`](https://github.com/MichaelStollBayreuth/LegendreQF) | Legendre's theorem on diagonal ternary quadratic forms; complete but defines no Hilbert symbol, Hasse invariant, or lattice notion. |
 | [`jonhanke/quadratic_forms_in_lean`](https://github.com/jonhanke/quadratic_forms_in_lean) | Skeleton only: the library files carry reference comments (Cassels) and a few thin definitions, no theorems; no LICENSE file. Do not mine. |
-| [`leanprover/hex-lll`](https://github.com/leanprover/hex-lll) | Verified LLL lattice-basis reduction with a proved short-vector bound; Mathlib bridge in [`leanprover/hex-lll-mathlib`](https://github.com/leanprover/hex-lll-mathlib). See the Hex rows below. |
-| [`Jun2M/Main-theorem-of-polytopes`](https://github.com/Jun2M/Main-theorem-of-polytopes) | Main theorem of polytopes. *(in Lean Pool)* |
+| [`leanprover/hex-lll`](https://github.com/leanprover/hex-lll) | Verified LLL lattice-basis reduction with a proved short-vector bound; Mathlib bridge in [`leanprover/hex-lll-mathlib`](https://github.com/leanprover/hex-lll-mathlib). See the [Hex](https://github.com/leanprover/hex) rows below. |
+| [`Jun2M/Main-theorem-of-polytopes`](https://github.com/Jun2M/Main-theorem-of-polytopes) | Main theorem of polytopes. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
 | [`jsm28/AperiodicMonotilesLean`](https://github.com/jsm28/AperiodicMonotilesLean) | Aperiodic monotiles (the hat and spectre), staging for Mathlib. |
 | [`dwrensha/Rupert.lean`](https://github.com/dwrensha/Rupert.lean) | The Rupert problem for convex polyhedra; with [`jcreedcmu/Noperthedron`](https://github.com/jcreedcmu/Noperthedron). |
-| [`vasnesterov/HadwigerNelson`](https://github.com/vasnesterov/HadwigerNelson) | Hadwiger–Nelson bounds. *(in Lean Pool)* |
+| [`vasnesterov/HadwigerNelson`](https://github.com/vasnesterov/HadwigerNelson) | Hadwiger–Nelson bounds. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
 
 ### Analysis, probability, geometry, dynamics
 
@@ -690,7 +690,7 @@ The pinned checkout owns these; search them by path before any external source.
 | [`leanprover-community/lean-perfectoid-spaces`](https://github.com/leanprover-community/lean-perfectoid-spaces) | Perfectoid spaces *(Lean 3)*. |
 | [`dagurtomas/lean-solid`](https://github.com/dagurtomas/lean-solid) | Solid abelian groups *(stale)*. |
 | [`ImperialCollegeLondon/condensed-sets`](https://github.com/ImperialCollegeLondon/condensed-sets) | Early condensed mathematics *(Lean 3)*. |
-| [`AlexKontorovich/CoveringSpacesProject`](https://github.com/AlexKontorovich/CoveringSpacesProject) | Covering spaces and universal covers; overlaps the Tau Ceti universal-covers roadmap. |
+| [`AlexKontorovich/CoveringSpacesProject`](https://github.com/AlexKontorovich/CoveringSpacesProject) | Covering spaces and universal covers; overlaps the [Tau Ceti](https://github.com/TauCetiProject/TauCeti) universal-covers roadmap. |
 | [`mccorvie/classification-of-surfaces`](https://github.com/mccorvie/classification-of-surfaces) | Classification of compact surfaces. |
 | [`urkud/SardMoreira`](https://github.com/urkud/SardMoreira) | Moreira's version of Sard's theorem; with [`fpvandoorn/sard`](https://github.com/fpvandoorn/sard). |
 | [`kebekus/ProjectVD`](https://github.com/kebekus/ProjectVD) | Value distribution theory (Nevanlinna). |
@@ -700,15 +700,15 @@ The pinned checkout owns these; search them by path before any external source.
 | [`weiran-sun/pde`](https://github.com/weiran-sun/pde) | PDE formalizations. |
 | [`RemyDegenne/brownian-motion`](https://github.com/RemyDegenne/brownian-motion) | Construction of Brownian motion; with [`RemyDegenne/kolmogorov_extension4`](https://github.com/RemyDegenne/kolmogorov_extension4). |
 | [`cameronfreer/exchangeability`](https://github.com/cameronfreer/exchangeability) | Exchangeability and three proofs of de Finetti's theorem. |
-| [`YellPika/quasi-borel-spaces`](https://github.com/YellPika/quasi-borel-spaces) | Quasi-Borel spaces. *(in Lean Pool)* |
-| [`mrdouglasny/OSforGFF`](https://github.com/mrdouglasny/OSforGFF) | Gaussian free field in d=4 and the Osterwalder–Schrader axioms *(in Lean Pool)*. Same author: [`gaussian-field`](https://github.com/mrdouglasny/gaussian-field), [`lgt`](https://github.com/mrdouglasny/lgt) (lattice gauge theory), [`pphi2`](https://github.com/mrdouglasny/pphi2) (φ⁴₂ construction), [`seiberg-witten`](https://github.com/mrdouglasny/seiberg-witten), [`hille-yosida`](https://github.com/mrdouglasny/hille-yosida), [`markov-semigroups`](https://github.com/mrdouglasny/markov-semigroups), [`spectral-positivity`](https://github.com/mrdouglasny/spectral-positivity) (Perron–Frobenius, Jentzsch). |
+| [`YellPika/quasi-borel-spaces`](https://github.com/YellPika/quasi-borel-spaces) | Quasi-Borel spaces. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
+| [`mrdouglasny/OSforGFF`](https://github.com/mrdouglasny/OSforGFF) | Gaussian free field in d=4 and the Osterwalder–Schrader axioms *(in [Lean Pool](https://github.com/Vilin97/lean-pool))*. Same author: [`gaussian-field`](https://github.com/mrdouglasny/gaussian-field), [`lgt`](https://github.com/mrdouglasny/lgt) (lattice gauge theory), [`pphi2`](https://github.com/mrdouglasny/pphi2) (φ⁴₂ construction), [`seiberg-witten`](https://github.com/mrdouglasny/seiberg-witten), [`hille-yosida`](https://github.com/mrdouglasny/hille-yosida), [`markov-semigroups`](https://github.com/mrdouglasny/markov-semigroups), [`spectral-positivity`](https://github.com/mrdouglasny/spectral-positivity) (Perron–Frobenius, Jentzsch). |
 | [`FredRaj3/SemicircleLaw`](https://github.com/FredRaj3/SemicircleLaw) | Wigner's semicircle law. |
 | [`dududuguo/HighDimProb`](https://github.com/dududuguo/HighDimProb) | High-dimensional probability, random matrices, concentration. |
-| [`lua-vr/pointwise-birkhoff`](https://github.com/lua-vr/pointwise-birkhoff) | Pointwise Birkhoff ergodic theorem. *(in Lean Pool)* |
+| [`lua-vr/pointwise-birkhoff`](https://github.com/lua-vr/pointwise-birkhoff) | Pointwise Birkhoff ergodic theorem. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
 | [`kkytola/ExtremeValueProject`](https://github.com/kkytola/ExtremeValueProject) | Fisher–Tippett–Gnedenko theorem. |
-| [`roos-j/lean-booleanfun`](https://github.com/roos-j/lean-booleanfun) | Analysis of Boolean functions, including Arrow's theorem. *(in Lean Pool)* |
-| [`sven-manthe/A-formalization-of-Borel-determinacy-in-Lean`](https://github.com/sven-manthe/A-formalization-of-Borel-determinacy-in-Lean) | Borel determinacy. *(in Lean Pool)* |
-| [`YnirPaz/PCF-Theory`](https://github.com/YnirPaz/PCF-Theory) | PCF theory. *(in Lean Pool)* |
+| [`roos-j/lean-booleanfun`](https://github.com/roos-j/lean-booleanfun) | Analysis of Boolean functions, including Arrow's theorem. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
+| [`sven-manthe/A-formalization-of-Borel-determinacy-in-Lean`](https://github.com/sven-manthe/A-formalization-of-Borel-determinacy-in-Lean) | Borel determinacy. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
+| [`YnirPaz/PCF-Theory`](https://github.com/YnirPaz/PCF-Theory) | PCF theory. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
 | [`VTrelat/ZFLean`](https://github.com/VTrelat/ZFLean) | Set-theoretic development framework. |
 
 ### Combinatorics, discrete mathematics, logic, foundations
@@ -731,7 +731,7 @@ The pinned checkout owns these; search them by path before any external source.
 | [`vihdzp/combinatorial-games`](https://github.com/vihdzp/combinatorial-games) | Combinatorial game theory. |
 | [`leanprover-community/add-combi`](https://github.com/leanprover-community/add-combi) | Mathlib's additive-combinatorics sublibrary. |
 | [`YaelDillies/cam-combi`](https://github.com/YaelDillies/cam-combi) | Cambridge Part II/III graph theory, combinatorics, extremal and probabilistic combinatorics. Same author: [`mean-fourier`](https://github.com/YaelDillies/mean-fourier), [`gibbs-measure`](https://github.com/YaelDillies/gibbs-measure), [`forbidden-matrix`](https://github.com/YaelDillies/forbidden-matrix), [`chandra-furst-lipton`](https://github.com/YaelDillies/chandra-furst-lipton). |
-| [`b-mehta/AharoniKorman`](https://github.com/b-mehta/AharoniKorman) | Disproof of the Aharoni–Korman conjecture. *(in Lean Pool)* |
+| [`b-mehta/AharoniKorman`](https://github.com/b-mehta/AharoniKorman) | Disproof of the Aharoni–Korman conjecture. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
 | [`celioboulay/expander-graphs`](https://github.com/celioboulay/expander-graphs) | Expander graphs. |
 | [`mitchell-horner/ErdosStoneSimonovitsKovariSosTuran`](https://github.com/mitchell-horner/ErdosStoneSimonovitsKovariSosTuran) | Erdős–Stone–Simonovits and Kővári–Sós–Turán theorems. |
 | [`DhyeyMavani2003/chip-firing-with-lean`](https://github.com/DhyeyMavani2003/chip-firing-with-lean) | Chip-firing games and Riemann–Roch for graphs. |
@@ -739,7 +739,7 @@ The pinned checkout owns these; search them by path before any external source.
 | [`PierreSenellart/descriptive-complexity`](https://github.com/PierreSenellart/descriptive-complexity) | Descriptive complexity: NP-completeness via first-order reductions. |
 | [`ctchou/AutomataTheory`](https://github.com/ctchou/AutomataTheory) | Automata theory. |
 | [`madvorak/chomsky`](https://github.com/madvorak/chomsky) | Chomsky hierarchy and formal grammars. |
-| [`FormalizedFormalLogic/Incompleteness`](https://github.com/FormalizedFormalLogic/Incompleteness) | Incompleteness theorems *(in Lean Pool)*; with [`FormalizedFormalLogic/ProvabilityLogic`](https://github.com/FormalizedFormalLogic/ProvabilityLogic). |
+| [`FormalizedFormalLogic/Incompleteness`](https://github.com/FormalizedFormalLogic/Incompleteness) | Incompleteness theorems *(in [Lean Pool](https://github.com/Vilin97/lean-pool))*; with [`FormalizedFormalLogic/ProvabilityLogic`](https://github.com/FormalizedFormalLogic/ProvabilityLogic). |
 | [`codyroux/traat-lean`](https://github.com/codyroux/traat-lean) | Selected lemmas from *Term Rewriting and All That*. |
 
 ### Computational and applied mathematics
@@ -757,12 +757,12 @@ The pinned checkout owns these; search them by path before any external source.
 | [`leanprover-community/iris-lean`](https://github.com/leanprover-community/iris-lean) | Iris separation logic port. |
 | [`or4nge19/NeuralNetworks`](https://github.com/or4nge19/NeuralNetworks) | Neural networks. |
 | [`shetzl/autth`](https://github.com/shetzl/autth) | Automata theory. |
-| [`leanprover/hex`](https://github.com/leanprover/hex) | Hex verified computational algebra; see the Lean FRO section below for the full library table. |
-| [`todbeibrot/Lean-Oscar`](https://github.com/todbeibrot/Lean-Oscar) | Interface between Lean 4 and the OSCAR computer-algebra system. Direct reference for the `lean-cas-dsl` backend route. |
+| [`leanprover/hex`](https://github.com/leanprover/hex) | Hex verified computational algebra; see the [Lean FRO](https://lean-lang.org/fro/) section below for the full library table. |
+| [`todbeibrot/Lean-Oscar`](https://github.com/todbeibrot/Lean-Oscar) | Interface between Lean 4 and the [OSCAR](https://www.oscar-system.org/) computer-algebra system. Direct reference for the `lean-cas-dsl` backend route. |
 | [`girving/series`](https://github.com/girving/series) | Power series arithmetic; same author [`bottcher`](https://github.com/girving/bottcher) (verified Böttcher series) and [`ray-render`](https://github.com/girving/ray-render) (verified Mandelbrot renders via interval arithmetic). |
 | [`alerad/LeanCert`](https://github.com/alerad/LeanCert) | Verified interval arithmetic: bounds on exp, sin, cos; root finding. |
-| [`Timeroot/computableReal`](https://github.com/Timeroot/computableReal) | Computable real numbers. *(in Lean Pool)* |
-| [`josephmckinsey/Flean`](https://github.com/josephmckinsey/Flean) | Floating-point numbers, replacing `Mathlib.Data.FP` *(in Lean Pool)*; with [`Beneficial-AI-Foundation/FloatSpec`](https://github.com/Beneficial-AI-Foundation/FloatSpec). |
+| [`Timeroot/computableReal`](https://github.com/Timeroot/computableReal) | Computable real numbers. *(in [Lean Pool](https://github.com/Vilin97/lean-pool))* |
+| [`josephmckinsey/Flean`](https://github.com/josephmckinsey/Flean) | Floating-point numbers, replacing `Mathlib.Data.FP` *(in [Lean Pool](https://github.com/Vilin97/lean-pool))*; with [`Beneficial-AI-Foundation/FloatSpec`](https://github.com/Beneficial-AI-Foundation/FloatSpec). |
 | [`alok/lean-inf`](https://github.com/alok/lean-inf) | Levi-Civita field for infinitesimal computation. |
 | [`Verified-zkEVM/CompPoly`](https://github.com/Verified-zkEVM/CompPoly) | Computable polynomials. |
 | [`leanprover/sos`](https://github.com/leanprover/sos) | Sum-of-squares tactic for nonlinear real arithmetic. |
@@ -796,28 +796,28 @@ The pinned checkout owns these; search them by path before any external source.
 | [`google-deepmind/formal-imo`](https://github.com/google-deepmind/formal-imo) | IMO problem statements; with [`google-deepmind/formal-putnam-like`](https://github.com/google-deepmind/formal-putnam-like), [`google-deepmind/miniF2F`](https://github.com/google-deepmind/miniF2F), and [`google-deepmind/debate`](https://github.com/google-deepmind/debate). |
 | [`carlok/LeanFrontier`](https://github.com/carlok/LeanFrontier) | Machine-generated, kernel-verified mathematics. |
 | [`agenticsnz/unsorry`](https://github.com/agenticsnz/unsorry) | Autonomous agents proving theorems; git is the queue. |
-| [`leanprover/lean-eval`](https://github.com/leanprover/lean-eval) | Comparator-based formal-mathematics evaluation. |
+| [`leanprover/lean-eval`](https://github.com/leanprover/lean-eval) | [Comparator](https://github.com/leanprover/comparator)-based formal-mathematics evaluation. |
 | [`kim-em/lean-training-data`](https://github.com/kim-em/lean-training-data) | Tooling to extract training data from Lean projects. |
-| [`kim-em/erdos-unit-distance`](https://github.com/kim-em/erdos-unit-distance) | Alpöge's disproof of the uniform-constant Erdős unit-distance conjecture; the Palomar example submission. Other Erdős-problem repos: [`davidturturean/erdos-870`](https://github.com/davidturturean/erdos-870), [`Parcly-Taxel/Redhill`](https://github.com/Parcly-Taxel/Redhill). |
+| [`kim-em/erdos-unit-distance`](https://github.com/kim-em/erdos-unit-distance) | Alpöge's disproof of the uniform-constant Erdős unit-distance conjecture; the [Palomar](https://palomar-registry.org/) example submission. Other Erdős-problem repos: [`davidturturean/erdos-870`](https://github.com/davidturturean/erdos-870), [`Parcly-Taxel/Redhill`](https://github.com/Parcly-Taxel/Redhill). |
 
 ### Lean FRO and Mathlib Initiative AI programmes — always search these
 
-The Lean FRO runs three AI projects ([Year 4 Part 1 roadmap](https://lean-lang.org/fro/roadmap/y4-1/), September 2026 to February 2027). Each is a reuse surface for this repository. Tau Ceti is a growing foundational library downstream of Mathlib and a prior-art check for every corpus unit. Hex is packaged, Mathlib-free verified computation with Mathlib bridges: an import candidate for the lattice and linear-algebra layers and for the executable side of `lean-cas-dsl`. Palomar is an index of already-verified statements pinned to exact commits. Their satellite standards (`formalization.yaml`, Comparator, project intentions) are the conventions any statement published from this repository must follow. Entries in this section resolved on GitHub on 2026-09-09.
+The [Lean FRO](https://lean-lang.org/fro/) runs three AI projects ([Year 4 Part 1 roadmap](https://lean-lang.org/fro/roadmap/y4-1/), September 2026 to February 2027). Each is a reuse surface for this repository. [Tau Ceti](https://github.com/TauCetiProject/TauCeti) is a growing foundational library downstream of Mathlib and a prior-art check for every corpus unit. [Hex](https://github.com/leanprover/hex) is packaged, Mathlib-free verified computation with Mathlib bridges: an import candidate for the lattice and linear-algebra layers and for the executable side of `lean-cas-dsl`. [Palomar](https://palomar-registry.org/) is an index of already-verified statements pinned to exact commits. Their satellite standards (`formalization.yaml`, [Comparator](https://github.com/leanprover/comparator), project intentions) are the conventions any statement published from this repository must follow. Entries in this section resolved on GitHub on 2026-09-09.
 
 | Repository | Content |
 | --- | --- |
-| [`TauCetiProject/TauCeti`](https://github.com/TauCetiProject/TauCeti) ([site](https://taucetiproject.github.io/TauCeti/)) | AI-authored Lean library downstream of Mathlib, incubated by the Lean FRO and the Mathlib Initiative: humans own the roadmap, AI agents author the proofs, AI reviewers gate every PR against open adversarial rubrics. Roadmap themes: universal covers, the Jacobian challenge, reductive algebraic groups, PDE, Heegaard Floer and grid homology, multiquadratic fields and genus theory, geometric topology. Search it for any corpus unit before authoring; Palomar allows it as a statement dependency. |
-| [`TauCetiProject/TauCetiRoadmap`](https://github.com/TauCetiProject/TauCetiRoadmap) | The human-controlled roadmaps: one `README.md` specification per area plus `Suggested.lean` target signatures. Read it to learn what Tau Ceti will own next, so this repository does not duplicate it. |
+| [`TauCetiProject/TauCeti`](https://github.com/TauCetiProject/TauCeti) ([site](https://taucetiproject.github.io/TauCeti/)) | AI-authored Lean library downstream of Mathlib, incubated by the [Lean FRO](https://lean-lang.org/fro/) and the [Mathlib Initiative](https://mathlib-initiative.org/): humans own the roadmap, AI agents author the proofs, AI reviewers gate every PR against open adversarial rubrics. Roadmap themes: universal covers, the Jacobian challenge, reductive algebraic groups, PDE, Heegaard Floer and grid homology, multiquadratic fields and genus theory, geometric topology. Search it for any corpus unit before authoring; [Palomar](https://palomar-registry.org/) allows it as a statement dependency. |
+| [`TauCetiProject/TauCetiRoadmap`](https://github.com/TauCetiProject/TauCetiRoadmap) | The human-controlled roadmaps: one `README.md` specification per area plus `Suggested.lean` target signatures. Read it to learn what [Tau Ceti](https://github.com/TauCetiProject/TauCeti) will own next, so this repository does not duplicate it. |
 | [`TauCetiProject/TauCetiReview`](https://github.com/TauCetiProject/TauCetiReview) | The review rubrics (scope, correctness, reuse, attribution, API design, generality, placement, naming, documentation, proof quality, deprecation) and the machinery that runs review. A reference rubric set for adversarial review of AI-written Lean here. |
 | [`kim-em/TauCetiWorker`](https://github.com/kim-em/TauCetiWorker) | The contributor agent loop (`uv tool install git+https://github.com/kim-em/TauCetiWorker`, then `tauceti work --loop`); reference implementation of a roadmap-driven Lean worker. |
 | [`leanprover/hex`](https://github.com/leanprover/hex) ([manual](https://kim-em.github.io/hex-dev/), [Reservoir](https://reservoir.lean-lang.org/@kim-em/Hex)) | Hex: verified computational algebra in Lean 4, built by spec-driven development (human specifications, AI implementations and proofs). The released aggregator; `import Hex` re-exports every released library at one pinned set. Add with `[[require]] name = "hex", git = "https://github.com/leanprover/hex"`. |
-| [`leanprover/hex-basic`](https://github.com/leanprover/hex-basic), [`hex-matrix`](https://github.com/leanprover/hex-matrix), [`hex-row-reduce`](https://github.com/leanprover/hex-row-reduce), [`hex-determinant`](https://github.com/leanprover/hex-determinant), [`hex-bareiss`](https://github.com/leanprover/hex-bareiss), [`hex-gram-schmidt`](https://github.com/leanprover/hex-gram-schmidt), [`hex-lll`](https://github.com/leanprover/hex-lll) | The Mathlib-free computational libraries: dense matrices, row reduction, nullspaces, determinants (Bareiss over `Int`), Gram–Schmidt, and a verified LLL lattice-basis reduction with a proved short-vector bound, plus a checked-oracle mode over fplll. Optimized for runtime first and kernel reduction second; runtime bodies are `@[csimp]` twins, never `@[implemented_by]`. |
-| [`leanprover/hex-matrix-mathlib`](https://github.com/leanprover/hex-matrix-mathlib), [`hex-row-reduce-mathlib`](https://github.com/leanprover/hex-row-reduce-mathlib), [`hex-determinant-mathlib`](https://github.com/leanprover/hex-determinant-mathlib), [`hex-bareiss-mathlib`](https://github.com/leanprover/hex-bareiss-mathlib), [`hex-gram-schmidt-mathlib`](https://github.com/leanprover/hex-gram-schmidt-mathlib), [`hex-lll-mathlib`](https://github.com/leanprover/hex-lll-mathlib) | The Mathlib bridges: correspondence proofs between each Hex computation and Mathlib's definitions, transported typeclass instances, and theorems whose proofs need Mathlib. This is the layer a `Realization` here would consume. |
+| [`leanprover/hex-basic`](https://github.com/leanprover/hex-basic), [`hex-matrix`](https://github.com/leanprover/hex-matrix), [`hex-row-reduce`](https://github.com/leanprover/hex-row-reduce), [`hex-determinant`](https://github.com/leanprover/hex-determinant), [`hex-bareiss`](https://github.com/leanprover/hex-bareiss), [`hex-gram-schmidt`](https://github.com/leanprover/hex-gram-schmidt), [`hex-lll`](https://github.com/leanprover/hex-lll) | The Mathlib-free computational libraries: dense matrices, row reduction, nullspaces, determinants (Bareiss over `Int`), Gram–Schmidt, and a verified LLL lattice-basis reduction with a proved short-vector bound, plus a checked-oracle mode over [fplll](https://github.com/fplll/fplll). Optimized for runtime first and kernel reduction second; runtime bodies are `@[csimp]` twins, never `@[implemented_by]`. |
+| [`leanprover/hex-matrix-mathlib`](https://github.com/leanprover/hex-matrix-mathlib), [`hex-row-reduce-mathlib`](https://github.com/leanprover/hex-row-reduce-mathlib), [`hex-determinant-mathlib`](https://github.com/leanprover/hex-determinant-mathlib), [`hex-bareiss-mathlib`](https://github.com/leanprover/hex-bareiss-mathlib), [`hex-gram-schmidt-mathlib`](https://github.com/leanprover/hex-gram-schmidt-mathlib), [`hex-lll-mathlib`](https://github.com/leanprover/hex-lll-mathlib) | The Mathlib bridges: correspondence proofs between each [Hex](https://github.com/leanprover/hex) computation and Mathlib's definitions, transported typeclass instances, and theorems whose proofs need Mathlib. This is the layer a `Realization` here would consume. |
 | [`kim-em/hex-dev`](https://github.com/kim-em/hex-dev) | The development monorepo: `SPEC/SPEC.md`, `SPEC/design-principles.md`, `PLAN.md`, `libraries.yml`, `bench/`, `conformance/`. Unreleased libraries (polynomial arithmetic, Hensel lifting, Berlekamp–Zassenhaus factoring, algebraic numbers) live here; released repositories are generated mirrors, never edited by hand. Its design principles (many small libraries, no Mathlib in the computational core, checked external oracles, conformance and benchmark gates before proofs) are the reference for any verified-computation layer in `lean-cas-dsl`. |
-| [Palomar](https://palomar-registry.org/) ([about](https://palomar-registry.org/about), [how to submit](https://palomar-registry.org/how-to-submit), [`PalomarRegistry/PalomarPolicy`](https://github.com/PalomarRegistry/PalomarPolicy), [`PalomarRegistry/PalomarTemplate`](https://github.com/PalomarRegistry/PalomarTemplate)) | Registry of Lean-verified mathematical results, incubated by the Lean FRO and ICARM. Each entry pins a 40-character commit, a short `Challenge.lean` statement (hard cap 1,000 lines), a `Solution.lean` proof, a Comparator configuration, and a `formalization.yaml`; proofs are replayed through Lean's kernel and the independent NanoDa kernel, and a language model checks the informal-to-formal correspondence. Search it for already-registered statements before formalizing; the template repository is the layout to use when publishing a result from here. |
-| [`leanprover/comparator`](https://github.com/leanprover/comparator) | Comparator: judges that a `Solution` module proves exactly the theorems stated in a `Challenge` module, with sandboxing (`landrun`), `lean4export`, permitted-axiom checks, and optional [`ammkrn/nanoda_lib`](https://github.com/ammkrn/nanoda_lib) replay. Required by Palomar; the FRO plans a `lake check` command that ships it in the Lean distribution. |
-| [`mathlib-initiative/formalization.yaml`](https://github.com/mathlib-initiative/formalization.yaml) | Self-reporting standard (v0.4, with JSON schema) for formalization projects: provenance, sources and their relationship (`formalizes`, `adapts`, `independently-proves`, `background`), AI use, fidelity, scope, review status. Palomar requires it; adopt it for any statement this repository publishes. Part of the Mathlib Initiative's [Formal Frontier](https://mathlib-initiative.org/formal-frontier/) programme. |
-| [`leanprover-community/intentions`](https://github.com/leanprover-community/intentions), [`leanprover-community/project-intentions`](https://github.com/leanprover-community/project-intentions) | Intention registration: a public board of who is formalizing what. Tau Ceti respects registered intentions when choosing roadmap material. Check it before starting a formalization programme, and register long-running work from here. |
+| [Palomar](https://palomar-registry.org/) ([about](https://palomar-registry.org/about), [how to submit](https://palomar-registry.org/how-to-submit), [`PalomarRegistry/PalomarPolicy`](https://github.com/PalomarRegistry/PalomarPolicy), [`PalomarRegistry/PalomarTemplate`](https://github.com/PalomarRegistry/PalomarTemplate)) | Registry of Lean-verified mathematical results, incubated by the [Lean FRO](https://lean-lang.org/fro/) and [ICARM](https://icarm.io/). Each entry pins a 40-character commit, a short `Challenge.lean` statement (hard cap 1,000 lines), a `Solution.lean` proof, a [Comparator](https://github.com/leanprover/comparator) configuration, and a `formalization.yaml`; proofs are replayed through Lean's kernel and the independent [NanoDa](https://github.com/ammkrn/nanoda_lib) kernel, and a language model checks the informal-to-formal correspondence. Search it for already-registered statements before formalizing; the template repository is the layout to use when publishing a result from here. |
+| [`leanprover/comparator`](https://github.com/leanprover/comparator) | Comparator: judges that a `Solution` module proves exactly the theorems stated in a `Challenge` module, with sandboxing (`landrun`), `lean4export`, permitted-axiom checks, and optional [`ammkrn/nanoda_lib`](https://github.com/ammkrn/nanoda_lib) replay. Required by [Palomar](https://palomar-registry.org/); the FRO plans a `lake check` command that ships it in the Lean distribution. |
+| [`mathlib-initiative/formalization.yaml`](https://github.com/mathlib-initiative/formalization.yaml) | Self-reporting standard (v0.4, with JSON schema) for formalization projects: provenance, sources and their relationship (`formalizes`, `adapts`, `independently-proves`, `background`), AI use, fidelity, scope, review status. [Palomar](https://palomar-registry.org/) requires it; adopt it for any statement this repository publishes. Part of the [Mathlib Initiative](https://mathlib-initiative.org/)'s [Formal Frontier](https://mathlib-initiative.org/formal-frontier/) programme. |
+| [`leanprover-community/intentions`](https://github.com/leanprover-community/intentions), [`leanprover-community/project-intentions`](https://github.com/leanprover-community/project-intentions) | Intention registration: a public board of who is formalizing what. [Tau Ceti](https://github.com/TauCetiProject/TauCeti) respects registered intentions when choosing roadmap material. Check it before starting a formalization programme, and register long-running work from here. |
 | [`Vilin97/lean-pool`](https://github.com/Vilin97/lean-pool) | Lean Pool: an arXiv-like archive of independent Lean 4 formalizations outside Mathlib's scope, kept `sorry`-free and pinned to current Mathlib by linters and LLM review. One Lake dependency imports every pooled project (173 as of 2026-09-09, from group theory and Lie theory to analytic number theory and probability), each with a provenance label (`human`, `AI`, `mix`). `LeanPool/projects.yml` is the machine-readable catalogue: query it by `branch` before any GitHub search, and prefer importing the pooled copy over a dormant upstream repository. Rows marked *(in Lean Pool)* in the tables above are already pooled. |
 | [`merely-true/merely-true`](https://github.com/merely-true/merely-true) | Permissive shared repository of AI-generated Lean mathematics with CI-only review (no `sorry`, no axioms). Statement bank of last resort; check declarations before reuse, as with `atlas-lean`. |
 
