@@ -50,3 +50,12 @@ Commit only the intended files after inspecting their complete diff. Use existin
 repository checks for implementation and the prose-only commit route for prose.
 Close a source only under the [whole-source closure rule](AGENTS.md#close-a-source-from-its-complete-obligations),
 with actual declarations and checks in its existing handoff.
+
+## LC-07 — Diagnose a red gate before further authoring
+
+The first time a commit gate, hook, or check goes red, diagnosing that failure
+becomes the current task. Stop authoring; root-cause and fix the gate, or record
+it as a blocker with a reproducer. Never continue authoring behind a red gate,
+and never accumulate uncommitted work around one. A gate that is red on two
+consecutive commit attempts is a defect to diagnose, not an environment
+condition to wait out.
