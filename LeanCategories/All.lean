@@ -7,6 +7,7 @@ module
 public import LeanCategories
 public import LeanCategories.CategoryTheory.WalkingArrow
 public import LeanCategories.CategoryTheory.EssentiallyDiscrete
+public import LeanCategories.CategoryTheory.AlgebraicTheoryModels
 public import LeanCategories.CategoryTheory.CommutativeGraph
 public import LeanCategories.CategoryTheory.Subcategory
 public import LeanCategories.CategoryTheory.RiehlPointwiseKan
