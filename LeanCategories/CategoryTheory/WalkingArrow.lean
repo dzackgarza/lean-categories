@@ -66,8 +66,7 @@ public theorem walkingArrow_not_isGroupoid : ¬ _root_.CategoryTheory.IsGroupoid
   let f : @Quiver.Hom WalkingArrow
       (_root_.CategoryTheory.Paths.categoryPaths WalkingArrowVertex).toQuiver
       WalkingArrowVertex.zero WalkingArrowVertex.one := WalkingArrow.generator
-  letI : _root_.CategoryTheory.IsIso f := h.all_isIso f
-  let g := _root_.CategoryTheory.inv f
+  let g := @_root_.CategoryTheory.inv _ _ _ _ f (h.all_isIso f)
   exact WalkingArrow.noPathOneZero g
 
 

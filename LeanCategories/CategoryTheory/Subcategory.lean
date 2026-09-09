@@ -42,9 +42,7 @@ def coreSubcategory (C : Type u) [_root_.CategoryTheory.Category.{v} C] : Subcat
     infer_instance
   comp_mem := by
     intro X Y Z hX hY hZ f g hf hg
-    letI : _root_.CategoryTheory.IsIso f := hf
-    letI : _root_.CategoryTheory.IsIso g := hg
-    infer_instance
+    exact _root_.CategoryTheory.IsIso.comp_isIso' hf hg
 
 /-- A nonisomorphism is excluded from `coreSubcategory`; this separates general subcategories from
 full subcategories on the same object collection. -/

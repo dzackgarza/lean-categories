@@ -9,6 +9,9 @@ public import LeanCategories.CategoryTheory.WalkingArrow
 public import LeanCategories.CategoryTheory.EssentiallyDiscrete
 public import LeanCategories.CategoryTheory.CommutativeGraph
 public import LeanCategories.CategoryTheory.Subcategory
+public import LeanCategories.CategoryTheory.StrictlyCreates
+public import LeanCategories.CategoryTheory.Homotopical
+public import LeanCategories.Topology.SmashProduct
 public import LeanCategories.Catalogue.Id
 public import LeanCategories.Catalogue.Syntax
 public import LeanCategories.Catalogue.Registry.Entry
