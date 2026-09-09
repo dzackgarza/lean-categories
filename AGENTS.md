@@ -568,6 +568,7 @@ The pinned checkout owns these; search them by path before any external source.
 | `Mathlib/AlgebraicTopology/` | Simplicial sets, nerves, quasicategories, simplicial homotopy theory. |
 | `Mathlib/Condensed/` | Condensed sets and condensed abelian groups. |
 | `Mathlib/AlgebraicGeometry/` | Schemes, morphism classes, gluing, Spec and Proj. |
+| `Mathlib/Geometry/Manifold/`, `.../Manifold/Riemannian/`, `.../Manifold/VectorBundle/` | Manifolds with corners, immersions, submersions, bordism, Whitney embedding; Riemannian bundles, `IsRiemannianManifold`, path length and Riemannian distance; vector bundles, local frames, covariant derivatives, tensoriality. Upstream Mathlib is adding metric connections, the Koszul formula, and the Levi-Civita pipeline, and Physlib carries pseudo-Riemannian metrics on top of these classes. Dormant external Riemannian-geometry repositories predate this tree and are superseded by it. |
 | `Mathlib/LinearAlgebra/QuadraticForm/`, `Mathlib/LinearAlgebra/BilinearForm/` | Quadratic and bilinear forms, isometries, orthogonality. |
 | `Mathlib/LinearAlgebra/RootSystem/` | Root pairings, root systems, Weyl groups. |
 | `Mathlib/NumberTheory/`, `Mathlib/RepresentationTheory/` | Number fields, modular forms, L-series, group representations. |
