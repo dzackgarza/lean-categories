@@ -3,6 +3,12 @@
 The centralized Lean baseline of categorical constructions. Downstream projects require
 this package and import the trees they need; no construction is duplicated downstream.
 
+The repository owns as little Lean as possible. It uses Mathlib directly, imports packaged
+libraries as Lake dependencies, and ports reference implementations with provenance when no
+package exists. It authors new Lean only for mathematics that a documented search has shown to
+exist nowhere else. A shorter repository that imports more is the better repository.
+[AGENTS.md](AGENTS.md) owns the reuse gate and the formalization source registry.
+
 `LeanCategories` is one category-theory library and one Lean namespace. The source tree
 uses mathematical owners and support roles:
 
@@ -75,7 +81,7 @@ lake exe lean-categories-export
 This repository builds one higher-categorical mathematical language and its Lean
 formalization. The broader programme has three coupled outputs with explicit ownership:
 
-1. **A Lean-owned mathematical foundation in this repository** in which categories,
+1. **A mathematical foundation in this repository, assembled in Lean from existing formalizations,** in which categories,
    higher categories, classifiers, functors, higher cells, limits, operations, and
    categories of structured objects have principled definitions.
 2. **A versioned Sage functionality and realization ledger in `lean-cas-dsl`** relating

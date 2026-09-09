@@ -120,9 +120,11 @@ The correct measure of progress is therefore not the quantity of code, metadata,
 
 The programme has three coupled outputs:
 
-1. **A Lean-owned mathematical foundation** in which categories, higher categories, classifiers, functors, higher cells, limits, categories of structured objects, and their coherences have principled definitions.
+1. **A mathematical foundation, assembled in Lean from existing formalizations,** in which categories, higher categories, classifiers, functors, higher cells, limits, categories of structured objects, and their coherences have principled definitions.
 2. **A Sage correspondence** that maps Sage’s empirical category system and algorithms into that normalized mathematical universe without making Sage’s labels, parent graph, or implementation accidents authoritative.
 3. **A computational mathematics DSL** in which a mathematician introduces and interrogates objects by ordinary mathematical membership and notation, while the formalization and backend routing remain invisible.
+
+**What this repository owns.** As little as possible. The ideal repository is a thin layer that stitches a vast array of existing formalizations together: Mathlib declarations used directly, packaged libraries imported as Lake dependencies, and, where no package exists, reference implementations copied or ported with their provenance. Glue between those sources is acceptable. The only Lean this repository authors from scratch is mathematics that a documented search has shown to exist nowhere: not in Mathlib, not in any Lean package, not in any Lean repository, not in another proof assistant as a port source. Every owned line is a permanent maintenance surface and an avoidable comparison theorem later, so a shorter repository that imports more is the better repository. The three outputs below are measured against this ideal, not against how much Lean the repository contains. The procedure is [the reuse gate](#reuse-before-you-write--the-operational-gate); the sources are [the formalization source registry](#formalization-source-registry).
 
 The long-term universe is not chosen only for the first algebraic examples. It must be capable of housing ordinary algebra, monoidal categories, categories of functors, sheaves, schemes, stacks, derived and spectral constructions, and computations such as loop objects and general limits. A narrow 1-categorical spike can be a model or experiment, but it is not the semantic horizon.
 
