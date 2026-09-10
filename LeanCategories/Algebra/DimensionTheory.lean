@@ -38,6 +38,27 @@ def IsSystemOfParameters {n : ℕ} (x : Fin n → R) : Prop :=
 
 end LocalRings
 
+section PrimeDepth
+
+variable {R : Type u} [CommRing R]
+
+/-- Atiyah--Macdonald's chain-theoretic depth of a prime ideal: the supremum
+of lengths of chains of prime ideals beginning at `p`. This is unrelated to the
+modern homological notion also called depth. -/
+noncomputable def PrimeIdealDepth (p : PrimeSpectrum R) : ℕ∞ :=
+  Order.coheight p
+
+/-- The source comparison `depth p = dim (R/p)`. -/
+theorem primeIdealDepth_eq_ringKrullDim_quotient (p : PrimeSpectrum R) :
+    (PrimeIdealDepth p : WithBot ℕ∞) = ringKrullDim (R ⧸ p.asIdeal) := by
+  rw [ringKrullDim_quotient, PrimeIdealDepth, Order.coheight_eq_krullDim_Ici]
+  apply Order.krullDim_eq_of_orderIso
+  apply OrderIso.setCongr
+  ext q
+  simp [PrimeSpectrum.mem_zeroLocus, PrimeSpectrum.asIdeal_le_asIdeal]
+
+end PrimeDepth
+
 section Hilbert
 
 variable {R : Type u} [Semiring R]
