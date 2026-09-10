@@ -113,20 +113,14 @@ _lint-conventions:
 test-push: test-ci
     @just -f {{ai_review_ci}}/justfiles/lean.just -d . lean-axiom-audit
 
-# Reservoir names packages, not repositories: the printed URL is the source
-# repository, and each link must be resolved before it enters the registry.
-# List Mathlib-dependent Reservoir packages not yet linked from AGENTS.md
-source-sweep:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    idx="$(mktemp -d)/reservoir-index"
-    git clone -q --depth 1 https://github.com/leanprover/reservoir-index "$idx"
-    grep -oE 'github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+' AGENTS.md | sed 's#github.com/##' | tr '[:upper:]' '[:lower:]' | sort -u > "$idx/../linked.txt"
-    for d in "$idx"/*/*/; do
-        [ -f "$d/metadata.json" ] || continue
-        jq -r '[.data[0].dependencies[]?.name] | index("mathlib") != null' "$d/versions.json" 2>/dev/null | grep -q true || continue
-        jq -r '[(.sources[0].repoUrl // ("https://github.com/" + .fullName)), (.stars|tostring), (.description // "" | gsub("[\\t\\n]";" "))] | @tsv' "$d/metadata.json"
-    done | sort -t"$(printf '\t')" -k2,2nr | while IFS=$'\t' read -r url stars desc; do
-        key="$(printf '%s' "${url#https://github.com/}" | tr '[:upper:]' '[:lower:]')"
-        grep -qx "$key" "$idx/../linked.txt" || printf '%s\t%s\t%s\n' "$url" "$stars" "$desc"
-    done
+# Regenerate the corpus site pages from the agent-memory vault
+site-build:
+    @python3 site/build.py
+
+# Serve the corpus site locally with live reload
+site-preview: site-build
+    @uvx --from quarto-cli quarto preview site --port 7655
+
+# Render the corpus site to site/_site, as CI does
+site-render: site-build
+    @uvx --from quarto-cli quarto render site --output-dir _site
