@@ -72,6 +72,7 @@ public import LeanCategories.ForMathlib.AddSubgroupCompletion
 public import LeanCategories.ForMathlib.AdicCompletionUniform
 public import LeanCategories.ForMathlib.DenseIntegralCompletion
 public import LeanCategories.ForMathlib.FiltrationTopology
+public import LeanCategories.ForMathlib.FiltrationGraded
 public import LeanCategories.ForMathlib.GaussianPrimeIdeals
 public import LeanCategories.ForMathlib.MvPolynomialIdealOfVars
 public import LeanCategories.ForMathlib.QuadraticReflection
