@@ -1,3 +1,4 @@
 .lake/
 .tmp-*
 __pycache__/
+_site/

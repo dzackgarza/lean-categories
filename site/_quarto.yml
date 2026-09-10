@@ -1,0 +1,244 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "lean-categories · corpus"
+  description: "A unit-by-unit survey of graduate mathematics against Mathlib."
+  site-url: https://dzackgarza.github.io/lean-categories/
+  repo-url: https://github.com/dzackgarza/lean-categories
+  search:
+    location: sidebar
+    type: overlay
+  navbar:
+    left:
+      - text: "Coverage"
+        href: coverage.md
+      - text: "The corpus"
+        href: corpus.md
+      - text: "Catalogues"
+        href: catalogues/index.md
+    right:
+      - icon: github
+        href: https://github.com/dzackgarza/lean-categories
+  sidebar:
+    style: docked
+    collapse-level: 1
+    contents:
+      - index.md
+      - coverage.md
+      - corpus.md
+      - status.md
+      - section: "Sources"
+        contents:
+          - section: "FC01"
+            href: sources/fc01/index.md
+            contents:
+              - sources/fc01/units.md
+              - sources/fc01/mapping.md
+          - section: "FC02"
+            href: sources/fc02/index.md
+            contents:
+              - sources/fc02/units.md
+              - sources/fc02/mapping.md
+          - section: "FC03"
+            href: sources/fc03/index.md
+            contents:
+              - sources/fc03/units.md
+              - sources/fc03/mapping.md
+          - section: "FC04"
+            href: sources/fc04/index.md
+            contents:
+              - sources/fc04/units.md
+              - sources/fc04/mapping.md
+              - sources/fc04/c01.md
+              - sources/fc04/c03.md
+              - sources/fc04/c04.md
+              - sources/fc04/c05.md
+              - sources/fc04/c06.md
+              - sources/fc04/c07.md
+              - sources/fc04/c08.md
+              - sources/fc04/c09.md
+              - sources/fc04/c10.md
+              - sources/fc04/c11.md
+          - section: "FC05"
+            href: sources/fc05/index.md
+            contents:
+              - sources/fc05/units.md
+              - sources/fc05/mapping.md
+              - sources/fc05/c01.md
+              - sources/fc05/c02.md
+              - sources/fc05/c03.md
+              - sources/fc05/c04.md
+              - sources/fc05/c05.md
+              - sources/fc05/c06.md
+              - sources/fc05/c07.md
+              - sources/fc05/c08.md
+              - sources/fc05/c09.md
+              - sources/fc05/c10.md
+              - sources/fc05/ca.md
+          - section: "FC06"
+            href: sources/fc06/index.md
+            contents:
+              - sources/fc06/units.md
+              - sources/fc06/mapping.md
+              - sources/fc06/c01.md
+              - sources/fc06/c02.md
+              - sources/fc06/c03.md
+              - sources/fc06/c04.md
+              - sources/fc06/c05.md
+          - section: "FC07"
+            href: sources/fc07/index.md
+            contents:
+              - sources/fc07/units.md
+              - sources/fc07/mapping.md
+              - sources/fc07/c00.md
+              - sources/fc07/c01.md
+              - sources/fc07/c02.md
+              - sources/fc07/c03.md
+              - sources/fc07/c04.md
+              - sources/fc07/ca.md
+          - section: "FC08"
+            href: sources/fc08/index.md
+            contents:
+              - sources/fc08/units.md
+              - sources/fc08/mapping.md
+              - sources/fc08/c01.md
+              - sources/fc08/c02.md
+              - sources/fc08/c03.md
+              - sources/fc08/c04.md
+              - sources/fc08/c05.md
+              - sources/fc08/c06.md
+              - sources/fc08/c07.md
+              - sources/fc08/c08.md
+              - sources/fc08/c09.md
+              - sources/fc08/c10.md
+              - sources/fc08/c11.md
+              - sources/fc08/c12.md
+              - sources/fc08/c13.md
+              - sources/fc08/c14.md
+              - sources/fc08/c15.md
+              - sources/fc08/c16.md
+              - sources/fc08/c17.md
+              - sources/fc08/c18.md
+              - sources/fc08/c19.md
+              - sources/fc08/c20.md
+              - sources/fc08/c21.md
+              - sources/fc08/c22.md
+              - sources/fc08/ca.md
+              - sources/fc08/cb.md
+              - sources/fc08/cc.md
+              - sources/fc08/cd.md
+          - section: "FC09"
+            href: sources/fc09/index.md
+            contents:
+              - sources/fc09/units.md
+              - sources/fc09/mapping.md
+              - sources/fc09/c01.md
+              - sources/fc09/c02.md
+              - sources/fc09/c03.md
+              - sources/fc09/c04.md
+              - sources/fc09/c05.md
+              - sources/fc09/c06.md
+              - sources/fc09/c07.md
+          - section: "FC10"
+            href: sources/fc10/index.md
+            contents:
+              - sources/fc10/units.md
+              - sources/fc10/mapping.md
+              - sources/fc10/c01.md
+              - sources/fc10/c02.md
+              - sources/fc10/c03.md
+              - sources/fc10/c04.md
+              - sources/fc10/c05.md
+              - sources/fc10/c06.md
+              - sources/fc10/c07.md
+              - sources/fc10/c08.md
+              - sources/fc10/c09.md
+              - sources/fc10/c10.md
+              - sources/fc10/c11.md
+              - sources/fc10/c12.md
+              - sources/fc10/c13.md
+              - sources/fc10/c14.md
+              - sources/fc10/c15.md
+          - section: "FC11"
+            href: sources/fc11/index.md
+            contents:
+              - sources/fc11/units.md
+              - sources/fc11/mapping.md
+              - sources/fc11/c01.md
+              - sources/fc11/c02.md
+              - sources/fc11/c03.md
+          - section: "FC12"
+            href: sources/fc12/index.md
+            contents:
+              - sources/fc12/units.md
+              - sources/fc12/mapping.md
+              - sources/fc12/c01.md
+              - sources/fc12/c02.md
+              - sources/fc12/c03.md
+              - sources/fc12/c04.md
+              - sources/fc12/c05.md
+              - sources/fc12/c06.md
+              - sources/fc12/c07.md
+              - sources/fc12/c08.md
+              - sources/fc12/c09.md
+              - sources/fc12/c10.md
+              - sources/fc12/a.md
+              - sources/fc12/b.md
+          - section: "FC13"
+            href: sources/fc13/index.md
+            contents:
+              - sources/fc13/units.md
+              - sources/fc13/mapping.md
+              - sources/fc13/c00.md
+              - sources/fc13/c01.md
+              - sources/fc13/c02.md
+              - sources/fc13/c03.md
+              - sources/fc13/c04.md
+              - sources/fc13/c05.md
+              - sources/fc13/c06.md
+              - sources/fc13/c07.md
+              - sources/fc13/c08.md
+              - sources/fc13/c09.md
+              - sources/fc13/c10.md
+              - sources/fc13/c11.md
+          - section: "FC14"
+            href: sources/fc14/index.md
+            contents:
+              - sources/fc14/units.md
+              - sources/fc14/mapping.md
+              - sources/fc14/c01.md
+          - section: "FC15"
+            href: sources/fc15/index.md
+            contents:
+              - sources/fc15/units.md
+          - section: "FC16"
+            href: sources/fc16/index.md
+            contents:
+              - sources/fc16/units.md
+      - section: "Definition catalogues"
+        href: catalogues/index.md
+        contents:
+          - catalogues/*.md
+      - section: "Notes and audits"
+        href: notes/index.md
+        contents:
+          - notes/*.md
+  page-footer:
+    left: "Generated from the project's reference notes by `site/build.py`."
+    right: "The Lean is the authority; where this site differs, the Lean is right."
+
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: darkly
+    toc: true
+    toc-depth: 2
+    page-layout: full
+    grid:
+      sidebar-width: 300px
+      margin-width: 0px
+    css: styles.css
+    link-external-newwindow: true

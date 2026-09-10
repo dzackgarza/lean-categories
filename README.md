@@ -76,6 +76,17 @@ just build
 lake exe lean-categories-export
 ```
 
+## The foundational corpus
+
+<https://dzackgarza.github.io/lean-categories/> publishes the survey behind the reuse
+gate: 16 graduate textbooks read unit by unit, each definition and theorem routed to the
+Lean declaration that owns it or recorded as having no owner, at a pinned Mathlib commit.
+Its unmatched rows are this repository's formalization roadmap.
+
+`site/` holds the pages. They are generated from the project's reference notes by
+`just site-build`, previewed with `just site-preview`, and deployed by
+[`.github/workflows/site.yml`](.github/workflows/site.yml) on every push that touches them.
+
 ## Mathematical design
 
 This repository builds one higher-categorical mathematical language and its Lean

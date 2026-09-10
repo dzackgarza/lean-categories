@@ -1,0 +1,362 @@
+---
+title: "Sage preamble definition catalogue — audit report"
+---
+
+Audit of `sage-preamble-definition-catalogue.md` against the pinned Mathlib (`.lake/packages/mathlib`) and the `lean-reference-corpus` zoekt index. Evidence rule: an entry is checked only when a tool result named the exact declaration and file path.
+
+## 1. Entries marked checked
+
+51 of 285 entries are checked, each with a citation sub-line naming the owning declaration and file (all `Mathlib/...`, verified against the pinned checkout).
+
+## 2. Entries left unchecked (residues)
+
+234 of 285 entries remain unchecked. These are Sage-source machinery, named lattices and genus/Nikulin data, Galois/profinite group constructions, scheme facades, module/lattice method surfaces, or formalizations not found in the pinned Mathlib, lean-reference-corpus, or in-repo sources.
+
+## 3. Full residue list
+
+- [ ] line 60: ConditionSet / ImageSet / PowerSet / SubsetsOfSize / FiniteSubsets
+- [ ] line 76: Ar(X,Y) / IsoAr(X,Y)
+- [ ] line 80: SubObject / SuperObject / CoveringObject / CoveredObject
+- [ ] line 85: DiagramCategory / DirectedSystem / InverseSystem
+- [ ] line 93: CartesianProductOfSets
+- [ ] line 99: AlgebraBaseChangeFunctor
+- [x] line 100: BaseChangeFunctor
+- [x] line 103: BaseChangeAdjunction F ⊣ G
+- [ ] line 118: FreeModuleOnGroupFunctor
+- [ ] line 121: TrivialActionFunctor ε* : Lat → Lat_G
+- [ ] line 125: Named lattices
+- [ ] line 126: Nikulin (r,a,δ) tables
+- [ ] line 127: Involutions I_dP, I_En, I_Nik of Λ_K3
+- [ ] line 128: Embeddings
+- [ ] line 129: Sterk cusp data
+- [ ] line 130: refine mechanism
+- [ ] line 146: FramedAlgebras(R)
+- [ ] line 147: FreeAlgebras(R)
+- [ ] line 153: FinitelyPresentedAlgebras(R); FramedFGAlgebras(R)
+- [ ] line 159: `is_algebra`, `is_free`, `is_finitely_presented` ⚠ all return True unconditionally by placement
+- [ ] line 165: MonomialSystem
+- [ ] line 166: WordMonomials
+- [ ] line 174: induced_hom
+- [ ] line 175: graded_piece(n)
+- [ ] line 176: ideal_generators_in_degree
+- [ ] line 179: Comparison morphisms
+- [ ] line 180: Adjunction extensions
+- [ ] line 181: FinitelyPresentedAlgebra F/I; FGAlgebra
+- [ ] line 182: base_change (algebras)
+- [ ] line 183: FreeAlgebraIdeal with normal form
+- [ ] line 184: PresentedFreeAlgebra A(F)/⟨K⟩
+- [ ] line 187: rank-one specializations
+- [ ] line 191: own_number_field(f)
+- [ ] line 192: discriminant d_K
+- [x] line 193: is_galois / galois_group
+- [ ] line 194: underlying_algebra(R)
+- [x] line 195: integral_basis
+- [ ] line 196: element theory
+- [x] line 202: is_central
+- [ ] line 203: R^n
+- [ ] line 206: OwnedRing / engine boundary
+- [ ] line 214: OwnedGroups
+- [ ] line 215: GroupsWithChosenFinitePresentation
+- [x] line 216: ProfiniteGroups
+- [x] line 217: AbsoluteGaloisGroups
+- [ ] line 221: refine_group / _group_categories
+- [ ] line 222: three-valued predicates
+- [ ] line 223: is_arithmetic_group
+- [ ] line 224: presenting_free_group / defining_relations / _presentation_of
+- [ ] line 225: AbelianGroupEndomorphismRing End(A)
+- [ ] line 228: notation management
+- [ ] line 229: Groups catalogue
+- [x] line 233: AbsoluteGaloisGroup
+- [ ] line 234: GaloisChoicePolicy
+- [ ] line 235: AbsoluteGaloisGroupElement
+- [ ] line 236: lift / LiftCoset
+- [ ] line 237: restriction maps / finite_quotient
+- [ ] line 238: open_subgroup / OpenAbsoluteGaloisSubgroup
+- [ ] line 239: decomposition/inertia groups; FrobeniusConjugacyClass
+- [ ] line 240: cyclotomic / quadratic characters
+- [ ] line 241: restrict_along / extensions_along
+- [ ] line 242: finite-field case
+- [ ] line 243: is_abelian
+- [x] line 251: RingedSpaces
+- [ ] line 252: Schemes(S)
+- [ ] line 253: AffineSpaces(S); ProjectiveSpaces(S); ClosedSubschemes(S); OpenSubschemes(S)
+- [ ] line 254: Varieties(S)
+- [ ] line 255: DivisorGroups
+- [x] line 259: structure_sheaf / underlying_space / stalk
+- [ ] line 260: SchemeMorphism
+- [ ] line 261: SchemePoint
+- [ ] line 262: Subscheme / inclusion_morphism
+- [ ] line 263: codimension
+- [ ] line 264: 𝔸ⁿ, ℙⁿ constructors; hyperplanes; basic opens D(f); closed subschemes V(f₁…f_k); toric varieties from fans; curves from equations
+- [ ] line 265: Pic(𝔸ⁿ) = 0, Cl(𝔸ⁿ) = 0, Pic(ℙⁿ) = ℤ, Cl(ℙⁿ) = ℤ
+- [ ] line 266: arithmetic_genus / geometric_genus
+- [ ] line 282: FinitelyGeneratedModules(R)
+- [ ] line 283: FramedModules(R)
+- [ ] line 284: FinitelyPresentedTorsionModules
+- [ ] line 289: FractionFieldQuotients(R)
+- [x] line 290: GradedModules(R); GradedAlgebras(R)
+- [ ] line 294: framing_morphism φ : F_R(S) → M
+- [ ] line 297: BasedFreeModule
+- [ ] line 300: FinitelyPresentedModule
+- [ ] line 303: hermite_form / invariant_factor_form
+- [ ] line 304: smith_form_module_generators / invariants / exponent / cardinality / rank / torsion_free_quotient
+- [ ] line 305: subobject_on / submodule
+- [ ] line 306: vector_space
+- [x] line 307: FractionalIdeal
+- [ ] line 308: K/𝔞 quotients (ℚ/ℤ, ℚ/2ℤ)
+- [ ] line 309: FunctionModule
+- [ ] line 310: ModuleOverRing(ρ)
+- [ ] line 318: ModuleHomset
+- [ ] line 319: ModuleMorphism
+- [ ] line 320: _check_relations
+- [ ] line 321: _coordinate_vector
+- [ ] line 322: Additive structure on Hom
+- [ ] line 323: Composition; endomorphism_ring End_R(M)
+- [ ] line 324: lift
+- [ ] line 325: _solve_left_integrally
+- [ ] line 326: kernel
+- [ ] line 327: cokernel
+- [ ] line 328: image / image_contains
+- [ ] line 329: is_injective
+- [ ] line 330: index [N : f(M)]
+- [x] line 331: orthogonal_complement
+- [ ] line 332: forget_form
+- [ ] line 333: FramingMorphism
+- [ ] line 334: ModuleAutomorphism
+- [ ] line 335: ModuleAutomorphismGroup Aut_R(M)
+- [ ] line 336: _close
+- [ ] line 337: order
+- [ ] line 338: FiniteAutomorphismSubgroup
+- [ ] line 339: inclusion ρ: G ↪ Aut(M)
+- [ ] line 340: _defining_matrix_group / _by_matrix
+- [ ] line 341: conjugacy_classes_representatives; irreducible_characters; character; trivial_character
+- [ ] line 342: GroupActionHomset
+- [ ] line 343: _values_on_generators
+- [ ] line 344: GroupAction ρ
+- [ ] line 345: MorphismMatrix
+- [ ] line 350: DualModule M* = Hom_R(M,R)
+- [ ] line 351: TensorProductModule M ⊗_R N
+- [ ] line 352: Tensor T^{p,q}(M)
+- [ ] line 353: valence (p,q) / degree
+- [ ] line 354: TensorElement
+- [ ] line 355: Evaluation / contract / trace / tensor_product (outer)
+- [ ] line 356: raise_index / lower_index
+- [ ] line 357: base_changed
+- [ ] line 358: MixedTensorAlgebra T(M) ⊗ T(M*)
+- [ ] line 359: structure morphism ρ: R → End(−)
+- [ ] line 360: Gram matrix as type-(0,2) tensor; multiplication table as type-(1,2)
+- [ ] line 361: tensor(...) constructor; zero; one
+- [ ] line 365: GroupModules(R, G)
+- [ ] line 366: is_semisimple
+- [ ] line 367: splitting_field K
+- [ ] line 368: is_split
+- [ ] line 369: GroupModule (M, ρ)
+- [ ] line 370: forget_action
+- [ ] line 371: character χ_ρ
+- [ ] line 372: GroupModuleHomset Hom_{R[G]}(M,N)
+- [ ] line 373: act / action_of / action_matrix; is_invariant
+- [ ] line 374: module_invariants M^G
+- [ ] line 375: module_coinvariants M_G
+- [ ] line 376: _index_characters
+- [ ] line 377: _base_field_automorphisms Gal(K/F)
+- [ ] line 378: _isotypic_projector p_χ
+- [ ] line 379: _isotypic_component M_χ
+- [ ] line 380: isotypic_decomposition ⊕ M_χ ↪ M
+- [ ] line 381: _group_subobject / _restricted_action_automorphisms
+- [ ] line 382: hom / _equivariant_hom
+- [ ] line 387: GroupLattices(G)
+- [ ] line 388: group_lattice(L, ρ)
+- [ ] line 389: _action_preserves_form
+- [ ] line 390: module_representation
+- [ ] line 391: forget_action
+- [ ] line 392: GroupLatticeHomset
+- [ ] line 393: _check_equivariance
+- [ ] line 394: subobject_on / _formed_group_subobject / _equip
+- [ ] line 395: invariant_lattice L^G
+- [ ] line 396: coinvariant_lattice (L^G)^⊥
+- [ ] line 397: isotypic_lattice L_χ; isotypic_decomposition
+- [ ] line 413: FormModules(R)
+- [ ] line 414: BilinearFormModules(R)
+- [ ] line 415: FreeFormModules(R)
+- [ ] line 416: Lattices(R)
+- [ ] line 417: TorsionModulesWithForm(R)
+- [ ] line 418: CokernelForms
+- [ ] line 419: DiscriminantForms
+- [ ] line 420: DiscriminantBilinearModules
+- [ ] line 421: DiscriminantQuadraticModules
+- [ ] line 425: FinitelyGenerated
+- [ ] line 426: ⚠ *Absent from the formed tree*: even, odd, unimodular, definite, signature — they live only in `integrallattice/`; yet `is_even` is a hard dependency of the discriminant-quadratic cokernel
+- [ ] line 430: TensorPower / SymmetricPower / AlternatingPower / DividedPower
+- [ ] line 431: TensorSquare
+- [ ] line 432: divided_power_invariant_inclusion
+- [ ] line 433: classifying_morphism
+- [ ] line 434: BilinearFormMorphism / QuadraticFormMorphism
+- [ ] line 435: pullback f*b
+- [ ] line 436: polarization
+- [ ] line 437: value submodule / scale
+- [ ] line 438: descends_along
+- [ ] line 442: forget_form
+- [ ] line 443: gram_tensor
+- [ ] line 444: dual_module
+- [ ] line 445: radical
+- [ ] line 446: subobject_on
+- [ ] line 447: FormHomset / FormMorphism
+- [ ] line 448: FormAutomorphismGroup
+- [ ] line 449: isotropic_reduction
+- [ ] line 453: from_module / from_relations_and_gram
+- [ ] line 454: cokernel
+- [ ] line 455: invariants / cardinality / annihilator / primary_part / primary_decomposition / is_p_elementary
+- [ ] line 456: isotropic_subobjects / maximal_isotropic_subobjects
+- [ ] line 457: p_adic_jordan_module_generators
+- [ ] line 458: normal_form
+- [ ] line 459: associated_quadratic_form
+- [ ] line 460: associated_bilinear_form
+- [ ] line 461: invariant_factor_form
+- [ ] line 462: regenerating_data / regenerate / relations_among
+- [ ] line 463: is_characteristic
+- [ ] line 464: form_vanishes_on
+- [ ] line 482: FinitelyGeneratedIntegralLattices
+- [ ] line 483: IntegralLattices
+- [ ] line 484: Nondegenerate
+- [ ] line 485: LatticeHomomorphisms
+- [ ] line 486: LatticeIsometries
+- [ ] line 487: Subobjects
+- [ ] line 488: RootLattices
+- [ ] line 489: RootLatticeIsometries
+- [ ] line 490: HyperbolicLattices
+- [ ] line 491: CoxeterDiagrams
+- [ ] line 495: is_unimodular
+- [ ] line 496: is_elliptic
+- [ ] line 497: is_decomposable / decomposition / summands
+- [ ] line 498: is_isometric
+- [ ] line 499: q(x), b(x,y)
+- [ ] line 500: div(x)
+- [ ] line 501: discriminant
+- [ ] line 502: genus
+- [ ] line 503: is_primitive
+- [ ] line 504: get_isotropic_type
+- [ ] line 508: dual_lattice
+- [ ] line 509: correlation / dual_embedding
+- [ ] line 510: discriminant_bilinear_form
+- [ ] line 511: discriminant_projection
+- [ ] line 512: glue(classes)
+- [ ] line 513: maximal_overlattice
+- [ ] line 514: I_perp_mod_I / e_perp_mod_e
+- [ ] line 515: direct_sum / ⊕ / powers
+- [ ] line 516: twist
+- [ ] line 517: Hom / End / Aut = O(L)
+- [ ] line 518: with_action(ρ)
+- [ ] line 519: subobject machinery
+- [ ] line 520: isotropic_reduction
+- [ ] line 521: named lattices
+- [ ] line 522: register_indecomposable
+- [ ] line 523: refine_root_lattice / cartan_type
+- [ ] line 524: LLL
+- [ ] line 525: vinberg_algorithm
+- [ ] line 526: isometry group machinery
+- [ ] line 530: minimal_edge_lattices
+- [ ] line 531: _coxeter_exponent
+- [ ] line 532: from_coxeter_matrix / from_cartan_type / from_roots
+- [ ] line 533: FiniteCoxeterDiagram
+- [ ] line 534: subdiagram
+- [ ] line 535: root-square node convention
+- [ ] line 536: CoxeterDiagramHomset/Morphism
+
+## 4. Uncertain or partial matches left unchecked
+
+Each entry below has a verified Mathlib neighbour but not an exact owner for the whole bundle, so it stays unchecked per the evidence rule.
+
+On 2026-08-16, 13 entries formerly listed here were re-verified directly against the pinned checkout and checked in the catalogue: BaseChangeFunctor (100), BaseChangeAdjunction (103), is_galois/galois_group (193), integral_basis (195), is_central (202), ProfiniteGroups (216), AbsoluteGaloisGroups (217), AbsoluteGaloisGroup (233), RingedSpaces (251), structure_sheaf/underlying_space/stalk (259), GradedModules/GradedAlgebras (290), FractionalIdeal (307), orthogonal_complement (331). The earlier "not found" claims were false negatives: several searches targeted the wrong file or directory (`Algebra/Central/Defs.lean`, `FieldTheory/Galois/Basic.lean`, `AlgebraicGeometry/`), and extension-of-scalars / base-change-adjunction exist in `Algebra/Category/ModuleCat/ChangeOfRings.lean`.
+
+- ConditionSet / ImageSet / PowerSet / SubsetsOfSize / FiniteSubsets: `Set.image` — `Data/Set/Defs.lean:261`; `Set.powerset` — `Data/Set/Defs.lean:254`; `Finset.powersetCard` — `Data/Finset/Powerset.lean:198`; ConditionSet/FiniteSubsets absent as standalone.
+- Ar(X,Y) / IsoAr(X,Y): Hom-set is foundational `X ⟶ Y` notation; no standalone `Ar`/`IsoAr` declaration.
+- SubObject / SuperObject / CoveringObject / CoveredObject: Only `Subobject` evidenced; SuperObject/CoveredObject absent.
+- DiagramCategory / DirectedSystem / InverseSystem: Diagrams are `Functor` in Mathlib; `DirectedSystem` class exists — `Order/DirectedInverseSystem.lean:69` — but for direct systems over a preorder, not the inverse-system notion here; no named InverseSystem.
+- CartesianProductOfSets: `Set.prod` — `Data/Set/Operations.lean:211`; `Finset.product` exists; entry bundles a distinction claim.
+- AlgebraBaseChangeFunctor: Extension-of-scalars functor for algebras absent; `AlgCat.restrictScalars` — `Algebra/Category/AlgCat/Basic.lean:261` — is the only verified half.
+- FreeModuleOnGroupFunctor: No named free-module-on-group functor; `ModuleCat.free` covers only the module ingredient.
+- TrivialActionFunctor: `Action` category exists; `Action.trivial` — `CategoryTheory/Action/Basic.lean:73` — verifies the trivial-action construction, but the ε* : Lat → Lat_G functor is Sage design.
+- FramedAlgebras(R): Framing (chosen surjection) notion absent.
+- FreeAlgebras(R): `FreeAlgebra` verified; the category-of-free-algebras/grading aspects unverified.
+- FinitelyPresentedAlgebras(R); FramedFGAlgebras(R): `Algebra.FinitePresentation` (class) — `RingTheory/FinitePresentation.lean:44` — verified; FramedFGAlgebras absent.
+- is_algebra / is_free / is_finitely_presented flags: Three-valued predicate machinery absent; `Module.Free`/`FinitePresentation` are the reachable parts.
+- FinitelyPresentedAlgebra F/I; FGAlgebra: `Ideal.quotient` exists; presented-algebra declaration unverified.
+- base_change (algebras): No verified base-change for algebras.
+- discriminant d_K: `NumberField.discr` and `classNumber` verified; signature via `card_real_embeddings`/`card_complex_embeddings`; ramified-primes part unverified.
+- element theory: `norm`/`trace`/`minpoly`/`IsIntegral` verified; charpoly/Bézout-inverse/embeddings parts unverified.
+- R^n: Product-module/Pi structure exists; a named `R^n` declaration unverified.
+- OwnedGroups: `Group` verified; the owned-groups Sage facade bundle unverified.
+- GroupsWithChosenFinitePresentation: `GroupPresentation` not found in Mathlib GroupTheory.
+- AbelianGroupEndomorphismRing End(A): `Module.End`/`AddCommGroup (M →ₗ[R] N)` exist; the End(A)-ring declaration unverified.
+- Schemes(S): `Scheme` verified; the 11-axiom bundle partial: Normal/Projective/QuasiAffine/QuasiProjective/FiniteType absent.
+- AffineSpaces / ProjectiveSpaces / ClosedSubschemes / OpenSubschemes: `IsOpenImmersion`/`IsClosedImmersion` verified; QuasiAffine/QuasiProjective/FiniteType parts absent.
+- Varieties(S): `Smooth` verified; variety = smooth+integral+proper bundle unverified.
+- DivisorGroups / ClassGroups / PicardGroups: Divisor-group machinery absent; `ClassGroup` — `RingTheory/ClassGroup/Basic.lean:88` — verified; PicardGroup comparisons unverified.
+- SchemeMorphism: `Scheme.Hom` exists; the Sage facade bundle (compose/pullback/evaluate) unverified.
+- Pic(𝔸ⁿ)=0 / Cl(ℙⁿ)=ℤ theorems: Theorem statements; no verified formalization.
+- FinitelyGeneratedModules(R): `Module.FG` verified; the pure/framed stratification semantics differ.
+- FramedModules(R): Framing (surjection witness) notion absent.
+- FractionFieldQuotients(R): `FractionRing`/`Localization` exist; the K/𝔞 quotient bundle unverified.
+- BasedFreeModule: `Module.Basis` exists; the based-free-module declaration unverified.
+- FinitelyPresentedModule: No `Module.FinitePresentation` path pinned; only `Algebra.FinitePresentation` (rings/algebras) exists.
+- hermite_form / invariant_factor_form: `smithNormalForm` verified; hermite normal form absent (only the Hermite polynomial — `RingTheory/Polynomial/Hermite/Basic.lean:48`).
+- smith_form_module_generators bundle: Components (SNF/finrank/exponent/Fintype.card/IsTorsionFree) verified individually; the bundle is unchecked.
+- vector_space: `Module 𝕜 V` verified; a named `VectorSpace` declaration unverified.
+
+## 5. Citation-format problems and naming notes
+
+- `Cone`/`Cocone` live in `CategoryTheory/Limits/Cones.lean` (plural file name), not `Cone.lean`.
+- `HasBiproduct` is a `class` in `CategoryTheory/Limits/Shapes/Biproducts.lean` (the Shapes layer); `Preadditive/Biproducts.lean` holds the additive theory on top.
+- The catalogue's `AlternatingAlgebra` is `ExteriorAlgebra` in Mathlib (`LinearAlgebra/ExteriorAlgebra/Basic.lean`).
+- The catalogue's `DividedPowerAlgebra` is the `abbrev` `DividedPowerAlgebra` in `RingTheory/DividedPowerAlgebra/Init.lean`.
+- `TensorAlgebra` lives in `LinearAlgebra/TensorAlgebra/`, not `Algebra/TensorAlgebra/`.
+- `ModuleCat` is a `structure` (Basic.lean:57); it is not a `def` or `abbrev`.
+- `FreeAlgebra.lift` is a `def` (an equivalence `(X → A) ≃ (FreeAlgebra R X →ₐ[R] A)`) at Algebra/FreeAlgebra.lean:369; `liftFun` (:111) is the underlying map.
+- `Module.Free` is a class at `LinearAlgebra/FreeModule/Basic.lean:43` — distinct from `Module.FG` (Algebra/Module/Defs.lean).
+- `Uncountable` is a `class` (Data/Countable/Defs.lean:125); `Set.Finite`/`Set.Infinite` have no standalone `def` line (cite the file; `finite_def` theorem at :56).
+- `Cardinal.aleph` (:417, Aleph.lean); `Cardinal.aleph0` (:478, SetTheory/Cardinal/Defs.lean).
+- `Spec.structureSheaf` def at StructureSheaf.lean:890; `structureSheafInType` (:171) is the type-level variant.
+- `dpow` (divided powers) at `RingTheory/DividedPowers/SubDPIdeal.lean:554` is the operation for divided-power structures on ideals; the catalogue's divided-power-algebra Γ notion shares the operation name in a different construction.
+- No `Scheme.toTop`/`underlying_space` declaration found; the L207 bundle therefore stays unchecked despite two of three components verifying.
+- The unicode in entry titles (Δ[n], ℵ, ⊣, γ, ℵ₀) round-trips through the file unchanged; checkboxes and citations were the only edits.
+
+## Appendix: checked entries
+
+- [x] line 54: Sets (owned)
+- [x] line 61: ordered sets; Δ[n]
+- [x] line 63: Cardinals ℵ_n
+- [x] line 68: Cat
+- [x] line 70: ArrowCategory Ar(C)
+- [x] line 72: IsoArrowCategory; Core(C)
+- [x] line 74: Isomorphism(f, g)
+- [x] line 77: SliceOver C/X; CosliceUnder X\C
+- [x] line 81: Kernel / Cokernel categories
+- [x] line 86: Cone / Cocone / Product / Coproduct / Biproduct / DirectSum
+- [x] line 94: TensorProductCategory
+- [x] line 101: RestrictionOfScalarsFunctor
+- [x] line 104: FreeModuleFunctorClass F_R : Set → Mod(R)
+- [x] line 106: UnderlyingSetOfGroupFunctor U : Grp → Set
+- [x] line 108: ForgetfulFunctorClass U : Mod(R) → Set
+- [x] line 110: FreeForgetfulAdjunction F_R ⊣ U
+- [x] line 112: TensorAlgebraFunctor / SymmetricAlgebraFunctor / AlternatingAlgebraFunctor
+- [x] line 116: GroupRingFunctor R[−]
+- [x] line 119: RingCenterFunctor Z : core(Rings) → CRings
+- [x] line 138: OwnedSemirings / OwnedRngs / OwnedRings / OwnedDivisionRings / OwnedFields
+- [x] line 144: Algebras(R)
+- [x] line 148: TensorAlgebras / SymmetricAlgebras / AlternatingAlgebras / DividedPowerAlgebras
+- [x] line 154: OwnedNumberFields()
+- [x] line 160: Structure-map obligation
+- [x] line 170: FreeAlgebraOnSet FreeAlg_R(S)
+- [x] line 172: hom (universal property)
+- [x] line 177: γ_a(x) divided powers; divided_square γ₂(x)
+- [x] line 185: polynomial arithmetic surface
+- [x] line 200: ring_center Z(R)
+- [x] line 204: PredicateSubring {z : P(z)}
+- [x] line 226: PredicateSubgroup {g : P(g)}
+- [x] line 276: Modules(R)
+- [x] line 278: FreeModules(R); ProjectiveModules(R); TorsionModules(R)
+- [x] line 285: DirectSumObjects
+- [x] line 287: OwnedIdeals(R)
+- [x] line 295: F_R(S)
+- [x] line 298: rank
+- [x] line 301: FreeResolution

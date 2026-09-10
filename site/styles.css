@@ -1,0 +1,170 @@
+/* The corpus pages are one very wide table each: a hundred-odd rows of six
+   columns, two of which are paragraphs of prose and two of which are lists of
+   Lean declaration names.  Everything here serves reading that shape. */
+
+:root {
+  --corpus-rule: #e3e6ea;
+  --corpus-head: #f6f7f9;
+  --corpus-zebra: #fbfcfd;
+  --corpus-ink-quiet: #5c636a;
+  --route-matched: #1a7f4b;
+  --route-owned: #6b4fbb;
+  --route-ported: #9a6212;
+  --route-unmatched: #b3261e;
+}
+
+body.quarto-dark {
+  --corpus-rule: #343a40;
+  --corpus-head: #22262a;
+  --corpus-zebra: #1d2125;
+  --corpus-ink-quiet: #adb5bd;
+  --route-matched: #5dd39e;
+  --route-owned: #b9a3f2;
+  --route-ported: #e0b055;
+  --route-unmatched: #f28b82;
+}
+
+/* Tables ------------------------------------------------------------------ */
+
+/* A coverage table is wider than any window. Rather than crushing six columns
+   into the text measure, let it keep its natural width and scroll inside its own
+   box, with the unit ID pinned so a row stays identifiable while scrolled. */
+.table-scroll {
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.quarto-container table {
+  font-size: 0.83rem;
+  line-height: 1.45;
+  border-collapse: collapse;
+}
+
+.table-scroll table {
+  width: max-content;
+  min-width: 100%;
+}
+
+.table-scroll td:first-child,
+.table-scroll th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--bs-body-bg, #fff);
+  border-right: 1px solid var(--corpus-rule);
+}
+
+.quarto-container thead th:first-child {
+  z-index: 3;
+  background: var(--corpus-head);
+}
+
+.quarto-container thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--corpus-head);
+  border-bottom: 2px solid var(--corpus-rule);
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.quarto-container tbody tr:nth-child(even) {
+  background: var(--corpus-zebra);
+}
+
+.quarto-container td,
+.quarto-container th {
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--corpus-rule);
+  vertical-align: top;
+}
+
+/* Column roles in a coverage table: id, verdict, route, Lean targets,
+   provenance, interface comparison. Each is capped at a readable measure so no
+   one column can stretch a row into a screenful. */
+.table-scroll td:nth-child(2) { max-width: 22rem; }
+.table-scroll td:nth-child(4) { max-width: 32rem; }
+.table-scroll td:nth-child(6) { max-width: 58rem; }
+
+/* Provenance is the same pinned commits on nearly every row of a page, and the
+   sweep's own note states them once. Keep it available, and quiet. */
+.table-scroll td:nth-child(5) {
+  max-width: 13rem;
+  font-size: 0.76rem;
+  color: var(--corpus-ink-quiet);
+  overflow-wrap: anywhere;
+}
+
+/* A unit ID is an anchor a reader copies; keep it on one line and unmissable. */
+.quarto-container td:first-child code {
+  white-space: nowrap;
+  font-size: 0.78rem;
+  background: none;
+  padding: 0;
+  color: inherit;
+  font-weight: 600;
+}
+
+/* Declaration names are the densest column: let them wrap anywhere. */
+.quarto-container td code {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Colour the route so a page's shape is legible before any of it is read. */
+.quarto-container td [class^="route-"] code,
+[class^="route-"] code {
+  font-weight: 600;
+  background: none;
+  padding: 0.1rem 0;
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+
+.route-mathlib, .route-mathlib code { color: var(--route-matched); }
+.route-project-existing, .route-project-existing code { color: var(--route-owned); }
+.route-package-import, .route-package-import code { color: var(--route-owned); }
+.route-reference-port, .route-reference-port code { color: var(--route-ported); }
+.route-unmatched, .route-unmatched code { color: var(--route-unmatched); }
+
+/* Coverage summary tables read as numbers, not prose. */
+.quarto-container td:nth-child(n + 2):last-child,
+.quarto-container th[align="right"],
+.quarto-container td[align="right"] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Provenance callout ------------------------------------------------------ */
+
+.callout-note .callout-body {
+  font-size: 0.86rem;
+}
+
+.callout-note .callout-body li {
+  margin-bottom: 0.35rem;
+}
+
+/* Page furniture ---------------------------------------------------------- */
+
+/* The lead sentence naming the source and block, above each coverage table. */
+main > p:first-of-type {
+  color: var(--corpus-ink-quiet);
+  font-size: 0.95rem;
+  margin-bottom: 1.25rem;
+}
+
+.sidebar-item-text {
+  font-size: 0.87rem;
+}
+
+#quarto-margin-sidebar {
+  font-size: 0.85rem;
+}
+
+/* Wide tables scroll inside their own box rather than the page. */
+.quarto-container .table-responsive,
+main .cell-output-display {
+  overflow-x: auto;
+}
