@@ -64,8 +64,8 @@ def validate (expected : LeanCategories.RegistryManifest) (j : Json) : Except St
   pure ()
 
 def run : IO UInt32 := do
-  let manifest ← loadRegisteredManifest
   let expected ← loadRegisteredManifestData
+  let manifest := toJson expected
   match Json.parse manifest.compress with
   | .error e =>
       IO.eprintln s!"JSON parse failed: {e}"
