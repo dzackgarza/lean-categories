@@ -217,6 +217,22 @@ theorem isInducing_of :
     intro x hx
     exact (QuotientAddGroup.eq_zero_iff x).mp hx
 
+/-- Representatives of a coherent residue family form a Cauchy sequence in the
+original subgroup-basis topology. -/
+theorem cauchySeq_out (x : Completion F hF) :
+    letI : TopologicalSpace G := topologyOfAntitone F hF
+    letI : UniformSpace G := IsTopologicalAddGroup.rightUniformSpace G
+    CauchySeq (fun n => (x.1 n).out) := by
+  let : TopologicalSpace G := topologyOfAntitone F hF
+  let : UniformSpace G := IsTopologicalAddGroup.rightUniformSpace G
+  let : IsUniformAddGroup G := isUniformAddGroup_of_addCommGroup
+  have hu : IsUniformInducing (of F hF) :=
+    AddMonoidHom.isUniformInducing_of_isInducing (isInducing_of F hF)
+  unfold CauchySeq
+  rw [← hu.cauchy_map_iff]
+  rw [Filter.map_map]
+  exact (tendsto_out F hF x).cauchySeq
+
 /-- Coherent residues give a complete separated uniform completion of the
 subgroup-topological group. -/
 def abstractCompletion :
