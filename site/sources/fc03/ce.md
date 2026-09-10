@@ -2,10 +2,12 @@
 title: "Epilogue: Theorems in Category Theory"
 ---
 
-FC03 — Riehl, *Category Theory in Context* — block `FC03-CE`.
+FC03 — Riehl, *Category Theory in Context*.
 
-This chapter is enumerated but not yet swept against Lean: the statements
-below carry no routing verdict.
+This chapter contains 7 definitions, 4 theorems, 2 constructions and 1 other statements.
+
+Nobody has checked this chapter against Lean yet, so the statements below
+say nothing about whether they are formalized.
 
 ### Definition: A symmetric monoidal category has a bifunctor ⊗, unit object, and natural… {#fc03-ce-u001}
 

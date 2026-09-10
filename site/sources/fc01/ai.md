@@ -2,10 +2,12 @@
 title: "FC01 Appendix I — Cartesian Products and Zorn's Lemma"
 ---
 
-FC01 — Dummit & Foote, *Abstract Algebra* — block `FC01-AI`.
+FC01 — Dummit & Foote, *Abstract Algebra*.
 
-This chapter is enumerated but not yet swept against Lean: the statements
-below carry no routing verdict.
+This chapter contains 6 definitions, 4 theorems, 1 proposition, 1 convention and 1 other statements.
+
+Nobody has checked this chapter against Lean yet, so the statements below
+say nothing about whether they are formalized.
 
 ### convention: An indexing set is a set whose elements index a family ({Ai\mid i\in I}). {#fc01-ai-u001}
 
@@ -47,7 +49,7 @@ For (j\in I), (A_j) is the (j)-th **component**, (a_j) the (j)-th **coordinate**
 
 For (I={1,\dots,n}), choice functions are canonically bijective with ordered (n)-tuples; for (I=\mathbb Z^+), they are infinite sequences.
 
-### proposition: For nonempty countable $I$, $\lvert\prod{i\in I}Ai\rvert=\prod{i\in I}\lvert… {#fc01-ai-u006}
+### proposition {#fc01-ai-u006}
 
 ::: {.unit-meta}
 `FC01-AI-U006` · Appendix I §1, p.906; Proposition 1, extraction l.31753 · after [`FC01-AI-U001`](#fc01-ai-u001), [`FC01-AI-U003`](#fc01-ai-u003)

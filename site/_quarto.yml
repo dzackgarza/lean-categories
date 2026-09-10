@@ -12,9 +12,9 @@ website:
     type: overlay
   navbar:
     left:
-      - text: "Coverage"
+      - text: "Every book"
         href: coverage.md
-      - text: "The corpus"
+      - text: "Reading list"
         href: corpus.md
       - text: "Catalogues"
         href: catalogues/index.md

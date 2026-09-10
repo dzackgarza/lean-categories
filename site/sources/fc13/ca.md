@@ -2,10 +2,12 @@
 title: "Appendix A. Tensor products, direct and inverse limits"
 ---
 
-FC13 — Matsumura, *Commutative Ring Theory* — block `FC13-CA`.
+FC13 — Matsumura, *Commutative Ring Theory*.
 
-This chapter is enumerated but not yet swept against Lean: the statements
-below carry no routing verdict.
+This chapter contains 10 definitions, 2 theorems, 2 examples, 1 counterexample, 4 constructions and 8 formulas.
+
+Nobody has checked this chapter against Lean yet, so the statements below
+say nothing about whether they are formalized.
 
 ### Definition: bilinear map {#fc13-ca-u001}
 

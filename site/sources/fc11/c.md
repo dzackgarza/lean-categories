@@ -2,10 +2,12 @@
 title: "FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)"
 ---
 
-FC11 — Peters & Sterk, *Symmetric and Quadratic Forms* — block `FC11-C`.
+FC11 — Peters & Sterk, *Symmetric and Quadratic Forms*.
 
-This chapter is enumerated but not yet swept against Lean: the statements
-below carry no routing verdict.
+This chapter contains 5 definitions, 2 theorems, 4 propositions, 2 lemmas, 3 corollaries and 2 remarks.
+
+Nobody has checked this chapter against Lean yet, so the statements below
+say nothing about whether they are formalized.
 
 ### Definition / construction / notation {#fc11-c-u001}
 
@@ -69,7 +71,7 @@ Theorem C.1.4 (Cartan–Dieudonn´e over local rings). Every isometry of a quadr
 `FC11-C-U008` · Appendix C, source L11956-L11960
 :::
 
-For a non-degenerate quadratic torsion group $(G,q)$, the normalized Gauss sum is $\gamma_{(G,q)}=\
+For a non-degenerate quadratic torsion group $(G,q)$, the normalized Gauss sum is $\gamma_{(G,q)}=|G|^{-1/2}\sum_{x\in G}\exp(2\pi i q(x))\in\mathbf C$.
 
 ### Theorem C.2.1 {#fc11-c-u009}
 
@@ -82,10 +84,10 @@ Theorem C.2.1 (Milgram). Let $L$ be a non-degenerate integral quadratic lattice 
 ### Definition / construction {#fc11-c-u010}
 
 ::: {.unit-meta}
-`FC11-C-U010` · Appendix C, source L11966-L11972
+`FC11-C-U010` · Appendix C, source L11966-L11972 · after [`FC11-C-U008`](#fc11-c-u008)
 :::
 
-For a possibly degenerate quadratic torsion form $q$ on $G$ and a homomorphism $f:\mathbf Q/\mathbf Z\to\mathbf Q/\mathbf Z$, the generalized Gauss sum is $\gamma_{(G,q)}(f)=\
+For a possibly degenerate quadratic torsion form $q$ on $G$ and a homomorphism $f:\mathbf Q/\mathbf Z\to\mathbf Q/\mathbf Z$, the generalized Gauss sum is $\gamma_{(G,q)}(f)=|G|^{-1/2}\sum_{x\in G}\exp(2\pi i\,f(q(x)))$.
 
 ### Proposition C.2.2 {#fc11-c-u011}
 
@@ -93,7 +95,7 @@ For a possibly degenerate quadratic torsion form $q$ on $G$ and a homomorphism $
 `FC11-C-U011` · Appendix C, source L11976-L11980
 :::
 
-Proposition C.2.2. (1) If $\iota : ( G , q ) \simeq ( G ^ { \prime } , q ^ { \prime } )$ is an isometry of torsion quadratic forms and $f , f ^ { \prime } : \mathbb { Q } / \mathbb { Z } \to \mathbb { Q } / \mathbb { Z }$ homomorphisms for which $f ^ { \prime } { \circ } q ^ { \prime } { \circ } l ~ = ~ f { \circ } q$ , then $\gamma _ { ( G ^ { \prime } , q ^ { \prime } ) } ( f ^ { \prime } ) = \gamma _ { ( G , q ) } ( f )$ . (2) Let $\left( G , q \right) = \left( G ^ { \prime } , q ^ { \prime } \right) \oplus \left( G ^ { \prime \prime } , q ^ { \prime \prime } \right)$ , then for all homomorphisms $f : \mathbb { Q } / \mathbb { Z } \to \mathbb { Q } / \mathbb { Z }$ one has $\gamma _ { ( G , q ) } ( f ) = \gamma _ { ( G ^ { \prime } , q ^ { \prime } ) } ( f ) \cdot \gamma _ { ( G ^ { \prime \prime } , q ^ { \prime \prime } ) } ( f )$ . (3) If $H$ is a totally isotropic subgroup of $( G , q )$ then $\begin{array} { r } { \gamma _ { ( G , q ) } = \sqrt { \
+Proposition C.2.2. (1) If $\iota : ( G , q ) \simeq ( G ^ { \prime } , q ^ { \prime } )$ is an isometry of torsion quadratic forms and $f , f ^ { \prime } : \mathbb { Q } / \mathbb { Z } \to \mathbb { Q } / \mathbb { Z }$ homomorphisms for which $f ^ { \prime } { \circ } q ^ { \prime } { \circ } l ~ = ~ f { \circ } q$ , then $\gamma _ { ( G ^ { \prime } , q ^ { \prime } ) } ( f ^ { \prime } ) = \gamma _ { ( G , q ) } ( f )$ . (2) Let $\left( G , q \right) = \left( G ^ { \prime } , q ^ { \prime } \right) \oplus \left( G ^ { \prime \prime } , q ^ { \prime \prime } \right)$ , then for all homomorphisms $f : \mathbb { Q } / \mathbb { Z } \to \mathbb { Q } / \mathbb { Z }$ one has $\gamma _ { ( G , q ) } ( f ) = \gamma _ { ( G ^ { \prime } , q ^ { \prime } ) } ( f ) \cdot \gamma _ { ( G ^ { \prime \prime } , q ^ { \prime \prime } ) } ( f )$ . (3) If $H$ is a totally isotropic subgroup of $( G , q )$ then $\begin{array} { r } { \gamma _ { ( G , q ) } = \sqrt { | H | } \frac { 1 } { \sqrt { | G / H ^ { \perp } | } } \cdot \gamma _ { ( H ^ { \perp } / H , q ) } . } \end{array}$ If, moreover, $( G , q )$ is non-degenerate, then $\gamma _ { ( G , q ) } = \gamma _ { ( H ^ { \perp } / H , q ) }$ . (4) The quotient group2 $\overline { { { G } } } ~ = ~ G / \mathrm { r a d } ( q )$ with induced quadratic form $\overline { { q } }$ satisfies $\gamma _ { ( G , q ) } ( f ) = \sqrt { | \operatorname { r a d } ( q ) | } \cdot \gamma _ { ( \overline { G } , \overline { q } ) } ( f )$ for every homomorphism $f : \mathbb { Q } / \mathbb { Z } \to \mathbb { Q } / \mathbb { Z }$ .. (5) Suppose that $\operatorname { r a d } ( q ) \neq G ^ { \bot }$ , then $\gamma _ { ( G , q ) } ( = \gamma _ { ( G , q ) } ( \mathrm { i d } ) ) = 0$ .
 
 ### Proposition C.2.3 {#fc11-c-u012}
 

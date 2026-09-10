@@ -2,10 +2,12 @@
 title: "Appendix B. Some homological algebra"
 ---
 
-FC13 — Matsumura, *Commutative Ring Theory* — block `FC13-CB`.
+FC13 — Matsumura, *Commutative Ring Theory*.
 
-This chapter is enumerated but not yet swept against Lean: the statements
-below carry no routing verdict.
+This chapter contains 15 definitions, 11 theorems, 1 corollary and 1 construction.
+
+Nobody has checked this chapter against Lean yet, so the statements below
+say nothing about whether they are formalized.
 
 ### Definition: complex, homology and cohomology {#fc13-cb-u001}
 

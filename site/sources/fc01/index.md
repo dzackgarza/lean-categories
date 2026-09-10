@@ -2,6 +2,27 @@
 title: "FC01 — Dummit & Foote, Abstract Algebra"
 ---
 
+This book contains 6 definitions, 4 theorems, 1 proposition, 1 convention and 1 other statements.
+
+13 statements, none of them checked against Lean yet.
+
+| Chapter | Definitions | Theorems, propositions | Lemmas, corollaries | Everything else | Formalized | Not formalized |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| [FC01 Appendix I — Cartesian Products and Zorn's Lemma](ai.html) | 6 | 5 | — | 2 | not checked |  |
+
+### What the book contains
+
+| Kind of statement | Count |
+| --- | ---: |
+| Definitions | 6 |
+| Theorems | 4 |
+| Propositions | 1 |
+| Conventions | 1 |
+| Other statements | 1 |
+| **Total** | **13** |
+
+### How this book was read
+
 ---
 title: FC01 — Dummit–Foote, Abstract Algebra
 ---
@@ -7301,11 +7322,5 @@ Units: 71.
 - Several formulas contain replacement characters (`�`), broken arrows, or split digits/letters, especially in Chapters 13–15 and 19. Where the mathematical object remains unambiguous, the catalogue uses concise normalized notation; the extraction line is retained as the authoritative locator.
 - Chapter 19, line 31535 prints `Lema 16` and corrupts the subgroup-index notation in the hypotheses; comparison with adjacent Lemma 15 makes the intended index notation recognizable.
 - Appendix I begins at extraction line 31689 (`Cartesian Products and Zorn's Lemma`); no material at or after that line is catalogued as Chapter 19.
-
-**13 source units** across 1 chapters and appendices.
-
-| Chapter | Units | In Lean | Not in Lean | Swept |
-| --- | ---: | ---: | ---: | :-: |
-| [FC01 Appendix I — Cartesian Products and Zorn's Lemma](ai.html) | 13 | — | — | no |
 
 - [Foundational corpus mapping FC01 Dummit Foote](mapping.html)

@@ -140,6 +140,14 @@ main th {
 main td[align="right"],
 main th[align="right"] {
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  width: 1%;
+}
+
+/* The first column of a summary table names a chapter or a book; without a
+   floor the counts squeeze it until the name wraps one letter per line. */
+main tbody td:first-child {
+  min-width: 18rem;
 }
 
 /* Anything wider than the measure scrolls in its own box, never the page. */
@@ -169,4 +177,14 @@ main > p:first-of-type {
 
 #quarto-margin-sidebar {
   font-size: 0.82rem;
+}
+
+/* A statement whose record is broken says so, in the place the mathematics
+   should have been. It is not styled to be ignorable. */
+.unit-defect {
+  border-left: 3px solid var(--route-unmatched);
+  background: color-mix(in srgb, var(--route-unmatched) 8%, transparent);
+  padding: 0.6rem 0.85rem;
+  margin: 0.85rem 0;
+  font-size: 0.88rem;
 }

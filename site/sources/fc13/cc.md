@@ -2,10 +2,12 @@
 title: "Appendix C. The exterior algebra"
 ---
 
-FC13 — Matsumura, *Commutative Ring Theory* — block `FC13-CC`.
+FC13 — Matsumura, *Commutative Ring Theory*.
 
-This chapter is enumerated but not yet swept against Lean: the statements
-below carry no routing verdict.
+This chapter contains 4 definitions, 5 theorems, 1 example, 2 constructions and 1 remark.
+
+Nobody has checked this chapter against Lean yet, so the statements below
+say nothing about whether they are formalized.
 
 ### Definition: alternating multilinear map {#fc13-cc-u001}
 

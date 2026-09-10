@@ -2,10 +2,12 @@
 title: "FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)"
 ---
 
-FC11 — Peters & Sterk, *Symmetric and Quadratic Forms* — block `FC11-B`.
+FC11 — Peters & Sterk, *Symmetric and Quadratic Forms*.
 
-This chapter is enumerated but not yet swept against Lean: the statements
-below carry no routing verdict.
+This chapter contains 27 definitions, 4 theorems, 1 proposition, 3 lemmas, 5 examples, 5 constructions, 1 remark and 1 criterion.
+
+Nobody has checked this chapter against Lean yet, so the statements below
+say nothing about whether they are formalized.
 
 ### Definition / construction {#fc11-b-u001}
 

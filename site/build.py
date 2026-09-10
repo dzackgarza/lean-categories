@@ -53,13 +53,42 @@ COMMIT = re.compile(r"\A[0-9a-f]{40}\Z")
 EXTERNAL = re.compile(r"\A(?P<repo>[\w.-]+/[\w.-]+)@(?P<sha>[0-9a-f]{7,40})(?:::|/)(?P<path>[^:]+\.lean)")
 PULL_REQUEST = re.compile(r"(?<![\w/#])#(\d{4,6})\b")
 
-ROUTE_MEANING = {
-    "mathlib": "Mathlib owns the unit outright.",
-    "project-existing": "This repository already owns it.",
-    "package-import": "A Lake-packaged library owns it.",
-    "reference-port": "An external Lean development owns it and is ported with provenance.",
-    "unmatched": "No checked Lean owner was found.",
+# How each verdict of the sweep reads to someone who does not work on it.
+ROUTE_LABEL = {
+    "mathlib": "in Mathlib",
+    "project-existing": "in lean-categories",
+    "package-import": "in a Lean package",
+    "reference-port": "in another Lean project",
+    "unmatched": "not formalized",
 }
+
+ROUTE_MEANING = {
+    "mathlib": "Mathlib states and proves it.",
+    "project-existing": "This repository states and proves it.",
+    "package-import": "A library available as a Lake dependency has it.",
+    "reference-port": "Some other Lean development has it; using it means porting that code.",
+    "unmatched": "A documented search found no Lean statement of it anywhere.",
+}
+
+# The kinds of statement a book contains, as the enumerations record them. A
+# compound kind ("Definition / construction") counts under the word it leads
+# with, which is the one the source itself leads with.
+KINDS = (
+    ("definition", "definitions"),
+    ("theorem", "theorems"),
+    ("proposition", "propositions"),
+    ("lemma", "lemmas"),
+    ("corollary", "corollaries"),
+    ("example", "examples"),
+    ("counterexample", "counterexamples"),
+    ("construction", "constructions"),
+    ("remark", "remarks"),
+    ("convention", "conventions"),
+    ("notation", "notations"),
+    ("formula", "formulas"),
+    ("criterion", "criteria"),
+)
+KIND_SINGULAR = {plural: singular for singular, plural in KINDS}
 
 SOURCE_TITLES = {
     "FC01": "FC01 — Dummit & Foote, *Abstract Algebra*",
@@ -81,6 +110,11 @@ SOURCE_TITLES = {
 }
 
 
+def plain(text: str) -> str:
+    """Drop emphasis markers, which several sources wrap their kind column in."""
+    return re.sub(r"[*_`]{1,2}", "", text).strip()
+
+
 @dataclass
 class Unit:
     """One statement of the source text, as the enumeration records it."""
@@ -92,6 +126,21 @@ class Unit:
     location: str = ""
     statement: str = ""
     depends: list[str] = field(default_factory=list)
+    truncated: bool = False
+
+    @property
+    def category(self) -> str:
+        """Which kind of statement this is: a definition, a theorem, a lemma.
+
+        Sources write the kind in several house styles — `Theorem 1.2`,
+        `Definition: …`, `**Definition/convention — …**` — and all of them lead
+        with the word the book itself leads with.
+        """
+        lead = re.split(r"[:/(,—–-]", plain(self.kind), maxsplit=1)[0].strip().lower()
+        for singular, plural in KINDS:
+            if lead.startswith(singular):
+                return plural
+        return "other statements"
 
 
 @dataclass
@@ -118,7 +167,19 @@ class Block:
 
     @property
     def counts(self) -> Counter:
-        return Counter(r.route for r in self.routes.values() if r.route)
+        return Counter(r.route for r in self.routes.values() if r.route in ROUTE_LABEL)
+
+    @property
+    def kinds(self) -> Counter:
+        return Counter(u.category for u in self.units)
+
+    @property
+    def size(self) -> int:
+        return len(self.units) or sum(self.counts.values())
+
+    @property
+    def checked(self) -> bool:
+        return bool(self.counts)
 
     @property
     def href(self) -> str:
@@ -199,8 +260,15 @@ def collapse_repeated_headings(text: str) -> tuple[str, str]:
 
 
 def table_cells(line: str) -> list[str]:
+    """Split a table row on its real column breaks.
+
+    A cell may contain an escaped pipe — `\\|x\\|=p^{-v(x)}` is an absolute value,
+    not two columns — and splitting on every pipe shifts every column after it.
+    """
     row = TABLE_ROW.match(line)
-    return [c.strip() for c in row.group(1).split("|")] if row else []
+    if not row:
+        return []
+    return [c.strip().replace("\\|", "|") for c in re.split(r"(?<!\\)\|", row.group(1))]
 
 
 def column_map(header: list[str]) -> dict[str, int]:
@@ -345,6 +413,30 @@ def target_url(text: str) -> str:
     return ""
 
 
+def math_balances(text: str) -> bool:
+    """Whether a recorded statement's formulas open and close.
+
+    They should. One that does not is a statement the extraction cut off
+    mid-formula: the mathematics it was supposed to record is missing, which is
+    a defect in the note, not a rendering problem.
+    """
+    probe = re.sub(r"\\\$", "", text)
+    return probe.count("$$") % 2 == 0 and probe.replace("$$", "").count("$") % 2 == 0
+
+
+def verbatim(text: str) -> str:
+    """Show a broken record exactly as it stands, interpreting none of it.
+
+    A statement cut off mid-formula cannot be typeset: its unclosed `$` runs on
+    into whatever follows, and escaping the dollars only leaves raw LaTeX macros
+    behind, which the renderer eats instead. Neither is honest about what the
+    note actually contains. So the text is quoted verbatim, and the entry says
+    plainly that it is incomplete.
+    """
+    fence = "`" * max(4, *(len(m) + 1 for m in re.findall(r"`+", text)), 4)
+    return f"{fence}text\n{text}\n{fence}"
+
+
 def linkify(body: str) -> str:
     """Point every declaration, source path, commit and pull request at its source."""
 
@@ -378,17 +470,42 @@ def unit_href(uid: str, here: tuple[str, str], known: set[tuple[str, str]]) -> s
 
 
 def route_badge(route: str) -> str:
-    return f"[`{route}`]{{.route-{route}}}" if route else ""
+    """The verdict, in words a reader who does not work on this can act on."""
+    if route not in ROUTE_LABEL:
+        return ""
+    return f"[{ROUTE_LABEL[route]}]{{.route-{route}}}"
 
 
 def route_table(routes: Counter) -> str:
     total = sum(routes.values())
     if not total:
         return ""
-    rows = ["| Route | Units | Share | Meaning |", "| --- | ---: | ---: | --- |"]
+    rows = ["| Status | Statements | Share | What it means |", "| --- | ---: | ---: | --- |"]
     for route, count in sorted(routes.items(), key=lambda kv: -kv[1]):
         rows.append(f"| {route_badge(route)} | {count} | {100 * count / total:.0f}% | {ROUTE_MEANING.get(route, '')} |")
-    rows.append(f"| **total** | **{total}** | | |")
+    rows.append(f"| **checked in total** | **{total}** | | |")
+    return "\n".join(rows)
+
+
+def kind_summary(kinds: Counter) -> str:
+    """"18 definitions, 12 theorems, 7 lemmas and 4 examples"."""
+    order = [plural for _, plural in KINDS] + ["other statements"]
+    parts = [f"{kinds[k]:,} {k if kinds[k] != 1 else KIND_SINGULAR.get(k, k)}" for k in order if kinds[k]]
+    if not parts:
+        return ""
+    if len(parts) == 1:
+        return parts[0]
+    return ", ".join(parts[:-1]) + " and " + parts[-1]
+
+
+def kind_table(kinds: Counter, heading: str = "Statements") -> str:
+    order = [plural for _, plural in KINDS] + ["other statements"]
+    present = [k for k in order if kinds[k]]
+    if not present:
+        return ""
+    rows = [f"| {heading} | Count |", "| --- | ---: |"]
+    rows += [f"| {k.capitalize()} | {kinds[k]:,} |" for k in present]
+    rows.append(f"| **Total** | **{sum(kinds.values()):,}** |")
     return "\n".join(rows)
 
 
@@ -406,8 +523,8 @@ def unit_heading(unit: Unit, route: Route | None) -> str:
     hundred headings all reading "Definition", so those take their name from the
     opening clause of the statement instead.
     """
-    kind = unit.kind or (route.verdict if route else "") or "Unit"
-    if not BARE_KIND.match(kind.strip()):
+    kind = plain(unit.kind) or plain(route.verdict if route else "") or "Statement"
+    if not BARE_KIND.match(kind):
         return kind
     opening = re.split(r"(?<=[a-z0-9)])[:.;] ", re.sub(r"\s+", " ", unit.statement), maxsplit=1)[0]
     opening = re.sub(r"[*_`]", "", opening).strip()
@@ -415,7 +532,10 @@ def unit_heading(unit: Unit, route: Route | None) -> str:
         return kind
     if len(opening) > 80:
         opening = opening[:77].rsplit(" ", 1)[0] + "…"
-    return f"{kind}: {opening}"
+    # Truncating can cut a formula in half. A heading is no place to find out,
+    # so one that no longer typesets falls back to the bare kind.
+    named = f"{kind}: {opening}"
+    return named if math_balances(named) else kind
 
 
 def render_unit(
@@ -437,11 +557,23 @@ def render_unit(
         meta.append(route_badge(route.route))
     lines += ["::: {.unit-meta}", " · ".join(meta), ":::", ""]
 
-    if unit.statement:
+    if unit.truncated:
+        lines += [
+            "::: {.unit-defect}",
+            "**This record is incomplete.** It stops mid-formula: the equation the "
+            "book states here was lost when the text was extracted, so what follows "
+            "is the broken record verbatim, not the mathematics. Read this one in "
+            "the book.",
+            "",
+            verbatim(unit.statement),
+            ":::",
+            "",
+        ]
+    elif unit.statement:
         lines += [unit.statement, ""]
 
     if route and (route.targets or route.comparison):
-        owner = "In Lean" if route.route != "unmatched" else "Not in Lean"
+        owner = "Formalized" if route.route != "unmatched" else "Not formalized"
         detail = []
         if route.targets and route.targets != "—":
             detail.append(route.targets)
@@ -458,27 +590,38 @@ def render_unit(
 def render_block(block: Block, known: set[tuple[str, str]]) -> Page:
     here = (block.source, block.name)
     counts = block.counts
-    lead = [f"{SOURCE_TITLES.get(block.source, block.source)} — block `{block.source}-{block.name}`.", ""]
+    lead = [f"{SOURCE_TITLES.get(block.source, block.source)}.", ""]
+
+    summary = kind_summary(block.kinds)
+    if summary:
+        lead += [f"This chapter contains {summary}.", ""]
 
     if counts:
         total = sum(counts.values())
-        owned = total - counts["unmatched"]
+        found = total - counts["unmatched"]
         lead += [
-            f"{len(block.units) or total} units. "
-            f"{owned} have a Lean owner; {counts['unmatched']} do not.",
+            f"Of the {total} statements checked against Lean, {found} are formalized "
+            f"somewhere and {counts['unmatched']} are not.",
             "",
             route_table(counts),
             "",
         ]
     else:
         lead += [
-            "This chapter is enumerated but not yet swept against Lean: the statements",
-            "below carry no routing verdict.",
+            "Nobody has checked this chapter against Lean yet, so the statements below",
+            "say nothing about whether they are formalized.",
             "",
         ]
 
     if block.provenance:
-        lead += ['::: {.callout-note collapse="true"}', "## How this chapter was searched", "", block.provenance, ":::", ""]
+        lead += [
+            '::: {.callout-note collapse="true"}',
+            "## Which versions of Lean and Mathlib were searched",
+            "",
+            block.provenance,
+            ":::",
+            "",
+        ]
 
     usual = Counter(r.provenance for r in block.routes.values() if r.provenance)
     usual_provenance = usual.most_common(1)[0][0] if usual else ""
@@ -504,29 +647,49 @@ def render_block(block: Block, known: set[tuple[str, str]]) -> Page:
 
 
 def render_source_index(source: str, blocks: list[Block], intro: str, extra: list[Page]) -> Page:
-    counts = Counter()
+    counts, kinds = Counter(), Counter()
     for block in blocks:
         counts.update(block.counts)
-    units = sum(len(b.units) or sum(b.counts.values()) for b in blocks)
+        kinds.update(block.kinds)
+    total = sum(b.size for b in blocks)
+    checked = sum(counts.values())
 
     lines = []
-    if intro:
-        lines += [intro, ""]
-    lines += [f"**{units} source units** across {len(blocks)} chapters and appendices.", ""]
+    summary = kind_summary(kinds)
+    if summary:
+        lines += [f"This book contains {summary}.", ""]
+    if checked:
+        lines += [
+            f"{checked:,} of its {total:,} statements have been checked against Lean; "
+            f"{checked - counts['unmatched']:,} of those are formalized somewhere.",
+            "",
+        ]
+    else:
+        lines += [f"{total:,} statements, none of them checked against Lean yet.", ""]
 
-    lines += ["| Chapter | Units | In Lean | Not in Lean | Swept |", "| --- | ---: | ---: | ---: | :-: |"]
+    lines += [
+        "| Chapter | Definitions | Theorems, propositions | Lemmas, corollaries | Everything else | Formalized | Not formalized |",
+        "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
+    ]
     for block in blocks:
-        c = block.counts
-        routed = sum(c.values())
-        n = len(block.units) or routed
-        owned = routed - c["unmatched"] if routed else 0
+        k, c = block.kinds, block.counts
+        checked_here = sum(c.values())
+        theorems = k["theorems"] + k["propositions"]
+        lemmas = k["lemmas"] + k["corollaries"]
+        rest = block.size - k["definitions"] - theorems - lemmas
         lines.append(
-            f"| [{block.title}]({block.name.lower()}.html) | {n} | "
-            f"{owned if routed else '—'} | {c['unmatched'] if routed else '—'} | "
-            f"{'yes' if routed else 'no'} |"
+            f"| [{block.title}]({block.name.lower()}.html) | {k['definitions'] or '—'} | "
+            f"{theorems or '—'} | {lemmas or '—'} | {rest or '—'} | "
+            f"{checked_here - c['unmatched'] if checked_here else 'not checked'} | "
+            f"{c['unmatched'] if checked_here else ''} |"
         )
+
+    if summary:
+        lines += ["", "### What the book contains", "", kind_table(kinds, "Kind of statement")]
     if counts:
-        lines += ["", "### Routes across this source", "", route_table(counts)]
+        lines += ["", "### Where its statements stand in Lean", "", route_table(counts)]
+    if intro:
+        lines += ["", "### How this book was read", "", intro]
     for page in extra:
         lines += ["", f"- [{page.title}]({page.path.split('/')[-1]}.html)"]
     return Page(f"sources/{source.lower()}/index", SOURCE_TITLES.get(source, source), "\n".join(lines))
@@ -621,7 +784,10 @@ def build(vault: Path) -> tuple[dict[str, list[Block]], list[Page]]:
 
     for block in blocks.values():
         for unit in block.units:
-            unit.statement = prose(unit.statement)
+            unit.truncated = not math_balances(unit.statement)
+            # A broken record is quoted as it stands; interpreting it is what
+            # lets it damage the page, and there is nothing there to interpret.
+            unit.statement = unit.statement if unit.truncated else prose(unit.statement)
             unit.kind = prose(unit.kind)
         for route in block.routes.values():
             route.targets = prose(route.targets)
@@ -688,88 +854,105 @@ def write_section_indexes(pages: list[Page]) -> None:
         write(Page(f"{section}/index", title, "\n".join(lines)))
 
 
-def write_coverage(by_source: dict[str, list[Block]]) -> Counter:
-    grand = Counter()
+def write_coverage(by_source: dict[str, list[Block]]) -> tuple[Counter, Counter]:
+    grand, all_kinds = Counter(), Counter()
     lines = [
-        "Every definition, theorem, lemma, example and remark in a read chapter is a",
-        "numbered unit. A swept chapter assigns each of its units exactly one route: a",
-        "Lean declaration that owns the whole statement, or a finding that nothing does.",
+        "Every definition, theorem, lemma, example and remark in these books is recorded",
+        "with its statement and the page it appears on. Where a chapter has been checked",
+        "against Lean, each of its statements also says whether some Lean development",
+        "already states and proves it.",
         "",
-        "Routes are strict about bundles. A unit is credited only when a checked",
-        "declaration carries the statement the source makes, hypotheses included. A",
-        "partial match is recorded as unmatched, with the partial named in its entry.",
+        "A statement counts as formalized only when a Lean declaration carries the whole",
+        "thing, hypotheses included. Where Lean has part of it, that counts as not",
+        "formalized, and the entry names the part that does exist.",
         "",
-        "| Source | Units | Swept | In Lean | Not in Lean |",
+        "| Book | Statements | Checked | Formalized | Not formalized |",
         "| --- | ---: | ---: | ---: | ---: |",
     ]
     for source, blocks in sorted(by_source.items()):
-        counts = Counter()
+        counts, kinds = Counter(), Counter()
         for block in blocks:
             counts.update(block.counts)
+            kinds.update(block.kinds)
         grand.update(counts)
-        routed = sum(counts.values())
-        units = sum(len(b.units) or sum(b.counts.values()) for b in blocks)
-        swept = sum(1 for b in blocks if b.counts)
+        all_kinds.update(kinds)
+        checked = sum(counts.values())
+        total = sum(b.size for b in blocks)
         lines.append(
-            f"| [{SOURCE_TITLES.get(source, source)}](sources/{source.lower()}/) | {units} | "
-            f"{swept}/{len(blocks)} | {routed - counts['unmatched'] if routed else '—'} | "
-            f"{counts['unmatched'] if routed else '—'} |"
+            f"| [{SOURCE_TITLES.get(source, source)}](sources/{source.lower()}/) | {total:,} | "
+            f"{checked:,} | {checked - counts['unmatched'] if checked else '—'} | "
+            f"{counts['unmatched'] if checked else '—'} |"
         )
-    lines += ["", "## Across every swept chapter", "", route_table(grand)]
-    write(Page("coverage", "Coverage", "\n".join(lines)))
-    return grand
+    lines += [
+        "",
+        "## What the books contain",
+        "",
+        kind_table(all_kinds, "Kind of statement"),
+        "",
+        "## Where the checked statements stand",
+        "",
+        route_table(grand),
+    ]
+    write(Page("coverage", "Every book", "\n".join(lines)))
+    return grand, all_kinds
 
 
-def write_index(grand: Counter, by_source: dict[str, list[Block]]) -> None:
-    units = sum(len(b.units) or sum(b.counts.values()) for blocks in by_source.values() for b in blocks)
-    routed = sum(grand.values())
+def write_index(grand: Counter, kinds: Counter, by_source: dict[str, list[Block]]) -> None:
+    total = sum(b.size for blocks in by_source.values() for b in blocks)
+    checked = sum(grand.values())
     body = f"""
-Sixteen standard graduate mathematics textbooks, read cover to cover. Every
-definition, theorem, lemma, example and remark is recorded as a numbered unit
-carrying its statement and the page it appears on — **{units:,} of them so far** —
-and where a chapter has been swept, each unit also names the Lean declaration
-that owns it, or records that none does.
+Sixteen standard graduate mathematics textbooks — Hartshorne, Weibel, Lee,
+Neukirch, Serre, Matsumura and others — read cover to cover. Every definition,
+theorem, lemma, example and remark in them is written down with its statement and
+the page it appears on: **{kinds['definitions']:,} definitions,
+{kinds['theorems'] + kinds['propositions']:,} theorems and propositions,
+{kinds['lemmas'] + kinds['corollaries']:,} lemmas and corollaries**, and
+{total - kinds['definitions'] - kinds['theorems'] - kinds['propositions'] - kinds['lemmas'] - kinds['corollaries']:,}
+examples, constructions, remarks and conventions besides.
 
-Read a chapter and you get the mathematics of that chapter with the state of its
-formalization attached, statement by statement. Every declaration name links to
-its Mathlib documentation; every commit and pull request links to the code it
-names.
+For {checked:,} of those statements someone has then gone looking for the same
+statement in Lean, and recorded what they found:
 
 | | |
 | --- | ---: |
-| Source units enumerated | **{units:,}** |
-| Of those, routed against Lean | {routed:,} |
-| Owned by Mathlib | {grand['mathlib']:,} |
-| Owned by an external Lean development | {grand['reference-port'] + grand['package-import']:,} |
-| Owned by this repository | {grand['project-existing']:,} |
-| **No Lean owner found** | **{grand['unmatched']:,}** |
+| Already in Mathlib | {grand['mathlib']:,} |
+| In some other Lean development | {grand['reference-port'] + grand['package-import']:,} |
+| In this repository | {grand['project-existing']:,} |
+| **Nowhere in Lean, as far as a documented search could tell** | **{grand['unmatched']:,}** |
 
-An unmatched unit is the interesting case: its entry names the partial machinery
-that does exist and the gap that stops it closing the statement, so it reads as a
-concrete formalization target rather than an absence.
+That last row is what the site is for. Each of those entries names the pieces
+Lean does have and the gap that stops them adding up to the statement, so it
+reads as a description of work to be done rather than a blank.
+
+Open a chapter and you get its mathematics in order, each statement with its
+location in the book and, where it has been checked, its standing in Lean. Every
+declaration name links to its Mathlib documentation; every commit and pull
+request links to the code.
 
 ## Where to start
 
-- [Coverage](coverage.md) — every source and how far it has been taken.
-- [The corpus](corpus.md) — which books, which editions, what scope, and the
-  prerequisite order they are read in.
-- [Sweep status](status.md) — the per-source progress table.
-- [Definition catalogues](catalogues/) — what each book defines, before any
-  question of Lean.
+- [Every book](coverage.md) — what each one contains and how far it has been checked.
+- [The reading list](corpus.md) — which books, which editions, and the order they
+  are read in.
+- [Progress](status.md) — which chapters have been checked.
+- [Definition catalogues](catalogues/) — what each book defines, listed by chapter.
 
-## What the routes mean
+## What the statuses mean
 
 {route_table(grand)}
 
-## Caveats
+## What this is not
 
-The sweep is a search, not a proof. An unmatched unit asserts that a documented
-search found no owner on the revisions named in its entry — not that none exists.
-Mathlib moves; an entry is only as current as the commits its chapter records.
-Statements are compressed restatements of the source, not quotations, and where
-one of them and the Lean disagree, the Lean is right.
+Checking is a search, not a proof. "Nowhere in Lean" means a documented search of
+Mathlib at a named commit, of open pull requests, and of the Lean developments
+its entry names, turned nothing up — not that nothing exists. Mathlib moves, so an
+entry is only as current as the commits its chapter records.
+
+The statements here are compressed restatements, not quotations, and they carry
+the compressor's mistakes. Where one of them and the Lean disagree, the Lean is
+right; where one of them and the book disagree, the book is right.
 """
-    write(Page("index", "The foundational corpus", body))
+    write(Page("index", "Graduate mathematics, and what Lean has of it", body))
 
 
 def write_quarto(by_source: dict[str, list[Block]]) -> None:
@@ -788,9 +971,9 @@ def write_quarto(by_source: dict[str, list[Block]]) -> None:
         "    type: overlay",
         "  navbar:",
         "    left:",
-        '      - text: "Coverage"',
+        '      - text: "Every book"',
         "        href: coverage.md",
-        '      - text: "The corpus"',
+        '      - text: "Reading list"',
         "        href: corpus.md",
         '      - text: "Catalogues"',
         "        href: catalogues/index.md",
@@ -862,12 +1045,27 @@ def main() -> None:
     for page in pages:
         write(page)
     write_section_indexes(pages)
-    grand = write_coverage(by_source)
-    write_index(grand, by_source)
+    grand, kinds = write_coverage(by_source)
+    write_index(grand, kinds, by_source)
     write_quarto(by_source)
 
-    units = sum(len(b.units) for blocks in by_source.values() for b in blocks)
-    print(f"{len(pages)} pages · {units} enumerated units · {sum(grand.values())} routed")
+    statements = sum(b.size for blocks in by_source.values() for b in blocks)
+    print(f"{len(pages)} pages · {statements} statements · {sum(grand.values())} checked against Lean")
+
+    # Defects in the notes are the build's business to report, not to hide.
+    broken = [
+        (block, unit)
+        for blocks in by_source.values()
+        for block in blocks
+        for unit in block.units
+        if unit.truncated
+    ]
+    if broken:
+        print(f"\n{len(broken)} statements are cut off mid-formula in the notes and need re-extracting:")
+        for block, unit in broken:
+            print(f"  {unit.uid}  {block.source} {block.title}")
+        print("\nEach is marked as incomplete on its page. Fix them in the vault's")
+        print("foundational-corpus-units-* notes, against the book's own extraction.")
 
 
 if __name__ == "__main__":
