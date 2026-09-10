@@ -68,7 +68,9 @@ public import LeanCategories.Algebra.PolynomialPowerSeries
 public import LeanCategories.Algebra.MatrixFamilies
 public import LeanCategories.Algebra.MonoidAlgebra
 public import LeanCategories.ForMathlib.AdicCompletionIntegers
+public import LeanCategories.ForMathlib.AdicCompletionUniform
 public import LeanCategories.ForMathlib.DenseIntegralCompletion
+public import LeanCategories.ForMathlib.FiltrationTopology
 public import LeanCategories.ForMathlib.GaussianPrimeIdeals
 public import LeanCategories.ForMathlib.MvPolynomialIdealOfVars
 public import LeanCategories.ForMathlib.QuadraticReflection
