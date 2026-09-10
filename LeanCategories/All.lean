@@ -38,6 +38,10 @@ public import LeanCategories.Algebra.Concrete.Magmas
 public import LeanCategories.Algebra.Concrete.Rings
 public import LeanCategories.Algebra.FractionalIdeals
 public import LeanCategories.Algebra.AtiyahMacdonald.PrimaryDecomposition
+public import LeanCategories.Algebra.AtiyahMacdonald.SubsetRadical
+public import LeanCategories.Algebra.AtiyahMacdonald.LocalProperty
+public import LeanCategories.Algebra.AtiyahMacdonald.IdealIntegralClosure
+public import LeanCategories.Algebra.AdditiveInvariant
 public import LeanCategories.Algebra.DimensionTheory
 public import LeanCategories.Algebra.Euclidean
 public import LeanCategories.Algebra.Ideals
