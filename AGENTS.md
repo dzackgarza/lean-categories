@@ -134,10 +134,56 @@ implementing it. Apply each sweep's own completion condition.
 
 Follow the sequence from the previous handoff through delivered mathematics to its next
 consumer. Preserve correct work, repair defeated assumptions, and extend sound owners.
-Necessary build waits are part of delivery. Commit counts, checkbox totals, and the
-proportion of administrative commits do not measure mathematical progress over time.
+Necessary build waits are part of delivery only while the build is alive; check that
+before waiting again. Commit counts, checkbox totals, and the proportion of
+administrative commits do not measure mathematical progress over time.
 Repeated searches or status edits need a changed input or a concrete unresolved
 obligation; otherwise resume the next mathematical unit.
+
+### A wait is only delivery while the process is alive
+
+An aggregate `lake build` prints `4760/4761` and stops. Hours later the transcript
+still reports waiting on that build and declines to start a duplicate run. In fact no
+`lake` process exists and nothing has been written under `.lake/build` since that line
+printed: the build was killed, and the exec session that owned it died with it. On a
+shared host, memory pressure, a full disk, and a dropped connector session all end a
+long build the same silent way. A worker cannot see its own killed process from inside
+its transcript: the poll loop looks the same whether the build is grinding or gone, so
+the absence of an error is not evidence of progress.
+
+Before continuing to wait on any long-running process — an aggregate build, the
+exporter, a commit gate, or any other exec session — find the process before you
+interpret its silence:
+
+```bash
+pgrep -a -x 'lake|lean'                       # the driver process
+ps -o pid,etimes,times,pcpu,args --ppid <pid> # the worker child; its CPU must advance
+find .lake/build -type f -mmin -5 | head      # artifacts written in the last 5 min
+uptime; df -h /; free -g                      # the load, disk, and memory a restart joins
+```
+
+No process and no new artifacts is a dead build that will never return, whatever the
+last line printed. A live process is progress even when it prints nothing and writes
+nothing: this repository's gate runs for hours, and its exporter and audit stages
+re-elaborate for long stretches without touching `.lake/build`. Read that case off the
+process, and read it off the right one: `lake exe` runs the built binary as a child, and
+the `lake` wrapper holds a flat CPU time for the whole stage while that child does the
+work. Cumulative CPU time (`times`) advancing between two checks is work; keep waiting.
+Silence is evidence only once the process is gone.
+
+Restart a dead build as a stated decision, never as a silent retry: a full aggregate
+rebuild is expensive and the `.lake` tree is shared, so say that you are starting one
+and what it costs at the current load. When another worker's build is already running,
+wait on theirs instead of adding a second. A gate that answers red is `LC-07`; a gate
+that never answers is this rule.
+
+Staged work is not banked work. Do not hold a staged tree across a build wait. The
+commit is what survives a killed session; a session that dies holding staged files
+leaves them with no record of what they were meant to prove. Commit the coherent unit
+you already have, then wait. Staged changes you did not create belong to the worker who
+created them under `LC-06`: do not commit, unstage, amend, or revert them to clear your
+own path, and commit by explicit pathspec so a shared index cannot carry them in.
+Record a stranded staged tree under `LC-05` with its file list and leave it in place.
 
 <!-- agent-memory:start -->
 # Agent memory

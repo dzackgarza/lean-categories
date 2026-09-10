@@ -59,3 +59,18 @@ it as a blocker with a reproducer. Never continue authoring behind a red gate,
 and never accumulate uncommitted work around one. A gate that is red on two
 consecutive commit attempts is a defect to diagnose, not an environment
 condition to wait out.
+
+## LC-08 — Verify a long-running process before waiting on it again
+
+Apply the [liveness check](AGENTS.md#a-wait-is-only-delivery-while-the-process-is-alive)
+before continuing to wait on an aggregate build, the exporter, a commit gate, or
+any other exec session. Find the process before interpreting its silence: no
+process and no new artifacts under `.lake/build` is a dead build, not slow
+progress, while a live process is progress even while it prints and writes
+nothing. Restart a dead build as a stated decision, since a full aggregate
+rebuild is expensive and the `.lake` tree is shared. Bank the coherent work you
+already have before waiting; a staged tree is not delivery and does not survive a
+killed session. Staged changes you did not create belong to the worker who
+created them under `LC-06`; record a stranded staged tree under `LC-05` and leave
+it in place. A gate that answers red is `LC-07`; a gate that never answers is
+this rule.
