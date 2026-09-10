@@ -69,6 +69,7 @@ public import LeanCategories.Algebra.MatrixFamilies
 public import LeanCategories.Algebra.MonoidAlgebra
 public import LeanCategories.ForMathlib.AdicCompletionIntegers
 public import LeanCategories.ForMathlib.DenseIntegralCompletion
+public import LeanCategories.ForMathlib.GaussianPrimeIdeals
 public import LeanCategories.ForMathlib.MvPolynomialIdealOfVars
 public import LeanCategories.ForMathlib.QuadraticReflection
 public import LeanCategories.ForMathlib.QuotientAnnihilator
@@ -76,6 +77,7 @@ public import LeanCategories.ForMathlib.QuotientManifold
 public import LeanCategories.ForMathlib.RestrictedProductMeasure
 public import LeanCategories.ForMathlib.WittCancellation
 public import LeanCategories.ForMathlib.SymmetricPairProduct
+public import LeanCategories.ForMathlib.TensorProductSubmodule
 public import LeanCategories.Modules.Framed
 public import LeanCategories.Modules.Localization
 public import LeanCategories.Modules.Presented
