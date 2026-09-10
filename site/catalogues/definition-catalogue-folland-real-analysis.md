@@ -2,8 +2,6 @@
 title: "Definition catalogue - Folland Real Analysis"
 ---
 
-# Real Analysis: definition catalogue
-
 Title: *Real Analysis: Modern Techniques and Their Applications*, second edition
 
 Author: Gerald B. Folland

@@ -2,8 +2,6 @@
 title: "Definition catalogue - Apostol Analytic Number Theory"
 ---
 
-# *Introduction to Analytic Number Theory*: definition catalogue
-
 - Author — Tom M. Apostol
 - Zotero key — `B2FFGKRT`
 - Citekey — `Apo98`

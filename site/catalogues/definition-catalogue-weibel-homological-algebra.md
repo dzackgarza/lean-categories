@@ -2,8 +2,6 @@
 title: "Definition catalogue - Weibel Homological Algebra"
 ---
 
-# *An Introduction to Homological Algebra*: definition catalogue
-
 - Author — Charles A. Weibel
 - Zotero key — `8XN9IJSP`
 - Citekey — `Wei94`

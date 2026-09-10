@@ -2,8 +2,6 @@
 title: "Definition catalogue - Shafarevich Basic Algebraic Geometry 1"
 ---
 
-# Basic Algebraic Geometry 1
-
 Title: *Basic Algebraic Geometry 1*
 
 Author: Igor R. Shafarevich

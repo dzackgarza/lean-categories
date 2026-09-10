@@ -2,8 +2,6 @@
 title: "Foundational source corpus"
 ---
 
-# Foundational source corpus v1
-
 ## Status
 
 **Corpus v1 is frozen.** It is the fixed denominator for the first four foundational sweeps. Changing membership, edition, or bounded scope requires an explicit corpus-version amendment; downstream work may not silently add a book, chapter, or local prerequisite.

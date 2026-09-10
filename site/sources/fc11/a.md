@@ -1,0 +1,433 @@
+---
+title: "FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)"
+---
+
+FC11 — Peters & Sterk, *Symmetric and Quadratic Forms* — block `FC11-A`.
+
+This chapter is enumerated but not yet swept against Lean: the statements
+below carry no routing verdict.
+
+### Definition / construction / notation {#fc11-a-u001}
+
+::: {.unit-meta}
+`FC11-A-U001` · Appendix A, source L11018
+:::
+
+Let $M$ be a finitely generated $R$ -module. By definition its torsion submodule equals
+
+### Definition / construction / notation {#fc11-a-u002}
+
+::: {.unit-meta}
+`FC11-A-U002` · Appendix A, source L11020
+:::
+
+The quotient $M / \mathrm { T o r s } ( M )$ is isomorphic to a direct sum of $\mathrm { r a n k } ( M )$ copies of $R$ . Such a module is called a free $R$ -module. Any submodule of a free module is free and a quotient of an $R$ -module by a submodule of the same rank is torsion:
+
+### Lemma A.1.1 {#fc11-a-u003}
+
+::: {.unit-meta}
+`FC11-A-U003` · Appendix A, source L11022
+:::
+
+Lemma A.1.1. Let $R$ be a principal ideal domain and let $M$ be a free finitely generated $R$ -module and $M ^ { \prime } \subset M$ a submodule of the same rank. Then $M / M ^ { \prime }$ is an $R$ -torsion module and every torsion module is of this form. More precisely, $M$ admits a basis $\{ e _ { 1 } , \ldots , e _ { r + s } \}$ such that $M ^ { \prime } = \oplus _ { k = 1 } ^ { r } R e _ { k } \oplus \oplus _ { k = 1 } ^ { s } R \cdot ( d _ { k } e _ { r + k } )$ with $d _ { j }$ non-units such that $d _ { 1 } \
+
+### Theorem A.1.2 {#fc11-a-u004}
+
+::: {.unit-meta}
+`FC11-A-U004` · Appendix A, source L11026
+:::
+
+Theorem A.1.2 (Elementary divisor theorem). Let $R$ be a principal ideal domain and let $T$ be a finitely generated torsion $R$ -module. There is an isomorphism $T \simeq$ $R / d _ { 1 } R \oplus \cdot \cdot \cdot \oplus R / d _ { s } R$ , with $d _ { j }$ non-units such that $d _ { 1 } \
+
+### Definition / construction / notation {#fc11-a-u005}
+
+::: {.unit-meta}
+`FC11-A-U005` · Appendix A, source L11028-L11032
+:::
+
+There is another canonical decomposition for $T$ . First some terminology. For $p \in R$ irreducible, one says that a finitely generated torsion module is $p$ -primary if every element is annihilated by some power of $p$ . Setting $$ T _ { p } = \{ x \in T \mid p ^ { n } \cdot x = 0 \quad { \mathrm { f o r ~ s o m e ~ p o w e r ~ } } p ^ { n } { \mathrm { ~ o f ~ } } p \} , $$
+
+### Definition / construction {#fc11-a-u006}
+
+::: {.unit-meta}
+`FC11-A-U006` · Appendix A, source L11034-L11040
+:::
+
+For an irreducible $p\in R$, the maximal $p$-primary submodule is $T_p=\{x\in T:p^n x=0\text{ for some }n\}$, and a finite torsion module has the Sylow decomposition $T=\bigoplus_pT_p$ with each $T_p$ decomposed into homogeneous summands $R/p^eR$.
+
+### Definition / construction / notation {#fc11-a-u007}
+
+::: {.unit-meta}
+`FC11-A-U007` · Appendix A, source L11040
+:::
+
+The $s _ { p , e }$ summands of the decomposition of $T _ { p }$ with fixed $e$ are called the homogeneous summands of exponent $e$ . Note that the above isomorphism for $T _ { p }$ is not canonically determined by $T$ as demonstrated in Example A.1.4.2 below.
+
+### Construction / comparison {#fc11-a-u008}
+
+::: {.unit-meta}
+`FC11-A-U008` · Appendix A, source L11042
+:::
+
+The invariant-factor and primary decompositions are related by factoring each elementary divisor into prime powers and applying the Chinese remainder theorem.
+
+### Definition / construction / notation {#fc11-a-u009}
+
+::: {.unit-meta}
+`FC11-A-U009` · Appendix A, source L11044
+:::
+
+We frequently use the concept of length: the length $\ell ( G )$ of a finite abelian torsion $R$ -module $G$ is equal to the minimal number of generators (by definition). In particular, the length of $T _ { p }$ is at most $s$ , and for primes diving $d _ { 1 }$ the length equals $s$ .
+
+### Definition / construction {#fc11-a-u010}
+
+::: {.unit-meta}
+`FC11-A-U010` · Appendix A, source L11044-L11046
+:::
+
+The length $\ell(G)$ of a finite torsion module is its minimal number of generators; for a $p$-primary module it is the total number of homogeneous summands, and the length of a finite torsion module is the maximum of its primary lengths.
+
+### Lemma A.1.3 {#fc11-a-u011}
+
+::: {.unit-meta}
+`FC11-A-U011` · Appendix A, source L11048 · after [`FC11-A-U006`](#fc11-a-u006)
+:::
+
+Lemma A.1.3. The length of a torsion $R$ -module $T$ of finite rank with Sylow decomposition $T = \oplus T _ { p }$ equals max(ℓ??) = #(elementary divisors) where $\ell _ { p }$ is the length of $T _ { p }$ .
+
+### Example / comparison {#fc11-a-u012}
+
+::: {.unit-meta}
+`FC11-A-U012` · Appendix A, source L11050
+:::
+
+If $R = \mathbb { Z }$ a torsion module is the same as a finite abelian group, and a $p$ -primary $\mathbb { Z }$ -torsion module is the same as a $p$ -primary group.
+
+### Example / comparison {#fc11-a-u013}
+
+::: {.unit-meta}
+`FC11-A-U013` · Appendix A, source L11052-L11056
+:::
+
+We assume $R = \mathbb { Z }$ . Suppose the elementary divisors of $T$ are $( 4 , 1 2 , 4 8 )$ . Then $T _ { 2 } \simeq \mathbb { Z } / 4 \mathbb { Z } \oplus \mathbb { Z } / 4 \mathbb { Z } \oplus \mathbb { Z } / 1 6 \mathbb { Z }$ , $T _ { 3 } \simeq \mathbb { Z } / 3 \mathbb { Z } \oplus \mathbb { Z } / 3 \mathbb { Z }$ and $\ell ( T ) = 3$ . Suppose $\{ e _ { 1 } , e _ { 2 } , e _ { 3 } \}$ is an ordered basis of $T _ { 2 }$ , i.e., a basis reflecting the above isomorphism. Then $\{ f _ { 1 } = e _ { 1 } + 2 e _ { 2 } + 4 e _ { 3 } , f _ { 2 } = e _ { 2 } + 4 e _ { 3 } , f _ { 3 } = 3 e _ { 3 } \}$ is also an ordered basis of $T _ { 2 }$ and so the isomorphism $T _ { 2 } \simeq \mathbb { Z } / 4 \mathbb { Z } \oplus \mathbb { Z } / 4 \mathbb { Z } \oplus \mathbb { Z } / 1 6 \mathbb { Z }$ is not unique. We finish this section by recalling some modular arithmetic. The multiplicative group of units $R ^ { \times }$ of the ring $R = \mathbb { Z } / m \mathbb { Z }$ has order $\varphi ( m )$ , the number of elements modulo $m$ that are coprime with $m$ . In what follows elements $r$ of $R$ are viewed as additive classes of integers modulo $m$ and we write $r \ = \ \bar { x }$ , where $x \in \mathbb { Z }$ . If the group $( \mathbb { Z } / m \mathbb { Z } ) ^ { \times }$ is cyclic and $r$ is a generator, one says that $r$ is a primitive generator modulo $m$ . We denote the (multiplicative) cyclic group of order $n$ by $C _ { n }$ (in contrast to the additive version $\mathbb { Z } / n \mathbb { Z }$ ). The next result can be found in elementary textbooks on number theory, e.g. [113].
+
+### Definition / construction / notation {#fc11-a-u014}
+
+::: {.unit-meta}
+`FC11-A-U014` · Appendix A, source L11054
+:::
+
+We finish this section by recalling some modular arithmetic. The multiplicative group of units $R ^ { \times }$ of the ring $R = \mathbb { Z } / m \mathbb { Z }$ has order $\varphi ( m )$ , the number of elements modulo $m$ that are coprime with $m$ . In what follows elements $r$ of $R$ are viewed as additive classes of integers modulo $m$ and we write $r \ = \ \bar { x }$ , where $x \in \mathbb { Z }$ . If the group $( \mathbb { Z } / m \mathbb { Z } ) ^ { \times }$ is cyclic and $r$ is a generator, one says that $r$ is a primitive generator modulo $m$ . We denote the (multiplicative) cyclic group of order $n$ by $C _ { n }$ (in contrast to the additive version $\mathbb { Z } / n \mathbb { Z }$ ).
+
+### Lemma A.1.5 {#fc11-a-u015}
+
+::: {.unit-meta}
+`FC11-A-U015` · Appendix A, source L11058-L11084
+:::
+
+Lemma A.1.5. 1. The units of the finite cyclic groups have the following structure: (a) For $p$ odd the groups $( \mathbb { Z } / p ^ { k } \mathbb { Z } ) ^ { \times }$ and $( \mathbb { Z } / 2 p ^ { k } \mathbb { Z } ) ^ { \times }$ are cyclic of order $p ^ { k } - p ^ { k - 1 }$ . For $p = 2$ we have $$ ( \mathbb { Z } / 2 ^ { k } \mathbb { Z } ) ^ { \times } = { \left\{ \begin{array} { l l } { 1 } & { i f k = 1 } \\ { C _ { 2 } ~ g e n e r a t e d ~ b y } { \overline { { - 1 } } } \right.} & { i f k = 2 } \\ { C _ { 2 } \times C _ { 2 ^ { k - 2 } ~ } g e n e r a t e d ~ b y } { ( \overline { { - 1 } } } , { \overline { { \pm 3 } } } ) & { i f k \geq 3 . } \end{array} $$ (b) In general, writing $m = 2 ^ { k } \Pi _ { p } p ^ { k _ { p } }$ , where the product is over odd primes $p$ , we have $$ ( \mathbb { Z } / m \mathbb { Z } ) ^ { \times } \simeq ( \mathbb { Z } / 2 ^ { k } \mathbb { Z } ) ^ { \times } \times \prod _ { p } ( \mathbb { Z } / p ^ { k _ { p } } \mathbb { Z } ) ^ { \times } . $$ In particular, only for $m = 2 , 4 , p ^ { k }$ and $2 p ^ { k }$ there exist primitive generators modulo $m$ . 2. The group $\sf D ( \mathbb { Z } / m \mathbb { Z } )$ of units of $\mathbb { Z } / m \mathbb { Z }$ modulo squares has the following structure: (a) In the cases $m = p ^ { k }$ and $2 p ^ { k }$ the group $\sf D ( \mathbb { Z } / m \mathbb { Z } )$ is cyclic of order 2 and generated by a non-square modulo $p ^ { k }$ : D(ℤ/????ℤ) = {1, ?? mod ????} ≃ ??2, $p$ an odd prime and ?? a non-square modulo $p ^ { k }$ (b) For $p = 2$ we have: $$ { \mathsf { D } } ( \mathbb { Z } / 2 ^ { k } \mathbb { Z } ) = { \left\{ \begin{array} { l l } { \{ { \bar { 1 } } \} } & { f o r k = 1 , } \\ { \{ { \bar { 1 } } , { \bar { 3 } } \} \simeq C _ { 2 } } & { f o r k = 2 , } \\ { \{ { \bar { 1 } } , { \bar { 3 } } , - { \bar { 3 } } , - { \bar { 1 } } \} \simeq C _ { 2 } \times C _ { 2 } } & { i f k \geq 3 . } \end{array} \right. } $$
+
+### Definition / construction / notation {#fc11-a-u016}
+
+::: {.unit-meta}
+`FC11-A-U016` · Appendix A, source L11090-L11094
+:::
+
+The $p$ -adic valuation and $\mathbb { Q } _ { p }$ . The field of $p$ -adic numbers $\mathbb { Q } _ { p }$ is the completion of $\mathbb { Q }$ with respect to the $p$ -adic valuation $v _ { p }$ on $\mathbb { Q }$ which is defined as follows: first, one sets $v _ { p } ( 0 ) = \infty$ . Next, for a non-zero number $\begin{array} { r } { x = p ^ { k } \frac { u } { v } } \end{array}$ with $\operatorname* { g c d } ( u , p ) =$ $\operatorname* { g c d } ( v , p ) = 1$ , one sets $$ v _ { p } ( x ) = k , \quad \\
+
+### Definition / construction / notation {#fc11-a-u017}
+
+::: {.unit-meta}
+`FC11-A-U017` · Appendix A, source L11108-L11112
+:::
+
+By definition of a completion, we have a natural embedding $$ \iota _ { p } : \mathbb { Q } \hookrightarrow \mathbb { Q } _ { p } . $$
+
+### Theorem A.2.1 {#fc11-a-u018}
+
+::: {.unit-meta}
+`FC11-A-U018` · Appendix A, source L11137
+:::
+
+Theorem A.2.1. 1. Suppose $p$ is an odd prime. Then $x \in \mathbb { Q } _ { p } ^ { \times }$ can be written uniquely as $x = u p ^ { k }$ with $u$ a unit in $\mathbb { Z } _ { p }$ . It is a square if and only if $k$ is even and $u \equiv 1$ mod $p$ . The group $\mathsf { D } ( \mathbb { Q } _ { p } )$ is isomorphic to the Klein group with representatives $1 , p$ , $u , u p$ , where $u$ is a unit in $\mathbb { Z } _ { p }$ such that $u$ mod $p$ is a non-square. The group $\mathsf { D } ( \mathbb { Z } _ { p } )$ is cyclic of order two, generated by a non-square in $\mathbb { Z } _ { p } ^ { \times }$ . 2. A dyadic number $x \in \mathbb { Q } _ { 2 }$ can be uniquely written as $x = u \cdot 2 ^ { k }$ , $u$ a unit in $\mathbb { Z } _ { 2 }$ . It is a square if and only if $k$ is even and $u \equiv 1$ mod 8. The group $\mathsf { D } ( \mathbb { Q } _ { 2 } )$ is isomorphic to $C _ { 2 } \times C _ { 2 } \times C _ { 2 }$ with generators 2, 3, 5 mod 8. $A$ unit $u \in \mathbb { Z } _ { 2 }$ is a square if and only if $u$ mod 8 is a square, and $\mathsf { D } ( \mathbb { Z } _ { 2 } )$ is isomorphic to the Klein group $( \mathbb { Z } / 8 \mathbb { Z } ) ^ { \times } = C _ { 2 } \times C _ { 2 }$ with generators $3 , 5$ mod 8.
+
+### Definition / construction {#fc11-a-u019}
+
+::: {.unit-meta}
+`FC11-A-U019` · Appendix A, source L11139-L11141
+:::
+
+The $p$-adic valuation defines the $p$-adic topology on $\mathbf Q_p$; $\mathbf Z_p$ is an open compact subring, $\mathbf Q$ is dense in $\mathbf Q_p$, and $\mathbf Z$ is dense in $\mathbf Z_p$.
+
+### Proposition A.2.2 {#fc11-a-u020}
+
+::: {.unit-meta}
+`FC11-A-U020` · Appendix A, source L11141
+:::
+
+Proposition A.2.2. The $p$ -adic topology on $\mathbb { Q } _ { p }$ has the following properties: 1. $\mathbb { Q } _ { p }$ is locally compact and contains $\mathbb { Z } _ { p }$ as an open compact subring. 2. The field $\mathbb { Q }$ is dense in $\mathbb { Q } _ { p }$ and the ring $\mathbb { Z }$ is dense in $\mathbb { Z } _ { p }$ .
+
+### Definition / construction {#fc11-a-u021}
+
+::: {.unit-meta}
+`FC11-A-U021` · Appendix A, source L11148
+:::
+
+For a finite set of places $S$, the local embeddings induce the diagonal embedding $\iota_S:\mathbf Q\hookrightarrow\prod_{v\in S}\mathbf Q_v$ used in weak approximation.
+
+### Proposition A.3.1 {#fc11-a-u022}
+
+::: {.unit-meta}
+`FC11-A-U022` · Appendix A, source L11150
+:::
+
+Proposition A.3.1 (Weak approximation). If $S$ is finite, the embedding $\iota _ { S }$ is a dense embedding with respect to the product topology.
+
+### Corollary A.3.2 {#fc11-a-u023}
+
+::: {.unit-meta}
+`FC11-A-U023` · Appendix A, source L11154-L11155
+:::
+
+Corollary A.3.2. Suppose that for some finite set $S \subset \mathcal { P }$ and all $p \in S$ we are given $c _ { p } \in \mathbb { Q } _ { p } ^ { \times }$ . Then there exists $c \in \mathbb { Q } ^ { \times }$ such that the coset of $c$ in $\mathsf { D } ( \mathbb { Q } _ { p } )$ equals the coset of $c _ { p }$ for all $p \in S$ .
+
+### Proposition A.3.3 {#fc11-a-u024}
+
+::: {.unit-meta}
+`FC11-A-U024` · Appendix A, source L11166
+:::
+
+Proposition A.3.3 (Weak approximation for the rotation group). Let $( V , q )$ be $a$ (non-degenerate) quadratic $\mathbb { Q }$ -vector space and let $S \subset \mathcal { S }$ be a finite set of places. Then the natural diagonal embedding $\begin{array} { r } { { \mathsf { S O } } ( V ) \hookrightarrow \prod _ { v \in S } { \mathsf { S O } } ( V _ { v } ) } \end{array}$ is dense.
+
+### Corollary A.3.4 {#fc11-a-u025}
+
+::: {.unit-meta}
+`FC11-A-U025` · Appendix A, source L11170-L11171
+:::
+
+Corollary A.3.4. Let $( V , q )$ be a (non-degenerate) quadratic $\mathbb { Q }$ -vector space of dimension $\geq ~ 2$ . Let $S ~ \subset ~ { \mathcal { P } }$ be a finite set of places. Suppose that $t ~ \in ~ \mathbb { Q } ^ { \times }$ is represented by $q$ . Then for given $x _ { v } \in V _ { v }$ , $v \in S$ with $q ( x _ { v } ) = t$ , there exists $x \in V$ with $q ( x ) = t$ which is as close to each of the $x _ { v }$ as we want.
+
+### Remark A.3.5 {#fc11-a-u026}
+
+::: {.unit-meta}
+`FC11-A-U026` · Appendix A, source L11174
+:::
+
+Remark A.3.5. As to lattices, since $\mathbb { Z } _ { p }$ is open and compact in $\mathbb { Q } _ { p }$ , any lattice $L _ { p }$ in $V _ { p }$ is open and compact in $V _ { p }$ . This is not the case for the place $\infty$ . Also, the subgroup $\mathrm { O } ( L _ { p } )$ of $\mathrm { O } ( V _ { p } )$ stabilizing a lattice $L _ { p } \subset V _ { p }$ is an open subgroup.
+
+### Theorem A.3.6 {#fc11-a-u027}
+
+::: {.unit-meta}
+`FC11-A-U027` · Appendix A, source L11178-L11182
+:::
+
+Theorem A.3.6 (Strong Approximation Theorem [36, Ch. 9, Thm. 1.5]). Let $( L , b )$ be a non-degenerate indefinite integral lattice of rank $\geq 4$ and $t$ a non-zero integer. Suppose that Then there exists $x \in L$ such that $b ( x , x ) = t$ . Further, given a finite set of places $S \subset { \mathcal { P } }$ , we can require $x \in L$ to be $p$ -adically arbitrarily close to $x _ { p }$ for all $p \in S$ .
+
+### Corollary A.3.7 {#fc11-a-u028}
+
+::: {.unit-meta}
+`FC11-A-U028` · Appendix A, source L11186-L11187
+:::
+
+Corollary A.3.7. Let $( L , b )$ be an indefinite non-degenerate quadratic lattice of rank $\geq 4$ and let $x \in L$ be a vector with $b ( x , x ) = t \neq 0$ . Then there are infinitely many $y \in L$ with $b ( y , y ) = t$ .
+
+### Definition / construction / notation {#fc11-a-u029}
+
+::: {.unit-meta}
+`FC11-A-U029` · Appendix A, source L11202-L11206
+:::
+
+Definitions and Properties. Let $v \in \mathcal { P }$ and let $a , b \in \mathbb { Q } _ { v } ^ { \times }$ . Define the Hilbert symbol (at $v$ ) as follows:1 $$ \begin{array} { r } { ( a , b ) _ { v } = \left\{ \begin{array} { l l } { 1 } & { \mathrm { ~ i f ~ } z ^ { 2 } = a x ^ { 2 } + b y ^ { 2 } \mathrm { ~ h a s ~ a ~ n o n - t r i v i a l ~ s o l u t i o n ~ } ( z , x , y ) \mathrm { ~ i n ~ } \mathbb { Q } _ { v } ^ { 3 } , } \\ { - 1 } & { \mathrm { ~ o t h e r w i s e } . } \end{array} \right. } \end{array} $$
+
+### Lemma A.4.1 {#fc11-a-u030}
+
+::: {.unit-meta}
+`FC11-A-U030` · Appendix A, source L11216
+:::
+
+Lemma A.4.1 (Hensel’s lemma). Let $f ( X _ { 1 } , \dots , X _ { n } ) \in \mathbb { Z } _ { p } [ X _ { 1 } , \dots , X _ { n } ]$ and suppose that $\pmb { a } = ( a _ { 1 } , \ldots , a _ { n } ) \in \mathbb { F } _ { p } ^ { n }$ is a simple zero of $f$ mod $p$ , that is, $f ( { \pmb a } ) \equiv 0$ mod $p$ and the gradient $\nabla f$ at $\mathbf { a }$ is not identically zero mod $p$ . Then this zero can be lifted to $\mathbb { Z } _ { p } ^ { n }$ . In other words, there exists $\pmb { b } \in \mathbb { Z } _ { p } ^ { n }$ with $f ( \pmb { b } ) = 0$ and ${ \pmb a } \equiv { \pmb b }$ mod $p$ .
+
+### Example / comparison {#fc11-a-u031}
+
+::: {.unit-meta}
+`FC11-A-U031` · Appendix A, source L11218-L11224
+:::
+
+Example A.4.2. For odd $p$, the equation $ax^2+by^2=c$ over $\mathbf F_p$, with $a,b\ne0$, always has a solution. If $a,b,c$ lift to $p$-adic units, a solution lifts by Hensel; in particular $(a,b)_p=1$ after taking $c=1$.
+
+### Lemma A.4.3 {#fc11-a-u032}
+
+::: {.unit-meta}
+`FC11-A-U032` · Appendix A, source L11228
+:::
+
+Lemma A.4.3 (Hensel’s lemma, II). Let $q$ be a unimodular dyadic quadratic form of rank ??, and let $a \in \mathbb { Z } _ { 2 }$ . If a primitive dyadic solution for $q ( x ) \equiv a$ mod 8 exists, then there is also a ”true” dyadic solution for $q ( x ) = a$ .
+
+### Definition / construction {#fc11-a-u033}
+
+::: {.unit-meta}
+`FC11-A-U033` · Appendix A, source L11230-L11236 · after [`FC11-A-U029`](#fc11-a-u029)
+:::
+
+The Hilbert symbol at a place $v$ is the symmetric bilinear pairing $(\ ,\ )_v:D(\mathbf Q_v)\times D(\mathbf Q_v)\to\{\pm1\}$; by bilinearity it is determined by its values on generators.
+
+### Theorem A.4.4 {#fc11-a-u034}
+
+::: {.unit-meta}
+`FC11-A-U034` · Appendix A, source L11238-L11251
+:::
+
+Theorem A.4.4. Let $a , b \in \mathbb { Q } _ { p }$ , $p$ prime. Write $a = p ^ { \alpha } u , b = p ^ { \beta } v$ with $u , v \in \mathbb { Z } _ { p } ^ { \times }$ . Then, recalling that $$ \begin{array} { r } { \varepsilon ( u ) = \left\{ \begin{array} { l l } { 0 } & { \mathrm { ~ } i f u \equiv 1 \bmod 4 , } \\ { 1 } & { \mathrm { ~ } i f u \equiv - 1 \bmod 4 , } \end{array} \right. \quad \quad a n d \omega ( u ) = \left\{ \begin{array} { l l } { 0 } & { \mathrm { ~ } i f u \equiv \pm 1 \bmod 8 , } \\ { 1 } & { \mathrm { ~ } i f u \equiv \pm 3 \bmod 8 , } \end{array} \right. } \end{array} $$ one has: 1. If $p$ is odd, $( a , b ) _ { p } = ( - 1 ) ^ { \alpha \beta \varepsilon ( p ) } \left( \frac { u } { p } \right) ^ { \beta } \left( \frac { v } { p } \right) ^ { \alpha }$ . In particular, if ?? and ?? are units, $( a , b ) _ { p } = 1$ . 2. For $p = 2$ , write $a = 2 ^ { \alpha } u , b = 2 ^ { \beta } v$ with $u , v \in \mathbb { Z } _ { 2 } ^ { \times }$ . Then $$ ( a , b ) _ { 2 } = ( - 1 ) ^ { \varepsilon ( u ) \varepsilon ( v ) + \alpha \omega ( v ) + \beta \omega ( u ) } .
+
+### Construction / comparison {#fc11-a-u035}
+
+::: {.unit-meta}
+`FC11-A-U035` · Appendix A, source L11254-L11258 · after [`FC11-A-U029`](#fc11-a-u029)
+:::
+
+The Hilbert symbol satisfies symmetry, triviality on squares, $(a,-a)_v=(a,1-a)_v=1$, multiplicativity in each argument, and the displayed elementary identities used to reduce calculations.
+
+### Construction / comparison {#fc11-a-u036}
+
+::: {.unit-meta}
+`FC11-A-U036` · Appendix A, source L11260-L11264
+:::
+
+Viewed as an $\mathbf F_2$-vector space, $D(\mathbf Q_p)$ has dimension $2$ for odd $p$ and dimension $3$ for $p=2$; Hilbert-symbol equations therefore define linear or affine hyperplanes in this square-class space.
+
+### Lemma A.4.5 {#fc11-a-u037}
+
+::: {.unit-meta}
+`FC11-A-U037` · Appendix A, source L11268-L11271
+:::
+
+Lemma A.4.5. 1. Let $r = \dim _ { \mathbb { F } _ { 2 } } \mathsf { D } ( \mathbb { Q } _ { p } )$ and let $a \in \mathsf { D } ( \mathbb { Q } _ { p } )$ . For $a \ne 1$ and $\varepsilon \in \{ 1 , - 1 \}$ , the equation $( a , x ) _ { p } = \varepsilon$ has $2 ^ { r - 1 }$ solutions. For $a = 1$ one has $( a , x ) _ { p } = 1$ for all $x \in \mathsf { D } ( \mathbb { Q } _ { p } )$ and $( 1 , x ) _ { p } = - 1$ has no solutions. 2. Let $a , a ^ { \prime } \in \mathsf { D } ( \mathbb { Q } _ { p } )$ . Assume that for some $\varepsilon , \varepsilon ^ { \prime } \in \{ 1 , - 1 \}$ each of the two equations $( a , x ) _ { p } = \varepsilon$ and $( a ^ { \prime } , x ) _ { p } = \varepsilon ^ { \prime }$ has a solution in $\mathsf { D } ( \mathbb { Q } _ { p } )$ . Then no common solution exists if and only if one has simultaneously $\boldsymbol { a } \ = \ \boldsymbol { a } ^ { \prime }$ and $\varepsilon = - \varepsilon ^ { \prime }$ .
+
+### Theorem A.4.6 {#fc11-a-u038}
+
+::: {.unit-meta}
+`FC11-A-U038` · Appendix A, source L11278
+:::
+
+Theorem A.4.6 (Hilbert’s product formula). Given $a , b \in \mathbb { Q } ^ { \times }$ , then $( a , b ) _ { v } = 1$ for all but a finite number ?? of places and for those $\begin{array} { r } { \prod _ { v \in S } ( a , b ) _ { v } = 1 } \end{array}$ .
+
+### Theorem A.4.7 {#fc11-a-u039}
+
+::: {.unit-meta}
+`FC11-A-U039` · Appendix A, source L11280-L11290 · after [`FC11-A-U029`](#fc11-a-u029)
+:::
+
+Theorem A.4.7 (Existence of rational numbers with given Hilbert symbol). Given finitely many $a_j\in\mathbf Q^\times$ and signs $\varepsilon_{j,v}\in\{\pm1\}$ satisfying finite support, the product formula in every $j$, and local simultaneous solvability at every place $v$, there exists $x\in\mathbf Q^\times$ with $(a_j,x)_v=\varepsilon_{j,v}$ for all $j,v$; conversely, existence of such an $x$ implies these three conditions.
+
+### Definition / construction / notation {#fc11-a-u040}
+
+::: {.unit-meta}
+`FC11-A-U040` · Appendix A, source L11304
+:::
+
+The pair $( V , b )$ is called a symplectic $k$ -space. As for symmetric bilinear forms, one can define orthogonality and orthogonal direct sums. A symplectic form $^ { b }$ is non-degenerate if any $x$ for which $b ( x , V ) = 0$ necessarily vanishes.
+
+### Example / comparison {#fc11-a-u041}
+
+::: {.unit-meta}
+`FC11-A-U041` · Appendix A, source L11306
+:::
+
+The standard example of a non-degenerate symplectic space is the symplectic plane $J$ with basis $\{ e , f \}$ and symplectic form $\left( \begin{array} { l l } { 0 } & { 1 } \\ { - 1 } & { 0 } \end{array} \right)$ The basis $\{ e , f \}$ is called a symplectic pair .
+
+### Example / comparison {#fc11-a-u042}
+
+::: {.unit-meta}
+`FC11-A-U042` · Appendix A, source L11308-L11318
+:::
+
+We get examples in all even dimensions by taking orthogonal direct sums $J ^ { \boldsymbol { \Theta } n } = J \boldsymbol { \Theta } \cdot \cdot \cdot \boldsymbol { \Theta } J$ ( $n$ copies). Reordering basis vectors, we find that $J ^ { \ ( \perp ) n }$ is isometric to the standard symplectic form $$ J _ { n } = \left( \begin{array} { l l } { \mathbf { 0 } _ { n } } & { \mathbf { 1 } _ { n } } \\ { - \mathbf { 1 } _ { n } } & { \mathbf { 0 } _ { n } } \end{array} \right) . $$ In other words, in a suitable basis $\pmb { { \cal E } } = \{ e _ { 1 } , \dots , e _ { 2 n } \}$ , the form becomes $$ b _ { E } ( x , y ) = \sum _ { i = 1 } ^ { n } \left( x _ { i } y _ { n + i } - y _ { i } x _ { n + i } \right) , \quad x = \sum _ { j = 1 } ^ { 2 n } x _ { j } e _ { j } , y = \sum _ { j = 1 } ^ { 2 n } y _ { j } e _ { j } . $$
+
+### Example / comparison {#fc11-a-u043}
+
+::: {.unit-meta}
+`FC11-A-U043` · Appendix A, source L11320-L11322
+:::
+
+If $\operatorname { c h a r } ( k ) = 2$ , the polar form $b _ { q }$ of a non-degenerate quadratic form $q$ is a non-degenerate symplectic form. This explains why symplectic forms come up naturally in the study of quadratic forms in characteristic 2. A $k$ -linear map between symplectic $k$ -spaces preserving the symplectic form is called a symplectic map and two symplectic spaces are isometric if there exists a symplectic isomorphism between them. Isometries of $( V , b )$ are called symplectic automorphisms and these form a subgroup Sp(??) of $\operatorname { G L } ( V )$ , the symplectic group of $V$ . The classification of non-degenerate symplectic forms up to symplectic isomorphism is very straighforward since any non-degenerate symplectic form is isometric to the standard form:
+
+### Definition / construction / notation {#fc11-a-u044}
+
+::: {.unit-meta}
+`FC11-A-U044` · Appendix A, source L11322
+:::
+
+A $k$ -linear map between symplectic $k$ -spaces preserving the symplectic form is called a symplectic map and two symplectic spaces are isometric if there exists a symplectic isomorphism between them. Isometries of $( V , b )$ are called symplectic automorphisms and these form a subgroup Sp(??) of $\operatorname { G L } ( V )$ , the symplectic group of $V$ . The classification of non-degenerate symplectic forms up to symplectic isomorphism is very straighforward since any non-degenerate symplectic form is isometric to the standard form:
+
+### Proposition A.5.2 {#fc11-a-u045}
+
+::: {.unit-meta}
+`FC11-A-U045` · Appendix A, source L11324-L11325
+:::
+
+Proposition A.5.2. A non-degenerate $k$ -symplectic space $( V , b )$ is isometric to $( k ^ { 2 n } , J ^ { \oplus n } )$ , and in particular must be even dimensional. In a suitable basis the Gram matrix of $^ { b }$ is $J _ { n }$ , the standard symplectic form.
+
+### Example / comparison {#fc11-a-u046}
+
+::: {.unit-meta}
+`FC11-A-U046` · Appendix A, source L11330
+:::
+
+For a symplectic vector space, a standard transvection has the displayed form determined by a vector $u$ and non-zero scalar $a$.
+
+### Lemma A.5.3 {#fc11-a-u047}
+
+::: {.unit-meta}
+`FC11-A-U047` · Appendix A, source L11338-L11339
+:::
+
+Lemma A.5.3. In a non-degenerate symplectic $k$ -space, a symplectic transvection ?? is of the form ?? = ????,?? .
+
+### Proposition A.5.4 {#fc11-a-u048}
+
+::: {.unit-meta}
+`FC11-A-U048` · Appendix A, source L11348-L11349 · after [`FC11-A-U044`](#fc11-a-u044)
+:::
+
+Proposition A.5.4. The symplectic group $\mathsf { S p } ( V )$ is generated by symplectic transvections.
+
+### Definition / construction / notation {#fc11-a-u049}
+
+::: {.unit-meta}
+`FC11-A-U049` · Appendix A, source L11386-L11390
+:::
+
+A $G$ -module is an abelian group $M$ equipped with a $G$ -action, or, equivalently, a $\mathbb { Z } [ G ]$ -module. Given a $G$ -module $M$ , we set $$ \begin{array} { l } { { M ^ { G } = \{ x \in M \mid g x = x , \forall g \in G \} , } } \\ { { M _ { G } = M / I M , \quad I = \langle g x - x \rangle , x \in M , g \in G . } } \end{array} $$
+
+### Definition / construction / notation {#fc11-a-u050}
+
+::: {.unit-meta}
+`FC11-A-U050` · Appendix A, source L11394
+:::
+
+Group (co)homology of $G$ can be defined topologically as the (co)homology of a topological space $X$ which has fundamental group $G$ and has no higher homotopy groups. These groups turn out to be independent of the choice of such $X$ .
+
+### Lemma A.6.1 {#fc11-a-u051}
+
+::: {.unit-meta}
+`FC11-A-U051` · Appendix A, source L11408-L11414
+:::
+
+Lemma A.6.1. 1. Let $M$ be a $G$ -module. Then $H ^ { 0 } ( G , M ) = M ^ { G }$ and $H _ { 0 } ( G , M ) =$ $M _ { G }$ . In particular, $H ^ { \cup } ( G ) = H _ { 0 } ( G ) = \mathbb { Z }$ . 2. If $G$ is a finite group of order $n$ , then the groups $H ^ { q } ( G , M )$ , $H _ { q } ( G , M )$ , $q \geq 1$ , are $n$ -torsion. If $G$ is a finite abelian group and $G$ acts trivially on $M$ , then $H ^ { 1 } ( G , M ) \simeq \operatorname { H o m } ( G , M )$ , $H _ { 1 } ( G , M ) \simeq G \otimes M$ and, in particular, $H ^ { 1 } ( G ) = 0$ 1 and $H _ { 1 } ( G ) \simeq G$ . 3. If $G$ is a finite abelian group $H ^ { 2 } ( G ) = \operatorname { E x t } ^ { 1 } ( G , \mathbb { Z } ) \simeq G$ . 4. If $G$ is cyclic of order $n$ , then $H ^ { j } ( G ) = 0$ for $j$ odd and $H ^ { j } ( G ) \simeq G$ for $j > 0$ even, while $H _ { j } ( G ) \simeq G$ for $j$ odd and $H _ { j } ( G ) = 0$ for $j > 0$ even.
+
+### Construction / comparison {#fc11-a-u052}
+
+::: {.unit-meta}
+`FC11-A-U052` · Appendix A, source L11416-L11422
+:::
+
+For a free action of a finite group $G$ on a CW-complex $X$ with quotient $Y$, the Cartan--Leray spectral sequence has $E_2^{p,q}=H^p(G,H^q(X))$ and converges to $H^{p+q}(Y)$.
+
+### Proposition A.6.2 {#fc11-a-u053}
+
+::: {.unit-meta}
+`FC11-A-U053` · Appendix A, source L11424-L11441
+:::
+
+Proposition A.6.2. Suppose $X$ is a connected CW-complex with finite rank cohomology groups and with $H _ { 1 } ( X ) = 0$ . If $G$ is a finite abelian group acting freely on $X$ with quotient map $\pi : X \to Y = X / G$ , then 1. $H ^ { 2 } ( X )$ has no torsion and Tors $H ^ { 2 } ( Y ) = \operatorname { E x t } ^ { 1 } G$ . 2. There is a natural map $\delta : H ^ { 2 } ( X ) ^ { G } H ^ { 3 } ( G )$ and an exact sequence $$ 0 \to \operatorname { E x t } ^ { 1 } G \to H ^ { 2 } ( Y ) \stackrel { \pi ^ { * } } { \longrightarrow } \ker ( H ^ { 2 } ( X ) ^ { G } \stackrel { \delta } { \to } H ^ { 3 } ( G ) ) \to 0 . $$ Moreover, there is an induced isomorphism $$ H ^ { 2 } ( Y ) / \mathrm { T o r s } ( H ^ { 2 } ( Y ) ) \stackrel { \sim } { } \ker ( \delta ) . $$ In case $G$ is cyclic, $\delta = 0$ and hence $\pi ^ { * }$ surjects onto $H ^ { 2 } ( X ) ^ { G }$ .
+

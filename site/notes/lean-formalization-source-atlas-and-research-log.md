@@ -23,19 +23,19 @@ A negative result applies only to the inspected source and commit.
 
 ## Source index
 
-- [Sphere-Packing-Lean](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean), commit `bad3de916074748eb88b7d1ee6dbf9494361ad17`
-- [atlas-lean](https://github.com/facebookresearch/atlas-lean), commit `34ffed396f376454c1a9b297f3fd74c5c801fb50`
-- [riemann-roch-function-fields](https://github.com/vaca22/riemann-roch-function-fields), commit `dbca5beed1da77e2ecd1eec207d0451fa57e8aa6`
-- [LeanFibredCategories](https://github.com/sinhp/LeanFibredCategories), commit `a58604a389544523aa171daf890386fb8317568b`
-- [formal-conjectures](https://github.com/google-deepmind/formal-conjectures), commit `b123bb89b5978ae6b648159e430c4e4dce161b97`
-- [FLT](https://github.com/ImperialCollegeLondon/FLT), commit `d18b563029f32a6855f46cdd0edaab39ccc5b8f5`
-- [lean-liquid](https://github.com/leanprover-community/lean-liquid), commit `087fffad55dc1dd8d54ab35c9816926a45b8c0fd`
-- [lean-stacks-project](https://github.com/kbuzzard/lean-stacks-project), commit `b57be17aa917f1c3a23c59db5ee37b1aa21112c2`
-- [lean-scheme](https://github.com/ramonfmir/lean-scheme), commit `6d3ec18fecfd174b79d0ce5c85a783f326dd50f6`
+- [Sphere-Packing-Lean](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean), commit [`bad3de916074748eb88b7d1ee6dbf9494361ad17`](https://github.com/leanprover-community/mathlib4/commit/bad3de916074748eb88b7d1ee6dbf9494361ad17)
+- [atlas-lean](https://github.com/facebookresearch/atlas-lean), commit [`34ffed396f376454c1a9b297f3fd74c5c801fb50`](https://github.com/leanprover-community/mathlib4/commit/34ffed396f376454c1a9b297f3fd74c5c801fb50)
+- [riemann-roch-function-fields](https://github.com/vaca22/riemann-roch-function-fields), commit [`dbca5beed1da77e2ecd1eec207d0451fa57e8aa6`](https://github.com/leanprover-community/mathlib4/commit/dbca5beed1da77e2ecd1eec207d0451fa57e8aa6)
+- [LeanFibredCategories](https://github.com/sinhp/LeanFibredCategories), commit [`a58604a389544523aa171daf890386fb8317568b`](https://github.com/leanprover-community/mathlib4/commit/a58604a389544523aa171daf890386fb8317568b)
+- [formal-conjectures](https://github.com/google-deepmind/formal-conjectures), commit [`b123bb89b5978ae6b648159e430c4e4dce161b97`](https://github.com/leanprover-community/mathlib4/commit/b123bb89b5978ae6b648159e430c4e4dce161b97)
+- [FLT](https://github.com/ImperialCollegeLondon/FLT), commit [`d18b563029f32a6855f46cdd0edaab39ccc5b8f5`](https://github.com/leanprover-community/mathlib4/commit/d18b563029f32a6855f46cdd0edaab39ccc5b8f5)
+- [lean-liquid](https://github.com/leanprover-community/lean-liquid), commit [`087fffad55dc1dd8d54ab35c9816926a45b8c0fd`](https://github.com/leanprover-community/mathlib4/commit/087fffad55dc1dd8d54ab35c9816926a45b8c0fd)
+- [lean-stacks-project](https://github.com/kbuzzard/lean-stacks-project), commit [`b57be17aa917f1c3a23c59db5ee37b1aa21112c2`](https://github.com/leanprover-community/mathlib4/commit/b57be17aa917f1c3a23c59db5ee37b1aa21112c2)
+- [lean-scheme](https://github.com/ramonfmir/lean-scheme), commit [`6d3ec18fecfd174b79d0ce5c85a783f326dd50f6`](https://github.com/leanprover-community/mathlib4/commit/6d3ec18fecfd174b79d0ce5c85a783f326dd50f6)
 - [Prove2Me](https://prove2.me), live API corpus, no commit pin
-- [anthropics/fermats-last-theorem](https://github.com/anthropics/fermats-last-theorem), commit `aa2d8b34692b16c70f699536de0d8e75b9a3e9ef`
+- [anthropics/fermats-last-theorem](https://github.com/anthropics/fermats-last-theorem), commit [`aa2d8b34692b16c70f699536de0d8e75b9a3e9ef`](https://github.com/leanprover-community/mathlib4/commit/aa2d8b34692b16c70f699536de0d8e75b9a3e9ef)
 
-Pinned Mathlib is commit `db584cd6d46c92f209a44c0f1c829460d327499d`, the `v4.33.0` tag, on Lean 4.33.0.
+Pinned Mathlib is commit [`db584cd6d46c92f209a44c0f1c829460d327499d`](https://github.com/leanprover-community/mathlib4/commit/db584cd6d46c92f209a44c0f1c829460d327499d), the `v4.33.0` tag, on Lean 4.33.0.
 
 ## Domain routing map
 
@@ -76,7 +76,7 @@ Search these sources:
 - pinned Mathlib `Topology/Sheaves`
 - pinned Mathlib `Geometry/RingedSpace`
 - pinned Mathlib `AlgebraicGeometry`
-- lean-scheme `sheaves`, `spectrum_of_a_ring`, `scheme.lean`, and `instances`
+- lean-scheme `sheaves`, `spectrum_of_a_ring`, [`scheme.lean`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=scheme.lean#doc), and `instances`
 - lean-stacks-project Stacks-tag files
 - formal-conjectures `FormalConjecturesForMathlib/AlgebraicGeometry`
 
@@ -327,7 +327,7 @@ Use it for concrete lattice data, sphere-packing geometry, modular forms, Fourie
 
 `SpherePacking/Basic/E8.lean` supplies concrete E8 data and proofs.
 
-Named declarations include `Submodule.E8`, `E8Matrix`, `E8Basis`, `E8Lattice`, and `E8_ℤBasis`.
+Named declarations include [`Submodule.E8`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Submodule.E8#doc), `E8Matrix`, `E8Basis`, `E8Lattice`, and `E8_ℤBasis`.
 
 The surrounding files show how E8 interacts with periodic packings and the analytic proof.
 
@@ -420,7 +420,7 @@ curl -s "https://prove2.me/api/v1/theorems/THEOREM_ID/submissions?status=ACCEPTE
 curl -s "https://prove2.me/api/v1/submissions/SUBMISSION_ID/solution" -H "Authorization: Bearer $TOK"
 ```
 
-The last call returns the exact `solution.lean` of any submission, accepted or failed. `GET /theorems/:id/graph` returns a mission's full decomposition tree. `GET /theorems/:id/decompositions` returns recorded reductions, which give proof plans as well as code.
+The last call returns the exact [`solution.lean`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=solution.lean#doc) of any submission, accepted or failed. `GET /theorems/:id/graph` returns a mission's full decomposition tree. `GET /theorems/:id/decompositions` returns recorded reductions, which give proof plans as well as code.
 
 The API key is valid 30 days. The access token is valid one hour.
 
@@ -474,6 +474,6 @@ Their thousands of declarations did not receive individual review.
 
 ## Freshness check (2026-09-05)
 
-The repository pins Mathlib `db584cd6d46c92f209a44c0f1c829460d327499d` (`v4.33.0`) on Lean 4.33.0, matching this atlas. The earlier pin was `81a5d257c8e410db227a6665ed08f64fea08e997` on Lean 4.32.0.
+The repository pins Mathlib [`db584cd6d46c92f209a44c0f1c829460d327499d`](https://github.com/leanprover-community/mathlib4/commit/db584cd6d46c92f209a44c0f1c829460d327499d) (`v4.33.0`) on Lean 4.33.0, matching this atlas. The earlier pin was [`81a5d257c8e410db227a6665ed08f64fea08e997`](https://github.com/leanprover-community/mathlib4/commit/81a5d257c8e410db227a6665ed08f64fea08e997) on Lean 4.32.0.
 
 External entries are commit-bounded snapshots. This audit did not refresh them. Their claims remain limited to the listed commits and coverage.

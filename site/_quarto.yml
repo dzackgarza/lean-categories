@@ -4,7 +4,7 @@ project:
 
 website:
   title: "lean-categories · corpus"
-  description: "A unit-by-unit survey of graduate mathematics against Mathlib."
+  description: "Graduate mathematics, statement by statement, against Lean."
   site-url: https://dzackgarza.github.io/lean-categories/
   repo-url: https://github.com/dzackgarza/lean-categories
   search:
@@ -34,24 +34,25 @@ website:
           - section: "FC01"
             href: sources/fc01/index.md
             contents:
-              - sources/fc01/units.md
               - sources/fc01/mapping.md
-          - section: "FC02"
-            href: sources/fc02/index.md
-            contents:
-              - sources/fc02/units.md
-              - sources/fc02/mapping.md
+              - sources/fc01/ai.md
           - section: "FC03"
             href: sources/fc03/index.md
             contents:
-              - sources/fc03/units.md
               - sources/fc03/mapping.md
+              - sources/fc03/c01.md
+              - sources/fc03/c02.md
+              - sources/fc03/c03.md
+              - sources/fc03/c04.md
+              - sources/fc03/c05.md
+              - sources/fc03/c06.md
+              - sources/fc03/ce.md
           - section: "FC04"
             href: sources/fc04/index.md
             contents:
-              - sources/fc04/units.md
               - sources/fc04/mapping.md
               - sources/fc04/c01.md
+              - sources/fc04/c02.md
               - sources/fc04/c03.md
               - sources/fc04/c04.md
               - sources/fc04/c05.md
@@ -64,7 +65,6 @@ website:
           - section: "FC05"
             href: sources/fc05/index.md
             contents:
-              - sources/fc05/units.md
               - sources/fc05/mapping.md
               - sources/fc05/c01.md
               - sources/fc05/c02.md
@@ -80,7 +80,6 @@ website:
           - section: "FC06"
             href: sources/fc06/index.md
             contents:
-              - sources/fc06/units.md
               - sources/fc06/mapping.md
               - sources/fc06/c01.md
               - sources/fc06/c02.md
@@ -90,7 +89,6 @@ website:
           - section: "FC07"
             href: sources/fc07/index.md
             contents:
-              - sources/fc07/units.md
               - sources/fc07/mapping.md
               - sources/fc07/c00.md
               - sources/fc07/c01.md
@@ -101,7 +99,6 @@ website:
           - section: "FC08"
             href: sources/fc08/index.md
             contents:
-              - sources/fc08/units.md
               - sources/fc08/mapping.md
               - sources/fc08/c01.md
               - sources/fc08/c02.md
@@ -132,7 +129,6 @@ website:
           - section: "FC09"
             href: sources/fc09/index.md
             contents:
-              - sources/fc09/units.md
               - sources/fc09/mapping.md
               - sources/fc09/c01.md
               - sources/fc09/c02.md
@@ -144,7 +140,6 @@ website:
           - section: "FC10"
             href: sources/fc10/index.md
             contents:
-              - sources/fc10/units.md
               - sources/fc10/mapping.md
               - sources/fc10/c01.md
               - sources/fc10/c02.md
@@ -164,15 +159,34 @@ website:
           - section: "FC11"
             href: sources/fc11/index.md
             contents:
-              - sources/fc11/units.md
               - sources/fc11/mapping.md
               - sources/fc11/c01.md
               - sources/fc11/c02.md
               - sources/fc11/c03.md
+              - sources/fc11/c04.md
+              - sources/fc11/c05.md
+              - sources/fc11/c06.md
+              - sources/fc11/c07.md
+              - sources/fc11/c08.md
+              - sources/fc11/c09.md
+              - sources/fc11/c10.md
+              - sources/fc11/c11.md
+              - sources/fc11/c12.md
+              - sources/fc11/c13.md
+              - sources/fc11/c14.md
+              - sources/fc11/c15.md
+              - sources/fc11/c16.md
+              - sources/fc11/c17.md
+              - sources/fc11/c18.md
+              - sources/fc11/c19.md
+              - sources/fc11/c20.md
+              - sources/fc11/c21.md
+              - sources/fc11/a.md
+              - sources/fc11/b.md
+              - sources/fc11/c.md
           - section: "FC12"
             href: sources/fc12/index.md
             contents:
-              - sources/fc12/units.md
               - sources/fc12/mapping.md
               - sources/fc12/c01.md
               - sources/fc12/c02.md
@@ -189,7 +203,6 @@ website:
           - section: "FC13"
             href: sources/fc13/index.md
             contents:
-              - sources/fc13/units.md
               - sources/fc13/mapping.md
               - sources/fc13/c00.md
               - sources/fc13/c01.md
@@ -203,20 +216,46 @@ website:
               - sources/fc13/c09.md
               - sources/fc13/c10.md
               - sources/fc13/c11.md
+              - sources/fc13/ca.md
+              - sources/fc13/cb.md
+              - sources/fc13/cc.md
           - section: "FC14"
             href: sources/fc14/index.md
             contents:
-              - sources/fc14/units.md
               - sources/fc14/mapping.md
               - sources/fc14/c01.md
+              - sources/fc14/c02.md
+              - sources/fc14/c03.md
+              - sources/fc14/c04.md
+              - sources/fc14/c05.md
+              - sources/fc14/c06.md
+              - sources/fc14/c07.md
           - section: "FC15"
             href: sources/fc15/index.md
             contents:
-              - sources/fc15/units.md
+              - sources/fc15/c01.md
+              - sources/fc15/c02.md
+              - sources/fc15/c03.md
+              - sources/fc15/c04.md
+              - sources/fc15/c05.md
+              - sources/fc15/c06.md
+              - sources/fc15/c07.md
+              - sources/fc15/c08.md
           - section: "FC16"
             href: sources/fc16/index.md
             contents:
-              - sources/fc16/units.md
+              - sources/fc16/c01.md
+              - sources/fc16/c02.md
+              - sources/fc16/c03.md
+              - sources/fc16/c04.md
+              - sources/fc16/c05.md
+              - sources/fc16/c06.md
+              - sources/fc16/c07.md
+              - sources/fc16/c08.md
+              - sources/fc16/c09.md
+              - sources/fc16/c10.md
+              - sources/fc16/c11.md
+              - sources/fc16/c12.md
       - section: "Definition catalogues"
         href: catalogues/index.md
         contents:
@@ -236,9 +275,9 @@ format:
       dark: darkly
     toc: true
     toc-depth: 2
-    page-layout: full
+    toc-expand: false
     grid:
       sidebar-width: 300px
-      margin-width: 0px
+      body-width: 900px
     css: styles.css
     link-external-newwindow: true

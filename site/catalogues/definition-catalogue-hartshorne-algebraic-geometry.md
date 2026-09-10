@@ -2,8 +2,6 @@
 title: "Definition catalogue - Hartshorne Algebraic Geometry"
 ---
 
-# Algebraic Geometry
-
 Title: *Algebraic Geometry*
 
 Author: Robin Hartshorne

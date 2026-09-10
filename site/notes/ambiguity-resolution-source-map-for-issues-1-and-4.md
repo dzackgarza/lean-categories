@@ -49,11 +49,11 @@ From issue #4 (CategoryGraph):
    - Thm 1.1: the normalization of the KSBA closure is semitoroidal, with 5 semifans. The Coxeter toroidal one dominates them.
 2. CategoryGraph items T to W. The source is the DSL cluster in `~/Downloads`:
    - `Axioms-in-Magma-Opfibrations.md`.
-   - `DSLDiscussion.zip`. It holds `axiom-classifiers-framework.md`; `Categorical-Foundations.md`, which carries the F.1 citation and Mathlib-anchor table; `sage-conversion-framework.md`; and `mathematical-language-style-guide.md`.
+   - [`DSLDiscussion.zip`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=DSLDiscussion.zip#doc). It holds `axiom-classifiers-framework.md`; `Categorical-Foundations.md`, which carries the F.1 citation and Mathlib-anchor table; `sage-conversion-framework.md`; and `mathematical-language-style-guide.md`.
    - `sagecats/`. This is the 179-row normalized mapping ledger. Of those rows, 174 are high-confidence, 3 are medium, and 2 need review. It hosts MagmasWithTwoOperations and GroupsWithSimpleReflections.
    - `sagemath-10.9-category-inventory.zip`, pinned at commit 686dc1a8. It holds 222 category entries, 51 axioms including the test-only Flying and Blue, 17 functorial constructions, and 444 feature declarations.
-   - `category_parent_graph.dot`.
-   - `catdsl_poc.zip`. This is a Lean 4 registry and preferred-functor-path prototype, on lean4:v4.32.0.
+   - [`category_parent_graph.dot`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=category_parent_graph.dot#doc).
+   - [`catdsl_poc.zip`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=catdsl_poc.zip#doc). This is a Lean 4 registry and preferred-functor-path prototype, on lean4:v4.32.0.
 
 ## Transcript rulings (paths under ~/agent-transcripts/chatgpt-browser/conversations/)
 
@@ -332,6 +332,6 @@ Externalize this mapping onto the lean-lattices GitHub issues (which are being r
 
 ## Later disposition (2026-08-11)
 
-The mapping was externalized into the reorganized issue tree. Issue #21 owns conjecture quarantine. Issue #22 owns relative Spec and Proj. Issue #37 owns intrinsic cones and fans. Issue #39 owns stacks and deformation theory. Issue #35 and current `Standard.lean` own ADE and K3 conventions.
+The mapping was externalized into the reorganized issue tree. Issue #21 owns conjecture quarantine. Issue #22 owns relative Spec and Proj. Issue #37 owns intrinsic cones and fans. Issue #39 owns stacks and deformation theory. Issue #35 and current [`Standard.lean`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Standard.lean#doc) own ADE and K3 conventions.
 
 Coble cusp counts remain research computations, not a current foundation task. This map is evidence for the 2026-07-22 survey. It is not a live task list.

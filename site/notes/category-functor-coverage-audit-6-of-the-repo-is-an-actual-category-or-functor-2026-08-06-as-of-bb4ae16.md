@@ -27,11 +27,11 @@ Some struct and instance pairs are counted twice above. Collapse them and these 
 
 - from LeanCategories: `SymmBilinModuleCat`, `ZLat`, `EvenLattice`, `FiniteQuadraticModule`;
 - from CategoryGraph, hand-built: `ClassifiedCategory`, `UnitalMagma`, `UnitalMagmaWithInv`, `AdditiveMagma`, `MultiplicativeMagma`, `Crystal`;
-- six `ObjectProperty.FullSubcategory` abbreviations inherited from Mathlib: `CommMagmaCat`, `FreeModuleCat`, `FinitelyGeneratedModuleCat`, `FiniteRankModuleCat`, `DistributiveTwoOpCat`, `DivisionTwoOpCat`.
+- six [`ObjectProperty.FullSubcategory`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=ObjectProperty.FullSubcategory#doc) abbreviations inherited from Mathlib: `CommMagmaCat`, `FreeModuleCat`, `FinitelyGeneratedModuleCat`, `FiniteRankModuleCat`, `DistributiveTwoOpCat`, `DivisionTwoOpCat`.
 
 That is about 10 distinct hand-authored categories in the whole repository.
 
-The functors are `discriminantFunctor`, `forgetForm`, `rationalizationFunctor` and `realificationFunctor` from LeanCategories, plus `projection`, three pullback-pasting functors in `ForMathlib/CategoricalPullback.lean`, four forgetful functors in `Realization/Mathlib/Algebra.lean`, `magmaForget` and `Crystal.forgetFunctor` from CategoryGraph. That is about 14 distinct functors.
+The functors are `discriminantFunctor`, `forgetForm`, `rationalizationFunctor` and `realificationFunctor` from LeanCategories, plus `projection`, three pullback-pasting functors in `ForMathlib/CategoricalPullback.lean`, four forgetful functors in `Realization/Mathlib/Algebra.lean`, `magmaForget` and [`Crystal.forgetFunctor`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Crystal.forgetFunctor#doc) from CategoryGraph. That is about 14 distinct functors.
 
 ## The NEITHER 94% is not one verdict. It splits into different buckets.
 

@@ -2,8 +2,6 @@
 title: "Definition catalogue - Whitehead Homotopy Theory"
 ---
 
-# *Elements of Homotopy Theory*: definition catalogue
-
 - Author — George W. Whitehead
 - Zotero key — `IAQXVT6W`
 - Citekey — `Whi78`

@@ -268,56 +268,56 @@ Each entry below has a verified Mathlib neighbour but not an exact owner for the
 
 On 2026-08-16, 13 entries formerly listed here were re-verified directly against the pinned checkout and checked in the catalogue: BaseChangeFunctor (100), BaseChangeAdjunction (103), is_galois/galois_group (193), integral_basis (195), is_central (202), ProfiniteGroups (216), AbsoluteGaloisGroups (217), AbsoluteGaloisGroup (233), RingedSpaces (251), structure_sheaf/underlying_space/stalk (259), GradedModules/GradedAlgebras (290), FractionalIdeal (307), orthogonal_complement (331). The earlier "not found" claims were false negatives: several searches targeted the wrong file or directory (`Algebra/Central/Defs.lean`, `FieldTheory/Galois/Basic.lean`, `AlgebraicGeometry/`), and extension-of-scalars / base-change-adjunction exist in `Algebra/Category/ModuleCat/ChangeOfRings.lean`.
 
-- ConditionSet / ImageSet / PowerSet / SubsetsOfSize / FiniteSubsets: `Set.image` — `Data/Set/Defs.lean:261`; `Set.powerset` — `Data/Set/Defs.lean:254`; `Finset.powersetCard` — `Data/Finset/Powerset.lean:198`; ConditionSet/FiniteSubsets absent as standalone.
+- ConditionSet / ImageSet / PowerSet / SubsetsOfSize / FiniteSubsets: [`Set.image`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Set.image#doc) — `Data/Set/Defs.lean:261`; [`Set.powerset`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Set.powerset#doc) — `Data/Set/Defs.lean:254`; [`Finset.powersetCard`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Finset.powersetCard#doc) — `Data/Finset/Powerset.lean:198`; ConditionSet/FiniteSubsets absent as standalone.
 - Ar(X,Y) / IsoAr(X,Y): Hom-set is foundational `X ⟶ Y` notation; no standalone `Ar`/`IsoAr` declaration.
 - SubObject / SuperObject / CoveringObject / CoveredObject: Only `Subobject` evidenced; SuperObject/CoveredObject absent.
 - DiagramCategory / DirectedSystem / InverseSystem: Diagrams are `Functor` in Mathlib; `DirectedSystem` class exists — `Order/DirectedInverseSystem.lean:69` — but for direct systems over a preorder, not the inverse-system notion here; no named InverseSystem.
-- CartesianProductOfSets: `Set.prod` — `Data/Set/Operations.lean:211`; `Finset.product` exists; entry bundles a distinction claim.
-- AlgebraBaseChangeFunctor: Extension-of-scalars functor for algebras absent; `AlgCat.restrictScalars` — `Algebra/Category/AlgCat/Basic.lean:261` — is the only verified half.
-- FreeModuleOnGroupFunctor: No named free-module-on-group functor; `ModuleCat.free` covers only the module ingredient.
-- TrivialActionFunctor: `Action` category exists; `Action.trivial` — `CategoryTheory/Action/Basic.lean:73` — verifies the trivial-action construction, but the ε* : Lat → Lat_G functor is Sage design.
+- CartesianProductOfSets: [`Set.prod`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Set.prod#doc) — `Data/Set/Operations.lean:211`; [`Finset.product`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Finset.product#doc) exists; entry bundles a distinction claim.
+- AlgebraBaseChangeFunctor: Extension-of-scalars functor for algebras absent; [`AlgCat.restrictScalars`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlgCat.restrictScalars#doc) — `Algebra/Category/AlgCat/Basic.lean:261` — is the only verified half.
+- FreeModuleOnGroupFunctor: No named free-module-on-group functor; [`ModuleCat.free`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=ModuleCat.free#doc) covers only the module ingredient.
+- TrivialActionFunctor: `Action` category exists; [`Action.trivial`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Action.trivial#doc) — `CategoryTheory/Action/Basic.lean:73` — verifies the trivial-action construction, but the ε* : Lat → Lat_G functor is Sage design.
 - FramedAlgebras(R): Framing (chosen surjection) notion absent.
 - FreeAlgebras(R): `FreeAlgebra` verified; the category-of-free-algebras/grading aspects unverified.
-- FinitelyPresentedAlgebras(R); FramedFGAlgebras(R): `Algebra.FinitePresentation` (class) — `RingTheory/FinitePresentation.lean:44` — verified; FramedFGAlgebras absent.
-- is_algebra / is_free / is_finitely_presented flags: Three-valued predicate machinery absent; `Module.Free`/`FinitePresentation` are the reachable parts.
-- FinitelyPresentedAlgebra F/I; FGAlgebra: `Ideal.quotient` exists; presented-algebra declaration unverified.
+- FinitelyPresentedAlgebras(R); FramedFGAlgebras(R): [`Algebra.FinitePresentation`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Algebra.FinitePresentation#doc) (class) — `RingTheory/FinitePresentation.lean:44` — verified; FramedFGAlgebras absent.
+- is_algebra / is_free / is_finitely_presented flags: Three-valued predicate machinery absent; [`Module.Free`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Module.Free#doc)/`FinitePresentation` are the reachable parts.
+- FinitelyPresentedAlgebra F/I; FGAlgebra: [`Ideal.quotient`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.quotient#doc) exists; presented-algebra declaration unverified.
 - base_change (algebras): No verified base-change for algebras.
-- discriminant d_K: `NumberField.discr` and `classNumber` verified; signature via `card_real_embeddings`/`card_complex_embeddings`; ramified-primes part unverified.
+- discriminant d_K: [`NumberField.discr`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=NumberField.discr#doc) and `classNumber` verified; signature via `card_real_embeddings`/`card_complex_embeddings`; ramified-primes part unverified.
 - element theory: `norm`/`trace`/`minpoly`/`IsIntegral` verified; charpoly/Bézout-inverse/embeddings parts unverified.
 - R^n: Product-module/Pi structure exists; a named `R^n` declaration unverified.
 - OwnedGroups: `Group` verified; the owned-groups Sage facade bundle unverified.
 - GroupsWithChosenFinitePresentation: `GroupPresentation` not found in Mathlib GroupTheory.
-- AbelianGroupEndomorphismRing End(A): `Module.End`/`AddCommGroup (M →ₗ[R] N)` exist; the End(A)-ring declaration unverified.
+- AbelianGroupEndomorphismRing End(A): [`Module.End`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Module.End#doc)/`AddCommGroup (M →ₗ[R] N)` exist; the End(A)-ring declaration unverified.
 - Schemes(S): `Scheme` verified; the 11-axiom bundle partial: Normal/Projective/QuasiAffine/QuasiProjective/FiniteType absent.
 - AffineSpaces / ProjectiveSpaces / ClosedSubschemes / OpenSubschemes: `IsOpenImmersion`/`IsClosedImmersion` verified; QuasiAffine/QuasiProjective/FiniteType parts absent.
 - Varieties(S): `Smooth` verified; variety = smooth+integral+proper bundle unverified.
 - DivisorGroups / ClassGroups / PicardGroups: Divisor-group machinery absent; `ClassGroup` — `RingTheory/ClassGroup/Basic.lean:88` — verified; PicardGroup comparisons unverified.
-- SchemeMorphism: `Scheme.Hom` exists; the Sage facade bundle (compose/pullback/evaluate) unverified.
+- SchemeMorphism: [`Scheme.Hom`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Scheme.Hom#doc) exists; the Sage facade bundle (compose/pullback/evaluate) unverified.
 - Pic(𝔸ⁿ)=0 / Cl(ℙⁿ)=ℤ theorems: Theorem statements; no verified formalization.
-- FinitelyGeneratedModules(R): `Module.FG` verified; the pure/framed stratification semantics differ.
+- FinitelyGeneratedModules(R): [`Module.FG`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Module.FG#doc) verified; the pure/framed stratification semantics differ.
 - FramedModules(R): Framing (surjection witness) notion absent.
 - FractionFieldQuotients(R): `FractionRing`/`Localization` exist; the K/𝔞 quotient bundle unverified.
-- BasedFreeModule: `Module.Basis` exists; the based-free-module declaration unverified.
-- FinitelyPresentedModule: No `Module.FinitePresentation` path pinned; only `Algebra.FinitePresentation` (rings/algebras) exists.
+- BasedFreeModule: [`Module.Basis`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Module.Basis#doc) exists; the based-free-module declaration unverified.
+- FinitelyPresentedModule: No [`Module.FinitePresentation`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Module.FinitePresentation#doc) path pinned; only [`Algebra.FinitePresentation`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Algebra.FinitePresentation#doc) (rings/algebras) exists.
 - hermite_form / invariant_factor_form: `smithNormalForm` verified; hermite normal form absent (only the Hermite polynomial — `RingTheory/Polynomial/Hermite/Basic.lean:48`).
 - smith_form_module_generators bundle: Components (SNF/finrank/exponent/Fintype.card/IsTorsionFree) verified individually; the bundle is unchecked.
 - vector_space: `Module 𝕜 V` verified; a named `VectorSpace` declaration unverified.
 
 ## 5. Citation-format problems and naming notes
 
-- `Cone`/`Cocone` live in `CategoryTheory/Limits/Cones.lean` (plural file name), not `Cone.lean`.
+- `Cone`/`Cocone` live in `CategoryTheory/Limits/Cones.lean` (plural file name), not [`Cone.lean`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Cone.lean#doc).
 - `HasBiproduct` is a `class` in `CategoryTheory/Limits/Shapes/Biproducts.lean` (the Shapes layer); `Preadditive/Biproducts.lean` holds the additive theory on top.
 - The catalogue's `AlternatingAlgebra` is `ExteriorAlgebra` in Mathlib (`LinearAlgebra/ExteriorAlgebra/Basic.lean`).
 - The catalogue's `DividedPowerAlgebra` is the `abbrev` `DividedPowerAlgebra` in `RingTheory/DividedPowerAlgebra/Init.lean`.
 - `TensorAlgebra` lives in `LinearAlgebra/TensorAlgebra/`, not `Algebra/TensorAlgebra/`.
 - `ModuleCat` is a `structure` (Basic.lean:57); it is not a `def` or `abbrev`.
-- `FreeAlgebra.lift` is a `def` (an equivalence `(X → A) ≃ (FreeAlgebra R X →ₐ[R] A)`) at Algebra/FreeAlgebra.lean:369; `liftFun` (:111) is the underlying map.
-- `Module.Free` is a class at `LinearAlgebra/FreeModule/Basic.lean:43` — distinct from `Module.FG` (Algebra/Module/Defs.lean).
-- `Uncountable` is a `class` (Data/Countable/Defs.lean:125); `Set.Finite`/`Set.Infinite` have no standalone `def` line (cite the file; `finite_def` theorem at :56).
-- `Cardinal.aleph` (:417, Aleph.lean); `Cardinal.aleph0` (:478, SetTheory/Cardinal/Defs.lean).
-- `Spec.structureSheaf` def at StructureSheaf.lean:890; `structureSheafInType` (:171) is the type-level variant.
+- [`FreeAlgebra.lift`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=FreeAlgebra.lift#doc) is a `def` (an equivalence `(X → A) ≃ (FreeAlgebra R X →ₐ[R] A)`) at Algebra/FreeAlgebra.lean:369; `liftFun` (:111) is the underlying map.
+- [`Module.Free`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Module.Free#doc) is a class at `LinearAlgebra/FreeModule/Basic.lean:43` — distinct from [`Module.FG`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Module.FG#doc) (Algebra/Module/Defs.lean).
+- `Uncountable` is a `class` (Data/Countable/Defs.lean:125); [`Set.Finite`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Set.Finite#doc)/[`Set.Infinite`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Set.Infinite#doc) have no standalone `def` line (cite the file; `finite_def` theorem at :56).
+- [`Cardinal.aleph`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Cardinal.aleph#doc) (:417, Aleph.lean); [`Cardinal.aleph0`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Cardinal.aleph0#doc) (:478, SetTheory/Cardinal/Defs.lean).
+- [`Spec.structureSheaf`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Spec.structureSheaf#doc) def at StructureSheaf.lean:890; `structureSheafInType` (:171) is the type-level variant.
 - `dpow` (divided powers) at `RingTheory/DividedPowers/SubDPIdeal.lean:554` is the operation for divided-power structures on ideals; the catalogue's divided-power-algebra Γ notion shares the operation name in a different construction.
-- No `Scheme.toTop`/`underlying_space` declaration found; the L207 bundle therefore stays unchecked despite two of three components verifying.
+- No [`Scheme.toTop`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Scheme.toTop#doc)/`underlying_space` declaration found; the L207 bundle therefore stays unchecked despite two of three components verifying.
 - The unicode in entry titles (Δ[n], ℵ, ⊣, γ, ℵ₀) round-trips through the file unchanged; checkboxes and citations were the only edits.
 
 ## Appendix: checked entries

@@ -2,8 +2,6 @@
 title: "Definition catalogue - Hatcher Algebraic Topology"
 ---
 
-# *Algebraic Topology*: definition catalogue
-
 - Author — Allen Hatcher
 - Zotero key — `5UPFWXXF`
 - Citekey — `Hat02`

@@ -2,8 +2,6 @@
 title: "Definition catalogue - Ahlfors Complex Analysis"
 ---
 
-# Complex Analysis: definition catalogue
-
 Title: *Complex Analysis*, third edition
 
 Author: Lars V. Ahlfors

@@ -139,7 +139,7 @@ This part is sufficiently precise. The fan category is not.
 - Found: the ambient ((\infty,2))-category or infinity-cosmos is not selected.
 - Conclusion: the higher classifier is not yet a fixed mathematical construction.
 - Confidence: High.
-- Gaps: A model may exist in `FOUNDATIONS.md`, but the issue does not select one.
+- Gaps: A model may exist in [`FOUNDATIONS.md`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=FOUNDATIONS.md#doc), but the issue does not select one.
 
 Terms such as homotopy pullback, classifying fiber, and truncation depend on the chosen model.
 

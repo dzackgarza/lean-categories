@@ -2,8 +2,6 @@
 title: "Definition catalogue - Atiyah and Macdonald Commutative Algebra"
 ---
 
-# Introduction to Commutative Algebra
-
 Title: *Introduction to Commutative Algebra*
 
 Authors: M. F. Atiyah and I. G. Macdonald

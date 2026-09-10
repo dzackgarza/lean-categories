@@ -11,7 +11,7 @@ The branch `feat/formed-module-arithmetic` added code without first applying the
 - `fixedValueInclusion` repeats Mathlib `Grothendieck.ι`. The two functors have the same objects and maps.
 - `scalarTowerTensorEquiv` is definitionally equal to Mathlib `TensorProduct.AlgebraTensorModule.cancelBaseChange ... .symm`.
 - `IsIntegral` is tautological because `IntegralLatticeCat R` already means an `R`-valued lattice.
-- `IsIntegralSubmodule` restates `P ≤ (rationalizedForm R L).dualSubmodule P` instead of using Mathlib `BilinForm.dualSubmodule`.
+- `IsIntegralSubmodule` restates `P ≤ (rationalizedForm R L).dualSubmodule P` instead of using Mathlib [`BilinForm.dualSubmodule`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=BilinForm.dualSubmodule#doc).
 
 ## Redundant K3 work
 
@@ -34,7 +34,7 @@ The historical findings describe branch head `fbf2671`. They do not describe mer
 - `1d7ba63` replaced the custom fixed-fiber functor with an abbreviation of `Grothendieck.ι`.
 - `5455718` removed `scalarTowerTensorEquiv` and uses `cancelBaseChange`.
 - `1d28c67` removed the tautological `IsIntegral`.
-- `7819e9d` made `IsIntegralSubmodule` use `BilinForm.dualSubmodule`. The project name remains. It does not define another metric dual.
+- `7819e9d` made `IsIntegralSubmodule` use [`BilinForm.dualSubmodule`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=BilinForm.dualSubmodule#doc). The project name remains. It does not define another metric dual.
 - `89cbe83` removed the redundant orthogonal-power aliases and direct rank endpoints.
 - `2024dd8` removed repeated genus witnesses.
 - `1f7324f` made metric-dual containment a derived theorem.

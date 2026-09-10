@@ -2,29 +2,38 @@
 title: "FC09 — Neukirch, Algebraic Number Theory"
 ---
 
-## The source, enumerated
+Corpus source: `FC09` in [Foundational source corpus v1 (frozen)](/corpus.html).
 
-- [Foundational corpus mapping FC09 Neukirch](mapping.html) — Where each unit is expected to land.
-- [Foundational corpus units FC09 Neukirch](units.html) — Every definition, theorem and example, assigned a unit ID.
 
-## Coverage by block
+Frozen source: ``local-write-api-1783468319638-8698XMKC_extracted.md``.
 
-| Block | Units | Mathlib | Owned here | Ported | Unmatched |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| [Chapter 1. Algebraic Integers](c01.html) | 135 | 64 | 0 | 1 | 70 |
-| [Chapter 2. Valuations](c02.html) | 134 | 30 | 1 | 0 | 103 |
-| [Chapter 3. Riemann-Roch Theory](c03.html) | 129 | 11 | 0 | 0 | 118 |
-| [Chapter 4. Abstract Class Field Theory](c04.html) | 83 | 17 | 1 | 5 | 60 |
-| [Chapter 5. Local Class Field Theory](c05.html) | 56 | 1 | 1 | 3 | 51 |
-| [Chapter 6. Global Class Field Theory](c06.html) | 90 | 3 | 1 | 0 | 86 |
-| [Chapter 7. Zeta Functions and L-series](c07.html) | 175 | 25 | 0 | 3 | 147 |
+Scope: complete book, Chapters I–VII; end-of-section Exercises and Problems excluded item-by-item. Stable IDs are chapter-local and source-ordered; dependencies point only to strictly earlier FC09 units.
 
-### This source in total
+Inventory policy: definitions, constructions, conventions/notation, labeled theorems/propositions/corollaries/lemmas/axioms, named theorem statements, and reusable examples/comparisons. Exposition/history, local proof variables, and later recaps are excluded as separate units.
+
+Candidate unit count: 803 (502 numbered main-text units; 21 explicit unnumbered examples/comparisons; 280 run-in definition/construction/convention units).
+
+**803 source units** across 7 chapters and appendices.
+
+| Chapter | Units | In Lean | Not in Lean | Swept |
+| --- | ---: | ---: | ---: | :-: |
+| [FC09 — Jürgen Neukirch, *Algebraic Number Theory* (1999)](c01.html) | 135 | 65 | 70 | yes |
+| [FC09 — Jürgen Neukirch, *Algebraic Number Theory* (1999)](c02.html) | 135 | 32 | 103 | yes |
+| [FC09 — Jürgen Neukirch, *Algebraic Number Theory* (1999)](c03.html) | 129 | 11 | 118 | yes |
+| [FC09 — Jürgen Neukirch, *Algebraic Number Theory* (1999)](c04.html) | 83 | 23 | 60 | yes |
+| [FC09 — Jürgen Neukirch, *Algebraic Number Theory* (1999)](c05.html) | 56 | 5 | 51 | yes |
+| [FC09 — Jürgen Neukirch, *Algebraic Number Theory* (1999)](c06.html) | 90 | 4 | 86 | yes |
+| [FC09 — Jürgen Neukirch, *Algebraic Number Theory* (1999)](c07.html) | 175 | 28 | 147 | yes |
+
+### Routes across this source
 
 | Route | Units | Share | Meaning |
 | --- | ---: | ---: | --- |
-| `unmatched` | 635 | 79% | No checked Lean owner was found. |
-| `mathlib` | 151 | 19% | Mathlib owns the unit outright. |
-| `reference-port` | 12 | 1% | An external Lean development owns it and is ported with provenance. |
-| `project-existing` | 4 | 0% | This repository already owns it. |
-| **total** | **802** | | |
+| [`unmatched`]{.route-unmatched} | 635 | 79% | No checked Lean owner was found. |
+| [`mathlib`]{.route-mathlib} | 151 | 19% | Mathlib owns the unit outright. |
+| [`reference-port`]{.route-reference-port} | 12 | 1% | An external Lean development owns it and is ported with provenance. |
+| [`project-existing`]{.route-project-existing} | 4 | 0% | This repository already owns it. |
+| [`x\`]{.route-x\} | 1 | 0% |  |
+| **total** | **803** | | |
+
+- [Foundational corpus mapping FC09 Neukirch](mapping.html)

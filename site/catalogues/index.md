@@ -2,9 +2,7 @@
 title: "Definition catalogues"
 ---
 
-A catalogue lists every definition a source states, in the order the source
-states it, with the section and page it appears on. The catalogues are the
-denominator the coverage sweeps are measured against.
+Every definition a source states, in the order it states them, with the section and page it appears on. A catalogue is the completeness check on the enumeration: what the book defines, before any question of Lean.
 
 - [Ahlfors complex analysis definition catalogue](ahlfors-complex-analysis-definition-catalogue.html)
 - [Apostol analytic number theory definition catalogue](apostol-analytic-number-theory-definition-catalogue.html)

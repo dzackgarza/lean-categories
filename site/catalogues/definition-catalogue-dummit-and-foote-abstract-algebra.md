@@ -2,8 +2,6 @@
 title: "Definition catalogue - Dummit and Foote Abstract Algebra"
 ---
 
-# Abstract Algebra: definition catalogue
-
 Title: *Abstract Algebra*, third edition
 
 Authors: David S. Dummit and Richard M. Foote
