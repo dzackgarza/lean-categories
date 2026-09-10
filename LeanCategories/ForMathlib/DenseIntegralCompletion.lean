@@ -386,8 +386,7 @@ theorem continuous_integersToAdicCompletion :
     AdicCompletion.quotientPowTopology R v.asIdeal n
   letI (n : ℕ) : DiscreteTopology (R ⧸ v.asIdeal ^ n) :=
     ⟨rfl⟩
-  apply continuous_induced_rng.mpr
-  apply continuous_pi
+  apply (AdicCompletion.continuous_iff_evalₐ R v.asIdeal _).mpr
   intro n
   letI : TopologicalSpace
       ((v.adicCompletionIntegers K) ⧸

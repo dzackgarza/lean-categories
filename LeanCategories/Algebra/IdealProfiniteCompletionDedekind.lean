@@ -562,8 +562,7 @@ theorem continuous_toPrimeAdic : Continuous (toPrimeAdic R) := by
   letI (n : ℕ) : TopologicalSpace (R ⧸ v.asIdeal ^ n) :=
     AdicCompletion.quotientPowTopology R v.asIdeal n
   letI (n : ℕ) : DiscreteTopology (R ⧸ v.asIdeal ^ n) := ⟨rfl⟩
-  apply continuous_induced_rng.mpr
-  apply continuous_pi
+  apply (AdicCompletion.continuous_iff_evalₐ R v.asIdeal _).mpr
   intro n
   letI : TopologicalSpace (R ⧸ (primePower R v n : Ideal R)) :=
     quotientTopology R (primePower R v n)
