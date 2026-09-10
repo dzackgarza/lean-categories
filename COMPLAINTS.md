@@ -121,6 +121,7 @@ does not justify weakening a dependent theorem or starting unrelated work.
 - **Evidence:** `AGENTS.md` directs `agent-memory` CRUD and treats every dirty vault as a maintenance trigger, but `agent-memory` is absent from PATH. The installed `/home/dzack/.local/bin/iwe2` is a wrapper invoking the published client through `uvx`. The current bundled vault-maintenance skill at `dzackgarza/agent-memory@220242fdcf2d83ad2521a3cf58e489d7f8c9d962` explicitly says unrelated dirty paths are not a recovery trigger and ordinary CRUD is path-scoped. Loading that skill through the documented `uvx ... agent-memory maintain skill vault-maintenance` call was blocked by the connector's safety-status check; reading the actual skill through the GitHub connector succeeded. A later combined read-only repository inspection was blocked by the same check, while direct file reads still succeeded.
 - **Impact and scope:** neither a stale blanket maintenance instruction nor an unrelated dirty vault justifies staging or rewriting other sources. The affected operation is updating existing FC04 records; source acquisition and Lean validation remain separate. Invoking `iwe2 update --help` recursively spawned the same `uvx ... iwe2 update --help` command. Stopping the first 168 matching processes left a racing descendant; stopping the original help session's entire process group then terminated the surviving chain, and a subsequent process-group check confirmed no members remained. No other jobs were stopped. The installed published package instead supplies an `agent-memory` entry point, found in the existing uv cache; its direct help command avoids the obsolete wrapper and requires no source checkout or installation. A normal path-scoped update nevertheless indexes the entire vault before committing: the observed `zk index --quiet` child consumed more than nine CPU minutes for the first FC04 chapter update. This is active indexing, not a dead job or permission to bypass the update's validation.
 - **Continuation evidence (2026-09-10):** another combined read-only source inspection and the transient-service launch for the origin-ideal mapping update received the same safety-status rejection. A smaller direct read and the same published Python mapping operation through ordinary execution succeeded; both canonical U032 records were committed. No theorem obligation or validation was bypassed. The PDF page-25 screenshot initially timed out and succeeded on retry.
+- **Further source-transport evidence:** web retrieval of the pinned P2M source returned `DisabledError`; a combined terminal download/inspection was rejected, while direct `curl` retrieved the exact revision. A later combined read-only target inspection was also rejected, while the connector's direct file read succeeded. The remote package uses `lakefile.lean`, not `lakefile.toml`. The page-29 PDF screenshot succeeded on retry after an initial timeout. These failures did not alter the source edition, dependency pin, or normal commit gate.
 - **Repair link:** repository memory-client setup and the existing connector safety-status complaint. Document the installed executable and align the recovery trigger with the published client; preserve unrelated vault changes during FC04 updates.
 
 ### A detached normal FC04 commit vanished after successful linting
@@ -131,6 +132,7 @@ does not justify weakening a dependent theorem or starting unrelated work.
 - **Repair link:** run the unchanged normal commit gate in a transient user-systemd service, retaining its log and exit status independently of the connector session. Verify the service and Git result before considering the batch banked.
 
 - **Resolution:** the service completed with exit status 0 and landed `0765c6c`. Its log includes the completed exporter, vacuity and lint checks, and final axiom audit. No hook was bypassed. The preceding batch was already banked as `3523c95`; the previous chat's final claim that no writes or commits occurred was contradicted by Git and the retained tool results.
+- **Continuation (2026-09-10):** a later ordinary documentation-only commit for the partial-homomorphism obstruction was terminated by signal 15 during `lake build`; `/tmp/lc-fc04-source-obstruction-bank.log` records the signal. No gate process or index lock remained, and HEAD stayed at `ef6fc9c`. The checked doubling-map proof and the consolidated source diagnosis are being banked together through the unchanged gate in a transient user-systemd service. The signal is observed; its origin is not established.
 
 ### FC04 Chapter 1 mapping IDs and comparison domains were mismatched
 
@@ -145,3 +147,30 @@ does not justify weakening a dependent theorem or starting unrelated work.
 - **Evidence:** printed p. 2 lists closure under addition and multiplication and membership of 1, then asserts that the inclusion is a ring homomorphism. The subset of nonnegative integers in `Z` satisfies that checklist but omits `-1`, so it cannot be a ring under the inherited operations. Mathlib's `Subring` correctly extends both `Subsemiring` and `AddSubgroup`.
 - **Coverage and disposition:** the source wording was checked on the page. The mapping explicitly identifies the omitted condition and maps the ring/inclusion assertion to `Subring`; it does not assert equivalence to the literal checklist or alter the canonical source quotation. Later consumers must use the actual additive-group structure, not the insufficient list.
 - **Repair link:** FC04-C01-U005 source comparison; retain this distinction in the existing mapping rather than introducing a weakened subring definition.
+
+### FC04-C05-U031 assumes the partial-homomorphism poset is nonempty
+
+- **Need:** the Zorn construction must preserve its actual hypotheses and must not obtain an initial partial homomorphism from an assumption that supplies none.
+- **Evidence:** the admitted 1969 edition, printed p. 65, takes a field `K` and an algebraically closed field `Ω`, defines pairs `(A,f)` with a unital subring `A ⊆ K` and a ring homomorphism `f : A → Ω`, and asserts that the poset has a maximal element. For `K = ZMod 2` and `Ω = AlgebraicClosure ℚ`, no such pair exists. Any subring has `2 = 0`; a unital homomorphism would therefore force `2 = 0` in characteristic zero. The empty chain has no upper bound in this empty poset.
+- **Coverage and impact:** the statement was read on the printed page, and the complete counterexample, including the field and algebraic-closedness instances, passed Lean 4.33.0 against pinned Mathlib. The earlier exact mapping to `ChevalleyHom.exists_maximal` was false: that declaration requires both an initial graph `Γ₀` and `IsGraph Γ₀`. The conditional external construction is valid and retained with its full namespace and revision. Lemma 5.19 and Theorem 5.21, which assume a supplied maximal pair, are not refuted by this example.
+- **Repair link:** FC04-C05-U031 and the existing C05 mapping/provenance records, which now contain the checked Lean counterexample and the corrected comparison. The source catalogue is unchanged; the unconditional existence clause remains unaccepted. Do not silently add an initial pair or discard the reusable conditional construction from `anthropics/fermats-last-theorem@aa2d8b34692b16c70f699536de0d8e75b9a3e9ef`.
+
+```lean
+import Mathlib.Algebra.CharP.Algebra
+import Mathlib.Algebra.Field.ZMod
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+
+noncomputable section
+
+example (A : Subring (ZMod 2)) (f : A →+* AlgebraicClosure ℚ) : False := by
+  have hA : (2 : A) = 0 := by
+    apply Subtype.ext
+    rfl
+  have hΩ : (2 : AlgebraicClosure ℚ) = 0 := by
+    rw [← map_ofNat f 2, hA, map_zero]
+  exact two_ne_zero hΩ
+
+example : IsAlgClosed (AlgebraicClosure ℚ) := inferInstance
+example : Field (ZMod 2) := inferInstance
+example : Field (AlgebraicClosure ℚ) := inferInstance
+```
