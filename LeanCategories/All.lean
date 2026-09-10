@@ -68,6 +68,7 @@ public import LeanCategories.Algebra.PolynomialPowerSeries
 public import LeanCategories.Algebra.MatrixFamilies
 public import LeanCategories.Algebra.MonoidAlgebra
 public import LeanCategories.ForMathlib.AdicCompletionIntegers
+public import LeanCategories.ForMathlib.AddSubgroupCompletion
 public import LeanCategories.ForMathlib.AdicCompletionUniform
 public import LeanCategories.ForMathlib.DenseIntegralCompletion
 public import LeanCategories.ForMathlib.FiltrationTopology
