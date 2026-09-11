@@ -117,6 +117,7 @@ public import LeanCategories.Homological.WeaklyEffaceable
 public import LeanCategories.Homological.IsHereditary
 public import LeanCategories.Homological.IsQuasiFrobenius
 public import LeanCategories.Homological.SplitComplex
+public import LeanCategories.Homological.VectorSpaceSplitting
 public import LeanCategories.Homological.GlobalDimension
 public import LeanCategories.Homological.Extensions
 public import LeanCategories.Homological.DerivedDimension
