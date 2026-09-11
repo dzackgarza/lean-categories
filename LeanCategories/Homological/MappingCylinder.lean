@@ -41,6 +41,11 @@ of `(id_B, -f) : B → B ⊞ D`. -/
 noncomputable def mappingCylinder (f : B ⟶ D) : ChainComplex C ℤ :=
   HomologicalComplex.homotopyCofiber (mappingCylinderMap f)
 
+/-- Weibel's chain mapping cone, with differential `(db, dd - f b)`, is the
+Mathlib homotopy cofiber of `-f`. The minus sign is part of the source convention. -/
+noncomputable def chainMappingCone (f : B ⟶ D) : ChainComplex C ℤ :=
+  HomologicalComplex.homotopyCofiber (-f)
+
 namespace mappingCylinder
 
 @[reassoc (attr := simp)]
@@ -102,6 +107,58 @@ theorem d_snd (f : B ⟶ D) {i j : ℤ} (hij : (ComplexShape.down ℤ).Rel i j) 
           (mappingCylinderMap f).f j +
         HomologicalComplex.homotopyCofiber.sndX (mappingCylinderMap f) i ≫ (B ⊞ D).d i j := by
   exact HomologicalComplex.homotopyCofiber.d_sndX (mappingCylinderMap f) i j hij
+
+/-! ## The cylinder/cone comparison row
+
+Weibel, §1.5 after Exercise 1.5.4 (FC05-C01-U046), constructs the upper row
+`0 → B → cyl(f) → cone(f) → 0` of the mapping-cylinder diagram and the map
+`β : cyl(f) → D`, `(b,b',d) ↦ f(b)+d`. Exactness and the full commutative
+diagram are the separate Lemma 1.5.7 theorem obligation.
+-/
+
+theorem downInt_has_prev (j : ℤ) : ∃ i, (ComplexShape.down ℤ).Rel i j :=
+  ⟨j + 1, by simp⟩
+
+/-- The commutative square `(id_B, snd)` from `(id_B,-f)` to the source cone map `-f`. -/
+noncomputable def toConeArrow (f : B ⟶ D) :
+    Arrow.mk (mappingCylinderMap f) ⟶ Arrow.mk (-f) :=
+  Arrow.homMk (𝟙 B) (biprod.snd : B ⊞ D ⟶ D) (by simp [mappingCylinderMap])
+
+/-- The quotient map `cyl(f) ⟶ cone(f)` induced by the preceding square. -/
+noncomputable def toCone (f : B ⟶ D) : mappingCylinder f ⟶ chainMappingCone f :=
+  HomologicalComplex.homotopyCofiber.mapArrowHom
+    (mappingCylinderMap f) (-f) downInt_has_prev (toConeArrow f)
+
+/-- Weibel's map `β : cyl(f) ⟶ D`, `(b,b',d) ↦ f(b)+d`. -/
+noncomputable def beta (f : B ⟶ D) : mappingCylinder f ⟶ D :=
+  HomologicalComplex.homotopyCofiber.desc (mappingCylinderMap f)
+    (biprod.desc f (𝟙 D))
+    (Homotopy.ofEq (by simp [mappingCylinderMap]))
+
+@[reassoc (attr := simp)]
+theorem inB_beta (f : B ⟶ D) : inB f ≫ beta f = f := by
+  unfold inB beta LeanCategories.Homological.mappingCylinder
+  rw [Category.assoc, HomologicalComplex.homotopyCofiber.inr_desc]
+  simp
+
+@[reassoc (attr := simp)]
+theorem inD_beta (f : B ⟶ D) : inD f ≫ beta f = 𝟙 D := by
+  unfold inD beta LeanCategories.Homological.mappingCylinder
+  rw [Category.assoc, HomologicalComplex.homotopyCofiber.inr_desc]
+  simp
+
+@[reassoc (attr := simp)]
+theorem inB_toCone (f : B ⟶ D) : inB f ≫ toCone f = 0 := by
+  unfold inB toCone LeanCategories.Homological.mappingCylinder
+    LeanCategories.Homological.chainMappingCone
+  dsimp [HomologicalComplex.homotopyCofiber.mapArrowHom]
+  rw [Category.assoc, HomologicalComplex.homotopyCofiber.inr_desc]
+  simp [toConeArrow]
+
+/-- The upper row `B → cyl(f) → cone(f)` of Weibel's cylinder diagram.
+Its exactness is asserted and proved separately in Lemma 1.5.7. -/
+noncomputable def coneShortComplex (f : B ⟶ D) : ShortComplex (ChainComplex C ℤ) :=
+  ShortComplex.mk (inB f) (toCone f) (inB_toCone f)
 
 end mappingCylinder
 end LeanCategories.Homological
