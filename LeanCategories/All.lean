@@ -42,6 +42,7 @@ public import LeanCategories.Algebra.AtiyahMacdonald.SubsetRadical
 public import LeanCategories.Algebra.AtiyahMacdonald.LocalProperty
 public import LeanCategories.Algebra.AtiyahMacdonald.IdealIntegralClosure
 public import LeanCategories.Algebra.AdditiveInvariant
+public import LeanCategories.Algebra.AssociatedGraded
 public import LeanCategories.Algebra.DimensionTheory
 public import LeanCategories.Algebra.Euclidean
 public import LeanCategories.Algebra.Ideals
