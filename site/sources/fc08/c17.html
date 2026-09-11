@@ -1,0 +1,2755 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013) – lean-categories · corpus</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-7335da993d57b01553edc5728a7cb5aa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">lean-categories · corpus</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../coverage.html" aria-current="page"> 
+<span class="menu-text">Every book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../corpus.html"> 
+<span class="menu-text">Reading list</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../catalogues/index.html"> 
+<span class="menu-text">Catalogues</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/dzackgarza/lean-categories"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/index.html">FC08</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/c17.html">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="sidebar-tools-main">
+    <div id="quarto-search" class="quarto-navigation-tool px-1" title="Search"></div>
+</div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Graduate mathematics, and what Lean has of it</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../coverage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Every book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../corpus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational source corpus</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../status.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus status</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Sources</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC01 Dummit Foote</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/ai.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01 Appendix I — Cartesian Products and Zorn’s Lemma</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC03</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC03 Riehl Category Theory in Context</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Categories, Functors, and Natural Transformations (pp.&nbsp;1–48)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Representability and the Yoneda Lemma (pp.&nbsp;49–72)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Limits and Colimits (pp.&nbsp;73–114)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Adjunctions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Monads and Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. All Concepts are Kan Extensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/ce.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Epilogue: Theorems in Category Theory</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC04</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC04 Atiyah Macdonald</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Rings and Ideals (pp.&nbsp;1–9)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Modules (pp.&nbsp;17–30)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Rings and Modules of Fractions (pp.&nbsp;36–42)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Primary Decomposition (pp.&nbsp;50–54)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Integral Dependence and Valuations (pp.&nbsp;59–66)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Chain Conditions (pp.&nbsp;74–77)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Noetherian Rings (pp.&nbsp;80–83)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Artin Rings (pp.&nbsp;89–90)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Discrete Valuation Rings and Dedekind Domains (pp.&nbsp;93–98)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. Completions (pp.&nbsp;100–112)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Dimension Theory (pp.&nbsp;116–124)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC05</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC05 Weibel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Chain Complexes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Derived Functors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Tor and Ext</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homological Dimension</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Spectral Sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Group Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Lie Algebra Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Simplicial Methods in Homological Algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Hochschild and Cyclic Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. The Derived Category</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Category Theory Language</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC06</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC06 Hartshorne</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter I: Varieties</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter II: Schemes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter III: Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter IV: Curves</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter V: Surfaces</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC07</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC07 Hatcher</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 0. Some Underlying Geometric Notions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. The Fundamental Group</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homotopy Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix. Topology of Cell Complexes</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC08 Lee</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c17.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c22.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC09 Neukirch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC10 Serre Local Fields</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc11/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC11 Peters Sterk</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc12/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC12 Beauville</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc13/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC13</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC13 Matsumura</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Front matter — conventions and terminology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Commutative rings and modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Prime ideals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Properties of extension rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Valuation rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Dimension theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Regular sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Regular rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Flatness revisited</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Derivations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. I-smoothness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Applications of complete local rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Tensor products, direct and inverse limits</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix B. Some homological algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix C. The exterior algebra</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc14/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC14</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC14 Humphreys</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Basic Concepts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Semisimple Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Root Systems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Isomorphism and Conjugacy Theorems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Existence Theorem</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Representation Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Chevalley Algebras and Groups</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc15/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC15</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Classification of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Polynomial invariants of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Affine reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Coxeter groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Special cases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Hecke algebras and Kazhdan–Lusztig polynomials</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Complements</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc16/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC16</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Algebraic Geometry</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Affine Algebraic Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Homogeneous Spaces</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Characteristic 0 Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Semisimple and Unipotent Elements</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Solvable Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VIII. Borel Subgroups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IX. Centralizers of Tori</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter X. Structure of Reductive Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XI. Representations and Classification of Semisimple Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XII. Survey of Rationality Properties and Appendix</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../catalogues/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Definition catalogues</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">catalogues/*.md</span>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Notes and audits</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">notes/*.md</span>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/index.html">FC08</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/c17.html">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>FC08 — Lee, <em>Introduction to Smooth Manifolds</em>.</p>
+<p>This chapter contains 19 definitions, 15 theorems, 6 propositions, 4 lemmas, 10 corollaries, 1 example and 1 convention.</p>
+<p>Of the 56 statements checked against Lean, 9 are formalized somewhere and 47 are not.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 28%">
+<col style="width: 28%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Status</th>
+<th style="text-align: right;">Statements</th>
+<th style="text-align: right;">Share</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="route-unmatched">not formalized</span></td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">84%</td>
+<td>A documented search found no Lean statement of it anywhere.</td>
+</tr>
+<tr class="even">
+<td><span class="route-mathlib">in Mathlib</span></td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">16%</td>
+<td>Mathlib states and proves it.</td>
+</tr>
+<tr class="odd">
+<td><strong>checked in total</strong></td>
+<td style="text-align: right;"><strong>56</strong></td>
+<td style="text-align: right;"></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Which versions of Lean and Mathlib were searched
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li>Canonical source block: FC08 Lee, Chapter 17, <code>FC08-C17-U001</code>–<code>FC08-C17-U056</code>, exactly 56 unique contiguous rows retrieved from <a href="../../sources/fc08/">FC08 — John M. Lee, Introduction to Smooth Manifolds</a> through <code>agent-memory</code>.</li>
+<li>Search order: project at <code>A=3b2239e161592472b34e02ad3b7da308f9ce7280</code>, pinned Mathlib <code>P=db584cd6d46c92f209a44c0f1c829460d327499d</code> (Apache-2.0, Lean 4.33.0), current upstream <code>H=5315eef9e4ffb98e0f89f278b765c50a149f66ca</code> (Apache-2.0, Lean 4.34.0-rc2), then targeted indexed/current/external Lean searches.</li>
+<li>C17 has 9 pinned <code>mathlib</code> rows and 47 dated <code>unmatched</code> rows. Positive rows are: U017, U026, U027, U047, U049, U052, U053, U054, U055.</li>
+<li>The geometric de Rham layer is absent at P/H. Current Mathlib documentation exposes manifold vector fields, Riemannian geometry, smooth sections, and algebraic homological/cohomological complexes but no manifold de Rham cohomology module. A targeted current GitHub search likewise did not identify a compatible Mathlib-based de Rham implementation meeting the evidence floor.</li>
+<li>U017 is independent of differential forms: <code>contractible_iff_id_nullhomotopic</code> is exactly Lee’s definition of contractibility as identity homotopic to a constant map.</li>
+<li>U026–U027 are algebraic exactness and are owned directly by <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Function.Exact#doc"><code>Function.Exact</code></a> / <code>moduleCat_exact_iff_range_eq_ker</code>.</li>
+<li>U047, U049, U052–U055 are generic homological algebra. Mathlib explicitly distinguishes <code>CochainComplex</code> (differentials increase degree) from <code>ChainComplex</code> (decrease degree), defines homology/cohomology as cycles modulo boundaries, gives induced homology maps, characterizes short exact complexes degreewise, and constructs the connecting morphism and long exact homology sequence. These rows therefore map without any de Rham bridge.</li>
+<li>U048 remains unmatched despite adjacent exactness/complex APIs because its complete source bundle includes the strict non-converse “complex need not be exact”; no checked single owner packages that assertion, and a new counterexample would be reconstruction rather than reuse.</li>
+<li>U046 was checked separately. P/H/current Mathlib contains Banach contraction fixed-point theory and one-dimensional interval fixed-point results, but no arbitrary-dimensional Brouwer closed-ball fixed-point theorem.</li>
+<li>All remaining geometric rows depend essentially on the missing manifold de Rham complex, integration layer, or orientation-covering/degree machinery established absent in C14–C16; generic topological homotopy or algebraic complex infrastructure is not promoted through that gap.</li>
+<li><code>N=2026-09-07</code> marks dated unmatched decisions. Strict whole-row semantics apply uniformly.</li>
+</ul>
+</div>
+</div>
+</div>
+<section id="fc08-c17-u001" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u001">Definition/convention — de Rham cohomology groups</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U001</code> · Ch. 17; source L13307 · after <a href="c11.html#fc08-c11-u064"><code>FC08-C11-U064</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Cohomology In Chapter 14 we defined closed and exact forms: a smooth differential form ! is closed if <span class="math inline">\(d \omega = 0\)</span> , and exact if it can be written <span class="math inline">\(\omega = d \eta\)</span> . Because d <span class="math inline">\(\circ d = 0 .\)</span> every exact form is closed. In this chapter, we explore the implications of the converse question: Is every closed form exact? The answer, in general, is no: in Example 11.48, for instance, we saw a 1-form on the punctured plane that is closed but not exact; the failure of exactness seemed to be a consequence of the “hole” in the center of the domain. For higher-degree forms, the question of which closed forms are exact depends on subtle topological properties of the manifold, connected with the existence of “holes” of higher dimensions. Making this dependence quantitative leads to a new set of invariants of smooth manifolds, called the de Rham cohomology groups, which are the subject of this chapter.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u002" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u002">Convention/notation — de Rham cohomology group in degree p (</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U002</code> · Ch. 17, § The de Rham Cohomology Groups; source L13327 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Let M be a smooth manifold with or without boundary, and let <span class="math inline">\(p\)</span> be a nonnegative integer. Because d <span class="math inline">\(\Omega ^ { p } ( M ) \to \Omega ^ { p + 1 } ( M )\)</span> is linear, its kernel and image are linear subspaces. We define <span class="math display">\[ \mathcal {Z} ^ {p} (M) = \operatorname{Ker} \left(d: \Omega^ {p} (M) \rightarrow \Omega^ {p + 1} (M)\right) = \{\text { closed } p \text {-forms on } M \}, \]</span> <span class="math display">\[ \mathcal {B} ^ {p} (M) = \operatorname{Im} \left(d: \Omega^ {p - 1} (M) \rightarrow \Omega^ {p} (M)\right) = \{\text { exact } p \text {-forms on } M \}. \]</span> By convention, we consider <span class="math inline">\(\Omega ^ { p } ( M )\)</span> to be the zero vector space when <span class="math inline">\(p &lt; 0\)</span> or <span class="math inline">\(p &gt; n = \dim M\)</span> ; so that, for example, <span class="math inline">\(\mathcal { B } ^ { 0 } ( M ) = 0\)</span> and <span class="math inline">\(\mathcal { Z } ^ { n } ( M ) = \Omega ^ { n } ( M )\)</span> The fact that every exact form is closed implies that <span class="math inline">\(\mathcal { B } ^ { p } ( M ) \subseteq \mathcal { Z } ^ { p } ( M )\)</span> . Thus, it makes sense to define the de Rham cohomology group in degree <span class="math inline">\(\pmb { p }\)</span> (or the pth de Rham group) of M to be the quotient vector space <span class="math display">\[ H _ {\mathrm{dR}} ^ {p} (M) = \frac {\mathcal {Z} ^ {p} (M)}{\mathcal {B} ^ {p} (M)}. \]</span> (It is a real vector space, and thus in particular a group under vector addition. Perhaps “de Rham cohomology space” would be a more appropriate term, but because most other cohomology theories produce only groups it is traditional to use the term group in this context as well, bearing in mind that these “groups” are actually real vector spaces.) It is clear that <span class="math inline">\(H _ { \mathrm { d R } } ^ { p } ( M ) = 0\)</span> for <span class="math inline">\(p &lt; 0\)</span> or p &gt; dim M; because <span class="math inline">\(\Omega ^ { p } ( M ) = 0\)</span> in those cases.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u003" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u003">Example 17.1</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U003</code> · Ch. 17, § The de Rham Cohomology Groups; source L13347 · after <a href="c11.html#fc08-c11-u064"><code>FC08-C11-U064</code></a>, <a href="c11.html#fc08-c11-u066"><code>FC08-C11-U066</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Example 17.1. The fact that there is a closed 1-form on <span class="math inline">\(\mathbb { R } ^ { 2 } \setminus \{ 0 \}\)</span> that is not exact means that <span class="math inline">\(H _ { \mathrm { d R } } ^ { 1 } \left( \mathbb { R } ^ { 2 } \setminus \{ 0 \} \right) \neq 0\)</span> (see Example 11.48). On the other hand, the Poincaré lemma for 1-forms (Theorem 11.49) implies that <span class="math inline">\(H _ { \mathrm { d R } } ^ { 1 } ( U ) = 0\)</span> for any star-shaped open subset <span class="math inline">\(U \subseteq \mathbb{R}^{n}\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u004" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u004">Definition/convention — cohomology class of</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U004</code> · Ch. 17, § The de Rham Cohomology Groups; source L13349 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>for any star-shaped open subset <span class="math inline">\(U \subseteq \mathbb { R } ^ { n }\)</span> The first order of business is to show that the de Rham groups are diffeomorphism invariants. For any closed <span class="math inline">\(p \mathrm { - f o r m } \ \omega\)</span> on M; we let Œ! denote the equivalence class of ! in <span class="math inline">\(H _ { \mathrm { d R } } ^ { p } ( M )\)</span> , called the cohomology class of !. If <span class="math inline">\([ \omega ] = [ \omega ^ { \prime } ]\)</span> (that is, if ! and <span class="math inline">\(\omega ^ { \prime }\)</span> differ by an exact form), we say that ! and <span class="math inline">\(\omega ^ { \prime }\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u005" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u005">Proposition 17.2</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U005</code> · Ch. 17, § The de Rham Cohomology Groups; source L13351 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>(Induced Cohomology Maps). For any smooth map <span class="math inline">\(F \colon M \to N\)</span> between smooth manifolds with or without boundary, the pullback <span class="math inline">\(F^{*} \colon \Omega^{p}(N) \to \Omega^{p}(M)\)</span> carries <span class="math inline">\(\mathcal{Z}^{p}(N)\)</span> into <span class="math inline">\(\mathcal{Z}^{p}(M)\)</span> and <span class="math inline">\(\mathcal{B}^{p}(N)\)</span> into <span class="math inline">\(\mathcal{B}^{p}(M)\)</span>, so it descends to a linear map <span class="math inline">\(F^{*} \colon H^{p}_{\mathrm{dR}}(N) \to H^{p}_{\mathrm{dR}}(M)\)</span>, the induced cohomology map. (a) If <span class="math inline">\(G \colon N \to P\)</span> is another smooth map, then <span class="math inline">\((G \circ F)^{*} = F^{*} \circ G^{*} \colon H^{p}_{\mathrm{dR}}(P) \to H^{p}_{\mathrm{dR}}(M)\)</span>. (b) <span class="math inline">\(\operatorname{Id}^{*}\)</span> is the identity map of <span class="math inline">\(H^{p}_{\mathrm{dR}}(M)\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u006" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u006">Corollary 17.3</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U006</code> · Ch. 17, § The de Rham Cohomology Groups; source L13371 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary 17.3 (Functoriality). For any integer p, the assignment <span class="math inline">\(M \mapsto H _ { \mathrm { d R } } ^ { p } ( M )\)</span> <span class="math inline">\(F \mapsto F ^ { * }\)</span> is a contravariant functor from the category of smooth manifolds with boundary to the category of real vector space rves with fewer than m such points.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u007" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u007">Corollary 17.4</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U007</code> · Ch. 17, § The de Rham Cohomology Groups; source L13373 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary 17.4 (Diffeomorphism Invariance of de Rham Cohomology). <span class="math inline">\(D i f f e o -\)</span> morphic smooth manifolds (with or without boundary) have isomorphic de Rham cohomology groups.  ##</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u008" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u008">Proposition 17.5</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U008</code> · Ch. 17, § Elementary Computations; source L13379 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 17.5 (Cohomology of Disjoint Unions). Let <span class="math inline">\(\{ M _ { j } \}\)</span> be a countable collection of smooth n-manifolds with or without boundary, and let <span class="math inline">\(\begin{array} { r } { M = \coprod _ { j } M _ { j } } \end{array}\)</span> . For each p, the inclusion maps <span class="math inline">\(\iota _ { j } \colon M _ { j } \hookrightarrow M\)</span> induce an isomorphism from <span class="math inline">\(H _ { \mathrm { d R } } ^ { p } ( M )\)</span> to the direct product space = (_ {} - _ { _ {0}} ) + (_ { _ {1}} - _ {} ) \ &amp; = _ { _ {1}} - _ { _ {0}} .</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u009" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u009">Proposition 17.6</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U009</code> · Ch. 17, § Elementary Computations; source L13393 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 17.6 (Cohomology in Degree Zero). If M is a connected smooth manifold with or without boundary, then <span class="math inline">\(H _ { \mathrm { d R } } ^ { 0 } ( M )\)</span> is equal to the space of constant functions and is therefore 1-dimensio Suppose <span class="math inline">\(( M , g )\)</span> is an oriented Riemannian manifold with or without boundary, and let <span class="math inline">\(\omega _ { g }\)</span> denote its Riemannian volume form.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u010" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u010">Corollary 17.7</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U010</code> · Ch. 17, § Elementary Computations; source L13397 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>a n t s } }$  Corollary 17.7 (Cohomology of Zero-Manifolds). Suppose M is a manifold of dimension 0. Then <span class="math inline">\(H _ { \mathrm { d R } } ^ { 0 } ( M )\)</span> is a direct product of 1-dimensional vector spaces, one for each point of M; and all other de Rham cohomology groups of M are zero. Proof. The statement about $</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u011" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u011">Definition/convention — homotopy operator between F</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U011</code> · Ch. 17, § Homotopy Invariance; source L13425 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>general, if <span class="math inline">\(F , G \colon M \to N\)</span> are smooth maps, a collection of linear maps <span class="math inline">\(h \colon \Omega ^ { p } ( N ) \to \Omega ^ { p - 1 } ( M )\)</span> such that (17.3) is satisfied for all <span class="math inline">\(\omega\)</span> is called a homotopy operator between <span class="math inline">\(F ^ { * }\)</span> and <span class="math inline">\(G ^ { * }\)</span> . (The term cochain homotopy is used frequently in the algebraic topology literature.) The next proposition follows immediately from the argument in the preceding nian n-manifold (with or without boundary).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u012" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u012">Proposition 17.8</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U012</code> · Ch. 17, § Homotopy Invariance; source L13427 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Suppose <span class="math inline">\(M\)</span> and <span class="math inline">\(N\)</span> are smooth manifolds with or without boundary. If <span class="math inline">\(F, G \colon M \to N\)</span> are smooth maps and there exists a homotopy operator between the pullbacks <span class="math inline">\(F^{*}\)</span> and <span class="math inline">\(G^{*}\)</span>, then the induced cohomology maps <span class="math inline">\(F^{*}, G^{*} \colon H^{p}_{\mathrm{dR}}(N) \to H^{p}_{\mathrm{dR}}(M)\)</span> are equal.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u013" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u013">Lemma 17.9</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U013</code> · Ch. 17, § Homotopy Invariance; source L13437 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Lemma 17.9 (Existence of a Homotopy Operator). For any smooth manifold M with or without boundary, there exists a homotopy operator between the two maps <span class="math inline">\(i _ { 0 } ^ { * } , i _ { 1 } ^ { * } \colon \Omega ^ { * } ( M \times I ) \to \Omega ^ { * } ( M )\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u014" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u014">Proposition 17.10</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U014</code> · Ch. 17, § Homotopy Invariance; source L13477 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 17.10. Suppose M and N are smooth manifolds with or without boundary, and F; G <span class="math inline">\(M N\)</span> are homotopic smooth maps. For every p, the induced cohomology maps <span class="math inline">\(F ^ { * } , G ^ { * } \colon H _ { \mathrm { d R } } ^ { p } ( N ) { \stackrel { - } { \to } } H _ { \mathrm { d R } } ^ { p } ( M )\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u015" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u015">Theorem 17.11</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U015</code> · Ch. 17, § Homotopy Invariance; source L13487 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 17.11 (Homotopy Invariance of de Rham Cohomology). If M and N are homotopy equivalent smooth manifolds with or without boundary, then <span class="math inline">\(H _ { \mathrm { d R } } ^ { p } ( M ) \cong H _ { \mathrm { d R } } ^ { p } ( N )\)</span> for each p.&nbsp;The isomorphisms are induced by any smooth homotopy equivalence F <span class="math inline">\(M \to N\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u016" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u016">Corollary 17.12</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U016</code> · Ch. 17, § Homotopy Invariance; source L13504 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary 17.12 (Topological Invariance of de Rham Cohomology). The de Rham cohomology groups are topological invariants: if M and N are homeomorphic smooth manifolds with or without boundary, then their de Rham cohomology groups are isomorphic.  T</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u017" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u017">Definition/convention — contractible</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U017</code> · Ch. 17, § Computations Using Homotopy Invariance; source L13510 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>We can use homotopy invariance to compute a number of de Rham groups. We begin with the simplest case of homotopy equivalence. A topological space X is said to be contractible if the identity map of X is homotopic to a constant map.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Homotopy/Contractible.html"><code>Mathlib/Topology/Homotopy/Contractible.lean::ContractibleSpace, contractible_iff_id_nullhomotopic</code></a> — <code>contractible_iff_id_nullhomotopic</code> states exactly that a space is contractible iff its identity map is homotopic to a constant map (<code>Nullhomotopic</code>); <code>ContractibleSpace</code> packages the equivalent homotopy-equivalence-to-a-point formulation.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c17-u018" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u018">Theorem 17.13</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U018</code> · Ch. 17, § Computations Using Homotopy Invariance; source L13512 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 17.13 (Cohomology of Contractible Manifolds). If M is a contractible smooth manifold with or without boundary, then <span class="math inline">\(H _ { \mathrm { d R } } ^ { p } ( M ) = 0 f o r \ p \geq 1\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u019" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u019">Definition/convention — star-shaped</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U019</code> · Ch. 17, § Computations Using Homotopy Invariance; source L13518 · after <a href="c11.html#fc08-c11-u066"><code>FC08-C11-U066</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 11.49 showed that every closed 1-form on a star-shaped open subset of <span class="math inline">\(\mathbb{R}^{n}\)</span> is exact, where <span class="math inline">\(U \subseteq \mathbb{R}^{n}\)</span> is star-shaped if there is <span class="math inline">\(c \in U\)</span> such that the segment from <span class="math inline">\(c\)</span> to <span class="math inline">\(x\)</span> lies in <span class="math inline">\(U\)</span> for every <span class="math inline">\(x \in U\)</span>. The next theorem generalizes this to forms of all degrees, and despite the apparent specialness of star-shaped domains it is one of the most important facts about de Rham cohomology.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u020" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u020">Theorem 17.14</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U020</code> · Ch. 17, § Computations Using Homotopy Invariance; source L13520 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 17.14 (The Poincaré Lemma). If U is a star-shaped open subset of R or <span class="math inline">\(\mathbb { H } ^ { n }\)</span> , then <span class="math inline">\(H _ { \mathrm { d R } } ^ { p } ( U ) = 0 f o r \ p \geq 1\)</span> Proof.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u021" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u021">Corollary 17.15</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U021</code> · Ch. 17, § Computations Using Homotopy Invariance; source L13528 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary 17.15 (Local Exactness of Closed Forms). Let M be a smooth manifold with or without boundary. Each point of M has a neighborhood on which every closed form is exact.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u022" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u022">Corollary 17.16</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U022</code> · Ch. 17, § Computations Using Homotopy Invariance; source L13532 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary 17.16 (Cohomology of Euclidean Spaces and Half-Spaces). For any and <span class="math inline">\(p \geq 1 , H _ { \mathrm { d R } } ^ { p } \left( \mathbb { R } ^ { n } \right) = 0\)</span> and <span class="math inline">\(H _ { \mathrm { d R } } ^ { \bar { p } } \left( \mathbb { H } ^ { n } \right) = 0\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u023" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u023">Definition/convention — linear map Phi</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U023</code> · Ch. 17, § Computations Using Homotopy Invariance; source L13536 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Both <span class="math inline">\(\mathbb { R } ^ { n }\)</span> and <span class="math inline">\(\mathbb { H } ^ { n }\)</span> are star-shaped. Another case in which we can say quite a lot about de Rham cohomology is in degree 1. Suppose M is a connected smooth manifold and <span class="math inline">\(q\)</span> is any point in <span class="math inline">\(M\)</span> Let Hom <span class="math inline">\(\left( \pi _ { 1 } ( \boldsymbol { M } , \boldsymbol { q } ) , \mathbb { R } \right)\)</span> denote the set of group homomorphisms from <span class="math inline">\(\pi _ { 1 } ( M , q )\)</span> to the additive group R; it is a vector space under pointwise addition of homomorphisms and multiplication by constants. We define a linear map <span class="math inline">\(\Phi \colon H _ { \mathrm { d R } } ^ { 1 } ( M ) \to\)</span> <span class="math inline">\(\mathrm { H o m } \big ( \pi _ { 1 } ( M , q ) , \mathbb { R } \big )\)</span> as follows: given a cohomology class <span class="math inline">\([ \omega ] \in H _ { \mathrm { d R } } ^ { 1 } ( \bar { M } )\)</span> , define <span class="math inline">\(\phi [ \omega ] \colon \pi _ { 1 } ( M , q ) \to \mathbb { R }\)</span> by <span class="math display">\[ \varPhi [ \omega ] [ \gamma ] = \int_ {\widetilde {\gamma}} \omega , \]</span> where <span class="math inline">\([ \gamma ]\)</span> is any path homotopy class in <span class="math inline">\(\pi _ { 1 } ( M , q )\)</span> , and <span class="math inline">\(\widetilde { \gamma }\)</span> is any piecewise smooth curve representing the same path class. Theorem 17.17 (First Cohomology and the Fundamental Group). Suppose M is a connected smooth manifold. For each <span class="math inline">\(q \in M\)</span> ; the linear map <span class="math inline">\(\Phi \colon H _ { \mathrm { d R } } ^ { 1 } ( M ) \to\)</span> Hom <span class="math inline">\(\left( \pi _ { 1 } ( M , q ) , \mathbb { R } \right)\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u024" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u024">Theorem 17.17</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U024</code> · Ch. 17, § Computations Using Homotopy Invariance; source L13544 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 17.17 (First Cohomology and the Fundamental Group). Suppose M is a connected smooth manifold. For each <span class="math inline">\(q \in M\)</span> ; the linear map <span class="math inline">\(\Phi \colon H _ { \mathrm { d R } } ^ { 1 } ( M ) \to\)</span> Hom <span class="math inline">\(\left( \pi _ { 1 } ( M , q ) , \mathbb { R } \right)\)</span> is wel ]{} ^ {1} (M) ^ {2} (M) ^ {3} (M).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u025" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u025">Corollary 17.18</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U025</code> · Ch. 17, § Computations Using Homotopy Invariance; source L13566 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary 17.18. If M is a connected smooth manifold with finite fundamental group, then <span class="math inline">\(H _ { \mathrm { d R } } ^ { 1 } ( M ) = 0\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u026" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u026">Definition/convention — exact</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U026</code> · Ch. 17, § The Mayer–Vietoris Theorem; source L13602 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>In the statement of the Mayer–Vietoris theorem, we will use the following standard algebraic terminology. Suppose we are given a sequence of vector spaces and linear maps: <span class="math display">\[ \dots \rightarrow V ^ {p - 1} \xrightarrow {F _ {p - 1}} V ^ {p} \xrightarrow {F _ {p}} V ^ {p + 1} \xrightarrow {F _ {p + 1}} V ^ {p + 2} \rightarrow \dots .\tag{17.9} \]</span> Such a sequence is said to be exact if the image of each map is equal to the kernel of the next: for each <span class="math inline">\(p\)</span> <span class="math display">\[ \operatorname{Im} F _ {p - 1} = \operatorname{Ker} F _ {p}. \]</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Exact/Basic.html#Function.Exact"><code>Mathlib/Algebra/Exact/Basic.lean::Function.Exact</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Homology/ShortComplex/ModuleCat.html#ShortComplex.moduleCat_exact_iff_range_eq_ker"><code>Mathlib/Algebra/Homology/ShortComplex/ModuleCat.lean::ShortComplex.moduleCat_exact_iff_range_eq_ker</code></a> — <code>Function.Exact f g</code> is the exact-pair predicate, and for module/linear maps <code>moduleCat_exact_iff_range_eq_ker</code> identifies categorical exactness with <code>range f = ker g</code>, exactly Lee’s degreewise definition.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c17-u027" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u027">Definition/convention — exact</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U027</code> · Ch. 17, § The Mayer–Vietoris Theorem; source L13608 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Such a sequence is said to be exact if the image of each map is equal to the kernel of the next: for each p</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Exact/Basic.html#Function.Exact"><code>Mathlib/Algebra/Exact/Basic.lean::Function.Exact</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Homology/ShortComplex/ModuleCat.html#ShortComplex.moduleCat_exact_iff_range_eq_ker"><code>Mathlib/Algebra/Homology/ShortComplex/ModuleCat.lean::ShortComplex.moduleCat_exact_iff_range_eq_ker</code></a> — This repeated source definition is literally Mathlib’s exact-pair condition: image/range of one linear map equals the kernel of the next.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c17-u028" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u028">Theorem 17.20</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U028</code> · Ch. 17, § The Mayer–Vietoris Theorem; source L13614 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 17.20 (Mayer–Vietoris). Let M be a smooth manifold with or without boundary, and let U , V be open subsets of M whose union is M . For each <span class="math inline">\(p _ { : }\)</span> , there is a linear map ı <span class="math inline">\(H _ { \mathrm { d R } } ^ { p } ( U \bar { \cap } V ) \to H _ { \mathrm { d R } } ^ { p + 1 } ( M )\)</span> such that the following sequence, called the Mayer–Vietoris sequence for the open cover <span class="math inline">\(\{ U , V \}\)</span> , is exact: <span class="math display">\[ \begin{array}{c} \dots \stackrel {{\delta}} {{\to}} H _ {\mathrm{dR}} ^ {p} (M) \xrightarrow {k ^ {*} \oplus l ^ {*}} H _ {\mathrm{dR}} ^ {p} (U) \oplus H _ {\mathrm{dR}} ^ {p} (V) \xrightarrow {i ^ {*} - j ^ {*}} H _ {\mathrm{dR}} ^ {p} (U \cap V) \\ \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \\ \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qend{array}\tag{17.10} \]</span> Computations Using the Mayer–Vietoris Theorem Using the Mayer–Vietoris theorem, it is a simple matter to compute all of the de Rham cohomology groups of spheres. Theorem 17.21 (Cohomology</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u029" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u029">Theorem 17.21</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U029</code> · Ch. 17, § The Mayer–Vietoris Theorem; source L13624 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>(Cohomology of Spheres). For <span class="math inline">\(n \geq 1\)</span> the de Rham cohomology groups of <span class="math inline">\(\mathbb{S}^{n}\)</span> are <span class="math display">\[ H^{p}_{\mathrm{dR}}(\mathbb{S}^{n}) \cong \begin{cases} \mathbb{R} &amp; \text{if } p = 0 \text{ or } p = n, \\ 0 &amp; \text{if } 0 &lt; p &lt; n, \end{cases} \tag{17.11} \]</span> and the cohomology class of any smooth orientation form is a basis for <span class="math inline">\(H^{n}_{\mathrm{dR}}(\mathbb{S}^{n})\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u030" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u030">Corollary 17.23</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U030</code> · Ch. 17, § The Mayer–Vietoris Theorem; source L13646 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>(Cohomology of Punctured Euclidean Space). Suppose <span class="math inline">\(n \geq 2\)</span>, <span class="math inline">\(x \in \mathbb{R}^{n}\)</span> and <span class="math inline">\(M = \mathbb{R}^{n} \setminus \{x\}\)</span>. The only nontrivial de Rham groups of <span class="math inline">\(M\)</span> are <span class="math inline">\(H^{0}_{\mathrm{dR}}(M)\)</span> and <span class="math inline">\(H^{n-1}_{\mathrm{dR}}(M)\)</span>, both 1-dimensional. A closed <span class="math inline">\((n-1)\)</span>-form <span class="math inline">\(\eta\)</span> on <span class="math inline">\(M\)</span> is exact if and only if <span class="math inline">\(\int_{S} \eta = 0\)</span> for some, hence every, <span class="math inline">\((n-1)\)</span>-dimensional sphere <span class="math inline">\(S \subseteq M\)</span> centered at <span class="math inline">\(x\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u031" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u031">Corollary 17.25</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U031</code> · Ch. 17, § The Mayer–Vietoris Theorem; source L13657 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Suppose <span class="math inline">\(n \geq 2\)</span>, <span class="math inline">\(U \subseteq \mathbb{R}^{n}\)</span> is open and <span class="math inline">\(x \in U\)</span>. Then <span class="math inline">\(H^{n-1}_{\mathrm{dR}}(U \setminus \{x\}) \neq 0\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u032" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u032">Theorem 17.26</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U032</code> · Ch. 17, § The Mayer–Vietoris Theorem; source L13663 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 17.26 (Topological Invariance of Dimension). A nonempty n-dimensional topological manifold cannot be homeomorphic to an m-dimensional manifold unless <span class="math inline">\(m = n\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u033" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u033">Lemma 17.27</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U033</code> · Ch. 17, § The Mayer–Vietoris Theorem; source L13669 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Lemma 17.27 (Poincaré Lemma with Compact Support). Let <span class="math inline">\(n \geq p \geq 1\)</span> , and suppose ! is a compactly supported closed p-form on <span class="math inline">\(\mathbb { R } ^ { n }\)</span> . If <span class="math inline">\(p = n\)</span> , suppose in addition that <span class="math inline">\(\textstyle \int _ { \mathbb { R } ^ { n } } \omega = 0\)</span> . Then there exists a compactly supported smooth <span class="math inline">\(( p - 1 )\)</span> form  on <span class="math inline">\(\mathbb { R } ^ { n }\)</span> such that <span class="math inline">\(\omega = d\eta\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u034" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u034">Definition/convention — generalization of the de Rham cohomology groups using only co</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U034</code> · Ch. 17, § The Mayer–Vietoris Theorem; source L13701 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For some purposes it is useful to define a generalization of the de Rham cohomology groups using only compactly supported forms. Let M be a smooth manifold with or without boundary and let Omega _c ^p ( M ) denote the vector space of compactly supported smooth p-forms on M . The pth compactly supported de Rham cohomology group of M is the quotient space <span class="math display">\[ H^{p}_{c}(M) = \frac{\operatorname{Ker}\big(d \colon \Omega^{p}_{c}(M) \to \Omega^{p+1}_{c}(M)\big)}{\operatorname{Im}\big(d \colon \Omega^{p-1}_{c}(M) \to \Omega^{p}_{c}(M)\big)}. \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u035" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u035">Theorem 17.28</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U035</code> · Ch. 17, § The Mayer–Vietoris Theorem; source L13709 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 17.28 (Compactly Supported Cohomology of <span class="math inline">\(\mathbb { R } ^ { n } )\)</span> . For <span class="math inline">\(n \geq 1\)</span> , the compactly supported de Rham cohomology groups <span class="math inline">\(o f \mathbb { R } ^ { n }\)</span> are <span class="math display">\[ H _ {c} ^ {p} \left(\mathbb {R} ^ {n}\right) \cong \left\{ \begin{array}{l l} 0 &amp; \text { if } 0 \leq p &lt; n, \\ \mathbb {R} &amp; \text { if } p = n. \end{array} \right. \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u036" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u036">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U036</code> · Ch. 17, § The Mayer–Vietoris Theorem; source L13717 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>In general, a smooth map need not pull back compactly supported forms to compactly supported ones, so it does not induce a map on compactly supported cohomology. However, a proper map does pull back compactly supported forms to compactly supported ones, so for a proper smooth map <span class="math inline">\(F \colon M \to N\)</span> there is an induced cohomology map <span class="math inline">\(F ^ { * } \colon H _ { c } ^ { p } ( N ) \to H _ { c } ^ { p } ( M )\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u037" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u037">Theorem 17.30</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U037</code> · Ch. 17, § The Mayer–Vietoris Theorem; source L13729 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 17.30 (Top Cohomology, Orientable Compact Support Case). If M is a connected oriented smooth n-manifold, then the integration map <span class="math inline">\(I \colon H _ { c } ^ { n } ( M ) \to \mathbb { R }\)</span> is an isomorphism, so <span class="math inline">\(H _ { c } ^ { n } ( M )\)</span> is 1-dim integral of <span class="math inline">\(f\)</span> over M is defined to be <span class="math inline">\(\textstyle { \int _ { M } f d V _ { g } }\)</span> .</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u038" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u038">Theorem 17.31</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U038</code> · Ch. 17, § The Mayer–Vietoris Theorem; source L13756 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 17.31 (Top Cohomology, Orientable Compact Case). If M is a compact connected orientable smooth n-manifold, then <span class="math inline">\(H _ { \mathrm { d R } } ^ { n } ( M )\)</span> is 1-dimensional, and is spanned by the cohomology class of any smooth orientation ## Problems 16-1.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u039" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u039">Theorem 17.32</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U039</code> · Ch. 17, § The Mayer–Vietoris Theorem; source L13760 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 17.32 (Top Cohomology, Orientable Noncompact Case). If M is a noncompact connected orientable smooth n-manifold, then <span class="math inline">\(H _ { \mathrm { d R } } ^ { n } ( M ) = 0\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u040" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u040">Lemma 17.33</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U040</code> · Ch. 17, § The Mayer–Vietoris Theorem; source L13768 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Lemma 17.33. Suppose M is a connected nonorientable smooth manifold and <span class="math inline">\(\widehat { \pi } \colon \widehat { M } \to M\)</span> is its orientation covering. For each p, the induced cohomology maps <span class="math inline">\(\widehat { \pi } ^ { * } \colon H _ { \mathrm { d R } } ^ { p } ( M ) \to H _ { \mathrm { d R } } ^ { p } \bigl ( \widehat { M } \bigr ) a n d \widehat { \pi } ^ { * } \colon \tilde { H _ { c } ^ { p } } ( M ) \to \tilde { H _ { c } ^ { p } } \bigl ( \widehat { M } \bigr )\)</span> are injective. Proof. First, we prove the lemma for compactly supported cohomology.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u041" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u041">Theorem 17.34</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U041</code> · Ch. 17, § The Mayer–Vietoris Theorem; source L13798 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>(Top Cohomology, Nonorientable Case). If <span class="math inline">\(M\)</span> is a connected nonorientable smooth <span class="math inline">\(n\)</span>-manifold, then <span class="math inline">\(H^{n}_{c}(M) = 0\)</span> and <span class="math inline">\(H^{n}_{\mathrm{dR}}(M) = 0\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u042" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u042">Theorem 17.35</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U042</code> · Ch. 17, § Degree Theory; source L13822 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 17.35 (Degree of a Smooth Map). Suppose M and N are compact, connected, oriented, smooth manifolds of dimension n, and <span class="math inline">\(F \colon M \to N\)</span> is a smooth map. There exists a unique integer k, called the degree of F , that satisfies both of the following conditions. (a) For every smooth n-form ! on N , <span class="math display">\[ \int_ {M} F ^ {*} \omega = k \int_ {N} \omega . \]</span> (b) <span class="math inline">\(H q \in N\)</span> is a regular value of F , then <span class="math display">\[ k = \sum_ {x \in F ^ {- 1} (q)} \operatorname{sgn} (x), \]</span> where <span class="math inline">\(\operatorname { s g n } ( x ) = + 1 i f d F _ { x }\)</span> is orientation-preserving, and 1</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u043" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u043">Proposition 17.36</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U043</code> · Ch. 17, § Degree Theory; source L13854 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 17.36 (Properties of the Degree). Suppose M; N , and P are compact, connected, oriented, smooth n-manifolds. (a) If <span class="math inline">\(F \colon M \to N\)</span> and <span class="math inline">\(G \colon N \to P\)</span> are both smooth maps, then deg <span class="math inline">\(( G \circ F ) =\)</span> <span class="math inline">\(( \deg G ) ( \deg F )\)</span> (b) If <span class="math inline">\(F \colon M \to N\)</span> is a diffeomorphism, then deg <span class="math inline">\(F = + 1 \ i f \ F\)</span> is orientationpreserving and 1 if it is orientation-reversing. (c) If two smooth maps <span class="math inline">\(F _ { 0 } , F _ { 1 } \colon M \to N\)</span> are homotopic, then they have the same degree.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u044" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u044">Definition/convention — degree of a continuous map F</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U044</code> · Ch. 17, § Degree Theory; source L13864 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>This proposition allows us to define the degree of a continuous map <span class="math inline">\(F \colon M \to N\)</span> between compact, connected, oriented, smooth n-manifolds, by letting deg <span class="math inline">\(F\)</span> be the degree of any smooth map that is homotopic to <span class="math inline">\(F\)</span> . The Whitney approximation theorem guarantees that there is such a map, and the preceding proposition guarantees that the degree is the same for every map homotopic to <span class="math inline">\(F\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u045" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u045">Theorem 17.38</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U045</code> · Ch. 17, § Degree Theory; source L13868 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 17.38. Suppose N is a compact, connected, oriented, smooth n-manifold, and X is a compact, oriented, smooth <span class="math inline">\(( n + 1 )\)</span> -manifold with connected boundary. <span class="math inline">\(I f ~ f \colon \partial X \to N\)</span> is a continuous map that has a continuous extension to <span class="math inline">\(X\)</span> , then deg tain Riemannian metrics are not flat.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u046" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u046">Theorem 17.39</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U046</code> · Ch. 17, § Degree Theory; source L13880 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>(Brouwer Fixed-Point Theorem). Every continuous map from <span class="math inline">\(\overline{\mathbb{B}}^{n}\)</span> to itself has a fixed point.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Targeted P/H/current searches find Banach fixed-point and one-dimensional interval fixed-point theorems, but no Brouwer fixed-point theorem for a closed Euclidean ball in arbitrary finite dimension. No complete owner was found. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u047" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u047">Definition/convention — a complex</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U047</code> · Ch. 17, § Proof of the Mayer–Vietoris Theorem; source L13908 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>(In all of our applications, the ring will be either <span class="math inline">\(\mathbb { Z } .\)</span> , in which case we are looking at abelian groups and homomorphisms, or R, in which case we have vector spaces and linear maps. The terminology of modules is just a convenient way to combine the two cases.) Such a sequence is said to be a complex if the composition of any two successive applications of d is the zero map: <span class="math display">\[ d \circ d = 0 \colon A ^ {p} \to A ^ {p + 2} \quad \mathrm{foreach} p. \]</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Homology/HomologicalComplex.html#HomologicalComplex.d_comp_d"><code>Mathlib/Algebra/Homology/HomologicalComplex.lean::HomologicalComplex, CochainComplex, ChainComplex, HomologicalComplex.d_comp_d</code></a> — <code>HomologicalComplex</code> is a graded sequence with differential satisfying <code>d ≫ d = 0</code>; <code>CochainComplex</code> specializes to increasing indices and <code>ChainComplex</code> to decreasing indices. This is exactly Lee’s abstract complex convention.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c17-u048" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u048">Definition/convention — exact sequence</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U048</code> · Ch. 17, § Proof of the Mayer–Vietoris Theorem; source L13914 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Just as in the case of vector spaces, such a sequence of modules is called an exact sequence if the image of each d is equal to the kernel of the next. Clearly, every exact sequence is a complex, but the converse need not be true.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib formalizes exact pairs and complexes and proves exact pairs have zero composite, but this bundled row also asserts that the converse fails. No single checked declaration packages the definition together with that non-converse; supplying a counterexample here would be reconstruction rather than reuse. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u049" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u049">Definition/convention — pth cohomology group of A to be the quotient module</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U049</code> · Ch. 17, § Proof of the Mayer–Vietoris Theorem; source L13916 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Let us denote the sequence (17.12) by A * . If it is a complex, then the image of each map d is contained in the kernel of the next, so we define the pth cohomology group of A * to be the quotient module <span class="math display">\[ H^{p}(A^{*}) = \frac{\operatorname{Ker}(d \colon A^{p} \to A^{p+1})}{\operatorname{Im}(d \colon A^{p-1} \to A^{p})}. \]</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Homology/ShortComplex/HomologicalComplex.html"><code>Mathlib/Algebra/Homology/ShortComplex/HomologicalComplex.lean::HomologicalComplex.cycles, HomologicalComplex.homology</code></a> — For a homological/cohomological complex in an abelian category, <code>cycles</code> is the kernel object and <code>homology</code> is its quotient by boundaries (implemented as the homology of the adjacent short complex), exactly <code>ker d / im d</code>.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c17-u050" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u050">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U050</code> · Ch. 17, § Proof of the Mayer–Vietoris Theorem; source L13922 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A complex is a sequence of vector spaces and linear maps whose consecutive composites vanish, and its cohomology measures the failure of exactness. The obvious example is the de Rham complex of a smooth <span class="math inline">\(n\)</span>-manifold <span class="math inline">\(M\)</span>, <span class="math display">\[ 0 \to \Omega^{0}(M) \xrightarrow{\ d\ } \cdots \xrightarrow{\ d\ } \Omega^{p}(M) \xrightarrow{\ d\ } \Omega^{p+1}(M) \xrightarrow{\ d\ } \cdots \xrightarrow{\ d\ } \Omega^{n}(M) \to 0, \]</span> whose cohomology groups are the de Rham groups of <span class="math inline">\(M\)</span>. In algebraic topology such a complex is called a cochain complex, a chain complex being the same with maps of decreasing index, <span class="math display">\[ \cdots \to A_{p+1} \xrightarrow{\ \partial\ } A_{p} \xrightarrow{\ \partial\ } A_{p-1} \to \cdots. \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u051" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u051">Definition/convention — cochain complex</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U051</code> · Ch. 17, § Proof of the Mayer–Vietoris Theorem; source L13928 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>whose cohomology groups are the de Rham groups of <span class="math inline">\(M\)</span> . (In algebraic topology, a complex as we have defined it is usually called a cochain complex, while a chain complex is defined similarly except that the maps go in the direction of decreasing indices: <span class="math display">\[ \dots \to A _ {p + 1} \stackrel {\partial} {\to} A _ {p} \stackrel {\partial} {\to} A _ {p - 1} \to \dots . \]</span> In that case, the term homology is used in place of cohomology.)</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c17-u052" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u052">Definition/convention — cochain map</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U052</code> · Ch. 17, § Proof of the Mayer–Vietoris Theorem; source L13936 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If <span class="math inline">\(A ^ { * }\)</span> and <span class="math inline">\(B ^ { * }\)</span> are complexes, a cochain map from <span class="math inline">\(A ^ { * }\)</span> to <span class="math inline">\(B ^ { * }\)</span> , denoted by <span class="math inline">\(F \colon A ^ { * } \to B ^ { * }\)</span> { p } B ^ { p }$ (it is easiest to use the same symbol for all of the maps) such that the following diagram commutes for each <span class="math inline">\(p \colon\)</span> <span class="math display">\[ \begin{array}{c} \dots \longrightarrow A ^ {p} \xrightarrow {d} A ^ {p + 1} \longrightarrow \dots \\ F \Big \downarrow \qquad \qquad \qquad \Big \downarrow F \\ \dots \longrightarrow B ^ {p} \xrightarrow {d} B ^ {p + 1} \longrightarrow \dots . \end{array} \]</span> The fact that $</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Homology/HomologicalComplex.html#HomologicalComplex.Hom"><code>Mathlib/Algebra/Homology/HomologicalComplex.lean::HomologicalComplex.Hom, CochainComplex</code></a> — A morphism of <code>CochainComplex</code> objects is a degreewise family of maps satisfying the differential-commuting condition, exactly Lee’s cochain map.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c17-u053" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u053">Definition/convention — chain map</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U053</code> · Ch. 17, § Proof of the Mayer–Vietoris Theorem; source L13942 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Because <span class="math inline">\(F \circ d = d \circ F\)</span>, any cochain map induces a linear map on cohomology <span class="math inline">\(F^{*} \colon H^{p}(A^{*}) \to H^{p}(B^{*})\)</span> for each <span class="math inline">\(p\)</span>, as for de Rham cohomology. A map between chain complexes satisfying the analogous relations is a chain map, and the same argument shows it induces a linear map on homology.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Homology/ShortComplex/HomologicalComplex.html"><code>Mathlib/Algebra/Homology/ShortComplex/HomologicalComplex.lean::HomologicalComplex.homologyMap, HomologicalComplex.homologyFunctor, HomologicalComplex.homologyMap_comp, HomologicalComplex.homologyMap_id</code></a> — Every chain/cochain-complex morphism induces <code>homologyMap</code> in each degree; <code>homologyFunctor</code>, <code>homologyMap_comp</code>, and <code>homologyMap_id</code> give the stated functoriality. The same <code>HomologicalComplex</code> interface covers both chain and cochain shapes.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c17-u054" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u054">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U054</code> · Ch. 17, § Proof of the Mayer–Vietoris Theorem; source L13944 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>homology.) A short exact sequence of complexes consists of three complexes <span class="math inline">\(A ^ { * } , B ^ { * } , C ^ { * }\)</span> together with cochain maps {*} <span class="math display">\[ such that each sequence \]</span> 0 A ^ {p} B ^ {p} C {p} <span class="math display">\[ is exact. This means that F is injective, G is surjective, and Im $F = \operatorname { K e r } G$ Lemma 17.40 (The Zigzag Lemma). Given a short exact sequence of complexes as above, for each p there is a linear map \]</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Homology/HomologicalComplexAbelian.html#HomologicalComplex.shortExact_iff_degreewise_shortExact"><code>Mathlib/Algebra/Homology/HomologicalComplexAbelian.lean::HomologicalComplex.shortExact_iff_degreewise_shortExact</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Homology/ShortComplex/ShortExact.html#CategoryTheory.ShortComplex.ShortExact"><code>Mathlib/Algebra/Homology/ShortComplex/ShortExact.lean::CategoryTheory.ShortComplex.ShortExact</code></a> — A short complex of complexes is short exact iff it is short exact in every degree. In module categories <code>ShortExact</code> means the first map is injective, the second surjective, and the middle pair exact, matching Lee’s degreewise definition.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c17-u055" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u055">Lemma 17.40</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U055</code> · Ch. 17, § Proof of the Mayer–Vietoris Theorem; source L13958 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>(The Zigzag Lemma). Given a short exact sequence of complexes, for each <span class="math inline">\(p\)</span> there is a linear map <span class="math inline">\(\delta \colon H^{p}(C^{*}) \to H^{p+1}(A^{*})\)</span>, the connecting homomorphism, for which the sequence <span class="math display">\[ \cdots \xrightarrow{\ \delta\ } H^{p}(A^{*}) \xrightarrow{\ F^{*}\ } H^{p}(B^{*}) \xrightarrow{\ G^{*}\ } H^{p}(C^{*}) \xrightarrow{\ \delta\ } H^{p+1}(A^{*}) \xrightarrow{\ F^{*}\ } \cdots \tag{17.13} \]</span> is exact.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Homology/HomologySequence.html"><code>Mathlib/Algebra/Homology/HomologySequence.lean::CategoryTheory.ShortComplex.ShortExact.δ, CategoryTheory.ShortComplex.ShortExact.homology_exact₁, CategoryTheory.ShortComplex.ShortExact.homology_exact₂, CategoryTheory.ShortComplex.ShortExact.homology_exact₃</code></a> — For every short exact sequence of homological complexes, Mathlib constructs the connecting morphism <code>δ</code>; the three <code>homology_exact</code> theorems give the consecutive exact pieces of the resulting long exact homology/cohomology sequence. Applied to a cochain shape, this is Lee’s Zigzag Lemma.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c17-u056" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c17-u056">Corollary 17.42</h3>
+<div class="unit-meta">
+<p><code>FC08-C17-U056</code> · Ch. 17, § Proof of the Mayer–Vietoris Theorem; source L14039 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary 17.42. The connecting homomorphism in the Mayer–Vietoris sequence, <span class="math inline">\(\delta \colon H _ { \mathrm { d R } } ^ { p } ( \dot { U } \cap V ) \to H _ { \mathrm { d R } } ^ { p + 1 } ( M )\)</span> , is defined as follows. For each <span class="math inline">\(\omega \in \mathcal { Z } ^ { p } ( U \cap V )\)</span> there are p-forms <span class="math inline">\(\eta \in \Omega ^ { p } ( U )\)</span> and <span class="math inline">\(\eta ^ { \prime } \in \Omega ^ { p } ( V )\)</span> / such that <span class="math inline">\(\omega = \eta | _ { U \cap V } - \eta ^ { \prime } | _ { U \cap V } ;\)</span> and then <span class="math inline">\(\delta [ \omega ] = [ \sigma ]\)</span> , where  is the <span class="math inline">\(( p + 1 )\)</span> /-form on M that is equal to d on U and to d on <span class="math inline">\(V . H \{ \varphi , \psi \}\)</span> is a smooth partition of unity subordinate to <span class="math inline">\(\{ U , V \}\)</span> , we can take <span class="math inline">\(\eta = \psi \omega\)</span> and <span class="math inline">\(\eta ^ { \prime } = - \varphi \omega\)</span> , both extended by zero outside the supports of <span class="math inline">\(\psi\)</span> and <span class="math inline">\(\varphi\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has generic homological algebra and manifold smooth-map infrastructure, but no checked smooth-manifold de Rham complex: no manifold differential-form exterior derivative, closed/exact form quotient, pullback-induced de Rham functor, homotopy operator, Mayer–Vietoris de Rham sequence, compactly supported de Rham theory, integration degree theory, or the stated de Rham computations. Algebraic/topological ingredients alone do not own this geometric row. Strict whole-row semantics reject proper subsets, unbridged alternative models, missing clauses, and substantive reconstruction from generic ingredients.</p>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/dzackgarza\.github\.io\/lean-categories\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Generated from the project’s reference notes by <code>site/build.py</code>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>The Lean is the authority; where this site differs, the Lean is right.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

@@ -1,0 +1,2696 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024) – lean-categories · corpus</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-7335da993d57b01553edc5728a7cb5aa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">lean-categories · corpus</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../coverage.html" aria-current="page"> 
+<span class="menu-text">Every book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../corpus.html"> 
+<span class="menu-text">Reading list</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../catalogues/index.html"> 
+<span class="menu-text">Catalogues</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/dzackgarza/lean-categories"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc11/index.html">FC11</a></li><li class="breadcrumb-item"><a href="../../sources/fc11/c20.html">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="sidebar-tools-main">
+    <div id="quarto-search" class="quarto-navigation-tool px-1" title="Search"></div>
+</div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Graduate mathematics, and what Lean has of it</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../coverage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Every book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../corpus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational source corpus</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../status.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus status</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Sources</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC01 Dummit Foote</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/ai.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01 Appendix I — Cartesian Products and Zorn’s Lemma</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC03</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC03 Riehl Category Theory in Context</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Categories, Functors, and Natural Transformations (pp.&nbsp;1–48)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Representability and the Yoneda Lemma (pp.&nbsp;49–72)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Limits and Colimits (pp.&nbsp;73–114)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Adjunctions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Monads and Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. All Concepts are Kan Extensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/ce.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Epilogue: Theorems in Category Theory</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC04</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC04 Atiyah Macdonald</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Rings and Ideals (pp.&nbsp;1–9)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Modules (pp.&nbsp;17–30)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Rings and Modules of Fractions (pp.&nbsp;36–42)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Primary Decomposition (pp.&nbsp;50–54)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Integral Dependence and Valuations (pp.&nbsp;59–66)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Chain Conditions (pp.&nbsp;74–77)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Noetherian Rings (pp.&nbsp;80–83)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Artin Rings (pp.&nbsp;89–90)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Discrete Valuation Rings and Dedekind Domains (pp.&nbsp;93–98)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. Completions (pp.&nbsp;100–112)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Dimension Theory (pp.&nbsp;116–124)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC05</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC05 Weibel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Chain Complexes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Derived Functors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Tor and Ext</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homological Dimension</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Spectral Sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Group Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Lie Algebra Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Simplicial Methods in Homological Algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Hochschild and Cyclic Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. The Derived Category</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Category Theory Language</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC06</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC06 Hartshorne</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter I: Varieties</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter II: Schemes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter III: Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter IV: Curves</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter V: Surfaces</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC07</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC07 Hatcher</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 0. Some Underlying Geometric Notions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. The Fundamental Group</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homotopy Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix. Topology of Cell Complexes</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC08 Lee</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c22.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC09 Neukirch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC10 Serre Local Fields</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc11/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC11 Peters Sterk</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c20.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc12/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC12 Beauville</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc13/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC13</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC13 Matsumura</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Front matter — conventions and terminology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Commutative rings and modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Prime ideals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Properties of extension rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Valuation rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Dimension theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Regular sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Regular rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Flatness revisited</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Derivations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. I-smoothness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Applications of complete local rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Tensor products, direct and inverse limits</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix B. Some homological algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix C. The exterior algebra</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc14/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC14</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC14 Humphreys</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Basic Concepts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Semisimple Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Root Systems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Isomorphism and Conjugacy Theorems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Existence Theorem</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Representation Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Chevalley Algebras and Groups</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc15/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC15</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Classification of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Polynomial invariants of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Affine reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Coxeter groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Special cases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Hecke algebras and Kazhdan–Lusztig polynomials</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Complements</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc16/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC16</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Algebraic Geometry</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Affine Algebraic Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Homogeneous Spaces</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Characteristic 0 Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Semisimple and Unipotent Elements</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Solvable Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VIII. Borel Subgroups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IX. Centralizers of Tori</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter X. Structure of Reductive Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XI. Representations and Classification of Semisimple Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XII. Survey of Rationality Properties and Appendix</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../catalogues/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Definition catalogues</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">catalogues/*.md</span>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Notes and audits</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">notes/*.md</span>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc11/index.html">FC11</a></li><li class="breadcrumb-item"><a href="../../sources/fc11/c20.html">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>FC11 — Peters &amp; Sterk, <em>Symmetric and Quadratic Forms</em>.</p>
+<p>This chapter contains 26 definitions, 6 theorems, 12 propositions, 12 lemmas, 5 corollaries, 12 examples, 1 construction, 5 remarks, 2 criteria and 1 other statements.</p>
+<p>Nobody has checked this chapter against Lean yet, so the statements below say nothing about whether they are formalized.</p>
+<section id="fc11-c20-u001" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u001">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U001</code> · Chapter 20, source L9697 · after <a href="c19.html#fc11-c19-u012"><code>FC11-C19-U012</code></a></p>
+</div>
+<p>In Section 20.1 we describe the automorphism group of a K3 surface through the action on cohomology, making use of the Torelli theorem 19.2.1. By definition, the subgroup of symplectic automorphisms is the subgroup fixing a holomorphic 2-form. For algebraic K3 surfaces this group is of finite index in the full group and the quotient group is well understood. This gives a finiteness criterion for automorphisms in terms of the N´eron–Severi lattice.</p>
+</section>
+<section id="fc11-c20-u002" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u002">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U002</code> · Chapter 20, source L9701</p>
+</div>
+<p>A Kummer surface is the minimal resolution of the quotient of a complex torus by its natural involution.</p>
+</section>
+<section id="fc11-c20-u003" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u003">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U003</code> · Chapter 20, source L9715</p>
+</div>
+<p>where <span class="math inline">\(e _ { S } ( \sigma )\)</span> is the extension of <span class="math inline">\(\sigma \oplus \mathrm { i d } _ { T }\)</span> , <span class="math inline">\(\sigma \in \operatorname { O } ^ { \# } ( S )\)</span> and <span class="math inline">\(\rho _ { T }\)</span> is the restriction. This extension is called the symplectic extension of <span class="math inline">\(\sigma\)</span> which is unique since <span class="math inline">\(S \oplus T\)</span> generates <span class="math inline">\(L\)</span> .</p>
+</section>
+<section id="fc11-c20-u004" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u004">Theorem 20.1.1</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U004</code> · Chapter 20, source L9731-L9740 · after <a href="#fc11-c20-u003"><code>FC11-C20-U003</code></a></p>
+</div>
+<p>Theorem 20.1.1. Let <span class="math inline">\(X\)</span> be a projective <span class="math inline">\(K \mathcal { 3 }\)</span> surface. There exists a positive integer ?? (depending on <span class="math inline">\(X\)</span> ) such that there is an exact sequence <span class="math display">\[ 1 \to \operatorname { A u t } _ { s } ( X ) \to \operatorname { A u t } ( X ) { \overset { \rho _ { T } } { \longrightarrow } } \mu _ { m } \to 1 , \]</span> where <span class="math inline">\(\mu _ { m }\)</span> is the group of ??-th roots of unity in <span class="math inline">\(\mathbb { C }\)</span> . The group <span class="math inline">\(\operatorname { A u t } _ { s } ( X )\)</span> is isomorphic to the subgroup of <span class="math inline">\(\mathsf { O } ( H ^ { 2 } ( X , \mathbb { Z } ) )\)</span> consisting of those symplectic extensions of isometries in <span class="math inline">\(\operatorname { O } ^ { - , \# } ( S )\)</span> which preserve the ample cone. This group is isomorphic to the quotient group <span class="math inline">\(0 ^ { - , \# } ( S ) / \mathsf { W } ^ { - } ( S )\)</span> .</p>
+</section>
+<section id="fc11-c20-u005" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u005">Remark 20.1.2</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U005</code> · Chapter 20, source L9743</p>
+</div>
+<p>Remark 20.1.2. If <span class="math inline">\(X\)</span> is a non-projective K3 surface, there can be automorphisms that do not act by multiplication with a root of unity and then <span class="math inline">\([ \operatorname { A u t } ( X ) : \operatorname { A u t } _ { s } ( X ) ] =\)</span> <span class="math inline">\(\infty\)</span> . See [106, Ch 15, Example 1.11].</p>
+</section>
+<section id="fc11-c20-u006" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u006">Criterion 20.1.3</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U006</code> · Chapter 20, source L9747-L9748</p>
+</div>
+<p>Criterion 20.1.3 ([189, §7, Theorem 1]). The automorphism group of a complex projective <span class="math inline">\(K \mathcal { 3 }\)</span> surface <span class="math inline">\(X\)</span> is finite if and only if <span class="math inline">\(0 ^ { - } ( S ) / \mathsf { W } ^ { - } ( S )\)</span> is finite. In other words, <span class="math inline">\({ \mathrm { A u t } } ( X )\)</span> is finite if and only if the Weyl group of <span class="math inline">\(X\)</span> (cf.&nbsp;19.1) embeds as a finite index subgroup in the isometry group of the N´eron–Severi lattice <span class="math inline">\(S\)</span> .</p>
+</section>
+<section id="fc11-c20-u007" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u007">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U007</code> · Chapter 20, source L9751</p>
+</div>
+<p>If <span class="math inline">\(\rho ( X ) = 1\)</span> the group <span class="math inline">\(\mathrm { O } ^ { - } ( S )\)</span> is the identity and so <span class="math inline">\(\operatorname { A u t } ( X )\)</span> is finite. In fact, if <span class="math inline">\(X\)</span> is a double cover of <span class="math inline">\(\mathbb { P } ^ { 2 }\)</span> branched along a general sextic curve, <span class="math inline">\(\operatorname { A u t } ( X )\)</span> is generated by the covering involution and in all other cases <span class="math inline">\({ \mathrm { A u t } } ( X )\)</span> is trivial. See e.g.&nbsp;[106, Ch. 15. Cor. 2.12]. So for all <span class="math inline">\(k \geq 2\)</span> , the general K3 admitting a degree <span class="math inline">\(2 k\)</span> -polarization has trivial automorphism group.</p>
+</section>
+<section id="fc11-c20-u008" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u008">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U008</code> · Chapter 20, source L9753</p>
+</div>
+<p>Suppose <span class="math inline">\(\rho ( X ) = 2\)</span> . Here finiteness occurs if and only if <span class="math inline">\(S\)</span> has either an isotropic vector or a root. This happens for infinitely many non-isometric lattices. The only possible infinite groups are <span class="math inline">\(\mathbb { Z }\)</span> and <span class="math inline">\(\mathbb { Z } \ast \mathbb { Z }\)</span> . See [75].</p>
+</section>
+<section id="fc11-c20-u009" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u009">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U009</code> · Chapter 20, source L9755-L9763</p>
+</div>
+<p>More generally, let <span class="math inline">\(\mathcal { F } ^ { \rho }\)</span> be the set of isometry classes of even lattices <span class="math inline">\(S\)</span> of signature <span class="math inline">\(( 1 , \rho - 1 )\)</span> for which <span class="math inline">\(0 ^ { - } ( S ) / \mathsf { W } ^ { - } ( S )\)</span> finite. Then the previous examples show that the sets <span class="math inline">\(\mathcal { F } ^ { 1 }\)</span> and <span class="math inline">\(\mathcal { F } ^ { 2 }\)</span> have infinitely many elements. By [170, 172] the set <span class="math inline">\(\mathcal { F } ^ { 2 0 }\)</span> is empty while for <span class="math inline">\(\rho = { \mathrm { 3 } } , \dots , { \mathrm { 1 9 } }\)</span> there are finitely many isometry classes in <span class="math inline">\(\mathcal { F } ^ { \rho }\)</span> and each of these occur as the N´eron–Severi lattice of some K3 surface. For geometric constructions (and much more) see [198]. As announced, the arithmetic nature of the description of <span class="math inline">\(\operatorname { A u t } _ { s } ( X )\)</span> has an important consequence. Continuing with the notation as above, introduce the following auxiliary groups: <span class="math display">\[ \begin{array} { r l } &amp; { G = \{ \gamma \in \mathsf { O } ( \Lambda _ { \mathrm { K 3 } } \otimes \mathbb { R } ) \mid \gamma ( S _ { \mathbb { R } } ) = S _ { \mathbb { R } } , \gamma ( \mathsf { C } _ { X } ^ { \mathrm { a m p } } ) = \mathsf { C } _ { X } ^ { \mathrm { a m p } } \} , } \\ &amp; { G _ { \mathbb { Z } } = G \cap \mathsf { O } ( \Lambda _ { \mathrm { K 3 } } ) , \quad G _ { \mathbb { Z } } ^ { - } = \{ g \in G \cap \mathsf { O } ^ { - } ( \Lambda _ { \mathrm { K 3 } } ) \mid g \mathrm { ~ i n d u c e s ~ i d ~ o n ~ } S ^ { * } / S \} . } \end{array} \]</span> Before stating the result we are after, recall that an algebraic matrix group <span class="math inline">\(G\)</span> defined over a field <span class="math inline">\(k\)</span> is an affine subvariety of <span class="math inline">\(M _ { n \times n } ( k )\)</span> , the affine space of the <span class="math inline">\(n\)</span> by <span class="math inline">\(n\)</span> matrices with coefficients in the field <span class="math inline">\(k\)</span> with group action inherited by matrix multiplication. In particular, <span class="math inline">\(G\)</span> is given as the zero locus of polynomials from the ring <span class="math inline">\(k [ X _ { 1 , 1 } , \dots , X _ { n , n } ]\)</span> .</p>
+</section>
+<section id="fc11-c20-u010" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u010">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U010</code> · Chapter 20, source L9757-L9761</p>
+</div>
+<p>As announced, the arithmetic nature of the description of <span class="math inline">\(\operatorname { A u t } _ { s } ( X )\)</span> has an important consequence. Continuing with the notation as above, introduce the following auxiliary groups: <span class="math display">\[ \begin{array} { r l } &amp; { G = \{ \gamma \in \mathsf { O } ( \Lambda _ { \mathrm { K 3 } } \otimes \mathbb { R } ) \mid \gamma ( S _ { \mathbb { R } } ) = S _ { \mathbb { R } } , \gamma ( \mathsf { C } _ { X } ^ { \mathrm { a m p } } ) = \mathsf { C } _ { X } ^ { \mathrm { a m p } } \} , } \\ &amp; { G _ { \mathbb { Z } } = G \cap \mathsf { O } ( \Lambda _ { \mathrm { K 3 } } ) , \quad G _ { \mathbb { Z } } ^ { - } = \{ g \in G \cap \mathsf { O } ^ { - } ( \Lambda _ { \mathrm { K 3 } } ) \mid g \mathrm { ~ i n d u c e s ~ i d ~ o n ~ } S ^ { * } / S \} . } \end{array} \]</span></p>
+</section>
+<section id="fc11-c20-u011" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u011">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U011</code> · Chapter 20, source L9763</p>
+</div>
+<p>An algebraic matrix group over <span class="math inline">\(k\)</span> is an affine algebraic subvariety of a matrix space whose group law is induced by matrix multiplication.</p>
+</section>
+<section id="fc11-c20-u012" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u012">Proposition 20.1.5</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U012</code> · Chapter 20, source L9765-L9766</p>
+</div>
+<p>Proposition 20.1.5 ([220]). Suppose <span class="math inline">\(X\)</span> is a projective <span class="math inline">\(K \mathcal { 3 }\)</span> surface. Then the group <span class="math inline">\(G\)</span> is an algebraic group defined over <span class="math inline">\(\mathbb { Q }\)</span> and hence <span class="math inline">\(G _ { \mathbb { Z } }\)</span> is finitely generated. A marking induces an isomorphism <span class="math inline">\(\mathrm { A u t } _ { s } ( X ) \simeq G _ { \mathbb { Z } } ^ { - }\)</span> . The latter has finite index in <span class="math inline">\(G _ { \mathbb { Z } }\)</span> and hence <span class="math inline">\(\operatorname { A u t } _ { s } ( X )\)</span> as well as <span class="math inline">\({ \mathrm { A u t } } ( X )\)</span> are finitely generated.</p>
+</section>
+<section id="fc11-c20-u013" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u013">Remark 20.1.6</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U013</code> · Chapter 20, source L9781-L9783</p>
+</div>
+<p>Remark 20.1.6. 1. One can show that all integers <span class="math inline">\(m \in \{ 1 , \ldots , 2 2 , 2 4 , 2 6 , 2 7 , 2 8 , 3 0 , 3 2 , 3 4 , 3 6 , 3 8 , 4 0 , 4 2 , 4 4 , 4 8 , 5 0 , 5 4 , 6 6 \}\)</span> occur, in some cases for a unique K3 surface. See [127, 146, 253, 255]. However, it turns out that the numbers 33 and 60 from the above table do not occur. 2. If <span class="math inline">\(\zeta _ { m } \in \mathbb { C }\)</span> is an <span class="math inline">\(m\)</span> -th root occurring as an eigenvalue for some <span class="math inline">\(m\)</span> in the table, then the corresponding eigenspace is defined over <span class="math inline">\(\mathbb { Q } ( \zeta _ { m } )\)</span> .</p>
+</section>
+<section id="fc11-c20-u014" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u014">Lemma 20.1.7</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U014</code> · Chapter 20, source L9787</p>
+</div>
+<p>Lemma 20.1.7. Suppose <span class="math inline">\(T\)</span> is the transcendental lattice of a projective <span class="math inline">\(K \mathcal { 3 }\)</span> surface ( so that its signature is of the form <span class="math inline">\(( 2 , * )\)</span> ). If no one-dimensional non-zero subspace of <span class="math inline">\(T _ { \mathbb { C } }\)</span> can be defined over the field <span class="math inline">\(K _ { \rho }\)</span> we just introduced, then <span class="math inline">\(\pm 1\)</span> are the only roots of unity that occur as eigenvalues of an isometry of <span class="math inline">\(T\)</span> preserving the Hodge decomposition.</p>
+</section>
+<section id="fc11-c20-u015" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u015">Definition 20.1.8</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U015</code> · Chapter 20, source L9791-L9794 · after <a href="#fc11-c20-u004"><code>FC11-C20-U004</code></a></p>
+</div>
+<p>Definition 20.1.8. Let <span class="math inline">\({ \mathrm { r a n k } } ( S ) = \rho\)</span> . A point <span class="math inline">\([ u ] \in D ( S ^ { \perp } )\)</span> is called <span class="math inline">\(K _ { \rho }\)</span> -generic or generic over <span class="math inline">\(K _ { \rho }\)</span> if the following two conditions hold: • With <span class="math inline">\(T = S ^ { \perp }\)</span> , there is no proper sublattice <span class="math inline">\(T ^ { \prime }\)</span> of <span class="math inline">\(T\)</span> for which <span class="math inline">\(\mathbb { C } u \subset T _ { \mathbb { C } } ^ { \prime }\)</span> . In particular, the Picard number of any corresponding K3 surface <span class="math inline">\(X\)</span> equals <span class="math inline">\(\rho = 2 2 - \mathrm { r a n k } ( T )\)</span> ; • No one-dimensional subspace of <span class="math inline">\(T _ { \mathbb { C } }\)</span> is defined over <span class="math inline">\(K _ { \rho }\)</span> and so, using the notation of Theorem 20.1.1, either <span class="math inline">\(\mathrm { I m } ( \rho _ { T } )\)</span> is the identity or the order two group <span class="math inline">\(\{ \pm \mathrm { i d } \}\)</span> .</p>
+</section>
+<section id="fc11-c20-u016" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u016">Lemma 20.1.9</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U016</code> · Chapter 20, source L9798</p>
+</div>
+<p>Lemma 20.1.9. Let <span class="math inline">\(K _ { \rho }\)</span> be defined by equation (20.1). If <span class="math inline">\([ u ] \in D ( S ^ { \perp } )\)</span> is a <span class="math inline">\(K _ { \rho }\)</span> - generic period point of a projective K3 surface, then the only automorphisms of <span class="math inline">\(T = S ^ { \perp }\)</span> extending to <span class="math inline">\(\Lambda _ { \mathsf { K 3 } }\)</span> are <span class="math inline">\(\pm\)</span> id.</p>
+</section>
+<section id="fc11-c20-u017" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u017">Corollary 20.1.10</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U017</code> · Chapter 20, source L9802-L9805</p>
+</div>
+<p>Corollary 20.1.10. Let <span class="math inline">\(\rho = \mathrm { r a n k } ( S )\)</span> and <span class="math inline">\(K _ { \rho }\)</span> defined by equation (20.1). For <span class="math inline">\(K _ { \rho }\)</span> -generic <span class="math inline">\(S\)</span> -marked projective <span class="math inline">\(K \mathcal { 3 }\)</span> surfaces <span class="math inline">\(X\)</span> without nodal curves one has • <span class="math inline">\({ \mathrm { A u t } } ( X ) = { \mathrm { A u t } } _ { s } ( X ) \times \{ \pm 1 \} \simeq { \mathsf { O } } ^ { - , \# } ( S ) \times \{ \pm 1 \}\)</span> if and only if <span class="math inline">\(X\)</span> admits an involution acting as −id on <span class="math inline">\(T\)</span> ; • <span class="math inline">\(\operatorname { A u t } ( X ) = \operatorname { A u t } _ { s } ( X ) \simeq 0 ^ { - , \# } ( S )\)</span> otherwise.</p>
+</section>
+<section id="fc11-c20-u018" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u018">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U018</code> · Chapter 20, source L9807 · after <a href="#fc11-c20-u017"><code>FC11-C20-U017</code></a></p>
+</div>
+<p>The non-symplectic alternative in Corollary 20.1.10 occurs: a K3 surface without nodal curves whose holomorphic two-form is negated by an involution, for example the K3 cover of a general Enriques surface, has the indicated extra involution.</p>
+</section>
+<section id="fc11-c20-u019" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u019">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U019</code> · Chapter 20, source L9813 · after <a href="c01.html#fc11-c01-u100"><code>FC11-C01-U100</code></a></p>
+</div>
+<p>Recall the notation <span class="math inline">\(\Lambda ^ { G }\)</span> for the <span class="math inline">\(G\)</span> -invariant sublattice, and <span class="math inline">\(\Lambda _ { G }\)</span> for its orthogonal complement. Note that <span class="math inline">\(\Lambda ^ { G }\)</span> and <span class="math inline">\(\Lambda _ { G }\)</span> are non-degenerate if <span class="math inline">\(G\)</span> is non-trivial. See Example 1.7.3.</p>
+</section>
+<section id="fc11-c20-u020" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u020">Criterion 20.2.1</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U020</code> · Chapter 20, source L9815-L9822</p>
+</div>
+<p>Criterion 20.2.1. Let <span class="math inline">\(X\)</span> be a <span class="math inline">\(K \mathcal { 3 }\)</span> surface. Then, up to conjugation under the action of <span class="math inline">\({ \mathsf { W } } ^ { - } ( X )\)</span> , a finite subgroup <span class="math inline">\(G\)</span> of <span class="math inline">\(\mathsf { O } ( H ^ { 2 } ( X , \mathbb { Z } ) )\)</span> is induced by automorphisms of <span class="math inline">\(X\)</span> if and only if the following three conditions hold simultaneously: 1. ?? preserves <span class="math inline">\(H ^ { 2 , 0 } ( X )\)</span> 2. There is a <span class="math inline">\(G\)</span> -invariant element in the positive cone; 3. <span class="math inline">\(H ^ { 2 } ( X , \mathbb { Z } ) _ { G } \cap \mathsf { N S } ( X )\)</span> contains no roots.</p>
+</section>
+<section id="fc11-c20-u021" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u021">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U021</code> · Chapter 20, source L9833 · after <a href="#fc11-c20-u001"><code>FC11-C20-U001</code></a></p>
+</div>
+<p>A finite subgroup action on the K3 lattice is called symplectic when it is realized by symplectic automorphisms on a K3 surface.</p>
+</section>
+<section id="fc11-c20-u022" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u022">Proposition 20.2.2</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U022</code> · Chapter 20, source L9835-L9844</p>
+</div>
+<p>Proposition 20.2.2. Let <span class="math inline">\(G\)</span> be a finite group acting symplectically on a marked <span class="math inline">\(K \mathcal { 3 }\)</span> surface <span class="math inline">\(X\)</span> . Then, via the marking, <span class="math inline">\(\Lambda _ { G }\)</span> does not contain roots and the period point of <span class="math inline">\(X\)</span> belongs to <span class="math inline">\(D ( \Lambda ^ { G } )\)</span> . Let <span class="math inline">\(G\)</span> be a finite subgroup of <span class="math inline">\({ \sf O } ( \Lambda )\)</span> . Suppose rank <span class="math inline">\(( \Lambda _ { G } ) \leq 1 8\)</span> and that <span class="math inline">\(\Lambda _ { G }\)</span> does not have roots. If the period point of <span class="math inline">\(X\)</span> belongs to <span class="math inline">\(D ( \Lambda ^ { G } )\)</span> , then, up to conjugation with some <span class="math inline">\(w \in \mathsf { W } ^ { - } ( X )\)</span> , every <span class="math inline">\(g \in G\)</span> acts symplectically on <span class="math inline">\(X\)</span> via the marking. Moreover, on the connected subset corresponding to <span class="math inline">\(K \mathcal { 3 }\)</span> -surfaces with N´eron–Severi group equal to <span class="math inline">\(\Lambda _ { G }\)</span> , <span class="math display">\[ \mathring { D } \left( \Lambda ^ { G } \right) = \{ [ u ] \in D ( \Lambda ^ { G } ) \ | \ \varphi \mathsf { N S } ( X ) = \ \Lambda _ { G } , [ u ] \ p e r i o d \ p o i n t \ o f \ ( X , \varphi ) \} , \]</span> one can take <span class="math inline">\(w = \mathrm { i d }\)</span> .</p>
+</section>
+<section id="fc11-c20-u023" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u023">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U023</code> · Chapter 20, source L9857</p>
+</div>
+<p>A different marking for <span class="math inline">\(X\)</span> gives a conjugate embedding so that the conjugation class of <span class="math inline">\(\iota _ { \varphi } ( G )\)</span> in <span class="math inline">\(\mathrm { O } ( \Lambda )\)</span> only depends on <span class="math inline">\(\iota\)</span> . So also the isometry class of the lattice fixed under <span class="math inline">\(\iota _ { \varphi } ( G )\)</span> only depends on <span class="math inline">\(\iota\)</span> , or, more precisely on the image <span class="math inline">\(\iota ( G )\)</span> , we shall denote any representing lattice by <span class="math inline">\(\Lambda ^ { \iota ( G ) }\)</span> and its orthogonal complement by <span class="math inline">\(\Lambda _ { l \left( G \right) }\)</span> . This leads to:</p>
+</section>
+<section id="fc11-c20-u024" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u024">Definition 20.2.3</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U024</code> · Chapter 20, source L9859</p>
+</div>
+<p>Definition 20.2.3. A marked K3-surface <span class="math inline">\(( X , \varphi )\)</span> with symplectic <span class="math inline">\(G\)</span> -action and induced embedding <span class="math inline">\(\iota : G \hookrightarrow \mathsf { O } ( \Lambda )\)</span> is called a <span class="math inline">\(( \iota , G )\)</span> -marked K3 surface.</p>
+</section>
+<section id="fc11-c20-u025" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u025">Corollary 20.2.4</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U025</code> · Chapter 20, source L9863-L9864 · after <a href="#fc11-c20-u024"><code>FC11-C20-U024</code></a></p>
+</div>
+<p>Corollary 20.2.4. Suppose that <span class="math inline">\(\Lambda _ { l \left( G \right) }\)</span> has rank <span class="math inline">\(\leq 1 8\)</span> and does not contain roots. Then <span class="math inline">\({ \overset { \circ } { D } } ( \Lambda ^ { \iota ( G ) } )\)</span> is the period domain of <span class="math inline">\(( \iota , G )\)</span> -marked K3 surfaces.</p>
+</section>
+<section id="fc11-c20-u026" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u026">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U026</code> · Chapter 20, source L9866-L9870 · after <a href="#fc11-c20-u024"><code>FC11-C20-U024</code></a></p>
+</div>
+<p>The moduli space of <span class="math inline">\((\iota,G)\)</span>-marked K3 surfaces is the inverse image of the open period domain <span class="math inline">\(\mathring D(\Lambda^{\iota(G)})\)</span> inside the universal marked-K3 moduli space.</p>
+</section>
+<section id="fc11-c20-u027" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u027">Construction / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U027</code> · Chapter 20, source L9872</p>
+</div>
+<p>For these root-free period points the light cone has two components and hence two choices of Kähler cone; replacing a marking by its negative exchanges the two choices.</p>
+</section>
+<section id="fc11-c20-u028" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u028">Proposition 20.2.5</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U028</code> · Chapter 20, source L9874</p>
+</div>
+<p>Proposition 20.2.5. Let <span class="math inline">\(G\)</span> be a finite group. The moduli space of <span class="math inline">\(( \iota , G )\)</span> -marked <span class="math inline">\(K \mathcal { 3 }\)</span> surfaces <span class="math inline">\(\mathcal { M } _ { \iota ( G ) }\)</span> has two connected components <span class="math inline">\(\mathcal { M } _ { \iota ( G ) } ^ { \pm }\)</span> corresponding to two opposite markings.</p>
+</section>
+<section id="fc11-c20-u029" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u029">Corollary 20.2.6</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U029</code> · Chapter 20, source L9878 · after <a href="#fc11-c20-u024"><code>FC11-C20-U024</code></a></p>
+</div>
+<p>Corollary 20.2.6. The images of <span class="math inline">\(G\)</span> in <span class="math inline">\(\mathrm { O } ( \Lambda )\)</span> for the members of the universal family of <span class="math inline">\(( \iota , G )\)</span> -marked K3 surfaces over a connected component of <span class="math inline">\(\mathcal { M } _ { \iota ( G ) }\)</span> belong to the same conjucacy class in <span class="math inline">\(\mathrm { O } ( \Lambda )\)</span> .</p>
+</section>
+<section id="fc11-c20-u030" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u030">Proposition 20.2.7</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U030</code> · Chapter 20, source L9882-L9886</p>
+</div>
+<p>Proposition 20.2.7. Let <span class="math inline">\(G\)</span> be a finite group of automorphisms of a K3 surface <span class="math inline">\(X\)</span> , then: 1. If <span class="math inline">\(G\)</span> acts symplectically, <span class="math inline">\(X / G\)</span> has at most du Val singularities and its minimal resolution is a K3 surface; 2. If <span class="math inline">\(G\)</span> does not act symplectically, <span class="math inline">\(X / G\)</span> is either rational or birational to an Enriques surface. It is isomorphic to an Enriques surface if <span class="math inline">\(G\)</span> has order 2 and acts freely on <span class="math inline">\(X\)</span> .</p>
+</section>
+<section id="fc11-c20-u031" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u031">Theorem 20.3.1</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U031</code> · Chapter 20, source L9897-L9898</p>
+</div>
+<p>Theorem 20.3.1 (Mukai, [159]). A finite group <span class="math inline">\(G\)</span> arises as a subgroup of <span class="math inline">\(\operatorname { A u t } _ { s } ( X )\)</span> for some projective <span class="math inline">\(K \mathcal { 3 }\)</span> surface <span class="math inline">\(X\)</span> if and only if <span class="math inline">\(G\)</span> is isomorphic to a subgroup of the Mathieu group <span class="math inline">\(M _ { 2 3 }\)</span> for which the induced action on <span class="math inline">\(\Omega\)</span> has at least 5 orbits.</p>
+</section>
+<section id="fc11-c20-u032" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u032">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U032</code> · Chapter 20, source L9941 · after <a href="#fc11-c20-u030"><code>FC11-C20-U030</code></a></p>
+</div>
+<p>20.4.A An inventory. Suppose <span class="math inline">\(G\)</span> acts symplectically on a K3 surface <span class="math inline">\(X\)</span> . By Proposition 20.2.7, <span class="math inline">\(Y = X / G\)</span> has at most du Val singularities and its minimal resolution <span class="math inline">\(\widetilde { Y }\)</span> is a K3 surface. The classes of the components in the minimal resolution <span class="math inline">\(\ddot { Y }\)</span> generate a sublattice of <span class="math inline">\(H ^ { 2 } ( { \widetilde { Y } } , \mathbb { Z } )\)</span> which is denoted <span class="math inline">\(M _ { Y } ^ { \prime }\)</span> . Its primitive closure, <span class="math inline">\(M _ { Y }\)</span> , is called the resolution lattice of the quotient K3 surface.</p>
+</section>
+<section id="fc11-c20-u033" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u033">Lemma 20.4.1</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U033</code> · Chapter 20, source L9943-L9947</p>
+</div>
+<p>Lemma 20.4.1. The possible finite abelian groups <span class="math inline">\(G\)</span> acting effectively and symplectically (and their invariants) are those which are given in Table 20.4.1, Table 20.4.1: Groups <span class="math inline">\(G\)</span> <img src="images/b2187e4329d4fe97f4059892469fffd99d95b639322dbff4920fccc7b04ac375.jpg" class="img-fluid"></p>
+</section>
+<section id="fc11-c20-u034" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u034">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U034</code> · Chapter 20, source L9962 · after <a href="c05.html#fc11-c05-u030"><code>FC11-C05-U030</code></a></p>
+</div>
+<p>Example 20.4.2. The first example in the above list is the Nikulin involution. The table shows that it has eight fixed points which upon resolving gives eight <span class="math inline">\(- 2\)</span> curves whose classes <span class="math inline">\(e _ { 1 } , \ldots , e _ { 8 }\)</span> span <span class="math inline">\(\mathbb { O } ^ { 8 } A _ { 1 } ( - 1 )\)</span> . The primitive closure in <span class="math inline">\(H ^ { 2 }\)</span> has an extra element <span class="math inline">\(\begin{array} { r } { { \frac { 1 } { 2 } } \sum _ { j } e _ { j } } \end{array}\)</span> . So the resolution lattice is the Nikulin lattice (see Definition 5.2.9) with discriminant group <span class="math inline">\(\mathbb { Q } ^ { 6 } \mathbb { Z } / 2 \mathbb { Z }\)</span> .</p>
+</section>
+<section id="fc11-c20-u035" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u035">Lemma 20.4.3</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U035</code> · Chapter 20, source L9987-L9992</p>
+</div>
+<p>Lemma 20.4.3. Let <span class="math inline">\(X\)</span> be a <span class="math inline">\(K \mathcal { 3 }\)</span> surface and <span class="math inline">\(G\)</span> a finite abelian group acting symplectically on <span class="math inline">\(X\)</span> with quotient <span class="math inline">\(Y = X / G\)</span> . Let <span class="math inline">\(E _ { Y }\)</span> be the collection of classes of the exceptional curves of the minimal resolution <span class="math inline">\(\widetilde { Y }\)</span> of <span class="math inline">\(Y\)</span> , <span class="math inline">\(M _ { Y } ^ { \prime }\)</span> the lattice they span and <span class="math inline">\(M _ { Y }\)</span> its resolution lattice, i.e., the primitive closure of <span class="math inline">\(M _ { Y } ^ { \prime }\)</span> in <span class="math inline">\(H ^ { 2 } ( \widetilde { Y } )\)</span> . 1. There exists an isometry <span class="math inline">\(\varphi : M _ { Y } \ { \overset { \sim } { \to } } \ M _ { G }\)</span> such that <span class="math inline">\(\varphi ( E _ { Y } ) = E _ { G }\)</span> ; hence <span class="math inline">\(\varphi\)</span> sends <span class="math inline">\(M _ { Y } ^ { \prime }\)</span> to <span class="math inline">\(M _ { G } ^ { \prime }\)</span> inducing a group isomorphism <span class="math inline">\(\bar { \varphi } : M _ { Y } / M _ { Y } ^ { \prime } \stackrel { \sim } { } M _ { G } / M _ { G } ^ { \prime }\)</span> . 2. The embedding <span class="math inline">\(M _ { Y } { \overset { \varphi } { \to } } M _ { G } \hookrightarrow \Lambda\)</span> extends to an <span class="math inline">\(M _ { G }\)</span> -marking <span class="math inline">\(H ^ { 2 } ( \widetilde { Y } ) \stackrel { \sim } { \to } \Lambda\)</span> . Any two embeddings of <span class="math inline">\(M _ { Y } \hookrightarrow \Lambda\)</span> are conjugate under <span class="math inline">\({ \sf O } ( \Lambda )\)</span> .</p>
+</section>
+<section id="fc11-c20-u036" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u036">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U036</code> · Chapter 20, source L10004 · after <a href="#fc11-c20-u034"><code>FC11-C20-U034</code></a></p>
+</div>
+<p>Example 20.4.4. Continuing with <span class="math inline">\(G \ = \ \mathbb { Z } / 2 \mathbb { Z }\)</span> , i.e., the Nikulin involution (cf.&nbsp;Example 20.4.2), we see that the 8 types <span class="math inline">\(\mu\)</span> are given by the 8 basisvectors of <span class="math inline">\(\mathbb { F } _ { 2 } ^ { \times }\)</span> and <span class="math inline">\(n ( \mu ) = 2\)</span> , <span class="math inline">\(m ( \mu ) = 1\)</span> . The extra generator is <span class="math inline">\(\begin{array} { r } { f = \frac { 1 } { 2 } \sum e _ { j } } \end{array}\)</span> . Then <span class="math inline">\(M _ { G } ^ { \prime } = \oplus ^ { 8 } A _ { 1 } ( - 1 )\)</span> , <span class="math inline">\(M _ { G } = \Lambda _ { \mathrm { N i k } }\)</span> and <span class="math inline">\(M _ { G } / M _ { G } ^ { \prime } \simeq \mathbb { Z } / 2 \mathbb { Z }\)</span> .</p>
+</section>
+<section id="fc11-c20-u037" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u037">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U037</code> · Chapter 20, source L10008-L10012</p>
+</div>
+<p>the roots in <span class="math inline">\(E _ { G }\)</span> are irreducible. We set <span class="math display">\[ \mathring { D } \ : ( M _ { G } ^ { \perp } ) : = \{ [ u ] \in D ( M _ { G } ^ { \perp } ) \mid [ u ] \mathrm { ~ i s ~ } ( M _ { G } , E _ { G } ) \mathrm { - m a r k e d } \} . \]</span></p>
+</section>
+<section id="fc11-c20-u038" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u038">Proposition 20.4.5</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U038</code> · Chapter 20, source L10016-L10027</p>
+</div>
+<p>Proposition 20.4.5. 1) Let <span class="math inline">\(\widetilde { Y }\)</span> be a <span class="math inline">\(K \mathcal { 3 }\)</span> surface admitting an <span class="math inline">\(( M _ { G } , E _ { G } )\)</span> -marking. • The <span class="math inline">\(( M _ { G } , E _ { G } )\)</span> -marking gives a canonical identification <span class="math display">\[ \iota ^ { * } : \mathrm { E x t } ^ { 1 } ( G ) \stackrel { \sim } { \to } M _ { Y } / M _ { Y } ^ { \prime } . \]</span> • There exists a <span class="math inline">\(K \mathcal { 3 }\)</span> -surface <span class="math inline">\(X\)</span> and an embedding <span class="math inline">\(\iota : G \hookrightarrow \operatorname { A u t } _ { s } ( X )\)</span> such that the minimal resolution of singularities of <span class="math inline">\(X / \iota ( G )\)</span> is isomorphic to <span class="math inline">\(\widetilde { Y }\)</span> . Moreover, <span class="math inline">\(\widetilde { Y }\)</span> has an <span class="math inline">\(( M _ { G } , E _ { G } )\)</span> -marking inducing <span class="math inline">\(\iota ^ { * }\)</span> . 2) Conversely, every <span class="math inline">\(K \mathcal { 3 }\)</span> -surface <span class="math inline">\(X\)</span> with symplectic <span class="math inline">\(G\)</span> -action comes in this way from some <span class="math inline">\(( M _ { G } , E _ { G } )\)</span> -marked <span class="math inline">\(K \mathcal { 3 }\)</span> surface. Two such marked <span class="math inline">\(K \mathcal { 3 }\)</span> -surfaces come from (possibly different) embeddings <span class="math inline">\(\iota , \iota ^ { \prime } : G \hookrightarrow \operatorname { A u t } _ { s } ( X )\)</span> if and only if <span class="math inline">\(\iota ^ { \prime } = \iota \circ \alpha\)</span> where <span class="math inline">\(\alpha\)</span> is an automorphism of the group <span class="math inline">\(G\)</span> .</p>
+</section>
+<section id="fc11-c20-u039" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u039">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U039</code> · Chapter 20, source L10038 · after <a href="#fc11-c20-u024"><code>FC11-C20-U024</code></a></p>
+</div>
+<p>A marked K3 surface with symplectic <span class="math inline">\(G\)</span>-action and induced lattice embedding <span class="math inline">\(\iota:G\hookrightarrow O(\Lambda)\)</span> is called <span class="math inline">\((\iota,G)\)</span>-marked.</p>
+</section>
+<section id="fc11-c20-u040" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u040">Theorem 20.4.6</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U040</code> · Chapter 20, source L10042-L10047 · after <a href="#fc11-c20-u029"><code>FC11-C20-U029</code></a></p>
+</div>
+<p>Theorem 20.4.6 ( [169, Thm. 4.7]). Let <span class="math inline">\(G\)</span> be a finite abelian group acting symplectically (and effectively) on some <span class="math inline">\(K \mathcal { 3 }\)</span> surface <span class="math inline">\(X\)</span> . Then the <span class="math inline">\(G\)</span> -action on the <span class="math inline">\(K \mathcal { 3 }\)</span> lattice induced by some marking of <span class="math inline">\(X\)</span> is up to conjugacy uniquely determined by <span class="math inline">\(G\)</span> . To achieve our goal, first recall that by Corollary 20.2.6 over connected components of the moduli space <span class="math inline">\(\mathcal { M } _ { \iota ( G ) }\)</span> incorporating the action of the group <span class="math inline">\(G\)</span> , we stay within the same conjugacy class. So there are at most two classes. To compare K3 surfaces whose moduli points are in different connected components we will use the moduli space <span class="math inline">\(\mathcal { M } _ { M _ { G } }\)</span> related to the quotients <span class="math inline">\(Y = X / G\)</span> . This comparison makes essential use of the fact that <span class="math inline">\(\mathcal { M } _ { M _ { G } }\)</span> does not depend on the embedding of <span class="math inline">\(G\)</span> in the orthogonal group of the K3 lattice. We divide the proof accordingly into several steps.</p>
+</section>
+<section id="fc11-c20-u041" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u041">Observation</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U041</code> · Chapter 20, source L10101</p>
+</div>
+<p>Observation. The period domains <span class="math inline">\(D ( \Lambda ^ { G } )\)</span> and <span class="math inline">\(D ( M _ { G } ^ { \bot } )\)</span> associated to finite abelian groups acting symplectically on <span class="math inline">\(K \mathcal { 3 }\)</span> surfaces have the same dimension.</p>
+</section>
+<section id="fc11-c20-u042" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u042">Lemma 20.4.7</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U042</code> · Chapter 20, source L10109</p>
+</div>
+<p>Lemma 20.4.7. If <span class="math inline">\(( \widetilde { Y } , \varphi _ { o } )\)</span> has moduli point , <span class="math inline">\(m = [ \tilde { u } _ { 1 } ] \in \mathcal { M } _ { M _ { G } } ^ { + , P ( M _ { G } ) }\)</span> , then the moduli point −??0 (??) of (??e, −??0◦????) belongs to M− ??(????)???? .</p>
+</section>
+<section id="fc11-c20-u043" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u043">Lemma: Lemma</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U043</code> · Chapter 20, source L10113-L10114</p>
+</div>
+<p>Lemma. One has <span class="math inline">\(\overline { { w } } _ { 0 } = \mathrm { i d }\)</span> on <span class="math inline">\({ M } _ { G } / { M } _ { G } ^ { \prime }\)</span> and so composing the marking with <span class="math inline">\(- w _ { 0 }\)</span> results in the opposite <span class="math inline">\(G\)</span> -action.</p>
+</section>
+<section id="fc11-c20-u044" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u044">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U044</code> · Chapter 20, source L10141-L10147</p>
+</div>
+<p>Examples from [79] with <span class="math inline">\(\mathbb { Z } / 3 \mathbb { Z }\)</span> -action. <span class="math inline">\(\bullet\)</span> The total space of the elliptic surface <span class="math inline">\(y ^ { 2 } = x ^ { 3 } + ( t ^ { 3 } - s ^ { 3 } ) ^ { 4 }\)</span> in Weierstraß form (with <span class="math inline">\(s\)</span> a parameter) can be shown to be a K3-surface which admits a torsion section of order 3 given by <span class="math inline">\(t \mapsto ( x , y ) = ( 0 , ( t ^ { 3 } - s ^ { 3 } ) ^ { 2 } )\)</span> and so admits an order 3 symplectic transformation (by translation). If we vary <span class="math inline">\(s\)</span> we get a 1-dimensional family of such surfaces. <span class="math inline">\(\bullet\)</span> <span class="math inline">\(\rho _ { 3 } = \exp ( 2 \pi i / 3 )\)</span> The action of a generator fo leaves invariant the 10 monomials <span class="math inline">\(\mathbb { Z } / 3 \mathbb { Z }\)</span> on <span class="math inline">\(\mathbb { P } ^ { 2 }\)</span> given by <span class="math inline">\(\sigma ( x : y : z ) = ( x : \rho _ { 3 } y : \rho _ { 3 } ^ { 2 } z )\)</span> <span class="math inline">\(x ^ { 6 } , x ^ { 4 } y z , x ^ { 3 } y ^ { 3 }\)</span> , <span class="math inline">\(x ^ { 3 } z ^ { 3 } , x ^ { 2 } y ^ { 2 } z ^ { 2 }\)</span> , <span class="math inline">\(x y ^ { 4 } z , x y z ^ { 4 } , y ^ { 6 } , y ^ { 3 } z ^ { 3 } , z ^ { 6 }\)</span> and a general linear combination <span class="math inline">\(f ( x , y , z )\)</span> of such monomials gives a smooth <span class="math inline">\(\mathbb { Z } / 3 \mathbb { Z }\)</span> -invariant sextic plane curve. The double cover of <span class="math inline">\(\mathbb { P } ^ { 2 }\)</span> branched in this sextic is a K3 surface with equation <span class="math inline">\(w ^ { 2 } = f ( x , y , z )\)</span> and <span class="math inline">\(\sigma\)</span> lifts to an automorphism. It preserves the non-zero holomorphic 2-form <span class="math inline">\(\Omega / w\)</span> , where <span class="math inline">\(\Omega = x d y \wedge d z + y d z \wedge d x + z d x \wedge d y\)</span> . The family depends on <span class="math inline">\(1 0 - 3 = 7\)</span> effective parameters since the projective transformations commuting with <span class="math inline">\(\sigma\)</span> are the diagonal transformations. <span class="math inline">\(\bullet\)</span> Similarly, one has an action of <span class="math inline">\(\mathbb { Z } / 3 \mathbb { Z }\)</span> on <span class="math inline">\(\mathbb { P } ^ { 3 }\)</span> given by <span class="math inline">\(\sigma ( x : y : z : t ) = ( x : y : \rho _ { 3 } z :\)</span> <span class="math inline">\(\rho _ { 3 } ^ { 2 }\)</span> ) and the general <span class="math inline">\(\sigma\)</span> -invariant quartic <span class="math inline">\(g\)</span> is a smooth K3-surface and <span class="math inline">\(\sigma\)</span> restricts to it symplectically since a non-zero holomorphic 2-form is given by the residue of <span class="math inline">\(\Omega _ { 3 } / f\)</span> where <span class="math inline">\(\mathrm { ~ 2 } _ { 3 } = x d y \wedge d z \wedge d t + y d z \wedge d t \wedge d x + z d t \wedge d x \wedge \nonumber\)</span> ???? + ?? ???? ∧ ???? ∧ ????. A dimension count shows that this gives a family depending on 7 effective parameters.</p>
+</section>
+<section id="fc11-c20-u045" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u045">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U045</code> · Chapter 20, source L10149 · after <a href="#fc11-c20-u002"><code>FC11-C20-U002</code></a></p>
+</div>
+<p>Examples from [174]. A very general Kummer surface of product type is the Kummer surface of a product of non-isogeneous elliptic curves. Such a surface has 4 different elliptic fibrations with a 2-torsion section and 3 different elliptic fibrations with <span class="math inline">\(( \mathbb { Z } / 2 \mathbb { Z } ) ^ { 2 }\)</span> -torsion Hence these have 4 different symplectic <span class="math inline">\(\mathbb { Z } / 2 \mathbb { Z }\)</span> -actions and 3 different symplectic <span class="math inline">\(( \mathbb { Z } / 2 \mathbb { Z } ) ^ { 2 }\)</span> -actions. Such surfaces depend on 2 effective parameters.</p>
+</section>
+<section id="fc11-c20-u046" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u046">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U046</code> · Chapter 20, source L10153</p>
+</div>
+<p>In this section we shall write <span class="math inline">\(H ^ { 2 } ( X ) , H ^ { 2 } ( Y ) , \ldots\)</span> to mean integral cohomology. We continue to write <span class="math inline">\(\Lambda\)</span> for the K3 lattice.</p>
+</section>
+<section id="fc11-c20-u047" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u047">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U047</code> · Chapter 20, source L10163-L10167</p>
+</div>
+<p>combined give <span class="math inline">\(t ( g ) = ( a , b , c )\)</span> , which we shall call the type of the involution. Since <span class="math inline">\(g\)</span> acts with trace <span class="math inline">\(0\)</span> on <span class="math inline">\(U\)</span> we see: <span class="math display">\[ \operatorname { T r } ( g ) = a - b . \]</span></p>
+</section>
+<section id="fc11-c20-u048" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u048">Lemma 20.5.1</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U048</code> · Chapter 20, source L10171-L10175</p>
+</div>
+<p>Lemma 20.5.1. If <span class="math inline">\(L\)</span> is a unimodular lattice, and <span class="math inline">\(G\)</span> acts as isometries, one has <span class="math display">\[ \begin{array} { r l } &amp; { \operatorname { r a n k } ( L ^ { G } ) = a + c , \operatorname { r a n k } ( L _ { G } ) = b + c , } \\ &amp; { [ L : ( L ^ { G } \circledast L _ { G } ) ] = 2 ^ { c } , } \\ &amp; { | \operatorname { d i s c } ( L ^ { G } ) | = | \operatorname { d i s c } ( L _ { G } ) | = 2 ^ { c } . } \end{array} \]</span></p>
+</section>
+<section id="fc11-c20-u049" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u049">Lemma 20.5.2</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U049</code> · Chapter 20, source L10179-L10182</p>
+</div>
+<p>Lemma 20.5.2. Suppose <span class="math inline">\(X\)</span> is a <span class="math inline">\(K \mathcal { 3 }\)</span> surface with an involution <span class="math inline">\(g : X \to X\)</span> . If <span class="math inline">\(g\)</span> is symplectic, it has 8 isolated fixed points and the quotient is a surface with 8 ordinary double points with a <span class="math inline">\(K \mathcal { 3 }\)</span> surface as its minimal resolution. In that case, <span class="math inline">\(\mathrm { T r } ( g ^ { * } | _ { H ^ { 2 } ( X ) } ) = 6\)</span> and the invariant lattice has rank 14, i.e., <span class="math inline">\(a + c = 1 4\)</span> , where <span class="math inline">\(( a , b , c )\)</span> is the type of <span class="math inline">\(g ^ { * }\)</span> . If <span class="math inline">\(g\)</span> is not symplectic, there are at most disjoint fixed point curves and <span class="math inline">\(Y = X / G\)</span> is smooth. If <span class="math inline">\(\mathrm { T r } ( g ^ { * } | _ { H ^ { 2 } ( X ) } ) = - 2\)</span> , then <span class="math inline">\(a + c = 1 0\)</span> .</p>
+</section>
+<section id="fc11-c20-u050" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u050">Remark 20.5.3</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U050</code> · Chapter 20, source L10193</p>
+</div>
+<p>Remark 20.5.3. If the second case of the above lemma occurs and no fixed curves are present, <span class="math inline">\(Y\)</span> is an Enriques surface. We give two examples where <span class="math inline">\(Y\)</span> is a rational surface. First, consider an elliptic pencil <span class="math inline">\(\lambda C + \mu C ^ { \prime } = 0\)</span> , <span class="math inline">\(( \lambda : \mu ) \in \mathbb { P } ^ { 1 }\)</span> , on <span class="math inline">\(\mathbb { P } ^ { 2 }\)</span> where <span class="math inline">\(C , C ^ { \prime }\)</span> are smooth elliptic curves intersecting transversally (in 9 points), and let <span class="math inline">\(Y\)</span> be the blow-up of <span class="math inline">\(\mathbb { P } ^ { 2 }\)</span> in the nine base points of the pencil. Let <span class="math inline">\(X\)</span> be the double cover of <span class="math inline">\(Y\)</span> branched in the strict transform of <span class="math inline">\(C + C ^ { \prime }\)</span> . Note that <span class="math inline">\(e ( Y ) = 3 + 9 = 1 2\)</span> and $e ( X ) = 2 4 $ as it should. Classical algebraic geometry teaches us that coordinates can be fixed so that a pencil of cubics passes through 4 fixed points in general position and the pencil is determined by the choice of 4 further points, giving 8 moduli. The resulting surface <span class="math inline">\(X\)</span> is a K3 surface admitting an involution which produces <span class="math inline">\(Y\)</span> .</p>
+</section>
+<section id="fc11-c20-u051" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u051">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U051</code> · Chapter 20, source L10195</p>
+</div>
+<p>The second example starts from a pencil of elliptic curves on <span class="math inline">\(\mathbb { P } ^ { 1 } \times \mathbb { P } ^ { 1 }\)</span> defined by a pair of smooth curves of bidegree <span class="math inline">\(( 2 , 2 )\)</span> meeting transversally (in 8 points). So here we have to blow up the 8 intersection points which gives a smooth rational surface with <span class="math inline">\(e = 4 + 8 = 1 2\)</span> as well.</p>
+</section>
+<section id="fc11-c20-u052" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u052">Proposition 20.5.4</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U052</code> · Chapter 20, source L10197-L10202</p>
+</div>
+<p>Proposition 20.5.4. Let <span class="math inline">\(X\)</span> be a <span class="math inline">\(K \mathcal { 3 }\)</span> surface with an involution <span class="math inline">\(g\)</span> inducing <span class="math inline">\(g ^ { * }\)</span> on <span class="math inline">\(H ^ { 2 } ( X )\)</span> and set <span class="math inline">\(G = \langle g ^ { * } \rangle\)</span> . If <span class="math inline">\(g\)</span> is an Enriques involution, i.e., a fixed point free involution, then <span class="math inline">\(H ^ { 2 } ( X ) ^ { G } \simeq\)</span> <span class="math inline">\(U ( 2 ) \mathbb { \oplus } E _ { 8 } ( - 2 )\)</span> of signature <span class="math inline">\(( 1 , 9 )\)</span> . The invariants <span class="math inline">\(( a ( g ^ { * } ) , b ( g ^ { * } ) , c ( g ^ { * } ) )\)</span> are <span class="math inline">\(( 0 , 2 , 1 0 )\)</span> . If <span class="math inline">\(g\)</span> is a Nikulin involution (i.e., a symplectic involution), the discriminant group of <span class="math inline">\(H ^ { 2 } ( X ) ^ { G }\)</span> is isomorphic to <span class="math inline">\(\oplus ^ { 8 } \mathbb { Z } / 2 \mathbb { Z }\)</span> . The invariants of <span class="math inline">\(g ^ { * }\)</span> are <span class="math inline">\(( 6 , 0 , 8 )\)</span> and the signature of <span class="math inline">\(H ^ { 2 } ( X ) ^ { G }\)</span> equals <span class="math inline">\(( 3 , 1 1 )\)</span> .</p>
+</section>
+<section id="fc11-c20-u053" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u053">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U053</code> · Chapter 20, source L10221</p>
+</div>
+<p>For the resolved quotient map <span class="math inline">\(\widetilde\pi:\widetilde X\to\widetilde Y\)</span>, the Gysin map <span class="math inline">\(\widetilde\pi_!:H^2(\widetilde X)\to H^2(\widetilde Y)\)</span> is Poincaré dual to the induced map on <span class="math inline">\(2\)</span>-homology and preserves the Hodge decomposition.</p>
+</section>
+<section id="fc11-c20-u054" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u054">Proposition 20.5.5</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U054</code> · Chapter 20, source L10223-L10228</p>
+</div>
+<p>Proposition 20.5.5. Let <span class="math inline">\(X\)</span> be a K¨ahler surface admitting an involution <span class="math inline">\(g\)</span> , and let <span class="math inline">\(G = \{ 1 , g \}\)</span> and <span class="math inline">\(\widetilde { \pi } : \widetilde { X } \to \widetilde { Y }\)</span> as above. 1. If all holomorphic 2-forms are invariant under <span class="math inline">\(g\)</span> , then <span class="math inline">\(\operatorname { T r s } ( X ) \subset H ^ { 2 } ( X ) ^ { G }\)</span> . 2. If, moreover, <span class="math inline">\(L\)</span> is a primitive sublattice of <span class="math inline">\(H ^ { 2 } ( X ) ^ { G }\)</span> such that <span class="math inline">\(\mathrm { T r s } ( X ) \subset L\)</span> and such that <span class="math inline">\(\widetilde { \pi } _ { ! } L\)</span> is primitive in <span class="math inline">\(H ^ { 2 } ( \widetilde { Y } )\)</span> , then <span class="math inline">\(\widetilde { \pi } _ { ! } : \operatorname { T r s } ( X ) ( 2 ) \ { \overset { \sim } { \to } } \ \operatorname { T r s } ( { \widetilde { Y } } ) = \operatorname { T r s } ( Y )\)</span> is an isometry.</p>
+</section>
+<section id="fc11-c20-u055" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u055">Proposition 20.6.1</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U055</code> · Chapter 20, source L10243-L10248</p>
+</div>
+<p>Proposition 20.6.1. <span class="math inline">\(\mathit { 1 }\)</span> . The discriminant quadratic form of the Kummer lattice is isometric to <span class="math inline">\(( ( \mathbb { Z } / 2 \mathbb { Z } ) ^ { 6 } , \mathbb { O } ^ { 3 } u _ { 1 } )\)</span> . 2. The orthogonal complement of <span class="math inline">\(\Lambda _ { \mathrm { K u m } }\)</span> in the <span class="math inline">\(K \mathcal { 3 }\)</span> -lattice is isometric to <span class="math inline">\(\mathbb { O } ^ { 3 } U ( 2 )\)</span> 3. The embedding <span class="math inline">\(\Lambda _ { \mathrm { K u m } } \hookrightarrow \Lambda _ { \mathsf { K 3 } }\)</span> is unique up to an isometry of the K3 lattice.</p>
+</section>
+<section id="fc11-c20-u056" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u056">Corollary 20.6.2</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U056</code> · Chapter 20, source L10257-L10258</p>
+</div>
+<p>Corollary 20.6.2 ([168]). A K3 surface cannot have more than 16 disjoint nodal curves. A singular K3 surface embedded as a degree ?? surface in projective space with <span class="math inline">\(d \ne 0\)</span> mod 4 and whose singularities are at most ordinary double points can have at most 15 of these.</p>
+</section>
+<section id="fc11-c20-u057" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u057">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U057</code> · Chapter 20, source L10263 · after <a href="#fc11-c20-u002"><code>FC11-C20-U002</code></a></p>
+</div>
+<p>20.6.B Characterizing Kummer surfaces. If <span class="math inline">\(X\)</span> is a complex two-torus, we denote by <span class="math inline">\(Y = \mathsf { K m } ( X )\)</span> the associated (smooth) Kummer surface and by <span class="math inline">\(\pi ^ { \prime } : X \xrightarrow { } Y\)</span> the canonical rational 2-to-1 map. In this section we establish a characterization of Kummer surfaces in terms of the N´eron–Severi lattice and the transcendental lattice. We need an auxiliary Hodge-theoretic result.</p>
+</section>
+<section id="fc11-c20-u058" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u058">Lemma 20.6.3</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U058</code> · Chapter 20, source L10265-L10266</p>
+</div>
+<p>Lemma 20.6.3. Suppose that <span class="math inline">\(L = \mathbb { Q } ^ { 3 } U\)</span> has a rank 2 Hodge structure of <span class="math inline">\(K \mathcal { 3 }\)</span> type.5 Then there is a complex 2-torus <span class="math inline">\(X\)</span> and an isometry <span class="math inline">\(H ^ { 2 } ( X , \mathbb { Z } ) \stackrel { \sim } { \to } L\)</span> preserving the Hodge structure.</p>
+</section>
+<section id="fc11-c20-u059" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u059">Proposition 20.6.4</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U059</code> · Chapter 20, source L10309-L10312 · after <a href="#fc11-c20-u002"><code>FC11-C20-U002</code></a></p>
+</div>
+<p>Proposition 20.6.4. 1. A <span class="math inline">\(K \mathcal { 3 }\)</span> surface <span class="math inline">\(Y\)</span> is a Kummer surface if and only if the following conditions hold simultaneously 6: (a) Trs(??) embeds primitively in <span class="math inline">\(\mathbb { O } ^ { 3 } U ( 2 )\)</span> ; (b) the abstract Kummer lattice <span class="math inline">\(\Lambda _ { \mathrm { K u m } }\)</span> embeds primitively in <span class="math inline">\({ \mathsf { N S } } ( Y )\)</span> . If this is the case, say <span class="math inline">\(Y = \mathsf { K m } ( X )\)</span> , then there is an isometry <span class="math inline">\({ \mathrm { T r s } } ( Y ) ~ \simeq\)</span> <span class="math inline">\(\mathrm { T r s } ( X ) ( 2 )\)</span> . 2. <span class="math inline">\(Y = \mathsf { K m } ( X )\)</span> is an algebraic Kummer surface if and only if there exists an even lattice <span class="math inline">\(T ^ { \prime }\)</span> such that <span class="math inline">\(\operatorname { T r s } ( Y ) \simeq \mathbb { O } ^ { e } U ( 2 ) \oplus T ^ { \prime } ( 2 )\)</span> , where <span class="math inline">\(e = \operatorname* { m a x } \left( 0 , k - 1 \right)\)</span> , and <span class="math inline">\(( 2 , k )\)</span> is the signature of <span class="math inline">\(\mathrm { T r s } ( Y )\)</span> .</p>
+</section>
+<section id="fc11-c20-u060" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u060">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U060</code> · Chapter 20, source L10329-L10333 · after <a href="#fc11-c20-u024"><code>FC11-C20-U024</code></a></p>
+</div>
+<p>The lattice Nikulin involution is the involution used to model the cohomological action of a symplectic involution on a marked K3 surface.</p>
+</section>
+<section id="fc11-c20-u061" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u061">Proposition 20.7.1</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U061</code> · Chapter 20, source L10339-L10348</p>
+</div>
+<p>Proposition 20.7.1. Let <span class="math inline">\(X\)</span> be a <span class="math inline">\(K \mathcal { 3 }\)</span> surface admitting a Nikulin involution ?? and let <span class="math inline">\(G\)</span> be the cyclic group generated by this involution. Then there is a commutative diagram <span class="math display">\[ \begin{array} { r l r } { H ^ { 2 } ( X ) \xrightarrow [ \lambda ] { \sim } } &amp; { \ N } &amp; { } \\ { \iota \bigg \downarrow } &amp; { } &amp; { \iota _ { \mathrm { N i k } } \bigg \downarrow } \\ { H ^ { 2 } ( X ) \xrightarrow [ \lambda ] { \sim } } &amp; { \ N . } \end{array} \]</span> In other words, a <span class="math inline">\(K \mathcal { 3 }\)</span> surface with a Nikulin involution admits a marking which turns this involution into a lattice Nikulin involution. Its period point belongs to <span class="math inline">\(D ( \Lambda ^ { G } )\)</span> , and7 <span class="math inline">\(H ^ { 2 } ( X ) ^ { G } \simeq \Lambda ^ { G } = \mathbb { O } ^ { 3 } U \mathbb { O } E _ { 8 } ( - 2 )\)</span> . A K3 surface <span class="math inline">\(X\)</span> with period point in <span class="math inline">\(D ( \Lambda ^ { G } )\)</span> admits a Nikulin involution which is, up to conjugation by an element of <span class="math inline">\(\mathsf { W } ^ { - } ( X )\)</span> , induced by the lattice Nikulin involution ??Nik as in (20.16). If the period point is general, <span class="math inline">\({ \mathsf { N S } } ( X ) \simeq \Lambda _ { G } \simeq E _ { 8 } ( - 2 )\)</span> .</p>
+</section>
+<section id="fc11-c20-u062" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u062">Proposition 20.7.2</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U062</code> · Chapter 20, source L10361-L10362</p>
+</div>
+<p>Proposition 20.7.2 ([83, §2]). Fix a positive integer <span class="math inline">\(k\)</span> and let <span class="math inline">\(N _ { k } = E _ { 8 } ( - 2 ) \textcircled { \scriptsize { \oplus } } \langle 2 k \rangle\)</span> . For even <span class="math inline">\(k\)</span> it has an up to isometry unique index 2 even overlattice, say <span class="math inline">\(N _ { k } ^ { \prime }\)</span> , which contains <span class="math inline">\(E _ { 8 } ( - 2 )\)</span> and <span class="math inline">\(\langle 2 k \rangle\)</span> primitively. For <span class="math inline">\(k\)</span> odd there are no such overlattices.</p>
+</section>
+<section id="fc11-c20-u063" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u063">Proposition 20.7.3</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U063</code> · Chapter 20, source L10373-L10376</p>
+</div>
+<p>Proposition 20.7.3. Let <span class="math inline">\(N _ { k }\)</span> (respectively <span class="math inline">\(N _ { k } ^ { \prime }\)</span> ) be primitively embedded in the <span class="math inline">\(K \mathcal { 3 }\)</span> lattice. The period-domain for <span class="math inline">\(N _ { k }\)</span> -marked or <span class="math inline">\(N _ { k } ^ { \prime }\)</span> -marked <span class="math inline">\(K \mathcal { 3 }\)</span> surfaces has dimension 11. With <span class="math inline">\(G\)</span> the group generated by ??Nik, any of these period domains are cut out in <span class="math inline">\(D ( \Lambda ^ { G } )\)</span> by a hyperplane. The general point of <span class="math inline">\(D ( N _ { k } ^ { \perp } )\)</span> corresponds to a K3 surface <span class="math inline">\(X\)</span> with <span class="math inline">\({ \mathsf { N S } } ( X ) \simeq N _ { k }\)</span> and likewise for <span class="math inline">\(N _ { k } ^ { \prime }\)</span> . Any such marked <span class="math inline">\(K \mathcal { 3 }\)</span> surface admits a Nikulin involution induced by the lattice Nikulin involution ??Nik.</p>
+</section>
+<section id="fc11-c20-u064" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u064">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U064</code> · Chapter 20, source L10391</p>
+</div>
+<p>is called a Shioda–Inose structure.8</p>
+</section>
+<section id="fc11-c20-u065" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u065">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U065</code> · Chapter 20, source L10393-L10397</p>
+</div>
+<p>For the complement of the fixed points of an involution, the induced free double cover is used to compare invariant cohomology with the quotient.</p>
+</section>
+<section id="fc11-c20-u066" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u066">Theorem 20.8.1</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U066</code> · Chapter 20, source L10401-L10408 · after <a href="#fc11-c20-u024"><code>FC11-C20-U024</code></a></p>
+</div>
+<p>Theorem 20.8.1 ([158, Th. 5.7]). Let <span class="math inline">\(( X , \varphi )\)</span> be a marked K3 surface such that <span class="math inline">\(\varphi ^ { - 1 } ( \mathbb { O } ^ { 2 } E _ { 8 } ( - 1 ) )\)</span> embeds into <span class="math inline">\({ \mathsf { N S } } ( X )\)</span> . Then with the notation as above 1. there is a Nikulin involution ?? on <span class="math inline">\(X\)</span> with <span class="math inline">\(\pi : { \widetilde { X } } \to { \widetilde { Y } }\)</span> ; 2. there exists a primitive embedding <span class="math inline">\(\Lambda _ { \mathrm { N i k } } \oplus E _ { 8 } ( - 1 ) \hookrightarrow \mathsf { N S } ( \widetilde { Y } )\)</span> ; 3. The Gysin morphism <span class="math inline">\(\pi _ { ! }\)</span> induces an isometry <span class="math inline">\(\operatorname { T r s } ( X ) ( 2 ) { \overset { \simeq } { \to } } \operatorname { T r s } ( { \widetilde { Y } } )\)</span> .</p>
+</section>
+<section id="fc11-c20-u067" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u067">Theorem 20.8.2</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U067</code> · Chapter 20, source L10455-L10466 · after <a href="#fc11-c20-u064"><code>FC11-C20-U064</code></a></p>
+</div>
+<p>Theorem 20.8.2 ([158, Thm. 6.3]). Let <span class="math inline">\(X\)</span> be a K3 surface. Consider the following properties. 1. ?? admits a Shioda–Inose structure; 2. there is a complex 2-torus <span class="math inline">\(A\)</span> with <span class="math inline">\(\operatorname { T r s } ( X ) \simeq \operatorname { T r s } ( A )\)</span> ; 3. there is a primitive embedding <span class="math inline">\(\operatorname { T r s } ( X ) \subset { \mathbb { O } } ^ { 3 } U\)</span> ; 4. there is an embedding <span class="math inline">\(\oplus ^ { \cdot 2 } E _ { 8 } ( - 1 ) \subset \mathsf { N S } ( X )\)</span> . One has the implications <span class="math inline">\(i \implies \mathcal { Z } \implies \mathcal { Z }\)</span> . If, moreover, <span class="math inline">\(X\)</span> is algebraic, then 3 <span class="math inline">\(\implies \ : 4 \implies \ : 1\)</span> , and hence in this case all of the above properties are equivalent.</p>
+</section>
+<section id="fc11-c20-u068" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u068">Corollary 20.8.3</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U068</code> · Chapter 20, source L10483 · after <a href="#fc11-c20-u064"><code>FC11-C20-U064</code></a></p>
+</div>
+<p>Corollary 20.8.3. A <span class="math inline">\(K \mathcal { 3 }\)</span> -surface <span class="math inline">\(X\)</span> whose transcendental lattice <span class="math inline">\(T\)</span> has rank 2 is obtained from a product of two elliptic curves by means of a Shioda–Inose structure. Such surfaces have no moduli and correspond one-to-one to points of the set of isometry classes of positive definite even lattices of rank 2.</p>
+</section>
+<section id="fc11-c20-u069" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u069">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U069</code> · Chapter 20, source L10485-L10491</p>
+</div>
+<p>Example 20.8.4. There are non-algebraic K3 surfaces with transcendental lattice <span class="math inline">\(U^{\oplus3}\)</span> whose Nikulin quotient is not Kummer, and also non-algebraic surfaces admitting Shioda–Inose structures. For the non-standard embedding <span class="math inline">\(U^{\oplus3}\subset\Lambda_{K3}\)</span> with orthogonal complement <span class="math inline">\(\Gamma_{16}(-1)\)</span>, the domain <span class="math inline">\(D(U^{\oplus3})\)</span> is the period domain of K3 surfaces admitting a Shioda–Inose structure; its general point is non-algebraic.</p>
+</section>
+<section id="fc11-c20-u070" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u070">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U070</code> · Chapter 20, source L10495</p>
+</div>
+<p>In this section <span class="math inline">\(X\)</span> is any compact (smooth) complex surface with a faithful action of a finite group <span class="math inline">\(G\)</span> , and <span class="math inline">\(\widetilde { Y }\)</span> denotes the minimal resolution of <span class="math inline">\(Y = X / G\)</span> . We write <span class="math inline">\(H ^ { 2 } ( X ) , H ^ { 2 } ( Y ) , \ldots\)</span> to mean integral cohomology while <span class="math inline">\(H _ { 1 } ( X ) , H _ { 2 } ( Y ) , . . .\)</span> . stands for integral homology. We relate the intersection lattices of <span class="math inline">\(X\)</span> and <span class="math inline">\(\widetilde { Y }\)</span> . The main result, Theorem 20.9.6, is quite technical, but it is of crucial importance for applications to K3 surfaces in Section 20.2.</p>
+</section>
+<section id="fc11-c20-u071" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u071">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U071</code> · Chapter 20, source L10497 · after <a href="c04.html#fc11-c04-u058"><code>FC11-C04-U058</code></a></p>
+</div>
+<p>20.9.A The set-up. By [35], the action of <span class="math inline">\(g \in G\)</span> on the tangent space at a fixed point can be linearized which implies that the fixed locus of <span class="math inline">\(g\)</span> in <span class="math inline">\(X\)</span> is either empty or a disjoint union of smooth curves and points. The image in <span class="math inline">\(Y\)</span> of an isolated fixed point of <span class="math inline">\(g\)</span> acting on <span class="math inline">\(X\)</span> by definition is a quotient singularity, hence by Proposition 4.5.2, a du Val singularity. We assume that there are only (finitely many) isolated fixed points and we employ the following notation:</p>
+</section>
+<section id="fc11-c20-u072" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u072">Lemma 20.9.1</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U072</code> · Chapter 20, source L10522-L10529</p>
+</div>
+<p>Lemma 20.9.1. Let <span class="math inline">\(\pi : X ^ { \prime } Y ^ { \prime } = X ^ { \prime } / G\)</span> be as above. Then 1. <span class="math inline">\(\mathfrak { t } ^ { * } \pi ^ { * } : H ^ { k } ( Y ^ { \prime } ) \to H ^ { k } ( Y ^ { \prime } )\)</span> is multiplication by <span class="math inline">\(n = | G |\)</span> . <span class="math inline">\(\pi ^ { * } \mathfrak { t } ^ { * } : H ^ { k } ( X ^ { \prime } ) \to H ^ { k } ( X ^ { \prime } )\)</span> is induced by the action of <span class="math inline">\(\textstyle \sum _ { g \in G } g \in \mathbb { Z } [ G ]\)</span> 2. <span class="math inline">\(\pi ^ { * } : H ^ { k } ( Y ^ { \prime } ) \to H ^ { k } ( X ^ { \prime } )\)</span> has its image in <span class="math inline">\(H ^ { k } ( X ^ { \prime } ) ^ { G }\)</span> . The kernel of <span class="math inline">\(\pi ^ { * }\)</span> as well as the kernel of <span class="math inline">\(\mathfrak { t } ^ { * } : H ^ { k } ( X ^ { \prime } ) ^ { G } H ^ { k } ( Y ^ { \prime } )\)</span> is <span class="math inline">\(n\)</span> -torsion. 3. If <span class="math inline">\(H ^ { k } ( X ^ { \prime } )\)</span> is <span class="math inline">\(a\)</span> free <span class="math inline">\(\mathbb { Z }\)</span> -module, then <span class="math inline">\(H ^ { k } ( X ^ { \prime } ) ^ { G }\)</span> is the primitive closure of <span class="math inline">\(\operatorname { I m } ( \pi ^ { * } )\)</span></p>
+</section>
+<section id="fc11-c20-u073" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u073">Remark 20.9.2</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U073</code> · Chapter 20, source L10536-L10540 · after <a href="#fc11-c20-u053"><code>FC11-C20-U053</code></a></p>
+</div>
+<p>Remark 20.9.2. If <span class="math inline">\(X ^ { \prime }\)</span> (and hence <span class="math inline">\(Y ^ { \prime }\)</span> ) are oriented compact connected manifolds, the transfer homomorphisms are the same as the Gysin homomorphisms. If <span class="math inline">\(X ^ { \prime }\)</span> and <span class="math inline">\(Y ^ { \prime }\)</span> are oriented but not necessarily compact, the Gysin maps <span class="math inline">\(\pi _ { ! } : H _ { c } ^ { k } ( X ^ { \prime } ) \to H _ { c } ^ { k } ( Y ^ { \prime } )\)</span> extend the transfer maps, i.e., there is a commutative diagram <span class="math display">\[ \begin{array} { r l } &amp; { H ^ { k } ( X ^ { \prime } ) \xrightarrow { \quad \overbrace { \mathrm { { ~ \delta ~ } } \mathbf { t } ^ { * } \quad } ^ { \pi ^ { * } } } H ^ { k } ( Y ^ { \prime } ) } \\ &amp; { \quad \quad \bigg | ^ { k } } \\ &amp; { H _ { c } ^ { k } ( X ^ { \prime } ) \xrightarrow { \pi _ { ! } } H _ { c } ^ { k } ( Y ^ { \prime } ) . } \end{array} \]</span></p>
+</section>
+<section id="fc11-c20-u074" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u074">Lemma 20.9.3</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U074</code> · Chapter 20, source L10544-L10545</p>
+</div>
+<p>Lemma 20.9.3. 1. One has <span class="math inline">\(\begin{array} { r } { \widetilde { \pi } ^ { * } \widetilde { \pi } _ { ! } ( u ) = \sum _ { g \in G } g ^ { * } ( u ) } \end{array}\)</span> , <span class="math inline">\(u \in H ^ { 2 } ( X )\)</span> . 2. The Gysin morphism <span class="math inline">\(\tilde { \pi } _ { ! } : H ^ { 2 } ( \widetilde { X } ) \to H ^ { 2 } ( \widetilde { Y } )\)</span> restricted to <span class="math inline">\(H ^ { 2 } ( X ) ^ { G }\)</span> is injective and multiplies the intersection form by <span class="math inline">\(| G |\)</span> .</p>
+</section>
+<section id="fc11-c20-u075" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u075">Lemma 20.9.4</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U075</code> · Chapter 20, source L10574-L10575</p>
+</div>
+<p>Lemma 20.9.4. With <span class="math inline">\(X , G , \Sigma , Y , { \widetilde { Y } }\)</span> as in <span class="math inline">\(\boldsymbol { \xi }\)</span> 20.9.A (with <span class="math inline">\(G\)</span> abelian), let <span class="math inline">\(G _ { p } , p \in\)</span> <span class="math inline">\(\Sigma\)</span> , be the stabilizer of <span class="math inline">\(p\)</span> in <span class="math inline">\(G\)</span> . Suppose that <span class="math inline">\(X\)</span> is simply connected and that the homomorphism <span class="math inline">\(\oplus _ { p \in \Sigma } G _ { p } \to G\)</span> induced by inclusion is surjective. Then <span class="math inline">\(H _ { 1 } ( \widetilde { Y } ) = 0\)</span> .</p>
+</section>
+<section id="fc11-c20-u076" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u076">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U076</code> · Chapter 20, source L10590</p>
+</div>
+<p>Example 20.9.5. If <span class="math inline">\(G\)</span> is a finite abelian group acting symplectically on a K3 surface <span class="math inline">\(X\)</span> , Tables 20.4.1 and 20.4.2 show that the assumption on the stabilizers is satisfied in this case. However, the conclusion that <span class="math inline">\(H _ { 1 } ( \widetilde { Y } ) = 0\)</span> in this case follows also directly since <span class="math inline">\(\widetilde { Y }\)</span> is a K3 surface.</p>
+</section>
+<section id="fc11-c20-u077" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u077">Theorem 20.9.6</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U077</code> · Chapter 20, source L10606-L10625</p>
+</div>
+<p>Theorem 20.9.6. Let <span class="math inline">\(X\)</span> be a compact complex surface admitting an action by a finite abelian group <span class="math inline">\(G\)</span> of order <span class="math inline">\(n\)</span> , let <span class="math inline">\(\pi : X \to Y = X / G\)</span> be the quotient map, <span class="math inline">\(\widetilde { Y }\)</span> the minimal resolution of singularities of <span class="math inline">\(Y\)</span> , <span class="math inline">\(X ^ { \prime }\)</span> the complement of the fixed points of <span class="math inline">\(G\)</span> , <span class="math inline">\(Y ^ { \prime } = X ^ { \prime } / G\)</span> , and <span class="math inline">\(j ^ { \prime } : X ^ { \prime } \hookrightarrow X\)</span> , <span class="math inline">\({ \widetilde { j } } : Y ^ { \prime } \hookrightarrow { \widetilde { Y } }\)</span> the inclusions. Assume that <span class="math inline">\(Y : = X / G\)</span> has at most cyclic quotient singularities, that <span class="math inline">\(X\)</span> is simply connected and that <span class="math inline">\(H _ { 1 } ( \widetilde { Y } ) = 0\)</span> . Then the following assertions hold: 1. Setting <span class="math inline">\(\theta : = ( j ^ { \prime } { } ^ { * } ) ^ { - 1 } \circ \pi ^ { * } \circ { \widetilde { j } } ^ { * } : H ^ { 2 } ( { \widetilde { Y } } ) H ^ { 2 } ( X ) ^ { G }\)</span> , the image of <span class="math inline">\(\theta\)</span> belongs to H (cf.&nbsp;(20.23)) and there is an exact sequence <span class="math display">\[ 0 \to M _ { Y } / M _ { Y } ^ { \prime } \to H ^ { 2 } ( \widetilde { Y } ) / M _ { Y } ^ { \prime } \overset { \theta } { \to } \mathsf { H } \to 0 . \]</span> The factor group <span class="math inline">\({ M _ { Y } } / { M _ { Y } ^ { \prime } }\)</span> is canonically isomorphic to <span class="math inline">\(\operatorname { E x t } ^ { 1 } ( G )\)</span> . 2. <span class="math inline">\(\theta\)</span> induces an isomorphism <span class="math inline">\(H ^ { 2 } ( \widetilde { Y } ) / M _ { Y } \stackrel { \simeq } { } \mathsf { H }\)</span> and an injection <span class="math inline">\(M _ { Y } ^ { \bot } \hookrightarrow \mathsf { H }\)</span> . This is an injection of free <span class="math inline">\(\mathbb { Z }\)</span> -modules of the same rank, but <span class="math inline">\(\theta | _ { M _ { Y } ^ { \perp } }\)</span> multiplies the intersection form with <span class="math inline">\(| G |\)</span> . In case <span class="math inline">\(G\)</span> is cyclic, <span class="math inline">\({ \mathsf { H } } = H ^ { 2 } ( X ) ^ { G }\)</span> . 3. The elementary divisors <span class="math inline">\(e _ { 1 } | e _ { 2 } | \cdots | e _ { r }\)</span> of the discriminant group of <span class="math inline">\(M _ { Y }\)</span> all divide <span class="math inline">\(n = | G |\)</span> . 4. The length of the discriminant group of the sublattice <span class="math inline">\(\mathsf { H } \subset H ^ { 2 } ( X )\)</span> is at least equal to <span class="math inline">\(\mathrm { r a n k } ( H ^ { 2 } ( X ) ^ { G } ) - r\)</span> . Its elementary divisors are obtained by omitting the integers equal to 1 from the list <span class="math inline">\(( n / e _ { 1 } , \ldots , n / e _ { r } , n , \ldots , n )\)</span> (the size of this list equals <span class="math inline">\(\operatorname { r a n k } ( \mathsf { H } ) = \operatorname { r a n k } ( H ^ { 2 } ( X ) ^ { G } ) = b _ { 2 } ( { \bar { Y } } ) - \operatorname { r a n k } ( M _ { Y } ) )\)</span> . The discriminant bilinear form of <span class="math inline">\(\mathsf { H }\)</span> assumes values in <span class="math inline">\(n ^ { - 1 } { \mathbb { Z } } / { \mathbb { Z } }\)</span> . If the intersection form on <span class="math inline">\(X\)</span> is even, the discriminant quadratic form takes values in <span class="math inline">\(( 2 n ) ^ { - 1 } \mathbb { Z } / \mathbb { Z }\)</span> .</p>
+</section>
+<section id="fc11-c20-u078" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u078">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U078</code> · Chapter 20, source L10645 · after <a href="c01.html#fc11-c01-u097"><code>FC11-C01-U097</code></a></p>
+</div>
+<p>Example 20.9.7. For an involution one has <span class="math inline">\(n = 2\)</span> , and all elementary divisors of the discriminant group of <span class="math inline">\(M _ { Y }\)</span> are equal to 2. Hence, in this case the discriminant group of the invariant lattice is isomorphic to <span class="math inline">\(\oplus ^ { \ell } \mathbb { Z } / 2 \mathbb { Z }\)</span> , <span class="math inline">\(\ell = b _ { 2 } ( \widetilde { Y } ) - \ell ( M _ { Y } )\)</span> , and if the intersection form on <span class="math inline">\(X\)</span> is even, then the discriminant quadratic form can be of type I, or of type II (cf.&nbsp;Definition 1.7.2).</p>
+</section>
+<section id="fc11-c20-u079" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u079">Remark 20.9.8</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U079</code> · Chapter 20, source L10647</p>
+</div>
+<p>Remark 20.9.8. Contrary to the claim in [169, §8.5], the homomorphism <span class="math inline">\(\pi ^ { \prime } { ^ { * } }\)</span> : <span class="math inline">\(H ^ { 2 } ( Y ^ { \prime } ) H ^ { 2 } ( X ^ { \prime } ) ^ { G }\)</span> is not in general surjective, for instance if <span class="math inline">\(b _ { 1 } ( X ^ { \prime } ) \neq 0\)</span> .</p>
+</section>
+<section id="fc11-c20-u080" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u080">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U080</code> · Chapter 20, source L10649-L10656</p>
+</div>
+<p>Table 20.9.1 records the invariant lattices <span class="math inline">\(\Lambda^G\)</span> for symplectic finite-group actions on K3 surfaces, using the corrected cohomological calculation in which the relevant pullback need only be surjective up to a finite subgroup of <span class="math inline">\(H^3(G)\)</span>.</p>
+</section>
+<section id="fc11-c20-u081" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u081">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U081</code> · Chapter 20, source L10664 · after <a href="#fc11-c20-u002"><code>FC11-C20-U002</code></a></p>
+</div>
+<p>A generalized Kummer surface is the minimal resolution associated to the indicated finite quotient of a complex torus.</p>
+</section>
+<section id="fc11-c20-u082" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c20-u082">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC11-C20-U082</code> · Chapter 20, source L10666 · after <a href="#fc11-c20-u002"><code>FC11-C20-U002</code></a>, <a href="#fc11-c20-u081"><code>FC11-C20-U081</code></a></p>
+</div>
+<p>A generalized Shioda–Inose structure is a triple <span class="math inline">\((X,A,G)\)</span> in which <span class="math inline">\(X\)</span> is a K3 surface, <span class="math inline">\(A\)</span> an abelian surface, <span class="math inline">\(G\)</span> acts symplectically on <span class="math inline">\(X\)</span> and finitely on <span class="math inline">\(A\)</span>, and the quotients <span class="math inline">\(X/G\)</span> and <span class="math inline">\(A/G\)</span> give the same generalized Kummer surface.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/dzackgarza\.github\.io\/lean-categories\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Generated from the project’s reference notes by <code>site/build.py</code>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>The Lean is the authority; where this site differs, the Lean is right.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

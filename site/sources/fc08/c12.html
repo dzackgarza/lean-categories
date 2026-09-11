@@ -1,0 +1,2688 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013) – lean-categories · corpus</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-7335da993d57b01553edc5728a7cb5aa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">lean-categories · corpus</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../coverage.html" aria-current="page"> 
+<span class="menu-text">Every book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../corpus.html"> 
+<span class="menu-text">Reading list</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../catalogues/index.html"> 
+<span class="menu-text">Catalogues</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/dzackgarza/lean-categories"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/index.html">FC08</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/c12.html">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="sidebar-tools-main">
+    <div id="quarto-search" class="quarto-navigation-tool px-1" title="Search"></div>
+</div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Graduate mathematics, and what Lean has of it</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../coverage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Every book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../corpus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational source corpus</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../status.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus status</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Sources</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC01 Dummit Foote</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/ai.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01 Appendix I — Cartesian Products and Zorn’s Lemma</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC03</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC03 Riehl Category Theory in Context</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Categories, Functors, and Natural Transformations (pp.&nbsp;1–48)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Representability and the Yoneda Lemma (pp.&nbsp;49–72)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Limits and Colimits (pp.&nbsp;73–114)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Adjunctions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Monads and Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. All Concepts are Kan Extensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/ce.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Epilogue: Theorems in Category Theory</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC04</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC04 Atiyah Macdonald</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Rings and Ideals (pp.&nbsp;1–9)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Modules (pp.&nbsp;17–30)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Rings and Modules of Fractions (pp.&nbsp;36–42)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Primary Decomposition (pp.&nbsp;50–54)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Integral Dependence and Valuations (pp.&nbsp;59–66)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Chain Conditions (pp.&nbsp;74–77)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Noetherian Rings (pp.&nbsp;80–83)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Artin Rings (pp.&nbsp;89–90)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Discrete Valuation Rings and Dedekind Domains (pp.&nbsp;93–98)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. Completions (pp.&nbsp;100–112)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Dimension Theory (pp.&nbsp;116–124)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC05</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC05 Weibel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Chain Complexes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Derived Functors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Tor and Ext</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homological Dimension</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Spectral Sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Group Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Lie Algebra Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Simplicial Methods in Homological Algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Hochschild and Cyclic Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. The Derived Category</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Category Theory Language</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC06</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC06 Hartshorne</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter I: Varieties</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter II: Schemes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter III: Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter IV: Curves</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter V: Surfaces</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC07</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC07 Hatcher</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 0. Some Underlying Geometric Notions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. The Fundamental Group</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homotopy Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix. Topology of Cell Complexes</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC08 Lee</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c12.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c22.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC09 Neukirch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC10 Serre Local Fields</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc11/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC11 Peters Sterk</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc12/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC12 Beauville</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc13/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC13</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC13 Matsumura</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Front matter — conventions and terminology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Commutative rings and modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Prime ideals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Properties of extension rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Valuation rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Dimension theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Regular sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Regular rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Flatness revisited</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Derivations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. I-smoothness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Applications of complete local rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Tensor products, direct and inverse limits</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix B. Some homological algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix C. The exterior algebra</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc14/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC14</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC14 Humphreys</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Basic Concepts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Semisimple Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Root Systems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Isomorphism and Conjugacy Theorems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Existence Theorem</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Representation Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Chevalley Algebras and Groups</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc15/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC15</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Classification of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Polynomial invariants of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Affine reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Coxeter groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Special cases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Hecke algebras and Kazhdan–Lusztig polynomials</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Complements</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc16/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC16</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Algebraic Geometry</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Affine Algebraic Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Homogeneous Spaces</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Characteristic 0 Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Semisimple and Unipotent Elements</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Solvable Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VIII. Borel Subgroups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IX. Centralizers of Tori</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter X. Structure of Reductive Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XI. Representations and Classification of Semisimple Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XII. Survey of Rationality Properties and Appendix</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../catalogues/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Definition catalogues</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">catalogues/*.md</span>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Notes and audits</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">notes/*.md</span>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/index.html">FC08</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/c12.html">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>FC08 — Lee, <em>Introduction to Smooth Manifolds</em>.</p>
+<p>This chapter contains 16 definitions, 1 theorem, 13 propositions, 2 lemmas, 4 corollaries, 5 examples, 2 constructions and 6 conventions.</p>
+<p>Of the 49 statements checked against Lean, 10 are formalized somewhere and 39 are not.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 28%">
+<col style="width: 28%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Status</th>
+<th style="text-align: right;">Statements</th>
+<th style="text-align: right;">Share</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="route-unmatched">not formalized</span></td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">80%</td>
+<td>A documented search found no Lean statement of it anywhere.</td>
+</tr>
+<tr class="even">
+<td><span class="route-mathlib">in Mathlib</span></td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">20%</td>
+<td>Mathlib states and proves it.</td>
+</tr>
+<tr class="odd">
+<td><strong>checked in total</strong></td>
+<td style="text-align: right;"><strong>49</strong></td>
+<td style="text-align: right;"></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Which versions of Lean and Mathlib were searched
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li>Canonical source block: FC08 Lee, Chapter 12, <code>FC08-C12-U001</code>–<code>FC08-C12-U049</code>, exactly 49 unique contiguous rows retrieved from <a href="../../sources/fc08/">FC08 — John M. Lee, Introduction to Smooth Manifolds</a> through <code>agent-memory</code>.</li>
+<li>Search order followed the Sweep-II plan: project source first at <code>A=3b2239e161592472b34e02ad3b7da308f9ce7280</code>, pinned Mathlib <code>P=db584cd6d46c92f209a44c0f1c829460d327499d</code> (Apache-2.0, Lean 4.33.0), current upstream Mathlib <code>H=5315eef9e4ffb98e0f89f278b765c50a149f66ca</code> (Apache-2.0, Lean 4.34.0-rc2), then targeted indexed/external Lean searches. No <code>project-existing</code>, <code>package-import</code>, or <code>reference-port</code> C12 owner survived strict whole-row checking.</li>
+<li>C12 has 10 pinned <code>mathlib</code> rows and 39 dated <code>unmatched</code> rows. Positive rows are: U001, U004, U005, U006, U008, U009, U010, U012, U014, U027.</li>
+<li>The algebraic tensor-product layer is strongly covered. <code>MultilinearMap</code> owns U001; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Basis.multilinearMap#doc"><code>Basis.multilinearMap</code></a> gives the dual-coordinate basis of scalar-valued multilinear maps for U004; <code>S →₀ ℝ</code> and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Finsupp.lift#doc"><code>Finsupp.lift</code></a> give the free real vector space and its universal property for U005–U006. <code>PiTensorProduct</code> gives an indexed k-fold tensor product, pure-tensor map, relations, spanning theorem, universal property, and pure-tensor basis, owning U008–U010.</li>
+<li>U012 is a checked short assembly rather than an inferred equivalence. For finite-dimensional real factors, <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=PiTensorProduct.dualDistribEquiv#doc"><code>PiTensorProduct.dualDistribEquiv</code></a> identifies the tensor product of duals with the dual of the tensor product, and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=PiTensorProduct.lift#doc"><code>PiTensorProduct.lift</code></a> identifies that dual with scalar-valued multilinear maps. <code>/tmp/fc08-c12-witness.lean</code> compiles their canonical composite and proves the expected pure-tensor evaluation formula. The same witness typechecks U014’s k-fold-dual representation.</li>
+<li>U011 is deliberately not inferred from the available associators. P has <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=TensorProduct.assoc#doc"><code>TensorProduct.assoc</code></a> and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=PiTensorProduct.tmulEquiv#doc"><code>PiTensorProduct.tmulEquiv</code></a> with exact pure-tensor formulas, but no single checked statement supplies Lee’s full pair of canonical three-factor identifications together with the stated uniqueness condition. Strict whole-row semantics keep it unmatched.</li>
+<li>The symmetric-tensor block U021–U026 has a clear interface boundary. <code>TensorPower/Symmetric.lean</code> defines <code>SymmetricPower</code> as a quotient by permutations, but its module documentation explicitly leaves the product and universal-property layer as TODO. Exact P/H searches found no Lee-style symmetric-multilinear subspace, averaging symmetrization projection, fixed-point theorem, or normalized symmetric product. The quotient model is not silently identified with Lee’s subspace model.</li>
+<li>U027 is independent of that gap: <code>AlternatingMap</code> is exactly an alternating scalar-valued multilinear map, with swap/permutation sign laws and vector-space structure. Combined with the checked U012 tensor/multilinear identification, it is an equivalent formalization of alternating covariant tensors.</li>
+<li>The canonical catalogue is visibly truncated at U013, U015, U017, U018, U028, and U030. These rows remain dated unmatched from the canonical text; Sweep II does not reconstruct their missing conclusions from the book.</li>
+<li>The manifold half U029–U049 remains blocked at a distinct abstraction boundary. P/H have no general manifold tensor-bundle/tensor-field type for covariant, contravariant, or mixed tensors. <code>Topology/VectorBundle/ContinuousAlternatingMap.lean</code> supplies a topological bundle of continuous alternating maps, while <code>Geometry/Manifold/VectorBundle/Tensoriality.lean</code> gives unary/binary tensoriality criteria on sections; neither is Lee’s arbitrary-k smooth tensor-field layer. <code>Analysis/Calculus/DifferentialForm/Basic.lean</code> separately records manifold differential forms as future work.</li>
+<li>Those manifold rows also inherit earlier promoted FC08 boundaries: C03 established that Lee’s tangent vectors use point derivations while Mathlib’s mature manifold vector-bundle APIs use standard <code>TangentSpace</code>, with no checked equivalence; C11 found no manifold cotangent-bundle/1-form layer. The Lie-derivative rows U042–U049 additionally depend on the C09 local/maximal-flow layer, which is absent at P/H.</li>
+<li>Current upstream <code>H=5315eef9e4ffb98e0f89f278b765c50a149f66ca</code> was searched by exact git object and does not add a manifold tensor-field bundle, tensor Lie derivative, symmetric-multilinear projection/product, or a bridge that closes these gaps. Targeted external searches surfaced no compatible completed Lean owner warranting <code>reference-port</code>.</li>
+<li><code>N=2026-09-07</code> marks dated unmatched decisions after the prescribed search layers. Strict whole-row semantics apply uniformly.</li>
+</ul>
+</div>
+</div>
+</div>
+<section id="fc08-c12-u001" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u001">Definition/convention — multilinear</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U001</code> · Ch. 12, § Multilinear Algebra; source L8889 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Suppose <span class="math inline">\(V_{1},\dots,V_{k}\)</span> and <span class="math inline">\(W\)</span> are vector spaces. A map <span class="math inline">\(F \colon V_{1} \times \cdots \times V_{k} \to W\)</span> is multilinear if it is linear in each variable separately when the others are held fixed: for each <span class="math inline">\(i\)</span>, <span class="math display">\[ F(v_{1},\dots,av_{i} + a'v_{i}',\dots,v_{k}) = aF(v_{1},\dots,v_{i},\dots,v_{k}) + a'F(v_{1},\dots,v_{i}',\dots,v_{k}). \]</span> The multilinear maps form a vector space <span class="math inline">\(\operatorname{L}(V_{1},\dots,V_{k};W)\)</span> under pointwise addition and scalar multiplication.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Multilinear/Basic.html"><code>Mathlib/LinearAlgebra/Multilinear/Basic.lean::MultilinearMap</code></a> — <code>MultilinearMap ℝ V W</code> is precisely a map linear in each argument separately. Its dependent-domain form covers Lee’s possibly different vector spaces <code>V₁,…,Vₖ</code>.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c12-u002" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u002">Example 12.1</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U002</code> · Ch. 12, § Multilinear Algebra; source L8903 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Example 12.1 (Some Familiar Multilinear Functions). (a) The dot product in <span class="math inline">\(\mathbb { R } ^ { n }\)</span> is a scalar-valued bilinear function of two vectors, used to compute lengths of vectors and angles between them. (b) The cross product in <span class="math inline">\(\mathbb { R } ^ { 3 }\)</span> is a vector-valued bilinear function of two vectors, used to compute areas of parallelograms and to find a third vector orthogonal to two given ones. (c) The determinant is a real-valued multilinear function of n vectors in <span class="math inline">\(\mathbb { R } ^ { n }\)</span> , used to detect linear independence and to compute the volume of the parallelepiped spanned by the vectors. (d) The bracket in a Lie algebra <span class="math inline">\(\mathfrak { g }\)</span> is a g-valued bilinear function of two elements of <span class="math inline">\(\mathfrak{g}\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib separately formalizes dot products, cross products, determinants, and Lie brackets, but no single checked declaration packages Lee’s four-example multilinear bundle. The row is therefore not owned as a whole. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u003" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u003">Example 12.2</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U003</code> · Ch. 12, § Multilinear Algebra; source L8915 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Example 12.2 (Tensor Products of Covectors). Suppose V is a vector space, and <span class="math inline">\(\omega , \eta \in V ^ { * }\)</span> . Define a function <span class="math inline">\(\omega \otimes \eta \colon V \times V \to \mathbb { R }\)</span> by <span class="math display">\[ \omega \otimes \eta (v _ {1}, v _ {2}) = \omega (v _ {1}) \eta (v _ {2}), \]</span> where the product on the right is just ordinary multiplication of real numbers. The linearity of ! and  guarantees that <span class="math inline">\(\omega \otimes \eta\)</span> is a bilinear function of <span class="math inline">\(v _ { 1 }\)</span> and <span class="math inline">\(v _ { 2 }\)</span> , so it is an element of <span class="math inline">\(\operatorname { L } ( V , V ; \mathbb { R } )\)</span> . For example, if <span class="math inline">\(\left( e ^ { 1 } , e ^ { 2 } \right)\)</span> denotes the standard dual basis for <span class="math inline">\(\left( \mathbb { R } ^ { 2 } \right) ^ { * }\)</span> , then <span class="math inline">\(e ^ { 1 } \otimes e ^ { 2 } \colon \mathbb { R } ^ { 2 } \times \mathbb { R } ^ { 2 } \to \mathbb { R }\)</span> is the bilinear function <span class="math display">\[ e ^ {1} \otimes e ^ {2} ((w, x), (y, z)) = w z. \]</span> The last example can be generalized to arbitrary real-valued multilinear functions as follows: let <span class="math inline">\(V _ { 1 } , \dots , V _ { k } , W _ { 1 } , \dots , W _ { l }\)</span> be real vector spaces, and suppose <span class="math inline">\(F \in \operatorname { L } ( V _ { 1 } , \ldots , V _ { k } ; \mathbb { R } )\)</span> and <span class="math inline">\(G \in \mathrm { L } ( W _ { 1 } , \ldots , W _ { l } ; \mathbb { R } )\)</span> . Define a function <span class="math display">\[ F \otimes G \colon V _ {1} \times \dots \times V _ {k} \times W _ {1} \times \dots \times W _ {l} \to \mathbb {R} \]</span> by <span class="math display">\[ F \otimes G (v _ {1}, \dots , v _ {k}, w _ {1}, \dots , w _ {l}) = F (v _ {1}, \dots , v _ {k}) G (w _ {1}, \dots , w _ {l}).\tag{12.1} \]</span> It follows from the multilinearity of F and <span class="math inline">\(G\)</span> that <span class="math inline">\(F \otimes G ( v _ { 1 } , \ldots , v _ { k } , w _ { 1 } , \ldots , w _ { l } )\)</span> depends linearly on each argument <span class="math inline">\(v _ { i }\)</span> or <span class="math inline">\(w _ { j }\)</span> separately, so <span class="math inline">\(F \otimes G\)</span> is an element of <span class="math inline">\(\operatorname { L } ( V _ { 1 } , \dots , V _ { k } , W _ { 1 } , \dots , W _ { l } ; \mathbb { R } )\)</span> , called the tensor product of F and <span class="math inline">\(\pmb { G }\)</span> . Exercise 12.3. Show that the tensor product operation boundary is said to be exact (or an exact differential) on M if there is a function <span class="math inline">\(f \in\)</span> <span class="math inline">\(C ^ { \infty } ( M )\)</span> such that <span class="math inline">\(\omega = d f\)</span> .</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=MultilinearMap.domCoprod#doc"><code>MultilinearMap.domCoprod</code></a> and tensor-product primitives provide ingredients for multiplying scalar-valued multilinear maps on disjoint argument blocks, but no checked declaration packages Lee’s full covector example, explicit <code>ℝ²</code> computation, and general scalar-valued tensor-product construction as one source row. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u004" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u004">Proposition 12.4</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U004</code> · Ch. 12, § Multilinear Algebra; source L8957 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>(A Basis for the Space of Multilinear Functions). Let <span class="math inline">\(V_{1},\dots,V_{k}\)</span> be real vector spaces of dimensions <span class="math inline">\(n_{1},\dots,n_{k}\)</span>. For each <span class="math inline">\(j\)</span> let <span class="math inline">\(\left(E^{(j)}_{1},\dots,E^{(j)}_{n_{j}}\right)\)</span> be a basis for <span class="math inline">\(V_{j}\)</span> and <span class="math inline">\(\left(\varepsilon^{1}_{(j)},\dots,\varepsilon^{n_{j}}_{(j)}\right)\)</span> the dual basis for <span class="math inline">\(V_{j}^{*}\)</span>. Then <span class="math display">\[ \mathcal{B} = \left\{\varepsilon^{i_{1}}_{(1)} \otimes \cdots \otimes \varepsilon^{i_{k}}_{(k)} : 1 \leq i_{1} \leq n_{1},\ \dots,\ 1 \leq i_{k} \leq n_{k}\right\} \]</span> is a basis for <span class="math inline">\(\operatorname{L}(V_{1},\dots,V_{k};\mathbb{R})\)</span>, which therefore has dimension <span class="math inline">\(n_{1}\cdots n_{k}\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Multilinear/Basis.html"><code>Mathlib/LinearAlgebra/Multilinear/Basis.lean::Basis.multilinearMap, Basis.multilinearMap_apply_apply</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Basis/Basic.html#Basis.singleton"><code>Mathlib/LinearAlgebra/Basis/Basic.lean::Basis.singleton</code></a> — Given bases on each finite-dimensional domain and the singleton basis of <code>ℝ</code>, <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Basis.multilinearMap#doc"><code>Basis.multilinearMap</code></a> gives the basis of scalar-valued multilinear maps indexed by tuples of basis indices; <code>multilinearMap_apply_apply</code> identifies its elements with products of the corresponding dual-coordinate functionals. This is Lee’s basis and dimension statement up to the inessential singleton codomain index.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c12-u005" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u005">Definition/convention — formal linear combination of elements of S</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U005</code> · Ch. 12, § Abstract Tensor Products of Vector Spaces; source L8999 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>simple.) To begin, we need to make sense of “formal linear combinations.” Let S be a set. Roughly speaking, a formal linear combination of elements of S is an expression of the form <span class="math inline">\(\scriptstyle \sum _ { i = 1 } ^ { m } a _ { i } x _ { i }\)</span> , where <span class="math inline">\(a _ { 1 } , \ldots , a _ { m }\)</span> are real numbers and <span class="math inline">\(x _ { 1 } , \ldots , x _ { m }\)</span> are elements of S. Of course, since we are not assuming that S has any algebraic structure, we cannot literally add elements of S together or multiply them by numbers. But the essential feature of such an expression is that it is completely determined by which elements of S appear in the sum, and what coefficients appear with them. Thus, we make the following definition: for any set S, a formal linear combination of elements of S is a function <span class="math inline">\(f \colon S \to \mathbb { R }\)</span> such that <span class="math inline">\(f ( s ) = 0\)</span> for all but finitely many <span class="math inline">\(s \in S\)</span> . The free (real) vector space on S , denoted by <span class="math inline">\({ \mathcal { F } } ( S )\)</span> , is the set of all formal linear combinations of elements of S. Under pointwise addition and scalar multiplication, <span class="math inline">\({ \mathcal { F } } ( S )\)</span> becomes have <span class="math inline">\(d f = \omega\)</span> , thus completing the proof.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Data/Finsupp/Defs.html"><code>Mathlib/Data/Finsupp/Defs.lean::Finsupp</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Finsupp/Defs.html#Finsupp.instModule"><code>Mathlib/LinearAlgebra/Finsupp/Defs.lean::Finsupp.instModule</code></a> — <code>S →₀ ℝ</code> is exactly the type of finitely supported coefficient functions on <code>S</code>, with pointwise additive and real-module structure: Lee’s free real vector space on the set <code>S</code>.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c12-u006" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u006">Proposition 12.5</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U006</code> · Ch. 12, § Abstract Tensor Products of Vector Spaces; source L9003 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Proposition 12.5 (Characteristic Property of the Free Vector Space). For any set S and any vector space W , every map <span class="math inline">\(A \colon S W\)</span> has a unique extension to a linear map <span class="math inline">\(\overline { { A } } \colon \mathcal { F } ( S ) \to W\)</span> Exercise 12.6. Prove the preceding act.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Finsupp/LSum.html"><code>Mathlib/LinearAlgebra/Finsupp/LSum.lean::Finsupp.lift, Finsupp.lift_symm_apply</code></a> — <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Finsupp.lift#doc"><code>Finsupp.lift</code></a> is the free-forgetful adjunction equivalence between arbitrary functions <code>S → W</code> and linear maps <code>(S →₀ ℝ) →ₗ[ℝ] W</code>; its inverse recovers the map on basis elements. This is exactly the existence-and-uniqueness characteristic property.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c12-u007" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u007">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U007</code> · Ch. 12, § Abstract Tensor Products of Vector Spaces; source L9007 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For real vector spaces <span class="math inline">\(V_{1},\dots,V_{k}\)</span>, form the free vector space <span class="math inline">\(\mathcal{F}(V_{1} \times \cdots \times V_{k})\)</span> of finite formal linear combinations of <span class="math inline">\(k\)</span>-tuples <span class="math inline">\((v_{1},\dots,v_{k})\)</span> with <span class="math inline">\(v_{i} \in V_{i}\)</span>, and let <span class="math inline">\(\mathcal{R}\)</span> be the subspace spanned by all elements of the forms <span class="math display">\[ (v_{1},\dots,av_{i},\dots,v_{k}) - a(v_{1},\dots,v_{i},\dots,v_{k}), \]</span> <span class="math display">\[ (v_{1},\dots,v_{i}+v_{i}',\dots,v_{k}) - (v_{1},\dots,v_{i},\dots,v_{k}) - (v_{1},\dots,v_{i}',\dots,v_{k}), \tag{12.4} \]</span> with <span class="math inline">\(v_{j}, v_{j}' \in V_{j}\)</span>, <span class="math inline">\(i \in \{1,\dots,k\}\)</span> and <span class="math inline">\(a \in \mathbb{R}\)</span>. The tensor product is the quotient <span class="math inline">\(\mathcal{F}(V_{1} \times \cdots \times V_{k})/\mathcal{R}\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib’s indexed tensor product uses an equivalent quotient by a generated congruence on a free additive monoid; it does not expose Lee’s particular intermediate subspace <code>R</code> inside the free vector space on tuples. U008 owns the resulting tensor product, but this implementation-specific construction row has no exact interface owner. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u008" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u008">Construction/definition — the (abstract) tensor product of v</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U008</code> · Ch. 12, § Abstract Tensor Products of Vector Spaces; source L9019 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>The tensor product of <span class="math inline">\(V_{1},\dots,V_{k}\)</span> is the quotient vector space <span class="math display">\[ V_{1} \otimes \cdots \otimes V_{k} = \mathcal{F}(V_{1} \times \cdots \times V_{k})/\mathcal{R}, \]</span> with natural projection <span class="math inline">\(\pi\)</span>. The class of <span class="math inline">\((v_{1},\dots,v_{k})\)</span> is written <span class="math display">\[ v_{1} \otimes \cdots \otimes v_{k} = \pi(v_{1},\dots,v_{k}), \tag{12.5} \]</span> the abstract tensor product of <span class="math inline">\(v_{1},\dots,v_{k}\)</span>. It follows that <span class="math inline">\(v_{1} \otimes \cdots \otimes av_{i} \otimes \cdots \otimes v_{k} = a(v_{1} \otimes \cdots \otimes v_{i} \otimes \cdots \otimes v_{k})\)</span> and <span class="math inline">\(v_{1} \otimes \cdots \otimes (v_{i}+v_{i}') \otimes \cdots \otimes v_{k} = (v_{1} \otimes \cdots \otimes v_{i} \otimes \cdots \otimes v_{k}) + (v_{1} \otimes \cdots \otimes v_{i}' \otimes \cdots \otimes v_{k})\)</span>. Every element of the tensor product is a linear combination of elements <span class="math inline">\(v_{1} \otimes \cdots \otimes v_{k}\)</span>, though not in general of that form itself.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/PiTensorProduct/Basic.html"><code>Mathlib/LinearAlgebra/PiTensorProduct/Basic.lean::PiTensorProduct, PiTensorProduct.tprod, PiTensorProduct.Eqv, PiTensorProduct.span_tprod_eq_top</code></a> — <code>PiTensorProduct ℝ V</code> is the indexed tensor product, defined by quotienting formal generators by additivity/scalar relations in each slot. <code>tprod</code> is the pure-tensor map and <code>span_tprod_eq_top</code> says pure tensors span. This is an equivalent formal construction of Lee’s abstract k-fold tensor product and its displayed multilinearity relations.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c12-u009" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u009">Proposition 12.7</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U009</code> · Ch. 12, § Abstract Tensor Products of Vector Spaces; source L9043 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>(Characteristic Property of the Tensor Product Space). Let <span class="math inline">\(V_{1},\dots,V_{k}\)</span> be finite-dimensional real vector spaces. If <span class="math inline">\(A \colon V_{1} \times \cdots \times V_{k} \to X\)</span> is any multilinear map into a vector space <span class="math inline">\(X\)</span>, there is a unique linear map <span class="math inline">\(\widetilde{A} \colon V_{1} \otimes \cdots \otimes V_{k} \to X\)</span> with <span class="math inline">\(\widetilde{A} \circ \pi = A\)</span>, where <span class="math inline">\(\pi(v_{1},\dots,v_{k}) = v_{1} \otimes \cdots \otimes v_{k}\)</span>. </p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/PiTensorProduct/Basic.html"><code>Mathlib/LinearAlgebra/PiTensorProduct/Basic.lean::PiTensorProduct.lift, PiTensorProduct.lift.tprod, PiTensorProduct.lift.unique</code></a> — <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=PiTensorProduct.lift#doc"><code>PiTensorProduct.lift</code></a> is a linear equivalence between multilinear maps from the factors and linear maps out of their indexed tensor product; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=lift.tprod#doc"><code>lift.tprod</code></a> gives the commuting triangle and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=lift.unique#doc"><code>lift.unique</code></a> gives uniqueness. This is Lee’s universal property exactly.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c12-u010" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u010">Proposition 12.8</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U010</code> · Ch. 12, § Abstract Tensor Products of Vector Spaces; source L9067 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Proposition 12.8 (A Basis for the Tensor Product Space). Suppose <span class="math inline">\(V _ { 1 } , \dots , V _ { k }\)</span> are real vector spaces of dimensions <span class="math inline">\(n _ { 1 } , \ldots , n _ { k }\)</span> , respectively. For each <span class="math inline">\(j = 1 , \dots , k\)</span> suppose <span class="math inline">\(\big ( E _ { 1 } ^ { ( j ) } , \dots , E _ { n _ { j } } ^ { ( j ) } \big )\)</span> is a basis for <span class="math inline">\(V _ { j }\)</span> . Then the set <span class="math display">\[ \mathcal {C} = \left\{E _ {i _ {1}} ^ {(1)} \otimes \dots \otimes E _ {i _ {k}} ^ {(k)}: 1 \leq i _ {1} \leq n _ {1}, \dots , 1 \leq i _ {k} \leq n _ {k} \right\} \]</span> is a basis for <span class="math inline">\(V _ { 1 } \otimes \cdots \otimes V _ { k }\)</span> , which therefore has dimension t there is no smooth (or even continuous) angle function on all of <span class="math inline">\(\mathbb { R } ^ { 2 } \setminus \{ 0 \}\)</span> , which is a consequence of the “hole” in the center.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/PiTensorProduct/Basis.html"><code>Mathlib/LinearAlgebra/PiTensorProduct/Basis.lean::Basis.piTensorProduct, Basis.piTensorProduct_apply</code></a> — <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Basis.piTensorProduct#doc"><code>Basis.piTensorProduct</code></a> gives the basis indexed by tuples of basis indices and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Basis.piTensorProduct_apply#doc"><code>Basis.piTensorProduct_apply</code></a> identifies each basis vector with the corresponding pure tensor. <code>/tmp/fc08-c12-witness.lean</code> compiles the resulting finite-dimensional dimension formula as the product of the factor basis cardinalities.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c12-u011" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u011">Proposition 12.9</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U011</code> · Ch. 12, § Abstract Tensor Products of Vector Spaces; source L9097 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>(Associativity of Tensor Product Spaces). Let <span class="math inline">\(V_{1}, V_{2}, V_{3}\)</span> be finite-dimensional real vector spaces. There are unique isomorphisms <span class="math display">\[ V_{1} \otimes (V_{2} \otimes V_{3}) \cong V_{1} \otimes V_{2} \otimes V_{3} \cong (V_{1} \otimes V_{2}) \otimes V_{3}, \]</span> under which <span class="math inline">\(v_{1} \otimes (v_{2} \otimes v_{3})\)</span>, <span class="math inline">\(v_{1} \otimes v_{2} \otimes v_{3}\)</span> and <span class="math inline">\((v_{1} \otimes v_{2}) \otimes v_{3}\)</span> all correspond.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned Mathlib has the binary associator <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=TensorProduct.assoc#doc"><code>TensorProduct.assoc</code></a> and indexed flattening equivalences <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=PiTensorProduct.tmulEquiv#doc"><code>PiTensorProduct.tmulEquiv</code></a>, all with pure-tensor formulas. No checked theorem packages Lee’s entire three-space statement with both canonical identifications and their stated uniqueness characterization, so the row is not inferred from adjacent equivalences. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u012" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u012">Proposition 12.10</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U012</code> · Ch. 12, § Abstract Tensor Products of Vector Spaces; source L9115 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Proposition 12.10 (Abstract vs.&nbsp;Concrete Tensor Products). If <span class="math inline">\(V _ { 1 } , \dots , V _ { k }\)</span> are finite-dimensional vector spaces, there is a canonical isomorphism <span class="math display">\[ V _ {1} ^ {*} \otimes \dots \otimes V _ {k} ^ {*} \cong \mathrm{L} (V _ {1}, \ldots , V _ {k}; \mathbb {R}), \]</span> under which the abstract tensor product defined by (12.5) corresponds to the tensor product of covectors defined ying family of paths starting at a fixed base point and reaching every point of the domain exactly once.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/PiTensorProduct/Dual.html#PiTensorProduct.dualDistribEquiv"><code>Mathlib/LinearAlgebra/PiTensorProduct/Dual.lean::PiTensorProduct.dualDistribEquiv</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/PiTensorProduct/Basic.html#PiTensorProduct.lift"><code>Mathlib/LinearAlgebra/PiTensorProduct/Basic.lean::PiTensorProduct.lift</code></a> — For finite-dimensional real spaces, <code>dualDistribEquiv</code> identifies the tensor product of the duals with the dual of the indexed tensor product, while <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=PiTensorProduct.lift#doc"><code>PiTensorProduct.lift</code></a> identifies that dual with scalar-valued multilinear maps. Their canonical composite is Lee’s abstract-vs-concrete tensor isomorphism; <code>/tmp/fc08-c12-witness.lean</code> compiles the composite and proves that a pure tensor of covectors evaluates as the product of their evaluations.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c12-u013" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u013">Convention/notation — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U013</code> · Ch. 12, § Abstract Tensor Products of Vector Spaces; source L9137 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Using this canonical isomorphism, we henceforth use the notation V _1 * ⊗ ·s ⊗ V _k * to denote either the abstract tensor product space or the space L ( V _1 , … , V _k ; ℝ ) focusing on whichever interpretation is more convenient for the problem at hand. Since we are assuming the vector spaces are all finite-dimensional, we can also identify each V _j with its second dual space V _j ^* * , and thereby obtain another canonical identification <span class="math display">\[ V_{1} \otimes \cdots \otimes V_{k} \cong \operatorname{L}\big(V_{1}^{*},\dots,V_{k}^{*};\mathbb{R}\big). \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — The canonical Sweep-I source statement for U013 is truncated before completing its mathematical assertion. Sweep II preserves that source defect and does not reconstruct the missing conclusion from the book or nearby rows. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u014" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u014">Definition/convention — covariant k-tensor</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U014</code> · Ch. 12, § Covariant and Contravariant Tensors on a Vector Space; source L9145 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Let V be a finite-dimensional real vector space. If k is a positive integer, a covariant k-tensor on V is an element of the k-fold tensor product <span class="math inline">\(V ^ { * } \otimes \cdots \otimes V ^ { * }\)</span> , which we typically think of as a real-valued multilinear function of k elements of <span class="math inline">\(V :\)</span> : <span class="math display">\[ \alpha \colon \underbrace {V \times \cdots \times V} _ {k \text { copies }} \to \mathbb {R}. \]</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/PiTensorProduct/Basic.html"><code>Mathlib/LinearAlgebra/PiTensorProduct/Basic.lean::PiTensorProduct</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/PiTensorProduct/Dual.html#PiTensorProduct.dualDistribEquiv"><code>Mathlib/LinearAlgebra/PiTensorProduct/Dual.lean::PiTensorProduct.dualDistribEquiv</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/PiTensorProduct/Basic.html#PiTensorProduct.lift"><code>Mathlib/LinearAlgebra/PiTensorProduct/Basic.lean::PiTensorProduct.lift</code></a> — Specializing the indexed family to <code>Fin k → V*</code> gives exactly the k-fold tensor product of the dual; the U012 canonical equivalence realizes it as a scalar-valued k-multilinear map. The audit witness typechecks this representation as <code>CovariantTensor</code> at P.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c12-u015" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u015">Convention/notation — rank of</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U015</code> · Ch. 12, § Covariant and Contravariant Tensors on a Vector Space; source L9151 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The number k is called the rank of ˛. A 0-tensor is, by convention, just a real number (a real-valued function depending multilinearly on no vectors!). We denote the vector space of all covariant k-tensors on V by the shorthand notation <span class="math display">\[ T^{k}(V^{*}) = \underbrace{V^{*} \otimes \cdots \otimes V^{*}}_{k \text{ copies}}. \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — The canonical Sweep-I source statement for U015 is truncated before completing its mathematical assertion. Sweep II preserves that source defect and does not reconstruct the missing conclusion from the book or nearby rows. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u016" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u016">Example 12.11</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U016</code> · Ch. 12, § Covariant and Contravariant Tensors on a Vector Space; source L9159 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Example 12.11 (Covariant Tensors). Let V be a finite-dimensional vector space. (a) Every linear functional <span class="math inline">\(\omega \colon V \mathbb { R }\)</span> is multilinear, so a covariant 1-tensor is just a covector. Thus, <span class="math inline">\(T ^ { 1 } ( V ^ { * } )\)</span> is equal to <span class="math inline">\(V ^ { * }\)</span> (b) A covariant 2-tensor on V is a real-valued bilinear function of two vectors, also called a bilinear form. One example is the dot product on <span class="math inline">\(\mathbb { R } ^ { n }\)</span> . More generally, every inner product is a covariant 2-tensor. (c) The determinant, thought of as a function of n vectors, is a covariant n-tensor _ {W} \ V ^ {<em>} A ^ {</em>} W ^ {*}.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Each example has strong nearby algebraic infrastructure, but the row bundles the identifications of 1-tensors with covectors, 2-tensors with bilinear forms/inner products, and determinant as an n-tensor. No single checked declaration owns this whole example bundle. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u017" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u017">Definition/convention — space of contravariant tensors</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U017</code> · Ch. 12, § Covariant and Contravariant Tensors on a Vector Space; source L9167 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For some purposes, it is important to generalize the notion of covariant tensors as follows. For any finite-dimensional real vector space V , we define the space of contravariant tensors on V of rank k to be the vector space <span class="math display">\[ T^{k}(V) = \underbrace{V \otimes \cdots \otimes V}_{k \text{ copies}}, \]</span> so <span class="math inline">\(T^{1}(V) = V\)</span> and, by convention, <span class="math inline">\(T^{0}(V) = \mathbb{R}\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — The canonical Sweep-I source statement for U017 is truncated before completing its mathematical assertion. Sweep II preserves that source defect and does not reconstruct the missing conclusion from the book or nearby rows. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u018" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u018">Definition/convention — space of mixed tensors</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U018</code> · Ch. 12, § Covariant and Contravariant Tensors on a Vector Space; source L9181 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For any nonnegative integers <span class="math inline">\(k, l\)</span>, the space of mixed tensors on <span class="math inline">\(V\)</span> of type <span class="math inline">\((k,l)\)</span> is <span class="math display">\[ T^{(k,l)}(V) = \underbrace{V \otimes \cdots \otimes V}_{k \text{ copies}} \otimes \underbrace{V^{*} \otimes \cdots \otimes V^{*}}_{l \text{ copies}}. \]</span> Some of these spaces coincide: <span class="math inline">\(T^{(0,0)}(V) = \mathbb{R}\)</span>, <span class="math inline">\(T^{(0,1)}(V) = V^{*}\)</span>, <span class="math inline">\(T^{(1,0)}(V) = V\)</span>, <span class="math inline">\(T^{(0,k)}(V) = T^{k}(V^{*})\)</span> and <span class="math inline">\(T^{(k,0)}(V) = T^{k}(V)\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — The canonical Sweep-I source statement for U018 is truncated before completing its mathematical assertion. Sweep II preserves that source defect and does not reconstruct the missing conclusion from the book or nearby rows. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u019" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u019">Convention/notation — mixed-tensor notation</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U019</code> · Ch. 12, § Covariant and Contravariant Tensors on a Vector Space; source L9193 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>(Be aware that the notation <span class="math inline">\(T ^ { ( k , l ) } ( V )\)</span> is not universal. Another notation that is in common use for this space is <span class="math inline">\(T _ { l } ^ { k } ( V )\)</span> . To make matters worse, some books reverse the roles of k and l in either of these notations; for example, the previous edition of this text used the notation <span class="math inline">\(T _ { k } ^ { l } ( V )\)</span> for the space we are here denoting by <span class="math inline">\(T ^ { ( k , l ) } ( V )\)</span> We have chosen the notation given here because it is common and nearly always means the same thing. The moral, as usual, is that when you read any differential geometry book, you need to make sure you understand the author’s notational conventions.)</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This row is primarily a source notation/convention about mixed-tensor index order and conflicting literature conventions. Mathlib’s generic tensor types do not formalize that prose convention as a mathematical interface. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u020" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u020">Corollary 12.12</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U020</code> · Ch. 12, § Covariant and Contravariant Tensors on a Vector Space; source L9199 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Let <span class="math inline">\(V\)</span> be an <span class="math inline">\(n\)</span>-dimensional real vector space with basis <span class="math inline">\((E_{i})\)</span> and dual basis <span class="math inline">\((\varepsilon^{j})\)</span>. Then <span class="math inline">\(\{\varepsilon^{i_{1}} \otimes \cdots \otimes \varepsilon^{i_{k}}\}\)</span> is a basis for <span class="math inline">\(T^{k}(V^{*})\)</span>, <span class="math inline">\(\{E_{i_{1}} \otimes \cdots \otimes E_{i_{k}}\}\)</span> for <span class="math inline">\(T^{k}(V)\)</span>, and <span class="math inline">\(\{E_{i_{1}} \otimes \cdots \otimes E_{i_{k}} \otimes \varepsilon^{j_{1}} \otimes \cdots \otimes \varepsilon^{j_{l}}\}\)</span> for <span class="math inline">\(T^{(k,l)}(V)\)</span>, with all indices running from <span class="math inline">\(1\)</span> to <span class="math inline">\(n\)</span>. Hence <span class="math inline">\(\dim T^{k}(V^{*}) = \dim T^{k}(V) = n^{k}\)</span> and <span class="math inline">\(\dim T^{(k,l)}(V) = n^{k+l}\)</span>. In particular every covariant <span class="math inline">\(k\)</span>-tensor <span class="math inline">\(\alpha \in T^{k}(V^{*})\)</span> is uniquely <span class="math inline">\(\alpha = \alpha_{i_{1}\dots i_{k}}\,\varepsilon^{i_{1}} \otimes \cdots \otimes \varepsilon^{i_{k}}\)</span> with <span class="math inline">\(\alpha_{i_{1}\dots i_{k}} = \alpha(E_{i_{1}},\dots,E_{i_{k}})\)</span>; for example <span class="math inline">\(T^{2}(V^{*})\)</span> is the space of bilinear forms, each written <span class="math inline">\(\beta = \beta_{ij}\varepsilon^{i} \otimes \varepsilon^{j}\)</span> for a unique <span class="math inline">\(n \times n\)</span> matrix <span class="math inline">\((\beta_{ij})\)</span>. Tensors are understood to be covariant unless stated otherwise.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Basis.piTensorProduct#doc"><code>Basis.piTensorProduct</code></a>, dual bases, and dimension lemmas supply most algebraic ingredients, but this row simultaneously bundles bases for covariant, contravariant, and mixed tensors, all dimension formulas, component expansions, the bilinear-form matrix case, and a source-wide covariant-tensor convention. No single checked interface owns the whole bundle. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u021" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u021">Definition/convention — symmetric</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U021</code> · Ch. 12, § Symmetric Tensors; source L9237 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Let V be a finite-dimensional vector space. A covariant k-tensor ˛ on V is said to be symmetric if its value is unchanged by interchanging any pair of arguments: <span class="math display">\[ \alpha (v _ {1}, \dots , v _ {i}, \dots , v _ {j}, \dots , v _ {k}) = \alpha (v _ {1}, \dots , v _ {j}, \dots , v _ {i}, \dots , v _ {k}) \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has permutation actions on multilinear maps and a quotient <code>SymmetricPower</code>, but no bundled predicate/subspace for Lee’s symmetric covariant multilinear tensors under the U012 realization. The quotient construction is not silently identified with Lee’s symmetric subspace. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u022" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u022">Convention/notation — new k - t e n s o r</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U022</code> · Ch. 12, § Symmetric Tensors; source L9253 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The set of symmetric covariant k-tensors is a linear subspace of the space <span class="math inline">\(T ^ { k } ( V ^ { * } )\)</span> of all covariant k-tensors on <span class="math inline">\(V :\)</span> ; we denote this subspace by <span class="math inline">\(\Sigma ^ { k } ( \dot { V } ^ { * } )\)</span> There is a natural projection from <span class="math inline">\(T ^ { k } ( V ^ { * } )\)</span> to <span class="math inline">\(\Sigma ^ { k } ( V ^ { * } )\)</span> defined as follows. First, let <span class="math inline">\(S _ { k }\)</span> denote the symmetric group on k elements, that is, the group of permutations of the set <span class="math inline">\(\{ 1 , \ldots , k \}\)</span> . Given a k-tensor ˛ and a permutation <span class="math inline">\(\sigma \in S _ { k }\)</span> , we define a new <span class="math inline">\(k \mathrm { - t e n s o r } ^ { \sigma } \alpha\)</span> by <span class="math display">\[ { } ^ { \sigma } \alpha ( v _ { 1 } , \dots , v _ { k } ) = \alpha \left( v _ { \sigma ( 1 ) } , \dots , v _ { \sigma ( k ) } \right) . \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <code>TensorPower/Symmetric.lean</code> defines a quotient symmetric power, but explicitly leaves the product and universal-property layer as TODO; targeted P/H searches found no Lee-style permutation action on covariant tensors, averaging symmetrization projection, fixed-point characterization, or normalized symmetric product. The available quotient is not an equivalent whole-row owner. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u023" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u023">Convention/notation — symmetrization by Sym α</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U023</code> · Ch. 12, § Symmetric Tensors; source L9259 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Note that <span class="math inline">\(^{\tau}(^{\sigma}\alpha) = {}^{\tau\sigma}\alpha\)</span>, where <span class="math inline">\(\tau\sigma\)</span> is the composition, <span class="math inline">\(\tau\sigma(i) = \tau(\sigma(i))\)</span> — the reason for writing <span class="math inline">\(\sigma\)</span> before <span class="math inline">\(\alpha\)</span>. The projection <span class="math inline">\(\operatorname{Sym} \colon T^{k}(V^{*}) \to \Sigma^{k}(V^{*})\)</span>, called symmetrization, is defined by <span class="math display">\[ \operatorname{Sym}\alpha = \frac{1}{k!}\sum_{\sigma \in S_{k}} {}^{\sigma}\alpha. \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <code>TensorPower/Symmetric.lean</code> defines a quotient symmetric power, but explicitly leaves the product and universal-property layer as TODO; targeted P/H searches found no Lee-style permutation action on covariant tensors, averaging symmetrization projection, fixed-point characterization, or normalized symmetric product. The available quotient is not an equivalent whole-row owner. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u024" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u024">Proposition 12.14</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U024</code> · Ch. 12, § Symmetric Tensors; source L9271 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 12.14 (Properties of Symmetrization). Let ˛ be a covariant tensor on a finite-dimensional vector space. (a) Sym ˛ is symmetric. (b) Sym <span class="math inline">\(\alpha = \alpha\)</span> if and only if ˛ is symmetric.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <code>TensorPower/Symmetric.lean</code> defines a quotient symmetric power, but explicitly leaves the product and universal-property layer as TODO; targeted P/H searches found no Lee-style permutation action on covariant tensors, averaging symmetrization projection, fixed-point characterization, or normalized symmetric product. The available quotient is not an equivalent whole-row owner. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u025" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u025">Definition/convention — their symmetric product to be the ( k</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U025</code> · Ch. 12, § Symmetric Tensors; source L9291 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If ˛ and <span class="math inline">\(\beta\)</span> are symmetric tensors on <span class="math inline">\(V ,\)</span> , then <span class="math inline">\(\alpha \otimes \beta\)</span> is not symmetric in general. However, using the symmetrization operator, it is possible to define a new product that takes a pair of symmetric tensors and yields another symmetric tensor. If <span class="math inline">\(\alpha \in\)</span> <span class="math inline">\(\Sigma ^ { k } ( V ^ { * } )\)</span> and <span class="math inline">\(\beta \in \Sigma ^ { \bar { l } } ( V ^ { * } )\)</span> , we define their symmetric product to be the <span class="math inline">\(( k + l ) \dash\)</span> tensor <span class="math inline">\(\alpha \beta\)</span> (denoted by juxtaposition with no intervening product symbol) given by <span class="math display">\[ \alpha \beta = \operatorname{Sym} (\alpha \otimes \beta). \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <code>TensorPower/Symmetric.lean</code> defines a quotient symmetric power, but explicitly leaves the product and universal-property layer as TODO; targeted P/H searches found no Lee-style permutation action on covariant tensors, averaging symmetrization projection, fixed-point characterization, or normalized symmetric product. The available quotient is not an equivalent whole-row owner. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u026" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u026">Proposition 12.15</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U026</code> · Ch. 12, § Symmetric Tensors; source L9303 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 12.15 (Properties of the Symmetric Product). (a) The symmetric product is symmetric and bilinear: for all symmetric tensors ˛, <span class="math inline">\(\beta , \gamma\)</span> and all <span class="math inline">\(a , b \in \mathbb { R }\)</span> <span class="math display">\[ \begin{array}{c} \alpha \beta = \beta \alpha , \\ (a \alpha + b \beta) \gamma = a \alpha \gamma + b \beta \gamma = \gamma (a \alpha + b \beta). \end{array} \]</span> (b) If ˛ and <span class="math inline">\(\beta\)</span> are covectors, then <span class="math display">\[ \alpha \beta = \frac {1}{2} (\alpha \otimes \beta + \beta \otimes \alpha). \]</span> Exercise 12.16. Prove Proposition 12.15. ## Alternating Tensors We continue to assume that V is a finite-dimensional unction <span class="math inline">\(f \in C ^ { \infty } ( U )\)</span> such that X grad <span class="math inline">\(f\)</span> .</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <code>TensorPower/Symmetric.lean</code> defines a quotient symmetric power, but explicitly leaves the product and universal-property layer as TODO; targeted P/H searches found no Lee-style permutation action on covariant tensors, averaging symmetrization projection, fixed-point characterization, or normalized symmetric product. The available quotient is not an equivalent whole-row owner. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u027" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u027">Definition/convention — exterior forms</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U027</code> · Ch. 12, § Alternating Tensors; source L9321 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>We continue to assume that V is a finite-dimensional real vector space. A covariant k-tensor ˛ on <span class="math inline">\(V\)</span> is said to be alternating (or antisymmetric or skew-symmetric) if it changes sign whenever two of its arguments are interchanged. This means that for all vectors <span class="math inline">\(v _ { 1 } , \dotsc , v _ { k } \in V\)</span> and every pair of distinct indices i , j it satisfies <span class="math display">\[ \alpha (v _ {1}, \ldots , v _ {i}, \ldots , v _ {j}, \ldots , v _ {k}) = - \alpha (v _ {1}, \ldots , v _ {j}, \ldots , v _ {i}, \ldots , v _ {k}). \]</span> Alternating covariant k-tensors are also variously called exterior forms, multicovectors, or k-covectors. The subspace of all alternating covariant k-tensors on <span class="math inline">\(V\)</span> is denoted by <span class="math inline">\(\Lambda ^ { k } ( V ^ { * } ) \subseteq T ^ { k } ( V ^ { * } )\)</span> . Recall that for any permutation <span class="math inline">\(\sigma \in S _ { k }\)</span> , the sign of  , denoted by sgn , is equal to 1 if  is even (i.e., can be written as a composition of an even number of transpositions), and 1 if  is odd (see Proposition</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Alternating/Basic.html"><code>Mathlib/LinearAlgebra/Alternating/Basic.lean::AlternatingMap, AlternatingMap.map_swap, AlternatingMap.map_perm</code></a> — <code>AlternatingMap ℝ V ℝ (Fin k)</code> is a scalar-valued k-multilinear map that changes sign under swaps/permutations, with the inherited real vector-space structure. Via U012’s tensor/multilinear equivalence this is exactly the space of alternating covariant k-tensors.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c12-u028" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u028">Definition/convention — alternating 2-tensor</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U028</code> · Ch. 12, § Alternating Tensors; source L9343 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Every 0-tensor (which is just a real number) is both symmetric and alternating, because there are no arguments to interchange. Similarly, every 1-tensor is both symmetric and alternating. An alternating 2-tensor on V is a skew-symmetric bilinear form. It is interesting to note that every covariant 2-tensor β can be expressed as a sum of an alternating tensor and a symmetric one, because <span class="math display">\[ \beta(v,w) = \tfrac{1}{2}\big(\beta(v,w) - \beta(w,v)\big) + \tfrac{1}{2}\big(\beta(v,w) + \beta(w,v)\big) = \alpha(v,w) + \sigma(v,w), \]</span> with <span class="math inline">\(\alpha\)</span> alternating and <span class="math inline">\(\sigma\)</span> symmetric.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — The canonical Sweep-I source statement for U028 is truncated before completing its mathematical assertion. Sweep II preserves that source defect and does not reconstruct the missing conclusion from the book or nearby rows. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u029" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u029">Definition/convention — bundle of covariant k-tensors</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U029</code> · Ch. 12, § Tensors and Tensor Fields on Manifolds; source L9355 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Now let M be a smooth manifold with or without boundary. We define the bundle of covariant k-tensors on M by <span class="math display">\[ T ^ {k} T ^ {*} M = \coprod_ {p \in M} T ^ {k} \big (T _ {p} ^ {*} M \big). \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — P/H have no general manifold tensor-bundle/tensor-field layer. <code>ContinuousAlternatingMap</code> constructs a topological bundle of alternating maps between arbitrary vector-bundle fibers, and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Tensoriality.lean#doc"><code>Tensoriality.lean</code></a> handles unary/binary tensorial operations on sections, but neither supplies Lee’s covariant/contravariant/mixed tensor bundles and smooth fields. These rows also inherit C03’s unbridged point-derivation vs standard-<code>TangentSpace</code> models and C11’s absent manifold cotangent bundle. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u030" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u030">Definition/convention — bundle of contravariant k-tensors by T</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U030</code> · Ch. 12, § Tensors and Tensor Fields on Manifolds; source L9361 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The bundle of contravariant <span class="math inline">\(k\)</span>-tensors is <span class="math display">\[ T^{k}TM = \coprod_{p \in M} T^{k}\big(T_{p}M\big), \]</span> and the bundle of mixed tensors of type <span class="math inline">\((k,l)\)</span> is <span class="math display">\[ T^{(k,l)}TM = \coprod_{p \in M} T^{(k,l)}\big(T_{p}M\big). \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — The canonical Sweep-I source statement for U030 is truncated before completing its mathematical assertion. Sweep II preserves that source defect and does not reconstruct the missing conclusion from the book or nearby rows. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u031" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u031">Definition/convention — tensor bundle</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U031</code> · Ch. 12, § Tensors and Tensor Fields on Manifolds; source L9397 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Any one of these bundles is called a tensor bundle over M . (Thus, the tangent and cotangent bundles are special cases of tensor bundles.) A section of a tensor bundle is called a (covariant, contravariant, or mixed) tensor field on M . A smooth tensor field is a section that is smooth in the usual sense of smooth sections of vector bundles. Using the identifications above, we see that contravariant 1-tensor fields are the same as vector fields, and covariant 1-tensor fields are covector fields. Because a 0-tensor is just a real number, a 0-tensor field is the same as a continuous real-valued function.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — P/H have no general manifold tensor-bundle/tensor-field layer. <code>ContinuousAlternatingMap</code> constructs a topological bundle of alternating maps between arbitrary vector-bundle fibers, and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Tensoriality.lean#doc"><code>Tensoriality.lean</code></a> handles unary/binary tensorial operations on sections, but neither supplies Lee’s covariant/contravariant/mixed tensor bundles and smooth fields. These rows also inherit C03’s unbridged point-derivation vs standard-<code>TangentSpace</code> models and C11’s absent manifold cotangent bundle. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u032" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u032">Convention/notation — component functions of A in the chosen coordinates</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U032</code> · Ch. 12, § Tensors and Tensor Fields on Manifolds; source L9405 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p><span class="math display">\[ The functions $A _ { i _ { 1 } . . . i _ { k } } , A ^ { i _ { 1 } . . . i _ { k } }$ , or $A _ { j _ { 1 } \ldots i _ { l } } ^ { i _ { 1 } \ldots i _ { k } }$ are called the component functions of A in the chosen coordinates. Because smooth covariant tensor fields occupy most of our attention, we adopt the following shorthand notation for the space of all smooth covariant k-tensor fields: \]</span> ^ {k} (M) = (T</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — P/H have no general manifold tensor-bundle/tensor-field layer. <code>ContinuousAlternatingMap</code> constructs a topological bundle of alternating maps between arbitrary vector-bundle fibers, and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Tensoriality.lean#doc"><code>Tensoriality.lean</code></a> handles unary/binary tensorial operations on sections, but neither supplies Lee’s covariant/contravariant/mixed tensor bundles and smooth fields. These rows also inherit C03’s unbridged point-derivation vs standard-<code>TangentSpace</code> models and C11’s absent manifold cotangent bundle. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u033" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u033">Proposition 12.19</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U033</code> · Ch. 12, § Tensors and Tensor Fields on Manifolds; source L9411 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 12.19 (Smoothness Criteria for Tensor Fields). Let M be a smooth manifold with or without boundary, and let A <span class="math inline">\(M \to T ^ { k } T ^ { * } M\)</span> be a rough section. The following are equivalent. (a) A is smooth. (b) In every smooth coordinate chart, the component functions of A are smooth. (c) Each point of M is contained in some coordinate chart in which A has smooth component functions. (d) { k } ( M )$ , then the function $ X _ { k } ) M _ {p} (X _ {1} | _ {p}, , X _ {k} | _ {p} ), smooth. (e) Whenever <span class="math inline">\(X _ { 1 } , \ldots , X _ { k }\)</span> are smooth vector fields defined on some open subset <span class="math inline">\(U \subseteq M\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — P/H have no general manifold tensor-bundle/tensor-field layer. <code>ContinuousAlternatingMap</code> constructs a topological bundle of alternating maps between arbitrary vector-bundle fibers, and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Tensoriality.lean#doc"><code>Tensoriality.lean</code></a> handles unary/binary tensorial operations on sections, but neither supplies Lee’s covariant/contravariant/mixed tensor bundles and smooth fields. These rows also inherit C03’s unbridged point-derivation vs standard-<code>TangentSpace</code> models and C11’s absent manifold cotangent bundle. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u034" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u034">Proposition 12.22</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U034</code> · Ch. 12, § Tensors and Tensor Fields on Manifolds; source L9433 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Suppose <span class="math inline">\(M\)</span> is a smooth manifold with or without boundary, <span class="math inline">\(A \in \mathcal{T}^{k}(M)\)</span>, <span class="math inline">\(B \in \mathcal{T}^{l}(M)\)</span> and <span class="math inline">\(f \in C^{\infty}(M)\)</span>. Then <span class="math inline">\(fA\)</span> and <span class="math inline">\(A \otimes B\)</span> are smooth tensor fields, with components in any smooth chart <span class="math display">\[ (fA)_{i_{1}\dots i_{k}} = f\,A_{i_{1}\dots i_{k}}, \qquad (A \otimes B)_{i_{1}\dots i_{k+l}} = A_{i_{1}\dots i_{k}}\,B_{i_{k+1}\dots i_{k+l}}. \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — P/H have no general manifold tensor-bundle/tensor-field layer. <code>ContinuousAlternatingMap</code> constructs a topological bundle of alternating maps between arbitrary vector-bundle fibers, and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Tensoriality.lean#doc"><code>Tensoriality.lean</code></a> handles unary/binary tensorial operations on sections, but neither supplies Lee’s covariant/contravariant/mixed tensor bundles and smooth fields. These rows also inherit C03’s unbridged point-derivation vs standard-<code>TangentSpace</code> models and C11’s absent manifold cotangent bundle. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u035" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u035">Lemma 12.24</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U035</code> · Ch. 12, § Tensors and Tensor Fields on Manifolds; source L9455 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>(Tensor Characterization Lemma). A map <span class="math display">\[ \mathcal{A} \colon \underbrace{\mathfrak{X}(M) \times \cdots \times \mathfrak{X}(M)}_{k \text{ copies}} \to C^{\infty}(M) \tag{12.7} \]</span> is induced by a smooth covariant <span class="math inline">\(k\)</span>-tensor field if and only if it is multilinear over <span class="math inline">\(C^{\infty}(M)\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — P/H have no general manifold tensor-bundle/tensor-field layer. <code>ContinuousAlternatingMap</code> constructs a topological bundle of alternating maps between arbitrary vector-bundle fibers, and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Tensoriality.lean#doc"><code>Tensoriality.lean</code></a> handles unary/binary tensorial operations on sections, but neither supplies Lee’s covariant/contravariant/mixed tensor bundles and smooth fields. These rows also inherit C03’s unbridged point-derivation vs standard-<code>TangentSpace</code> models and C11’s absent manifold cotangent bundle. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u036" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u036">Definition/convention — covariant tensor field</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U036</code> · Ch. 12, § Tensors and Tensor Fields on Manifolds; source L9489 · after <a href="#fc08-c12-u026"><code>FC08-C12-U026</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A symmetric tensor field on a manifold (with or without boundary) is simply a covariant tensor field whose value at each point is a symmetric tensor. The symmetric product of two or more tensor fields is defined pointwise, just like the tensor product. Thus, for example, if A and B are smooth covector fields, their symmetric product is the smooth 2-tensor field AB, which by Proposition 12.15(b) is given by <span class="math display">\[ A B = \frac {1}{2} (A \otimes B + B \otimes A). \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — P/H have no general manifold tensor-bundle/tensor-field layer. <code>ContinuousAlternatingMap</code> constructs a topological bundle of alternating maps between arbitrary vector-bundle fibers, and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Tensoriality.lean#doc"><code>Tensoriality.lean</code></a> handles unary/binary tensorial operations on sections, but neither supplies Lee’s covariant/contravariant/mixed tensor bundles and smooth fields. These rows also inherit C03’s unbridged point-derivation vs standard-<code>TangentSpace</code> models and C11’s absent manifold cotangent bundle. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u037" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u037">Definition/convention — differential forms</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U037</code> · Ch. 12, § Tensors and Tensor Fields on Manifolds; source L9495 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Alternating tensor fields are called differential forms; we will study them in depth beginning in Chapter 14.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — P/H have no general manifold tensor-bundle/tensor-field layer. <code>ContinuousAlternatingMap</code> constructs a topological bundle of alternating maps between arbitrary vector-bundle fibers, and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Tensoriality.lean#doc"><code>Tensoriality.lean</code></a> handles unary/binary tensorial operations on sections, but neither supplies Lee’s covariant/contravariant/mixed tensor bundles and smooth fields. These rows also inherit C03’s unbridged point-derivation vs standard-<code>TangentSpace</code> models and C11’s absent manifold cotangent bundle. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u038" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u038">Construction/definition — pointwise pullback of</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U038</code> · Ch. 12, § Pullbacks of Tensor Fields; source L9501 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For any point <span class="math inline">\(p \in M\)</span> and any k-tensor <span class="math inline">\(\alpha \in T ^ { k } \bigl ( T _ { F ( p ) } ^ { * } N \bigr )\)</span> , we define a tensor d <span class="math inline">\(\bar { F } _ { p } ^ { * } ( \alpha ) \in \bar { T } ^ { \bar { k } } \big ( T _ { p } ^ { * } \bar { M } \big )\)</span> , called the pointwise pullback of ˛ by F at p, by <span class="math display">\[ d F _ {p} ^ {*} (\alpha) (v _ {1}, \dots , v _ {k}) = \alpha \left(d F _ {p} (v _ {1}), \dots , d F _ {p} (v _ {k})\right) \]</span> for any <span class="math inline">\(v _ { 1 } , \dotsc , v _ { k } \in T _ { p } M\)</span> . If A is a covariant k-tensor field on N , we define a rough k-tensor field <span class="math inline">\(F ^ { * } A\)</span> on M; called the pullback of A by F , by <span class="math display">\[ (F ^ {*} A) _ {p} = d F _ {p} ^ {*} \big (A _ {F (p)} \big). \]</span> This tensor field acts on vectors <span class="math inline">\(v _ { 1 } , \dotsc , v _ { k } \in T _ { p } M\)</span> by <span class="math display">\[ (F ^ {*} A) _ {p} (v _ {1}, \dots , v _ {k}) = A _ {F (p)} \left(d F _ {p} (v _ {1}), \dots , d F _ {p} (v _ {k})\right). \]</span> Proposition 12.25 (Properties of Tensor Pullbacks). Suppose <span class="math inline">\(F \colon M \to N\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — P/H have no general manifold tensor-bundle/tensor-field layer. <code>ContinuousAlternatingMap</code> constructs a topological bundle of alternating maps between arbitrary vector-bundle fibers, and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Tensoriality.lean#doc"><code>Tensoriality.lean</code></a> handles unary/binary tensorial operations on sections, but neither supplies Lee’s covariant/contravariant/mixed tensor bundles and smooth fields. These rows also inherit C03’s unbridged point-derivation vs standard-<code>TangentSpace</code> models and C11’s absent manifold cotangent bundle. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u039" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u039">Proposition 12.25</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U039</code> · Ch. 12, § Pullbacks of Tensor Fields; source L9519 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 12.25 (Properties of Tensor Pullbacks). Suppose and <span class="math inline">\(G \colon N \to P\)</span> are smooth maps, A and B are covariant tensor fields on N , and f is a real-valued function on N . (a) <span class="math inline">\(F ^ { * } ( f B ) = ( f \circ F ) F ^ { * } B\)</span> F ^ { * } A F ^ { * } B .$ (c) $F ^ { * } ( A + B ) = F ^ { * } A + F (d) F B is a (continuous) tensor field, and is smooth if B is smooth. (e) <span class="math inline">\(( G \circ F ) ^ { * } B = F ^ { * } ( G ^ { * } B )\)</span> (f) <span class="math inline">\(( \mathrm { I d } _ { N } ) ^ { * } B = B\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — P/H have no general manifold tensor-bundle/tensor-field layer. <code>ContinuousAlternatingMap</code> constructs a topological bundle of alternating maps between arbitrary vector-bundle fibers, and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Tensoriality.lean#doc"><code>Tensoriality.lean</code></a> handles unary/binary tensorial operations on sections, but neither supplies Lee’s covariant/contravariant/mixed tensor bundles and smooth fields. These rows also inherit C03’s unbridged point-derivation vs standard-<code>TangentSpace</code> models and C11’s absent manifold cotangent bundle. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u040" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u040">Corollary 12.28</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U040</code> · Ch. 12, § Pullbacks of Tensor Fields; source L9541 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>(Pullback of a Tensor Field). Let <span class="math inline">\(M = \{(r,\theta) : r &gt; 0,\ |\theta| &lt; \pi/2\}\)</span> and <span class="math inline">\(N = \{(x,y) : x &gt; 0\}\)</span>, and let <span class="math inline">\(F \colon M \to \mathbb{R}^{2}\)</span> be the smooth map <span class="math inline">\(F(r,\theta) = (r\cos\theta,\ r\sin\theta)\)</span>. The pullback of the tensor field <span class="math inline">\(A = x^{-2}\,dy \otimes dy\)</span> is computed by substituting the coordinate functions of <span class="math inline">\(F\)</span> and expanding.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — P/H have no general manifold tensor-bundle/tensor-field layer. <code>ContinuousAlternatingMap</code> constructs a topological bundle of alternating maps between arbitrary vector-bundle fibers, and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Tensoriality.lean#doc"><code>Tensoriality.lean</code></a> handles unary/binary tensorial operations on sections, but neither supplies Lee’s covariant/contravariant/mixed tensor bundles and smooth fields. These rows also inherit C03’s unbridged point-derivation vs standard-<code>TangentSpace</code> models and C11’s absent manifold cotangent bundle. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u041" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u041">Example 12.29</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U041</code> · Ch. 12, § Pullbacks of Tensor Fields; source L9549 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>of a Tensor Field). Let <span class="math inline">\(M = \{ ( r , \theta ) : r &gt; 0 , | \theta | &lt; \pi / 2 \}\)</span> and <span class="math inline">\(N = \{ ( x , y ) : x &gt; 0 \}\)</span> , and let <span class="math inline">\(F \colon M \to \mathbb { R } ^ { 2 }\)</span> be the smooth map <span class="math inline">\(F ( r , \theta ) =\)</span> .r cos ; r sin  /. The pullback of the tensor field <span class="math inline">\(A = x ^ { - 2 } d y \otimes d y\)</span> by F can be computed easily by substituting <span class="math inline">\(x = r \cos \theta , y = r\)</span> sin  and simplifying: <span class="math display">\[ \begin{array}{l} F ^ {*} A = (r \cos \theta) ^ {- 2} d (r \sin \theta) \otimes d (r \sin \theta) \\ \qquad = (r \cos \theta) ^ {- 2} (\sin \theta d r + r \cos \theta d \theta) \otimes (\sin \theta d r + r \cos \theta d \theta) \\ \qquad = r ^ {- 2} \tan^ {2} \theta d r \otimes d r + r ^ {- 1} \tan \theta (d \theta \otimes d r + d r \otimes d \theta) + d \theta \otimes d \theta . \end{array} \]</span> In general, there is neither a pushforward nor a pullback operation for mixed tensor fields. However, in the special case of a diffeomorphism, tensor fields of any variance can be pushed forward and pulled back at will (s</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — P/H have no general manifold tensor-bundle/tensor-field layer. <code>ContinuousAlternatingMap</code> constructs a topological bundle of alternating maps between arbitrary vector-bundle fibers, and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Tensoriality.lean#doc"><code>Tensoriality.lean</code></a> handles unary/binary tensorial operations on sections, but neither supplies Lee’s covariant/contravariant/mixed tensor bundles and smooth fields. These rows also inherit C03’s unbridged point-derivation vs standard-<code>TangentSpace</code> models and C11’s absent manifold cotangent bundle. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u042" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u042">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U042</code> · Ch. 12, § Lie Derivatives of Tensor Fields; source L9561 · after <a href="c09.html#fc08-c09-u049"><code>FC08-C09-U049</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Suppose M is a smooth manifold, V is a smooth vector field on M; and θ is its flow. (For simplicity, we discuss only the case ∂ M = emptyset here, but these definitions and results carry over essentially unchanged to manifolds with boundary as long as V is tangent to the boundary, so that its flow exists by Theorem 9.34.) For any p ∈ M; if t is sufficiently close to zero, then θ _t is a diffeomorphism from a neighborhood of p to a neighborhood of θ _t ( p ) , so d ( θ _t ) _p * pulls back tensors at θ _t ( p ) to ones at p by the formula <span class="math display">\[ d(\theta_{t})^{*}_{p}\big(A_{\theta_{t}(p)}\big)(v_{1},\dots,v_{k}) = A_{\theta_{t}(p)}\big(d(\theta_{t})_{p}(v_{1}),\dots,d(\theta_{t})_{p}(v_{k})\big), \]</span> which is the value at <span class="math inline">\(p\)</span> of the pullback tensor field <span class="math inline">\(\theta_{t}^{*}A\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — No checked manifold tensor-field Lie-derivative API exists at P or current H. These rows require the absent tensor-field/pullback layer plus the C09 maximal/local-flow machinery and, for formulas involving vector fields/brackets, the C03/C08 tangent-model bridge. Generic flow, bracket, and algebraic tensor ingredients do not own the source statements. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u043" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u043">Lemma 12.30</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U043</code> · Ch. 12, § Lie Derivatives of Tensor Fields; source L9579 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Lemma 12.30. With M; V , and A as above, the derivative in (12.8) exists for every <span class="math inline">\(p \in M\)</span> and defines <span class="math inline">\(\mathcal { L } _ { V } A\)</span> as a smooth tensor field se of “formal linear combinations.” Let S be a set.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — No checked manifold tensor-field Lie-derivative API exists at P or current H. These rows require the absent tensor-field/pullback layer plus the C09 maximal/local-flow machinery and, for formulas involving vector fields/brackets, the C03/C08 tangent-model bridge. Generic flow, bracket, and algebraic tensor ingredients do not own the source statements. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u044" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u044">Proposition 12.32</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U044</code> · Ch. 12, § Lie Derivatives of Tensor Fields; source L9586 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 12.32. Let M be a smooth manifold and let <span class="math inline">\(V \in { \mathfrak { X } } ( M )\)</span> . Suppose f is a smooth real-valued function (regarded as a 0-tensor field) on M; and A; B are smooth covariant tensor fields on M . (a) <span class="math inline">\(\mathcal { L } _ { V } f = V f\)</span> (b) <span class="math inline">\(\displaystyle \mathcal { L } _ { V } ( f A ) = ( \mathcal { L } _ { V } f ) A + f \mathcal { L } _ { V } A .\)</span> (c) <span class="math inline">\({ \mathcal { L } } _ { V } ( A \otimes B ) = ( { \mathcal { L } } _ { V } A ) \otimes B + A \otimes { \mathcal { L } } _ { V } B .\)</span> (d) <span class="math inline">\(I f X _ { 1 } , \ldots , X _ { k }\)</span> are smooth vector fields and A is a smooth k-tensor field, <span class="math display">\[ \begin{array}{c} \mathcal {L} _ {V} \big (A (X _ {1}, \ldots , X _ {k}) \big) = (\mathcal {L} _ {V} A) (X _ {1}, \ldots , X _ {k}) + A (\mathcal {L} _ {V} X _ {1}, \ldots , X _ {k}) \\ + \dots + A (X _ {1}, \ldots , \mathcal {L} _ {V} X _ {k}). \end{array}\tag{12.9} \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — No checked manifold tensor-field Lie-derivative API exists at P or current H. These rows require the absent tensor-field/pullback layer plus the C09 maximal/local-flow machinery and, for formulas involving vector fields/brackets, the C03/C08 tangent-model bridge. Generic flow, bracket, and algebraic tensor ingredients do not own the source statements. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u045" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u045">Corollary 12.33</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U045</code> · Ch. 12, § Lie Derivatives of Tensor Fields; source L9618 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary 12.33. If V is a smooth vector field and A is a smooth covariant k-tensor field, then for any smooth vector <span class="math inline">\(X _ { 1 } , \ldots , X _ { k }\)</span> <span class="math display">\[ \begin{array}{c} (\mathcal {L} _ {V} A) (X _ {1}, \ldots , X _ {k}) = V \big (A (X _ {1}, \ldots , X _ {k}) \big) - A \big ([ V, X _ {1} ], X _ {2}, \ldots , X _ {k} \big) \\ - \dots - A \big (X _ {1}, \ldots , X _ {k - 1}, [ V, X _ {k} ] \big). \end{array}\tag{12.10} \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — No checked manifold tensor-field Lie-derivative API exists at P or current H. These rows require the absent tensor-field/pullback layer plus the C09 maximal/local-flow machinery and, for formulas involving vector fields/brackets, the C03/C08 tangent-model bridge. Generic flow, bracket, and algebraic tensor ingredients do not own the source statements. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u046" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u046">Corollary 12.34</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U046</code> · Ch. 12, § Lie Derivatives of Tensor Fields; source L9626 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If <span class="math inline">\(f \in C^{\infty}(M)\)</span>, then <span class="math inline">\(\mathcal{L}_{V}(df) = d(\mathcal{L}_{V}f)\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — No checked manifold tensor-field Lie-derivative API exists at P or current H. These rows require the absent tensor-field/pullback layer plus the C09 maximal/local-flow machinery and, for formulas involving vector fields/brackets, the C03/C08 tangent-model bridge. Generic flow, bracket, and algebraic tensor ingredients do not own the source statements. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u047" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u047">Example 12.35</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U047</code> · Ch. 12, § Lie Derivatives of Tensor Fields; source L9636 · after <a href="c09.html#fc08-c09-u058"><code>FC08-C09-U058</code></a>, <a href="c09.html#fc08-c09-u056"><code>FC08-C09-U056</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a smooth covariant 2-tensor field <span class="math inline">\(A\)</span> and a smooth vector field <span class="math inline">\(V\)</span>, since <span class="math inline">\(\mathcal{L}_{V}dx^{i} = d(\mathcal{L}_{V}x^{i}) = d(Vx^{i}) = dV^{i}\)</span>, the Lie derivative in smooth local coordinates is <span class="math display">\[ \mathcal{L}_{V}A = \left(VA_{ij} + A_{kj}\frac{\partial V^{k}}{\partial x^{i}} + A_{ik}\frac{\partial V^{k}}{\partial x^{j}}\right) dx^{i} \otimes dx^{j}. \]</span> A smooth tensor field <span class="math inline">\(A\)</span> is invariant under a flow <span class="math inline">\(\theta\)</span> if each <span class="math inline">\(\theta_{t}\)</span> pulls <span class="math inline">\(A\)</span> back to itself wherever defined, that is <span class="math display">\[ d(\theta_{t})^{*}_{p}\left(A_{\theta_{t}(p)}\right) = A_{p} \tag{12.11} \]</span> for all <span class="math inline">\((t,p)\)</span> in the domain of <span class="math inline">\(\theta\)</span>; for a global flow this is <span class="math inline">\(\theta_{t}^{*}A = A\)</span> for all <span class="math inline">\(t \in \mathbb{R}\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — No checked manifold tensor-field Lie-derivative API exists at P or current H. These rows require the absent tensor-field/pullback layer plus the C09 maximal/local-flow machinery and, for formulas involving vector fields/brackets, the C03/C08 tangent-model bridge. Generic flow, bracket, and algebraic tensor ingredients do not own the source statements. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u048" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u048">Proposition 12.36</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U048</code> · Ch. 12, § Lie Derivatives of Tensor Fields; source L9652 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 12.36. Suppose M is a smooth manifold with or without boundary and { } ( M ) . I f M = $ , assume in addition that V is tangent to <span class="citation" data-cites="M">@M</span> . Let  be the flow of V . For any smooth covariant tensor field A and any $ <span class="math display">\[ \left. \frac {d}{d t} \right| _ {t = t _ {0}} \left(\theta_ {t} ^ {*} A\right) _ {p} = \left(\theta_ {t _ {0}} ^ {*} (\mathcal {L} _ {V} A)\right) _ {p}.\tag{12.12} \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — No checked manifold tensor-field Lie-derivative API exists at P or current H. These rows require the absent tensor-field/pullback layer plus the C09 maximal/local-flow machinery and, for formulas involving vector fields/brackets, the C03/C08 tangent-model bridge. Generic flow, bracket, and algebraic tensor ingredients do not own the source statements. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c12-u049" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c12-u049">Theorem 12.37</h3>
+<div class="unit-meta">
+<p><code>FC08-C12-U049</code> · Ch. 12, § Lie Derivatives of Tensor Fields; source L9670 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Let <span class="math inline">\(M\)</span> be a smooth manifold and <span class="math inline">\(V \in \mathfrak{X}(M)\)</span>. A smooth covariant tensor field <span class="math inline">\(A\)</span> is invariant under the flow of <span class="math inline">\(V\)</span> if and only if <span class="math inline">\(\mathcal{L}_{V}A = 0\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — No checked manifold tensor-field Lie-derivative API exists at P or current H. These rows require the absent tensor-field/pullback layer plus the C09 maximal/local-flow machinery and, for formulas involving vector fields/brackets, the C03/C08 tangent-model bridge. Generic flow, bracket, and algebraic tensor ingredients do not own the source statements. Strict whole-row semantics reject proper subsets, unproved equivalences, stronger hypotheses, truncated-source reconstruction, and substantive assembly from generic ingredients.</p>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/dzackgarza\.github\.io\/lean-categories\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Generated from the project’s reference notes by <code>site/build.py</code>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>The Lean is the authority; where this site differs, the Lean is right.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

@@ -1,0 +1,2656 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Chapter 4. Adjunctions – lean-categories · corpus</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-7335da993d57b01553edc5728a7cb5aa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">lean-categories · corpus</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../coverage.html" aria-current="page"> 
+<span class="menu-text">Every book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../corpus.html"> 
+<span class="menu-text">Reading list</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../catalogues/index.html"> 
+<span class="menu-text">Catalogues</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/dzackgarza/lean-categories"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc03/index.html">FC03</a></li><li class="breadcrumb-item"><a href="../../sources/fc03/c04.html">Chapter 4. Adjunctions</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="sidebar-tools-main">
+    <div id="quarto-search" class="quarto-navigation-tool px-1" title="Search"></div>
+</div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Graduate mathematics, and what Lean has of it</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../coverage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Every book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../corpus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational source corpus</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../status.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus status</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Sources</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC01 Dummit Foote</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/ai.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01 Appendix I — Cartesian Products and Zorn’s Lemma</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC03</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC03 Riehl Category Theory in Context</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Categories, Functors, and Natural Transformations (pp.&nbsp;1–48)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Representability and the Yoneda Lemma (pp.&nbsp;49–72)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Limits and Colimits (pp.&nbsp;73–114)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c04.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Chapter 4. Adjunctions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Monads and Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. All Concepts are Kan Extensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/ce.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Epilogue: Theorems in Category Theory</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC04</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC04 Atiyah Macdonald</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Rings and Ideals (pp.&nbsp;1–9)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Modules (pp.&nbsp;17–30)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Rings and Modules of Fractions (pp.&nbsp;36–42)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Primary Decomposition (pp.&nbsp;50–54)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Integral Dependence and Valuations (pp.&nbsp;59–66)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Chain Conditions (pp.&nbsp;74–77)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Noetherian Rings (pp.&nbsp;80–83)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Artin Rings (pp.&nbsp;89–90)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Discrete Valuation Rings and Dedekind Domains (pp.&nbsp;93–98)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. Completions (pp.&nbsp;100–112)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Dimension Theory (pp.&nbsp;116–124)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC05</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC05 Weibel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Chain Complexes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Derived Functors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Tor and Ext</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homological Dimension</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Spectral Sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Group Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Lie Algebra Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Simplicial Methods in Homological Algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Hochschild and Cyclic Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. The Derived Category</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Category Theory Language</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC06</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC06 Hartshorne</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter I: Varieties</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter II: Schemes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter III: Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter IV: Curves</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter V: Surfaces</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC07</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC07 Hatcher</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 0. Some Underlying Geometric Notions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. The Fundamental Group</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homotopy Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix. Topology of Cell Complexes</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC08 Lee</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c22.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC09 Neukirch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC10 Serre Local Fields</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc11/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC11 Peters Sterk</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc12/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC12 Beauville</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc13/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC13</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC13 Matsumura</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Front matter — conventions and terminology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Commutative rings and modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Prime ideals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Properties of extension rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Valuation rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Dimension theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Regular sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Regular rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Flatness revisited</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Derivations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. I-smoothness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Applications of complete local rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Tensor products, direct and inverse limits</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix B. Some homological algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix C. The exterior algebra</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc14/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC14</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC14 Humphreys</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Basic Concepts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Semisimple Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Root Systems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Isomorphism and Conjugacy Theorems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Existence Theorem</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Representation Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Chevalley Algebras and Groups</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc15/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC15</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Classification of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Polynomial invariants of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Affine reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Coxeter groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Special cases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Hecke algebras and Kazhdan–Lusztig polynomials</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Complements</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc16/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC16</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Algebraic Geometry</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Affine Algebraic Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Homogeneous Spaces</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Characteristic 0 Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Semisimple and Unipotent Elements</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Solvable Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VIII. Borel Subgroups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IX. Centralizers of Tori</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter X. Structure of Reductive Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XI. Representations and Classification of Semisimple Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XII. Survey of Rationality Properties and Appendix</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../catalogues/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Definition catalogues</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">catalogues/*.md</span>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Notes and audits</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">notes/*.md</span>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc03/index.html">FC03</a></li><li class="breadcrumb-item"><a href="../../sources/fc03/c04.html">Chapter 4. Adjunctions</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Chapter 4. Adjunctions</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>FC03 — Riehl, <em>Category Theory in Context</em>.</p>
+<p>This chapter contains 13 definitions, 6 theorems, 10 propositions, 8 lemmas, 10 corollaries, 20 examples, 2 constructions, 2 remarks, 1 notation and 4 other statements.</p>
+<p>Nobody has checked this chapter against Lean yet, so the statements below say nothing about whether they are formalized.</p>
+<section id="fc03-c04-u001" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u001">Definition 4.1.1</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U001</code> · §4.1, pp.&nbsp;116–121; L3847 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>An adjunction F:C→D ⊣ G:D→C is a natural family of bijections D(Fc,d) ≅ C(c,Gd), natural in c and d; F is the left adjoint, G the right adjoint, and corresponding morphisms are transposes.</p>
+</section>
+<section id="fc03-c04-u002" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u002">Lemma 4.1.3</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U002</code> · §4.1, pp.&nbsp;116–121; L3885 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>Consider a pair of functors <span class="math inline">\(F \colon \mathsf{C} \to \mathsf{D}\)</span> and <span class="math inline">\(G \colon \mathsf{D} \to \mathsf{C}\)</span> equipped with isomorphisms <span class="math inline">\(\mathsf{D}(Fc,d) \cong \mathsf{C}(c,Gd)\)</span> for all <span class="math inline">\(c \in \mathsf{C}\)</span> and <span class="math inline">\(d \in \mathsf{D}\)</span>. Naturality of this collection of isomorphisms is equivalent to the assertion that, for every <span class="math inline">\(f \colon c' \to c\)</span> in <span class="math inline">\(\mathsf{C}\)</span>, every <span class="math inline">\(g \colon d \to d'\)</span> in <span class="math inline">\(\mathsf{D}\)</span> and every <span class="math inline">\(k \colon Fc \to d\)</span> with transpose <span class="math inline">\(k^{\sharp} \colon c \to Gd\)</span>, <span class="math display">\[ (g \cdot k \cdot Ff)^{\sharp} = Gg \cdot k^{\sharp} \cdot f, \]</span> that is, the square (4.1.4) commutes in <span class="math inline">\(\mathsf{D}\)</span> if and only if its transposed square commutes in <span class="math inline">\(\mathsf{C}\)</span>.</p>
+</section>
+<section id="fc03-c04-u003" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u003">Notation 4.1.5</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U003</code> · §4.1, pp.&nbsp;116–121; L3893 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>Write F ⊣ G (equivalently G ⊢ F) to assert that F:C→D is left adjoint to G:D→C.</p>
+</section>
+<section id="fc03-c04-u004" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u004">Example 4.1.6</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U004</code> · §4.1, pp.&nbsp;116–121; L3903 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>The forgetful functor U : Top Set admits both left and right adjoints. The left adjoint constructs a topological space from a set S in such a way that continuous maps from this space to another space T correspond naturally and bijectively to functions <span class="math inline">\(S \to U ( T )\)</span> . The discrete topology on S has this universal property: writing <span class="math inline">\(D ( S )\)</span> for this discrete space, any function <span class="math inline">\(S \to U ( T )\)</span> defines a continuous map <span class="math inline">\(D ( S ) \to T\)</span></p>
+</section>
+<section id="fc03-c04-u005" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u005">Definition/comparison</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U005</code> · §4.1, pp.&nbsp;116–121; L3915 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>An adjunction between preorders is a monotone Galois connection: order-preserving F:A→B and G:B→A satisfy F(a)≤b iff a≤G(b).</p>
+</section>
+<section id="fc03-c04-u006" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u006">Example 4.1.7</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U006</code> · §4.1, pp.&nbsp;116–121; L3921 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>The inclusion of posets <span class="math inline">\(\mathbb { Z } \hookrightarrow \mathbb { R }\)</span> , with the usual ordering , has both left and right adjoints, namely, the ceiling and floor functions. For any integer n and real number <span class="math inline">\(r , n \leq r \mathrm { i f }\)</span> and only if <span class="math inline">\(n \leq \lfloor r \rfloor\)</span> , where <span class="math inline">\(\lfloor r \rfloor\)</span> denotes the greatest integer less than or equal to r. This function is order-preserving, defining a functor <span class="math inline">\(\lfloor - \rfloor \colon \mathbb { R } \to \mathbb { Z }\)</span> that is right adjoint to the inclusion <span class="math inline">\(\mathbb { Z } \hookrightarrow \mathbb { R }\)</span> . Dually, <span class="math inline">\(r \leq n\)</span> if and only if <span class="math inline">\(\lceil r \rceil \leq n ,\)</span> and this order-preserving function defines a functor <span class="math inline">\(\lceil - \rceil : \mathbb { R } \to \mathbb { Z }\)</span> that is left adjoint to the inclusion.</p>
+</section>
+<section id="fc03-c04-u007" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u007">Example 4.1.8</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U007</code> · §4.1, pp.&nbsp;116–121; L3925 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>Consider a function <span class="math inline">\(f \colon A \to B\)</span> between sets. The subsets of A and subsets of B form posets, PA and <span class="math inline">\(P B ,\)</span> ordered by inclusion. The map f induces direct image and inverse image functors <span class="math inline">\(f _ { * } \colon P A \to P B\)</span> and <span class="math inline">\(f ^ { - 1 } \colon P B \to P A\)</span> The inverse image is right adjoint to the direct image: for <span class="math inline">\(A ^ { \prime } \subset A\)</span> and <span class="math inline">\(B ^ { \prime } \subset B , f ( A ^ { \prime } ) \subset B ^ { \prime }\)</span> if and only if <span class="math inline">\(A ^ { \prime } \subset f ^ { - 1 } ( B ^ { \prime } )\)</span></p>
+</section>
+<section id="fc03-c04-u008" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u008">Example 4.1.9</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U008</code> · §4.1, pp.&nbsp;116–121; L3931 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>A propositional function is a function <span class="math inline">\(P \colon X \Omega = { \bot , \top }\)</span> , which we interpret as declaring, for each <span class="math inline">\(x \in X ,\)</span> , whether <span class="math inline">\(P ( x )\)</span> is true or false. The set <span class="math inline">\(\Omega ^ { X }\)</span> is then the set of propositional functions on X. The set Ω is given the partial order <span class="math inline">\(\perp \le \top\)</span> from which <span class="math inline">\(\Omega ^ { X }\)</span> inherits a pointwise-defined order: <span class="math inline">\(P \leq Q\)</span> if and only if <span class="math inline">\(P ( x ) \leq Q ( x )\)</span> for all <span class="math inline">\(x \in X\)</span> which is the case if and only if <span class="math inline">\(P\)</span> implies <span class="math inline">\(Q .\)</span></p>
+</section>
+<section id="fc03-c04-u009" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u009">Example 4.1.10</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U009</code> · §4.1, pp.&nbsp;116–121; L3945 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>There is a large and very important family of “free forgetful” adjunctions <span class="math display">\[ \mathsf {A} \xrightarrow [ U ]{\stackrel {{F}} {\perp}} \mathsf {S}, \]</span> with the forgetful functor U defining the right adjoint and the free functor F defining the left adjoint. If one can construct a universal object of type A on an object of type S, and this construction defines a left adjoint to a forgetful functor <span class="math inline">\(U \colon \mathsf { A } \mathsf { S }\)</span> , then the term “free” is used in place of “universal” to convey this particular relationship. The reason why left adjoints to forgetful functors are more common than right adjoints has to do with the handedness of the universal properties that one meets in practice. “Cofree” constructions, which define right adjoints to some forgetful functor, are somehow less common. The following forgetful functors admit left adjoints, defining “free” constructions.</p>
+</section>
+<section id="fc03-c04-u010" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u010">Construction: For a ring map φ:R→S, restriction of scalars φ:ModS→ModR has left adjoint…</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U010</code> · §4.1, pp.&nbsp;116–121; L3977 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>For a ring map φ:R→S, restriction of scalars φ*:Mod_S→Mod_R has left adjoint S⊗_R−, called extension of scalars.</p>
+</section>
+<section id="fc03-c04-u011" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u011">Example 4.1.11</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U011</code> · §4.1, pp.&nbsp;116–121; L3985 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>Example 4.1.10(xiii) can be generalized: Example 6.2.8 proves that for any complete and cocomplete category C and any group homomorphism φ: <span class="math inline">\(H \to G ,\)</span> , the restriction functor <span class="math inline">\(\phi ^ { * } \colon { \mathsf { \bar { C } } } ^ { \mathsf { B } G } \to { \mathsf { \bar { C } } } ^ { \mathsf { B } H }\)</span> admits both left and right adjoints. These are most commonly considered for subgroup inclusions <span class="math inline">\(H \subset G .\)</span> , in which case the left adjoint is called induction and the right adjoint is called coinduction: Taking <span class="math inline">\(\mathsf { C } \ = \ \mathsf { V e c t _ { \mathbb { k } } }\)</span> , the adjunction <span class="math inline">\(\mathrm { i n d } _ { H } ^ { G } \ \mathsf { \Pi } \mathsf { \Pi } \mathsf { I } \mathrm { e s } _ { H } ^ { G }\)</span> between the category <span class="math inline">\(\mathsf { V e c t } _ { \parallel _ { \mathsf { k } } } ^ { \mathsf { B } H }\)</span> of <span class="math inline">\(H -\)</span> representations and the category of <span class="math inline">\(\mathsf { V e c t } _ { \Bbbk } ^ { \mathsf { B } \bar { G } }\)</span> of <span class="math inline">\(G \mathrm { . }\)</span> -rep resentations. This adjunction is known in the representation theory literature as Frobenius reciprocity.</p>
+</section>
+<section id="fc03-c04-u012" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u012">Example 4.1.12</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U012</code> · §4.1, pp.&nbsp;116–121; L3991 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>None of the functors <span class="math display">\[ \text { Field } \xrightarrow {U} \text { Ring }, \quad \text { Field } \xrightarrow {U} \text { Ab }, \quad \text { Field } \xrightarrow {(-) ^ {\times}} \text { Ab }, \quad \text { Field } \xrightarrow {U} \text { Set } \]</span> that forget algebraic structure on fields admit left or right adjoints. To see that no left adjoint is possible, note that there exist maps in the target categories from <span class="math inline">\(\mathbb { Z }\)</span> to fields of any characteristic. As there are no field homomorphisms between fields of difering characteristic, it is not possible to define the value of a hypothetical left adjoint on <span class="math inline">\(\mathbb { Z } .\)</span> . A similar argument can be used to show that no right adjoints to these functors exist.</p>
+</section>
+<section id="fc03-c04-u013" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u013">Example 4.1.13</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U013</code> · §4.1, pp.&nbsp;116–121; L3999 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>The forgetful functor U : Cat DirGraph admits a left adjoint <span class="math inline">\(F ,\)</span> defining the free category on a directed graph. A directed graph G consists of a set V of vertices, a set <span class="math inline">\(E\)</span> of edges, and two functions <span class="math inline">\(s , t \colon E \preceq V\)</span> defining the source and target of each directed edge. The free category on G has V as its set of objects. The set of morphisms consists of identities for each vertex together with finite “paths” of edges. Composition is defined by concatenation of paths.</p>
+</section>
+<section id="fc03-c04-u014" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u014">Example 4.1.14</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U014</code> · §4.1, pp.&nbsp;116–121; L4005 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>Let <span class="math inline">\(\mathbb{n}+\mathbb{1}\)</span> denote the ordinal category, freely generated by the directed graph <span class="math inline">\(0 \to 1 \to 2 \to \cdots \to n\)</span>. For each <span class="math inline">\(0 \leq i \leq n\)</span> there is an injective functor <span class="math inline">\(d^{i} \colon \mathbb{n} \to \mathbb{n}+\mathbb{1}\)</span>, where <span class="math inline">\(i \in \mathbb{n}+\mathbb{1}\)</span> is the unique object missing from the image. For each <span class="math inline">\(0 \leq i &lt; n\)</span> there is also a surjective functor <span class="math inline">\(s^{i} \colon \mathbb{n}+\mathbb{1} \to \mathbb{n}\)</span>, for which <span class="math inline">\(i \in \mathbb{n}\)</span> is the unique object with two preimages. These functors define a sequence of <span class="math inline">\(2n+1\)</span> adjoints <span class="math display">\[ d^{0} \dashv s^{0} \dashv d^{1} \dashv s^{1} \dashv \cdots \dashv s^{n-1} \dashv d^{n}, \]</span> proving that arbitrarily long finite sequences of adjoint functors exist.</p>
+</section>
+<section id="fc03-c04-u015" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u015">Example 4.1.15</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U015</code> · §4.1, pp.&nbsp;116–121; L4013 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>The inclusion <span class="math inline">\(\mathsf{Groupoid} \hookrightarrow \mathsf{Cat}\)</span> admits both a left and a right adjoint. The right adjoint carries a category to its maximal subgroupoid, considered in Lemma 1.1.13: since functors preserve isomorphisms, the image of a functor <span class="math inline">\(\mathsf{G} \to \mathsf{C}\)</span> whose domain is a groupoid factors uniquely through the maximal subgroupoid of <span class="math inline">\(\mathsf{C}\)</span>. The left adjoint formally inverts the morphisms of a category, constructing the corresponding category of fractions. The category of fractions for <span class="math inline">\(\mathsf{C}\)</span> is a quotient of the free category on the directed graph obtained by gluing the directed graph underlying <span class="math inline">\(\mathsf{C}\)</span> to the directed graph underlying <span class="math inline">\(\mathsf{C}^{\mathrm{op}}\)</span> along the common discrete subcategory <span class="math inline">\(\mathrm{ob}\,\mathsf{C}\)</span>. Its objects are the objects of <span class="math inline">\(\mathsf{C}\)</span> and its morphisms are finite zig-zags of morphisms of <span class="math inline">\(\mathsf{C}\)</span>, subject to relations that, for instance, equate the zig-zags <span class="math display">\[ a \xrightarrow{\ f\ } b \xleftarrow{\ f\ } a \qquad\text{and}\qquad b \xleftarrow{\ f\ } a \xrightarrow{\ f\ } b \]</span> with the identities on <span class="math inline">\(a\)</span> and on <span class="math inline">\(b\)</span>.</p>
+</section>
+<section id="fc03-c04-u016" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u016">Lemma 4.2.2</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U016</code> · §4.2, pp.&nbsp;122–125; L4065 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>Given an adjunction <span class="math inline">\(F \to G ,\)</span> , there is a natural transformation η : <span class="math inline">\(1 _ { \mathsf { C } } \Rightarrow G F ,\)</span> called the unit of the adjunction, whose component <span class="math inline">\(\eta _ { c } \colon c \to G F c\)</span> at c is defined to be the transpose of the identity morphism <span class="math inline">\(1 _ { F c }\)</span></p>
+</section>
+<section id="fc03-c04-u017" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u017">Lemma 4.2.3</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U017</code> · §4.2, pp.&nbsp;122–125; L4077 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>Given an adjunction <span class="math inline">\(F \to G ,\)</span> , there is a natural transformation <span class="math inline">\(\epsilon \colon F G \Rightarrow 1 _ { \mathsf { D } } ,\)</span> called the counit of the adjunction, whose component $_ { d } F G d $ d at d is defined to be the transpose of the identity morphism <span class="math inline">\(1 _ { G d } .\)</span></p>
+</section>
+<section id="fc03-c04-u018" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u018">Example 4.2.4</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U018</code> · §4.2, pp.&nbsp;122–125; L4079 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>The left adjoint F to the forgetful functor <span class="math inline">\(U \colon { \mathsf { G r o u p } } \to { \mathsf { S e t } }\)</span> defines the free group on a set S . Elements of the group <span class="math inline">\(F ( S )\)</span> are finite “words” whose “letters” are elements s of S and formal “inverses” <span class="math inline">\(s ^ { - 1 }\)</span> , modulo some evident relations. The empty word serves as the identity element and multiplication is by concatenation; the relations, in particular, identify <span class="math inline">\(s s ^ { - 1 }\)</span> and <span class="math inline">\(s ^ { - 1 } s\)</span> with the empty word.</p>
+</section>
+<section id="fc03-c04-u019" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u019">Construction/terminology</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U019</code> · §4.2, pp.&nbsp;122–125; L4085 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>For an adjunction, components of the unit and counit are the universal elements representing the adjunction hom-set bijections.</p>
+</section>
+<section id="fc03-c04-u020" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u020">Definition 4.2.5</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U020</code> · §4.2, pp.&nbsp;122–125; L4095 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>An adjunction may equivalently be specified by F:C→D, G:D→C, a unit η:1_C⇒GF and counit ε:FG⇒1_D satisfying the triangle identities Gε·ηG=1_G and εF·Fη=1_F.</p>
+</section>
+<section id="fc03-c04-u021" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u021">Proposition 4.2.6</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U021</code> · §4.2, pp.&nbsp;122–125; L4103 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>Given a pair of functors <span class="math inline">\(F \colon \mathsf { C } \mathsf { D } \colon G ,\)</span> , there exists a natural isomorphism <span class="math inline">\(\mathsf { D } ( F c , d ) \cong \mathsf { C } ( c , G d )\)</span> if and only if there exists a pair of natural transformations <span class="math inline">\(\eta \colon 1 _ { \mathsf { C } } \Rightarrow G F\)</span> and <span class="math inline">\(\epsilon \colon F G \Rightarrow { \mathrm { 1 } } _ { \mathsf { D } }\)</span> satisfying the triangle identities.</p>
+</section>
+<section id="fc03-c04-u022" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u022">Remark 4.2.7</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U022</code> · §4.2, pp.&nbsp;122–125; L4127 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>Proposition 4.2.6 reveals that the data of a fully-specified adjunction can be presented in two equivalent forms: a pair of functors <span class="math inline">\(F \colon \mathsf{C} \to \mathsf{D}\)</span>, <span class="math inline">\(G \colon \mathsf{D} \to \mathsf{C}\)</span> together with either (i) a natural family of isomorphisms <span class="math inline">\(\mathsf{D}(Fc,d) \cong \mathsf{C}(c,Gd)\)</span> for all <span class="math inline">\(c \in \mathsf{C}\)</span>, <span class="math inline">\(d \in \mathsf{D}\)</span>, or, equivalently, (ii) natural transformations <span class="math inline">\(\eta \colon 1_{\mathsf{C}} \Rightarrow GF\)</span> and <span class="math inline">\(\epsilon \colon FG \Rightarrow 1_{\mathsf{D}}\)</span> satisfying <span class="math inline">\(G\epsilon \cdot \eta G = 1_{G}\)</span> and <span class="math inline">\(\epsilon F \cdot F\eta = 1_{F}\)</span>. Either of the unit and the counit alone suffices: (i) and (ii) are each equivalent to (iii) a natural transformation <span class="math inline">\(\eta \colon 1_{\mathsf{C}} \Rightarrow GF\)</span> for which <span class="math display">\[ \mathsf{D}(Fc,d) \xrightarrow{\ G\ } \mathsf{C}(GFc,Gd) \xrightarrow{\ (\eta_{c})^{*}\ } \mathsf{C}(c,Gd) \]</span> is an isomorphism for all <span class="math inline">\(c \in \mathsf{C}\)</span>, <span class="math inline">\(d \in \mathsf{D}\)</span>, and dually to (iv) a natural transformation <span class="math inline">\(\epsilon \colon FG \Rightarrow 1_{\mathsf{D}}\)</span> for which <span class="math display">\[ \mathsf{C}(c,Gd) \xrightarrow{\ F\ } \mathsf{D}(Fc,FGd) \xrightarrow{\ (\epsilon_{d})_{*}\ } \mathsf{D}(Fc,d) \]</span> is an isomorphism for all <span class="math inline">\(c \in \mathsf{C}\)</span>, <span class="math inline">\(d \in \mathsf{D}\)</span>.</p>
+</section>
+<section id="fc03-c04-u023" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u023">Corollary 4.2.8</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U023</code> · §4.2, pp.&nbsp;122–125; L4157 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>If <span class="math inline">\(\mathsf{A}\)</span> and <span class="math inline">\(\mathsf{B}\)</span> are posets and <span class="math inline">\(F \colon \mathsf{A} \to \mathsf{B}\)</span>, <span class="math inline">\(G \colon \mathsf{B} \to \mathsf{A}\)</span> form a Galois connection, with <span class="math inline">\(F \dashv G\)</span>, then <span class="math inline">\(F\)</span> and <span class="math inline">\(G\)</span> satisfy the fixed point formulae <span class="math display">\[ FGF = F \qquad\text{and}\qquad GFG = G. \]</span></p>
+</section>
+<section id="fc03-c04-u024" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u024">Definition 4.3.1</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U024</code> · §4.3, pp.&nbsp;126–131; L4229 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>A pair of contravariant functors <span class="math inline">\(F \colon { \mathsf { C } } ^ { \mathrm { o p } } \to \mathsf { D }\)</span> and <span class="math inline">\(G \colon { \mathsf { D } } ^ { \mathrm { o p } } \ \to \ { \mathsf { C } }\)</span> are mutually left adjoint if there exists a natural isomorphism <span class="math display">\[ \mathsf{D}(Fc,d) \cong \mathsf{C}(Gd,c), \]</span> or mutually right adjoint if there exists a natural isomorphism <span class="math display">\[ \mathsf{D}(d,Fc) \cong \mathsf{C}(c,Gd). \]</span></p>
+</section>
+<section id="fc03-c04-u025" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u025">Example 4.3.2</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U025</code> · §4.3, pp.&nbsp;126–131; L4245 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>For a fixed natural number n and algebraically closed field k, consider the sets of elements in the polynomial ring <span class="math inline">\(\mathbb { k } [ x _ { 1 } , \ldots , x _ { n } ]\)</span> and in the vector space <span class="math inline">\(\mathbb { k } ^ { n }\)</span> . There are contravariant functors <span class="math display">\[ P(\Bbbk[x_{1},\dots,x_{n}])^{\mathrm{op}} \xrightarrow{\ V\ } P(\Bbbk^{n}) \qquad\text{and}\qquad P(\Bbbk^{n})^{\mathrm{op}} \xrightarrow{\ I\ } P(\Bbbk[x_{1},\dots,x_{n}]), \]</span> carrying a set of polynomials to its vanishing locus and a set of points to the ideal of polynomials vanishing on it; they are mutually right adjoint.</p>
+</section>
+<section id="fc03-c04-u026" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u026">Example 4.3.3</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U026</code> · §4.3, pp.&nbsp;126–131; L4277 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>Let <span class="math inline">\(\mathrm{Axiom}_{\sigma}\)</span> be a set of axioms, that is, sentences in a fixed first-order language whose signature <span class="math inline">\(\sigma\)</span> specifies function, constant and relation symbols, and let <span class="math inline">\(\mathrm{Struct}_{\sigma}\)</span> be a set of <span class="math inline">\(\sigma\)</span>-structures, that is, sets with interpretations of those symbols. For instance, the language of the natural numbers has a constant symbol <span class="math inline">\(0\)</span>, a binary function symbol <span class="math inline">\(+\)</span> and a binary relation symbol <span class="math inline">\(\leq\)</span>; a structure for it is any set with a specified constant, binary function and binary relation. Axioms include sentences such as <span class="math display">\[ \forall x,y,z,\ ((x \leq y) \wedge (y \leq z)) \rightarrow (x \leq z) \qquad\text{or}\qquad \forall x,\ x + 0 = x, \]</span> asserting transitivity of <span class="math inline">\(\leq\)</span> and that <span class="math inline">\(0\)</span> is a unit for <span class="math inline">\(+\)</span>. Writing <span class="math inline">\(M \models A\)</span> when every axiom of <span class="math inline">\(A\)</span> holds in every structure of <span class="math inline">\(M\)</span> gives contravariant functors between the posets <span class="math inline">\(P(\mathrm{Axiom}_{\sigma})\)</span> and <span class="math inline">\(P(\mathrm{Struct}_{\sigma})\)</span>, ordered by inclusion, which form a Galois connection.</p>
+</section>
+<section id="fc03-c04-u027" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u027">Named comparison</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U027</code> · §4.3, pp.&nbsp;126–131; L4293 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>Sets of axioms and classes of structures form the Galois connection between syntax and semantics via satisfaction.</p>
+</section>
+<section id="fc03-c04-u028" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u028">Proposition 4.3.4</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U028</code> · §4.3, pp.&nbsp;126–131; L4297 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>Consider a functor <span class="math inline">\(F \colon \mathsf { A } \mathsf { B }\)</span> so that for each <span class="math inline">\(b \in \mathsf { B }\)</span> there exists an object Gb A together with an isomorphism <span class="math display">\[ \mathsf{B}(Fa,b) \cong \mathsf{A}(a,Gb), \quad\text{natural in } a \in \mathsf{A}. \tag{4.3.5} \]</span> Then there is a unique way to extend the assignment <span class="math inline">\(b \mapsto Gb\)</span> to a functor <span class="math inline">\(G \colon \mathsf{B} \to \mathsf{A}\)</span> so that the isomorphisms (4.3.5) are also natural in <span class="math inline">\(b\)</span>, and <span class="math inline">\(F \dashv G\)</span>.</p>
+</section>
+<section id="fc03-c04-u029" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u029">Proposition 4.3.6</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U029</code> · §4.3, pp.&nbsp;126–131; L4323 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>Suppose that <span class="math inline">\(F \colon \mathsf { A } \times \mathsf { B } \to \mathsf { C }\)</span> is a bifunctor so that for each object a A, the induced functor <span class="math inline">\(F ( a , \mathrm { - } ) \colon { \mathsf { B } } \to { \mathsf { C } }\)</span> admits a right adjoint <span class="math inline">\(G _ { a } \colon { \mathsf { C } } \to { \mathsf { B } }\)</span> . Then: (i) These right adjoints assemble into a unique bifunctor <span class="math inline">\(G \colon \mathsf { A } ^ { \mathrm { o p } } \times \mathsf { C } \to \mathsf { B }\)</span> , defined so that <span class="math inline">\(G ( a , c ) = G _ { a } ( c )\)</span> and so that the isomorphisms <span class="math display">\[ \mathsf {C} (F (a, b), c) \cong \mathsf {B} (b, G (a, c)) \]</span> are natural in all three variables.</p>
+</section>
+<section id="fc03-c04-u030" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u030">Definition 4.3.7</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U030</code> · §4.3, pp.&nbsp;126–131; L4351 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>A triple of bifunctors <span class="math display">\[ \mathsf{A} \times \mathsf{B} \xrightarrow{\ F\ } \mathsf{C}, \qquad \mathsf{A}^{\mathrm{op}} \times \mathsf{C} \xrightarrow{\ G\ } \mathsf{B}, \qquad \mathsf{B}^{\mathrm{op}} \times \mathsf{C} \xrightarrow{\ H\ } \mathsf{A} \]</span> equipped with a natural isomorphism <span class="math display">\[ \mathsf{C}(F(a,b),c) \cong \mathsf{B}(b,G(a,c)) \cong \mathsf{A}(a,H(b,c)) \]</span> defines a two-variable adjunction.</p>
+</section>
+<section id="fc03-c04-u031" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u031">Definition: For a two-variable adjunction associated to a monoidal product, the…</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U031</code> · §4.3, pp.&nbsp;126–131; L4365 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>For a two-variable adjunction associated to a monoidal product, the pointwise right adjoints are the left and right closures; when isomorphic, the monoidal product is called closed.</p>
+</section>
+<section id="fc03-c04-u032" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u032">Example 4.3.8</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U032</code> · §4.3, pp.&nbsp;126–131; L4367 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>The product bifunctor <span class="math inline">\(\times \colon \mathsf{Set} \times \mathsf{Set} \to \mathsf{Set}\)</span> is closed: the operation called currying in computer science defines a family of natural isomorphisms <span class="math display">\[ \{A \times B \xrightarrow{\ f\ } C\} \cong \{A \xrightarrow{\ f\ } C^{B}\} \cong \{B \xrightarrow{\ f\ } C^{A}\}, \]</span> so the product and exponential bifunctors form a two-variable adjunction.</p>
+</section>
+<section id="fc03-c04-u033" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u033">Definition 4.3.9</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U033</code> · §4.3, pp.&nbsp;126–131; L4387 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>A cartesian closed category is a category C with finite products in which the product bifunctor <span class="math display">\[ \times \colon \mathsf{C} \times \mathsf{C} \to \mathsf{C} \]</span> is closed.</p>
+</section>
+<section id="fc03-c04-u034" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u034">Example 4.3.10</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U034</code> · §4.3, pp.&nbsp;126–131; L4397 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>The category <span class="math inline">\(\mathsf{Top}\)</span> is not cartesian closed, but Steenrod’s convenient category of spaces is: the product on a yet-to-be-defined subcategory <span class="math inline">\(\mathsf{cgHaus}\)</span> should be the categorical product of Definition 3.1.9, which is not preserved by the full inclusion <span class="math inline">\(\mathsf{cgHaus} \hookrightarrow \mathsf{Haus}\)</span>. Objects of <span class="math inline">\(\mathsf{cgHaus}\)</span> are the compactly generated Hausdorff spaces: Hausdorff <span class="math inline">\(X\)</span> such that any <span class="math inline">\(A \subset X\)</span> meeting every compact <span class="math inline">\(K \subset X\)</span> in a closed subset is itself closed. The inclusion <span class="math inline">\(\mathsf{cgHaus} \hookrightarrow \mathsf{Haus}\)</span> has a right adjoint <span class="math inline">\(k \colon \mathsf{Haus} \to \mathsf{cgHaus}\)</span>, <span class="math inline">\(k\)</span>-ification, which refines the topology of <span class="math inline">\(X\)</span> by adding as closed those <span class="math inline">\(A \subset X\)</span> whose intersections with all compact <span class="math inline">\(K\)</span> are closed; by the dual of Proposition 4.5.15 its presence makes <span class="math inline">\(\mathsf{cgHaus}\)</span> complete and cocomplete. The product on <span class="math inline">\(\mathsf{cgHaus}\)</span> is the <span class="math inline">\(k\)</span>-ification of the product on <span class="math inline">\(\mathsf{Haus}\)</span>, and the pointwise right adjoint is <span class="math inline">\(\operatorname{Map}(X,Y)\)</span>: the set of continuous maps <span class="math inline">\(X \to Y\)</span> with the <span class="math inline">\(k\)</span>-ification of the compact-open topology.</p>
+</section>
+<section id="fc03-c04-u035" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u035">Example 4.3.11</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U035</code> · §4.3, pp.&nbsp;126–131; L4409 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>Consider the hom bifunctor <span class="math inline">\(\operatorname{Hom} \colon \mathsf{Ab}^{\mathrm{op}} \times \mathsf{Ab} \to \mathsf{Ab}\)</span>, where <span class="math inline">\(\operatorname{Hom}(A,B)\)</span> is the group of homomorphisms <span class="math inline">\(A \to B\)</span> with addition defined pointwise in <span class="math inline">\(B\)</span>. Fixing the contravariant variable, there is an adjunction <span class="math inline">\(A \otimes_{\mathbb{Z}} - \dashv \operatorname{Hom}(A,-)\)</span> on <span class="math inline">\(\mathsf{Ab}\)</span>, with <span class="math display">\[ \mathsf{Ab}(A \otimes_{\mathbb{Z}} B, C) \cong \mathsf{Ab}(B, \operatorname{Hom}(A,C)), \tag{4.3.12} \]</span> defining the tensor product. Proposition 4.3.4 extends this data to a functor <span class="math inline">\(A \otimes_{\mathbb{Z}} - \colon \mathsf{Ab} \to \mathsf{Ab}\)</span> and Proposition 4.3.6(i) to the bifunctor <span class="math inline">\(\otimes_{\mathbb{Z}} \colon \mathsf{Ab} \times \mathsf{Ab} \to \mathsf{Ab}\)</span>, in such a way that the tensor product and the hom define a two-variable adjunction.</p>
+</section>
+<section id="fc03-c04-u036" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u036">Example 4.3.14</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U036</code> · §4.3, pp.&nbsp;126–131; L4437 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>Temporarily, let Top denote not the ordinary category of topological spaces but the cartesian closed category of spaces defined in Example 4.3.10. In this context, the two-variable adjunction specializes to define an adjunction: <span class="math display">\[ \text { Top } \xrightarrow [ \text { Map } (S ^ {1} , -) ]{S ^ {1} \times -} \text { Top } \]</span> where <span class="math inline">\(S ^ { 1 } \in\)</span> Top is the unit circle. The space <span class="math inline">\(\mathbf { M a p } ( S ^ { 1 } , X )\)</span> is the free loop space on X; points in <span class="math inline">\(\mathbf { M a p } ( S ^ { 1 } , X )\)</span> are loops in the space X. The slice category of Top under the singleton space defines a convenient category Top of based topological spaces. By Exercise <span class="math inline">\(4 . 3 . \mathrm { i v ( i i ) }\)</span> , Top admits a two-variable adjunction <span class="math display">\[ \wedge \colon \mathsf{Top}_{*} \times \mathsf{Top}_{*} \to \mathsf{Top}_{*}, \qquad \mathsf{Top}_{*}^{\mathrm{op}} \times \mathsf{Top}_{*} \to \mathsf{Top}_{*}, \]</span> the smash product together with the based mapping space.</p>
+</section>
+<section id="fc03-c04-u037" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u037">Named construction</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U037</code> · §4.3, pp.&nbsp;126–131; L4451 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>On based spaces, the closed monoidal product appearing in the two-variable adjunction is the smash product.</p>
+</section>
+<section id="fc03-c04-u038" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u038">Proposition 4.4.1</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U038</code> · §4.4, pp.&nbsp;132–135; L4509 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>If <span class="math inline">\(F\)</span> and <span class="math inline">\(F'\)</span> are both left adjoint to <span class="math inline">\(G\)</span>, then <span class="math inline">\(F \cong F'\)</span>, and moreover there is a unique natural isomorphism <span class="math inline">\(\theta \colon F \cong F'\)</span> commuting with the units and counits of the two adjunctions. Explicitly, <span class="math display">\[ \theta := F \xrightarrow{\ F\eta'\ } FGF' \xrightarrow{\ \epsilon F'\ } F', \qquad \theta^{-1} = F' \xrightarrow{\ F'\eta\ } F'GF \xrightarrow{\ \epsilon' F\ } F, \]</span> where <span class="math inline">\(\theta\)</span> is the transpose of <span class="math inline">\(\eta' \colon 1_{\mathsf{C}} \Rightarrow GF'\)</span> under the adjunction <span class="math inline">\(F \dashv G\)</span>.</p>
+</section>
+<section id="fc03-c04-u039" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u039">Proposition 4.4.4</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U039</code> · §4.4, pp.&nbsp;132–135; L4579 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>Given adjunctions <span class="math inline">\(F \to G\)</span> and <span class="math inline">\(F ^ { \prime } \to G ^ { \prime }\)</span> <span class="math display">\[ \mathsf {C} \xrightarrow [ G ]{\underset {\perp} {F}} \mathsf {D} \xrightarrow [ G ^ {\prime} ]{\underset {\perp} {F ^ {\prime}}} \mathsf {E} \qquad \rightsquigarrow \qquad \mathsf {C} \xrightarrow [ G G ^ {\prime} ]{\underset {\perp} {F ^ {\prime} F}} \mathsf {E} \]</span> the composite <span class="math inline">\(F ^ { \prime } F\)</span> is left adjoint to the composite <span class="math inline">\(G G ^ { \prime }\)</span> Proof 1. There are natural isomorphisms <span class="math display">\[ \mathsf{E}(F'Fc, e) \cong \mathsf{D}(Fc, G'e) \cong \mathsf{C}(c, GG'e), \]</span> the first defined using <span class="math inline">\(F' \dashv G'\)</span> and the second using <span class="math inline">\(F \dashv G\)</span>.</p>
+</section>
+<section id="fc03-c04-u040" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u040">Proposition 4.4.5</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U040</code> · §4.4, pp.&nbsp;132–135; L4603 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>Any equivalence <span class="math display">\[ \mathsf {C} \xrightarrow [ G ]{F} \mathsf {D} \qquad \eta \colon 1 _ {\mathsf {C}} \cong G F, \quad \epsilon \colon F G \cong 1 _ {\mathsf {D}} \]</span> can be promoted to an adjoint equivalence, in which the natural isomorphisms satisfy the triangle identities, by replacing either one of the originally specified natural isomorphisms by a new unit or counit. Note that the symmetry in the definition implies that an equivalence of categories <span class="math inline">\(F \colon { \mathsf { C } } \to { \mathsf { D } }\)</span> may be regarded as either a left or right adjoint; indeed, any chosen equivalence inverse <span class="math inline">\(G \colon \mathsf { D } \to \mathsf { C }\)</span> is both left and right adjoint to <span class="math inline">\(F\)</span></p>
+</section>
+<section id="fc03-c04-u041" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u041">Proposition 4.4.6</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U041</code> · §4.4, pp.&nbsp;132–135; L4641 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>Given an adjunction <span class="math inline">\(F \dashv G \colon \mathsf{C} \rightleftarrows \mathsf{D}\)</span>, post-composition with <span class="math inline">\(F\)</span> and <span class="math inline">\(G\)</span> defines a pair of adjoint functors <span class="math display">\[ F_{*} \dashv G_{*} \colon \mathsf{C}^{\mathsf{J}} \rightleftarrows \mathsf{D}^{\mathsf{J}} \]</span> for any small category <span class="math inline">\(\mathsf{J}\)</span>, and pre-composition with <span class="math inline">\(F\)</span> and <span class="math inline">\(G\)</span> also defines an adjunction <span class="math display">\[ G^{*} \dashv F^{*} \colon \mathsf{E}^{\mathsf{C}} \rightleftarrows \mathsf{E}^{\mathsf{D}} \]</span> for any locally small category <span class="math inline">\(\mathsf{E}\)</span>.</p>
+</section>
+<section id="fc03-c04-u042" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u042">Remark 4.4.7</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U042</code> · §4.4, pp.&nbsp;132–135; L4671 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a></p>
+</div>
+<p>The “syntactic” proofs of Propositions 4.4.1, 4.4.4, 4.4.5, and 4.4.6 (the last of these left to Exercise 4.4.ii) apply immediately to adjunctions defined internally to any 2-category, in place of Cat. This suggests a reason to prefer these proofs to the alternate “Yoneda-style” arguments, which apply only to Cat. However, using analogous arguments to those made in §3.4, these “Yoneda-style” arguments can be bootstrapped from Cat to a general 2-category. As (co)limits in a general category are defined representably in terms of limits in Set, so too—again by the Yoneda lemma—are adjunctions and equivalences in a 2-category are defined representably in terms of adjunctions and equivalences in Cat. This line of reasoning supports the category theorist’s joke that “all theorems are Yoneda.”</p>
+</section>
+<section id="fc03-c04-u043" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u043">Proposition 4.5.1</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U043</code> · §4.5, pp.&nbsp;136–142; L4685 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>A category C admits all limits of diagrams indexed by a small category J if and only if the constant diagram functor <span class="math inline">\(\Delta \colon { \mathsf { C } } \to { \mathsf { C } } ^ { \mathsf { J } }\)</span> admits a right adjoint, and admits all colimits of J-indexed diagrams if and only if ∆ admits a left adjoint: When these adjoints exist, they define the limit and colimit functors introduced in Proposition 3.6.1. Recall that the axiom of choice is needed to define the action of the limit or colimit functor on objects.</p>
+</section>
+<section id="fc03-c04-u044" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u044">Theorem 4.5.2</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U044</code> · §4.5, pp.&nbsp;136–142; L4703 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>Right adjoints preserve limits.</p>
+</section>
+<section id="fc03-c04-u045" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u045">Theorem 4.5.3</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U045</code> · §4.5, pp.&nbsp;136–142; L4737 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>Left adjoints preserve colimits. Corollaries are ubiquitous. For instance:</p>
+</section>
+<section id="fc03-c04-u046" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u046">Corollary 4.5.4</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U046</code> · §4.5, pp.&nbsp;136–142; L4741 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>For any function <span class="math inline">\(f \colon A \ \to \ B ,\)</span> the inverse image <span class="math inline">\(f ^ { - 1 } \colon P B \to P A\)</span> , a function between the power sets of A and B, preserves both unions and intersections, while the direct image <span class="math inline">\(f _ { * } \colon P A \to P B\)</span> only preserves unions.</p>
+</section>
+<section id="fc03-c04-u047" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u047">Corollary 4.5.5</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U047</code> · §4.5, pp.&nbsp;136–142; L4749 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>For any vector spaces <span class="math inline">\(U , V , W ,\)</span> <span class="math display">\[ U \otimes (V \oplus W) \cong (U \otimes V) \oplus (U \otimes W). \]</span></p>
+</section>
+<section id="fc03-c04-u048" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u048">Corollary 4.5.6</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U048</code> · §4.5, pp.&nbsp;136–142; L4759 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>For any sets <span class="math inline">\(A\)</span>, <span class="math inline">\(B\)</span>, <span class="math inline">\(C\)</span> there are natural isomorphisms <span class="math display">\[ A \times (B+C) \cong (A \times B) + (A \times C), \qquad (B \times C)^{A} \cong B^{A} \times C^{A}, \qquad A^{B+C} \cong A^{B} \times A^{C}. \]</span> Consequently, for any cardinals <span class="math inline">\(\alpha\)</span>, <span class="math inline">\(\beta\)</span>, <span class="math inline">\(\gamma\)</span>, cardinal arithmetic satisfies the laws <span class="math display">\[ \alpha \times (\beta + \gamma) = (\alpha \times \beta) + (\alpha \times \gamma), \qquad (\beta \times \gamma)^{\alpha} = \beta^{\alpha} \times \gamma^{\alpha}, \qquad \alpha^{\beta+\gamma} = \alpha^{\beta} \times \alpha^{\gamma}. \]</span></p>
+</section>
+<section id="fc03-c04-u049" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u049">Corollary 4.5.7</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U049</code> · §4.5, pp.&nbsp;136–142; L4775 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>The free group on the set X Y is the free product of the free groups on the sets X and Y.</p>
+</section>
+<section id="fc03-c04-u050" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u050">Corollary 4.5.8</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U050</code> · §4.5, pp.&nbsp;136–142; L4781 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>For any R-S bimodule M, the tensor product M <span class="math inline">\(\otimes _ { S } - i s \ r i g h t \ e x a c t\)</span></p>
+</section>
+<section id="fc03-c04-u051" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u051">Definition 4.5.9</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U051</code> · §4.5, pp.&nbsp;136–142; L4787 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>A functor is right exact if it preserves finite colimits and left exact if it preserves finite limits.</p>
+</section>
+<section id="fc03-c04-u052" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u052">Proposition 4.5.10</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U052</code> · §4.5, pp.&nbsp;136–142; L4791 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>A functor <span class="math inline">\(F \colon \mathsf{A} \to \mathsf{B}\)</span> between abelian categories is left exact if and only if it preserves direct sums and kernels. For such functors, if <span class="math display">\[ 0 \to A \to A' \to A'' \]</span> is exact in <span class="math inline">\(\mathsf{A}\)</span>, then <span class="math display">\[ 0 \to FA \to FA' \to FA'' \]</span> is exact in <span class="math inline">\(\mathsf{B}\)</span>.</p>
+</section>
+<section id="fc03-c04-u053" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u053">Corollary 4.5.11</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U053</code> · §4.5, pp.&nbsp;136–142; L4817 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>For any adjoint functors between abelian categories, the left adjoint is right exact and the right adjoint is left exact. Moreover, both functors are additive.9</p>
+</section>
+<section id="fc03-c04-u054" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u054">Definition 4.5.12</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U054</code> · §4.5, pp.&nbsp;136–142; L4831 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>A reflective subcategory of a category C is a full subcategory D so that the inclusion admits a left adjoint, called the reflector or localization: <span class="math display">\[ \mathsf {D} \xleftarrow [ ]{\underset {\perp} {\overset {L} {\longrightarrow}}} \mathsf {C} . \]</span> Where possible, we identify the full subcategory D with its image in <span class="math inline">\(\complement ,\)</span> declining in particular to introduce notation for the inclusion functor. With this convention in mind, the components of the unit have the form <span class="math inline">\(c \to L c ;\)</span> the mnemonic is that “an object looks at its reflection.” The following lemma implies that the components of the counit <span class="math inline">\(L d \cong d\)</span> are isomorphisms. Via the counit, any object in a reflective subcategory <span class="math inline">\(\mathsf { D } \hookrightarrow \mathsf { C }\)</span> is naturally isomorphic to its reflection back into that subcategory.</p>
+</section>
+<section id="fc03-c04-u055" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u055">Lemma 4.5.13</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U055</code> · §4.5, pp.&nbsp;136–142; L4839 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>Consider an adjunction <span class="math display">\[ \mathsf {C} \xrightarrow [ \begin{array}{c} \perp \ G \end{array} ]{\stackrel {{F}} {\longrightarrow}} \mathsf {D} \]</span> with counit ǫ : <span class="math inline">\(F G \Rightarrow 1 _ { \mathsf { D } }\)</span> . Then: (i) G is faithful if and only if each component of ǫ is an epimorphism.</p>
+</section>
+<section id="fc03-c04-u056" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u056">Example 4.5.14</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U056</code> · §4.5, pp.&nbsp;136–142; L4863 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>The following define reflective subcategories: (i) Compact Hausdorf spaces define a reflective subcategory cHaus <span class="math inline">\(\hookrightarrow\)</span> Top of the category of all topological spaces. The reflector is the functor <span class="math inline">\(\beta \colon\)</span> Top cHaus sending a space to its Stone–Čech compactification, which is constructed in Example 4.6.12. The universal property of the unit says that any continuous function <span class="math inline">\(X K\)</span> from a space X to a compact Hausdorf space K extends uniquely to the Stone–Čech compactification: (ii) Abelian groups define a reflective subcategory <span class="math inline">\(\mathsf { A b } \hookrightarrow\)</span> Group of the category of groups. The reflector carries a group G to its abelianization, the quotient <span class="math inline">\(G / [ G , G ]\)</span> by the commutator subgroup, the normal subgroup generated by elements <span class="math inline">\(g h g ^ { - 1 } h ^ { - 1 }\)</span> The quotient maps <span class="math inline">\(G \to G / [ G , G ]\)</span> define the components of the unit. For any abelian group A, there is an isomorphism <span class="math inline">\(A \cong A / [ A , A ] ;\)</span></p>
+</section>
+<section id="fc03-c04-u057" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u057">Named comparison</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U057</code> · §4.5, pp.&nbsp;136–142; L4871 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>Examples of reflective subcategories: Ab↪Group with reflector G↦G/[G,G], CRing↪Ring via commutativization, and torsion-free abelian groups ↪ Ab via A↦A/TA.</p>
+</section>
+<section id="fc03-c04-u058" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u058">Proposition 4.5.15</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U058</code> · §4.5, pp.&nbsp;136–142; L4907 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p><span class="math inline">\(I f \mathsf { D } \hookrightarrow \mathsf { C }\)</span> is a reflective subcategory, then: (i) The inclusion <span class="math inline">\(\mathsf { D } \hookrightarrow \mathsf { C }\)</span> creates all limits that C admits. (ii) D has all colimits that C admits, formed by applying the reflector to the colimit in C. By Theorems 4.5.2 and 4.5.3, if D has limits or colimits, they must be constructed in the way described in Proposition 4.5.15: limits are preserved by the inclusion <span class="math inline">\(\mathsf { D } \hookrightarrow \mathsf { C }\)</span> and colimits of diagrams in D, regarded as diagrams in C, are preserved by <span class="math inline">\(L \colon { \mathsf { C } } \to { \mathsf { D } }\)</span> . The real content of this result is that these (co)limits necessarily exist in D. A special case of this completes some unfinished business from §3.5:</p>
+</section>
+<section id="fc03-c04-u059" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u059">Corollary 4.5.16</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U059</code> · §4.5, pp.&nbsp;136–142; L4915 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>Cat is complete and cocomplete.</p>
+</section>
+<section id="fc03-c04-u060" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u060">Lemma 4.6.1</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U060</code> · §4.6, pp.&nbsp;143–152; L4981 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>A functor U : <span class="math inline">\(\mathsf { A } \to \mathsf { S }\)</span> admits a left adjoint if and only if for each <span class="math inline">\(s \in \mathsf { S }\)</span> the comma category <span class="math inline">\(\mathbf { s } \downarrow U\)</span> has an initial object.</p>
+</section>
+<section id="fc03-c04-u061" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u061">Terminology</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U061</code> · §4.6, pp.&nbsp;143–152; L5015 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>A limit-preserving functor is called continuous; a colimit-preserving functor is called cocontinuous.</p>
+</section>
+<section id="fc03-c04-u062" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u062">Lemma 4.6.2</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U062</code> · §4.6, pp.&nbsp;143–152; L5017 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>For any functor <span class="math inline">\(U \colon \mathsf { A } \mathsf { S }\)</span> and object <span class="math inline">\(s \in \mathsf { S } ,\)</span> the associated forgetful functor Π : <span class="math inline">\(s \downarrow U \to { \mathsf { A } }\)</span> strictly creates the limit of any diagram whose limit exists in A and is preserved by U. In particular, if A is complete and U is continuous, then <span class="math inline">\(s \downarrow U\)</span> is complete.</p>
+</section>
+<section id="fc03-c04-u063" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u063">Theorem 4.6.3</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U063</code> · §4.6, pp.&nbsp;143–152; L5025 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>Let <span class="math inline">\(U \colon \mathsf { A } \mathsf { S }\)</span> be a continuous functor whose domain is locally small and complete. Suppose that U satisfies the following solution set condition: For every <span class="math inline">\(s \in \mathsf { S }\)</span> there exists a set of morphisms <span class="math inline">\(\Phi _ { s } = { f _ { i } \colon s U a _ { i } }\)</span> so that any $f s $ Ua factors through some <span class="math inline">\(f _ { i } \in \Phi _ { s }\)</span> along a morphism <span class="math inline">\(a _ { i } \to a\)</span> in A. Then U admits a left adjoint. The solution set condition says exactly that <span class="math inline">\({ f _ { i } \colon s U a _ { i } }\)</span> is a set of jointly weakly initial objects in the category <span class="math inline">\(s \downarrow U\)</span></p>
+</section>
+<section id="fc03-c04-u064" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u064">Definition 4.6.4</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U064</code> · §4.6, pp.&nbsp;143–152; L5033 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<ol type="i">
+<li>An object c in a category C is weakly initial if for every <span class="math inline">\(x \in \mathsf { C }\)</span> there exists a morphism <span class="math inline">\(c \to x\)</span> (but possibly more than one). (ii) A collection of objects <span class="math inline">\(\Phi = { c _ { i } }\)</span> in a category C is jointly weakly initial if for every <span class="math inline">\(x \in \mathsf { C }\)</span> there exists some <span class="math inline">\(c _ { i } \in \Phi\)</span> for which there exists a morphism <span class="math inline">\(c _ { i } \to x .\)</span> In the presence of certain limits, an initial object can be built from a jointly weakly initial set of objects:</li>
+</ol>
+</section>
+<section id="fc03-c04-u065" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u065">Lemma 4.6.5</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U065</code> · §4.6, pp.&nbsp;143–152; L5041 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>If C is complete, locally small, and has a jointly weakly initial set of objects Φ, then C has an initial object.</p>
+</section>
+<section id="fc03-c04-u066" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u066">Example 4.6.6</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U066</code> · §4.6, pp.&nbsp;143–152; L5067 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>For example, consider the functor U : Group Set and a set S . The following construction of the free group on S can be found in [Lan02, §I.12]. Let Φ′ be the set of representatives for isomorphism classes of groups that can be generated by a set of elements of cardinality at most S . Let Φ be the set of functions <span class="math inline">\(S \to U G\)</span> , with <span class="math inline">\(G \in \Phi ^ { \prime } .\)</span> whose image generates the group G. This is a jointly weakly initial set of objects in the comma category <span class="math inline">\(S \downarrow U\)</span> and a solution set for <span class="math inline">\(U \colon { \mathsf { G r o u p } } \to { \mathsf { S e t } }\)</span></p>
+</section>
+<section id="fc03-c04-u067" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u067">Definition 4.6.7</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U067</code> · §4.6, pp.&nbsp;143–152; L5081 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>A separating set or separator for a category C is a set Φ of objects that can distinguish between distinct parallel morphisms in the following sense: given <span class="math inline">\(f , g \colon x \preceq y\)</span> , if <span class="math inline">\(f \neq g\)</span> then there exists some <span class="math inline">\(h \colon c \to x\)</span> with <span class="math inline">\(c \in \Phi\)</span> so that <span class="math inline">\(f h \neq g h\)</span> . A coseparating set in C is a separating set in <span class="math inline">\({ \mathsf { C } } ^ { \mathrm { { o p } } }\)</span></p>
+</section>
+<section id="fc03-c04-u068" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u068">Definition 4.6.8</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U068</code> · §4.6, pp.&nbsp;143–152; L5083 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>A subobject of an object <span class="math inline">\(c \in \mathsf { C }\)</span> is a monomorphism <span class="math inline">\(c ^ { \prime } \mapsto c\)</span> with codomain <span class="math inline">\(c .\)</span> Isomorphic subobjects, that is, subobjects <span class="math inline">\(c ^ { \prime } \mapsto c \gets c ^ { \prime \prime }\)</span> with a commuting isomorphism <span class="math inline">\(c ^ { \prime } \cong c ^ { \prime \prime }\)</span> , are typically identified.</p>
+</section>
+<section id="fc03-c04-u069" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u069">Theorem 4.6.10</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U069</code> · §4.6, pp.&nbsp;143–152; L5089 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>Let <span class="math inline">\(U \colon \mathsf { A } \mathsf { S }\)</span> be a continuous functor whose domain is complete and whose domain and codomain are locally small. Furthermore, if A has a small coseparating set and every collection of subobjects of a fixed object in A admits an intersection, then U admits a left adjoint.</p>
+</section>
+<section id="fc03-c04-u070" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u070">Lemma 4.6.11</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U070</code> · §4.6, pp.&nbsp;143–152; L5093 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>Suppose C is locally small, complete, has a small coseparating set <span class="math inline">\(\Phi ,\)</span> and has the property that every collection of subobjects has an intersection. Then C has an initial object.</p>
+</section>
+<section id="fc03-c04-u071" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u071">Example 4.6.12</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U071</code> · §4.6, pp.&nbsp;143–152; L5119 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>The Special Adjoint Functor Theorem is an abstraction of the construction of the Stone–Čech compactification <span class="math inline">\(\beta \colon\)</span> Top cHaus, which defines a left adjoint to the inclusion cHaus ֒ Top. The unit interval <span class="math inline">\(I = [ 0 , 1 ] \in \mathbb { R }\)</span> is a coseparating object in cHaus. To see this, note that if <span class="math inline">\(f \neq g \colon X \Rightarrow Y .\)</span> , there must be some <span class="math inline">\(x \in X\)</span> with <span class="math inline">\(f ( x ) \neq g ( x )\)</span> . Then Urysohn’s lemma can be used to define a continuous function h : <span class="math inline">\(Y I\)</span> with <span class="math inline">\(h f ( x ) = 0\)</span> and <span class="math inline">\(h g ( x ) = 1\)</span> , so that in particular <span class="math inline">\(h f \neq h g\)</span> . Given a topological space X, Theorem 4.6.10 constructs an initial object in X cHaus in the following manner. A coseparating family in <span class="math inline">\(X \downarrow\)</span> cHaus is given by the set of all maps <span class="math inline">\(X I .\)</span> By Proposition 3.3.8, the product of these maps, considered as objects in <span class="math inline">\(X \downarrow\)</span> cHaus, is the canonical map <span class="math display">\[ X \xrightarrow{\ \hat{\eta}\ } \prod_{\operatorname{Hom}(X,I)} I. \]</span></p>
+</section>
+<section id="fc03-c04-u072" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u072">Corollary 4.6.13</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U072</code> · §4.6, pp.&nbsp;143–152; L5129 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>Suppose C is locally small, complete, has a small coseparating set, and has the property that every collection of subobjects of a fixed object has an intersection. Then C is also cocomplete.</p>
+</section>
+<section id="fc03-c04-u073" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u073">Corollary 4.6.14</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U073</code> · §4.6, pp.&nbsp;143–152; L5135 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>Suppose C is locally small, complete, has a small coseparating set, and has the property that every collection of subobjects of a fixed object has an intersection. Then any continuous functor <span class="math inline">\(F \colon \mathsf { C } \to\)</span> Set is representable.</p>
+</section>
+<section id="fc03-c04-u074" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u074">Theorem 4.6.15</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U074</code> · §4.6, pp.&nbsp;143–152; L5145 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>Let <span class="math inline">\(F \colon \mathsf { C } \to\)</span> Set be a continuous functor and suppose that C is complete and locally small. If F satisfies the solution set condition: There exists a set Φ of objects of C so that for any <span class="math inline">\(c \in \mathsf { C }\)</span> and any element <span class="math inline">\(x \in F c ,\)</span> there exists an <span class="math inline">\(s \in \Phi ,\)</span> , an element <span class="math inline">\(y \in F s ,\)</span> , and a morphism f : <span class="math inline">\(s c\)</span> so that <span class="math inline">\(F f ( y ) = x\)</span> then F is representable.</p>
+</section>
+<section id="fc03-c04-u075" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u075">Definition 4.6.16</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U075</code> · §4.6, pp.&nbsp;143–152; L5155 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>Let κ be a regular cardinal.12 A locally small category C is locally κ-presentable if it is cocomplete and if it has a set of objects S so that: (i) Every object in C can be written as a colimit of a diagram valued in the subcategory spanned by the objects in S . (ii) For each object <span class="math inline">\(s \in S\)</span> , the functor <span class="math inline">\({ \mathsf { C } } ( s , - ) \colon { \mathsf { C } } \to\)</span> Set preserves κ-filtered colimits. A functor between locally κ-presentable categories is accessible if it preserves κ-filtered colimits. For example, a large variety of categories whose objects are sets equipped with some sort of “algebraic” structure are locally finitely presentable (meaning locally ω-presentable); see Definition 5.5.5. A locally κ-presentable category is also locally λ-presentable for any <span class="math inline">\(\lambda &gt; \kappa .\)</span> Between locally presentable categories, meaning categories that are locally κ-presentable for some <span class="math inline">\(\kappa ,\)</span> the adjoint functor theorem takes a part icularly appealing form, theorem 4.6.17: a functor between locally presentable categories admits a right adjoint if and only if it is cocontinuous, and a left adjoint if and only if it is continuous and accessible.</p>
+</section>
+<section id="fc03-c04-u076" class="level3">
+<h3 class="anchored" data-anchor-id="fc03-c04-u076">Theorem 4.6.17</h3>
+<div class="unit-meta">
+<p><code>FC03-C04-U076</code> · §4.6, pp.&nbsp;143–152; L5165 · after <a href="c01.html#fc03-c01-u028"><code>FC03-C01-U028</code></a>, <a href="c01.html#fc03-c01-u049"><code>FC03-C01-U049</code></a>, <a href="c03.html#fc03-c03-u038"><code>FC03-C03-U038</code></a></p>
+</div>
+<p>A functor F : C D between locally presentable categories (i) admits a right adjoint if and only if it is cocontinuous. (ii) admits a left adjoint if and only if it is continuous and accessible.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/dzackgarza\.github\.io\/lean-categories\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Generated from the project’s reference notes by <code>site/build.py</code>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>The Lean is the authority; where this site differs, the Lean is right.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

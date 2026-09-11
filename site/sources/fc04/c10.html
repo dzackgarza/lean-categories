@@ -1,0 +1,2793 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Chapter 10. Completions (pp.&nbsp;100–112) – lean-categories · corpus</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-7335da993d57b01553edc5728a7cb5aa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">lean-categories · corpus</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../coverage.html" aria-current="page"> 
+<span class="menu-text">Every book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../corpus.html"> 
+<span class="menu-text">Reading list</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../catalogues/index.html"> 
+<span class="menu-text">Catalogues</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/dzackgarza/lean-categories"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc04/index.html">FC04</a></li><li class="breadcrumb-item"><a href="../../sources/fc04/c10.html">Chapter 10. Completions (pp.&nbsp;100–112)</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="sidebar-tools-main">
+    <div id="quarto-search" class="quarto-navigation-tool px-1" title="Search"></div>
+</div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Graduate mathematics, and what Lean has of it</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../coverage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Every book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../corpus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational source corpus</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../status.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus status</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Sources</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC01 Dummit Foote</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/ai.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01 Appendix I — Cartesian Products and Zorn’s Lemma</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC03</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC03 Riehl Category Theory in Context</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Categories, Functors, and Natural Transformations (pp.&nbsp;1–48)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Representability and the Yoneda Lemma (pp.&nbsp;49–72)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Limits and Colimits (pp.&nbsp;73–114)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Adjunctions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Monads and Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. All Concepts are Kan Extensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/ce.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Epilogue: Theorems in Category Theory</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC04</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC04 Atiyah Macdonald</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Rings and Ideals (pp.&nbsp;1–9)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Modules (pp.&nbsp;17–30)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Rings and Modules of Fractions (pp.&nbsp;36–42)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Primary Decomposition (pp.&nbsp;50–54)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Integral Dependence and Valuations (pp.&nbsp;59–66)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Chain Conditions (pp.&nbsp;74–77)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Noetherian Rings (pp.&nbsp;80–83)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Artin Rings (pp.&nbsp;89–90)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Discrete Valuation Rings and Dedekind Domains (pp.&nbsp;93–98)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c10.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Chapter 10. Completions (pp.&nbsp;100–112)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Dimension Theory (pp.&nbsp;116–124)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC05</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC05 Weibel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Chain Complexes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Derived Functors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Tor and Ext</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homological Dimension</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Spectral Sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Group Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Lie Algebra Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Simplicial Methods in Homological Algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Hochschild and Cyclic Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. The Derived Category</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Category Theory Language</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC06</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC06 Hartshorne</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter I: Varieties</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter II: Schemes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter III: Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter IV: Curves</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter V: Surfaces</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC07</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC07 Hatcher</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 0. Some Underlying Geometric Notions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. The Fundamental Group</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homotopy Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix. Topology of Cell Complexes</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC08 Lee</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c22.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC09 Neukirch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC10 Serre Local Fields</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc11/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC11 Peters Sterk</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc12/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC12 Beauville</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc13/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC13</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC13 Matsumura</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Front matter — conventions and terminology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Commutative rings and modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Prime ideals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Properties of extension rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Valuation rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Dimension theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Regular sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Regular rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Flatness revisited</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Derivations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. I-smoothness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Applications of complete local rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Tensor products, direct and inverse limits</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix B. Some homological algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix C. The exterior algebra</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc14/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC14</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC14 Humphreys</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Basic Concepts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Semisimple Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Root Systems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Isomorphism and Conjugacy Theorems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Existence Theorem</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Representation Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Chevalley Algebras and Groups</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc15/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC15</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Classification of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Polynomial invariants of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Affine reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Coxeter groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Special cases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Hecke algebras and Kazhdan–Lusztig polynomials</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Complements</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc16/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC16</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Algebraic Geometry</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Affine Algebraic Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Homogeneous Spaces</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Characteristic 0 Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Semisimple and Unipotent Elements</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Solvable Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VIII. Borel Subgroups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IX. Centralizers of Tori</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter X. Structure of Reductive Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XI. Representations and Classification of Semisimple Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XII. Survey of Rationality Properties and Appendix</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../catalogues/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Definition catalogues</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">catalogues/*.md</span>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Notes and audits</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">notes/*.md</span>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc04/index.html">FC04</a></li><li class="breadcrumb-item"><a href="../../sources/fc04/c10.html">Chapter 10. Completions (pp.&nbsp;100–112)</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Chapter 10. Completions (pp.&nbsp;100–112)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>FC04 — Atiyah &amp; Macdonald, <em>Introduction to Commutative Algebra</em>.</p>
+<p>This chapter contains 15 definitions, 3 theorems, 11 propositions, 4 lemmas, 9 corollaries, 3 examples, 1 counterexample, 5 constructions, 1 notation and 8 other statements.</p>
+<p>Of the 60 statements checked against Lean, 39 are formalized somewhere and 21 are not.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 28%">
+<col style="width: 28%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Status</th>
+<th style="text-align: right;">Statements</th>
+<th style="text-align: right;">Share</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="route-mathlib">in Mathlib</span></td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">57%</td>
+<td>Mathlib states and proves it.</td>
+</tr>
+<tr class="even">
+<td><span class="route-unmatched">not formalized</span></td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">35%</td>
+<td>A documented search found no Lean statement of it anywhere.</td>
+</tr>
+<tr class="odd">
+<td><span class="route-reference-port">in another Lean project</span></td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">7%</td>
+<td>Some other Lean development has it; using it means porting that code.</td>
+</tr>
+<tr class="even">
+<td><span class="route-project-existing">in lean-categories</span></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2%</td>
+<td>This repository states and proves it.</td>
+</tr>
+<tr class="odd">
+<td><strong>checked in total</strong></td>
+<td style="text-align: right;"><strong>60</strong></td>
+<td style="text-align: right;"></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Which versions of Lean and Mathlib were searched
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li>Project search: <code>LeanCategories/**</code> outside <code>.lake/.agents/.git</code> was searched first at repo HEAD <a href="https://github.com/leanprover-community/mathlib4/commit/351cba0287077eadfcd7c71a78ec4a509ce8c966"><code>351cba0287077eadfcd7c71a78ec4a509ce8c966</code></a>. <a href="https://github.com/dzackgarza/lean-categories/blob/main/LeanCategories/ForMathlib/AdicCompletionTopology.lean"><code>LeanCategories/ForMathlib/AdicCompletionTopology.lean</code></a> is the sole general whole-row project owner in this chapter: it supplies the topology and topological-ring structure on ring adic completion used for <code>FC04-C10-U018</code>. The file was compiled at this HEAD. Project code has no topology on general module adic completions, no associated-graded construction, and no general Rees grading structure.</li>
+<li>Pinned Mathlib: project pin <a href="https://github.com/leanprover-community/mathlib4/commit/db584cd6d46c92f209a44c0f1c829460d327499d"><code>db584cd6d46c92f209a44c0f1c829460d327499d</code></a> (Apache-2.0, Lean v4.33.0), denoted <code>P</code>, contains the topological-group completion APIs, adic completion/functoriality/exactness/tensor/flatness/local/Krull infrastructure, filtrations/Artin-Rees/Rees algebra, and general graded-ring/module infrastructure cited in the chapter. Source-shaped assemblies for U035, U037, U041, U046, and U047 were compile-checked against P; the first-half declaration-name probe and the project U018 bridge also compiled in the P environment.</li>
+<li>Current Mathlib: upstream <a href="https://github.com/leanprover-community/mathlib4/commit/5aedf732b6987e8c26ab3c9ebc855314f82b045f"><code>5aedf732b6987e8c26ab3c9ebc855314f82b045f</code></a> (Apache-2.0), denoted <code>H</code>, was rechecked on 2026-09-06 and retains the pinned positive owners. H still has no topology on <code>AdicCompletion I M</code>, no stable-filtration topology theorem, no graded-Noetherian biconditional of U029, no exported grading on the Rees ring/module objects of U030, and no pinned associated-graded/noetherian-completion owners for U053/U054/U059.</li>
+<li>Open Mathlib work was rechecked immediately before assembly. PR <a href="https://github.com/leanprover-community/mathlib4/pull/33218">#33218</a> remains open at head <a href="https://github.com/leanprover-community/mathlib4/commit/3c12745297b7236616f6a23d7c11a8addd85e839"><code>3c12745297b7236616f6a23d7c11a8addd85e839</code></a> (Apache-2.0) and supplies the associated graded ring in <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/FilteredAlgebra/AssociatedGraded.html"><code>Mathlib/RingTheory/FilteredAlgebra/AssociatedGraded.lean</code></a>; U053 is therefore <code>reference-port</code>, not <code>mathlib</code>. PR <a href="https://github.com/leanprover-community/mathlib4/pull/33220">#33220</a> remains open at head <a href="https://github.com/leanprover-community/mathlib4/commit/70572cd62395e933e8f6476bcedcee366a5b5e82"><code>70572cd62395e933e8f6476bcedcee366a5b5e82</code></a> and supplies the associated graded module; U054 is <code>reference-port</code>. PR <a href="https://github.com/leanprover-community/mathlib4/pull/38331">#38331</a> remains open at head <a href="https://github.com/leanprover-community/mathlib4/commit/700711ddc105006709aa5e9bb98684001a93859a"><code>700711ddc105006709aa5e9bb98684001a93859a</code></a> and supplies Noetherianity of general adic completion; U059 is <code>reference-port</code>. Negative evidence for U056 also rechecked PR heads <a href="https://github.com/leanprover-community/mathlib4/pull/33225">#33225</a>=<a href="https://github.com/leanprover-community/mathlib4/commit/77d1835b8c0fcd797e8ba34f3513d3bcd4e6ce20"><code>77d1835b8c0fcd797e8ba34f3513d3bcd4e6ce20</code></a> and <a href="https://github.com/leanprover-community/mathlib4/pull/33227">#33227</a>=<a href="https://github.com/leanprover-community/mathlib4/commit/41854bad257ddac64fd172e8d3d571b633ee0c0e"><code>41854bad257ddac64fd172e8d3d571b633ee0c0e</code></a>: their filtered/associated-graded map results still do not imply injectivity/surjectivity after completion.</li>
+<li>External exact route U012: <code>LiranShaul/lean-faithfully-flat-descent@f5967aab9067290aed1b7113569c1b9024a9fca4</code> (Apache-2.0), <code>lib/mlSystem.lean::InverseSystem.surjective_limit_of_mittagLeffler_exact</code> plus <code>surjective_is_mittag_leffler</code>. The repository currently pins Lean <code>v4.26.0-rc2</code> and Mathlib <a href="https://github.com/leanprover-community/mathlib4/commit/d5c9558e75342a10d6321e6a8c798a14f68ae23c"><code>d5c9558e75342a10d6321e6a8c798a14f68ae23c</code></a>; the source file compiled unchanged against this project’s newer P, so U012 is a revision-specific <code>reference-port</code> with verified compatibility.</li>
+<li>External/current inverse-limit search also rechecked <code>ImperialCollegeLondon/FLT@8ec873aab84b21c4faaef849d5afd56ef79f684d</code>, <code>DE0CH/flt-lean@a5ec7082457bab42553702cdb183b3e034021ab3</code>, and <code>acmepjz/lean-iwasawa@7fffeb8c80fbe13f989f318c23cbb0dcf2230092</code>. They contain inverse-limit infrastructure but no stronger whole-row owner replacing the U012 route or filling U013–U015.</li>
+<li>The bundled p-adic example U021 was searched through P/H and indexed external Lean code. Current heads of the most relevant surfaced repositories were rechecked: <code>rwst/lean-code@ce1619b6418dc263efb911b11ad09409c2083d80</code>, <code>YijunYuan/FormalizedSparse@be9fb43dded873bc7567b486e17e924823e10e41</code>, and <code>CBirkbeck/AINTLIB@160e446617a2168c34c95bbe7a76c4105b392434</code>. None supplied the complete source bundle identifying <code>ℤ_p</code> with the adic completion together with a canonical base-<code>p</code> digit expansion and convergence statement.</li>
+<li>Graded/Rees negatives U023/U029/U030 were searched in P/H, open Mathlib work, and indexed external Lean code. <code>tom111/BEI-lean@5b3ddff1ffac4a12d16da43df6fc443501f4d680</code> surfaced for graded Noetherian developments but assumes both Noetherianity and finite type rather than proving U029. No external <code>reesAlgebra</code> grading owner or stable-filtration topology theorem was found.</li>
+<li><code>N</code> denotes dated 2026-09-06 strict negative evidence after project-first search, P/H, open/current Mathlib, installed packages, and targeted external Lean search. A partial theorem, informal docstring identification, editorially related fact, or one clause of a bundled proposition does not satisfy a canonical unit under strict bundle semantics. This is why U023, U029, U030, U044, and U055 remain unmatched despite substantial nearby formalization.</li>
+</ul>
+</div>
+</div>
+</div>
+<section id="fc04-c10-u001" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u001">Definition / comparison: Topological abelian group and zero-neighborhood control</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U001</code> · § Topologies and completions; pp.&nbsp;101–104; L3585 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A topological abelian group has continuous addition and inversion. If {0} is closed then the group is Hausdorff; translations are homeomorphisms, so the topology is determined by the neighborhoods of 0.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Algebra/Group/Basic.html"><code>Mathlib/Topology/Algebra/Group/Basic.lean::IsTopologicalAddGroup</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Homeomorph.addLeft#doc"><code>Homeomorph.addLeft</code></a>; <code>map_add_left_nhds_zero</code>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Algebra/Group/Pointwise.html#IsTopologicalAddGroup.t2Space_iff_zero_closed"><code>Mathlib/Topology/Algebra/Group/Pointwise.lean::IsTopologicalAddGroup.t2Space_iff_zero_closed</code></a> — Addition/inversion continuity is the bundled topological-add-group structure. Translation is a homeomorphism, zero-neighborhoods determine all neighborhoods, and in a topological additive group closed <code>{0}</code> is equivalent to Hausdorffness.</p>
+</div>
+</section>
+<section id="fc04-c10-u002" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u002">Lemma: Lemma 10.1</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U002</code> · § Topologies and completions; pp.&nbsp;101–104; L3587 · after <a href="#fc04-c10-u001"><code>FC04-C10-U001</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If H is the intersection of all neighborhoods of 0 in a topological abelian group G, then H is a subgroup, H=closure({0}), G/H is Hausdorff, and G is Hausdorff iff H=0.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Separation/Basic.html#R0Space.closure_singleton"><code>Mathlib/Topology/Separation/Basic.lean::R0Space.closure_singleton</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Algebra/FilterBasis.html#AddGroupFilterBasis.t2Space_iff"><code>Mathlib/Topology/Algebra/FilterBasis.lean::AddGroupFilterBasis.t2Space_iff</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Algebra/Group/Quotient.html#QuotientAddGroup.instT3Space"><code>Mathlib/Topology/Algebra/Group/Quotient.lean::QuotientAddGroup.instT3Space</code></a> — In a topological additive group the neighborhood-kernel at zero is the closure of <code>{0}</code> and is an additive subgroup. Quotienting by that closed subgroup is Hausdorff; the filter-basis criterion identifies Hausdorffness with trivial intersection.</p>
+</div>
+</section>
+<section id="fc04-c10-u003" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u003">Definition / construction: Cauchy sequences and completion of a topological abelian group</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U003</code> · § Topologies and completions; p.&nbsp;101–104; L3603–L3609 · after <a href="#fc04-c10-u001"><code>FC04-C10-U001</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Assuming 0 has a countable fundamental system of neighborhoods, a sequence is Cauchy if its pairwise differences eventually lie in every zero-neighborhood. Equivalent Cauchy sequences differ by a sequence tending to 0; their classes form the completion Ĝ, with canonical homomorphism φ:G→Ĝ given by constant sequences.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/UniformSpace/Completion.html#UniformSpace.Completion"><code>Mathlib/Topology/UniformSpace/Completion.lean::UniformSpace.Completion</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Completion.denseRange_coe#doc"><code>Completion.denseRange_coe</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Algebra/GroupCompletion.html#UniformSpace.Completion.toCompl"><code>Mathlib/Topology/Algebra/GroupCompletion.lean::UniformSpace.Completion.toCompl</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/UniformSpace/Cauchy.html"><code>Mathlib/Topology/UniformSpace/Cauchy.lean::CauchySeq</code></a> — Mathlib constructs the same Hausdorff completion by Cauchy filters modulo inseparability, without the source’s countable-basis restriction. <code>CauchySeq</code> supplies the sequence formulation when desired, and <code>toCompl</code> is the canonical additive homomorphism.</p>
+</div>
+</section>
+<section id="fc04-c10-u004" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u004">Comparison: Kernel and injectivity of the completion map</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U004</code> · § Topologies and completions; p.&nbsp;101–104; L3611–L3615 · after <a href="#fc04-c10-u002"><code>FC04-C10-U002</code></a>, <a href="#fc04-c10-u003"><code>FC04-C10-U003</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For the canonical map φ:G→Ĝ, ker φ is the intersection of all neighborhoods of 0; hence φ is injective exactly when G is Hausdorff.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=UniformSpace.Completion.isUniformInducing_coe#doc"><code>UniformSpace.Completion.isUniformInducing_coe</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=SeparationQuotient.mk_eq_mk#doc"><code>SeparationQuotient.mk_eq_mk</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=R0Space.closure_singleton#doc"><code>R0Space.closure_singleton</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=UniformSpace.Completion.coe_injective#doc"><code>UniformSpace.Completion.coe_injective</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=IsTopologicalAddGroup.t2Space_iff_zero_closed#doc"><code>IsTopologicalAddGroup.t2Space_iff_zero_closed</code></a> — Equality in the separated completion is exactly source inseparability pulled back along the uniform inducing map. For a topological additive group the inseparability class of zero is <code>closure {0}</code>, i.e.&nbsp;the intersection of its neighborhoods; therefore the completion map is injective exactly in the Hausdorff case.</p>
+</div>
+</section>
+<section id="fc04-c10-u005" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u005">Construction / convention: Functoriality of completion</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U005</code> · § Topologies and completions; p.&nbsp;101–104; L3617–L3619 · after <a href="#fc04-c10-u003"><code>FC04-C10-U003</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A continuous homomorphism f:G→H sends Cauchy sequences to Cauchy sequences and induces a continuous homomorphism f̂:Ĝ→Ĥ; completion respects composition: (g∘f)^=ĝ∘f̂.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Algebra/GroupCompletion.html#AddMonoidHom.completion"><code>Mathlib/Topology/Algebra/GroupCompletion.lean::AddMonoidHom.completion</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AddMonoidHom.continuous_completion#doc"><code>AddMonoidHom.continuous_completion</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/UniformSpace/Completion.html#UniformSpace.Completion.map_comp"><code>Mathlib/Topology/UniformSpace/Completion.lean::UniformSpace.Completion.map_comp</code></a> — A continuous additive homomorphism is uniformly continuous for the canonical group uniformities, extends to completions, and the underlying completion maps satisfy the source composition law.</p>
+</div>
+</section>
+<section id="fc04-c10-u006" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u006">Construction / example: Topologies defined by descending subgroups</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U006</code> · § Topologies and completions; p.&nbsp;101–104; L3621–L3627 · after <a href="#fc04-c10-u001"><code>FC04-C10-U001</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A descending sequence G=G₀⊇G₁⊇⋯ defines a topology by declaring U a zero-neighborhood iff U contains some Gₙ. Each Gₙ is open and closed. The standard example is the p-adic topology on Z with Gₙ=pⁿZ.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Algebra/FilterBasis.html"><code>Mathlib/Topology/Algebra/FilterBasis.lean::AddGroupFilterBasis</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AddGroupFilterBasis.hasBasis#doc"><code>AddGroupFilterBasis.hasBasis</code></a>; open-subgroup/closed-subgroup API; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Algebra/Nonarchimedean/AdicTopology.html#Ideal.hasBasis_nhds_zero_adic"><code>Mathlib/Topology/Algebra/Nonarchimedean/AdicTopology.lean::Ideal.hasBasis_nhds_zero_adic</code></a> — A descending family of additive subgroups is a zero-neighborhood basis and generates the source topology; basis subgroups are open and hence closed. The principal-ideal adic basis specializes this to the standard <code>p</code>-adic topology on <code>ℤ</code>.</p>
+</div>
+</section>
+<section id="fc04-c10-u007" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u007">Construction / comparison: Completion as coherent residue classes</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U007</code> · § Topologies and completions; p.&nbsp;101–104; L3629–L3641 · after <a href="#fc04-c10-u003"><code>FC04-C10-U003</code></a>, <a href="#fc04-c10-u006"><code>FC04-C10-U006</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a subgroup topology, a Cauchy sequence determines compatible classes ξₙ∈G/Gₙ, and every coherent family arises this way. Thus Ĝ can equivalently be defined as the group of coherent sequences of residue classes.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=UniformSpace.Completion#doc"><code>UniformSpace.Completion</code></a>; quotient groups; categorical limits — P/H have both abstract completion and quotient/inverse-limit infrastructure, but no checked bridge identifies completion for an arbitrary descending subgroup topology with coherent residue classes <code>G/G_n</code>, including surjectivity from every coherent family. Targeted current/open/external search found no whole-row owner.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c10-u008" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u008">Definition / construction: Inverse system and inverse limit</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U008</code> · § Topologies and completions; p.&nbsp;101–104; L3643–L3653 · after <a href="#fc04-c10-u007"><code>FC04-C10-U007</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A sequence of groups Aₙ with transition maps θₙ₊₁:Aₙ₊₁→Aₙ is an inverse system. Its inverse limit lim←Aₙ is the group of coherent sequences (aₙ) with θₙ₊₁(aₙ₊₁)=aₙ. In particular Ĝ≅lim←G/Gₙ.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Order/DirectedInverseSystem.html"><code>Mathlib/Order/DirectedInverseSystem.lean::InverseSystem</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CategoryTheory.Limits.limit#doc"><code>CategoryTheory.Limits.limit</code></a>; U007 infrastructure — Inverse systems and categorical inverse limits are formalized, but the row also asserts the specific canonical isomorphism <code>Ĝ ≃ lim G/G_n</code>; that missing bridge prevents strict whole-bundle credit.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c10-u009" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u009">Comparison / convention: Topology versus a chosen inverse system</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U009</code> · § Topologies and completions; pp.&nbsp;101–104; L3655 · after <a href="#fc04-c10-u008"><code>FC04-C10-U008</code></a>, <a href="#fc04-c10-u006"><code>FC04-C10-U006</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Different descending subgroup sequences can define the same topology and hence the same completion; the topological formulation packages this choice-independence, whereas a single inverse-system presentation depends on the chosen subgroups.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: topological completion; inverse-system APIs — P/H have topology and limit interfaces separately, but no checked theorem proves that cofinal/different descending subgroup presentations defining the same topology yield the source completion comparison.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c10-u010" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u010">Definition: Surjective inverse system</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U010</code> · § Topologies and completions; pp.&nbsp;101–104; L3657 · after <a href="#fc04-c10-u008"><code>FC04-C10-U008</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>An inverse system is called surjective when every transition homomorphism θₙ₊₁ is surjective.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Order/DirectedInverseSystem.html"><code>Mathlib/Order/DirectedInverseSystem.lean::InverseSystem</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Function.Surjective#doc"><code>Function.Surjective</code></a> — Mathlib’s transition-law structure together with pointwise <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Function.Surjective#doc"><code>Function.Surjective</code></a> is exactly the source notion that every transition homomorphism is surjective.</p>
+</div>
+</section>
+<section id="fc04-c10-u011" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u011">Definition / construction: Exact sequence of inverse systems</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U011</code> · § Topologies and completions; p.&nbsp;101–104; L3657–L3669 · after <a href="#fc04-c10-u008"><code>FC04-C10-U008</code></a>, <a href="c02.html#fc04-c02-u036"><code>FC04-C02-U036</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Compatible short exact sequences 0→Aₙ→Bₙ→Cₙ→0 arranged in commuting transition diagrams form an exact sequence of inverse systems and induce maps between their inverse limits.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Homology/ShortComplex/FunctorEquivalence.html#ShortComplex.functorEquivalence"><code>Mathlib/Algebra/Homology/ShortComplex/FunctorEquivalence.lean::ShortComplex.functorEquivalence</code></a>; functor-category abelian/exactness API; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CategoryTheory.Limits.lim.map#doc"><code>CategoryTheory.Limits.lim.map</code></a> — A compatible family of short exact sequences is equivalently a functor into short complexes, with exactness checked pointwise. A natural transformation induces the source maps on inverse limits through <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=lim.map#doc"><code>lim.map</code></a>.</p>
+</div>
+</section>
+<section id="fc04-c10-u012" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u012">Proposition: Proposition 10.2</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U012</code> · § Topologies and completions; pp.&nbsp;101–104; L3671 · after <a href="#fc04-c10-u010"><code>FC04-C10-U010</code></a>, <a href="#fc04-c10-u011"><code>FC04-C10-U011</code></a> · <span class="route-reference-port">in another Lean project</span></p>
+</div>
+<p>For an exact sequence 0→{Aₙ}→{Bₙ}→{Cₙ}→0 of inverse systems, 0→lim←Aₙ→lim←Bₙ→lim←Cₙ is always exact. If {Aₙ} is surjective, the map lim←Bₙ→lim←Cₙ is also surjective, giving a short exact sequence.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://github.com/LiranShaul/lean-faithfully-flat-descent/blob/f5967aab9067290aed1b7113569c1b9024a9fca4/lib/mlSystem.lean"><code>LiranShaul/lean-faithfully-flat-descent@f5967aab9067290aed1b7113569c1b9024a9fca4::lib/mlSystem.lean::InverseSystem.surjective_limit_of_mittagLeffler_exact</code></a>; <code>surjective_is_mittag_leffler</code> — The external theorem proves right exactness on inverse limits under the Mittag-Leffler condition; its surjective-transition lemma specializes exactly to Proposition 10.2. Apache-2.0; source Lean <code>v4.26.0-rc2</code>, Mathlib <a href="https://github.com/leanprover-community/mathlib4/commit/d5c9558e75342a10d6321e6a8c798a14f68ae23c"><code>d5c9558e75342a10d6321e6a8c798a14f68ae23c</code></a>. The file compiled unchanged against P.</p>
+</div>
+<p><span class="unit-provenance">Searched: E</span></p>
+</section>
+<section id="fc04-c10-u013" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u013">Notation / OCR-sensitive comparison: Derived obstruction Coker d^A</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U013</code> · § Topologies and completions; pp.&nbsp;101–104; L3709 · after <a href="#fc04-c10-u012"><code>FC04-C10-U012</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For d^A:∏Aₙ→∏Aₙ used in the proof of 10.2, the source records Coker d^A as a derived-functor inverse-limit object. The frozen extraction garbles both the superscript in d^A and the displayed limit notation; this unit preserves the mathematical role without silently trusting the OCR rendering.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: inverse-limit and Mittag-Leffler infrastructure — No checked project/P/H/open/external declaration identifies the source difference map <code>d^A</code> and its cokernel with a <code>lim¹</code>/derived inverse-limit object. The source row is also OCR-sensitive, so partial inverse-limit APIs are not credited.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c10-u014" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u014">Corollary: Corollary 10.3</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U014</code> · § Topologies and completions; pp.&nbsp;101–104; L3711 · after <a href="#fc04-c10-u012"><code>FC04-C10-U012</code></a>, <a href="#fc04-c10-u006"><code>FC04-C10-U006</code></a>, <a href="c02.html#fc04-c02-u036"><code>FC04-C02-U036</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a short exact sequence 0→G′→G→G″→0, give G the topology from {Gₙ}, G′ the induced topology from {G′∩Gₙ}, and G″ that from {p(Gₙ)}. Then 0→Ĝ′→Ĝ→Ĝ″→0 is exact.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: short exact sequences; completion; U012 external theorem — The abstract ingredients exist, but no checked owner assembles the induced subgroup/quotient topologies, identifies their completions with the corresponding residue inverse limits, and proves the displayed completed short exact sequence.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c10-u015" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u015">Corollary: Corollary 10.4</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U015</code> · § Topologies and completions; pp.&nbsp;101–104; L3727 · after <a href="#fc04-c10-u014"><code>FC04-C10-U014</code></a>, <a href="#fc04-c10-u006"><code>FC04-C10-U006</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For each n, the completion of Gₙ is a subgroup Ĝₙ⊆Ĝ and Ĝ/Ĝₙ≅G/Gₙ.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: completion; quotient groups — No checked P/H/open/external theorem identifies the completion of each basis subgroup <code>G_n</code> with a subgroup of <code>Ĝ</code> and proves <code>Ĝ/Ĝ_n ≃ G/G_n</code> as a whole bundle.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c10-u016" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u016">Proposition: Proposition 10.5</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U016</code> · § Topologies and completions; pp.&nbsp;101–104; L3735 · after <a href="#fc04-c10-u015"><code>FC04-C10-U015</code></a>, <a href="#fc04-c10-u008"><code>FC04-C10-U008</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>The completion of a completion is canonically isomorphic to the completion: ≅G. Equivalently, Ĝ is complete. The frozen extraction at L3735 loses one hat and renders this tautologically as “Ĝ≅Ĝ”.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/UniformSpace/Completion.html#UniformCompletion.completeEquivSelf"><code>Mathlib/Topology/UniformSpace/Completion.lean::UniformCompletion.completeEquivSelf</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=UniformSpace.Completion.instCompleteSpace#doc"><code>UniformSpace.Completion.instCompleteSpace</code></a> — Completion is complete and separated; applying <code>completeEquivSelf</code> to an already complete separated completion gives the canonical idempotence <code>Completion (Completion G) ≃ Completion G</code>.</p>
+</div>
+</section>
+<section id="fc04-c10-u017" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u017">Definition: Complete topological group</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U017</code> · § Topologies and completions; pp.&nbsp;101–104; L3737 · after <a href="#fc04-c10-u003"><code>FC04-C10-U003</code></a>, <a href="#fc04-c10-u004"><code>FC04-C10-U004</code></a>, <a href="#fc04-c10-u016"><code>FC04-C10-U016</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>G is complete when its canonical map φ:G→Ĝ is an isomorphism. Under this definition completeness includes Hausdorffness.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <code>CompleteSpace</code>; <code>T0Space</code>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=UniformCompletion.completeEquivSelf#doc"><code>UniformCompletion.completeEquivSelf</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=UniformSpace.Completion.coe_injective#doc"><code>UniformSpace.Completion.coe_injective</code></a> — The source’s “canonical completion map is an isomorphism” is Mathlib’s <code>CompleteSpace</code> together with separation (<code>T0Space</code>, equivalent to Hausdorff for topological groups). Under those hypotheses <code>completeEquivSelf</code> is the canonical uniform equivalence, so source completeness includes Hausdorffness exactly as stated.</p>
+</div>
+</section>
+<section id="fc04-c10-u018" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u018">Definition / construction: a-adic topology and completion of a ring</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U018</code> · § Topologies and completions; pp.&nbsp;101–104; L3739 · after <a href="#fc04-c10-u006"><code>FC04-C10-U006</code></a>, <a href="#fc04-c10-u003"><code>FC04-C10-U003</code></a>, <a href="#fc04-c10-u002"><code>FC04-C10-U002</code></a>, <a href="c01.html#fc04-c01-u006"><code>FC04-C01-U006</code></a>, <a href="c01.html#fc04-c01-u041"><code>FC04-C01-U041</code></a> · <span class="route-project-existing">in lean-categories</span></p>
+</div>
+<p>For an ideal a⊆A, the subgroups aⁿ define the a-adic topology. A is then a topological ring (its ring operations are continuous); it is Hausdorff iff ⋂aⁿ=(0). Its completion Â is a topological ring and A→Â is a continuous ring homomorphism with kernel ⋂aⁿ.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://github.com/dzackgarza/lean-categories/blob/main/LeanCategories/ForMathlib/AdicCompletionTopology.lean"><code>LeanCategories/ForMathlib/AdicCompletionTopology.lean::AdicCompletion.quotientPowTopology</code></a>; <code>adicCompletionTopologicalSpace</code>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AdicCompletion.instIsTopologicalRing#doc"><code>AdicCompletion.instIsTopologicalRing</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AdicCompletion.continuous_eval#doc"><code>AdicCompletion.continuous_eval</code></a>; P <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.hasBasis_nhds_zero_adic#doc"><code>Ideal.hasBasis_nhds_zero_adic</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AdicCompletion.of#doc"><code>AdicCompletion.of</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AdicCompletion.of_injective_iff#doc"><code>AdicCompletion.of_injective_iff</code></a> — P supplies the ideal-power adic topology and algebraic coherent-residue completion. The project adds the inverse-limit topology on the completion, topological-ring structure, and continuity of projections; together with the pinned Hausdorff/injectivity criteria this realizes the full ring row. The project file compiled at current repo HEAD.</p>
+</div>
+<p><span class="unit-provenance">Searched: repo HEAD + P</span></p>
+</section>
+<section id="fc04-c10-u019" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u019">Definition / construction: a-adic topology and completion of a module</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U019</code> · § Topologies and completions; pp.&nbsp;101–104; L3741 · after <a href="#fc04-c10-u018"><code>FC04-C10-U018</code></a>, <a href="#fc04-c10-u005"><code>FC04-C10-U005</code></a>, <a href="c02.html#fc04-c02-u001"><code>FC04-C02-U001</code></a>, <a href="c02.html#fc04-c02-u016"><code>FC04-C02-U016</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For an A-module M, the submodules aⁿM define the a-topology. The completion M̂ is a topological Â-module (the scalar action Â×M̂→M̂ is continuous). Every A-linear map f:M→N is continuous for these topologies and induces f̂:M̂→N̂.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: P <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.adicModuleTopology#doc"><code>Ideal.adicModuleTopology</code></a>; <code>AdicCompletion I M</code>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AdicCompletion.map#doc"><code>AdicCompletion.map</code></a>; algebraic <code>Module (AdicCompletion I R) (AdicCompletion I M)</code> — P has the source algebraic module completion and functorial linear maps, but neither P nor H gives a topology on <code>AdicCompletion I M</code> or continuity of the completed scalar action. The project topology bridge is ring-only, so the whole source bundle is not represented.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c10-u020" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u020">Example: kx as an adic completion</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U020</code> · § Topologies and completions; pp.&nbsp;101–104; L3743 · after <a href="#fc04-c10-u018"><code>FC04-C10-U018</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For A=k[x] and a=(x), the a-adic completion is kx.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/MvPowerSeries/Equiv.html#MvPowerSeries.toAdicCompletionAlgEquiv"><code>Mathlib/RingTheory/MvPowerSeries/Equiv.lean::MvPowerSeries.toAdicCompletionAlgEquiv</code></a> — Specializing the finite-variable theorem to one variable identifies the <code>(x)</code>-adic completion of <code>k[x]</code> with <code>kx</code>, exactly the source example.</p>
+</div>
+</section>
+<section id="fc04-c10-u021" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u021">Example: p-adic integers as an adic completion</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U021</code> · § Topologies and completions; pp.&nbsp;101–104; L3745 · after <a href="#fc04-c10-u018"><code>FC04-C10-U018</code></a>, <a href="#fc04-c10-u006"><code>FC04-C10-U006</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For A=Z and a=(p), Â is the ring of p-adic integers, represented by ∑aₙpⁿ with 0≤aₙ≤p−1; pⁿ→0.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: <code>PadicInt</code>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=PadicInt.toZModPow#doc"><code>PadicInt.toZModPow</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=PadicInt.ker_toZModPow#doc"><code>PadicInt.ker_toZModPow</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=PadicInt.adicCompletionIntegersEquiv#doc"><code>PadicInt.adicCompletionIntegersEquiv</code></a>; adic convergence APIs — P/H formalize <code>ℤ_p</code>, its compatible residues, completeness, and adic-completion comparisons, but no checked declaration gives the source digit expansion <code>∑ a_n p^n</code> with <code>0≤a_n≤p-1</code> as part of the same bundle. Current external searches (including <code>rwst/lean-code@ce1619b6418dc263efb911b11ad09409c2083d80</code>, <code>YijunYuan/FormalizedSparse@be9fb43dded873bc7567b486e17e924823e10e41</code>, and <code>CBirkbeck/AINTLIB@160e446617a2168c34c95bbe7a76c4105b392434</code>) found no complete owner.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c10-u022" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u022">Definition: Filtration, a-filtration, and stable a-filtration</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U022</code> · § Filtrations; p.&nbsp;105; L3749 · after <a href="#fc04-c10-u019"><code>FC04-C10-U019</code></a>, <a href="c02.html#fc04-c02-u007"><code>FC04-C02-U007</code></a>, <a href="c02.html#fc04-c02-u016"><code>FC04-C02-U016</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A filtration of M is a descending chain M=M₀⊇M₁⊇⋯. It is an a-filtration if aMₙ⊆Mₙ₊₁ for all n, and stable if aMₙ=Mₙ₊₁ for all sufficiently large n.&nbsp;The filtration (aⁿM) is stable.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Filtration.html#Ideal.Filtration"><code>Mathlib/RingTheory/Filtration.lean::Ideal.Filtration</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.Filtration.Stable#doc"><code>Ideal.Filtration.Stable</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.stableFiltration#doc"><code>Ideal.stableFiltration</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.stableFiltration_stable#doc"><code>Ideal.stableFiltration_stable</code></a> — <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.Filtration#doc"><code>Ideal.Filtration</code></a> is a descending module filtration satisfying <code>I • F_n ≤ F_{n+1}</code>; <code>Stable</code> is eventual equality, and the power filtration is proved stable.</p>
+</div>
+</section>
+<section id="fc04-c10-u023" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u023">Lemma: Lemma 10.6</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U023</code> · § Filtrations; p.&nbsp;105; L3751 · after <a href="#fc04-c10-u022"><code>FC04-C10-U022</code></a>, <a href="#fc04-c10-u019"><code>FC04-C10-U019</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Any two stable a-filtrations of M have bounded difference; consequently all stable a-filtrations induce the same topology, namely the a-topology.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Filtration.html#Ideal.Filtration.Stable.bounded_difference"><code>Mathlib/RingTheory/Filtration.lean::Ideal.Filtration.Stable.bounded_difference</code></a> — P proves the exact bounded-difference lemma, but <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Filtration.lean#doc"><code>Filtration.lean</code></a> exports no topology generated by an arbitrary filtration and no theorem that bounded difference implies equality of those topologies. H and targeted external Lean search found no whole-row owner.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c10-u024" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u024">Definition: Graded ring</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U024</code> · § Graded rings and modules; pp.&nbsp;106–110; L3757 · after <a href="c01.html#fc04-c01-u001"><code>FC04-C01-U001</code></a>, <a href="c02.html#fc04-c02-u023"><code>FC04-C02-U023</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A graded ring is a ring A with additive subgroups Aₙ (n≥0) such that A=⊕ₙAₙ and A_mA_n⊆A_{m+n}. Thus A₀ is a subring and each Aₙ an A₀-module.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/GradedAlgebra/Basic.html"><code>Mathlib/RingTheory/GradedAlgebra/Basic.lean::GradedRing</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=DirectSum.Decomposition#doc"><code>DirectSum.Decomposition</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=GradedRing.proj#doc"><code>GradedRing.proj</code></a> — The internal graded-ring class records multiplication of grades and a direct-sum decomposition; grade zero inherits ring structure and each grade the expected module structure.</p>
+</div>
+</section>
+<section id="fc04-c10-u025" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u025">Example: Polynomial grading</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U025</code> · § Graded rings and modules; pp.&nbsp;106–110; L3759 · after <a href="#fc04-c10-u024"><code>FC04-C10-U024</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For A=k[x₁,…,x_r], take Aₙ to be the homogeneous polynomials of degree n.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/MvPolynomial/Homogeneous.html#MvPolynomial.homogeneousSubmodule"><code>Mathlib/RingTheory/MvPolynomial/Homogeneous.lean::MvPolynomial.homogeneousSubmodule</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=MvPolynomial.gradedAlgebra#doc"><code>MvPolynomial.gradedAlgebra</code></a>; <code>homogeneousComponent</code> — The homogeneous degree-<code>n</code> polynomial submodules form the standard grading of a polynomial algebra, specializing to the source finite polynomial ring.</p>
+</div>
+</section>
+<section id="fc04-c10-u026" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u026">Definition / convention: Graded module, homogeneous elements, and components</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U026</code> · § Graded rings and modules; pp.&nbsp;106–110; L3761 · after <a href="#fc04-c10-u024"><code>FC04-C10-U024</code></a>, <a href="c02.html#fc04-c02-u001"><code>FC04-C02-U001</code></a>, <a href="c02.html#fc04-c02-u023"><code>FC04-C02-U023</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A graded A-module M has M=⊕ₙMₙ with A_mM_n⊆M_{m+n}. Elements lying in some Mₙ are homogeneous of degree n, and every element has a unique finite decomposition into homogeneous components.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Module/GradedModule.html#SetLike.GradedSMul"><code>Mathlib/Algebra/Module/GradedModule.lean::SetLike.GradedSMul</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=DirectSum.Decomposition#doc"><code>DirectSum.Decomposition</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=DirectSum.decompose#doc"><code>DirectSum.decompose</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=DirectSum.sum_support_decompose#doc"><code>DirectSum.sum_support_decompose</code></a>; homogeneous-element API — Mathlib’s internal graded-module interface is a direct-sum decomposition compatible with graded scalar multiplication. <code>decompose</code> has finite support and reconstructs each element uniquely as the sum of homogeneous components.</p>
+</div>
+</section>
+<section id="fc04-c10-u027" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u027">Definition: Homomorphism of graded modules</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U027</code> · § Graded rings and modules; pp.&nbsp;106–110; L3763 · after <a href="#fc04-c10-u026"><code>FC04-C10-U026</code></a>, <a href="c02.html#fc04-c02-u003"><code>FC04-C02-U003</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A homomorphism f:M→N of graded A-modules is A-linear and satisfies f(Mₙ)⊆Nₙ for every n.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/GradedAlgebra/RingHom.html"><code>Mathlib/RingTheory/GradedAlgebra/RingHom.lean::GradedRingHom</code></a>; graded linear-map/<code>map_mem</code> API — The graded-map structures require the underlying linear/additive map to send each degree component into the same prescribed degree, exactly the source condition.</p>
+</div>
+</section>
+<section id="fc04-c10-u028" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u028">Definition / construction: Positive-degree ideal A₊</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U028</code> · § Graded rings and modules; pp.&nbsp;106–110; L3765 · after <a href="#fc04-c10-u024"><code>FC04-C10-U024</code></a>, <a href="c01.html#fc04-c01-u006"><code>FC04-C01-U006</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For a graded ring A, A₊=⊕_{n&gt;0}Aₙ is an ideal of A.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/GradedAlgebra/Homogeneous/Ideal.html#HomogeneousIdeal.irrelevant"><code>Mathlib/RingTheory/GradedAlgebra/Homogeneous/Ideal.lean::HomogeneousIdeal.irrelevant</code></a>; <code>mem_irrelevant_iff</code>; <code>irrelevant_eq_iSup</code> — The irrelevant ideal is precisely the ideal generated by all nonzero/positive homogeneous degrees; over <code>ℕ</code> this is the source <code>A_+ = ⊕_{n&gt;0} A_n</code>.</p>
+</div>
+</section>
+<section id="fc04-c10-u029" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u029">Proposition: Proposition 10.7</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U029</code> · § Graded rings and modules; pp.&nbsp;106–110; L3767 · after <a href="#fc04-c10-u024"><code>FC04-C10-U024</code></a>, <a href="#fc04-c10-u028"><code>FC04-C10-U028</code></a>, <a href="c06.html#fc04-c06-u014"><code>FC04-C06-U014</code></a>, <a href="c07.html#fc04-c07-u007"><code>FC04-C07-U007</code></a>, <a href="c02.html#fc04-c02-u067"><code>FC04-C02-U067</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a graded ring A, A is Noetherian iff A₀ is Noetherian and A is finitely generated as an A₀-algebra.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/GradedAlgebra/Noetherian.html#GradedRing.GradeZero.isNoetherianRing"><code>Mathlib/RingTheory/GradedAlgebra/Noetherian.lean::GradedRing.GradeZero.isNoetherianRing</code></a>; generic <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Algebra.FiniteType.isNoetherianRing#doc"><code>Algebra.FiniteType.isNoetherianRing</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=GradedAlgebra.exists_finset_adjoin_eq_top_and_homogeneous#doc"><code>GradedAlgebra.exists_finset_adjoin_eq_top_and_homogeneous</code></a> — P/H prove <code>A</code> Noetherian implies <code>A_0</code> Noetherian and prove the forward Hilbert-basis direction from finite type over a Noetherian base, but no checked theorem derives finite generation of an arbitrary <code>ℕ</code>-graded Noetherian ring over <code>A_0</code>. <code>tom111/BEI-lean@5b3ddff1ffac4a12d16da43df6fc443501f4d680</code> only assumes both hypotheses.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c10-u030" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u030">Construction: The graded rings/modules A and M attached to a filtration</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U030</code> · § Graded rings and modules; pp.&nbsp;106–110; L3777 · after <a href="#fc04-c10-u024"><code>FC04-C10-U024</code></a>, <a href="#fc04-c10-u026"><code>FC04-C10-U026</code></a>, <a href="#fc04-c10-u022"><code>FC04-C10-U022</code></a>, <a href="c01.html#fc04-c01-u041"><code>FC04-C01-U041</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a ring A and ideal a, A*=⊕_{n≥0}aⁿ is a graded ring. If (Mₙ) is an a-filtration, M<em>=⊕ₙMₙ is a graded A</em>-module.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/ReesAlgebra.html"><code>Mathlib/RingTheory/ReesAlgebra.lean::reesAlgebra</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Filtration.html#Ideal.Filtration.submodule"><code>Mathlib/RingTheory/Filtration.lean::Ideal.Filtration.submodule</code></a>; coefficient membership theorems — P/H realize <code>A*</code> and <code>M*</code> as coefficient-restricted polynomial algebra/module objects, and the Rees-algebra docstring identifies the direct-sum mathematics, but no exported <code>GradedRing</code> structure on <code>reesAlgebra</code> or graded-module structure on <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Filtration.submodule#doc"><code>Filtration.submodule</code></a> was found. Strict bundle semantics therefore do not credit the informal identification.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c10-u031" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u031">Comparison: Noetherianity of A</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U031</code> · § Graded rings and modules; pp.&nbsp;106–110; L3779 · after <a href="#fc04-c10-u030"><code>FC04-C10-U030</code></a>, <a href="c06.html#fc04-c06-u014"><code>FC04-C06-U014</code></a>, <a href="c07.html#fc04-c07-u007"><code>FC04-C07-U007</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If A is Noetherian and a=(x₁,…,x_r), then A*=A[x₁,…,x_r] and is Noetherian.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/ReesAlgebra.html"><code>Mathlib/RingTheory/ReesAlgebra.lean::reesAlgebra</code></a>; <code>adjoin_monomial_eq_reesAlgebra</code>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=reesAlgebra.fg#doc"><code>reesAlgebra.fg</code></a>; Noetherian instance — For a finitely generated ideal the Rees algebra is generated in degree one; over a Noetherian ring the ideal is finitely generated and the Rees algebra is Noetherian, exactly the source comparison.</p>
+</div>
+</section>
+<section id="fc04-c10-u032" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u032">Lemma: Lemma 10.8</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U032</code> · § Graded rings and modules; pp.&nbsp;106–110; L3781 · after <a href="#fc04-c10-u030"><code>FC04-C10-U030</code></a>, <a href="#fc04-c10-u031"><code>FC04-C10-U031</code></a>, <a href="#fc04-c10-u022"><code>FC04-C10-U022</code></a>, <a href="c06.html#fc04-c06-u014"><code>FC04-C06-U014</code></a>, <a href="c02.html#fc04-c02-u022"><code>FC04-C02-U022</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Let A be Noetherian, M finitely generated, and (Mₙ) an a-filtration. Then M* is finitely generated as an A*-module iff the filtration (Mₙ) is stable.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Filtration.html#Ideal.Filtration.submodule_fg_iff_stable"><code>Mathlib/RingTheory/Filtration.lean::Ideal.Filtration.submodule_fg_iff_stable</code></a> — For finitely generated filtration pieces, finite generation of the filtration’s Rees submodule is equivalent to stability, exactly Lemma 10.8.</p>
+</div>
+</section>
+<section id="fc04-c10-u033" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u033">Proposition: Proposition 10.9 (Artin–Rees lemma)</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U033</code> · § Graded rings and modules; pp.&nbsp;106–110; L3795 · after <a href="#fc04-c10-u032"><code>FC04-C10-U032</code></a>, <a href="#fc04-c10-u022"><code>FC04-C10-U022</code></a>, <a href="c06.html#fc04-c06-u014"><code>FC04-C06-U014</code></a>, <a href="c02.html#fc04-c02-u007"><code>FC04-C02-U007</code></a>, <a href="c02.html#fc04-c02-u022"><code>FC04-C02-U022</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Let A be Noetherian, a an ideal, M finitely generated, (Mₙ) a stable a-filtration, and M′⊆M. Then (M′∩Mₙ) is a stable a-filtration of M′. The extraction drops the symbol a before “an ideal in A”.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Filtration.html#Ideal.Filtration.Stable.inter_right"><code>Mathlib/RingTheory/Filtration.lean::Ideal.Filtration.Stable.inter_right</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Stable.of_le#doc"><code>Stable.of_le</code></a> — Intersecting a stable filtration with a submodule in a finite module over a Noetherian ring remains stable, exactly Proposition 10.9.</p>
+</div>
+</section>
+<section id="fc04-c10-u034" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u034">Corollary: Corollary 10.10</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U034</code> · § Graded rings and modules; pp.&nbsp;106–110; L3801 · after <a href="#fc04-c10-u033"><code>FC04-C10-U033</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For M′⊆M as above, there is k such that (aⁿM)∩M′ = a<sup>{n−k}((a</sup>kM)∩M′) for all n≥k.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Filtration.html#Ideal.exists_pow_inf_eq_pow_smul"><code>Mathlib/RingTheory/Filtration.lean::Ideal.exists_pow_inf_eq_pow_smul</code></a> — This is the Artin-Rees formula <code>(I^n M) ∩ M' = I^(n-k)((I^k M) ∩ M')</code> after the theorem’s index normalization.</p>
+</div>
+</section>
+<section id="fc04-c10-u035" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u035">Theorem: Theorem 10.11</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U035</code> · § Graded rings and modules; pp.&nbsp;106–110; L3811 · after <a href="#fc04-c10-u033"><code>FC04-C10-U033</code></a>, <a href="#fc04-c10-u023"><code>FC04-C10-U023</code></a>, <a href="#fc04-c10-u019"><code>FC04-C10-U019</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For A Noetherian, a an ideal, M finitely generated, and M′⊆M, the filtrations aⁿM′ and (aⁿM)∩M′ have bounded difference. Hence the intrinsic a-topology on M′ equals the topology induced from M.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Filtration.html#Ideal.Filtration.Stable.bounded_difference"><code>Mathlib/RingTheory/Filtration.lean::Ideal.Filtration.Stable.bounded_difference</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Stable.inter_right#doc"><code>Stable.inter_right</code></a>; stable power filtration — Applying bounded difference to the intrinsic power filtration on <code>M'</code> and the induced intersection filtration gives exactly the source bounded-difference assertion. The source-shaped assembly was compile-checked against P; equality of the induced adic topologies follows from the same two-sided cofinal bounds.</p>
+</div>
+</section>
+<section id="fc04-c10-u036" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u036">Named comparison: Strong versus topological Artin–Rees</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U036</code> · § Graded rings and modules; pp.&nbsp;106–110; L3813 · after <a href="#fc04-c10-u035"><code>FC04-C10-U035</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The source distinguishes the bounded-difference assertion of 10.11 from its topological consequence: Chapter 10 uses the latter, while Chapter 11 needs the stronger bounded-difference form.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: U035 strong Artin-Rees theorem — The mathematical strong theorem is formalized, but the source row is specifically the named distinction and later-use comparison between the strong assertion and its topological consequence; no formal declaration owns that editorial comparison as a source-shaped unit.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c10-u037" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u037">Proposition: Proposition 10.12</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U037</code> · § Graded rings and modules; pp.&nbsp;106–110; L3817 · after <a href="#fc04-c10-u035"><code>FC04-C10-U035</code></a>, <a href="#fc04-c10-u014"><code>FC04-C10-U014</code></a>, <a href="c02.html#fc04-c02-u036"><code>FC04-C02-U036</code></a>, <a href="c06.html#fc04-c06-u014"><code>FC04-C06-U014</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If 0→M′→M→M″→0 is exact with all three modules finitely generated over a Noetherian ring A, then for any ideal a the induced sequence of a-adic completions 0→M̂′→M̂→M̂″→0 is exact.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/AdicCompletion/Exactness.html#AdicCompletion.map_injective"><code>Mathlib/RingTheory/AdicCompletion/Exactness.lean::AdicCompletion.map_injective</code></a>; <code>map_exact</code>; <code>map_surjective</code> — These three theorems assemble the completed short exact sequence for finite modules over a Noetherian ring. The complete source-shaped sequence was compile-checked against P.</p>
+</div>
+</section>
+<section id="fc04-c10-u038" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u038">Construction: Natural map Â⊗A M→M̂</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U038</code> · § Graded rings and modules; p.&nbsp;106–110; L3831–L3835 · after <a href="#fc04-c10-u018"><code>FC04-C10-U018</code></a>, <a href="#fc04-c10-u019"><code>FC04-C10-U019</code></a>, <a href="c02.html#fc04-c02-u046"><code>FC04-C02-U046</code></a>, <a href="c02.html#fc04-c02-u055"><code>FC04-C02-U055</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>The canonical A→Â makes Â an A-algebra, and M→M̂ induces a natural Â-linear comparison map Â⊗_A M→M̂.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/AdicCompletion/AsTensorProduct.html#AdicCompletion.ofTensorProduct"><code>Mathlib/RingTheory/AdicCompletion/AsTensorProduct.lean::AdicCompletion.ofTensorProduct</code></a>; <code>ofTensorProduct_tmul</code>; <code>ofTensorProduct_naturality</code> — <code>ofTensorProduct</code> is exactly the canonical <code>Â ⊗_A M → M̂</code> comparison and is natural in <code>M</code>.</p>
+</div>
+</section>
+<section id="fc04-c10-u039" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u039">Comparison: The natural tensor/completion map can fail both injectivity and surjectivity</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U039</code> · § Graded rings and modules; pp.&nbsp;106–110; L3837 · after <a href="#fc04-c10-u038"><code>FC04-C10-U038</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For arbitrary A and M, the natural map Â⊗_A M→M̂ need be neither injective nor surjective; Proposition 10.13 records the finite-generation hypotheses that recover surjectivity or an isomorphism.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AdicCompletion.ofTensorProduct#doc"><code>AdicCompletion.ofTensorProduct</code></a>; finite-generation recovery theorems — P/H/open/external search found no explicit examples witnessing both possible failures—noninjectivity and nonsurjectivity—of the arbitrary tensor/completion comparison map. Positive finite-generation theorems do not satisfy this row.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c10-u040" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u040">Proposition: Proposition 10.13</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U040</code> · § Graded rings and modules; pp.&nbsp;106–110; L3839 · after <a href="#fc04-c10-u038"><code>FC04-C10-U038</code></a>, <a href="#fc04-c10-u037"><code>FC04-C10-U037</code></a>, <a href="c02.html#fc04-c02-u022"><code>FC04-C02-U022</code></a>, <a href="c02.html#fc04-c02-u058"><code>FC04-C02-U058</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For any ring A and finitely generated M, the natural map Â⊗_A M→M̂ is surjective. If A is Noetherian, it is an isomorphism.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AdicCompletion.ofTensorProduct_surjective_of_finite#doc"><code>AdicCompletion.ofTensorProduct_surjective_of_finite</code></a>; <code>ofTensorProduct_bijective_of_finite_of_isNoetherian</code>; <code>ofTensorProductEquivOfFiniteNoetherian</code> — The natural map is surjective for finite modules over any ring and bijective/equivalent for finite modules over a Noetherian ring, exactly Proposition 10.13.</p>
+</div>
+</section>
+<section id="fc04-c10-u041" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u041">Comparison: Exactness of tensor-completion on finite modules</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U041</code> · § Graded rings and modules; pp.&nbsp;106–110; L3855 · after <a href="#fc04-c10-u037"><code>FC04-C10-U037</code></a>, <a href="#fc04-c10-u040"><code>FC04-C10-U040</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For A Noetherian, 10.12 and 10.13 identify completion on finitely generated modules with the exact functor M↦Â⊗_A M.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> U037/U040 owners; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/TensorProduct/RightExactness.html#LinearMap.lTensor_exact"><code>Mathlib/LinearAlgebra/TensorProduct/RightExactness.lean::LinearMap.lTensor_exact</code></a> — The finite-module completion equivalences identify the exact completion sequence with tensoring by <code>Â</code>; the tensor exactness assembly was compile-checked against P.</p>
+</div>
+</section>
+<section id="fc04-c10-u042" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u042">Proposition: Proposition 10.14</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U042</code> · § Graded rings and modules; pp.&nbsp;106–110; L3857 · after <a href="#fc04-c10-u041"><code>FC04-C10-U041</code></a>, <a href="c02.html#fc04-c02-u061"><code>FC04-C02-U061</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If A is Noetherian and Â is its a-adic completion, then Â is a flat A-algebra.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/AdicCompletion/AsTensorProduct.html#AdicCompletion.flat_of_isNoetherian"><code>Mathlib/RingTheory/AdicCompletion/AsTensorProduct.lean::AdicCompletion.flat_of_isNoetherian</code></a> — The adic completion of a Noetherian ring is flat over the original ring, exactly Proposition 10.14.</p>
+</div>
+</section>
+<section id="fc04-c10-u043" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u043">Named comparison: Completion versus tensor-completion for non-finite modules</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U043</code> · § Graded rings and modules; pp.&nbsp;106–110; L3859 · after <a href="#fc04-c10-u040"><code>FC04-C10-U040</code></a>, <a href="#fc04-c10-u042"><code>FC04-C10-U042</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For non-finitely-generated modules M↦M̂ need not be exact; M↦Â⊗_A M is exact and agrees with completion on finitely generated modules.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: U040/U042 positive finite-module agreement and flat tensor exactness — P/H/open/external search found no source-shaped non-finitely-generated module for which adic completion fails exactness, so the negative comparison row is not formalized as stated.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c10-u044" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u044">Proposition: Proposition 10.15</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U044</code> · § Graded rings and modules; pp.&nbsp;106–110; L3863 · after <a href="#fc04-c10-u040"><code>FC04-C10-U040</code></a>, <a href="#fc04-c10-u015"><code>FC04-C10-U015</code></a>, <a href="#fc04-c10-u016"><code>FC04-C10-U016</code></a>, <a href="c01.html#fc04-c01-u037"><code>FC04-C01-U037</code></a>, <a href="c01.html#fc04-c01-u038"><code>FC04-C01-U038</code></a>, <a href="c06.html#fc04-c06-u014"><code>FC04-C06-U014</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For A Noetherian with a-adic completion Â: (i) â=Âa≅Â⊗_A a; (ii) (aⁿ)^=(â)ⁿ; (iii) aⁿ/aⁿ⁺¹≅âⁿ/âⁿ⁺¹; (iv) â is contained in the Jacobson radical of Â.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adic completion tensor equivalence; mapped-ideal/power APIs; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=IsAdicComplete.le_jacobson_bot#doc"><code>IsAdicComplete.le_jacobson_bot</code></a> — P supplies clauses corresponding to extension of the ideal, powers, and the Jacobson-radical inclusion, but no exported general isomorphism <code>a^n/a^(n+1) ≃ â^n/â^(n+1)</code> was found. Under strict bundle semantics the missing clause (iii) makes the proposition unmatched.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c10-u045" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u045">Proposition: Proposition 10.16</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U045</code> · § Graded rings and modules; pp.&nbsp;106–110; L3903 · after <a href="#fc04-c10-u044"><code>FC04-C10-U044</code></a>, <a href="c01.html#fc04-c01-u028"><code>FC04-C01-U028</code></a>, <a href="c01.html#fc04-c01-u029"><code>FC04-C01-U029</code></a>, <a href="c06.html#fc04-c06-u014"><code>FC04-C06-U014</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If (A,m) is a Noetherian local ring, then its m-adic completion Â is local with maximal ideal m̂.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/AdicCompletion/LocalRing.html#AdicCompletion.isLocalRing_of_fg"><code>Mathlib/RingTheory/AdicCompletion/LocalRing.lean::AdicCompletion.isLocalRing_of_fg</code></a>; Noetherian local instance; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AdicCompletion.maximalIdeal_eq_map#doc"><code>AdicCompletion.maximalIdeal_eq_map</code></a> — For a Noetherian local ring the maximal ideal is finitely generated, the maximal-adic completion is local, and its maximal ideal is the mapped/completed original maximal ideal.</p>
+</div>
+</section>
+<section id="fc04-c10-u046" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u046">Theorem: Theorem 10.17 (Krull’s Theorem)</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U046</code> · § Graded rings and modules; pp.&nbsp;106–110; L3909 · after <a href="#fc04-c10-u035"><code>FC04-C10-U035</code></a>, <a href="#fc04-c10-u004"><code>FC04-C10-U004</code></a>, <a href="c02.html#fc04-c02-u022"><code>FC04-C02-U022</code></a>, <a href="c02.html#fc04-c02-u030"><code>FC04-C02-U030</code></a>, <a href="c06.html#fc04-c06-u014"><code>FC04-C06-U014</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For A Noetherian, a an ideal, and M finitely generated, the kernel E=⋂_{n≥1}aⁿM of M→M̂ consists exactly of those x∈M annihilated by some element of 1+a.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Filtration.html#Ideal.mem_iInf_smul_pow_eq_bot_iff"><code>Mathlib/RingTheory/Filtration.lean::Ideal.mem_iInf_smul_pow_eq_bot_iff</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/AdicCompletion/Basic.html#AdicCompletion.of_apply"><code>Mathlib/RingTheory/AdicCompletion/Basic.lean::AdicCompletion.of_apply</code></a> — The filtration theorem characterizes membership in <code>⋂ I^n M</code> by existence of a scalar congruent to one modulo <code>I</code> fixing the element; rewriting gives annihilation by an element of <code>1+I</code>. Together with the completion map’s kernel this is exactly 10.17. The assembly was compile-checked.</p>
+</div>
+</section>
+<section id="fc04-c10-u047" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u047">Named comparison: Localization inside completion for S=1+a</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U047</code> · § Graded rings and modules; p.&nbsp;106–110; L3917–L3929 · after <a href="#fc04-c10-u046"><code>FC04-C10-U046</code></a>, <a href="c03.html#fc04-c03-u001"><code>FC04-C03-U001</code></a>, <a href="c03.html#fc04-c03-u002"><code>FC04-C03-U002</code></a>, <a href="c03.html#fc04-c03-u006"><code>FC04-C03-U006</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>With S=1+a, A→Â and A→S⁻¹A have the same kernel. Every element of S becomes a unit in Â, giving a natural injective homomorphism S⁻¹A→Â.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=IsLocalization.map_eq_zero_iff#doc"><code>IsLocalization.map_eq_zero_iff</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=IsLocalization.lift#doc"><code>IsLocalization.lift</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=IsLocalization.lift_injective_iff#doc"><code>IsLocalization.lift_injective_iff</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/AdicCompletion/Basic.html#IsAdicComplete.le_jacobson_bot"><code>Mathlib/RingTheory/AdicCompletion/Basic.lean::IsAdicComplete.le_jacobson_bot</code></a>; U046 — Elements of <code>1+I</code> become units in the complete ring, the localization therefore maps to the completion, and the localization kernel criterion plus U046 gives equality of kernels and injectivity. The source-shaped bundle was compile-checked against P.</p>
+</div>
+</section>
+<section id="fc04-c10-u048" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u048">Counterexample: Failure of Krull’s theorem without Noetherianity</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U048</code> · § Graded rings and modules; p.&nbsp;106–110; L3931–L3941 · after <a href="#fc04-c10-u046"><code>FC04-C10-U046</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For A=C^∞(R) and a the maximal ideal of functions vanishing at 0, ⋂aⁿ consists of functions flat at 0, whereas annihilation by 1+a corresponds to vanishing on a neighborhood. The function e^{-1/x²} separates the two kernels, so A is not Noetherian.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: Mathlib smooth glue/flat-function calculus such as <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=expNegInvGlue.contDiff#doc"><code>expNegInvGlue.contDiff</code></a> — No checked Lean development supplies the ring <code>C^∞(ℝ)</code>, the maximal ideal at zero, the identification of all ideal powers with vanishing jets, and the <code>e^{-1/x²}</code> kernel separation required by the source counterexample.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c10-u049" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u049">Corollary: Corollary 10.18</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U049</code> · § Graded rings and modules; pp.&nbsp;106–110; L3945 · after <a href="#fc04-c10-u046"><code>FC04-C10-U046</code></a>, <a href="c01.html#fc04-c01-u013"><code>FC04-C01-U013</code></a>, <a href="c06.html#fc04-c06-u014"><code>FC04-C06-U014</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If A is a Noetherian domain and a≠(1), then ⋂_{n≥1}aⁿ=0.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Filtration.html#Ideal.iInf_pow_eq_bot_of_isDomain"><code>Mathlib/RingTheory/Filtration.lean::Ideal.iInf_pow_eq_bot_of_isDomain</code></a> — For a Noetherian domain and proper ideal, the intersection of all powers is zero, exactly Corollary 10.18.</p>
+</div>
+</section>
+<section id="fc04-c10-u050" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u050">Corollary: Corollary 10.19</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U050</code> · § Graded rings and modules; pp.&nbsp;106–110; L3949 · after <a href="#fc04-c10-u046"><code>FC04-C10-U046</code></a>, <a href="c01.html#fc04-c01-u037"><code>FC04-C01-U037</code></a>, <a href="c01.html#fc04-c01-u038"><code>FC04-C01-U038</code></a>, <a href="#fc04-c10-u019"><code>FC04-C10-U019</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If A is Noetherian, a is contained in the Jacobson radical, and M is finitely generated, then ⋂aⁿM=0; equivalently, the a-topology on M is Hausdorff.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Filtration.html#Ideal.iInf_pow_smul_eq_bot_of_le_jacobson"><code>Mathlib/RingTheory/Filtration.lean::Ideal.iInf_pow_smul_eq_bot_of_le_jacobson</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/AdicCompletion/Noetherian.html#IsHausdorff.of_le_jacobson"><code>Mathlib/RingTheory/AdicCompletion/Noetherian.lean::IsHausdorff.of_le_jacobson</code></a> — If the ideal lies in the Jacobson radical, the intersection of its powers acting on a finite module is zero; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=IsHausdorff.of_le_jacobson#doc"><code>IsHausdorff.of_le_jacobson</code></a> packages the equivalent Hausdorff adic-completion condition.</p>
+</div>
+</section>
+<section id="fc04-c10-u051" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u051">Corollary: Corollary 10.20</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U051</code> · § Graded rings and modules; pp.&nbsp;106–110; L3955 · after <a href="#fc04-c10-u050"><code>FC04-C10-U050</code></a>, <a href="c01.html#fc04-c01-u028"><code>FC04-C01-U028</code></a>, <a href="c06.html#fc04-c06-u014"><code>FC04-C06-U014</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For a Noetherian local ring (A,m) and finitely generated M, the m-adic topology on M is Hausdorff; in particular, so is the m-adic topology on A.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/AdicCompletion/Noetherian.html#IsHausdorff.of_isLocalRing"><code>Mathlib/RingTheory/AdicCompletion/Noetherian.lean::IsHausdorff.of_isLocalRing</code></a>; maximal-ideal <code>IsHausdorff</code> instance — Specializing U050 to a Noetherian local ring and its maximal ideal gives Hausdorffness for every finite module, and hence for the ring itself.</p>
+</div>
+</section>
+<section id="fc04-c10-u052" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u052">Corollary: Corollary 10.21</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U052</code> · § Graded rings and modules; pp.&nbsp;106–110; L3959 · after <a href="#fc04-c10-u051"><code>FC04-C10-U051</code></a>, <a href="c07.html#fc04-c07-u016"><code>FC04-C07-U016</code></a>, <a href="c04.html#fc04-c04-u004"><code>FC04-C04-U004</code></a>, <a href="c04.html#fc04-c04-u023"><code>FC04-C04-U023</code></a>, <a href="c03.html#fc04-c03-u009"><code>FC04-C03-U009</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For A Noetherian and p prime, the intersection of all p-primary ideals of A is the kernel of A→A_p.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: primary-ideal APIs; localization kernels; Krull intersection — P/H/open/external search found no theorem identifying the intersection of all <code>p</code>-primary ideals with the kernel of <code>A → A_p</code>. The surrounding localization and primary-decomposition ingredients do not constitute the source corollary.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c10-u053" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u053">Definition / construction: Associated graded ring Ga(A)</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U053</code> · § The associated graded ring; p.&nbsp;111–112; L3961–L3969 · after <a href="#fc04-c10-u024"><code>FC04-C10-U024</code></a>, <a href="c01.html#fc04-c01-u041"><code>FC04-C01-U041</code></a> · <span class="route-reference-port">in another Lean project</span></p>
+</div>
+<p>For a ring A and ideal a, G_a(A)=⊕_{n≥0} aⁿ/aⁿ⁺¹, with multiplication induced by representatives: x̄_m x̄_n=overline{x_mx_n}.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> Mathlib PR <a href="https://github.com/leanprover-community/mathlib4/pull/33218">#33218</a> head <a href="https://github.com/leanprover-community/mathlib4/commit/3c12745297b7236616f6a23d7c11a8addd85e839"><code>3c12745297b7236616f6a23d7c11a8addd85e839</code></a>, <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/FilteredAlgebra/AssociatedGraded.html"><code>Mathlib/RingTheory/FilteredAlgebra/AssociatedGraded.lean::GradedPiece</code></a>; <code>AssociatedGraded</code>; graded multiplication/ring instance — Open Apache-2.0 Mathlib PR. The generic associated-graded construction specializes, after the standard descending-to-ascending reindexing, to <code>G_a(A)=⊕ a^n/a^(n+1)</code> with representative multiplication. Because it is absent at P, this remains a revision-specific reference port.</p>
+</div>
+<p><span class="unit-provenance">Searched: PR33218</span></p>
+</section>
+<section id="fc04-c10-u054" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u054">Definition / construction: Associated graded module G(M)</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U054</code> · § The associated graded ring; p.&nbsp;111–112; L3971–L3977 · after <a href="#fc04-c10-u053"><code>FC04-C10-U053</code></a>, <a href="#fc04-c10-u022"><code>FC04-C10-U022</code></a>, <a href="#fc04-c10-u026"><code>FC04-C10-U026</code></a> · <span class="route-reference-port">in another Lean project</span></p>
+</div>
+<p>For an A-module M with a-filtration (Mₙ), define G(M)=⊕_{n≥0}Mₙ/Mₙ₊₁, naturally a graded G_a(A)-module; write Gₙ(M)=Mₙ/Mₙ₊₁.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> Mathlib PR <a href="https://github.com/leanprover-community/mathlib4/pull/33220">#33220</a> head <a href="https://github.com/leanprover-community/mathlib4/commit/70572cd62395e933e8f6476bcedcee366a5b5e82"><code>70572cd62395e933e8f6476bcedcee366a5b5e82</code></a>, <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/FilteredAlgebra/AssociatedGraded.html"><code>Mathlib/RingTheory/FilteredAlgebra/AssociatedGraded.lean</code></a>; associated-graded module scalar structure and <code>Module (AssociatedGraded ...)</code> — Open Apache-2.0 Mathlib PR. It supplies the quotient graded pieces and natural module structure over the associated graded ring, matching the source <code>G(M)</code> construction after reindexing.</p>
+</div>
+<p><span class="unit-provenance">Searched: PR33220</span></p>
+</section>
+<section id="fc04-c10-u055" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u055">Proposition: Proposition 10.22</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U055</code> · § The associated graded ring; pp.&nbsp;111–112; L3979 · after <a href="#fc04-c10-u053"><code>FC04-C10-U053</code></a>, <a href="#fc04-c10-u054"><code>FC04-C10-U054</code></a>, <a href="#fc04-c10-u044"><code>FC04-C10-U044</code></a>, <a href="#fc04-c10-u029"><code>FC04-C10-U029</code></a>, <a href="#fc04-c10-u022"><code>FC04-C10-U022</code></a>, <a href="c06.html#fc04-c06-u014"><code>FC04-C06-U014</code></a>, <a href="c02.html#fc04-c02-u022"><code>FC04-C02-U022</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For A Noetherian and ideal a: (i) G_a(A) is Noetherian; (ii) G_a(A)≅G_â(Â) as graded rings; (iii) if M is finitely generated and (Mₙ) is a stable a-filtration, then G(M) is finitely generated over G_a(A).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: PR <a href="https://github.com/leanprover-community/mathlib4/pull/38331">#38331</a> graded-ring Noetherianity support; PR <a href="https://github.com/leanprover-community/mathlib4/pull/33218">#33218</a>/#33220 associated-graded structures — Current/open work can cover associated-graded Noetherianity, but no checked source supplies the completion graded-ring isomorphism <code>G_a(A) ≃ G_â(Â)</code> together with the finite-generation statement for stable filtered modules. The three-clause source bundle therefore remains unmatched.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c10-u056" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u056">Lemma: Lemma 10.23</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U056</code> · § The associated graded ring; pp.&nbsp;111–112; L3995 · after <a href="#fc04-c10-u054"><code>FC04-C10-U054</code></a>, <a href="#fc04-c10-u003"><code>FC04-C10-U003</code></a>, <a href="#fc04-c10-u012"><code>FC04-C10-U012</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a homomorphism φ:A→B of filtered groups (meaning φ(Aₙ)⊆Bₙ), if the induced G(φ):G(A)→G(B) is injective then φ̂ is injective; if G(φ) is surjective then φ̂ is surjective.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: Mathlib PR <a href="https://github.com/leanprover-community/mathlib4/pull/33225">#33225</a>/#33227 filtered and associated-graded hom exactness — The open filtered/associated-graded map work does not prove the source implication “graded map injective/surjective ⇒ completed map injective/surjective.” No complete project/current/external owner was found.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c10-u057" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u057">Proposition: Proposition 10.24</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U057</code> · § The associated graded ring; pp.&nbsp;111–112; L4017 · after <a href="#fc04-c10-u017"><code>FC04-C10-U017</code></a>, <a href="#fc04-c10-u022"><code>FC04-C10-U022</code></a>, <a href="#fc04-c10-u054"><code>FC04-C10-U054</code></a>, <a href="#fc04-c10-u056"><code>FC04-C10-U056</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Let A be complete in the a-topology, M an A-module with an a-filtration, and suppose M is Hausdorff for the filtration topology. If G(M) is finitely generated over G(A), then M is finitely generated over A.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: completion; associated-graded PRs — No checked declaration proves that completeness plus Hausdorffness and finite generation of the associated graded module lift to finite generation of the original filtered module.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c10-u058" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u058">Corollary: Corollary 10.25</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U058</code> · § The associated graded ring; pp.&nbsp;111–112; L4037 · after <a href="#fc04-c10-u057"><code>FC04-C10-U057</code></a>, <a href="c06.html#fc04-c06-u011"><code>FC04-C06-U011</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Under the hypotheses of 10.24, if G(M) is Noetherian as a G(A)-module, then M is Noetherian as an A-module.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: U057 ingredients; Noetherian module APIs — No checked declaration lifts Noetherianity of <code>G(M)</code> over <code>G(A)</code> to Noetherianity of the complete Hausdorff filtered module <code>M</code> under the source hypotheses.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c10-u059" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u059">Theorem: Theorem 10.26</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U059</code> · § The associated graded ring; pp.&nbsp;111–112; L4043 · after <a href="#fc04-c10-u055"><code>FC04-C10-U055</code></a>, <a href="#fc04-c10-u058"><code>FC04-C10-U058</code></a>, <a href="#fc04-c10-u016"><code>FC04-C10-U016</code></a>, <a href="c06.html#fc04-c06-u014"><code>FC04-C06-U014</code></a> · <span class="route-reference-port">in another Lean project</span></p>
+</div>
+<p>If A is Noetherian and a is an ideal, then the a-adic completion Â is Noetherian.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> Mathlib PR <a href="https://github.com/leanprover-community/mathlib4/pull/38331">#38331</a> head <a href="https://github.com/leanprover-community/mathlib4/commit/700711ddc105006709aa5e9bb98684001a93859a"><code>700711ddc105006709aa5e9bb98684001a93859a</code></a>, <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/AdicCompletion/Noetherian.html#AdicCompletion.isNoetherianRing_of_fg"><code>Mathlib/RingTheory/AdicCompletion/Noetherian.lean::AdicCompletion.isNoetherianRing_of_fg</code></a>; general <code>IsNoetherianRing (AdicCompletion I R)</code> instance — Open Apache-2.0 Mathlib PR. It proves exactly that the adic completion of a Noetherian ring is Noetherian; the result is absent at P/H and therefore is recorded only at this PR revision.</p>
+</div>
+<p><span class="unit-provenance">Searched: PR38331</span></p>
+</section>
+<section id="fc04-c10-u060" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c10-u060">Corollary: Corollary 10.27</h3>
+<div class="unit-meta">
+<p><code>FC04-C10-U060</code> · § The associated graded ring; pp.&nbsp;111–112; L4053 · after <a href="#fc04-c10-u059"><code>FC04-C10-U059</code></a>, <a href="c07.html#fc04-c07-u007"><code>FC04-C07-U007</code></a>, <a href="c07.html#fc04-c07-u006"><code>FC04-C07-U006</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If A is Noetherian, then Ax₁,…,xₙ is Noetherian; in particular kx₁,…,xₙ is Noetherian for a field k.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/MvPowerSeries/Equiv.html"><code>Mathlib/RingTheory/MvPowerSeries/Equiv.lean</code></a> finite-variable <code>IsNoetherianRing (MvPowerSeries σ R)</code> instance; power-series Noetherian infrastructure — For finite <code>σ</code>, formal power series over a Noetherian coefficient ring are Noetherian; specializing to <code>Fin n</code> gives <code>Ax_1,…,x_n</code>, and fields are Noetherian.</p>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/dzackgarza\.github\.io\/lean-categories\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Generated from the project’s reference notes by <code>site/build.py</code>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>The Lean is the authority; where this site differs, the Lean is right.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

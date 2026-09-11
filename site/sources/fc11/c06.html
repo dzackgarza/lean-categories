@@ -1,0 +1,2566 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024) – lean-categories · corpus</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-7335da993d57b01553edc5728a7cb5aa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">lean-categories · corpus</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../coverage.html" aria-current="page"> 
+<span class="menu-text">Every book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../corpus.html"> 
+<span class="menu-text">Reading list</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../catalogues/index.html"> 
+<span class="menu-text">Catalogues</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/dzackgarza/lean-categories"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc11/index.html">FC11</a></li><li class="breadcrumb-item"><a href="../../sources/fc11/c06.html">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="sidebar-tools-main">
+    <div id="quarto-search" class="quarto-navigation-tool px-1" title="Search"></div>
+</div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Graduate mathematics, and what Lean has of it</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../coverage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Every book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../corpus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational source corpus</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../status.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus status</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Sources</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC01 Dummit Foote</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/ai.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01 Appendix I — Cartesian Products and Zorn’s Lemma</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC03</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC03 Riehl Category Theory in Context</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Categories, Functors, and Natural Transformations (pp.&nbsp;1–48)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Representability and the Yoneda Lemma (pp.&nbsp;49–72)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Limits and Colimits (pp.&nbsp;73–114)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Adjunctions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Monads and Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. All Concepts are Kan Extensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/ce.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Epilogue: Theorems in Category Theory</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC04</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC04 Atiyah Macdonald</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Rings and Ideals (pp.&nbsp;1–9)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Modules (pp.&nbsp;17–30)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Rings and Modules of Fractions (pp.&nbsp;36–42)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Primary Decomposition (pp.&nbsp;50–54)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Integral Dependence and Valuations (pp.&nbsp;59–66)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Chain Conditions (pp.&nbsp;74–77)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Noetherian Rings (pp.&nbsp;80–83)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Artin Rings (pp.&nbsp;89–90)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Discrete Valuation Rings and Dedekind Domains (pp.&nbsp;93–98)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. Completions (pp.&nbsp;100–112)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Dimension Theory (pp.&nbsp;116–124)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC05</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC05 Weibel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Chain Complexes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Derived Functors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Tor and Ext</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homological Dimension</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Spectral Sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Group Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Lie Algebra Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Simplicial Methods in Homological Algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Hochschild and Cyclic Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. The Derived Category</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Category Theory Language</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC06</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC06 Hartshorne</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter I: Varieties</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter II: Schemes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter III: Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter IV: Curves</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter V: Surfaces</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC07</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC07 Hatcher</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 0. Some Underlying Geometric Notions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. The Fundamental Group</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homotopy Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix. Topology of Cell Complexes</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC08 Lee</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c22.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC09 Neukirch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC10 Serre Local Fields</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc11/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC11 Peters Sterk</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c06.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc12/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC12 Beauville</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc13/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC13</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC13 Matsumura</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Front matter — conventions and terminology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Commutative rings and modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Prime ideals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Properties of extension rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Valuation rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Dimension theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Regular sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Regular rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Flatness revisited</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Derivations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. I-smoothness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Applications of complete local rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Tensor products, direct and inverse limits</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix B. Some homological algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix C. The exterior algebra</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc14/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC14</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC14 Humphreys</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Basic Concepts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Semisimple Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Root Systems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Isomorphism and Conjugacy Theorems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Existence Theorem</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Representation Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Chevalley Algebras and Groups</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc15/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC15</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Classification of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Polynomial invariants of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Affine reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Coxeter groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Special cases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Hecke algebras and Kazhdan–Lusztig polynomials</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Complements</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc16/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC16</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Algebraic Geometry</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Affine Algebraic Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Homogeneous Spaces</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Characteristic 0 Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Semisimple and Unipotent Elements</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Solvable Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VIII. Borel Subgroups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IX. Centralizers of Tori</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter X. Structure of Reductive Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XI. Representations and Classification of Semisimple Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XII. Survey of Rationality Properties and Appendix</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../catalogues/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Definition catalogues</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">catalogues/*.md</span>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Notes and audits</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">notes/*.md</span>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="-1">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+  <li><a href="#binary-forms.-a-we-first-consider-the-hyperbolic-plane-u-_-r-r-e-oplus-r-f-e-cdot-e-f-cdot-f-0-e-cdot-f-1-assume-2-neq-0-.-up-to-units-e-and-f-are-the-only-primitive-isotropic-vectors.-since-these-are-preserved-under-isometries-the-only-isometries-are-the-rotations-i-_-a-left-beginarray-c-c-a-0-0-a---1-endarray-right-a-in-r-times-and-the-reflections-j-_-b-binom-0-b-beginarray-r-b---1-0-endarray-b-in-r-times-.-observe-that-j-_-b-is-the-hyperplane-reflection-in-e---b-f-.-since-j-_-1-circ-j-_-a-i-_-a-all-isometries-of-u-_-r-are-products-of-at-most-two-hyperplane-reflections.-note-that-these-isometries-are-also-the-isometries-for-the-corresponding-quadratic-form.-in-case-2-0-also-the-vector-e-f-is-a-primitive-isotropic-vector-and-as-we-saw-in-example-6.5.1-this-gives-an-isometry-of-the-bilinear-form-but-not-of-the-quadratic-form.-indeed-if-left-beginarray-c-c-a-_-1-1-a-_-1-2-a-_-2-1-a-_-2-2-endarray-right-represents-an-isometry-with-respect-to-the-quadratic-form-then-a-_-1-1-x-a-_-1-2-y-a-_-2-1-x-a-_-2-2-y-x-y-.-this-implies-a-_-mathrm-1-1-a-_-mathrm-2-1-a-_-mathrm-1-2-a-_-mathrm-2-2-0-and-a-_-1-1-a-_-2-2-a-_-1-2-a-_-2-1-1-so-that-the-only-isometries-preserving-the-quadratic-form-are-just-the-j-_-a-and-the-i-_-b-for-suitable-units-a-b-.-for-a-non-zero-s-which-is-not-a-unit-the-lattice-u-_-r-s-is-not-unimodular-and-its-discriminant-torsion-module-s---1-r-r-oplus-2-inherits-the-hyperbolic-form.-its-isometry-group-consists-of-the-isometries-i-_-bar-a-and-j-_-bar-b-where-now-bar-a-bar-b-in-r-s-r-times-.-hence-the-reduction-homomorphism-is-surjective.-b-next-we-return-to-the-situation-see-section-6.3.b-where-k-q-r-k-q-s-s-r-xi-a-quadratic-extension-with-xi-2-u-xi-v-0-and-associated-quadratic-form-mathsf-n-_-k-k-x-y-xi-x-2---u-x-y-v-y-2-on-k-i.e.-x-2---u-x-y-v-y-2-on-phi-2-k-where-x-y-is-identified-with-x-y-xi-.-b1-determining-the-rotations-in-case-2-neq-0-.-multiplication-with-any-u-in-s-with-n-_-k-k-u-1-induces-a-k--linear-map-from-k-to-k-that-preserves-the-quadratic-form-since-n-_-k-k-is-multiplicative.-the-matrix-of-multiplication-by-u-a-b-xi-a-b-in-r-in-the-basis-1-xi-is-given-by-m-_-a-b-left-beginarray-c-c-a---b-v-b-a---u-b-endarray-right-.-since-operatorname-d-e-t-bigl-m-_-a-b-bigr-a-2---u-a-b-v-b-2-n-_-k-k-u-1-this-is-a-rotation.-we-claim-that-all-rotations-occur-this-way.-let-rho-be-any-rotation-and-let-rho-1-a-cdot-1-b-xi-.-then-n-_-k-k-big-a-b-xi-big-1-and-rho---1-cdot-m-_-a-b-1-1-.-a-small-matrix-computation-shows-that-the-only-rotation-which-fixes-1-is-the-identity.-it-follows-that-rho-m-_-a-b-.-b2-on-reflections-in-case-2-neq-0-.-the-reflection-in-a---1-b-xi-with-n-_-k-k-a-b-xi-a-2---u-a-b-v-b-2-1-has-matrix-m-_-a-b-prime-left-beginarray-c-c-a---u-a-v-b-b---a-endarray-right-.-as-in-the-case-of-rotations-any-orthogonal-transformation-with-determinant---1-is-of-this-shape.-observe-also-that-m-_-a-b-prime-circ-m-_-1-0-prime-m-_-a-b-and-so-all-isometries-are-products-of-at-most-two-reflections.-b3-the-case-2-0-.-we-still-have-the-preceding-wo-types-of-orthogonal-transformations-despite-both-having-determinant-1.-the-first-type-m-_-a-b-comes-from-multiplication-with-norm-1-elements.-however-a-matrix-for-a-reflection-cannot-come-from-multiplication-with-norm-1-vectors-since-if-this-were-the-case-we-would-have-u-b-0-u-a-and-so-u-0-but-then-the-extension-r-xi-r-would-not-be-separable.-we-shall-see-later-cf.-example-16.2.5.3-that-in-this-case-the-two-types-of-orthogonal-transformations-are-distinguished-by-their-dickson-invariants." id="toc-binary-forms.-a-we-first-consider-the-hyperbolic-plane-u-_-r-r-e-oplus-r-f-e-cdot-e-f-cdot-f-0-e-cdot-f-1-assume-2-neq-0-.-up-to-units-e-and-f-are-the-only-primitive-isotropic-vectors.-since-these-are-preserved-under-isometries-the-only-isometries-are-the-rotations-i-_-a-left-beginarray-c-c-a-0-0-a---1-endarray-right-a-in-r-times-and-the-reflections-j-_-b-binom-0-b-beginarray-r-b---1-0-endarray-b-in-r-times-.-observe-that-j-_-b-is-the-hyperplane-reflection-in-e---b-f-.-since-j-_-1-circ-j-_-a-i-_-a-all-isometries-of-u-_-r-are-products-of-at-most-two-hyperplane-reflections.-note-that-these-isometries-are-also-the-isometries-for-the-corresponding-quadratic-form.-in-case-2-0-also-the-vector-e-f-is-a-primitive-isotropic-vector-and-as-we-saw-in-example-6.5.1-this-gives-an-isometry-of-the-bilinear-form-but-not-of-the-quadratic-form.-indeed-if-left-beginarray-c-c-a-_-1-1-a-_-1-2-a-_-2-1-a-_-2-2-endarray-right-represents-an-isometry-with-respect-to-the-quadratic-form-then-a-_-1-1-x-a-_-1-2-y-a-_-2-1-x-a-_-2-2-y-x-y-.-this-implies-a-_-mathrm-1-1-a-_-mathrm-2-1-a-_-mathrm-1-2-a-_-mathrm-2-2-0-and-a-_-1-1-a-_-2-2-a-_-1-2-a-_-2-1-1-so-that-the-only-isometries-preserving-the-quadratic-form-are-just-the-j-_-a-and-the-i-_-b-for-suitable-units-a-b-.-for-a-non-zero-s-which-is-not-a-unit-the-lattice-u-_-r-s-is-not-unimodular-and-its-discriminant-torsion-module-s---1-r-r-oplus-2-inherits-the-hyperbolic-form.-its-isometry-group-consists-of-the-isometries-i-_-bar-a-and-j-_-bar-b-where-now-bar-a-bar-b-in-r-s-r-times-.-hence-the-reduction-homomorphism-is-surjective.-b-next-we-return-to-the-situation-see-section-6.3.b-where-k-q-r-k-q-s-s-r-xi-a-quadratic-extension-with-xi-2-u-xi-v-0-and-associated-quadratic-form-mathsf-n-_-k-k-x-y-xi-x-2---u-x-y-v-y-2-on-k-i.e.-x-2---u-x-y-v-y-2-on-phi-2-k-where-x-y-is-identified-with-x-y-xi-.-b1-determining-the-rotations-in-case-2-neq-0-.-multiplication-with-any-u-in-s-with-n-_-k-k-u-1-induces-a-k--linear-map-from-k-to-k-that-preserves-the-quadratic-form-since-n-_-k-k-is-multiplicative.-the-matrix-of-multiplication-by-u-a-b-xi-a-b-in-r-in-the-basis-1-xi-is-given-by-m-_-a-b-left-beginarray-c-c-a---b-v-b-a---u-b-endarray-right-.-since-operatorname-d-e-t-bigl-m-_-a-b-bigr-a-2---u-a-b-v-b-2-n-_-k-k-u-1-this-is-a-rotation.-we-claim-that-all-rotations-occur-this-way.-let-rho-be-any-rotation-and-let-rho-1-a-cdot-1-b-xi-.-then-n-_-k-k-big-a-b-xi-big-1-and-rho---1-cdot-m-_-a-b-1-1-.-a-small-matrix-computation-shows-that-the-only-rotation-which-fixes-1-is-the-identity.-it-follows-that-rho-m-_-a-b-.-b2-on-reflections-in-case-2-neq-0-.-the-reflection-in-a---1-b-xi-with-n-_-k-k-a-b-xi-a-2---u-a-b-v-b-2-1-has-matrix-m-_-a-b-prime-left-beginarray-c-c-a---u-a-v-b-b---a-endarray-right-.-as-in-the-case-of-rotations-any-orthogonal-transformation-with-determinant---1-is-of-this-shape.-observe-also-that-m-_-a-b-prime-circ-m-_-1-0-prime-m-_-a-b-and-so-all-isometries-are-products-of-at-most-two-reflections.-b3-the-case-2-0-.-we-still-have-the-preceding-wo-types-of-orthogonal-transformations-despite-both-having-determinant-1.-the-first-type-m-_-a-b-comes-from-multiplication-with-norm-1-elements.-however-a-matrix-for-a-reflection-cannot-come-from-multiplication-with-norm-1-vectors-since-if-this-were-the-case-we-would-have-u-b-0-u-a-and-so-u-0-but-then-the-extension-r-xi-r-would-not-be-separable.-we-shall-see-later-cf.-example-16.2.5.3-that-in-this-case-the-two-types-of-orthogonal-transformations-are-distinguished-by-their-dickson-invariants." class="nav-link active" data-scroll-target="#binary-forms.-a-we-first-consider-the-hyperbolic-plane-u-_-r-r-e-oplus-r-f-e-cdot-e-f-cdot-f-0-e-cdot-f-1-assume-2-neq-0-.-up-to-units-e-and-f-are-the-only-primitive-isotropic-vectors.-since-these-are-preserved-under-isometries-the-only-isometries-are-the-rotations-i-_-a-left-beginarray-c-c-a-0-0-a---1-endarray-right-a-in-r-times-and-the-reflections-j-_-b-binom-0-b-beginarray-r-b---1-0-endarray-b-in-r-times-.-observe-that-j-_-b-is-the-hyperplane-reflection-in-e---b-f-.-since-j-_-1-circ-j-_-a-i-_-a-all-isometries-of-u-_-r-are-products-of-at-most-two-hyperplane-reflections.-note-that-these-isometries-are-also-the-isometries-for-the-corresponding-quadratic-form.-in-case-2-0-also-the-vector-e-f-is-a-primitive-isotropic-vector-and-as-we-saw-in-example-6.5.1-this-gives-an-isometry-of-the-bilinear-form-but-not-of-the-quadratic-form.-indeed-if-left-beginarray-c-c-a-_-1-1-a-_-1-2-a-_-2-1-a-_-2-2-endarray-right-represents-an-isometry-with-respect-to-the-quadratic-form-then-a-_-1-1-x-a-_-1-2-y-a-_-2-1-x-a-_-2-2-y-x-y-.-this-implies-a-_-mathrm-1-1-a-_-mathrm-2-1-a-_-mathrm-1-2-a-_-mathrm-2-2-0-and-a-_-1-1-a-_-2-2-a-_-1-2-a-_-2-1-1-so-that-the-only-isometries-preserving-the-quadratic-form-are-just-the-j-_-a-and-the-i-_-b-for-suitable-units-a-b-.-for-a-non-zero-s-which-is-not-a-unit-the-lattice-u-_-r-s-is-not-unimodular-and-its-discriminant-torsion-module-s---1-r-r-oplus-2-inherits-the-hyperbolic-form.-its-isometry-group-consists-of-the-isometries-i-_-bar-a-and-j-_-bar-b-where-now-bar-a-bar-b-in-r-s-r-times-.-hence-the-reduction-homomorphism-is-surjective.-b-next-we-return-to-the-situation-see-section-6.3.b-where-k-q-r-k-q-s-s-r-xi-a-quadratic-extension-with-xi-2-u-xi-v-0-and-associated-quadratic-form-mathsf-n-_-k-k-x-y-xi-x-2---u-x-y-v-y-2-on-k-i.e.-x-2---u-x-y-v-y-2-on-phi-2-k-where-x-y-is-identified-with-x-y-xi-.-b1-determining-the-rotations-in-case-2-neq-0-.-multiplication-with-any-u-in-s-with-n-_-k-k-u-1-induces-a-k--linear-map-from-k-to-k-that-preserves-the-quadratic-form-since-n-_-k-k-is-multiplicative.-the-matrix-of-multiplication-by-u-a-b-xi-a-b-in-r-in-the-basis-1-xi-is-given-by-m-_-a-b-left-beginarray-c-c-a---b-v-b-a---u-b-endarray-right-.-since-operatorname-d-e-t-bigl-m-_-a-b-bigr-a-2---u-a-b-v-b-2-n-_-k-k-u-1-this-is-a-rotation.-we-claim-that-all-rotations-occur-this-way.-let-rho-be-any-rotation-and-let-rho-1-a-cdot-1-b-xi-.-then-n-_-k-k-big-a-b-xi-big-1-and-rho---1-cdot-m-_-a-b-1-1-.-a-small-matrix-computation-shows-that-the-only-rotation-which-fixes-1-is-the-identity.-it-follows-that-rho-m-_-a-b-.-b2-on-reflections-in-case-2-neq-0-.-the-reflection-in-a---1-b-xi-with-n-_-k-k-a-b-xi-a-2---u-a-b-v-b-2-1-has-matrix-m-_-a-b-prime-left-beginarray-c-c-a---u-a-v-b-b---a-endarray-right-.-as-in-the-case-of-rotations-any-orthogonal-transformation-with-determinant---1-is-of-this-shape.-observe-also-that-m-_-a-b-prime-circ-m-_-1-0-prime-m-_-a-b-and-so-all-isometries-are-products-of-at-most-two-reflections.-b3-the-case-2-0-.-we-still-have-the-preceding-wo-types-of-orthogonal-transformations-despite-both-having-determinant-1.-the-first-type-m-_-a-b-comes-from-multiplication-with-norm-1-elements.-however-a-matrix-for-a-reflection-cannot-come-from-multiplication-with-norm-1-vectors-since-if-this-were-the-case-we-would-have-u-b-0-u-a-and-so-u-0-but-then-the-extension-r-xi-r-would-not-be-separable.-we-shall-see-later-cf.-example-16.2.5.3-that-in-this-case-the-two-types-of-orthogonal-transformations-are-distinguished-by-their-dickson-invariants.">2. Binary forms. (a) We first consider the hyperbolic plane <span class="math inline">\(U _ { R } = R e \oplus R f\)</span> , <span class="math inline">\(e \cdot e = f \cdot f = 0\)</span> , <span class="math inline">\(e \cdot f = 1\)</span> Assume <span class="math inline">\(2 \neq 0\)</span> . Up to units <span class="math inline">\(e\)</span> and <span class="math inline">\(f\)</span> are the only primitive isotropic vectors. Since these are preserved under isometries, the only isometries are the rotations <span class="math inline">\(i _ { a } : = \left( \begin{array} { c c } { { a } } &amp; { { 0 } } \\ { { 0 } } &amp; { { a ^ { - 1 } } } \end{array} \right)\)</span> , <span class="math inline">\(a \in R ^ { \times }\)</span> , and the reflections <span class="math inline">\(j _ { b } : = \binom { 0 } { b } \begin{array} { r } { b ^ { - 1 } } \\ { 0 } \end{array}\)</span> , <span class="math inline">\(b \in R ^ { \times }\)</span> . Observe that <span class="math inline">\(j _ { b }\)</span> is the hyperplane reflection in <span class="math inline">\(e - b f\)</span> . Since <span class="math inline">\(j _ { 1 } \circ j _ { a } = i _ { a }\)</span> , all isometries of <span class="math inline">\(U _ { R }\)</span> are products of at most two hyperplane reflections. Note that these isometries are also the isometries for the corresponding quadratic form. In case <span class="math inline">\(2 = 0\)</span> , also the vector <span class="math inline">\(e + f\)</span> is a primitive isotropic vector and as we saw in Example 6.5.1, this gives an isometry of the bilinear form but not of the quadratic form. Indeed, if <span class="math inline">\(\left( \begin{array} { c c } { { a _ { 1 1 } } } &amp; { { a _ { 1 2 } } } \\ { { a _ { 2 1 } } } &amp; { { a _ { 2 2 } } } \end{array} \right)\)</span> represents an isometry with respect to the quadratic form, then <span class="math inline">\(( a _ { 1 1 } x + a _ { 1 2 } y ) ( a _ { 2 1 } x + a _ { 2 2 } y ) = x y\)</span> . This implies <span class="math inline">\(a _ { \mathrm { 1 1 } } a _ { \mathrm { 2 1 } } = a _ { \mathrm { 1 2 } } a _ { \mathrm { 2 2 } } = 0\)</span> and <span class="math inline">\(a _ { 1 1 } a _ { 2 2 } + a _ { 1 2 } a _ { 2 1 } = 1\)</span> so that the only isometries preserving the quadratic form are just the <span class="math inline">\(j _ { a }\)</span> and the <span class="math inline">\(i _ { b }\)</span> for suitable units <span class="math inline">\(a\)</span> , <span class="math inline">\(b\)</span> . For a non-zero <span class="math inline">\(s\)</span> which is not a unit, the lattice <span class="math inline">\(U _ { R } ( s )\)</span> is not unimodular and its discriminant torsion module <span class="math inline">\([ s ^ { - 1 } R / R ] ^ { \oplus 2 }\)</span> inherits the hyperbolic form. Its isometry group consists of the isometries <span class="math inline">\(i _ { \bar { a } }\)</span> and <span class="math inline">\(j _ { \bar { b } }\)</span> where now <span class="math inline">\(\bar { a } , \bar { b } \in ( R / s R ) ^ { \times }\)</span> . Hence the reduction homomorphism ?????? is surjective. (b) Next, we return to the situation (see Section 6.3.B) where <span class="math inline">\(k = Q ( R )\)</span> , <span class="math inline">\(K = Q ( S )\)</span> <span class="math inline">\(S = R [ \xi ]\)</span> , a quadratic extension with <span class="math inline">\(\xi ^ { 2 } + u \xi + v = 0\)</span> , and associated quadratic form <span class="math inline">\(\mathsf { N } _ { K / k } ( x + y \xi ) = x ^ { 2 } - u x y + v y ^ { 2 }\)</span> on <span class="math inline">\(K\)</span> (i.e., <span class="math inline">\(x ^ { 2 } - u x y + v y ^ { 2 }\)</span> on <span class="math inline">\(\Phi ^ { 2 } k\)</span> , where <span class="math inline">\(( x , y )\)</span> is identified with <span class="math inline">\(x + y \xi\)</span> ). (b1) Determining the rotations in case <span class="math inline">\(2 \neq 0\)</span> . Multiplication with any <span class="math inline">\(U \in S\)</span> with <span class="math inline">\(N _ { K / k } ( U ) = 1\)</span> induces a <span class="math inline">\(k\)</span> -linear map from <span class="math inline">\(K\)</span> to <span class="math inline">\(K\)</span> that preserves the quadratic form since <span class="math inline">\(N _ { K / k }\)</span> is multiplicative. The matrix of multiplication by <span class="math inline">\(U = a + b \xi\)</span> , <span class="math inline">\(a , b , \in R\)</span> , in the basis <span class="math inline">\(\{ 1 , \xi \}\)</span> is given by <span class="math display">\[ M _ { a , b } = \left( \begin{array} { c c } { { a } } &amp; { { - b v } } \\ { { b } } &amp; { { a - u b } } \end{array} \right) . \]</span> Since <span class="math inline">\(\operatorname* { d e t } \bigl ( M _ { a , b } \bigr ) = a ^ { 2 } - u a b + v b ^ { 2 } = N _ { K / k } ( U ) = 1\)</span> , this is a rotation. We claim that all rotations occur this way. Let <span class="math inline">\(\rho\)</span> be any rotation and let <span class="math inline">\(\rho ( 1 ) = a \cdot 1 + b \xi\)</span> . Then <span class="math inline">\(N _ { K / k } \big ( a + b \xi \big ) = 1\)</span> and <span class="math inline">\(\rho ^ { - 1 } \cdot M _ { a , b } ( 1 ) = 1\)</span> . A small matrix computation shows that the only rotation which fixes 1 is the identity. It follows that <span class="math inline">\(\rho = M _ { a , b }\)</span> . (b2) On reflections in case <span class="math inline">\(2 \neq 0\)</span> . The reflection in <span class="math inline">\(a - 1 + b \xi\)</span> with <span class="math inline">\(N _ { K / k } ( a + b \xi ) =\)</span> <span class="math inline">\(a ^ { 2 } - u a b + v b ^ { 2 } = 1\)</span> has matrix <span class="math display">\[ M _ { a , b } ^ { \prime } = \left( \begin{array} { c c } { { a } } &amp; { { - u a + v b } } \\ { { b } } &amp; { { - a } } \end{array} \right) . \]</span> As in the case of rotations, any orthogonal transformation with determinant <span class="math inline">\(^ { - 1 }\)</span> is of this shape. Observe also that <span class="math inline">\(M _ { a , b } ^ { \prime } \circ M _ { 1 , 0 } ^ { \prime } = M _ { a , b }\)</span> , and so all isometries are products of at most two reflections. (b3) The case <span class="math inline">\(2 = 0\)</span> . We still have the preceding wo types of orthogonal transformations despite both having determinant 1. The first type <span class="math inline">\(M _ { a , b }\)</span> comes from multiplication with norm 1 elements. However, a matrix for a reflection cannot come from multiplication with norm 1 vectors, since if this were the case, we would have <span class="math inline">\(u b = 0 = u a\)</span> and so <span class="math inline">\(u = 0\)</span> but then the extension <span class="math inline">\(R ( \xi ) / R\)</span> would not be separable. We shall see later (cf.&nbsp;Example 16.2.5.3) that in this case the two types of orthogonal transformations are distinguished by their Dickson invariants.</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc11/index.html">FC11</a></li><li class="breadcrumb-item"><a href="../../sources/fc11/c06.html">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>FC11 — Peters &amp; Sterk, <em>Symmetric and Quadratic Forms</em>.</p>
+<p>This chapter contains 28 definitions, 5 propositions, 6 lemmas, 16 examples, 3 constructions and 4 remarks.</p>
+<p>Nobody has checked this chapter against Lean yet, so the statements below say nothing about whether they are formalized.</p>
+<section id="fc11-c06-u001" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u001">Definition 6.1.1</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U001</code> · Chapter 6, source L4049-L4053</p>
+</div>
+<p>Definition 6.1.1. An <span class="math inline">\(F\)</span> -valued form <span class="math inline">\(b\)</span> on an <span class="math inline">\(R\)</span> module <span class="math inline">\(V\)</span> is a bilinear form <span class="math inline">\(b : V \times V \to F\)</span> . In other words, <span class="math inline">\(^ { b }\)</span> has the following properties: <span class="math display">\[ \begin{array} { r l } &amp; { b ( r x + s y , z ) = r b ( x , z ) + s b ( y , z ) , \quad r , s \in R , x , y , z \in V \ ( \mathrm { l e f t - l i n e a r i t y } ) , } \\ &amp; { b ( x , r y + s z ) = r b ( x , y ) + s b ( x , z ) , \quad r , s \in R , x , y , z \in V \ ( \mathrm { r i g h t - l i n e a r i t y } ) . } \end{array} \]</span></p>
+</section>
+<section id="fc11-c06-u002" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u002">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U002</code> · Chapter 6, source L4055</p>
+</div>
+<p>An <span class="math inline">\(F\)</span> -valued form <span class="math inline">\(^ { b }\)</span> is called symmetric, if <span class="math inline">\(b ( x , y ) = b ( y , x )\)</span> for <span class="math inline">\(x , y \in V\)</span> , skewsymmetric, if <span class="math inline">\(b ( x , y ) = - b ( y , x )\)</span> for <span class="math inline">\(x , y \in V\)</span> , and alternating or symplectic, if <span class="math inline">\(b ( x , x ) = 0\)</span> for all <span class="math inline">\(x \in V\)</span> .</p>
+</section>
+<section id="fc11-c06-u003" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u003">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U003</code> · Chapter 6, source L4057</p>
+</div>
+<p>An <span class="math inline">\(F\)</span>-valued symmetric <span class="math inline">\(R\)</span>-module is a pair <span class="math inline">\((V,b)\)</span> consisting of an <span class="math inline">\(R\)</span>-module and an <span class="math inline">\(F\)</span>-valued symmetric bilinear form; when <span class="math inline">\(F=R\)</span> it is called a symmetric <span class="math inline">\(R\)</span>-module.</p>
+</section>
+<section id="fc11-c06-u004" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u004">Definition 6.1.2</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U004</code> · Chapter 6, source L4061-L4065</p>
+</div>
+<p>Definition 6.1.2. An <span class="math inline">\(F\)</span> -valued quadratic <span class="math inline">\(R\)</span> -module consists of an <span class="math inline">\(R\)</span> -module <span class="math inline">\(V\)</span> equipped with an <span class="math inline">\(R\)</span> -quadratic function <span class="math inline">\(q : V \to F\)</span> , i.e., <span class="math inline">\(q ( r x ) = r ^ { 2 } q ( x )\)</span> for all <span class="math inline">\(r \in R\)</span> and <span class="math inline">\(x \in V\)</span> , and such that the form <span class="math inline">\(b _ { q } ( x , y ) = q ( x + y ) - q ( x ) - q ( y )\)</span> is a symmetric <span class="math inline">\(F\)</span> -valued bilinear form on <span class="math inline">\(V\)</span> , the polar form of <span class="math inline">\(q\)</span> . If <span class="math inline">\(F = R\)</span> we speak of a quadratic ??-module. It follows from the above definitions that <span class="math inline">\(b _ { q } ( x , x ) = q ( 2 x ) - 2 q ( x ) = 2 q ( x ) \in 2 F\)</span> . In contrast to the integral situation, 2 can be a unit in <span class="math inline">\(R\)</span> and then the bilinear form <span class="math inline">\(b = 2 ^ { - 1 } b _ { q }\)</span> gives back <span class="math inline">\(q\)</span> . If this is not the case, we distinguish two cases, just as in the integral situation:</p>
+</section>
+<section id="fc11-c06-u005" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u005">Definition 6.1.3</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U005</code> · Chapter 6, source L4067</p>
+</div>
+<p>Definition 6.1.3. Suppose <span class="math inline">\(2 \neq 0\)</span> is not a unit in <span class="math inline">\(R\)</span> . Then an <span class="math inline">\(F\)</span> -valued symmetric form <span class="math inline">\(^ { b }\)</span> on <span class="math inline">\(V\)</span> is called even if <span class="math inline">\(b ( x , x ) \in 2 F\)</span> for all <span class="math inline">\(x \in V\)</span> . A form which is not even is called <span class="math inline">\(\mathbf { \Gamma } _ { o d d }\)</span> .</p>
+</section>
+<section id="fc11-c06-u006" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u006">Construction / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U006</code> · Chapter 6, source L4069</p>
+</div>
+<p>If multiplication by <span class="math inline">\(2\)</span> on the value module <span class="math inline">\(F\)</span> is injective, then every even symmetric <span class="math inline">\(F\)</span>-valued form is the polar form of the quadratic function <span class="math inline">\(q(x)=\frac12b(x,x)\)</span>.</p>
+</section>
+<section id="fc11-c06-u007" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u007">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U007</code> · Chapter 6, source L4071-L4080</p>
+</div>
+<p>The general <span class="math inline">\(F\)</span>-valued formalism includes <span class="math inline">\(R\)</span>-lattices and <span class="math inline">\(p\)</span>-adic lattices when <span class="math inline">\(F=R\)</span>, and symmetric or quadratic torsion forms when <span class="math inline">\(R\)</span> is an integral domain and <span class="math inline">\(F=Q(R)/R\)</span>: these are <span class="math inline">\(Q(R)/R\)</span>-valued forms on finitely generated torsion <span class="math inline">\(R\)</span>-modules. For <span class="math inline">\(R=\mathbf Z\)</span> they are forms on finite abelian groups with values in <span class="math inline">\(\mathbf Q/\mathbf Z\)</span>.</p>
+</section>
+<section id="fc11-c06-u008" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u008">Definition 6.1.4</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U008</code> · Chapter 6, source L4084</p>
+</div>
+<p>Definition 6.1.4. Let <span class="math inline">\(( V _ { j } , b _ { j } )\)</span> , <span class="math inline">\(j = 1 , 2\)</span> , be two symmetric <span class="math inline">\(F\)</span> -valued <span class="math inline">\(R\)</span> -bilinear modules. A homomorphism of <span class="math inline">\(R\)</span> -modules <span class="math inline">\(\varphi : V _ { 1 } \to V _ { 2 }\)</span> such that <span class="math inline">\(b _ { 2 } ( \varphi ( x ) , \varphi ( y ) ) =\)</span> <span class="math inline">\(b _ { 1 } ( x , y )\)</span> for all <span class="math inline">\(x , y \in V _ { 1 }\)</span> is called a morphism of <span class="math inline">\(F\)</span> -valued symmetric <span class="math inline">\(R\)</span> - modules. If such a morphism is injective, it is called an isometric embedding and if it is bijective it is called an isometry .</p>
+</section>
+<section id="fc11-c06-u009" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u009">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U009</code> · Chapter 6, source L4086</p>
+</div>
+<p>Two symmetric <span class="math inline">\(F\)</span> -valued <span class="math inline">\(R\)</span> -bilinear modules <span class="math inline">\(( V _ { 1 } , b _ { 1 } )\)</span> and <span class="math inline">\(( V _ { 2 } , b _ { 2 } )\)</span> are called isometric, written <span class="math inline">\(V _ { 1 } \simeq V _ { 2 }\)</span> or <span class="math inline">\(b _ { 1 } \simeq b _ { 2 }\)</span> , if there exists an isometry <span class="math inline">\(V _ { 1 } V _ { 2 }\)</span> . The forms <span class="math inline">\(b _ { 1 }\)</span> and <span class="math inline">\(b _ { 2 }\)</span> are then said to be equivalent over <span class="math inline">\(R\)</span> . For quadratic <span class="math inline">\(F\)</span> -valued <span class="math inline">\(R\)</span> -modules the definitions are similar.</p>
+</section>
+<section id="fc11-c06-u010" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u010">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U010</code> · Chapter 6, source L4088</p>
+</div>
+<p>The self-isometries of an <span class="math inline">\(F\)</span>-valued symmetric <span class="math inline">\(R\)</span>-module form its orthogonal group <span class="math inline">\(O(V,b)\)</span>.</p>
+</section>
+<section id="fc11-c06-u011" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u011">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U011</code> · Chapter 6, source L4092</p>
+</div>
+<p>6.1.B Examples. 1. Rank one forms. A choice of <span class="math inline">\(r \in R\)</span> defines the symmetric form <span class="math inline">\(\langle r \rangle\)</span> on the rank one <span class="math inline">\(R\)</span> -module <span class="math inline">\(R \cdot e\)</span> by setting <span class="math inline">\(e \cdot e = r\)</span> . This is in accordance with the notation we previously used for lattices and vector spaces. Isomorphisms of <span class="math inline">\(R \cdot e\)</span> are given by multiplying with a unit <span class="math inline">\(u\)</span> of <span class="math inline">\(R\)</span> . It transforms <span class="math inline">\(\langle r \rangle\)</span> into <span class="math inline">\(\langle u ^ { 2 } r \rangle\)</span> . So <span class="math inline">\(\langle r \rangle _ { R } \simeq \langle s \rangle _ { R }\)</span> if and only if <span class="math inline">\(r = u ^ { 2 } s\)</span> for a unit <span class="math inline">\(u \in R ^ { \times }\)</span> and isometry classes of nondegenerate (see <span class="math inline">\(\mathrm { 8 ~ 6 . 1 . C }\)</span> below) rank one symmetric <span class="math inline">\(R\)</span> -modules are in one-to-one correspondence with the set of equivalence classes <span class="math inline">\(r \cdot ( R ^ { \times } ) ^ { 2 }\)</span> , <span class="math inline">\(r \in R - \{ 0 \}\)</span> .</p>
+</section>
+<section id="fc11-c06-u012" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u012">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U012</code> · Chapter 6, source L4096-L4098</p>
+</div>
+<p>For odd <span class="math inline">\(p\)</span>, rank-one <span class="math inline">\(p\)</span>-adic forms are classified up to isometry by the square class of their unit coefficient; the dyadic unit square classes are represented by <span class="math inline">\(\pm1,\pm3\)</span> modulo <span class="math inline">\(8\)</span>.</p>
+</section>
+<section id="fc11-c06-u013" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u013">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U013</code> · Chapter 6, source L4100</p>
+</div>
+<ol start="3" type="1">
+<li>Scaling a form. In the same way as for integral lattices, if <span class="math inline">\(b\)</span> is an <span class="math inline">\(F\)</span> - valued symmetric form over <span class="math inline">\(R\)</span> and <span class="math inline">\(r \in R\)</span> , we let <span class="math inline">\(b ( r )\)</span> be the form defined by <span class="math inline">\(( x , y ) \mapsto r \cdot b ( x , y )\)</span> . It is called the form <span class="math inline">\(^ { b }\)</span> scaled by <span class="math inline">\(r\)</span> .</li>
+</ol>
+</section>
+<section id="fc11-c06-u014" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u014">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U014</code> · Chapter 6, source L4104</p>
+</div>
+<p>6.1.C Orthogonality and non-degeneracy. Our first task is to extend the notion of orthogonality from Section 1.3 to the present setting. Let <span class="math inline">\(( V , b )\)</span> be a symmetric <span class="math inline">\(R\)</span> -module. We say that <span class="math inline">\(X \subset V\)</span> is orthogonal to <span class="math inline">\(Y \subset V\)</span> if <span class="math inline">\(b ( x , y ) = 0\)</span> for all <span class="math inline">\(x \in X\)</span> and <span class="math inline">\(y \in Y\)</span> . For a submodule <span class="math inline">\(W\)</span> of <span class="math inline">\(V\)</span> , the set of elements in <span class="math inline">\(V\)</span> orthogonal to <span class="math inline">\(W\)</span> is again a submodule of <span class="math inline">\(V\)</span> which we write <span class="math inline">\(W ^ { \perp }\)</span> . Similar definitions hold for quadratic modules using the corresponding polar forms.</p>
+</section>
+<section id="fc11-c06-u015" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u015">Definition 6.1.5</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U015</code> · Chapter 6, source L4106-L4116</p>
+</div>
+<p>Definition 6.1.5. 1. A submodule <span class="math inline">\(W \subset V\)</span> is called isotropic if <span class="math inline">\(b ( x , y ) = 0\)</span> for all <span class="math inline">\(x , y \in W\)</span> . In other words <span class="math inline">\(W \subset W ^ { \bot }\)</span> . It is called totally isotropic if <span class="math inline">\(W = W ^ { \perp }\)</span> . A generator of a rank one isotropic submodule is called an isotropic vector . In other words <span class="math inline">\(x \neq 0\)</span> is isotropic if <span class="math inline">\(b ( x , x ) = 0\)</span> . A submodule <span class="math inline">\(W\)</span> without isotropic vectors is called totally anisotropic. In other words, <span class="math inline">\(W\)</span> is totally anisotropic if the quadratic equation <span class="math inline">\(b ( x , x ) = 0\)</span> has only the trivial solution in <span class="math inline">\(W\)</span> . In the quadratic module setting, one uses the polar form to define these notions. 2. The radical or null-space of a symmetric (quadratic) <span class="math inline">\(R\)</span> -module <span class="math inline">\(( V , b )\)</span> (respectively <span class="math inline">\(( V , q )\)</span> ) is given by <span class="math display">\[ \begin{array} { r l } &amp; { \mathrm { r a d } ( b ) = V ^ { \perp } = \{ x \in V \mid b ( x , y ) = 0 \mathrm { ~ f o r ~ a l l ~ } y \in V \} } \\ &amp; { \mathrm { r a d } ( q ) \qquad = \{ x \in \mathrm { r a d } ( b _ { q } ) \mid q ( x ) = 0 \} , \mathrm { r e s p e c t i v e l y . } } \end{array} \]</span> 3. The form <span class="math inline">\(^ { b }\)</span> on <span class="math inline">\(V\)</span> is non-degenerate if <span class="math inline">\(V ^ { \perp } = 0\)</span> , i.e.&nbsp;if <span class="math inline">\(b ( x , V ) = 0\)</span> implies <span class="math inline">\(x = 0\)</span> A quadratic form <span class="math inline">\(q\)</span> is non-degenerate if <span class="math inline">\(\operatorname { r a d } ( b _ { q } ) = 0\)</span> . 4. If <span class="math inline">\(V\)</span> is a direct sum <span class="math inline">\(V = W _ { 1 } \oplus \cdots \oplus W _ { m }\)</span> of <span class="math inline">\(R\)</span> -submodules such that the <span class="math inline">\(W _ { j }\)</span> are mutually orthogonal, we say that <span class="math inline">\(V\)</span> is the (internal) orthogonal direct sum of the <span class="math inline">\(W _ { j }\)</span> , written as <span class="math inline">\(V = W _ { 1 } \odot \cdots \odot W _ { m }\)</span> .</p>
+</section>
+<section id="fc11-c06-u016" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u016">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U016</code> · Chapter 6, source L4118</p>
+</div>
+<p>The external orthogonal sum of <span class="math inline">\(F\)</span>-valued symmetric <span class="math inline">\(R\)</span>-modules <span class="math inline">\((V_i,b_i)\)</span> is <span class="math inline">\((\bigoplus_iV_i,\bigoplus_i b_i)\)</span>.</p>
+</section>
+<section id="fc11-c06-u017" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u017">Lemma 6.1.6</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U017</code> · Chapter 6, source L4122-L4124</p>
+</div>
+<p>Lemma 6.1.6. Let <span class="math inline">\(( V , q )\)</span> be a quadratic <span class="math inline">\(R\)</span> -module with polar form <span class="math inline">\(b _ { q }\)</span> . Then <span class="math inline">\(\mathit { 1 }\)</span> . rad(??) is a submodule of <span class="math inline">\(V\)</span> . 2. <span class="math inline">\(\operatorname { r a d } ( q ) \subset \operatorname { r a d } ( b _ { q } )\)</span> with equality if 2 is invertible in <span class="math inline">\(R\)</span> .</p>
+</section>
+<section id="fc11-c06-u018" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u018">Remark 6.1.7</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U018</code> · Chapter 6, source L4131-L4133</p>
+</div>
+<p>Remark 6.1.7. Suppose that <span class="math inline">\(R\)</span> is an integral domain. If <span class="math inline">\(( V , b )\)</span> is non-degenerate and has values in <span class="math inline">\(R\)</span> , then <span class="math inline">\(V\)</span> is free of torsion. Indeed, if <span class="math inline">\(x \in V\)</span> would be torsion, say <span class="math inline">\(m x = 0\)</span> , then <span class="math inline">\(m b ( x , V ) = 0\)</span> and since <span class="math inline">\(R\)</span> has no torsion, <span class="math inline">\(x\)</span> belongs to <span class="math inline">\(V ^ { \perp } = \{ 0 \}\)</span> On the other hand, if <span class="math inline">\(( V , b )\)</span> is a finitely generated non-degenerate <span class="math inline">\(Q ( R ) / R\)</span> - valued symmetric bilinear <span class="math inline">\(R\)</span> -module, then all elements of <span class="math inline">\(V\)</span> are torsion. Indeed, <span class="math inline">\(b ( x , y ) \in Q ( R ) / R\)</span> implies that there is some <span class="math inline">\(r = r ( x , y ) \in R { - } \{ 0 \}\)</span> such that <span class="math inline">\(r b ( x , y ) =\)</span> <span class="math inline">\(0\)</span> . If <span class="math inline">\(\{ y _ { 1 } , \dots , y _ { m } \}\)</span> is a set of generators of <span class="math inline">\(V\)</span> , the non-zero product <span class="math inline">\(r ( x ) = r ( x , y _ { 1 } ) \cdot \cdot \cdot\)</span> <span class="math inline">\(r ( x , y _ { m } )\)</span> is such that <span class="math inline">\(r ( x ) b ( x , y ) = 0\)</span> for all <span class="math inline">\(y \in V\)</span> . Hence <span class="math inline">\(r ( x ) x \in V ^ { \bot } = \{ 0 \}\)</span> and so <span class="math inline">\(x\)</span> is torsion.</p>
+</section>
+<section id="fc11-c06-u019" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u019">Proposition 6.1.8</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U019</code> · Chapter 6, source L4137-L4144</p>
+</div>
+<p>Proposition 6.1.8. 1. Any non-degenerate <span class="math inline">\(\mathbb { Q } / \mathbb { Z }\)</span> -valued cyclic symmetric torsion form on <span class="math inline">\(C _ { m }\)</span> is given by <span class="math inline">\(( x , y ) \mapsto a \cdot m ^ { - 1 } \cdot x y \in \mathbb { Q } / \mathbb { Z }\)</span> for some integer ?? with <span class="math inline">\(( a , m ) = 1\)</span> . In other words, it is isometric to <span class="math inline">\(\langle a \cdot m ^ { - 1 } \rangle\)</span> . 2. Isometry classes of non-degenerate bilinear cyclic torsion forms on <span class="math inline">\(C _ { m }\)</span> are classified by <span class="math inline">\(\sf D ( \mathbb { Z } / m \mathbb { Z } )\)</span> . 3. Any quadratic torsion form on <span class="math inline">\(C _ { m }\)</span> is of the form <span class="math inline">\(\textstyle \left[ { \frac { 1 } { 2 } } a m ^ { - 1 } \right]\)</span> , i.e., <span class="math inline">\(x \mapsto a ( 2 m ) ^ { - 1 } x ^ { 2 }\)</span> , with ???? even. Its polar form is <span class="math inline">\(\langle a m ^ { - 1 } \rangle\)</span> . The quadratic form is non-degenerate if and only if <span class="math inline">\(( a , m ) = 1\)</span> . 4. The non-degenerate quadratic forms on <span class="math inline">\(C _ { m }\)</span> are classified by elements in <span class="math inline">\(\mathsf { D } ( \mathbb { Z } / 2 m \mathbb { Z } )\)</span> .</p>
+</section>
+<section id="fc11-c06-u020" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u020">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U020</code> · Chapter 6, source L4157</p>
+</div>
+<p><span class="math inline">\(C _ { 9 }\)</span> . Units in this group are <span class="math inline">\(\{ \overline { { 1 } } , \overline { { 2 } } , \overline { { 4 } } , \overline { { 5 } } , \overline { { 7 } } , \overline { { 8 } } \}\)</span> and these form a cyclic group generated by <span class="math inline">\(\overline { { 2 } }\)</span> . The non-zero squares are <span class="math inline">\(\overline { { 1 } } , \overline { { 4 } } , \overline { { 7 } }\)</span> and <span class="math inline">\(\overline { { 2 } } , \overline { { 8 } } , \overline { { 5 } }\)</span> are the non-squares. Therefore, there are two non-degenerate non-isometric symmetric forms: <span class="math inline">\(\left. { \frac { 1 } { 9 } } \right.\)</span> and <span class="math inline">\(\big &lt; \frac { 2 } { 9 } \big &gt;\)</span> . Next we turn to quadratic forms. The group <span class="math inline">\(\mathsf { D } ( \mathbb { Z } / 1 8 \mathbb { Z } )\)</span> is the cyclic group generated by <span class="math inline">\(\bar { 5 }\)</span> , the class of 5 mod 18. The squares are <span class="math inline">\(\{ \overline { { 1 } } , \overline { { 7 } } , \overline { { 1 3 } } \}\)</span> and the non-squares <span class="math inline">\(\{ \overline { { 5 } } , \overline { { 1 1 } } , \overline { { 1 7 } } \}\)</span> . We find the two non-isometric quadratic forms <span class="math inline">\(\left[ { \frac { 1 } { 9 } } \right]\)</span> and <span class="math inline">\(\textstyle { \left[ { \frac { 2 } { 9 } } \right] }\)</span> .</p>
+</section>
+<section id="fc11-c06-u021" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u021">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U021</code> · Chapter 6, source L4159-L4164 · after <a href="c01.html#fc11-c01-u121"><code>FC11-C01-U121</code></a></p>
+</div>
+<p><span class="math inline">\(C _ { 6 }\)</span> . Consider the set <span class="math inline">\(\{ 1 , 5 \}\)</span> of numbers coprime to 6, one a square and one a nonsquare. So there are two symmetric forms <span class="math inline">\(\langle { \scriptstyle { \frac { 1 } { 6 } } } \rangle\)</span> and <span class="math inline">\(\big &lt; \frac { 5 } { 6 } \big &gt;\)</span> . For the quadratic forms we consider the set <span class="math inline">\(\{ 1 , 5 , 7 , 1 1 \}\)</span> of numbers coprime to 12. Since <span class="math inline">\(5 ^ { 2 } = 7 ^ { 2 } = 1 1 ^ { 2 } = 1\)</span> and <span class="math inline">\(5 \cdot 7 = 1 1\)</span> the group <span class="math inline">\(( \mathbb { Z } / 1 2 \mathbb { Z } ) ^ { \times }\)</span> modulo squares is isomorphic to the product of two cyclic groups of order 2 and hence there are four non-degenerate non-isometric quadratic forms <span class="math inline">\(\textstyle { \left[ { \frac { a } { 1 2 } } \right] }\)</span> , <span class="math inline">\(a \in \{ 1 , 5 , 7 , 1 1 \}\)</span> , while the polar forms for <span class="math inline">\(a = 1 , 7\)</span> as well as for <span class="math inline">\(a = 5 , 1 1\)</span> are the same and give the two non-isometric symmetric torsion forms on <span class="math inline">\(C _ { 6 }\)</span> . We now pass to non-degenerate torsion forms on the groups <span class="math inline">\(C _ { m }\)</span> , <span class="math inline">\(m = p ^ { k }\)</span> a prime power. These have been enumerated in Example 1.9.5. Here we discuss the isometry problem. We have just seen that the symmetric forms on <span class="math inline">\(C _ { p ^ { k } }\)</span> are classified by <span class="math inline">\(\mathsf { D } ( \mathbb { Z } / p ^ { k } \mathbb { Z } )\)</span> and the quadratic forms by <span class="math inline">\(\mathsf { D } ( \mathbb { Z } / 2 p ^ { k } \mathbb { Z } )\)</span> . Recall (Lemma A.1.5) that for odd primes <span class="math inline">\(p\)</span> the group <span class="math inline">\(\mathsf { D } ( \mathbb { Z } / 2 p ^ { k } \mathbb { Z } ) \simeq \mathsf { D } ( \mathbb { Z } _ { p ^ { k } } ) \simeq \mathsf { D } ( \mathbb { Z } _ { p } )\)</span> is cyclic, generated by a non-square modulo <span class="math inline">\(p\)</span> . The groups <span class="math inline">\(\mathsf { D } ( \mathbb { Z } / 2 ^ { k } \mathbb { Z } )\)</span> which enter the classification for <span class="math inline">\(p = 2\)</span> can be viewed as subgroups of the multiplicative group <span class="math inline">\(( \mathbb { Z } / 2 ^ { 3 } \mathbb { Z } ) ^ { \times }\)</span> : for <span class="math inline">\(k = 1\)</span> the group consists of the class of 1, for <span class="math inline">\(k = 2\)</span> one has the cyclic group <span class="math inline">\(\{ 1 , 3 \}\)</span> , and for <span class="math inline">\(k \geq 2\)</span> one has the full multiplicative group of <span class="math inline">\(\mathbb { Z } / 2 ^ { 3 } \mathbb { Z }\)</span> . Since <span class="math inline">\(\mathsf { D } ( \mathbb { Z } / 2 ^ { k } \mathbb { Z } )\)</span> and <span class="math inline">\(\mathsf { D } ( \mathbb { Z } / 2 ^ { k + 1 } \mathbb { Z } )\)</span> differ for <span class="math inline">\(k = 1 , 2\)</span> , some non-isometric quadratic forms have isometric polar forms as indicated in Table 6.1.1 by putting them in the same row. Table 6.1.1: Cyclic torsion forms of prime power order <img src="images/91bd82eac3a5fbf699b88bf629a405b8beb055f19c557013a42f002ea1374958.jpg" class="img-fluid"></p>
+</section>
+<section id="fc11-c06-u022" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u022">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U022</code> · Chapter 6, source L4168</p>
+</div>
+<p>The adjoint/correlation map associated to a bilinear form sends a vector to its pairing functional.</p>
+</section>
+<section id="fc11-c06-u023" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u023">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U023</code> · Chapter 6, source L4174</p>
+</div>
+<p>The kernel of the adjoint map equals <span class="math inline">\(V ^ { \perp }\)</span> and so, by definition, <span class="math inline">\(^ { b }\)</span> is non-degenerate if and only if <span class="math inline">\(b _ { V }\)</span> is injective. If, moreover, <span class="math inline">\(b _ { V }\)</span> is an isomorphism, we say that <span class="math inline">\(( V , b )\)</span> is unimodular. For a quadratic <span class="math inline">\(R\)</span> -module <span class="math inline">\(( V , q )\)</span> the correlation map <span class="math inline">\(b _ { V } : V \to V _ { F } ^ { * }\)</span> is the one associated to the polar form of <span class="math inline">\(q\)</span> and if it is injective, respectively bijective we speak of a non-degenerate, respectively unimodular quadratic <span class="math inline">\(R\)</span> -module. 2</p>
+</section>
+<section id="fc11-c06-u024" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u024">Remark: Remark</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U024</code> · Chapter 6, source L4176-L4184</p>
+</div>
+<p>Remark. 1. Observe also that unimodularity imposes a rather severe restriction on the possible <span class="math inline">\(R\)</span> -modules <span class="math inline">\(F\)</span> in which <span class="math inline">\(b\)</span> takes values. 2. Starting from an <span class="math inline">\(F\)</span> -valued symmetric <span class="math inline">\(R\)</span> -module <span class="math inline">\(( V , b )\)</span> , there is a canonical way to transport the structure to rings <span class="math inline">\(S\)</span> that are <span class="math inline">\(R\)</span> -algebras. Take for example <span class="math inline">\(R = \mathbb { Z }\)</span> and <span class="math inline">\(S = \mathbb { R }\)</span> . The correlation morphism for <span class="math inline">\(( V , b ) _ { S } = ( V \otimes _ { R } S , b \otimes 1 )\)</span> is the composition <span class="math display">\[ V \otimes _ { R } S \xrightarrow { b _ { V } \otimes \mathrm { i d } } V _ { F } ^ { * } \otimes S = \mathrm { H o m } _ { R } ( V , F ) \otimes _ { R } S \xrightarrow { \alpha } \mathrm { H o m } _ { S } ( V _ { S } , F _ { S } ) , \]</span> where the rightmost map is the natural map. In many cases, if <span class="math inline">\(b _ { V }\)</span> is an isomorphism, then so is <span class="math inline">\(b _ { V _ { S } } = \alpha \circ ( b _ { V } \otimes \mathrm { i d } )\)</span> , e.g.&nbsp;if <span class="math inline">\(F = R\)</span> and <span class="math inline">\(V\)</span> is a finitely generated free <span class="math inline">\(R\)</span> -module. In particular, if <span class="math inline">\(V\)</span> is a finitely generated free <span class="math inline">\(R\)</span> -module and <span class="math inline">\(( V , b )\)</span> is unimodular, then so is <span class="math inline">\(( V , b ) _ { S }\)</span> .</p>
+</section>
+<section id="fc11-c06-u025" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u025">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U025</code> · Chapter 6, source L4186-L4192</p>
+</div>
+<p>For a submodule <span class="math inline">\(W\subset V\)</span>, the relative correlation map is <span class="math inline">\(\beta_W:V\to W_F^*\)</span>, <span class="math inline">\(x\mapsto b(x,-)|_W\)</span>; the ordinary correlation <span class="math inline">\(b_W:W\to W_F^*\)</span> is its restriction to <span class="math inline">\(W\)</span>.</p>
+</section>
+<section id="fc11-c06-u026" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u026">Lemma 6.2.1</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U026</code> · Chapter 6, source L4194-L4199</p>
+</div>
+<p>Lemma 6.2.1. Let <span class="math inline">\(V\)</span> be an <span class="math inline">\(F\)</span> -valued symmetric <span class="math inline">\(R\)</span> -module of finite rank and <span class="math inline">\(W \subset\)</span> <span class="math inline">\(V\)</span> a submodule. Then 1. <span class="math inline">\(\beta _ { W }\)</span> is injective on <span class="math inline">\(W\)</span> if and only if <span class="math inline">\(^ { b }\)</span> restricts to a non-degenerate form on <span class="math inline">\(W\)</span> . 2. If <span class="math inline">\(\beta _ { W } | _ { W }\)</span> is an isomorphism, that is, <span class="math inline">\(( W , b | _ { W } )\)</span> is a unimodular submodule, then <span class="math inline">\(V = W \oplus W ^ { \perp }\)</span> . In other words, unimodular submodules split off.</p>
+</section>
+<section id="fc11-c06-u027" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u027">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U027</code> · Chapter 6, source L4208-L4212</p>
+</div>
+<p>An <span class="math inline">\(R\)</span>-lattice is a finite-rank free <span class="math inline">\(R\)</span>-module equipped with an <span class="math inline">\(R\)</span>-valued symmetric bilinear form.</p>
+</section>
+<section id="fc11-c06-u028" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u028">Definition 6.3.1</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U028</code> · Chapter 6, source L4216</p>
+</div>
+<p>Definition 6.3.1. The discriminant <span class="math inline">\(\operatorname { d i s c } ( b )\)</span> of <span class="math inline">\(b\)</span> is the value of <span class="math inline">\(\operatorname* { d e t } ( B _ { E } )\)</span> up to squares of units.</p>
+</section>
+<section id="fc11-c06-u029" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u029">Proposition 6.3.2</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U029</code> · Chapter 6, source L4220-L4224</p>
+</div>
+<p>Proposition 6.3.2. Let <span class="math inline">\(( L , b )\)</span> be an <span class="math inline">\(R\)</span> -lattice. Then: 1. ?? is non-degenerate if <span class="math inline">\(\operatorname { d i s c } ( b )\)</span> is not a zero-divisor. It is unimodular if <span class="math inline">\(\operatorname { d i s c } ( b ) \in \mathsf { D } ( R ) = R ^ { \times } / ( R ^ { \times } ) ^ { 2 }\)</span> . 2. For <span class="math inline">\(R = k\)</span> a field, <span class="math inline">\(^ { b }\)</span> is non-degenerate if and only if <span class="math inline">\(^ { b }\)</span> is unimodular.</p>
+</section>
+<section id="fc11-c06-u030" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u030">Construction / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U030</code> · Chapter 6, source L4226-L4232</p>
+</div>
+<p>If <span class="math inline">\(2\)</span> is not a unit, the Gram determinant of the polar form of an odd-rank quadratic <span class="math inline">\(R\)</span>-module is <span class="math inline">\(2P\)</span> for a polynomial invariant <span class="math inline">\(P\)</span>. Hence such a quadratic module is never unimodular; the class of <span class="math inline">\(P\)</span> modulo squares is the semi-discriminant used in Definition 6.3.3 and may be invertible.</p>
+</section>
+<section id="fc11-c06-u031" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u031">Definition 6.3.3</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U031</code> · Chapter 6, source L4235</p>
+</div>
+<p>Definition 6.3.3. For a quadratic <span class="math inline">\(R\)</span> -module <span class="math inline">\(( V , q )\)</span> of odd rank over a ring <span class="math inline">\(R\)</span> the semi-discriminant is the invariant <span class="math inline">\(\mathrm { s d i s c } ( q ) \in R / ( R ^ { \times } ) ^ { 2 }\)</span> . The module <span class="math inline">\(( V , q )\)</span> (or the form <span class="math inline">\(q\)</span> ) is called semi-unimodular if the semi-discriminant is invertible, that is <span class="math inline">\(\operatorname { s d i s c } ( q ) \in \mathsf { D } ( R )\)</span> . If 2 is invertible, then <span class="math inline">\(q\)</span> is semi-unimodular if and only if it is unimodular.</p>
+</section>
+<section id="fc11-c06-u032" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u032">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U032</code> · Chapter 6, source L4237-L4239 · after <a href="#fc11-c06-u031"><code>FC11-C06-U031</code></a></p>
+</div>
+<p><span class="math inline">\(n = 1\)</span> . Here the bilinear form is never unimodular, but since <span class="math inline">\(\mathrm { s d i s c } ( q ) = a _ { 1 1 } =\)</span> <span class="math inline">\(q ( e _ { 1 } , e _ { 1 } )\)</span> , the form is semi-unimodular if and only if <span class="math inline">\(a _ { 1 1 }\)</span> is a unit.</p>
+</section>
+<section id="fc11-c06-u033" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u033">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U033</code> · Chapter 6, source L4241 · after <a href="#fc11-c06-u031"><code>FC11-C06-U031</code></a></p>
+</div>
+<p><span class="math inline">\(n = 3\)</span> . Expanding the determinant we find <span class="math inline">\(\mathrm { s d i s c } ( q ) = 4 a _ { 1 1 } a _ { 2 2 } a _ { 2 3 } + a _ { 1 2 } a _ { 2 3 } a _ { 1 3 } -\)</span> <span class="math inline">\(a _ { 1 3 } ^ { 2 } a _ { 1 2 } - a _ { 2 3 } ^ { 2 } a _ { 1 1 } - a _ { 1 2 } ^ { 2 } a _ { 2 3 }\)</span> . In particular, if <span class="math inline">\(B\)</span> is diagonal <span class="math inline">\(\operatorname { s d i s c } ( q )\)</span> is not invertible. This is evidently true for all odd <span class="math inline">\(n \geq 3\)</span> , and so diagonal forms of odd rank <span class="math inline">\(\geq 3\)</span> are not semi-unimodular.</p>
+</section>
+<section id="fc11-c06-u034" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u034">Remark 6.3.5</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U034</code> · Chapter 6, source L4243-L4245 · after <a href="c01.html#fc11-c01-u024"><code>FC11-C01-U024</code></a></p>
+</div>
+<p>Remark 6.3.5. An <span class="math inline">\(R\)</span> -valued symmetric <span class="math inline">\(R\)</span> -module <span class="math inline">\(( L , b )\)</span> such that <span class="math inline">\(^ { b }\)</span> is unimodular is also called an inner product space over <span class="math inline">\(R\)</span> . Similarly, one speaks of a quadratic inner product space over <span class="math inline">\(R\)</span> . In Chapter 1 we used this terminology for a field <span class="math inline">\(R\)</span> , but in the literature it is often used when working over integral domains. As before, we can speak of primitive sublattices. Observe however that for free modules over general commutative rings <span class="math inline">\(R\)</span> the characterizations of Definition 1.2.4 valid for <span class="math inline">\(R = \mathbb { Z }\)</span> do not all make sense, since <span class="math inline">\(R\)</span> and hence <span class="math inline">\(L\)</span> can have non-trivial zero-divisors. However, they remain valid for rings without zero-divisors. The following definition makes sense in general.</p>
+</section>
+<section id="fc11-c06-u035" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u035">Definition 6.3.6</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U035</code> · Chapter 6, source L4247</p>
+</div>
+<p>Definition 6.3.6. A sublattice <span class="math inline">\(S\)</span> of <span class="math inline">\(L\)</span> is called primitive if it is a direct summand of <span class="math inline">\(L\)</span> . Equivalently: any basis of <span class="math inline">\(S\)</span> can be extended to a basis of <span class="math inline">\(L\)</span> . A vector <span class="math inline">\(x \in L\)</span> is called primitive if <span class="math inline">\(R x\)</span> is a primitive sublattice of <span class="math inline">\(L\)</span> .</p>
+</section>
+<section id="fc11-c06-u036" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u036">Lemma 6.3.7</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U036</code> · Chapter 6, source L4251-L4258</p>
+</div>
+<p>Lemma 6.3.7. Let <span class="math inline">\(( L , b )\)</span> be a unimodular <span class="math inline">\(R\)</span> -lattice. 1. For any basis <span class="math inline">\(\{ e _ { 1 } , \ldots , e _ { n } \}\)</span> of <span class="math inline">\(L\)</span> there exists <span class="math inline">\(a\)</span> (unique) <span class="math inline">\(^ { b }\)</span> -dual basis <span class="math inline">\(\{ e _ { 1 } ^ { \# } , . . . , e _ { n } ^ { \# } \}\)</span> for <span class="math inline">\(L\)</span> , that is, a basis for which <span class="math inline">\(b ( e _ { i } , e _ { j } ^ { \# } ) = \delta _ { i j }\)</span> . 2. If fir <span class="math inline">\(S\)</span> s a primit?? vectors f m <span class="math inline">\(L\)</span> and a basi <span class="math inline">\(\{ e _ { 1 } , \ldots , e _ { n } \}\)</span> an <span class="math inline">\(L\)</span> ch that theis a basis <span class="math inline">\(\{ e _ { 1 } , \ldots , e _ { m } \}\)</span> <span class="math inline">\(S\)</span> <span class="math inline">\(\{ e _ { m + 1 } ^ { \# } , \hdots , e _ { n } ^ { \# } \}\)</span> <span class="math inline">\(S ^ { \bot }\)</span> <span class="math inline">\(( S ^ { \bot } ) ^ { \bot } = S\)</span> 3. Let <span class="math inline">\(R x \subset L\)</span> be primitive. Then there exists a vector <span class="math inline">\(y \in L\)</span> for which <span class="math inline">\(b ( x , y ) =\)</span> 1.</p>
+</section>
+<section id="fc11-c06-u037" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u037">Lemma 6.3.8</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U037</code> · Chapter 6, source L4265-L4266</p>
+</div>
+<p>Lemma 6.3.8. Let <span class="math inline">\(R\)</span> be a ring in which 2 is invertible. The hyperbolic plane <span class="math inline">\(U _ { R }\)</span> over <span class="math inline">\(R\)</span> represents all elements of <span class="math inline">\(R\)</span> . A unimodular quadratic <span class="math inline">\(R\)</span> -module <span class="math inline">\(( L , q )\)</span> represents 0 if and only if <span class="math inline">\(L\)</span> splits off a hyperbolic plane.</p>
+</section>
+<section id="fc11-c06-u038" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u038">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U038</code> · Chapter 6, source L4273</p>
+</div>
+<p>For symmetric <span class="math inline">\(\mathbf Z\)</span>-lattices, the general ring-theoretic notions of non-degeneracy and unimodularity agree with the integral-lattice notions from Chapter 1.</p>
+</section>
+<section id="fc11-c06-u039" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u039">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U039</code> · Chapter 6, source L4275</p>
+</div>
+<p>A rank-one integral or dyadic quadratic lattice is never unimodular because its polar form is even.</p>
+</section>
+<section id="fc11-c06-u040" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u040">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U040</code> · Chapter 6, source L4277</p>
+</div>
+<p>The hyperbolic plane is the split rank-two quadratic space.</p>
+</section>
+<section id="fc11-c06-u041" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u041">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U041</code> · Chapter 6, source L4279</p>
+</div>
+<p>For the dyadic lattices <span class="math inline">\(V_k\)</span>, <span class="math inline">\(V_0\)</span> is unimodular whereas <span class="math inline">\(V_k\)</span> for <span class="math inline">\(k\ge1\)</span> is non-degenerate but not unimodular.</p>
+</section>
+<section id="fc11-c06-u042" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u042">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U042</code> · Chapter 6, source L4281-L4287</p>
+</div>
+<p>For a quadratic field extension <span class="math inline">\(K/k\)</span>, the field norm gives a binary quadratic norm form; its polarization is the associated trace form.</p>
+</section>
+<section id="fc11-c06-u043" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u043">Lemma 6.3.9</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U043</code> · Chapter 6, source L4299</p>
+</div>
+<p>Lemma 6.3.9. A quadratic binary form <span class="math inline">\(q ( x , y ) = a x ^ { 2 } + c y ^ { 2 }\)</span> over a field of characteristic different from 2 is a norm form if and only if <span class="math inline">\(- c / a\)</span> is not <span class="math inline">\(a\)</span> square. If <span class="math inline">\(- c / a\)</span> is a square, then <span class="math inline">\(q\)</span> is isometric to the hyperbolic plane.</p>
+</section>
+<section id="fc11-c06-u044" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u044">Construction / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U044</code> · Chapter 6, source L4301</p>
+</div>
+<p>Over a perfect field of characteristic <span class="math inline">\(2\)</span>, a non-degenerate binary quadratic form is either hyperbolic or, up to scale, the norm form of a quadratic field extension.</p>
+</section>
+<section id="fc11-c06-u045" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u045">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U045</code> · Chapter 6, source L4303</p>
+</div>
+<p>For a local ring <span class="math inline">\((R,\mathfrak m)\)</span>, reduction of an <span class="math inline">\(R\)</span>-lattice modulo <span class="math inline">\(\mathfrak m\)</span> induces a symmetric form over the residue field; non-degeneracy of the reduction implies non-degeneracy upstairs, while the converse can fail.</p>
+</section>
+<section id="fc11-c06-u046" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u046">Proposition 6.3.10</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U046</code> · Chapter 6, source L4307-L4313</p>
+</div>
+<p>Proposition 6.3.10 (Splitting off units). Let <span class="math inline">\(( L , b )\)</span> be an <span class="math inline">\(R\)</span> -valued symmetric form, <span class="math inline">\(v \in L\)</span> , such that <span class="math inline">\(b ( v , v ) = u\)</span> , a unit in <span class="math inline">\(R\)</span> . Then <span class="math inline">\(L = R v \oplus ( R v ) ^ { \perp } \simeq \langle u \rangle \oplus ( R v ) ^ { \perp }\)</span> . Consequently, there exists an orthogonal splitting <span class="math display">\[ \boldsymbol { L } \simeq \left. \boldsymbol { u } _ { 1 } \right. \mathbb { \Phi } \cdots \mathbb { O } \left. \boldsymbol { u } _ { s } \right. \mathbb { O } \boldsymbol { N } , \]</span> where <span class="math inline">\(u _ { 1 } , \ldots , u _ { s }\)</span> are units in <span class="math inline">\(R\)</span> , and <span class="math inline">\(b ( x , x )\)</span> is a non-unit for every <span class="math inline">\(x \in N\)</span> .</p>
+</section>
+<section id="fc11-c06-u047" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u047">Proposition 6.3.11</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U047</code> · Chapter 6, source L4317-L4318</p>
+</div>
+<p>Proposition 6.3.11 (Splitting over local rings). Let <span class="math inline">\(R\)</span> be a local ring in which 2 is a unit and let <span class="math inline">\(( L , b )\)</span> be a unimodular form on a free <span class="math inline">\(R\)</span> -module of finite rank. Then ?? is diagonalizable.</p>
+</section>
+<section id="fc11-c06-u048" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u048">Proposition 6.3.12</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U048</code> · Chapter 6, source L4351-L4356</p>
+</div>
+<p>Proposition 6.3.12 (Embedding in hyperbolic modules). Let <span class="math inline">\(L\)</span> be <span class="math inline">\(a\)</span> free <span class="math inline">\(R\)</span> -module of finite rank ?? endowed with a non-degenerate <span class="math inline">\(R\)</span> -valued quadratic form <span class="math inline">\(q\)</span> . 1. The embedding <span class="math inline">\(j : L \to L \oplus L ^ { * }\)</span> , <span class="math inline">\(j ( x ) = ( x , 0 )\)</span> induces an isometric embedding from <span class="math inline">\(( L , q )\)</span> into <span class="math inline">\(U _ { L , q }\)</span> such that <span class="math inline">\(j ( L ) ^ { \perp } \simeq L ( - 1 )\)</span> . 2. If <span class="math inline">\(L\)</span> is unimodular, then <span class="math inline">\(U _ { L , q } = j ( L ) \oplus j ( L ) ^ { \perp } \simeq L \oplus L ( - 1 )\)</span> .</p>
+</section>
+<section id="fc11-c06-u049" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u049">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U049</code> · Chapter 6, source L4373</p>
+</div>
+<p>The discriminant torsion module of a non-degenerate <span class="math inline">\(R\)</span>-lattice is the quotient of the dual lattice by the lattice.</p>
+</section>
+<section id="fc11-c06-u050" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u050">Lemma 6.4.1</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U050</code> · Chapter 6, source L4375-L4383</p>
+</div>
+<p>Lemma 6.4.1. 1. Under the above identification of <span class="math inline">\(L _ { Q ( R ) }\)</span> with <span class="math inline">\(L _ { Q ( R ) } ^ { * }\)</span> we have <span class="math display">\[ L ^ { * } = \{ y \in L _ { Q ( R ) } \mid b _ { Q ( R ) } ( y , x ) \in R f o r \ a l l \ x \in L \} . \]</span> 2. If <span class="math inline">\(A = B _ { E }\)</span> is the Gram matrix of <span class="math inline">\(b\)</span> with respect to the basis <span class="math inline">\(\boldsymbol { E } = \{ e _ { 1 } , \ldots , e _ { n } \}\)</span> , then <span class="math inline">\(A ^ { - 1 }\)</span> is the Gram matrix of <span class="math inline">\(b _ { Q ( R ) }\)</span> with respect to the dual basis <span class="math inline">\(\pmb { E } ^ { * }\)</span> . This is also the matrix expressing the basis <span class="math inline">\(E ^ { * }\)</span> of <span class="math inline">\({ L } _ { Q ( R ) } ^ { * } = { L } _ { Q ( R ) }\)</span> in the basis <span class="math inline">\(\pmb { { \cal E } }\)</span> . 3. There is a canonical identification <span class="math inline">\(L = ( L ^ { * } ) ^ { * }\)</span> induced by <span class="math inline">\(b _ { Q ( R ) } ^ { * } { \circ } b _ { Q ( R ) }\)</span></p>
+</section>
+<section id="fc11-c06-u051" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u051">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U051</code> · Chapter 6, source L4385-L4389</p>
+</div>
+<p>For a non-degenerate symmetric <span class="math inline">\(R\)</span>-lattice, the bilinear extension to <span class="math inline">\(L_{Q(R)}\)</span> induces the discriminant bilinear form <span class="math inline">\(b_L^\#: \operatorname{dg}_L\times\operatorname{dg}_L\to Q(R)/R\)</span>, <span class="math inline">\((\bar x,\bar y)\mapsto b_{Q(R)}(x,y)\bmod R\)</span>.</p>
+</section>
+<section id="fc11-c06-u052" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u052">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U052</code> · Chapter 6, source L4391-L4397 · after <a href="#fc11-c06-u051"><code>FC11-C06-U051</code></a></p>
+</div>
+<p>For a non-degenerate quadratic <span class="math inline">\(R\)</span>-lattice, the quadratic extension induces the discriminant quadratic form <span class="math inline">\(q_L^\#: \operatorname{dg}_L\to Q(R)/R\)</span>, <span class="math inline">\(\bar x\mapsto q_{Q(R)}(x)\bmod R\)</span>; the associated discriminant bilinear form is non-degenerate.</p>
+</section>
+<section id="fc11-c06-u053" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u053">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U053</code> · Chapter 6, source L4413</p>
+</div>
+<p>Example 6.5.1. Consider a non-degenerate quadratic form <span class="math inline">\(q\)</span> on a vector space <span class="math inline">\(V\)</span> over a field of characteristic 2 such that <span class="math inline">\(q\)</span> has an isotropic vector, e.g.&nbsp;if <span class="math inline">\(q\)</span> is an orthogonal direct sum of hyperbolic planes. The so-called symplectic transvection <span class="math inline">\(t ( x ) = x + b _ { q } ( u , x ) u\)</span> , <span class="math inline">\(u \in V\)</span> isotropic, preserves <span class="math inline">\(b _ { q }\)</span> as one directly checks. However, since we are in characteristic two, <span class="math inline">\(q ( t ( x ) ) = q ( x ) + b _ { q } ( u , x ) ^ { 2 }\)</span> and so <span class="math inline">\(t \not \in { \cal O } ( q )\)</span> . The simplest such example is the hyperbolic plane <span class="math inline">\(U _ { \mathbb { F } _ { 2 } }\)</span> over <span class="math inline">\(\mathbb { F } _ { 2 }\)</span> . Then <span class="math inline">\(\mathrm { O } ( U _ { \mathbb { F } _ { 2 } } ) .\)</span> ) consists of the six transformations <span class="math inline">\(\mathrm { i d } , t : = \left( \begin{array} { l l } { 0 } &amp; { 1 } \\ { 1 } &amp; { 0 } \end{array} \right) , s : = \left( \begin{array} { l l } { 1 } &amp; { 1 } \\ { 1 } &amp; { 0 } \end{array} \right) , s ^ { 2 } , s t = t s ^ { 2 }\)</span> and <span class="math inline">\(s t ^ { 2 } = t s\)</span> , while <span class="math inline">\({ \sf O } ( q ) = \{ { \mathrm { i d } } , t \}\)</span> .</p>
+</section>
+<section id="fc11-c06-u054" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u054">Definition / construction / notation</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U054</code> · Chapter 6, source L4415</p>
+</div>
+<p>An isometry of determinant <span class="math inline">\(1\)</span> is called a rotation; an isometry of determinant <span class="math inline">\(-1\)</span> is called a reflection.</p>
+</section>
+<section id="fc11-c06-u055" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u055">Definition 6.5.2</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U055</code> · Chapter 6, source L4417</p>
+</div>
+<p>Definition 6.5.2. Suppose <span class="math inline">\(2 \neq 0\)</span> in <span class="math inline">\(R\)</span> . The special orthogonal group (or the group of rotations of <span class="math inline">\(L\)</span> ) is the group <span class="math inline">\(\operatorname { S O } ( L ) = \{ g \in \operatorname { O } ( L ) \mid \operatorname* { d e t } ( \varphi ) = 1 \}\)</span> , a normal subgroup of <span class="math inline">\(\mathrm { O } ( L )\)</span> of index at most 2. An isometry <span class="math inline">\(\varphi\)</span> with <span class="math inline">\(\operatorname* { d e t } \varphi = - 1\)</span> will be called a reflection.</p>
+</section>
+<section id="fc11-c06-u056" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u056">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U056</code> · Chapter 6, source L4419-L4447</p>
+</div>
+<p>Example 6.5.3. If a non-isotropic <span class="math inline">\(x\)</span> in an <span class="math inline">\(R\)</span>-lattice satisfies <span class="math inline">\(2b(x,L)\subset b(x,x)R\)</span>, then <span class="math inline">\(\sigma_x(y)=y-2b(x,y)b(x,x)^{-1}x\)</span> is the hyperplane reflection in <span class="math inline">\(x\)</span> and has determinant <span class="math inline">\(-1\)</span>. For a quadratic lattice this is <span class="math inline">\(\sigma_x(y)=y-b_q(x,y)q(x)^{-1}x\)</span>.</p>
+</section>
+<section id="fc11-c06-u057" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u057">Remark 6.5.4</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U057</code> · Chapter 6, source L4449-L4451</p>
+</div>
+<p>Remark 6.5.4. 1. One can define the determinant for an isometry with values in any commutative ring <span class="math inline">\(A\)</span> . However, if <span class="math inline">\(A\)</span> has zero-divisors, this is a less useful concept, especially if all elements are zero-divisors since then <span class="math inline">\(1 = 0\)</span> . This applies for example to the ring <span class="math inline">\(Q ( R ) / R\)</span> and hence to <span class="math inline">\(R\)</span> -torsion modules. 2. There are lattices <span class="math inline">\(( L , b )\)</span> that do not admit reflections, i.e., for which <span class="math inline">\({ \sf O } ( L ) =\)</span> <span class="math inline">\(\mathsf { S O } ( L )\)</span> . See Example 6.5.5.4 below.</p>
+</section>
+<section id="fc11-c06-u058" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u058">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U058</code> · Chapter 6, source L4453-L4467</p>
+</div>
+<p>Every lattice isometry acts on <span class="math inline">\(L^*/L\)</span> and yields reduction homomorphisms <span class="math inline">\(r_L^b:O(L,b)\to O(b_L^\#)\)</span> and, for a quadratic lattice, <span class="math inline">\(r_L^q:O(L,b_q)\to O(q_L^\#)\hookrightarrow O(b_L^\#)\)</span>. These maps need not be injective or surjective; scaling a lattice by a non-zero scalar does not change its isometry group.</p>
+</section>
+<section id="fc11-c06-u059" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u059">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U059</code> · Chapter 6, source L4469-L4477 · after <a href="#fc11-c06-u051"><code>FC11-C06-U051</code></a>, <a href="#fc11-c06-u052"><code>FC11-C06-U052</code></a>, <a href="#fc11-c06-u058"><code>FC11-C06-U058</code></a></p>
+</div>
+<p>Rank one lattices. The isometry group of <span class="math inline">\(\langle a \rangle\)</span> , <span class="math inline">\(a \in R - \{ 0 \}\)</span> is the kernel <span class="math inline">\(R _ { [ 2 ] } ^ { \times }\)</span> of the squaring map on <span class="math inline">\(R ^ { \times }\)</span> . If <span class="math inline">\(( R , \mathfrak { m } )\)</span> is a local ring with 2 a unit, this group only consists of , as we shall see in Remark 7.2.2. The isometry group of the discriminant bilinear form <span class="math inline">\(\langle a ^ { - 1 } \rangle\)</span> is the kernel <span class="math inline">\(( R / a R ) _ { [ 2 ] } ^ { \times }\)</span> of the squaring map on <span class="math inline">\(( R / a R ) ^ { \times }\)</span> . Indeed, in the latter case an isometry is given by an invertible element <span class="math inline">\(\xi \in a ^ { - 1 } R / R\)</span> such that <span class="math inline">\(a ^ { - 1 } \xi ^ { 2 } x y - a ^ { - 1 } x y = 0\)</span> in <span class="math inline">\(a ^ { - 1 } R / R\)</span> for all <span class="math inline">\(x , y \in a ^ { - 1 } R\)</span> , which is equivalent to <span class="math inline">\(\xi ^ { 2 } - 1 = 0\)</span> in <span class="math inline">\(R / a R\)</span> . The reduction homomorphism is the quotient morphism <span class="math inline">\(R _ { [ 2 ] } ^ { \times } ( R / a R ) _ { [ 2 ] } ^ { \times }\)</span> . by ow to theand has adratic form as its polar f <span class="math inline">\([ \mathinner { \frac { 1 } { 2 } } a ]\)</span> , <span class="math inline">\(a \in 2 R\)</span> ,s n.&nbsp;<span class="math inline">\(x \mapsto { \textstyle { \frac { 1 } { 2 } } } a x ^ { 2 }\)</span> <span class="math inline">\(\langle a \rangle\)</span> <span class="math inline">\({ \cal O } ( [ \textstyle \frac { 1 } { 2 } a ] ) = { \cal O } ( \langle a \rangle ) = R _ { [ 2 ] } ^ { \times }\)</span> The isometry group of its discriminant quadratic form <span class="math inline">\([ \textstyle { \frac { 1 } { 2 } } a ^ { - 1 } ]\)</span> is the same as for its polar form. Indeed, <span class="math inline">\({ \scriptstyle { \frac { 1 } { 2 } } } a ^ { - 1 } \xi ^ { 2 } x ^ { 2 } - { \scriptstyle { \frac { 1 } { 2 } } } a ^ { - 1 } x ^ { 2 } = 0\)</span> in <span class="math inline">\(a ^ { - 1 } R / R\)</span> for all <span class="math inline">\(x \in a ^ { - 1 } R / R\)</span> is equivalent to <span class="math inline">\(\xi ^ { 2 } - 1 = 0\)</span> in <span class="math inline">\(2 a ^ { - 1 } R / 2 R \simeq R / a R\)</span> . Consider for example <span class="math inline">\(R = \mathbb { Z }\)</span> and <span class="math inline">\(a = 2 ^ { k }\)</span> , <span class="math inline">\(k \geq 1\)</span> . Then <span class="math inline">\(\operatorname { O } ( \langle 2 ^ { - k } \rangle )\)</span> is the identity for <span class="math inline">\(k = 1\)</span> , the cyclic group generated by <span class="math inline">\(-\)</span> id for <span class="math inline">\(k = 2\)</span> , and the Klein 4-group <span class="math inline">\(C _ { 2 } { \times } C _ { 2 }\)</span> generated by <span class="math inline">\(-\)</span> id and multiplication by <span class="math inline">\(- 1 + 2 ^ { k - 1 }\)</span> mod <span class="math inline">\(2 ^ { k }\)</span> for all <span class="math inline">\(k \geq 3\)</span> (since its square is <span class="math inline">\(1\)</span> in <span class="math inline">\(\mathbb { Z } / 2 ^ { k } \mathbb { Z }\)</span> ). Since the isometry group of rank one integral lattices consists of <span class="math inline">\(\pm\)</span> id, we see that the reduction homomorphism (for the symmetric as well as the quadratic form) is not surjective if <span class="math inline">\(k \geq 3\)</span> . If instead <span class="math inline">\(R = \mathbb { Z } _ { 2 }\)</span> , the group <span class="math inline">\(R _ { [ 2 ] } ^ { \times }\)</span> is isomorphic to <span class="math inline">\(C _ { 2 } \times C _ { 2 }\)</span> , since the units up to squares are represented by <span class="math inline">\(\pm 1 , \pm 3\)</span> , each with square 1. The preceding calculation for the isometry groups of the discriminant forms for <span class="math inline">\(R = \mathbb { Z }\)</span> is also valid for <span class="math inline">\(R = \mathbb { Z } _ { 2 }\)</span> . So in this case the reduction morphisms are surjective.</p>
+</section>
+<section id="fc11-c06-u060" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u060">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U060</code> · Chapter 6, source L4479-L4507 · after <a href="#fc11-c06-u049"><code>FC11-C06-U049</code></a>, <a href="#fc11-c06-u053"><code>FC11-C06-U053</code></a>, <a href="#fc11-c06-u058"><code>FC11-C06-U058</code></a></p>
+</div>
+</section>
+<section id="binary-forms.-a-we-first-consider-the-hyperbolic-plane-u-_-r-r-e-oplus-r-f-e-cdot-e-f-cdot-f-0-e-cdot-f-1-assume-2-neq-0-.-up-to-units-e-and-f-are-the-only-primitive-isotropic-vectors.-since-these-are-preserved-under-isometries-the-only-isometries-are-the-rotations-i-_-a-left-beginarray-c-c-a-0-0-a---1-endarray-right-a-in-r-times-and-the-reflections-j-_-b-binom-0-b-beginarray-r-b---1-0-endarray-b-in-r-times-.-observe-that-j-_-b-is-the-hyperplane-reflection-in-e---b-f-.-since-j-_-1-circ-j-_-a-i-_-a-all-isometries-of-u-_-r-are-products-of-at-most-two-hyperplane-reflections.-note-that-these-isometries-are-also-the-isometries-for-the-corresponding-quadratic-form.-in-case-2-0-also-the-vector-e-f-is-a-primitive-isotropic-vector-and-as-we-saw-in-example-6.5.1-this-gives-an-isometry-of-the-bilinear-form-but-not-of-the-quadratic-form.-indeed-if-left-beginarray-c-c-a-_-1-1-a-_-1-2-a-_-2-1-a-_-2-2-endarray-right-represents-an-isometry-with-respect-to-the-quadratic-form-then-a-_-1-1-x-a-_-1-2-y-a-_-2-1-x-a-_-2-2-y-x-y-.-this-implies-a-_-mathrm-1-1-a-_-mathrm-2-1-a-_-mathrm-1-2-a-_-mathrm-2-2-0-and-a-_-1-1-a-_-2-2-a-_-1-2-a-_-2-1-1-so-that-the-only-isometries-preserving-the-quadratic-form-are-just-the-j-_-a-and-the-i-_-b-for-suitable-units-a-b-.-for-a-non-zero-s-which-is-not-a-unit-the-lattice-u-_-r-s-is-not-unimodular-and-its-discriminant-torsion-module-s---1-r-r-oplus-2-inherits-the-hyperbolic-form.-its-isometry-group-consists-of-the-isometries-i-_-bar-a-and-j-_-bar-b-where-now-bar-a-bar-b-in-r-s-r-times-.-hence-the-reduction-homomorphism-is-surjective.-b-next-we-return-to-the-situation-see-section-6.3.b-where-k-q-r-k-q-s-s-r-xi-a-quadratic-extension-with-xi-2-u-xi-v-0-and-associated-quadratic-form-mathsf-n-_-k-k-x-y-xi-x-2---u-x-y-v-y-2-on-k-i.e.-x-2---u-x-y-v-y-2-on-phi-2-k-where-x-y-is-identified-with-x-y-xi-.-b1-determining-the-rotations-in-case-2-neq-0-.-multiplication-with-any-u-in-s-with-n-_-k-k-u-1-induces-a-k--linear-map-from-k-to-k-that-preserves-the-quadratic-form-since-n-_-k-k-is-multiplicative.-the-matrix-of-multiplication-by-u-a-b-xi-a-b-in-r-in-the-basis-1-xi-is-given-by-m-_-a-b-left-beginarray-c-c-a---b-v-b-a---u-b-endarray-right-.-since-operatorname-d-e-t-bigl-m-_-a-b-bigr-a-2---u-a-b-v-b-2-n-_-k-k-u-1-this-is-a-rotation.-we-claim-that-all-rotations-occur-this-way.-let-rho-be-any-rotation-and-let-rho-1-a-cdot-1-b-xi-.-then-n-_-k-k-big-a-b-xi-big-1-and-rho---1-cdot-m-_-a-b-1-1-.-a-small-matrix-computation-shows-that-the-only-rotation-which-fixes-1-is-the-identity.-it-follows-that-rho-m-_-a-b-.-b2-on-reflections-in-case-2-neq-0-.-the-reflection-in-a---1-b-xi-with-n-_-k-k-a-b-xi-a-2---u-a-b-v-b-2-1-has-matrix-m-_-a-b-prime-left-beginarray-c-c-a---u-a-v-b-b---a-endarray-right-.-as-in-the-case-of-rotations-any-orthogonal-transformation-with-determinant---1-is-of-this-shape.-observe-also-that-m-_-a-b-prime-circ-m-_-1-0-prime-m-_-a-b-and-so-all-isometries-are-products-of-at-most-two-reflections.-b3-the-case-2-0-.-we-still-have-the-preceding-wo-types-of-orthogonal-transformations-despite-both-having-determinant-1.-the-first-type-m-_-a-b-comes-from-multiplication-with-norm-1-elements.-however-a-matrix-for-a-reflection-cannot-come-from-multiplication-with-norm-1-vectors-since-if-this-were-the-case-we-would-have-u-b-0-u-a-and-so-u-0-but-then-the-extension-r-xi-r-would-not-be-separable.-we-shall-see-later-cf.-example-16.2.5.3-that-in-this-case-the-two-types-of-orthogonal-transformations-are-distinguished-by-their-dickson-invariants." class="level1">
+<h1>2. Binary forms. (a) We first consider the hyperbolic plane <span class="math inline">\(U _ { R } = R e \oplus R f\)</span> , <span class="math inline">\(e \cdot e = f \cdot f = 0\)</span> , <span class="math inline">\(e \cdot f = 1\)</span> Assume <span class="math inline">\(2 \neq 0\)</span> . Up to units <span class="math inline">\(e\)</span> and <span class="math inline">\(f\)</span> are the only primitive isotropic vectors. Since these are preserved under isometries, the only isometries are the rotations <span class="math inline">\(i _ { a } : = \left( \begin{array} { c c } { { a } } &amp; { { 0 } } \\ { { 0 } } &amp; { { a ^ { - 1 } } } \end{array} \right)\)</span> , <span class="math inline">\(a \in R ^ { \times }\)</span> , and the reflections <span class="math inline">\(j _ { b } : = \binom { 0 } { b } \begin{array} { r } { b ^ { - 1 } } \\ { 0 } \end{array}\)</span> , <span class="math inline">\(b \in R ^ { \times }\)</span> . Observe that <span class="math inline">\(j _ { b }\)</span> is the hyperplane reflection in <span class="math inline">\(e - b f\)</span> . Since <span class="math inline">\(j _ { 1 } \circ j _ { a } = i _ { a }\)</span> , all isometries of <span class="math inline">\(U _ { R }\)</span> are products of at most two hyperplane reflections. Note that these isometries are also the isometries for the corresponding quadratic form. In case <span class="math inline">\(2 = 0\)</span> , also the vector <span class="math inline">\(e + f\)</span> is a primitive isotropic vector and as we saw in Example 6.5.1, this gives an isometry of the bilinear form but not of the quadratic form. Indeed, if <span class="math inline">\(\left( \begin{array} { c c } { { a _ { 1 1 } } } &amp; { { a _ { 1 2 } } } \\ { { a _ { 2 1 } } } &amp; { { a _ { 2 2 } } } \end{array} \right)\)</span> represents an isometry with respect to the quadratic form, then <span class="math inline">\(( a _ { 1 1 } x + a _ { 1 2 } y ) ( a _ { 2 1 } x + a _ { 2 2 } y ) = x y\)</span> . This implies <span class="math inline">\(a _ { \mathrm { 1 1 } } a _ { \mathrm { 2 1 } } = a _ { \mathrm { 1 2 } } a _ { \mathrm { 2 2 } } = 0\)</span> and <span class="math inline">\(a _ { 1 1 } a _ { 2 2 } + a _ { 1 2 } a _ { 2 1 } = 1\)</span> so that the only isometries preserving the quadratic form are just the <span class="math inline">\(j _ { a }\)</span> and the <span class="math inline">\(i _ { b }\)</span> for suitable units <span class="math inline">\(a\)</span> , <span class="math inline">\(b\)</span> . For a non-zero <span class="math inline">\(s\)</span> which is not a unit, the lattice <span class="math inline">\(U _ { R } ( s )\)</span> is not unimodular and its discriminant torsion module <span class="math inline">\([ s ^ { - 1 } R / R ] ^ { \oplus 2 }\)</span> inherits the hyperbolic form. Its isometry group consists of the isometries <span class="math inline">\(i _ { \bar { a } }\)</span> and <span class="math inline">\(j _ { \bar { b } }\)</span> where now <span class="math inline">\(\bar { a } , \bar { b } \in ( R / s R ) ^ { \times }\)</span> . Hence the reduction homomorphism ?????? is surjective. (b) Next, we return to the situation (see Section 6.3.B) where <span class="math inline">\(k = Q ( R )\)</span> , <span class="math inline">\(K = Q ( S )\)</span> <span class="math inline">\(S = R [ \xi ]\)</span> , a quadratic extension with <span class="math inline">\(\xi ^ { 2 } + u \xi + v = 0\)</span> , and associated quadratic form <span class="math inline">\(\mathsf { N } _ { K / k } ( x + y \xi ) = x ^ { 2 } - u x y + v y ^ { 2 }\)</span> on <span class="math inline">\(K\)</span> (i.e., <span class="math inline">\(x ^ { 2 } - u x y + v y ^ { 2 }\)</span> on <span class="math inline">\(\Phi ^ { 2 } k\)</span> , where <span class="math inline">\(( x , y )\)</span> is identified with <span class="math inline">\(x + y \xi\)</span> ). (b1) Determining the rotations in case <span class="math inline">\(2 \neq 0\)</span> . Multiplication with any <span class="math inline">\(U \in S\)</span> with <span class="math inline">\(N _ { K / k } ( U ) = 1\)</span> induces a <span class="math inline">\(k\)</span> -linear map from <span class="math inline">\(K\)</span> to <span class="math inline">\(K\)</span> that preserves the quadratic form since <span class="math inline">\(N _ { K / k }\)</span> is multiplicative. The matrix of multiplication by <span class="math inline">\(U = a + b \xi\)</span> , <span class="math inline">\(a , b , \in R\)</span> , in the basis <span class="math inline">\(\{ 1 , \xi \}\)</span> is given by <span class="math display">\[ M _ { a , b } = \left( \begin{array} { c c } { { a } } &amp; { { - b v } } \\ { { b } } &amp; { { a - u b } } \end{array} \right) . \]</span> Since <span class="math inline">\(\operatorname* { d e t } \bigl ( M _ { a , b } \bigr ) = a ^ { 2 } - u a b + v b ^ { 2 } = N _ { K / k } ( U ) = 1\)</span> , this is a rotation. We claim that all rotations occur this way. Let <span class="math inline">\(\rho\)</span> be any rotation and let <span class="math inline">\(\rho ( 1 ) = a \cdot 1 + b \xi\)</span> . Then <span class="math inline">\(N _ { K / k } \big ( a + b \xi \big ) = 1\)</span> and <span class="math inline">\(\rho ^ { - 1 } \cdot M _ { a , b } ( 1 ) = 1\)</span> . A small matrix computation shows that the only rotation which fixes 1 is the identity. It follows that <span class="math inline">\(\rho = M _ { a , b }\)</span> . (b2) On reflections in case <span class="math inline">\(2 \neq 0\)</span> . The reflection in <span class="math inline">\(a - 1 + b \xi\)</span> with <span class="math inline">\(N _ { K / k } ( a + b \xi ) =\)</span> <span class="math inline">\(a ^ { 2 } - u a b + v b ^ { 2 } = 1\)</span> has matrix <span class="math display">\[ M _ { a , b } ^ { \prime } = \left( \begin{array} { c c } { { a } } &amp; { { - u a + v b } } \\ { { b } } &amp; { { - a } } \end{array} \right) . \]</span> As in the case of rotations, any orthogonal transformation with determinant <span class="math inline">\(^ { - 1 }\)</span> is of this shape. Observe also that <span class="math inline">\(M _ { a , b } ^ { \prime } \circ M _ { 1 , 0 } ^ { \prime } = M _ { a , b }\)</span> , and so all isometries are products of at most two reflections. (b3) The case <span class="math inline">\(2 = 0\)</span> . We still have the preceding wo types of orthogonal transformations despite both having determinant 1. The first type <span class="math inline">\(M _ { a , b }\)</span> comes from multiplication with norm 1 elements. However, a matrix for a reflection cannot come from multiplication with norm 1 vectors, since if this were the case, we would have <span class="math inline">\(u b = 0 = u a\)</span> and so <span class="math inline">\(u = 0\)</span> but then the extension <span class="math inline">\(R ( \xi ) / R\)</span> would not be separable. We shall see later (cf.&nbsp;Example 16.2.5.3) that in this case the two types of orthogonal transformations are distinguished by their Dickson invariants.</h1>
+<section id="fc11-c06-u061" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u061">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U061</code> · Chapter 6, source L4509 · after <a href="#fc11-c06-u058"><code>FC11-C06-U058</code></a></p>
+</div>
+<p>The form <span class="math inline">\(V\)</span> over <span class="math inline">\(\mathbb { Z } _ { 2 }\)</span> , that is, the norm form for the extension <span class="math inline">\(\mathbb { Z } _ { 2 } [ \xi ]\)</span> with <span class="math inline">\(\xi ^ { 2 } + \xi + 1 = 0\)</span> . Hence we can apply the calculation in <span class="math inline">\(\ S\)</span> 6.3.B, example 4: The rotation group of <span class="math inline">\(V\)</span> (and so of <span class="math inline">\(V _ { k }\)</span> ) consists of matrices of the form <span class="math inline">\(\left( { a \atop b } \quad { - b \atop a - b } \right)\)</span> and those with determinant equal to <span class="math inline">\(^ { - 1 }\)</span> are given by <span class="math inline">\(\left( { a \atop b } \right. \left. { - a + b \atop - a } \right)\)</span> Since <span class="math inline">\(a ^ { 2 } - a b + b ^ { 2 } = 1\)</span> either <span class="math inline">\(a\)</span> or <span class="math inline">\(^ { b }\)</span> must be a dyadic unit. As in the previous example <span class="math inline">\(0 ( q _ { V _ { k } } ^ { \# } )\)</span> is of similar shape where one replaces by residue classes of integers modulo with <span class="math inline">\(a ^ { 2 } - a b + b ^ { 2 } \equiv 1 { \bmod { 2 } } ^ { k }\)</span> . In particular, the reduction homomorphism <span class="math inline">\(r _ { V _ { k } } ^ { q }\)</span> is surjective.</p>
+</section>
+<section id="fc11-c06-u062" class="level3">
+<h3 class="anchored" data-anchor-id="fc11-c06-u062">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC11-C06-U062</code> · Chapter 6, source L4511-L4517</p>
+</div>
+<p>Consider the quadratic form <span class="math inline">\(q ( x , y ) = a x ^ { 2 } + 2 x y + c y ^ { 2 }\)</span> on <span class="math inline">\(\mathbb { Z } ^ { 2 }\)</span> with <span class="math inline">\(a , c \in \mathbb { Z }\)</span> and <span class="math inline">\(a \ge 2\)</span> and <span class="math inline">\(c &gt; a\)</span> . The only integral solution for <span class="math inline">\(q ( x , y ) = a\)</span> is <span class="math inline">\(( x , y ) = ( \pm 1 , 0 )\)</span> . Indeed, writing <span class="math display">\[ q ( x , y ) = a \left( x + a ^ { - 1 } y \right) ^ { 2 } + \left( c - a ^ { - 1 } \right) y ^ { 2 } , \]</span> and observing that <span class="math inline">\(c - a ^ { - 1 } &gt; a\)</span> , one sees that if <span class="math inline">\(| y | \ge 1\)</span> , there is no solution, and if <span class="math inline">\(y = 0\)</span> , then <span class="math inline">\(x = \pm 1\)</span> . Hence, an isometry of <span class="math inline">\(q ( x , y )\)</span> must preserve the first basis vector up to sign. Then the matrix representing the isometry is of the shape <span class="math inline">\(\left( { \begin{array} { c c } { \pm 1 } &amp; { * } \\ { 0 } &amp; { \pm 1 } \end{array} } \right)\)</span> and a small calculation shows that if <span class="math inline">\(a &gt; 2\)</span> such an isometry can only be ±id and <span class="math inline">\(q\)</span> does not admit reflections. However, for <span class="math inline">\(a = 2\)</span> there are two reflections, <span class="math inline">\(\pm \left( { \begin{array} { r r } { 1 } &amp; { 1 } \\ { 0 } &amp; { - 1 } \end{array} } \right)\)</span> .</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/dzackgarza\.github\.io\/lean-categories\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Generated from the project’s reference notes by <code>site/build.py</code>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>The Lean is the authority; where this site differs, the Lean is right.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

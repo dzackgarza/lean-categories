@@ -1,0 +1,2565 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Chapter 5. Integral Dependence and Valuations (pp.&nbsp;59–66) – lean-categories · corpus</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-7335da993d57b01553edc5728a7cb5aa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">lean-categories · corpus</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../coverage.html" aria-current="page"> 
+<span class="menu-text">Every book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../corpus.html"> 
+<span class="menu-text">Reading list</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../catalogues/index.html"> 
+<span class="menu-text">Catalogues</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/dzackgarza/lean-categories"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc04/index.html">FC04</a></li><li class="breadcrumb-item"><a href="../../sources/fc04/c05.html">Chapter 5. Integral Dependence and Valuations (pp.&nbsp;59–66)</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="sidebar-tools-main">
+    <div id="quarto-search" class="quarto-navigation-tool px-1" title="Search"></div>
+</div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Graduate mathematics, and what Lean has of it</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../coverage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Every book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../corpus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational source corpus</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../status.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus status</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Sources</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC01 Dummit Foote</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/ai.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01 Appendix I — Cartesian Products and Zorn’s Lemma</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC03</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC03 Riehl Category Theory in Context</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Categories, Functors, and Natural Transformations (pp.&nbsp;1–48)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Representability and the Yoneda Lemma (pp.&nbsp;49–72)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Limits and Colimits (pp.&nbsp;73–114)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Adjunctions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Monads and Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. All Concepts are Kan Extensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/ce.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Epilogue: Theorems in Category Theory</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC04</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC04 Atiyah Macdonald</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Rings and Ideals (pp.&nbsp;1–9)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Modules (pp.&nbsp;17–30)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Rings and Modules of Fractions (pp.&nbsp;36–42)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Primary Decomposition (pp.&nbsp;50–54)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c05.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Chapter 5. Integral Dependence and Valuations (pp.&nbsp;59–66)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Chain Conditions (pp.&nbsp;74–77)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Noetherian Rings (pp.&nbsp;80–83)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Artin Rings (pp.&nbsp;89–90)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Discrete Valuation Rings and Dedekind Domains (pp.&nbsp;93–98)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. Completions (pp.&nbsp;100–112)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Dimension Theory (pp.&nbsp;116–124)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC05</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC05 Weibel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Chain Complexes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Derived Functors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Tor and Ext</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homological Dimension</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Spectral Sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Group Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Lie Algebra Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Simplicial Methods in Homological Algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Hochschild and Cyclic Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. The Derived Category</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Category Theory Language</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC06</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC06 Hartshorne</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter I: Varieties</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter II: Schemes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter III: Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter IV: Curves</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter V: Surfaces</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC07</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC07 Hatcher</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 0. Some Underlying Geometric Notions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. The Fundamental Group</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homotopy Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix. Topology of Cell Complexes</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC08 Lee</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c22.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC09 Neukirch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC10 Serre Local Fields</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc11/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC11 Peters Sterk</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc12/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC12 Beauville</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc13/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC13</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC13 Matsumura</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Front matter — conventions and terminology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Commutative rings and modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Prime ideals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Properties of extension rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Valuation rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Dimension theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Regular sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Regular rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Flatness revisited</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Derivations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. I-smoothness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Applications of complete local rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Tensor products, direct and inverse limits</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix B. Some homological algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix C. The exterior algebra</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc14/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC14</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC14 Humphreys</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Basic Concepts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Semisimple Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Root Systems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Isomorphism and Conjugacy Theorems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Existence Theorem</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Representation Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Chevalley Algebras and Groups</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc15/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC15</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Classification of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Polynomial invariants of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Affine reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Coxeter groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Special cases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Hecke algebras and Kazhdan–Lusztig polynomials</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Complements</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc16/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC16</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Algebraic Geometry</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Affine Algebraic Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Homogeneous Spaces</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Characteristic 0 Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Semisimple and Unipotent Elements</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Solvable Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VIII. Borel Subgroups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IX. Centralizers of Tori</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter X. Structure of Reductive Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XI. Representations and Classification of Semisimple Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XII. Survey of Rationality Properties and Appendix</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../catalogues/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Definition catalogues</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">catalogues/*.md</span>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Notes and audits</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">notes/*.md</span>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc04/index.html">FC04</a></li><li class="breadcrumb-item"><a href="../../sources/fc04/c05.html">Chapter 5. Integral Dependence and Valuations (pp.&nbsp;59–66)</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Chapter 5. Integral Dependence and Valuations (pp.&nbsp;59–66)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>FC04 — Atiyah &amp; Macdonald, <em>Introduction to Commutative Algebra</em>.</p>
+<p>This chapter contains 9 definitions, 4 theorems, 9 propositions, 3 lemmas, 8 corollaries, 1 example, 1 construction and 4 other statements.</p>
+<p>Of the 39 statements checked against Lean, 32 are formalized somewhere and 7 are not.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 28%">
+<col style="width: 28%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Status</th>
+<th style="text-align: right;">Statements</th>
+<th style="text-align: right;">Share</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="route-mathlib">in Mathlib</span></td>
+<td style="text-align: right;">28</td>
+<td style="text-align: right;">72%</td>
+<td>Mathlib states and proves it.</td>
+</tr>
+<tr class="even">
+<td><span class="route-unmatched">not formalized</span></td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">18%</td>
+<td>A documented search found no Lean statement of it anywhere.</td>
+</tr>
+<tr class="odd">
+<td><span class="route-project-existing">in lean-categories</span></td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5%</td>
+<td>This repository states and proves it.</td>
+</tr>
+<tr class="even">
+<td><span class="route-package-import">in a Lean package</span></td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5%</td>
+<td>A library available as a Lake dependency has it.</td>
+</tr>
+<tr class="odd">
+<td><strong>checked in total</strong></td>
+<td style="text-align: right;"><strong>39</strong></td>
+<td style="text-align: right;"></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Which versions of Lean and Mathlib were searched
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li>Project search: <code>LeanCategories/**</code> outside <code>.lake/.agents/.git</code> was searched first. Project HEAD <a href="https://github.com/leanprover-community/mathlib4/commit/351cba0287077eadfcd7c71a78ec4a509ce8c966"><code>351cba0287077eadfcd7c71a78ec4a509ce8c966</code></a> owns the integrally-closed-domain and valuation-ring category wrappers used at U020 and U029; the remaining source-shaped results are delegated to Mathlib.</li>
+<li>Pinned Mathlib: project pin <a href="https://github.com/leanprover-community/mathlib4/commit/db584cd6d46c92f209a44c0f1c829460d327499d"><code>db584cd6d46c92f209a44c0f1c829460d327499d</code></a> (Apache-2.0, Lean v4.33.0), denoted <code>P</code>, contains every <code>mathlib</code> route below. Critical declaration names were compile-checked against the project pin.</li>
+<li>Current/open Mathlib: upstream <a href="https://github.com/leanprover-community/mathlib4/commit/5aedf732b6987e8c26ab3c9ebc855314f82b045f"><code>5aedf732b6987e8c26ab3c9ebc855314f82b045f</code></a> (Apache-2.0), denoted <code>H</code>, was refreshed 2026-09-06. The only change from the immediately preceding checked <a href="https://github.com/leanprover-community/mathlib4/commit/29ea5de9cb981cb62dfa7979aaff0851f50c603a"><code>29ea5de9cb981cb62dfa7979aaff0851f50c603a</code></a> is <code>scripts/nolints.json</code>, so none of the C05 Lean-source positives or negatives changed; targeted open-PR searches did not resolve the strict gaps.</li>
+<li>Package-import route: <code>E</code> is <code>anthropics/fermats-last-theorem@aa2d8b34692b16c70f699536de0d8e75b9a3e9ef</code> (Apache-2.0), path <code>P2M/Sol/S_ValuationSubring_exists_ringHom_extend_of_isAlgClosed.lean</code>. Its lakefile pins Mathlib <code>P</code> and toolchain v4.33.1; the module was independently built against this repository’s Lean v4.33.0 and pin <code>P</code>. U031–U032 use its exported <code>ChevalleyHom</code> partial-homomorphism graph/Zorn/local-ring API.</li>
+<li>External negative search: U003 was checked against current/open Mathlib, broad indexed/GitHub Lean search, and ATLAS <a href="https://github.com/leanprover-community/mathlib4/commit/e8b31c5cb0bec89b487ce33fe525a2c0b0f8b9c6"><code>e8b31c5cb0bec89b487ce33fe525a2c0b0f8b9c6</code></a> (Apache-2.0) without an exact faithful-module criterion. U023–U025 have no checked external owner. For U033–U034, <code>E</code> reaches the valuation-ring endpoint for its chosen maximal graph internally but does not export the source theorems for an arbitrary supplied maximal pair; TauCeti <a href="https://github.com/leanprover-community/mathlib4/commit/89947b89f080ff3ad6f83f6842fe23b6d07e2b9f"><code>89947b89f080ff3ad6f83f6842fe23b6d07e2b9f</code></a> and CBirkbeck <a href="https://github.com/leanprover-community/mathlib4/commit/2f45865e87d20dd460cc5a14d04850bf03be4570"><code>2f45865e87d20dd460cc5a14d04850bf03be4570</code></a> likewise use Mathlib’s alternative maximal-local-subring construction. No checked external owner was found for U036.</li>
+<li><code>N</code> denotes dated 2026-09-06 negative evidence after project-first search, P/H, open/current work, installed packages, and targeted external Lean search. Alternative proofs are not credited for source-specific construction rows, and partial theorem bundles are not promoted.</li>
+</ul>
+</div>
+</div>
+</div>
+<section id="fc04-c05-u001" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u001">Definition: Element integral over a subring</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U001</code> · Integral dependence; pp.&nbsp;59–60; L2284–2290 · after <a href="c01.html#fc04-c01-u005"><code>FC04-C01-U005</code></a>, <a href="c01.html#fc04-c01-u001"><code>FC04-C01-U001</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For A⊂B, x∈B is integral over A if it satisfies a monic polynomial x<sup>n+a₁x</sup>{n−1}+⋯+a_n=0 with a_i∈A.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/IntegralClosure/IsIntegral/Defs.html#RingHom.IsIntegralElem"><code>Mathlib/RingTheory/IntegralClosure/IsIntegral/Defs.lean::RingHom.IsIntegralElem</code></a>; <code>IsIntegral</code> — Integrality is existence of a monic polynomial over the base whose evaluation at the element is zero, exactly the source definition.</p>
+</div>
+</section>
+<section id="fc04-c05-u002" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u002">Example 5.0: Rational numbers integral over Z</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U002</code> · Integral dependence; pp.&nbsp;59–60; L2292–2298 · after <a href="#fc04-c05-u001"><code>FC04-C05-U001</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A rational r/s in lowest terms integral over Z must have s=±1; hence the elements of Q integral over Z are exactly Z.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/NumberTheory/Niven.html#IsIntegral.exists_int_iff_exists_rat"><code>Mathlib/NumberTheory/Niven.lean::IsIntegral.exists_int_iff_exists_rat</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Rat.den_eq_one_iff#doc"><code>Rat.den_eq_one_iff</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Rat.den_div_intCast_eq_one_iff#doc"><code>Rat.den_div_intCast_eq_one_iff</code></a> — Specializing the concrete rational/integer theorem to <code>x=q:ℚ</code> gives integral rational ⇒ integer; integer casts are integral. The denominator lemmas recover the source reduced-fraction conclusion that the denominator is a unit, hence <code>±1</code>.</p>
+</div>
+</section>
+<section id="fc04-c05-u003" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u003">Proposition 5.1: Equivalent criteria for integrality</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U003</code> · Integral dependence; pp.&nbsp;59–60; L2300–2320 · after <a href="c02.html#fc04-c02-u020"><code>FC04-C02-U020</code></a>, <a href="c02.html#fc04-c02-u022"><code>FC04-C02-U022</code></a>, <a href="c02.html#fc04-c02-u029"><code>FC04-C02-U029</code></a>, <a href="#fc04-c05-u001"><code>FC04-C05-U001</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>x is integral over A iff A[x] is finite as an A-module; equivalently it lies in a finite A-subring and there exists a faithful A[x]-module finite over A. The extraction omits displayed clause (iii), but lines 2316–2318 identify it as the intermediate finite A-subring criterion.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Algebra.finite_adjoin_simple_of_isIntegral#doc"><code>Algebra.finite_adjoin_simple_of_isIntegral</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Algebra.IsIntegral.of_finite#doc"><code>Algebra.IsIntegral.of_finite</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=IsIntegral.of_mem_of_fg#doc"><code>IsIntegral.of_mem_of_fg</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=LinearMap.exists_monic_and_aeval_eq_zero#doc"><code>LinearMap.exists_monic_and_aeval_eq_zero</code></a> — P/H realize the finite-adjoin and finite-intermediate-subalgebra criteria, but no checked theorem gives the source converse from existence of a faithful <code>A[x]</code>-module finite over arbitrary commutative <code>A</code>. The closest <code>isIntegral_of_smul_mem_submodule</code> assumes a domain ambient algebra and torsion-free module.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c05-u004" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u004">Corollary 5.2: Finite generation by finitely many integral elements</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U004</code> · Integral dependence; pp.&nbsp;59–60; L2322–2324 · after <a href="c02.html#fc04-c02-u054"><code>FC04-C02-U054</code></a>, <a href="#fc04-c05-u003"><code>FC04-C05-U003</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If x₁,…,xₙ are integral over A then A[x₁,…,xₙ] is finitely generated as an A-module.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/IntegralClosure/IsIntegral/Basic.html#Algebra.finite_adjoin_of_finite_of_isIntegral"><code>Mathlib/RingTheory/IntegralClosure/IsIntegral/Basic.lean::Algebra.finite_adjoin_of_finite_of_isIntegral</code></a> — A finite set of integral generators has module-finite adjoin, exactly the finite-generator corollary.</p>
+</div>
+</section>
+<section id="fc04-c05-u005" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u005">Corollary 5.3: Integral elements form a subring</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U005</code> · Integral dependence; pp.&nbsp;59–60; L2326–2328 · after <a href="#fc04-c05-u003"><code>FC04-C05-U003</code></a>, <a href="#fc04-c05-u004"><code>FC04-C05-U004</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>The elements of B integral over A form a subring C containing A.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/IntegralClosure/Algebra/Basic.html"><code>Mathlib/RingTheory/IntegralClosure/Algebra/Basic.lean::integralClosure</code></a>; <code>mem_integralClosure_iff</code> — <code>integralClosure A B</code> is the subalgebra whose carrier is exactly the elements integral over <code>A</code>; its structure supplies closure under ring operations and contains the base image.</p>
+</div>
+</section>
+<section id="fc04-c05-u006" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u006">Definition: Integral closure of A in B</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U006</code> · Integral dependence; pp.&nbsp;59–60; L2330 · after <a href="#fc04-c05-u005"><code>FC04-C05-U005</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>The subring C of all elements of B integral over A.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/IntegralClosure/Algebra/Basic.html"><code>Mathlib/RingTheory/IntegralClosure/Algebra/Basic.lean::integralClosure</code></a>; <code>mem_integralClosure_iff</code> — Exactly the subring/subalgebra of ambient elements integral over the base.</p>
+</div>
+</section>
+<section id="fc04-c05-u007" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u007">Definition: A integrally closed in B</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U007</code> · Integral dependence; pp.&nbsp;59–60; L2330 · after <a href="#fc04-c05-u006"><code>FC04-C05-U006</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A is integrally closed in B when its integral closure in B equals A.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/IntegralClosure/IntegrallyClosed.html#IsIntegrallyClosedIn.integralClosure_eq_bot_iff"><code>Mathlib/RingTheory/IntegralClosure/IntegrallyClosed.lean::IsIntegrallyClosedIn.integralClosure_eq_bot_iff</code></a>; <code>isIntegrallyClosedIn_iff</code> — For an injective inclusion, being integrally closed in the ambient ring is equivalent to the integral closure being the embedded base ring (<code>⊥</code> as a subalgebra).</p>
+</div>
+</section>
+<section id="fc04-c05-u008" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u008">Definition: B integral over A</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U008</code> · Integral dependence; pp.&nbsp;59–60; L2330 · after <a href="#fc04-c05-u001"><code>FC04-C05-U001</code></a>, <a href="#fc04-c05-u006"><code>FC04-C05-U006</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>B is integral over A when every element of B is integral over A, equivalently the integral closure equals B.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Algebra.IsIntegral#doc"><code>Algebra.IsIntegral</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/IntegralClosure/IsIntegralClosure/Basic.html"><code>Mathlib/RingTheory/IntegralClosure/IsIntegralClosure/Basic.lean::integralClosure_eq_top_iff</code></a> — Every target element is integral over the source iff the integral closure is top, exactly “B integral over A”.</p>
+</div>
+</section>
+<section id="fc04-c05-u009" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u009">Definition: Integral ring homomorphism / integral A-algebra</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U009</code> · Integral dependence; pp.&nbsp;59–60; L2332 · after <a href="c02.html#fc04-c02-u063"><code>FC04-C02-U063</code></a>, <a href="#fc04-c05-u008"><code>FC04-C05-U008</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For f:A→B, f is integral and B an integral A-algebra when B is integral over f(A).</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/IntegralClosure/IsIntegral/Defs.html#RingHom.IsIntegral"><code>Mathlib/RingTheory/IntegralClosure/IsIntegral/Defs.lean::RingHom.IsIntegral</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/IntegralClosure/Algebra/Defs.html"><code>Mathlib/RingTheory/IntegralClosure/Algebra/Defs.lean::algebraMap_isIntegral_iff</code></a> — A ring hom is integral exactly when every target element is integral with respect to it; the algebra formulation is its algebra-map specialization.</p>
+</div>
+</section>
+<section id="fc04-c05-u010" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u010">Comparison: Finite type + integral = finite</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U010</code> · Integral dependence; pp.&nbsp;59–60; L2332–2336 · after <a href="c02.html#fc04-c02-u066"><code>FC04-C02-U066</code></a>, <a href="c02.html#fc04-c02-u067"><code>FC04-C02-U067</code></a>, <a href="#fc04-c05-u004"><code>FC04-C05-U004</code></a>, <a href="#fc04-c05-u009"><code>FC04-C05-U009</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>An A-algebra that is both of finite type and integral is finite as an A-module.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/IntegralClosure/IsIntegralClosure/Basic.html#Algebra.IsIntegral.finite"><code>Mathlib/RingTheory/IntegralClosure/IsIntegralClosure/Basic.lean::Algebra.IsIntegral.finite</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Algebra.finite_iff_isIntegral_and_finiteType#doc"><code>Algebra.finite_iff_isIntegral_and_finiteType</code></a> — Finite type plus integral is equivalent to module-finite, in particular giving the source implication.</p>
+</div>
+</section>
+<section id="fc04-c05-u011" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u011">Corollary 5.4: Transitivity of integral dependence</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U011</code> · Integral dependence; pp.&nbsp;59–60; L2338–2344 · after <a href="c02.html#fc04-c02-u054"><code>FC04-C02-U054</code></a>, <a href="#fc04-c05-u003"><code>FC04-C05-U003</code></a>, <a href="#fc04-c05-u008"><code>FC04-C05-U008</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If A⊂B⊂C, B is integral over A, and C integral over B, then C is integral over A.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/IntegralClosure/IsIntegralClosure/Basic.html#Algebra.IsIntegral.trans"><code>Mathlib/RingTheory/IntegralClosure/IsIntegralClosure/Basic.lean::Algebra.IsIntegral.trans</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=RingHom.IsIntegral.trans#doc"><code>RingHom.IsIntegral.trans</code></a> — Integral extensions compose exactly as in Corollary 5.4.</p>
+</div>
+</section>
+<section id="fc04-c05-u012" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u012">Corollary 5.5: Integral closure is integrally closed in the ambient ring</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U012</code> · Integral dependence; pp.&nbsp;59–60; L2346–2348 · after <a href="#fc04-c05-u006"><code>FC04-C05-U006</code></a>, <a href="#fc04-c05-u007"><code>FC04-C05-U007</code></a>, <a href="#fc04-c05-u011"><code>FC04-C05-U011</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If C is the integral closure of A in B, then C is integrally closed in B.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/IntegralClosure/IntegrallyClosed.html"><code>Mathlib/RingTheory/IntegralClosure/IntegrallyClosed.lean</code></a> instance <code>IsIntegrallyClosedIn (integralClosure R A) A</code> — The integral closure is integrally closed in its ambient algebra, exactly Corollary 5.5.</p>
+</div>
+</section>
+<section id="fc04-c05-u013" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u013">Proposition 5.6: Integral dependence under quotients and localization</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U013</code> · Integral dependence; pp.&nbsp;59–60; L2352–2366 · after <a href="c01.html#fc04-c01-u056"><code>FC04-C01-U056</code></a>, <a href="c03.html#fc04-c03-u002"><code>FC04-C03-U002</code></a>, <a href="#fc04-c05-u008"><code>FC04-C05-U008</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If B is integral over A, then B/𝔟 is integral over A/(A∩𝔟), and S⁻¹B is integral over S⁻¹A for multiplicative S⊂A.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=RingHom.IsIntegral.quotient#doc"><code>RingHom.IsIntegral.quotient</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Algebra.IsIntegral.quotient#doc"><code>Algebra.IsIntegral.quotient</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Localization/Integral.html"><code>Mathlib/RingTheory/Localization/Integral.lean::isIntegral_localization</code></a> — Integrality descends to the quotient with contracted base ideal and is preserved after localizing source and target at corresponding submonoids.</p>
+</div>
+</section>
+<section id="fc04-c05-u014" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u014">Proposition 5.7: Field criterion for integral domain extensions</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U014</code> · Going-up theorem; p.&nbsp;61; L2370–2386 · after <a href="c01.html#fc04-c01-u013"><code>FC04-C01-U013</code></a>, <a href="c01.html#fc04-c01-u018"><code>FC04-C01-U018</code></a>, <a href="#fc04-c05-u008"><code>FC04-C05-U008</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For integral domains A⊂B with B integral over A, B is a field iff A is a field.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/IntegralClosure/IsIntegralClosure/Basic.html#Algebra.IsIntegral.isField_iff_isField"><code>Mathlib/RingTheory/IntegralClosure/IsIntegralClosure/Basic.lean::Algebra.IsIntegral.isField_iff_isField</code></a> — For an injective integral extension of domains, the source is a field iff the target is a field; a source inclusion supplies injectivity.</p>
+</div>
+</section>
+<section id="fc04-c05-u015" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u015">Corollary 5.8 (extraction reads “Corollary 5.3”): Maximality contracts and reflects in integral extensions</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U015</code> · Going-up theorem; p.&nbsp;61; L2388 · after <a href="c01.html#fc04-c01-u021"><code>FC04-C01-U021</code></a>, <a href="#fc04-c05-u013"><code>FC04-C05-U013</code></a>, <a href="#fc04-c05-u014"><code>FC04-C05-U014</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For integral B/A and prime 𝔮⊂B with 𝔭=𝔮∩A, 𝔮 is maximal iff 𝔭 is maximal. The frozen extraction mislabels this line 5.3; the proof and following 5.9 identify it as 5.8.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/GoingUp.html"><code>Mathlib/RingTheory/Ideal/GoingUp.lean::isMaximal_of_isIntegral_of_isMaximal_comap</code></a>; <code>isMaximal_comap_of_isIntegral_of_isMaximal</code> — For a prime upstairs in an integral extension, maximality is equivalent to maximality of its contraction.</p>
+</div>
+</section>
+<section id="fc04-c05-u016" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u016">Corollary 5.9: Incomparability over one contracted prime</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U016</code> · Going-up theorem; p.&nbsp;61; L2390–2392 · after <a href="c03.html#fc04-c03-u027"><code>FC04-C03-U027</code></a>, <a href="#fc04-c05-u013"><code>FC04-C05-U013</code></a>, <a href="#fc04-c05-u015"><code>FC04-C05-U015</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If prime ideals 𝔮⊆𝔮′ of B have the same contraction to A in an integral extension, then 𝔮=𝔮′.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/GoingUp.html#IsIntegral.comap_lt_comap"><code>Mathlib/RingTheory/Ideal/GoingUp.lean::IsIntegral.comap_lt_comap</code></a> — Strict inclusion of primes upstairs forces strict inclusion of their contractions; comparable primes with the same contraction therefore coincide.</p>
+</div>
+</section>
+<section id="fc04-c05-u017" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u017">Theorem 5.10: Lying over</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U017</code> · Going-up theorem; p.&nbsp;61; L2394–2400 · after <a href="c03.html#fc04-c03-u009"><code>FC04-C03-U009</code></a>, <a href="c03.html#fc04-c03-u027"><code>FC04-C03-U027</code></a>, <a href="#fc04-c05-u013"><code>FC04-C05-U013</code></a>, <a href="#fc04-c05-u015"><code>FC04-C05-U015</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For integral A⊂B and prime 𝔭⊂A, there exists a prime 𝔮⊂B with 𝔮∩A=𝔭.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/GoingUp.html"><code>Mathlib/RingTheory/Ideal/GoingUp.lean::exists_ideal_over_prime_of_isIntegral_of_isDomain</code></a>; <code>exists_ideal_over_prime_of_isIntegral</code> — For an integral inclusion and any prime downstairs, there exists a prime upstairs contracting to it.</p>
+</div>
+</section>
+<section id="fc04-c05-u018" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u018">Theorem 5.11: Going-up theorem</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U018</code> · Going-up theorem; p.&nbsp;61; L2402–2404 · after <a href="c01.html#fc04-c01-u009"><code>FC04-C01-U009</code></a>, <a href="#fc04-c05-u013"><code>FC04-C05-U013</code></a>, <a href="#fc04-c05-u017"><code>FC04-C05-U017</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For integral A⊂B, a chain of primes of B lying over an initial segment of an ascending chain of primes of A extends to a chain lying over the whole chain.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/HasGoingUp.html#Algebra.HasGoingUp.of_isIntegral"><code>Mathlib/RingTheory/Ideal/HasGoingUp.lean::Algebra.HasGoingUp.of_isIntegral</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.exists_ltSeries_of_hasGoingUp#doc"><code>Ideal.exists_ltSeries_of_hasGoingUp</code></a> — Integral algebras satisfy going up, and the finite strict-chain theorem lifts a whole prime chain with a prescribed initial prime.</p>
+</div>
+</section>
+<section id="fc04-c05-u019" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u019">Proposition 5.12: Integral closure commutes with localization</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U019</code> · Integrally closed integral domains. The going-down theorem; pp.&nbsp;62–64; L2412–2420 · after <a href="c03.html#fc04-c03-u002"><code>FC04-C03-U002</code></a>, <a href="#fc04-c05-u006"><code>FC04-C05-U006</code></a>, <a href="#fc04-c05-u013"><code>FC04-C05-U013</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If C is the integral closure of A in B and S⊂A multiplicative, then S⁻¹C is the integral closure of S⁻¹A in S⁻¹B.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Localization/Integral.html#IsLocalization.integralClosure"><code>Mathlib/RingTheory/Localization/Integral.lean::IsLocalization.integralClosure</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=IsLocalization.Away.integralClosure#doc"><code>IsLocalization.Away.integralClosure</code></a> — The integral closure after localization is the localization of the original integral closure, exactly Proposition 5.12.</p>
+</div>
+</section>
+<section id="fc04-c05-u020" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u020">Definition: Integrally closed domain</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U020</code> · Integrally closed integral domains. The going-down theorem; pp.&nbsp;62–64; L2422 · after <a href="c01.html#fc04-c01-u013"><code>FC04-C01-U013</code></a>, <a href="c03.html#fc04-c03-u004"><code>FC04-C03-U004</code></a>, <a href="#fc04-c05-u007"><code>FC04-C05-U007</code></a> · <span class="route-project-existing">in lean-categories</span></p>
+</div>
+<p>An integral domain integrally closed in its field of fractions.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://github.com/dzackgarza/lean-categories/blob/main/LeanCategories/Algebra/Concrete/Rings.lean"><code>LeanCategories/Algebra/Concrete/Rings.lean::LeanCategories.Algebra.IntegrallyClosedDomainCat</code></a> — The project full subcategory is precisely domains satisfying Mathlib <code>IsIntegrallyClosed</code>, whose fraction-field definition matches the source.</p>
+</div>
+<p><span class="unit-provenance">Searched: repo HEAD</span></p>
+</section>
+<section id="fc04-c05-u021" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u021">Reusable comparison: UFDs and polynomial rings are integrally closed</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U021</code> · Integrally closed integral domains. The going-down theorem; pp.&nbsp;62–64; L2422 · after <a href="c01.html#fc04-c01-u033"><code>FC04-C01-U033</code></a>, <a href="#fc04-c05-u002"><code>FC04-C05-U002</code></a>, <a href="#fc04-c05-u020"><code>FC04-C05-U020</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Z is integrally closed; the same divisibility argument gives every UFD integrally closed, hence k[x₁,…,xₙ] is integrally closed.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Polynomial/RationalRoot.html#UniqueFactorizationMonoid.instIsIntegrallyClosed"><code>Mathlib/RingTheory/Polynomial/RationalRoot.lean::UniqueFactorizationMonoid.instIsIntegrallyClosed</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Polynomial/UniqueFactorization.html#MvPolynomial.uniqueFactorizationMonoid"><code>Mathlib/RingTheory/Polynomial/UniqueFactorization.lean::MvPolynomial.uniqueFactorizationMonoid</code></a> — Every UFD is integrally closed; this covers <code>ℤ</code> and, over a field, finite-variable polynomial rings via their UFD structure.</p>
+</div>
+</section>
+<section id="fc04-c05-u022" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u022">Proposition 5.13: Integral closure is a local property for domains</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U022</code> · Integrally closed integral domains. The going-down theorem; pp.&nbsp;62–64; L2426–2434 · after <a href="c03.html#fc04-c03-u022"><code>FC04-C03-U022</code></a>, <a href="c03.html#fc04-c03-u024"><code>FC04-C03-U024</code></a>, <a href="#fc04-c05-u019"><code>FC04-C05-U019</code></a>, <a href="#fc04-c05-u020"><code>FC04-C05-U020</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For a domain A, A is integrally closed iff every A_𝔭 is integrally closed iff every A_𝔪 is integrally closed.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/IntegralClosure/IntegrallyClosed.html"><code>Mathlib/RingTheory/IntegralClosure/IntegrallyClosed.lean::isIntegrallyClosed_of_isLocalization</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/LocalProperties/IntegrallyClosed.html#IsIntegrallyClosed.of_localization_maximal"><code>Mathlib/RingTheory/LocalProperties/IntegrallyClosed.lean::IsIntegrallyClosed.of_localization_maximal</code></a> — Integral closedness localizes at primes, and it is recovered from all maximal localizations; together these give the source prime/maximal local equivalences.</p>
+</div>
+</section>
+<section id="fc04-c05-u023" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u023">Definition: Element integral over an ideal</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U023</code> · Integrally closed integral domains. The going-down theorem; pp.&nbsp;62–64; L2436 · after <a href="c01.html#fc04-c01-u006"><code>FC04-C01-U006</code></a>, <a href="#fc04-c05-u001"><code>FC04-C05-U001</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For A⊂B and ideal 𝔞⊂A, x∈B is integral over 𝔞 if it satisfies a monic integral-dependence equation whose nonleading coefficients all lie in 𝔞.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/IntegralClosure/Algebra/Ideal.html"><code>Mathlib/RingTheory/IntegralClosure/Algebra/Ideal.lean</code></a> coefficient-witness lemmas — No checked project/P/H/external declaration defines “x integral over an ideal I” as the source coefficient condition.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c05-u024" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u024">Definition: Integral closure of an ideal in B</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U024</code> · Integrally closed integral domains. The going-down theorem; pp.&nbsp;62–64; L2436 · after <a href="#fc04-c05-u023"><code>FC04-C05-U023</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The set of elements of B integral over 𝔞.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: ideal-integrality witness lemmas in <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/IntegralClosure/Algebra/Ideal.html"><code>Mathlib/RingTheory/IntegralClosure/Algebra/Ideal.lean</code></a> — No checked declaration defines the integral closure of an ideal in an ambient algebra.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c05-u025" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u025">Lemma 5.14: Integral closure of an ideal as a radical</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U025</code> · Integrally closed integral domains. The going-down theorem; pp.&nbsp;62–64; L2438–2446 · after <a href="c01.html#fc04-c01-u050"><code>FC04-C01-U050</code></a>, <a href="c01.html#fc04-c01-u055"><code>FC04-C01-U055</code></a>, <a href="c02.html#fc04-c02-u029"><code>FC04-C02-U029</code></a>, <a href="#fc04-c05-u006"><code>FC04-C05-U006</code></a>, <a href="#fc04-c05-u024"><code>FC04-C05-U024</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If C is the integral closure of A in B and 𝔞^e its extension to C, then the integral closure of 𝔞 in B equals r(𝔞^e), hence is closed under addition and multiplication.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: <code>integralClosure</code>; ideal extension/radical APIs; <code>IntegralClosure/Algebra/Ideal.lean</code> — No checked theorem identifies the source ideal-integral closure with the radical of its extension to the ring integral closure.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c05-u026" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u026">Proposition 5.15: Coefficients of a minimal polynomial for an element integral over an ideal</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U026</code> · Integrally closed integral domains. The going-down theorem; pp.&nbsp;62–64; L2448–2450 · after <a href="c01.html#fc04-c01-u050"><code>FC04-C01-U050</code></a>, <a href="#fc04-c05-u020"><code>FC04-C05-U020</code></a>, <a href="#fc04-c05-u023"><code>FC04-C05-U023</code></a>, <a href="#fc04-c05-u025"><code>FC04-C05-U025</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For integrally closed domain A⊂B and x integral over 𝔞, the coefficients of the minimal polynomial of x over Frac(A) lie in r(𝔞).</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/IntegralClosure/GoingDown.html#Polynomial.coeff_mem_radical_span_coeff_of_dvd"><code>Mathlib/RingTheory/IntegralClosure/GoingDown.lean::Polynomial.coeff_mem_radical_span_coeff_of_dvd</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=minpoly.isIntegrallyClosed_dvd#doc"><code>minpoly.isIntegrallyClosed_dvd</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=minpoly.isIntegrallyClosed_eq_field_fractions'#doc"><code>minpoly.isIntegrallyClosed_eq_field_fractions'</code></a> — From the source ideal-integrality witness polynomial, the pinned lemmas force every nonleading coefficient of the fraction-field minimal polynomial into the radical of the ideal.</p>
+</div>
+</section>
+<section id="fc04-c05-u027" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u027">Theorem 5.16: Going-down theorem</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U027</code> · Integrally closed integral domains. The going-down theorem; pp.&nbsp;62–64; L2452–2476 · after <a href="c03.html#fc04-c03-u033"><code>FC04-C03-U033</code></a>, <a href="#fc04-c05-u018"><code>FC04-C05-U018</code></a>, <a href="#fc04-c05-u020"><code>FC04-C05-U020</code></a>, <a href="#fc04-c05-u025"><code>FC04-C05-U025</code></a>, <a href="#fc04-c05-u026"><code>FC04-C05-U026</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If A⊂B are domains, A integrally closed, B integral over A, then a descending prime chain of B lying over an initial segment of a descending prime chain of A extends over the full chain.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> integral-extension <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Algebra.HasGoingDown#doc"><code>Algebra.HasGoingDown</code></a> instance in <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/IntegralClosure/GoingDown.html"><code>Mathlib/RingTheory/IntegralClosure/GoingDown.lean</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/GoingDown.html#Ideal.exists_ltSeries_of_hasGoingDown"><code>Mathlib/RingTheory/Ideal/GoingDown.lean::Ideal.exists_ltSeries_of_hasGoingDown</code></a> — For integral extensions of an integrally closed domain, going down holds and the chain theorem realizes the source descending-prime-chain extension.</p>
+</div>
+</section>
+<section id="fc04-c05-u028" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u028">Proposition 5.17: Integral closure inside a finite separable field extension is bounded by a finite free A-module</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U028</code> · Integrally closed integral domains. The going-down theorem; pp.&nbsp;62–64; L2480–2494 · after <a href="#fc04-c05-u006"><code>FC04-C05-U006</code></a>, <a href="#fc04-c05-u020"><code>FC04-C05-U020</code></a>, <a href="#fc04-c05-u026"><code>FC04-C05-U026</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For integrally closed domain A with fraction field K, finite separable L/K, and B the integral closure of A in L, there is a K-basis v₁,…,vₙ of L with B⊆ΣAv_j.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/DedekindDomain/IntegralClosure.html#FiniteDimensional.exists_is_basis_integral"><code>Mathlib/RingTheory/DedekindDomain/IntegralClosure.lean::FiniteDimensional.exists_is_basis_integral</code></a>; <code>integralClosure_le_span_dualBasis</code> — A finite separable field extension admits the required finite basis, and the integral closure is contained in the A-span of the dual basis, giving the source finite-free bound.</p>
+</div>
+</section>
+<section id="fc04-c05-u029" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u029">Definition: Valuation ring of a field</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U029</code> · Valuation rings; pp.&nbsp;65–66; L2498 · after <a href="c01.html#fc04-c01-u013"><code>FC04-C01-U013</code></a>, <a href="c03.html#fc04-c03-u004"><code>FC04-C03-U004</code></a> · <span class="route-project-existing">in lean-categories</span></p>
+</div>
+<p>For a domain B with fraction field K, B is a valuation ring of K if for every x∈K×, either x∈B or x⁻¹∈B.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://github.com/dzackgarza/lean-categories/blob/main/LeanCategories/Algebra/Concrete/Rings.lean"><code>LeanCategories/Algebra/Concrete/Rings.lean::LeanCategories.Algebra.ValuationRingCat</code></a>; P <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=ValuationRing.iff_isInteger_or_isInteger#doc"><code>ValuationRing.iff_isInteger_or_isInteger</code></a> — The project valuation-ring category uses the exact fraction-field criterion that every nonzero fraction or its inverse lies in the ring.</p>
+</div>
+<p><span class="unit-provenance">Searched: repo HEAD + P</span></p>
+</section>
+<section id="fc04-c05-u030" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u030">Proposition 5.18: Basic properties of valuation rings</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U030</code> · Valuation rings; pp.&nbsp;65–66; L2500–2516 · after <a href="c01.html#fc04-c01-u028"><code>FC04-C01-U028</code></a>, <a href="#fc04-c05-u020"><code>FC04-C05-U020</code></a>, <a href="#fc04-c05-u029"><code>FC04-C05-U029</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A valuation ring B of K is local; every intermediate B⊂B′⊂K is again a valuation ring; B is integrally closed in K.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Valuation/ValuationSubring.html#ValuationSubring.isLocalRing"><code>Mathlib/RingTheory/Valuation/ValuationSubring.lean::ValuationSubring.isLocalRing</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=ValuationSubring.ofLE#doc"><code>ValuationSubring.ofLE</code></a>; integrally-closed instance in <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Valuation/LocalSubring.html"><code>Mathlib/RingTheory/Valuation/LocalSubring.lean</code></a> — Pinned APIs realize locality, stability under intermediate overrings, and integral closedness in the fraction field.</p>
+</div>
+</section>
+<section id="fc04-c05-u031" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u031">Construction: Zorn poset of partial homomorphism extensions</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U031</code> · Valuation rings; pp.&nbsp;65–66; L2518–2526 · after <a href="c01.html#fc04-c01-u004"><code>FC04-C01-U004</code></a>, <a href="c01.html#fc04-c01-u005"><code>FC04-C01-U005</code></a> · <span class="route-package-import">in a Lean package</span></p>
+</div>
+<p>For field K and algebraically closed Ω, order pairs (A,f) with A⊂K a subring and f:A→Ω by extension; Zorn gives maximal pairs (B,g).</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <code>P2M/Sol/S_ValuationSubring_exists_ringHom_extend_of_isAlgClosed.lean::ChevalleyHom.IsGraph</code>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=ChevalleyHom.graph#doc"><code>ChevalleyHom.graph</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=ChevalleyHom.Above#doc"><code>ChevalleyHom.Above</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=ChevalleyHom.exists_maximal#doc"><code>ChevalleyHom.exists_maximal</code></a> — Graph subrings encode the source partial ring homomorphisms into the algebraically closed field, <code>Above</code> is extension of partial maps, and <code>exists_maximal</code> supplies the required Zorn-maximal extension.</p>
+</div>
+<p><span class="unit-provenance">Searched: E</span></p>
+</section>
+<section id="fc04-c05-u032" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u032">Lemma 5.19: A maximal partial-homomorphism domain is local</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U032</code> · Valuation rings; pp.&nbsp;65–66; L2528–2530 · after <a href="c03.html#fc04-c03-u006"><code>FC04-C03-U006</code></a>, <a href="#fc04-c05-u031"><code>FC04-C05-U031</code></a> · <span class="route-package-import">in a Lean package</span></p>
+</div>
+<p>For a maximal pair (B,g), B is local and ker g is its maximal ideal.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <code>P2M/Sol/S_ValuationSubring_exists_ringHom_extend_of_isAlgClosed.lean::ChevalleyHom.isLocalRing</code>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=ChevalleyHom.mem_maximalIdeal_iff#doc"><code>ChevalleyHom.mem_maximalIdeal_iff</code></a> — For the maximal <code>ChevalleyHom</code>, the graph domain is local and membership in its maximal ideal is equivalent pointwise to vanishing under the homomorphism, exactly <code>m = ker g</code>.</p>
+</div>
+<p><span class="unit-provenance">Searched: E</span></p>
+</section>
+<section id="fc04-c05-u033" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u033">Lemma 5.20: One of B[x], B[x⁻¹] has proper extended maximal ideal</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U033</code> · Valuation rings; pp.&nbsp;65–66; L2532–2556 · after <a href="c01.html#fc04-c01-u055"><code>FC04-C01-U055</code></a>, <a href="#fc04-c05-u032"><code>FC04-C05-U032</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For x∈K× and maximal ideal 𝔪=ker g, either 𝔪[x]≠B[x] or 𝔪[x⁻¹]≠B[x⁻¹].</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: polynomial-adjoin/ideal-extension APIs — No checked theorem proves for the source maximal pair that one of <code>m[x]</code> or <code>m[x⁻¹]</code> is proper.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c05-u034" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u034">Theorem 5.21: Maximal partial-homomorphism domains are valuation rings</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U034</code> · Valuation rings; pp.&nbsp;65–66; L2558–2562 · after <a href="c01.html#fc04-c01-u025"><code>FC04-C01-U025</code></a>, <a href="#fc04-c05-u029"><code>FC04-C05-U029</code></a>, <a href="#fc04-c05-u031"><code>FC04-C05-U031</code></a>, <a href="#fc04-c05-u033"><code>FC04-C05-U033</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A maximal pair (B,g) in Σ has B a valuation ring of K.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: E <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=ChevalleyHom.main#doc"><code>ChevalleyHom.main</code></a>; P <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=LocalSubring.exists_valuationRing_of_isMax#doc"><code>LocalSubring.exists_valuationRing_of_isMax</code></a> — <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=ChevalleyHom.main#doc"><code>ChevalleyHom.main</code></a> proves the valuation dichotomy internally for its chosen maximal graph only to export an existence theorem; neither E nor P states the source theorem for an arbitrary supplied maximal partial-homomorphism pair.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c05-u035" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u035">Corollary 5.22: Integral closure as intersection of valuation rings</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U035</code> · Valuation rings; pp.&nbsp;65–66; L2564–2568 · after <a href="#fc04-c05-u006"><code>FC04-C05-U006</code></a>, <a href="#fc04-c05-u030"><code>FC04-C05-U030</code></a>, <a href="#fc04-c05-u034"><code>FC04-C05-U034</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For A⊂K, the integral closure of A in K is the intersection of all valuation rings of K containing A.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Valuation/LocalSubring.html"><code>Mathlib/RingTheory/Valuation/LocalSubring.lean::iInf_valuationSubring_superset</code></a> — The integral closure is exactly the intersection of valuation subrings of the field containing the base ring.</p>
+</div>
+</section>
+<section id="fc04-c05-u036" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u036">Proposition 5.23: Extension of homomorphisms from a finitely generated domain</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U036</code> · Valuation rings; pp.&nbsp;65–66; L2570–2586 · after <a href="c02.html#fc04-c02-u068"><code>FC04-C02-U068</code></a>, <a href="#fc04-c05-u034"><code>FC04-C05-U034</code></a>, <a href="#fc04-c05-u035"><code>FC04-C05-U035</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If A⊂B are domains with B finitely generated over A and v∈B nonzero, some u∈A nonzero has the property that any f:A→Ω with f(u)≠0 extends to g:B→Ω with g(v)≠0 for algebraically closed Ω.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: finite-type, localization, algebraically-closed-field APIs — No checked theorem gives the source uniform <code>u≠0</code> controlling extension of every <code>f:A→Ω</code> to <code>g:B→Ω</code> while preserving <code>g(v)≠0</code>.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c05-u037" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u037">Run-in definition: Transcendental over A</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U037</code> · Valuation rings; pp.&nbsp;65–66; L2574 · after <a href="#fc04-c05-u036"><code>FC04-C05-U036</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For x in the one-generator reduction, “x transcendental over A” means no nonzero polynomial over A has x as a root.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Algebraic/Defs.html"><code>Mathlib/RingTheory/Algebraic/Defs.lean::Transcendental</code></a>; <code>transcendental_iff</code> — Exactly the assertion that no nonzero polynomial over the base vanishes at the element.</p>
+</div>
+</section>
+<section id="fc04-c05-u038" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u038">Run-in definition: Algebraic over A</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U038</code> · Valuation rings; pp.&nbsp;65–66; L2576 · after <a href="c01.html#fc04-c01-u013"><code>FC04-C01-U013</code></a>, <a href="c03.html#fc04-c03-u004"><code>FC04-C03-U004</code></a>, <a href="#fc04-c05-u036"><code>FC04-C05-U036</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Here “x algebraic over A” means algebraic over the field of fractions of A.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Algebraic/Defs.html"><code>Mathlib/RingTheory/Algebraic/Defs.lean::IsAlgebraic</code></a>, instantiated over <code>FractionRing A</code>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Localization/FractionRing.html"><code>Mathlib/RingTheory/Localization/FractionRing.lean</code></a> — This is precisely algebraicity over the fraction field of the base domain, matching the source convention.</p>
+</div>
+</section>
+<section id="fc04-c05-u039" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c05-u039">Corollary 5.24: Zariski lemma / Nullstellensatz form</h3>
+<div class="unit-meta">
+<p><code>FC04-C05-U039</code> · Valuation rings; pp.&nbsp;65–66; L2588–2592 · after <a href="c02.html#fc04-c02-u067"><code>FC04-C02-U067</code></a>, <a href="#fc04-c05-u036"><code>FC04-C05-U036</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If k is a field and B a finitely generated k-algebra that is itself a field, then B is a finite algebraic extension of k; the text notes this as one form of Hilbert’s Nullstellensatz.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Jacobson/Ring.html"><code>Mathlib/RingTheory/Jacobson/Ring.lean::finite_of_finite_type_of_isJacobsonRing</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Algebraic/Integral.html#Algebra.IsAlgebraic.of_finite"><code>Mathlib/RingTheory/Algebraic/Integral.lean::Algebra.IsAlgebraic.of_finite</code></a> — A field that is finite type over a field is module-finite and hence algebraic, exactly the source Nullstellensatz/Zariski-lemma form.</p>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/dzackgarza\.github\.io\/lean-categories\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Generated from the project’s reference notes by <code>site/build.py</code>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>The Lean is the authority; where this site differs, the Lean is right.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

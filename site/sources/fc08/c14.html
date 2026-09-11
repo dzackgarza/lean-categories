@@ -1,0 +1,2647 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013) – lean-categories · corpus</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-7335da993d57b01553edc5728a7cb5aa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">lean-categories · corpus</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../coverage.html" aria-current="page"> 
+<span class="menu-text">Every book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../corpus.html"> 
+<span class="menu-text">Reading list</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../catalogues/index.html"> 
+<span class="menu-text">Catalogues</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/dzackgarza/lean-categories"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/index.html">FC08</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/c14.html">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="sidebar-tools-main">
+    <div id="quarto-search" class="quarto-navigation-tool px-1" title="Search"></div>
+</div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Graduate mathematics, and what Lean has of it</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../coverage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Every book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../corpus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational source corpus</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../status.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus status</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Sources</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC01 Dummit Foote</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/ai.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01 Appendix I — Cartesian Products and Zorn’s Lemma</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC03</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC03 Riehl Category Theory in Context</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Categories, Functors, and Natural Transformations (pp.&nbsp;1–48)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Representability and the Yoneda Lemma (pp.&nbsp;49–72)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Limits and Colimits (pp.&nbsp;73–114)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Adjunctions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Monads and Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. All Concepts are Kan Extensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/ce.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Epilogue: Theorems in Category Theory</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC04</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC04 Atiyah Macdonald</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Rings and Ideals (pp.&nbsp;1–9)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Modules (pp.&nbsp;17–30)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Rings and Modules of Fractions (pp.&nbsp;36–42)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Primary Decomposition (pp.&nbsp;50–54)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Integral Dependence and Valuations (pp.&nbsp;59–66)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Chain Conditions (pp.&nbsp;74–77)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Noetherian Rings (pp.&nbsp;80–83)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Artin Rings (pp.&nbsp;89–90)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Discrete Valuation Rings and Dedekind Domains (pp.&nbsp;93–98)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. Completions (pp.&nbsp;100–112)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Dimension Theory (pp.&nbsp;116–124)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC05</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC05 Weibel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Chain Complexes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Derived Functors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Tor and Ext</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homological Dimension</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Spectral Sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Group Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Lie Algebra Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Simplicial Methods in Homological Algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Hochschild and Cyclic Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. The Derived Category</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Category Theory Language</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC06</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC06 Hartshorne</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter I: Varieties</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter II: Schemes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter III: Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter IV: Curves</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter V: Surfaces</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC07</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC07 Hatcher</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 0. Some Underlying Geometric Notions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. The Fundamental Group</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homotopy Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix. Topology of Cell Complexes</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC08 Lee</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c14.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c22.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC09 Neukirch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC10 Serre Local Fields</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc11/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC11 Peters Sterk</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc12/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC12 Beauville</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc13/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC13</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC13 Matsumura</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Front matter — conventions and terminology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Commutative rings and modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Prime ideals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Properties of extension rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Valuation rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Dimension theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Regular sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Regular rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Flatness revisited</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Derivations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. I-smoothness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Applications of complete local rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Tensor products, direct and inverse limits</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix B. Some homological algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix C. The exterior algebra</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc14/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC14</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC14 Humphreys</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Basic Concepts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Semisimple Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Root Systems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Isomorphism and Conjugacy Theorems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Existence Theorem</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Representation Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Chevalley Algebras and Groups</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc15/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC15</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Classification of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Polynomial invariants of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Affine reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Coxeter groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Special cases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Hecke algebras and Kazhdan–Lusztig polynomials</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Complements</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc16/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC16</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Algebraic Geometry</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Affine Algebraic Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Homogeneous Spaces</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Characteristic 0 Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Semisimple and Unipotent Elements</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Solvable Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VIII. Borel Subgroups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IX. Centralizers of Tori</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter X. Structure of Reductive Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XI. Representations and Classification of Semisimple Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XII. Survey of Rationality Properties and Appendix</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../catalogues/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Definition catalogues</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">catalogues/*.md</span>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Notes and audits</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">notes/*.md</span>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/index.html">FC08</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/c14.html">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>FC08 — Lee, <em>Introduction to Smooth Manifolds</em>.</p>
+<p>This chapter contains 13 definitions, 2 theorems, 11 propositions, 5 lemmas, 2 corollaries, 6 examples, 3 constructions and 3 conventions.</p>
+<p>Of the 45 statements checked against Lean, 10 are formalized somewhere and 35 are not.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 28%">
+<col style="width: 28%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Status</th>
+<th style="text-align: right;">Statements</th>
+<th style="text-align: right;">Share</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="route-unmatched">not formalized</span></td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">78%</td>
+<td>A documented search found no Lean statement of it anywhere.</td>
+</tr>
+<tr class="even">
+<td><span class="route-mathlib">in Mathlib</span></td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">22%</td>
+<td>Mathlib states and proves it.</td>
+</tr>
+<tr class="odd">
+<td><strong>checked in total</strong></td>
+<td style="text-align: right;"><strong>45</strong></td>
+<td style="text-align: right;"></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Which versions of Lean and Mathlib were searched
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li>Canonical source block: FC08 Lee, Chapter 14, <code>FC08-C14-U001</code>–<code>FC08-C14-U045</code>, exactly 45 unique contiguous rows retrieved from <a href="../../sources/fc08/">FC08 — John M. Lee, Introduction to Smooth Manifolds</a> through <code>agent-memory</code>.</li>
+<li>Search order: project at <code>A=3b2239e161592472b34e02ad3b7da308f9ce7280</code>, pinned Mathlib <code>P=db584cd6d46c92f209a44c0f1c829460d327499d</code> (Apache-2.0, Lean 4.33.0), current upstream <code>H=5315eef9e4ffb98e0f89f278b765c50a149f66ca</code> (Apache-2.0, Lean 4.34.0-rc2), then targeted indexed/external Lean searches. Project search found exterior-algebra consumers/contraction lemmas but no source-row owner; no <code>project-existing</code>, <code>package-import</code>, or <code>reference-port</code> route survived strict whole-row checking.</li>
+<li>C14 has 10 pinned <code>mathlib</code> rows and 35 dated <code>unmatched</code> rows. Positive rows are: U001, U002, U003, U005, U007, U012, U013, U014, U019, U021.</li>
+<li>The algebraic alternating-map layer is strong. <code>AlternatingMap</code> directly represents scalar exterior forms; <code>map_linearDependent</code> and the defining repeated-input axiom give Lee’s equivalent alternating criteria. <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=MultilinearMap.alternatization#doc"><code>MultilinearMap.alternatization</code></a> is the unnormalized signed permutation sum and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlternatingMap.coe_alternatization#doc"><code>AlternatingMap.coe_alternatization</code></a> supplies the exact <code>k!</code> factor, so Lee’s normalized <code>Alt</code> and its projection property are short checked assemblies. <code>/tmp/fc08-c14-witness.lean</code> compiles U002/U003/U005 at exact P.</li>
+<li>Elementary forms and top-degree determinant behavior also have direct checked realizations. <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Matrix.detRowAlternating#doc"><code>Matrix.detRowAlternating</code></a> composed with selected coordinate covectors gives Lee’s determinant elementary form (U007). <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlternatingMap.eq_smul_basis_det#doc"><code>AlternatingMap.eq_smul_basis_det</code></a> plus <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Basis.det_comp#doc"><code>Basis.det_comp</code></a> gives the top-degree transformation law (U012). Both assemblies compile in the witness.</li>
+<li><a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlternatingMap.domCoprod#doc"><code>AlternatingMap.domCoprod</code></a> is explicitly Mathlib’s exterior product and uses the signed shuffle formula. For scalar forms, composing with <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=TensorProduct.lid#doc"><code>TensorProduct.lid</code></a> and reindexing along <code>finSumFinEquiv</code> gives Lee’s determinant-convention wedge; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=MultilinearMap.domCoprod_alternization_eq#doc"><code>MultilinearMap.domCoprod_alternization_eq</code></a> verifies the factorial normalization. U013/U014 are therefore promoted. Lee’s alternate convention U019 is the corresponding normalized alternation of <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=MultilinearMap.domCoprod#doc"><code>MultilinearMap.domCoprod</code></a>, also compiled in the witness.</li>
+<li><a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlternatingMap.curryLeft#doc"><code>AlternatingMap.curryLeft</code></a> is exactly interior multiplication by fixing the first argument, so U021 is promoted. <code>curryLeft_same</code> proves U022(a), but no checked Leibniz rule against the scalar specialized wedge was found; strict whole-row semantics keep U022 unmatched.</li>
+<li>A deliberate representation boundary blocks several tempting algebraic promotions. Mathlib has <code>ExteriorAlgebra</code>, <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Module.Basis.exteriorPower#doc"><code>Module.Basis.exteriorPower</code></a>, <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=exteriorPower.finrank_eq#doc"><code>exteriorPower.finrank_eq</code></a>, and grading machinery, but targeted P/H searches found no checked finite-dimensional equivalence identifying the abstract exterior powers of <code>V*</code> with the scalar-valued <code>AlternatingMap</code> realization used by Lee. U011/U018 and dependent coordinate/algebra laws are not inferred across that missing bridge.</li>
+<li>The manifold half remains absent. P and H have <code>Topology/VectorBundle/ContinuousAlternatingMap.lean</code>, which constructs a topological bundle of continuous alternating maps between vector-bundle fibers, but no smooth <code>ContMDiff</code> alternating-map bundle or manifold <code>DifferentialForm</code> section API. Moreover, Lee’s FC08 tangent/cotangent spaces remain the point-derivation model from C03/C11 with no checked bridge to Mathlib’s standard <code>TangentSpace</code>. Thus U023–U031 are unmatched.</li>
+<li>Exact P/H searches also find no manifold exterior-derivative layer: no smooth differential-form <code>d</code>, invariant exterior-derivative formula, Cartan magic formula, or Lie-derivative/exterior-derivative package. U032–U045 remain unmatched rather than being reconstructed from vector-space calculus and Lie-bracket ingredients.</li>
+<li>Current-H file search shows the same relevant manifold surface: <code>Topology/VectorBundle/ContinuousAlternatingMap.lean</code> but no geometry/manifold differential-form implementation. Targeted external indexed search did not surface a compatible Lean owner; one current categorical-differential-geometry project describes de Rham cohomology only as a long-term goal rather than a replacement implementation.</li>
+<li><code>N=2026-09-07</code> marks dated unmatched decisions. Strict whole-row semantics apply uniformly.</li>
+</ul>
+</div>
+</div>
+</div>
+<section id="fc08-c14-u001" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u001">Definition/convention — exterior forms</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U001</code> · Ch. 14, § The Algebra of Alternating Tensors; source L10456 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Let V be a finite-dimensional (real) vector space. Recall that a covariant k-tensor on V is said to be alternating if its value changes sign whenever two arguments are interchanged, or equivalently if any permutation of the arguments causes its value to be multiplied by the sign of the permutation (see Exercise 12.17). Alternating covariant k-tensors are also called exterior forms, multicovectors, or k-covectors. The vector space of all k-covectors on V is denoted by <span class="math inline">\(\Lambda ^ { k } ( V ^ { * } )\)</span> . As we noted in Chapter 12, all 0-tensors and 1-tensors are alternating.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Alternating/Basic.html"><code>Mathlib/LinearAlgebra/Alternating/Basic.lean::AlternatingMap, AlternatingMap.map_perm, AlternatingMap.constLinearEquivOfIsEmpty, AlternatingMap.ofSubsingleton</code></a> — <code>AlternatingMap ℝ V ℝ (Fin k)</code> is exactly a real-valued alternating k-linear form. <code>map_perm</code> gives the sign rule under permutations; <code>constLinearEquivOfIsEmpty</code> and <code>ofSubsingleton</code> identify degrees 0 and 1 with scalars and ordinary linear forms, matching the final clause of Lee’s definition.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c14-u002" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u002">Lemma 14.1</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U002</code> · Ch. 14, § The Algebra of Alternating Tensors; source L10460 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Lemma 14.1. Let ˛ be a covariant k-tensor on a finite-dimensional vector space V . The following are equivalent: (a) ˛ is alternating. (b) <span class="math inline">\(\alpha ( v _ { 1 } , \ldots , v _ { k } ) = 0\)</span> v _ { k } )$ is linearly dependent. (c) ˛ gives the value zero whenever two of its arguments are equal: <span class="math display">\[ \alpha (v _ {1}, \ldots , w, \ldots , w, \ldots , v _ {k}) = 0. \]</span> Proof. The implications $</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Alternating/Basic.html"><code>Mathlib/LinearAlgebra/Alternating/Basic.lean::AlternatingMap.map_linearDependent, AlternatingMap.map_eq_zero_of_eq</code></a> — <code>map_linearDependent</code> proves that an alternating map vanishes on linearly dependent input, while <code>map_eq_zero_of_eq</code> is the repeated-argument condition built into <code>AlternatingMap</code>. Conversely, the repeated-argument condition directly constructs an <code>AlternatingMap</code>; <code>/tmp/fc08-c14-witness.lean</code> compiles both equivalences at P.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c14-u003" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u003">Construction/definition — symmetrization</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U003</code> · Ch. 14, § The Algebra of Alternating Tensors; source L10492 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Chapter 12 defined a projection <span class="math inline">\(\operatorname{Sym} \colon T^{k}(V^{*}) \to \Sigma^{k}(V^{*})\)</span> called symmetrization. The analogous projection <span class="math inline">\(\operatorname{Alt} \colon T^{k}(V^{*}) \to \Lambda^{k}(V^{*})\)</span>, called alternation, is <span class="math display">\[ \operatorname{Alt}\alpha = \frac{1}{k!}\sum_{\sigma \in S_{k}} (\operatorname{sgn}\sigma)\,({}^{\sigma}\alpha), \]</span> where <span class="math inline">\(S_{k}\)</span> is the symmetric group on <span class="math inline">\(k\)</span> elements; explicitly, <span class="math display">\[ (\operatorname{Alt}\alpha)(v_{1},\dots,v_{k}) = \frac{1}{k!}\sum_{\sigma \in S_{k}} (\operatorname{sgn}\sigma)\,\alpha(v_{\sigma(1)},\dots,v_{\sigma(k)}). \]</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Alternating/Basic.html"><code>Mathlib/LinearAlgebra/Alternating/Basic.lean::MultilinearMap.alternatization, MultilinearMap.alternatization_apply, AlternatingMap.coe_alternatization</code></a> — <code>alternatization</code> is the signed sum over all permutations. Scaling by <code>(k!)⁻¹</code> over <code>ℝ</code> gives exactly Lee’s normalized <code>Alt</code>; <code>coe_alternatization</code> states that alternatizing an already alternating form multiplies it by <code>k!</code>. The normalized wrapper compiles in <code>/tmp/fc08-c14-witness.lean</code>.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c14-u004" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u004">Example 14.2</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U004</code> · Ch. 14, § The Algebra of Alternating Tensors; source L10504 · after <a href="c12.html#fc08-c12-u024"><code>FC08-C12-U024</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Example 14.2. If ˛ is any 1-tensor, then Alt <span class="math inline">\(\alpha = \alpha\)</span> . If <span class="math inline">\(\beta\)</span> is a 2-tensor, then <span class="math display">\[ (\operatorname{Alt} \beta) (v, w) = \frac {1}{2} (\beta (v, w) - \beta (w, v)). \]</span> For a 3-tensor <span class="math inline">\(\gamma .\)</span> , <span class="math display">\[ \begin{array}{c} (\text {Alt} \gamma) (v, w, x) = \frac {1}{6} \big (\gamma (v, w, x) + \gamma (w, x, v) + \gamma (x, v, w) \\ - \gamma (w, v, x) - \gamma (v, x, w) - \gamma (x, w, v) \big). \end{array} \]</span> The next proposition is the analogue for alternating tensors , and Example 13.18 shows that the induced metric is <span class="math inline">\(d t ^ { 2 } + ( P t + K ) ^ { 2 } d \theta ^ { 2 }\)</span> .</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — The normalized alternation operator is available by the U003 assembly, but no checked declaration packages Lee’s complete degree-1/2/3 worked formulas as one source example. Deriving the explicit six-term degree-3 expansion is example reconstruction rather than a direct route. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u005" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u005">Proposition 14.3</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U005</code> · Ch. 14, § The Algebra of Alternating Tensors; source L10518 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Proposition 14.3 (Properties of Alternation). Let ˛ be a covariant tensor on a finite-dimensional vector space. (a) Alt ˛ is alternating. (b) Alt <span class="math inline">\(\alpha = \alpha\)</span> if and only if ˛ is alternating.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Alternating/Basic.html"><code>Mathlib/LinearAlgebra/Alternating/Basic.lean::MultilinearMap.alternatization, AlternatingMap.coe_alternatization</code></a> — Because <code>alternatization</code> lands in <code>AlternatingMap</code>, normalized <code>Alt α</code> is alternating. <code>coe_alternatization</code> and nonvanishing of <code>k!</code> over <code>ℝ</code> give <code>Alt α = α</code> for an alternating α; the converse is immediate because <code>Alt α</code> itself is alternating. <code>/tmp/fc08-c14-witness.lean</code> compiles the iff.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c14-u006" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u006">Convention/notation — multi-index of length k</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U006</code> · Ch. 14, § Elementary Alternating Tensors; source L10528 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For computations with alternating tensors, the following notation is exceedingly useful. Given a positive integer k, an ordered k-tuple <span class="math inline">\(I = ( i _ { 1 } , \dots , i _ { k } )\)</span> of positive integers is called a multi-index of length k. If I is such a multi-index and <span class="math inline">\(\sigma \in S _ { k }\)</span> is a permutation of <span class="math inline">\(\{ 1 , \ldots , k \}\)</span> , we write <span class="math inline">\(I _ { \sigma }\)</span> for the following multi-index: <span class="math display">\[ I _ {\sigma} = \left(i _ {\sigma (1)}, \dots , i _ {\sigma (k)}\right). \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This row is source-specific multi-index/Kronecker notation or a worked coordinate example. Mathlib has the underlying finite-index, determinant, and basis machinery, but no exact declaration owning the complete notation/example bundle. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u007" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u007">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U007</code> · Ch. 14, § Elementary Alternating Tensors; source L10542 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>In other words, if v denotes the <span class="math inline">\(n \times k\)</span> matrix whose columns are the components of the vectors <span class="math inline">\(v _ { 1 } , \ldots , v _ { k }\)</span> with respect to the basis <span class="math inline">\(\left( E _ { i } \right)\)</span> dual to <span class="math inline">\(\left( \varepsilon ^ { i } \right)\)</span> , then <span class="math inline">\(\boldsymbol { \varepsilon } ^ { I } ( v _ { 1 } , \dots , v _ { k } )\)</span> is the determinant of the <span class="math inline">\(k \times k\)</span> submatrix consisting of rows <span class="math inline">\(i _ { 1 } , \ldots , i _ { k }\)</span> of v. Because the determinant changes sign whenever two columns are interchanged, it is clear that <span class="math inline">\(\varepsilon ^ { I }\)</span> is an alternating k-tensor. We call <span class="math inline">\(\varepsilon ^ { I }\)</span> an elementary alternating tensor frac {}{t} () - ()) .</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/Determinant/Basic.html#Matrix.detRowAlternating"><code>Mathlib/LinearAlgebra/Matrix/Determinant/Basic.lean::Matrix.detRowAlternating</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Alternating/Basic.html#AlternatingMap.compLinearMap"><code>Mathlib/LinearAlgebra/Alternating/Basic.lean::AlternatingMap.compLinearMap</code></a> — <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Matrix.detRowAlternating#doc"><code>Matrix.detRowAlternating</code></a> is determinant as an alternating map of rows. Composing it with the linear coordinate map <code>v ↦ (ε^{i_j}(v))_j</code> gives Lee’s elementary k-covector and its determinant-of-selected-coordinates formula. This exact construction compiles in <code>/tmp/fc08-c14-witness.lean</code>.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c14-u008" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u008">Example 14.5</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U008</code> · Ch. 14, § Elementary Alternating Tensors; source L10544 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Example 14.5. In terms of the standard dual basis <span class="math inline">\(\left( e ^ { 1 } , e ^ { 2 } , e ^ { 3 } \right)\)</span> for <span class="math inline">\(\left( \mathbb { R } ^ { 3 } \right) ^ { * }\)</span> , we have <span class="math display">\[ e ^ {1 3} (v, w) = v ^ {1} w ^ {3} - w ^ {1} v ^ {3}; \]</span> <span class="math display">\[ e ^ {1 2 3} (v, w, x) = \det (v, w, x). \]</span> In order to streamline computations with the elementary k-covectors, it is useful to extend the Kronecker delta notation in the following way. If I and J are multiindices of length <span class="math inline">\(k\)</span> , we define <span class="math display">\[ \delta_ {J} ^ {I} = \det \left( \begin{array}{c c c} \delta_ {j _ {1}} ^ {i _ {1}} &amp; \ldots &amp; \delta_ {j _ {k}} ^ {i _ {1}} \\ \vdots &amp; \ddots &amp; \vdots \\ \delta_ {j _ {1}} ^ {i _ {k}} &amp; \ldots &amp; \delta_ {j _ {k}} ^ {i _ {k}} \end{array} \right). \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This row is source-specific multi-index/Kronecker notation or a worked coordinate example. Mathlib has the underlying finite-index, determinant, and basis machinery, but no exact declaration owning the complete notation/example bundle. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u009" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u009">Lemma 14.7</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U009</code> · Ch. 14, § Elementary Alternating Tensors; source L10564 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Lemma 14.7 (Properties of Elementary k-Covectors). Let <span class="math inline">\(\left( E _ { i } \right)\)</span> be a basis for V , let <span class="math inline">\(\left( \varepsilon ^ { i } \right)\)</span> be the dual basis for <span class="math inline">\(V ^ { * }\)</span> , and let <span class="math inline">\(\varepsilon ^ { I }\)</span> be as defined above. (a) If I has a repeated index, then <span class="math inline">\(\varepsilon ^ { I } = 0\)</span> (b) <span class="math inline">\(I f J = I _ { \sigma }\)</span> for some <span class="math inline">\(\sigma \in S _ { k }\)</span> , then <span class="math inline">\(\varepsilon ^ { I } = ( \operatorname { s g n } \sigma ) \varepsilon ^ { J }\)</span> (c) The result of evaluating <span class="math inline">\(\varepsilon ^ { I }\)</span> on a sequence of basis vectors is <span class="math display">\[ \varepsilon^ {I} \left(E _ {j _ {1}}, \dots , E _ {j _ {k}}\right) = \delta_ {J} ^ {I}. \]</span> Proof. If I has a repeated index, then for any vectors <span class="math inline">\(v _ { 1 } , \ldots , v _ { k }\)</span> , the determinant in (14.1) has two identical rows, so it vanishes.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — The determinant and alternating-map APIs contain the ingredients for repeated selected indices, permutation signs, and evaluation on basis vectors, but no checked theorem packages Lee’s generalized-Kronecker multi-index statement. Reassembling all three clauses would be a substantive source-specific coordinate proof. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u010" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u010">Definition/convention — increasing</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U010</code> · Ch. 14, § Elementary Alternating Tensors; source L10578 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A multi-index <span class="math inline">\(I = (i_{1},\dots,i_{k})\)</span> is increasing if <span class="math inline">\(i_{1} &lt; \cdots &lt; i_{k}\)</span>. A primed summation sign denotes a sum over increasing multi-indices only, so that, for example, <span class="math display">\[ \sideset{}{'}\sum_{I} \alpha_{I}\varepsilon^{I} = \sum_{\{I \,:\, i_{1} &lt; \cdots &lt; i_{k}\}} \alpha_{I}\varepsilon^{I}. \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This row is source-specific multi-index/Kronecker notation or a worked coordinate example. Mathlib has the underlying finite-index, determinant, and basis machinery, but no exact declaration owning the complete notation/example bundle. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u011" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u011">Proposition 14.8</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U011</code> · Ch. 14, § Elementary Alternating Tensors; source L10584 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 14.8 (A Basis for <span class="math inline">\(\pmb { \Lambda } ^ { k } ( V ^ { \ast } ) )\)</span> . Let V be an n-dimensional vector space. <span class="math inline">\(H ^ { \prime } \left( \varepsilon ^ { i } \right)\)</span> is any basis for <span class="math inline">\(V ^ { * }\)</span> , then for each positive integer <span class="math inline">\(k \leq n\)</span> , the collection of k-covectors <span class="math display">\[ \mathcal {E} = \left\{\varepsilon^ {I}: I \text {is an increasing multi - index of length} k \right\} \]</span> is a basis for <span class="math inline">\(\Lambda ^ { k } ( V ^ { * } )\)</span> . Therefore, <span class="math display">\[ \dim \Lambda^ {k} (V ^ {*}) = \binom {n} {k} = \frac {n !}{k ! (n - k) !}. \]</span> <span class="math inline">\(I f k &gt; n\)</span> , then dim <span class="math inline">\(\Lambda ^ { k } ( V ^ { * } ) = 0\)</span> Proof. The fact that <span class="math inline">\(\Lambda ^ { k } ( V ^ { * } )\)</span> is the trivial vector space when <span class="math inline">\(k &gt; n\)</span> follows immediately from Lemma 14.1(b), since every <span class="math inline">\(k { \mathrm { - t u p l e } }\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Module.Basis.exteriorPower#doc"><code>Module.Basis.exteriorPower</code></a> and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=exteriorPower.finrank_eq#doc"><code>exteriorPower.finrank_eq</code></a> for the <strong>abstract</strong> exterior power, but no checked finite-dimensional equivalence identifies <code>⋀^k(V*)</code> with Lee’s scalar-valued <code>AlternatingMap</code> realization. The missing representation bridge prevents using the abstract basis theorem for this source row. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u012" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u012">Proposition 14.9</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U012</code> · Ch. 14, § Elementary Alternating Tensors; source L10626 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Proposition 14.9. Suppose V is an n-dimensional vector space and <span class="math inline">\(\omega \in \Lambda ^ { n } ( V ^ { * } )\)</span> <span class="math inline">\(I f T \colon V \to V\)</span> is any linear map and <span class="math inline">\(v _ { 1 } , \ldots , v _ { n }\)</span> are arbitrary vectors in V , then <span class="math display">\[ \omega (T v _ {1}, \dots , T v _ {n}) = (\det T) \omega (v _ {1}, \dots , v _ {n}).\tag{14.2} \]</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Determinant.html"><code>Mathlib/LinearAlgebra/Determinant.lean::AlternatingMap.eq_smul_basis_det, Module.Basis.det_comp</code></a> — <code>eq_smul_basis_det</code> says every top-degree scalar alternating form is a scalar multiple of the determinant form for a basis, and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Basis.det_comp#doc"><code>Basis.det_comp</code></a> gives composition with an endomorphism as multiplication by <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=LinearMap.det#doc"><code>LinearMap.det</code></a>. Together they prove Lee’s transformation formula; the assembly compiles in <code>/tmp/fc08-c14-witness.lean</code>.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c14-u013" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u013">Definition/convention — similar product operation for alternating tensors</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U013</code> · Ch. 14, § The Wedge Product; source L10652 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>In this section we define a similar product operation for alternating tensors. One way to define it would be to mimic what we did in the symmetric case and define the product of alternating tensors ! and  to be <span class="math inline">\(\mathbf { A l t } ( \omega \otimes \eta )\)</span> . However, we will use a different definition that looks more complicated at first but turns out to be much better suited to compu Riemannian isometry.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Alternating/DomCoprod.html#AlternatingMap.domCoprod"><code>Mathlib/LinearAlgebra/Alternating/DomCoprod.lean::AlternatingMap.domCoprod</code></a> — <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlternatingMap.domCoprod#doc"><code>AlternatingMap.domCoprod</code></a> is explicitly documented and defined as the exterior product of two alternating maps, using the signed shuffle sum. This is precisely the product operation Lee introduces before fixing notation in U014.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c14-u014" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u014">Definition/convention — their wedge product</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U014</code> · Ch. 14, § The Wedge Product; source L10654 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>We continue with the assumption that V is a finite-dimensional real vector space. Given <span class="math inline">\(\omega \in \Lambda ^ { k } ( V ^ { * } )\)</span> and <span class="math inline">\(\eta \in \Lambda ^ { l } ( V ^ { * } )\)</span> , we define their wedge product or exterior product to be the following <span class="math inline">\(( k + l )\)</span> -covector: <span class="math display">\[ \omega \wedge \eta = \frac {(k + l) !}{k ! l !} \operatorname{Alt} (\omega \otimes \eta).\tag{14.3} \]</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Alternating/DomCoprod.html"><code>Mathlib/LinearAlgebra/Alternating/DomCoprod.lean::AlternatingMap.domCoprod, MultilinearMap.domCoprod_alternization_eq</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/TensorProduct/Basic.html#TensorProduct.lid"><code>Mathlib/LinearAlgebra/TensorProduct/Basic.lean::TensorProduct.lid</code></a> — For scalar-valued forms, compose <code>domCoprod</code> with the canonical <code>ℝ ⊗[ℝ] ℝ ≃ₗ ℝ</code> and reindex <code>Fin k ⊕ Fin l ≃ Fin (k+l)</code>. <code>domCoprod_alternization_eq</code> gives the factorial relation showing this shuffle product equals Lee’s determinant convention <code>((k+l)!)/(k!l!) Alt(ω⊗η)</code>. The specialized wrapper compiles at P.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c14-u015" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u015">Lemma 14.10</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U015</code> · Ch. 14, § The Wedge Product; source L10662 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Lemma 14.10. Let V be an n-dimensional vector space and let <span class="math inline">\(\left( \varepsilon ^ { 1 } , \ldots , \varepsilon ^ { n } \right)\)</span> be a basis for <span class="math inline">\(V ^ { * }\)</span> . For any multi-indices <span class="math inline">\(I = ( i _ { 1 } , \dots , i _ { k } )\)</span> and <span class="math inline">\(J = ( j _ { 1 } , \ldots , j _ { l } )\)</span> <span class="math display">\[ \varepsilon^ {I} \wedge \varepsilon^ {J} = \varepsilon^ {I J},\tag{14.4} \]</span> where <span class="math inline">\(I J = ( i _ { 1 } , \dots , i _ { k } , j _ { 1 } , \dots , j _ { l } )\)</span> is obtained by concatenating K, | v | _ {} = 1 }.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — The determinant-convention wedge is available through U014, but no checked theorem states Lee’s elementary multi-index concatenation identity under the scalar <code>AlternatingMap</code> specialization. Proving it would reconstruct a coordinate theorem from determinant/shuffle ingredients. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u016" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u016">Proposition 14.11</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U016</code> · Ch. 14, § The Wedge Product; source L10698 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 14.11 (Properties of the Wedge Product). Suppose !, <span class="math inline">\(\omega ^ { \prime } , \eta , \eta ^ { \prime }\)</span> , and <span class="math inline">\(\xi\)</span> are multicovectors on a finite-dimensional vector space <span class="math inline">\(V\)</span> . (a) BILINEARITY: For <span class="math inline">\(a , a ^ { \prime } \in \mathbb { R }\)</span> <span class="math display">\[ \begin{array}{l} (a \omega + a ^ {\prime} \omega^ {\prime}) \wedge \eta = a (\omega \wedge \eta) + a ^ {\prime} (\omega^ {\prime} \wedge \eta), \\ \eta \wedge (a \omega + a ^ {\prime} \omega^ {\prime}) = a (\eta \wedge \omega) + a ^ {\prime} (\eta \wedge \omega^ {\prime}). \end{array} \]</span> (b) ASSOCIATIVITY: <span class="math display">\[ \omega \wedge (\eta \wedge \xi) = (\omega \wedge \eta) \wedge \xi . \]</span> (c) ANTICOMMUTATIVITY: For <span class="math inline">\(\omega \in \Lambda ^ { k } ( V ^ { * } )\)</span> and <span class="math inline">\(\eta \in \Lambda ^ { l } ( V ^ { * } )\)</span> , <span class="math display">\[ \omega \wedge \eta = (- 1) ^ {k l} \eta \wedge \omega .\tag{14.6} \]</span> (d) <span class="math inline">\(H \left( \varepsilon ^ { i } \right)\)</span> is any basis for <span class="math inline">\(V ^ { * }\)</span> and <span class="math inline">\(I = ( i _ { 1 } , \dots , i _ { k } )\)</span> is any multi-index, then <span class="math display">\[ \varepsilon^ {i _ {1}} \wedge \dots \wedge \varepsilon^ {i _ {k}} = \varepsilon^ {I}.\tag{14.7} \]</span> (e) For any covectors <span class="math inline">\(\omega ^ { 1 } , \ldots , \omega ^ { k }\)</span> and vectors <span class="math inline">\(v _ { 1 } , \ldots , v _ { k }\)</span> <span class="math display">\[ \omega^ {1} \wedge \dots \wedge \omega^ {k} (v _ {1}, \dots , v _ {k}) = \det \left(\omega^ {j} (v _ {i})\right).\tag{14.8} \]</span> Proof. Bilinearity follows immediately from the definition, because the tensor product is bilinear ball of radius ” around <span class="math inline">\(p\)</span> such that <span class="math inline">\({ \overline { { V } } } \subseteq U\)</span> as above.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib’s <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlternatingMap.domCoprod#doc"><code>AlternatingMap.domCoprod</code></a> defines the wedge, but targeted P/H searches found no packaged scalar-valued associativity, graded-commutativity, elementary-wedge, and determinant-evaluation theorem bundle matching all five clauses. <code>ExteriorAlgebra</code> has algebra laws only after changing representation, and the needed representation bridge is absent. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u017" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u017">Definition/convention — decomposable</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U017</code> · Ch. 14, § The Wedge Product; source L10748 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A k-covector  is said to be decomposable if it can be expressed in the form <span class="math inline">\(\eta = \omega ^ { 1 } \wedge \cdots \wedge \omega ^ { k }\)</span> , where <span class="math inline">\(\omega ^ { 1 } , \ldots , \omega ^ { k }\)</span> are covectors. It is important to be aware that not every k-covector is decomposable when <span class="math inline">\(k &gt; 1\)</span> (see Problem 14-2); however, it follows from Propositions 14.8 and 14.11(d) that every k-covector can be written as a linear combination of decomposable ones.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — No checked predicate/interface for decomposable scalar alternating forms was found. Abstract exterior-algebra generators and spanning theorems do not by themselves identify Lee’s <code>AlternatingMap</code> object with decomposable wedges. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u018" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u018">Construction/definition — exterior algebra (</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U018</code> · Ch. 14, § The Wedge Product; source L10760 · after <a href="#fc08-c14-u011"><code>FC08-C14-U011</code></a>, <a href="#fc08-c14-u016"><code>FC08-C14-U016</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p><span class="math display">\[ It follows from Proposition 14.8 that dim $\Lambda ( V ^ { * } ) = 2 ^ { n }$ . Proposition 14.11 shows that the wedge product turns $\Lambda ( V ^ { * } )$ into an associative algebra, called the exterior algebra (or Grassmann algebra) of V . This algebra is not commutative, but it has a closely related property. An algebra A is said to be graded if it has a direct sum decomposition $\overset { \cdot } { A } = \overset { \cdot } { \oplus _ { k \in \mathbb { Z } } } \overset { \cdot } { A ^ { k } }$ such that the product satisfies $\left( A ^ { k } \right) \left( A ^ { l } \right) \subseteq A ^ { k + l }$ for each k and l. A graded algebra is anticommutative if the product satisfies $a b = ( - 1 ) ^ { k l } b a$ for $a \overset { \cdot } { \in } A ^ { k } , b \in A ^ { l }$ . Proposition 14.11(c) shows that $\Lambda ( V ^ { * } )$ is an anticommutative graded algebra (where we interpret $A ^ { k } = \Lambda ^ { k } ( V ^ { * } )$ for $0 \leq k \leq n$ and $A ^ { k } = \{ 0 \}$ otherwise). As we observed at the beginning of this section, one could also define the wedge product without the unwieldy coefficient of (14.3). Some authors choose this alternative definition of the wedge product. To avoid confusion, we denote it by : \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has a graded <code>ExteriorAlgebra ℝ (Dual ℝ V)</code> and exterior-power bases, but Lee’s row is explicitly the algebra on the previously defined scalar alternating tensors <code>Λ^k(V*)</code>. No checked finite-dimensional algebra equivalence between these representations was found at P or H, so the abstract algebra cannot own the whole row. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u019" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u019">Convention/notation — wedge product without the unwieldy coefficient of (14</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U019</code> · Ch. 14, § The Wedge Product; source L10762 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>As we observed at the beginning of this section, one could also define the wedge product without the unwieldy coefficient of (14.3). Some authors choose this alternative definition of the wedge product. To avoid confusion, we denote it by Z : ω ∧ η = Alt (ω ⊗ η).tag14.9</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Multilinear/TensorProduct.html#MultilinearMap.domCoprod"><code>Mathlib/LinearAlgebra/Multilinear/TensorProduct.lean::MultilinearMap.domCoprod</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Alternating/Basic.html#MultilinearMap.alternatization"><code>Mathlib/LinearAlgebra/Alternating/Basic.lean::MultilinearMap.alternatization</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/TensorProduct/Basic.html#TensorProduct.lid"><code>Mathlib/LinearAlgebra/TensorProduct/Basic.lean::TensorProduct.lid</code></a> — Lee’s alternate convention is exactly normalized alternation of the multilinear tensor product. <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=MultilinearMap.domCoprod#doc"><code>MultilinearMap.domCoprod</code></a> forms the product, <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=TensorProduct.lid#doc"><code>TensorProduct.lid</code></a> multiplies scalar codomains, and <code>(k+l)!⁻¹ • alternatization</code> is the normalized <code>Alt</code>. <code>/tmp/fc08-c14-witness.lean</code> compiles this definition.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c14-u020" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u020">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U020</code> · Ch. 14, § The Wedge Product; source L10782 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Because of (14.8), we call definition (14.3) the determinant convention for the wedge product, and (14.9) the Alt convention. The choice of which definition to use is largely a matter of taste. Although the definition of the Alt convention is perhaps a bit more natural, the computational advantages of the determinant convention make it preferable for most applications, and we use it exclusively in this book. (But see Problem 14-3 for an argument in favor of the Alt convention.) The determinant convention is most common in introductory differential geometry texts, and is used, for example, in [Boo86, Cha06, dC92, LeeJeff09, Pet06, Spi99]. The Alt convention is used in [KN69] and is more common in complex differential geometry.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This is a source terminology/convention distinguishing two wedge normalizations. The underlying determinant and Alt conventions are separately formalized in U014/U019, but no additional checked object corresponds to Lee’s naming convention itself.</p>
+</div>
+</section>
+<section id="fc08-c14-u021" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u021">Definition/convention — interior multiplication by v</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U021</code> · Ch. 14, § Interior Multiplication; source L10786 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>There is an important operation that relates vectors with alternating tensors. Let V be a finite-dimensional vector space. For each <span class="math inline">\(v \in V\)</span> ^ { k - 1 } ( V ^ { * } )$ , called interior multiplication by v, as follows: <span class="math display">\[ i _ {v} \omega (w _ {1}, \ldots , w _ {k - 1}) = \omega (v, w _ {1}, \ldots , w _ {k - 1}). \]</span> In other words, $</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Alternating/Curry.html"><code>Mathlib/LinearAlgebra/Alternating/Curry.lean::AlternatingMap.curryLeft, AlternatingMap.curryLeft_apply_apply, AlternatingMap.curryLeftLinearMap</code></a> — <code>curryLeft</code> sends an alternating <code>(k+1)</code>-form to the linear map <code>v ↦ (w ↦ ω(v,w₁,…,w_k))</code>, exactly Lee’s interior multiplication by <code>v</code> after fixing the first argument.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c14-u022" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u022">Lemma 14.13</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U022</code> · Ch. 14, § Interior Multiplication; source L10800 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Lemma 14.13. Let V be a finite-dimensional vector space and <span class="math inline">\(v \in V\)</span> (a) <span class="math inline">\(i _ { v } \circ i _ { v } = 0\)</span> (b) <span class="math inline">\(H \omega \in \Lambda ^ { k } ( V ^ { * } )\)</span> and <span class="math inline">\(\eta \in \Lambda ^ { l } ( V ^ { * } )\)</span> <span class="math display">\[ i _ {v} (\omega \wedge \eta) = (i _ {v} \omega) \wedge \eta + (- 1) ^ {k} \omega \wedge (i _ {v} \eta).\tag{14.11} \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlternatingMap.curryLeft_same#doc"><code>AlternatingMap.curryLeft_same</code></a> directly proves <code>i_v ∘ i_v = 0</code>, but targeted P/H searches found no graded Leibniz rule for <code>curryLeft</code> against the specialized scalar <code>domCoprod</code> wedge. One of the two clauses is therefore missing. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u023" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u023">Convention/notation — differential k-form</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U023</code> · Ch. 14, § Differential Forms on Manifolds; source L10852 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A section of <span class="math inline">\(\Lambda ^ { k } T ^ { * } M\)</span> is called a differential k-form, or just a <span class="math inline">\(k { \cdot } f o r m ^ { \cdot }\)</span> ; this is a (continuous) tensor field whose value at each point is an alternating tensor. The integer <span class="math inline">\(k\)</span> is called the degree of the form. We denote the vector space of smooth k-forms by <span class="math display">\[ \Omega^ {k} (M) = \Gamma \big (\Lambda^ {k} T ^ {*} M \big). \]</span> The wedge product of a <span class="math inline">\(k\)</span>-form and an <span class="math inline">\(l\)</span>-form is a <span class="math inline">\((k+l)\)</span>-form.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib constructs a <strong>topological</strong> vector bundle of continuous alternating maps between fibers, but no smooth manifold differential-form bundle/section API was found. These rows also require Lee’s point-derivation tangent/cotangent model, whose bridge to standard <code>TangentSpace</code> remains absent from C03/C11. Hence form sections, pointwise wedge, pullback, and coordinate formulas are not complete checked rows. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u024" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u024">Definition/convention — k-form</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U024</code> · Ch. 14, § Differential Forms on Manifolds; source L10858 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The wedge product of two differential forms is defined pointwise: ( ω ∧ η ) _p = ω _p ∧ η _p . Thus, the wedge product of a k-form with an l -form is a ( k + l ) – form . If f is a 0-form and η is a k-form, we interpret the wedge product f ∧ η to mean the ordinary product f η . If we define <span class="math display">\[ \Omega^{*}(M) = \bigoplus_{k=0}^{n} \Omega^{k}(M), \tag{14.14} \]</span> then the wedge product turns <span class="math inline">\(\Omega^{*}(M)\)</span> into an associative, anticommutative graded algebra.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib constructs a <strong>topological</strong> vector bundle of continuous alternating maps between fibers, but no smooth manifold differential-form bundle/section API was found. These rows also require Lee’s point-derivation tangent/cotangent model, whose bridge to standard <code>TangentSpace</code> remains absent from C03/C11. Hence form sections, pointwise wedge, pullback, and coordinate formulas are not complete checked rows. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u025" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u025">Example 14.15</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U025</code> · Ch. 14, § Differential Forms on Manifolds; source L10884 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Example 14.15. A 0-form is just a continuous real-valued function, and a 1-form is a covector field. <span class="math inline">\(\mathrm { O n } \mathbb { R } ^ { 3 }\)</span> , some examples of smooth 2-forms are given by <span class="math display">\[ \omega = (\sin x y) d y \wedge d z; \]</span> <span class="math display">\[ \eta = d x \wedge d y + d x \wedge d z + d y \wedge d z. \]</span> Every 3-form on <span class="math inline">\(\mathbb { R } ^ { 3 }\)</span> is a continuous real-valued fun th manifold M is a smooth symmetric 2-tensor field whose value is nondegenerate at each point, with the same signature everywhere on M .</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib constructs a <strong>topological</strong> vector bundle of continuous alternating maps between fibers, but no smooth manifold differential-form bundle/section API was found. These rows also require Lee’s point-derivation tangent/cotangent model, whose bridge to standard <code>TangentSpace</code> remains absent from C03/C11. Hence form sections, pointwise wedge, pullback, and coordinate formulas are not complete checked rows. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u026" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u026">Construction/definition — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U026</code> · Ch. 14, § Differential Forms on Manifolds; source L10896 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If <span class="math inline">\(F \colon M \to N\)</span> is a smooth map and <span class="math inline">\(\omega\)</span> is a differential form on N , the pullback <span class="math inline">\(F ^ { * } \omega\)</span> is a differential form on M; defined as for any covariant tensor field: <span class="math display">\[ (F ^ {*} \omega) _ {p} (v _ {1}, \ldots , v _ {k}) = \omega_ {F (p)} \big (d F _ {p} (v _ {1}), \ldots , d F _ {p} (v _ {k}) \big). \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib constructs a <strong>topological</strong> vector bundle of continuous alternating maps between fibers, but no smooth manifold differential-form bundle/section API was found. These rows also require Lee’s point-derivation tangent/cotangent model, whose bridge to standard <code>TangentSpace</code> remains absent from C03/C11. Hence form sections, pointwise wedge, pullback, and coordinate formulas are not complete checked rows. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u027" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u027">Lemma 14.16</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U027</code> · Ch. 14, § Differential Forms on Manifolds; source L10904 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Suppose <span class="math inline">\(F \colon M \to N\)</span> is smooth. (a) <span class="math inline">\(F^{*} \colon \Omega^{k}(N) \to \Omega^{k}(M)\)</span> is linear over <span class="math inline">\(\mathbb{R}\)</span>. (b) <span class="math inline">\(F^{*}(\omega \wedge \eta) = (F^{*}\omega) \wedge (F^{*}\eta)\)</span>. (c) In any smooth chart, <span class="math display">\[ F^{*}\left(\sideset{}{'}\sum_{I} \omega_{I}\,dy^{i_{1}} \wedge \cdots \wedge dy^{i_{k}}\right) = \sideset{}{'}\sum_{I} (\omega_{I} \circ F)\,d(y^{i_{1}} \circ F) \wedge \cdots \wedge d(y^{i_{k}} \circ F). \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib constructs a <strong>topological</strong> vector bundle of continuous alternating maps between fibers, but no smooth manifold differential-form bundle/section API was found. These rows also require Lee’s point-derivation tangent/cotangent model, whose bridge to standard <code>TangentSpace</code> remains absent from C03/C11. Hence form sections, pointwise wedge, pullback, and coordinate formulas are not complete checked rows. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u028" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u028">Example 14.18</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U028</code> · Ch. 14, § Differential Forms on Manifolds; source L10920 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Define <span class="math inline">\(F \colon \mathbb{R}^{2} \to \mathbb{R}^{3}\)</span> by <span class="math inline">\(F(u,v) = (u,\ v,\ u^{2}-v^{2})\)</span> and let <span class="math inline">\(\omega = y\,dx \wedge dz + x\,dy \wedge dz\)</span> on <span class="math inline">\(\mathbb{R}^{3}\)</span>. Then <span class="math display">\[ F^{*}\omega = v\,du \wedge (2u\,du - 2v\,dv) + u\,dv \wedge (2u\,du - 2v\,dv) = -2v^{2}\,du \wedge dv + 2u^{2}\,dv \wedge du, \]</span> using <span class="math inline">\(du \wedge du = dv \wedge dv = 0\)</span>; since <span class="math inline">\(dv \wedge du = -du \wedge dv\)</span> this simplifies to <span class="math display">\[ F^{*}\omega = -2(u^{2}+v^{2})\,du \wedge dv. \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib constructs a <strong>topological</strong> vector bundle of continuous alternating maps between fibers, but no smooth manifold differential-form bundle/section API was found. These rows also require Lee’s point-derivation tangent/cotangent model, whose bridge to standard <code>TangentSpace</code> remains absent from C03/C11. Hence form sections, pointwise wedge, pullback, and coordinate formulas are not complete checked rows. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u029" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u029">Example 14.19</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U029</code> · Ch. 14, § Differential Forms on Manifolds; source L10934 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Thinking of the transformation to polar coordinates <span class="math inline">\(x = r \cos \theta , y = r\)</span> sin  as an expression for the identity map with respect to different coordinates on the domain and codomain, we obtain <span class="math display">\[ \begin{array}{r l} d x \wedge d y &amp; = d (r \cos \theta) \wedge d (r \sin \theta) \\ &amp; = (\cos \theta d r - r \sin \theta d \theta) \wedge (\sin \theta d r + r \cos \theta d \theta) \\ &amp; = r d r \wedge d \theta . \end{array} \]</span> The similarity between this formula and the formula for changing a double integral from Cartesian to polar coordinates is striking. The following proposition generalizes this.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib constructs a <strong>topological</strong> vector bundle of continuous alternating maps between fibers, but no smooth manifold differential-form bundle/section API was found. These rows also require Lee’s point-derivation tangent/cotangent model, whose bridge to standard <code>TangentSpace</code> remains absent from C03/C11. Hence form sections, pointwise wedge, pullback, and coordinate formulas are not complete checked rows. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u030" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u030">Proposition 14.20</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U030</code> · Ch. 14, § Differential Forms on Manifolds; source L10942 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 14.20 (Pullback Formula for Top-Degree Forms). Let <span class="math inline">\(F \colon M \to N\)</span> be a smooth map between n-manifolds with or without boundary. <span class="math inline">\(H \left( x ^ { i } \right)\)</span> and <span class="math inline">\(\left( y ^ { j } \right)\)</span> are smooth coordinates on open subsets <span class="math inline">\(U \subseteq M\)</span> and <span class="math inline">\(V \subseteq N\)</span> , respectively, and u is a continuous real-valued function on V , then the following holds on <span class="math inline">\(U \cap F ^ { - 1 } ( V )\)</span> <span class="math display">\[ F ^ {*} \left(u d y ^ {1} \wedge \dots \wedge d y ^ {n}\right) = (u \circ F) (\det D F) d x ^ {1} \wedge \dots \wedge d x ^ {n},\tag{14.15} \]</span> where DF represents the Jacobian mat Compute the coordinate representation of <span class="math inline">\(\mathring { g }\)</span> in stereographic coordinates (see Problem 1-7).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib constructs a <strong>topological</strong> vector bundle of continuous alternating maps between fibers, but no smooth manifold differential-form bundle/section API was found. These rows also require Lee’s point-derivation tangent/cotangent model, whose bridge to standard <code>TangentSpace</code> remains absent from C03/C11. Hence form sections, pointwise wedge, pullback, and coordinate formulas are not complete checked rows. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u031" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u031">Corollary 14.21</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U031</code> · Ch. 14, § Differential Forms on Manifolds; source L10964 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If <span class="math inline">\((U,(x^{i}))\)</span> and <span class="math inline">\((\widetilde{U},(\widetilde{x}^{j}))\)</span> are overlapping smooth charts on <span class="math inline">\(M\)</span>, then on <span class="math inline">\(U \cap \widetilde{U}\)</span> <span class="math display">\[ d\widetilde{x}^{1} \wedge \cdots \wedge d\widetilde{x}^{n} = \det\left(\frac{\partial \widetilde{x}^{j}}{\partial x^{i}}\right) dx^{1} \wedge \cdots \wedge dx^{n}. \tag{14.16} \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib constructs a <strong>topological</strong> vector bundle of continuous alternating maps between fibers, but no smooth manifold differential-form bundle/section API was found. These rows also require Lee’s point-derivation tangent/cotangent model, whose bridge to standard <code>TangentSpace</code> remains absent from C03/C11. Hence form sections, pointwise wedge, pullback, and coordinate formulas are not complete checked rows. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u032" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u032">Definition/convention — exterior derivative</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U032</code> · Ch. 14, § Exterior Derivatives; source L10986 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Derivatives In this section we define a natural differential operator on smooth forms, called the exterior derivative. It is a generalization of the differential of a function.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Neither pinned Mathlib nor current H contains a manifold differential-form exterior-derivative API. Searches find no smooth <code>DifferentialForm</code> type with <code>d</code>, no Cartan formula, and no Lie-derivative/exterior-derivative package; the existing vector-space alternating maps and topological alternating-map bundle are only prerequisites. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u033" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u033">Definition/convention — its exterior derivative d</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U033</code> · Ch. 14, § Exterior Derivatives; source L11004 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The definition of d on Euclidean space is straightforward: if <span class="math inline">\(\begin{array} { r } { \omega = \sum _ { J } ^ { \prime } \omega _ { J } d x ^ { J } } \end{array}\)</span> is a smooth k-form on an open subset <span class="math inline">\(U \subseteq \mathbb { R } ^ { n }\)</span> or <span class="math inline">\(\mathbb { H } ^ { n }\)</span> , we define its exterior derivative d! to be the following <span class="math inline">\(( k + 1 )\)</span> /-form: <span class="math display">\[ d \left(\sum_ {J} ^ {\prime} \omega_ {J} d x ^ {J}\right) = \sum_ {J} ^ {\prime} d \omega_ {J} \wedge d x ^ {J},\tag{14.19} \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Neither pinned Mathlib nor current H contains a manifold differential-form exterior-derivative API. Searches find no smooth <code>DifferentialForm</code> type with <code>d</code>, no Cartan formula, and no Lie-derivative/exterior-derivative package; the existing vector-space alternating maps and topological alternating-map bundle are only prerequisites. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u034" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u034">Proposition 14.23</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U034</code> · Ch. 14, § Exterior Derivatives; source L11032 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 14.23 (Properties of the Exterior Derivative on <span class="math inline">\(\mathbb { R } ^ { n } )\)</span> ). (a) d is linear over R. (b) If ! is a smooth k-form and  is a smooth l-form on an open subset <span class="math inline">\(U \subseteq \mathbb { R } ^ { n }\)</span> or H, then <span class="math display">\[ d (\omega \wedge \eta) = d \omega \wedge \eta + (- 1) ^ {k} \omega \wedge d \eta . \]</span> (c) d <span class="math inline">\(\circ d \equiv 0\)</span> (d) d commutes with pullbacks: <span class="math inline">\(i f U\)</span> is an open subset of <span class="math inline">\(\mathbb { R } ^ { n }\)</span> or <span class="math inline">\(\mathbb { H } ^ { n }\)</span> , V is an open subset of <span class="math inline">\(\mathbb { R } ^ { m }\)</span> or <span class="math inline">\(\mathbb { H } ^ { m } , F \colon U \to V\)</span> is a smooth map, and <span class="math inline">\(\omega \in \Omega ^ { k } ( V )\)</span> , then <span class="math display">\[ F ^ {*} (d \omega) = d \left(F ^ {*} \omega\right).\tag{14.21} \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Neither pinned Mathlib nor current H contains a manifold differential-form exterior-derivative API. Searches find no smooth <code>DifferentialForm</code> type with <code>d</code>, no Cartan formula, and no Lie-derivative/exterior-derivative package; the existing vector-space alternating maps and topological alternating-map bundle are only prerequisites. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u035" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u035">Theorem 14.24</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U035</code> · Ch. 14, § Exterior Derivatives; source L11092 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 14.24 (Existence and Uniqueness of Exterior Differentiation). Suppose M is a smooth manifold with or without boundary. There are unique operators <span class="math inline">\(d \colon \Omega ^ { k } ( M ) \Omega ^ { k + 1 } ( M )\)</span> for all k, called exterior differentiation, satisfying the following four properties: (i) d is linear over R. (ii) If <span class="math inline">\(\omega \in \Omega ^ { k } ( M )\)</span> and <span class="math inline">\(\eta \in \Omega ^ { l } ( M )\)</span> , then <span class="math display">\[ d (\omega \wedge \eta) = d \omega \wedge \eta + (- 1) ^ {k} \omega \wedge d \eta . \]</span> (iii) d <span class="math inline">\(\circ d \equiv 0\)</span> (iv) For <span class="math inline">\(f \in \Omega ^ { 0 } ( M ) = C ^ { \infty } ( M )\)</span> , df is the differential of f , given by <span class="math inline">\(d f ( X ) =\)</span> <span class="math inline">\(X f\)</span> In any smooth coordinate chart, d is given by (14.19).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Neither pinned Mathlib nor current H contains a manifold differential-form exterior-derivative API. Searches find no smooth <code>DifferentialForm</code> type with <code>d</code>, no Cartan formula, and no Lie-derivative/exterior-derivative package; the existing vector-space alternating maps and topological alternating-map bundle are only prerequisites. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u036" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u036">Definition/convention — a map of degree m</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U036</code> · Ch. 14, § Exterior Derivatives; source L11126 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If <span class="math inline">\(A = \bigoplus_{k} A^{k}\)</span> is a graded algebra, a linear map <span class="math inline">\(T \colon A \to A\)</span> has degree <span class="math inline">\(m\)</span> if <span class="math inline">\(T(A^{k}) \subseteq A^{k+m}\)</span> for each <span class="math inline">\(k\)</span>, and is an antiderivation if <span class="math inline">\(T(xy) = (Tx)y + (-1)^{k}x(Ty)\)</span> whenever <span class="math inline">\(x \in A^{k}\)</span> and <span class="math inline">\(y \in A^{l}\)</span>. The preceding theorem says the differential on functions extends uniquely to an antiderivation of <span class="math inline">\(\Omega^{*}(M)\)</span> of degree <span class="math inline">\(1\)</span> whose square is zero.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Neither pinned Mathlib nor current H contains a manifold differential-form exterior-derivative API. Searches find no smooth <code>DifferentialForm</code> type with <code>d</code>, no Cartan formula, and no Lie-derivative/exterior-derivative package; the existing vector-space alternating maps and topological alternating-map bundle are only prerequisites. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u037" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u037">Proposition 14.26</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U037</code> · Ch. 14, § Exterior Derivatives; source L11132 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 14.26 (Naturality of the Exterior Derivative). If <span class="math inline">\(F \colon M \to N\)</span> is a smooth map, then for each k the pullback map <span class="math inline">\(F ^ { * } \colon \Omega ^ { k } ( N ) \to \Omega ^ { k } ( M )\)</span> commutes with d : for all <span class="math inline">\(\omega \in \Omega ^ { k } ( N )\)</span> , <span class="math display">\[ F ^ {*} (d \omega) = d (F ^ {*} \omega).\tag{14.23} \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Neither pinned Mathlib nor current H contains a manifold differential-form exterior-derivative API. Searches find no smooth <code>DifferentialForm</code> type with <code>d</code>, no Cartan formula, and no Lie-derivative/exterior-derivative package; the existing vector-space alternating maps and topological alternating-map bundle are only prerequisites. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u038" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u038">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U038</code> · Ch. 14, § Exterior Derivatives; source L11148 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Extending the terminology we introduced for covector fields in Chapter 11, we say that a smooth differential form <span class="math inline">\(\omega \in \Omega ^ { k } ( M )\)</span> is closed if <span class="math inline">\(d \omega = 0\)</span> , and exact if there exists a smooth <span class="math inline">\(( k - 1 )\)</span> -form  on M such that <span class="math inline">\(\omega = d \eta\)</span> . Because the exterior derivative of a 1-form satisfies (14.18), this definition of closed 1-forms agrees with the one we gave in Chapter 11.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Neither pinned Mathlib nor current H contains a manifold differential-form exterior-derivative API. Searches find no smooth <code>DifferentialForm</code> type with <code>d</code>, no Cartan formula, and no Lie-derivative/exterior-derivative package; the existing vector-space alternating maps and topological alternating-map bundle are only prerequisites. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u039" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u039">Example 14.27</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U039</code> · Ch. 14, § Exterior Derivatives and Vector Calculus in ℝ ^3; source L11154 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Example 14.27. Let us work out the exterior derivatives of arbitrary 1-forms and 2-forms on <span class="math inline">\(\mathbb { R } ^ { 3 }\)</span> . Any smooth 1-form can be written <span class="math display">\[ \omega = P d x + Q d y + R d z \]</span> for some smooth functions P; Q; R. Using (14.19) and the fact that the wedge product of any 1-form with itself is zero, we compute <span class="math display">\[ \begin{array}{l} d \omega = d P \wedge d x + d Q \wedge d y + d R \wedge d z \\ \qquad = \left(\frac {\partial P}{\partial x} d x + \frac {\partial P}{\partial y} d y + \frac {\partial P}{\partial z} d z\right) \wedge d x + \left(\frac {\partial Q}{\partial x} d x + \frac {\partial Q}{\partial y} d y + \frac {\partial Q}{\partial z} d z\right) \wedge d y \\ \qquad + \left(\frac {\partial R}{\partial x} d x + \frac {\partial R}{\partial y} d y + \frac {\partial R}{\partial z} d z\right) \wedge d z \\ \qquad = \left(\frac {\partial Q}{\partial x} - \frac {\partial P}{\partial y}\right) d x \wedge d y + \left(\frac {\partial R}{\partial x} - \frac {\partial P}{\partial z}\right) d x \wedge d z \\ \qquad + \left(\frac {\partial R}{\partial y} - \frac {\partial Q}{\partial z}\right) d y \wedge d z. \end{array} \]</span> on <span class="math inline">\(\mathbb { R } ^ { 3 }\)</span> can be written <span class="math display">\[ \eta = u d x \wedge d y + v d x \wedge d z + w d y \wedge d z. \]</span> computation shows that <span class="math display">\[ d \eta = \left(\frac {\partial u}{\partial z} - \frac {\partial v}{\partial y} + \frac {\partial w}{\partial x}\right) d x \wedge d y \wedge d z. \]</span> vector calculus operators on <span class="math inline">\(\mathbb { R } ^ { n }\)</span> : the (Euclidean) gradient of a function <span class="math inline">\(f \in C ^ { \infty } ( \mathbb { R } ^ { n } )\)</span> and divergence of a vector field <span class="math inline">\(X \in { \mathfrak { X } } ( \mathbb { R } ^ { n } )\)</span> f = _ {i = 1} ^ {n} , X = _ {i = 1} ^ {n} . <span class="math display">\[ In addition, in the case $n = 3$ , the curl of a vector field $X \in \mathcal { X } \left( \mathbb { R } ^ { 3 } \right)$ is defined by (11.26). It is interesting to note that the components of the 2-form d! in the preceding example are exactly the components of the curl of the vector field with components $( P , Q , R )$ (except perhaps in a different order and with different signs). Similarly, but for signs and ordering of terms, there is a strong analogy between the formula for $d \eta$ and the divergence of a vector field. These analogies can be made precise in the following way. The Euclidean metric on $\mathbb { R } ^ { 3 }$ yields an index-lowering isomorphism [ $\mathcal { X } ( \mathbb { R } ^ { 3 } ) $ $\Omega ^ { 1 } \left( \mathbb { R } ^ { 3 } \right)$ . Interior multiplication yields another map $\beta \colon \mathfrak { X } ( \mathbb { R } ^ { 3 } ) \Omega ^ { 2 } ( \mathbb { R } ^ { 3 } )$ as follows: \]</span> <span class="math inline">\(T M\)</span> to <span class="math inline">\(\Lambda ^ { 2 } T ^ { * } \mathbb { R } ^ { 3 }\)</span> . It is a bundle because it is injective and both <span class="math inline">\(T M\)</span> and <span class="math inline">\(\Lambda ^ { 2 } T ^ { * } \mathbb { R } ^ { 3 }\)</span> are bundles of rank 3. Similarly, we define bundle isomorphism <span class="math inline">\(C ^ { \infty } ( \mathbb { R } ^ { 3 } ) \Omega ^ { 3 } ( \mathbb { R } ^ { 3 } )\)</span> by <span class="math display">\[ * (f) = f d x \wedge d y \wedge d z.\tag{14.26} \]</span> all of these operators are summarized in the following diagram: <span class="math display">\[ \begin{array}{c} C ^ {\infty} \left(\mathbb {R} ^ {3}\right) \xrightarrow {\text { grad }} \mathfrak {X} \left(\mathbb {R} ^ {3}\right) \xrightarrow {\text { curl }} \mathfrak {X} \left(\mathbb {R} ^ {3}\right) \xrightarrow {\text { div }} C ^ {\infty} \left(\mathbb {R} ^ {3}\right) \\ \Biggl \downarrow \text { Id } \qquad \qquad \Biggl \downarrow_ {\flat} \qquad \qquad \Biggl \downarrow_ {\beta} \qquad \qquad \Biggl \downarrow_ {*} \\ \Omega^ {0} \left(\mathbb {R} ^ {3}\right) \xrightarrow [ d ]{} \Omega^ {1} \left(\mathbb {R} ^ {3}\right) \xrightarrow [ d ]{} \Omega^ {2} \left(\mathbb {R} ^ {3}\right) \xrightarrow [ d ]{} \Omega^ {3} \left(\mathbb {R} ^ {3}\right). \end{array}\tag{14.27} \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Neither pinned Mathlib nor current H contains a manifold differential-form exterior-derivative API. Searches find no smooth <code>DifferentialForm</code> type with <code>d</code>, no Cartan formula, and no Lie-derivative/exterior-derivative package; the existing vector-space alternating maps and topological alternating-map bundle are only prerequisites. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u040" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u040">Proposition 14.29</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U040</code> · Ch. 14, § An Invariant Formula for the Exterior Derivative; source L11212 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 14.29 (Exterior Derivative of a 1-Form). For any smooth 1-form ! and smooth vector fields X and <span class="math inline">\(Y\)</span> , <span class="math display">\[ d \omega (X, Y) = X (\omega (Y)) - Y (\omega (X)) - \omega ([ X, Y ]).\tag{14.28} \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Neither pinned Mathlib nor current H contains a manifold differential-form exterior-derivative API. Searches find no smooth <code>DifferentialForm</code> type with <code>d</code>, no Cartan formula, and no Lie-derivative/exterior-derivative package; the existing vector-space alternating maps and topological alternating-map bundle are only prerequisites. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u041" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u041">Proposition 14.30</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U041</code> · Ch. 14, § An Invariant Formula for the Exterior Derivative; source L11234 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Let <span class="math inline">\(M\)</span> be a smooth <span class="math inline">\(n\)</span>-manifold with or without boundary, <span class="math inline">\((E_{i})\)</span> a smooth local frame and <span class="math inline">\((\varepsilon^{i})\)</span> the dual coframe. Define <span class="math inline">\(b^{i}_{jk}\)</span> and <span class="math inline">\(c^{i}_{jk}\)</span> by <span class="math display">\[ d\varepsilon^{i} = \sum_{j&lt;k} b^{i}_{jk}\,\varepsilon^{j} \wedge \varepsilon^{k}, \qquad [E_{j},E_{k}] = c^{i}_{jk}E_{i}. \]</span> Then <span class="math inline">\(b^{i}_{jk} = -c^{i}_{jk}\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Neither pinned Mathlib nor current H contains a manifold differential-form exterior-derivative API. Searches find no smooth <code>DifferentialForm</code> type with <code>d</code>, no Cartan formula, and no Lie-derivative/exterior-derivative package; the existing vector-space alternating maps and topological alternating-map bundle are only prerequisites. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u042" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u042">Proposition 14.32</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U042</code> · Ch. 14, § An Invariant Formula for the Exterior Derivative; source L11246 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>(Invariant Formula for the Exterior Derivative). Let <span class="math inline">\(M\)</span> be a smooth manifold with or without boundary and <span class="math inline">\(\omega \in \Omega^{k}(M)\)</span>. For any smooth vector fields <span class="math inline">\(X_{1},\dots,X_{k+1}\)</span> on <span class="math inline">\(M\)</span>, <span class="math display">\[ d\omega(X_{1},\dots,X_{k+1}) = \sum_{1 \leq i \leq k+1} (-1)^{i-1} X_{i}\big(\omega(X_{1},\dots,\widehat{X}_{i},\dots,X_{k+1})\big) + \sum_{1 \leq i &lt; j \leq k+1} (-1)^{i+j} \omega\big([X_{i},X_{j}],X_{1},\dots,\widehat{X}_{i},\dots,\widehat{X}_{j},\dots,X_{k+1}\big), \tag{14.29} \]</span> the hats indicating omitted arguments.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Neither pinned Mathlib nor current H contains a manifold differential-form exterior-derivative API. Searches find no smooth <code>DifferentialForm</code> type with <code>d</code>, no Cartan formula, and no Lie-derivative/exterior-derivative package; the existing vector-space alternating maps and topological alternating-map bundle are only prerequisites. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u043" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u043">Proposition 14.33</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U043</code> · Ch. 14, § Lie Derivatives of Differential Forms; source L11320 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Suppose <span class="math inline">\(M\)</span> is a smooth manifold, <span class="math inline">\(V \in \mathfrak{X}(M)\)</span> and <span class="math inline">\(\omega, \eta \in \Omega^{*}(M)\)</span>. Then <span class="math display">\[ \mathcal{L}_{V}(\omega \wedge \eta) = (\mathcal{L}_{V}\omega) \wedge \eta + \omega \wedge (\mathcal{L}_{V}\eta). \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Neither pinned Mathlib nor current H contains a manifold differential-form exterior-derivative API. Searches find no smooth <code>DifferentialForm</code> type with <code>d</code>, no Cartan formula, and no Lie-derivative/exterior-derivative package; the existing vector-space alternating maps and topological alternating-map bundle are only prerequisites. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u044" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u044">Theorem 14.35</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U044</code> · Ch. 14, § Lie Derivatives of Differential Forms; source L11330 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 14.35 (Cartan’s Magic Formula). On a smooth manifold M; for any smooth vector field V and any smooth differential form !, <span class="math display">\[ \mathcal {L} _ {V} \omega = V \lrcorner (d \omega) + d (V \lrcorner \omega).\tag{14.32} \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Neither pinned Mathlib nor current H contains a manifold differential-form exterior-derivative API. Searches find no smooth <code>DifferentialForm</code> type with <code>d</code>, no Cartan formula, and no Lie-derivative/exterior-derivative package; the existing vector-space alternating maps and topological alternating-map bundle are only prerequisites. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c14-u045" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c14-u045">Corollary 14.36</h3>
+<div class="unit-meta">
+<p><code>FC08-C14-U045</code> · Ch. 14, § Lie Derivatives of Differential Forms; source L11364 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary 14.36 (The Lie Derivative Commutes with d). <span class="math inline">\(I f V\)</span> is a smooth vector field and ! is a smooth differential form, then <span class="math display">\[ \mathcal {L} _ {V} (d \omega) = d (\mathcal {L} _ {V} \omega). \]</span> Proof.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Neither pinned Mathlib nor current H contains a manifold differential-form exterior-derivative API. Searches find no smooth <code>DifferentialForm</code> type with <code>d</code>, no Cartan formula, and no Lie-derivative/exterior-derivative package; the existing vector-space alternating maps and topological alternating-map bundle are only prerequisites. Strict whole-row semantics reject proper subsets, missing representation bridges, and reconstruction of substantive source theorems from generic ingredients.</p>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/dzackgarza\.github\.io\/lean-categories\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Generated from the project’s reference notes by <code>site/build.py</code>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>The Lean is the authority; where this site differs, the Lean is right.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

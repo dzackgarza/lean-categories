@@ -1,0 +1,2605 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>FC10 — Jean-Pierre Serre, Local Fields (1979) – lean-categories · corpus</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-7335da993d57b01553edc5728a7cb5aa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">lean-categories · corpus</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../coverage.html" aria-current="page"> 
+<span class="menu-text">Every book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../corpus.html"> 
+<span class="menu-text">Reading list</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../catalogues/index.html"> 
+<span class="menu-text">Catalogues</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/dzackgarza/lean-categories"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc10/index.html">FC10</a></li><li class="breadcrumb-item"><a href="../../sources/fc10/c13.html">FC10 — Jean-Pierre Serre, Local Fields (1979)</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="sidebar-tools-main">
+    <div id="quarto-search" class="quarto-navigation-tool px-1" title="Search"></div>
+</div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Graduate mathematics, and what Lean has of it</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../coverage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Every book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../corpus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational source corpus</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../status.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus status</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Sources</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC01 Dummit Foote</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/ai.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01 Appendix I — Cartesian Products and Zorn’s Lemma</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC03</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC03 Riehl Category Theory in Context</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Categories, Functors, and Natural Transformations (pp.&nbsp;1–48)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Representability and the Yoneda Lemma (pp.&nbsp;49–72)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Limits and Colimits (pp.&nbsp;73–114)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Adjunctions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Monads and Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. All Concepts are Kan Extensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/ce.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Epilogue: Theorems in Category Theory</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC04</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC04 Atiyah Macdonald</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Rings and Ideals (pp.&nbsp;1–9)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Modules (pp.&nbsp;17–30)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Rings and Modules of Fractions (pp.&nbsp;36–42)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Primary Decomposition (pp.&nbsp;50–54)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Integral Dependence and Valuations (pp.&nbsp;59–66)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Chain Conditions (pp.&nbsp;74–77)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Noetherian Rings (pp.&nbsp;80–83)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Artin Rings (pp.&nbsp;89–90)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Discrete Valuation Rings and Dedekind Domains (pp.&nbsp;93–98)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. Completions (pp.&nbsp;100–112)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Dimension Theory (pp.&nbsp;116–124)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC05</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC05 Weibel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Chain Complexes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Derived Functors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Tor and Ext</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homological Dimension</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Spectral Sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Group Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Lie Algebra Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Simplicial Methods in Homological Algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Hochschild and Cyclic Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. The Derived Category</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Category Theory Language</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC06</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC06 Hartshorne</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter I: Varieties</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter II: Schemes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter III: Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter IV: Curves</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter V: Surfaces</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC07</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC07 Hatcher</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 0. Some Underlying Geometric Notions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. The Fundamental Group</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homotopy Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix. Topology of Cell Complexes</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC08 Lee</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c22.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC09 Neukirch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC10 Serre Local Fields</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c13.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc11/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC11 Peters Sterk</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc12/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC12 Beauville</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc13/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC13</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC13 Matsumura</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Front matter — conventions and terminology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Commutative rings and modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Prime ideals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Properties of extension rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Valuation rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Dimension theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Regular sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Regular rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Flatness revisited</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Derivations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. I-smoothness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Applications of complete local rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Tensor products, direct and inverse limits</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix B. Some homological algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix C. The exterior algebra</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc14/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC14</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC14 Humphreys</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Basic Concepts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Semisimple Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Root Systems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Isomorphism and Conjugacy Theorems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Existence Theorem</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Representation Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Chevalley Algebras and Groups</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc15/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC15</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Classification of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Polynomial invariants of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Affine reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Coxeter groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Special cases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Hecke algebras and Kazhdan–Lusztig polynomials</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Complements</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc16/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC16</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Algebraic Geometry</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Affine Algebraic Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Homogeneous Spaces</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Characteristic 0 Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Semisimple and Unipotent Elements</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Solvable Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VIII. Borel Subgroups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IX. Centralizers of Tori</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter X. Structure of Reductive Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XI. Representations and Classification of Semisimple Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XII. Survey of Rationality Properties and Appendix</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../catalogues/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Definition catalogues</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">catalogues/*.md</span>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Notes and audits</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">notes/*.md</span>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc10/index.html">FC10</a></li><li class="breadcrumb-item"><a href="../../sources/fc10/c13.html">FC10 — Jean-Pierre Serre, Local Fields (1979)</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">FC10 — Jean-Pierre Serre, Local Fields (1979)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>FC10 — Serre, <em>Local Fields</em>.</p>
+<p>This chapter contains 8 definitions, 2 theorems, 15 propositions, 1 lemma, 11 corollaries, 2 examples and 4 conventions.</p>
+<p>Of the 43 statements checked against Lean, 0 are formalized somewhere and 43 are not.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 28%">
+<col style="width: 28%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Status</th>
+<th style="text-align: right;">Statements</th>
+<th style="text-align: right;">Share</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="route-unmatched">not formalized</span></td>
+<td style="text-align: right;">43</td>
+<td style="text-align: right;">100%</td>
+<td>A documented search found no Lean statement of it anywhere.</td>
+</tr>
+<tr class="even">
+<td><strong>checked in total</strong></td>
+<td style="text-align: right;"><strong>43</strong></td>
+<td style="text-align: right;"></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Which versions of Lean and Mathlib were searched
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li>Canonical source block: FC10 Serre Chapter 13, “Local Class Field Theory”, <code>FC10-C13-U001</code>–<code>FC10-C13-U043</code>, 43 units, in exact canonical order from <a href="../../sources/fc10/">Foundational corpus units FC10 Serre Local Fields</a>.</li>
+<li>Project code baseline: <code>A=3b2239e161592472b34e02ad3b7da308f9ce7280</code>. The live repository moved only documentation/coordination files after A during this audit; no Lean source changed, so A is the semantic project baseline.</li>
+<li>Pinned Mathlib: <code>P=db584cd6d46c92f209a44c0f1c829460d327499d</code>; current Mathlib checked at <code>H=71a80585ee495fc24472fd0eaffc89d94e4fd8d6</code>. Strict bundle semantics were used: partial ingredients never earn a route.</li>
+<li>External CFT reference where cited: <code>ClassFieldTheory@ccc3323c6750abca25b49b35106f54eb3a398509</code> (Apache-2.0). Open Mathlib class-formation reference where cited: PR <a href="https://github.com/leanprover-community/mathlib4/pull/42687">#42687</a> at <a href="https://github.com/leanprover-community/mathlib4/commit/a40561e249ebf45d2870f5d9d45bc2eb4d80b242"><code>a40561e249ebf45d2870f5d9d45bc2eb4d80b242</code></a> (Apache-2.0).</li>
+<li>Current Mathlib still marks higher ramification groups in lower numbering as TODO. Open/current local class-field-theory work does not supply a finished reciprocity/existence layer; unresolved/sorry-tainted downstream claims were not credited.</li>
+<li>Route totals for C13: <code>mathlib</code> 0, <code>project-existing</code> 0, <code>package-import</code> 0, <code>reference-port</code> 0, <code>unmatched</code> 43.</li>
+</ul>
+</div>
+</div>
+</div>
+<section id="fc10-c13-u001" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u001">Proposition 1</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U001</code> · Chapter XIII, source L6754-L6758 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 1. Let <span class="math inline">\(\mathbf { A } ^ { \prime }\)</span> bethe subgroup of A consisting of those <span class="math inline">\(a \in \mathbb { A }\)</span> for which there is a positive integernsatisfying <span class="math inline">\(\{ 1 + \mathfrak { F } + \cdots + \mathfrak { F } ^ { n - 1 } ) a = 0 ,\)</span> Then <span class="math display">\[ \mathbf { H } ^ { \mathbf { i } } ( \mathfrak { g } , \mathbf { A } ) = \mathbf { A } ^ { \prime } / ( \mathbf { F } - \mathbf { 1 } ) \mathbf { A } . \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u002" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u002">Corollary: Corollary</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U002</code> · Chapter XIII, source L6764 · after <a href="c12.html#fc10-c12-u012"><code>FC10-C12-U012</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary. The character group <span class="math inline">\(\mathbf { X ( 9 ) }\)</span> of <span class="math inline">\(\mathfrak { g }\)</span> can be identified with <span class="math inline">\(\mathbf { Q } / \mathbf { Z }\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u003" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u003">Proposition 2</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U003</code> · Chapter XIII, source L6776 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 2.If A is either a divisible group or a torsion group,then <span class="math inline">\(\mathrm { H } ^ { 2 } \{ { \mathfrak { g } } , \mathrm { A } \} = 0 .\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u004" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u004">Convention / notation</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U004</code> · Chapter XIII, source L6796 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Finally,suppose A is divisible.If <span class="math inline">\(n \geq \sharp\)</span> ,denote by <span class="math inline">\(\pmb { n } ^ { \hat { \pmb { A } } }\)</span> the kernel of multiplication by n on A.The exact sequence <span class="math display">\[ 0 \to {}_{n}A \to A \xrightarrow{\ n\ } A \to 0 \]</span> is then available.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u005" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u005">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U005</code> · Chapter XIII, source L6812 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>We denote by <span class="math inline">\(z\)</span> the completion of <span class="math inline">\(\mathbf { z }\)</span> for the topology of subgroups of finite index； it is a compact totally disconnected group,equal to the projective limit of the groups <span class="math inline">\(\mathbb { Z } / n \mathbb { Z } .\)</span> By decomposing these groups into their <span class="math inline">\(p\)</span> primary components,one sees that <span class="math inline">\(\pmb { \mathcal { Z } }\)</span> is canonically isomorphic to the product <span class="math inline">\(\prod z _ { p }\)</span> <span class="math inline">\(p\)</span> running through the prime numbers).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u006" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u006">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U006</code> · Chapter XIII, source L6814 · after <a href="#fc10-c13-u005"><code>FC10-C13-U005</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Set <span class="math inline">\({ \mathfrak { g } } = { \hat { \mathbf { Z } } }\)</span> and <span class="math inline">\({ \mathfrak { g } } _ { n } = n { \hat { \mathbf { Z } } }\)</span> ; then <span class="math inline">\({ \mathfrak { g } } = { \mathrm { l i m } } { \mathfrak { g } } / { \mathfrak { g } } _ { n }\)</span> and every open subgroup of <span class="math inline">\(\mathfrak { G }\)</span> coincides with some <span class="math inline">\(\mathfrak { g } _ { \mathfrak { n } }\)</span> LetA be topological <span class="math inline">\({ \mathfrak { g } }\)</span> module (in the sense of Chap.X,$3). The canonical generator <span class="math inline">\({ \bf 1 \in Z }\)</span> defines an automorphism <span class="math inline">\(\boldsymbol { \mathsf { F } }\)</span> ofA;to say that A isa topological <span class="math inline">\(\mathfrak { g }\)</span> -module then means that for each <span class="math inline">\(a \in \mathsf { A }\)</span> there is a positive integer <span class="math inline">\(\pmb { n }\)</span> such that <span class="math inline">\(\mathbb { F } ^ { n } a = a .\)</span> Thus the group A is the union of its subgroups <span class="math inline">\(\mathsf { A } ^ { \mathfrak { g } _ { m } }\)</span> ,the latter being <span class="math inline">\({ \mathfrak { g } } / { \mathfrak { g } } _ { n }\)</span> modules.The cohomology groups <span class="math inline">\(\alpha f g\)</span> with values in Aare defined by the formula <span class="math display">\[ H^{q}(\mathfrak{g}, A) = \varinjlim_{n} H^{q}(\mathfrak{g}/\mathfrak{g}_{n}, A^{\mathfrak{g}_{n}}). \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u007" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u007">Convention / notation</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U007</code> · Chapter XIII, source L6851 · after <a href="#fc10-c13-u006"><code>FC10-C13-U006</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>such that <span class="math inline">\(f _ { s } \{ 1 \} = s .\)</span> If the group <span class="math inline">\(\mathfrak { g }\)</span> is denoted multiplicatively,we will write <span class="math inline">\(s ^ { \nu }\)</span> instead of <span class="math inline">\(f _ { s } ( \nu ) , \nu \in \hat { \mathcal { Z } }\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u008" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u008">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U008</code> · Chapter XIII, source L6853 · after <a href="#fc10-c13-u006"><code>FC10-C13-U006</code></a>, <a href="#fc10-c13-u007"><code>FC10-C13-U007</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A quasi-finite field structure on a field <span class="math inline">\(k\)</span> consists of a chosen <span class="math inline">\(F\in G(k_s/k)\)</span> such that <span class="math inline">\(k\)</span> is perfect and the map <span class="math inline">\(\widehat{\mathbf Z}\to G(k_s/k)\)</span>, <span class="math inline">\(\nu\mapsto F^{\nu}\)</span>, is an isomorphism.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u009" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u009">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U009</code> · Chapter XIII, source L6866 · after <a href="#fc10-c13-u008"><code>FC10-C13-U008</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>ExAMPLES OF QUASI-FINITE FIELDS.a) Finite fields.If <span class="math inline">\(k\)</span> has <span class="math inline">\(q\)</span> elements,take <span class="math inline">\(\mathbf { F }\)</span> to be the“Frobenius substitution” <span class="math inline">\(x \mapsto x ^ { q }\)</span> (cf.Bourbaki,Alg.,Chap.V,$11).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u010" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u010">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U010</code> · Chapter XIII, source L6868 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>b)Let <span class="math inline">\(\mathbf { c }\)</span> be an algebraically closed field of characteristic zero,and let <span class="math inline">\(k = C ( \{ \tilde { \Pi } \} )\)</span> ,the power series field in one variable.For every integer <span class="math inline">\(n \geq 1\)</span> <span class="math inline">\(k _ { n } = C \{ ( { \mathbb { T } } ^ { 1 / n } ) \}\)</span> isacyclic extension of degreenof <span class="math inline">\(k ,\)</span> and the union <span class="math inline">\(k _ { s }\)</span> ofthe <span class="math inline">\(k _ { \pi }\)</span> is an algebraic closure of <span class="math inline">\(k\)</span> (cf.Chap.IV,prop.8).A generator <span class="math inline">\(\mathbf { F } _ { \mathfrak { n } }\)</span> of <span class="math inline">\(\mathrm { G } \{ \boldsymbol { k } _ { n } / k \}\)</span> is defined by <span class="math inline">\(\mathbf { T } ^ { \downarrow / \pi } \mapsto a _ { n } \mathbf { T } ^ { 1 / n }\)</span> where <span class="math inline">\(a _ { n }\)</span> is a primitive nth root of unity. For the <span class="math inline">\({ \widehat { \mathbf { F } } } _ { \mathfrak { n } }\)</span> to fit together and define an F,the <span class="math inline">\(\pmb { a } _ { \pmb { \pi } }\)</span> must be chosen to satisfy <span class="math inline">\(\smash { ( a _ { m n } ) ^ { n } = a _ { m } }\)</span> which ispossible (cf.Bourbaki,loc.cit.）；when <span class="math inline">\(\Gamma = \mathbf { C }\)</span> one can take <span class="math inline">\(a _ { n } = \exp \{ 2 \pi i / n \}\)</span> Thus <span class="math inline">\(k\)</span> is quasi-finite.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u011" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u011">Proposition 3</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U011</code> · Chapter XIII, source L6872 · after <a href="#fc10-c13-u008"><code>FC10-C13-U008</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 3.Letk bea quasi-finite field,andletFbe the given free generator of its Galois group.Let <span class="math inline">\(k ^ { \prime } / k\)</span> bea finite extension of degreen,and let <span class="math inline">\(\mathbf { F } ^ { \prime } = \mathbf { F } ^ { \prime \prime }\)</span> Then <span class="math inline">\(\mathbb { F } ^ { \prime } \in \operatorname { G } \{ \mathbb { k } _ { s } / \mathbb { k } ^ { \prime } \} ,\)</span> and <span class="math inline">\(\mathbf { F } ^ { \prime }\)</span> provides <span class="math inline">\(k ^ { \prime }\)</span> witha structure of quasi-finite feld.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u012" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u012">Proposition 4</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U012</code> · Chapter XIII, source L6878-L6880 · after <a href="#fc10-c13-u008"><code>FC10-C13-U008</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 4. Let <span class="math inline">\(k\)</span> be a quasi-finite field,F the free generator of its Galois group <span class="math inline">\({ \mathfrak { g } } = { \mathrm { G } } ( { k _ { \mathrm { s } } } / { k } )\)</span> a) <span class="math inline">\(H \ w \in K _ { s } ^ { \ast }\)</span> is a root of unity,there exists <span class="math inline">\(y \in k _ { s } ^ { * }\)</span> such that <span class="math inline">\(w = y ^ { { \mathsf { F } } - 1 }\)</span> (i.e., <span class="math inline">\(w = \mathbf { F } \{ y \} / y \}\)</span> b）if <span class="math inline">\(k\)</span> has characteristic <span class="math inline">\(\neq 0\)</span> thehomomorphism <span class="math inline">\(\mathfrak { F } - 1 : \mathfrak { k } _ { s } \to \mathfrak { k } _ { s }\)</span> is surjective.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u013" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u013">Convention / notation</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U013</code> · Chapter XIII, source L6886 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>be identified with <span class="math inline">\(\mathbf { Q } / \mathbf { Z }\)</span> This givesa homomorphism <span class="math inline">\(\mathbf { \delta B _ { \mathbf { K } } } \to \mathbf { Q } / \mathbf { Z }\)</span> which will be denoted <span class="math inline">\(\dot { \bar { \mathbf { u v } } } _ { \mathbf { x } }\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u014" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u014">Proposition 5</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U014</code> · Chapter XIII, source L6936 · after <a href="c10.html#fc10-c10-u022"><code>FC10-C10-U022</code></a>, <a href="#fc10-c13-u008"><code>FC10-C13-U008</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 5.The Brauer group of a quasi-finite field is zero.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u015" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u015">Corollary: Corollary</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U015</code> · Chapter XIII, source L6940 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary. If <span class="math inline">\(k ^ { \prime }\)</span> is <span class="math inline">\(^ a\)</span> finiteextension of aquasi-finite field <span class="math inline">\(k _ { i }\)</span> then the norm map <span class="math inline">\(N : k ^ { \prime \star } \to k ^ { * }\)</span> is surjective.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u016" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u016">Proposition 6</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U016</code> · Chapter XIII, source L6888 · after <a href="c12.html#fc10-c12-u013"><code>FC10-C12-U013</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 6.The homomorphism <span class="math inline">\(\mathbf { i n v _ { \mathbf { K } } } : \mathbf { B _ { \mathbf { K } } } \to \mathbf { Q } / \mathbf { Z }\)</span> is an isomorphism.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u017" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u017">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U017</code> · Chapter XIII, source L6898 · after <a href="#fc10-c13-u016"><code>FC10-C13-U016</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The invariant map <span class="math inline">\(\operatorname{inv}_K:B_K\to\mathbf Q/\mathbf Z\)</span> is the composite <span class="math inline">\(\gamma\circ\delta^{-1}\circ\beta\circ\alpha^{-1}\)</span> arising from <span class="math inline">\(B_K\cong H^2(\mathfrak g,K_{nr}^*)\to H^2(\mathfrak g,\mathbf Z)\to H^1(\mathfrak g,\mathbf Q/\mathbf Z)\to\mathbf Q/\mathbf Z\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u018" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u018">Proposition 7</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U018</code> · Chapter XIII, source L6904-L6908 · after <a href="#fc10-c13-u016"><code>FC10-C13-U016</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 7. Let L bea finite extensionof <span class="math inline">\(\mathbf { \check { K } }\)</span> of degreen, and let $ _ { / } : _ { } $ <span class="math inline">\(\ B _ { \mu }\)</span> be the canonical homomorphism of <span class="math inline">\(\mathbf { B _ { K } }\)</span> into <span class="math inline">\(\mathbf { B _ { \lambda } }\)</span> (cf.&nbsp;Chap. X, <span class="math inline">\(\ S 4\)</span> aswell as Chap. XI, <span class="math inline">\(\ S \ S \ S , 2 )\)</span> .Then <span class="math display">\[ \mathbf { i n v _ { k } } \circ \mathbf { R e s } _ { \mathbf { k } / \mathbf { k } } = n , \mathbf { i n v _ { k } } . \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u019" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u019">Corollary 1</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U019</code> · Chapter XIII, source L6988 · after <a href="#fc10-c13-u018"><code>FC10-C13-U018</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary 1.Keeping the hypotheses and notation of prop.7,a necessary and sufficient condition foran element <span class="math inline">\(\pmb { a } \in \mathbb { B } _ { \mathbb { K } }\)</span> to be split byLis <span class="math inline">\(n a = 0 .\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u020" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u020">Corollary 2</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U020</code> · Chapter XIII, source L6992 · after <a href="#fc10-c13-u016"><code>FC10-C13-U016</code></a>, <a href="#fc10-c13-u018"><code>FC10-C13-U018</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary 2. Suppose <span class="math inline">\(L / \mathsf { K }\)</span> is Galois.Then the isomorphism <span class="math inline">\(\mathbf { i n v _ { K } } : \mathbf { B _ { K } } \to \mathbf { Q } / \mathbf { Z }\)</span> maps the subgroup <span class="math inline">\(\mathbb { H } ^ { 2 } ( \mathbb { I } _ { - } / \mathbb { K } )\)</span> f <span class="math inline">\(\mathfrak { B } _ { \mathtt { K } }\)</span> onto the subgroup <span class="math inline">\(( \mathbf { f } / n ) \mathbf { Z } / \mathbf { Z }\)</span> f <span class="math inline">\(\mathbf { Q } / \mathbf { Z }\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u021" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u021">Corollary 3</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U021</code> · Chapter XIII, source L6996 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary 3.Let <span class="math inline">\(\mathbf { D }\)</span> beacentral division algebra over <span class="math inline">\(\mathbf { \delta K }\)</span> ofrank <span class="math inline">\(n ^ { 2 }\)</span> andlet <span class="math inline">\(a \in \mathbb { B } _ { \mathbb { K } }\)</span> bethe corresponding element of the Brauer group.Thena has order <span class="math inline">\(\pmb { n }\)</span> in <span class="math inline">\(\mathbf { B _ { K } }\)</span> ,and everyextension of <span class="math inline">\(\mathbf { K }\)</span> ofdegreencanbeembedded in D.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u022" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u022">Theorem 1</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U022</code> · Chapter XIII, source L7028 · after <a href="c11.html#fc10-c11-u004"><code>FC10-C11-U004</code></a>, <a href="#fc10-c13-u008"><code>FC10-C13-U008</code></a>, <a href="#fc10-c13-u016"><code>FC10-C13-U016</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 1.The preceding formation, together with the <span class="math inline">\(\dot { \mathfrak { s m } } \mathfrak { v } _ { \mathtt { E } }\)</span> is a class formation (cf.Chap.X1,$2).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u023" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u023">Proposition 8</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U023</code> · Chapter XIII, source L7099-L7103 · after <a href="#fc10-c13-u022"><code>FC10-C13-U022</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 8.For every integer n, the cup product with <span class="math inline">\(u _ { \mathrm { F } ; \mathrm { E } }\)</span> defines an isomorphism <span class="math display">\[ \hat { \mathbf { H } } ^ { n } ( \mathbf { G } _ { \mathrm { F / E } } , \mathbf { Z } ) \to \hat { \mathbf { H } } ^ { n + 2 } ( \mathbf { G } _ { \mathrm { F / E } } , \mathbf { F } ^ { * } ) . \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u024" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u024">Corollary: Corollary，The cup product with <span class="math inline">\(\boldsymbol { u }  { \mathbb { F } / \Xi }\)</span>…</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U024</code> · Chapter XIII, source L7109-L7115 · after <a href="#fc10-c13-u023"><code>FC10-C13-U023</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary，The cup product with <span class="math inline">\(\boldsymbol { u } _ { \mathbb { F } / \Xi }\)</span> defines an isomorphism <span class="math display">\[ \theta _ { \mathrm { F } i \mathrm { E } } \colon \mathbf { G } _ { \mathrm { F } j \mathrm { E } } ^ { a } \to \mathrm { E } ^ { * } / \mathrm { N F } ^ { * } \quad ( \mathrm { N } \ d e n o t i n g \ t h e \ n o r m \ i n \ \mathrm { F } / \mathrm { E } ) . \]</span> Inparticular, <span class="math inline">\(( \mathrm { E } ^ { * } \colon \mathrm { N F } ^ { * } ) = \left[ \mathrm { F } \colon \mathrm { E } \right] i f \mathrm { ~ F } / \mathrm { E }\)</span> is an abelian extension.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u025" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u025">Proposition 9</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U025</code> · Chapter XIII, source L7119 · after <a href="#fc10-c13-u024"><code>FC10-C13-U024</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition9.If F/E is a finite separable extension,then <span class="math inline">\(\mathbf { N F ^ { * } }\)</span> has finite index in <span class="math inline">\(\mathbf { E } ^ { * }\)</span> ；thisindexdivides[F:E],andisequal toit ifand onlyifF/Eis abelian.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u026" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u026">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U026</code> · Chapter XIII, source L7127 · after <a href="#fc10-c13-u024"><code>FC10-C13-U024</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a finite abelian extension <span class="math inline">\(F/E\)</span>, let <span class="math inline">\(\theta_{F/E}:G_{F/E}\to E^*/N_{F/E}F^*\)</span> be the class-formation isomorphism. Its inverse is the reciprocity isomorphism, and for <span class="math inline">\(x\in E^*\)</span> one writes <span class="math inline">\(\{x,F/E\}=\theta_{F/E}^{-1}(\bar x)\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u027" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u027">Corollary: Corollary</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U027</code> · Chapter XIII, source L7141 · after <a href="#fc10-c13-u026"><code>FC10-C13-U026</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary. Let <span class="math inline">\(\mathbf { \mathbb { F } } / \mathbf { \mathbb { E } }\)</span> be an abelian extension with Galois group G.Let <span class="math inline">\(\mathbf { U } _ { \Xi } \subset \mathbf { E } ^ { \ast }\)</span> be the group of units of E.Then the reciprocity map <span class="math inline">\(\mathbf { E } ^ { * } \mathbf { G }\)</span> sends <span class="math inline">\(U _ { \mathbf { E } }\)</span> onto the inertia subgroup ofG.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u028" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u028">Proposition 10</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U028</code> · Chapter XIII, source L7046-L7049 · after <a href="#fc10-c13-u026"><code>FC10-C13-U026</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 10. Consider an extension <span class="math inline">\(\mathbf { F } \supset \mathbf { E } ^ { \prime } \supset \mathbf { E }\)</span> with F/E Galois.The <span class="math inline">\(g r o u p \mathbb { G } _ { \mathbb { F } / \mathbb { E } }\)</span> is a subgroup of <span class="math inline">\(\mathbf { G } _ { \mathbf { F } / \mathbf { E } }\)</span> a)If <span class="math inline">\(x \in \mathbb { E } ^ { \prime * }\)</span> and <span class="math inline">\(y = \Nu _ { \Xi ^ { \prime } i \in } ( x ) ,\)</span> then the image of <span class="math inline">\(\{ x , \mathbf { F } / \mathbf { E ^ { \prime } } \} \in \mathbf { G } _ { \mathbf { F } / \mathbf { E } } ^ { a } .\)</span> in <span class="math inline">\(\mathbf { G } _ { \mathbf { F } / \mathbf { E } } ^ { \pmb { \alpha } }\)</span> is equal to <span class="math inline">\(\{ y , \mathbf { F } / \mathbf { E } \}\)</span> b)If <span class="math inline">\(\boldsymbol { x } \in \mathbb { E } ^ { * }\)</span> ,the image of <span class="math inline">\(\{ x , \mathbf { F } / \mathbf { E } \} \in \mathbf { G } _ { \mathbf { F } / \mathbf { E } } ^ { a }\)</span> in <span class="math inline">\(G _ { \mathcal { F } j \mathbf { E } ^ { \prime } } ^ { \alpha }\)</span> under the transfer is equal to <span class="math inline">\(\{ x , \ F / \operatorname { E } ^ { \prime } \}\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u029" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u029">Proposition 11</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U029</code> · Chapter XIII, source L7051-L7055 · after <a href="#fc10-c13-u026"><code>FC10-C13-U026</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 11. 1f <span class="math inline">\(\mathbf { F } / \mathbf { E }\)</span> is a Galois extension and <span class="math inline">\(s \in \mathbb { G } _ { F / \ E }\)</span> ,then <span class="math display">\[ \{ s x , s F / s \mathbb { E } \} = s \circ \{ x , \mathbf { F } / \mathbb { E } \} \circ s ^ { - 1 } \qquad f o r \ a l l \ x \in \mathbb { E } ^ { * } . \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u030" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u030">Proposition 12</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U030</code> · Chapter XIII, source L7057 · after <a href="#fc10-c13-u026"><code>FC10-C13-U026</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 12.Consider an extension <span class="math inline">\(\mathbf { F } ^ { \prime } \supset \mathbf { F } \supset \mathbf { E }\)</span> with <span class="math inline">\(\mathbf { F } / \mathbf { E }\)</span> and <span class="math inline">\(\mathbf { F } ^ { \prime } / \mathbf { E }\)</span> Galois <span class="math inline">\(\ b { I f } \ b { x } \in \ b { \mathrm { E } } ^ { * }\)</span> then the imageof <span class="math inline">\(\{ { \boldsymbol { x } } , { \boldsymbol { \mathsf { F } } } ^ { \prime } / { \boldsymbol { \mathsf { E } } } \}\)</span> in <span class="math inline">\(\mathbb { G } _ { \mathtt { F } ; \mathtt { E } } ^ { a }\)</span> is equal to <span class="math inline">\(\{ \boldsymbol { x } , \boldsymbol { \mathsf { F } } / \boldsymbol { \mathbf { E } } \}\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u031" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u031">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U031</code> · Chapter XIII, source L7059 · after <a href="#fc10-c13-u030"><code>FC10-C13-U030</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>This last proposition allows us to define $ { ( x , F / E ) }$ fora Galois extension <span class="math inline">\(F / \frac { \pi } { L }\)</span> that is not finite;it also shows that we can confine ourselves to abelian extensions.When <span class="math inline">\(\mathbf { F }\)</span> is themaximal abelian extension <span class="math inline">\({ \mathfrak { E } } ^ { \alpha }\)</span> of E, we write <span class="math inline">\(\{ x , { \bar { \mathbf { \pi } } } / { \mathbf { E } } \}\)</span> instead <span class="math inline">\(\sigma _ { \mathrm { ~ } } ^ { \mathrm { ~ f ~ } } \{ x , \mathbb { E } ^ { a } / \mathbb { E } \}\)</span> ；it is an element of the Galois group <span class="math inline">\(\mathfrak { A } _ { \Xi } = \mathsf { G } \{ \mathbf { E } ^ { a } / \Xi \} .\)</span> The reciprocity map allows the identification of <span class="math inline">\(\mathfrak { Y } _ { \Xi }\)</span> with the Hausdorff completion of <span class="math inline">\(\mathbf { E } ^ { \ast }\)</span> forthe topology definedby the groups of norms (cf.Chap.XI, <span class="math inline">\(\ S 4 )\)</span> We will determine this topology in the next chapter,for the special case where <span class="math inline">\(R\)</span> is finite.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u032" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u032">Proposition 13</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U032</code> · Chapter XIII, source L7063-L7069 · after <a href="#fc10-c13-u008"><code>FC10-C13-U008</code></a>, <a href="#fc10-c13-u026"><code>FC10-C13-U026</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 13. Let <span class="math inline">\(L / \bar { \bf K }\)</span> be anunramified extension.If we identify the groups <span class="math inline">\(G _ { I / K }\)</span> and <span class="math inline">\(\mathbf { G } _ { \mathbf { f } ; \hat { \mathbf { K } } }\)</span> ,then <span class="math display">\[ ( x , \mathbf { L } / \mathbf { K } ) = \mathbf { F } _ { \mathbf { K } } ^ { v ( x ) } , \]</span> where <span class="math inline">\(\mathbf { F _ { K } }\)</span> denotes the canonical generator of <span class="math inline">\(\mathbf { G } _ { \mathbb { L } / \bar { \mathbf { K } } }\)</span> ,and where <span class="math inline">\(\mathfrak { v }\)</span> is the valuation of K.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u033" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u033">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U033</code> · Chapter XIII, source L7097 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>such that <span class="math inline">\(\dot { \mathrm { m } } \Psi _ { \mathrm { E } } ( u _ { \mathrm { F / E } } ) = \updownarrow / n _ { \ddag }\)</span> with <span class="math inline">\(n = \left[ \mathbf { F } : \mathbf { E } \right]\)</span> It is called the fundamental class of the extension <span class="math inline">\(F / \mathbb { E }\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u034" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u034">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U034</code> · Chapter XIII, source L7153 · after <a href="c01.html#fc10-c01-u072"><code>FC10-C01-U072</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>where <span class="math inline">\(\mathfrak { T } _ { \mathbb { K } }\)</span> is the inertia group of <span class="math inline">\({ \bf K } ^ { a } / { \bf K }\)</span> (defined by passage to the limit from the finite case).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u035" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u035">Proposition 14</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U035</code> · Chapter XIII, source L7183 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 14. For every <span class="math inline">\(q \in { \bf Z } , \hat { \bf H } ^ { q } ( { \bf G } , \hat { \bf L } _ { n r } ^ { * } ) = 0 .\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u036" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u036">Corollary 1</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U036</code> · Chapter XIII, source L7187 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary 1. The exact sequence <span class="math inline">\(0 \to { \hat { \mathbb { U } } } _ { n r } \to { \hat { \mathbb { L } } } _ { n r } ^ { * } \to { \mathbb { Z } } \to 0\)</span> defines an isomor-phismof <span class="math inline">\(\mathbf { G } ^ { a } = \hat { \mathbf { H } } ^ { - 2 } ( \mathbf { G } , \pmb { \mathbb { Z } } )\)</span> onto <span class="math inline">\(\hat { \mathbb { H } } ^ { - 1 } \{ \mathbb { G } , \mathbb { U } _ { n s } \}\)</span> ：</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u037" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u037">Corollary 2</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U037</code> · Chapter XIII, source L7193-L7201 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary 2. Let <span class="math inline">\(\pmb { \mathscr { s } } _ { \sharp } \in \mathbb { G }\)</span> and <span class="math inline">\(z _ { i } \in \sum _ { n r } ^ { * }\)</span> be elements such that <span class="math display">\[ \prod z _ { i } ^ { s _ { i } - 1 } = 1 . \]</span> <span class="math display">\[ T h e n \prod s _ { i } ^ { w ( z _ { i } ) } \equiv 1 \mathrm { ~ } i n \mathrm { ~ } G ^ { a } . \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u038" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u038">Corollary: Corollary</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U038</code> · Chapter XIII, source L7259-L7263 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary. <span class="math inline">\(L e t \ x \in K ^ { * }\)</span> y∈L*,s∈G be such that <span class="math display">\[ x = \mathbb { N } y , y ^ { \mathsf { F } - 1 } = \pi ^ { \mathsf { s } - 1 } , \pi \mathit { b e i n g ~ a ~ u n i f o r m i z e r ~ o f ~ } \hat { \mathsf { L } } _ { n r } . \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u039" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u039">Lemma 1</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U039</code> · Chapter XIII, source L7287 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Lemma 1. In order that an element <span class="math inline">\(\pmb { x }\)</span> <span class="math inline">\(\widehat { \mathbb { L } } _ { n r }\)</span> (resp.of <span class="math inline">\(\scriptstyle { \hat { \mathbf { K } } } _ { n r } \}\)</span> belong to L (resp. to K),it is necessary and sufficient that <span class="math inline">\(\mathbf { F } { \boldsymbol { x } } = { \boldsymbol { x } } .\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u040" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u040">Theorem 2</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U040</code> · Chapter XIII, source L7299-L7303 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 2 (Dwork).Let <span class="math inline">\(L / \kappa\)</span> bea totally ramified Galois extension,having abelian Galois group G.Suppose that the residue field <span class="math inline">\(\Re = \mathbb { L }\)</span> is quasi-finite. Let <span class="math inline">\(x \in \mathbb { K } ^ { * }\)</span> ; let <span class="math inline">\(y \in \hat { \mathbf { L } } _ { n y } ^ { * }\)</span> be such that <span class="math inline">\(\aleph _ { y } = x\)</span> ;let <span class="math inline">\(\boldsymbol { z } _ { i } \in \mathbb { \hat { L } } _ { n r } ^ { * }\)</span> <span class="math inline">\(s _ { i } \in \mathbf { G }\)</span> be such that <span class="math display">\[ y ^ { \mathbf { F } - 1 } = \prod z _ { i } ^ { s _ { i } - 1 } . \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u041" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u041">Proposition 15</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U041</code> · Chapter XIII, source L7317 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 15. Suppose <span class="math inline">\(\bar { \kappa }\)</span> haspositive characteristic.Let V be the group of unitsof <span class="math inline">\(\hat { \mathfrak { L } } _ { \pi r }\)</span> For every integer <span class="math inline">\(m \gtrsim \mathrm { \mathfrak { k } }\)</span> ,thehomomorphism <span class="math inline">\(x \mapsto x ^ { F - 1 }\)</span> maps <span class="math inline">\(V ^ { ( m ) }\)</span> onto itself.If <span class="math inline">\(x\)</span> is an element of <span class="math inline">\(\mathbf { V }\)</span> whose residue class <span class="math inline">\(\vec { x } \in \bar { \mathbb { K } } _ { n \tau } ^ { * }\)</span> is aroot of unity,then there exists <span class="math inline">\(y \in \mathbf { V }\)</span> such that <span class="math inline">\(x = y ^ { \mathbf { F } - \textbf { t } }\)</span> ，</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u042" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u042">Corollary</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U042</code> · Chapter XIII, source L7323 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary.If <span class="math inline">\(\bar { \aleph }\)</span> isafinite field,then <span class="math inline">\(\mathbf { V } = \mathbf { V } ^ { \ F \cdots \ F }\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+</section>
+<section id="fc10-c13-u043" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c13-u043">Convention / notation</h3>
+<div class="unit-meta">
+<p><code>FC10-C13-U043</code> · Chapter XIII, source L6958 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>and denote by <span class="math inline">\(\mathbf { \vec { F } }\)</span> the free generatorof <span class="math inline">\(\mathfrak { g }\)</span> that defines the quasi-finite structure on <span class="math inline">\(R\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> No checked compatible source closes this local class-field-theory/quasi-finite-field reciprocity statement; available CFT implementations cross unresolved proof boundaries.</p>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/dzackgarza\.github\.io\/lean-categories\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Generated from the project’s reference notes by <code>site/build.py</code>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>The Lean is the authority; where this site differs, the Lean is right.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

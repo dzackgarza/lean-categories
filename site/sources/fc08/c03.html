@@ -1,0 +1,2773 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013) – lean-categories · corpus</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-7335da993d57b01553edc5728a7cb5aa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">lean-categories · corpus</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../coverage.html" aria-current="page"> 
+<span class="menu-text">Every book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../corpus.html"> 
+<span class="menu-text">Reading list</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../catalogues/index.html"> 
+<span class="menu-text">Catalogues</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/dzackgarza/lean-categories"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/index.html">FC08</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/c03.html">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="sidebar-tools-main">
+    <div id="quarto-search" class="quarto-navigation-tool px-1" title="Search"></div>
+</div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Graduate mathematics, and what Lean has of it</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../coverage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Every book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../corpus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational source corpus</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../status.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus status</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Sources</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC01 Dummit Foote</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/ai.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01 Appendix I — Cartesian Products and Zorn’s Lemma</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC03</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC03 Riehl Category Theory in Context</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Categories, Functors, and Natural Transformations (pp.&nbsp;1–48)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Representability and the Yoneda Lemma (pp.&nbsp;49–72)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Limits and Colimits (pp.&nbsp;73–114)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Adjunctions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Monads and Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. All Concepts are Kan Extensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/ce.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Epilogue: Theorems in Category Theory</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC04</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC04 Atiyah Macdonald</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Rings and Ideals (pp.&nbsp;1–9)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Modules (pp.&nbsp;17–30)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Rings and Modules of Fractions (pp.&nbsp;36–42)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Primary Decomposition (pp.&nbsp;50–54)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Integral Dependence and Valuations (pp.&nbsp;59–66)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Chain Conditions (pp.&nbsp;74–77)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Noetherian Rings (pp.&nbsp;80–83)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Artin Rings (pp.&nbsp;89–90)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Discrete Valuation Rings and Dedekind Domains (pp.&nbsp;93–98)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. Completions (pp.&nbsp;100–112)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Dimension Theory (pp.&nbsp;116–124)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC05</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC05 Weibel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Chain Complexes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Derived Functors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Tor and Ext</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homological Dimension</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Spectral Sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Group Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Lie Algebra Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Simplicial Methods in Homological Algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Hochschild and Cyclic Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. The Derived Category</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Category Theory Language</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC06</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC06 Hartshorne</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter I: Varieties</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter II: Schemes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter III: Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter IV: Curves</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter V: Surfaces</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC07</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC07 Hatcher</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 0. Some Underlying Geometric Notions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. The Fundamental Group</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homotopy Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix. Topology of Cell Complexes</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC08 Lee</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c03.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c22.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC09 Neukirch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC10 Serre Local Fields</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc11/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC11 Peters Sterk</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc12/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC12 Beauville</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc13/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC13</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC13 Matsumura</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Front matter — conventions and terminology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Commutative rings and modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Prime ideals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Properties of extension rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Valuation rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Dimension theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Regular sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Regular rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Flatness revisited</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Derivations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. I-smoothness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Applications of complete local rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Tensor products, direct and inverse limits</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix B. Some homological algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix C. The exterior algebra</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc14/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC14</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC14 Humphreys</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Basic Concepts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Semisimple Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Root Systems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Isomorphism and Conjugacy Theorems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Existence Theorem</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Representation Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Chevalley Algebras and Groups</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc15/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC15</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Classification of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Polynomial invariants of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Affine reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Coxeter groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Special cases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Hecke algebras and Kazhdan–Lusztig polynomials</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Complements</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc16/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC16</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Algebraic Geometry</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Affine Algebraic Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Homogeneous Spaces</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Characteristic 0 Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Semisimple and Unipotent Elements</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Solvable Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VIII. Borel Subgroups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IX. Centralizers of Tori</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter X. Structure of Reductive Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XI. Representations and Classification of Semisimple Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XII. Survey of Rationality Properties and Appendix</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../catalogues/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Definition catalogues</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">catalogues/*.md</span>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Notes and audits</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">notes/*.md</span>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/index.html">FC08</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/c03.html">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>FC08 — Lee, <em>Introduction to Smooth Manifolds</em>.</p>
+<p>This chapter contains 23 definitions, 14 propositions, 3 lemmas, 3 corollaries, 2 examples, 2 constructions, 9 conventions and 1 other statements.</p>
+<p>Of the 57 statements checked against Lean, 17 are formalized somewhere and 40 are not.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 28%">
+<col style="width: 28%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Status</th>
+<th style="text-align: right;">Statements</th>
+<th style="text-align: right;">Share</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="route-unmatched">not formalized</span></td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">70%</td>
+<td>A documented search found no Lean statement of it anywhere.</td>
+</tr>
+<tr class="even">
+<td><span class="route-mathlib">in Mathlib</span></td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">30%</td>
+<td>Mathlib states and proves it.</td>
+</tr>
+<tr class="odd">
+<td><strong>checked in total</strong></td>
+<td style="text-align: right;"><strong>57</strong></td>
+<td style="text-align: right;"></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Which versions of Lean and Mathlib were searched
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li>Canonical source block: FC08 Lee, Chapter 3, <code>FC08-C03-U001</code>–<code>FC08-C03-U057</code>, exactly 57 unique contiguous rows retrieved from <a href="../../sources/fc08/">FC08 — John M. Lee, Introduction to Smooth Manifolds</a> through <code>agent-memory</code>.</li>
+<li>Search order followed the Sweep-II plan: project source first at <code>A=3b2239e161592472b34e02ad3b7da308f9ce7280</code>, then pinned Mathlib <code>P=db584cd6d46c92f209a44c0f1c829460d327499d</code> (Apache-2.0, Lean 4.33.0), current upstream Mathlib <code>H=5315eef9e4ffb98e0f89f278b765c50a149f66ca</code> (Apache-2.0, Lean 4.34.0-rc2), followed by current/open/indexed and external Lean checks for the remaining interfaces. No <code>project-existing</code>, <code>package-import</code>, or <code>reference-port</code> C03 owner survived strict bundle checking.</li>
+<li>Every promoted Mathlib path exists at exact <code>P</code>. <code>/tmp/fc08-c03-witness.lean</code> compiled through the project toolchain and checks the nontrivial U011 assembly: <code>fdifferential</code> of the identity is the identity on <code>PointDerivation</code>, and for a smooth diffeomorphism the derivation differentials of the map and its inverse are mutual inverses. The same witness checks the <code>PointDerivation</code> real-module instance and the smooth-function stalk/evaluation interfaces used in the germ audit. The witness is audit evidence only, not project source.</li>
+<li>C03 has 17 pinned <code>mathlib</code> rows and 40 dated <code>unmatched</code> rows. Positive rows are: U001, U002, U003, U004, U007, U008, U009, U010, U011, U043, U044, U047, U048, U051, U052, U053, U054.</li>
+<li>The decisive C03 interface boundary is explicit in pinned <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/DerivationBundle.html"><code>Mathlib/Geometry/Manifold/DerivationBundle.lean</code></a>: <code>PointDerivation</code> formalizes Lee’s algebraic tangent-space definition and <code>fdifferential</code> formalizes the differential by precomposition, but the file only documents that this model coincides with the usual tangent space for finite-dimensional <code>C^∞</code> real manifolds; it does not provide a checked <code>PointDerivation ≃ TangentSpace</code> equivalence. Targeted searches at <code>P</code> and current <code>H</code> found no such bridge. Consequently U005–U006 and U012–U042 are not inferred from the otherwise extensive chart/model-space <code>TangentSpace</code>, <code>mfderiv</code>, <code>TangentBundle</code>, and <code>tangentMap</code> APIs.</li>
+<li>U002–U004 and U007–U011 are promoted entirely inside the derivation model. <code>PointDerivation</code> is generic <code>Derivation</code> on smooth functions with evaluation at the point as the scalar action; <code>fdifferential_apply</code> is literally Lee’s precomposition formula. For U011, chain, identity, and diffeomorphism-inverse clauses were compiled at the pin rather than inferred from the separate standard tangent-space derivative API.</li>
+<li>U001 is independent of the later derivation identification: Mathlib’s standard-model <code>TangentSpace</code> is definitionally the model vector space and its constant-fibre <code>TangentBundle</code> total space canonically identifies with base × fibre, matching Lee’s preliminary geometric tangent-vector model up to suppression of the fixed base coordinate.</li>
+<li>U043–U044 are mapped to the stalk of the smooth real-function sheaf. <code>exists_germ_eq</code>, <code>germ_eq</code>, and <code>germ_res_apply</code> give exactly the representative/restriction/equality-on-a-neighborhood semantics of smooth germs. U045 remains unmatched because the pin does not package these stalks with the complete scalar-algebra/module structure needed to instantiate Lee’s ℝ-linear point-derivation space on germs; generic <code>Derivation</code> plus a stalk is only adjacent infrastructure without that assembly.</li>
+<li>U047–U048 and U051–U054 are direct generic category-theory interfaces. U050 is not promoted from <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CategoryTheory.Pointed#doc"><code>CategoryTheory.Pointed</code></a> alone because Lee’s row deliberately ranges over pointed sets, topological spaces, and smooth manifolds; the checked sources do not package the full pointed-smooth-manifold category. U055–U057 similarly remain unmatched because the specific smooth-manifold categories/functors are not bundled interfaces even though their constituent pointwise maps and functorial laws exist.</li>
+<li>Current upstream <code>H=5315eef9e4ffb98e0f89f278b765c50a149f66ca</code> was checked without changing the pinned worktree. Exact greps for a <code>PointDerivation</code>/<code>TangentSpace</code> bridge, a tangent functor, velocity realization, coordinate-vector tangent APIs, and a pointed smooth-manifold category found no current-only owner. The project and pinned Mathlib worktrees remained unmodified by the audit.</li>
+<li><code>N=2026-09-07</code> denotes a dated unmatched result after the prescribed search layers. Strict whole-row semantics apply uniformly: no proper subset, unbridged equivalent model, isolated example, or reconstruction of the missing theorem is promoted.</li>
+</ul>
+</div>
+</div>
+</div>
+<section id="fc08-c03-u001" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u001">Convention/notation — geometric tangent space to</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U001</code> · Ch. 3, § Geometric Tangent Vectors; source L1463 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Here is a preliminary definition of tangent vectors in Euclidean space. Given a point a ∈ ℝ ^n , let us define the geometric tangent space to ℝ ^n at ^a , denoted by ℝ _a ^n , to be the set a × ℝ ^n = ( a , v ) : v ∈ ℝ ^n . A geometric tangent vector in ℝ ^n is an element of ℝ _a ^n for some a ∈ ℝ ^n As a matter of notation, we abbreviate ( a , v ) as v _a (or sometimes ∣ v ∣ _a if it is clearer, for example if v itself has a subscript). We think of v _a as the vector v with its initial point at a (Fig. 3.1).The set ℝ _a ^n is a real vector space under the natural operations <span class="math display">\[ v_{a} + w_{a} = (v+w)_{a}, \qquad c(v_{a}) = (cv)_{a}, \]</span> and the vectors <span class="math inline">\(e_{i}|_{a}\)</span>, <span class="math inline">\(i = 1,\dots,n\)</span>, are a basis for <span class="math inline">\(\mathbb{R}^{n}_{a}\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/IsManifold/Basic.html"><code>Mathlib/Geometry/Manifold/IsManifold/Basic.lean::TangentSpace, TangentBundle</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Data/Bundle.html#Bundle.TotalSpace.toProd"><code>Mathlib/Data/Bundle.lean::Bundle.TotalSpace.toProd</code></a> — <code>TangentSpace</code> for the standard vector-space model is definitionally the model vector space, while <code>TangentBundle</code> is its total-space bundle and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Bundle.TotalSpace.toProd#doc"><code>Bundle.TotalSpace.toProd</code></a> identifies a constant-fibre total space with base × fibre. This is Lee’s geometric tangent-vector model up to the canonical identification that suppresses the fixed base point in the fibre.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c03-u002" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u002">Definition/convention — derivation at a</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U002</code> · Ch. 3, § Geometric Tangent Vectors; source L1503 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>With this construction in mind, we make the following definition. If a is a point of R, a map w <span class="math inline">\(C ^ { \infty } \left( \mathbb { R } ^ { n } \right) \to \mathbb { R }\)</span> is called a derivation at a if it is linear over R and satisfies the following product rule: <span class="math display">\[ w (f g) = f (a) w g + g (a) w f.\tag{3.3} \]</span> Let <span class="math inline">\(T _ { a } \mathbb { R } ^ { n }\)</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/DerivationBundle.html#PointedContMDiffMap.eval"><code>Mathlib/Geometry/Manifold/DerivationBundle.lean::PointDerivation, PointedContMDiffMap.eval</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Derivation/Basic.html#Derivation.leibniz"><code>Mathlib/RingTheory/Derivation/Basic.lean::Derivation, Derivation.leibniz</code></a> — <code>PointDerivation I a</code> is exactly a derivation from the algebra of smooth scalar-valued functions to the scalar field with the module action induced by evaluation at <code>a</code>; generic <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Derivation.leibniz#doc"><code>Derivation.leibniz</code></a> is precisely Lee’s product rule.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c03-u003" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u003">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U003</code> · Ch. 3, § Geometric Tangent Vectors; source L1509 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Let T _a ℝ ^n denote the set of all derivations of C ^∞ ( ℝ ^n ) at a . . Clearly, T _a ℝ ^n is a vector space under the operations <span class="math display">\[ (w_{1}+w_{2})f = w_{1}f + w_{2}f, \qquad (cw)f = c(wf). \]</span> It is finite-dimensional, and naturally isomorphic to the geometric tangent space <span class="math inline">\(\mathbb{R}^{n}_{a}\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/DerivationBundle.html"><code>Mathlib/Geometry/Manifold/DerivationBundle.lean::PointDerivation</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Derivation/Basic.html#Derivation.instModule"><code>Mathlib/RingTheory/Derivation/Basic.lean::Derivation.instModule</code></a> — <code>PointDerivation I a</code> is the type of all point derivations, and the generic derivation module instance makes it a vector space over the scalar field, exactly Lee’s <code>T_a ℝ^n</code> construction.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c03-u004" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u004">Lemma 3.1</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U004</code> · Ch. 3, § Geometric Tangent Vectors; source L1517 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>(Properties of Derivations). Suppose <span class="math inline">\(a \in \mathbb{R}^{n}\)</span>, <span class="math inline">\(w \in T_{a}\mathbb{R}^{n}\)</span>, and <span class="math inline">\(f, g \in C^{\infty}(\mathbb{R}^{n})\)</span>. (a) If <span class="math inline">\(f\)</span> is a constant function, then <span class="math inline">\(wf = 0\)</span>. (b) If <span class="math inline">\(f(a) = g(a) = 0\)</span>, then <span class="math inline">\(w(fg) = 0\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/DerivationBundle.html#PointedContMDiffMap.smul_def"><code>Mathlib/Geometry/Manifold/DerivationBundle.lean::PointDerivation, PointedContMDiffMap.smul_def</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Derivation/Basic.html"><code>Mathlib/RingTheory/Derivation/Basic.lean::Derivation.map_algebraMap, Derivation.leibniz</code></a> — <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Derivation.map_algebraMap#doc"><code>Derivation.map_algebraMap</code></a> kills scalar constants. If both values at the base point vanish, <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Derivation.leibniz#doc"><code>Derivation.leibniz</code></a> together with the evaluation scalar action makes both product-rule terms zero, giving the two clauses of Lee’s lemma.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c03-u005" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u005">Proposition 3.2</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U005</code> · Ch. 3, § Geometric Tangent Vectors; source L1538 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 3.2. Let <span class="math inline">\(a \in \mathbb { R } ^ { n }\)</span> . (a) For each geometric tangent vector <span class="math inline">\(v _ { a } \in \mathbb { R } _ { a } ^ { n }\)</span> , the map <span class="math inline">\(D _ { v } | _ { a } \colon C ^ { \infty } ( \mathbb { R } ^ { n } ) \to \mathbb { R }\)</span> defined by (3.1) is a derivation at a. (b) The map <span class="math inline">\(v _ { a } \mapsto D _ { v } | _ { a }\)</span> is an isomorphism from <span class="math inline">\(\mathbb { R } _ { a } ^ { n }\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned Mathlib has both Lee’s algebraic <code>PointDerivation</code> model and its chart/model-space <code>TangentSpace</code> model, but no checked finite-dimensional real-manifold equivalence between them. The derivation bundle documentation explicitly notes coincidence only informally, so the directional-vector-to-derivation isomorphism is not promoted. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u006" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u006">Corollary 3.3</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U006</code> · Ch. 3, § Geometric Tangent Vectors; source L1568 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For any <span class="math inline">\(a \in \mathbb{R}^{n}\)</span>, the <span class="math inline">\(n\)</span> derivations <span class="math inline">\(\left.\frac{\partial}{\partial x^{1}}\right|_{a}, \dots, \left.\frac{\partial}{\partial x^{n}}\right|_{a}\)</span>, defined by <span class="math inline">\(\left.\frac{\partial}{\partial x^{i}}\right|_{a} f = \frac{\partial f}{\partial x^{i}}(a)\)</span>, form a basis for <span class="math inline">\(T_{a}\mathbb{R}^{n}\)</span>, which therefore has dimension <span class="math inline">\(n\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Coordinate partial derivatives and finite-dimensional tangent spaces exist in the standard differential API, but no checked theorem identifies that standard tangent space with the chapter’s <code>PointDerivation</code> space; hence the claimed derivation basis/dimension cannot be credited under strict bridge semantics. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u007" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u007">Definition/convention — derivation at p</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U007</code> · Ch. 3, § Tangent Vectors on Manifolds; source L1580 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Now we are in a position to define tangent vectors on manifolds and manifolds with boundary. The definition is the same in both cases. Let M be a smooth manifold with or without boundary, and let <span class="math inline">\(p\)</span> be a point of M . A linear map v <span class="math inline">\(C ^ { \infty } ( M ) \to \mathbb { R }\)</span> is called a derivation at p if it satisfies <span class="math display">\[ v (f g) = f (p) v g + g (p) v f \quad \text { for all } f, g \in C ^ {\infty} (M).\tag{3.4} \]</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/DerivationBundle.html#PointedContMDiffMap.eval"><code>Mathlib/Geometry/Manifold/DerivationBundle.lean::PointDerivation, PointedContMDiffMap.eval</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Derivation/Basic.html"><code>Mathlib/RingTheory/Derivation/Basic.lean::Derivation</code></a> — For an arbitrary smooth manifold, <code>PointDerivation I p</code> is exactly Lee’s definition: an ℝ-linear derivation on globally smooth scalar functions, with the target-module action given by evaluation at <code>p</code>.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c03-u008" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u008">Definition/convention — tangent space to M at p</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U008</code> · Ch. 3, § Tangent Vectors on Manifolds; source L1586 · after <a href="#fc08-c03-u004"><code>FC08-C03-U004</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>The set of all derivations of <span class="math inline">\(C ^ { \infty } ( M )\)</span> at <span class="math inline">\(p ,\)</span> , denoted by <span class="math inline">\(T _ { p } M ,\)</span> is a vector space called the tangent space to M at p.&nbsp;An element of <span class="math inline">\(T _ { p } M\)</span> is called a tangent vector at <span class="math inline">\(\pmb { p } .\)</span> The following lemma is the analogue of Lemma 3.1 for manifolds.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/DerivationBundle.html"><code>Mathlib/Geometry/Manifold/DerivationBundle.lean::PointDerivation</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Derivation/Basic.html#Derivation.instModule"><code>Mathlib/RingTheory/Derivation/Basic.lean::Derivation.instModule</code></a> — <code>PointDerivation I p</code> is the set/type of all derivations at <code>p</code>, and the derivation module instance supplies its scalar-vector-space structure, exactly Lee’s tangent-space definition in this chapter.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c03-u009" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u009">Lemma 3.4</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U009</code> · Ch. 3, § Tangent Vectors on Manifolds; source L1588 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Lemma 3.4 (Properties of Tangent Vectors on Manifolds). Suppose M is <span class="math inline">\(a\)</span> smooth manifold with or without boundary, <span class="math inline">\(p \in M , v \in T _ { p } M\)</span> ; and <span class="math inline">\(f , g \in C ^ { \infty } ( M )\)</span> . (a) If f is a constant function, then <span class="math inline">\(v f = 0 .\)</span> (b) <span class="math inline">\(I f f ( p ) = g ( p ) = 0 , t h e n \ v ( f g ) = 0 .\)</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/DerivationBundle.html#PointedContMDiffMap.smul_def"><code>Mathlib/Geometry/Manifold/DerivationBundle.lean::PointDerivation, PointedContMDiffMap.smul_def</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Derivation/Basic.html"><code>Mathlib/RingTheory/Derivation/Basic.lean::Derivation.map_algebraMap, Derivation.leibniz</code></a> — This is the manifold specialization of the generic derivation facts used for U004: constants are killed and the Leibniz rule gives zero on a product when both factors vanish at the base point.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c03-u010" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u010">Construction/definition — differential of F at p (Fig</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U010</code> · Ch. 3, § The Differential of a Smooth Map; source L1605 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If M and N are smooth manifolds with or without boundary and F : M → N is a smooth map, for each p ∈ M we define a map d F _p : T _p M → T _F (p) N, called the differential of F at p (Fig. 3.3), as follows. Given v ∈ T _p M ; we let d F _p ( v ) be the derivation at F ( p ) that acts on f ∈ C ^∞ ( N ) by the rule <span class="math display">\[ dF_{p}(v)(f) = v(f \circ F), \qquad dF_{p} \colon T_{p}M \to T_{F(p)}N. \]</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/DerivationBundle.html"><code>Mathlib/Geometry/Manifold/DerivationBundle.lean::fdifferential, fdifferential_apply</code></a> — <code>fdifferential f p</code> is a scalar-linear map between <code>PointDerivation</code> spaces, and <code>fdifferential_apply</code> states exactly <code>d f_p(v)(g)=v(g ∘ f)</code>.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c03-u011" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u011">Proposition 3.6</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U011</code> · Ch. 3, § The Differential of a Smooth Map; source L1623 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Proposition 3.6 (Properties of Differentials). Let M; N , and P be smooth manifolds with or without boundary, let <span class="math inline">\(F \colon M \to N\)</span> and <span class="math inline">\(G \colon N \to P\)</span> be smooth maps, and let <span class="math inline">\(p \in M\)</span> (a) d <span class="math inline">\(F _ { p } \colon T _ { p } M \to T _ { F ( p ) } N\)</span> is linear. (b) <span class="math inline">\(d ( G \circ F ) _ { p } = d G _ { F ( p ) } \circ d F _ { p } \colon T _ { p } M \to T _ { G \circ F ( p ) } P .\)</span> (c) <span class="math inline">\(d ( \mathrm { I d } _ { M } ) _ { p } = \mathrm { I d } _ { T _ { p } M } \colon T _ { p } M \to T _ { p } M .\)</span> (d) If F is a diffeomorphism, then d <span class="math inline">\(F _ { p } \colon T _ { p } M \to T _ { F ( p ) } N\)</span> is an isomorphism, and <span class="math inline">\(\begin{array} { r } { ( d F _ { p } ) ^ { - 1 } = d \bigl ( F ^ { - 1 } \bigr ) _ { F ( p ) } . } \end{array}\)</span> Exercise 3.7. Prove Proposition 3.6.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/DerivationBundle.html"><code>Mathlib/Geometry/Manifold/DerivationBundle.lean::fdifferential, fdifferential_comp</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/ContMDiffMap.html"><code>Mathlib/Geometry/Manifold/ContMDiffMap.lean::ContMDiffMap.id, ContMDiffMap.comp</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/Diffeomorph.html#Diffeomorph.toContMDiffMap"><code>Mathlib/Geometry/Manifold/Diffeomorph.lean::Diffeomorph.toContMDiffMap</code></a> — <code>fdifferential</code> is linear and <code>fdifferential_comp</code> is the chain rule. At the identity its action is definitionally the identity derivation; applying the chain rule to a diffeomorphism and its inverse proves the two differentials are mutual inverses. All four clauses were compiled together in the C03 pinned audit witness.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c03-u012" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u012">Proposition 3.8</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U012</code> · Ch. 3, § The Differential of a Smooth Map; source L1637 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 3.8. Let M be a smooth manifold with or without boundary, <span class="math inline">\(p \in M\)</span> and <span class="math inline">\(v \in T _ { p }\)</span> M . If f; <span class="math inline">\(g \in C ^ { \infty } ( M )\)</span> agree on some neighborhood of p, then <span class="math inline">\(v f = v g\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — The smooth-function API is local and the smooth sheaf has germs, but no checked theorem states that a global <code>PointDerivation</code> depends only on the germ of a smooth function at its base point. Proving this requires the substantive locality argument. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u013" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u013">Proposition 3.9</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U013</code> · Ch. 3, § The Differential of a Smooth Map; source L1643 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 3.9 (The Tangent Space to an Open Submanifold). Let M be a smooth manifold with or without boundary, let <span class="math inline">\(U \subseteq M\)</span> be an open subset, and let  <span class="math inline">\(U \hookrightarrow\)</span> M be the inclusion map. For every <span class="math inline">\(p \in U\)</span> , the differential $d _ { p } T _ { p } U $ <span class="math inline">\(T _ { p } M\)</span> is an isomorphi erm in the last sum above is a product of two smooth functions of x that vanish at <span class="math inline">\(x = a \mathrm { : }\)</span> one is <span class="math inline">\(\left( x ^ { i } - a ^ { i } \right)\)</span> , and the other is <span class="math inline">\(\left( x ^ { j } - a ^ { j } \right)\)</span> times the integral.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — The standard tangent-space API gives canonical differentials for open charts/local diffeomorphisms, but no checked theorem gives the open-submanifold inclusion isomorphism for <code>PointDerivation</code>, Lee’s tangent-space model in this chapter. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u014" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u014">Comparison/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U014</code> · Ch. 3, § The Differential of a Smooth Map; source L1661 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Given an open subset <span class="math inline">\(U \subseteq M .\)</span> the isomorphism <span class="math inline">\(d \iota _ { p }\)</span> between <span class="math inline">\(T _ { p } U\)</span> and <span class="math inline">\(T _ { p }\)</span> M is canonically defined, independently of any choices. From now on we identify <span class="math inline">\(T _ { p } U\)</span> with <span class="math inline">\(T _ { p } M\)</span> for any point <span class="math inline">\(p \in U\)</span> . This identification just amounts to the observation that <span class="math inline">\(d \iota _ { p } ( v )\)</span> is the same derivation as v, thought of as acting on functions on the bigger manifold M instead of functions on <span class="math inline">\(U\)</span> . Since the action of a derivation on a function depends only on the values of the function in an arbitrarily small neighborhood, this is a harmless identification. In particular, this means that any tangent vector <span class="math inline">\(v \in T _ { p } M\)</span> can be unambiguously applied to functions defined only in a neighborhood of <span class="math inline">\(p\)</span> , not necessarily on all of M .</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This identification depends on U013 together with locality of point derivations. The checked APIs do not bridge <code>PointDerivation</code> to local smooth germs/open-submanifold tangent spaces, so the convention is not formally justified as a complete route. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u015" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u015">Proposition 3.10</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U015</code> · Ch. 3, § The Differential of a Smooth Map; source L1666 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 3.10 (Dimension of the Tangent Space). If M is an n-dimensiona smooth manifold, then for each <span class="math inline">\(p \in M .\)</span> ; the tangent space <span class="math inline">\(T _ { p } M\)</span> is an n-dimensional vector space.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib’s standard <code>TangentSpace</code> is the model vector space and thus has the expected finite dimension, but no checked finite-dimensional equivalence identifies it with Lee’s derivation-defined <code>PointDerivation</code>; the chapter theorem is therefore unmatched. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u016" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u016">Lemma 3.11</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U016</code> · Ch. 3, § The Differential of a Smooth Map; source L1676 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Let <span class="math inline">\(\iota \colon \mathbb{H}^{n} \hookrightarrow \mathbb{R}^{n}\)</span> denote the inclusion map. For any <span class="math inline">\(a \in \partial\mathbb{H}^{n}\)</span>, the differential <span class="math inline">\(d\iota_{a} \colon T_{a}\mathbb{H}^{n} \to T_{a}\mathbb{R}^{n}\)</span> is an isomorphism.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib’s model-with-corners tangent-space machinery handles half-spaces and inclusions, but the source statement is about the derivation-defined tangent spaces and no checked bridge to <code>PointDerivation</code> exists. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u017" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u017">Proposition 3.12</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U017</code> · Ch. 3, § The Differential of a Smooth Map; source L1702 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>and its image in <span class="math inline">\(T _ { a } \mathbb { R } ^ { n }\)</span> Proposition 3.12 (Dimension of Tangent Spaces on a Manifold with Boundary). Suppose M is an n-dimensional smooth manifold with boundary. For each <span class="math inline">\(p \in M\)</span> <span class="math inline">\(T _ { p } M\)</span> is an n-dimensional vector sp this proposition, we can identify the tangent space to an open submanifold with the tangent space to the whole manifold.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As for U015, finite-dimensionality is immediate for Mathlib’s standard model-space tangent fibre but is not connected by a checked theorem to Lee’s <code>PointDerivation</code> tangent space on manifolds with boundary. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u018" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u018">Construction/definition — map D</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U018</code> · Ch. 3, § The Differential of a Smooth Map; source L1710 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Suppose V is a finite-dimensional vector space and <span class="math inline">\(a \in V\)</span> . Just as we did earlier in the case of <span class="math inline">\(\mathbb { R } ^ { n }\)</span> , for any vector <span class="math inline">\(v \in V\)</span> , we define a map <span class="math inline">\(D _ { v } | _ { a } \colon C ^ { \infty } ( V ) \to { \mathbb { R } }\)</span> by <span class="math display">\[ D _ {v} | _ {a} f = \left. \frac {d}{d t} \right| _ {t = 0} f (a + t v).\tag{3.5} \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned Mathlib has Fréchet/manifold derivatives and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=NormedSpace.fromTangentSpace#doc"><code>NormedSpace.fromTangentSpace</code></a>, but no checked construction identifies Lee’s directional derivative functional with a <code>PointDerivation</code> in the finite-dimensional vector-space case. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u019" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u019">Proposition 3.13</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U019</code> · Ch. 3, § The Differential of a Smooth Map; source L1716 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 3.13 (The Tangent Space to a Vector Space). Suppose V is a finitedimensional vector space with its standard smooth manifold structure. For each point <span class="math inline">\(a \in V\)</span> , the map <span class="math inline">\(v \mapsto D _ { v } | _ { a }\)</span> defined by (3.5) is a canonical isomorphism from V to <span class="math inline">\(T _ { a } V .\)</span> , such that for any linear map <span class="math inline">\(L \colon V \to W\)</span> , the following diagram commutes: <span class="math display">\[ \begin{array}{c} V \xrightarrow {\cong} T _ {a} V \\ L \Big \downarrow \qquad \qquad \qquad \qquad \Big \downarrow d L _ {a} \\ W \xrightarrow {\cong} T _ {L a} W. \end{array}\tag{3.6} \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=NormedSpace.fromTangentSpace#doc"><code>NormedSpace.fromTangentSpace</code></a> canonically identifies Mathlib’s standard tangent fibre with the ambient normed space, but the theorem here identifies the ambient space with Lee’s derivation-defined tangent space and asserts naturality for linear maps. The missing <code>PointDerivation ≃ TangentSpace</code> bridge blocks the row. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u020" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u020">Proposition 3.14</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U020</code> · Ch. 3, § The Differential of a Smooth Map; source L1734 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>product manifold. Proposition 3.14 (The Tangent Space to a Product Manifold). Let <span class="math inline">\(M _ { 1 } , \dots , M _ { k }\)</span> be smooth manifolds, and for each j M _ { k } M _ { j }$ be the projection onto the <span class="math inline">\(M _ { j }\)</span> factor. For any point $ ) M _ { 1 } M _ { k }$ , the map <span class="math display">\[ \alpha \colon T _ {p} (M _ {1} \times \dots \times M _ {k}) \rightarrow T _ {p _ {1}} M _ {1} \oplus \dots \oplus T _ {p _ {k}} M _ {k} \]</span> defined by <span class="math display">\[ \alpha (v) = \left(d (\pi_ {1}) _ {p} (v), \dots , d (\pi_ {k}) _ {p} (v)\right)\tag{3.7} \]</span> is an isomorphism. The same is true if one of the spaces $</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned Mathlib has exact product-tangent equivalences and derivatives of projections for its standard tangent spaces, but no checked bridge transfers that theorem to the derivation-defined tangent spaces used by Lee in C03. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u021" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u021">Convention/notation — coordinate vectors at p associated</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U021</code> · Ch. 3, § Computations in Coordinates; source L1761 · after <a href="#fc08-c03-u006"><code>FC08-C03-U006</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>By Corollary 3.3, the derivations <span class="math inline">\(\partial / \partial x ^ { 1 } | _ { \varphi ( p ) } , \ldots , \partial / \partial x ^ { n } | _ { \varphi ( p ) }\)</span> form a basis for <span class="math inline">\(T _ { \varphi ( p ) } \mathbb { R } ^ { n }\)</span> . Therefore, the preimages of these vectors under the isomorphism <span class="math inline">\(d \varphi _ { p }\)</span> form a basis for <span class="math inline">\(T _ { p } M \ ( \mathrm { F i g . } \ 3 . 5 )\)</span> . In keeping with our standard practice of treating coordinate maps as identifications whenever possible, we use the notation <span class="math inline">\(\partial / \partial x ^ { i } | _ { p }\)</span> for these vectors, characterized by either of the following expressions: <span class="math display">\[ \left. \frac {\partial}{\partial x ^ {i}} \right| _ {p} = (d \varphi_ {p}) ^ {- 1} \left(\left. \frac {\partial}{\partial x ^ {i}} \right| _ {\varphi (p)}\right) = d (\varphi^ {- 1}) _ {\varphi (p)} \left(\left. \frac {\partial}{\partial x ^ {i}} \right| _ {\varphi (p)}\right).\tag{3.8} \]</span> Unwinding the definitions, we see that <span class="math inline">\(\partial / \partial x ^ { i } | _ { p }\)</span> acts on a function <span class="math inline">\(f \in C ^ { \infty } ( U )\)</span> by <span class="math display">\[ \left. \frac {\partial}{\partial x ^ {i}} \right| _ {p} f = \left. \frac {\partial}{\partial x ^ {i}} \right| _ {\varphi (p)} \big (f \circ \varphi^ {- 1} \big) = \frac {\partial \widehat {f}}{\partial x ^ {i}} (\widehat {p}), \]</span> where <span class="math inline">\(\hat { f } = f \circ \varphi ^ { - 1 }\)</span> is the coordinate representation of <span class="math inline">\(f\)</span> , and <span class="math inline">\(\widehat { p } = \left( p ^ { 1 } , \ldots , p ^ { n } \right) =\)</span> <span class="math inline">\(\varphi ( p )\)</span> is the coordinate representation of <span class="math inline">\(p\)</span> . In other words, <span class="math inline">\(\partial / \partial x ^ { i } | _ { p }\)</span> is just the derivation that takes the i th partial derivative of (the coordinate representation of) f at (the coordinate representation of) p.&nbsp;The vectors <span class="math inline">\(\partial / \partial x ^ { i } \rvert _ { p }\)</span> are called the coordinate vectors at p associated with the given coordinate system. In the special case of standard coordinates on <span class="math inline">\(\mathbb { R } ^ { n }\)</span> , the vectors <span class="math inline">\(\partial / \partial x ^ { i } | _ { p }\)</span> are literally the partial derivative operators. When M is a smooth manifold with boundary and <span class="math inline">\(p\)</span> is an interior point, the discussion above applies verbatim. For <span class="math inline">\(p \in \partial M\)</span> ; the only change that needs to be made is to substitute <span class="math inline">\(\mathbb { H } ^ { n }\)</span> for <span class="math inline">\(\mathbb { R } ^ { n }\)</span> , with the understanding that the notation <span class="math inline">\(\partial / \partial x ^ { i } | _ { \varphi ( p ) }\)</span> can be used interchangeably to denote either an element of <span class="math inline">\(T _ { \varphi ( p ) } \mathbb { R } ^ { n }\)</span> or an element of <span class="math inline">\(T _ { \varphi ( p ) } \mathbb { H } ^ { n }\)</span> , in keeping with our convention of considering the isomorphism <span class="math inline">\(d\iota_{p}\)</span> as an identification.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Chart derivatives and inverse-chart tangent equivalences exist for Mathlib’s standard <code>TangentSpace</code>; the coordinate vectors here are derivations and their action on local smooth functions is part of the missing bridge/locality theory, so the complete row is not owned. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u022" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u022">Convention/notation — smooth manifold</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U022</code> · Ch. 3, § Computations in Coordinates; source L1775 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>When M is a smooth manifold with boundary and <span class="math inline">\(p\)</span> is an interior point, the discussion above applies verbatim. For <span class="math inline">\(p \in \partial M\)</span> ; the only change that needs to be made is to substitute <span class="math inline">\(\mathbb { H } ^ { n }\)</span> for <span class="math inline">\(\mathbb { R } ^ { n }\)</span> , with the understanding that the notation <span class="math inline">\(\partial / \partial x ^ { i } | _ { \varphi ( p ) }\)</span> can be used interchangeably to denote either an element of <span class="math inline">\(T _ { \varphi ( p ) } \mathbb { R } ^ { n }\)</span> or an element of <span class="math inline">\(T _ { \varphi ( p ) } \mathbb { H } ^ { n }\)</span> , in keeping with our convention of considering the isomorphism <span class="math inline">\(d \iota _ { \varphi ( p ) } \colon T _ { \varphi ( p ) } \mathbb { H } ^ { n } \to T _ { \varphi ( p ) } \mathbb { R } ^ { n }\)</span> as an identification. The nth coordinate vector <span class="math inline">\(\partial / \partial x ^ { n } | _ { p }\)</span> should be interpreted ws.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Models with corners formalize boundary tangent spaces, but the one-sided coordinate-derivation convention in Lee’s derivation model is not packaged or bridged to Mathlib’s standard tangent fibre. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u023" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u023">Proposition 3.15</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U023</code> · Ch. 3, § Computations in Coordinates; source L1779 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Let <span class="math inline">\(M\)</span> be a smooth <span class="math inline">\(n\)</span>-manifold with or without boundary and let <span class="math inline">\(p \in M\)</span>. Then <span class="math inline">\(T_{p}M\)</span> is an <span class="math inline">\(n\)</span>-dimensional vector space, and for any smooth chart <span class="math inline">\((U,(x^{i}))\)</span> containing <span class="math inline">\(p\)</span> the coordinate vectors <span class="math inline">\(\left.\partial/\partial x^{1}\right|_{p}, \dots, \left.\partial/\partial x^{n}\right|_{p}\)</span> form a basis for <span class="math inline">\(T_{p}M\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — The standard tangent fibre has the model dimension and chart equivalences, but no checked theorem supplies Lee’s coordinate-derivation basis for <code>PointDerivation</code>. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u024" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u024">Convention/notation — coordinate basis for</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U024</code> · Ch. 3, § Computations in Coordinates; source L1787 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Under the summation convention, with an upper index in a denominator counting as a lower index, the ordered basis <span class="math inline">\(\left(\left.\partial/\partial x^{i}\right|_{p}\right)\)</span> is called a coordinate basis for <span class="math inline">\(T_{p}M\)</span>, and the numbers <span class="math inline">\((v^{1},\dots,v^{n})\)</span> are the components of <span class="math inline">\(v\)</span> with respect to it. The components are recovered from the action of <span class="math inline">\(v\)</span> on the coordinate functions: for each <span class="math inline">\(j\)</span>, <span class="math display">\[ v(x^{j}) = \left(v^{i}\left.\frac{\partial}{\partial x^{i}}\right|_{p}\right)(x^{j}) = v^{i}\frac{\partial x^{j}}{\partial x^{i}}(p) = v^{j}. \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — No checked coordinate-derivation basis/components API proves the formula <code>v^j = v(x^j)</code> for Lee’s <code>PointDerivation</code> tangent vectors. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u025" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u025">Definition/convention — tangent map</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U025</code> · Ch. 3, § The Differential in Coordinates; source L1832 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>In the differential geometry literature the differential is sometimes called the tangent map, the total derivative, or simply the derivative of <span class="math inline">\(F\)</span>; because it pushes tangent vectors forward from the domain manifold to the codomain, it is also called the (pointwise) pushforward. Different authors denote it by symbols such as <span class="math display">\[ F'(p), \quad DF, \quad DF(p), \quad F_{*}, \quad TF, \quad T_{p}F. \]</span> This book writes <span class="math inline">\(dF_{p}\)</span> for the differential of a smooth map between manifolds, reserving <span class="math inline">\(DF(p)\)</span> for the total derivative of a map between finite-dimensional vector spaces, identified for Euclidean spaces with the Jacobian matrix.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib uses <code>mfderiv</code> and <code>tangentMap</code> terminology for the standard tangent-space differential, while Lee’s row is a terminology convention for the derivation differential. No separate mathematical theorem is owned by this naming row. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u026" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u026">Convention/notation — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U026</code> · Ch. 3, § The Differential in Coordinates; source L1838 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>We will stick with the notation <span class="math inline">\(d F _ { p }\)</span> for the differential of a smooth map between manifolds, and reserve <span class="math inline">\(D F ( p )\)</span> for the total derivative of a map between finitedimensional vector spaces, which in the case of Euclidean spaces we identify with the Jacobian matrix of <span class="math inline">\(F\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib distinguishes <code>fderiv</code>/<code>mfderiv</code> and has Jacobian infrastructure, but this is Lee-specific notation policy rather than a mathematical interface requiring a route. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u027" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u027">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U027</code> · Ch. 3, § Change of Coordinates; source L1842 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Suppose <span class="math inline">\(( U , \varphi )\)</span> and <span class="math inline">\(( V , \psi )\)</span> are two smooth charts on <span class="math inline">\(M ,\)</span> and <span class="math inline">\(p \in U \cap V\)</span> . Let us denote the coordinate functions of <span class="math inline">\(\varphi\)</span> by <span class="math inline">\(\left( x ^ { i } \right)\)</span> and those of by <span class="math inline">\(\left( \widetilde { x } ^ { i } \right)\)</span> . Any tangent vector at <span class="math inline">\(p\)</span> can be represented with respect to either basis <span class="math inline">\(\left( \partial / \partial x ^ { i } | _ { p } \right)\)</span> or <span class="math inline">\(\left( \partial / \partial \widetilde { x } ^ { i } | _ { p } \right)\)</span> . How are the two representations related? In this situation, it is customary to write the transition map <span class="math inline">\(\circ \varphi ^ { - 1 } \colon \varphi ( U \cap V ) \to\)</span> <span class="math inline">\(\psi ( U \cap V )\)</span> in the following shorthand notation:</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This row is setup prose for change of coordinate bases; no standalone theorem or construction beyond the unbridged coordinate-vector apparatus is asserted. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u028" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u028">Convention/notation — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U028</code> · Ch. 3, § Change of Coordinates; source L1850 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Here we are indulging in a typical abuse of notation: in the expression tilde(x) ^i ( x ) , we think of tilde(x) ^i as a coordinate function (whose domain is an open subset of M , ; identified with an open subset of ℝ ^n or ℍ ^n ) ; ; but we think of x as representing a point (in this case, in φ ( U ∩ V ) ) . By (3.9), the differential d ( ψ ∘ φ ^- 1 ) _φ ( p ) can be written <span class="math display">\[ d(\psi \circ \varphi^{-1})_{\varphi(p)}\left(\frac{\partial}{\partial x^{i}}\bigg|_{\varphi(p)}\right) = \frac{\partial \widetilde{x}^{j}}{\partial x^{i}}(\varphi(p))\, \frac{\partial}{\partial \widetilde{x}^{j}}\bigg|_{\psi(p)}. \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has chart transition derivatives for standard tangent spaces, but the displayed coordinate-basis transition formula for derivation tangent vectors is not packaged and depends on the missing bridge. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u029" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u029">Example 3.16</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U029</code> · Ch. 3, § Change of Coordinates; source L1871 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The transition map between polar and standard coordinates on suitable open subsets of the plane is <span class="math inline">\((x,y) = (r\cos\theta,\ r\sin\theta)\)</span>. Let <span class="math inline">\(p \in \mathbb{R}^{2}\)</span> have polar representation <span class="math inline">\((r,\theta) = (2,\pi/2)\)</span> and let <span class="math inline">\(v \in T_{p}\mathbb{R}^{2}\)</span> have polar representation <span class="math inline">\(v = 3\left.\frac{\partial}{\partial r}\right|_{p} - \left.\frac{\partial}{\partial\theta}\right|_{p}\)</span>. Since <span class="math inline">\(\left.\frac{\partial}{\partial\theta}\right|_{p} = -2\sin\!\left(\tfrac{\pi}{2}\right)\left.\frac{\partial}{\partial x}\right|_{p} + 2\cos\!\left(\tfrac{\pi}{2}\right)\left.\frac{\partial}{\partial y}\right|_{p} = -2\left.\frac{\partial}{\partial x}\right|_{p}\)</span>, the standard-coordinate representation is <span class="math inline">\(v = 3\left.\frac{\partial}{\partial y}\right|_{p} + 2\left.\frac{\partial}{\partial x}\right|_{p}\)</span>. Each coordinate vector <span class="math inline">\(\left.\partial/\partial x^{i}\right|_{p}\)</span> depends on the whole coordinate system, not on the single function <span class="math inline">\(x^{i}\)</span>: it differentiates with respect to <span class="math inline">\(x^{i}\)</span> while the other coordinates are held constant, so changing them can change its direction.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Differentiation of polar-coordinate transition maps is available from generic calculus, but no checked declaration packages Lee’s complete numerical polar-coordinate tangent-vector example and its coordinate-basis interpretation. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u030" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u030">Definition/convention — tangent bundle of M</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U030</code> · Ch. 3, § The Tangent Bundle; source L1911 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Tangent Bundle Often it is useful to consider the set of all tangent vectors at all points of a manifold. Given a smooth manifold M with or without boundary, we define the tangent bundle of M , denoted by TM; to be the disjoint union of the tangent spaces at all points of M : <span class="math display">\[ T M = \coprod_ {p \in M} T _ {p} M. \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned Mathlib defines <code>TangentBundle</code> as the bundle of its standard model-space tangent fibres. Lee’s <code>TM</code> in C03 is the disjoint union of derivation-defined tangent spaces; no checked equivalence of these bundle models exists. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u031" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u031">Proposition 3.18</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U031</code> · Ch. 3, § The Tangent Bundle; source L1932 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 3.18. For any smooth n-manifold M; the tangent bundle TM has a natural topology and smooth structure that make it into a 2n-dimensional smooth manifold. With respect to this structure, the projection  TM M is smooth.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Bundle.TotalSpace.isManifold#doc"><code>Bundle.TotalSpace.isManifold</code></a> and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Bundle.contMDiff_proj#doc"><code>Bundle.contMDiff_proj</code></a> give exactly the manifold/smooth-projection theorem for Mathlib’s standard tangent vector bundle, but the source bundle is assembled from Lee’s <code>PointDerivation</code> fibres and the required bundle-level bridge is absent. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u032" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u032">Definition/convention — natural coordinates</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U032</code> · Ch. 3, § The Tangent Bundle; source L1968 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The coordinates <span class="math inline">\((x^{i}, v^{i})\)</span> given by (3.13) are called natural coordinates on <span class="math inline">\(TM\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Tangent-bundle trivializations provide the standard fibre coordinates in Mathlib, but no checked theorem identifies them with Lee’s coordinate derivations/components on the derivation bundle. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u033" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u033">Proposition 3.20</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U033</code> · Ch. 3, § The Tangent Bundle; source L1972 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If <span class="math inline">\(M\)</span> is a smooth <span class="math inline">\(n\)</span>-manifold with or without boundary that can be covered by a single smooth chart, then <span class="math inline">\(TM\)</span> is diffeomorphic to <span class="math inline">\(M \times \mathbb{R}^{n}\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has tangent-bundle local trivializations and a model-space tangent-bundle diffeomorphism, but no checked theorem gives this global single-chart product diffeomorphism for Lee’s derivation bundle, nor a bridge to the standard tangent bundle. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u034" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u034">Convention/notation — global differential</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U034</code> · Ch. 3, § The Tangent Bundle; source L1978 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>By putting together the differentials of F at all points of M; we obtain a globally defined map between tangent bundles, called the global differential or global tangent map and denoted by <span class="math inline">\(d F \colon T M \to T N\)</span> This is just the map whose restriction to each tangent space <span class="math inline">\(T _ { p } M \subseteq T M\)</span> is d <span class="math inline">\(F _ { p }\)</span> . When we apply the differential of F to a specific vector <span class="math inline">\(v \in T _ { p } M _ { ☉ }\)</span> ; we can write either d <span class="math inline">\(F _ { p } ( v )\)</span> or <span class="math inline">\(d F ( v )\)</span> , depending on how much emphasis we wish to give to the point <span class="math inline">\(p\)</span> . The former notation is more informative, while the second is more concise.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <code>tangentMap</code> bundles the differential on Mathlib’s standard tangent bundle, whereas <code>fdifferential</code> is pointwise on <code>PointDerivation</code>. No checked global total-space map is provided for the derivation bundle used by Lee here. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u035" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u035">Proposition 3.21</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U035</code> · Ch. 3, § The Tangent Bundle; source L1982 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 3.21. If <span class="math inline">\(F \colon M \to N\)</span> is a smooth map, then its global differentia dF TM TN is a smooth <span class="math inline">\(( x , y )\)</span> denote the standard coordinates on <span class="math inline">\(\mathbb { R } ^ { 2 }\)</span> .</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=ContMDiff.contMDiff_tangentMap#doc"><code>ContMDiff.contMDiff_tangentMap</code></a> proves smoothness of the standard tangent map, but the source global differential is built from derivation-defined tangent spaces; without the bundle bridge this is an unbridged analogue. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u036" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u036">Corollary 3.22</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U036</code> · Ch. 3, § The Tangent Bundle; source L1994 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary 3.22 (Properties of the Global Differential). Suppose <span class="math inline">\(F \colon M \to N\)</span> and <span class="math inline">\(G \colon N \to P\)</span> are smooth maps. (a) <span class="math inline">\(d ( G \circ F ) = d G \circ d F .\)</span> (b) <span class="math inline">\(d ( \mathrm { I d } _ { M } ) = \mathrm { I d } _ { T M } .\)</span> (c) If F is a diffeomorphism, then d <span class="math inline">\(F \colon T M \to T N\)</span> is also a diffeomorphism, and <span class="math inline">\(( d F ) ^ { - 1 } = d \big ( F ^ { - 1 } \big )\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — The standard tangent-map API proves identity/composition and diffeomorphism functoriality, and <code>fdifferential_comp</code> proves the pointwise derivation chain rule, but no checked global derivation-bundle map packages all clauses of this row. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u037" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u037">Convention/notation — dF^{-1} for a diffeomorphism</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U037</code> · Ch. 3, § The Tangent Bundle; source L2002 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>F ^ { - 1 } )$  Because of part (c) of this corollary, when F is a diffeomorphism we can use the notation <span class="math inline">\(d F ^ { - 1 }\)</span> unambiguously to mean either <span class="math inline">\(( d F ) ^ { - 1 }\)</span> or $d ( F ^ { - 1</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This is notation for the inverse global differential of a diffeomorphism and depends on the unmatched derivation-bundle global differential construction. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u038" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u038">Definition/convention — curve in M to be a continuous map</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U038</code> · Ch. 3, § Velocity Vectors of Curves; source L2008 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If M is a manifold with or without boundary, we define a curve in M to be a continuous map <span class="math inline">\(\gamma \colon J \to M\)</span> ; where <span class="math inline">\(J \subseteq \mathbb { R }\)</span> is an interval. (Most of the time, we will be interested in curves whose domains are open intervals, but for some purposes it is useful to allow J to have one or two endpoints; the definitions all make sense with minor modifications in that case, either by considering J as a manifold with boundary or by interpreting derivatives as one-sided derivatives.) Note that in this book the term curve always refers to a map from an interval into M (a parametrized curve), not just a set of points.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib represents parametrized maps and interval subtypes, but no checked first-class <code>Curve</code> interface matches Lee’s broad continuous-interval convention including endpoint interpretation; this row is primarily source terminology. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u039" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u039">Definition/convention — velocity of at t (Fig</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U039</code> · Ch. 3, § Velocity Vectors of Curves; source L2013 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Now let M be a smooth manifold, still with or without boundary. Our definition of tangent spaces leads to a natural interpretation of velocity vectors: given a smooth curve J → M and t _0 ∈ J , we define the velocity of at t (Fig. 3.9), denoted by γ ^prime ( t _0 ) , to be the vector <span class="math display">\[ \gamma'(t_{0}) = d\gamma\left(\frac{d}{dt}\bigg|_{t_{0}}\right) \in T_{\gamma(t_{0})}M, \]</span> where <span class="math inline">\(d/dt|_{t_{0}}\)</span> is the standard coordinate basis vector of <span class="math inline">\(T_{t_{0}}\mathbb{R}\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Manifold derivatives can evaluate a parametrized smooth map, but no checked velocity-vector construction into Lee’s derivation-defined tangent space is packaged. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u040" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u040">Proposition 3.23</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U040</code> · Ch. 3, § Velocity Vectors of Curves; source L2043 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 3.23. Suppose M is a smooth manifold with or without boundary and <span class="math inline">\(p \in M\)</span> Every <span class="math inline">\(v \in T _ { p } M\)</span> is the velocity of some smooth curve in M .</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — No checked pinned/current theorem states that every tangent vector is the velocity of a smooth curve in the required derivation tangent-space model. The standard tangent API also has no direct existence theorem found by the audit. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u041" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u041">Proposition 3.24</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U041</code> · Ch. 3, § Velocity Vectors of Curves; source L2057 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 3.24 (The Velocity of a Composite Curve). Let <span class="math inline">\(F \colon M \to N\)</span> be a smooth map, and let <span class="math inline">\(\gamma \colon J \to M\)</span> be a smooth curve. For any <span class="math inline">\(t _ { 0 } \in J\)</span> , the velocity at <span class="math inline">\(t = t _ { 0 }\)</span> of the composite curve <span class="math inline">\(F \circ \gamma \colon J \to N\)</span> is given by <span class="math display">\[ (F \circ \gamma) ^ {\prime} (t _ {0}) = d F (\gamma^ {\prime} (t _ {0})). \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — The manifold chain rule gives the analogous formula for standard <code>mfderiv</code>, but no checked velocity interface into <code>PointDerivation</code> realizes Lee’s composite-curve statement. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u042" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u042">Corollary 3.25</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U042</code> · Ch. 3, § Velocity Vectors of Curves; source L2071 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>(Computing the Differential Using a Velocity Vector). Suppose <span class="math inline">\(F \colon M \to N\)</span> is a smooth map, <span class="math inline">\(p \in M\)</span> and <span class="math inline">\(v \in T_{p}M\)</span>. Then <span class="math inline">\(dF_{p}(v) = (F \circ \gamma)'(0)\)</span> for any smooth curve <span class="math inline">\(\gamma \colon J \to M\)</span> with <span class="math inline">\(0 \in J\)</span>, <span class="math inline">\(\gamma(0) = p\)</span> and <span class="math inline">\(\gamma'(0) = v\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This corollary depends on U039–U041 and the realization of every derivation tangent vector by a curve; those interfaces are not present as a complete checked route. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u043" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u043">Definition/convention — germ of f at p</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U043</code> · Ch. 3, § Tangent Vectors as Derivations of the Space of Germs; source L2089 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A smooth function element on M is an ordered pair ( f , U ) , where U is an open subset of M and f : U → ℝ is a smooth function. Given a point p ∈ M ; let us define an equivalence relation on the set of all smooth function elements whose domains contain p by setting ( f , U ) ∼ ( g , V ) ~ i f ~ f equiv g on some neighborhood of p . . The equivalence class of a function element ( f , U ) is called the germ of f at p . . The set of all germs of smooth functions at p is denoted by C _p ^∞ ( M ) It is a real vector space and an associative algebra under the operations <span class="math display">\[ c\,[(f,U)] = [(cf,U)], \qquad [(f,U)] + [(g,V)] = [(f+g, U \cap V)], \qquad [(f,U)]\,[(g,V)] = [(fg, U \cap V)]. \]</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/Sheaf/Smooth.html"><code>Mathlib/Geometry/Manifold/Sheaf/Smooth.lean::smoothSheafCommRing</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Sheaves/Stalks.html"><code>Mathlib/Topology/Sheaves/Stalks.lean::TopCat.Presheaf.exists_germ_eq, TopCat.Presheaf.germ_eq</code></a> — The stalk at <code>p</code> of the sheaf of smooth real-valued functions is exactly the algebra of smooth germs. <code>exists_germ_eq</code> represents every stalk element by a section on a neighborhood, and <code>germ_eq</code> identifies two representatives precisely after restricting to a sufficiently small common neighborhood; the stalk carries the pointwise commutative-ring operations.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c03-u044" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u044">Convention/notation — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U044</code> · Ch. 3, § Tangent Vectors as Derivations of the Space of Germs; source L2095 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>(The zero element of this algebra is the equivalence class of the zero function on <span class="math inline">\(M . )\)</span> Let us denote the germ at <span class="math inline">\(p\)</span> of the function element <span class="math inline">\(( f , U )\)</span> simply by <span class="math inline">\([ f ] _ { p }\)</span> ; there is no need to include the domain <span class="math inline">\(U\)</span> in the notation, because the same germ is represented by the restriction of <span class="math inline">\(f\)</span> to any neighborhood of <span class="math inline">\(p\)</span> . To say that two germs <span class="math inline">\([ f ] _ { p }\)</span> and <span class="math inline">\([ g ] _ { p }\)</span> are equal is simply to say that <span class="math inline">\(f \equiv g\)</span> on some neighborhood of <span class="math inline">\(p _ { : }\)</span> , however small.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Sheaves/Stalks.html"><code>Mathlib/Topology/Sheaves/Stalks.lean::TopCat.Presheaf.germ_eq, TopCat.Presheaf.germ_res_apply</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/Sheaf/Smooth.html"><code>Mathlib/Geometry/Manifold/Sheaf/Smooth.lean::smoothSheafCommRing</code></a> — <code>germ_res_apply</code> makes restriction independent at the stalk, while <code>germ_eq</code> says equality of two germs is witnessed on a common open neighborhood. Together these are exactly Lee’s <code>[f]_p</code> restriction/equality convention.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c03-u045" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u045">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U045</code> · Ch. 3, § Tangent Vectors as Derivations of the Space of Germs; source L2097 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A derivation of <span class="math inline">\(C^{\infty}_{p}(M)\)</span> is a linear map <span class="math inline">\(v \colon C^{\infty}_{p}(M) \to \mathbb{R}\)</span> satisfying the product rule analogous to (3.4): <span class="math display">\[ v[fg]_{p} = f(p)\,v[g]_{p} + g(p)\,v[f]_{p}. \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — The smooth-function stalk and its evaluation map are formalized, and generic <code>Derivation</code> is formalized, but the pin does not package the required real-algebra/module structures turning a smooth stalk at <code>p</code> into Lee’s first-class space of ℝ-linear point derivations. The ingredients are not promoted without that exact assembly. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u046" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u046">Definition/convention — equivalence relation</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U046</code> · Ch. 3, § Tangent Vectors as Equivalence Classes of Curves; source L2111 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Suppose <span class="math inline">\(p\)</span> is a point of M . We wish to define an equivalence relation on the set of all smooth curves of the form <span class="math inline">\(\gamma \colon J \to M\)</span> ; where J is an interval containing 0 and <span class="math inline">\(\gamma ( 0 ) = p\)</span> . Given two such curves <span class="math inline">\(\gamma _ { 1 } \colon J _ { 1 } \to M\)</span> and <span class="math inline">\(\gamma _ { 2 } \colon J _ { 2 } \to M .\)</span> ; let us say that <span class="math inline">\(\gamma _ { 1 } \sim \gamma _ { 2 }\)</span> if <span class="math inline">\(( f \circ \gamma _ { 1 } ) ^ { \prime } ( 0 ) = ( f \circ \gamma _ { 2 } ) ^ { \prime } ( 0 )\)</span> for every smooth real-valued function <span class="math inline">\(f\)</span> defined in a neighborhood of <span class="math inline">\(p\)</span> . Let <span class="math inline">\(\mathfrak { V } _ { p } M\)</span> denote the set of equivalence classes. The tangent space to M at <span class="math inline">\(p\)</span> is often defined to be the set <span class="math inline">\(\mathfrak{V}_{p}M\)</span> of such equivalence classes.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — No checked quotient/equivalence-class-of-curves construction identifies tangent vectors by equality of all local smooth-function derivatives, nor a theorem identifies that quotient with <code>PointDerivation</code>. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u047" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u047">Definition/convention — objects of C</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U047</code> · Ch. 3, § Categories and Functors; source L2129 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A category C consists of the following things: a class Ob.C/, whose elements are called objects of , a class Hom.C/, whose elements are called morphisms of , for each morphism <span class="math inline">\(f \in { \mathrm { H o m } } ( \mathsf { C } )\)</span> , two objects X; <span class="math inline">\(Y \in \mathrm { O b } ( \mathsf { C } )\)</span> called the source and target of f , respectively, for each triple <span class="math inline">\(X , Y , Z \in \mathrm { O b } ( { \mathsf { C } } )\)</span> , a mapping called composition: <span class="math display">\[ \operatorname{Hom} _ {\mathbb {C}} (X, Y) \times \operatorname{Hom} _ {\mathbb {C}} (Y, Z) \to \operatorname{Hom} _ {\mathbb {C}} (X, Z), \]</span> written <span class="math inline">\(( f , g ) \mapsto g \circ f\)</span> , where <span class="math inline">\({ \mathrm { H o m } } _ { \mathsf { C } } ( X , Y )\)</span> denotes the class of all morphisms with source X and target Y . The morphisms are required to satisfy the following axioms: (i) ASSOCIATIVITY: .f g/ h f .g h/. (ii) EXISTENCE OF IDENTITIES: For each object <span class="math inline">\(X \in \mathrm { O b } ( \mathsf C )\)</span> , there exists an identity morphism <span class="math inline">\(\operatorname { I d } _ { X } \in \operatorname { H o m } _ { \mathbb { C } } ( X , X )\)</span> , such that IdY <span class="math inline">\(\circ f = f = f \circ \operatorname { I d } _ { X }\)</span> for all <span class="math inline">\(f \in { \mathrm { H o m } } _ { \mathsf { C } } ( X , Y ) .\)</span> A morphism <span class="math inline">\(f \in { \mathrm { H o m } } _ { \mathsf { C } } ( X , Y )\)</span> is called an isomorphism in if there exists a morphism <span class="math inline">\(g \in { \mathrm { H o m } } _ { \mathsf { C } } ( Y , X )\)</span> such that <span class="math inline">\(f \circ g = \operatorname { I d } _ { Y }\)</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/CategoryTheory/Category/Basic.html"><code>Mathlib/CategoryTheory/Category/Basic.lean::CategoryStruct, Category</code></a> — <code>CategoryStruct</code> packages hom-types, identities, and composition; <code>Category</code> adds left/right identity and associativity laws. This is exactly Lee’s category data and axioms, represented universe-polymorphically.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c03-u048" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u048">Definition/convention — isomorphism in C</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U048</code> · Ch. 3, § Categories and Functors; source L2151 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p><span class="math inline">\(f \in { \mathrm { H o m } } _ { \mathsf { C } } ( X , Y ) .\)</span> A morphism <span class="math inline">\(f \in { \mathrm { H o m } } _ { \mathsf { C } } ( X , Y )\)</span> is called an isomorphism in if there exists a morphism <span class="math inline">\(g \in { \mathrm { H o m } } _ { \mathsf { C } } ( Y , X )\)</span> such that <span class="math inline">\(f \circ g = \operatorname { I d } _ { Y }\)</span> and <span class="math inline">\(g \circ f = \operatorname { I d } _ { X }\)</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/CategoryTheory/Iso.html#CategoryTheory.Iso"><code>Mathlib/CategoryTheory/Iso.lean::CategoryTheory.Iso</code></a> — <code>Iso X Y</code> bundles forward and inverse morphisms with the two inverse identities, exactly Lee’s categorical isomorphism.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c03-u049" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u049">Example 3.26</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U049</code> · Ch. 3, § Categories and Functors; source L2153 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>(Categories). In most of the categories that one meets “in nature,” the objects are sets with some extra structure, the morphisms are maps that preserve that structure, and the composition laws and identity morphisms are the obvious ones. Some of the categories of this type that appear in this book (implicitly or explicitly) are listed below. In each case, we describe the category by giving its objects and its morphisms.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib contains many of the individual concrete categories alluded to in Lee’s example, but this row is explanatory prose/listing rather than one mathematical interface, and no single checked object owns the complete example list under whole-row semantics. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u050" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u050">Definition/convention — pointed set and pointed map</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U050</code> · Ch. 3, § Categories and Functors; source L2179 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>There are also important categories whose objects are sets with distinguished base points, in addition to (possibly) other structures. A pointed set is an ordered pair .X; p/, where X is a set and p is an element of X. Other pointed objects such as pointed topological spaces or pointed smooth manifolds are defined similarly. If <span class="math inline">\(( X , p )\)</span> and <span class="math inline">\(( X ^ { \prime } , p ^ { \prime } )\)</span> are pointed sets (or topological spaces, etc.), a map <span class="math inline">\(F \colon X \to\)</span> X is said to be a pointed map if <span class="math inline">\(F ( p ) = p ^ { \prime } ;\)</span> in this case, we write <span class="math inline">\(F \colon ( X , p ) \to\)</span> <span class="math inline">\(( X ^ { \prime } , p ^ { \prime } )\)</span> . Here are some important examples of categories of pointed objects. ●</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CategoryTheory.Pointed#doc"><code>CategoryTheory.Pointed</code></a> exactly packages pointed sets and basepoint-preserving maps, and pointed topological infrastructure exists separately, but no checked pointed-smooth-manifold category packages the whole multi-context row as stated. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u051" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u051">Definition/convention — small and locally small categories</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U051</code> · Ch. 3, § Categories and Functors; source L2189 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>smooth manifolds and pointed smooth maps We use the word class instead of <span class="math inline">\(s e t\)</span> for the collections of objects and morphisms in a category because in some categories they are “too large” to be considered sets. For example, in the category Set, Ob.Set/ is the class of all sets; any attempt to treat it as a set in its own right leads to the well-known Russell paradox of set theory. (See [LeeTM, Appendix A] or almost any book on set theory for more.) Even though the classes of objects and morphisms might not constitute sets, we still use notations such as <span class="math inline">\(X \in \mathrm { O b } ( \mathsf C )\)</span> and <span class="math inline">\(f \in { \mathrm { H o m } } ( \mathsf { C } )\)</span> to indicate that X is an object and f is a morphism in C. A category in which both Ob.C/ and Hom.C/ are sets is called a small category, and one in which each class of morphisms <span class="math inline">\({ \mathrm { H o m } } _ { \mathsf { C } } ( X , Y )\)</span> is a set is called locally small. All the categories listed abov say that two germs <span class="math inline">\([ f ] _ { p }\)</span> and <span class="math inline">\([ g ] _ { p }\)</span> are equal is simply to say that <span class="math inline">\(f \equiv g\)</span> on some neighborhood of <span class="math inline">\(p _ { : }\)</span> , however small.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/CategoryTheory/Category/Basic.html"><code>Mathlib/CategoryTheory/Category/Basic.lean::SmallCategory</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/CategoryTheory/EssentiallySmall.html#CategoryTheory.LocallySmall"><code>Mathlib/CategoryTheory/EssentiallySmall.lean::CategoryTheory.LocallySmall</code></a> — <code>SmallCategory</code> makes both objects and homs live in one small universe, while <code>LocallySmall</code> asserts smallness of every hom-type. These are the universe-polymorphic formalizations of Lee’s small and locally small categories.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c03-u052" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u052">Definition/convention — covariant functor</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U052</code> · Ch. 3, § Categories and Functors; source L2191 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If <span class="math inline">\(\mathsf{C}\)</span> and <span class="math inline">\(\mathsf{D}\)</span> are categories, a covariant functor from <span class="math inline">\(\mathsf{C}\)</span> to <span class="math inline">\(\mathsf{D}\)</span> assigns to each object <span class="math inline">\(X \in \operatorname{Ob}(\mathsf{C})\)</span> an object <span class="math inline">\(F(X) \in \operatorname{Ob}(\mathsf{D})\)</span>, and to each morphism <span class="math inline">\(f \in \operatorname{Hom}_{\mathsf{C}}(X,Y)\)</span> a morphism <span class="math inline">\(F(f) \in \operatorname{Hom}_{\mathsf{D}}(F(X),F(Y))\)</span>, preserving identities and composition: <span class="math display">\[ F(\operatorname{Id}_{X}) = \operatorname{Id}_{F(X)}, \qquad F(g \circ h) = F(g) \circ F(h). \]</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/CategoryTheory/Functor/Basic.html#CategoryTheory.Functor"><code>Mathlib/CategoryTheory/Functor/Basic.lean::CategoryTheory.Functor</code></a> — <code>Functor C D</code> consists of object and morphism maps with preservation of identity and composition, exactly Lee’s covariant-functor definition.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c03-u053" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u053">Definition/convention — contravariant functor</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U053</code> · Ch. 3, § Categories and Functors; source L2197 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p><span class="math display">\[ We also need to consider functors that reverse morphisms: a contravariant functor from to is a rule $\mathcal { F }$ that assigns to each object $X \in { \mathrm { O b } } ( \mathsf C )$ an object ${ \mathcal { F } } ( X ) \in { \mathrm { O b } } ( \mathsf { D } )$ , and to each morphism $f \in { \mathrm { H o m } } _ { \mathsf { C } } ( X , Y )$ a morphism $\mathcal { F } ( f ) \in$ $\mathrm { H o m } _ { \mathsf { D } } ( { \mathcal F } ( Y ) , { \mathcal F } ( X ) )$ , such that \]</span> ( _ {X}) = _ { (X)}; alytic manifolds.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/CategoryTheory/Functor/Basic.html#CategoryTheory.Functor"><code>Mathlib/CategoryTheory/Functor/Basic.lean::CategoryTheory.Functor</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/CategoryTheory/Opposites.html#CategoryTheory.Functor.op"><code>Mathlib/CategoryTheory/Opposites.lean::CategoryTheory.Functor.op</code></a> — A contravariant functor from <code>C</code> to <code>D</code> is represented canonically as a covariant functor <code>Cᵒᵖ ⥤ D</code>; Mathlib’s opposite-category/functor API reverses morphisms and composition exactly as in Lee’s definition.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c03-u054" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u054">Definition/convention — covariant functor</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U054</code> · Ch. 3, § Categories and Functors; source L2205 · after <a href="#fc08-c03-u049"><code>FC08-C03-U049</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>One trivial example of a covariant functor is the identity functor from any category to itself: it takes each object and each morphism to itself. Another example is the forgetful functor: if C is a category whose objects are sets with some additional structure and whose morphisms are maps preserving that structure (as are all the categories listed in the first part of Example 3.26 except Set itself), the forgetful functor <span class="math inline">\(\mathcal { F } \colon \mathsf { C } \to\)</span> Set assigns to each object its underlying set, and to each morphism the same map thought of as a m</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/CategoryTheory/Functor/Basic.html#CategoryTheory.Functor.id"><code>Mathlib/CategoryTheory/Functor/Basic.lean::CategoryTheory.Functor.id</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/CategoryTheory/ConcreteCategory/Forget.html#CategoryTheory.forget"><code>Mathlib/CategoryTheory/ConcreteCategory/Forget.lean::CategoryTheory.forget</code></a> — <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Functor.id#doc"><code>Functor.id</code></a> is the identity functor. For every concrete category, <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CategoryTheory.forget#doc"><code>CategoryTheory.forget</code></a> sends each structured object to its underlying type and each morphism to its underlying function, exactly Lee’s two examples.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c03-u055" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u055">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U055</code> · Ch. 3, § Categories and Functors; source L2207 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>More interesting functors arise when we associate “invariants” to classes of mathematical objects. For example, the fundamental group is a covariant functor from <span class="math inline">\(\mathsf { T o p } _ { * }\)</span> to Grp. The results of Problem 2-10 show that there is a contravariant functor from Diff to VecR defined by assigning to each smooth manifold space <span class="math inline">\(C ^ { \infty } ( M )\)</span> , and to each smooth map <span class="math inline">\(F \colon M \to N\)</span> the } ( N ) C ^ { } ( M )$ defined by $</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned Mathlib has the fundamental groupoid functor and generic smooth-function composition, but no checked route packages both Lee examples: the pointed-space fundamental-group functor to groups and the contravariant smooth-function functor from the category of smooth manifolds. Whole-row semantics reject the partial matches. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u056" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u056">Definition/convention — functor</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U056</code> · Ch. 3, § Categories and Functors; source L2209 · after <a href="#fc08-c03-u011"><code>FC08-C03-U011</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>by <span class="math inline">\(F ^ { * } ( f ) = f \circ F\)</span> The discussion in this chapter has given us some other important examples of functors. First, the tangent space functor is a covariant functor from the category Diff of pointed smooth manifolds to the category VecR of real vector spaces. To each pointed smooth manifold <span class="math inline">\(( M , p )\)</span> it assigns the tangent space <span class="math inline">\(T _ { p } M _ { \mathrm { \ell } }\)</span> ; and to each pointed smooth map <span class="math inline">\(F \colon ( M , p ) ( N , F ( p ) )\)</span> it assigns the differential d <span class="math inline">\(F _ { p }\)</span> The fact that this is a functor is the content of parts (b) and (c) of Proposi</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <code>fdifferential</code> has the required pointwise identity/composition laws, but Mathlib does not package the category of pointed smooth manifolds and the resulting tangent-space functor to real vector spaces; the source functor is therefore not an existing checked interface. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c03-u057" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c03-u057">Definition/convention — tangent functor</h3>
+<div class="unit-meta">
+<p><code>FC08-C03-U057</code> · Ch. 3, § Categories and Functors; source L2211 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 3.6. Similarly, we can think of the assignments <span class="math inline">\(M \mapsto T M\)</span> and <span class="math inline">\(F \mapsto d F\)</span> (sending each smooth manifold to its tangent bundle and each smooth map to its global differential) as a covariant functor from Diff to itself, called the tangent functor.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has <code>TangentBundle</code>, <code>tangentMap</code>, and their functorial laws, but no checked category of smooth manifolds with a bundled tangent endofunctor, and the standard tangent bundle is moreover unbridged to Lee’s derivation bundle in this chapter. Strict bundle semantics reject a proper subset, an unbridged equivalent model, terminology-only analogy, or reconstruction of the substantive source theorem.</p>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/dzackgarza\.github\.io\/lean-categories\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Generated from the project’s reference notes by <code>site/build.py</code>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>The Lean is the authority; where this site differs, the Lean is right.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
