@@ -115,6 +115,7 @@ public import LeanCategories.Homological.DeltaFunctor
 public import LeanCategories.Homological.DeltaFunctorMorphisms
 public import LeanCategories.Homological.SatelliteFunctors
 public import LeanCategories.Homological.Syzygy
+public import LeanCategories.Homological.BalancedFunctor
 public import LeanCategories.Homological.ExactSequenceCategories
 public import LeanCategories.Homological.MappingCylinder
 public import LeanCategories.Homological.SheafPresheafComparison
