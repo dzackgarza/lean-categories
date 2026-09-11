@@ -95,7 +95,7 @@ The interior of S , denoted by Int S, is the union of all open subsets of X cont
 `FC08-CA-U006` · Appendix A, § Topological Spaces; source L17916 · [not formalized]{.route-unmatched}
 :::
 
-The exterior of S , denoted by Ext S, is the union of all open subsets of X contained in X setminus S
+The exterior of S , denoted by Ext S, is the union of all open subsets of X contained in $X \setminus S$
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — The source packages a named relative/exterior construction in a convention not represented by one checked declaration with the same interface; it is expressible from interior/complement or subtype topology, but that expression would be reconstruction. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -147,7 +147,7 @@ A point p ∈ S is said to be an isolated point of S if p has a neighborhood U �
 `FC08-CA-U010` · Appendix A, § Topological Spaces; source L17924 · [in Mathlib]{.route-mathlib}
 :::
 
-A point p ∈ X (not necessarily in S ) is said to be a limit point of S if every neighborhood of p contains at least one point of S other than p.
+point $p \in X$ (not necessarily in S ) is said to be a limit point of S if every neighborhood of p contains at least one point of S other than p.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/ClusterPt.lean::accPt_iff_nhds`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/ClusterPt.html) — For the principal filter of `S`, `accPt_iff_nhds` says every neighborhood contains a distinct point of `S`, exactly Lee’s limit-point condition.
@@ -159,7 +159,7 @@ A point p ∈ X (not necessarily in S ) is said to be a limit point of S if ever
 `FC08-CA-U011` · Appendix A, § Topological Spaces; source L17926 · [in Mathlib]{.route-mathlib}
 :::
 
-S is said to be dense in X if bar(S) = X , or equivalently if every nonempty open subset of X contains at least one point of S .
+S is said to be dense in X if ${ \overline { { S } } } = X$ , or equivalently if every nonempty open subset of X contains at least one point
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/Closure.lean::Dense, dense_iff_closure_eq, dense_iff_inter_open`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Closure.html) — Mathlib gives both source characterizations: closure equal to the whole space and intersection with every nonempty open set.
@@ -197,7 +197,7 @@ The most important concepts of topology are continuous maps and convergent seque
 `FC08-CA-U014` · Appendix A, § Topological Spaces; source L17932 · [in Mathlib]{.route-mathlib}
 :::
 
-A map F : X → Y is said to be continuous if for every open subset U ⊆ Y , the preimage F ^- 1 ( U ) is open in X .
+map $F \colon X \to Y$ is said to be continuous if for every open subset $U \subseteq Y$ , the preimage $F ^ { - 1 } ( U )$ is open
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/Defs/Basic.lean::Continuous`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Defs/Basic.html) — `Continuous f` is the open-preimage condition.
@@ -209,7 +209,7 @@ A map F : X → Y is said to be continuous if for every open subset U ⊆ Y , th
 `FC08-CA-U015` · Appendix A, § Topological Spaces; source L17934 · [in Mathlib]{.route-mathlib}
 :::
 
-A continuous bijective map F : X → Y with continuous inverse is called a homeomorphism. If there exists a homeomorphism from X to Y , we say that X and Y are homeomorphic.
+. A continuous bijective map $F \colon X \to Y$ with continuous inverse is called a homeomorphism. If there exists a homeomorphism from X to Y , we say that X and Y are homeomorph
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/Homeomorph/Defs.lean::Homeomorph`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Homeomorph/Defs.html) — `Homeomorph X Y` is a bijection with continuous forward and inverse maps, exactly the source object.
@@ -221,7 +221,7 @@ A continuous bijective map F : X → Y with continuous inverse is called a homeo
 `FC08-CA-U016` · Appendix A, § Topological Spaces; source L17936 · [in Mathlib]{.route-mathlib}
 :::
 
-A continuous map F : X → Y is said to be a local homeomorphism if every point p ∈ X has a neighborhood U ⊆ X such that F ( U ) is open in Y and F restricts to a homeomorphism from U to F ( U )
+continuous map $F \colon X \to Y$ is said to be a local homeomorphism if every point $p \in X$ has a neighborhood $U \subseteq X$ such that $F ( U )$ is open in Y and F restricts to a homeomorphism from U
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/IsLocalHomeomorph.lean::IsLocalHomeomorph, isLocalHomeomorph_iff_isOpenEmbedding_restrict`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/IsLocalHomeomorph.html) — The pointwise open-restriction characterization is exactly Lee’s local-homeomorphism definition.
@@ -245,7 +245,7 @@ Given a sequence ( p _i ) _i = 1 ^∞ of points in X and a point p ∈ X , the s
 `FC08-CA-U018` · Appendix A, § Topological Spaces; source L17958 · [in Mathlib]{.route-mathlib}
 :::
 
-(Discrete Spaces). If X is an arbitrary set, the discrete topology on X is the topology defined by declaring every subset of X to be open. Any space that has the discrete topology is called a discrete space. //
+Example A.4 (Discrete Spaces). If X is an arbitrary set, the discrete topology on X is the topology defined by declaring every subset of X to be open. Any space that has the discrete topology is called a discrete space.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/Order.lean::DiscreteTopology`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Order.html) — `DiscreteTopology X` is exactly the topology in which every subset is open.
@@ -257,7 +257,7 @@ Given a sequence ( p _i ) _i = 1 ^∞ of points in X and a point p ∈ X , the s
 `FC08-CA-U019` · Appendix A, § Topological Spaces; source L17960 · [in Mathlib]{.route-mathlib}
 :::
 
-(Metric Spaces). A metric space is a set M endowed with a distance function (also called a metric) d M × M → ℝ (where R denotes the set of rea numbers) satisfying the following properties for all x , y , z ∈ M (i) POSITIVITY: d ( x , y ) ≥ 0 , with equality if and only if x = y (ii) SYMMETRY: d ( x , y ) = d ( y , x ) (iii) TRIANGLE INEQUALITY: d ( x , z ) ≤ d ( x , y ) + d ( y , z ) If M is a metric space, x ∈ M ; and r > 0 , the open ball of radius r around x is the set B _r (x) = y ∈ M: d (x, y) < r , and the closed ball of radius r is bar(B) _r (x) = y ∈ M: d (x, y) ≤ r . The metric topology on M is defined by declaring a subset S ⊆ M to be open if for every point x ∈ S , there is some r > 0 such that B _r ( x ) ⊆ S
+Example A.5 (Metric Spaces). A metric space is a set M endowed with a distance function (also called a metric) d $M \times M \to \mathbb { R }$ (where R denotes the set of rea numbers) satisfying the following properties for all $x , y , z \in M$ (i) POSITIVITY: $d ( x , y ) \geq 0$ , with equality if and only if $x = y$ (ii) SYMMETRY: $d ( x , y ) = d ( y , x )$ (iii) TRIANGLE INEQUALITY: $d ( x , z ) \leq d ( x , y ) + d ( y , z )$ If M is a metric space, $x \in M$ ; and $r > 0$ , the open ball of radius r around x is the set $$ B _ {r} (x) = \left\{y \in M: d (x, y) < r \right\}, $$ and the closed ball of radius r is $$ \bar {B} _ {r} (x) = \left\{y \in M: d (x, y) \leq r \right\}. $$ The metric topology on M is defined by declaring a subset $S \subseteq M$ to be open if for every point $x \in S$ , there is some $r > 0$ such
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/MetricSpace/Defs.lean::MetricSpace`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/MetricSpace/Defs.html); [`Mathlib/Topology/MetricSpace/Pseudo/Defs.lean::Metric.ball, Metric.closedBall, Metric.nhds_basis_ball`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/MetricSpace/Pseudo/Defs.html) — The metric axioms, open/closed balls, and the ball basis for the induced metric topology directly realize the full example.
@@ -333,7 +333,7 @@ For each $x \in \mathbb{R}^{n}$, the Euclidean norm of $x$ is the nonnegative re
 `FC08-CA-U025` · Appendix A, § Topological Spaces; source L18000 · [in Mathlib]{.route-mathlib}
 :::
 
-and for x; y ∈ ℝ ^n , the Euclidean distance function is defined by d (x, y) = ∣ x - y ∣.
+{n}\right) ^ {2}}, $$ and for x; $y \in \mathbb { R } ^ { n }$ , the Euclidean distance function is defined by $$ d (x, y) = |
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Analysis/Normed/Group/Basic.lean::dist_eq_norm`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Normed/Group/Basic.html) — `dist_eq_norm` is exactly `d(x,y)=‖x-y‖` in the norm-induced Euclidean metric.
@@ -345,7 +345,7 @@ and for x; y ∈ ℝ ^n , the Euclidean distance function is defined by d (x, y)
 `FC08-CA-U026` · Appendix A, § Topological Spaces; source L18006 · [not formalized]{.route-unmatched}
 :::
 
-This distance function turns ℝ ^n into a complete metric space. The resulting metric topology on ℝ ^n is called the Euclidean topology. //
+This distance function turns $\mathbb { R } ^ { n }$ into a complete metric space. The resulting metric topology on $\mathbb { R } ^ { n }$ is called the Euclidean
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib has Euclidean/normed-space instances and many of the listed facts separately, but this source row bundles Lee’s coordinate conventions or several Euclidean identifications/examples; no single checked interface owns the whole bundle. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -359,7 +359,7 @@ This distance function turns ℝ ^n into a complete metric space. The resulting 
 `FC08-CA-U027` · Appendix A, § Topological Spaces; source L18008 · [not formalized]{.route-unmatched}
 :::
 
-(Complex Euclidean Spaces). We also sometimes have occasion to work with complex Euclidean spaces. We consider the set C of complex numbers, as a set, to be simply ℝ ^2 , with the complex number x + i y corresponding to ( x , y ) ∈ ℝ ^2 . For any positive integer n, the n-dimensional complex Euclidean space is the set ℂ ^n of ordered n-tuples of complex numbers. It becomes a topological space when identified with ℝ ^ 2 bar(n) via the correspondence (x ^1 + i y ^1, … , x ^n + i y ^n ) rightarrow (x ^1, y ^1, … , x ^n, y ^n ).tag
+Example A.7 (Complex Euclidean Spaces). We also sometimes have occasion to work with complex Euclidean spaces. We consider the set C of complex numbers, as a set, to be simply $\mathbb { R } ^ { 2 }$ , with the complex number $x + i y$ corresponding to $( x , y ) \in \mathbb { R } ^ { 2 }$ . For any positive integer n, the n-dimensional complex Euclidean space is the set $\mathbb { C } ^ { n }$ of ordered n-tuples of complex numbers. It becomes a topological space when identified with $\mathbb { R } ^ { 2 { \bar { n } } }$ via the correspondence $$ \left(x ^ {1} + i y ^ {1}, \dots , x ^ {n} + i y ^ {n}\right) \leftrightarrow \left(x ^ {1}, y ^ {1}, \dots , x ^ {n}, y ^ {n}\right).\tag{//} $$
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib has Euclidean/normed-space instances and many of the listed facts separately, but this source row bundles Lee’s coordinate conventions or several Euclidean identifications/examples; no single checked interface owns the whole bundle. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -387,7 +387,7 @@ This distance function turns ℝ ^n into a complete metric space. The resulting 
 `FC08-CA-U029` · Appendix A, § Hausdorff Spaces; source L18052 · [in Mathlib]{.route-mathlib}
 :::
 
-To avoid pathological cases like this, which result when X does not have sufficiently many open subsets, we often restrict our attention to topological spaces satisfying the following special condition. A topological space X is said to be a Hausdorff space if for every pair of distinct points p , q ∈ X , there exist disjoint open subsets U , V ⊆ X such that p ∈ U and q ∈ V .
+To avoid pathological cases like this, which result when X does not have sufficiently many open subsets, we often restrict our attention to topological spaces satisfying the following special condition. A topological space X is said to be a Hausdorff space if for every pair of distinct points $p , q \in X$ , there exist disjoint open subsets $U , V \subseteq X$ such that $p \in U$ and $q \in V .$
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/Separation/Hausdorff.lean::T2Space`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Separation/Hausdorff.html) — `T2Space` is exactly pairwise separation of distinct points by disjoint neighborhoods/open sets.
@@ -399,7 +399,7 @@ To avoid pathological cases like this, which result when X does not have suffici
 `FC08-CA-U030` · Appendix A, § Bases and Countability; source L18060 · [in Mathlib]{.route-mathlib}
 :::
 
-Suppose X is a topological space. A collection B of open subsets of X is said to be a basis for the topology of X (plural: bases) if every open subset of X is the union of some collection of elements of B .
+Suppose X is a topological space. A collection of open subsets of X is said to be a basis for the topology of X (plural: bases) if every open subset of X is the union of some collection of elements of .
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/Bases.lean::IsTopologicalBasis`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Bases.html) — `IsTopologicalBasis B` is precisely the source condition that open sets are unions of basis elements.
@@ -435,7 +435,7 @@ Then the collection of all unions of elements of B is a topology on X, called th
 `FC08-CA-U033` · Appendix A, § Bases and Countability; source L18070 · [in Mathlib]{.route-mathlib}
 :::
 
-If X is a topological space and p ∈ X a neighborhood basis at p is a collection B _p of neighborhoods of p such that every neighborhood of p contains at least one B ∈ B _p .
+If X is a topological space and $p \in X$ a neighborhood basis at p is a collection $\mathcal { B } _ { p }$ of neighborhoods of p such that every neighborhood of p contains at least one $B \in { \mathcal { B } } _ { p } .$
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/Neighborhoods.lean::nhds_basis_opens`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Neighborhoods.html); [`Mathlib/Order/Filter/Bases/Basic.lean::Filter.HasBasis`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Order/Filter/Bases/Basic.html#Filter.HasBasis) — `nhds_basis_opens` says open sets containing `p` form a basis of `𝓝 p`; [`Filter.HasBasis`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Filter.HasBasis#doc) is exactly the refinement property Lee calls a neighborhood basis.
@@ -475,7 +475,7 @@ The next lemma expresses the most important properties of first-countable spaces
 `FC08-CA-U036` · Appendix A, § Bases and Countability; source L18076 · [not formalized]{.route-unmatched}
 :::
 
-(Sequence Lemma). Let X be a first-countable space, let A ⊆ X be any subset, and let x ∈ X (a) x ∈ bar(A) if and only if x is a limit of a sequence of points in A. (b) x ∈ Int A if and only if every sequence in X converging to x is eventually in A. (c) A is closed in X if and only if A contains every limit of every convergent sequence of points in A. (d) A is open in X if and only if every sequence in X converging to a point of A is eventually in A.
+Lemma A.12 (Sequence Lemma). Let X be a first-countable space, let $A \subseteq X$ be any subset, and let $x \in X$ (a) $x \in { \overline { { A } } }$ if and only if x is a limit of a sequence of points in A. (b) $x \in$ Int A if and only if every sequence in X converging to x is eventually in A. (c) A is closed in X if and only if A contains every limit of every convergent sequence of points in A. (d) A is open in X if and only if every sequence in X converging to a point of A is eventua
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib has the constituent countability/filter/sequence/cover notions, but this source row bundles several definitions or several sequential characterizations. No one declaration or short checked assembly owns all clauses under strict whole-row semantics. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -489,7 +489,7 @@ The next lemma expresses the most important properties of first-countable spaces
 `FC08-CA-U037` · Appendix A, § Bases and Countability; source L18092 · [not formalized]{.route-unmatched}
 :::
 
-One of the most important properties of second-countable spaces is expressed in the following proposition. Let X be a topological space. A cover of X is a collection U of subsets of X whose union is X; it is called an open cover if each of the sets in U is open. A subcover of U is a subcollection of U that is still a cover.
+One of the most important properties of second-countable spaces is expressed in the following proposition. Let X be a topological space. A cover of X is a collection of subsets of X whose union is X; it is called an open cover if each of the sets in is open. A subcover of is a subcollection of that is still a cover.
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib has the constituent countability/filter/sequence/cover notions, but this source row bundles several definitions or several sequential characterizations. No one declaration or short checked assembly owns all clauses under strict whole-row semantics. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -503,7 +503,7 @@ One of the most important properties of second-countable spaces is expressed in 
 `FC08-CA-U038` · Appendix A, § Bases and Countability; source L18094 · [in Mathlib]{.route-mathlib}
 :::
 
-Let X be a second-countable topological space. Every open cover of X has a countable subcover.
+Proposition A.16. Let X be a second-countable topological space. Every open cover of X has a countable subcover.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/Compactness/Lindelof.lean::SecondCountableTopology.toHereditarilyLindelof, IsLindelof.elim_countable_subcover`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Compactness/Lindelof.html) — Second-countability supplies Lindelöfness, whose elimination theorem gives a countable subcover of every open cover.
@@ -515,7 +515,7 @@ Let X be a second-countable topological space. Every open cover of X has a count
 `FC08-CA-U039` · Appendix A, § Subspaces; source L18102 · [in Mathlib]{.route-mathlib}
 :::
 
-Probably the simplest way to obtain new topological spaces from old ones is by taking subsets of other spaces. If X is a topological space and S ⊆ X is an arbitrary subset, we define the subspace topology on S (sometimes called the relative topology) by declaring a subset U ⊆ S to be open in S if and only if there exists an open subset V X such that U = V ∩ S A subset of S that is open or closed in the subspace topology is sometimes said to be relatively open or relatively closed in S , to make it clear that we do not mean open or closed as a subset of X. Any subset of X endowed with the subspace topology is said to be a subspace of X . Whenever we treat a subset of a topological space as a space in its own right, we always assume that it has the subspace topology unless otherwise specified.
+Probably the simplest way to obtain new topological spaces from old ones is by taking subsets of other spaces. If X is a topological space and $S \subseteq X$ is an arbitrary subset, we define the subspace topology on S (sometimes called the relative topology) by declaring a subset $U \subseteq S$ to be open in S if and only if there exists an open subset V X such that $U = V \cap S$ A subset of S that is open or closed in the subspace topology is sometimes said to be relatively open or relatively closed in S , to make it clear that we do not mean open or closed as a subset of X. Any subset of X endowed with the subspace topology is said to be a subspace of X . Whenever we treat a subset of a topological space as a space in its own right, we always assume that it has the subspace topology unless otherwise specified.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/Defs/Induced.lean::TopologicalSpace.induced`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Defs/Induced.html#TopologicalSpace.induced); [`Mathlib/Topology/Constructions.lean::isOpen_induced_iff`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Constructions.html) — The subtype topology is the induced topology and `isOpen_induced_iff` gives exactly the intersection-with-an-ambient-open-set characterization.
@@ -527,7 +527,7 @@ Probably the simplest way to obtain new topological spaces from old ones is by t
 `FC08-CA-U040` · Appendix A, § Subspaces; source L18104 · [in Mathlib]{.route-mathlib}
 :::
 
-If X and Y are topological spaces, a continuous injective map F : X → Y is called a topological embedding if it is a homeomorphism onto its image F ( X ) ⊆ Y in the subspace topology.
+If X and Y are topological spaces, a continuous injective map $F \colon X \to Y$ is called a topological embedding if it is a homeomorphism onto its image $F ( X ) \subseteq Y$ in the subspace topolo
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/Defs/Induced.lean::Topology.IsEmbedding`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Defs/Induced.html#Topology.IsEmbedding) — `IsEmbedding f` is injective and inducing; equivalently a continuous injection that is a homeomorphism onto its range with the subspace topology.
@@ -539,7 +539,7 @@ If X and Y are topological spaces, a continuous injective map F : X → Y is cal
 `FC08-CA-U041` · Appendix A, § Subspaces; source L18108 · [not formalized]{.route-unmatched}
 :::
 
-(Properties of the Subspace Topology). Let X be a topological space and let S be a subspace of X. (a) CHARACTERISTIC PROPERTY: If Y is a topological space, a map F Y S is continuous if and only if the composition iota _S ∘ F : Y → X is continuous, where iota _S : S ↪ X is the inclusion map (the restriction of the identity map of X to S ). (b) The subspace topology is the unique topology on S for which the characteristic property holds. (c) A subset K ⊆ S is closed in S if and only if there exists a closed subset L ⊆ X such that K = L ∩ S (d) The inclusion map iota _S : S ↪ X is a topological embedding. (e) If Y is a topological space and F : X → Y is continuous, then F ∣ _S : S → Y (the restriction of F to S ) is continuous. (f) If B is a basis for the topology of X , then B _S = B ∩ S : B ∈ B is a basis for the subspace topology on S. (g) If X is Hausdorff, then so is S . (h) If X is first-countable, then so is S . (i) If X is second-countable, then so is S .
+Proposition A.17 (Properties of the Subspace Topology). Let X be a topological space and let S be a subspace of X. (a) CHARACTERISTIC PROPERTY: If Y is a topological space, a map F Y S is continuous if and only if the composition $\iota _ { S } \circ F \colon Y \to X$ is continuous, where $\iota _ { S } \colon S \hookrightarrow$ X is the inclusion map (the restriction of the identity map of X to S ). (b) The subspace topology is the unique topology on S for which the characteristic property holds. (c) A subset $K \subseteq S$ is closed in S if and only if there exists a closed subset $L \subseteq X$ such that $K = L \cap S$ (d) The inclusion map $\iota _ { S } \colon S \hookrightarrow X$ is a topological embedding. (e) If Y is a topological space and $F \colon X \to Y$ is continuous, then $F | _ { S } \colon S \to Y$ (the restriction of F to S ) is continuous. (f) If is a basis for the topology of X , then $\mathcal { B } _ { S } = \{ B \cap S : B \in \mathcal { B } \}$ is a basis for the subspace topology on S. (g) If X is Hausdorff, then so is S . (h) If X is first-countable, then so is S . (i)
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — The underlying subspace/product/disjoint-union infrastructure is formalized, but this row is a multi-clause construction/properties bundle (or tagged-image convention) not owned in full by one declaration or a short assembly. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -553,7 +553,7 @@ If X and Y are topological spaces, a continuous injective map F : X → Y is cal
 `FC08-CA-U042` · Appendix A, § Subspaces; source L18132 · [in Mathlib]{.route-mathlib}
 :::
 
-(Continuity Is Local). Continuity is a local property, in the following sense: if F X Y is a map between topological spaces such that every poin p ∈ X has a neighborhood U on which the restriction F ∣ _U is continuous, then F is continuous.
+Lemma A.19 (Continuity Is Local). Continuity is a local property, in the following sense: if F X Y is a map between topological spaces such that every poin $p \in X$ has a neighborhood U on which the restriction $F | _ { U }$ is continuous, then F is continuous.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/ContinuousOn.lean::continuous_of_cover_nhds`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/ContinuousOn.html) — `continuous_of_cover_nhds` is the local-to-global continuity theorem on a neighborhood cover, exactly Lee’s lemma.
@@ -565,7 +565,7 @@ If X and Y are topological spaces, a continuous injective map F : X → Y is cal
 `FC08-CA-U043` · Appendix A, § Subspaces; source L18134 · [not formalized]{.route-unmatched}
 :::
 
-(Gluing Lemma for Continuous Maps). Let X and Y be topological spaces, and suppose one of the following conditions holds: (a) B _1 , … , B _n are finitely many closed subsets of X whose union is X. (b) B _i _i ∈ A is a collection of open subsets of X whose union is X. Suppose that for all i we are given continuous maps F _i : B _i → Y that agree on overlaps: F _i ∣ _ B _i ∩ B _j = F _j ∣ _ B _i ∩ B _j . Then there exists a unique continuous map F : X → Y whose restriction to each B _i is equal to F _i .
+Lemma A.20 (Gluing Lemma for Continuous Maps). Let X and Y be topological spaces, and suppose one of the following conditions holds: (a) $B _ { 1 } , \ldots , B _ { n }$ are finitely many closed subsets of X whose union is X. (b) $\{ B _ { i } \} _ { i \in A }$ is a collection of open subsets of X whose union is X. Suppose that for all i we are given continuous maps $F _ { i } \colon B _ { i } \to Y$ that agree on overlaps: $F _ { i } | _ { B _ { i } \cap B _ { j } } = F _ { j } | _ { B _ { i } \cap B _ { j } }$ . Then there exists a unique continuous map $F \colon X \to Y$ whose restriction to each $B _ { i }$ is equal
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — The underlying subspace/product/disjoint-union infrastructure is formalized, but this row is a multi-clause construction/properties bundle (or tagged-image convention) not owned in full by one declaration or a short assembly. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -673,7 +673,7 @@ Given an indexed family of topological spaces ( X _α ) _α ∈ A , we define th
 `FC08-CA-U051` · Appendix A, § Quotient Spaces and Quotient Maps; source L18224 · [in Mathlib]{.route-mathlib}
 :::
 
-If X is a topological space, Y is a set, and π : X → Y is a surjective map, the quotient topology on Y determined by π is defined by declaring a subset U ⊆ Y to be open if and only if π ^- 1 ( U ) is open in X. If X and Y are topological spaces, a map π : X → Y is called a quotient map if it is surjective and continuous and Y has the quotient topology determined by π
+If X is a topological space, Y is a set, and $\pi \colon X \to Y$ is a surjective map, the quotient topology on Y determined by  is defined by declaring a subset $U \subseteq Y$ to be open if and only if $\pi ^ { - 1 } ( U )$ is open in X. If X and Y are topological spaces, a map $\pi \colon X \to Y$ is called a quotient map if it is surjective and continuous and Y has the quotient topology determi
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/Defs/Induced.lean::Topology.IsQuotientMap`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Defs/Induced.html#Topology.IsQuotientMap) — `IsQuotientMap` is surjectivity plus the coinduced/quotient topology, hence exactly Lee’s quotient-map package.
@@ -685,7 +685,7 @@ If X is a topological space, Y is a set, and π : X → Y is a surjective map, t
 `FC08-CA-U052` · Appendix A, § Quotient Spaces and Quotient Maps; source L18226 · [not formalized]{.route-unmatched}
 :::
 
-The following construction is the most common way of producing quotient maps. A relation on a set X is called an equivalence relation if it is reflexive ( x ∼ x for all x ∈ X ) , symmetric ( x ∼ y implies y ∼ x ) , and transitive ( x ∼ y and y ∼ z imply x ∼ z ) . If R ⊆ X × X is any relation on X, then the intersection of all equivalence relations on X containing R is an equivalence relation, called the equivalence relation generated by R. If is an equivalence relation on X , then for each x ∈ X , the equivalence class of x, denoted by Œx, is the set of all y ∈ X such that y ∼ x . The set of all equivalence classes is a partition of X : a collection of disjoint nonempty subsets whose union is X .
+The following construction is the most common way of producing quotient maps. A relation on a set X is called an equivalence relation if it is reflexive $( x \sim x$ for all $x \in X )$ , symmetric $( x \sim y$ implies $y \sim x )$ , and transitive $( x \sim y$ and $y \sim z$ imply $x \sim z )$ . If $R \subseteq X \times X$ is any relation on X, then the intersection of all equivalence relations on $X$ containing R is an equivalence relation, called the equivalence relation generated by R. If is an equivalence relation on $X$ , then for each $x \in X$ , the equivalence class of x, denoted by Œx, is the set of all $y \in X$ such that $y \sim x$ . The set of all equivalence classes is a partition of X : a collection of disjoint nonempty subsets whose union is
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib has quotient/setoid/open/closed-map infrastructure, but this row bundles generated equivalence relations, adjunction examples, saturation, several quotient properties, or quotient-space uniqueness beyond the single directly mapped universal property. No complete owner was found. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -699,7 +699,7 @@ The following construction is the most common way of producing quotient maps. A 
 `FC08-CA-U053` · Appendix A, § Quotient Spaces and Quotient Maps; source L18228 · [not formalized]{.route-unmatched}
 :::
 
-Suppose X is a topological space and is an equivalence relation on X. Let X / ∼ denote the set of equivalence classes in X, and let π : X → X / ∼ be the natural projection sending each point to its equivalence class. Endowed with the quotient topology determined by π, the space X / ∼ is called the quotient space (or identification space) of X determined by ∼. For example, suppose X and Y are topological spaces, A ⊆ Y is a closed subset, and f : A → X is a continuous map. The relation a ∼ f ( a ) for all a ∈ A generates an equivalence relation on X Y , whose quotient space is denoted by X ∪ _f Y and called an adjunction space. It is said to be formed by attaching Y to X along f .
+Suppose X is a topological space and is an equivalence relation on X. Let $X / \sim$ denote the set of equivalence classes in X, and let $\pi \colon X \to X / \sim$ be the natural projection sending each point to its equivalence class. Endowed with the quotient topology determined by , the space $X / \sim$ is called the quotient space (or identification space) of X determined by . For example, suppose X and Y are topological spaces, $A \subseteq Y$ is a closed subset, and $f \colon A \to X$ is a continuous map. The relation $a \sim f ( a )$ for all $a \in A$ generates an equivalence relation on X Y , whose quotient space is denoted by $X \cup _ { f } Y$ and called an adjunction space. It is said to be formed by attaching Y to X
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib has quotient/setoid/open/closed-map infrastructure, but this row bundles generated equivalence relations, adjunction examples, saturation, several quotient properties, or quotient-space uniqueness beyond the single directly mapped universal property. No complete owner was found. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -781,7 +781,7 @@ A map F : X → Y (continuous or not) is said to be an open map if for every ope
 `FC08-CA-U059` · Appendix A, § Open and Closed Maps; source L18288 · [not formalized]{.route-unmatched}
 :::
 
-Suppose X and Y are topological spaces, and F : X → Y is a continuous map that is either open or closed. (a) If F is surjective, then it is a quotient map. (b) If F is injective, then it is a topological embedding. (c) If F is bijective, then it is a homeomorphism.
+Theorem A.38. Suppose X and Y are topological spaces, and $F \colon X \to Y$ is a continuous map that is either open or closed. (a) If F is surjective, then it is a quotient map. (b) If F is injective, then it is a topological embedding. (c) If F is bijective, then it is a homeomor
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib has quotient/setoid/open/closed-map infrastructure, but this row bundles generated equivalence relations, adjunction examples, saturation, several quotient properties, or quotient-space uniqueness beyond the single directly mapped universal property. No complete owner was found. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -819,7 +819,7 @@ A maximal connected subset of X (i.e., a connected subset that is not properly c
 `FC08-CA-U062` · Appendix A, § Connectedness and Compactness; source L18306 · [not formalized]{.route-unmatched}
 :::
 
-(Properties of Connected Spaces). Let X and Y be topological spaces. (a) I f F : X → Y is continuous and X is connected, then F ( X ) is connected. (b) Every connected subset of X is contained in a single component of X. (c) A union of connected subspaces of X with a point in common is connected. (d) The components of X are disjoint nonempty closed subsets whose union is X, and thus they form a partition of X . (e) If S is a subset of X that is both open and closed, then S is a union of components of X . (f) Every finite product of connected spaces is connected. (g) Every quotient space of a connected space is connected.
+Proposition A.39 (Properties of Connected Spaces). Let X and Y be topological spaces. (a) $I f F \colon X \to Y$ is continuous and X is connected, then $F ( X )$ is connected. (b) Every connected subset of X is contained in a single component of X. (c) A union of connected subspaces of X with a point in common is connected. (d) The components of X are disjoint nonempty closed subsets whose union is X, and thus they form a partition of X . (e) If S is a subset of X that is both open and closed, then S is a union of components of X . (f) Every finite product of connected spaces is connected. (g) Every quotient space of a connected space is conn
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib contains many constituent connectedness/compactness/properness facts, but the source row is a substantial multi-clause theorem or uses Lee’s compact-preimage definition of properness for maps not assumed continuous. No one checked owner matches the complete row. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -833,7 +833,7 @@ A maximal connected subset of X (i.e., a connected subset that is not properly c
 `FC08-CA-U063` · Appendix A, § Connectedness and Compactness; source L18324 · [in Mathlib]{.route-mathlib}
 :::
 
-Closely related to connectedness is path connectedness. If X is a topological space and p , q ∈ X , a path in X from p to q is a continuous map f : I → X (where I = [ 0 , 1 ] ) such that f ( 0 ) = p and f ( 1 ) = q . If for every pair of points p , q ∈ X there exists a path in X from p to q, then X is said to be path-connected. The path components of X are its maximal path-connected subsets.
+Closely related to connectedness is path connectedness. If X is a topological space and $p , q \in X$ , a path in X from p to q is a continuous map $f \colon I \to X$ (where $I = [ 0 , 1 ] )$ such that $f ( 0 ) = p$ and $f ( 1 ) = q$ . If for every pair of points $p , q \in X$ there exists a path in X from p to q, then X is said to be path-connected. The path components of X are its maximal path-connected subse
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/Path.lean::Path`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Path.html); [`Mathlib/Topology/Connected/PathConnected.lean::IsPathConnected, pathComponent`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Connected/PathConnected.html) — Mathlib directly formalizes paths on `[0,1]`, path-connected subsets, and maximal path components.
@@ -845,7 +845,7 @@ Closely related to connectedness is path connectedness. If X is a topological sp
 `FC08-CA-U064` · Appendix A, § Connectedness and Compactness; source L18326 · after [`FC08-CA-U062`](#fc08-ca-u062) · [not formalized]{.route-unmatched}
 :::
 
-(Properties of Path-Connected Spaces). (a) Proposition A.39 holds with “connected” replaced by “path-connected” and “component” by “path component” throughout. (b) Every path-connected space is connected.
+Proposition A.41 (Properties of Path-Connected Spaces). (a) Proposition A.39 holds with “connected” replaced by “path-connected” and “component” by “path component” throughout. (b) Every path-connected space is connected.
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib contains many constituent connectedness/compactness/properness facts, but the source row is a substantial multi-clause theorem or uses Lee’s compact-preimage definition of properness for maps not assumed continuous. No one checked owner matches the complete row. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -871,7 +871,7 @@ For most topological spaces we treat in this book, including all manifolds, conn
 `FC08-CA-U066` · Appendix A, § Connectedness and Compactness; source L18336 · [not formalized]{.route-unmatched}
 :::
 
-(Properties of Locally Path-Connected Spaces). Let X be a locally path-connected topological space. (a) The components of X are open in X. (b) The path components of X are equal to its components. (c) X is connected if and only if it is path-connected. (d) Every open subset of X is locally path-connected.
+Proposition A.43 (Properties of Locally Path-Connected Spaces). Let X be a locally path-connected topological space. (a) The components of X are open in X. (b) The path components of X are equal to its components. (c) X is connected if and only if it is path-connected. (d) Every open subset of X is locally path-connected.
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib contains many constituent connectedness/compactness/properness facts, but the source row is a substantial multi-clause theorem or uses Lee’s compact-preimage definition of properness for maps not assumed continuous. No one checked owner matches the complete row. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -885,7 +885,7 @@ For most topological spaces we treat in this book, including all manifolds, conn
 `FC08-CA-U067` · Appendix A, § Connectedness and Compactness; source L18348 · [in Mathlib]{.route-mathlib}
 :::
 
-A topological space X is said to be compact if every open cover of X has a finite subcover. A compact subset of a topological space is one that is a compact space in the subspace topology. For example, it is a consequence of the Heine–Borel theorem that a subset of R n is compact if and only if it is closed and bounded.
+A topological space X is said to be compact if every open cover of X has a finite subcover. A compact subset of a topological space is one that is a compact space in the subspace topology. For example, it is a consequence of the Heine–Borel theorem that a subset of R is compact if and only if it is closed and bounded.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/Defs/Filter.lean::IsCompact`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Defs/Filter.html); [`Mathlib/Topology/Compactness/Compact.lean::isCompact_iff_finite_subcover`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Compactness/Compact.html); [`Mathlib/Topology/MetricSpace/Bounded.lean::isCompact_iff_isClosed_bounded`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/MetricSpace/Bounded.html) — Mathlib’s finite-subcover characterization is the source compactness definition, and its Heine–Borel theorem gives the stated closed-and-bounded criterion in Euclidean proper metric spaces.
@@ -897,7 +897,7 @@ A topological space X is said to be compact if every open cover of X has a finit
 `FC08-CA-U068` · Appendix A, § Connectedness and Compactness; source L18350 · [not formalized]{.route-unmatched}
 :::
 
-(Properties of Compact Spaces). Let X and Y be topological spaces. (a) If F : X → Y is continuous and X is compact, then F .X / is compact. (b) If X is compact and f X R is continuous, then f is bounded and attains its maximum and minimum values on X. (c) Any union of finitely many compact subspaces of X is compact. (d) If X is Hausdorff and K and L are disjoint compact subsets of X, then there exist disjoint open subsets U; V ⊆ X such that K ⊆ U and L ⊆ V (e) Every closed subset of a compact space is compact. (f) Every compact subset of a Hausdorff space is closed. (g) Every compact subset of a metric space is bounded. (h) Every finite product of compact spaces is compact. (i) Every quotient of a compact space is compact.
+Proposition A.45 (Properties of Compact Spaces). Let X and Y be topological spaces. (a) If $F \colon X \to Y$ is continuous and X is compact, then F .X / is compact. (b) If X is compact and f X R is continuous, then f is bounded and attains its maximum and minimum values on X. (c) Any union of finitely many compact subspaces of X is compact. (d) If X is Hausdorff and K and L are disjoint compact subsets of X, then there exist disjoint open subsets U; $V \subseteq X$ such that $K \subseteq U$ and $L \subseteq V$ (e) Every closed subset of a compact space is compact. (f) Every compact subset of a Hausdorff space is closed. (g) Every compact subset of a metric space is bounded. (h) Every finite product of compact spaces is compact. (i) Every quotient of a compact space is compa
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib contains many constituent connectedness/compactness/properness facts, but the source row is a substantial multi-clause theorem or uses Lee’s compact-preimage definition of properness for maps not assumed continuous. No one checked owner matches the complete row. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -923,7 +923,7 @@ For maps between metric spaces, there are several variants of continuity that ar
 `FC08-CA-U070` · Appendix A, § Connectedness and Compactness; source L18376 · [in Mathlib]{.route-mathlib}
 :::
 
-Suppose ( M _1 , d _1 ) and ( M _2 , d _2 ) are metric spaces and F : M _1 → M _2 is a map. Let K be any compact subset of M _1 (a) If F is continuous, then F ∣ _K is uniformly continuous. (b) If F is locally Lipschitz continuous, then F ∣ _K is Lipschitz continuous.
+Proposition A.48. Suppose $( M _ { 1 } , d _ { 1 } )$ and $( M _ { 2 } , d _ { 2 } )$ are metric spaces and $F \colon M _ { 1 } \to$ $M _ { 2 }$ is a map. Let K be any compact subset of $M _ { 1 }$ (a) If F is continuous, then $F | _ { K }$ is uniformly continuous. (b) If F is locally Lipschitz continuous, then $F | _ { K }$ is Lipschitz conti
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/UniformSpace/HeineCantor.lean::IsCompact.uniformContinuousOn_of_continuous`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/UniformSpace/HeineCantor.html#IsCompact.uniformContinuousOn_of_continuous); [`Mathlib/Topology/Algebra/MetricSpace/Lipschitz.lean::LocallyLipschitzOn.exists_lipschitzOnWith_of_compact`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Algebra/MetricSpace/Lipschitz.html#LocallyLipschitzOn.exists_lipschitzOnWith_of_compact) — The first theorem is Heine–Cantor on a compact set; the second states exactly that locally Lipschitz on a compact set admits one global Lipschitz constant there.
@@ -935,7 +935,7 @@ Suppose ( M _1 , d _1 ) and ( M _2 , d _2 ) are metric spaces and F : M _1 → M
 `FC08-CA-U071` · Appendix A, § Connectedness and Compactness; source L18396 · [not formalized]{.route-unmatched}
 :::
 
-(Equivalent Formulations of Compactness). Suppose M is a second-countable Hausdorff space or a metric space. The following are equivalent. (a) M is compact. (b) Every infinite subset of M has a limit point in M . (c) Every sequence in M has a convergent subsequence in M .
+Proposition A.50 (Equivalent Formulations of Compactness). Suppose M is a second-countable Hausdorff space or a metric space. The following are equivalent. (a) M is compact. (b) Every infinite subset of M has a limit point in M . (c) Every sequence in M has a convergent subsequence in M .
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib contains many constituent connectedness/compactness/properness facts, but the source row is a substantial multi-clause theorem or uses Lee’s compact-preimage definition of properness for maps not assumed continuous. No one checked owner matches the complete row. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -949,7 +949,7 @@ Suppose ( M _1 , d _1 ) and ( M _2 , d _2 ) are metric spaces and F : M _1 → M
 `FC08-CA-U072` · Appendix A, § Connectedness and Compactness; source L18408 · [not formalized]{.route-unmatched}
 :::
 
-(Closed Map Lemma). Suppose X is a compact space, Y is a Hausdorff space, and F X Y is a continuous map. (a) F is a closed map. (b) If F is surjective, it is a quotient map. (c) If F is injective, it is a topological embedding. (d) If F is bijective, it is a homeomorphism.
+Lemma A.52 (Closed Map Lemma). Suppose X is a compact space, Y is a Hausdorff space, and F X Y is a continuous map. (a) F is a closed map. (b) If F is surjective, it is a quotient map. (c) If F is injective, it is a topological embedding. (d) If F is bijective, it is a homeomorphism.
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib contains many constituent connectedness/compactness/properness facts, but the source row is a substantial multi-clause theorem or uses Lee’s compact-preimage definition of properness for maps not assumed continuous. No one checked owner matches the complete row. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -963,7 +963,7 @@ Suppose ( M _1 , d _1 ) and ( M _2 , d _2 ) are metric spaces and F : M _1 → M
 `FC08-CA-U073` · Appendix A, § Connectedness and Compactness; source L18420 · [not formalized]{.route-unmatched}
 :::
 
-If X and Y are topological spaces, a map F X Y (continuous or not) is said to be proper if for every compact set K Y , the preimage F -1 .K/ is compact. Here are some useful sufficient conditions for a map to be proper.
+If X and Y are topological spaces, a map F X Y (continuous or not) is said to be proper if for every compact set K Y , the preimage F .K/ is compact. Here are some useful sufficient conditions for a map to be proper.
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib contains many constituent connectedness/compactness/properness facts, but the source row is a substantial multi-clause theorem or uses Lee’s compact-preimage definition of properness for maps not assumed continuous. No one checked owner matches the complete row. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -1015,7 +1015,7 @@ A topological space X is said to be locally compact if every point has a neighbo
 `FC08-CA-U077` · Appendix A, § Locally Compact Hausdorff Spaces; source L18454 · [in Mathlib]{.route-mathlib}
 :::
 
-(Proper Continuous Maps Are Closed). Suppose X is a topological space and Y is a locally compact Hausdorff space. Then every proper continuous map F : X → Y is closed.
+Theorem A.57 (Proper Continuous Maps Are Closed). Suppose X is a topological space and Y is a locally compact Hausdorff space. Then every proper continuous map $F \colon X \to Y$ is clos
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/Maps/Proper/CompactlyGenerated.lean::isProperMap_iff_isCompact_preimage`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Maps/Proper/CompactlyGenerated.html); [`Mathlib/Topology/Maps/Proper/Basic.lean::IsProperMap.isClosedMap`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Maps/Proper/Basic.html#IsProperMap.isClosedMap) — For a locally compact Hausdorff target, the compact-preimage criterion is equivalent to Mathlib properness, whose `isClosedMap` theorem gives Lee’s conclusion.
@@ -1027,7 +1027,7 @@ A topological space X is said to be locally compact if every point has a neighbo
 `FC08-CA-U078` · Appendix A, § Locally Compact Hausdorff Spaces; source L18460 · [in Mathlib]{.route-mathlib}
 :::
 
-(Baire Category Theorem). In a locally compact Hausdorff space or a complete metric space, every countable union of nowhere dense sets has empty interior.
+Theorem A.58 (Baire Category Theorem). In a locally compact Hausdorff space or a complete metric space, every countable union of nowhere dense sets has empty interior.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/Baire/CompleteMetrizable.lean::BaireSpace.of_completelyPseudoMetrizable`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Baire/CompleteMetrizable.html#BaireSpace.of_completelyPseudoMetrizable); [`Mathlib/Topology/Baire/LocallyCompactRegular.lean::BaireSpace.of_t2Space_locallyCompactSpace`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Baire/LocallyCompactRegular.html#BaireSpace.of_t2Space_locallyCompactSpace) — Mathlib supplies Baire-space instances for complete metrizable and locally compact Hausdorff spaces; its Baire-space axiom is equivalent to the source nowhere-dense-union formulation.
@@ -1039,7 +1039,7 @@ A topological space X is said to be locally compact if every point has a neighbo
 `FC08-CA-U079` · Appendix A, § Locally Compact Hausdorff Spaces; source L18462 · [not formalized]{.route-unmatched}
 :::
 
-In a locally compact Hausdorff space or a complete metric space, every nonempty countable closed subset contains at least one isolated point.
+Corollary A.59. In a locally compact Hausdorff space or a complete metric space, every nonempty countable closed subset contains at least one isolated point.
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib contains many constituent connectedness/compactness/properness facts, but the source row is a substantial multi-clause theorem or uses Lee’s compact-preimage definition of properness for maps not assumed continuous. No one checked owner matches the complete row. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -1101,7 +1101,7 @@ Two paths $f_{0}, f_{1} \colon I \to X$ are path-homotopic, written $f_{0} \sim 
 `FC08-CA-U084` · Appendix A, § Homotopy and the Fundamental Group; source L18488 · [in Mathlib]{.route-mathlib}
 :::
 
-For any given points p , q ∈ X , path homotopy is an equivalence relation on the set of all paths from p to q . The equivalence class of a path f is called its path class, and is denoted by Œf .
+For any given points $p , q \in X$ , path homotopy is an equivalence relation on the set of all paths from $p$ to $q$ . The equivalence class of a path $f$ is called its path class, and is denoted by Œf .
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/Homotopy/Path.lean::Path.Homotopic.Quotient`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Homotopy/Path.html#Path.Homotopic.Quotient) — The quotient by path homotopy is exactly the set of path classes between fixed endpoints.
@@ -1113,7 +1113,7 @@ For any given points p , q ∈ X , path homotopy is an equivalence relation on t
 `FC08-CA-U085` · Appendix A, § Homotopy and the Fundamental Group; source L18498 · [in Mathlib]{.route-mathlib}
 :::
 
-If X is a topological space and q is a point in X, a loop in X based at q is a path in X from q to q , that is, a continuous map f : I → X such that f ( 0 ) = f ( 1 ) = q The set of path classes of loops based at q is denoted by π _1 ( X , q ) . Equipped with the product described above, it is a group, called the fundamental group of X based at ±b q . The identity element of this group is the path class of the constant path c _q ( s ) equiv q , and the inverse of [ f ] is the path class of the reverse path bar(f) ( s ) = f ( 1 - s )
+If X is a topological space and $q$ is a point in X, a loop in X based at q is a path in X from $q$ to $q$ , that is, a continuous map $f \colon I \to X$ such that $f ( 0 ) = f ( 1 ) = q$ The set of path classes of loops based at q is denoted by $\pi _ { 1 } ( X , q )$ . Equipped with the product described above, it is a group, called the fundamental group of X based at $\pmb q$ . The identity element of this group is the path class of the constant path $c _ { q } ( s ) \equiv q$ , and the inverse of $[ f ]$ is the path class of the reverse path ${ \overline { { f } } } ( s ) =$ $f ( 1 - s )$ It can
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/AlgebraicTopology/FundamentalGroupoid/FundamentalGroup.lean::FundamentalGroup`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicTopology/FundamentalGroupoid/FundamentalGroup.html) — `FundamentalGroup X q` is the automorphism group at `q` in the path-homotopy fundamental groupoid, i.e. path classes of based loops with concatenation, constant identity, and reversal inverse.
@@ -1125,7 +1125,7 @@ If X is a topological space and q is a point in X, a loop in X based at q is a p
 `FC08-CA-U086` · Appendix A, § Homotopy and the Fundamental Group; source L18500 · [not formalized]{.route-unmatched}
 :::
 
-It can be shown that for path-connected spaces, the fundamental groups based at different points are isomorphic. If X is path-connected and for some (hence every) q ∈ X , the fundamental group π _1 ( X , q ) is the trivial group consisting of [ c _q ] alone, we say that X is simply connected. This means that every loop is path-homotopic to a constant path.
+$f ( 1 - s )$ It can be shown that for path-connected spaces, the fundamental groups based at different points are isomorphic. If X is path-connected and for some (hence every) $q \in X$ , the fundamental group $\pi _ { 1 } ( X , q )$ is the trivial group consisting of $[ c _ { q } ]$ alone, we say that X is simply connected. This means that every loop is path-homotopic to a constant path.
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib/TauCeti contain substantial fundamental-group and homotopy infrastructure, but this row bundles basepoint transport, composition/functoriality clauses, sphere/product computations, or a concrete deformation example without one complete checked owner at the required interface. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -1139,7 +1139,7 @@ It can be shown that for path-connected spaces, the fundamental groups based at 
 `FC08-CA-U087` · Appendix A, § Homotopy and the Fundamental Group; source L18506 · [not formalized]{.route-unmatched}
 :::
 
-If F _0 , F _1 : X Y and G _0 , G _1 : Y → Z are continuous maps with F _0 simeq F _1 and G _0 simeq G _1 , then G _0 ∘ F _0 simeq G _1 ∘ F _1 . Similarly, i f f _0 , f _1 : I → X are path-homotopic and F : X → Y is a continuous map, then F ∘ f _0 ∼ F ∘ f _1
+$F _ { 0 } , F _ { 1 } \colon X Y$ and $G _ { 0 } , G _ { 1 } \colon Y \to Z$ are continuous maps with $F _ { 0 } \simeq F _ { 1 }$ and $G _ { 0 } \simeq G _ { 1 }$ , then $G _ { 0 } \circ F _ { 0 } \simeq G _ { 1 } \circ F _ { 1 }$ . Similarly, $i f f _ { 0 } , f _ { 1 } \colon I \to X$ are path-homotopic and $F \colon X \to Y$ is a continuous map, then
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib/TauCeti contain substantial fundamental-group and homotopy infrastructure, but this row bundles basepoint transport, composition/functoriality clauses, sphere/product computations, or a concrete deformation example without one complete checked owner at the required interface. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -1153,7 +1153,7 @@ If F _0 , F _1 : X Y and G _0 , G _1 : Y → Z are continuous maps with F _0 sim
 `FC08-CA-U088` · Appendix A, § Homotopy and the Fundamental Group; source L18516 · [in Mathlib]{.route-mathlib}
 :::
 
-If X and Y are topological spaces and F : X → Y is a continuous map, then F _* : π _1 ( X , q ) → π _1 ( Y , F ( q ) ) is a group homomorphism, known as the homomorphism induced by F .
+Proposition A.64. If X and Y are topological spaces and $F \colon X \to Y$ is a continuous map, then $F _ { * } \colon \pi _ { 1 } ( X , q ) \to \pi _ { 1 } ( Y , F ( q ) )$ is a group homomorphism, known as the homomorphism induce
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/AlgebraicTopology/FundamentalGroupoid/FundamentalGroup.lean::FundamentalGroup.map`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicTopology/FundamentalGroupoid/FundamentalGroup.html#FundamentalGroup.map) — A continuous map induces exactly the stated group homomorphism on based fundamental groups.
@@ -1247,7 +1247,7 @@ Suppose E and X are topological spaces. A map π : E → X is called a covering 
 `FC08-CA-U095` · Appendix A, § Covering Maps; source L18576 · [not formalized]{.route-unmatched}
 :::
 
-If π : E → X is a covering map and F : B → X is a continuous map, a lift of F is a continuous map tilde(F) : B → E such that π ∘ tilde(F) = F
+$\pi \colon E \to X$ is a covering map and $F \colon B \to X$ is a continuous map, a lift of F is a continuous map $\widetilde { F } \colon B \to E$ such that $\pi \circ { \tilde { F } } = F$
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Pinned Mathlib has covering and lifting infrastructure and TauCeti has later universal-cover classification results, but Lee’s row uses an augmented covering-map convention or a locally-simply-connected/universal-cover statement whose full hypotheses and uniqueness conclusion are not owned by one compatible checked declaration without a nontrivial bridge. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -1313,7 +1313,7 @@ A topological space is said to be locally simply connected if it admits a basis 
 `FC08-CA-U100` · Appendix A, § Covering Maps; source L18594 · [not formalized]{.route-unmatched}
 :::
 
-(Existence of a Universal Covering Space). If X is a connected and locally simply connected topological space, there exists a simply connected topological space tilde(X) and a covering map π tilde(X) → X . I f hat(π) : hat(X) → bar(X) is any other simply connected covering of X, there is a homeomorphism φ : tilde(X) hat(X) such that hat(π) ∘ φ = π
+Proposition A.80 (Existence of a Universal Covering Space). If X is a connected and locally simply connected topological space, there exists a simply connected topological space $\widetilde { X }$ and a covering map  ${ \tilde { X } } \to X . \ I f { \widehat { \pi } } \colon { \hat { X } } \to { \bar { X } }$ is any other simply connected covering of X, there is a homeomorphism $\varphi \colon { \tilde { X } } { \hat { X } }$ such that ${ \hat { \pi } } \circ \varphi = \pi$
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Pinned Mathlib has covering and lifting infrastructure and TauCeti has later universal-cover classification results, but Lee’s row uses an augmented covering-map convention or a locally-simply-connected/universal-cover statement whose full hypotheses and uniqueness conclusion are not owned by one compatible checked declaration without a nontrivial bridge. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.

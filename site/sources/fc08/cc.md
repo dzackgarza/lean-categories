@@ -35,7 +35,7 @@ Of the 50 statements checked against Lean, 23 are formalized somewhere and 27 ar
 `FC08-CC-U001` · Appendix C, § Total and Partial Derivatives; source L19458 · [in Mathlib]{.route-mathlib}
 :::
 
-Let V , W be finite-dimensional vector spaces, which we may assume to be endowed with norms. If U ⊆ V is an open subset and a ∈ U , a map F : U → W is said to be differentiable at a if there exists a linear map L : V → W such that lim _v → 0 (∣ F (a + v) - F (a) - L v ∣)/(∣ v ∣) = 0.tagC.1
+Let V , W be finite-dimensional vector spaces, which we may assume to be endowed with norms. If $U \subseteq V$ is an open subset and $a \in U$ , a map $F \colon U \to W$ is said to be differentiable at a if there exists a linear map $L \colon V \to W$ such that $$ \lim _ {v \to 0} \frac {| F (a + v) - F (a) - L v |}{| v |} = 0.\tag{C.1} $$
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Analysis/Calculus/FDeriv/Defs.lean::HasFDerivWithinAt, HasFDerivAt, fderivWithin, fderiv`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/FDeriv/Defs.html) — Mathlib’s Fréchet derivative is exactly Lee’s total derivative: `HasFDerivWithinAt` gives the little-o linear approximation on a set, and on an open domain it agrees with `HasFDerivAt`; `fderivWithin`/`fderiv` are the unique derivative maps.
@@ -77,7 +77,7 @@ If F is differentiable at a, the linear map L satisfying (C.1) is denoted by D F
 `FC08-CC-U004` · Appendix C, § Partial Derivatives; source L19548 · [in Mathlib]{.route-mathlib}
 :::
 
-Now we specialize to maps between Euclidean spaces. Suppose U ⊆ ℝ ^n is open and f : U → ℝ is a real-valued function. For any a = ( a ^1 , … , a ^n ) ∈ U and any j ∈ 1 , …c , n , the j th partial derivative of f at a is defined to be the ordinary derivative of f with respect to x ^j while holding the other variables fixed: beginarrayc (∂ f)/(∂ x ^j) (a) = lim _h → 0 (f (a ^1 , … , a ^j + h , … , a ^n) - f (a ^1 , … , a ^j , … , a ^n))/(h) = lim _h → 0 (f (a + h e _j) - f (a))/(h), endarray
+Now we specialize to maps between Euclidean spaces. Suppose $U \subseteq \mathbb { R } ^ { n }$ is open and $f \colon U \to \mathbb { R }$ is a real-valued function. For any $a = \left( a ^ { 1 } , \ldots , a ^ { n } \right) \in U$ and any $j \in \{ 1 , \dotsc , n \}$ , the j th partial derivative of f at a is defined to be the ordinary derivative of f with respect to $x ^ { j }$ while holding the other variables fixed: $$ \begin{array}{c} \frac {\partial f}{\partial x ^ {j}} (a) = \lim _ {h \to 0} \frac {f (a ^ {1} , \ldots , a ^ {j} + h , \ldots , a ^ {n}) - f (a ^ {1} , \ldots , a ^ {j} , \ldots , a ^ {n})}{h} \\ = \lim _ {h \to 0} \frac {f (a + h e _ {j}) - f (a)}{h}, \end{array} $$
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Analysis/Calculus/LineDeriv/Basic.lean::lineDerivWithin, lineDeriv`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/LineDeriv/Basic.html) — Lee’s partial derivative is exactly the line derivative in the standard-basis direction `e_j`; `lineDerivWithin ℝ f U a e_j` is defined by the same one-variable difference quotient.
@@ -133,7 +133,7 @@ In general, if U ⊆ ℝ ^n is an open subset and k ≥ 0 , a function F : U ℝ
 `FC08-CC-U008` · Appendix C, § Partial Derivatives; source L19568 · [in Mathlib]{.route-mathlib}
 :::
 
-A function that is of class C ^k for every k ≥ 0 is said to be of class C ^∞ , smooth, or infinitely differentiable. If U and V are open subsets of Euclidean spaces, a function F : U → V is called a diffeomorphism if it is smooth and bijective and its inverse function is also smooth.
+in $U$ A function that is of class $C ^ { k }$ for every $k \geq 0$ is said to be of class $C ^ { \infty }$ , smooth, or infinitely differentiable. If U and V are open subsets of Euclidean spaces, a function $F \colon U \to V$ is called a diffeomorphism if it is smooth and bijective and its inverse function is also
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Analysis/Calculus/ContDiff/Defs.lean::ContDiffOn`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/ContDiff/Defs.html); `Lean core::Function.Bijective, Function.invFun` — Lee’s Euclidean diffeomorphism definition is the exact conjunction that `F` is smooth on `U`, bijective onto `V`, and its inverse is smooth on `V`; these are canonical Lean/Mathlib predicates, requiring no new mathematical owner.
@@ -185,7 +185,7 @@ We are especially concerned with real-valued functions, that is, functions whose
 `FC08-CC-U012` · Appendix C, § Partial Derivatives; source L19600 · [in Mathlib]{.route-mathlib}
 :::
 
-(Equality of Mixed Partial Derivatives). If U is an open subset of ℝ ^n and F U → ℝ ^m is a function of class C ^2 , then the mixed second-order partial derivatives of F do not depend on the order of differentiation: (∂^2 F ^i)/(∂ x ^j ∂ x ^k) = (∂^2 F ^i)/(∂ x ^k ∂ x ^j).
+Proposition C.6 (Equality of Mixed Partial Derivatives). If U is an open subset $o f \mathbb { R } ^ { n }$ and F $U \to \mathbb { R } ^ { m }$ is a function of class $C ^ { 2 }$ , then the mixed second-order partial derivatives of F do not depend on the order of differentiation: $$ \frac {\partial^ {2} F ^ {i}}{\partial x ^ {j} \partial x ^ {k}} = \frac {\partial^ {2} F ^ {i}}{\partial x ^ {k} \partial x ^ {j}}. $$
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Analysis/Calculus/FDeriv/Symmetric.lean::second_derivative_symmetric, ContDiffAt.isSymmSndFDerivAt`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/FDeriv/Symmetric.html#ContDiffAt.isSymmSndFDerivAt) — Mathlib proves symmetry of the second Fréchet derivative for `C²` maps. Evaluating the symmetric bilinear derivative on standard basis vectors gives equality of Lee’s mixed second partial derivatives componentwise.
@@ -199,7 +199,7 @@ We are especially concerned with real-valued functions, that is, functions whose
 `FC08-CC-U013` · Appendix C, § Partial Derivatives; source L19606 · [not formalized]{.route-unmatched}
 :::
 
-If F : U ℝ ^m is smooth, then the mixed partial derivatives of F of any order are independent of the order of differentiation.
+Corollary C.7. If $F \colon U \mathbb { R } ^ { m }$ is smooth, then the mixed partial derivatives of F of any order are independent of the order of different
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib directly proves symmetry of second Fréchet derivatives, but targeted P/H searches found no checked all-orders permutation-invariance theorem for coordinate mixed partials matching this row. Iterated Fréchet derivatives/Taylor-series infrastructure is adjacent but does not by itself certify the exact statement. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
@@ -279,7 +279,7 @@ Now suppose f : U → ℝ is a smooth real-valued function on an open subset U �
 `FC08-CC-U019` · Appendix C, § Partial Derivatives; source L19688 · [not formalized]{.route-unmatched}
 :::
 
-(Taylor’s Theorem). Let U ⊆ ℝ ^n be an open subset, and let a ∈ U be fixed. Suppose f ∈ C ^k + 1 ( U ) for some k ≥ 0 . If W is any convex subset of U containing a, then for all x ∈ W f (x) = P _k (x) + R _k (x),tagC.7 where P _k is the kth-order Taylor polynomial of f at a, defined by P _k (x) = f (a) + sum_m = 1 ^k (1)/(m !) sum_I: ∣ I ∣ = m partial_I f (a) (x - a) ^I,tagC.8 and R _k is the kth remainder term, given by R _k (x) = (1)/(k !) sum_I: ∣ I ∣ = k + 1 (x - a) ^I int_0 ^1 (1 - t) ^k partial_I f (a + t (x - a)) d t.tagC.9
+Theorem C.15 (Taylor’s Theorem). Let $U \subseteq \mathbb { R } ^ { n }$ be an open subset, and let $a \in U$ be fixed. Suppose $f \in C ^ { k + 1 } ( U )$ for some $k \geq 0$ . If W is any convex subset of U containing a, then for all $x \in W$ $$ f (x) = P _ {k} (x) + R _ {k} (x),\tag{C.7} $$ where $P _ { k }$ is the kth-order Taylor polynomial of f at a, defined by $$ P _ {k} (x) = f (a) + \sum_ {m = 1} ^ {k} \frac {1}{m !} \sum_ {I: | I | = m} \partial_ {I} f (a) (x - a) ^ {I},\tag{C.8} $$ and $R _ { k }$ is the kth remainder term, given by $$ R _ {k} (x) = \frac {1}{k !} \sum_ {I: | I | = k + 1} (x - a) ^ {I} \int_ {0} ^ {1} (1 - t) ^ {k} \partial_ {I} f (a + t (x - a)) d t.\tag{C.9} $$
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — `map_add_eq_sum_add_integral_iteratedFDeriv` is a stronger coordinate-free Taylor formula with integral remainder, but the source row is the explicit multi-index partial-derivative expansion. Because U013’s all-orders mixed-partial bridge is not checked, the two interfaces are not silently identified. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
@@ -437,7 +437,7 @@ If D ⊆ ℝ ^n is a domain of integration, then every bounded continuous real-v
 `FC08-CC-U032` · Appendix C, § Multiple Integrals; source L19872 · [not formalized]{.route-unmatched}
 :::
 
-If D is a domain of integration, the volume of D is defined to be Vol (D) = int_D 1 d V.tagC.13
+If D is a domain of integration, the volume of D is defined to be $$ \operatorname{Vol} (D) = \int_ {D} 1 d V.\tag{C.13} $$
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — `setIntegral_one_eq_measureReal` gives volume as the Lebesgue integral of `1`, but Lee’s row defines volume via the preceding Riemann integral. Without a checked Riemann–Lebesgue equivalence this is only an adjacent representation. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
@@ -487,7 +487,7 @@ A set of measure zero in ℝ ^n contains no nonempty open subset.
 `FC08-CC-U036` · Appendix C, § Multiple Integrals; source L19926 · [not formalized]{.route-unmatched}
 :::
 
-(Change of Variables). Suppose D and E are open domains of integration in ℝ ^n , and G : bar(D) → bar(E) is smooth map that restricts to a diffeomorphism from D to E. For every continuous function f : bar(E) → ℝ int_E f d V = int_D (f ∘ G) ∣ det D G ∣ d V.
+Theorem C.26 (Change of Variables). Suppose D and E are open domains of integration in $\mathbb { R } ^ { n }$ , and $G \colon { \bar { D } } \to { \bar { E } }$ is smooth map that restricts to a diffeomorphism from D to E. For every continuous function $f \colon { \overline { { E } } } \to \mathbb { R }$ $$ \int_ {E} f d V = \int_ {D} (f \circ G) | \det D G | d V. $$
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib has the stronger Lebesgue/Bochner Jacobian change-of-variables theorem `integral_image_eq_integral_abs_det_fderiv_smul`, but no checked equivalence to Lee’s Riemann integral on domains of integration was found. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
@@ -601,7 +601,7 @@ I f U ⊆ ℝ ^n is an open subset and F : U ℝ ^m is of class C ^1 , then f is
 `FC08-CC-U045` · Appendix C, § The Inverse and Implicit Function Theorems; source L20038 · [in Mathlib]{.route-mathlib}
 :::
 
-Let X be a metric space. A map G : X → X is said to be a contraction if there is a constant λ ∈ ( 0 , 1 ) such that d ( G ( x ) , G ( y ) ) ≤ λ d ( x , y ) for all x , y ∈ X . Clearly, every contraction is continuous. A fixed point of a map G : X → X is a point x ∈ X such that G ( x ) = x
+Let X be a metric space. A map $G \colon X \to X$ is said to be a contraction if there is a constant $\lambda \in ( 0 , 1 )$ such that d $\bigl ( G ( x ) , G ( y ) \bigr ) \leq \lambda d ( x , y )$ for all $x , y \in X$ . Clearly, every contraction is continuous. A fixed point of a map $G \colon X \to X$ is a point $x \in X$ such
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/MetricSpace/Contracting.lean::ContractingWith, ContractingWith.toLipschitzWith, ContractingWith.fixedPoint, ContractingWith.fixedPoint_isFixedPt, ContractingWith.fixedPoint_unique`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/MetricSpace/Contracting.html) — `ContractingWith K G` is `K<1` plus the Lipschitz inequality, hence continuity; on a nonempty complete metric space `fixedPoint` exists, is fixed, and `fixedPoint_unique` proves uniqueness. This is exactly Lee’s contraction definition and Lemma C.35.
@@ -641,7 +641,7 @@ Suppose U ⊆ ℝ ^n is an open subset, and F : U → ℝ ^n is a smooth functio
 `FC08-CC-U048` · Appendix C, § The Inverse and Implicit Function Theorems; source L20156 · after [`FC08-CC-U047`](#fc08-cc-u047) · [in Mathlib]{.route-mathlib}
 :::
 
-(Polar Coordinates). As you know from calculus, polar coordinates ( r , θ ) in the plane are defined implicitly by the relations x = r cos θ y = r sin θ . The map F : ( 0 , ∞ ) × ℝ → ℝ ^2 defined by F ( r , θ ) = ( r cos θ , r sin θ ) is smooth and has Jacobian determinant equal to r , which is nonzero everywhere on the domain. Thus, Corollary C.36 shows that the restriction of F to any open subset on which it is injective is a diffeomorphism onto its image. One such subset is ( r , θ ) : r > 0 , - π < θ < π , which is mapped bijectively by F onto the complement of the nonpositive part of the x-axis. //
+(Polar Coordinates). As you know from calculus, polar coordinates ( r , θ ) in the plane are defined implicitly by the relations x = r cos θ y = r sin θ . The map F : ( 0 , ∞ ) × ℝ → ℝ ^2 defined by F ( r , θ ) = ( r cos θ , r sin θ ) is smooth and has Jacobian determinant equal to r , which is nonzero everywhere on the domain. Thus, Corollary C.36 shows that the restriction of F to any open subset on which it is injective is a diffeomorphism onto its image. One such subset is ( r , θ ) : r > 0 , - π < θ < π , which is mapped bijectively by F onto the complement of the nonpositive part of the x-axis.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Analysis/SpecialFunctions/PolarCoord.lean::polarCoord, continuous_polarCoord_symm, fderivPolarCoordSymm, det_fderivPolarCoordSymm`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/SpecialFunctions/PolarCoord.html) — Mathlib’s `polarCoord` is an open partial homeomorphism between the slit plane and `(0,∞)×(-π,π)`; its inverse is `(r,θ) ↦ (r cos θ,r sin θ)`, and Mathlib computes its derivative determinant to be `r`. This realizes the complete polar-coordinate example.

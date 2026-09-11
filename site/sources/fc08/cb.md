@@ -35,7 +35,7 @@ Of the 90 statements checked against Lean, 81 are formalized somewhere and 9 are
 `FC08-CB-U001` · Appendix B, § Vector Spaces; source L18604 · [in Mathlib]{.route-mathlib}
 :::
 
-Let R denote the field of real numbers. A vector space over R (or real vector space) is a set V endowed with two operations: vector addition V × V → V , denoted by ( v , w ) ↦ v + w , and scalar multiplication ℝ × V V , denoted by ( a , v ) ↦ a v satisfying the following properties: (i) V is an abelian group under vector addition.
+Let R denote the field of real numbers. A vector space over (or real vector space) is a set V endowed with two operations: vector addition $V \times V \to V$ , denoted by $( v , w ) \mapsto v + w$ , and scalar multiplication $\mathbb { R } \times V V$ , denoted by $( a , v ) \mapsto a v$ satisfying the following properties: (i) V is an abelian group under vector additi
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Algebra/Module/Defs.lean::Module`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Module/Defs.html) — `Module ℝ V` is Mathlib’s canonical real-vector-space structure, with addition supplied by the additive-group structure and scalar multiplication/laws by `Module`.
@@ -61,7 +61,7 @@ The elements of a vector space are usually called vectors. When it is necessary 
 `FC08-CB-U003` · Appendix B, § Vector Spaces; source L18634 · [in Mathlib]{.route-mathlib}
 :::
 
-Let V be a vector space. A subset W ⊆ V that is closed under vector addition and scalar multiplication is itself a vector space with the same operations, and is called a subspace of V . To avoid confusion with the use of the word “subspace” in topology, we sometimes use the term linear subspace for a subspace of a vector space in this sense, and topological subspace for a subset of a topological space endowed with the subspace topology.
+Let V be a vector space. A subset $W \subseteq V$ that is closed under vector addition and scalar multiplication is itself a vector space with the same operations, and is called a subspace of V . To avoid confusion with the use of the word “subspace” in topology, we sometimes use the term linear subspace for a subspace of a vector space in this sense, and topological subspace for a subset of a topological space endowed with the subspace topology.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Span/Defs.lean::Submodule, Submodule.span, subset_span, span_le`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Span/Defs.html#Submodule.span) — `Submodule ℝ V` is a linear subspace and [`Submodule.span`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Submodule.span#doc) is the least submodule containing a set; `subset_span`/`span_le` give precisely Lee’s closure/minimality characterization.
@@ -73,7 +73,7 @@ Let V be a vector space. A subset W ⊆ V that is closed under vector addition a
 `FC08-CB-U004` · Appendix B, § Vector Spaces; source L18636 · [in Mathlib]{.route-mathlib}
 :::
 
-A finite sum of the form textstyle sum _i = 1 ^k a ^i v _i , where a ^i are scalars and v _i ∈ V , is called a linear combination of the vectors v _1 , … , v _k . (The reason we write the coefficients a ^i with superscripts instead of subscripts is to be consistent with the Einstein summation convention, explained in Chapter 1.) If S is an arbitrary subset of V , the set of all linear combinations of elements of S is called the span of S and is denoted by span.S /; it is easily seen to be the smallest subspace of V containing S. If V = s p a n ( S ) , we say that S spans V . By convention, a linear combination of no elements is considered to sum to zero, and the span of the empty set is 0 .
+A finite sum of the form $\textstyle \sum _ { i = 1 } ^ { k } a ^ { i } v _ { i }$ , where $a ^ { i }$ are scalars and $v _ { i } \in V$ , is called a linear combination of the vectors $\pmb { v } _ { 1 } , \ldots , \pmb { v } _ { k }$ . (The reason we write the coefficients $a ^ { i }$ with superscripts instead of subscripts is to be consistent with the Einstein summation convention, explained in Chapter 1.) If S is an arbitrary subset of V , the set of all linear combinations of elements of S is called the span of S and is denoted by span.S /; it is easily seen to be the smallest subspace of V containing S. If $V = \operatorname { s p a n } ( S )$ , we say that S spans $V$ . By convention, a linear combination of no elements is considered to sum to zero, and the span of the empty set
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Span/Defs.lean::Submodule, Submodule.span, subset_span, span_le`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Span/Defs.html#Submodule.span) — `Submodule ℝ V` is a linear subspace and [`Submodule.span`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Submodule.span#doc) is the least submodule containing a set; `subset_span`/`span_le` give precisely Lee’s closure/minimality characterization.
@@ -85,7 +85,7 @@ A finite sum of the form textstyle sum _i = 1 ^k a ^i v _i , where a ^i are scal
 `FC08-CB-U005` · Appendix B, § Vector Spaces; source L18638 · [in Mathlib]{.route-mathlib}
 :::
 
-If p and q are points of V , the line segment from p to q is the set ( 1 - t ) p + t q : 0 ≤ t ≤ 1 . A subset B ⊆ V is said to be convex if for every two points p , q ∈ B the line segment from p to q is contained in B.
+If p and q are points of V , the line segment from p to q is the set $\{ ( 1 - t ) p + t q :$ $0 \leq t \leq 1 \}$ . A subset $B \subseteq V$ is said to be convex if for every two points $p , q \in B$ the line segment from $p$ to q is contained in B. ##
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Analysis/Convex/Basic.lean::Convex`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Convex/Basic.html) — `Convex ℝ B` is exactly closure of `B` under real line segments/convex combinations, equivalent to Lee’s segment definition.
@@ -97,7 +97,7 @@ If p and q are points of V , the line segment from p to q is the set ( 1 - t ) p
 `FC08-CB-U006` · Appendix B, § Bases and Dimension; source L18642 · [in Mathlib]{.route-mathlib}
 :::
 
-Suppose V is a vector space. A subset S ⊆ V is said to be linearly dependent if there exists a linear relation of the form textstyle sum _i = 1 ^k a ^i v _i = 0 , where v _1 , … , v _k are distinct elements of S and at least one of the coefficients a ^i is nonzero; S is said to be linearly independent otherwise. In other words, S is linearly independent if and only if the only linear combination of distinct elements of S that sums to zero is the one in which all the scalar coefficients are zero. Note that every set containing the zero vector is linearly dependent. By convention, the empty set is considered to be linearly independent.
+Suppose V is a vector space. A subset $S \subseteq V$ is said to be linearly dependent if there exists a linear relation of the form $\textstyle \sum _ { i = 1 } ^ { k } a ^ { i } v _ { i } = 0$ , where $v _ { 1 } , \ldots , v _ { k }$ are distinct elements of S and at least one of the coefficients $a ^ { i }$ is nonzero; S is said to be linearly independent otherwise. In other words, S is linearly independent if and only if the only linear combination of distinct elements of S that sums to zero is the one in which all the scalar coefficients are zero. Note that every set containing the zero vector is linearly dependent. By convention, the empty set is considered to be linearly indep
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/LinearIndependent/Defs.lean::LinearIndepOn, LinearIndependent`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/LinearIndependent/Defs.html) — `LinearIndepOn` handles a set of vectors and `LinearIndependent` an indexed family; these are exactly Lee’s set and ordered-tuple notions, including repeated vectors through noninjectivity.
@@ -109,7 +109,7 @@ Suppose V is a vector space. A subset S ⊆ V is said to be linearly dependent i
 `FC08-CB-U007` · Appendix B, § Bases and Dimension; source L18644 · [in Mathlib]{.route-mathlib}
 :::
 
-It is frequently important to work with ordered k-tuples of vectors in V : ; such a k-tuple is denoted by ( v _1 , … , v _k ) or ( v _i ) , with parentheses instead of braces to distinguish it from the (unordered) set of elements v _1 , … , v _k . When we consider ordered k-tuples, linear dependence takes on a slightly different meaning. We say that ( v _1 , … , v _k ) is a linearly dependent k-tuple if there are scalars ( a ^1 , … , a ^k ) not all zero, such that textstyle sum _i = 1 ^k a ^i v _i = 0 ; it is a linearly independent k-tuple otherwise. The only difference between a linearly independent set and a linearly independent k - t u p l e is that the latter cannot have repeated vectors. For example if v ∈ V is a nonzero vector, the ordered pair ( v , v ) is linearly dependent, while the set v , v = v is linearly independent. On the other hand, if ( v _1 , … , v _k ) is any linearly independent k-tuple, then the set v _1 , … , v _k is also linearly independent.
+It is frequently important to work with ordered k-tuples of vectors in $V :$ ; such a k-tuple is denoted by $( v _ { 1 } , \ldots , v _ { k } )$ or $( v _ { i } )$ , with parentheses instead of braces to distinguish it from the (unordered) set of elements $\{ v _ { 1 } , \ldots , v _ { k } \}$ . When we consider ordered k-tuples, linear dependence takes on a slightly different meaning. We say that $( v _ { 1 } , \ldots , v _ { k } )$ is a linearly dependent k-tuple if there are scalars $( a ^ { 1 } , \ldots , a ^ { k } )$ not all zero, such that $\textstyle \sum _ { i = 1 } ^ { k } a ^ { i } v _ { i } = 0$ ; it is a linearly independent k-tuple otherwise. The only difference between a linearly independent set and a linearly independent $k { - } t u p l e$ is that the latter cannot have repeated vectors. For example if $v \in V$ is a nonzero vector, the ordered pair $( v , v )$ is linearly dependent, while the set $\{ v , v \} = \{ v \}$ is linearly independent. On the other hand, if $( v _ { 1 } , \ldots , v _ { k } )$ is any linearly independent k-tuple, then the set $\{ v _ { 1 } , \ldots , v _ { k } \}$ is also linearly indep
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/LinearIndependent/Defs.lean::LinearIndepOn, LinearIndependent`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/LinearIndependent/Defs.html) — `LinearIndepOn` handles a set of vectors and `LinearIndependent` an indexed family; these are exactly Lee’s set and ordered-tuple notions, including repeated vectors through noninjectivity.
@@ -121,7 +121,7 @@ It is frequently important to work with ordered k-tuples of vectors in V : ; suc
 `FC08-CB-U008` · Appendix B, § Bases and Dimension; source L18656 · [in Mathlib]{.route-mathlib}
 :::
 
-A basis for V (plural: bases) is a subset S ⊆ V that is linearly independent and spans V . If S is a basis for V , every element of V has a unique expression as a linear combination of elements of S. If V has a finite basis, then V is said to be finite-dimensional, and otherwise it is infinite-dimensional. The trivial vector space 0 is finite-dimensional, because it has the empty set as a basis.
+A basis for V (plural: bases) is a subset $S \subseteq V$ that is linearly independent and spans V . If S is a basis for V , every element of V has a unique expression as a linear combination of elements of S. If V has a finite basis, then $V$ is said to be finite-dimensional, and otherwise it is infinite-dimensional. The trivial vector space $\{ 0 \}$ is finite-dimensional, because it has the empty set as a basis.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Basis/Defs.lean::Basis, Basis.repr`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Basis/Defs.html#Basis.repr); [`Mathlib/LinearAlgebra/Dimension/Finrank.lean::Module.finrank`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Dimension/Finrank.html#Module.finrank) — A `Basis ι ℝ V` is a linearly independent spanning indexed family, [`Basis.repr`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Basis.repr#doc) gives unique coordinates, and finite index types together with [`Module.finrank`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Module.finrank#doc) encode finite dimension and ordered bases.
@@ -133,7 +133,7 @@ A basis for V (plural: bases) is a subset S ⊆ V that is linearly independent a
 `FC08-CB-U009` · Appendix B, § Bases and Dimension; source L18658 · [in Mathlib]{.route-mathlib}
 :::
 
-If V is finite-dimensional, an ordered basis for V is a basis endowed with a specific ordering of the basis vectors, or equivalently a linearly independent n-tuple ( E _i ) that spans V . For most purposes, ordered bases are more useful than unordered bases, so we always assume, often without comment, that each basis comes with a given ordering.
+If V is finite-dimensional, an ordered basis for V is a basis endowed with a specific ordering of the basis vectors, or equivalently a linearly independent n-tuple $\left( E _ { i } \right)$ that spans $V$ . For most purposes, ordered bases are more useful than unordered bases, so we always assume, often without comment, that each basis comes with a given
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Basis/Defs.lean::Basis, Basis.repr`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Basis/Defs.html#Basis.repr); [`Mathlib/LinearAlgebra/Dimension/Finrank.lean::Module.finrank`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Dimension/Finrank.html#Module.finrank) — A `Basis ι ℝ V` is a linearly independent spanning indexed family, [`Basis.repr`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Basis.repr#doc) gives unique coordinates, and finite index types together with [`Module.finrank`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Module.finrank#doc) encode finite dimension and ordered bases.
@@ -145,7 +145,7 @@ If V is finite-dimensional, an ordered basis for V is a basis endowed with a spe
 `FC08-CB-U010` · Appendix B, § Bases and Dimension; source L18666 · [in Mathlib]{.route-mathlib}
 :::
 
-The numbers v ^i are called the components of v with respect to this basis, and the ordered n-tuple ( v ^1 , … , v ^n ) is called its basis representation. (Here is an example of a definition that requires an ordered basis.)
+The numbers $v ^ { i }$ are called the components of v with respect to this basis, and the ordered n-tuple $\left( v ^ { 1 } , \ldots , v ^ { n } \right)$ is called its basis representation. (Here is an example of a definition that requires an ordered
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Basis/Defs.lean::Basis, Basis.repr`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Basis/Defs.html#Basis.repr); [`Mathlib/LinearAlgebra/Dimension/Finrank.lean::Module.finrank`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Dimension/Finrank.html#Module.finrank) — A `Basis ι ℝ V` is a linearly independent spanning indexed family, [`Basis.repr`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Basis.repr#doc) gives unique coordinates, and finite index types together with [`Module.finrank`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Module.finrank#doc) encode finite dimension and ordered bases.
@@ -157,7 +157,7 @@ The numbers v ^i are called the components of v with respect to this basis, and 
 `FC08-CB-U011` · Appendix B, § Bases and Dimension; source L18668 · [in Mathlib]{.route-mathlib}
 :::
 
-Let V be a vector space. If V is spanned by a set of n vectors, then every subset of V containing more than n vectors is linearly dependent.
+basis.) Lemma B.2. Let V be a vector space. If V is spanned by a set of n vectors, then every subset of V containing more than n vectors is linearly dependent.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Dimension/Constructions.lean::finrank_span_le_card, finrank_span_eq_card`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Dimension/Constructions.html); [`Mathlib/LinearAlgebra/Dimension/OrzechProperty.lean::linearIndependent_iff_card_le_finrank_span`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Dimension/OrzechProperty.html) — For a finite family, Mathlib identifies the cardinality of an independent family with the finrank of its span and bounds span finrank by the number of generators. Applied to an `n`-element spanning family, this gives Lee Lemma B.2 exactly.
@@ -231,7 +231,7 @@ If S is a subspace of a finite-dimensional vector space V , we define the codime
 `FC08-CB-U017` · Appendix B, § Bases and Dimension; source L18710 · [in Mathlib]{.route-mathlib}
 :::
 
-If S and T are subspaces of a vector space V , the notation S + T denotes the set of all vectors of the form v + w , where v ∈ S and w ∈ T . It is easily seen to be a subspace of V , and in fact is the subspace spanned by S ∪ T . If S + T = V and S ∩ T = 0 , then V is said to be the (internal) direct sum of S and T , and we write V = S oplus T . Two linear subspaces S , T ⊆ V are said to be complementary subspaces if V = S oplus T . In this case, every vector in V has a unique expression as a sum of an element of S plus an element of T
+If S and T are subspaces of a vector space V , the notation $S + T$ denotes the set of all vectors of the form $v + w$ , where $v \in S$ and $w \in T$ . It is easily seen to be a subspace of V , and in fact is the subspace spanned by $S \cup T$ . If $S + T = V$ and $S \cap T = \{ 0 \}$ , then V is said to be the (internal) direct sum of S and T , and we write $V = S \oplus T$ . Two linear subspaces $S , T \subseteq V$ are said to be complementary subspaces if $V = S \oplus T$ . In this case, every vector in V has a unique expression as a sum of an element of S plus an element of $T$
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Projection.lean::IsCompl, Submodule.prodEquivOfIsCompl`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Projection.html#Submodule.prodEquivOfIsCompl) — For submodules, lattice supremum is the sum and `IsCompl S T` is exactly `S ⊓ T = ⊥` together with `S ⊔ T = ⊤`; `prodEquivOfIsCompl` gives the unique decomposition.
@@ -315,7 +315,7 @@ This map is called the projection onto S with kernel T .
 `FC08-CB-U024` · Appendix B, § Linear Maps; source L18768 · [in Mathlib]{.route-mathlib}
 :::
 
-If V and W are vector spaces, a bijective linear map T : V → W is called an isomorphism. In this case, there is a unique inverse map T ^- 1 : W → V , and the following computation shows that T ^- 1 is also linear: beginarrayl a T ^- 1 v + b T ^- 1 w = T ^- 1 T (a T ^- 1 v + b T ^- 1 w ) = T ^- 1 (a T T ^- 1 v + b T T ^- 1 w ) text (by linearity of T) = T ^- 1 (a v + b w). endarray
+If V and W are vector spaces, a bijective linear map $T \colon V \to W$ is called an isomorphism. In this case, there is a unique inverse map $T ^ { - 1 } \colon W \to V$ , and the following computation shows that $T ^ { - 1 }$ is also linear: $$ \begin{array}{l} a T ^ {- 1} v + b T ^ {- 1} w = T ^ {- 1} T \left(a T ^ {- 1} v + b T ^ {- 1} w\right) \\ \qquad = T ^ {- 1} \left(a T T ^ {- 1} v + b T T ^ {- 1} w\right) \quad \text {(by linearity of T)} \\ \qquad = T ^ {- 1} (a v + b w). \end{array} $$
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Algebra/Module/Equiv/Defs.lean::LinearEquiv`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Module/Equiv/Defs.html) — `LinearEquiv` is a bijective linear map with a linear inverse, exactly Lee’s isomorphism/invertibility notion for vector spaces.
@@ -339,7 +339,7 @@ For this reason, a bijective linear map is also said to be invertible. If there 
 `FC08-CB-U026` · Appendix B, § Linear Maps; source L18776 · [in Mathlib]{.route-mathlib}
 :::
 
-Let V be an n-dimensional real vector space, and ( E _1 , … , E _n ) be an ordered basis for V . Define a map E : ℝ ^n → V by E (x ^1, … , x ^n ) = x ^1 E _1 + … + x ^n E _n. Then E is linear and bijective, so it is an isomorphism, called the basis isomorphism determined by this basis. Thus, every n-dimensional real vector space is isomorphic to R n .
+Example B.12. Let V be an n-dimensional real vector space, and $( E _ { 1 } , \ldots , E _ { n } )$ be an ordered basis for V . Define a map $E \colon \mathbb { R } ^ { n } \to V$ by $$ E \left(x ^ {1}, \dots , x ^ {n}\right) = x ^ {1} E _ {1} + \dots + x ^ {n} E _ {n}. $$ Then E is linear and bijective, so it is an isomorphism, called the basis isomorphism determined by this basis. Thus, every n-dimensional real vector space is isomorphic to R.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Basis/Defs.lean::Basis.equivFun`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Basis/Defs.html#Basis.equivFun) — [`Basis.equivFun`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Basis.equivFun#doc) is the coordinate linear equivalence `V ≃ₗ[ℝ] (ι → ℝ)`; its inverse is Lee’s basis isomorphism from coordinate space to `V`.
@@ -351,7 +351,7 @@ Let V be an n-dimensional real vector space, and ( E _1 , … , E _n ) be an ord
 `FC08-CB-U027` · Appendix B, § Linear Maps; source L18806 · [in Mathlib]{.route-mathlib}
 :::
 
-If V and W are vector spaces, a map F : V → W is called an affine map if it can be written in the form F ( v ) = w + T v for some linear map T : V → W and some fixed w ∈ W
+{ K e r } T$ If V and W are vector spaces, a map $F \colon V \to W$ is called an affine map if it can be written in the form $F ( v ) = w + T v$ for some linear map $T \colon V \to W$ and some fixed $w
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/AffineSpace/AffineMap.lean::AffineMap`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/AffineSpace/AffineMap.html) — An `AffineMap ℝ V W` is a map with a linear part preserving affine combinations; for vector spaces it is exactly a translation plus a linear map, Lee’s `w + T v`.
@@ -387,7 +387,7 @@ Writing the components of a vector with respect to a basis as a column matrix, t
 `FC08-CB-U030` · Appendix B, § Linear Maps; source L18842 · [in Mathlib]{.route-mathlib}
 :::
 
-Insofar as possible, we denote the row index of a matrix by a superscript and the column index by a subscript, so that A _j ^i represents the element in the ith row and j th column. Thus the entry in the ith row and j th column of a matrix product AB is given by (A B) _j ^i = sum_k = 1 ^n A _k ^i B _j ^k.
+Insofar as possible, we denote the row index of a matrix by a superscript and the column index by a subscript, so that $A _ { j } ^ { i }$ represents the element in the ith row and j th column. Thus the entry in the ith row and $j$ th column of a matrix product AB is given by $$ (A B) _ {j} ^ {i} = \sum_ {k = 1} ^ {n} A _ {k} ^ {i} B _ {j} ^ {k}. $$
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Matrix/ToLin.lean::LinearMap.toMatrix, LinearMap.toMatrix_mulVec_repr, LinearMap.toMatrix_comp, LinearMap.toMatrix_id`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/ToLin.html); [`Mathlib/Data/Matrix/Basic.lean::Matrix.mul_apply`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Data/Matrix/Basic.html#Matrix.mul_apply) — [`LinearMap.toMatrix`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=LinearMap.toMatrix#doc) is the matrix in chosen bases; `toMatrix_mulVec_repr` is coordinate matrix-vector multiplication, [`Matrix.mul_apply`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Matrix.mul_apply#doc) is the entry formula, and `toMatrix_comp`/`toMatrix_id` give composition and identity matrices.
@@ -399,7 +399,7 @@ Insofar as possible, we denote the row index of a matrix by a superscript and th
 `FC08-CB-U031` · Appendix B, § Linear Maps; source L18848 · [in Mathlib]{.route-mathlib}
 :::
 
-The composition of two linear maps is represented by the product of their matrices. Provided we use the same basis for both the domain and the codomain, the identity map on an n-dimensional vector space is represented by the n - n identity matrix, which we denote by I _n ; it is the matrix with ones on the main diagona (where the row number equals the column number) and zeros elsewhere.
+The composition of two linear maps is represented by the product of their matrices. Provided we use the same basis for both the domain and the codomain, the identity map on an n-dimensional vector space is represented by the n - n identity matrix, which we denote by $I _ { n }$ ; it is the matrix with ones on the main diagona (where the row number equals the column number) and zeros elsewhere.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Matrix/ToLin.lean::LinearMap.toMatrix, LinearMap.toMatrix_mulVec_repr, LinearMap.toMatrix_comp, LinearMap.toMatrix_id`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/ToLin.html); [`Mathlib/Data/Matrix/Basic.lean::Matrix.mul_apply`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Data/Matrix/Basic.html#Matrix.mul_apply) — [`LinearMap.toMatrix`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=LinearMap.toMatrix#doc) is the matrix in chosen bases; `toMatrix_mulVec_repr` is coordinate matrix-vector multiplication, [`Matrix.mul_apply`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Matrix.mul_apply#doc) is the entry formula, and `toMatrix_comp`/`toMatrix_id` give composition and identity matrices.
@@ -423,7 +423,7 @@ A map $B \colon V \times W \to \mathbb{R}$ is bilinear if it is linear in each v
 `FC08-CB-U033` · Appendix B, § Linear Maps; source L18856 · [in Mathlib]{.route-mathlib}
 :::
 
-An algebra (over R) is a real vector space V endowed with a bilinear product map V × V → V . The algebra is said to be commutative or associative if the bilinear product has that property.
+An algebra (over R) is a real vector space V endowed with a bilinear product map $V \times V \to V$ . The algebra is said to be commutative or associative if the bilinear product has that property.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Algebra/Algebra/Basic.lean::Algebra`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Algebra/Basic.html) — Mathlib’s `Algebra ℝ A` packages a real module with compatible multiplication; commutativity/associativity are the corresponding multiplication typeclasses, matching Lee’s algebra terminology.
@@ -509,7 +509,7 @@ If T : V → W is a linear map between finite-dimensional spaces, the dimension 
 `FC08-CB-U040` · Appendix B, § Change of Basis; source L18942 · [in Mathlib]{.route-mathlib}
 :::
 
-(Rank-Nullity Law). Suppose T : V → W is a linear map between finite-dimensional vector spaces. Then dim V = rank T + text nullity T = dim (Im T) + dim (Ker T).
+Corollary B.21 (Rank-Nullity Law). Suppose $T \colon V \to W$ is a linear map between finite-dimensional vector spaces. Then $$ \dim V = \operatorname{rank} T + \text { nullity } T = \dim (\operatorname{Im} T) + \dim (\operatorname{Ker} T). $$
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Dimension/RankNullity.lean::LinearMap.finrank_range_add_finrank_ker`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Dimension/RankNullity.html#LinearMap.finrank_range_add_finrank_ker) — Mathlib defines rank/nullity as finranks of `range`/`ker`; [`LinearMap.finrank_range_add_finrank_ker`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=LinearMap.finrank_range_add_finrank_ker#doc) is exactly the finite-dimensional rank-nullity law.
@@ -533,7 +533,7 @@ Let A be an m × n matrix. The transpose of A is the n × m matrix A ^T obtained
 `FC08-CB-U042` · Appendix B, § Change of Basis; source L18970 · [in Mathlib]{.route-mathlib}
 :::
 
-The rank of an m × n matrix A is defined to be the rank of the corresponding linear map from ℝ ^n to ℝ ^m . Because the columns of A, thought of as vectors in ℝ ^m are the images of the standard basis vectors under this linear map, the rank of A can also be thought of as the dimension of the span of its columns, and is sometimes called its column rank. Analogously, we define the row rank of A to be the dimension of the span of its rows, thought of similarly as vectors in ℝ ^n
+{ T }$ The rank of an $m \times n$ matrix A is defined to be the rank of the corresponding linear map from $\mathbb { R } ^ { n }$ to $\mathbb { R } ^ { m }$ . Because the columns of A, thought of as vectors in $\mathbb { R } ^ { m }$ are the images of the standard basis vectors under this linear map, the rank of A can also be thought of as the dimension of the span of its columns, and is sometimes called its column rank. Analogously, we define the row rank of A to be the dimension of the span of its rows, thought of similarly as vectors in $\mathbb
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Matrix/Rank.lean::Matrix.rank, Matrix.rank_eq_finrank_span_cols, Matrix.rank_transpose`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/Rank.html) — [`Matrix.rank`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Matrix.rank#doc) is the finrank of the matrix linear map/column span, and `rank_transpose` proves row rank equals column rank.
@@ -595,7 +595,7 @@ If X is a set, a permutation of X is a bijective map from X to itself. The set o
 `FC08-CB-U047` · Appendix B, § The Determinant; source L19000 · [in Mathlib]{.route-mathlib}
 :::
 
-We let S _n denote the group of permutations of the set 1 , … , n , called the symmetric group on n elements. The properties of S _n that we need are summarized in the following proposition; proofs can be found in any good undergraduate algebra text such as [Hun97] or [Her75].
+We let $S _ { n }$ denote the group of permutations of the set $\{ 1 , \ldots , n \}$ , called the symmetric group on n elements. The properties of $S _ { n }$ that we need are summarized in the following proposition; proofs can be found in any good undergraduate algebra text such as [Hun97] or [Her75].
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Logic/Equiv/Defs.lean::Equiv, Equiv.Perm`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Logic/Equiv/Defs.html#Equiv.Perm); [`Mathlib/GroupTheory/Perm/Basic.lean::Equiv.swap`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/GroupTheory/Perm/Basic.html#Equiv.swap) — `Equiv.Perm X` is the permutation group of `X`; [`Equiv.swap`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Equiv.swap#doc) is a transposition, so the symmetric group and transpositions are represented directly.
@@ -631,7 +631,7 @@ If A = ( A _j ^i ) is an n × n (real or complex) matrix, the determinant of A i
 `FC08-CB-U050` · Appendix B, § The Determinant; source L19026 · [in Mathlib]{.route-mathlib}
 :::
 
-Although the determinant is defined as a function of matrices, it is also useful to think of it as a function of n vectors in ℝ ^n : if A _1 , … , A _n ∈ ℝ ^n , we interpret operatorname* d e t ( A _1 , … , A _n ) to mean the determinant of the matrix whose columns are ( A _1 , … , A _n ) : det (A _1, … , A _n) = det ( beginarrayc c c A _1 ^1 & … & A _n ^1 vdots & ddots & vdots A _1 ^n & … & A _n ^n endarray ).
+Although the determinant is defined as a function of matrices, it is also useful to think of it as a function of n vectors in $\mathbb { R } ^ { n }$ : if $A _ { 1 } , \ldots , A _ { n } \in \mathbb { R } ^ { n }$ , we interpret $\operatorname* { d e t } ( A _ { 1 } , \ldots , A _ { n } )$ to mean the determinant of the matrix whose columns are $( A _ { 1 } , \ldots , A _ { n } )$ : $$ \det (A _ {1}, \ldots , A _ {n}) = \det \left( \begin{array}{c c c} A _ {1} ^ {1} & \ldots & A _ {n} ^ {1} \\ \vdots & \ddots & \vdots \\ A _ {1} ^ {n} & \ldots & A _ {n} ^ {n} \end{array} \right). $$
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Matrix/Determinant/Basic.lean::Matrix.det, Matrix.det_apply`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/Determinant/Basic.html) — [`Matrix.det`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Matrix.det#doc) is the signed permutation sum. A matrix is a family of column vectors, so this is exactly Lee’s determinant both as a matrix function and as a function of its columns.
@@ -655,7 +655,7 @@ Although the determinant is defined as a function of matrices, it is also useful
 `FC08-CB-U052` · Appendix B, § The Determinant; source L19088 · [not formalized]{.route-unmatched}
 :::
 
-The operations on matrices described in parts (a), (b), and (c) of the preceding proposition (multiplying one column by a scalar, interchanging two columns, and adding a multiple of one column to another) are called elementary column operations. Part of the proposition, therefore, describes precisely how a determinant is affected by elementary column operations. If we define elementary row operations analogously, the fact that the determinant of A ^T is equal to that of A implies that the determinant behaves similarly under elementary row operations.
+ The operations on matrices described in parts (a), (b), and (c) of the preceding proposition (multiplying one column by a scalar, interchanging two columns, and adding a multiple of one column to another) are called elementary column operations. Part of the proposition, therefore, describes precisely how a determinant is affected by elementary column operations. If we define elementary row operations analogously, the fact that the determinant of $A ^ { T }$ is equal to that of A implies that the determinant behaves similarly under elementary row operations.
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib has the actual row/column update and swap operations and their determinant laws, but no canonical object corresponding to Lee’s source-specific collective terminology “elementary row/column operations.”
@@ -669,7 +669,7 @@ The operations on matrices described in parts (a), (b), and (c) of the preceding
 `FC08-CB-U053` · Appendix B, § The Determinant; source L19106 · [in Mathlib]{.route-mathlib}
 :::
 
-If A and B are n × n matrices, then det (A B) = (det A) (det B).
+and B are $n \times n$ matrices, then $$ \det (A B) = (\det A) (\det B). $$
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Matrix/Determinant/Basic.lean::Matrix.det_mul, Matrix.det_units_conj`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/Determinant/Basic.html); [`Mathlib/LinearAlgebra/Matrix/NonsingularInverse.lean::Matrix.det_nonsing_inv`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/NonsingularInverse.html#Matrix.det_nonsing_inv); [`Mathlib/LinearAlgebra/Matrix/Nonsingular.lean::Matrix.nonsingular_iff_det_ne_zero`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/Nonsingular.html#Matrix.nonsingular_iff_det_ne_zero) — `det_mul` is multiplicativity; `det_nonsing_inv` gives the determinant of the inverse; `nonsingular_iff_det_ne_zero` is Lee’s singularity criterion over `ℝ`; determinant conjugation invariance follows directly and is also packaged for units.
@@ -693,7 +693,7 @@ If A is a nonsingular n × n matrix, then det A ≠ 0 and operatorname* d e t ( 
 `FC08-CB-U055` · Appendix B, § The Determinant; source L19120 · [in Mathlib]{.route-mathlib}
 :::
 
-A square matrix is singular if and only if its determinant is zero.
+Corollary B.33. A square matrix is singular if and only if its determinant is zero.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Matrix/Determinant/Basic.lean::Matrix.det_mul, Matrix.det_units_conj`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/Determinant/Basic.html); [`Mathlib/LinearAlgebra/Matrix/NonsingularInverse.lean::Matrix.det_nonsing_inv`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/NonsingularInverse.html#Matrix.det_nonsing_inv); [`Mathlib/LinearAlgebra/Matrix/Nonsingular.lean::Matrix.nonsingular_iff_det_ne_zero`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/Nonsingular.html#Matrix.nonsingular_iff_det_ne_zero) — `det_mul` is multiplicativity; `det_nonsing_inv` gives the determinant of the inverse; `nonsingular_iff_det_ne_zero` is Lee’s singularity criterion over `ℝ`; determinant conjugation invariance follows directly and is also packaged for units.
@@ -729,7 +729,7 @@ A and tilde(A) representing T with respect to two different bases are related by
 `FC08-CB-U058` · Appendix B, § The Determinant; source L19138 · [in Mathlib]{.route-mathlib}
 :::
 
-(Expansion by Minors). Let A be an n × n matrix, and for each i , j let M _i ^j denote the ( n - 1 ) × ( n - 1 ) submatrix obtained by deleting the ith column and j th row of A. For any fixed i between 1 and n inclusive, det A = sum_j = 1 ^n (- 1) ^i + j A _i ^j det M _i ^j.tagB.5
+Proposition B.35 (Expansion by Minors). Let A be an $n \times n$ matrix, and for each $i , j$ let $M _ { i } ^ { j }$ denote the $( n - 1 ) \times ( n - 1 )$ submatrix obtained by deleting the ith column and j th row of A. For any fixed i between 1 and n inclusive, $$ \det A = \sum_ {j = 1} ^ {n} (- 1) ^ {i + j} A _ {i} ^ {j} \det M _ {i} ^ {j}.\tag{B.5} $$
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Matrix/Determinant/Basic.lean::Matrix.det_succ_row, Matrix.det_succ_column`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/Determinant/Basic.html) — `det_succ_row`/`det_succ_column` give Laplace expansion by signed determinants of the deleted-row/deleted-column submatrices, exactly expansion by minors.
@@ -741,7 +741,7 @@ A and tilde(A) representing T with respect to two different bases are related by
 `FC08-CB-U059` · Appendix B, § The Determinant; source L19172 · [not formalized]{.route-unmatched}
 :::
 
-Each determinant det M _i ^j is called a minor of A, and (B.5) is called the expansion of det A by minors along the i th column. Since det A det A ^T , there is an analogous expansion along any row. The factor ( - 1 ) ^i + j det M _i ^j multiplying A _i ^j in (B.5) is called the cofactor of A _i ^j , and is denoted by co Sigma _i ^: j .
+Each determinant det $M _ { i } ^ { j }$ is called a minor of A, and (B.5) is called the expansion of det A by minors along the i th column. Since det A det $A ^ { T }$ , there is an analogous expansion along any row. The factor $( - 1 ) ^ { i + j }$ det $M _ { i } ^ { j }$ multiplying $A _ { i } ^ { j }$ in (B.5) is called the cofactor of $A _ { i } ^ { j }$ , and is denoted by
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib represents signed minors through submatrices and adjugate entries, but does not expose Lee’s exact `M_i^j` / cofactor terminology as a canonical standalone construction for this row. Strict whole-row semantics reject proper subsets and substantive reconstruction from adjacent generic ingredients.
@@ -755,7 +755,7 @@ Each determinant det M _i ^j is called a minor of A, and (B.5) is called the exp
 `FC08-CB-U060` · Appendix B, § The Determinant; source L19174 · [in Mathlib]{.route-mathlib}
 :::
 
-(Cramer’s Rule). If A is a nonsingular n × n matrix, then A ^- 1 is equal to 1 / ( operatorname* d e t A ) times the transposed cofactor matrix of A. Thus, the entry in the ith row and j th column of A ^- 1 is (A ^- 1 ) _j ^i = (1)/(det A) cof _i ^j = (1)/(det A) (- 1) ^i + j det M _i ^j.tagB.8
+Proposition B.36 (Cramer’s Rule). If A is a nonsingular $n \times n$ matrix, then $A ^ { - 1 }$ is equal to $1 / ( \operatorname* { d e t } A )$ times the transposed cofactor matrix of A. Thus, the entry in the ith row and j th column of $A ^ { - 1 }$ is $$ \left(A ^ {- 1}\right) _ {j} ^ {i} = \frac {1}{\det A} \mathrm{cof} _ {i} ^ {j} = \frac {1}{\det A} (- 1) ^ {i + j} \det M _ {i} ^ {j}.\tag{B.8} $$
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Matrix/Adjugate.lean::Matrix.adjugate_fin_succ_eq_det_submatrix`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/Adjugate.html#Matrix.adjugate_fin_succ_eq_det_submatrix); [`Mathlib/LinearAlgebra/Matrix/NonsingularInverse.lean::Matrix.nonsing_inv_apply`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/NonsingularInverse.html#Matrix.nonsing_inv_apply) — Mathlib identifies adjugate entries with signed minors and defines the inverse of an invertible matrix as determinant inverse times the adjugate, which is exactly Lee’s Cramer-rule formula for `A⁻¹`.
@@ -767,7 +767,7 @@ Each determinant det M _i ^j is called a minor of A, and (B.5) is called the exp
 `FC08-CB-U061` · Appendix B, § The Determinant; source L19188 · [in Mathlib]{.route-mathlib}
 :::
 
-A square matrix A = ( A _j ^i ) is said to be upper triangular if A _j ^i = 0 for i > j (i.e., the only nonzero entries are on and above the main diagonal). Determinants of upper triangular matrices are particularly easy to compute.
+A square matrix $A = \left( A _ { j } ^ { i } \right)$ is said to be upper triangular if $A _ { j } ^ { i } = 0$ for $i > j$ (i.e., the only nonzero entries are on and above the main diagonal). Determinants of upper triangular matrices are particularly easy to
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Matrix/Block.lean::Matrix.IsUpperTriangular, Matrix.det_of_isUpperTriangular`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/Block.html) — [`Matrix.IsUpperTriangular`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Matrix.IsUpperTriangular#doc) is the zero-below-diagonal predicate and `det_of_isUpperTriangular` gives the product of diagonal entries exactly.
@@ -815,7 +815,7 @@ If X is the block upper triangular matrix given by (B.10), then det X = ( operat
 `FC08-CB-U065` · Appendix B, § Inner Products and Norms; source L19232 · [in Mathlib]{.route-mathlib}
 :::
 
-If V is a real vector space, an inner product on V is a map V × V → ℝ , usually written ( v , w ) ↦ langle v , w rangle , that satisfies the following conditions: (i) SYMMETRY: langle v, w rangle = langle w, v rangle ; (ii) BILINEARITY: beginarrayr langle a v + a ^prime v ^prime, w rangle = a langle v, w rangle + a ^prime langle v ^prime, w rangle , langle v, b w + b ^prime w ^prime rangle = b langle v, w rangle + b ^prime langle v, w ^prime rangle ; endarray (iii) POSITIVE DEFINITENESS: langle v, v rangle ≥ 0, text with equality if and only if v = 0.
+If V is a real vector space, an inner product on V is a map $V \times V \to \mathbb { R }$ , usually written $( v , w ) \mapsto \langle v , w \rangle$ , that satisfies the following conditions: (i) SYMMETRY: $$ \langle v, w \rangle = \langle w, v \rangle ; $$ (ii) BILINEARITY: $$ \begin{array}{r} \langle a v + a ^ {\prime} v ^ {\prime}, w \rangle = a \langle v, w \rangle + a ^ {\prime} \langle v ^ {\prime}, w \rangle , \\ \langle v, b w + b ^ {\prime} w ^ {\prime} \rangle = b \langle v, w \rangle + b ^ {\prime} \langle v, w ^ {\prime} \rangle ; \end{array} $$ (iii) POSITIVE DEFINITENESS: $$ \langle v, v \rangle \geq 0, \quad \text { with equality if and only if } v = 0. $$ A vector
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Analysis/InnerProductSpace/Defs.lean::InnerProductSpace.Core, InnerProductSpace`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/InnerProductSpace/Defs.html#InnerProductSpace.Core); [`Mathlib/Analysis/InnerProductSpace/PiL2.lean::Pi.instInnerProductSpace`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/InnerProductSpace/PiL2.html#Pi.instInnerProductSpace) — `InnerProductSpace.Core ℝ V` packages a symmetric bilinear positive-definite real inner product, and Mathlib’s finite coordinate spaces have the standard dot-product instance.
@@ -827,7 +827,7 @@ If V is a real vector space, an inner product on V is a map V × V → ℝ , usu
 `FC08-CB-U066` · Appendix B, § Inner Products and Norms; source L19252 · [in Mathlib]{.route-mathlib}
 :::
 
-A vector space endowed with a specific inner product is called an inner product space. The standard example is, of course, ℝ ^n with its Euclidean dot product: langle x, y rangle = x · y = sum_i = 1 ^n x ^i y ^i.
+$$ A vector space endowed with a specific inner product is called an inner product space. The standard example is, of course, $\mathbb { R } ^ { n }$ with its Euclidean dot product: $$ \langle x, y \rangle = x \cdot y = \sum_ {i = 1} ^ {n} x ^ {i} y ^ {i}.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Analysis/InnerProductSpace/Defs.lean::InnerProductSpace.Core, InnerProductSpace`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/InnerProductSpace/Defs.html#InnerProductSpace.Core); [`Mathlib/Analysis/InnerProductSpace/PiL2.lean::Pi.instInnerProductSpace`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/InnerProductSpace/PiL2.html#Pi.instInnerProductSpace) — `InnerProductSpace.Core ℝ V` packages a symmetric bilinear positive-definite real inner product, and Mathlib’s finite coordinate spaces have the standard dot-product instance.
@@ -853,7 +853,7 @@ Let $V$ be an inner product space. For $v \in V$, the length of $v$ is $|v| = \s
 `FC08-CB-U068` · Appendix B, § Inner Products and Norms; source L19264 · [in Mathlib]{.route-mathlib}
 :::
 
-Two vectors v; w ∈ V are said to be orthogonal if langle v , w rangle = 0 ; this means that either one of the vectors is zero, or the angle between them is π / 2
+Two vectors v; $w \in V$ are said to be orthogonal if $\langle v , w \rangle = 0 $ ; this means that either one of the vectors is zero, or the angle between them is $\pi / 2$
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Analysis/InnerProductSpace/Orthogonal.lean::Submodule.orthogonal`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/InnerProductSpace/Orthogonal.html#Submodule.orthogonal); [`Mathlib/Analysis/InnerProductSpace/PiL2.lean::Orthonormal, OrthonormalBasis`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/InnerProductSpace/PiL2.html) — Orthogonality is zero inner product and `Orthonormal`/`OrthonormalBasis` impose pairwise orthogonality with unit norm, exactly Lee’s definitions.
@@ -913,7 +913,7 @@ If V is a finite-dimensional inner product space and S ⊆ V is a subspace, the 
 `FC08-CB-U073` · Appendix B, § Inner Products and Norms; source L19320 · [in Mathlib]{.route-mathlib}
 :::
 
-Thanks to the result of the preceding exercise, for any subspace S of an inner product space V , there is a natural projection π : V → S with kernel S ^perp . This is called the orthogonal projection of V onto S .
+Thanks to the result of the preceding exercise, for any subspace S of an inner product space V , there is a natural projection $\pi \colon V \to S$ with kernel $S ^ { \perp }$ . This is called the orthogonal projection of V onto S . ##
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Analysis/InnerProductSpace/Orthogonal.lean::Submodule.orthogonal`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/InnerProductSpace/Orthogonal.html#Submodule.orthogonal); [`Mathlib/Analysis/InnerProductSpace/Projection/Basic.lean::Submodule.orthogonalProjectionOnto`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/InnerProductSpace/Projection/Basic.html#Submodule.orthogonalProjectionOnto) — [`Submodule.orthogonal`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Submodule.orthogonal#doc) is the orthogonal complement and `orthogonalProjectionOnto` is the canonical projection onto a subspace with orthogonal kernel; finite-dimensional real inner-product spaces have the required projection instance.
@@ -925,7 +925,7 @@ Thanks to the result of the preceding exercise, for any subspace S of an inner p
 `FC08-CB-U074` · Appendix B, § Norms; source L19324 · [in Mathlib]{.route-mathlib}
 :::
 
-If V is a real vector space, a norm on V is a function from V to R, written v ↦ ∣ v ∣ satisfying the following properties.
+Norms If V is a real vector space, a norm on V is a function from V to R, written $v \mapsto | v |$ satisfying the following properties. (i)
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Analysis/Normed/Group/Basic.lean::Norm, NormedAddCommGroup`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Normed/Group/Basic.html); [`Mathlib/Analysis/Normed/Module/Basic.lean::NormedSpace`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Normed/Module/Basic.html) — `Norm` together with the normed additive-group axioms is Mathlib’s norm; `NormedSpace ℝ V` combines it with the vector-space scalar action and its metric topology.
@@ -949,7 +949,7 @@ A vector space together with a specific choice of norm is called a normed linear
 `FC08-CB-U076` · Appendix B, § Norms; source L19334 · [in Mathlib]{.route-mathlib}
 :::
 
-(Euclidean Spaces). Endowed with the Euclidean norm defined by ∣ x ∣ = sqrt x · x,tagB.14 R n is a normed linear space, whose norm topology is exactly the Euclidean topology described in Appendix A.
+Example B.46 (Euclidean Spaces). Endowed with the Euclidean norm defined by $$ | x | = \sqrt {x \cdot x},\tag{B.14} $$ R is a normed linear space, whose norm topology is exactly the Euclidean topology described in Appendix A.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Analysis/InnerProductSpace/PiL2.lean::EuclideanSpace, Pi.instInnerProductSpace`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/InnerProductSpace/PiL2.html#Pi.instInnerProductSpace) — Mathlib’s finite `EuclideanSpace ℝ (Fin n)` has the Euclidean inner product and induced square-root-sum-of-squares norm, whose topology is the standard finite-product Euclidean topology.
@@ -987,7 +987,7 @@ Two norms ∣ · ∣ _1 and ∣ · ∣ _2 on a vector space V are said to be equ
 `FC08-CB-U079` · Appendix B, § Norms; source L19376 · [in Mathlib]{.route-mathlib}
 :::
 
-If V and W are normed linear spaces, a linear map T : V → W is said to be bounded if there exists a positive constant C such that ∣ T v ∣ ≤ C ∣ v ∣ text for all v ∈ V.
+If V and W are normed linear spaces, a linear map $T \colon V \to W$ is said to be bounded if there exists a positive constant C such that $$ | T v | \leq C | v | \quad \text { for all } v \in V. $$
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Analysis/Normed/Operator/BoundedLinearMaps.lean::IsBoundedLinearMap, isBoundedLinearMap_iff`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Normed/Operator/BoundedLinearMaps.html) — `IsBoundedLinearMap` is explicitly the unbundled predicate that a linear map has a constant `C>0` with `‖Tv‖ ≤ C‖v‖`, exactly Lee’s bounded linear map.
@@ -1023,7 +1023,7 @@ For some applications (chiefly in our treatment of de Rham cohomology in Chapter
 `FC08-CB-U082` · Appendix B, § Direct Products and Direct Sums; source L19402 · [not formalized]{.route-unmatched}
 :::
 
-If ( V _α ) _α ∈ A is an arbitrary indexed family of sets, their Cartesian product, denoted by Pi _α ∈ A V _α , is defined as the set of functions v A textstyle bigcup _α ∈ A V _α with the property that v ( α ) ∈ V _α for each ˛. Thanks to the axiom of choice, the Cartesian product of a nonempty indexed family of nonempty sets is nonempty. If v is an element of the Cartesian product, we usually denote the value of v at α ∈ A by v _α instead of v ( α ) ; the element v itself is usually denoted by ( v _α ) _α ∈ A , or just ( v _α ) if the index set is understood. This can be thought of as an indexed family of elements of the sets V _α . , or an mathrm bf ddot Delta A - t u p l e . bf 7 For each β ∈ A , we have a canonical projection map textstyle π _β : prod _α ∈ A V _α → V _β , defined by pi_β ((v _α) _α ∈ A ) = v _β.
+If $( V _ { \alpha } ) _ { \alpha \in A }$ is an arbitrary indexed family of sets, their Cartesian product, denoted by $\Pi _ { \alpha \in A } V _ { \alpha }$ , is defined as the set of functions v $A \textstyle \bigcup _ { \alpha \in A } V _ { \alpha }$ with the property that $v ( \alpha ) \in V _ { \alpha }$ for each ˛. Thanks to the axiom of choice, the Cartesian product of a nonempty indexed family of nonempty sets is nonempty. If v is an element of the Cartesian product, we usually denote the value of v at $\alpha \in A$ by $v _ { \alpha }$ instead of $v ( \alpha )$ ; the element v itself is usually denoted by $( v _ { \alpha } ) _ { \alpha \in A }$ , or just $( v _ { \alpha } )$ if the index set is understood. This can be thought of as an indexed family of elements of the sets $V _ { \alpha } .$ , or an $\mathrm { \bf \ddot { \Delta } A - t u p l e . \mathrm { \bf 7 } }$ For each $\beta \in A$ , we have a canonical projection map $\textstyle \pi _ { \beta } \colon \prod _ { \alpha \in A } V _ { \alpha } \to V _ { \beta }$ , defined by $$ \pi_ {\beta} \left((v _ {\alpha}) _ {\alpha \in A}\right) = v _ {\beta}. $$
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Pi types and coordinate projections are canonical Lean structures, but the row also asserts the axiom-of-choice nonemptiness theorem for arbitrary nonempty indexed families. No single checked declaration owns that whole set-theoretic bundle. Strict whole-row semantics reject proper subsets and substantive reconstruction from adjacent generic ingredients.
@@ -1037,7 +1037,7 @@ If ( V _α ) _α ∈ A is an arbitrary indexed family of sets, their Cartesian p
 `FC08-CB-U083` · Appendix B, § Direct Products and Direct Sums; source L19408 · [in Mathlib]{.route-mathlib}
 :::
 
-Now suppose that ( V _α ) _α ∈ A is an indexed family of R -modules. The direct product of the family is the set Pi _α ∈ A V _α , made into an R -module by defining addition and scalar multiplication as follows: beginarrayc (v _α) + big (v _α ^prime big) = big (v _α + v _α ^prime big), c (v _α) = (c v _α). endarray
+Now suppose that $( V _ { \alpha } ) _ { \alpha \in A }$ is an indexed family of -modules. The direct product of the family is the set $\Pi _ { \alpha \in A } V _ { \alpha }$ , made into an -module by defining addition and scalar multiplication as follows: $$ \begin{array}{c} (v _ {\alpha}) + \big (v _ {\alpha} ^ {\prime} \big) = \big (v _ {\alpha} + v _ {\alpha} ^ {\prime} \big), \\ c (v _ {\alpha}) = (c v _ {\alpha}). \end{array} $$ The zero
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Algebra/Module/Pi.lean::Pi.instModule`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Module/Pi.html#Pi.instModule); [`Mathlib/Algebra/Module/Defs.lean::Module`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Module/Defs.html); [`Mathlib/Algebra/Module/Submodule/Defs.lean::Submodule`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Module/Submodule/Defs.html) — Products of modules carry pointwise operations; `Module` and `Submodule` are exactly Lee’s module/submodule notions. For a finite family, product and direct-sum representations are linearly equivalent.
@@ -1049,7 +1049,7 @@ Now suppose that ( V _α ) _α ∈ A is an indexed family of R -modules. The dir
 `FC08-CB-U084` · Appendix B, § Direct Products and Direct Sums; source L19416 · [in Mathlib]{.route-mathlib}
 :::
 
-(Characteristic Property of the Direct Product). Let ( V _α ) _α ∈ A be an indexed family of R -modules. Given an R -module W and a family of R - linear maps G _α : W → V _α , there exists a unique R -linear map beginarray r G : W → prod _α ∈ A V _α endarray such that π _α ∘ G = G _α f o r each α ∈ A
+Proposition B.53 (Characteristic Property of the Direct Product). Let $( V _ { \alpha } ) _ { \alpha \in A }$ be an indexed family of -modules. Given an -module W and a family of - linear maps $G _ { \alpha } \colon W \to V _ { \alpha }$ , there exists a unique -linear map $\begin{array} { r } { G \colon W \to \prod _ { \alpha \in A } V _ { \alpha } } \end{array}$ such that $\pi _ { \alpha } \circ G = G _ { \alpha } f o r$ each
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Pi.lean::LinearMap.pi, LinearMap.proj`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Pi.html) — [`LinearMap.pi`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=LinearMap.pi#doc) is the unique linear map into an indexed product with prescribed coordinate maps, with coordinate projections and extensionality giving exactly the product universal property.
@@ -1061,7 +1061,7 @@ Now suppose that ( V _α ) _α ∈ A is an indexed family of R -modules. The dir
 `FC08-CB-U085` · Appendix B, § Direct Products and Direct Sums; source L19420 · [in Mathlib]{.route-mathlib}
 :::
 
-Complementary to direct products is the notion of direct sums. Given an indexed family ( V _α ) _α ∈ A as above, we define the direct sum of the family to be the submodule of their direct product consisting of A-tuples ( v _α ) _α ∈ A with the property that v _α = 0 for all but finitely many ˛. The direct sum is denoted by oplus _α ∈ A V _α , or in the case of a finite family by V _1 oplus ·s oplus V _k . For finite families of modules, the direct product and the direct sum are identical.
+Complementary to direct products is the notion of direct sums. Given an indexed family $( V _ { \alpha } ) _ { \alpha \in A }$ as above, we define the direct sum of the family to be the submodule of their direct product consisting of A-tuples $( v _ { \alpha } ) _ { \alpha \in A }$ with the property that $v _ { \alpha } = 0$ for all but finitely many ˛. The direct sum is denoted by $\oplus _ { \alpha \in A } V _ { \alpha }$ , or in the case of a finite family by $V _ { 1 } \oplus \cdots \oplus V _ { k }$ . For finite families of modules, the direct product and the direct sum are identical.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Algebra/DirectSum/Basic.lean::DirectSum`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/DirectSum/Basic.html); [`Mathlib/Algebra/DirectSum/Module.lean::DirectSum.lof, DirectSum.toModule, DirectSum.toModule_lof, DirectSum.toModule.unique`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/DirectSum/Module.html) — Mathlib’s `DirectSum` is the finite-support dependent family (`DFinsupp`) representation; `lof` is the canonical injection and `toModule` with its uniqueness theorem is exactly Lee’s direct-sum universal property.
@@ -1073,7 +1073,7 @@ Complementary to direct products is the notion of direct sums. Given an indexed 
 `FC08-CB-U086` · Appendix B, § Direct Products and Direct Sums; source L19422 · [in Mathlib]{.route-mathlib}
 :::
 
-For each β ∈ A , there is a canonical R -linear injection iota _β : V _β → bigoplus _α ∈ A V _α . defined by letting iota _β ( v ) be the A-tuple ( v _α ) _α ∈ A with v _β = v and v _α = 0 for ˛ ≠ β In the case of a finite direct sum, this just means iota _β ( v ) = ( 0 , … , 0 , v , 0 , … , 0 ) , with v in position β .
+For each $\beta \in A$ , there is a canonical -linear injection $\iota _ { \beta } \colon V _ { \beta } \to \bigoplus _ { \alpha \in A } V _ { \alpha } .$ defined by letting $\iota _ { \beta } ( v )$ be the A-tuple $( v _ { \alpha } ) _ { \alpha \in A }$ with $v _ { \beta } = v$ and $v _ { \alpha } = 0$ for ˛ $\neq \beta$ In the case of a finite direct sum, this just means $\iota _ { \beta } ( v ) = ( 0 , \dots , 0 , v , 0 , \dots , 0 )$ , with v in position
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Algebra/DirectSum/Basic.lean::DirectSum`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/DirectSum/Basic.html); [`Mathlib/Algebra/DirectSum/Module.lean::DirectSum.lof, DirectSum.toModule, DirectSum.toModule_lof, DirectSum.toModule.unique`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/DirectSum/Module.html) — Mathlib’s `DirectSum` is the finite-support dependent family (`DFinsupp`) representation; `lof` is the canonical injection and `toModule` with its uniqueness theorem is exactly Lee’s direct-sum universal property.
