@@ -489,12 +489,15 @@ completion claim.
 prerequisites for every unticked cell, regenerating from the unit catalogues and mapping
 records. Sweep completion still reads only from the whole-source ledger.
 
-**Completed 2026-09-11.** `test-commit` now runs Lake's incremental `LeanCategories`
-library target plus the no-sorry and local-convention scans; exporter, vacuity,
-Mathlib-lint, unused-variable and axiom whole-environment audits remain unchanged under
-`test-ci`. A temporary one-declaration edit passed the new commit tier in **23.26 s**, versus
-the **about 24 min** median interval between consecutive feature commits measured above;
-the complete unchanged CI tier passed separately in **350.08 s** on the same host/cache.
+**Completed 2026-09-11.** `8a31f94` first split the tiers: a temporary one-declaration
+edit passed its incremental commit tier in **23.26 s**, versus the **about 24 min** median
+interval between consecutive feature commits measured above, while the complete CI tier
+passed separately in **350.08 s** on the same host/cache. The follow-up tiering change takes
+the remaining library elaboration and sorry-freedom out of `test-commit`: commit now runs
+only the repository's cheap local-convention scan, whose Cartan prohibition records the
+actual issue #1 Corrections 2–3 failure. `test-push` still delegates to unchanged `test-ci`,
+which owns full elaboration, sorry-freedom, exporter, vacuity, Mathlib-lint,
+unused-variable and axiom audits.
 `scripts/foundational_frontier.py` now regenerates `FOUNDATIONAL_FRONTIER.md` directly from
 the canonical Sweep-I catalogues, Sweep-II mapping records and whole-source status ledger.
 The current ledger has **28** unticked Mapping/Definitions/Theorems cells (12 Definitions,

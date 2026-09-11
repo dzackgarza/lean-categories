@@ -37,12 +37,12 @@ test: build
     @just _lean-unused-variables
     @just _lean-axiom-audit
 
-# Commit-tier QC: Lake's incremental library target elaborates changed modules
-# and affected dependents. Whole-environment exporter/linter/axiom audits stay
-# in `test-ci`, where `test` remains the complete repository gate.
+# Commit-tier QC is deliberately non-elaborating: it catches the repository's
+# local convention error while a worker can still bank a partially elaborated
+# transcription. Full elaboration, sorry-freedom, exporter/linter/axiom audits
+# stay in `test-ci`/`test-push`, where `test` remains the complete repository
+# gate.
 test-commit:
-    @lake build LeanCategories
-    @just -f {{ai_review_ci}}/justfiles/lean.just -d . lean-no-sorry
     @just _lint-conventions
 
 # Run the CI quality gate
