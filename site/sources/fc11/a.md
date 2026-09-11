@@ -279,13 +279,7 @@ The Hilbert symbol at a place $v$ is the symmetric bilinear pairing $(\ ,\ )_v:D
 `FC11-A-U034` · Appendix A, source L11238-L11251
 :::
 
-::: {.unit-defect}
-**This record is incomplete.** It stops mid-formula: the equation the book states here was lost when the text was extracted, so what follows is the broken record verbatim, not the mathematics. Read this one in the book.
-
-````text
-Theorem A.4.4. Let $a , b \in \mathbb { Q } _ { p }$ , $p$ prime. Write $a = p ^ { \alpha } u , b = p ^ { \beta } v$ with $u , v \in \mathbb { Z } _ { p } ^ { \times }$ . Then, recalling that $$ \begin{array} { r } { \varepsilon ( u ) = \left\{ \begin{array} { l l } { 0 } & { \mathrm { ~ } i f u \equiv 1 \bmod 4 , } \\ { 1 } & { \mathrm { ~ } i f u \equiv - 1 \bmod 4 , } \end{array} \right. \quad \quad a n d \omega ( u ) = \left\{ \begin{array} { l l } { 0 } & { \mathrm { ~ } i f u \equiv \pm 1 \bmod 8 , } \\ { 1 } & { \mathrm { ~ } i f u \equiv \pm 3 \bmod 8 , } \end{array} \right. } \end{array} $$ one has: 1. If $p$ is odd, $( a , b ) _ { p } = ( - 1 ) ^ { \alpha \beta \varepsilon ( p ) } \left( \frac { u } { p } \right) ^ { \beta } \left( \frac { v } { p } \right) ^ { \alpha }$ . In particular, if ?? and ?? are units, $( a , b ) _ { p } = 1$ . 2. For $p = 2$ , write $a = 2 ^ { \alpha } u , b = 2 ^ { \beta } v$ with $u , v \in \mathbb { Z } _ { 2 } ^ { \times }$ . Then $$ ( a , b ) _ { 2 } = ( - 1 ) ^ { \varepsilon ( u ) \varepsilon ( v ) + \alpha \omega ( v ) + \beta \omega ( u ) } .
-````
-:::
+Let $a, b \in \mathbb{Q}_{p}$ with $p$ prime, and write $a = p^{\alpha}u$, $b = p^{\beta}v$ with $u, v \in \mathbb{Z}_{p}^{\times}$. Recall $$ \varepsilon(u) = \begin{cases} 0 & \text{if } u \equiv 1 \bmod 4, \\ 1 & \text{if } u \equiv -1 \bmod 4, \end{cases} \qquad \omega(u) = \begin{cases} 0 & \text{if } u \equiv \pm 1 \bmod 8, \\ 1 & \text{if } u \equiv \pm 3 \bmod 8. \end{cases} $$ Then: 1. If $p$ is odd, $$ (a,b)_{p} = (-1)^{\alpha\beta\varepsilon(p)} \left(\frac{u}{p}\right)^{\beta} \left(\frac{v}{p}\right)^{\alpha}; $$ in particular $(a,b)_{p} = 1$ when $a$ and $b$ are units. 2. For $p = 2$, writing $a = 2^{\alpha}u$, $b = 2^{\beta}v$ with $u, v \in \mathbb{Z}_{2}^{\times}$, $$ (a,b)_{2} = (-1)^{\varepsilon(u)\varepsilon(v) + \alpha\omega(v) + \beta\omega(u)}. $$
 
 ### Construction / comparison {#fc11-a-u035}
 
