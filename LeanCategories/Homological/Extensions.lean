@@ -7,6 +7,7 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
@@ -294,6 +295,98 @@ theorem baerLeft_right_exact {R : Type u} [Ring R] {A B : ModuleCat.{u, u} R}
       baerFiberProjection e₁ e₂ x =
           baerFiberProjection e₁ e₂ (baerLeftLift e₁ e₂ a) := h.symm
       _ = 0 := e₁.leftMap_rightMap_exact.apply_apply_eq_zero a
+
+/-- The left Baer map as a morphism between the existing bundled module objects. -/
+noncomputable def baerLeftHom {R : Type u} [Ring R] {A B : ModuleCat.{u, u} R}
+    (e₁ e₂ : Extension A B) :
+    A ⟶ ModuleCat.of R (baerMiddle e₁ e₂) :=
+  (ModuleCat.hom_surjective
+    (R := R) (M := A) (N := ModuleCat.of R (baerMiddle e₁ e₂)) (baerLeft e₁ e₂)).choose
+
+@[simp]
+theorem baerLeftHom_hom {R : Type u} [Ring R] {A B : ModuleCat.{u, u} R}
+    (e₁ e₂ : Extension A B) :
+    (baerLeftHom e₁ e₂).hom = baerLeft e₁ e₂ :=
+  (ModuleCat.hom_surjective
+    (R := R) (M := A) (N := ModuleCat.of R (baerMiddle e₁ e₂)) (baerLeft e₁ e₂)).choose_spec
+
+/-- The right Baer map as a morphism between the existing bundled module objects. -/
+noncomputable def baerRightHom {R : Type u} [Ring R] {A B : ModuleCat.{u, u} R}
+    (e₁ e₂ : Extension A B) :
+    ModuleCat.of R (baerMiddle e₁ e₂) ⟶ B :=
+  (ModuleCat.hom_surjective
+    (R := R) (M := ModuleCat.of R (baerMiddle e₁ e₂)) (N := B) (baerRight e₁ e₂)).choose
+
+@[simp]
+theorem baerRightHom_hom {R : Type u} [Ring R] {A B : ModuleCat.{u, u} R}
+    (e₁ e₂ : Extension A B) :
+    (baerRightHom e₁ e₂).hom = baerRight e₁ e₂ :=
+  (ModuleCat.hom_surjective
+    (R := R) (M := ModuleCat.of R (baerMiddle e₁ e₂)) (N := B) (baerRight e₁ e₂)).choose_spec
+
+/-- The short exact sequence representing the Baer sum. -/
+noncomputable def baerSeq {R : Type u} [Ring R] {A B : ModuleCat.{u, u} R}
+    (e₁ e₂ : Extension A B) : ShortComplex (ModuleCat.{u, u} R) :=
+  ShortComplex.mk (baerLeftHom e₁ e₂) (baerRightHom e₁ e₂) (by
+    apply ModuleCat.hom_ext
+    rw [ModuleCat.hom_comp, baerLeftHom_hom, baerRightHom_hom]
+    ext a
+    exact e₁.leftMap_rightMap_exact.apply_apply_eq_zero a)
+
+@[simp]
+theorem baerSeq_f_hom {R : Type u} [Ring R] {A B : ModuleCat.{u, u} R}
+    (e₁ e₂ : Extension A B) :
+    (baerSeq e₁ e₂).f.hom = baerLeft e₁ e₂ :=
+  baerLeftHom_hom e₁ e₂
+
+@[simp]
+theorem baerSeq_g_hom {R : Type u} [Ring R] {A B : ModuleCat.{u, u} R}
+    (e₁ e₂ : Extension A B) :
+    (baerSeq e₁ e₂).g.hom = baerRight e₁ e₂ :=
+  baerRightHom_hom e₁ e₂
+
+@[simp]
+theorem baerSeq_X₁ {R : Type u} [Ring R] {A B : ModuleCat.{u, u} R}
+    (e₁ e₂ : Extension A B) : (baerSeq e₁ e₂).X₁ = A := rfl
+
+@[simp]
+theorem baerSeq_X₂ {R : Type u} [Ring R] {A B : ModuleCat.{u, u} R}
+    (e₁ e₂ : Extension A B) :
+    (baerSeq e₁ e₂).X₂ = ModuleCat.of R (baerMiddle e₁ e₂) := rfl
+
+@[simp]
+theorem baerSeq_X₃ {R : Type u} [Ring R] {A B : ModuleCat.{u, u} R}
+    (e₁ e₂ : Extension A B) : (baerSeq e₁ e₂).X₃ = B := rfl
+
+/-- The Baer sum of two extensions, formed by fibre product over `B` and quotient by the
+skew-diagonal copy of `A`. -/
+noncomputable def baerSum {R : Type u} [Ring R] {A B : ModuleCat.{u, u} R}
+    (e₁ e₂ : Extension A B) : Extension A B := by
+  have hFunctionExact :
+      Function.Exact (baerSeq e₁ e₂).f.hom (baerSeq e₁ e₂).g.hom := by
+    rw [baerSeq_f_hom, baerSeq_g_hom]
+    exact baerLeft_right_exact e₁ e₂
+  have hExact : (baerSeq e₁ e₂).Exact :=
+    (CategoryTheory.ShortComplex.ShortExact.moduleCat_exact_iff_function_exact
+      (baerSeq e₁ e₂)).mpr hFunctionExact
+  have hInjective : Function.Injective (baerSeq e₁ e₂).f.hom := by
+    rw [baerSeq_f_hom]
+    exact baerLeft_injective e₁ e₂
+  have hMono : Mono (baerSeq e₁ e₂).f := by
+    apply (ModuleCat.mono_iff_injective (baerSeq e₁ e₂).f).mpr
+    exact hInjective
+  have hSurjective : Function.Surjective (baerSeq e₁ e₂).g.hom := by
+    rw [baerSeq_g_hom]
+    exact baerRight_surjective e₁ e₂
+  have hEpi : Epi (baerSeq e₁ e₂).g := by
+    apply (ModuleCat.epi_iff_surjective (baerSeq e₁ e₂).g).mpr
+    exact hSurjective
+  exact
+    { E := ModuleCat.of R (baerMiddle e₁ e₂)
+      seq := baerSeq e₁ e₂
+      exact := ShortComplex.ShortExact.mk' hExact hMono hEpi
+      left_eq := rfl
+      right_eq := rfl }
 
 /-- Two extensions `0 → A → E₁ → B → 0` and `0 → A → E₂ → B → 0`
     are **equivalent** (Weibel, Def. 3.4.1) if there exists a morphism of
