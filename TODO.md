@@ -307,6 +307,66 @@ Sweep IV may be very long-running. Unproved theorem units remain open theorem wo
 encoded as axioms, theorem-shaped structure fields, weakened definitions, or reasons to narrow
 Sweep III.
 
+## 4a. What limits the rate, and is worth fixing before the next source
+
+Neither item below is sweep work. Both are why sweep work is slow, and this repository can
+only ever run one worker, so an hour spent waiting is an hour the corpus does not advance.
+
+### `test-commit` is `test-ci`, so every commit pays a whole-project elaboration
+
+`justfile` defines `test-commit: test` and `test-ci: test`, and `test` is `build` followed
+by the exporter, `lean-no-sorry`, `_lint-conventions`, `_lean-vacuity-audit`,
+`_lean-mathlib-lint-audit`, `_lean-unused-variables` and `_lean-axiom-audit` — a full
+repository elaboration plus five whole-environment audits, for a commit that may have
+added one definition to one file.
+
+Measured on the productive run of 2026-09-10 21:10 through 2026-09-11 05:48, the interval
+between consecutive `feat` commits was 37, 23, 24, 9, 10, 43, 13 and 41 minutes, median
+about 24. Nineteen commits landed in twenty-four hours. The mathematics in each is minutes
+of work; most of the interval is the gate.
+
+The gate holds `.git/index.lock` for its whole run, so the cost is not only the waiting
+worker's. Observed 2026-09-11 06:23–06:40: a commit's `lean-categories-axiom-audit` held
+the lock for seventeen minutes, during which no other write to this repository was
+possible — which is also the mechanism behind the stale locks `LC-05` exists for, since a
+gate killed part-way through leaves that lock with no owner.
+
+The obligation is to separate the tiers, not to weaken either. Commit tier checks what the
+commit changed and its dependents; CI tier keeps the whole-environment audits exactly as
+they are, since `env_linter`-backed checks like the vacuity audit are inherently
+whole-environment and belong where they are paid once. Nothing here licenses committing
+past a red audit — `LC-07` still governs that, and a check that is skipped at commit tier
+must be one CI will still run before the work is relied on.
+
+**Acceptance:** a one-declaration commit no longer elaborates the whole project, the full
+audit set still runs at `test-ci`, and no audit is deleted or narrowed to achieve it.
+Record the measured before/after interval in the commit.
+
+### The remaining sweep frontier is 30 whole-source cells with no finer structure
+
+The [corpus status ledger](.agents/references/foundational-corpus-status.md) is scored per
+source per sweep: 16 sources × 4 sweeps, of which 34 cells are checked. A checkbox means
+the sweep is complete for the entire source, and partial chapter progress deliberately does
+not check it. That is the right rule for a completion ledger and the wrong granularity for
+choosing the next hour of work: FC05 Weibel definitions is a single unticked box covering a
+whole book, and the twelve remaining definition cells and sixteen theorem cells are the
+same shape.
+
+Between 2026-09-10 and 2026-09-11 one cell moved. That is a true measurement of sweep
+completion and a useless one for scheduling, because it cannot distinguish a source that is
+nearly done from one not started, and it gives a second worker nothing disjoint to take if
+this host ever has room for one.
+
+The unit catalogues from Sweep I already hold the per-unit structure; what is missing is a
+frontier derived from them — per source, which units are delivered, which are next in the
+traversal order, and what each is blocked on. Derive it, do not hand-maintain it, and keep
+the whole-source ledger as the sole completion authority so this does not become a second
+completion claim.
+
+**Acceptance:** a generated per-source frontier that names the next units and their
+prerequisites for every unticked cell, regenerating from the unit catalogues and mapping
+records. Sweep completion still reads only from the whole-source ledger.
+
 ## 5. Legacy definition catalogues
 
 The older per-source definition catalogues in `.agents/references/definition-catalogue-*.md` are
