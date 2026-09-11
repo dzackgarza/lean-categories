@@ -601,7 +601,7 @@ I f U ⊆ ℝ ^n is an open subset and F : U ℝ ^m is of class C ^1 , then f is
 `FC08-CC-U045` · Appendix C, § The Inverse and Implicit Function Theorems; source L20038 · [in Mathlib]{.route-mathlib}
 :::
 
-Let X be a metric space. A map $G \colon X \to X$ is said to be a contraction if there is a constant $\lambda \in ( 0 , 1 )$ such that d $\bigl ( G ( x ) , G ( y ) \bigr ) \leq \lambda d ( x , y )$ for all $x , y \in X$ . Clearly, every contraction is continuous. A fixed point of a map $G \colon X \to X$ is a point $x \in X$ such
+Let X be a metric space. A map G : X → X is said to be a contraction if there is a constant λ ∈ ( 0 , 1 ) such that d ( G ( x ) , G ( y ) ) ≤ λ d ( x , y ) for all x , y ∈ X . Clearly, every contraction is continuous. A fixed point of a map G : X → X is a point x ∈ X such that G ( x ) = x
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/MetricSpace/Contracting.lean::ContractingWith, ContractingWith.toLipschitzWith, ContractingWith.fixedPoint, ContractingWith.fixedPoint_isFixedPt, ContractingWith.fixedPoint_unique`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/MetricSpace/Contracting.html) — `ContractingWith K G` is `K<1` plus the Lipschitz inequality, hence continuity; on a nonempty complete metric space `fixedPoint` exists, is fixed, and `fixedPoint_unique` proves uniqueness. This is exactly Lee’s contraction definition and Lemma C.35.

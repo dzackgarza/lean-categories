@@ -71,7 +71,7 @@ A neighborhood of p is an open subset containing p. Similarly, a neighborhood of
 `FC08-CA-U004` · Appendix A, § Topological Spaces; source L17912 · [in Mathlib]{.route-mathlib}
 :::
 
-S is said to be closed if X setminus S is open (where X setminus S denotes the set difference x ∈ X : x not ∈ S ) .
+S is said to be closed if $X \setminus S$ is open (where $X \setminus S$ denotes the set difference $\{ x \in X : x \not \in S \} )$
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/Defs/Basic.lean::IsClosed`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Defs/Basic.html) — `IsClosed s` is defined by openness of the complement, exactly Lee’s convention.
@@ -121,7 +121,7 @@ The closure of S , denoted by bar(S) , , is the intersection of all closed subse
 `FC08-CA-U008` · Appendix A, § Topological Spaces; source L17920 · [in Mathlib]{.route-mathlib}
 :::
 
-The boundary of S , denoted by @S, is the set of all points of X that are in neither Int S nor Ext S.
+The boundary of S , denoted by @S, is the set of all points of X that are in neither Int S nor
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/Defs/Basic.lean::frontier`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Defs/Basic.html); [`Mathlib/Topology/Closure.lean::frontier_eq_inter_compl_interior`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Closure.html) — `frontier` is Lee’s boundary; `frontier_eq_inter_compl_interior` identifies it exactly with points in neither the interior nor the exterior.
@@ -171,7 +171,7 @@ S is said to be dense in X if ${ \overline { { S } } } = X$ , or equivalently if
 `FC08-CA-U012` · Appendix A, § Topological Spaces; source L17928 · [in Mathlib]{.route-mathlib}
 :::
 
-S is said to be nowhere dense in X if Sx contains no nonempty open subset.
+S is said to be nowhere dense in X if Sx contains no nonempty open
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/GDelta/Basic.lean::IsNowhereDense`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/GDelta/Basic.html) — `IsNowhereDense s` is defined by `interior (closure s) = ∅`, exactly the source convention.
@@ -183,7 +183,7 @@ S is said to be nowhere dense in X if Sx contains no nonempty open subset.
 `FC08-CA-U013` · Appendix A, § Topological Spaces; source L17930 · [not formalized]{.route-unmatched}
 :::
 
-The most important concepts of topology are continuous maps and convergent sequences, which we define next. Let X and Y be topological spaces.
+The most important concepts of topology are continuous maps and convergent sequences, which we define next. Let X and Y be topological
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — This is transitional prose rather than a mathematical theorem/construction with an independent checked owner. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -209,7 +209,7 @@ map $F \colon X \to Y$ is said to be continuous if for every open subset $U \sub
 `FC08-CA-U015` · Appendix A, § Topological Spaces; source L17934 · [in Mathlib]{.route-mathlib}
 :::
 
-. A continuous bijective map $F \colon X \to Y$ with continuous inverse is called a homeomorphism. If there exists a homeomorphism from X to Y , we say that X and Y are homeomorph
+A continuous bijective map F : X → Y with continuous inverse is called a homeomorphism. If there exists a homeomorphism from X to Y , we say that X and Y are homeomorphic.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/Homeomorph/Defs.lean::Homeomorph`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Homeomorph/Defs.html) — `Homeomorph X Y` is a bijection with continuous forward and inverse maps, exactly the source object.
@@ -257,7 +257,7 @@ Example A.4 (Discrete Spaces). If X is an arbitrary set, the discrete topology o
 `FC08-CA-U019` · Appendix A, § Topological Spaces; source L17960 · [in Mathlib]{.route-mathlib}
 :::
 
-Example A.5 (Metric Spaces). A metric space is a set M endowed with a distance function (also called a metric) d $M \times M \to \mathbb { R }$ (where R denotes the set of rea numbers) satisfying the following properties for all $x , y , z \in M$ (i) POSITIVITY: $d ( x , y ) \geq 0$ , with equality if and only if $x = y$ (ii) SYMMETRY: $d ( x , y ) = d ( y , x )$ (iii) TRIANGLE INEQUALITY: $d ( x , z ) \leq d ( x , y ) + d ( y , z )$ If M is a metric space, $x \in M$ ; and $r > 0$ , the open ball of radius r around x is the set $$ B _ {r} (x) = \left\{y \in M: d (x, y) < r \right\}, $$ and the closed ball of radius r is $$ \bar {B} _ {r} (x) = \left\{y \in M: d (x, y) \leq r \right\}. $$ The metric topology on M is defined by declaring a subset $S \subseteq M$ to be open if for every point $x \in S$ , there is some $r > 0$ such
+(Metric Spaces). A metric space is a set M endowed with a distance function (also called a metric) d M × M → ℝ (where R denotes the set of rea numbers) satisfying the following properties for all x , y , z ∈ M (i) POSITIVITY: d ( x , y ) ≥ 0 , with equality if and only if x = y (ii) SYMMETRY: d ( x , y ) = d ( y , x ) (iii) TRIANGLE INEQUALITY: d ( x , z ) ≤ d ( x , y ) + d ( y , z ) If M is a metric space, x ∈ M ; and r > 0 , the open ball of radius r around x is the set B _r (x) = y ∈ M: d (x, y) < r , and the closed ball of radius r is bar(B) _r (x) = y ∈ M: d (x, y) ≤ r . The metric topology on M is defined by declaring a subset S ⊆ M to be open if for every point x ∈ S , there is some r > 0 such that B _r ( x ) ⊆ S
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/MetricSpace/Defs.lean::MetricSpace`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/MetricSpace/Defs.html); [`Mathlib/Topology/MetricSpace/Pseudo/Defs.lean::Metric.ball, Metric.closedBall, Metric.nhds_basis_ball`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/MetricSpace/Pseudo/Defs.html) — The metric axioms, open/closed balls, and the ball basis for the induced metric topology directly realize the full example.
@@ -333,7 +333,7 @@ For each $x \in \mathbb{R}^{n}$, the Euclidean norm of $x$ is the nonnegative re
 `FC08-CA-U025` · Appendix A, § Topological Spaces; source L18000 · [in Mathlib]{.route-mathlib}
 :::
 
-{n}\right) ^ {2}}, $$ and for x; $y \in \mathbb { R } ^ { n }$ , the Euclidean distance function is defined by $$ d (x, y) = |
+and for x; y ∈ ℝ ^n , the Euclidean distance function is defined by d (x, y) = ∣ x - y ∣.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Analysis/Normed/Group/Basic.lean::dist_eq_norm`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Normed/Group/Basic.html) — `dist_eq_norm` is exactly `d(x,y)=‖x-y‖` in the norm-induced Euclidean metric.
@@ -399,7 +399,7 @@ To avoid pathological cases like this, which result when X does not have suffici
 `FC08-CA-U030` · Appendix A, § Bases and Countability; source L18060 · [in Mathlib]{.route-mathlib}
 :::
 
-Suppose X is a topological space. A collection of open subsets of X is said to be a basis for the topology of X (plural: bases) if every open subset of X is the union of some collection of elements of .
+Suppose X is a topological space. A collection of open subsets of X is said to be a basis for the topology of X (plural: bases) if every open subset of X is the union of some collection of elements
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/Bases.lean::IsTopologicalBasis`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Bases.html) — `IsTopologicalBasis B` is precisely the source condition that open sets are unions of basis elements.
@@ -685,7 +685,7 @@ If X is a topological space, Y is a set, and $\pi \colon X \to Y$ is a surjectiv
 `FC08-CA-U052` · Appendix A, § Quotient Spaces and Quotient Maps; source L18226 · [not formalized]{.route-unmatched}
 :::
 
-The following construction is the most common way of producing quotient maps. A relation on a set X is called an equivalence relation if it is reflexive $( x \sim x$ for all $x \in X )$ , symmetric $( x \sim y$ implies $y \sim x )$ , and transitive $( x \sim y$ and $y \sim z$ imply $x \sim z )$ . If $R \subseteq X \times X$ is any relation on X, then the intersection of all equivalence relations on $X$ containing R is an equivalence relation, called the equivalence relation generated by R. If is an equivalence relation on $X$ , then for each $x \in X$ , the equivalence class of x, denoted by Œx, is the set of all $y \in X$ such that $y \sim x$ . The set of all equivalence classes is a partition of X : a collection of disjoint nonempty subsets whose union is
+The following construction is the most common way of producing quotient maps. A relation on a set X is called an equivalence relation if it is reflexive ( x ∼ x for all x ∈ X ) , symmetric ( x ∼ y implies y ∼ x ) , and transitive ( x ∼ y and y ∼ z imply x ∼ z ) . If R ⊆ X × X is any relation on X, then the intersection of all equivalence relations on X containing R is an equivalence relation, called the equivalence relation generated by R. If is an equivalence relation on X , then for each x ∈ X , the equivalence class of x, denoted by Œx, is the set of all y ∈ X such that y ∼ x . The set of all equivalence classes is a partition of X : a collection of disjoint nonempty subsets whose union is X .
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib has quotient/setoid/open/closed-map infrastructure, but this row bundles generated equivalence relations, adjunction examples, saturation, several quotient properties, or quotient-space uniqueness beyond the single directly mapped universal property. No complete owner was found. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -807,7 +807,7 @@ A topological space X is said to be disconnected if it has two disjoint nonempty
 `FC08-CA-U061` · Appendix A, § Connectedness and Compactness; source L18304 · [in Mathlib]{.route-mathlib}
 :::
 
-A maximal connected subset of X (i.e., a connected subset that is not properly contained in any larger connected subset) is called a component (or connected component) of X.
+A maximal connected subset of X (i.e., a connected subset that is not properly contained in any larger connected subset) is called a component (or connected component)
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/Connected/Basic.lean::connectedComponent`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Connected/Basic.html) — `connectedComponent x` is the maximal connected subset through `x`, exactly the source component.
@@ -1139,7 +1139,7 @@ $f ( 1 - s )$ It can be shown that for path-connected spaces, the fundamental gr
 `FC08-CA-U087` · Appendix A, § Homotopy and the Fundamental Group; source L18506 · [not formalized]{.route-unmatched}
 :::
 
-$F _ { 0 } , F _ { 1 } \colon X Y$ and $G _ { 0 } , G _ { 1 } \colon Y \to Z$ are continuous maps with $F _ { 0 } \simeq F _ { 1 }$ and $G _ { 0 } \simeq G _ { 1 }$ , then $G _ { 0 } \circ F _ { 0 } \simeq G _ { 1 } \circ F _ { 1 }$ . Similarly, $i f f _ { 0 } , f _ { 1 } \colon I \to X$ are path-homotopic and $F \colon X \to Y$ is a continuous map, then
+If F _0 , F _1 : X Y and G _0 , G _1 : Y → Z are continuous maps with F _0 simeq F _1 and G _0 simeq G _1 , then G _0 ∘ F _0 simeq G _1 ∘ F _1 . Similarly, i f f _0 , f _1 : I → X are path-homotopic and F : X → Y is a continuous map, then F ∘ f _0 ∼ F ∘ f _1
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib/TauCeti contain substantial fundamental-group and homotopy infrastructure, but this row bundles basepoint transport, composition/functoriality clauses, sphere/product computations, or a concrete deformation example without one complete checked owner at the required interface. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.

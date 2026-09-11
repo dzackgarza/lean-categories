@@ -267,7 +267,7 @@ For each vector v ∈ V , the affine subspace v + S is also called the coset of 
 `FC08-CB-U020` · Appendix B, § Linear Maps; source L18756 · [in Mathlib]{.route-mathlib}
 :::
 
-Let V and W be real vector spaces. A map T : V → W is linear if T ( a v + b w ) = a T v + b T w for all vectors v , w ∈ V and all scalars a; b. (Because of the close connection between linear maps and matrix multiplication described below, we generally write the action of a linear map T on a vector v as T v without parentheses, unless parentheses are needed for grouping.) In the special case W = ℝ , a linear map from V to R is usually called a linear functional on V .
+Let V and W be real vector spaces. A map $T \colon V \to W$ \boldsymbol { w }$ for all vectors $v , w \in V$ and all scalars a; b. (Because of the close connection between linear maps and matrix multiplication described below, we generally write the action of a linear map T on a vector v as T v without parentheses, unless parentheses are needed for grouping.) In the special case $W = \mathbb { R }$ , a linear map from V to R is usually called a linear functional on V . If $
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Algebra/Module/LinearMap/Defs.lean::LinearMap`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Module/LinearMap/Defs.html); [`Mathlib/LinearAlgebra/Dual/Defs.lean::Module.Dual`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Dual/Defs.html#Module.Dual); [`Mathlib/Algebra/Module/LinearMap/Defs.lean::LinearMap.ker, LinearMap.range`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Module/LinearMap/Defs.html) — `LinearMap` is the canonical linear-map object; [`Module.Dual`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Module.Dual#doc) is the scalar-valued special case, and [`LinearMap.ker`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=LinearMap.ker#doc)/`range` are exactly Lee’s kernel and image subspaces.
@@ -351,7 +351,7 @@ Example B.12. Let V be an n-dimensional real vector space, and $( E _ { 1 } , \l
 `FC08-CB-U027` · Appendix B, § Linear Maps; source L18806 · [in Mathlib]{.route-mathlib}
 :::
 
-{ K e r } T$ If V and W are vector spaces, a map $F \colon V \to W$ is called an affine map if it can be written in the form $F ( v ) = w + T v$ for some linear map $T \colon V \to W$ and some fixed $w
+If V and W are vector spaces, a map F : V → W is called an affine map if it can be written in the form F ( v ) = w + T v for some linear map T : V → W and some fixed w ∈ W
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/AffineSpace/AffineMap.lean::AffineMap`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/AffineSpace/AffineMap.html) — An `AffineMap ℝ V W` is a map with a linear part preserving affine combinations; for vector spaces it is exactly a translation plus a linear map, Lee’s `w + T v`.
@@ -533,7 +533,7 @@ Let A be an m × n matrix. The transpose of A is the n × m matrix A ^T obtained
 `FC08-CB-U042` · Appendix B, § Change of Basis; source L18970 · [in Mathlib]{.route-mathlib}
 :::
 
-{ T }$ The rank of an $m \times n$ matrix A is defined to be the rank of the corresponding linear map from $\mathbb { R } ^ { n }$ to $\mathbb { R } ^ { m }$ . Because the columns of A, thought of as vectors in $\mathbb { R } ^ { m }$ are the images of the standard basis vectors under this linear map, the rank of A can also be thought of as the dimension of the span of its columns, and is sometimes called its column rank. Analogously, we define the row rank of A to be the dimension of the span of its rows, thought of similarly as vectors in $\mathbb
+The rank of an m × n matrix A is defined to be the rank of the corresponding linear map from ℝ ^n to ℝ ^m . Because the columns of A, thought of as vectors in ℝ ^m are the images of the standard basis vectors under this linear map, the rank of A can also be thought of as the dimension of the span of its columns, and is sometimes called its column rank. Analogously, we define the row rank of A to be the dimension of the span of its rows, thought of similarly as vectors in ℝ ^n
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Matrix/Rank.lean::Matrix.rank, Matrix.rank_eq_finrank_span_cols, Matrix.rank_transpose`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/Rank.html) — [`Matrix.rank`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Matrix.rank#doc) is the finrank of the matrix linear map/column span, and `rank_transpose` proves row rank equals column rank.
@@ -655,7 +655,7 @@ Although the determinant is defined as a function of matrices, it is also useful
 `FC08-CB-U052` · Appendix B, § The Determinant; source L19088 · [not formalized]{.route-unmatched}
 :::
 
- The operations on matrices described in parts (a), (b), and (c) of the preceding proposition (multiplying one column by a scalar, interchanging two columns, and adding a multiple of one column to another) are called elementary column operations. Part of the proposition, therefore, describes precisely how a determinant is affected by elementary column operations. If we define elementary row operations analogously, the fact that the determinant of $A ^ { T }$ is equal to that of A implies that the determinant behaves similarly under elementary row operations.
+The operations on matrices described in parts (a), (b), and (c) of the preceding proposition (multiplying one column by a scalar, interchanging two columns, and adding a multiple of one column to another) are called elementary column operations. Part of the proposition, therefore, describes precisely how a determinant is affected by elementary column operations. If we define elementary row operations analogously, the fact that the determinant of A ^T is equal to that of A implies that the determinant behaves similarly under elementary row operations.
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib has the actual row/column update and swap operations and their determinant laws, but no canonical object corresponding to Lee’s source-specific collective terminology “elementary row/column operations.”
@@ -741,7 +741,7 @@ Proposition B.35 (Expansion by Minors). Let A be an $n \times n$ matrix, and for
 `FC08-CB-U059` · Appendix B, § The Determinant; source L19172 · [not formalized]{.route-unmatched}
 :::
 
-Each determinant det $M _ { i } ^ { j }$ is called a minor of A, and (B.5) is called the expansion of det A by minors along the i th column. Since det A det $A ^ { T }$ , there is an analogous expansion along any row. The factor $( - 1 ) ^ { i + j }$ det $M _ { i } ^ { j }$ multiplying $A _ { i } ^ { j }$ in (B.5) is called the cofactor of $A _ { i } ^ { j }$ , and is denoted by
+Each determinant det M _i ^j is called a minor of A, and (B.5) is called the expansion of det A by minors along the i th column. Since det A det A ^T , there is an analogous expansion along any row. The factor ( - 1 ) ^i + j det M _i ^j multiplying A _i ^j in (B.5) is called the cofactor of A _i ^j , and is denoted by co Sigma _i ^: j .
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib represents signed minors through submatrices and adjugate entries, but does not expose Lee’s exact `M_i^j` / cofactor terminology as a canonical standalone construction for this row. Strict whole-row semantics reject proper subsets and substantive reconstruction from adjacent generic ingredients.
@@ -767,7 +767,7 @@ Proposition B.36 (Cramer’s Rule). If A is a nonsingular $n \times n$ matrix, t
 `FC08-CB-U061` · Appendix B, § The Determinant; source L19188 · [in Mathlib]{.route-mathlib}
 :::
 
-A square matrix $A = \left( A _ { j } ^ { i } \right)$ is said to be upper triangular if $A _ { j } ^ { i } = 0$ for $i > j$ (i.e., the only nonzero entries are on and above the main diagonal). Determinants of upper triangular matrices are particularly easy to
+A square matrix A = ( A _j ^i ) is said to be upper triangular if A _j ^i = 0 for i > j (i.e., the only nonzero entries are on and above the main diagonal). Determinants of upper triangular matrices are particularly easy to compute.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Matrix/Block.lean::Matrix.IsUpperTriangular, Matrix.det_of_isUpperTriangular`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/Block.html) — [`Matrix.IsUpperTriangular`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Matrix.IsUpperTriangular#doc) is the zero-below-diagonal predicate and `det_of_isUpperTriangular` gives the product of diagonal entries exactly.
