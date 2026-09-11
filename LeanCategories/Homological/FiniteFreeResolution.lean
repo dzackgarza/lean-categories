@@ -165,4 +165,41 @@ theorem finiteFreeResolution_d_succ [IsNoetherianRing R]
       (ObjectProperty.homMk (finiteFreeKernelMap R (finiteFreeCover R M).map))
       (fun f => finiteFreeResolutionSucc R f) n)
 
+/-- Exactness at every positive degree of the finite-free resolution. -/
+theorem finiteFreeResolution_exact_succ [IsNoetherianRing R]
+    (M : ModuleCat.{u} R) [Module.Finite R M] (n : ℕ) :
+    (ShortComplex.mk
+      ((finiteFreeResolutionComplex R M).d (n + 2) (n + 1)).hom
+      ((finiteFreeResolutionComplex R M).d (n + 1) n).hom
+      (by
+        exact congrArg (fun g => g.hom)
+          ((finiteFreeResolutionComplex R M).d_comp_d (n + 2) (n + 1) n))).Exact := by
+  let K := finiteFreeResolutionComplex R M
+  let f := (K.d (n + 1) n).hom
+  let T := ShortComplex.mk (finiteFreeKernelMap R f) f (finiteFreeKernelMap_comp R f)
+  have hT : T.Exact := finiteFreeKernelMap_exact R f
+  let e₀ := ChainComplex.mk'XIso
+    (finiteFreeCover R M).source
+    (finiteFreeKernelCover R (finiteFreeCover R M).map).source
+    (ObjectProperty.homMk (finiteFreeKernelMap R (finiteFreeCover R M).map))
+    (fun g => finiteFreeResolutionSucc R g) n
+  let e₁ : (K.X (n + 2)).obj ≅ (finiteFreeKernelCover R f).source.obj := by
+    dsimp [K, f, e₀]
+    refine
+      { hom := e₀.hom.hom
+        inv := e₀.inv.hom
+        hom_inv_id := ?_
+        inv_hom_id := ?_ }
+    · exact congrArg (fun g => g.hom) e₀.hom_inv_id
+    · exact congrArg (fun g => g.hom) e₀.inv_hom_id
+  let S := ShortComplex.mk
+    (K.d (n + 2) (n + 1)).hom f
+    (by exact congrArg (fun g => g.hom) (K.d_comp_d (n + 2) (n + 1) n))
+  have e : S ≅ T := ShortComplex.isoMk e₁ (Iso.refl _) (Iso.refl _)
+    (by
+      dsimp [S, T, e₁, f, K]
+      exact (finiteFreeResolution_d_succ R M n).symm.trans (Category.comp_id _).symm)
+    (by simp [S, T, f])
+  exact (ShortComplex.exact_iff_of_iso e).2 hT
+
 end LeanCategories.Homological
