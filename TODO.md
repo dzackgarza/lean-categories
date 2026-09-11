@@ -36,6 +36,13 @@ Read [AGENTS.md — Start here: corpus execution](AGENTS.md#start-here-corpus-ex
 before selecting work. Its execution sequence and worked failure cases apply to all
 four sweep plans below. Then:
 
+0. Check [§4a](#4a-what-limits-the-rate-and-is-worth-fixing-before-the-next-source) for
+   outstanding items before claiming a source. It holds work that is not sweep work and
+   that makes sweep work slow — gate tiering, the projection frontier, module granularity.
+   The Execution DAG above is deliberately scoped to the four sweeps, so §4a obligations
+   appear nowhere in it and a continuation that goes straight to step 1 will never select
+   them. An open §4a item costs every subsequent source, so it is taken first; if all are
+   closed, this step is one glance.
 1. Read the current sweep's plan and the existing source handoff. Resume your claimed
    source or claim the next available source in the admitted traversal order. Start
    from the latest delivered mathematics and the next unresolved source unit.
