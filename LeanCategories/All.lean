@@ -113,6 +113,7 @@ public import LeanCategories.Schemes
 public import LeanCategories.Homological
 public import LeanCategories.Homological.ExactSequenceCategories
 public import LeanCategories.Homological.MappingCylinder
+public import LeanCategories.Homological.WeaklyEffaceable
 public import LeanCategories.Homological.IsHereditary
 public import LeanCategories.Homological.IsQuasiFrobenius
 public import LeanCategories.Homological.SplitComplex

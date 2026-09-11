@@ -210,3 +210,17 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
   homotopy API remains the owner of the separate contraction condition.
 - **Repair link:** FC05-C01-U031, Sweep III. Preserve the distinction when
   proving later equivalence/contractibility statements.
+
+### FC05-C01-U064 conflated the Yoneda defect functor with weak effaceability
+
+- **Need:** keep Weibel's two constructions separate in Sweep III.
+- **Evidence:** printed §1.6 first fixes a short exact sequence `0 → A → B → C → 0` and defines
+  `W(M) = coker(Hom(M,B) → Hom(M,C))`; weak effaceability is separately the condition that every
+  element of a contravariant functor dies after pullback along some epimorphism `P → M`. The prior
+  catalogue summary described `W(M)` itself as a cokernel "over epimorphisms".
+- **Impact:** that wording would build the wrong object and erase the ordinary Yoneda-cokernel
+  construction used by Proposition 1.6.12.
+- **Resolution:** the catalogue and mapping were corrected in place. `WeaklyEffaceable` now owns the
+  epi-killing predicate, while `yonedaDefect` is the functor-category cokernel of `h_B → h_C`.
+- **Repair link:** FC05-C01-U064; later localizing-subcategory statements should use these owners
+  without recombining them into a new definition.
