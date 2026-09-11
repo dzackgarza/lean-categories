@@ -342,6 +342,45 @@ must be one CI will still run before the work is relied on.
 audit set still runs at `test-ci`, and no audit is deleted or narrowed to achieve it.
 Record the measured before/after interval in the commit.
 
+**How the two 2026 large formalizations handled this, since neither made the check cheap —
+both made it rare.** Anthropic's FLT formalization (29,511 theorems, 60,475 modules) has a
+full kernel check costing about **5 h 32 m at 96 parallel jobs**, peaking at 153 GB of
+memory, with an independent comparator pass at roughly 15 hours on top. That check ran at
+the end of the run, not per unit of work. Per unit of work the granularity was one theorem:
+statements live in `Theorems/` and proofs in `P2M/Sol/`, each proof module importing only
+the statements it cites, so proving a leaf elaborates that leaf against already-accepted
+statements rather than the project. Statements were reviewed by other agents *before* proof
+work began, which caught false statements while they were still cheap. The terminal gate is
+a single `FinalCheck.lean` asserting
+
+```lean
+/-- info: 'fermat_last_theorem' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms fermat_last_theorem
+```
+
+OpenAI's Navier–Stokes release is the same principle at small scale: `lake exe cache get`
+so Mathlib is never compiled, one self-contained development, and an external
+`lake exe comparator` run to certify the formalized statement matches the intended problem
+statement.
+
+Two things follow for this repository, and neither requires new machinery:
+
+- **The root-axiom check subsumes the whole-environment scans.** An axiom collection over
+  the exported root catches `sorryAx` anywhere in its dependency tree, transitively — which
+  is what `lean-no-sorry` is scanning the whole environment for on every commit.
+  `LeanCategories/Tools/AxiomAudit.lean` already calls `collectAxioms` from
+  `Lean.Util.CollectAxioms`, so the capability exists; it is being spent per commit as a
+  sweep instead of once as a terminal assertion over the roots.
+- **Separating statements from proofs is what makes the commit-tier check small**, and it is
+  the same restructuring the frontier item below needs in order to schedule work per unit.
+  Do them together rather than twice. 297 files holding 4,417 declarations is coarse enough
+  that almost any edit pulls in a large recompile; FLT's 60,475 modules for 29,511 theorems
+  is the granularity that makes leaf-level checking possible.
+
+Neither project skipped verification — FLT ran two independent external checkers, one a
+separate Rust kernel. They moved the total cost out of the inner loop.
+
 ### The remaining sweep frontier is 30 whole-source cells with no finer structure
 
 The [corpus status ledger](.agents/references/foundational-corpus-status.md) is scored per
