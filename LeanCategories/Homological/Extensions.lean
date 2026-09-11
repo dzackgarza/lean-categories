@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 
 /-!
@@ -51,6 +52,63 @@ structure Extension.{u} {R : Type u} [Ring R] (A B : ModuleCat.{u, u} R) where
   right_eq : seq.X₃ = B
 
 namespace Extension
+
+/-- The actual middle object of the short exact sequence underlying an extension.
+
+The legacy `Extension.E` field is not tied to `seq.X₂`; constructions should use
+`middle` instead. -/
+abbrev middle {R : Type u} [Ring R] {A B : ModuleCat.{u, u} R}
+    (e : Extension A B) : ModuleCat.{u, u} R :=
+  e.seq.X₂
+
+/-- The endpoint-normalized injection `A ⟶ e.middle`. -/
+def leftMap {R : Type u} [Ring R] {A B : ModuleCat.{u, u} R}
+    (e : Extension A B) : A ⟶ e.middle :=
+  eqToHom e.left_eq.symm ≫ e.seq.f
+
+/-- The endpoint-normalized projection `e.middle ⟶ B`. -/
+def rightMap {R : Type u} [Ring R] {A B : ModuleCat.{u, u} R}
+    (e : Extension A B) : e.middle ⟶ B :=
+  e.seq.g ≫ eqToHom e.right_eq
+
+@[reassoc (attr := simp)]
+theorem leftMap_comp_rightMap {R : Type u} [Ring R]
+    {A B : ModuleCat.{u, u} R} (e : Extension A B) :
+    e.leftMap ≫ e.rightMap = 0 := by
+  simp [leftMap, rightMap, Category.assoc]
+
+/-- The underlying short exact sequence with its endpoints normalized to `A` and `B`. -/
+def normalizedSeq {R : Type u} [Ring R] {A B : ModuleCat.{u, u} R}
+    (e : Extension A B) : ShortComplex (ModuleCat.{u, u} R) :=
+  ShortComplex.mk e.leftMap e.rightMap e.leftMap_comp_rightMap
+
+/-- The stored short complex of an extension is canonically isomorphic to its endpoint-normalized
+form. -/
+def normalizedIso {R : Type u} [Ring R] {A B : ModuleCat.{u, u} R}
+    (e : Extension A B) : e.seq ≅ e.normalizedSeq :=
+  ShortComplex.isoMk (eqToIso e.left_eq) (Iso.refl _) (eqToIso e.right_eq)
+    (by simp [normalizedSeq, leftMap])
+    (by simp [normalizedSeq, rightMap])
+
+/-- Endpoint normalization preserves short exactness. -/
+theorem normalizedSeq_shortExact {R : Type u} [Ring R]
+    {A B : ModuleCat.{u, u} R} (e : Extension A B) :
+    e.normalizedSeq.ShortExact :=
+  ShortComplex.shortExact_of_iso e.normalizedIso e.exact
+
+theorem leftMap_injective {R : Type u} [Ring R] {A B : ModuleCat.{u, u} R}
+    (e : Extension A B) : Function.Injective e.leftMap :=
+  CategoryTheory.ShortComplex.ShortExact.moduleCat_injective_f e.normalizedSeq_shortExact
+
+theorem rightMap_surjective {R : Type u} [Ring R] {A B : ModuleCat.{u, u} R}
+    (e : Extension A B) : Function.Surjective e.rightMap :=
+  CategoryTheory.ShortComplex.ShortExact.moduleCat_surjective_g e.normalizedSeq_shortExact
+
+theorem leftMap_rightMap_exact {R : Type u} [Ring R]
+    {A B : ModuleCat.{u, u} R} (e : Extension A B) :
+    Function.Exact e.leftMap e.rightMap :=
+  (CategoryTheory.ShortComplex.ShortExact.moduleCat_exact_iff_function_exact e.normalizedSeq).mp
+    e.normalizedSeq_shortExact.exact
 
 /-- Two extensions `0 → A → E₁ → B → 0` and `0 → A → E₂ → B → 0`
     are **equivalent** (Weibel, Def. 3.4.1) if there exists a morphism of
