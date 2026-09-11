@@ -37,10 +37,21 @@ test: build
     @just _lean-unused-variables
     @just _lean-axiom-audit
 
-test-commit: test
+# Commit-tier QC: Lake's incremental library target elaborates changed modules
+# and affected dependents. Whole-environment exporter/linter/axiom audits stay
+# in `test-ci`, where `test` remains the complete repository gate.
+test-commit:
+    @lake build LeanCategories
+    @just -f {{ai_review_ci}}/justfiles/lean.just -d . lean-no-sorry
+    @just _lint-conventions
 
 # Run the CI quality gate
 test-ci: test
+
+# Regenerate the derived foundational-corpus scheduling frontier. The canonical
+# whole-source status ledger remains the sole sweep-completion authority.
+foundational-frontier:
+    @python3 scripts/foundational_frontier.py > FOUNDATIONAL_FRONTIER.md
 
 # Repo-supplied kernel-axiom audit, consumed by the global lean-axiom-audit gate
 [private]

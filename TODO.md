@@ -434,6 +434,18 @@ completion claim.
 prerequisites for every unticked cell, regenerating from the unit catalogues and mapping
 records. Sweep completion still reads only from the whole-source ledger.
 
+**Completed 2026-09-11.** `test-commit` now runs Lake's incremental `LeanCategories`
+library target plus the no-sorry and local-convention scans; exporter, vacuity,
+Mathlib-lint, unused-variable and axiom whole-environment audits remain unchanged under
+`test-ci`. A temporary one-declaration edit passed the new commit tier in **23.26 s**, versus
+the **about 24 min** median interval between consecutive feature commits measured above;
+the complete unchanged CI tier passed separately in **350.08 s** on the same host/cache.
+`scripts/foundational_frontier.py` now regenerates `FOUNDATIONAL_FRONTIER.md` directly from
+the canonical Sweep-I catalogues, Sweep-II mapping records and whole-source status ledger.
+The current ledger has **28** unticked Mapping/Definitions/Theorems cells (12 Definitions,
+16 Theorems), rather than the 30-cell snapshot recorded when this section was written; the
+generated frontier follows the live ledger and does not alter its completion claims.
+
 ## 5. Legacy definition catalogues
 
 The older per-source definition catalogues in `.agents/references/definition-catalogue-*.md` are
