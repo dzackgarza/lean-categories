@@ -381,6 +381,34 @@ Two things follow for this repository, and neither requires new machinery:
 Neither project skipped verification — FLT ran two independent external checkers, one a
 separate Rust kernel. They moved the total cost out of the inner loop.
 
+**Three things that reference architecture does not settle for us, so decide them first
+rather than porting FLT's layout literally.**
+
+*The root is already named.* `#print axioms` needs something to point at, and FLT had one
+theorem. Here the analogue exists: `lake exe lean-categories-export` calls the checked
+manifest path `LeanCategories.checkedRegistryManifest`, and `ExportBoundaryProbe.lean`
+already `#check`s it. Whatever else changes, the terminal assertion should be over the
+registry manifest and anything else the export boundary treats as a root — settle that root
+set explicitly and write it down, because a per-commit sweep can be replaced by a terminal
+assertion only if the assertion demonstrably covers the same declarations.
+
+*Statement/proof separation does not transfer to a definitional corpus, and that is the
+phase we are in.* This tree holds 2,752 `def`/`abbrev`/`structure`/`class`/`instance`
+against 1,679 `theorem`/`lemma`, and the remaining frontier is twelve Sweep III definition
+cells before sixteen Sweep IV theorem cells. A definition has no proof to split from its
+statement, so FLT's `Theorems/` versus `P2M/Sol/` division buys little for the work
+immediately ahead. What does transfer is the part underneath it: module granularity and
+narrow imports, so that editing one declaration recompiles its module and its dependents
+rather than a large component. Apply that now; revisit the statement/proof split when
+Sweep IV makes this a theorem-heavy tree, where it earns its keep.
+
+*Mathlib is not the cost.* `lake exe cache get` is wired as the `cache` recipe and
+`.lake/packages/mathlib/.lake/build` holds 6.7 GB of prebuilt artifacts, so the gate is not
+rebuilding Mathlib. The 644 jobs a trivial commit triggers are this repository's own
+modules. That rules out the usual first answer and points the work squarely at the import
+graph — `importGraph` is already a dependency and can tell you which modules a change
+actually forces.
+
 ### The remaining sweep frontier is 30 whole-source cells with no finer structure
 
 The [corpus status ledger](.agents/references/foundational-corpus-status.md) is scored per
