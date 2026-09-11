@@ -111,6 +111,7 @@ public import LeanCategories.Topology.UniformMetric
 public import LeanCategories.Topology.WindingNumber
 public import LeanCategories.Schemes
 public import LeanCategories.Homological
+public import LeanCategories.Homological.ExactSequenceCategories
 public import LeanCategories.Homological.IsHereditary
 public import LeanCategories.Homological.IsQuasiFrobenius
 public import LeanCategories.Homological.GlobalDimension
