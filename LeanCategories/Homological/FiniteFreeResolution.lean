@@ -146,4 +146,23 @@ theorem finiteFreeResolution_exact_zero [IsNoetherianRing R]
     (finiteFreeCover R M).map _).Exact
   exact finiteFreeKernelMap_exact R (finiteFreeCover R M).map
 
+/-- The inductively constructed differential is, up to the canonical `mk'` source isomorphism,
+the finite-free cover of the kernel of the preceding differential. -/
+theorem finiteFreeResolution_d_succ [IsNoetherianRing R]
+    (M : ModuleCat.{u} R) [Module.Finite R M] (n : ℕ) :
+    ((finiteFreeResolutionComplex R M).d (n + 2) (n + 1)).hom =
+      (ChainComplex.mk'XIso
+        (finiteFreeCover R M).source
+        (finiteFreeKernelCover R (finiteFreeCover R M).map).source
+        (ObjectProperty.homMk (finiteFreeKernelMap R (finiteFreeCover R M).map))
+        (fun f => finiteFreeResolutionSucc R f) n).hom.hom ≫
+        finiteFreeKernelMap R ((finiteFreeResolutionComplex R M).d (n + 1) n).hom := by
+  dsimp only [finiteFreeResolutionComplex]
+  simpa [finiteFreeResolutionSucc] using congrArg (fun g => g.hom)
+    (ChainComplex.mk'_d
+      (finiteFreeCover R M).source
+      (finiteFreeKernelCover R (finiteFreeCover R M).map).source
+      (ObjectProperty.homMk (finiteFreeKernelMap R (finiteFreeCover R M).map))
+      (fun f => finiteFreeResolutionSucc R f) n)
+
 end LeanCategories.Homological
