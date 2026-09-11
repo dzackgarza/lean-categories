@@ -187,3 +187,26 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
 - **Repair boundary:** use Mathlib's canonical filtration together with `F.N 0 = ⊤` when realizing this source definition; retain the more general library structure for other uses. The stable-filtration topology comparison must use this normalization when identifying the topology with the adic topology on all of `M`. The existing `Stable.bounded_difference` theorem already records equality of the two initial terms.
 - **Resolution:** `LeanCategories/ForMathlib/FiltrationTopology.lean` constructs the subgroup topology and proves `Ideal.Filtration.Stable.topology_eq` under equality of the initial terms, then `Stable.topology_eq_adic` under `F.N 0 = ⊤`. The checked zero and whole-module constant filtrations are both stable for the unit ideal on the integers but induce distinct topologies. The source's `pⁿℤ` example is also identified with the principal-ideal power filtration. The canonical library definition is unchanged; the C10 mapping records the source normalization explicitly.
 - **Repair link:** FC04-C10-U022–U023 and their existing C10 mapping. Do not add the condition to Mathlib's broader definition or silently drop it from the source comparison.
+
+### FC05-C01-U031 catalogue replaced the split-exact definition by a characterization
+
+- **Need:** Definition 1.4.1 must keep Weibel's two notions separate: `split`
+  means that splitting maps satisfy `d = d s d`, while `split exact` means
+  split and acyclic.
+- **Evidence:** the admitted 1994 text, §1.4, states “If in addition C is
+  acyclic (exact as a sequence), we say that C is split exact.” The canonical
+  catalogue instead said that split exact means additionally `ds+sd=id`.
+  The surrounding discussion uses `ds+sd=id` as the contracting-homotopy
+  condition/characterization, and Mathlib already formalizes that condition as
+  `HomologicalComplex.Homotopy (𝟙 C) 0`.
+- **Gap and impact:** using a chain contraction as the definition would erase
+  the source's weaker `d=dsd` split notion and would encode a derived
+  characterization as ontology. The mapping had already noticed that the
+  split half was missing, but the catalogue still misstated the defining
+  split-exact clause.
+- **Coverage and repair:** the source row and its mapping have been corrected
+  in place. `LeanCategories.Homological.Splitting`, `IsSplit`, and
+  `IsSplitExact` realize the source data and predicates; the existing Mathlib
+  homotopy API remains the owner of the separate contraction condition.
+- **Repair link:** FC05-C01-U031, Sweep III. Preserve the distinction when
+  proving later equivalence/contractibility statements.
