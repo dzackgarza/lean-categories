@@ -498,11 +498,15 @@ Before writing any **foundational-corpus** construct, in order:
    corpus catalogue with a stable ID, source location, kind, hypotheses/data, and dependencies.
    Do not invent scope from implementation searches or downstream demand.
 
-2. **Require its Sweep-II mapping.** Search pinned Mathlib first, then current upstream Mathlib
-   and open work, [Loogle](https://loogle.lean-lang.org/)/[LeanSearch](https://leansearch.net/)/docs, [Lean Reservoir](https://reservoir.lean-lang.org/), and
-   [`lean-reference-corpus`](https://github.com/dzackgarza/lean-reference-corpus) — which indexes the registered Lean repositories, the Reservoir packages, and the Rocq and Agda port sources in one searchable tree.
-   Then search GitHub broadly across all discoverable Lean repositories rather than stopping at
-   the registered corpus. Search names, synonyms, source theorem names, and expected type shapes.
+2. **Require its Sweep-II mapping.** Search
+   [`lean-reference-corpus`](https://github.com/dzackgarza/lean-reference-corpus) first: it checks out and indexes the
+   pinned Mathlib, the registered Lean repositories, the Reservoir packages, and the Rocq and Agda
+   port sources in one searchable tree, so one query covers every surface the others cover
+   separately. It is the first approximation to every mapping, not one option among several.
+   Then widen to current upstream Mathlib and open work,
+   [Loogle](https://loogle.lean-lang.org/)/[LeanSearch](https://leansearch.net/)/docs, and [Lean Reservoir](https://reservoir.lean-lang.org/) for anything the index
+   predates, and then to GitHub broadly across all discoverable Lean repositories rather than
+   stopping at the registered corpus. Search names, synonyms, source theorem names, and expected type shapes.
    Open candidate code and compare mathematical generality and hypotheses.
 
 3. **Reuse before authorship.** A Mathlib or existing project route is used directly. An
@@ -541,10 +545,12 @@ Strict preference order:
 
 [`lean-reference-corpus`](https://github.com/dzackgarza/lean-reference-corpus) owns the sources. Its [`SOURCES.md`](https://github.com/dzackgarza/lean-reference-corpus/blob/main/SOURCES.md) is the registry: every known Lean 4 formalization repository grouped by mathematical domain, the Rocq and Agda port sources, the search surfaces, and for each one what it holds and how far to trust it. That corpus also checks the sources out and indexes them, so the registry is searchable rather than merely readable. This document does not repeat the list; a source added here and not there is invisible to every search that the reuse gate depends on.
 
-Read `SOURCES.md` before authoring, and search the corpus itself:
+Read `SOURCES.md` before authoring, and search the corpus itself. The repository is named
+`lean-reference-corpus` on GitHub and is checked out here as `formalization-corpus`, which is
+the path the search takes:
 
 ```sh
-just -f ~/gitclones/lean-reference-corpus/justfile search 'IsometryEquiv'
+just -f ~/gitclones/formalization-corpus/justfile search 'IsometryEquiv'
 ```
 
 The preference order above is this repository's policy and stays here. Which repositories exist, what state they are in, and whether a construction is already formalized are the corpus's facts.
