@@ -87,7 +87,7 @@ Theorem B.2.3 (Hodge Index Theorem). For a K¨ahler surface $X$ the intersection
 `FC11-B-U010` · Appendix B, source L11542 · after [`FC11-B-U009`](#fc11-b-u009)
 :::
 
-It follows that the considerations of Example 16.1 apply to $H ^ { 1 , 1 } ( X ) _ { \mathbb { R } }$ : the light cone $\{ x \in H ^ { 1 , 1 } ( X ) _ { \mathbb { R } } \mid x \cdot x > 0 \}$ consists of two connected components. In the present situation, the positive cone is the one that contains the K¨ahler classes. The set of K¨ahler classes is a convex cone and so has to belong to just one connected component of the light cone. We denote it by
+The considerations of Example 16.1 apply to $H^{1,1}(X)_{\mathbb{R}}$: the light cone $\{x \in H^{1,1}(X)_{\mathbb{R}} \mid x \cdot x > 0\}$ has two connected components, and the positive cone is the one containing the Kähler classes, which form a convex cone and so lie in a single component. That component is denoted $$ \mathsf{C}_{X} = \text{the component of } \{x \in H^{1,1}(X)_{\mathbb{R}} \mid x \cdot x > 0\} \text{ containing the Kähler classes}, $$ and the Kähler classes span a subcone of it, the Kähler cone.
 
 ### Definition / construction {#fc11-b-u011}
 
@@ -327,7 +327,7 @@ This is not defined at points where all sections of $L$ vanish.
 `FC11-B-U040` · Appendix B, source L11756
 :::
 
-If $f _ { L }$ is everywhere defined and is an embedding, $L$ is called very ample and likewise for a divisor $D$ with $L = \odot _ { X } ( D )$ . Lastly, $L$ (or $D$ ) is called ample if for some positive $m$ the bundle $L ^ { \otimes m }$ (or the divisor $m D$ ) is very ample. This implies that $L \cdot C > 0$ for all curves $C \subset X$ , since $L \cdot ( m C )$ is the degree of the curve $c$ as embedded in $\mathbb { P } ^ { N }$ by means of $f _ { L ^ { \otimes m } }$ . Similarly, if $X$ has dimension $d$ , we have $L \cdots L > 0$ . We conclude that if $d = 2$ , for $D$ ample, we have $D \cdot C > 0$ and $D ^ { 2 } > 0$ . $d$ times
+If $f _ { L }$ is everywhere defined and is an embedding, $L$ is called very ample and likewise for a divisor $D$ with $L = \odot _ { X } ( D )$ . Lastly, $L$ (or $D$ ) is called ample if for some positive $m$ the bundle $L ^ { \otimes m }$ (or the divisor $m D$ ) is very ample. This implies that $L \cdot C > 0$ for all curves $C \subset X$ , since $L \cdot ( m C )$ is the degree of the curve $c$ as embedded in $\mathbb { P } ^ { N }$ by means of $f _ { L ^ { \otimes m } }$ . Similarly, if $X$ has dimension $d$ , we have $L \cdots L > 0$ . We conclude that if $d = 2$ , for $D$ ample, we have $D \cdot C > 0$ and $D ^ { 2 } > 0$ . The converse is the Kleiman criterion: a divisor $D$ on a surface with $D^{2} > 0$ and $D \cdot C > 0$ for every curve $C$ is ample.
 
 ### Criterion / construction {#fc11-b-u041}
 

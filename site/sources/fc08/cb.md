@@ -363,7 +363,7 @@ If V and W are vector spaces, a map F : V → W is called an affine map if it ca
 `FC08-CB-U028` · Appendix B, § Linear Maps; source L18812 · [in Mathlib]{.route-mathlib}
 :::
 
-Now suppose V and W are finite-dimensional vector spaces with ordered bases ( E _1 , … , E _n ) and ( F _1 , … , F _m ) , respectively. If T : V → W is a linear map, the matrix of T with respect to these bases is the m × n matrix
+Now suppose V and W are finite-dimensional vector spaces with ordered bases ( E _1 , … , E _n ) and ( F _1 , … , F _m ) , respectively. If T : V → W is a linear map, the matrix of T with respect to these bases is the m × n matrix $$ A = (A^{i}_{j}) = \begin{pmatrix} A^{1}_{1} & \cdots & A^{1}_{n} \\ \vdots & \ddots & \vdots \\ A^{m}_{1} & \cdots & A^{m}_{n} \end{pmatrix}, $$ whose $j$th column consists of the components of $TE_{j}$ with respect to the basis $(F_{i})$.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Matrix/ToLin.lean::LinearMap.toMatrix, LinearMap.toMatrix_mulVec_repr, LinearMap.toMatrix_comp, LinearMap.toMatrix_id`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/ToLin.html); [`Mathlib/Data/Matrix/Basic.lean::Matrix.mul_apply`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Data/Matrix/Basic.html#Matrix.mul_apply) — [`LinearMap.toMatrix`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=LinearMap.toMatrix#doc) is the matrix in chosen bases; `toMatrix_mulVec_repr` is coordinate matrix-vector multiplication, [`Matrix.mul_apply`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Matrix.mul_apply#doc) is the entry formula, and `toMatrix_comp`/`toMatrix_id` give composition and identity matrices.
@@ -375,7 +375,7 @@ Now suppose V and W are finite-dimensional vector spaces with ordered bases ( E 
 `FC08-CB-U029` · Appendix B, § Linear Maps; source L18830 · [in Mathlib]{.route-mathlib}
 :::
 
-If we write the components of a vector with respect to a basis as a column matrix, then the matrix representation of w = T v is given by matrix multiplication: ( beginarrayc w ^1 vdots w ^m endarray ) = ( beginarrayc c c A _1 ^1 & … & A _n ^1 vdots & ddots & vdots A _1 ^m & … & A _n ^m endarray ) ( beginarrayc v ^1 vdots v ^n endarray ),
+Writing the components of a vector with respect to a basis as a column matrix, the matrix representation of $w = Tv$ is given by matrix multiplication, $$ \begin{pmatrix} w^{1} \\ \vdots \\ w^{m} \end{pmatrix} = \begin{pmatrix} A^{1}_{1} & \cdots & A^{1}_{n} \\ \vdots & \ddots & \vdots \\ A^{m}_{1} & \cdots & A^{m}_{n} \end{pmatrix} \begin{pmatrix} v^{1} \\ \vdots \\ v^{n} \end{pmatrix}, $$ or more succinctly $w^{i} = \sum_{j=1}^{n} A^{i}_{j}v^{j}$.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Matrix/ToLin.lean::LinearMap.toMatrix, LinearMap.toMatrix_mulVec_repr, LinearMap.toMatrix_comp, LinearMap.toMatrix_id`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/ToLin.html); [`Mathlib/Data/Matrix/Basic.lean::Matrix.mul_apply`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Data/Matrix/Basic.html#Matrix.mul_apply) — [`LinearMap.toMatrix`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=LinearMap.toMatrix#doc) is the matrix in chosen bases; `toMatrix_mulVec_repr` is coordinate matrix-vector multiplication, [`Matrix.mul_apply`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Matrix.mul_apply#doc) is the entry formula, and `toMatrix_comp`/`toMatrix_id` give composition and identity matrices.
@@ -411,7 +411,7 @@ The composition of two linear maps is represented by the product of their matric
 `FC08-CB-U032` · Appendix B, § Linear Maps; source L18850 · [in Mathlib]{.route-mathlib}
 :::
 
-The set M [ ( m × n , ℝ ) . of all m × n real matrices is easily seen to be a real vector space of dimension mn. (In fact, by stringing out the matrix entries in a single row, we can identify it in a natural way with ℝ ^m n .) Similarly, because C is a real vector space of dimension 2, the set M ( m × n , ℂ ) of m × n complex matrices is a real vector space of dimension 2mn. When m = n , we abbreviate the spaces of n × n square real and complex matrices by M.n; R/ and M ( n , ℂ ) , respectively. In this case, matrix multiplication gives these spaces additional algebraic structure. If V , W , and Z are vector spaces, a map B : V × W → Z is said to be bilinear if it is linear in each variable separately when the other is held fixed: beginarrayc B (a _1 v _1 + a _2 v _2, w) = a _1 B (v _1, w) + a _2 B (v _2, w), B (v, a _1 w _1 + a _2 w _2) = a _1 B (v, w _1) + a _2 B (v, w _2). endarray
+A map $B \colon V \times W \to \mathbb{R}$ is bilinear if it is linear in each variable separately: $$ B(a_{1}v_{1} + a_{2}v_{2}, w) = a_{1}B(v_{1},w) + a_{2}B(v_{2},w), \qquad B(v, a_{1}w_{1} + a_{2}w_{2}) = a_{1}B(v,w_{1}) + a_{2}B(v,w_{2}). $$ An algebra over $\mathbb{R}$ is a real vector space $V$ with a bilinear product $V \times V \to V$; it is commutative or associative when that product is.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/BilinearMap.lean::LinearMap.BilinMap`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/BilinearMap.html#LinearMap.BilinMap); [`Mathlib/LinearAlgebra/Matrix/ToLin.lean::LinearMap.toMatrix`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/ToLin.html#LinearMap.toMatrix) — [`LinearMap.BilinMap`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=LinearMap.BilinMap#doc) is a map linear in each argument; matrices are finite function spaces and inherit the componentwise real-vector-space structure.
@@ -471,7 +471,7 @@ Now suppose V and W are finite-dimensional vector spaces and T : V → W is a li
 `FC08-CB-U037` · Appendix B, § Change of Basis; source L18904 · [in Mathlib]{.route-mathlib}
 :::
 
-If V and W are real vector spaces, the set L ( V ; W ) of linear maps from V to W is a real vector space under the operations
+If V and W are real vector spaces, the set L ( V ; W ) of linear maps from V to W is a real vector space under the operations $$ (S+T)v = Sv + Tv, \qquad (cT)v = c(Tv). $$ If $\dim V = n$ and $\dim W = m$, a choice of bases identifies $\operatorname{L}(V;W)$ with the $m \times n$ matrices.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Algebra/Module/LinearMap/Defs.lean::LinearMap`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Module/LinearMap/Defs.html) — `V →ₗ[ℝ] W` carries the pointwise module structure, exactly Lee’s vector space `L(V,W)` of linear maps.
@@ -619,7 +619,7 @@ We let S _n denote the group of permutations of the set 1 , … , n , called the
 `FC08-CB-U049` · Appendix B, § The Determinant; source L19018 · [in Mathlib]{.route-mathlib}
 :::
 
-If A = ( A _j ^i ) is an n × n (real or complex) matrix, the determinant of A is defined by the expression
+If A = ( A _j ^i ) is an n × n (real or complex) matrix, the determinant of A is defined by the expression $$ \det A = \sum_{\sigma \in S_{n}} (\operatorname{sgn}\sigma)\, A^{\sigma(1)}_{1} \cdots A^{\sigma(n)}_{n}. \tag{B.3} $$
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Matrix/Determinant/Basic.lean::Matrix.det, Matrix.det_apply`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/Determinant/Basic.html) — [`Matrix.det`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Matrix.det#doc) is the signed permutation sum. A matrix is a family of column vectors, so this is exactly Lee’s determinant both as a matrix function and as a function of its columns.
@@ -791,7 +791,7 @@ If A is an upper triangular n × n matrix, then the determinant of A is the prod
 `FC08-CB-U063` · Appendix B, § The Determinant; source L19198 · [in Mathlib]{.route-mathlib}
 :::
 
-Suppose X is an ( m + k ) × ( m + k ) matrix. We say that X is block upper triangular if X has the form
+Suppose X is an ( m + k ) × ( m + k ) matrix. We say that X is block upper triangular if X has the form $$ X = \begin{pmatrix} A & B \\ 0 & C \end{pmatrix} \tag{B.10} $$ for matrices $A$, $B$, $C$ of sizes $m \times m$, $m \times k$ and $k \times k$.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/LinearAlgebra/Matrix/Block.lean::Matrix.BlockTriangular, Matrix.upper_two_blockTriangular, Matrix.det_fromBlocks_zero₂₁`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/Block.html) — Mathlib’s two-block triangular construction is the matrix `[[A,B],[0,C]]`; `det_fromBlocks_zero₂₁` proves its determinant is `det A * det C`.
@@ -839,7 +839,7 @@ A vector space endowed with a specific inner product is called an inner product 
 `FC08-CB-U067` · Appendix B, § Inner Products and Norms; source L19258 · [not formalized]{.route-unmatched}
 :::
 
-Suppose V is an inner product space. For each v ∈ V , the length of v is the nonnegative real number ∣ v ∣ = sqrt langle v , v rangle . A unit vector is a vector of length 1. If v , w ∈ V are nonzero vectors, the angle between v and w is defined to be the unique θ ∈ [ 0 , π ] satisfying
+Let $V$ be an inner product space. For $v \in V$, the length of $v$ is $|v| = \sqrt{\langle v,v \rangle}$, and a unit vector is a vector of length $1$. For nonzero $v, w \in V$, the angle between $v$ and $w$ is the unique $\theta \in [0,\pi]$ satisfying $$ \cos\theta = \frac{\langle v,w \rangle}{|v|\,|w|}. $$ Vectors are orthogonal if $\langle v,w \rangle = 0$, which means one of them is zero or the angle between them is $\pi/2$.
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib has norm and inner-product APIs, but targeted P/H search found no single canonical “angle between vectors” definition with Lee’s exact arccos characterization bundled together with the unit-vector terminology. The norm component alone is a proper subset. Strict whole-row semantics reject proper subsets and substantive reconstruction from adjacent generic ingredients.
@@ -901,7 +901,7 @@ An isomorphism T : V → W between inner product spaces is called a linear isome
 `FC08-CB-U072` · Appendix B, § Inner Products and Norms; source L19312 · [in Mathlib]{.route-mathlib}
 :::
 
-If V is a finite-dimensional inner product space and S ⊆ V is a subspace, the orthogonal complement of S in V is the set
+If V is a finite-dimensional inner product space and S ⊆ V is a subspace, the orthogonal complement of S in V is the set $$ S^{\perp} = \{v \in V : \langle v,w \rangle = 0 \text{ for all } w \in S\}. $$
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Analysis/InnerProductSpace/Orthogonal.lean::Submodule.orthogonal`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/InnerProductSpace/Orthogonal.html#Submodule.orthogonal); [`Mathlib/Analysis/InnerProductSpace/Projection/Basic.lean::Submodule.orthogonalProjectionOnto`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/InnerProductSpace/Projection/Basic.html#Submodule.orthogonalProjectionOnto) — [`Submodule.orthogonal`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Submodule.orthogonal#doc) is the orthogonal complement and `orthogonalProjectionOnto` is the canonical projection onto a subspace with orthogonal kernel; finite-dimensional real inner-product spaces have the required projection instance.
@@ -999,7 +999,7 @@ If V and W are normed linear spaces, a linear map T : V → W is said to be boun
 `FC08-CB-U080` · Appendix B, § Direct Products and Direct Sums; source L19388 · [in Mathlib]{.route-mathlib}
 :::
 
-If V _1 , … , V _k are real vector spaces, their direct product is the vector space whose underlying set is the Cartesian product V _1 × ·s × V _k , with addition and scalar multiplication defined componentwise: (v _1, … , v _k ) + (v _1 ^prime, … , v _k ^prime ) = (v _1 + v _1 ^prime, … , v _k + v _k ^prime ),
+If $V_{1},\dots,V_{k}$ are real vector spaces, their direct product is the vector space whose underlying set is the Cartesian product $V_{1} \times \cdots \times V_{k}$, with addition and scalar multiplication defined componentwise, $$ (v_{1},\dots,v_{k}) + (v_{1}',\dots,v_{k}') = (v_{1}+v_{1}',\dots,v_{k}+v_{k}'), \qquad c(v_{1},\dots,v_{k}) = (cv_{1},\dots,cv_{k}). $$ The basic example is Euclidean space $\mathbb{R}^{n} = \mathbb{R} \times \cdots \times \mathbb{R}$.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Algebra/Module/Pi.lean::Pi.instModule`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Module/Pi.html#Pi.instModule); [`Mathlib/Algebra/Module/Defs.lean::Module`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Module/Defs.html); [`Mathlib/Algebra/Module/Submodule/Defs.lean::Submodule`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Module/Submodule/Defs.html) — Products of modules carry pointwise operations; `Module` and `Submodule` are exactly Lee’s module/submodule notions. For a finite family, product and direct-sum representations are linearly equivalent.
@@ -1109,7 +1109,7 @@ If W is an R -module and ( V _α ) _α ∈ A is a family of subspaces of W , the
 `FC08-CB-U089` · Appendix B, § Direct Products and Direct Sums; source L19430 · [in Mathlib]{.route-mathlib}
 :::
 
-If V and W are R -modules, the set Hom R ( V , W ) of all R -linear maps from V to W is an R -module under pointwise addition and scalar multiplication: beginarrayc (F + G) (v) = F (v) + G (v), (a F) (v) = a F (v). endarray
+For $\mathcal{R}$-modules $V$ and $W$, the set $\operatorname{Hom}_{\mathcal{R}}(V,W)$ of $\mathcal{R}$-linear maps is an $\mathcal{R}$-module under pointwise addition and scalar multiplication, $$ (F+G)(v) = F(v) + G(v), \qquad (aF)(v) = a\,F(v). $$ For real vector spaces this is the space $\operatorname{L}(V;W)$ of linear maps.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Algebra/Module/LinearMap/Defs.lean::LinearMap`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Module/LinearMap/Defs.html); [`Mathlib/Algebra/DirectSum/Module.lean::DirectSum.toModule, DirectSum.toModule.unique`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/DirectSum/Module.html) — Linear maps form the pointwise `R`-module `V →ₗ[R] W`. The direct-sum universal property gives the canonical linear equivalence between maps out of `⨁ Vα` and families of maps `Vα →ₗ[R] W`, i.e. Lee’s Hom/direct-product isomorphism.

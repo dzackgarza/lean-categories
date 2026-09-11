@@ -15,7 +15,7 @@ say nothing about whether they are formalized.
 `FC11-A-U001` · Appendix A, source L11018
 :::
 
-Let $M$ be a finitely generated $R$ -module. By definition its torsion submodule equals
+Let $M$ be a finitely generated $R$ -module. By definition its torsion submodule equals $$ \operatorname{Tors}(M) = \{m \in M \mid rm = 0 \text{ for some } r \in R \setminus \{0\}\}. $$ The quotient $M/\operatorname{Tors}(M)$ is isomorphic to a direct sum of $\operatorname{rank}(M)$ copies of $R$, that is, a free $R$-module.
 
 ### Definition / construction / notation {#fc11-a-u002}
 

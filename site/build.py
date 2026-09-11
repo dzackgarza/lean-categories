@@ -124,6 +124,7 @@ class Unit:
     block: str
     kind: str = ""
     location: str = ""
+    name: str = ""
     statement: str = ""
     depends: list[str] = field(default_factory=list)
     truncated: bool = False
@@ -272,7 +273,14 @@ def table_cells(line: str) -> list[str]:
 
 
 def column_map(header: list[str]) -> dict[str, int]:
-    """Match the enumeration's columns by name; sources order them differently."""
+    """Match the enumeration's columns by name; sources order them differently.
+
+    Most notes give the statement one column, headed for the data it holds
+    ("Concise data", "Unit / hypotheses-data"). FC16 splits it in two: "Unit"
+    names the statement and "Data / hypotheses" states it. Reading by position
+    there takes the name and drops the mathematics, so the data column wins
+    wherever a note has one, and the naming column becomes the unit's name.
+    """
     columns: dict[str, int] = {}
     for i, name in enumerate(header):
         lowered = name.lower()
@@ -284,8 +292,12 @@ def column_map(header: list[str]) -> dict[str, int]:
             columns["kind"] = i
         elif lowered in {"location", "source"}:
             columns["location"] = i
+        elif any(word in lowered for word in ("data", "hypotheses", "statement", "definition")):
+            columns["statement"] = i
         else:
-            columns.setdefault("statement", i)
+            columns.setdefault("name", i)
+    if "statement" not in columns:
+        columns["statement"] = columns.pop("name", 0)
     return columns
 
 
@@ -329,6 +341,7 @@ def parse_units(text: str) -> tuple[str, dict[tuple[str, str], tuple[str, list[U
             block=block,
             kind=cell("kind").strip("`"),
             location=cell("location"),
+            name=cell("name"),
             statement=cell("statement"),
             depends=[m.group(0) for m in UNIT_ID.finditer(cell("depends"))],
         )
@@ -524,6 +537,10 @@ def unit_heading(unit: Unit, route: Route | None) -> str:
     opening clause of the statement instead.
     """
     kind = plain(unit.kind) or plain(route.verdict if route else "") or "Statement"
+    # A note that names its units separately has already answered this.
+    if unit.name:
+        named = f"{kind}: {plain(unit.name)}"
+        return named if math_balances(named) else kind
     if not BARE_KIND.match(kind):
         return kind
     opening = re.split(r"(?<=[a-z0-9)])[:.;] ", re.sub(r"\s+", " ", unit.statement), maxsplit=1)[0]

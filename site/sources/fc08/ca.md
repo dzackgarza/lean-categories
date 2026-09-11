@@ -33,7 +33,7 @@ Of the 101 statements checked against Lean, 54 are formalized somewhere and 47 a
 `FC08-CA-U001` · Appendix A, § Topological Spaces; source L17896 · [in Mathlib]{.route-mathlib}
 :::
 
-We begin with the definitions. Let X be a set. A topology on X is a collection T of subsets of X , called open subsets, satisfying
+Let $X$ be a set. A topology on $X$ is a collection $\mathcal{T}$ of subsets of $X$, called open subsets, such that (i) $X$ and $\emptyset$ are open; (ii) the union of any family of open subsets is open; and (iii) the intersection of any finite family of open subsets is open. A pair $(X,\mathcal{T})$ is called a topological space.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/Defs/Basic.lean::TopologicalSpace, IsOpen`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Defs/Basic.html) — `TopologicalSpace` is exactly a family of open sets closed under arbitrary unions and finite intersections; `IsOpen` names membership in it.
@@ -319,7 +319,7 @@ Example A.6 (Euclidean Spaces). For each integer n ≥ 1 , the set ℝ ^n of ord
 `FC08-CA-U024` · Appendix A, § Topological Spaces; source L17994 · [not formalized]{.route-unmatched}
 :::
 
-For each x ∈ ℝ ^n , the Euclidean norm of x is the nonnegative real number ∣ x ∣ = sqrt (x ^1 ) ^2 + ·s + (x ^n ) ^2,
+For each $x \in \mathbb{R}^{n}$, the Euclidean norm of $x$ is the nonnegative real number $$ |x| = \sqrt{(x^{1})^{2} + \cdots + (x^{n})^{2}}, $$ and for $x, y \in \mathbb{R}^{n}$ the Euclidean distance function is $d(x,y) = |x-y|$.
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib has Euclidean/normed-space instances and many of the listed facts separately, but this source row bundles Lee’s coordinate conventions or several Euclidean identifications/examples; no single checked interface owns the whole bundle. Strict whole-row semantics reject partial clause coverage and unbridged reconstruction.
@@ -621,7 +621,7 @@ Suppose X _1 , … , X _k are topological spaces. The collection of all subsets 
 `FC08-CA-U047` · Appendix A, § Disjoint Union Spaces; source L18188 · [in Mathlib]{.route-mathlib}
 :::
 
-Another simple way of building new topological spaces is by taking disjoint unions of other spaces. From a set-theoretic point of view, the disjoint union is defined as follows. If ( X _α ) _α ∈ A is an indexed family of sets, their disjoint union is the set
+Another simple way of building new topological spaces is by taking disjoint unions of other spaces. From a set-theoretic point of view, the disjoint union is defined as follows. If ( X _α ) _α ∈ A is an indexed family of sets, their disjoint union is the set $$ \coprod_{\alpha \in A} X_{\alpha} = \{(x,\alpha) : \alpha \in A,\ x \in X_{\alpha}\}, $$ with canonical injections $\iota_{\alpha} \colon X_{\alpha} \to \coprod_{\alpha \in A} X_{\alpha}$.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Data/Sigma/Basic.lean::Sigma`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Data/Sigma/Basic.html) — The dependent sum `Σ a, X a` is exactly the tagged disjoint union of an indexed family.
@@ -1089,7 +1089,7 @@ If X and Y are topological spaces and F _0 , F _1 : X Y are continuous maps, a h
 `FC08-CA-U083` · Appendix A, § Homotopy and the Fundamental Group; source L18482 · [in Mathlib]{.route-mathlib}
 :::
 
-The most important application of homotopies is to paths. Suppose X is a topological space. Two paths f _0 , f _1 : I → X are said to be path-homotopic, denoted symbolically by f _0 ∼ f _1 , if they are homotopic relative to 0; 1 . Explicitly, this means that there is a continuous map H : I × I → X satisfying
+Two paths $f_{0}, f_{1} \colon I \to X$ are path-homotopic, written $f_{0} \sim f_{1}$, if they are homotopic relative to $\{0,1\}$; explicitly, there is a continuous map $H \colon I \times I \to X$ with $$ H(s,0) = f_{0}(s), \quad H(s,1) = f_{1}(s) \quad (s \in I), \qquad H(0,t) = f_{0}(0) = f_{1}(0), \quad H(1,t) = f_{0}(1) = f_{1}(1) \quad (t \in I). $$ For fixed $p, q \in X$, path homotopy is an equivalence relation on the paths from $p$ to $q$; the class of $f$ is its path class $[f]$.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Topology/Homotopy/Path.lean::Path.Homotopic`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Homotopy/Path.html#Path.Homotopic) — [`Path.Homotopic`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Path.Homotopic#doc) is homotopy relative to the two endpoints, exactly Lee’s path-homotopy relation.

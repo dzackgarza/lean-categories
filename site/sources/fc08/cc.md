@@ -49,7 +49,7 @@ Let V , W be finite-dimensional vector spaces, which we may assume to be endowed
 `FC08-CC-U002` · Appendix C, § Total and Partial Derivatives; source L19468 · [in Mathlib]{.route-mathlib}
 :::
 
-If F is differentiable at a, the linear map L satisfying (C.1) is denoted by D F ( a ) and is called the total derivative of F at a. Condition (C.1) can also be written
+If F is differentiable at a, the linear map L satisfying (C.1) is denoted by D F ( a ) and is called the total derivative of F at a. Condition (C.1) can also be written $$ F(a+v) = F(a) + DF(a)v + R(v), \tag{C.2} $$ where the remainder $R(v) = F(a+v) - F(a) - DF(a)v$ satisfies $|R(v)|/|v| \to 0$ as $v \to 0$.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Analysis/Calculus/FDeriv/Defs.lean::HasFDerivWithinAt, HasFDerivAt, fderivWithin, fderiv`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/FDeriv/Defs.html) — Mathlib’s Fréchet derivative is exactly Lee’s total derivative: `HasFDerivWithinAt` gives the little-o linear approximation on a set, and on an open domain it agrees with `HasFDerivAt`; `fderivWithin`/`fderiv` are the unique derivative maps.
@@ -105,7 +105,7 @@ More generally, for a vector-valued function F : U ℝ ^m , we can write the coo
 `FC08-CC-U006` · Appendix C, § Partial Derivatives; source L19558 · [in Mathlib]{.route-mathlib}
 :::
 
-If F : U ℝ ^m is a function for which each partial derivative exists at each point in U and the functions ∂ F ^i / ∂ x ^j : U → ℝ so defined are all continuous, then F is said to be of class C ^1 or continuously differentiable. If this is the case, we can differentiate the functions ∂ F ^i / ∂ x ^j to obtain second-order partial derivatives
+If F : U ℝ ^m is a function for which each partial derivative exists at each point in U and the functions ∂ F ^i / ∂ x ^j : U → ℝ so defined are all continuous, then F is said to be of class C ^1 or continuously differentiable. If this is the case, we can differentiate the functions ∂ F ^i / ∂ x ^j to obtain second-order partial derivatives $$ \frac{\partial^{2}F^{i}}{\partial x^{k}\partial x^{j}} = \frac{\partial}{\partial x^{k}}\left(\frac{\partial F^{i}}{\partial x^{j}}\right), $$ and, continuing, partial derivatives of every order; $F$ is of class $C^{k}$ when all partial derivatives of order at most $k$ exist and are continuous.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Analysis/Calculus/ContDiff/Defs.lean::ContDiffOn, ContDiff`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/ContDiff/Defs.html) — `ContDiffOn ℝ k F U` is Mathlib’s `C^k` predicate and `ContDiffOn ℝ ∞ F U` is smoothness; the definition is local and agrees with the usual Euclidean partial-derivative formulation.
@@ -253,7 +253,7 @@ Let U ⊆ ℝ ^n be open. If F : U ℝ ^m is of class C ^1 , then it is differen
 `FC08-CC-U017` · Appendix C, § Partial Derivatives; source L19654 · [in Mathlib]{.route-mathlib}
 :::
 
-Now suppose f : U → ℝ is a smooth real-valued function on an open subset U ⊆ ℝ ^n , and a ∈ U . For each vector v ∈ ℝ ^n , we define the directional derivative of f in the direction v at a to be the number
+Now suppose f : U → ℝ is a smooth real-valued function on an open subset U ⊆ ℝ ^n , and a ∈ U . For each vector v ∈ ℝ ^n , we define the directional derivative of f in the direction v at a to be the number $$ D_{v}f(a) = \left.\frac{d}{dt}\right|_{t=0} f(a+tv), \tag{C.6} $$ which makes sense for any vector $v$, not only a unit vector.
 
 ::: {.unit-lean}
 **Formalized.** [`Mathlib/Analysis/Calculus/LineDeriv/Basic.lean::lineDeriv, HasLineDerivAt`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/LineDeriv/Basic.html) — `lineDeriv ℝ f a v` is exactly Lee’s directional derivative along the line `a + t v`; for smooth `f` it equals `fderiv ℝ f a v`.
@@ -339,7 +339,7 @@ Given a closed interval [ a , b ] ⊆ ℝ , a partition of Œa; b is a finite 
 `FC08-CC-U024` · Appendix C, § Multiple Integrals; source L19742 · [not formalized]{.route-unmatched}
 :::
 
-Suppose A ⊆ ℝ ^n is a closed rectangle and f : A → ℝ is a bounded function. For each partition P of A, we define the lower sum of f with respect to P by L (f, P) = sum_j (inf _ R _j f ) Vol (R _j),
+Suppose $A \subseteq \mathbb{R}^{n}$ is a closed rectangle and $f \colon A \to \mathbb{R}$ is bounded. For each partition $P$ of $A$, the lower sum of $f$ with respect to $P$ is $$ \mathrm{L}(f,P) = \sum_{j} \left(\inf_{R_{j}} f\right)\operatorname{Vol}(R_{j}), $$ the sum being over the subrectangles $R_{j}$ of $P$, and the upper sum is $$ \mathrm{U}(f,P) = \sum_{j} \left(\sup_{R_{j}} f\right)\operatorname{Vol}(R_{j}). $$
 
 ::: {.unit-lean}
 **Not formalized.** none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib does not formalize Lee’s multidimensional Darboux lower/upper sums as the canonical integration interface. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
