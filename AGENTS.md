@@ -140,6 +140,33 @@ administrative commits do not measure mathematical progress over time.
 Repeated searches or status edits need a changed input or a concrete unresolved
 obligation; otherwise resume the next mathematical unit.
 
+### One Lean process at a time — a second one gets both killed
+
+A single `lean` elaborating a non-trivial file holds one to two gigabytes here, and this
+host has under eight in total with a browser and three other repositories' workers on it.
+Two concurrent checks is already over the line: on 2026-09-11 `check-sigmaext.lean` at
+1.75 GB and `test-ag-ringfull.lean` at 1.20 GB ran together alongside a 0.65 GB toolchain
+process, the machine went to 125 MB free, and the kernel took the longest-running one.
+
+That is the mechanism behind the stale index locks. A gate killed part-way through leaves
+`.git/index.lock` with no owner, the next commit attempt fails on it, and the repository
+becomes uncommittable for every stream until someone proves the lock stale and moves it
+aside. The visible symptom is a worker that cannot bank for hours; the cause is two
+processes that should never have been running at once.
+
+Before starting a `lake build`, `lake env lean`, or any gate that elaborates, check that
+no other Lean process is running and that the machine has room for one:
+
+```bash
+pgrep -a -x 'lean|lake'        # expect nothing, or one you started and are waiting on
+free -m | sed -n 2p            # available column, not free
+```
+
+If another Lean process is running, wait on it rather than adding a second — including
+your own earlier one that you may believe has finished. If memory is already tight,
+say so and wait; a gate started into 125 MB of headroom does not finish, it dies, and it
+takes the index lock down with it.
+
 ### A wait is only delivery while the process is alive
 
 An aggregate `lake build` prints `4760/4761` and stops. Hours later the transcript
