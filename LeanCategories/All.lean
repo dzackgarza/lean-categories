@@ -117,6 +117,7 @@ public import LeanCategories.Homological.SatelliteFunctors
 public import LeanCategories.Homological.Syzygy
 public import LeanCategories.Homological.BalancedFunctor
 public import LeanCategories.Homological.GrothendieckAB4Star
+public import LeanCategories.Homological.SheafAB4StarCounterexample
 public import LeanCategories.Homological.FiniteFreeResolution
 public import LeanCategories.Homological.ExactSequenceCategories
 public import LeanCategories.Homological.MappingCylinder
