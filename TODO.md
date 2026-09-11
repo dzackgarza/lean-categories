@@ -334,13 +334,61 @@ gate killed part-way through leaves that lock with no owner.
 The obligation is to separate the tiers, not to weaken either. Commit tier checks what the
 commit changed and its dependents; CI tier keeps the whole-environment audits exactly as
 they are, since `env_linter`-backed checks like the vacuity audit are inherently
-whole-environment and belong where they are paid once. Nothing here licenses committing
-past a red audit — `LC-07` still governs that, and a check that is skipped at commit tier
-must be one CI will still run before the work is relied on.
+whole-environment and belong where they are paid once.
 
 **Acceptance:** a one-declaration commit no longer elaborates the whole project, the full
 audit set still runs at `test-ci`, and no audit is deleted or narrowed to achieve it.
 Record the measured before/after interval in the commit.
+
+**Delivered `8a31f94`**, and the measurement held: a one-declaration change passes
+`test-commit` in **23.26 s** against a recorded ~24-minute median before, with `test-ci`
+intact at 350.08 s. What follows is the next step, not a revision of that.
+
+### What each of the three tiers is actually for
+
+The tiers exist and are wired — `test-commit` on pre-commit, `test-push: test-ci` on
+pre-push — but they are still all asking the same question, only over different amounts of
+the tree. They should be asking different questions.
+
+**The highest priority in this repository is writing the mathematics down.** A corpus of
+sixteen sources is a transcription job before it is anything else, and the throughput that
+matters is source units reaching the tree. Every gate is justified only by how little it
+obstructs that while still keeping the tree from becoming nonsense.
+
+- **Commit tier is a sanity check, not a quality gate.** Its job is to catch what the
+  author forgot or overlooked while the context is still live and the fix is seconds:
+  does this parse, does it follow the conventions, is the name what the mapping record
+  says, did the unit get its ledger entry. It should be fast, and — more importantly — it
+  **must not require the library to elaborate**. A worker transcribing FC05 that writes a
+  definition referring to something not yet transcribed currently cannot bank it at all,
+  and `lake build LeanCategories` at commit tier is what stops it. Partial, incoherent,
+  in-progress state is the normal condition mid-sweep and banking it is what makes it
+  survivable; `LC-04`'s "staged work is not banked work" points the same way.
+- **Push tier carries the hard work.** Full elaboration, the whole-environment audits, the
+  exporter, sorry-freedom. This is where 350 seconds is well spent, because it is paid once
+  per batch of work rather than once per declaration.
+- **The contribution gate is the guarantee to the outside world.** Anything leaving this
+  repository must be coherent, compilable and of defensible quality. That is a real
+  promise and it does not move.
+
+So the remaining change is narrow: take whole-library elaboration and sorry-freedom out of
+commit tier and let push tier own them, leaving commit tier the cheap checks that catch
+mistakes early. This is the same trade `DEV-58` makes in the research repository, and the
+same one FLT made by letting a statement be a usable node before its proof existed.
+
+**Acceptance:** a worker can commit a partially elaborated unit mid-transcription; `just
+test-push` still refuses anything that does not fully elaborate, pass every audit and
+contain no `sorry`; and the commit-tier checks that remain are ones that would have caught
+a real recent mistake, named in the commit.
+
+### Corpus rework is a milestone phase, not continuous
+
+Reorganising and reworking what has been transcribed — fixing owners, consolidating
+duplicated notions, repairing mappings found wrong in hindsight — is proper work, and it
+belongs in a triage phase at the end of a transcription milestone rather than interleaved
+with the transcription itself. Interleaving it is what turns a sweep into an unbounded
+refactor and is why a sweep can run for days without a cell closing. Transcribe to the end
+of the source, then triage what the sweep exposed, then close the cell.
 
 **How the two 2026 large formalizations handled this, since neither made the check cheap —
 both made it rare.** Anthropic's FLT formalization (29,511 theorems, 60,475 modules) has a
