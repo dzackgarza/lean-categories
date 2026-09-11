@@ -202,4 +202,51 @@ theorem finiteFreeResolution_exact_succ [IsNoetherianRing R]
     (by simp [S, T, f])
   exact (ShortComplex.exact_iff_of_iso e).2 hT
 
+/-- An augmented resolution by finite-rank free modules. -/
+structure FiniteFreeResolution (M : ModuleCat.{u} R) where
+  complex : ChainComplex (FiniteFreeModuleCat R) ℕ
+  augmentation : (finiteFreeModuleInclusion R).obj (complex.X 0) ⟶ M
+  epi_augmentation : Epi augmentation
+  d_comp_augmentation :
+    (finiteFreeModuleInclusion R).map (complex.d 1 0) ≫ augmentation = 0
+  exact_zero :
+    (ShortComplex.mk
+      ((finiteFreeModuleInclusion R).map (complex.d 1 0))
+      augmentation d_comp_augmentation).Exact
+  exact_succ : ∀ n : ℕ,
+    (ShortComplex.mk
+      (complex.d (n + 2) (n + 1)).hom
+      (complex.d (n + 1) n).hom
+      (congrArg (fun g => g.hom) (complex.d_comp_d (n + 2) (n + 1) n))).Exact
+
+/-- A finitely generated module over a Noetherian ring admits a noncanonical resolution by
+finite-rank free modules. -/
+noncomputable def finiteFreeResolution [IsNoetherianRing R]
+    (M : ModuleCat.{u} R) [Module.Finite R M] : FiniteFreeResolution R M where
+  complex := finiteFreeResolutionComplex R M
+  augmentation := finiteFreeResolutionAugmentation R M
+  epi_augmentation := finiteFreeResolutionAugmentation_epi R M
+  d_comp_augmentation := finiteFreeResolution_d_comp_augmentation R M
+  exact_zero := finiteFreeResolution_exact_zero R M
+  exact_succ := finiteFreeResolution_exact_succ R M
+
+/-- Source-facing convention: a right Noetherian ring is a ring whose opposite ring is
+Noetherian in Mathlib's left-module convention. -/
+abbrev IsRightNoetherianRing (R : Type u) [Ring R] : Prop :=
+  IsNoetherianRing Rᵐᵒᵖ
+
+/-- A finitely generated right module over a right Noetherian ring is finitely presented. -/
+theorem finitePresentation_of_finite_rightModule
+    {M : Type u} [AddCommGroup M] [Module Rᵐᵒᵖ M]
+    [IsRightNoetherianRing R] [Module.Finite Rᵐᵒᵖ M] :
+    Module.FinitePresentation Rᵐᵒᵖ M :=
+  Module.finitePresentation_of_finite Rᵐᵒᵖ M
+
+/-- A finitely generated right module over a right Noetherian ring admits a noncanonical
+finite-rank free resolution. -/
+noncomputable def rightFiniteFreeResolution [IsRightNoetherianRing R]
+    (M : ModuleCat.{u} Rᵐᵒᵖ) [Module.Finite Rᵐᵒᵖ M] :
+    FiniteFreeResolution Rᵐᵒᵖ M :=
+  finiteFreeResolution (Rᵐᵒᵖ) M
+
 end LeanCategories.Homological
