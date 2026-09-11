@@ -255,6 +255,46 @@ theorem baerRight_surjective {R : Type u} [Ring R] {A B : ModuleCat.{u, u} R}
   change baerFiberProjection e₁ e₂ x = b
   simpa [baerFiberProjection, x] using hx₁
 
+theorem baerLeft_right_exact {R : Type u} [Ring R] {A B : ModuleCat.{u, u} R}
+    (e₁ e₂ : Extension A B) : Function.Exact (baerLeft e₁ e₂) (baerRight e₁ e₂) := by
+  intro y
+  rcases y with ⟨x⟩
+  change baerFiberProjection e₁ e₂ x = 0 ↔
+    ∃ a, baerLeft e₁ e₂ a = (baerSkewRange e₁ e₂).mkQ x
+  constructor
+  · intro hx
+    have hx₂ : e₂.rightMap x.1.2 = 0 := by
+      rw [← baerFiberProjection_eq_second e₁ e₂ x]
+      exact hx
+    obtain ⟨a₁, ha₁⟩ := (e₁.leftMap_rightMap_exact x.1.1).mp hx
+    obtain ⟨a₂, ha₂⟩ := (e₂.leftMap_rightMap_exact x.1.2).mp hx₂
+    refine ⟨a₁ + a₂, ?_⟩
+    change (baerSkewRange e₁ e₂).mkQ (baerLeftLift e₁ e₂ (a₁ + a₂)) =
+      (baerSkewRange e₁ e₂).mkQ x
+    rw [← sub_eq_zero, ← map_sub]
+    have hmem : baerLeftLift e₁ e₂ (a₁ + a₂) - x ∈ baerSkewRange e₁ e₂ := by
+      refine ⟨a₂, ?_⟩
+      apply Subtype.ext
+      apply Prod.ext
+      · change e₁.leftMap a₂ = e₁.leftMap (a₁ + a₂) - x.1.1
+        rw [map_add, ha₁]
+        abel
+      · change -e₂.leftMap a₂ = 0 - x.1.2
+        rw [ha₂]
+        simp
+    change baerLeftLift e₁ e₂ (a₁ + a₂) - x ∈
+      LinearMap.ker (baerSkewRange e₁ e₂).mkQ
+    rw [Submodule.ker_mkQ]
+    exact hmem
+  · rintro ⟨a, ha⟩
+    have h := congrArg (fun z => baerRight e₁ e₂ z) ha
+    change baerFiberProjection e₁ e₂ (baerLeftLift e₁ e₂ a) =
+      baerFiberProjection e₁ e₂ x at h
+    calc
+      baerFiberProjection e₁ e₂ x =
+          baerFiberProjection e₁ e₂ (baerLeftLift e₁ e₂ a) := h.symm
+      _ = 0 := e₁.leftMap_rightMap_exact.apply_apply_eq_zero a
+
 /-- Two extensions `0 → A → E₁ → B → 0` and `0 → A → E₂ → B → 0`
     are **equivalent** (Weibel, Def. 3.4.1) if there exists a morphism of
     short complexes `τ : seq₁ → seq₂` with `τ.τ₁ = 𝟙 A` and
