@@ -126,6 +126,7 @@ public import LeanCategories.Homological.SheafPresheafComparison
 public import LeanCategories.Homological.WeaklyEffaceable
 public import LeanCategories.Homological.IsHereditary
 public import LeanCategories.Homological.IsQuasiFrobenius
+public import LeanCategories.Homological.FrobeniusAlgebra
 public import LeanCategories.Homological.SplitComplex
 public import LeanCategories.Homological.VectorSpaceSplitting
 public import LeanCategories.Homological.GlobalDimension
