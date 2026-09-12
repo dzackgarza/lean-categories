@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Homological.SheafPresheafComparison
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 
 /-!
 # A shrinking-fibre space for the sheaf AB4* counterexample
@@ -480,5 +481,36 @@ theorem piExpSheafHom_not_epi : ¬ Epi piExpSheafHom := by
   have h := congrArg
     (fun q : C((Opens.toTopCat X).obj V, TopCat.of (ℕ → Additive ℂˣ)) => q x) hs
   exact h
+
+/-- Sheaves of abelian groups on the shrinking-fibre space have arbitrary products. -/
+noncomputable instance shrinkingCStarSheafAddCommGrpHasProducts :
+    HasProducts.{0} (TopCat.Sheaf AddCommGrpCat (TopCat.of ShrinkingCStar)) :=
+  fun _ => inferInstance
+
+/-- The discrete family of coordinate exponential morphisms is an epimorphism in the functor
+category, because each coordinate is an epimorphism. -/
+theorem expSheafDiagramHom_epi :
+    Epi (expSheafDiagramHom (TopCat.of ShrinkingCStar)) := by
+  apply (CategoryTheory.NatTrans.epi_iff_epi_app _).2
+  intro j
+  change Epi (expSheafHom (TopCat.of ShrinkingCStar))
+  exact expSheafHom_epi_shrinking
+
+attribute [local instance] expSheafDiagramHom_epi
+
+/-- AB4* would force the coordinatewise exponential product map to be an epimorphism. -/
+theorem piExpSheafHom_epi_of_AB4Star
+    [hAB4Star : AB4Star (TopCat.Sheaf AddCommGrpCat (TopCat.of ShrinkingCStar))] :
+    Epi piExpSheafHom := by
+  rw [piExpSheafHom_eq_categoricalProduct]
+  infer_instance
+
+/-- Sheaves of abelian groups on the shrinking-fibre space are complete but do not satisfy
+Weibel's AB4*: countable products fail to preserve the epimorphic family of exponential maps. -/
+theorem shrinkingCStarSheafAddCommGrp_not_AB4Star :
+    ¬ AB4Star (TopCat.Sheaf AddCommGrpCat (TopCat.of ShrinkingCStar)) := by
+  intro hAB4Star
+  exact piExpSheafHom_not_epi
+    (piExpSheafHom_epi_of_AB4Star (hAB4Star := hAB4Star))
 
 end LeanCategories.Homological
