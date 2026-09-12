@@ -13,7 +13,8 @@ The linked whole-source ledger remains the sole source of sweep completion.
 | `catalogue` | [Sweep I: every source unit](#1-sweep-i--catalogue-every-corpus-unit) | `corpus` |
 | `mapping` | [Sweep II: every unit's Lean route](#2-sweep-ii--map-every-unit-onto-existing-lean) | `catalogue` |
 | `definitions` | [Sweep III: definitions and intrinsic laws](#3-sweep-iii--realize-the-complete-definitional-layer) | `mapping` |
-| `theorems` | [Sweep IV: remaining theorem obligations](#4-sweep-iv--formalize-the-remaining-lemmas-and-theorems) | `definitions` |
+
+| `theorems` | [Sweep IV: remaining theorem obligations](#4-sweep-iv--formalize-the-remaining-lemmas-and-theorems) | `definitions`, and per source its own `fcNN-definitions` |
 
 Within a sweep, source dependencies and traversal order come from the existing
 [source manifest](.agents/references/foundational-source-corpus.md); unit IDs and
