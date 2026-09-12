@@ -334,6 +334,127 @@ noncomputable def piExpSheafHom :
       continuousAddSheaf (TopCat.of ShrinkingCStar) (ℕ → Additive ℂˣ) :=
   continuousAddSheafMap (TopCat.of ShrinkingCStar) piComplexExpAddHom
 
+/-- Coordinatewise exponential commutes with every product projection. -/
+theorem piExpSheafHom_proj (n : ℕ) :
+    piExpSheafHom ≫
+        (continuousAddSheafPiCone (TopCat.of ShrinkingCStar) (Additive ℂˣ)).proj n =
+      (continuousAddSheafPiCone (TopCat.of ShrinkingCStar) ℂ).proj n ≫
+        expSheafHom (TopCat.of ShrinkingCStar) := by
+  apply CategoryTheory.Sheaf.hom_ext
+  apply NatTrans.ext
+  funext U
+  apply AddCommGrpCat.hom_ext
+  apply AddMonoidHom.ext
+  intro g
+  apply ContinuousMap.ext
+  intro x
+  rfl
+
+/-- The morphism induced by the concrete product universal property from the coordinate
+exponential maps. -/
+noncomputable def concreteProductExpSheafHom :
+    continuousAddSheaf (TopCat.of ShrinkingCStar) (ℕ → ℂ) ⟶
+      continuousAddSheaf (TopCat.of ShrinkingCStar) (ℕ → Additive ℂˣ) :=
+  (continuousAddSheafPiConeIsLimit
+    (TopCat.of ShrinkingCStar) (Additive ℂˣ)).lift
+      (Fan.mk (continuousAddSheaf (TopCat.of ShrinkingCStar) (ℕ → ℂ)) fun n =>
+        (continuousAddSheafPiCone (TopCat.of ShrinkingCStar) ℂ).proj n ≫
+          expSheafHom (TopCat.of ShrinkingCStar))
+
+@[reassoc]
+theorem concreteProductExpSheafHom_proj (n : ℕ) :
+    concreteProductExpSheafHom ≫
+        (continuousAddSheafPiCone (TopCat.of ShrinkingCStar) (Additive ℂˣ)).proj n =
+      (continuousAddSheafPiCone (TopCat.of ShrinkingCStar) ℂ).proj n ≫
+        expSheafHom (TopCat.of ShrinkingCStar) := by
+  exact (continuousAddSheafPiConeIsLimit
+    (TopCat.of ShrinkingCStar) (Additive ℂˣ)).fac _ ⟨n⟩
+
+/-- Coordinatewise exponential is the morphism induced by the concrete product universal
+property. -/
+theorem piExpSheafHom_eq_concreteProduct :
+    piExpSheafHom = concreteProductExpSheafHom := by
+  apply Fan.IsLimit.hom_ext
+    (continuousAddSheafPiConeIsLimit (TopCat.of ShrinkingCStar) (Additive ℂˣ))
+  intro n
+  exact (piExpSheafHom_proj n).trans (concreteProductExpSheafHom_proj n).symm
+
+/-- The concrete universal-property product map agrees with the canonical `lim.map` after the
+canonical product objects are identified with continuous-function sheaves. -/
+theorem concreteProductExpSheafHom_eq_categoricalProduct :
+    concreteProductExpSheafHom =
+      (continuousAddSheafPiIso (TopCat.of ShrinkingCStar) ℂ).inv ≫
+        lim.map (expSheafDiagramHom (TopCat.of ShrinkingCStar)) ≫
+        (continuousAddSheafPiIso (TopCat.of ShrinkingCStar) (Additive ℂˣ)).hom := by
+  apply Fan.IsLimit.hom_ext
+    (continuousAddSheafPiConeIsLimit (TopCat.of ShrinkingCStar) (Additive ℂˣ))
+  intro n
+  change concreteProductExpSheafHom ≫
+      continuousAddSheafMap (TopCat.of ShrinkingCStar)
+        (piEvalContinuousAddHom (Additive ℂˣ) n) =
+    ((continuousAddSheafPiIso (TopCat.of ShrinkingCStar) ℂ).inv ≫
+      lim.map (expSheafDiagramHom (TopCat.of ShrinkingCStar)) ≫
+      (continuousAddSheafPiIso (TopCat.of ShrinkingCStar) (Additive ℂˣ)).hom) ≫
+      continuousAddSheafMap (TopCat.of ShrinkingCStar)
+        (piEvalContinuousAddHom (Additive ℂˣ) n)
+  have hTproj :
+      (continuousAddSheafPiIso (TopCat.of ShrinkingCStar) (Additive ℂˣ)).hom ≫
+          continuousAddSheafMap (TopCat.of ShrinkingCStar)
+            (piEvalContinuousAddHom (Additive ℂˣ) n) =
+        limit.π (Discrete.functor (fun _ : ℕ =>
+          continuousAddSheaf (TopCat.of ShrinkingCStar) (Additive ℂˣ))) ⟨n⟩ := by
+    change (continuousAddSheafPiConeIsLimit
+      (TopCat.of ShrinkingCStar) (Additive ℂˣ)).lift
+        (limit.cone (Discrete.functor (fun _ : ℕ =>
+          continuousAddSheaf (TopCat.of ShrinkingCStar) (Additive ℂˣ)))) ≫
+          continuousAddSheafMap (TopCat.of ShrinkingCStar)
+            (piEvalContinuousAddHom (Additive ℂˣ) n) = _
+    simpa [continuousAddSheafPiCone] using
+      (continuousAddSheafPiConeIsLimit
+        (TopCat.of ShrinkingCStar) (Additive ℂˣ)).fac
+          (limit.cone (Discrete.functor (fun _ : ℕ =>
+            continuousAddSheaf (TopCat.of ShrinkingCStar) (Additive ℂˣ)))) ⟨n⟩
+  have hSproj :
+      (continuousAddSheafPiIso (TopCat.of ShrinkingCStar) ℂ).inv ≫
+          limit.π (Discrete.functor (fun _ : ℕ =>
+            continuousAddSheaf (TopCat.of ShrinkingCStar) ℂ)) ⟨n⟩ =
+        continuousAddSheafMap (TopCat.of ShrinkingCStar)
+          (piEvalContinuousAddHom ℂ n) := by
+    change (limit.isLimit (Discrete.functor (fun _ : ℕ =>
+      continuousAddSheaf (TopCat.of ShrinkingCStar) ℂ))).lift
+        (continuousAddSheafPiCone (TopCat.of ShrinkingCStar) ℂ) ≫
+          limit.π (Discrete.functor (fun _ : ℕ =>
+            continuousAddSheaf (TopCat.of ShrinkingCStar) ℂ)) ⟨n⟩ = _
+    change _ = (continuousAddSheafPiCone (TopCat.of ShrinkingCStar) ℂ).proj n
+    exact (limit.isLimit (Discrete.functor (fun _ : ℕ =>
+      continuousAddSheaf (TopCat.of ShrinkingCStar) ℂ))).fac
+        (continuousAddSheafPiCone (TopCat.of ShrinkingCStar) ℂ) ⟨n⟩
+  calc
+    concreteProductExpSheafHom ≫
+        continuousAddSheafMap (TopCat.of ShrinkingCStar)
+          (piEvalContinuousAddHom (Additive ℂˣ) n) =
+      continuousAddSheafMap (TopCat.of ShrinkingCStar) (piEvalContinuousAddHom ℂ n) ≫
+        expSheafHom (TopCat.of ShrinkingCStar) := by
+      simpa [continuousAddSheafPiCone] using concreteProductExpSheafHom_proj n
+    _ = ((continuousAddSheafPiIso (TopCat.of ShrinkingCStar) ℂ).inv ≫
+          lim.map (expSheafDiagramHom (TopCat.of ShrinkingCStar)) ≫
+          (continuousAddSheafPiIso (TopCat.of ShrinkingCStar) (Additive ℂˣ)).hom) ≫
+          continuousAddSheafMap (TopCat.of ShrinkingCStar)
+            (piEvalContinuousAddHom (Additive ℂˣ) n) := by
+      simp only [Category.assoc]
+      rw [hTproj, ← limMap_eq, limMap_π]
+      rw [← Category.assoc, hSproj]
+      rfl
+
+/-- Under the concrete product identifications, the categorical product of the coordinate
+exponential maps is exactly coordinatewise exponential. -/
+theorem piExpSheafHom_eq_categoricalProduct :
+    piExpSheafHom =
+      (continuousAddSheafPiIso (TopCat.of ShrinkingCStar) ℂ).inv ≫
+        lim.map (expSheafDiagramHom (TopCat.of ShrinkingCStar)) ≫
+        (continuousAddSheafPiIso (TopCat.of ShrinkingCStar) (Additive ℂˣ)).hom :=
+  piExpSheafHom_eq_concreteProduct.trans concreteProductExpSheafHom_eq_categoricalProduct
+
 /-- Each coordinate exponential is an epimorphism of sheaves on the shrinking-fibre space. -/
 theorem expSheafHom_epi_shrinking :
     Epi (expSheafHom (TopCat.of ShrinkingCStar)) :=
