@@ -6,6 +6,8 @@ module
 
 public import Mathlib.Algebra.Homology.SpectralSequence.Basic
 public import Mathlib.CategoryTheory.Abelian.Subobject
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Bounded spectral sequences and convergence
@@ -128,5 +130,67 @@ exactly one nonzero column. -/
 def CollapsesAt {r₀ : ℤ} {c : ℤ → ComplexShape (ℤ × ℤ)}
     (E : SpectralSequence C c r₀) (r : ℤ) (hr : r₀ ≤ r) : Prop :=
   HasSingleNonzeroRowAt E r hr ∨ HasSingleNonzeroColumnAt E r hr
+
+/-- Weibel's homological bounded-below condition (Definition 5.2.9): in each total degree,
+the initial page vanishes sufficiently far to the left. -/
+def IsHomologicallyBoundedBelow {r₀ : ℤ} (E : HomologicalSpectralSequence C r₀) : Prop :=
+  ∀ n : ℤ, ∃ p₀ : ℤ, ∀ p : ℤ, p ≤ p₀ →
+    IsZero ((E.page r₀ (by rfl)).X (p, n - p))
+
+/-- The cohomological dual of Weibel's bounded-below condition: in each total degree, the
+initial page vanishes sufficiently far to the right. -/
+def IsCohomologicallyBoundedBelow {r₀ : ℤ} (E : CohomologicalSpectralSequence C r₀) : Prop :=
+  ∀ n : ℤ, ∃ p₀ : ℤ, ∀ p : ℤ, p₀ ≤ p →
+    IsZero ((E.page r₀ (by rfl)).X (p, n - p))
+
+/-- Degree-boundedness is stronger than the homological bounded-below condition. -/
+theorem isHomologicallyBoundedBelow_of_degreeBounded {r₀ : ℤ}
+    (E : HomologicalSpectralSequence C r₀) (hE : IsDegreeBounded E) :
+    IsHomologicallyBoundedBelow E := by
+  intro n
+  let s : Set (ℤ × ℤ) :=
+    {pq | pq.1 + pq.2 = n ∧ ¬ IsZero ((E.page r₀ (by rfl)).X pq)}
+  have hs : s.Finite := hE n
+  let t : Set ℤ := Prod.fst '' s
+  have ht : t.Finite := hs.image Prod.fst
+  by_cases htn : t.Nonempty
+  · let m : ℤ := ht.toFinset.min' (by simpa using htn)
+    refine ⟨m - 1, fun p hp => ?_⟩
+    by_contra hz
+    have hp_mem_s : (p, n - p) ∈ s := by
+      exact ⟨by omega, hz⟩
+    have hp_mem_t : p ∈ t := ⟨(p, n - p), hp_mem_s, rfl⟩
+    have hm_le : m ≤ p := by
+      exact ht.toFinset.min'_le _ (by simpa using hp_mem_t)
+    omega
+  · refine ⟨0, fun p hp => ?_⟩
+    by_contra hz
+    apply htn
+    exact ⟨p, ⟨(p, n - p), ⟨by omega, hz⟩, rfl⟩⟩
+
+/-- Degree-boundedness is also stronger than the cohomological bounded-below condition. -/
+theorem isCohomologicallyBoundedBelow_of_degreeBounded {r₀ : ℤ}
+    (E : CohomologicalSpectralSequence C r₀) (hE : IsDegreeBounded E) :
+    IsCohomologicallyBoundedBelow E := by
+  intro n
+  let s : Set (ℤ × ℤ) :=
+    {pq | pq.1 + pq.2 = n ∧ ¬ IsZero ((E.page r₀ (by rfl)).X pq)}
+  have hs : s.Finite := hE n
+  let t : Set ℤ := Prod.fst '' s
+  have ht : t.Finite := hs.image Prod.fst
+  by_cases htn : t.Nonempty
+  · let m : ℤ := ht.toFinset.max' (by simpa using htn)
+    refine ⟨m + 1, fun p hp => ?_⟩
+    by_contra hz
+    have hp_mem_s : (p, n - p) ∈ s := by
+      exact ⟨by omega, hz⟩
+    have hp_mem_t : p ∈ t := ⟨(p, n - p), hp_mem_s, rfl⟩
+    have hp_le : p ≤ m := by
+      exact ht.toFinset.le_max' _ (by simpa using hp_mem_t)
+    omega
+  · refine ⟨0, fun p hp => ?_⟩
+    by_contra hz
+    apply htn
+    exact ⟨p, ⟨(p, n - p), ⟨by omega, hz⟩, rfl⟩⟩
 
 end LeanCategories.Homological
