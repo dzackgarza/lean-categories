@@ -45,22 +45,34 @@ plans, including plans that describe their input mappings as “verified.”
 
 ## Definitions close before theorems open
 
-Within a source, the Definitions sweep is finished before any Theorems work begins, and that
-ordering is not negotiable against local convenience. A theorem stated over an object the
-corpus has not defined has only two outcomes: it invents a local definition that the Definitions
-sweep will replace, and the theorem is rewritten; or it silently proves a statement about the
-wrong object. Both cost more than the theorem was worth, and neither is visible at the time.
+This is the project's integrity invariant, not a scheduling preference. The whole value of this
+corpus is that **every definition is auditable to real literature** — a named source, a located
+statement, a mapping record that some later reader can check. A corpus of Lean that merely
+typechecks is worth nothing here; what makes it worth something is that each object in it is the
+object the literature names.
 
-The ledger makes the imbalance concrete. On 2026-09-12 FC05 stood at 174/376 definitions with
-202 pending, while 134/718 theorems had been delivered — theorem work proceeding over a
-definition layer less than half built. Across FC05 through FC12 there were 1798 definitions
-pending against 3959 theorems. Definitions are the smaller obligation and every theorem depends
-on them, so they are also the faster route to a source actually closing.
+Theorem-first work destroys exactly that. A theorem needs its objects to exist, so a worker
+proving before the Definitions sweep has closed will supply the missing ones itself — inline,
+plausibly, and with no source behind them. Those definitions enter the corpus carrying no
+provenance and no mapping record, and nothing downstream distinguishes them from audited ones.
+The corpus keeps typechecking while quietly ceasing to be an audit of anything.
 
-Examples, counterexamples and witness constructions are theorem work. A sequence of commits
-building one counterexample — a product that fails to be epi, a witness space, an obstruction
-— is deep theorem work on a single unit, and belongs after the definition layer of its source
-is closed, not alongside it.
+It is self-reinforcing, which is why it must be prevented rather than corrected. Once theorems
+depend on an invented definition, replacing it with the literature's definition means rewriting
+those theorems, so every later worker finds it cheaper to keep the unaudited object and build on
+it. The damage compounds in the direction of never being fixed.
+
+The ledger shows how far this can run before anyone notices. On 2026-09-12 FC05 stood at 174/376
+definitions with 202 pending, while 134/718 theorems had been delivered — hundreds of theorems
+standing over a definition layer less than half built. Across FC05 through FC12 there were 1798
+definitions pending against 3959 theorems.
+
+So within a source, the Definitions sweep finishes before any Theorems work begins. Examples,
+counterexamples and witness constructions are theorem work and wait with the rest: a run of
+commits building one counterexample — a product that fails to be epi, a witness space, an
+obstruction — is deep theorem work on a single unit while the definitions its source depends on
+are still missing. If a definition you need is absent, that absence *is* the next unit; add it
+with its source and mapping record rather than assuming it around.
 
 ## A record update is not a unit of work
 
