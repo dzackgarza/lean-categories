@@ -225,4 +225,32 @@ theorem no_simultaneous_log_on_neighborhood (U : Opens ShrinkingCStar)
   change complexExpAddHom (l z) = Additive.ofMul z
   simpa [l, j] using h
 
+
+/-- Coordinatewise exponential as a morphism between the corresponding continuous-function
+sheaves on the shrinking-fibre space. -/
+noncomputable def piExpSheafHom :
+    continuousAddSheaf (TopCat.of ShrinkingCStar) (ℕ → ℂ) ⟶
+      continuousAddSheaf (TopCat.of ShrinkingCStar) (ℕ → Additive ℂˣ) :=
+  continuousAddSheafMap (TopCat.of ShrinkingCStar) piComplexExpAddHom
+
+/-- The coordinatewise exponential is not an epimorphism of sheaves on the shrinking-fibre
+space: its simultaneous winding section has no local lift at the base point. -/
+theorem piExpSheafHom_not_epi : ¬ Epi piExpSheafHom := by
+  intro hEpi
+  have hloc : TopCat.Presheaf.IsLocallySurjective piExpSheafHom.hom :=
+    (TopCat.Sheaf.isLocallySurjective_iff_epi piExpSheafHom).2 hEpi
+  rw [TopCat.Presheaf.isLocallySurjective_iff] at hloc
+  let X : TopCat := TopCat.of ShrinkingCStar
+  let U : Opens X := ⊤
+  let t : C((Opens.toTopCat X).obj U, TopCat.of (ℕ → Additive ℂˣ)) :=
+    ⟨fun x => simultaneousWinding x.1,
+      simultaneousWinding.continuous.comp continuous_subtype_val⟩
+  obtain ⟨V, hVU, ⟨s, hs⟩, hbV⟩ := hloc U t ShrinkingCStar.base trivial
+  apply no_simultaneous_log_on_neighborhood V hbV
+  refine ⟨s, ?_⟩
+  intro x
+  have h := congrArg
+    (fun q : C((Opens.toTopCat X).obj V, TopCat.of (ℕ → Additive ℂˣ)) => q x) hs
+  exact h
+
 end LeanCategories.Homological
