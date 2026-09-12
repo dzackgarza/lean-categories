@@ -45,4 +45,13 @@ def BasedHomotopyRel {n : ℕ} {x : X _⦋0⦌}
     (f g : BasedCycles X n x) : Prop :=
   Nonempty (PtSimplex.RelStruct f g (Fin.last n))
 
+/-- Weibel's pointed homotopy set `π_n(X,*)`, defined as the quotient of `Z_n(X,*)` by the
+source homotopy relation.  Lean's `Quot` construction only needs the relation itself; the lemma
+that this relation is an equivalence relation is therefore not needed to state the definition and
+remains theorem-level work.
+
+Source: Weibel, Lemma/Definition 8.3.1, pp. 263--269 (FC05-C08-U025). -/
+def BasedHomotopyQuotient (n : ℕ) (x : X _⦋0⦌) : Type u :=
+  Quot (BasedHomotopyRel X (n := n) (x := x))
+
 end SSet
