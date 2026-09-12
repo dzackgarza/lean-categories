@@ -174,6 +174,59 @@ theorem of_principalIdealDomain (R : Type*) [CommRing R] [IsDomain R]
     haveI : Module.Projective Rᵐᵒᵖ Rᵐᵒᵖ := inferInstance
     exact Module.Projective.of_equiv' fEquiv
 
+private theorem projective_ideal_of_rightHereditary {R : Type*} [CommRing R]
+    (h : IsRightHereditary R) (I : Ideal R) : Module.Projective R I := by
+  let e : R ≃+* Rᵐᵒᵖ := RingEquiv.toOpposite R
+  letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
+  letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.of_ringEquiv_symm e
+  let J : Ideal Rᵐᵒᵖ := I.map e.toRingHom
+  let eI : I ≃ₛₗ[e.toRingHom] J :=
+    { toFun := fun x => ⟨e x, Ideal.mem_map_of_mem e.toRingHom x.2⟩
+      invFun := fun y =>
+        ⟨e.symm y, by
+          rcases (Ideal.mem_map_iff_of_surjective e.toRingHom e.surjective).mp y.2 with
+            ⟨x, hx, hxy⟩
+          have hback : e.symm y = x := by
+            rw [← hxy]
+            exact e.symm_apply_apply x
+          simpa [hback] using hx⟩
+      left_inv := fun x => Subtype.ext (e.symm_apply_apply x)
+      right_inv := fun y => Subtype.ext (e.apply_symm_apply y)
+      map_add' := fun x y => Subtype.ext (e.map_add x y)
+      map_smul' := fun r x => by
+        apply Subtype.ext
+        simpa [smul_eq_mul] using e.map_mul r x }
+  letI : Module.Projective Rᵐᵒᵖ J := h J
+  exact Module.Projective.of_equiv eI.symm
+
+/-- A commutative hereditary domain is a Dedekind domain. -/
+theorem isDedekindDomain {R : Type*} [CommRing R] [IsDomain R]
+    (h : IsRightHereditary R) : IsDedekindDomain R := by
+  rw [isDedekindDomain_iff_mul_inv_cancel (A := R) (K := FractionRing R)]
+  intro I hI
+  obtain ⟨a, J, ha, hIJ⟩ :=
+    FractionalIdeal.exists_eq_spanSingleton_mul (K := FractionRing R) I
+  suffices h₂ :
+      I * (FractionalIdeal.spanSingleton R⁰ (algebraMap R (FractionRing R) a) *
+        (J : FractionalIdeal R⁰ (FractionRing R))⁻¹) = 1 by
+    rw [FractionalIdeal.mul_inv_cancel_iff]
+    exact ⟨FractionalIdeal.spanSingleton R⁰ (algebraMap R (FractionRing R) a) *
+      (J : FractionalIdeal R⁰ (FractionRing R))⁻¹, h₂⟩
+  subst hIJ
+  have hJ0 : J ≠ ⊥ :=
+    FractionalIdeal.coeIdeal_ne_zero.mp (right_ne_zero_of_mul hI)
+  have hJinv :
+      (J : FractionalIdeal R⁰ (FractionRing R)) *
+          (J : FractionalIdeal R⁰ (FractionRing R))⁻¹ = 1 :=
+    ideal_mul_inv_cancel_of_projective J hJ0 (projective_ideal_of_rightHereditary h J)
+  rw [mul_assoc, mul_left_comm (J : FractionalIdeal R⁰ (FractionRing R)), hJinv, mul_one,
+    FractionalIdeal.spanSingleton_mul_spanSingleton, inv_mul_cancel₀,
+    FractionalIdeal.spanSingleton_one]
+  exact mt
+    ((injective_iff_map_eq_zero (algebraMap R (FractionRing R))).mp
+      (IsFractionRing.injective R (FractionRing R)) _)
+    ha
+
 end IsRightHereditary
 
 end LeanCategories.Homological
