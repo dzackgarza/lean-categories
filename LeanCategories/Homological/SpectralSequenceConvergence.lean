@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.Algebra.Homology.SpectralSequence.Basic
+public import LeanCategories.Homological.SpectralSequenceInfinity
 public import Mathlib.CategoryTheory.Abelian.Subobject
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Set.Finite.Basic
@@ -70,6 +71,63 @@ noncomputable def gradedPiece (F : FiniteIncreasingFiltration X) (p : ℤ) : C :
   cokernel (Subobject.ofLE (F.obj (p - 1)) (F.obj p) (F.monotone (by omega)))
 
 end FiniteIncreasingFiltration
+
+/-- An increasing filtration `… ⊆ F_{p-1}X ⊆ F_pX ⊆ F_{p+1}X ⊆ …`.
+This is the filtration data used in Weibel, *An Introduction to Homological Algebra*,
+Definition 5.2.11, p. 126. -/
+structure IncreasingFiltration (X : C) where
+  obj : ℤ → Subobject X
+  monotone : Monotone obj
+
+namespace IncreasingFiltration
+
+variable {X : C}
+
+/-- The associated graded piece `F_pX/F_{p-1}X` from Weibel Definition 5.2.11, p. 126. -/
+noncomputable def gradedPiece (F : IncreasingFiltration X) (p : ℤ) : C :=
+  cokernel (Subobject.ofLE (F.obj (p - 1)) (F.obj p) (F.monotone (by omega)))
+
+/-- The quotient `X/F_pX` occurring in the inverse-limit clause of Weibel
+Definition 5.2.11, p. 126. -/
+noncomputable def quotient (F : IncreasingFiltration X) (p : ℤ) : C :=
+  cokernel (F.obj p).arrow
+
+/-- For `p ≤ q`, the canonical quotient map `X/F_pX ⟶ X/F_qX`. -/
+noncomputable def quotientMap (F : IncreasingFiltration X) {p q : ℤ} (h : p ≤ q) :
+    F.quotient p ⟶ F.quotient q :=
+  cokernel.map (F.obj p).arrow (F.obj q).arrow
+    (Subobject.ofLE (F.obj p) (F.obj q) (F.monotone h)) (𝟙 X) (by simp)
+
+/-- The inverse-limit diagram `p ↦ X/F_pX` of Weibel Definition 5.2.11, p. 126. -/
+noncomputable def quotientFunctor (F : IncreasingFiltration X) : ℤ ⥤ C where
+  obj p := F.quotient p
+  map f := F.quotientMap (leOfHom f)
+  map_id p := by
+    simp [quotientMap, quotient]
+  map_comp := by
+    intro p q s f g
+    dsimp [quotientMap, quotient]
+    rw [← cancel_epi (cokernel.π (F.obj p).arrow)]
+    simp
+
+/-- The canonical cone from `X` to the quotients `X/F_pX`.  Weibel's completeness
+clause `X ≅ lim_p X/F_pX` says precisely that this cone is limiting. -/
+noncomputable def completionCone (F : IncreasingFiltration X) : Cone F.quotientFunctor :=
+  Cone.mk X
+    { app := fun p => cokernel.π (F.obj p).arrow
+      naturality := by
+        intro p q f
+        simp [quotientFunctor, quotientMap, quotient] }
+
+/-- Exhaustiveness `X = ⋃_p F_pX` in Weibel Definition 5.2.11, p. 126. -/
+def IsExhaustive (F : IncreasingFiltration X) : Prop :=
+  IsLUB (Set.range F.obj) ⊤
+
+/-- Hausdorffness `⋂_p F_pX = 0` in Weibel Definition 5.2.11, p. 126. -/
+def IsHausdorff (F : IncreasingFiltration X) : Prop :=
+  IsGLB (Set.range F.obj) ⊥
+
+end IncreasingFiltration
 
 /-- A finite decreasing filtration of an object, indexed by `ℤ` and eventually equal to the
 whole object on the left and `0` on the right. -/
@@ -200,6 +258,40 @@ def IsRegularSpectralSequence {r₀ : ℤ} {c : ℤ → ComplexShape (ℤ × ℤ
     (E : SpectralSequence C c r₀) : Prop :=
   ∀ pq : ℤ × ℤ, ∃ r : ℤ, ∃ hr : r₀ ≤ r, ∀ s : ℤ, ∀ hrs : r ≤ s,
     (E.page s (hr.trans hrs)).d pq ((c s).next pq) = 0
+
+/-- Weak convergence of a spectral sequence to a graded object: the infinity page is the
+associated graded object of an increasing filtration.  Source: Weibel, *An Introduction to
+Homological Algebra*, Definition 5.2.11, p. 126.  The `presentation` and `infinityBounds` fields
+are exactly the existence data for `E^∞` from Construction 5.2.8. -/
+structure SpectralSequenceWeakConvergence {r₀ : ℤ} {c : ℤ → ComplexShape (ℤ × ℤ)}
+    (E : SpectralSequence C c r₀) (H : ℤ → C) where
+  presentation (pq : ℤ × ℤ) : CycleBoundaryPresentation E pq
+  infinityBounds (pq : ℤ × ℤ) : (presentation pq).InfinityBounds
+  filtration (n : ℤ) : IncreasingFiltration (H n)
+  gradedIso (p q : ℤ) :
+    (presentation (p, q)).infinityPage (infinityBounds (p, q)) ≅
+      (filtration (p + q)).gradedPiece p
+
+namespace SpectralSequenceWeakConvergence
+
+variable {E : SpectralSequence C c r₀} {H : ℤ → C}
+
+/-- A weakly convergent spectral sequence approaches, or abuts to, `H` when every target
+filtration is exhaustive and Hausdorff.  Source: Weibel Definition 5.2.11, p. 126. -/
+def Approaches (W : SpectralSequenceWeakConvergence E H) : Prop :=
+  ∀ n : ℤ, (W.filtration n).IsExhaustive ∧ (W.filtration n).IsHausdorff
+
+/-- `AbutsTo` is Weibel's synonymous terminology for `Approaches` in Definition 5.2.11. -/
+abbrev AbutsTo (W : SpectralSequenceWeakConvergence E H) : Prop := W.Approaches
+
+/-- Full convergence requires abutment, regularity, and completeness of each target filtration:
+the canonical cone `H_n ⟶ H_n/F_pH_n` is a limit cone.  Source: Weibel, *An Introduction to
+Homological Algebra*, Definition 5.2.11, p. 126. -/
+def Converges (W : SpectralSequenceWeakConvergence E H) : Prop :=
+  W.Approaches ∧ IsRegularSpectralSequence E ∧
+    ∀ n : ℤ, Nonempty (IsLimit (W.filtration n).completionCone)
+
+end SpectralSequenceWeakConvergence
 
 /-- A spectral sequence whose outgoing differentials vanish on every page is regular. -/
 theorem isRegularSpectralSequence_of_differential_zero {r₀ : ℤ}
