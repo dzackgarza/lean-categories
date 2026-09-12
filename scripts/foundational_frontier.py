@@ -71,6 +71,15 @@ RESULT_ONLY_CONSTRUCTION_UNITS = frozenset(
         # Construction 5.6.5 is the collapse argument deriving the Künneth short
         # exact sequence; it introduces no new object, map, predicate, or notation.
         "FC05-C05-U049",
+        # 6.8.3 is the pair of low-degree exact sequences extracted from the LHS
+        # spectral sequences; it is result content despite the Sweep-I label.
+        "FC05-C06-U100",
+        # The §7.4 augmentation-ideal passage applies Tor to an already-defined
+        # short exact sequence and states the resulting isomorphisms/exact sequence.
+        "FC05-C07-U030",
+        # 7.5.3 likewise consists of the low-degree exact sequences extracted
+        # from the Hochschild--Serre spectral sequences.
+        "FC05-C07-U042",
     }
 )
 

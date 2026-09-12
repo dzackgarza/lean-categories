@@ -75,6 +75,12 @@ does not justify weakening a dependent theorem or starting unrelated work.
   claim that every ambiguous “Construction” label in every corpus source has
   been semantically re-audited; a newly encountered ambiguous construction
   still requires source inspection rather than another broad substring rule.
+  Continuing source traversal found three further result-only rows mislabeled
+  as constructions by Sweep I: `FC05-C06-U100` (the LHS five-term exact
+  sequences), `FC05-C07-U030` (Tor isomorphisms/exact sequence obtained from
+  the augmentation ideal sequence), and `FC05-C07-U042` (the Lie
+  Hochschild--Serre five-term exact sequences). They are now excluded from the
+  FC05 definition population rather than counted as missing definitions.
 - **Repair link:** `scripts/foundational_frontier.py` now classifies the
   source-unit label separately from its descriptive title, honors explicit
   `[definition-only]` mapping evidence for mixed/nonstandard labels, and records
