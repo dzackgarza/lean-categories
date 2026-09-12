@@ -313,6 +313,20 @@ noncomputable def continuousAddSheafPiConeIsLimit (X : TopCat) (A : Type) [AddCo
       exact congrArg
         (fun q : C((Opens.toTopCat X).obj (unop U), TopCat.of A) => q x) h)
 
+/-- The canonical categorical product is isomorphic to the concrete continuous-function
+sheaf with product target. -/
+noncomputable def continuousAddSheafPiIso (X : TopCat) (A : Type) [AddCommGroup A]
+    [TopologicalSpace A] [IsTopologicalAddGroup A] :
+    (∏ᶜ fun _ : ℕ => continuousAddSheaf X A) ≅ continuousAddSheaf X (ℕ → A) :=
+  (limit.isLimit (Discrete.functor fun _ : ℕ => continuousAddSheaf X A)).conePointUniqueUpToIso
+    (continuousAddSheafPiConeIsLimit X A)
+
+/-- The countable discrete family of exponential morphisms. -/
+noncomputable def expSheafDiagramHom (X : TopCat) :
+    Discrete.functor (fun _ : ℕ => continuousAddSheaf X ℂ) ⟶
+      Discrete.functor (fun _ : ℕ => continuousAddSheaf X (Additive ℂˣ)) :=
+  Discrete.natTrans fun _ => expSheafHom X
+
 /-- Coordinatewise exponential as a morphism between the corresponding continuous-function
 sheaves on the shrinking-fibre space. -/
 noncomputable def piExpSheafHom :
