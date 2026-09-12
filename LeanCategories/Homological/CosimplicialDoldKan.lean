@@ -42,4 +42,10 @@ def cosimplicialDoldKanEquivalence :
   (cosimplicialDoldKanOpEquivalence A).rightOp.trans
     (opOpEquivalence (CochainComplex A ℕ))
 
+/-- The degree-`n` cohomotopy object of a cosimplicial object, computed through
+its normalized cochain complex under dual Dold--Kan. -/
+def cosimplicialCohomotopyObject (X : CosimplicialObject A) (n : ℕ) : A :=
+  (HomologicalComplex.homologyFunctor A (ComplexShape.up ℕ) n).obj
+    ((cosimplicialDoldKanEquivalence A).functor.obj X)
+
 end LeanCategories.Homological
