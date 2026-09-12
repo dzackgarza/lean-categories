@@ -43,6 +43,47 @@ plans, including plans that describe their input mappings as “verified.”
    names the actual declarations, checks already run, and next unresolved source units
    in the existing execution record so the next worker can continue directly.
 
+## Definitions close before theorems open
+
+Within a source, the Definitions sweep is finished before any Theorems work begins, and that
+ordering is not negotiable against local convenience. A theorem stated over an object the
+corpus has not defined has only two outcomes: it invents a local definition that the Definitions
+sweep will replace, and the theorem is rewritten; or it silently proves a statement about the
+wrong object. Both cost more than the theorem was worth, and neither is visible at the time.
+
+The ledger makes the imbalance concrete. On 2026-09-12 FC05 stood at 174/376 definitions with
+202 pending, while 134/718 theorems had been delivered — theorem work proceeding over a
+definition layer less than half built. Across FC05 through FC12 there were 1798 definitions
+pending against 3959 theorems. Definitions are the smaller obligation and every theorem depends
+on them, so they are also the faster route to a source actually closing.
+
+Examples, counterexamples and witness constructions are theorem work. A sequence of commits
+building one counterexample — a product that fails to be epi, a witness space, an obstruction
+— is deep theorem work on a single unit, and belongs after the definition layer of its source
+is closed, not alongside it.
+
+## A record update is not a unit of work
+
+Advancing a frontier row, ticking a ledger cell, recording a mapping decision, closing a queue
+item: none of these is work and none earns a commit of its own. Each one costs a full gate run
+to move a marker, and a history of marker commits reads as a healthy cadence while the corpus
+gains nothing. Fold the record update into the commit carrying the mathematics it describes. If
+a record change has no mathematics to ride with, it is bookkeeping that should not be happening.
+
+## Repair the scheduler, do not route around it
+
+The generated scheduling documents are load-bearing, and when one breaks the failure is silent:
+a worker that cannot read its next unit starts choosing units itself, and the corpus drifts
+toward whatever is interesting rather than whatever is next. `FOUNDATIONAL_FRONTIER.md` spent
+2026-09-11 emitting its "Next 5 open units in source traversal order" heading six times with no
+rows under any of them, and the workers of that night picked their own units accordingly.
+
+So at every source closure, and whenever a scheduling document fails to answer the question it
+exists to answer, stop and repair it before continuing the mathematics. Check that the frontier
+tables are populated, that the ledger counts move when work lands, and that the mapping records
+parse. A tool that has stopped answering is a defect to fix at its owner, never a step to work
+around — the next worker inherits the same silence and makes the same drift.
+
 The [corpus acceptance workflow](#corpus-acceptance-workflow) gives the detailed checks
 at each of these decisions. Keep source content in the catalogue, implementation
 provenance in the mapping, and completion in the existing ledger. Apply the checks as
