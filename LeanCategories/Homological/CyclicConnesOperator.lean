@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Homological.DoubleComplexFirstPages
 public import LeanCategories.Homological.CyclicOperators
+public import LeanCategories.Homological.MixedComplex
 
 /-!
 # Connes' operator attached to a cyclic object
@@ -51,6 +52,17 @@ def connesOperator (A : CyclicObject (C := C)) (n : ℕ) :
   cyclicNorm A n ≫ connesContraction A n ≫
     (𝟙 _ + ((-1 : ℤ) ^ n) • (A.t (n + 1)).hom)
 
+/-- The Hochschild boundary `b = d₀-d₁+⋯+(-1)^{n+1}d_{n+1}` with its
+source and target displayed directly as the degree objects of the cyclic
+object. -/
+def cyclicHochschildBoundary (A : CyclicObject (C := C)) (n : ℕ) :
+    A.obj.obj (op ⦋n + 1⦌) ⟶ A.obj.obj (op ⦋n⦌) :=
+  ∑ i : Fin (n + 2), (-1 : ℤ) ^ (i : ℕ) • A.obj.δ i
+
+lemma cyclicHochschildComplex_d (A : CyclicObject (C := C)) (n : ℕ) :
+    (cyclicHochschildComplex A).d (n + 1) n = cyclicHochschildBoundary A n := by
+  exact AlgebraicTopology.AlternatingFaceMapComplex.obj_d_eq A.obj n
+
 /-- A source-faithful realization of Connes' double complex obtained from a
 cyclic object by eliminating the odd acyclic columns of Tsygan's bicomplex.
 
@@ -78,5 +90,38 @@ structure CyclicConnesDoubleComplexRealization (A : CyclicObject (C := C)) where
             (show q - (p + 1) + 1 = q - p by omega)) =
       (bicomplex.d (p + 1) p).f q ≫
         (nonzeroIso p q (by omega)).hom
+
+/-- The two identities in Weibel's calculation that make Connes' operator
+`B` into the degree-raising differential of a mixed complex.  The equation
+`b²=0` is already part of `cyclicHochschildComplex A`. -/
+structure CyclicMixedComplexIdentities (A : CyclicObject (C := C)) where
+  /-- `B²=0`. -/
+  B_sq : ∀ n : ℕ, connesOperator A n ≫ connesOperator A (n + 1) = 0
+  /-- The degree-zero instance of `bB+Bb=0`. -/
+  mixed_zero :
+    connesOperator A 0 ≫ cyclicHochschildBoundary A 0 = 0
+  /-- `bB+Bb=0` in every positive degree. -/
+  mixed_succ : ∀ n : ℕ,
+    cyclicHochschildBoundary A n ≫ connesOperator A n +
+      connesOperator A (n + 1) ≫
+        cyclicHochschildBoundary A (n + 1) = 0
+
+/-- The mixed complex `(A,b,B)` associated to a cyclic object once the
+source calculation of `B²=0` and `bB+Bb=0` has been supplied.
+
+This is exactly Weibel's construction immediately following Definition 9.8.1
+(FC05-C09-U114): the chain differential is the Hochschild differential `b`
+and the degree-raising operator is the source-defined `connesOperator`. -/
+def cyclicMixedComplex (A : CyclicObject (C := C))
+    (h : CyclicMixedComplexIdentities A) : MixedComplex C where
+  chain := cyclicHochschildComplex A
+  B := connesOperator A
+  B_sq := h.B_sq
+  mixed_zero := by
+    rw [cyclicHochschildComplex_d]
+    exact h.mixed_zero
+  mixed_succ := fun n => by
+    rw [cyclicHochschildComplex_d, cyclicHochschildComplex_d]
+    exact h.mixed_succ n
 
 end LeanCategories.Homological
