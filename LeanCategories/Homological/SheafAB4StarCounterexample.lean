@@ -17,7 +17,7 @@ The `n`th winding coordinate is the identity on the `n`th fibre and one on every
 
 @[expose] public section
 
-open CategoryTheory TopologicalSpace
+open CategoryTheory Limits Opposite TopologicalSpace
 
 namespace LeanCategories.Homological
 
@@ -225,6 +225,93 @@ theorem no_simultaneous_log_on_neighborhood (U : Opens ShrinkingCStar)
   change complexExpAddHom (l z) = Additive.ofMul z
   simpa [l, j] using h
 
+/-- Evaluation at one coordinate as a continuous additive homomorphism out of a countable
+product. -/
+def piEvalContinuousAddHom (A : Type) [AddCommGroup A] [TopologicalSpace A]
+    [IsTopologicalAddGroup A] (n : ℕ) : (ℕ → A) →ₜ+ A where
+  toFun f := f n
+  map_zero' := rfl
+  map_add' _ _ := rfl
+  continuous_toFun := continuous_apply n
+
+/-- The continuous-function sheaf into a countable product, with its coordinate projections. -/
+noncomputable def continuousAddSheafPiCone (X : TopCat) (A : Type) [AddCommGroup A]
+    [TopologicalSpace A] [IsTopologicalAddGroup A] :
+    Fan (fun _ : ℕ => continuousAddSheaf X A) :=
+  Fan.mk (continuousAddSheaf X (ℕ → A)) fun n =>
+    continuousAddSheafMap X (piEvalContinuousAddHom A n)
+
+/-- The morphism into the continuous-function sheaf of a countable product induced by a family
+of morphisms into the coordinate sheaves. -/
+noncomputable def continuousAddSheafPiLift (X : TopCat) (A : Type) [AddCommGroup A]
+    [TopologicalSpace A] [IsTopologicalAddGroup A]
+    (s : Fan (fun _ : ℕ => continuousAddSheaf X A)) :
+    s.pt ⟶ continuousAddSheaf X (ℕ → A) :=
+  ⟨{ app := fun U => AddCommGrpCat.ofHom
+      { toFun := fun y =>
+          ⟨fun x n =>
+              (show C((Opens.toTopCat X).obj (unop U), TopCat.of A) from
+                (s.proj n).hom.app U y) x,
+            continuous_pi fun n =>
+              (show C((Opens.toTopCat X).obj (unop U), TopCat.of A) from
+                (s.proj n).hom.app U y).continuous⟩
+        map_zero' := by
+          apply ContinuousMap.ext
+          intro x
+          funext n
+          have h := ((s.proj n).hom.app U).hom.map_zero
+          exact congrArg
+            (fun q : C((Opens.toTopCat X).obj (unop U), TopCat.of A) => q x) h
+        map_add' := by
+          intro y z
+          apply ContinuousMap.ext
+          intro x
+          funext n
+          have h := ((s.proj n).hom.app U).hom.map_add y z
+          exact congrArg
+            (fun q : C((Opens.toTopCat X).obj (unop U), TopCat.of A) => q x) h }
+     naturality := by
+      intro U V f
+      apply AddCommGrpCat.hom_ext
+      apply AddMonoidHom.ext
+      intro y
+      apply ContinuousMap.ext
+      intro x
+      funext n
+      have h := congrArg (fun q => q y) ((s.proj n).hom.naturality f)
+      exact congrArg
+        (fun q : C((Opens.toTopCat X).obj (unop V), TopCat.of A) => q x) h }⟩
+
+/-- Continuous maps into a product are exactly families of continuous coordinate maps, hence the
+continuous-function sheaf into `ℕ → A` is the categorical countable product of the coordinate
+continuous-function sheaves. -/
+noncomputable def continuousAddSheafPiConeIsLimit (X : TopCat) (A : Type) [AddCommGroup A]
+    [TopologicalSpace A] [IsTopologicalAddGroup A] :
+    IsLimit (continuousAddSheafPiCone X A) :=
+  Fan.IsLimit.mk _ (continuousAddSheafPiLift X A)
+    (fun s n => by
+      apply CategoryTheory.Sheaf.hom_ext
+      apply NatTrans.ext
+      funext U
+      apply AddCommGrpCat.hom_ext
+      apply AddMonoidHom.ext
+      intro y
+      apply ContinuousMap.ext
+      intro x
+      rfl)
+    (fun s m hm => by
+      apply CategoryTheory.Sheaf.hom_ext
+      apply NatTrans.ext
+      funext U
+      apply AddCommGrpCat.hom_ext
+      apply AddMonoidHom.ext
+      intro y
+      apply ContinuousMap.ext
+      intro x
+      funext n
+      have h := congrArg (fun q => q.hom.app U y) (hm n)
+      exact congrArg
+        (fun q : C((Opens.toTopCat X).obj (unop U), TopCat.of A) => q x) h)
 
 /-- Coordinatewise exponential as a morphism between the corresponding continuous-function
 sheaves on the shrinking-fibre space. -/
