@@ -34,4 +34,16 @@ Source: Weibel, *An Introduction to Homological Algebra*, §5.4, p. 131. -/
 abbrev ChainComplexFiltration (K : HomologicalComplex A c) :=
   IncreasingFiltration K
 
+namespace ChainComplexFiltration
+
+variable {A c} {K : HomologicalComplex A c}
+
+/-- An exhaustive filtration, i.e. `C = ⋃ₚ FₚC` in the source notation.  Categorically this says
+that the filtered chain subcomplexes have the whole complex as their least upper bound.
+Source: Weibel, *An Introduction to Homological Algebra*, §5.4, p. 131. -/
+abbrev IsExhaustive (F : ChainComplexFiltration A c K) : Prop :=
+  IncreasingFiltration.IsExhaustive F
+
+end ChainComplexFiltration
+
 end LeanCategories.Homological
