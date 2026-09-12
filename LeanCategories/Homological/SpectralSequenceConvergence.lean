@@ -193,4 +193,34 @@ theorem isCohomologicallyBoundedBelow_of_degreeBounded {r₀ : ℤ}
     apply htn
     exact ⟨p, ⟨(p, n - p), ⟨by omega, hz⟩, rfl⟩⟩
 
+/-- Weibel's regularity condition (Definition 5.2.10): at every fixed bidegree, the outgoing
+differential is zero on every sufficiently late page. -/
+def IsRegularSpectralSequence {r₀ : ℤ} {c : ℤ → ComplexShape (ℤ × ℤ)}
+    (E : SpectralSequence C c r₀) : Prop :=
+  ∀ pq : ℤ × ℤ, ∃ r : ℤ, ∃ hr : r₀ ≤ r, ∀ s : ℤ, ∀ hrs : r ≤ s,
+    (E.page s (hr.trans hrs)).d pq ((c s).next pq) = 0
+
+/-- A spectral sequence whose outgoing differentials vanish on every page is regular. -/
+theorem isRegularSpectralSequence_of_differential_zero {r₀ : ℤ}
+    {c : ℤ → ComplexShape (ℤ × ℤ)} (E : SpectralSequence C c r₀)
+    (hE : ∀ (r : ℤ) (hr : r₀ ≤ r) (pq : ℤ × ℤ),
+      (E.page r hr).d pq ((c r).next pq) = 0) :
+    IsRegularSpectralSequence E := by
+  rw [IsRegularSpectralSequence]
+  intro pq
+  exact ⟨r₀, le_rfl, fun s hs => hE s hs pq⟩
+
+/-- A bidegree supporting nonzero outgoing differentials arbitrarily late prevents regularity. -/
+theorem not_isRegularSpectralSequence_of_cofinally_nonzero {r₀ : ℤ}
+    {c : ℤ → ComplexShape (ℤ × ℤ)} (E : SpectralSequence C c r₀)
+    (pq : ℤ × ℤ)
+    (hE : ∀ (r : ℤ) (hr : r₀ ≤ r), ∃ s : ℤ, ∃ hrs : r ≤ s,
+      (E.page s (hr.trans hrs)).d pq ((c s).next pq) ≠ 0) :
+    ¬ IsRegularSpectralSequence E := by
+  intro hreg
+  rw [IsRegularSpectralSequence] at hreg
+  obtain ⟨r, hr₀, hr⟩ := hreg pq
+  obtain ⟨s, hrs, hs⟩ := hE r hr₀
+  exact hs (hr s hrs)
+
 end LeanCategories.Homological
