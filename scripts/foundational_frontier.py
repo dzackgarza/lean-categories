@@ -303,6 +303,30 @@ def mapping_label(mapping: Mapping | None) -> str:
     return f"{route}; {mapping.action}"
 
 
+def unit_blockers(unit: Unit, mappings: dict[str, Mapping]) -> tuple[str, ...]:
+    """Return recorded prerequisites that do not yet have a usable owner."""
+    return tuple(
+        dep
+        for dep in unit.dependencies
+        if dep not in mappings or not mappings[dep].delivered
+    )
+
+
+def next_open_units(
+    pending: list[Unit], mappings: dict[str, Mapping], limit: int
+) -> list[Unit]:
+    """Choose the next executable units without losing source traversal order.
+
+    Scan the whole pending population before applying the display limit.  If the
+    first pending units are blocked, truncating first hides executable rows that
+    occur later in source order.  If nothing is executable, retain the earliest
+    blocked rows so the frontier exposes the dependency stop instead of printing
+    an empty scheduling table.
+    """
+    ready = [unit for unit in pending if not unit_blockers(unit, mappings)]
+    return (ready if ready else pending)[:limit]
+
+
 def compact_unit_ids(units: list[Unit]) -> str:
     """Render an exact source-order unit set as compact consecutive spans."""
     if not units:
@@ -413,21 +437,23 @@ def render(reference_dir: Path, limit: int) -> str:
             lines.extend(["No per-unit residue remains; the whole-source ledger is still authoritative.", ""])
             continue
 
+        next_units = next_open_units(pending, mappings, limit)
+        if not next_units:
+            raise ValueError(
+                f"{status.source_id} {phase}: pending units exist but the scheduling table is empty"
+            )
+
         lines.extend(
             [
-                f"Next {min(limit, len(pending))} open units in source traversal order:",
+                f"Next {len(next_units)} open units in source traversal order:",
                 "",
                 "| Unit | Kind | Prerequisites | Unit blockers | Mapping action |",
                 "| --- | --- | --- | --- | --- |",
             ]
         )
-        for unit in pending[:limit]:
+        for unit in next_units:
             prerequisites = ", ".join(f"`{dep}`" for dep in unit.dependencies) or "—"
-            blockers = [
-                dep
-                for dep in unit.dependencies
-                if dep not in mappings or not mappings[dep].delivered
-            ]
+            blockers = unit_blockers(unit, mappings)
             blocker_text = (
                 ", ".join(f"`{dep}`" for dep in blockers)
                 if blockers

@@ -54,8 +54,8 @@ Next 5 open units in source traversal order:
 | `FC03-C01-U002` | Remark | `FC03-C01-U001` | ready by recorded prerequisites | unmatched; author |
 | `FC03-C01-U003` | Example | `FC03-C01-U001` | ready by recorded prerequisites | unmatched; author |
 | `FC03-C01-U004` | Example | `FC03-C01-U001` | ready by recorded prerequisites | unmatched; author |
-| `FC03-C01-U011` | Example | `FC03-C01-U009`, `FC03-C01-U003` | `FC03-C01-U003` | unmatched; author |
-| `FC03-C01-U018` | Example | `FC03-C01-U016`, `FC03-C01-U004` | `FC03-C01-U004` | unmatched; author |
+| `FC03-C01-U026` | Example | `FC03-C01-U009`, `FC03-C01-U022`, `FC03-C01-U025` | ready by recorded prerequisites | unmatched; author |
+| `FC03-C01-U031` | Example | `FC03-C01-U028` | ready by recorded prerequisites | unmatched; author |
 
 ## FC04 — Theorems
 
@@ -83,11 +83,11 @@ Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC05-C01-U048` | Construction/comparison 1.5.8 — Replace a short exact sequence by cone/cylinder data | `FC05-C01-U038`, `FC05-C01-U047`, `FC05-C01-U004` | `FC05-C01-U047` | unmatched; author |
-| `FC05-C02-U047` | Construction 2.5.1 — Right derived functors | `FC05-C02-U027`, `FC05-C02-U038`, `FC05-C02-U046` | `FC05-C02-U046` | unmatched; author |
-| `FC05-C02-U056` | Definition 2.6.4 — Tor functors | `FC05-C02-U038`, `FC05-C02-U054` | `FC05-C02-U054` | unmatched; author |
-| `FC05-C02-U081` | Definition/comparison — Left balanced functor | `FC05-C02-U080`, `FC05-C02-U075` | `FC05-C02-U075` | unmatched; author |
-| `FC05-C03-U009` | Definition 3.2.1 — Flat module | `FC05-C02-U054`, `FC05-C01-U058` | `FC05-C02-U054` | unmatched; author |
+| `FC05-C05-U011` | Definition 5.2.10 — Regular spectral sequence | `FC05-C05-U002`, `FC05-C05-U009` | ready by recorded prerequisites | unmatched; author |
+| `FC05-C05-U014` | Construction 5.2.13 — Multiplicative spectral sequence | `FC05-C05-U002` | ready by recorded prerequisites | unmatched; author |
+| `FC05-C05-U015` | Definition 5.3.1 — Serre fibration | — | ready by recorded prerequisites | unmatched; author |
+| `FC05-C05-U022` | Definition — Filtration of a chain complex | `FC05-C01-U002`, `FC05-C01-U011` | ready by recorded prerequisites | unmatched; author |
+| `FC05-C05-U068` | Definition — Exact couple | `FC05-C01-U014`, `FC05-C02-U070` | ready by recorded prerequisites | reference-port; port |
 
 ## FC05 — Theorems
 
@@ -102,8 +102,8 @@ Next 5 open units in source traversal order:
 | `FC05-C01-U007` | Application 1.1.3 — Simplicial homology | `FC05-C01-U002` | ready by recorded prerequisites | unmatched; author |
 | `FC05-C01-U008` | Application 1.1.4 — Singular homology | `FC05-C01-U002`, `FC05-C01-U004` | ready by recorded prerequisites | unmatched; author |
 | `FC05-C01-U016` | Example 1.2.4 — Double complexes | `FC05-C01-U002` | ready by recorded prerequisites | unmatched; author |
-| `FC05-C01-U017` | Sign Trick 1.2.5 — Double complexes as complexes of complexes | `FC05-C01-U016`, `FC05-C01-U003` | `FC05-C01-U016` | unmatched; author |
-| `FC05-C01-U018` | Total Complexes 1.2.6 — Direct-sum and product totalizations | `FC05-C01-U016`, `FC05-C01-U017` | `FC05-C01-U016`, `FC05-C01-U017` | unmatched; author |
+| `FC05-C01-U028` | Proposition 1.3.4 — Functoriality of the long exact sequence | `FC05-C01-U022`, `FC05-C01-U027` | ready by recorded prerequisites | unmatched; author |
+| `FC05-C01-U032` | Example 1.4.2 — Acyclic complex that is not split exact | `FC05-C01-U031` | ready by recorded prerequisites | unmatched; author |
 
 ## FC06 — Definitions
 
@@ -116,10 +116,10 @@ Next 5 open units in source traversal order:
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
 | `FC06-C01-U001` | Convention/construction — affine space | — | ready by recorded prerequisites | unmatched; author |
-| `FC06-C01-U005` | Definition — Zariski topology on affine space | `FC06-C01-U003`, `FC06-C01-U004` | `FC06-C01-U004` | unmatched; author |
 | `FC06-C01-U011` | Definition — affine and quasi-affine varieties | `FC06-C01-U003`, `FC06-C01-U007` | ready by recorded prerequisites | unmatched; author |
 | `FC06-C01-U021` | Definition — affine coordinate ring | `FC06-C01-U012` | ready by recorded prerequisites | unmatched; author |
-| `FC06-C01-U038` | Definition/construction — projective space and homogeneous coordinates | `FC06-C01-U001` | `FC06-C01-U001` | unmatched; author |
+| `FC06-C01-U133` | Definition — numerical polynomial | — | ready by recorded prerequisites | unmatched; author |
+| `FC06-C01-U135` | Definitions — graded module, twist, and annihilator | `FC06-C01-U039` | ready by recorded prerequisites | unmatched; author |
 
 ## FC06 — Theorems
 
@@ -132,10 +132,10 @@ Next 5 open units in source traversal order:
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
 | `FC06-C01-U004` | Proposition 1.1 — algebraic sets are closed-set data | `FC06-C01-U003` | ready by recorded prerequisites | unmatched; author |
-| `FC06-C01-U006` | Example 1.1.1 — Zariski topology on A^1 | `FC06-C01-U005` | `FC06-C01-U005` | unmatched; author |
-| `FC06-C01-U008` | Example 1.1.2 — A^1 is irreducible | `FC06-C01-U006`, `FC06-C01-U007` | `FC06-C01-U006` | unmatched; author |
 | `FC06-C01-U013` | Proposition 1.2 — zero-set/vanishing-ideal calculus | `FC06-C01-U002`, `FC06-C01-U012` | ready by recorded prerequisites | unmatched; author |
-| `FC06-C01-U015` | Corollary 1.4 — algebraic sets versus radical ideals | `FC06-C01-U007`, `FC06-C01-U013`, `FC06-C01-U014` | `FC06-C01-U013` | unmatched; author |
+| `FC06-C01-U031` | Theorem 1.8A — dimension theorem for finitely generated domains | `FC06-C01-U029` | ready by recorded prerequisites | unmatched; author |
+| `FC06-C01-U037` | Remark 1.13.1 — height two need not be two-generated | `FC06-C01-U035` | ready by recorded prerequisites | unmatched; author |
+| `FC06-C01-U069` | Theorem 3.9A — finiteness of integral closure | — | ready by recorded prerequisites | unmatched; author |
 
 ## FC07 — Definitions
 
@@ -148,10 +148,10 @@ Next 5 open units in source traversal order:
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
 | `FC07-C00-U001` | Definition — deformation retraction | — | ready by recorded prerequisites | reference-port; port |
-| `FC07-C00-U002` | Definition/construction — mapping cylinder | `FC07-C00-U001` | `FC07-C00-U001` | reference-port; port |
 | `FC07-C00-U004` | Definition — retraction | — | ready by recorded prerequisites | unmatched; author |
 | `FC07-C00-U008` | Definition/construction — CW complex, cells, and skeleta | `FC07-C00-U003` | ready by recorded prerequisites | unmatched; author |
-| `FC07-C00-U017` | Construction — product CW structure | `FC07-C00-U008` | `FC07-C00-U008` | unmatched; author |
+| `FC07-C00-U018` | Construction — quotient CW structure | `FC07-C00-U016` | ready by recorded prerequisites | unmatched; author |
+| `FC07-C00-U034` | Definition — homotopy extension property | `FC07-C00-U003` | ready by recorded prerequisites | reference-port; port |
 
 ## FC07 — Theorems
 
@@ -308,10 +308,10 @@ Next 5 open units in source traversal order:
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
 | `FC12-C01-U002` | Definition I.2 | — | ready by recorded prerequisites | unmatched; author |
-| `FC12-C01-U003` | Definition I.3 | `FC12-C01-U002` | `FC12-C01-U002` | unmatched; author |
-| `FC12-C01-U008` | Notation | `FC12-C01-U004` | `FC12-C01-U004` | unmatched; author |
-| `FC12-C01-U012` | Construction / interpretation I.10 | `FC12-C01-U001`, `FC12-C01-U004` | `FC12-C01-U001`, `FC12-C01-U004` | unmatched; author |
-| `FC12-C01-U013` | Definition / construction | `FC12-C01-U012` | `FC12-C01-U012` | unmatched; author |
+| `FC12-C02-U001` | Definition / construction II.1 | — | ready by recorded prerequisites | unmatched; author |
+| `FC12-C02-U004` | Definition / construction II.4 | — | ready by recorded prerequisites | unmatched; author |
+| `FC12-C02-U005` | Definition / construction II.5 | — | ready by recorded prerequisites | unmatched; author |
+| `FC12-C02-U017` | Definition / convention | — | ready by recorded prerequisites | unmatched; author |
 
 ## FC12 — Theorems
 
@@ -324,10 +324,10 @@ Next 5 open units in source traversal order:
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
 | `FC12-C01-U001` | Fact I.1 | — | ready by recorded prerequisites | unmatched; author |
-| `FC12-C01-U004` | Theorem I.4 | `FC12-C01-U001`, `FC12-C01-U003` | `FC12-C01-U001`, `FC12-C01-U003` | unmatched; author |
 | `FC12-C01-U005` | Lemma I.5 | — | ready by recorded prerequisites | unmatched; author |
-| `FC12-C01-U006` | Lemma I.6 | `FC12-C01-U004` | `FC12-C01-U004` | unmatched; author |
 | `FC12-C01-U007` | Fact I.7 | — | ready by recorded prerequisites | unmatched; author |
+| `FC12-C01-U014` | Theorem I.11 | — | ready by recorded prerequisites | unmatched; author |
+| `FC12-C01-U017` | Formula I.14 | — | ready by recorded prerequisites | unmatched; author |
 
 ## FC13 — Definitions
 
@@ -356,10 +356,10 @@ Next 5 open units in source traversal order:
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
 | `FC13-C01-U022` | Example: formal power-series units and local rings | `FC13-C01-U002`, `FC13-C01-U015`, `FC13-C01-U017` | ready by recorded prerequisites | unmatched; author |
-| `FC13-C01-U028` | Example: polynomial UFDs | `FC13-C01-U024`, `FC13-C01-U026` | `FC13-C01-U024` | unmatched; author |
-| `FC13-C01-U029` | Example: Z[√−5] is not a UFD | `FC13-C01-U024`, `FC13-C01-U026` | `FC13-C01-U024` | unmatched; author |
 | `FC13-C01-U039` | Theorem: Theorem 2.3 (minimal bases over a local ring) | `FC13-C01-U017`, `FC13-C01-U037`, `FC13-C01-U038` | ready by recorded prerequisites | unmatched; author |
 | `FC13-C01-U041` | Theorem: Theorem 2.5 (Kaplansky) | `FC13-C01-U017` | ready by recorded prerequisites | unmatched; author |
+| `FC13-C01-U048` | Lemma: finite length of A/mⁿ | `FC13-C01-U046` | ready by recorded prerequisites | unmatched; author |
+| `FC13-C01-U057` | Example: ACC and DCC are independent for modules | `FC13-C01-U053` | ready by recorded prerequisites | unmatched; author |
 
 ## FC14 — Definitions
 
@@ -389,9 +389,9 @@ Next 5 open units in source traversal order:
 | --- | --- | --- | --- | --- |
 | `FC14-C01-U017` | Theorem/recorded result: Ado–Iwasawa linearity theorem | `FC14-C01-U006` | ready by recorded prerequisites | unmatched; author |
 | `FC14-C01-U020` | Classification: Lie algebras of dimension at most two | `FC14-C01-U002`, `FC14-C01-U003`, `FC14-C01-U018` | ready by recorded prerequisites | package-import; import |
-| `FC14-C01-U026` | Example: simplicity of sl(2,F) | `FC14-C01-U007`, `FC14-C01-U025` | `FC14-C01-U007` | unmatched; author |
 | `FC14-C01-U031` | Proposition: homomorphism theorems | `FC14-C01-U021`, `FC14-C01-U027`, `FC14-C01-U030` | ready by recorded prerequisites | unmatched; author |
-| `FC14-C01-U037` | Example: standard inner automorphism of sl(2,F) | `FC14-C01-U026`, `FC14-C01-U036` | `FC14-C01-U026`, `FC14-C01-U036` | unmatched; author |
+| `FC14-C01-U038` | Formula: conjugation-exponential identity | `FC14-C01-U005`, `FC14-C01-U035` | ready by recorded prerequisites | unmatched; author |
+| `FC14-C01-U041` | Proposition: closure properties of solvability | `FC14-C01-U027`, `FC14-C01-U030`, `FC14-C01-U039` | ready by recorded prerequisites | package-import; import |
 
 ## FC15 — Definitions
 
@@ -404,10 +404,10 @@ Next 5 open units in source traversal order:
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
 | `FC15-C01-U001` | Definition: reflection in a Euclidean space | — | ready by recorded prerequisites | unmatched; author |
-| `FC15-C01-U002` | Definition: finite reflection group | `FC15-C01-U001` | `FC15-C01-U001` | unmatched; author |
-| `FC15-C01-U005` | Definition: essential reflection-group action | `FC15-C01-U002` | `FC15-C01-U002` | unmatched; author |
-| `FC15-C01-U009` | Definition: root system for a finite reflection group | `FC15-C01-U001` | `FC15-C01-U001` | unmatched; author |
 | `FC15-C01-U011` | Definition: total ordering and positive vectors | — | ready by recorded prerequisites | unmatched; author |
+| `FC15-C01-U038` | Definition: Poincaré polynomial | `FC15-C01-U022` | ready by recorded prerequisites | reference-port; port |
+| `FC15-C01-U049` | Construction: hyperplane arrangement complex | — | ready by recorded prerequisites | unmatched; author |
+| `FC15-C02-U006` | Construction: bilinear form associated to a Coxeter graph | `FC15-C02-U005` | ready by recorded prerequisites | unmatched; author |
 
 ## FC15 — Theorems
 
@@ -415,15 +415,14 @@ Delivered/directly reusable by mapping: **2/205**; pending realization: **203** 
 Delivered/direct-reuse spans: `FC15-C05-U006`, `FC15-C08-U015`.
 Phase blocker: Sweep III is not complete corpus-wide: FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16.
 
-Next 5 open units in source traversal order:
+Next 4 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC15-C01-U003` | Example: dihedral reflection group I_2(m) | `FC15-C01-U002` | `FC15-C01-U002` | unmatched; author |
-| `FC15-C01-U004` | Example: symmetric group as type A_{n-1} | `FC15-C01-U002` | `FC15-C01-U002` | unmatched; author |
-| `FC15-C01-U006` | Example: type B_n signed permutation group | `FC15-C01-U002` | `FC15-C01-U002` | unmatched; author |
-| `FC15-C01-U007` | Example: type D_n even signed permutation group | `FC15-C01-U006` | `FC15-C01-U006` | unmatched; author |
-| `FC15-C01-U008` | Proposition: orthogonal conjugacy of reflections | `FC15-C01-U001` | `FC15-C01-U001` | unmatched; author |
+| `FC15-C02-U026` | Remark/comparison: nonreduced crystallographic root systems BC_n | `FC15-C02-U018` | ready by recorded prerequisites | unmatched; author |
+| `FC15-C05-U003` | Example: PGL(2,Z) as a rank-three Coxeter group | `FC15-C05-U001` | ready by recorded prerequisites | unmatched; author |
+| `FC15-C05-U004` | Proposition: sign character of a Coxeter group | `FC15-C05-U001` | ready by recorded prerequisites | unmatched; author |
+| `FC15-C08-U004` | Theorem/recorded result: conjugacy problem for extra-large Coxeter groups | `FC15-C05-U001` | ready by recorded prerequisites | unmatched; author |
 
 ## FC16 — Definitions
 
@@ -436,10 +435,10 @@ Next 5 open units in source traversal order:
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
 | `FC16-C01-U001` | Convention | — | ready by recorded prerequisites | unmatched; author |
-| `FC16-C01-U002` | Definition/result | `FC16-C01-U001` | `FC16-C01-U001` | unmatched; author |
-| `FC16-C01-U005` | Definition/result | `FC16-C01-U001` | `FC16-C01-U001` | unmatched; author |
-| `FC16-C01-U007` | Definition/result | `FC16-C01-U001` | `FC16-C01-U001` | unmatched; author |
-| `FC16-C01-U008` | Definition/result | `FC16-C01-U001` | `FC16-C01-U001` | unmatched; author |
+| `FC16-C01-U023` | Definition/result | `FC16-C01-U020`, `FC16-C01-U021` | ready by recorded prerequisites | unmatched; author |
+| `FC16-C01-U029` | Construction/result | `FC16-C01-U020`, `FC16-C01-U022` | ready by recorded prerequisites | unmatched; author |
+| `FC16-C01-U030` | Definition | `FC16-C01-U020`, `FC16-C01-U022` | ready by recorded prerequisites | unmatched; author |
+| `FC16-C12-U046` | Definition/result | `FC16-C12-U045` | ready by recorded prerequisites | unmatched; author |
 
 ## FC16 — Theorems
 
@@ -451,8 +450,8 @@ Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC16-C01-U002` | Definition/result | `FC16-C01-U001` | `FC16-C01-U001` | unmatched; author |
-| `FC16-C01-U003` | Recorded result | `FC16-C01-U001` | `FC16-C01-U001` | unmatched; author |
-| `FC16-C01-U005` | Definition/result | `FC16-C01-U001` | `FC16-C01-U001` | unmatched; author |
-| `FC16-C01-U006` | Theorem/recorded result | `FC16-C01-U005` | `FC16-C01-U005` | unmatched; author |
-| `FC16-C01-U007` | Definition/result | `FC16-C01-U001` | `FC16-C01-U001` | unmatched; author |
+| `FC16-C01-U023` | Definition/result | `FC16-C01-U020`, `FC16-C01-U021` | ready by recorded prerequisites | unmatched; author |
+| `FC16-C01-U028` | Proposition | `FC16-C01-U022`, `FC16-C01-U025` | ready by recorded prerequisites | unmatched; author |
+| `FC16-C01-U029` | Construction/result | `FC16-C01-U020`, `FC16-C01-U022` | ready by recorded prerequisites | unmatched; author |
+| `FC16-C01-U068` | Proposition | `FC16-C01-U067`, `FC16-C01-U010`, `FC16-C01-U011` | ready by recorded prerequisites | unmatched; author |
+| `FC16-C12-U046` | Definition/result | `FC16-C12-U045` | ready by recorded prerequisites | unmatched; author |
