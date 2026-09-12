@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Projective
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import LeanCategories.Homological.FlatDimension
 
 /-!
 # Global and weak dimensions of rings
@@ -53,6 +54,22 @@ noncomputable def globalDimension.{u} (R : Type u) [Ring R] : WithBot ℕ∞ :=
     This is `sup { id(M) | M is a right R-module }`. -/
 noncomputable def injectiveGlobalDimension.{u} (R : Type u) [Ring R] : WithBot ℕ∞ :=
   sSup (Set.range fun (M : ModuleCat.{u, u} R) => injectiveDimension M)
+
+/-- Weibel's right global dimension: the supremum of projective dimensions of
+right `R`-modules, represented as left `Rᵐᵒᵖ`-modules. -/
+noncomputable def rightGlobalDimension.{u} (R : Type u) [Ring R] : WithBot ℕ∞ :=
+  sSup (Set.range fun (M : ModuleCat.{u, u} Rᵐᵒᵖ) => projectiveDimension M)
+
+/-- Weibel's left global dimension: the supremum of projective dimensions of
+left `R`-modules. -/
+noncomputable def leftGlobalDimension.{u} (R : Type u) [Ring R] : WithBot ℕ∞ :=
+  sSup (Set.range fun (M : ModuleCat.{u, u} R) => projectiveDimension M)
+
+/-- The right weak (Tor) dimension of `R`, defined as the supremum of flat
+dimensions of right `R`-modules.  Equality with the left-module and Tor-vanishing
+formulations is theorem-level content. -/
+noncomputable def rightWeakDimension.{u} (R : Type u) [Ring R] : WithBot ℕ∞ :=
+  sSup (Set.range fun (M : ModuleCat.{u, u} Rᵐᵒᵖ) => flatDimension R M)
 
 namespace globalDimension
 
