@@ -82,6 +82,29 @@ to move a marker, and a history of marker commits reads as a healthy cadence whi
 gains nothing. Fold the record update into the commit carrying the mathematics it describes. If
 a record change has no mathematics to ride with, it is bookkeeping that should not be happening.
 
+## The frontier is a product, and reviewing your own drift is part of the work
+
+`FOUNDATIONAL_FRONTIER.md` and the whole-source ledger are not reports about the corpus, they
+are the instruments that decide what gets built next, and they are maintained to the same
+standard as the mathematics. A delivered count that does not move when work lands, a mapping
+record that no longer parses, a next-units table that cannot name a ready unit: each is a
+defect in the thing that selects work, and each one silently returns unit selection to whoever
+is reading it. Repair it before taking the next unit, and fold the record update into the
+commit carrying the mathematics it describes.
+
+At every source closure, and whenever a session has run long without a definition landing,
+look back and ask:
+
+- **Did this session deliver units, or discuss them?** Mapping comparisons, catalogue
+  reconciliation and handoff notes are part of delivering a unit; they are not a unit. A run of
+  commits with no new Lean declaration in them means the session drifted into administration.
+- **Did the ledger move, and in source order?** Units delivered out of order are drift even
+  when each one is correct, because the order is what keeps definitions ahead of the theorems
+  that depend on them.
+- **What made this source cost more than it should have?** A search you repeated, a mapping you
+  could not trust, a tool that answered nothing. That is an obstruction; fix it at its owner
+  and commit the fix. Working around it silently guarantees the next worker pays it again.
+
 ## Repair the scheduler, do not route around it
 
 The generated scheduling documents are load-bearing, and when one breaks the failure is silent:
