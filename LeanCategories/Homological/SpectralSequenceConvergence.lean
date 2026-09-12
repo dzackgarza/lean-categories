@@ -193,8 +193,9 @@ theorem isCohomologicallyBoundedBelow_of_degreeBounded {r₀ : ℤ}
     apply htn
     exact ⟨p, ⟨(p, n - p), ⟨by omega, hz⟩, rfl⟩⟩
 
-/-- Weibel's regularity condition (Definition 5.2.10): at every fixed bidegree, the outgoing
-differential is zero on every sufficiently late page. -/
+/-- A spectral sequence is regular when, at each fixed bidegree, every sufficiently late
+outgoing differential vanishes.  Source: Weibel, *An Introduction to Homological Algebra*,
+Definition 5.2.10, p. 126. -/
 def IsRegularSpectralSequence {r₀ : ℤ} {c : ℤ → ComplexShape (ℤ × ℤ)}
     (E : SpectralSequence C c r₀) : Prop :=
   ∀ pq : ℤ × ℤ, ∃ r : ℤ, ∃ hr : r₀ ≤ r, ∀ s : ℤ, ∀ hrs : r ≤ s,
