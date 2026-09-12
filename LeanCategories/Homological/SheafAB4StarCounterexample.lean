@@ -166,4 +166,63 @@ theorem continuous_winding (n : ℕ) : Continuous (winding n) := by
     exact isOpen_fiberSet n (hU.preimage continuous_ofMul)
 
 end ShrinkingCStar
+
+
+open ShrinkingCStar
+
+/-- Coordinatewise complex exponential on countable products. -/
+noncomputable def piComplexExpAddHom : (ℕ → ℂ) →ₜ+ (ℕ → Additive ℂˣ) where
+  toFun f n := complexExpAddHom (f n)
+  map_zero' := by funext n; exact complexExpAddHom.map_zero
+  map_add' f g := by funext n; exact complexExpAddHom.map_add (f n) (g n)
+  continuous_toFun := continuous_pi fun n =>
+    complexExpAddHom.continuous.comp (continuous_apply n)
+
+/-- The simultaneous winding section on the shrinking-fibre space. -/
+def simultaneousWinding : C(ShrinkingCStar, ℕ → Additive ℂˣ) :=
+  ⟨fun x n => winding n x, continuous_pi continuous_winding⟩
+
+/-- Every neighbourhood of the base point contains one whole fibre. -/
+theorem exists_full_fiber_in_open (U : Opens ShrinkingCStar)
+    (hb : ShrinkingCStar.base ∈ U) :
+    ∃ n : ℕ, ∀ z : ℂˣ, ShrinkingCStar.fiber n z ∈ U := by
+  obtain ⟨F, hF⟩ := exists_tail_subset_of_isOpen U.2 hb
+  let G : Finset ℕ := insert 0 F
+  have hG : G.Nonempty := ⟨0, Finset.mem_insert_self 0 F⟩
+  let n := G.max' hG + 1
+  have hnG : n ∉ G := by
+    intro hn
+    have hle : n ≤ G.max' hG := Finset.le_max' G n hn
+    exact Nat.not_succ_le_self (G.max' hG) hle
+  have hnF : n ∉ F := by
+    intro hn
+    exact hnG (Finset.mem_insert_of_mem hn)
+  refine ⟨n, fun z => hF ?_⟩
+  exact (fiber_mem_tailSet_iff F n z).2 hnF
+
+/-- No neighbourhood of the base point admits continuous logarithms of all winding coordinates
+simultaneously. -/
+theorem no_simultaneous_log_on_neighborhood (U : Opens ShrinkingCStar)
+    (hb : ShrinkingCStar.base ∈ U) :
+    ¬ ∃ s : C(U, ℕ → ℂ),
+      ∀ x : U, piComplexExpAddHom (s x) = simultaneousWinding x.1 := by
+  rintro ⟨s, hs⟩
+  obtain ⟨n, hn⟩ := exists_full_fiber_in_open U hb
+  let j : C(ℂˣ, U) :=
+    ⟨fun z => ⟨ShrinkingCStar.fiber n z, hn z⟩,
+      (fiberEmbedding n).continuous.subtype_mk _⟩
+  let l : C(ℂˣ, ℂ) :=
+    ⟨fun z => s (j z) n,
+      (continuous_apply n).comp (s.continuous.comp j.continuous)⟩
+  apply noContinuousGlobalLog
+  refine ⟨l, ?_⟩
+  intro z
+  have h := congrFun (hs (j z)) n
+  change complexExpAddHom (s (j z) n) = winding n (j z).1 at h
+  have hj : (j z).1 = ShrinkingCStar.fiber n z := rfl
+  rw [hj] at h
+  simp only [winding] at h
+  change complexExpAddHom (l z) = Additive.ofMul z
+  simpa [l, j] using h
+
 end LeanCategories.Homological
