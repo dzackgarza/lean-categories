@@ -108,4 +108,25 @@ structure CohomologicalBoundedConvergence {r₀ : ℤ}
   gradedIso (p q : ℤ) :
     (stable (p, q)).object ≅ (filtration (p + q)).gradedPiece p
 
+/-- On page `r`, exactly one row is nonzero: all terms off row `q₀` vanish, and at least one
+term on row `q₀` is nonzero. -/
+def HasSingleNonzeroRowAt {r₀ : ℤ} {c : ℤ → ComplexShape (ℤ × ℤ)}
+    (E : SpectralSequence C c r₀) (r : ℤ) (hr : r₀ ≤ r) : Prop :=
+  ∃ q₀ : ℤ,
+    (∃ p : ℤ, ¬ IsZero ((E.page r hr).X (p, q₀))) ∧
+      ∀ p q : ℤ, q ≠ q₀ → IsZero ((E.page r hr).X (p, q))
+
+/-- On page `r`, exactly one column is nonzero. -/
+def HasSingleNonzeroColumnAt {r₀ : ℤ} {c : ℤ → ComplexShape (ℤ × ℤ)}
+    (E : SpectralSequence C c r₀) (r : ℤ) (hr : r₀ ≤ r) : Prop :=
+  ∃ p₀ : ℤ,
+    (∃ q : ℤ, ¬ IsZero ((E.page r hr).X (p₀, q))) ∧
+      ∀ p q : ℤ, p ≠ p₀ → IsZero ((E.page r hr).X (p, q))
+
+/-- Weibel's collapse condition (Definition 5.2.7): page `E^r` has exactly one nonzero row or
+exactly one nonzero column. -/
+def CollapsesAt {r₀ : ℤ} {c : ℤ → ComplexShape (ℤ × ℤ)}
+    (E : SpectralSequence C c r₀) (r : ℤ) (hr : r₀ ≤ r) : Prop :=
+  HasSingleNonzeroRowAt E r hr ∨ HasSingleNonzeroColumnAt E r hr
+
 end LeanCategories.Homological
