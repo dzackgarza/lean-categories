@@ -81,6 +81,7 @@ public import LeanCategories.ForMathlib.QuotientAnnihilator
 public import LeanCategories.ForMathlib.QuotientManifold
 public import LeanCategories.ForMathlib.RestrictedProductMeasure
 public import LeanCategories.ForMathlib.SequentialInverseLimitOne
+public import LeanCategories.ForMathlib.TrivialMittagLeffler
 public import LeanCategories.ForMathlib.WittCancellation
 public import LeanCategories.ForMathlib.SymmetricPairProduct
 public import LeanCategories.ForMathlib.TensorProductSubmodule
