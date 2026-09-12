@@ -54,4 +54,19 @@ Source: Weibel, Lemma/Definition 8.3.1, pp. 263--269 (FC05-C08-U025). -/
 def BasedHomotopyQuotient (n : ℕ) (x : X _⦋0⦌) : Type u :=
   Quot (BasedHomotopyRel X (n := n) (x := x))
 
+/-- The definition-layer predicate for an Eilenberg--Mac Lane space `K(G,n)`.
+
+At the distinguished degree, the pointed homotopy quotient has underlying type equivalent to `G`;
+at every other degree it is a singleton.  The source's group structure on positive-degree homotopy
+quotients is established in the preceding comparison result (FC05-C08-U026), so this definition
+records only the carrier-level condition needed independently of that theorem.  The later claims
+that `G` is abelian for `n ≥ 2` and that `BG` is a `K(G,1)` are result/example clauses and are not
+part of this definition.
+
+Source: Weibel, Definition 8.3.4, pp. 263--269 (FC05-C08-U029). -/
+def IsEilenbergMacLane (x : X _⦋0⦌) (G : Type u) [Group G] (n : ℕ) : Prop :=
+  Nonempty (BasedHomotopyQuotient X n x ≃ G) ∧
+    ∀ i : ℕ, i ≠ n →
+      Nonempty (BasedHomotopyQuotient X i x) ∧ Subsingleton (BasedHomotopyQuotient X i x)
+
 end SSet
