@@ -89,6 +89,17 @@ noncomputable def cohomologicalDimension {C D : Type*} [Category C]
     [HasZeroObject C] (F : C ⥤ D) [F.Additive] : WithBot ℕ∞ :=
   sSup (Set.range fun (X : C) => cohomologicalDimensionAt F X)
 
+/-- A functor has **cohomological dimension `n`** when its right-derived functors vanish in every
+degree strictly above `n`, while the degree-`n` derived functor is nonzero somewhere.
+
+This is Weibel's Definition 10.5.10 stated directly, rather than through the extended-natural
+supremum `cohomologicalDimension`. -/
+def HasCohomologicalDimension {C D : Type*} [Category C]
+    [Category D] [Abelian C] [HasInjectiveResolutions C] [Abelian D]
+    (F : C ⥤ D) [F.Additive] (n : ℕ) : Prop :=
+  (∀ i > n, ∀ X : C, IsZero ((F.rightDerived i).obj X)) ∧
+    ∃ X : C, ¬ IsZero ((F.rightDerived n).obj X)
+
 /-!
 ## Homological dimension of a functor
 -/
@@ -110,5 +121,15 @@ noncomputable def homologicalDimension {C D : Type*} [Category C]
     [Category D] [Abelian C] [HasProjectiveResolutions C] [Abelian D]
     [HasZeroObject C] (F : C ⥤ D) [F.Additive] : WithBot ℕ∞ :=
   sSup (Set.range fun (X : C) => homologicalDimensionAt F X)
+
+/-- A functor has **homological dimension `n`** when its left-derived functors vanish in every
+degree strictly above `n`, while the degree-`n` derived functor is nonzero somewhere.
+
+This is the dual clause of Weibel's Definition 10.5.10 stated directly. -/
+def HasHomologicalDimension {C D : Type*} [Category C]
+    [Category D] [Abelian C] [HasProjectiveResolutions C] [Abelian D]
+    (F : C ⥤ D) [F.Additive] (n : ℕ) : Prop :=
+  (∀ i > n, ∀ X : C, IsZero ((F.leftDerived i).obj X)) ∧
+    ∃ X : C, ¬ IsZero ((F.leftDerived n).obj X)
 
 end LeanCategories.Homological

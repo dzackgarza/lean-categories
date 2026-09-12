@@ -10,10 +10,10 @@ public import Mathlib.CategoryTheory.Abelian.Injective.Basic
 public import Mathlib.CategoryTheory.Abelian.Projective.Basic
 
 /-!
-# Right-balanced multivariable functors
+# Balanced multivariable functors
 
-Weibel, *An Introduction to Homological Algebra* (1994), Definition 2.7.7,
-§2.7, pp. 58--65, FC05-C02-U080.
+Weibel, *An Introduction to Homological Algebra* (1994), Definition 2.7.7
+and its left-balanced dual, §2.7, pp. 58--65, FC05-C02-U080--U081.
 
 A multivariable functor is represented as a functor out of the dependent
 product of its input categories.  Variance is encoded by orienting each
@@ -67,6 +67,11 @@ def IsMultivariableLeftExact (T : (∀ i, C i) ⥤ D) : Prop :=
   ∀ (X : ∀ i, C i) (i : I),
     PreservesFiniteLimits (MultivariableFunctor.restrictVariable C T X i)
 
+/-- A multivariable functor is right exact when every one-variable restriction is right exact. -/
+def IsMultivariableRightExact (T : (∀ i, C i) ⥤ D) : Prop :=
+  ∀ (X : ∀ i, C i) (i : I),
+    PreservesFiniteColimits (MultivariableFunctor.restrictVariable C T X i)
+
 /-- A multivariable functor is exact in variable `j` with all other entries fixed at `X`. -/
 def IsExactInVariable (T : (∀ i, C i) ⥤ D) (X : ∀ i, C i) (j : I) : Prop :=
   PreservesFiniteLimits (MultivariableFunctor.restrictVariable C T X j) ∧
@@ -82,6 +87,18 @@ projective object in the original category. -/
 def IsRightBalanced (T : (∀ i, C i) ⥤ D) : Prop :=
   IsMultivariableLeftExact T ∧
     ∀ (X : ∀ i, C i) (i : I), Injective (X i) →
+      ∀ j : I, j ≠ i → IsExactInVariable T X j
+
+/-- Weibel's left-balanced condition for a multivariable right-exact functor.
+
+As for `IsRightBalanced`, the family `C` consists of the *oriented* input categories.  Thus a
+projective object in an oriented covariant slot is a projective object of the original category,
+whereas in an oriented contravariant slot it represents an injective object of the original
+category.  Left balancedness says that fixing such an oriented projective input makes every
+remaining one-variable restriction exact. -/
+def IsLeftBalanced (T : (∀ i, C i) ⥤ D) : Prop :=
+  IsMultivariableRightExact T ∧
+    ∀ (X : ∀ i, C i) (i : I), Projective (X i) →
       ∀ j : I, j ≠ i → IsExactInVariable T X j
 
 end LeanCategories.Homological
