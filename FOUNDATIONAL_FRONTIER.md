@@ -83,11 +83,11 @@ Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC05-C05-U077` | Construction 5.9.9 — Bockstein spectral sequence | `FC05-C05-U068`, `FC05-C05-U070` | `FC05-C05-U070` | unmatched; author |
-| `FC05-C06-U100` | Construction 6.8.3 — Low-degree LHS exact sequences | `FC05-C06-U099`, `FC05-C05-U007`, `FC05-C06-U082` | `FC05-C06-U099`, `FC05-C05-U007` | unmatched; author |
-| `FC05-C06-U104` | Construction 6.8.7 — Free presentation and low-degree LHS sequence | `FC05-C06-U024`, `FC05-C06-U100` | `FC05-C06-U024`, `FC05-C06-U100` | unmatched; author |
-| `FC05-C06-U110` | Construction 6.9.3 — Central extension from a free presentation | `FC05-C06-U104`, `FC05-C06-U106`, `FC05-C06-U107` | `FC05-C06-U104` | unmatched; author |
-| `FC05-C07-U030` | Construction — Augmentation-ideal Tor exact sequences for H_1 | `FC05-C07-U025`, `FC05-C07-U026`, `FC05-C02-U044`, `FC05-C02-U056` | `FC05-C07-U025`, `FC05-C07-U026`, `FC05-C02-U044` | unmatched; author |
+| `FC05-C05-U077` | Construction 5.9.9 — Bockstein spectral sequence | `FC05-C05-U068`, `FC05-C05-U070` | ready by recorded prerequisites | unmatched; author |
+| `FC05-C06-U100` | Construction 6.8.3 — Low-degree LHS exact sequences | `FC05-C06-U099`, `FC05-C05-U007`, `FC05-C06-U082` | ready by recorded prerequisites | unmatched; author |
+| `FC05-C07-U030` | Construction — Augmentation-ideal Tor exact sequences for H_1 | `FC05-C07-U025`, `FC05-C07-U026`, `FC05-C02-U044`, `FC05-C02-U056` | ready by recorded prerequisites | unmatched; author |
+| `FC05-C07-U042` | Construction 7.5.3 — Low-degree Hochschild–Serre exact sequences | `FC05-C07-U041`, `FC05-C05-U007` | ready by recorded prerequisites | unmatched; author |
+| `FC05-C08-U051` | Construction — associated first-quadrant double complex C(A) | `FC05-C01-U017`, `FC05-C08-U012`, `FC05-C08-U050`, `FC05-C01-U016` | ready by recorded prerequisites | unmatched; author |
 
 ## FC05 — Theorems
 

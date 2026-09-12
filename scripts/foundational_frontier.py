@@ -381,17 +381,37 @@ def mapping_label(mapping: Mapping | None, phase: str) -> str:
     return f"{route}; {mapping.action}"
 
 
-def unit_blockers(unit: Unit, mappings: dict[str, Mapping]) -> tuple[str, ...]:
-    """Return recorded prerequisites that do not yet have a usable owner."""
-    return tuple(
-        dep
-        for dep in unit.dependencies
-        if dep not in mappings or not mappings[dep].delivered
-    )
+def unit_blockers(
+    phase: str,
+    unit: Unit,
+    mappings: dict[str, Mapping],
+    catalogue_index: dict[str, Unit],
+) -> tuple[str, ...]:
+    """Return phase-relevant prerequisites that do not yet have a usable owner.
+
+    In the audited FC05 Definitions sweep, theorem-only source dependencies are
+    not admissible blockers: Definitions must close before theorem work opens.
+    Mixed dependencies that themselves carry definitional content still block
+    until that definition layer has an owner.
+    """
+    source_id = unit.unit_id.split("-", 1)[0]
+    blockers: list[str] = []
+    for dep in unit.dependencies:
+        if phase == "Definitions" and source_id in CONTENT_CLASSIFIED_DEFINITION_SOURCES:
+            dep_unit = catalogue_index.get(dep)
+            if dep_unit is not None and not is_definition(dep_unit, mappings.get(dep)):
+                continue
+        if dep not in mappings or not mappings[dep].delivered:
+            blockers.append(dep)
+    return tuple(blockers)
 
 
 def next_open_units(
-    pending: list[Unit], mappings: dict[str, Mapping], limit: int
+    phase: str,
+    pending: list[Unit],
+    mappings: dict[str, Mapping],
+    catalogue_index: dict[str, Unit],
+    limit: int,
 ) -> list[Unit]:
     """Choose the next executable units without losing source traversal order.
 
@@ -401,7 +421,11 @@ def next_open_units(
     blocked rows so the frontier exposes the dependency stop instead of printing
     an empty scheduling table.
     """
-    ready = [unit for unit in pending if not unit_blockers(unit, mappings)]
+    ready = [
+        unit
+        for unit in pending
+        if not unit_blockers(phase, unit, mappings, catalogue_index)
+    ]
     return (ready if ready else pending)[:limit]
 
 
@@ -515,7 +539,8 @@ def render(reference_dir: Path, limit: int) -> str:
             lines.extend(["No per-unit residue remains; the whole-source ledger is still authoritative.", ""])
             continue
 
-        next_units = next_open_units(pending, mappings, limit)
+        catalogue_index = {unit.unit_id: unit for unit in catalogues[status.source_id]}
+        next_units = next_open_units(phase, pending, mappings, catalogue_index, limit)
         if not next_units:
             raise ValueError(
                 f"{status.source_id} {phase}: pending units exist but the scheduling table is empty"
@@ -531,7 +556,7 @@ def render(reference_dir: Path, limit: int) -> str:
         )
         for unit in next_units:
             prerequisites = ", ".join(f"`{dep}`" for dep in unit.dependencies) or "—"
-            blockers = unit_blockers(unit, mappings)
+            blockers = unit_blockers(phase, unit, mappings, catalogue_index)
             blocker_text = (
                 ", ".join(f"`{dep}`" for dep in blockers)
                 if blockers

@@ -60,6 +60,15 @@ does not justify weakening a dependent theorem or starting unrelated work.
   population. After the classifier repair the current derived FC05 population
   is `329/376` with 47 pending; the unchanged denominator is coincidental (three
   false positives removed and three explicit definition layers restored).
+- **Additional scheduler defect:** after the corrected source classification
+  reached `335/376`, every remaining FC05 definition row was displayed as
+  blocked because `unit_blockers` treated theorem-only source prerequisites as
+  Sweep-III gates. Examples include Construction 5.9.9 blocked by Proposition
+  5.9.2, Construction 6.8.3 blocked by the LHS spectral-sequence theorem, and
+  DG-Hochschild construction 9.9.10 blocked by Goodwillie's theorem. This is
+  incompatible with the repository invariant that Definitions close before
+  theorem work opens: theorem-only prerequisites may motivate or prove a later
+  property of the construction, but cannot be required to state its definition.
 - **Coverage:** the named false positives, the newly restored
   `[definition-only]` rows, and the regenerated FC05 frontier were checked
   directly against the canonical catalogue/mapping records. This is not a
@@ -69,9 +78,11 @@ does not justify weakening a dependent theorem or starting unrelated work.
 - **Repair link:** `scripts/foundational_frontier.py` now classifies the
   source-unit label separately from its descriptive title, honors explicit
   `[definition-only]` mapping evidence for mixed/nonstandard labels, and records
-  the audited result-only `FC05-C05-U049` exception. Keep future exceptions
-  source-grounded and do not infer theorem obligations from definition-sweep
-  progress.
+  the audited result-only `FC05-C05-U049` exception. For audited FC05 Sweep III,
+  dependency blocking now ignores prerequisites that carry no definitional
+  content while retaining mixed/definition prerequisites as real blockers.
+  Keep future exceptions source-grounded and do not infer theorem obligations
+  from definition-sweep progress.
 
 ### FC03 source manifest points to a missing extracted source file
 
