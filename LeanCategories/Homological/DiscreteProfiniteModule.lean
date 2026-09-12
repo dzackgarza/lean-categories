@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
+public import Mathlib.CategoryTheory.Preadditive.Basic
 public import Mathlib.RepresentationTheory.Rep.Basic
 public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 public import Mathlib.Topology.Algebra.MulAction
@@ -43,5 +44,18 @@ structure DiscreteProfiniteModule (G : ProfiniteGrp.{u}) where
   toRep : Rep.{u} ℤ G
   /-- Every element has open stabilizer. -/
   isDiscrete : IsDiscreteProfiniteModule G toRep
+
+/-- Weibel's category `C_G` of discrete `G`-modules: the full subcategory of `Rep ℤ G` on modules
+satisfying the discrete-module condition.  Because this is a full subcategory, its morphisms are
+exactly the ordinary `G`-linear maps; Mathlib's full-subcategory instance also inherits the
+preadditive structure from `Rep ℤ G`.
+
+The assertion that this is an abelian subcategory is result-level and is deliberately left out of
+the Definitions sweep.
+
+Source: Weibel, §6.11, p. 210 (FC05-C06-U143). -/
+abbrev DiscreteProfiniteModuleCat (G : ProfiniteGrp.{u}) :=
+  CategoryTheory.ObjectProperty.FullSubcategory
+    (fun A : Rep.{u} ℤ G => IsDiscreteProfiniteModule G A)
 
 end LeanCategories.Homological
