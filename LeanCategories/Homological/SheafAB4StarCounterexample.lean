@@ -233,6 +233,12 @@ noncomputable def piExpSheafHom :
       continuousAddSheaf (TopCat.of ShrinkingCStar) (ℕ → Additive ℂˣ) :=
   continuousAddSheafMap (TopCat.of ShrinkingCStar) piComplexExpAddHom
 
+/-- Each coordinate exponential is an epimorphism of sheaves on the shrinking-fibre space. -/
+theorem expSheafHom_epi_shrinking :
+    Epi (expSheafHom (TopCat.of ShrinkingCStar)) :=
+  (TopCat.Sheaf.isLocallySurjective_iff_epi _).1
+    (expSheafHom_isLocallySurjective (TopCat.of ShrinkingCStar))
+
 /-- The coordinatewise exponential is not an epimorphism of sheaves on the shrinking-fibre
 space: its simultaneous winding section has no local lift at the base point. -/
 theorem piExpSheafHom_not_epi : ¬ Epi piExpSheafHom := by
