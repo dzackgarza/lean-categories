@@ -43,7 +43,9 @@ theorem augmentation_single {K : Type v} [Monoid K] (k : K) (r : R) :
     augmentation R K (single k r) = r := by
   simp [augmentation]
 
-/-- The augmentation ideal is the kernel of the coefficient-sum augmentation. -/
+/-- The augmentation ideal is the kernel of the coefficient-sum augmentation.
+At `R = ℤ` this is Weibel, *An Introduction to Homological Algebra*,
+Definition 6.1.5, p. 163 (FC05-C06-U007). -/
 noncomputable def augmentationIdeal (K : Type v) [Monoid K] : Ideal (MonoidAlgebra R K) :=
   RingHom.ker (augmentation R K)
 
@@ -68,5 +70,22 @@ TauCeti proves that these elements span `augmentationIdeal`; that equality and
 the cyclic-principal specialization belong to Sweep IV. -/
 def augmentationGenerators (K : Type v) [Monoid K] : Set (MonoidAlgebra R K) :=
   Set.range fun k : K => single k 1 - 1
+
+end MonoidAlgebra
+
+
+namespace MonoidAlgebra
+
+universe u v
+
+variable (R : Type u) [Ring R]
+
+/-- The norm element `N = ∑_{g ∈ G} g` of the group algebra `R[G]` for a finite group `G`.
+At `R = ℤ` this is Weibel, *An Introduction to Homological Algebra*, Definition 6.1.8,
+p. 163 (FC05-C06-U010).  Centrality and invariance are source result clauses and are not
+part of this definition. -/
+noncomputable def normElement (G : Type v) [Group G] [Fintype G] : MonoidAlgebra R G := by
+  classical
+  exact ∑ g : G, single g 1
 
 end MonoidAlgebra

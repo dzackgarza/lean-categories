@@ -99,3 +99,22 @@ abbrev outerAutomorphismGroupMap : MulAut G →* outerAutomorphismGroup G :=
   QuotientGroup.mk' (MulAut.conj : G →* MulAut G).range
 
 end LeanCategories.Algebra
+
+
+namespace SemidirectProduct
+
+universe u v
+
+variable {N : Type u} {G : Type v} [Group N] [Group G]
+
+/-- An automorphism of `N ⋊[φ] G` is stabilizing when it fixes the normal factor `N`
+pointwise and induces the identity on the quotient `G`.  The second clause is expressed through
+the canonical quotient map `rightHom : N ⋊[φ] G → G`.
+
+Source: Weibel, *An Introduction to Homological Algebra*, Definition 6.4.9, p. 176
+(FC05-C06-U046). -/
+def IsStabilizingAutomorphism (φ : G →* MulAut N) (α : MulAut (N ⋊[φ] G)) : Prop :=
+  (∀ n : N, α (inl (φ := φ) n) = inl (φ := φ) n) ∧
+    ∀ x : N ⋊[φ] G, rightHom (φ := φ) (α x) = rightHom (φ := φ) x
+
+end SemidirectProduct
