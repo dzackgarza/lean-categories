@@ -6,6 +6,7 @@ module
 
 public import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
 public import Mathlib.CategoryTheory.Functor.Derived.RightDerived
+public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.CategoryTheory.Triangulated.Functor
 
 /-!
@@ -69,5 +70,25 @@ structure TotalLeftDerivedFunctor
   counit : L ⋙ derived ⟶ F
   /-- The dual universal property of the left derived functor. -/
   [isDerived : derived.IsLeftDerivedFunctor counit W]
+
+/-- Restrict a total right derived functor to a chosen full subcategory of its domain.
+
+This is the construction underlying Weibel's domain decorations such as `RᵇF`, `R⁺F`, and
+`R_BF`.  Uniqueness and the induced comparison transformations are theorem-layer consequences
+of the universal property.
+
+Source: Weibel, §10.5, pp. 390--393 (FC05-C10-U056). -/
+def TotalRightDerivedFunctor.restrictTo
+    {F : C ⥤ H} {L : C ⥤ D} {W : MorphismProperty C}
+    [L.IsLocalization W] (RF : TotalRightDerivedFunctor F L W)
+    (P : ObjectProperty D) : P.FullSubcategory ⥤ H :=
+  ObjectProperty.ι P ⋙ RF.derived
+
+/-- The corresponding domain-restriction convention for a total left derived functor. -/
+def TotalLeftDerivedFunctor.restrictTo
+    {F : C ⥤ H} {L : C ⥤ D} {W : MorphismProperty C}
+    [L.IsLocalization W] (LF : TotalLeftDerivedFunctor F L W)
+    (P : ObjectProperty D) : P.FullSubcategory ⥤ H :=
+  ObjectProperty.ι P ⋙ LF.derived
 
 end LeanCategories.Homological
