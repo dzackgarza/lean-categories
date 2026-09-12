@@ -72,6 +72,11 @@ class Mapping:
         return any(marker in verdict for marker in POSITIVE_LEGACY_VERDICT_MARKERS)
 
     @property
+    def definition_only(self) -> bool:
+        """Whether this direct owner discharges only a mixed unit's definition layer."""
+        return "[definition-only]" in self.row.lower()
+
+    @property
     def action(self) -> str:
         if self.delivered:
             return "reuse"
@@ -281,6 +286,8 @@ def unit_delivered(phase: str, unit: Unit, mappings: dict[str, Mapping]) -> bool
     mapping = mappings.get(unit.unit_id)
     if phase == "Mapping":
         return mapping is not None
+    if phase == "Theorems" and mapping is not None and mapping.definition_only:
+        return False
     return mapping is not None and mapping.delivered
 
 
@@ -296,10 +303,12 @@ def phase_blocker(phase: str, status: SourceStatus, statuses: list[SourceStatus]
     return "none"
 
 
-def mapping_label(mapping: Mapping | None) -> str:
+def mapping_label(mapping: Mapping | None, phase: str) -> str:
     if mapping is None:
         return "missing mapping record"
     route = mapping.route or "legacy-direct"
+    if phase == "Theorems" and mapping.definition_only:
+        return f"{route}; theorem clause pending"
     return f"{route}; {mapping.action}"
 
 
@@ -462,7 +471,7 @@ def render(reference_dir: Path, limit: int) -> str:
             kind = unit.kind.replace("|", "\\|")
             lines.append(
                 f"| `{unit.unit_id}` | {kind} | {prerequisites} | {blocker_text} | "
-                f"{mapping_label(mappings.get(unit.unit_id))} |"
+                f"{mapping_label(mappings.get(unit.unit_id), phase)} |"
             )
         lines.append("")
 
