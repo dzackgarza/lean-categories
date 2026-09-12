@@ -73,6 +73,28 @@ p. 132. -/
 abbrev IsHausdorff (F : ChainComplexFiltration A c K) : Prop :=
   IncreasingFiltration.IsHausdorff F
 
+/-- The inverse-limit diagram `p ↦ C/FₚC` defining the completion of a filtered chain complex.
+Source: Weibel, *An Introduction to Homological Algebra*, §5.4, p. 132. -/
+abbrev completionDiagram (F : ChainComplexFiltration A c K) :=
+  IncreasingFiltration.quotientFunctor F
+
+/-- The completion `Ĉ = limₚ C/FₚC` of a filtered chain complex, when the inverse limit is chosen.
+Source: Weibel, *An Introduction to Homological Algebra*, §5.4, p. 132. -/
+noncomputable abbrev completion (F : ChainComplexFiltration A c K)
+    [HasLimit F.completionDiagram] : HomologicalComplex A c :=
+  limit F.completionDiagram
+
+/-- The canonical map `C → Ĉ = limₚ C/FₚC` from a filtered complex to its completion.
+Source: Weibel, *An Introduction to Homological Algebra*, §5.4, p. 132. -/
+noncomputable def toCompletion (F : ChainComplexFiltration A c K)
+    [HasLimit F.completionDiagram] : K ⟶ F.completion :=
+  limit.lift _ (IncreasingFiltration.completionCone F)
+
+/-- A complete filtration: the canonical cone `C → C/FₚC` is a limit cone, i.e.
+`C ≅ limₚ C/FₚC`.  Source: Weibel, *An Introduction to Homological Algebra*, §5.4, p. 132. -/
+def IsComplete (F : ChainComplexFiltration A c K) : Prop :=
+  Nonempty (IsLimit (IncreasingFiltration.completionCone F))
+
 end ChainComplexFiltration
 
 end LeanCategories.Homological
