@@ -34,6 +34,45 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Workflow papercuts
 
+### Foundational frontier kind markers confuse definitional and result content
+
+- **Need:** Sweep-III scheduling must classify the mathematical content of each
+  source unit, including mixed units, rather than treating an arbitrary marker
+  word anywhere in the catalogue title as phase metadata.
+- **Evidence:** `scripts/foundational_frontier.py` formerly implemented
+  `is_definition` as a substring search over the complete `Kind / source unit`
+  cell. This put `FC05-C04-U084` (Theorem 4.6.8, whose title mentions the
+  derived and Koszul *constructions*) and `FC05-C05-U072` (Theorem 5.9.4,
+  comparing two *constructions*) into Sweep III. It also put
+  `FC05-C05-U049` there merely because Weibel labels the Künneth-collapse
+  argument “Construction 5.6.5”, although the unit introduces no new object,
+  map, predicate, or notation: it proves flat-dimension/collapse assertions and
+  yields the Künneth short exact sequence. In the other direction, the marker
+  search omitted source-audited definition layers whose leading labels are
+  nonstandard, including `FC05-C04-U071` (DG-algebras), `FC05-C09-U083`
+  (cyclic operator on the tuple model of `BG`), and `FC05-C09-U090` (cyclic
+  coinvariant quotient complex); their mapping rows explicitly carry
+  `[definition-only]`.
+- **Gap and impact:** false positives ask the definition sweep to prove source
+  results before the definitional layer closes, while false negatives can make
+  that layer appear closed with named constructions still absent. The former
+  FC05 scalar `326/376` with 50 pending was therefore not a sound scheduling
+  population. After the classifier repair the current derived FC05 population
+  is `329/376` with 47 pending; the unchanged denominator is coincidental (three
+  false positives removed and three explicit definition layers restored).
+- **Coverage:** the named false positives, the newly restored
+  `[definition-only]` rows, and the regenerated FC05 frontier were checked
+  directly against the canonical catalogue/mapping records. This is not a
+  claim that every ambiguous “Construction” label in every corpus source has
+  been semantically re-audited; a newly encountered ambiguous construction
+  still requires source inspection rather than another broad substring rule.
+- **Repair link:** `scripts/foundational_frontier.py` now classifies the
+  source-unit label separately from its descriptive title, honors explicit
+  `[definition-only]` mapping evidence for mixed/nonstandard labels, and records
+  the audited result-only `FC05-C05-U049` exception. Keep future exceptions
+  source-grounded and do not infer theorem obligations from definition-sweep
+  progress.
+
 ### FC03 source manifest points to a missing extracted source file
 
 - **Need:** Sweep III requires reading each source statement before accepting or repairing its Lean realization.

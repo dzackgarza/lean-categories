@@ -22,6 +22,28 @@ DIRECT_ROUTES = {"mathlib", "project-existing"}
 NEGATIVE_VERDICT_MARKERS = ("unmatched", "partial", "wrong interface", "missing")
 POSITIVE_LEGACY_VERDICT_MARKERS = ("exact", "broad")
 DEFINITION_MARKERS = ("definition", "construction", "convention", "notation", "terminology")
+# Labels that unambiguously announce result content.  If one of these is the
+# source-unit label, a word such as "constructions" appearing only in the title
+# must not promote the row into Sweep III.
+STRICT_RESULT_LABEL_MARKERS = (
+    "lemma",
+    "proposition",
+    "theorem",
+    "corollary",
+    "comparison",
+    "application",
+    "result",
+    "criterion",
+    "porism",
+    "vista",
+    "addendum",
+    "calculation",
+)
+# Sources for which the richer mixed-unit phase classification below has been
+# checked against the canonical source/mapping records.  Do not silently apply
+# an FC05 audit result to another corpus source: extend this set only together
+# with that source's own phase-classification audit.
+CONTENT_CLASSIFIED_DEFINITION_SOURCES = frozenset({"FC05"})
 THEOREM_MARKERS = (
     "lemma",
     "proposition",
@@ -37,6 +59,19 @@ THEOREM_MARKERS = (
     "vista",
     "addendum",
     "calculation",
+)
+
+# Sweep-I occasionally preserves Weibel's label "Construction" for a unit whose
+# mathematical content is only an argument/result, not a construction of new
+# data.  These exceptions are source-audited rather than inferred from the word
+# "Construction" alone.  Keep this set small: new ambiguities should be resolved
+# against the source before being added here.
+RESULT_ONLY_CONSTRUCTION_UNITS = frozenset(
+    {
+        # Construction 5.6.5 is the collapse argument deriving the Künneth short
+        # exact sequence; it introduces no new object, map, predicate, or notation.
+        "FC05-C05-U049",
+    }
 )
 
 
@@ -253,8 +288,38 @@ def parse_status(path: Path) -> list[SourceStatus]:
     return statuses
 
 
-def is_definition(unit: Unit) -> bool:
+def kind_label(kind: str) -> str:
+    """Return the source-unit label, excluding the descriptive title.
+
+    Catalogue rows conventionally separate the source label from the title by
+    an em dash.  Phase classification must inspect that label, not arbitrary
+    words in the title: e.g. a theorem titled "Derived and Koszul constructions
+    ..." is still a theorem.
+    """
+    return kind.partition("—")[0].strip().lower()
+
+
+def is_definition(unit: Unit, mapping: Mapping | None = None) -> bool:
+    """Whether the source unit carries Sweep-III definitional content."""
+    source_id = unit.unit_id.split("-", 1)[0]
     kind = unit.kind.lower()
+    if source_id not in CONTENT_CLASSIFIED_DEFINITION_SOURCES:
+        return any(marker in kind for marker in DEFINITION_MARKERS)
+    if mapping is not None and mapping.definition_only:
+        return True
+    if unit.unit_id in RESULT_ONLY_CONSTRUCTION_UNITS:
+        return False
+    label = kind_label(unit.kind)
+    # An explicit definitional source label wins, including mixed labels such
+    # as `Construction/result`; the theorem clause is classified separately.
+    if any(marker in label for marker in DEFINITION_MARKERS):
+        return True
+    # Do not let descriptive theorem titles such as "Derived and Koszul
+    # constructions ..." masquerade as definitions.
+    if any(marker in label for marker in STRICT_RESULT_LABEL_MARKERS):
+        return False
+    # Examples and remarks sometimes introduce genuine notation/constructions
+    # without using a Definition heading (e.g. FC05-C01-U029 and C02-U035).
     return any(marker in kind for marker in DEFINITION_MARKERS)
 
 
@@ -262,7 +327,9 @@ def is_theorem(unit: Unit) -> bool:
     kind = unit.kind.lower()
     # Mixed rows can contribute both a Sweep-III definition and a Sweep-IV
     # theorem clause; the definition sweep explicitly leaves theorem clauses to IV.
-    return any(marker in kind for marker in THEOREM_MARKERS) or not is_definition(unit)
+    return any(marker in kind for marker in THEOREM_MARKERS) or not any(
+        marker in kind for marker in DEFINITION_MARKERS
+    )
 
 
 def source_file(reference_dir: Path, prefix: str, source_id: str) -> Path:
@@ -272,9 +339,11 @@ def source_file(reference_dir: Path, prefix: str, source_id: str) -> Path:
     return matches[0]
 
 
-def phase_units(phase: str, units: list[Unit]) -> list[Unit]:
+def phase_units(
+    phase: str, units: list[Unit], mappings: dict[str, Mapping]
+) -> list[Unit]:
     if phase == "Definitions":
-        return [unit for unit in units if is_definition(unit)]
+        return [unit for unit in units if is_definition(unit, mappings.get(unit.unit_id))]
     if phase == "Theorems":
         return [unit for unit in units if is_theorem(unit)]
     if phase == "Mapping":
@@ -422,7 +491,7 @@ def render(reference_dir: Path, limit: int) -> str:
         )
 
     for status, phase in open_cells:
-        units = phase_units(phase, catalogues[status.source_id])
+        units = phase_units(phase, catalogues[status.source_id], mappings)
         delivered = [unit for unit in units if unit_delivered(phase, unit, mappings)]
         pending = [unit for unit in units if not unit_delivered(phase, unit, mappings)]
         route_counts = Counter(
