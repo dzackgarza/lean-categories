@@ -7,7 +7,7 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Lie.Abelian
 public import Mathlib.Algebra.Lie.Nilpotent
-public import Mathlib.CategoryTheory.Preadditive.Basic
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # The category of modules over a Lie algebra
@@ -138,6 +138,74 @@ abbrev invariants (M : LieModuleCat.{u, v, w} R L) : ModuleCat.{w} R :=
 Source: Weibel, §7.2, pp. 219--222 (FC05-C07-U016). -/
 abbrev coinvariants (M : LieModuleCat.{u, v, w} R L) : ModuleCat.{w} R :=
   ModuleCat.of R (M ⧸ LieModule.lowerCentralSeries R L M 1)
+
+/-- Lie invariants as a functor from `L`-modules to `R`-modules.
+
+On a Lie-module morphism this is Mathlib's functorial map on maximal trivial submodules.
+
+Source: Weibel, §7.2, pp. 219--222 (FC05-C07-U016--U017). -/
+noncomputable def invariantsFunctor :
+    LieModuleCat.{u, v, w} R L ⥤ ModuleCat.{w} R where
+  obj M := invariants R L M
+  map f := ModuleCat.ofHom (LieModule.maxTrivHom f).toLinearMap
+  map_id M := by
+    apply ModuleCat.hom_ext
+    ext m
+    rfl
+  map_comp f g := by
+    apply ModuleCat.hom_ext
+    ext m
+    rfl
+
+instance invariantsFunctor_additive : Functor.Additive (invariantsFunctor R L) where
+  map_add := by
+    intro M N f g
+    apply ModuleCat.hom_ext
+    ext m
+    rfl
+
+/-- The map on Lie coinvariants induced by a Lie-module morphism. -/
+noncomputable def coinvariantsMap {M N : LieModuleCat.{u, v, w} R L} (f : M ⟶ N) :
+    coinvariants R L M ⟶ coinvariants R L N :=
+  ModuleCat.ofHom <|
+    Submodule.mapQ
+      (LieModule.lowerCentralSeries R L M 1 : Submodule R M)
+      (LieModule.lowerCentralSeries R L N 1 : Submodule R N)
+      f.toLinearMap <| by
+        rw [← Submodule.map_le_iff_le_comap, ← LieSubmodule.toSubmodule_map]
+        exact LieModule.map_lowerCentralSeries_le (R := R) (L := L) (M := M) 1 f
+
+/-- Lie coinvariants as a functor from `L`-modules to `R`-modules.
+
+The denominator is the first lower-central-series term, and functoriality follows from Mathlib's
+`map_lowerCentralSeries_le`.
+
+Source: Weibel, §7.2, pp. 219--222 (FC05-C07-U016--U017). -/
+noncomputable def coinvariantsFunctor :
+    LieModuleCat.{u, v, w} R L ⥤ ModuleCat.{w} R where
+  obj M := coinvariants R L M
+  map f := coinvariantsMap R L f
+  map_id M := by
+    apply ModuleCat.hom_ext
+    apply LinearMap.ext
+    intro x
+    induction x using Submodule.Quotient.induction_on with
+    | _ x => rfl
+  map_comp f g := by
+    apply ModuleCat.hom_ext
+    apply LinearMap.ext
+    intro x
+    induction x using Submodule.Quotient.induction_on with
+    | _ x => rfl
+
+instance coinvariantsFunctor_additive : Functor.Additive (coinvariantsFunctor R L) where
+  map_add := by
+    intro M N f g
+    apply ModuleCat.hom_ext
+    apply LinearMap.ext
+    intro x
+    induction x using Submodule.Quotient.induction_on with
+    | _ x => rfl
 
 end LieModuleCat
 
