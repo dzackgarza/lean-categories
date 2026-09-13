@@ -71,3 +71,9 @@ Every canonical unit receives exactly one Sweep-II route: `mathlib`, `project-ex
 [Provenance contract for FC13 C11](provenance-contract-for-fc13-c11)
 
 [Chapter 11. Catenarity, formal fibres and normalization FC13](chapter-11-catenarity-formal-fibres-and-normalization-fc13)
+
+## Appendix A — Multilinear algebra and limits
+
+| Unit | Match | Route | Lean owner | Provenance | Notes |
+| --- | --- | --- | --- | --- | --- |
+| `FC13-CA-U001` | bilinear maps are exactly curried linear maps | `mathlib` | `Mathlib/LinearAlgebra/BilinearMap.lean::LinearMap.BilinMap`, `LinearMap.mk₂` | P=db584cd6d46c92f209a44c0f1c829460d327499d | `LinearMap.BilinMap A M L` is the native type `M →ₗ[A] M →ₗ[A] L`; more generally the source's bilinear maps `M × N → L` are represented by `M →ₗ[A] N →ₗ[A] L`. `LinearMap.mk₂` constructs one from a function linear in each argument, and the linear-map instances give the stated `A`-module of bilinear maps. |
