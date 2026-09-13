@@ -715,6 +715,38 @@ and preserve the original source obligation. Retain useful reference implementat
 with exact provenance. Do not turn an inconvenient port or a partial match into a
 greenfield task without the required reuse search.
 
+#### A bundled row is matched clause by clause, and `unmatched` is the last resort
+
+Authorship is cleared only for a unit whose mapping is `unmatched`, so `unmatched` is the most
+consequential label in this repository and it is the one most easily reached by accident. A row
+is `unmatched` when *every known source has been exhausted* — pinned Mathlib, current upstream,
+open PRs, Reservoir, every discoverable Lean repository, and the formalization atlas — not when
+the first search returned nothing convenient.
+
+**"No single declaration realizes the whole bundled row" is not a ground for `unmatched`.** A
+source row that bundles several clauses is matched by the conjunction of the declarations that
+supply those clauses, plus the comparison that assembles them; that comparison *is* the work
+the row buys, and it is a fraction of the cost of a fresh development. The mapping sweep of
+2026-09-06 applied the opposite rule under the name "strict bundle semantics", and the result is
+in the reference tables: `chapter-5-submanifolds-fc08.md` carries it on 70 of 70 rows and
+`chapter-4-homotopy-theory-fc07.md` on 183 of 188, against a Mathlib with `Geometry/Manifold`
+and `AlgebraicTopology`. Spot-checked in `chapter-1-varieties-fc06.md`, `FC06-C01-U013` and
+`FC06-C01-U015` are the Nullstellensatz correspondence, which Mathlib holds in
+`RingTheory/Nullstellensatz.lean` as `vanishingIdeal_zeroLocus_eq_radical` and
+`zeroLocus_vanishingIdeal_galoisConnection` — in the classical `Set (σ → K)` form, so the row's
+own escape clause about scheme-only analogues does not apply either.
+
+Two further grounds that are also not `unmatched`. A library declaration stated in greater
+generality than the source covers the source; record the specialization as the comparison. And a
+bundled type that already carries a property the source states separately — `HomogeneousIdeal`
+against an `Ideal` plus a homogeneity proof — is a *better* match than an unbundled
+reconstruction, not a worse one. Reaching for the unbundled form and re-deriving the property is
+reinvention wearing an import.
+
+When a mapping row is wrong, repair the row before authoring against it. A stale `unmatched`
+silently converts this program from formalizing a corpus against the literature into
+transcribing a textbook into Lean, and nothing downstream can tell the two apart.
+
 #### Establish the definition before dependent use
 
 Before writing a new definition, derive its data, laws, hypotheses, and quantified
