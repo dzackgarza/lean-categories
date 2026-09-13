@@ -74,13 +74,9 @@ def basedPathLoopHomeomorph (X : Type u) [TopologicalSpace X] (x₀ : X) :
     apply continuous_induced_rng.mpr
     exact continuous_subtype_val.comp continuous_subtype_val
   continuous_invFun := by
-    apply Continuous.subtype_mk
-    · apply Continuous.subtype_mk
-      · exact continuous_induced_dom
-      · intro γ
-        exact γ.source
-    · intro γ
-      exact γ.target
+    apply continuous_induced_rng.mpr
+    apply continuous_induced_rng.mpr
+    exact continuous_induced_dom
 
 /-- The pathspace replacement of `f : A → B`: pairs `(a,γ)` where `γ` begins at `f(a)`.
 
