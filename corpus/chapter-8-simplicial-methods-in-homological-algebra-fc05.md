@@ -129,5 +129,5 @@ project_id: github.com__dzackgarza__lean-categories
 
 - Canonical rows: **106/106** (`FC05-C08-U001`–`FC05-C08-U106`).
 - Routes: **24 `mathlib`**, **0 `project-existing`**, **0 `package-import`**, **0 `reference-port`**, **82 `unmatched`**.
-- Strict bundle semantics are applied row-wise. In particular, generator/relations infrastructure is not promoted to U003–U005 without the missing uniqueness/equivalence theorem; simplicial-set Kan infrastructure is not promoted to the absent theorem that every simplicial group is Kan; and normalized/Dold–Kan infrastructure is not promoted to Eilenberg–Zilber, cotriple, relative-Tor/Ext, or André–Quillen rows.
+- Rows are mapped clause by clause. Generator/relations infrastructure therefore supplies only the clauses it actually proves in U003–U005; simplicial-set Kan infrastructure does not supply the absent theorem that every simplicial group is Kan; and normalized/Dold–Kan infrastructure does not by itself supply Eilenberg–Zilber, cotriple, relative-Tor/Ext, or André–Quillen results.
 - The U010/U014/U019/U050 definitional assemblies were checked by a local Lean audit witness against the exact pinned Mathlib revision; the witness is audit evidence, not project source.
