@@ -79,8 +79,13 @@ does not justify weakening a dependent theorem or starting unrelated work.
   as constructions by Sweep I: `FC05-C06-U100` (the LHS five-term exact
   sequences), `FC05-C07-U030` (Tor isomorphisms/exact sequence obtained from
   the augmentation ideal sequence), and `FC05-C07-U042` (the Lie
-  Hochschild--Serre five-term exact sequences). They are now excluded from the
-  FC05 definition population rather than counted as missing definitions.
+  Hochschild--Serre five-term exact sequences). The same defect later surfaced
+  at `FC05-C09-U064`: its mixed label says `Definition/comparison`, but the row
+  is only the theorem-level preview that the Hochschild complex decomposes into
+  Hodge pieces and compares the first piece with André--Quillen theory; the
+  actual source definition is Definition 9.4.15 (`FC05-C09-U072`). These rows
+  are excluded from the FC05 definition population rather than counted as
+  missing definitions.
 - **Repair link:** `scripts/foundational_frontier.py` now classifies the
   source-unit label separately from its descriptive title, honors explicit
   `[definition-only]` mapping evidence for mixed/nonstandard labels, and records

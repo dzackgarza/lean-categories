@@ -66,7 +66,7 @@ THEOREM_MARKERS = (
 # data.  These exceptions are source-audited rather than inferred from the word
 # "Construction" alone.  Keep this set small: new ambiguities should be resolved
 # against the source before being added here.
-RESULT_ONLY_CONSTRUCTION_UNITS = frozenset(
+RESULT_ONLY_DEFINITION_UNITS = frozenset(
     {
         # Construction 5.6.5 is the collapse argument deriving the Künneth short
         # exact sequence; it introduces no new object, map, predicate, or notation.
@@ -80,6 +80,9 @@ RESULT_ONLY_CONSTRUCTION_UNITS = frozenset(
         # 7.5.3 likewise consists of the low-degree exact sequences extracted
         # from the Hochschild--Serre spectral sequences.
         "FC05-C07-U042",
+        # The §9.4 Hodge/λ row is a theorem-level preview of the decomposition;
+        # the actual Hodge-subcomplex definition is Definition 9.4.15 (C09-U072).
+        "FC05-C09-U064",
     }
 )
 
@@ -316,7 +319,7 @@ def is_definition(unit: Unit, mapping: Mapping | None = None) -> bool:
         return any(marker in kind for marker in DEFINITION_MARKERS)
     if mapping is not None and mapping.definition_only:
         return True
-    if unit.unit_id in RESULT_ONLY_CONSTRUCTION_UNITS:
+    if unit.unit_id in RESULT_ONLY_DEFINITION_UNITS:
         return False
     label = kind_label(unit.kind)
     # An explicit definitional source label wins, including mixed labels such
