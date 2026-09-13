@@ -83,6 +83,10 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # The §9.4 Hodge/λ row is a theorem-level preview of the decomposition;
         # the actual Hodge-subcomplex definition is Definition 9.4.15 (C09-U072).
         "FC05-C09-U064",
+        # The §9.8 convention merely reuses the already-defined mixed-complex
+        # operator B to name the d¹ map of Connes' spectral sequence.  Existence
+        # of that induced homology differential is result content, not new data.
+        "FC05-C09-U122",
     }
 )
 

@@ -83,7 +83,11 @@ does not justify weakening a dependent theorem or starting unrelated work.
   at `FC05-C09-U064`: its mixed label says `Definition/comparison`, but the row
   is only the theorem-level preview that the Hochschild complex decomposes into
   Hodge pieces and compares the first piece with André--Quillen theory; the
-  actual source definition is Definition 9.4.15 (`FC05-C09-U072`). These rows
+  actual source definition is Definition 9.4.15 (`FC05-C09-U072`). The same
+  issue occurs at `FC05-C09-U122`: the catalogue calls it a convention, but its
+  only mathematical assertion is that the already-defined mixed-complex
+  operator `B` induces the `d¹` map in Connes' spectral sequence, which is
+  theorem-layer content. These rows
   are excluded from the FC05 definition population rather than counted as
   missing definitions.
 - **Repair link:** `scripts/foundational_frontier.py` now classifies the
