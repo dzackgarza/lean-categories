@@ -99,35 +99,35 @@ Next 5 open units in source traversal order:
 
 ## FC06 — Definitions
 
-Delivered/directly reusable by mapping: **104/252**; pending realization: **148** (reference-port=3, unmatched=145).
-Delivered/direct-reuse spans: `FC06-C01-U001`–`FC06-C01-U003`, `FC06-C01-U007`, `FC06-C01-U011`–`FC06-C01-U012`, `FC06-C01-U021`, `FC06-C01-U023`, `FC06-C01-U027`, `FC06-C01-U029`, `FC06-C01-U038`–`FC06-C01-U041`, `FC06-C01-U045`, `FC06-C01-U055`–`FC06-C01-U059`, `FC06-C01-U063`, `FC06-C01-U071`–`FC06-C01-U072`, `FC06-C01-U079`, `FC06-C01-U092`, `FC06-C01-U094`, `FC06-C01-U096`, `FC06-C01-U099`, `FC06-C01-U102`, `FC06-C01-U108`–`FC06-C01-U111`, `FC06-C01-U113`, `FC06-C01-U115`, `FC06-C01-U133`, `FC06-C01-U137`–`FC06-C01-U138`, `FC06-C01-U143`, `FC06-C02-U002`, `FC06-C02-U004`, `FC06-C02-U009`, `FC06-C02-U012`, `FC06-C02-U014`–`FC06-C02-U016`, `FC06-C02-U019`–`FC06-C02-U021`, `FC06-C02-U023`–`FC06-C02-U026`, `FC06-C02-U028`, `FC06-C02-U031`, `FC06-C02-U038`, `FC06-C02-U040`–`FC06-C02-U042`, `FC06-C02-U045`, `FC06-C02-U047`–`FC06-C02-U049`, `FC06-C02-U052`, `FC06-C02-U055`–`FC06-C02-U056`, `FC06-C02-U059`–`FC06-C02-U060`, `FC06-C02-U068`, `FC06-C02-U071`, `FC06-C02-U074`, `FC06-C02-U078`, `FC06-C02-U087`, `FC06-C02-U095`, `FC06-C02-U099`–`FC06-C02-U100`, `FC06-C02-U105`–`FC06-C02-U106`, `FC06-C02-U108`, `FC06-C02-U111`, `FC06-C02-U125`, `FC06-C02-U142`, `FC06-C02-U253`–`FC06-C02-U255`, `FC06-C02-U297`, `FC06-C02-U299`–`FC06-C02-U300`, `FC06-C02-U304`, `FC06-C02-U307`–`FC06-C02-U308`, `FC06-C03-U001`, `FC06-C03-U010`, `FC06-C03-U012`–`FC06-C03-U013`, `FC06-C03-U026`–`FC06-C03-U027`, `FC06-C03-U049`, `FC06-C03-U078`, `FC06-C03-U119`, `FC06-C03-U195`, `FC06-C04-U086`, `FC06-C04-U094`, `FC06-C05-U116`.
+Delivered/directly reusable by mapping: **103/252**; pending realization: **149** (mathlib=14, reference-port=3, unmatched=132).
+Delivered/direct-reuse spans: `FC06-C01-U001`–`FC06-C01-U003`, `FC06-C01-U005`, `FC06-C01-U007`, `FC06-C01-U011`–`FC06-C01-U012`, `FC06-C01-U021`, `FC06-C01-U023`, `FC06-C01-U027`, `FC06-C01-U029`, `FC06-C01-U038`–`FC06-C01-U039`, `FC06-C01-U043`, `FC06-C01-U045`, `FC06-C01-U054`–`FC06-C01-U056`, `FC06-C01-U058`–`FC06-C01-U059`, `FC06-C01-U063`, `FC06-C01-U071`–`FC06-C01-U072`, `FC06-C01-U079`, `FC06-C01-U092`, `FC06-C01-U094`, `FC06-C01-U096`, `FC06-C01-U099`, `FC06-C01-U102`, `FC06-C01-U108`–`FC06-C01-U111`, `FC06-C01-U113`, `FC06-C01-U115`, `FC06-C01-U137`–`FC06-C01-U138`, `FC06-C01-U143`, `FC06-C02-U002`, `FC06-C02-U004`, `FC06-C02-U009`, `FC06-C02-U012`, `FC06-C02-U014`–`FC06-C02-U016`, `FC06-C02-U019`–`FC06-C02-U021`, `FC06-C02-U023`–`FC06-C02-U026`, `FC06-C02-U028`, `FC06-C02-U031`, `FC06-C02-U038`, `FC06-C02-U040`–`FC06-C02-U042`, `FC06-C02-U045`, `FC06-C02-U047`–`FC06-C02-U049`, `FC06-C02-U052`, `FC06-C02-U055`–`FC06-C02-U056`, `FC06-C02-U059`–`FC06-C02-U060`, `FC06-C02-U068`, `FC06-C02-U071`, `FC06-C02-U074`, `FC06-C02-U078`, `FC06-C02-U087`, `FC06-C02-U095`, `FC06-C02-U099`–`FC06-C02-U100`, `FC06-C02-U105`–`FC06-C02-U106`, `FC06-C02-U108`, `FC06-C02-U111`, `FC06-C02-U125`, `FC06-C02-U142`, `FC06-C02-U253`–`FC06-C02-U255`, `FC06-C02-U297`, `FC06-C02-U299`–`FC06-C02-U300`, `FC06-C02-U304`, `FC06-C02-U307`–`FC06-C02-U308`, `FC06-C03-U001`, `FC06-C03-U010`, `FC06-C03-U012`–`FC06-C03-U013`, `FC06-C03-U026`–`FC06-C03-U027`, `FC06-C03-U049`, `FC06-C03-U078`, `FC06-C03-U119`, `FC06-C03-U195`, `FC06-C04-U086`, `FC06-C04-U094`, `FC06-C05-U116`.
 Phase blocker: none
 
 Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC06-C01-U005` | Definition — Zariski topology on affine space | `FC06-C01-U003`, `FC06-C01-U004` | ready by recorded prerequisites | unmatched; author |
-| `FC06-C01-U049` | Definition — regular functions on quasi-affine varieties | `FC06-C01-U011` | ready by recorded prerequisites | unmatched; author |
-| `FC06-C01-U075` | Construction — pullback on function fields from a dominant rational map | `FC06-C01-U057`, `FC06-C01-U071` | ready by recorded prerequisites | unmatched; author |
-| `FC06-C01-U093` | Definition/notation — Jacobian matrix at a point | `FC06-C01-U092` | ready by recorded prerequisites | unmatched; author |
-| `FC06-C01-U135` | Definitions — graded module, twist, and annihilator | `FC06-C01-U039` | ready by recorded prerequisites | unmatched; author |
+| `FC06-C01-U040` | Construction — projective zero sets | `FC06-C01-U038`, `FC06-C01-U039` | ready by recorded prerequisites | mathlib; repair mapping/interface |
+| `FC06-C01-U046` | Construction — standard affine charts of projective space | `FC06-C01-U038`, `FC06-C01-U043` | ready by recorded prerequisites | mathlib; repair mapping/interface |
+| `FC06-C01-U049` | Definition — regular functions on quasi-affine varieties | `FC06-C01-U011` | ready by recorded prerequisites | mathlib; repair mapping/interface |
+| `FC06-C01-U057` | Definition — function field and rational functions | `FC06-C01-U055` | ready by recorded prerequisites | mathlib; repair mapping/interface |
+| `FC06-C01-U093` | Definition/notation — Jacobian matrix at a point | `FC06-C01-U092` | ready by recorded prerequisites | mathlib; repair mapping/interface |
 
 ## FC06 — Theorems
 
-Delivered/directly reusable by mapping: **72/729**; pending realization: **657** (reference-port=1, unmatched=656).
-Delivered/direct-reuse spans: `FC06-C01-U004`, `FC06-C01-U008`–`FC06-C01-U010`, `FC06-C01-U013`–`FC06-C01-U015`, `FC06-C01-U019`, `FC06-C01-U024`–`FC06-C01-U026`, `FC06-C01-U028`, `FC06-C01-U030`, `FC06-C01-U032`, `FC06-C01-U034`–`FC06-C01-U035`, `FC06-C01-U052`, `FC06-C01-U058`, `FC06-C01-U060`, `FC06-C01-U065`, `FC06-C01-U067`–`FC06-C01-U068`, `FC06-C01-U074`, `FC06-C01-U081`, `FC06-C01-U097`, `FC06-C01-U112`, `FC06-C01-U114`, `FC06-C01-U116`, `FC06-C02-U002`, `FC06-C02-U010`, `FC06-C02-U012`, `FC06-C02-U018`, `FC06-C02-U022`, `FC06-C02-U027`, `FC06-C02-U029`, `FC06-C02-U036`, `FC06-C02-U039`, `FC06-C02-U043`, `FC06-C02-U050`–`FC06-C02-U051`, `FC06-C02-U054`, `FC06-C02-U061`, `FC06-C02-U066`, `FC06-C02-U070`, `FC06-C02-U081`, `FC06-C02-U083`, `FC06-C02-U086`, `FC06-C02-U089`–`FC06-C02-U090`, `FC06-C02-U098`, `FC06-C02-U107`, `FC06-C02-U109`, `FC06-C02-U127`, `FC06-C02-U255`–`FC06-C02-U260`, `FC06-C02-U302`, `FC06-C02-U305`, `FC06-C03-U002`–`FC06-C03-U005`, `FC06-C03-U023`, `FC06-C03-U025`, `FC06-C03-U079`, `FC06-C03-U121`–`FC06-C03-U123`, `FC06-C03-U196`.
+Delivered/directly reusable by mapping: **73/729**; pending realization: **656** (mathlib=37, reference-port=6, unmatched=613).
+Delivered/direct-reuse spans: `FC06-C01-U004`, `FC06-C01-U008`–`FC06-C01-U010`, `FC06-C01-U013`–`FC06-C01-U019`, `FC06-C01-U024`–`FC06-C01-U026`, `FC06-C01-U034`–`FC06-C01-U035`, `FC06-C01-U042`, `FC06-C01-U052`, `FC06-C01-U058`, `FC06-C01-U062`, `FC06-C01-U065`–`FC06-C01-U067`, `FC06-C01-U074`, `FC06-C01-U081`, `FC06-C01-U097`, `FC06-C01-U112`, `FC06-C01-U114`, `FC06-C01-U116`, `FC06-C02-U002`, `FC06-C02-U010`, `FC06-C02-U012`, `FC06-C02-U018`, `FC06-C02-U022`, `FC06-C02-U027`, `FC06-C02-U029`, `FC06-C02-U036`, `FC06-C02-U039`, `FC06-C02-U043`, `FC06-C02-U050`–`FC06-C02-U051`, `FC06-C02-U054`, `FC06-C02-U061`, `FC06-C02-U066`, `FC06-C02-U070`, `FC06-C02-U081`, `FC06-C02-U083`, `FC06-C02-U086`, `FC06-C02-U089`–`FC06-C02-U090`, `FC06-C02-U098`, `FC06-C02-U107`, `FC06-C02-U109`, `FC06-C02-U127`, `FC06-C02-U255`–`FC06-C02-U260`, `FC06-C02-U302`, `FC06-C02-U305`, `FC06-C03-U002`–`FC06-C03-U005`, `FC06-C03-U023`, `FC06-C03-U025`, `FC06-C03-U079`, `FC06-C03-U121`–`FC06-C03-U123`, `FC06-C03-U196`.
 Phase blocker: Sweep III is not complete corpus-wide: FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16.
 
 Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC06-C01-U016` | Example 1.4.1 — affine space is irreducible | `FC06-C01-U015` | ready by recorded prerequisites | unmatched; author |
-| `FC06-C01-U017` | Example 1.4.2 — irreducible plane curves | `FC06-C01-U015` | ready by recorded prerequisites | unmatched; author |
+| `FC06-C01-U006` | Example 1.1.1 — Zariski topology on A^1 | `FC06-C01-U005` | ready by recorded prerequisites | mathlib; repair mapping/interface |
 | `FC06-C01-U020` | Example 1.4.5 — algebraic closure is essential | `FC06-C01-U013`, `FC06-C01-U014` | ready by recorded prerequisites | unmatched; author |
-| `FC06-C01-U022` | Remark 1.4.6 — affine varieties and finitely generated domains | `FC06-C01-U011`, `FC06-C01-U015`, `FC06-C01-U021` | ready by recorded prerequisites | unmatched; author |
-| `FC06-C01-U031` | Theorem 1.8A — dimension theorem for finitely generated domains | `FC06-C01-U029` | ready by recorded prerequisites | unmatched; author |
+| `FC06-C01-U022` | Remark 1.4.6 — affine varieties and finitely generated domains | `FC06-C01-U011`, `FC06-C01-U015`, `FC06-C01-U021` | ready by recorded prerequisites | mathlib; repair mapping/interface |
+| `FC06-C01-U030` | Proposition 1.7 — geometric and ring dimension agree | `FC06-C01-U015`, `FC06-C01-U021`, `FC06-C01-U027`, `FC06-C01-U029` | ready by recorded prerequisites | mathlib; repair mapping/interface |
+| `FC06-C01-U031` | Theorem 1.8A — dimension theorem for finitely generated domains | `FC06-C01-U029` | ready by recorded prerequisites | mathlib; repair mapping/interface |
 
 ## FC07 — Definitions
 
