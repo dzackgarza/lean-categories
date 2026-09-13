@@ -153,7 +153,7 @@ Next 5 open units in source traversal order:
 
 ## FC07 — Theorems
 
-Delivered/directly reusable by mapping: **37/416**; pending realization: **379** (mathlib=1, reference-port=19, unmatched=359).
+Delivered/directly reusable by mapping: **37/416**; pending realization: **379** (mathlib=1, reference-port=21, unmatched=357).
 Delivered/direct-reuse spans: `FC07-C01-U002`–`FC07-C01-U003`, `FC07-C01-U007`, `FC07-C01-U010`–`FC07-C01-U012`, `FC07-C01-U016`, `FC07-C01-U028`–`FC07-C01-U029`, `FC07-C01-U045`, `FC07-C01-U048`–`FC07-C01-U049`, `FC07-C01-U077`, `FC07-C02-U003`, `FC07-C02-U013`–`FC07-C02-U014`, `FC07-C02-U017`–`FC07-C02-U020`, `FC07-C02-U023`, `FC07-C02-U029`, `FC07-C02-U087`, `FC07-C03-U004`, `FC07-C03-U022`, `FC07-C03-U073`–`FC07-C03-U074`, `FC07-C03-U100`, `FC07-C03-U128`, `FC07-C03-U133`, `FC07-C04-U006`, `FC07-C04-U103`, `FC07-C04-U105`, `FC07-CA-U003`, `FC07-CA-U019`–`FC07-CA-U020`, `FC07-CA-U023`.
 Phase blocker: Sweep III is not complete corpus-wide: FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16.
 
