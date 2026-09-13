@@ -14,13 +14,13 @@ project_id: github.com__dzackgarza__lean-categories
 ---
 # FC11 — Peters–Sterk, *Symmetric and Quadratic Forms* mapping
 
-Status: **Sweep II complete.** All 1,114 canonical units in Chapters 1–21 and Appendices A–C have promoted mapping records and provenance contracts.
+Status: **Sweep II complete; FC11 exact-route remap closed 2026-09-13.** All 1,114 canonical units in Chapters 1–21 and Appendices A–C have promoted mapping records and provenance contracts. The `remap-strict-bundle` audit rechecked every current route row clause by clause before FC11 was released to the global blocker.
 
 Canonical catalogue: [[foundational-corpus-units-fc11-peters-sterk|FC11 Peters–Sterk unit catalogue]].
 
-Pinned project baseline: Mathlib `db584cd6d46c92f209a44c0f1c829460d327499d` on Lean 4.33.0; project `12618f8abc2b4852b3da9ab65c3bc547ac4c1f19`. Current upstream Mathlib searched at `71a80585ee495fc24472fd0eaffc89d94e4fd8d6`. Rows use exactly one of `mathlib`, `project-existing`, `package-import`, `reference-port`, `unmatched`, under strict whole-row semantics.
+Pinned mapping baseline remains Mathlib `db584cd6d46c92f209a44c0f1c829460d327499d` on Lean 4.33.0. The 2026-09-13 remap rechecked the live project tree and current upstream Mathlib through `87befc843c2b3a1be12f7fe9ba274d212b544348`, together with the registered source atlas, package/reference repositories, broad Lean-source discovery, and the live `formalization-corpus` index where queries completed. Rows use exactly one of `mathlib`, `project-existing`, `package-import`, `reference-port`, `unmatched`. Bundled source units are matched clause by clause; search failures are never used as negative evidence; every `project-existing` row records its route to mapped/library/reference mathematics.
 
-Whole-source route totals: `mathlib` 17, `project-existing` 60, `package-import` 0, `reference-port` 5, `unmatched` 1,032; total 1,114.
+Whole-source route totals after the exact-route remap: `mathlib` 221, `project-existing` 53, `package-import` 0, `reference-port` 9, `unmatched` 831; total 1,114.
 
 ## Promoted chapter records
 
