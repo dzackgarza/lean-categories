@@ -99,17 +99,17 @@ Next 5 open units in source traversal order:
 
 ## FC06 — Definitions
 
-Delivered/directly reusable by mapping: **85/252**; pending realization: **167** (reference-port=1, unmatched=166).
-Delivered/direct-reuse spans: `FC06-C01-U002`–`FC06-C01-U003`, `FC06-C01-U007`, `FC06-C01-U012`, `FC06-C01-U023`, `FC06-C01-U027`, `FC06-C01-U029`, `FC06-C01-U039`, `FC06-C01-U063`, `FC06-C01-U071`–`FC06-C01-U072`, `FC06-C01-U079`, `FC06-C01-U094`, `FC06-C01-U099`, `FC06-C01-U109`–`FC06-C01-U111`, `FC06-C01-U113`, `FC06-C01-U115`, `FC06-C01-U138`, `FC06-C02-U002`, `FC06-C02-U004`, `FC06-C02-U009`, `FC06-C02-U012`, `FC06-C02-U014`–`FC06-C02-U016`, `FC06-C02-U019`–`FC06-C02-U021`, `FC06-C02-U023`–`FC06-C02-U026`, `FC06-C02-U028`, `FC06-C02-U031`, `FC06-C02-U038`, `FC06-C02-U040`–`FC06-C02-U042`, `FC06-C02-U045`, `FC06-C02-U047`–`FC06-C02-U049`, `FC06-C02-U052`, `FC06-C02-U055`–`FC06-C02-U056`, `FC06-C02-U059`–`FC06-C02-U060`, `FC06-C02-U068`, `FC06-C02-U071`, `FC06-C02-U074`, `FC06-C02-U078`, `FC06-C02-U087`, `FC06-C02-U095`, `FC06-C02-U099`–`FC06-C02-U100`, `FC06-C02-U105`–`FC06-C02-U106`, `FC06-C02-U108`, `FC06-C02-U111`, `FC06-C02-U125`, `FC06-C02-U142`, `FC06-C02-U253`–`FC06-C02-U255`, `FC06-C02-U297`, `FC06-C02-U299`–`FC06-C02-U300`, `FC06-C02-U304`, `FC06-C02-U307`–`FC06-C02-U308`, `FC06-C03-U001`, `FC06-C03-U010`, `FC06-C03-U012`–`FC06-C03-U013`, `FC06-C03-U026`–`FC06-C03-U027`, `FC06-C03-U049`, `FC06-C03-U078`, `FC06-C03-U119`, `FC06-C03-U195`, `FC06-C04-U086`, `FC06-C04-U094`, `FC06-C05-U116`.
+Delivered/directly reusable by mapping: **86/252**; pending realization: **166** (reference-port=1, unmatched=165).
+Delivered/direct-reuse spans: `FC06-C01-U001`–`FC06-C01-U003`, `FC06-C01-U007`, `FC06-C01-U012`, `FC06-C01-U023`, `FC06-C01-U027`, `FC06-C01-U029`, `FC06-C01-U039`, `FC06-C01-U063`, `FC06-C01-U071`–`FC06-C01-U072`, `FC06-C01-U079`, `FC06-C01-U094`, `FC06-C01-U099`, `FC06-C01-U109`–`FC06-C01-U111`, `FC06-C01-U113`, `FC06-C01-U115`, `FC06-C01-U138`, `FC06-C02-U002`, `FC06-C02-U004`, `FC06-C02-U009`, `FC06-C02-U012`, `FC06-C02-U014`–`FC06-C02-U016`, `FC06-C02-U019`–`FC06-C02-U021`, `FC06-C02-U023`–`FC06-C02-U026`, `FC06-C02-U028`, `FC06-C02-U031`, `FC06-C02-U038`, `FC06-C02-U040`–`FC06-C02-U042`, `FC06-C02-U045`, `FC06-C02-U047`–`FC06-C02-U049`, `FC06-C02-U052`, `FC06-C02-U055`–`FC06-C02-U056`, `FC06-C02-U059`–`FC06-C02-U060`, `FC06-C02-U068`, `FC06-C02-U071`, `FC06-C02-U074`, `FC06-C02-U078`, `FC06-C02-U087`, `FC06-C02-U095`, `FC06-C02-U099`–`FC06-C02-U100`, `FC06-C02-U105`–`FC06-C02-U106`, `FC06-C02-U108`, `FC06-C02-U111`, `FC06-C02-U125`, `FC06-C02-U142`, `FC06-C02-U253`–`FC06-C02-U255`, `FC06-C02-U297`, `FC06-C02-U299`–`FC06-C02-U300`, `FC06-C02-U304`, `FC06-C02-U307`–`FC06-C02-U308`, `FC06-C03-U001`, `FC06-C03-U010`, `FC06-C03-U012`–`FC06-C03-U013`, `FC06-C03-U026`–`FC06-C03-U027`, `FC06-C03-U049`, `FC06-C03-U078`, `FC06-C03-U119`, `FC06-C03-U195`, `FC06-C04-U086`, `FC06-C04-U094`, `FC06-C05-U116`.
 Phase blocker: none
 
 Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC06-C01-U001` | Convention/construction — affine space | — | ready by recorded prerequisites | unmatched; author |
 | `FC06-C01-U011` | Definition — affine and quasi-affine varieties | `FC06-C01-U003`, `FC06-C01-U007` | ready by recorded prerequisites | unmatched; author |
 | `FC06-C01-U021` | Definition — affine coordinate ring | `FC06-C01-U012` | ready by recorded prerequisites | unmatched; author |
+| `FC06-C01-U038` | Definition/construction — projective space and homogeneous coordinates | `FC06-C01-U001` | ready by recorded prerequisites | unmatched; author |
 | `FC06-C01-U133` | Definition — numerical polynomial | — | ready by recorded prerequisites | unmatched; author |
 | `FC06-C01-U135` | Definitions — graded module, twist, and annihilator | `FC06-C01-U039` | ready by recorded prerequisites | unmatched; author |
 
