@@ -1,3 +1,9 @@
 .lake/
 .tmp-*
 __pycache__/
+/.agents
+/.hermes
+/.fc11-*.py
+/.foundational-corpus-validate.py
+/.u045-*.lean
+*.lean.tmp

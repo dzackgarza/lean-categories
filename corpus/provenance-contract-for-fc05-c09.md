@@ -1,0 +1,33 @@
+---
+type: reference
+title: Provenance contract for FC05 C09
+description: '## Provenance contract for FC05 C09'
+tags:
+- project
+- reference
+timestamp: '2026-09-06T00:00:00Z'
+scope: project
+source: agent
+confidence: high
+promotable: false
+project_id: github.com__dzackgarza__lean-categories
+---
+# Provenance contract for FC05 C09
+
+## Provenance contract for FC05 C09
+
+- Project-first search was performed at repository HEAD `f90173886bc881c2d43c0a7eb2d9fe7f110ac9a5`. No project declaration owns a complete C09 source row under strict bundle semantics.
+- Pinned Mathlib is `P=db584cd6d46c92f209a44c0f1c829460d327499d`, Lean 4.33.0, Apache-2.0 and directly project-compatible. Every P declaration cited below was checked at that revision; the complete positive interface set compiles together in `/tmp/fc05_c09_all_targets_probe.lean`, and the two derived interface chains for Kähler localization/essential finite type compile in `/tmp/fc05_c09_derived_positive_probe.lean`.
+- Current Mathlib was refreshed on 2026-09-06 at `H=5aedf732b6987e8c26ab3c9ebc855314f82b045f`, Apache-2.0, Lean 4.34.0-rc2. Neither P nor H contains a Hochschild-homology or cyclic-homology implementation. Current searches likewise found no completed Connes/mixed-complex, cyclic, negative/periodic cyclic, or Loday–Quillen package closing the corresponding source bundles.
+- `T=0857cbca8b6a91dd22680eba45ecc284c14d8325` is the refreshed 2026-09-06 TauCeti HEAD, Apache-2.0, Lean 4.34.0-rc2. Targeted T searches found nearby tensor-coalgebra primitives and Kähler infrastructure but no Hochschild/cyclic complex or theorem bundle matching C09. The reduced-tensor-coalgebra primitive theorem is specific to that coalgebra and does not own the generic primitive-elements row U156.
+- U038 is the only C09 route in this block that depends on post-pin current Mathlib: `Mathlib/FieldTheory/TranscendentalSeparable.lean::Algebra.IsSeparablyGenerated` at exact revision `5aedf732b6987e8c26ab3c9ebc855314f82b045f`; the file is absent at P, so it is `reference-port`, not `mathlib`.
+- Indexed GitHub code search on 2026-09-06 returned no Lean code for the phrases “Hochschild homology”, identifiers `HochschildHomology`/`CyclicHomology`, or a substantive cyclic-homology implementation. The sole phrase hit for “cyclic homology” was `deancureton/sphere-six-complex` at revision `895c0a0661501581c34d42fea3c553d4f0ee43b1`, where “infinite-cyclic homology” refers to an ordinary chain homology group; it is not cyclic homology theory and is not a reference-port. Open Mathlib PR searches found no Hochschild/cyclic-homology work closing these gaps.
+- U004 is not inferred from the standard tensor-product action alone. `Mathlib/Algebra/Module/Bimodule.lean` explains and supplies `TensorProduct.Algebra.module`, but does not package the full equivalence between bimodules and modules over `R⊗Rᵐᵒᵖ` stated by the source row.
+- U006 is exact even though the flat tensor-product proof is installed as an instance: the named pinned ingredients `Module.Flat.iff_rTensor_injectiveₛ` and `Module.Flat.rTensor_preserves_injective_linearMap`, together with `Module.Projective.tensorProduct`, realize the two source implications; the project-pin instance check compiles.
+- U015 is routed through the exact localized-module interface: `KaehlerDifferential.isLocalizedModule_map` registers the Kähler map under localization and `IsLocalizedModule.linearEquiv` supplies the canonical localized-module isomorphism.
+- U020–U025 are not inferred from field-theoretic separability, formal étaleness, or Azumaya infrastructure. The source defines separable finite-dimensional algebras through semisimplicity after every field extension and then proves equivalences with enveloping-module projectivity/HH vanishing. P has adjacent `FormallyEtale`, `Algebra.IsSeparable` for fields, and `IsAzumaya.matrix`, but not that complete source chain; `Algebra/Azumaya/Defs.lean` explicitly lists the center-plus-separable-algebra characterization as future work.
+- In U035–U050, the source’s term “smooth” denotes the square-zero lifting property; this is P’s `Algebra.FormallySmooth`, not P’s finite-presentation `Algebra.Smooth`. U035, U037, U039 and U050 therefore have exact P owners. For U037, `/tmp/fc05_c09_u037_probe.lean` compiles both split fundamental sequences at P: Jacobi–Zariski/H₁-cotangent exactness gives injectivity of the left maps and projectivity of the right Kähler modules gives splitting. U036 remains unmatched because its full bundle additionally includes Hochschild/symmetric-H² statements.
+- P’s `FieldTheory/SeparablyGenerated.lean` develops criteria but has no standalone separably-generated predicate. H adds `Mathlib/FieldTheory/TranscendentalSeparable.lean::Algebra.IsSeparablyGenerated`, which exactly realizes U038 and is therefore a revision-specific reference-port. The same H file defines `Algebra.IsTranscendentalSeparable`, but U041 also bundles the smoothness conclusion, which H does not prove; U040–U044 likewise contain stronger arbitrary-extension smoothness/reducedness bundles not supplied by the checked current files.
+- U073 is not inferred from P’s category-theoretic Morita equivalence: `Mathlib/RingTheory/Morita/Basic.lean` explicitly lists the characterization by invertible bimodules—the literal source definition—as TODO. U074 is direct because `Morita/Matrix.lean` constructs the matrix-ring equivalence.
+- No checked P/H/T declaration supplies the algebraic de Rham differential/complex U124 or the complete primitive/DG-coalgebra bundles U156/U162. H does add `Mathlib/RingTheory/Coalgebra/Primitive.lean::Coalgebra.skewPrimitive`, which gives the ungraded primitive-element submodule after specializing to `(1,1)`, but U156 also requires the graded-submodule statement, so strict bundle semantics leave U156 unmatched. TauCeti’s tensor-coalgebra primitive calculation is still only a special case.
+- `N` denotes dated 2026-09-06 negative evidence after project-first inspection, P, H/current Mathlib, T, open Mathlib work, indexed GitHub search, and relevant external Lean repositories. A prerequisite, mathematically derivable consequence, analogous construction, differently scoped theorem, or proper subset of a bundled row is not credited as that row’s route.

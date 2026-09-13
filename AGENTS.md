@@ -643,11 +643,15 @@ must depend on that theorem specifically; the entire theorem corpus is not its p
 
 Canonical execution records:
 
-- [.agents/references/foundational-source-corpus.md](.agents/references/foundational-source-corpus.md)
+- [corpus/foundational-source-corpus.md](corpus/foundational-source-corpus.md)
   freezes FC01–FC12, their prerequisite order, exact editions/scopes, and verified local Markdown
   extraction paths.
-- [.agents/references/foundational-corpus-status.md](.agents/references/foundational-corpus-status.md)
+- [corpus/foundational-corpus-status.md](corpus/foundational-corpus-status.md)
   is the single whole-source completion ledger for Catalogue, Mapping, Definitions, and Theorems.
+- [`corpus/`](corpus/) is the repository-owned canonical home for source catalogues, Sweep-II
+  mapping records, provenance contracts, and the source atlas. These are durable mathematical
+  project knowledge and must remain versioned. `.agents/` and `.hermes/` are private agent-memory
+  symlinks and are not authoritative for corpus state.
 - [.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/)
   owns the four sequential plans and their handoff/output conventions. Do not maintain competing
   per-source progress ledgers elsewhere.

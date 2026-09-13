@@ -22,8 +22,8 @@ worker reading the stale copy either redoes closed work or stops short of the re
 Read the frontier.
 
 
-| `commit-the-mapping-records` | **Companion to `remap-strict-bundle`, not a blocker on it.** `.agents/` is a symlink into `~/.agent-memory-vault`, a separate git repository, so mapping records are versioned *there* and a commit in this repository does not record a mapping change. Two gaps follow. All 42 `*-fc11.md` reference tables are untracked in the vault, so that source's mappings have no history at all. And 23 files in the subtree are modified and uncommitted right now, meaning mapping work already done is unbanked in a repository nobody's commit gate covers. **Acceptance:** the fc11 tables are tracked, the vault subtree is clean, and every re-mapping turn commits in the vault as well as here — a re-mapped row that is not committed in the vault has not landed | none |
-| `remap-strict-bundle` | **Blocks every definition row below.** The mapping sweep of 2026-09-06 wrote `unmatched` on rows whose clauses Mathlib supplies individually, justified as "strict bundle semantics reject … one clause/example of a bundled row, or a proper subset". That is not the rule [AGENTS.md](AGENTS.md) states, and `unmatched` is what clears a unit for repo-local invention — so the corpus has been authored where it should have been mapped. The justification appears on 240 of 325 rows in `chapter-2-schemes-fc06.md`, 183 of 188 in `chapter-4-homotopy-theory-fc07.md`, and 70 of 70 in `chapter-5-submanifolds-fc08.md`. Re-map every row carrying it, clause by clause, exhausting pinned Mathlib, current upstream, open PRs, Reservoir, discoverable Lean repositories and the atlas before any row keeps `unmatched`; record the declarations supplying each clause and the comparison assembling them. Verified starting points: `FC06-C01-U013` and `FC06-C01-U015` are `MvPolynomial.vanishingIdeal_zeroLocus_eq_radical` and `zeroLocus_vanishingIdeal_galoisConnection`; `FC06-C01-U004` and `FC06-C01-U008` are the `zeroLocus` and irreducibility lemmas in `Spectrum/Prime/Basic.lean` and `Spectrum/Prime/Topology.lean`. Work source by source: a source's definition row unblocks when its own rows are re-mapped, so do not wait for all twelve. **Acceptance:** no row carries the strict-bundle justification, and each re-mapped row names its declarations and its comparison, committed in the vault | `mapping` |
+| `track-the-catalogue` | **Completed 2026-09-13.** The 378 Markdown records formerly reachable only through the private `.agents/references/` symlink are now tracked under `corpus/`: source catalogues, per-unit mappings, provenance contracts, the source atlas, source manifest, and whole-source ledger. `scripts/foundational_frontier.py` defaults to that tracked directory, and a fresh clone with no `.agents` or `.hermes` symlink regenerates `FOUNDATIONAL_FRONTIER.md` byte-for-byte. `.agents`, `.hermes`, and the known local probe scripts are explicitly ignored as scratch/private automation. **Acceptance:** every catalogue and mapping file is tracked, `git log` shows them, and a fresh clone regenerates `FOUNDATIONAL_FRONTIER.md` identically | none |
+| `remap-strict-bundle` | **Blocks every definition row below.** The mapping sweep of 2026-09-06 wrote `unmatched` on rows whose clauses Mathlib supplies individually, justified as "strict bundle semantics reject … one clause/example of a bundled row, or a proper subset". That is not the rule [AGENTS.md](AGENTS.md) states, and `unmatched` is what clears a unit for repo-local invention — so the corpus has been authored where it should have been mapped. The justification appears on 240 of 325 rows in `chapter-2-schemes-fc06.md`, 183 of 188 in `chapter-4-homotopy-theory-fc07.md`, and 70 of 70 in `chapter-5-submanifolds-fc08.md`. Re-map every row carrying it, clause by clause, exhausting pinned Mathlib, current upstream, open PRs, Reservoir, discoverable Lean repositories and the atlas before any row keeps `unmatched`; record the declarations supplying each clause and the comparison assembling them. Verified starting points: `FC06-C01-U013` and `FC06-C01-U015` are `MvPolynomial.vanishingIdeal_zeroLocus_eq_radical` and `zeroLocus_vanishingIdeal_galoisConnection`; `FC06-C01-U004` and `FC06-C01-U008` are the `zeroLocus` and irreducibility lemmas in `Spectrum/Prime/Basic.lean` and `Spectrum/Prime/Topology.lean`. Work source by source: a source's definition row unblocks when its own rows are re-mapped, so do not wait for all twelve. **Acceptance:** no row carries the strict-bundle justification, and each re-mapped row names its declarations and its comparison, committed in the tracked `corpus/` record | `track-the-catalogue`, `mapping` |
 | `audit-authored-definitions` | **Needs `remap-strict-bundle` for the source being audited.** A definition already authored under a row that re-maps to a real Mathlib route is reinvention now carried in the corpus, and leaving it is worse than the original mistake because it looks audited. For each such unit, either replace the local development with the library route plus a comparison theorem, or record explicitly why the library route was rejected on mathematical grounds. `LeanCategories/AlgebraicGeometry/ProjectiveCoordinateRing.lean` is the worked example of what to look for: it returns an unbundled `Ideal` and proves homogeneity separately where `HomogeneousIdeal` carries both. **Acceptance:** each audited unit either uses the library route or carries the recorded mathematical reason it does not | `remap-strict-bundle` |
 | `fc05-definitions` | Sweep III for FC05: the pending count is the `## FC05 — Definitions` section of [FOUNDATIONAL_FRONTIER.md](FOUNDATIONAL_FRONTIER.md), which is regenerated; do not read a count from this row. Close this source's definitional layer before any FC05 theorem work; each definition carries its source citation and mapping record in the same commit | `mapping` |
 | `fc06-definitions` | Sweep III for FC06: the pending count is the `## FC06 — Definitions` section of [FOUNDATIONAL_FRONTIER.md](FOUNDATIONAL_FRONTIER.md), which is regenerated; do not read a count from this row. Close this source's definitional layer before any FC06 theorem work; each definition carries its source citation and mapping record in the same commit | `fc05-definitions` |
@@ -44,7 +44,7 @@ Read the frontier.
 | `bloat-audit-loop` | Terminal, and it loops rather than closing. Continually audit for unnecessary bloat, non-idiomatic Lean, proof-length reduction opportunities, and anything hand-rolled that mathlib or another dependency already provides — the reuse gate applies to finished work as well as to new. Append every finding to `COMPLAINTS.md` as it is found, and repair at least one finding in the same turn that records it. A pass that files findings and repairs none has not advanced this node, and a commit whose only content is a `COMPLAINTS.md` entry is not a unit of work. The backlog may outrun the repairs, and the audit is never declared finished | `lint-paydown` |
 
 Within a sweep, source dependencies and traversal order come from the existing
-[source manifest](.agents/references/foundational-source-corpus.md); unit IDs and
+[source manifest](corpus/foundational-source-corpus.md); unit IDs and
 their mathematical prerequisites come from the complete source catalogues.
 Use `(sweep, source-unit ID)` to distinguish a unit's successive obligations.
 A theorem needed for a definition's construction is an intrinsic prerequisite
@@ -106,7 +106,9 @@ remain in Sweep IV.
 Plans are not stored in this repository. `.agents/` is a symlink to this project's directory in
 the central agent memory vault at `/home/dzack/.agent-memory-vault`, so every `.agents/...` link
 below resolves in a local checkout and resolves nowhere on GitHub. `.hermes/` points at the same
-directory.
+directory. Those symlinks are private automation surfaces and are intentionally ignored by Git.
+The durable mathematical corpus is different: source catalogues, mapping records, provenance
+contracts, the source atlas, and the whole-source status ledger are tracked under `corpus/`.
 
 The plan tree has three levels:
 
@@ -135,17 +137,18 @@ To find plans:
   ```
 
 Progress belongs to two surfaces and no others: a plan's own `status`, and the whole-source
-[corpus status ledger](.agents/references/foundational-corpus-status.md) for the four sweeps
+[corpus status ledger](corpus/foundational-corpus-status.md) for the four sweeps
 below. Reference material — source catalogues, mapping records, the Lean source atlas — lives in
-`.agents/references/`.
+the tracked `corpus/` directory. Changes to those records are ordinary repository changes and
+must be committed with the work they describe; `.agents/` is never their canonical owner.
 
 ## The foundational programme
 
 The foundational programme is source-based and corpus v1 is frozen. The exact editions,
 source dependencies, prerequisite rationale, and verified Markdown extraction paths live in
-[the foundational source index](.agents/references/foundational-source-corpus.md). Whole-source
+[the foundational source index](corpus/foundational-source-corpus.md). Whole-source
 progress for all four sweeps lives only in the
-[central corpus status ledger](.agents/references/foundational-corpus-status.md).
+[central corpus status ledger](corpus/foundational-corpus-status.md).
 
 The same corpus is traversed in four separate sequential sweeps:
 
@@ -242,9 +245,9 @@ unit:
 - [x] Assign stable source-unit IDs used unchanged by all later sweeps.
 
 Which sources are catalogued is stated only in
-[the corpus status ledger](.agents/references/foundational-corpus-status.md). The catalogues
+[the corpus status ledger](corpus/foundational-corpus-status.md). The catalogues
 themselves are one file per source in
-`.agents/references/foundational-corpus-units-fc*.md`. Each catalogue is faithful to its frozen
+`corpus/foundational-corpus-units-fc*.md`. Each catalogue is faithful to its frozen
 Markdown extraction, which no phase has yet compared against the printed source.
 
 A source is not fully catalogued merely because all of its definitions have existing Lean
@@ -255,9 +258,9 @@ routes; its theorem/lemma content still belongs to Sweep I.
 Plan: [PLAN-FOUNDATIONAL-CORPUS-MAPPING-SWEEP](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/plans/PLAN-FOUNDATIONAL-CORPUS-MAPPING-SWEEP/PLAN-FOUNDATIONAL-CORPUS-MAPPING-SWEEP.md).
 
 Complete. Which sources are mapped is stated only in
-[the corpus status ledger](.agents/references/foundational-corpus-status.md); the per-source
+[the corpus status ledger](corpus/foundational-corpus-status.md); the per-source
 verdicts live in the mapping records beside it, one file per source,
-`.agents/references/foundational-corpus-mapping-fc*.md`.
+`corpus/foundational-corpus-mapping-fc*.md`.
 
 Take a source, not a chapter. Choose the first source in the v2 traversal order whose Mapping box
 is unticked and that no other agent has named as in progress, name it at the head of its mapping
@@ -494,7 +497,7 @@ actually forces.
 
 ### The remaining sweep frontier is 30 whole-source cells with no finer structure
 
-The [corpus status ledger](.agents/references/foundational-corpus-status.md) is scored per
+The [corpus status ledger](corpus/foundational-corpus-status.md) is scored per
 source per sweep: 16 sources × 4 sweeps, of which 34 cells are checked. A checkbox means
 the sweep is complete for the entire source, and partial chapter progress deliberately does
 not check it. That is the right rule for a completion ledger and the wrong granularity for
@@ -534,7 +537,7 @@ generated frontier follows the live ledger and does not alter its completion cla
 
 ## 5. Legacy definition catalogues
 
-The older per-source definition catalogues in `.agents/references/definition-catalogue-*.md` are
+The older per-source definition catalogues in `corpus/definition-catalogue-*.md` are
 superseded by the Sweep-I unit catalogues. They stay as cross-checks and mapping hints. They do
 not define source scope, and they never enlarge corpus v1.
 

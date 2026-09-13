@@ -1,0 +1,33 @@
+---
+type: reference
+title: Provenance contract for FC05 C08
+description: '## Provenance contract for FC05 C08'
+tags:
+- project
+- reference
+timestamp: '2026-09-06T00:00:00Z'
+scope: project
+source: agent
+confidence: high
+promotable: false
+project_id: github.com__dzackgarza__lean-categories
+---
+# Provenance contract for FC05 C08
+
+## Provenance contract for FC05 C08
+
+- Project-first search was performed at repo HEAD `f90173886bc881c2d43c0a7eb2d9fe7f110ac9a5`. No project declaration owns a complete C08 source row under strict bundle semantics.
+- Pinned Mathlib is `P=db584cd6d46c92f209a44c0f1c829460d327499d`, Lean 4.33.0, Apache-2.0 and directly project-compatible. Every `P` target cited in the chapter table was inspected at that revision. A local P-compiled witness also checked the exact definitional assemblies for semisimplicial objects (U010), degreewise postcomposition (U014), pointwise simplicial products (U019), and bisimplicial objects (U050).
+- Current Mathlib was refreshed again on 2026-09-06 at `H=5aedf732b6987e8c26ab3c9ebc855314f82b045f`. Targeted P→H/current searches found no H-only declaration closing the missing generator/relations equivalence, simplicial-group Kan theorem, higher simplicial homotopy-group package, Eilenberg–Zilber/Alexander–Whitney theorem, comonadic standard resolution, relative Tor/Ext theory, or André–Quillen theory.
+- Open Mathlib PR searches were refreshed for Dold–Kan, Eilenberg–Zilber, simplicial homotopy, André–Quillen, and cotangent complexes. No Dold–Kan/Eilenberg–Zilber/AQ PR was found. PRs surfaced by the broader simplicial-homotopy search (`#41735` homotopy-cartesian squares at `05f5b74caccabab60ca495271b65e19b85f8d208`, `#42158` nerve homotopy at `b50e98976e1b6298e3b0a6d2df5305abac9f0d34`, `#41963` nerve products at `ac9800b417b53c33d797559c04d12d8fed0e08f2`, and `#37659` relative singular homology at `01b33ef8a476b54c7d1538ff14e245d097577b7d`) do not realize any unmatched C08 whole-source bundle, so none is promoted as a reference-port.
+- Indexed GitHub Lean searches for `AndreQuillen`, “André-Quillen”, “relative Tor”, “cotangent complex”, `AlexanderWhitney`, `EilenbergZilber`, and `cotriple` found no exact missing owner. The only external Eilenberg–Zilber-named candidate inspected was `the-omega-institute/newmath` at `E=223bff05b2227f278d34738b20c15a95a5f64e86` (MIT), `lean4/BEDC/Derived/EilenbergZilberUp.lean`; it computes a specialized spectral-sequence page/toy result rather than Weibel's natural chain comparison, convergence theorem, Alexander–Whitney map, or shuffle homotopy inverse, so it is negative evidence only.
+- U003 remains unmatched because pinned `SimplexCategory/GeneratorsRelations/NormalForms.lean` explicitly leaves uniqueness of the face normal form as TODO; therefore the bundled unique epi-mono/standard face-degeneracy expression is incomplete, and U004–U005's equivalences from generators-and-relations data are not available either.
+- U011/U012/U015 remain unmatched despite `SemiSimplexCategory` and the simplicial alternating-face complex: the pin has no left adjoint freely adjoining degeneracies and no semisimplicial alternating/free-module complex realizing the source's explicit “simplicial or semisimplicial” bundles.
+- U017 remains unmatched although `SSet.toTop ⊣ TopCat.toSSet` is pinned: the source also asserts the CW-type iff characterization of the realization-singular counit, and no checked declaration proves that clause. U021 remains unmatched because no checked declaration proves every simplicial group is Kan.
+- U030–U034 are not inferred from the additive normalized Moore complex. Pinned `normalizedMooreComplex` uses the opposite endpoint convention to Weibel U032, and `DoldKan/Decomposition.lean` explicitly records the degenerate-subcomplex complement as unfinished. U035 is promoted because the pinned chain-homotopy equivalence directly gives the source homology comparison.
+- U040 remains unmatched: pinned `SSet.Homotopy` defines the cylinder map and `toSimplicialObjectHomotopy` converts it to a combinatorial homotopy, but no converse/bijection realizing the source equivalence was found. U041 is not inferred because the pinned chain-homotopy construction targets the alternating-face complex, while the source row specifically asserts the induced chain homotopy on the normalized complex.
+- U045 remains unmatched because `DoldKan/Equivalence.lean` explicitly lists the dual cosimplicial/cochain Dold–Kan equivalence as TODO. U046–U048 are promoted through the explicit Γ construction, unit/counit comparison isomorphisms, and reflects-isomorphisms instances already present at P.
+- U049 remains unmatched: extra degeneracy gives pinned contractibility/chain-homotopy consequences, but the source row bundles an asphericity definition and an iff with exactness not supplied by the checked API. U051–U057 remain unmatched because no checked P/H/O/E source supplies the bisimplicial total-complex/diagonal Eilenberg–Zilber spectral sequence or Alexander–Whitney/shuffle chain equivalence.
+- U058–U059 are pinned generic category-theory owners, but U060–U080 are not inferred from them: no checked API constructs the canonical simplicial comonad resolution, cotriple projectives, standard/free resolutions, or cotriple derived-functor theory in those rows.
+- U081–U095 remain unmatched: no checked source realizes Weibel's relative Tor/Ext, k-split comparison, relative flatness, or the associated base-change spectral sequences. U096–U097 are pinned through `CommAlgCat` and Kähler differentials. U098–U106 remain unmatched: `Mathlib/RingTheory/Kaehler/JacobiZariski.lean` contains only the low-degree naive cotangent/Kähler exact sequence and explicitly notes stronger Tor input as future work; it is not the all-degree André–Quillen cotangent-complex/Jacobi–Zariski package of the source.
+- `N` is dated 2026-09-06 negative evidence after A, P, H, open PR/current searches, indexed GitHub searches, and the external E candidate above. A prerequisite, an equivalent slogan without the source comparison theorem, or one clause of a bundled row is not credited as the route for that row.

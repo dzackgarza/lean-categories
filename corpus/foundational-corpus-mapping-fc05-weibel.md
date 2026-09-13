@@ -1,0 +1,88 @@
+---
+type: reference
+title: Foundational corpus mapping FC05 Weibel
+description: '# Foundational corpus mapping FC05 Weibel'
+tags:
+- project
+- reference
+timestamp: '2026-09-11T00:00:00Z'
+scope: project
+source: agent
+confidence: high
+promotable: false
+project_id: github.com__dzackgarza__lean-categories
+---
+# Foundational corpus mapping FC05 Weibel
+
+# Foundational corpus mapping FC05 Weibel
+
+# Foundational corpus mapping FC05 Weibel
+
+# Foundational corpus mapping FC05 Weibel
+
+# Foundational corpus mapping FC05 Weibel
+
+# Foundational corpus mapping FC05 Weibel
+
+# Foundational corpus mapping FC05 Weibel
+
+# Foundational corpus mapping FC05 Weibel
+
+# FC05 — Weibel, *An Introduction to Homological Algebra* mapping
+
+Status: **Sweep II complete.** C01–C10 and Appendix A are complete.
+
+## Sweep III execution — FC05
+
+Active source: FC05. Delivered Sweep III C01 owners include U027 (`8d9923d35465caa0c0b848d6daffc1df37db7326`, exact-sequence categories), U031 (`3a54724`, split/split-exact complexes), U043 (`88f8c7695cd68068b15add1e23c974fa904f06b2`, mapping cylinder), U046 (`e1a8d1079d908f80b77d42f265f4b8330d296e4f`, cylinder/cone comparison construction), U064 (`fef625b60b66a7af727251771d1b6035be748a30`, Yoneda defect and weak effaceability), U030 (`2dc447cb7d803555cbcec2a6bc2ac84062a197cb`, vector-space splitting and decomposition), and U057 (`105a2ea8eca5f75ba4f230286eb416fff82810d2`, sheaf-versus-presheaf exponential counterexample). Sweep III C02 owners include U001 (`887d412db1b999d3aade31af067c37027f8eb6d9`, homological/cohomological δ-functors), U006 (`f5249475bfb718a27deef032b467792703ebb265`, morphisms and universal δ-functors), U008 (`77cbedf932c2ff494f68fba80d8df70cad34c4ff`, left/right satellite terminology), U045 (`2cb95566c780301276a432387277e67f900cb021`, projective-resolution syzygy kernels), and U080 (`6275e09dd58df3f335c45442205790ddd4f5f1dc`, right-balanced multivariable functors); U030 is also closed directly by pinned Mathlib's generic right action. Sweep III C03 now includes U033 (`8ea3f3cdf2b1a6100cf6e12deecb1392d80f16d7`, right-Noetherian finite-presentation convention and noncanonical degreewise finite-rank free resolutions with exactness proved), U040 (`46fe0d30487afad2f793f1a139e6ae1627884a3b`, literal Baer sum via fibre product and skew-diagonal quotient), U045 (`1391d0a`, the AB4* convention with positive Ab/module/chain-complex examples and an explicit shrinking-fibre sheaf counterexample showing products of epis need not be epi), U046 (`502d89e`, the Eilenberg countable-tower difference-map model with coherent kernel, `lim¹` cokernel, and zero higher terms), and U052 (`b71d575`, Mathlib’s image-stabilization condition plus the project-owned trivial Mittag–Leffler condition and its implication to ordinary Mittag–Leffler). C01-U048, C02-U047, C02-U056, and C02-U081 remain dependency-blocked. The next ready open Sweep III definition in source traversal order is C03-U059, the Roos cochain-complex construction for higher derived inverse limits; continue there.
+
+Canonical catalogue: [[foundational-corpus-units-fc05-weibel|FC05 — Weibel, An Introduction to Homological Algebra]].
+
+Pinned project baseline: Mathlib `db584cd6d46c92f209a44c0f1c829460d327499d`, Lean 4.33.0. Current Mathlib was refreshed 2026-09-06 to `5aedf732b6987e8c26ab3c9ebc855314f82b045f`; declarations first appearing after the project pin are revision-specific reference-port routes unless an importable package route is independently justified.
+
+Every canonical unit receives exactly one Sweep-II route: `mathlib`, `project-existing`, `package-import`, `reference-port`, or `unmatched`. Project source is searched first, followed by pinned/current Mathlib, open/current work, indexed search services, and relevant external Lean repositories. Strict bundle semantics apply throughout.
+
+[Provenance contract for FC05 C01](provenance-contract-for-fc05-c01)
+
+[Chapter 1. Chain Complexes FC05](chapter-1-chain-complexes-fc05)
+
+[Provenance contract for FC05 C02](provenance-contract-for-fc05-c02)
+
+[Chapter 2. Derived Functors FC05](chapter-2-derived-functors-fc05)
+
+[Provenance contract for FC05 C03](provenance-contract-for-fc05-c03)
+
+[Chapter 3. Tor and Ext FC05](chapter-3-tor-and-ext-fc05)
+
+[Provenance contract for FC05 C04](provenance-contract-for-fc05-c04)
+
+[Chapter 4. Homological Dimension FC05](chapter-4-homological-dimension-fc05)
+
+[Provenance contract for FC05 C05](provenance-contract-for-fc05-c05)
+
+[Chapter 5. Spectral Sequences FC05](chapter-5-spectral-sequences-fc05)
+
+[Provenance contract for FC05 C06](provenance-contract-for-fc05-c06)
+
+[Chapter 6. Group Homology and Cohomology FC05](chapter-6-group-homology-and-cohomology-fc05)
+
+[Provenance contract for FC05 C07](provenance-contract-for-fc05-c07)
+
+[Chapter 7. Lie Algebra Homology and Cohomology FC05](chapter-7-lie-algebra-homology-and-cohomology-fc05)
+
+[Provenance contract for FC05 C08](provenance-contract-for-fc05-c08)
+
+[Chapter 8. Simplicial Methods in Homological Algebra FC05](chapter-8-simplicial-methods-in-homological-algebra-fc05)
+
+[Provenance contract for FC05 C09](provenance-contract-for-fc05-c09)
+
+[Chapter 9. Hochschild and Cyclic Homology FC05](chapter-9-hochschild-and-cyclic-homology-fc05)
+
+[Provenance contract for FC05 C10](provenance-contract-for-fc05-c10)
+
+[Chapter 10. The Derived Category FC05](chapter-10-the-derived-category-fc05)
+
+[Provenance contract for FC05 CA](provenance-contract-for-fc05-ca)
+
+[Appendix A. Category Theory Language FC05](appendix-a-category-theory-language-fc05)
+

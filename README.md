@@ -49,8 +49,8 @@ categorical owners; then formalize the remaining source lemmas and theorems. Onl
 survive the mapping sweep as genuinely unmatched are greenfield formalization. The theorem pass
 is deliberately independent so long proof programmes do not freeze growth of the mathematical
 DSL. [`TODO.md`](TODO.md), the
-[frozen source/extraction manifest](.agents/references/foundational-source-corpus.md), the
-[central four-phase status ledger](.agents/references/foundational-corpus-status.md), and
+[frozen source/extraction manifest](corpus/foundational-source-corpus.md), the
+[central four-phase status ledger](corpus/foundational-corpus-status.md), and
 [FEATURE-FOUNDATIONAL-CORPUS](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/FEATURE-FOUNDATIONAL-CORPUS.md)
 own the current corpus execution state.
 
