@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Homological.ConnesDoubleComplex
+public import LeanCategories.Homological.DoubleComplexFiltrations
 public import LeanCategories.Homological.HochschildHodgeDecomposition
 
 /-!
@@ -54,5 +55,29 @@ structure HodgeConnesDoubleComplexRealization (i : ℕ) where
   zeroAbove : ∀ (p q : ℕ), q < p → IsZero ((bicomplex.X p).X q)
   /-- Columns strictly to the right of the Hodge weight vanish. -/
   zeroPastWeight : ∀ (p q : ℕ), i < p → IsZero ((bicomplex.X p).X q)
+
+/-- The total complex of the `i`th Hodge sub-double-complex.
+
+Source: Weibel, Definition 9.8.14, pp. 344--353 (FC05-C09-U131). -/
+def hodgeConnesTotalComplex {i : ℕ}
+    (H : HodgeConnesDoubleComplexRealization R i)
+    [HomologicalComplex₂.HasTotal H.bicomplex (ComplexShape.down ℕ)] :
+    ChainComplex (ModuleCat ℚ) ℕ :=
+  HomologicalComplex₂.total H.bicomplex (ComplexShape.down ℕ)
+
+/-- Weibel's `i`th Hodge summand of cyclic homology,
+`HC_n^(i)(R)`, defined as the homology of the total complex of the `i`th
+Hodge sub-double-complex.
+
+The direct-sum decomposition of ordinary cyclic homology into these summands
+is theorem-layer content following the source definition.
+
+Source: Weibel, Definition 9.8.14, pp. 344--353 (FC05-C09-U131). -/
+def cyclicHodgeHomology {i : ℕ}
+    (H : HodgeConnesDoubleComplexRealization R i)
+    [HomologicalComplex₂.HasTotal H.bicomplex (ComplexShape.down ℕ)]
+    (n : ℕ) : ModuleCat ℚ :=
+  (HomologicalComplex.homologyFunctor (ModuleCat ℚ) (ComplexShape.down ℕ) n).obj
+    (hodgeConnesTotalComplex R H)
 
 end LeanCategories.Homological
