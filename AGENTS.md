@@ -603,9 +603,11 @@ independent sequential plans.
    a mathematical unit deserves a row. Establish coverage of the admitted source before
    deriving filtered worklists; unrecognized sections or metadata remain unresolved inputs.
 2. **Lean-ecosystem mapping sweep.** Only after the catalogue is complete, search every unit
-   against pinned and upstream Mathlib, open Mathlib work, Loogle/LeanSearch, Reservoir, the local
-   source atlas, **broad GitHub search across all discoverable Lean repositories**, local mirrors,
-   and statement banks. Inspect actual declarations and hypotheses. Classify the unit as
+   against pinned and upstream Mathlib, open Mathlib work, the live
+   [`formalization-corpus`](https://dzackgarza.github.io/formalization-corpus/) search/API,
+   Loogle/LeanSearch, Reservoir, the local source atlas, **broad GitHub search across all
+   discoverable Lean repositories**, local mirrors, and statement banks. Inspect actual declarations
+   and hypotheses. Classify the unit as
    `mathlib`, `project-existing`, `package-import`, `reference-port`, or `unmatched`, recording
    exact repo/commit/path/declaration/license/toolchain provenance. Before accepting a route,
    compare the entire source obligation with the actual candidate declarations using the
@@ -746,8 +748,9 @@ route that points at unmapped local code is a mapping failure, not a shortcut.
 Authorship is cleared only for a unit whose mapping is `unmatched`, so `unmatched` is the most
 consequential label in this repository and it is the one most easily reached by accident. A row
 is `unmatched` when *every known source has been exhausted* — pinned Mathlib, current upstream,
-open PRs, Reservoir, every discoverable Lean repository, and the formalization atlas — not when
-the first search returned nothing convenient.
+open PRs, the live `formalization-corpus` API under multiple formulations, Reservoir, every
+discoverable Lean repository, and the formalization atlas — not when the first search returned
+nothing convenient.
 
 **"No single declaration realizes the whole bundled row" is not a ground for `unmatched`.** A
 source row that bundles several clauses is matched by the conjunction of the declarations that
@@ -1059,10 +1062,15 @@ Before writing any **foundational-corpus** construct, in order:
    Do not invent scope from implementation searches or downstream demand.
 
 2. **Require its Sweep-II mapping.** Search pinned Mathlib first, then current upstream Mathlib
-   and open work, Loogle/LeanSearch/docs, Lean Reservoir, and the formalization source atlas.
-   Then search GitHub broadly across all discoverable Lean repositories rather than stopping at
-   the curated registry. Search names, synonyms, source theorem names, and expected type shapes.
-   Open candidate code and compare mathematical generality and hypotheses.
+   and open work. Query the live [`formalization-corpus`](https://github.com/dzackgarza/formalization-corpus)
+   index through its [browser search](https://dzackgarza.github.io/formalization-corpus/) and,
+   preferably for systematic work, its open `POST https://formalization-corpus.dzackgarza.com/api/search`
+   API documented at [the API page](https://dzackgarza.github.io/formalization-corpus/api.html).
+   Search several formulations: standard names, source theorem names, synonyms, characteristic
+   type/declaration fragments, and nearby constructions; use `repo:`/`file:` filters only to refine,
+   never to shrink the initial search domain. Then use Loogle/LeanSearch/docs, Reservoir, open PRs,
+   and broad GitHub search for material not yet indexed or for revision history. Open candidate code
+   and compare mathematical generality and hypotheses.
    Apply the [mapping acceptance boundary](#accept-a-mapping-against-the-whole-source-obligation)
    to the actual declarations; a completed mapping row is not its own semantic evidence.
 
@@ -1091,9 +1099,13 @@ The failure this gate prevents is §4.3 and §4.4: writing a plausible new defin
 
 ---
 
-## Formalization source registry
+## External formalization corpus and programme-specific annotations
 
-**The highest priority of this programme is minimizing the lines of Lean owned by this repository.** Re-defining or re-proving mathematics that is already formalized anywhere online is the primary failure mode: every re-derived line is a permanent maintenance surface and an avoidable comparison theorem later. Exhaust this registry before authoring anything.
+**The highest priority of this programme is minimizing the lines of Lean owned by this repository.** Re-defining or re-proving mathematics that is already formalized anywhere online is the primary failure mode: every re-derived line is a permanent maintenance surface and an avoidable comparison theorem later.
+
+The canonical evolving external registry is [`dzackgarza/formalization-corpus`](https://github.com/dzackgarza/formalization-corpus), especially its [`SOURCES.md`](https://github.com/dzackgarza/formalization-corpus/blob/main/SOURCES.md). Its [GitHub Pages site](https://dzackgarza.github.io/formalization-corpus/) searches the actual indexed source corpus, and its [API documentation](https://dzackgarza.github.io/formalization-corpus/api.html) describes the live, unauthenticated search service at `POST https://formalization-corpus.dzackgarza.com/api/search`; `GET /api/list` enumerates indexed repositories. **Use the live API as a required discovery surface before recording `unmatched`.** The corpus indexes Mathlib, registered Lean repositories, Reservoir packages, and Rocq/Agda sources together, so a non-Lean hit can still discharge the obligation to find a reference implementation even when it cannot discharge the Lean import route.
+
+The domain tables below are only programme-specific annotations that may explain why a known source is especially relevant, unsuitable, stale, unlicensed, or already integrated. They are not exhaustive, are not a second source registry, and cannot support a negative search result. When they disagree with `formalization-corpus/SOURCES.md` about what sources exist, update or delete the local annotation rather than forking the registry here.
 
 Strict preference order:
 
@@ -1102,13 +1114,29 @@ Strict preference order:
 3. **Copy or port the reference implementation** when the source is unpackaged, toolchain-incompatible, Lean 3, or in another proof assistant. Cite the origin at the ported site: repository, file, and commit or tag.
 4. **Author new Lean only after 1–3 fail**, under step 3 of the reuse gate, relating the new construct to what exists in the same PR.
 
-Every repository below resolved on GitHub on 2026-08-14. *(Lean 3)* entries are port sources only: Lean 3 code cannot enter a Lean 4 build. *(archived)* and *(stale)* flag maintenance status, not validity. Any Lean 4 repository, archived or not, is a legitimate pinned dependency exactly when it builds against this repository's toolchain and pinned Mathlib. Lake resolves one version of every package for the whole build graph from the root manifest, so a dependency compiles against this project's Mathlib — the dependency's own older Mathlib pin does not travel with it. A dormant repository often fails that test and then enters as a port with citation; when it passes, prefer the import — it is fewer owned lines. An unmaintained dependency does assign its upkeep here: the Mathlib bump that breaks it converts it to a fork-or-port at that time. Two repositories named in earlier revisions of this document no longer resolve and were removed: `BoltonBailey/FRISoundness`, and `sinhp/GroupoidModelofHoTTinLean4` (its subject now lives in [`sinhp/HoTTLean`](https://github.com/sinhp/HoTTLean)). GitHub also hosts autogenerated repository farms (for example the `*-canonical-lane-mathlib` pattern); a repository enters a plan, an import, or this registry only after a provenance check of its authors and history.
+The annotations below were originally assembled as a local registry and therefore contain dated repository/toolchain observations. Treat those observations as hints to recheck, not as current inventory. Any Lean 4 repository, archived or not, is a legitimate pinned dependency exactly when it builds against this repository's toolchain and pinned Mathlib. Lake resolves one version of every package for the whole build graph from the root manifest, so a dependency compiles against this project's Mathlib — the dependency's own older Mathlib pin does not travel with it. A dormant repository often fails that test and then enters as a port with citation; when it passes, prefer the import — it is fewer owned lines. An unmaintained dependency does assign its upkeep here: the Mathlib bump that breaks it converts it to a fork-or-port at that time. GitHub also hosts autogenerated repository farms; provenance of authors/history/license must still be checked before a hit becomes a route.
+
+The hosted corpus is a **discovery index, not final mapping provenance**: its external repositories are current snapshots rather than commit-pinned evidence. After a hit, open the upstream repository and record the exact repository, commit/tag, path, declaration, license, toolchain compatibility, and mathematical comparison in the mapping row. An API hit never substitutes for checking the declaration, and an API outage never counts as evidence for `unmatched`.
+
+A minimal shell query is:
+
+```sh
+curl -sS https://formalization-corpus.dzackgarza.com/api/search \
+  -H 'Content-Type: application/json' \
+  -d '{"Q":"Hasse invariant file:\\.lean$","Opts":{"MaxDocDisplayCount":20}}' \
+  | jq -r '.Result.Files[] | "\(.Repository)\t\(.FileName)"'
+```
+
+For mapping work, vary the query rather than treating one zero-result string as exhaustion. The API accepts Zoekt syntax; the linked API page documents options such as `ChunkMatches`, `NumContextLines`, and `Whole`.
 
 ### Indexes and search surfaces
 
 | Surface | Use |
 | --- | --- |
-| [Lean Reservoir](https://reservoir.lean-lang.org/) | Index of public Lake packages. Search before any general GitHub search. |
+| [`formalization-corpus` source registry](https://github.com/dzackgarza/formalization-corpus/blob/main/SOURCES.md) | Canonical evolving inventory of indexed formalization repositories, domains, and trust/provenance notes. Do not duplicate this inventory locally. |
+| [`formalization-corpus` browser](https://dzackgarza.github.io/formalization-corpus/) | Interactive Zoekt search over the live cross-repository corpus. |
+| [`formalization-corpus` API](https://dzackgarza.github.io/formalization-corpus/api.html) | Required systematic discovery surface. `POST https://formalization-corpus.dzackgarza.com/api/search` with `{"Q": ..., "Opts": ...}`; supports Zoekt `repo:`/`file:` filters. Use multiple semantic spellings before a negative verdict. |
+| [Lean Reservoir](https://reservoir.lean-lang.org/) | Index of public Lake packages and supplementary package metadata; the formalization corpus also indexes hydrated Reservoir sources. |
 | [Loogle](https://loogle.lean-lang.org/) ([`nomeata/loogle`](https://github.com/nomeata/loogle)) | Type-pattern search over Mathlib; also the `lean_loogle` MCP tool. |
 | [LeanSearch](https://leansearch.net/) | Natural-language search over Mathlib; also the `lean_leansearch` MCP tool. |
 | [Mathlib docs](https://leanprover-community.github.io/mathlib4_docs/) | Declaration-level documentation for current Mathlib. |

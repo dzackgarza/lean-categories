@@ -144,10 +144,13 @@ Search order:
 
 1. the pinned `.lake/packages/mathlib/Mathlib` source, by declaration/type shape and standard synonyms;
 2. current `leanprover-community/mathlib4`, including source history and relevant open PRs;
-3. Loogle, LeanSearch, Mathlib docs, and the local source atlas;
-4. Lean Reservoir and every packaged Lean dependency/repository it exposes;
-5. GitHub code/repository search across **all discoverable Lean repositories**, using the source term, standard synonyms, expected type signatures/namespaces, and cited theorem names;
-6. locally mirrored/vendored Lean reference corpora and statement banks such as `formal-conjectures` where relevant.
+3. the live [`formalization-corpus`](https://github.com/dzackgarza/formalization-corpus) index: use the [browser](https://dzackgarza.github.io/formalization-corpus/) or, for systematic mapping, the open [`POST /api/search`](https://dzackgarza.github.io/formalization-corpus/api.html) service at `https://formalization-corpus.dzackgarza.com/api/search`; search source names, standard synonyms, theorem names, expected declarations/type fragments, and nearby constructions rather than one literal phrase;
+4. Loogle, LeanSearch, Mathlib docs, and the local source atlas;
+5. Lean Reservoir and every packaged Lean dependency/repository it exposes;
+6. GitHub code/repository search across **all discoverable Lean repositories**, especially revision history, open work, or repositories not yet present in the hosted corpus;
+7. locally mirrored/vendored Lean reference corpora and statement banks such as `formal-conjectures` where relevant.
+
+The hosted corpus is a discovery index over current snapshots, not commit-pinned mapping evidence. After a hit, inspect the actual upstream declaration and record repository/package, commit/tag, path, declaration name, license, toolchain/Mathlib compatibility, and mathematical comparison. Its [`SOURCES.md`](https://github.com/dzackgarza/formalization-corpus/blob/main/SOURCES.md) is the canonical evolving registry of indexed projects; do not maintain a competing repository inventory here. If the hosted API is unavailable, that outage does not count as a negative search and cannot justify `unmatched`.
 
 For each candidate, inspect the actual declaration and hypotheses; name similarity is not a match. Record repository/package, commit/tag, path, declaration name, license, toolchain/Mathlib compatibility, and mathematical comparison to the corpus unit.
 
