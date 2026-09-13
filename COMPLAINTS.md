@@ -32,6 +32,15 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Mathematical issues
 
+### `IsJordanCanonicalInBasis` weakens the chosen-basis Jordan condition
+
+- **Need:** FC01-C12-U039 defines a Jordan canonical form for a linear transformation as a basis in which the representing matrix itself is block diagonal with Jordan blocks.
+- **Evidence:** `LeanCategories/Algebra/JordanCanonical.lean::IsJordanCanonicalInBasis` is defined by `IsJordanCanonical (LinearMap.toMatrix b b f)`, while `IsJordanCanonical A` only requires `A` to be *similar* to a reindexed Jordan matrix. The source statement in `corpus/foundational-corpus-units-fc01-dummit-foote.md` requires equality in the chosen basis, not existence of a further conjugation.
+- **Gap and impact:** the predicate is strictly weaker than the source-facing name suggests and cannot serve as the U039 transformation-definition owner. The correct source condition is `IsJordanMatrix (LinearMap.toMatrix b b f)`; any consumer relying on `IsJordanCanonicalInBasis` as a chosen-basis normal-form assertion may be weakened.
+- **Coverage:** the source row, `JordanCanonical.lean`, and pinned Mathlib matrix-representation APIs were inspected. No existence/uniqueness theorem is claimed here.
+- **Repair link:** `audit-authored-definitions` after FC01 remapping closes; repair or rename `IsJordanCanonicalInBasis` and update affected consumers while preserving `IsJordanMatrix` as the exact matrix predicate.
+
+
 ## Workflow papercuts
 
 ### Foundational frontier kind markers confuse definitional and result content
