@@ -105,6 +105,21 @@ look back and ask:
   could not trust, a tool that answered nothing. That is an obstruction; fix it at its owner
   and commit the fix. Working around it silently guarantees the next worker pays it again.
 
+## Do not end a turn without the next unit started
+
+A turn that ends on a committed definition ends the stream. Nothing restarts it until someone
+outside the repository notices and asks, and the corpus gains nothing across that gap however
+short it is. On 2026-09-13 this repository delivered definitions at a good rate and stopped
+after each one, so most of its wall-clock went to waiting rather than to elaborating.
+
+The unit of a turn is not one definition. Commit the definition, read the next pending unit
+from the frontier, and start it in the same turn — and keep going. There is no point at which
+the correct thing to do is stop and report the count: the frontier already reports the count,
+and it does so more accurately than a message can.
+
+Stop only when the frontier cannot name a ready unit, and then the scheduler is the defect
+(below), not the stopping point.
+
 ## Repair the scheduler, do not route around it
 
 The generated scheduling documents are load-bearing, and when one breaks the failure is silent:
