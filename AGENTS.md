@@ -120,6 +120,21 @@ and it does so more accurately than a message can.
 Stop only when the frontier cannot name a ready unit, and then the scheduler is the defect
 (below), not the stopping point.
 
+## Write Lean sources with the patch tool, not a shell heredoc
+
+Writing a whole file with `cat > Foo.lean <<'EOF'` fails here, and it has failed thirteen times
+in this chat against zero failures across the other three managed repositories, which do not
+write Lean. Each failure costs the turn that produced the file and a reformulation; the recovery
+every time was the patch tool, which wrote the same content without complaint.
+
+So create and edit `.lean` files with the patch tool. Use the shell for what it is good at here
+— `rg` over mathlib, `lake env lean` on one file, reading a range out of a dependency — and not
+for delivering source text through a command string.
+
+If a heredoc write does fail, do not retry it and do not shorten the file to make it fit: switch
+tools and keep the definition intact. A definition trimmed to survive a write path is a worse
+definition, and nothing downstream records why it shrank.
+
 ## Bank before you wait
 
 Work that is written but uncommitted lives only in this chat's working tree, and a turn that
