@@ -99,15 +99,15 @@ Next 5 open units in source traversal order:
 
 ## FC06 — Definitions
 
-Delivered/directly reusable by mapping: **90/252**; pending realization: **162** (reference-port=1, unmatched=161).
-Delivered/direct-reuse spans: `FC06-C01-U001`–`FC06-C01-U003`, `FC06-C01-U007`, `FC06-C01-U011`–`FC06-C01-U012`, `FC06-C01-U021`, `FC06-C01-U023`, `FC06-C01-U027`, `FC06-C01-U029`, `FC06-C01-U038`–`FC06-C01-U040`, `FC06-C01-U063`, `FC06-C01-U071`–`FC06-C01-U072`, `FC06-C01-U079`, `FC06-C01-U094`, `FC06-C01-U099`, `FC06-C01-U109`–`FC06-C01-U111`, `FC06-C01-U113`, `FC06-C01-U115`, `FC06-C01-U138`, `FC06-C02-U002`, `FC06-C02-U004`, `FC06-C02-U009`, `FC06-C02-U012`, `FC06-C02-U014`–`FC06-C02-U016`, `FC06-C02-U019`–`FC06-C02-U021`, `FC06-C02-U023`–`FC06-C02-U026`, `FC06-C02-U028`, `FC06-C02-U031`, `FC06-C02-U038`, `FC06-C02-U040`–`FC06-C02-U042`, `FC06-C02-U045`, `FC06-C02-U047`–`FC06-C02-U049`, `FC06-C02-U052`, `FC06-C02-U055`–`FC06-C02-U056`, `FC06-C02-U059`–`FC06-C02-U060`, `FC06-C02-U068`, `FC06-C02-U071`, `FC06-C02-U074`, `FC06-C02-U078`, `FC06-C02-U087`, `FC06-C02-U095`, `FC06-C02-U099`–`FC06-C02-U100`, `FC06-C02-U105`–`FC06-C02-U106`, `FC06-C02-U108`, `FC06-C02-U111`, `FC06-C02-U125`, `FC06-C02-U142`, `FC06-C02-U253`–`FC06-C02-U255`, `FC06-C02-U297`, `FC06-C02-U299`–`FC06-C02-U300`, `FC06-C02-U304`, `FC06-C02-U307`–`FC06-C02-U308`, `FC06-C03-U001`, `FC06-C03-U010`, `FC06-C03-U012`–`FC06-C03-U013`, `FC06-C03-U026`–`FC06-C03-U027`, `FC06-C03-U049`, `FC06-C03-U078`, `FC06-C03-U119`, `FC06-C03-U195`, `FC06-C04-U086`, `FC06-C04-U094`, `FC06-C05-U116`.
+Delivered/directly reusable by mapping: **91/252**; pending realization: **161** (reference-port=1, unmatched=160).
+Delivered/direct-reuse spans: `FC06-C01-U001`–`FC06-C01-U003`, `FC06-C01-U007`, `FC06-C01-U011`–`FC06-C01-U012`, `FC06-C01-U021`, `FC06-C01-U023`, `FC06-C01-U027`, `FC06-C01-U029`, `FC06-C01-U038`–`FC06-C01-U041`, `FC06-C01-U063`, `FC06-C01-U071`–`FC06-C01-U072`, `FC06-C01-U079`, `FC06-C01-U094`, `FC06-C01-U099`, `FC06-C01-U109`–`FC06-C01-U111`, `FC06-C01-U113`, `FC06-C01-U115`, `FC06-C01-U138`, `FC06-C02-U002`, `FC06-C02-U004`, `FC06-C02-U009`, `FC06-C02-U012`, `FC06-C02-U014`–`FC06-C02-U016`, `FC06-C02-U019`–`FC06-C02-U021`, `FC06-C02-U023`–`FC06-C02-U026`, `FC06-C02-U028`, `FC06-C02-U031`, `FC06-C02-U038`, `FC06-C02-U040`–`FC06-C02-U042`, `FC06-C02-U045`, `FC06-C02-U047`–`FC06-C02-U049`, `FC06-C02-U052`, `FC06-C02-U055`–`FC06-C02-U056`, `FC06-C02-U059`–`FC06-C02-U060`, `FC06-C02-U068`, `FC06-C02-U071`, `FC06-C02-U074`, `FC06-C02-U078`, `FC06-C02-U087`, `FC06-C02-U095`, `FC06-C02-U099`–`FC06-C02-U100`, `FC06-C02-U105`–`FC06-C02-U106`, `FC06-C02-U108`, `FC06-C02-U111`, `FC06-C02-U125`, `FC06-C02-U142`, `FC06-C02-U253`–`FC06-C02-U255`, `FC06-C02-U297`, `FC06-C02-U299`–`FC06-C02-U300`, `FC06-C02-U304`, `FC06-C02-U307`–`FC06-C02-U308`, `FC06-C03-U001`, `FC06-C03-U010`, `FC06-C03-U012`–`FC06-C03-U013`, `FC06-C03-U026`–`FC06-C03-U027`, `FC06-C03-U049`, `FC06-C03-U078`, `FC06-C03-U119`, `FC06-C03-U195`, `FC06-C04-U086`, `FC06-C04-U094`, `FC06-C05-U116`.
 Phase blocker: none
 
 Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC06-C01-U041` | Definition — projective algebraic set | `FC06-C01-U040` | ready by recorded prerequisites | unmatched; author |
+| `FC06-C01-U045` | Construction — homogeneous ideal and coordinate ring | `FC06-C01-U039`, `FC06-C01-U040`, `FC06-C01-U041` | ready by recorded prerequisites | unmatched; author |
 | `FC06-C01-U049` | Definition — regular functions on quasi-affine varieties | `FC06-C01-U011` | ready by recorded prerequisites | unmatched; author |
 | `FC06-C01-U092` | Definition — Jacobian nonsingularity for affine varieties | `FC06-C01-U011`, `FC06-C01-U027` | ready by recorded prerequisites | unmatched; author |
 | `FC06-C01-U133` | Definition — numerical polynomial | — | ready by recorded prerequisites | unmatched; author |
@@ -127,7 +127,7 @@ Next 5 open units in source traversal order:
 | `FC06-C01-U013` | Proposition 1.2 — zero-set/vanishing-ideal calculus | `FC06-C01-U002`, `FC06-C01-U012` | ready by recorded prerequisites | unmatched; author |
 | `FC06-C01-U031` | Theorem 1.8A — dimension theorem for finitely generated domains | `FC06-C01-U029` | ready by recorded prerequisites | unmatched; author |
 | `FC06-C01-U037` | Remark 1.13.1 — height two need not be two-generated | `FC06-C01-U035` | ready by recorded prerequisites | unmatched; author |
-| `FC06-C01-U069` | Theorem 3.9A — finiteness of integral closure | — | ready by recorded prerequisites | unmatched; author |
+| `FC06-C01-U042` | Proposition 2.1 — projective algebraic sets are closed-set data | `FC06-C01-U041` | ready by recorded prerequisites | unmatched; author |
 
 ## FC07 — Definitions
 
