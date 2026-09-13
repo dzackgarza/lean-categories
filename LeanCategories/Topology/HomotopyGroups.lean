@@ -93,4 +93,27 @@ def IsWeakHomotopyEquivalence {X : Type u} {Y : Type v}
     [TopologicalSpace X] [TopologicalSpace Y] (f : C(X, Y)) : Prop :=
   ∀ (x : X) (n : ℕ), Function.Bijective (homotopyGroupMap f x (Fin n))
 
+/-- Data exhibiting a based space as an Eilenberg--Mac Lane space `K(G,n)`.
+
+The distinguished homotopy group is identified with `G` as a group, not merely as a type.  The
+standard consequence that `G` is abelian when `n ≥ 2` follows from Mathlib's commutative-group
+instance on higher homotopy groups and is theorem content rather than an extra definitional
+field.
+
+Source: Hatcher, *Algebraic Topology*, §4.2, p. 360 (FC07-C04-U042). -/
+structure EilenbergMacLaneStructure (X : BasedTop.{u}) (G : Type v) [Group G] (n : ℕ) where
+  n_pos : 0 < n
+  pathConnected : PathConnectedSpace X.right
+  groupEquiv :
+    (letI : Nonempty (Fin n) := ⟨⟨0, n_pos⟩⟩;
+      HomotopyGroup.Pi n X.right X.point ≃* G)
+  otherTrivial :
+    ∀ i : ℕ, i ≠ n → Subsingleton (HomotopyGroup.Pi i X.right X.point)
+
+/-- Predicate that a based space is an Eilenberg--Mac Lane space `K(G,n)`.
+
+Source: Hatcher, *Algebraic Topology*, §4.2, p. 360 (FC07-C04-U042). -/
+def IsEilenbergMacLane (X : BasedTop.{u}) (G : Type v) [Group G] (n : ℕ) : Prop :=
+  Nonempty (EilenbergMacLaneStructure X G n)
+
 end LeanCategories.Topology
