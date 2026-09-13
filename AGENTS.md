@@ -719,6 +719,27 @@ and preserve the original source obligation. Retain useful reference implementat
 with exact provenance. Do not turn an inconvenient port or a partial match into a
 greenfield task without the required reuse search.
 
+#### Authoring is part of closing a row, when the row records what it was assembled from
+
+The remap blocks definition work, and that block would be unsatisfiable if it also forbade the
+authoring a remap concludes is necessary: a row cannot be closed as genuinely unmatched without
+producing the thing it says is missing. So writing a declaration *as the resolution of the row
+being remapped* is remap work, not a breach of the block.
+
+What separates it from the reinvention this whole effort exists to undo is the row. A closed row
+must name the library pieces the new declaration is assembled from. On 2026-09-13 `FC06-C02-U151`
+and `U152` left `unmatched` for `project-existing` naming `LeanCategories/Schemes/Divisors.lean`,
+and each recorded its route underneath — `Order.coheight`,
+`Scheme.ringKrullDim_stalk_eq_coheight`, `IsRegularLocalRing` for the first, and mapped `U151`
+plus `IsNoetherian`, `IsIntegral`, `Scheme.IsSeparated` for the second. That is Hartshorne's
+standing hypothesis `(*)` expressed as a conjunction of Mathlib predicates, which is formalizing
+a bundled source condition, not rebuilding what the library already has.
+
+A `feat(...)` commit during the remap is therefore judged by the row it closes, never by its
+subject line. With the pieces named, it is the remap finishing a unit. Without them, it is the
+old failure wearing a new commit message, and the row is the only place that difference is
+visible.
+
 #### `project-existing` is not a route unless the project code is itself mapped
 
 The audit claim of this repository is that every definition traces to real literature or a real
