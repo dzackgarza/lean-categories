@@ -107,27 +107,27 @@ Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
+| `FC06-C01-U005` | Definition — Zariski topology on affine space | `FC06-C01-U003`, `FC06-C01-U004` | ready by recorded prerequisites | unmatched; author |
 | `FC06-C01-U049` | Definition — regular functions on quasi-affine varieties | `FC06-C01-U011` | ready by recorded prerequisites | unmatched; author |
 | `FC06-C01-U092` | Definition — Jacobian nonsingularity for affine varieties | `FC06-C01-U011`, `FC06-C01-U027` | ready by recorded prerequisites | unmatched; author |
 | `FC06-C01-U133` | Definition — numerical polynomial | — | ready by recorded prerequisites | unmatched; author |
 | `FC06-C01-U135` | Definitions — graded module, twist, and annihilator | `FC06-C01-U039` | ready by recorded prerequisites | unmatched; author |
-| `FC06-C02-U001` | Definition — presheaf | — | ready by recorded prerequisites | unmatched; author |
 
 ## FC06 — Theorems
 
-Delivered/directly reusable by mapping: **56/729**; pending realization: **673** (reference-port=1, unmatched=672).
-Delivered/direct-reuse spans: `FC06-C01-U009`–`FC06-C01-U010`, `FC06-C01-U014`, `FC06-C01-U025`, `FC06-C01-U034`–`FC06-C01-U035`, `FC06-C01-U074`, `FC06-C01-U081`, `FC06-C01-U097`, `FC06-C01-U112`, `FC06-C01-U114`, `FC06-C01-U116`, `FC06-C02-U002`, `FC06-C02-U010`, `FC06-C02-U012`, `FC06-C02-U018`, `FC06-C02-U022`, `FC06-C02-U027`, `FC06-C02-U029`, `FC06-C02-U036`, `FC06-C02-U039`, `FC06-C02-U043`, `FC06-C02-U050`–`FC06-C02-U051`, `FC06-C02-U054`, `FC06-C02-U061`, `FC06-C02-U066`, `FC06-C02-U070`, `FC06-C02-U081`, `FC06-C02-U083`, `FC06-C02-U086`, `FC06-C02-U089`–`FC06-C02-U090`, `FC06-C02-U098`, `FC06-C02-U107`, `FC06-C02-U109`, `FC06-C02-U127`, `FC06-C02-U255`–`FC06-C02-U260`, `FC06-C02-U302`, `FC06-C02-U305`, `FC06-C03-U002`–`FC06-C03-U005`, `FC06-C03-U023`, `FC06-C03-U025`, `FC06-C03-U079`, `FC06-C03-U121`–`FC06-C03-U123`, `FC06-C03-U196`.
+Delivered/directly reusable by mapping: **60/729**; pending realization: **669** (reference-port=1, unmatched=668).
+Delivered/direct-reuse spans: `FC06-C01-U004`, `FC06-C01-U008`–`FC06-C01-U010`, `FC06-C01-U013`–`FC06-C01-U015`, `FC06-C01-U025`, `FC06-C01-U034`–`FC06-C01-U035`, `FC06-C01-U074`, `FC06-C01-U081`, `FC06-C01-U097`, `FC06-C01-U112`, `FC06-C01-U114`, `FC06-C01-U116`, `FC06-C02-U002`, `FC06-C02-U010`, `FC06-C02-U012`, `FC06-C02-U018`, `FC06-C02-U022`, `FC06-C02-U027`, `FC06-C02-U029`, `FC06-C02-U036`, `FC06-C02-U039`, `FC06-C02-U043`, `FC06-C02-U050`–`FC06-C02-U051`, `FC06-C02-U054`, `FC06-C02-U061`, `FC06-C02-U066`, `FC06-C02-U070`, `FC06-C02-U081`, `FC06-C02-U083`, `FC06-C02-U086`, `FC06-C02-U089`–`FC06-C02-U090`, `FC06-C02-U098`, `FC06-C02-U107`, `FC06-C02-U109`, `FC06-C02-U127`, `FC06-C02-U255`–`FC06-C02-U260`, `FC06-C02-U302`, `FC06-C02-U305`, `FC06-C03-U002`–`FC06-C03-U005`, `FC06-C03-U023`, `FC06-C03-U025`, `FC06-C03-U079`, `FC06-C03-U121`–`FC06-C03-U123`, `FC06-C03-U196`.
 Phase blocker: Sweep III is not complete corpus-wide: FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16.
 
 Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC06-C01-U004` | Proposition 1.1 — algebraic sets are closed-set data | `FC06-C01-U003` | ready by recorded prerequisites | unmatched; author |
-| `FC06-C01-U013` | Proposition 1.2 — zero-set/vanishing-ideal calculus | `FC06-C01-U002`, `FC06-C01-U012` | ready by recorded prerequisites | unmatched; author |
-| `FC06-C01-U031` | Theorem 1.8A — dimension theorem for finitely generated domains | `FC06-C01-U029` | ready by recorded prerequisites | unmatched; author |
-| `FC06-C01-U037` | Remark 1.13.1 — height two need not be two-generated | `FC06-C01-U035` | ready by recorded prerequisites | unmatched; author |
-| `FC06-C01-U042` | Proposition 2.1 — projective algebraic sets are closed-set data | `FC06-C01-U041` | ready by recorded prerequisites | unmatched; author |
+| `FC06-C01-U016` | Example 1.4.1 — affine space is irreducible | `FC06-C01-U015` | ready by recorded prerequisites | unmatched; author |
+| `FC06-C01-U017` | Example 1.4.2 — irreducible plane curves | `FC06-C01-U015` | ready by recorded prerequisites | unmatched; author |
+| `FC06-C01-U019` | Example 1.4.4 — maximal ideals are points | `FC06-C01-U015` | ready by recorded prerequisites | unmatched; author |
+| `FC06-C01-U020` | Example 1.4.5 — algebraic closure is essential | `FC06-C01-U013`, `FC06-C01-U014` | ready by recorded prerequisites | unmatched; author |
+| `FC06-C01-U022` | Remark 1.4.6 — affine varieties and finitely generated domains | `FC06-C01-U011`, `FC06-C01-U015`, `FC06-C01-U021` | ready by recorded prerequisites | unmatched; author |
 
 ## FC07 — Definitions
 
