@@ -87,6 +87,10 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # operator B to name the d¹ map of Connes' spectral sequence.  Existence
         # of that induced homology differential is result content, not new data.
         "FC05-C09-U122",
+        # The §10.8 convention merely says later applications use the dual
+        # Composition Theorem isomorphism LF ∘ LG ≅ L(FG) without restating it.
+        # That is theorem-level comparison data, not a new definition.
+        "FC05-C10-U092",
     }
 )
 
