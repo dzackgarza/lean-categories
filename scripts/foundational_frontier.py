@@ -91,6 +91,10 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # Composition Theorem isomorphism LF ∘ LG ≅ L(FG) without restating it.
         # That is theorem-level comparison data, not a new definition.
         "FC05-C10-U092",
+        # The §10.8 change-of-rings RHom row is the Composition Theorem applied
+        # to Hom_R(S,-), asserting an isomorphism of already-defined derived Hom
+        # objects.  The comparison-map construction itself is C10-U086.
+        "FC05-C10-U096",
     }
 )
 

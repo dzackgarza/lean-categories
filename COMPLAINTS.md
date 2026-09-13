@@ -90,7 +90,10 @@ does not justify weakening a dependent theorem or starting unrelated work.
   theorem-layer content. `FC05-C10-U092` is the same failure mode: the row is
   only a convention to use the dual Composition Theorem isomorphism
   `LF ∘ LG ≅ L(FG)` without further comment, so it likewise introduces no
-  definition-layer object or notation. These rows
+  definition-layer object or notation. `FC05-C10-U096` is likewise only the
+  Composition Theorem applied to `Hom_R(S,-)`, producing the derived
+  change-of-rings `RHom` isomorphism; the actual comparison-map construction
+  already occurs at `FC05-C10-U086`. These rows
   are excluded from the FC05 definition population rather than counted as
   missing definitions.
 - **Repair link:** `scripts/foundational_frontier.py` now classifies the
