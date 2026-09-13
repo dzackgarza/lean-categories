@@ -719,6 +719,28 @@ and preserve the original source obligation. Retain useful reference implementat
 with exact provenance. Do not turn an inconvenient port or a partial match into a
 greenfield task without the required reuse search.
 
+#### `project-existing` is not a route unless the project code is itself mapped
+
+The audit claim of this repository is that every definition traces to real literature or a real
+library. A `project-existing` row points at our own Lean file, so it only preserves that claim if
+the declaration it names carries its own route — to Mathlib, to a cited port, or to a source unit
+realized under these rules. Where it does not, the chain terminates inside our own invention and
+the row records reinvention as though it were reuse. That is worse than `unmatched`, because
+`unmatched` at least announces that something must be built.
+
+On 2026-09-13 the FC06 tables moved `FC06-C01-U001` and `FC06-C01-U011` from Mathlib routes onto
+`project-existing` pointing at `LeanCategories/AlgebraicGeometry/AffinePointSpace.lean` and
+`ClassicalVariety.lean`, for units Mathlib supplies through `Fin n → k` with
+`MvPolynomial.zeroLocus`, and through `IsIrreducible`/`IsClosed`/`IsOpen`. Nothing in the rows
+was false; the files exist and do contain the constructions. The rows were still wrong, because
+the question a mapping answers is not "does this repository have it" but "what does this
+repository owe the literature for it".
+
+So before recording `project-existing`, open the named declaration and find its own route. If it
+has none, the honest row is the Mathlib one you skipped, and the local file is now the thing to
+retire against it — file that under `audit-authored-definitions` rather than blessing it here. A
+route that points at unmapped local code is a mapping failure, not a shortcut.
+
 #### A bundled row is matched clause by clause, and `unmatched` is the last resort
 
 Authorship is cleared only for a unit whose mapping is `unmatched`, so `unmatched` is the most
