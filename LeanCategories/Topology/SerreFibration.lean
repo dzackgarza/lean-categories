@@ -5,8 +5,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Topology.SurfaceTriangulation
+public import LeanCategories.Topology.HomotopyLifting
 public import Mathlib.AlgebraicTopology.SimplicialComplex.Basic
-public import Mathlib.Topology.Homotopy.Basic
 
 /-!
 # Serre fibrations
@@ -70,11 +70,8 @@ structure SerreFibration (π : C(E, B)) where
   /-- Weibel's homotopy lifting property for every finite polyhedron `P` and unit interval `I`:
 a homotopy in the base whose time-zero map lifts through `π` admits a homotopy lift with that
 prescribed time-zero map. -/
-  liftHomotopy : ∀ (P : Type*) [TopologicalSpace P], IsFinitePolyhedron P →
-    ∀ (g : C(P, E)) (H : C(P × unitInterval, B)),
-      (∀ p, H (p, 0) = π (g p)) →
-      ∃ G : C(P × unitInterval, E),
-        (∀ p, G (p, 0) = g p) ∧ ∀ pt, π (G pt) = H pt
+  liftHomotopy : ∀ (P : Type*) [TopologicalSpace P],
+    IsFinitePolyhedron P → HasHomotopyLiftingProperty π P
 
 namespace SerreFibration
 
