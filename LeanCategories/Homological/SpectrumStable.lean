@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Homological.Spectrum
+public import LeanCategories.Topology.HomotopyGroups
 public import Mathlib.CategoryTheory.Localization.Construction
 
 /-!
@@ -44,28 +45,6 @@ def stableHomotopyLevel (n : ℤ) : ℕ :=
 /-- The ordinary homotopy degree used at `stableHomotopyLevel n`. -/
 def stableHomotopyDegree (n : ℤ) : ℕ :=
   Int.toNat (n + stableHomotopyLevel n)
-
-/-- Postcomposition sends a generalized based loop to a generalized based loop. -/
-def basedGenLoopMap {X Y : BasedTop.{u}} (f : X ⟶ Y) (N : Type*)
-    (p : GenLoop N X.right X.point) : GenLoop N Y.right Y.point :=
-  ⟨f.right.hom.comp p.1, by
-    intro z hz
-    change f.right (p z) = Y.point
-    calc
-      f.right (p z) = f.right X.point := congrArg f.right (p.2 z hz)
-      _ = Y.point := BasedTop.map_point f⟩
-
-/-- Postcomposition by a based map preserves homotopy relative to the cube boundary. -/
-theorem basedGenLoopMap_homotopic {X Y : BasedTop.{u}} (f : X ⟶ Y) {N : Type*}
-    {p q : GenLoop N X.right X.point} (h : GenLoop.Homotopic p q) :
-    GenLoop.Homotopic (basedGenLoopMap f N p) (basedGenLoopMap f N q) := by
-  change (f.right.hom.comp p.1).HomotopicRel (f.right.hom.comp q.1) (Cube.boundary N)
-  exact h.comp_continuousMap f.right.hom
-
-/-- The map on homotopy groups induced by a based map. -/
-def basedHomotopyGroupMap {X Y : BasedTop.{u}} (f : X ⟶ Y) (N : Type*) :
-    HomotopyGroup N X.right X.point → HomotopyGroup N Y.right Y.point :=
-  Quotient.map (basedGenLoopMap f N) (fun _ _ h => basedGenLoopMap_homotopic f h)
 
 /-- The `n`th stable homotopy group of a spectrum, evaluated at the canonical sufficiently large
 level `stableHomotopyLevel n`.
