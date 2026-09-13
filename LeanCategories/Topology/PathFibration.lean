@@ -47,6 +47,41 @@ def basedPathEndpoint (X : Type u) [TopologicalSpace X] (x₀ : X) :
   toFun γ := γ.1 1
   continuous_toFun := (continuous_eval_const 1).comp continuous_subtype_val
 
+/-- The fiber of endpoint evaluation over the basepoint. -/
+def BasedPathLoopFiber (X : Type u) [TopologicalSpace X] (x₀ : X) :=
+  { γ : BasedPathSpace X x₀ // basedPathEndpoint X x₀ γ = x₀ }
+
+instance basedPathLoopFiberTopologicalSpace (X : Type u) [TopologicalSpace X] (x₀ : X) :
+    TopologicalSpace (BasedPathLoopFiber X x₀) := by
+  unfold BasedPathLoopFiber
+  infer_instance
+
+/-- The fiber of `PX → X` over the basepoint is canonically the based loop space.
+
+Both sides carry the topology induced from the compact-open topology on `C(I,X)`.
+
+Source: Hatcher, *Algebraic Topology*, §4.3, p. 378 (FC07-C04-U088). -/
+def basedPathLoopHomeomorph (X : Type u) [TopologicalSpace X] (x₀ : X) :
+    BasedPathLoopFiber X x₀ ≃ₜ Path x₀ x₀ where
+  toFun γ :=
+    { toContinuousMap := γ.1.1
+      source' := γ.1.2
+      target' := γ.2 }
+  invFun γ := ⟨⟨γ.toContinuousMap, γ.source⟩, γ.target⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+  continuous_toFun := by
+    apply continuous_induced_rng.mpr
+    exact continuous_subtype_val.comp continuous_subtype_val
+  continuous_invFun := by
+    apply Continuous.subtype_mk
+    · apply Continuous.subtype_mk
+      · exact continuous_induced_dom
+      · intro γ
+        exact γ.source
+    · intro γ
+      exact γ.target
+
 /-- The pathspace replacement of `f : A → B`: pairs `(a,γ)` where `γ` begins at `f(a)`.
 
 Source: Hatcher, *Algebraic Topology*, §4.3, pp. 379–380 (FC07-C04-U089–U090). -/
