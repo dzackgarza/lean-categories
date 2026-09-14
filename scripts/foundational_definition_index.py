@@ -181,8 +181,10 @@ def rows(corpus: Path) -> Iterable[list[str]]:
                 unit.unit_id, (unit.unit_id, "", unit.unit_id)
             )
             route = mapping.route if mapping is not None and mapping.route else "missing"
-            if mapping is None or route == "unmatched":
+            if mapping is None or (route == "unmatched" and not mapping.negative_search_complete):
                 action = "search"
+            elif route == "unmatched":
+                action = "author"
             elif route == "reference-port":
                 action = "port"
             elif route == "package-import":
