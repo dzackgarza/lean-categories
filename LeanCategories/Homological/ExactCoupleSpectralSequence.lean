@@ -40,13 +40,18 @@ variable {C : Type u} [Category.{v, u} C] [Abelian C]
 /-- The bidegree index used by Weibel's exact couples. -/
 abbrev ExactCoupleBidegree := ℤ × ℤ
 
-/-- A degree-`s` family of maps, rewritten so that its target is exactly the
-specified bidegree.  If `f_p : X_p ⟶ Y_{p+s}`, then
-`bigradedIncoming s f p : X_{p-s} ⟶ Y_p`. -/
-def bigradedIncoming {X Y : ExactCoupleBidegree → C} (s : ExactCoupleBidegree)
-    (f : ∀ p, X p ⟶ Y (p + s)) (p : ExactCoupleBidegree) :
-    X (p - s) ⟶ Y p :=
-  f (p - s) ≫ eqToHom (congrArg Y (sub_add_cancel p s))
+/-- A homogeneous family of maps rewritten as an incoming map at a specified
+bidegree.  The degree shift is represented by an actual automorphism of the
+indexing set; this is the construction-level datum needed below, while closed
+integer formulas for those shifts belong to Proposition 5.9.2's theorem layer.
+
+If `f_p : X_p ⟶ Y_{s(p)}`, then `bigradedIncoming s f p` is
+`X_{s⁻¹(p)} ⟶ Y_p`. -/
+def bigradedIncoming {X Y : ExactCoupleBidegree → C}
+    (s : ExactCoupleBidegree ≃ ExactCoupleBidegree)
+    (f : ∀ p, X p ⟶ Y (s p)) (p : ExactCoupleBidegree) :
+    X (s.symm p) ⟶ Y p :=
+  f (s.symm p) ≫ eqToHom (congrArg Y (s.apply_symm_apply p))
 
 /-- A bigraded exact couple.  The three exactness fields are written at the
 middle bidegree, so each short complex has literally matching source and target
@@ -58,98 +63,99 @@ structure BigradedExactCouple where
   D : ExactCoupleBidegree → C
   /-- The `E` terms. -/
   E : ExactCoupleBidegree → C
-  /-- Bidegree of `i`. -/
-  iDeg : ExactCoupleBidegree
-  /-- Bidegree of `j`. -/
-  jDeg : ExactCoupleBidegree
-  /-- Bidegree of `k`. -/
-  kDeg : ExactCoupleBidegree
+  /-- Index shift of `i`. -/
+  iShift : ExactCoupleBidegree ≃ ExactCoupleBidegree
+  /-- Index shift of `j`. -/
+  jShift : ExactCoupleBidegree ≃ ExactCoupleBidegree
+  /-- Index shift of `k`. -/
+  kShift : ExactCoupleBidegree ≃ ExactCoupleBidegree
   /-- The map `i`. -/
-  i : ∀ p, D p ⟶ D (p + iDeg)
+  i : ∀ p, D p ⟶ D (iShift p)
   /-- The map `j`. -/
-  j : ∀ p, D p ⟶ E (p + jDeg)
+  j : ∀ p, D p ⟶ E (jShift p)
   /-- The map `k`. -/
-  k : ∀ p, E p ⟶ D (p + kDeg)
-  /-- Consecutive maps `i,j` compose to zero at every middle bidegree. -/
-  i_j : ∀ p, bigradedIncoming iDeg i p ≫ j p = 0
-  /-- Consecutive maps `j,k` compose to zero at every middle bidegree. -/
-  j_k : ∀ p, bigradedIncoming jDeg j p ≫ k p = 0
-  /-- Consecutive maps `k,i` compose to zero at every middle bidegree. -/
-  k_i : ∀ p, bigradedIncoming kDeg k p ≫ i p = 0
-  /-- Exactness at every `D` term between `i` and `j`. -/
+  k : ∀ p, E p ⟶ D (kShift p)
+  /-- Consecutive homogeneous maps `i,j` compose to zero. -/
+  i_j : ∀ p, i p ≫ j (iShift p) = 0
+  /-- Consecutive homogeneous maps `j,k` compose to zero. -/
+  j_k : ∀ p, j p ≫ k (jShift p) = 0
+  /-- Consecutive homogeneous maps `k,i` compose to zero. -/
+  k_i : ∀ p, k p ≫ i (kShift p) = 0
+  /-- Exactness of each consecutive `i,j` pair. -/
   exact_ij : ∀ p,
-    (ShortComplex.mk (bigradedIncoming iDeg i p) (j p) (i_j p)).Exact
-  /-- Exactness at every `E` term between `j` and `k`. -/
+    (ShortComplex.mk (i p) (j (iShift p)) (i_j p)).Exact
+  /-- Exactness of each consecutive `j,k` pair. -/
   exact_jk : ∀ p,
-    (ShortComplex.mk (bigradedIncoming jDeg j p) (k p) (j_k p)).Exact
-  /-- Exactness at every `D` term between `k` and `i`. -/
+    (ShortComplex.mk (j p) (k (jShift p)) (j_k p)).Exact
+  /-- Exactness of each consecutive `k,i` pair. -/
   exact_ki : ∀ p,
-    (ShortComplex.mk (bigradedIncoming kDeg k p) (i p) (k_i p)).Exact
+    (ShortComplex.mk (k p) (i (kShift p)) (k_i p)).Exact
 
 namespace BigradedExactCouple
 
 variable (X : BigradedExactCouple (C := C))
 
 /-- The incoming `i` map at a fixed middle bidegree. -/
-abbrev incomingI (p : ExactCoupleBidegree) : X.D (p - X.iDeg) ⟶ X.D p :=
-  bigradedIncoming X.iDeg X.i p
+abbrev incomingI (p : ExactCoupleBidegree) : X.D (X.iShift.symm p) ⟶ X.D p :=
+  bigradedIncoming X.iShift X.i p
 
 /-- The incoming `j` map at a fixed middle bidegree. -/
-abbrev incomingJ (p : ExactCoupleBidegree) : X.D (p - X.jDeg) ⟶ X.E p :=
-  bigradedIncoming X.jDeg X.j p
+abbrev incomingJ (p : ExactCoupleBidegree) : X.D (X.jShift.symm p) ⟶ X.E p :=
+  bigradedIncoming X.jShift X.j p
 
 /-- The incoming `k` map at a fixed middle bidegree. -/
-abbrev incomingK (p : ExactCoupleBidegree) : X.E (p - X.kDeg) ⟶ X.D p :=
-  bigradedIncoming X.kDeg X.k p
+abbrev incomingK (p : ExactCoupleBidegree) : X.E (X.kShift.symm p) ⟶ X.D p :=
+  bigradedIncoming X.kShift X.k p
 
-/-- The degree step of the page differential `k ≫ j`, without yet identifying
+/-- The index shift of the page differential `k ≫ j`, without yet identifying
 it with Weibel's closed formula `(-r,r-1)`. -/
-def pageStep : ExactCoupleBidegree := X.kDeg + X.jDeg
+def pageShift : ExactCoupleBidegree ≃ ExactCoupleBidegree :=
+  X.kShift.trans X.jShift
 
 /-- The complex shape determined directly by the composite `k ≫ j`.
 Its relation is written with the same parenthesization as the actual composite,
 which keeps the construction free of artificial transport morphisms. -/
 def pageShape : ComplexShape ExactCoupleBidegree where
-  Rel p q := (p + X.kDeg) + X.jDeg = q
+  Rel p q := X.pageShift p = q
   next_eq h h' := h.symm.trans h'
-  prev_eq h h' := by
-    have hk : _ + X.kDeg = _ + X.kDeg := add_right_cancel (h.trans h'.symm)
-    exact add_right_cancel hk
+  prev_eq h h' := X.pageShift.injective (h.trans h'.symm)
 
 /-- The exact-couple differential on the `E` terms, in categorical composition
 order: `E_p ⟶ D_{p+k} ⟶ E_{p+k+j}`. -/
 def pageDifferential (p : ExactCoupleBidegree) :
-    X.E p ⟶ X.E ((p + X.kDeg) + X.jDeg) :=
-  X.k p ≫ X.j (p + X.kDeg)
+    X.E p ⟶ X.E (X.pageShift p) :=
+  X.k p ≫ X.j (X.kShift p)
 
 /-- The direct `j`--`k` composite is zero. -/
 theorem j_comp_k (p : ExactCoupleBidegree) :
-    X.j p ≫ X.k (p + X.jDeg) = 0 := by
-  have h := X.j_k (p + X.jDeg)
-  simpa [bigradedIncoming] using h
+    X.j p ≫ X.k (X.jShift p) = 0 := by
+  exact X.j_k p
 
 /-- Consecutive exact-couple page differentials compose to zero. -/
 theorem pageDifferential_sq (p : ExactCoupleBidegree) :
     X.pageDifferential p ≫
-      X.pageDifferential ((p + X.kDeg) + X.jDeg) = 0 := by
-  unfold pageDifferential
-  slice_lhs 2 3 => rw [X.j_comp_k (p + X.kDeg)]
+      X.pageDifferential (X.pageShift p) = 0 := by
+  unfold pageDifferential pageShift
+  simp only [Equiv.trans_apply]
+  slice_lhs 2 3 =>
+    exact X.j_comp_k (X.kShift p)
   simp
+  all_goals rfl
 
 /-- The page homological complex intrinsically constructed from a bigraded
 exact couple. -/
 def page : HomologicalComplex C X.pageShape where
   X := X.E
   d p q :=
-    if h : (p + X.kDeg) + X.jDeg = q then
+    if h : X.pageShift p = q then
       X.pageDifferential p ≫ eqToHom (congrArg X.E h)
     else 0
   shape p q h := by
-    change ¬((p + X.kDeg) + X.jDeg = q) at h
+    change ¬(X.pageShift p = q) at h
     simp [h]
   d_comp_d' p q r hpq hqr := by
-    change (p + X.kDeg) + X.jDeg = q at hpq
-    change (q + X.kDeg) + X.jDeg = r at hqr
+    change X.pageShift p = q at hpq
+    change X.pageShift q = r at hqr
     simp only [dif_pos hpq, dif_pos hqr]
     subst q
     subst r
@@ -169,6 +175,55 @@ structure DerivedData where
   D_iso : ∀ p, couple.D p ≅ Abelian.image (X.incomingI p)
   /-- The next `E` term is the homology of the current exact-couple page. -/
   E_iso : ∀ p, couple.E p ≅ X.page.homology p
+
+/-- A recursively derived exact-couple tower rooted at `X`.
+
+This is the source-faithful input to the associated spectral-sequence
+construction: one supplies the actual sequence of exact couples together with
+the fact that each successor is the derived couple of its predecessor.  No
+global choice of a derived couple for unrelated exact couples is required. -/
+structure DerivedTower where
+  /-- The `n`th exact couple in the tower. -/
+  couple : ℕ → BigradedExactCouple (C := C)
+  /-- The tower starts at `X`. -/
+  zero_eq : couple 0 = X
+  /-- One-step derived-couple data at every stage. -/
+  step : ∀ n, (couple n).DerivedData
+  /-- The derived couple supplied by `step n` is the next tower term. -/
+  succ_eq : ∀ n, (step n).couple = couple (n + 1)
+
+namespace DerivedTower
+
+variable (T : X.DerivedTower)
+
+/-- The complex shape on page `r` of a spectral sequence starting at page `a`. -/
+def spectralShape (a r : ℤ) : ComplexShape ExactCoupleBidegree :=
+  (T.couple (r - a).toNat).pageShape
+
+/-- The `r`th page of the spectral sequence attached to the tower. -/
+def spectralPage (a r : ℤ) : HomologicalComplex C (spectralShape X T a r) :=
+  (T.couple (r - a).toNat).page
+
+/-- Successive pages are related by the homology identification in the
+derived-couple step. -/
+def spectralPageIso (a r r' : ℤ) (p : ExactCoupleBidegree)
+    (hrr' : r + 1 = r') (hr : a ≤ r) :
+    (spectralPage X T a r).homology p ≅ (spectralPage X T a r').X p := by
+  have hnat : (r' - a).toNat = (r - a).toNat + 1 := by omega
+  let n := (r - a).toNat
+  have hnext : (T.step n).couple.E p = (T.couple (r' - a).toNat).E p := by
+    rw [T.succ_eq n]
+    exact congrArg (fun m : ℕ => (T.couple m).E p) hnat.symm
+  exact ((T.step n).E_iso p).symm ≪≫ eqToIso hnext
+
+/-- The spectral sequence intrinsically constructed from a rooted derived
+exact-couple tower. -/
+def spectralSequence (a : ℤ) :
+    SpectralSequence C (spectralShape X T a) a where
+  page r _ := spectralPage X T a r
+  iso r r' p hrr' hr := spectralPageIso X T a r r' p hrr' hr
+
+end DerivedTower
 
 variable (derive : ∀ Y : BigradedExactCouple (C := C), Y.DerivedData)
 

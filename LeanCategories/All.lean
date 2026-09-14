@@ -123,6 +123,7 @@ public import LeanCategories.Homological.SheafAB4StarCounterexample
 public import LeanCategories.Homological.SpectralSequenceConvergence
 public import LeanCategories.Homological.SpectralSequenceInfinity
 public import LeanCategories.Homological.ExactCoupleSpectralSequence
+public import LeanCategories.Homological.BocksteinSpectralSequence
 public import LeanCategories.Homological.DoubleComplexFiltrations
 public import LeanCategories.Homological.CentralHomLocalization
 public import LeanCategories.Homological.KoszulComplex
