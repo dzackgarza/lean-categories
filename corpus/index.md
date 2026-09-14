@@ -40,6 +40,7 @@ okf_version: '0.1'
 - [Definition catalogue - Hatcher Algebraic Topology](definition-catalogue-hatcher-algebraic-topology) - # *Algebraic Topology*: definition catalogue
 - [Definition catalogue - Whitehead Homotopy Theory](definition-catalogue-whitehead-homotopy-theory) - # *Elements of Homotopy Theory*: definition catalogue
 - [Definition catalogue - Apostol Analytic Number Theory](definition-catalogue-apostol-analytic-number-theory) - # *Introduction to Analytic Number Theory*: definition catalogue
+- [Kerodon source-unit index](kerodon-source-unit-index) - Exhaustive supplementary stable-tag index for 7,673 current and retired definitions, results, examples, remarks, exercises, notation records, equations, and related mathematical units in Kerodon.
 - [Dummit and Foote definition catalogue](dummit-and-foote-definition-catalogue) - # Abstract Algebra: definition catalogue
 - [Folland real analysis definition catalogue](folland-real-analysis-definition-catalogue) - # Real Analysis: definition catalogue
 - [Ahlfors complex analysis definition catalogue](ahlfors-complex-analysis-definition-catalogue) - # Complex Analysis: definition catalogue
