@@ -314,3 +314,10 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
   epi-killing predicate, while `yonedaDefect` is the functor-category cokernel of `h_B → h_C`.
 - **Repair link:** FC05-C01-U064; later localizing-subcategory statements should use these owners
   without recombining them into a new definition.
+
+### FC08-CC-U009 is false for empty diffeomorphism domains as frozen
+
+- **Need:** the Appendix C remap must not certify Proposition C.4's ambient-dimension conclusion without the nonemptiness hypothesis needed by that conclusion.
+- **Evidence:** the frozen FC08-Catalogue statement says that if open `U ⊆ ℝ^n` and `V ⊆ ℝ^m` are diffeomorphic, then `m = n`. For any `m ≠ n`, taking `U = ∅` and `V = ∅` gives a smooth bijection with smooth inverse, while the claimed dimension equality is false. The derivative-inverse clause is vacuous on this example.
+- **Coverage and disposition:** the Appendix C mapping keeps U009 `unmatched` as written and records the counterexample. Under `Nonempty U`, the standard chain-rule argument makes `D F(a)` and `D(F⁻¹)(F(a))` inverse linear maps, giving the inverse-derivative formula and equality of finite dimensions; that repaired theorem is not substituted silently for the frozen source statement.
+- **Repair link:** FC08-CC-U009, `corpus/appendix-c-review-of-calculus-fc08.md`. Preserve the catalogue quotation and source defect; Definitions remain blocked by `remap-strict-bundle`.
