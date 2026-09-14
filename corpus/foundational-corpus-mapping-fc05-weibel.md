@@ -44,6 +44,8 @@ Sweep III C04-U068 is now realized by `LeanCategories/Homological/KoszulComplex.
 
 Sweep III C04-U069 now uses that canonical owner directly in `LeanCategories/Homological/KoszulHomology.lean`. `koszulHomology` and `koszulCohomology` take only the central sequence and coefficient module, exactly as Notation 4.5.1 does; the realization-parametrized `…Of` helpers are retained solely for comparison maps. Focused builds of `KoszulHomology` and the dependent `KoszulTransition` module both succeed.
 
+Sweep III C04-U070 is realized by `LeanCategories/Homological/KoszulExteriorDescription.lean::canonicalKoszulExteriorDescription`: at arbitrary-ring generality it uses the source's free module on ordered wedge symbols and proves the U068 differential is contraction by the central sequence. In the commutative specialization, `koszulExteriorPowerEquiv` and `koszulExteriorPowerEquiv_wedgeSymbol` compare that model to Mathlib's actual exterior power and standard exterior basis. The focused module build succeeds; the earlier exhaustive external-search evidence remains provenance/prior art rather than a narrower substitute.
+
 Canonical catalogue: [[foundational-corpus-units-fc05-weibel|FC05 — Weibel, An Introduction to Homological Algebra]].
 
 Pinned project baseline: Mathlib `db584cd6d46c92f209a44c0f1c829460d327499d`, Lean 4.33.0. Current Mathlib was refreshed 2026-09-14 to `2ff8073df352b7cb74638403c464ed5cd3f97ce2`; declarations first appearing after the project pin are revision-specific reference-port routes unless an importable package route is independently justified.
