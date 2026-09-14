@@ -74,15 +74,22 @@ obstruction — is deep theorem work on a single unit while the definitions its 
 are still missing. If a definition you need is absent, that absence *is* the next unit; add it
 with its source and mapping record rather than assuming it around.
 
-Exact-route remediation is likewise **source-local**, not a corpus-wide phase barrier. The
-2026-09-13/14 global `remap-strict-bundle` sweep ran for roughly half a day at high commit cadence
-while preventing any Definitions work from opening. That was a scheduling defect, not evidence
-that the mappings were unimportant. The durable pipeline is now just-in-time: close the current
-source's `fcNN-remap` node, immediately perform that source's Definitions work, then remap the next
-source when its Definitions pass is next. Already-delivered remap work for later sources remains
-valid prior work and must be reused rather than repeated. Do not resume a heaviest-unmatched-first
-corpus sweep while an earlier source's Definitions pass is ready or can be made ready by closing
-its own remap node.
+Mapping is an essential global prerequisite for greenfield Definitions. The current correction is
+**Mapping, not remapping**: its worklist is the definitional catalogue units whose current route is
+`unmatched`, because only those units would otherwise force this repository to invent mathematics.
+A definition that already has a real formalization source route — `mathlib`, `project-existing`,
+`package-import`, or `reference-port` — is not part of this fixing-the-mapping exercise unless
+concrete evidence falsifies that particular route. Do not spend the correction recursively
+re-auditing positive rows.
+
+Before authoring any new definition, exhaust those unmatched definitional obligations against the
+live `formalization-corpus` under multiple mathematical formulations, pinned/current Mathlib and
+open work, Reservoir and discoverable Lean repositories, and the other proof-assistant repositories
+indexed by the corpus. A checked Rocq, Agda, Isabelle, or other prover implementation is still an
+existing reference implementation: record it as provenance to port/adapt rather than rederive the
+textbook construction. Definitions resume only after Mapping has either found an existing
+implementation for each such obligation or recorded genuinely exhaustive negative evidence. The
+point of the barrier is precisely to minimize how much new mathematics Sweep III must write.
 
 ## A record update is not a unit of work
 
@@ -612,18 +619,20 @@ independent sequential plans.
    hypotheses/data, and source-unit dependencies. Do not consult Lean coverage to decide whether
    a mathematical unit deserves a row. Establish coverage of the admitted source before
    deriving filtered worklists; unrecognized sections or metadata remain unresolved inputs.
-2. **Lean-ecosystem mapping sweep.** Only after the catalogue is complete, search every unit
+2. **Formalization-ecosystem mapping sweep.** Only after the catalogue is complete, search every unit
    against pinned and upstream Mathlib, open Mathlib work, the live
    [`formalization-corpus`](https://dzackgarza.github.io/formalization-corpus/) search/API,
    Loogle/LeanSearch, Reservoir, the local source atlas, **broad GitHub search across all
-   discoverable Lean repositories**, local mirrors, and statement banks. Inspect actual declarations
+   discoverable Lean repositories**, and the Rocq/Agda/Isabelle/other proof-assistant repositories
+   indexed by `formalization-corpus`, plus local mirrors and statement banks. Inspect actual declarations
    and hypotheses. Classify the unit as
    `mathlib`, `project-existing`, `package-import`, `reference-port`, or `unmatched`, recording
    exact repo/commit/path/declaration/license/toolchain provenance. Before accepting a route,
    compare the entire source obligation with the actual candidate declarations using the
    [mapping acceptance boundary](#accept-a-mapping-against-the-whole-source-obligation).
-   Import usable packages; when Lean code exists but is not directly importable, preserve it
-   as a reference implementation to port/adapt. Only `unmatched` units are greenfield mathematics.
+   Import usable packages; when a checked implementation exists but is not directly importable —
+   including in another proof assistant — preserve it as a reference implementation to port/adapt.
+   Only `unmatched` units are greenfield mathematics.
 3. **Definition sweep.** Traverse every definitional unit using its mapping. Reuse canonical
    owners directly, port reference implementations rather than rederive them, and author new
    mathematics only for unmatched units. Place every notion at its correct categorical owner,
@@ -731,27 +740,19 @@ and preserve the original source obligation. Retain useful reference implementat
 with exact provenance. Do not turn an inconvenient port or a partial match into a
 greenfield task without the required reuse search.
 
-#### `project-existing` is not a route unless the project code is itself mapped
+#### Positive routes are not the current Mapping worklist
 
-The audit claim of this repository is that every definition traces to real literature or a real
-library. A `project-existing` row points at our own Lean file, so it only preserves that claim if
-the declaration it names carries its own route — to Mathlib, to a cited port, or to a source unit
-realized under these rules. Where it does not, the chain terminates inside our own invention and
-the row records reinvention as though it were reuse. That is worse than `unmatched`, because
-`unmatched` at least announces that something must be built.
+The current Mapping correction exists to eliminate unnecessary greenfield authoring. Its active
+worklist is the definitional units currently labelled `unmatched`. A row already carrying a real
+source route — Mathlib, an importable package, an existing project owner with recorded provenance,
+or a reference implementation to port — already answers the question this correction is asking and
+is left alone. Do not recursively reopen positive rows merely because their implementation chain
+could be audited more deeply.
 
-On 2026-09-13 the FC06 tables moved `FC06-C01-U001` and `FC06-C01-U011` from Mathlib routes onto
-`project-existing` pointing at `LeanCategories/AlgebraicGeometry/AffinePointSpace.lean` and
-`ClassicalVariety.lean`, for units Mathlib supplies through `Fin n → k` with
-`MvPolynomial.zeroLocus`, and through `IsIrreducible`/`IsClosed`/`IsOpen`. Nothing in the rows
-was false; the files exist and do contain the constructions. The rows were still wrong, because
-the question a mapping answers is not "does this repository have it" but "what does this
-repository owe the literature for it".
-
-So before recording `project-existing`, open the named declaration and find its own route. If it
-has none, the honest row is the Mathlib one you skipped, and the local file is now the thing to
-retire against it — file that under `audit-authored-definitions` rather than blessing it here. A
-route that points at unmapped local code is a mapping failure, not a shortcut.
+A concrete contradiction still matters: if source reading or execution shows that a positive row
+does not actually implement the recorded obligation, repair that factual mapping at its owner.
+That exception is evidence-driven correction, not the worklist for the current Mapping correction.
+Auditing already-authored project definitions for reinvention is a separate downstream quality task.
 
 #### A bundled row is matched clause by clause, and `unmatched` is the last resort
 
@@ -759,8 +760,8 @@ Authorship is cleared only for a unit whose mapping is `unmatched`, so `unmatche
 consequential label in this repository and it is the one most easily reached by accident. A row
 is `unmatched` when *every known source has been exhausted* — pinned Mathlib, current upstream,
 open PRs, the live `formalization-corpus` API under multiple formulations, Reservoir, every
-discoverable Lean repository, and the formalization atlas — not when the first search returned
-nothing convenient.
+discoverable Lean repository, the other proof-assistant repositories indexed by the corpus, and
+the formalization atlas — not when the first search returned nothing convenient.
 
 **"No single declaration realizes the whole bundled row" is not a ground for `unmatched`.** A
 source row that bundles several clauses is matched by the conjunction of the declarations that

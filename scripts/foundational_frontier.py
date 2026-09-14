@@ -371,14 +371,21 @@ def phase_units(
     if phase == "Theorems":
         return [unit for unit in units if is_theorem(unit)]
     if phase == "Mapping":
-        return units
+        # The reopened Mapping correction exists to prevent greenfield definition
+        # authoring where an implementation already exists elsewhere.  Positive
+        # routes are already sourced and therefore out of this worklist; theorem
+        # rows are not reopened by this definition-focused correction.
+        return [unit for unit in units if is_definition(unit, mappings.get(unit.unit_id))]
     raise ValueError(f"unsupported frontier phase {phase}")
 
 
 def unit_delivered(phase: str, unit: Unit, mappings: dict[str, Mapping]) -> bool:
     mapping = mappings.get(unit.unit_id)
     if phase == "Mapping":
-        return mapping is not None
+        # A reference/package route completes Mapping even when later realization
+        # still needs a port/import.  Only absent records and explicit `unmatched`
+        # verdicts remain source-discovery work here.
+        return mapping is not None and mapping.route != "unmatched"
     if phase == "Theorems" and mapping is not None and mapping.definition_only:
         return False
     return mapping is not None and mapping.delivered
@@ -400,6 +407,10 @@ def mapping_label(mapping: Mapping | None, phase: str) -> str:
     if mapping is None:
         return "missing mapping record"
     route = mapping.route or "legacy-direct"
+    if phase == "Mapping":
+        if mapping.route == "unmatched":
+            return "unmatched; search existing formalizations"
+        return f"{route}; source already found"
     if phase == "Theorems" and mapping.definition_only:
         return f"{route}; theorem clause pending"
     return f"{route}; {mapping.action}"
@@ -418,6 +429,11 @@ def unit_blockers(
     Mixed dependencies that themselves carry definitional content still block
     until that definition layer has an owner.
     """
+    if phase == "Mapping":
+        # Discovery of an existing implementation does not depend on whether a
+        # prerequisite unit has itself been realized locally.
+        return ()
+
     source_id = unit.unit_id.split("-", 1)[0]
     blockers: list[str] = []
     for dep in unit.dependencies:
@@ -517,10 +533,10 @@ def render(reference_dir: Path, limit: int) -> str:
         "Sweep-I unit catalogues and Sweep-II mapping records.",
         "",
         f"Current whole-source ledger: **{len(open_cells)} unticked Mapping/Definitions/Theorems cells**.",
-        "A unit is shown as delivered here only when its mapping record supplies a non-partial `mathlib` or "
-        "`project-existing` route (or an equivalent positive legacy direct row). `package-import`, "
-        "`reference-port`, partial-interface, and `unmatched` rows remain scheduling work until their mapping "
-        "record points to a canonical usable owner.",
+        "For Mapping, a definitional unit is complete once it has a positive implementation source: "
+        "`mathlib`, `project-existing`, `package-import`, or `reference-port`; only missing/`unmatched` "
+        "definitions remain discovery work. For Definitions and Theorems, realization is stricter: "
+        "`reference-port`, `package-import`, partial-interface, and `unmatched` rows can still require work.",
         "",
     ]
 
@@ -548,8 +564,18 @@ def render(reference_dir: Path, limit: int) -> str:
         )
         counts = ", ".join(f"{key}={value}" for key, value in sorted(route_counts.items())) or "none"
 
-        lines.extend(
-            [
+        if phase == "Mapping":
+            summary_lines = [
+                f"## {status.source_id} — {phase}",
+                "",
+                f"Definitions with an implementation source: **{len(delivered)}/{len(units)}**; "
+                f"source-discovery gaps: **{len(pending)}** ({counts}).",
+                f"Already-sourced definition spans: {compact_unit_ids(delivered)}.",
+                f"Phase blocker: {phase_blocker(phase, status, statuses)}",
+                "",
+            ]
+        else:
+            summary_lines = [
                 f"## {status.source_id} — {phase}",
                 "",
                 f"Delivered/directly reusable by mapping: **{len(delivered)}/{len(units)}**; "
@@ -558,7 +584,7 @@ def render(reference_dir: Path, limit: int) -> str:
                 f"Phase blocker: {phase_blocker(phase, status, statuses)}",
                 "",
             ]
-        )
+        lines.extend(summary_lines)
         if not pending:
             lines.extend(["No per-unit residue remains; the whole-source ledger is still authoritative.", ""])
             continue
