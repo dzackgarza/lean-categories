@@ -37,13 +37,30 @@ def unit_metadata(path: Path) -> dict[str, tuple[str, str, str]]:
     result: dict[str, tuple[str, str, str]] = {}
     lines = path.read_text(encoding="utf-8").splitlines()
 
-    for line in lines:
+    heading_starts: list[tuple[int, str, str]] = []
+    for index, line in enumerate(lines):
         match = frontier.HEADING_UNIT_RE.match(line)
         if match is not None:
             unit_id = match.group(1)
             tail = line[match.end() :].strip().lstrip("—-").strip()
             label = clean_markdown(tail) or unit_id
             result[unit_id] = (label, "", label)
+            heading_starts.append((index, unit_id, label))
+
+    # FC01/FC02 use heading records rather than tables.  Their exact source
+    # sentence is already present under `Statement/data`; retain it for bulk
+    # retrieval instead of reducing those units to a slug or bare source ID.
+    for position, (start, unit_id, label) in enumerate(heading_starts):
+        end = heading_starts[position + 1][0] if position + 1 < len(heading_starts) else len(lines)
+        location = ""
+        data = ""
+        for entry in lines[start + 1 : end]:
+            lowered = entry.lower()
+            if lowered.startswith("- **locator:**"):
+                location = clean_markdown(entry.split(":**", 1)[1])
+            elif lowered.startswith("- **statement/data:**"):
+                data = clean_markdown(entry.split(":**", 1)[1])
+        result[unit_id] = (label, location, data or label)
 
     headers: list[str] | None = None
     for line in lines:
@@ -137,6 +154,9 @@ GENERIC_SEARCH_WORDS = {
 def search_key(label: str, data: str) -> str:
     """Derive a compact first-pass discovery query from a catalogue label."""
 
+    if frontier.UNIT_RE.fullmatch(label):
+        return data or label
+
     value = re.sub(
         r"^(?:Definition|Construction|Convention|Notation|Terminology)\b"
         r"(?:\s+[A-Za-z0-9.*-]+)?\s*(?:—|-|:)?\s*",
@@ -181,7 +201,16 @@ def rows(corpus: Path) -> Iterable[list[str]]:
                 unit.unit_id, (unit.unit_id, "", unit.unit_id)
             )
             route = mapping.route if mapping is not None and mapping.route else "missing"
-            if mapping is None or (route == "unmatched" and not mapping.negative_search_complete):
+            # Reopening a source's Mapping phase reopens discovery for every
+            # unmatched definition in that source.  An old
+            # `[negative-search-complete]` marker remains the authoring gate
+            # only after Mapping is closed again; while Mapping is open it is
+            # prior evidence to recheck, not a reason to omit the row from the
+            # bulk candidate census.
+            if mapping is None or (
+                route == "unmatched"
+                and (not status.mapping or not mapping.negative_search_complete)
+            ):
                 action = "search"
             elif route == "unmatched":
                 action = "author"

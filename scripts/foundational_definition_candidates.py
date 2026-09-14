@@ -200,14 +200,22 @@ def query_for(row: Mapping[str, str]) -> str:
     if direct_tag is not None:
         return f"kerodon {direct_tag.group(1)}"
 
-    text = raw.replace("∞", "infinity")
+    text = raw.replace("∞", "infinity").replace("-", " ")
     text = re.sub(r"\\(?:text|operatorname|mathrm|mathbf|mathbb|mathcal)\s*", " ", text)
     text = re.sub(r"[^0-9A-Za-z_+*-]+", " ", text)
-    words = [
-        word
-        for word in text.split()
-        if len(word) >= 2 and word.lower() not in STOPWORDS
-    ]
+    words: list[str] = []
+    for raw_word in text.split():
+        # Zoekt treats a leading `-` (and bare operator-like punctuation) as
+        # query syntax.  Mathematical source text such as `A--D--E` can
+        # otherwise produce a malformed negation query.  Retain only the
+        # alphanumeric core of each lexical token for this broad first pass.
+        word = raw_word.strip("+-*")
+        if (
+            len(word) >= 2
+            and re.search(r"[0-9A-Za-z_]", word)
+            and word.lower() not in STOPWORDS
+        ):
+            words.append(word)
     # Preserve enough of a compound mathematical name to disambiguate it, but
     # avoid requiring incidental prose words to occur in the same source file.
     return " ".join(words[:8]) or raw
@@ -423,6 +431,11 @@ def main() -> None:
         default="primary",
         help="use source-derived search keys or the prior mapping summary as a second formulation",
     )
+    parser.add_argument(
+        "--retry-zero-from",
+        type=Path,
+        help="search only units whose candidate row in this earlier census has file_count=0",
+    )
     parser.add_argument("--no-resume", action="store_true")
     args = parser.parse_args()
 
@@ -434,6 +447,14 @@ def main() -> None:
         if row["action"] == "search"
         and (not args.source or row["source_id"] in set(args.source))
     ]
+    if args.retry_zero_from is not None:
+        prior = read_existing(args.retry_zero_from)
+        zero_units = {
+            unit_id
+            for unit_id, candidate in prior.items()
+            if candidate[4].isdigit() and int(candidate[4]) == 0
+        }
+        selected = [row for row in selected if row["unit_id"] in zero_units]
     cache = kerodon_query_cache(selected, args.kerodon_cache)
     enrich_kerodon_rows(selected, cache)
     if args.query_mode == "mapping-hint":
