@@ -55,6 +55,21 @@ DSL. [`TODO.md`](TODO.md), the
 [FEATURE-FOUNDATIONAL-CORPUS](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/FEATURE-FOUNDATIONAL-CORPUS.md)
 own the current corpus execution state.
 
+Definition-layer ecosystem discovery is deliberately bulk rather than source-serial. The generated
+[`FOUNDATIONAL_DEFINITIONS.tsv`](FOUNDATIONAL_DEFINITIONS.tsv) joins every Sweep-III definition,
+construction, notation, and convention to its source data and current mapping. Refresh and search it
+with:
+
+```bash
+python scripts/foundational_definition_index.py
+python scripts/foundational_definition_candidates.py
+```
+
+The second command uses the live Formalization Corpus batch operation resolved from its OpenAPI
+document and writes resumable candidate checkpoints under `.tmp/`. Candidate hits are discovery
+evidence only; canonical semantic routes remain in `corpus/` mapping records. A greenfield
+`unmatched` disposition requires the finite negative-search gate recorded in `AGENTS.md`.
+
 Sage observation, method exposure, backend routing, and runnable parity belong to
 [`dzackgarza/lean-cas-dsl`](https://github.com/dzackgarza/lean-cas-dsl). Sage labels and
 implementation details do not define this library.

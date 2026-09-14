@@ -74,29 +74,33 @@ obstruction — is deep theorem work on a single unit while the definitions its 
 are still missing. If a definition you need is absent, that absence *is* the next unit; add it
 with its source and mapping record rather than assuming it around.
 
-Mapping is an essential prerequisite for greenfield Definitions, but it is **source-local**, not
-a corpus-wide serialization barrier. The active Mapping worklist for a source is its definitional
-catalogue units whose current route is `unmatched`, because only those units would otherwise force
-this repository to invent mathematics. A definition that already has a real formalization source
-route — `mathlib`, `project-existing`, `package-import`, or `reference-port` — is not part of this
-correction unless concrete evidence falsifies that route. Do not recursively re-audit positive rows.
+Mapping is an essential prerequisite for greenfield Definitions, but **candidate discovery is a
+corpus-wide batch retrieval problem, not a source-by-source serial workflow**. Regenerate
+`FOUNDATIONAL_DEFINITIONS.tsv` with `scripts/foundational_definition_index.py`; it is the derived
+join of every definitional catalogue unit with its source data and current mapping. Run
+`scripts/foundational_definition_candidates.py` across every row whose action is `search`, using the
+live `formalization-corpus` batch operation resolved from OpenAPI. Do not issue thousands of
+one-off API requests or wait for FC05 implementation before discovering candidates for FC06–FC17.
+Discovery may run arbitrarily far ahead because finding prior art has no dependency on local Lean
+realization. A definition already carrying `mathlib`, `project-existing`, `package-import`, or
+`reference-port` is not re-searched unless concrete evidence falsifies that route.
 
-Use the in-force corpus traversal order as a pipeline: close FC05 Mapping, immediately perform FC05 Definitions,
-then map FC13 immediately before FC13 Definitions, then FC06, FC07, and so on through FC17. Reuse all mapping
-evidence already delivered for later sources when their turn arrives. Do not hold a ready source's
-Definitions work behind negative-search work for unrelated later sources. The global barrier was
-reintroduced on 2026-09-14 after the repository had already measured roughly half a day of the same
-failure mode: high mapping-commit cadence with no definitions landing. That is scheduling progress,
-not mathematical progress, and it is not the execution order.
+The source traversal order governs **semantic adjudication and implementation**, not cheap
+retrieval. After the global candidate census, take the first source whose definition mapping is
+open, compare its candidates to the actual source clauses, and resolve every definitional row.
+Positive hits receive exact provenance. An `unmatched` row is accepted for greenfield authoring
+only after the finite negative-search rule has been applied and its canonical mapping row contains
+`[negative-search-complete]`; a zero-result lexical query is not such evidence. Once all definition
+rows for a source have either a positive route or that explicit negative-search marker, begin that
+source's Definitions pass immediately. Mapping of its theorem/remark/example rows remains a Sweep-II
+obligation but **does not block Sweep III**; those rows are resolved before their Sweep-IV use.
 
-Before authoring a new definition for the current source, exhaust that source's unmatched
-definitional obligations against the live `formalization-corpus` under multiple mathematical
-formulations, pinned/current Mathlib and open work, Reservoir and discoverable Lean repositories,
-and the other proof-assistant repositories indexed by the corpus. A checked Rocq, Agda, Isabelle,
-or other prover implementation is still an existing reference implementation: record it as
-provenance to port/adapt rather than rederive the textbook construction. That source's Definitions
-resume once its unmatched definitional obligations have either found an implementation or met the
-finite negative-search stopping rule below.
+Before authoring a new definition, therefore, consult the corpus-wide candidate table first, then
+finish targeted searches for that unit under multiple mathematical formulations against pinned and
+current Mathlib/open work, Reservoir and discoverable Lean repositories, and the other proof-assistant
+repositories indexed by `formalization-corpus`. A checked Rocq, Agda, Isabelle, or other prover
+implementation is still an existing reference implementation: record it as provenance to port/adapt
+rather than rederive the textbook construction.
 
 ## A record update is not a unit of work
 

@@ -19,6 +19,7 @@ import argparse
 import base64
 import json
 import os
+import pathlib
 import sys
 import urllib.error
 import urllib.request
@@ -92,7 +93,11 @@ def resolve_operation(spec: Mapping[str, Any], operation_id: str) -> tuple[str, 
 
 
 def call_operation(
-    spec: Mapping[str, Any], operation_id: str, payload: Mapping[str, Any]
+    spec: Mapping[str, Any],
+    operation_id: str,
+    payload: Mapping[str, Any],
+    *,
+    timeout: float = 120,
 ) -> dict[str, Any]:
     """Invoke an operation resolved solely from the OpenAPI document."""
 
@@ -109,7 +114,7 @@ def call_operation(
         },
     )
     try:
-        with urllib.request.urlopen(request, timeout=120) as response:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
             value = json.load(response)
     except urllib.error.HTTPError as error:
         detail = error.read().decode("utf-8", "replace")
@@ -220,6 +225,57 @@ def print_list(response: Mapping[str, Any]) -> None:
         )
 
 
+def load_batch_items(path: pathlib.Path) -> list[dict[str, Any]]:
+    """Load batch search items from a JSON array or JSON Lines file."""
+
+    text = path.read_text(encoding="utf-8")
+    try:
+        value = json.loads(text)
+    except json.JSONDecodeError:
+        value = [json.loads(line) for line in text.splitlines() if line.strip()]
+    if not isinstance(value, list) or not value:
+        raise CorpusAPIError("batch input must be a nonempty JSON array or JSON Lines file")
+    items: list[dict[str, Any]] = []
+    for index, item in enumerate(value, start=1):
+        if not isinstance(item, dict):
+            raise CorpusAPIError(f"batch item {index} is not an object")
+        item_id = item.get("ID")
+        if not isinstance(item_id, str) or not item_id:
+            raise CorpusAPIError(f"batch item {index} has no nonempty ID")
+        request = item.get("Request")
+        if request is None:
+            query = item.get("Q")
+            if not isinstance(query, str) or not query:
+                raise CorpusAPIError(f"batch item {index} has neither Request nor Q")
+            request = {"Q": query}
+            if isinstance(item.get("Opts"), dict):
+                request["Opts"] = item["Opts"]
+        if not isinstance(request, dict):
+            raise CorpusAPIError(f"batch item {index} Request is not an object")
+        items.append({"ID": item_id, "Request": request})
+    return items
+
+
+def print_batch(response: Mapping[str, Any]) -> None:
+    """Render a compact per-query summary for a bulk search response."""
+
+    results = response.get("Results")
+    if not isinstance(results, list):
+        raise CorpusAPIError("batch response has no Results list")
+    for item in results:
+        if not isinstance(item, dict):
+            raise CorpusAPIError("batch Results contains a non-object entry")
+        item_id = item.get("ID", "?")
+        status = item.get("StatusCode", "?")
+        cache = item.get("Cache") or "-"
+        result = item.get("Result") if isinstance(item.get("Result"), dict) else {}
+        print(
+            f"{item_id}\tstatus={status}\tcache={cache}\t"
+            f"files={result.get('FileCount', 0)}\tmatches={result.get('MatchCount', 0)}\t"
+            f"error={item.get('Error') or ''}"
+        )
+
+
 def parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
     """Parse CLI arguments."""
 
@@ -249,6 +305,9 @@ def parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
         default="",
         help="repository query, e.g. repo:mathlib4; empty lists all sources",
     )
+    batch = subparsers.add_parser("batch", help="run OpenAPI operation searchCorpusBatch")
+    batch.add_argument("input", type=pathlib.Path, help="JSON array or JSON Lines search batch")
+    batch.add_argument("--concurrency", type=int, default=16)
     return parser.parse_args(argv)
 
 
@@ -262,6 +321,16 @@ def main(argv: Sequence[str] | None = None) -> int:
             response = call_operation(spec, "searchCorpus", search_payload(arguments))
         elif arguments.command == "list":
             response = call_operation(spec, "listSources", {"Q": arguments.query})
+        elif arguments.command == "batch":
+            response = call_operation(
+                spec,
+                "searchCorpusBatch",
+                {
+                    "Searches": load_batch_items(arguments.input),
+                    "MaxConcurrency": arguments.concurrency,
+                },
+                timeout=180,
+            )
         else:  # argparse makes this unreachable.
             raise CorpusAPIError(f"unsupported command {arguments.command!r}")
 
@@ -270,6 +339,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             print()
         elif arguments.command == "search":
             print_search(response, whole=arguments.whole)
+        elif arguments.command == "batch":
+            print_batch(response)
         else:
             print_list(response)
     except CorpusAPIError as error:

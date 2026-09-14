@@ -136,6 +136,12 @@ class Mapping:
         return "[definition-only]" in self.row.lower()
 
     @property
+    def negative_search_complete(self) -> bool:
+        """Whether an unmatched row has passed the finite negative-search gate."""
+
+        return "[negative-search-complete]" in self.row.lower()
+
+    @property
     def action(self) -> str:
         if self.delivered:
             return "reuse"
@@ -371,16 +377,12 @@ def phase_units(
     if phase == "Theorems":
         return [unit for unit in units if is_theorem(unit)]
     if phase == "Mapping":
-        # The reopened Mapping correction normally targets only definitional
-        # rows because the pre-existing corpus already received an initial
-        # mapping row for every unit.  A newly admitted source (or any damaged
-        # older source) must establish complete row coverage first; otherwise
-        # non-definitional units would never enter the scheduler and the source's
-        # whole-source Mapping cell could never legitimately close.
-        if any(unit.unit_id not in mappings for unit in units):
-            return units
-        # Once row coverage is complete, only unmatched definitions remain
-        # discovery work before the source's Definitions pass.
+        # Sweep-II ultimately maps every corpus unit, but only definitional rows
+        # can force Sweep III to invent an object.  Discovery for that gate is
+        # therefore definition-focused even for a newly admitted source.  Theorem
+        # mapping remains an obligation and is visible when Sweep IV opens; it is
+        # not allowed to serialize the definition layer behind thousands of
+        # unrelated theorem/remark/example searches.
         return [unit for unit in units if is_definition(unit, mappings.get(unit.unit_id))]
     raise ValueError(f"unsupported frontier phase {phase}")
 
@@ -388,9 +390,28 @@ def phase_units(
 def mapping_row_coverage_incomplete(
     units: list[Unit], mappings: dict[str, Mapping]
 ) -> bool:
-    """Whether a source still lacks any canonical Sweep-II mapping row."""
+    """Whether the source's definition layer lacks a canonical mapping row."""
 
-    return any(unit.unit_id not in mappings for unit in units)
+    return any(
+        is_definition(unit, mappings.get(unit.unit_id)) and unit.unit_id not in mappings
+        for unit in units
+    )
+
+
+def definition_mapping_incomplete(
+    units: list[Unit], mappings: dict[str, Mapping]
+) -> bool:
+    """Whether any definition still lacks an accepted reuse/negative disposition."""
+
+    for unit in units:
+        mapping = mappings.get(unit.unit_id)
+        if not is_definition(unit, mapping):
+            continue
+        if mapping is None:
+            return True
+        if mapping.route == "unmatched" and not mapping.negative_search_complete:
+            return True
+    return False
 
 
 def unit_delivered(phase: str, unit: Unit, mappings: dict[str, Mapping]) -> bool:
@@ -399,17 +420,25 @@ def unit_delivered(phase: str, unit: Unit, mappings: dict[str, Mapping]) -> bool
         # A reference/package route completes Mapping even when later realization
         # still needs a port/import.  Only absent records and explicit `unmatched`
         # verdicts remain source-discovery work here.
-        return mapping is not None and mapping.route != "unmatched"
+        return mapping is not None and (
+            mapping.route != "unmatched" or mapping.negative_search_complete
+        )
     if phase == "Theorems" and mapping is not None and mapping.definition_only:
         return False
     return mapping is not None and mapping.delivered
 
 
-def phase_blocker(phase: str, status: SourceStatus, statuses: list[SourceStatus]) -> str:
+def phase_blocker(
+    phase: str,
+    status: SourceStatus,
+    statuses: list[SourceStatus],
+    units: list[Unit],
+    mappings: dict[str, Mapping],
+) -> str:
     if phase == "Mapping" and not status.catalogue:
         return "Sweep I catalogue is not complete for this source."
-    if phase == "Definitions" and not status.mapping:
-        return "Sweep II mapping is not complete for this source."
+    if phase == "Definitions" and not status.mapping and definition_mapping_incomplete(units, mappings):
+        return "Sweep II definition mapping is not complete for this source."
     if phase == "Theorems":
         open_definitions = [entry.source_id for entry in statuses if not entry.definitions]
         if open_definitions:
@@ -599,7 +628,7 @@ def render(reference_dir: Path, limit: int) -> str:
                     f"Canonical mapping rows present: **{len(delivered)}/{len(units)}**; "
                     f"row-coverage gaps: **{len(pending)}** ({counts}).",
                     f"Mapped source-unit spans: {compact_unit_ids(delivered)}.",
-                    f"Phase blocker: {phase_blocker(phase, status, statuses)}",
+                    f"Phase blocker: {phase_blocker(phase, status, statuses, source_units, mappings)}",
                     "",
                 ]
             else:
@@ -609,7 +638,7 @@ def render(reference_dir: Path, limit: int) -> str:
                     f"Definitions with an implementation source: **{len(delivered)}/{len(units)}**; "
                     f"source-discovery gaps: **{len(pending)}** ({counts}).",
                     f"Already-sourced definition spans: {compact_unit_ids(delivered)}.",
-                    f"Phase blocker: {phase_blocker(phase, status, statuses)}",
+                    f"Phase blocker: {phase_blocker(phase, status, statuses, source_units, mappings)}",
                     "",
                 ]
         else:
@@ -619,7 +648,7 @@ def render(reference_dir: Path, limit: int) -> str:
                 f"Delivered/directly reusable by mapping: **{len(delivered)}/{len(units)}**; "
                 f"pending realization: **{len(pending)}** ({counts}).",
                 f"Delivered/direct-reuse spans: {compact_unit_ids(delivered)}.",
-                f"Phase blocker: {phase_blocker(phase, status, statuses)}",
+                f"Phase blocker: {phase_blocker(phase, status, statuses, source_units, mappings)}",
                 "",
             ]
         lines.extend(summary_lines)
