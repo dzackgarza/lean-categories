@@ -16,7 +16,7 @@ project_id: github.com__dzackgarza__lean-categories
 
 # Provenance contract for FC05 C06
 
-- Project-first search was performed at repo HEAD `f90173886bc881c2d43c0a7eb2d9fe7f110ac9a5`. No project declaration owns a complete C06 source row under strict bundle semantics.
+- Project-first search was performed at repo HEAD `f90173886bc881c2d43c0a7eb2d9fe7f110ac9a5`. Later clause-wise remap work credits project declarations for the C06 clauses they own; the baseline search found no complete standalone C06 owner.
 - Pinned Mathlib is `P=db584cd6d46c92f209a44c0f1c829460d327499d`, Lean 4.33.0, Apache-2.0 and directly project-compatible. Every `P` row target was inspected at this revision.
 - Current Mathlib was refreshed on 2026-09-06 at `H=5aedf732b6987e8c26ab3c9ebc855314f82b045f`. H-only declarations are not treated as project-compatible without an independently justified import route. The H audit did not close the remaining strict C06 bundles.
 - `C=ccc3323c6750abca25b49b35106f54eb3a398509` is `git@github.com:kbuzzard/ClassFieldTheory.git`, Apache-2.0, Lean 4.33.0-rc1. Its exact augmentation-ideal, regular-invariants, and cyclic Tate declarations are cited on U007, U011 and U021. These are `reference-port`, not `package-import`, because the audited toolchain differs from the project Lean 4.33.0 pin.
