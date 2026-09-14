@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Homological.CrossedModule
+public import Mathlib.Tactic.Group
 
 /-!
 # Four-term crossed extensions and their three-cochain data
@@ -53,6 +54,14 @@ namespace FourTermCrossedExtension
 
 variable {A N E G : Type u} [Group A] [Group N] [Group E] [Group G]
 
+@[simp]
+lemma act_one (X : FourTermCrossedExtension A N E G) (n : N) : X.act 1 n = n := by
+  simp [CrossedModule.act]
+
+@[simp]
+lemma act_one_mem (X : FourTermCrossedExtension A N E G) (e : E) : X.act e 1 = 1 := by
+  simp [CrossedModule.act]
+
 /-- A normalized multiplicative three-cochain `G³ → A`.
 
 No cocycle equation is part of this definition. -/
@@ -69,6 +78,151 @@ structure NormalizedThreeCochain where
 instance : CoeFun (NormalizedThreeCochain (A := A) (G := G))
     (fun _ => G → G → G → A) :=
   ⟨NormalizedThreeCochain.toFun⟩
+
+/-- A normalized set-theoretic section of the four-term projection. -/
+noncomputable def canonicalSection (X : FourTermCrossedExtension A N E G) (g : G) : E :=
+  by
+    classical
+    exact if h : g = 1 then 1 else Classical.choose (X.projection_surjective g)
+
+@[simp]
+lemma canonicalSection_one (X : FourTermCrossedExtension A N E G) :
+    X.canonicalSection 1 = 1 := by
+  simp [canonicalSection]
+
+@[simp]
+lemma projection_canonicalSection (X : FourTermCrossedExtension A N E G) (g : G) :
+    X.projection (X.canonicalSection g) = g := by
+  classical
+  by_cases h : g = 1
+  · subst g
+    simp
+  · simp only [canonicalSection, dif_neg h]
+    exact Classical.choose_spec (X.projection_surjective g)
+
+/-- The multiplicative defect of the normalized section. -/
+noncomputable def sectionDefect (X : FourTermCrossedExtension A N E G) (g h : G) : E :=
+  X.canonicalSection g * X.canonicalSection h * (X.canonicalSection (g * h))⁻¹
+
+@[simp]
+lemma projection_sectionDefect (X : FourTermCrossedExtension A N E G) (g h : G) :
+    X.projection (X.sectionDefect g h) = 1 := by
+  simp [sectionDefect]
+
+lemma sectionDefect_mem_boundary_range
+    (X : FourTermCrossedExtension A N E G) (g h : G) :
+    X.sectionDefect g h ∈ X.boundary.range := by
+  rw [X.range_boundary_eq_ker_projection]
+  exact MonoidHom.mem_ker.mpr (X.projection_sectionDefect g h)
+
+/-- An arbitrary lift in `N` of the section defect. -/
+noncomputable def rawFactorLift (X : FourTermCrossedExtension A N E G) (g h : G) : N :=
+  Classical.choose (MonoidHom.mem_range.mp (X.sectionDefect_mem_boundary_range g h))
+
+@[simp]
+lemma boundary_rawFactorLift (X : FourTermCrossedExtension A N E G) (g h : G) :
+    X.boundary (X.rawFactorLift g h) = X.sectionDefect g h :=
+  Classical.choose_spec (MonoidHom.mem_range.mp (X.sectionDefect_mem_boundary_range g h))
+
+/-- The normalized lift `u(g,h)` of the multiplication defect. -/
+noncomputable def canonicalFactorLift
+    (X : FourTermCrossedExtension A N E G) (g h : G) : N :=
+  by
+    classical
+    exact if hg : g = 1 then 1 else if hh : h = 1 then 1 else X.rawFactorLift g h
+
+@[simp]
+lemma canonicalFactorLift_one_left
+    (X : FourTermCrossedExtension A N E G) (g : G) :
+    X.canonicalFactorLift 1 g = 1 := by
+  simp [canonicalFactorLift]
+
+@[simp]
+lemma canonicalFactorLift_one_right
+    (X : FourTermCrossedExtension A N E G) (g : G) :
+    X.canonicalFactorLift g 1 = 1 := by
+  classical
+  by_cases hg : g = 1 <;> simp [canonicalFactorLift, hg]
+
+@[simp]
+lemma boundary_canonicalFactorLift
+    (X : FourTermCrossedExtension A N E G) (g h : G) :
+    X.boundary (X.canonicalFactorLift g h) = X.sectionDefect g h := by
+  classical
+  by_cases hg : g = 1
+  · subst g
+    simp [sectionDefect]
+  · by_cases hh : h = 1
+    · subst h
+      simp [sectionDefect]
+    · simp [canonicalFactorLift, hg, hh]
+
+/-- The associativity defect of the lifted factor set. -/
+noncomputable def associativityDefect
+    (X : FourTermCrossedExtension A N E G) (g h k : G) : N :=
+  X.act (X.canonicalSection g) (X.canonicalFactorLift h k) *
+    X.canonicalFactorLift g (h * k) *
+    (X.canonicalFactorLift (g * h) k)⁻¹ *
+    (X.canonicalFactorLift g h)⁻¹
+
+/-- The associativity defect has trivial boundary, hence lies in the image of
+`A`. -/
+@[simp]
+lemma boundary_associativityDefect
+    (X : FourTermCrossedExtension A N E G) (g h k : G) :
+    X.boundary (X.associativityDefect g h k) = 1 := by
+  simp only [associativityDefect, map_mul, map_inv, X.boundary_act,
+    X.boundary_canonicalFactorLift, sectionDefect]
+  group
+
+lemma associativityDefect_mem_inl_range
+    (X : FourTermCrossedExtension A N E G) (g h k : G) :
+    X.associativityDefect g h k ∈ X.inl.range := by
+  rw [X.range_inl_eq_ker_boundary]
+  exact MonoidHom.mem_ker.mpr (X.boundary_associativityDefect g h k)
+
+/-- The `A`-valued associativity defect. -/
+noncomputable def threeCochainFun
+    (X : FourTermCrossedExtension A N E G) (g h k : G) : A :=
+  Classical.choose (MonoidHom.mem_range.mp (X.associativityDefect_mem_inl_range g h k))
+
+@[simp]
+lemma inl_threeCochainFun
+    (X : FourTermCrossedExtension A N E G) (g h k : G) :
+    X.inl (X.threeCochainFun g h k) = X.associativityDefect g h k :=
+  Classical.choose_spec (MonoidHom.mem_range.mp (X.associativityDefect_mem_inl_range g h k))
+
+@[simp]
+lemma threeCochainFun_one_first
+    (X : FourTermCrossedExtension A N E G) (h k : G) :
+    X.threeCochainFun 1 h k = 1 := by
+  apply X.inl_injective
+  rw [X.inl_threeCochainFun]
+  simp [associativityDefect]
+
+@[simp]
+lemma threeCochainFun_one_second
+    (X : FourTermCrossedExtension A N E G) (g k : G) :
+    X.threeCochainFun g 1 k = 1 := by
+  apply X.inl_injective
+  rw [X.inl_threeCochainFun]
+  simp [associativityDefect]
+
+@[simp]
+lemma threeCochainFun_one_third
+    (X : FourTermCrossedExtension A N E G) (g h : G) :
+    X.threeCochainFun g h 1 = 1 := by
+  apply X.inl_injective
+  rw [X.inl_threeCochainFun]
+  simp [associativityDefect]
+
+/-- The normalized three-cochain produced by Weibel's construction. -/
+noncomputable def canonicalThreeCochain
+    (X : FourTermCrossedExtension A N E G) : NormalizedThreeCochain (A := A) (G := G) where
+  toFun := X.threeCochainFun
+  map_one_first := X.threeCochainFun_one_first
+  map_one_second := X.threeCochainFun_one_second
+  map_one_third := X.threeCochainFun_one_third
 
 /-- The choices entering Weibel's four-term-extension construction.
 
@@ -99,7 +253,19 @@ structure Choices (X : FourTermCrossedExtension A N E G) where
   inl_threeCochain : ∀ g h k,
     X.inl (threeCochain g h k) =
       X.act (sectionMap g) (factorLift h k) * factorLift g (h * k) *
-        (factorLift (g * h) k)⁻¹ * (factorLift g h)⁻¹
+      (factorLift (g * h) k)⁻¹ * (factorLift g h)⁻¹
+
+/-- The source choices exist canonically (noncomputably) from exactness. -/
+noncomputable def canonicalChoices (X : FourTermCrossedExtension A N E G) : X.Choices where
+  sectionMap := X.canonicalSection
+  section_one := X.canonicalSection_one
+  projection_section := X.projection_canonicalSection
+  factorLift := X.canonicalFactorLift
+  factorLift_one_left := X.canonicalFactorLift_one_left
+  factorLift_one_right := X.canonicalFactorLift_one_right
+  boundary_factorLift := X.boundary_canonicalFactorLift
+  threeCochain := X.canonicalThreeCochain
+  inl_threeCochain := X.inl_threeCochainFun
 
 end FourTermCrossedExtension
 
