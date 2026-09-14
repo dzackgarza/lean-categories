@@ -12,53 +12,15 @@ confidence: high
 promotable: false
 project_id: github.com__dzackgarza__lean-categories
 ---
-# Foundational corpus mapping FC08 Lee
-
-# Foundational corpus mapping FC08 Lee
-
-# Foundational corpus mapping FC08 Lee
-
-# Foundational corpus mapping FC08 Lee
-
-# Foundational corpus mapping FC08 Lee
-
-# Foundational corpus mapping FC08 Lee
-
-# Foundational corpus mapping FC08 Lee
-
-# Foundational corpus mapping FC08 Lee
-
-# Foundational corpus mapping FC08 Lee
-
-# Foundational corpus mapping FC08 Lee
-
-# Foundational corpus mapping FC08 Lee
-
-# Foundational corpus mapping FC08 Lee
-
-# Foundational corpus mapping FC08 Lee
-
-# Foundational corpus mapping FC08 Lee
-
-# Foundational corpus mapping FC08 Lee
-
-# Foundational corpus mapping FC08 Lee
-
-# Foundational corpus mapping FC08 Lee
-
-# Foundational corpus mapping FC08 Lee
-
-# Foundational corpus mapping FC08 Lee
-
 # FC08 — John M. Lee, *Introduction to Smooth Manifolds*, 2nd ed. mapping
 
-Status: **Sweep II complete.** C01–C22 and Appendices CA–CD mapped.
+Status: **Sweep II exact-route acceptance complete (2026-09-14).** C01–C22 and Appendices CA–CD map every frozen catalogue unit exactly once.
 
 Canonical catalogue: [[foundational-corpus-units-fc08-lee|FC08 — John M. Lee, Introduction to Smooth Manifolds]].
 
-Pinned project baseline: Mathlib `db584cd6d46c92f209a44c0f1c829460d327499d`, Lean 4.33.0. Current upstream Mathlib was refreshed 2026-09-07 to `5315eef9e4ffb98e0f89f278b765c50a149f66ca` (Lean 4.34.0-rc2). Declarations outside the project pin are revision-specific `reference-port` routes unless an importable package route is independently justified.
+Pinned project baseline: Mathlib `db584cd6d46c92f209a44c0f1c829460d327499d`, Lean 4.33.0. Current/project/external revisions are recorded per row and in the source-local provenance contracts; declarations outside the project pin are revision-specific `reference-port` routes unless an importable package route is independently justified.
 
-Every canonical unit receives exactly one Sweep-II route: `mathlib`, `project-existing`, `package-import`, `reference-port`, or `unmatched`. Project source is searched first, followed by pinned/current Mathlib, open/current work, indexed search services, Reservoir/packages, broad discoverable Lean repositories, and local reference mirrors. Strict bundle semantics apply throughout.
+Every canonical unit receives exactly one route: `mathlib`, `project-existing`, `package-import`, `reference-port`, or `unmatched`. Project source is searched first, followed by pinned/current Mathlib, open/current work, indexed search services, Reservoir/packages, broad discoverable Lean repositories, and local reference mirrors. The exact-route remap credits native definitions, short checked representation bridges, and independently supplied clauses; `unmatched` records only the residual mathematical/interface gap. Missing convenience wrappers or source-specific one-theorem bundles are not negative evidence by themselves.
 
 [Provenance contract for FC08 C01](provenance-contract-for-fc08-c01)
 
