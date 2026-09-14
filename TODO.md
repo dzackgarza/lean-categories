@@ -9,10 +9,10 @@ The linked whole-source ledger remains the sole source of sweep completion.
 
 | ID | Obligation | Needs |
 | --- | --- | --- |
-| `corpus` | [Admitted sources, editions, scope and source acquisition](#0a-corpus-v2-amendment--four-admitted-sources) | none |
+| `corpus` | [Admitted sources, editions, scope and source acquisition](#0-foundational-corpus-and-in-force-amendments) | none |
 | `catalogue` | [Sweep I: every source unit](#1-sweep-i--catalogue-every-corpus-unit) | `corpus` |
 | `mapping` | [Sweep II: map every unit onto an existing formalization where one exists](#2-sweep-ii--map-every-unit-onto-existing-formalizations). This is the semantic umbrella for the source-local Mapping nodes below, not a global prerequisite edge into FC05 Definitions. | `catalogue` |
-| `definitions` | [Sweep III: definitions and intrinsic laws](#3-sweep-iii--realize-the-complete-definitional-layer) | `fc16-definitions` |
+| `definitions` | [Sweep III: definitions and intrinsic laws](#3-sweep-iii--realize-the-complete-definitional-layer) | `fc17-definitions` |
 
 The definition rows below deliberately carry no counts. They used to, and every one of them was
 wrong within the day: `fc05-definitions` still read "199 pending of 376" after the source had
@@ -53,6 +53,8 @@ move directly into that source's Definitions pass. Do not finish Mapping for lat
 | `fc15-definitions` | Sweep III for FC15 under the same mapping-first rule. | `fc15-mapping` |
 | `fc16-mapping` | Finish only FC16's unmatched definitional discovery work, reusing prior evidence. | `fc15-definitions` |
 | `fc16-definitions` | Sweep III for FC16 under the same mapping-first rule. | `fc16-mapping` |
+| `fc17-mapping` | Map every FC17 Kerodon source unit through the same Sweep-II gate, with its definitional units forming the mandatory gate into FC17 Definitions. Read each permanent-tag source statement, search pinned/current Mathlib, and use the live `formalization-corpus` API as a required first-class discovery surface under multiple formulations before any `unmatched` verdict. | `fc16-definitions` |
+| `fc17-definitions` | Sweep III for the Kerodon definitional layer. Reuse/import/port the accepted FC17 mappings and author only mathematics that remains genuinely unmatched after `fc17-mapping`. | `fc17-mapping` |
 | `theorems` | [Sweep IV: remaining theorem obligations](#4-sweep-iv--formalize-the-remaining-lemmas-and-theorems) | `definitions`, and per source its own `fcNN-definitions` |
 | `arithmetic-lattice-foundations` | Execute [PLAN-ARITHMETIC-LATTICE-FOUNDATIONS](.agents/plans/features/FEATURE-ARITHMETIC-LATTICE-FOUNDATIONS/plans/PLAN-ARITHMETIC-LATTICE-FOUNDATIONS/PLAN-ARITHMETIC-LATTICE-FOUNDATIONS.md) at its stated natural generality after the foundational source programme: projective formed modules, metric I-duality/modularity, Dedekind/projective arithmetic, equivariant lattices, height-one/local realizations, intrinsic local invariants, ring adeles and adelic genus, local classification, signature loci, and the exact comparison maps back to their Mathlib/project owners. Preserve every distinction the plan calls out: separation vs perfection, primitive vs finite-index embeddings, algebraic vs metric duality, integral ring adeles vs field adeles, and bilinear vs quadratic discriminant data. Reuse Mathlib and external owners before project implementation. **Acceptance:** the plan success criteria and phase/task consumers are realized with kernel-checked comparisons; no familiar special case silently replaces a parameterized construction | `theorems` |
 
@@ -161,8 +163,9 @@ must be committed with the work they describe; `.agents/` is never their canonic
 
 ## The foundational programme
 
-The foundational programme is source-based and corpus v1 is frozen. The exact editions,
-source dependencies, prerequisite rationale, and verified Markdown extraction paths live in
+The foundational programme is source-based. Corpus v1 remains frozen, with the explicit v2 and
+v3 amendments recorded in the source manifest. The exact editions or pinned snapshots,
+source dependencies, prerequisite rationale, and verified source-acquisition paths live in
 [the foundational source index](corpus/foundational-source-corpus.md). Whole-source
 progress for all four sweeps lives only in the
 [central corpus status ledger](corpus/foundational-corpus-status.md).
@@ -178,7 +181,7 @@ Do not merge these sweeps. In particular, implementation availability must not s
 catalogue, and theorem formalization may be long-running without holding the definitional DSL
 hostage.
 
-## 0. Frozen foundational corpus v1
+## 0. Foundational corpus and in-force amendments
 
 The deterministic source order is:
 
@@ -203,7 +206,7 @@ Hatcher instantiate them; and Neukirch/Serre supply local arithmetic before Pete
 p-adic lattice theory.
 
 Changing corpus membership, order, edition, or bounded scope requires a new explicit corpus
-version/amendment. Amendment v2 below is the only such change so far. Existing
+version/amendment. Amendments v2 and v3 below are the only such changes so far. Existing
 Folland/Ahlfors/Shafarevich/Whitehead/Apostol/Lam/Gerstein/etc. catalogues remain supplementary
 and do not silently enlarge the corpus.
 
@@ -236,6 +239,16 @@ v2 traverses:
 `FC01`, `FC02`, `FC03`, `FC04`, `FC05`, `FC13`, `FC06`, `FC07`, `FC08`, `FC09`, `FC10`, `FC11`,
 `FC12`, `FC14`, `FC15`, `FC16`.
 
+## 0b. Corpus v3 amendment — Kerodon
+
+17. `FC17` Lurie, *Kerodon* (pinned stable-tag snapshot).
+
+`FC17` is appended as the higher/homotopy-coherent category-theory branch. Its canonical
+Sweep-I population is the pinned stable-tag snapshot under `corpus/`; definitions are not
+allowed to bypass Sweep II merely because Kerodon is online. Its source-local Mapping and
+Definitions nodes therefore follow `fc16-definitions` in the terminal definition programme.
+Corpus v3 traverses the v2 order above and then `FC17`.
+
 Two further sources are admitted as **supplementary only**, not as corpus members: Folland,
 *Real Analysis: Modern Techniques and Their Applications*, and Conway, *A Course in Functional
 Analysis*. No corpus source's dependency spine passes through measure theory or functional
@@ -249,7 +262,7 @@ acquisition before Sweep I can traverse it.
 
 Plan: [PLAN-FOUNDATIONAL-CORPUS-CATALOGUE-SWEEP](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/plans/PLAN-FOUNDATIONAL-CORPUS-CATALOGUE-SWEEP/PLAN-FOUNDATIONAL-CORPUS-CATALOGUE-SWEEP.md).
 
-Traverse every corpus source completely, in the v2 traversal order above. Record every formal
+Traverse every corpus source completely, in the v3 traversal order above. Record every formal
 unit:
 
 - definitions, constructions, conventions, and notation;
@@ -276,7 +289,7 @@ Plan: [PLAN-FOUNDATIONAL-CORPUS-MAPPING-SWEEP](.agents/plans/features/FEATURE-FO
 
 The initial row-coverage pass is complete, but each source's Mapping cell remains open until its definitional rows that would otherwise authorize greenfield work have been searched against existing formalizations to the stopping rule in `AGENTS.md`. Whole-source Mapping completion is stated only in [the corpus status ledger](corpus/foundational-corpus-status.md); per-unit routes live in the mapping records beside it. Execute this source-locally immediately before that source's Definitions pass. During this correction, work only definitional rows still classified `unmatched`; do not redo theorem rows or positive-source routes unless concrete evidence falsifies one.
 
-Take a source, not a chapter. Choose the first source in the v2 traversal order whose Mapping box
+Take a source, not a chapter. Choose the first source in the v3 traversal order whose Mapping box
 is unticked and that no other agent has named as in progress, name it at the head of its mapping
 record, then map it straight through to the end and tick its box yourself. Do not stop between
 chapters to be told to continue, and do not wait to be given a source.
@@ -288,10 +301,12 @@ The mandatory search surface includes:
 - pinned Mathlib source;
 - current upstream Mathlib, relevant source history, and open PRs;
 - the live [`formalization-corpus`](https://github.com/dzackgarza/formalization-corpus): use its
-  [Pages search](https://dzackgarza.github.io/formalization-corpus/) or, for systematic work, the
-  open [`POST /api/search`](https://dzackgarza.github.io/formalization-corpus/api.html) endpoint at
-  `https://formalization-corpus.dzackgarza.com/api/search`; its `SOURCES.md` is the canonical
-  external-repository registry, but API hits must still be pinned to actual upstream commits/paths;
+  [Pages search](https://dzackgarza.github.io/formalization-corpus/) and, for systematic work, the
+  live API through `scripts/formalization_corpus.py` or a client generated from the
+  [OpenAPI reference](https://dzackgarza.github.io/formalization-corpus/api.html). The live
+  OpenAPI document is authoritative for paths, methods, and schemas; its `SOURCES.md` is the
+  canonical external-repository registry, but API hits must still be pinned to actual upstream
+  commits/paths;
 - Loogle, LeanSearch, Mathlib docs, and the local source atlas;
 - Lean Reservoir and every discoverable packaged Lean project;
 - broad GitHub code/repository search across all discoverable Lean repositories, especially open
@@ -514,11 +529,10 @@ modules. That rules out the usual first answer and points the work squarely at t
 graph — `importGraph` is already a dependency and can tell you which modules a change
 actually forces.
 
-### The remaining sweep frontier is 30 whole-source cells with no finer structure
+### The whole-source ledger is intentionally too coarse to schedule individual units
 
 The [corpus status ledger](corpus/foundational-corpus-status.md) is scored per
-source per sweep: 16 sources × 4 sweeps, of which 34 cells are checked. A checkbox means
-the sweep is complete for the entire source, and partial chapter progress deliberately does
+source per sweep. A checkbox means the sweep is complete for the entire source, and partial chapter progress deliberately does
 not check it. That is the right rule for a completion ledger and the wrong granularity for
 choosing the next hour of work: FC05 Weibel definitions is a single unticked box covering a
 whole book, and the twelve remaining definition cells and sixteen theorem cells are the
@@ -550,15 +564,14 @@ which owns full elaboration, sorry-freedom, exporter, vacuity, Mathlib-lint,
 unused-variable and axiom audits.
 `scripts/foundational_frontier.py` now regenerates `FOUNDATIONAL_FRONTIER.md` directly from
 the canonical Sweep-I catalogues, Sweep-II mapping records and whole-source status ledger.
-The current ledger has **28** unticked Mapping/Definitions/Theorems cells (12 Definitions,
-16 Theorems), rather than the 30-cell snapshot recorded when this section was written; the
-generated frontier follows the live ledger and does not alter its completion claims.
+The generated frontier follows the live ledger and does not duplicate its changing counts in
+this hand-written TODO.
 
 ## 5. Legacy definition catalogues
 
 The older per-source definition catalogues in `corpus/definition-catalogue-*.md` are
 superseded by the Sweep-I unit catalogues. They stay as cross-checks and mapping hints. They do
-not define source scope, and they never enlarge corpus v1.
+not define source scope, and they never enlarge the admitted corpus.
 
 The four sweep plans, frozen source manifest, and central status ledger are collected under
 [FEATURE-FOUNDATIONAL-CORPUS](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/FEATURE-FOUNDATIONAL-CORPUS.md).

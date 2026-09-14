@@ -20,7 +20,7 @@ project_id: github.com__dzackgarza__lean-categories
 
 # Foundational corpus status
 
-Corpus: [[foundational-source-corpus|Foundational source corpus v1 (frozen)]].
+Corpus: [[foundational-source-corpus|Foundational source corpus, including in-force v2/v3 amendments]].
 
 | ID   | Source                                                                                                                                                                                                                                               | Catalogue | Mapping | Definitions | Theorems |
 | ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------- | ----------- | -------- |
@@ -45,5 +45,11 @@ Corpus v2 amendment (traversed after `FC05`, before `FC06` for `FC13`; after `FC
 | FC14 | [Foundational corpus units FC14 Humphreys](foundational-corpus-units-fc14-humphreys)                                                                           | [x]       | [ ]     | [ ]         | [ ]      |
 | FC15 | [Foundational corpus units FC15 Humphreys Reflection Groups and Coxeter Groups](foundational-corpus-units-fc15-humphreys-reflection-groups-and-coxeter-groups) | [x]       | [ ]     | [ ]         | [ ]      |
 | FC16 | [Foundational corpus units FC16 Humphreys Linear Algebraic Groups](foundational-corpus-units-fc16-humphreys-linear-algebraic-groups)                           | [x]       | [ ]     | [ ]         | [ ]      |
+
+Corpus v3 amendment (appended after the v2 traversal):
+
+| ID   | Source | Catalogue | Mapping | Definitions | Theorems |
+| ---- | ------ | --------- | ------- | ----------- | -------- |
+| FC17 | [FC17 — Kerodon](foundational-corpus-units-fc17-kerodon) · [FC17 — Kerodon mapping](foundational-corpus-mapping-fc17-kerodon) | [x] | [ ] | [ ] | [ ] |
 
 A checkbox means that sweep is complete for the entire source. Partial chapter progress does not check the box. For Mapping, completion requires a parsed mapping row for every catalogue unit; an admissible exhaustively-searched `unmatched` row may close its unit, but a missing row may not. This document contains no per-source prose progress; detailed work stays in the four sweep plans and their source-unit/mapping artifacts.

@@ -22,7 +22,7 @@ project_id: github.com__dzackgarza__lean-categories
 
 **Corpus v1 is frozen.** It is the fixed denominator for the first four foundational sweeps. Changing membership, edition, or bounded scope requires an explicit corpus-version amendment; downstream work may not silently add a book, chapter, or local prerequisite.
 
-**Amendment v2 is in force.** It admits `FC13`–`FC16` without renumbering, re-editioning or rescoping `FC01`–`FC12`, so every existing source-unit ID stays valid. See "Corpus v2 amendment" below. It is the only amendment so far.
+**Amendment v3 is in force.** Amendment v2 admitted `FC13`–`FC16` without renumbering, re-editioning or rescoping `FC01`–`FC12`. Amendment v3 admits Kerodon as `FC17` without changing any existing source-unit ID. See "Corpus v2 amendment" and "Corpus v3 amendment" below.
 
 The corpus order is fixed before cataloguing. It is a chosen topological order of the mathematical prerequisite graph, with **abstraction ownership** included in the dependency relation: a later source may be mathematically readable without an earlier source, but if its formalization should reuse an earlier generic object/category/functor rather than invent a local one, the generic source comes first.
 
@@ -60,6 +60,31 @@ Four sources are admitted as corpus members. Each closes a gap in the v1 depende
 
 Amendment v2 also admits Folland, *Real Analysis: Modern Techniques and Their Applications*, and Conway, *A Course in Functional Analysis*, as **supplementary only**. No corpus source's dependency spine passes through measure theory or functional analysis, so neither enters the sweep denominator.
 
+## Corpus v3 amendment
+
+Kerodon is admitted as a full corpus source rather than a supplementary catalogue.
+It is an online, growing reference, so this amendment pins the exact repository-owned
+metadata snapshot instead of pretending that a mutable website is an editioned book.
+
+| ID | Source | Pinned version/scope | Depends on | Prerequisite reason |
+| --- | --- | --- | --- | --- |
+| `FC17` | Jacob Lurie, *Kerodon* | `corpus/kerodon-source-units.json`, retrieved `2026-09-14T13:34:50Z`; every non-structural stable tag in that snapshot, including the retired part and exercises | `FC01`, `FC02`, `FC03`, `FC05`, `FC07` | Owns the higher/homotopy-coherent category-theory branch: simplicial sets, ∞-categories/quasicategories, fibrations, Kan-extension/cofinality machinery, and related constructions. Its definitions must pass through the same ecosystem Mapping gate as every other admitted source rather than becoming an isolated reference list. |
+
+Corpus v3 traverses the v2 order unchanged and then `FC17`:
+
+`FC01`, `FC02`, `FC03`, `FC04`, `FC05`, `FC13`, `FC06`, `FC07`, `FC08`, `FC09`, `FC10`, `FC11`, `FC12`, `FC14`, `FC15`, `FC16`, `FC17`.
+
+The canonical Sweep-I catalogue is
+`corpus/foundational-corpus-units-fc17-kerodon.md`, generated from the normalized
+snapshot by `scripts/index_kerodon.py`. Kerodon's permanent tag is the source
+identity; the generated `FC17-KER-Uxxxxx` ID is a deterministic encoding of that
+tag and therefore does not change when the live text moves the item. The exact
+statement remains authoritative at `https://kerodon.net/tag/<TAG>` and
+`https://kerodon.net/data/tag/<TAG>/content/statement`; Sweep II reads that source
+statement before accepting a mapping. Refreshing the snapshot does **not** silently
+expand this amendment: a changed stable-tag population is a corpus-scope change and
+requires another explicit amendment.
+
 ## Local Markdown extraction manifest
 
 All frozen corpus-v1 sources already have full-book Markdown extractions available locally. Sweep I uses these exact files as its primary traversal inputs; the source/edition table above remains authoritative if extraction metadata and filenames disagree.
@@ -91,6 +116,12 @@ The four v2 sources have local PDFs but **no** Markdown extraction. Each require
 | `FC16` | `/home/dzack/Zotero/storage/782SZTXW/Linear Algebraic Groups - James E. Humphreys.pdf` | Extracted to `/home/dzack/Zotero/storage/782SZTXW/Humphreys - Linear Algebraic Groups.md`; 276 PDF pages; OCR-derived from the pinned image-only PDF; reaches terminal indexes and GTM-series list. |
 
 The two supplementary admissions are also local PDFs only: Folland at `/home/dzack/Zotero/storage/HFDC2XPA/Real Analysis Modern Techniques and Their - Gerald B. Folland.pdf` and Conway at `/home/dzack/Zotero/storage/QVLZ5UJP/A Course in Functional Analysis - John B. Conway.pdf`. Neither is a sweep input.
+
+`FC17` is source-acquired through Kerodon's public stable-tag hierarchy rather than a
+local PDF extraction. The pinned normalized snapshot contains 8,189 unique stable
+tags, of which 7,673 are non-structural mathematical units. The generated catalogue
+is the Sweep-I input; no copied statement/proof prose is required because each unit
+retains its permanent authoritative Kerodon tag and statement endpoint.
 
 The table is a deterministic traversal order. The source-unit catalogue additionally records fine-grained dependencies between individual units, so independent material inside a later book need not falsely depend on every earlier theorem.
 
@@ -138,17 +169,18 @@ Implementation ownership/status is **not** required to catalogue a unit. Any kno
 
 ## Sweep-II mapping schema and search order
 
-Every source-unit ID receives one mapping record. Search is exhaustive over known Lean code, not limited to a hand-picked repository registry.
+Every source-unit ID receives one mapping record. Search is exhaustive over known formalization work, not limited to Lean or to a hand-picked repository registry.
 
 Search order:
 
 1. the pinned `.lake/packages/mathlib/Mathlib` source, by declaration/type shape and standard synonyms;
 2. current `leanprover-community/mathlib4`, including source history and relevant open PRs;
-3. the live [`formalization-corpus`](https://github.com/dzackgarza/formalization-corpus) index: use the [browser](https://dzackgarza.github.io/formalization-corpus/) or, for systematic mapping, the open [`POST /api/search`](https://dzackgarza.github.io/formalization-corpus/api.html) service at `https://formalization-corpus.dzackgarza.com/api/search`; search source names, standard synonyms, theorem names, expected declarations/type fragments, and nearby constructions rather than one literal phrase;
+3. the live [`formalization-corpus`](https://github.com/dzackgarza/formalization-corpus) index: use the [browser](https://dzackgarza.github.io/formalization-corpus/) and, for systematic mapping, `scripts/formalization_corpus.py` or a client generated from the [OpenAPI reference](https://dzackgarza.github.io/formalization-corpus/api.html); the live OpenAPI document is authoritative for API paths, methods, and schemas. Search source names, standard synonyms, theorem names, expected declarations/type fragments, and nearby constructions rather than one literal phrase;
 4. Loogle, LeanSearch, Mathlib docs, and the local source atlas;
 5. Lean Reservoir and every packaged Lean dependency/repository it exposes;
 6. GitHub code/repository search across **all discoverable Lean repositories**, especially revision history, open work, or repositories not yet present in the hosted corpus;
-7. locally mirrored/vendored Lean reference corpora and statement banks such as `formal-conjectures` where relevant.
+7. Rocq, Agda, Isabelle, and other proof-assistant repositories indexed by `formalization-corpus`, when they provide a checked reference implementation;
+8. locally mirrored/vendored Lean reference corpora and statement banks such as `formal-conjectures` where relevant.
 
 The hosted corpus is a discovery index over current snapshots, not commit-pinned mapping evidence. After a hit, inspect the actual upstream declaration and record repository/package, commit/tag, path, declaration name, license, toolchain/Mathlib compatibility, and mathematical comparison. Its [`SOURCES.md`](https://github.com/dzackgarza/formalization-corpus/blob/main/SOURCES.md) is the canonical evolving registry of indexed projects; do not maintain a competing repository inventory here. If the hosted API is unavailable, that outage does not count as a negative search and cannot justify `unmatched`.
 
@@ -159,8 +191,8 @@ Each unit ends in exactly one route class:
 - `mathlib`: use the canonical pinned Mathlib declaration/proof directly;
 - `project-existing`: an existing canonical LeanCategories declaration already owns it;
 - `package-import`: an external Lean package can be imported as a dependency;
-- `reference-port`: Lean code exists but is not directly importable; preserve/copy the exact implementation as a provenance-checked reference and port/adapt it rather than rederive it;
-- `unmatched`: no acceptable Lean implementation was found after the exhaustive search.
+- `reference-port`: a checked implementation exists but is not directly importable, including implementations in another proof assistant; preserve exact provenance and port/adapt from that reference rather than rederive it;
+- `unmatched`: no acceptable implementation source was found after the exhaustive search.
 
 Only `unmatched` definitional units are slated for genuinely new mathematical formalization. `reference-port` units are port/integration work, not greenfield mathematics. Mapping failures are scoped negative findings tied to the search date and corpus unit, never claims that no formalization exists anywhere forever.
 

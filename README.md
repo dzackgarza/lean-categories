@@ -42,14 +42,15 @@ category remains open. No matrix, Gram, or determinant comparison is claimed com
 
 Scheme theory, stacks, manifolds, and period constructions remain roadmap targets.
 Issues #38, #39, and #40 own their prerequisite order. No placeholder source represents
-those domains. Foundational corpus v1 is frozen in mathematical dependency order and developed
+those domains. The foundational corpus is dependency-ordered, with its frozen v1 base and
+explicit v2/v3 amendments, and is developed
 in four separate passes: catalogue every formal source unit; exhaustively map every unit against
-Mathlib and the broader Lean ecosystem; realize the remaining definitional layer at its correct
+Mathlib and the broader formalization ecosystem; realize the remaining definitional layer at its correct
 categorical owners; then formalize the remaining source lemmas and theorems. Only units that
 survive the mapping sweep as genuinely unmatched are greenfield formalization. The theorem pass
 is deliberately independent so long proof programmes do not freeze growth of the mathematical
 DSL. [`TODO.md`](TODO.md), the
-[frozen source/extraction manifest](corpus/foundational-source-corpus.md), the
+[source/snapshot manifest](corpus/foundational-source-corpus.md), the
 [central four-phase status ledger](corpus/foundational-corpus-status.md), and
 [FEATURE-FOUNDATIONAL-CORPUS](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/FEATURE-FOUNDATIONAL-CORPUS.md)
 own the current corpus execution state.

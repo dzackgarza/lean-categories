@@ -371,12 +371,26 @@ def phase_units(
     if phase == "Theorems":
         return [unit for unit in units if is_theorem(unit)]
     if phase == "Mapping":
-        # The reopened Mapping correction exists to prevent greenfield definition
-        # authoring where an implementation already exists elsewhere.  Positive
-        # routes are already sourced and therefore out of this worklist; theorem
-        # rows are not reopened by this definition-focused correction.
+        # The reopened Mapping correction normally targets only definitional
+        # rows because the pre-existing corpus already received an initial
+        # mapping row for every unit.  A newly admitted source (or any damaged
+        # older source) must establish complete row coverage first; otherwise
+        # non-definitional units would never enter the scheduler and the source's
+        # whole-source Mapping cell could never legitimately close.
+        if any(unit.unit_id not in mappings for unit in units):
+            return units
+        # Once row coverage is complete, only unmatched definitions remain
+        # discovery work before the source's Definitions pass.
         return [unit for unit in units if is_definition(unit, mappings.get(unit.unit_id))]
     raise ValueError(f"unsupported frontier phase {phase}")
+
+
+def mapping_row_coverage_incomplete(
+    units: list[Unit], mappings: dict[str, Mapping]
+) -> bool:
+    """Whether a source still lacks any canonical Sweep-II mapping row."""
+
+    return any(unit.unit_id not in mappings for unit in units)
 
 
 def unit_delivered(phase: str, unit: Unit, mappings: dict[str, Mapping]) -> bool:
@@ -555,9 +569,22 @@ def render(reference_dir: Path, limit: int) -> str:
         )
 
     for status, phase in open_cells:
-        units = phase_units(phase, catalogues[status.source_id], mappings)
-        delivered = [unit for unit in units if unit_delivered(phase, unit, mappings)]
-        pending = [unit for unit in units if not unit_delivered(phase, unit, mappings)]
+        source_units = catalogues[status.source_id]
+        initial_mapping_coverage = (
+            phase == "Mapping"
+            and mapping_row_coverage_incomplete(source_units, mappings)
+        )
+        units = phase_units(phase, source_units, mappings)
+        if initial_mapping_coverage:
+            # During initial row coverage, every explicit route — including an
+            # exhaustively searched `unmatched` verdict — is a delivered Sweep-II
+            # record.  The later definition-focused correction reopens only the
+            # unmatched definitional rows after complete row coverage exists.
+            delivered = [unit for unit in units if unit.unit_id in mappings]
+            pending = [unit for unit in units if unit.unit_id not in mappings]
+        else:
+            delivered = [unit for unit in units if unit_delivered(phase, unit, mappings)]
+            pending = [unit for unit in units if not unit_delivered(phase, unit, mappings)]
         route_counts = Counter(
             (mappings[unit.unit_id].route or "legacy") if unit.unit_id in mappings else "missing"
             for unit in pending
@@ -565,15 +592,26 @@ def render(reference_dir: Path, limit: int) -> str:
         counts = ", ".join(f"{key}={value}" for key, value in sorted(route_counts.items())) or "none"
 
         if phase == "Mapping":
-            summary_lines = [
-                f"## {status.source_id} — {phase}",
-                "",
-                f"Definitions with an implementation source: **{len(delivered)}/{len(units)}**; "
-                f"source-discovery gaps: **{len(pending)}** ({counts}).",
-                f"Already-sourced definition spans: {compact_unit_ids(delivered)}.",
-                f"Phase blocker: {phase_blocker(phase, status, statuses)}",
-                "",
-            ]
+            if initial_mapping_coverage:
+                summary_lines = [
+                    f"## {status.source_id} — {phase}",
+                    "",
+                    f"Canonical mapping rows present: **{len(delivered)}/{len(units)}**; "
+                    f"row-coverage gaps: **{len(pending)}** ({counts}).",
+                    f"Mapped source-unit spans: {compact_unit_ids(delivered)}.",
+                    f"Phase blocker: {phase_blocker(phase, status, statuses)}",
+                    "",
+                ]
+            else:
+                summary_lines = [
+                    f"## {status.source_id} — {phase}",
+                    "",
+                    f"Definitions with an implementation source: **{len(delivered)}/{len(units)}**; "
+                    f"source-discovery gaps: **{len(pending)}** ({counts}).",
+                    f"Already-sourced definition spans: {compact_unit_ids(delivered)}.",
+                    f"Phase blocker: {phase_blocker(phase, status, statuses)}",
+                    "",
+                ]
         else:
             summary_lines = [
                 f"## {status.source_id} — {phase}",

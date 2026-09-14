@@ -81,8 +81,8 @@ this repository to invent mathematics. A definition that already has a real form
 route — `mathlib`, `project-existing`, `package-import`, or `reference-port` — is not part of this
 correction unless concrete evidence falsifies that route. Do not recursively re-audit positive rows.
 
-Use the v2 traversal order as a pipeline: close FC05 Mapping, immediately perform FC05 Definitions,
-then map FC13 immediately before FC13 Definitions, then FC06, FC07, and so on. Reuse all mapping
+Use the in-force corpus traversal order as a pipeline: close FC05 Mapping, immediately perform FC05 Definitions,
+then map FC13 immediately before FC13 Definitions, then FC06, FC07, and so on through FC17. Reuse all mapping
 evidence already delivered for later sources when their turn arrives. Do not hold a ready source's
 Definitions work behind negative-search work for unrelated later sources. The global barrier was
 reintroduced on 2026-09-14 after the repository had already measured roughly half a day of the same
@@ -627,8 +627,9 @@ independent sequential plans.
    a mathematical unit deserves a row. Establish coverage of the admitted source before
    deriving filtered worklists; unrecognized sections or metadata remain unresolved inputs.
 2. **Formalization-ecosystem mapping sweep.** Only after the catalogue is complete, search every unit
-   against pinned and upstream Mathlib, open Mathlib work, the live
-   [`formalization-corpus`](https://dzackgarza.github.io/formalization-corpus/) search/API,
+   against pinned and upstream Mathlib and open Mathlib work. Then query the live
+   [`formalization-corpus`](https://dzackgarza.github.io/formalization-corpus/) API as a
+   first-class mandatory discovery source, not as a fallback, before continuing through
    Loogle/LeanSearch, Reservoir, the local source atlas, **broad GitHub search across all
    discoverable Lean repositories**, and the Rocq/Agda/Isabelle/other proof-assistant repositories
    indexed by `formalization-corpus`, plus local mirrors and statement banks. Inspect actual declarations
@@ -672,8 +673,9 @@ must depend on that theorem specifically; the entire theorem corpus is not its p
 Canonical execution records:
 
 - [corpus/foundational-source-corpus.md](corpus/foundational-source-corpus.md)
-  freezes FC01–FC12, their prerequisite order, exact editions/scopes, and verified local Markdown
-  extraction paths.
+  owns the in-force source population: frozen FC01–FC12 plus the explicit v2/v3 amendments,
+  their prerequisite order, exact editions/scopes or pinned online snapshots, and source-acquisition
+  records.
 - [corpus/foundational-corpus-status.md](corpus/foundational-corpus-status.md)
   is the single whole-source completion ledger for Catalogue, Mapping, Definitions, and Theorems.
 - [`corpus/`](corpus/) is the repository-owned canonical home for source catalogues, Sweep-II
@@ -1092,9 +1094,11 @@ Before writing any **foundational-corpus** construct, in order:
 
 2. **Require its Sweep-II mapping.** Search pinned Mathlib first, then current upstream Mathlib
    and open work. Query the live [`formalization-corpus`](https://github.com/dzackgarza/formalization-corpus)
-   index through its [browser search](https://dzackgarza.github.io/formalization-corpus/) and,
-   preferably for systematic work, its open `POST https://formalization-corpus.dzackgarza.com/api/search`
-   API documented at [the API page](https://dzackgarza.github.io/formalization-corpus/api.html).
+   index through its [browser search](https://dzackgarza.github.io/formalization-corpus/) and the
+   API described by its [API page](https://dzackgarza.github.io/formalization-corpus/api.html)
+   and authoritative live OpenAPI document. For systematic
+   work use `python scripts/formalization_corpus.py search '<query>'` (or a generated OpenAPI
+   client); the API is required, not merely preferred.
    Search several formulations: standard names, source theorem names, synonyms, characteristic
    type/declaration fragments, and nearby constructions; use `repo:`/`file:` filters only to refine,
    never to shrink the initial search domain. Then use Loogle/LeanSearch/docs, Reservoir, open PRs,
@@ -1121,8 +1125,8 @@ Before writing any **foundational-corpus** construct, in order:
    notes per downstream consumer. `unmatched` is a dated scoped negative search result, never a
    timeless claim that no formalization exists anywhere.
 
-For genuinely new work outside the frozen corpus, the same reuse search applies, but first make
-an explicit source/corpus-scope decision rather than silently extending corpus v1.
+For genuinely new work outside the admitted corpus, the same reuse search applies, but first make
+an explicit source/corpus-scope decision rather than silently extending the in-force corpus.
 
 The failure this gate prevents is §4.3 and §4.4: writing a plausible new definition is faster and *feels* more productive than finding the three-line composition of existing constructions that already says it. That is not progress — it is a new maintenance surface and an avoidable comparison theorem later.
 
@@ -1132,7 +1136,7 @@ The failure this gate prevents is §4.3 and §4.4: writing a plausible new defin
 
 **The highest priority of this programme is minimizing the lines of Lean owned by this repository.** Re-defining or re-proving mathematics that is already formalized anywhere online is the primary failure mode: every re-derived line is a permanent maintenance surface and an avoidable comparison theorem later.
 
-The canonical evolving external registry is [`dzackgarza/formalization-corpus`](https://github.com/dzackgarza/formalization-corpus), especially its [`SOURCES.md`](https://github.com/dzackgarza/formalization-corpus/blob/main/SOURCES.md). Its [GitHub Pages site](https://dzackgarza.github.io/formalization-corpus/) searches the actual indexed source corpus, and its [API documentation](https://dzackgarza.github.io/formalization-corpus/api.html) describes the live, unauthenticated search service at `POST https://formalization-corpus.dzackgarza.com/api/search`; `GET /api/list` enumerates indexed repositories. **Use the live API as a required discovery surface before recording `unmatched`.** The corpus indexes Mathlib, registered Lean repositories, Reservoir packages, and Rocq/Agda sources together, so a non-Lean hit can still discharge the obligation to find a reference implementation even when it cannot discharge the Lean import route.
+The canonical evolving external registry is [`dzackgarza/formalization-corpus`](https://github.com/dzackgarza/formalization-corpus), especially its [`SOURCES.md`](https://github.com/dzackgarza/formalization-corpus/blob/main/SOURCES.md). Its [GitHub Pages site](https://dzackgarza.github.io/formalization-corpus/) searches the actual indexed source corpus, and its [API documentation](https://dzackgarza.github.io/formalization-corpus/api.html) links the live OpenAPI contract. **The OpenAPI document is the sole authority for API paths, HTTP methods, request/response schemas, and supported options; do not duplicate those facts in repository policy.** Use the live API as a first-class required discovery surface for every Mapping pass and before recording `unmatched`. The corpus indexes Mathlib, registered Lean repositories, Reservoir packages, and Rocq/Agda/Isabelle/other proof-assistant sources together, so a non-Lean hit can still discharge the obligation to find a reference implementation even when it cannot discharge the Lean import route.
 
 The domain tables below are only programme-specific annotations that may explain why a known source is especially relevant, unsuitable, stale, unlicensed, or already integrated. They are not exhaustive, are not a second source registry, and cannot support a negative search result. When they disagree with `formalization-corpus/SOURCES.md` about what sources exist, update or delete the local annotation rather than forking the registry here.
 
@@ -1147,16 +1151,20 @@ The annotations below were originally assembled as a local registry and therefor
 
 The hosted corpus is a **discovery index, not final mapping provenance**: its external repositories are current snapshots rather than commit-pinned evidence. After a hit, open the upstream repository and record the exact repository, commit/tag, path, declaration, license, toolchain compatibility, and mathematical comparison in the mapping row. An API hit never substitutes for checking the declaration, and an API outage never counts as evidence for `unmatched`.
 
-A minimal shell query is:
+The repository client is the normal agent-facing entry point. It loads the live
+OpenAPI document on every run, resolves operations from that document, and decodes
+base64 chunk matches:
 
 ```sh
-curl -sS https://formalization-corpus.dzackgarza.com/api/search \
-  -H 'Content-Type: application/json' \
-  -d '{"Q":"Hasse invariant file:\\.lean$","Opts":{"MaxDocDisplayCount":20}}' \
-  | jq -r '.Result.Files[] | "\(.Repository)\t\(.FileName)"'
+python scripts/formalization_corpus.py search 'Hasse invariant file:\.lean$'
+python scripts/formalization_corpus.py list 'repo:mathlib4'
 ```
 
-For mapping work, vary the query rather than treating one zero-result string as exhaustion. The API accepts Zoekt syntax; the linked API page documents options such as `ChunkMatches`, `NumContextLines`, and `Whole`.
+The website exposes direct `curl` examples and generated-client snippets from the live
+OpenAPI document. Prefer those upstream instructions over copying their API contract
+into this repository.
+
+For mapping work, vary the query rather than treating one zero-result string as exhaustion. The linked API documentation and OpenAPI contract are authoritative for query syntax and options. Search the full corpus first; narrowing filters refine a candidate family and must not prematurely shrink discovery.
 
 ### Indexes and search surfaces
 
@@ -1164,7 +1172,7 @@ For mapping work, vary the query rather than treating one zero-result string as 
 | --- | --- |
 | [`formalization-corpus` source registry](https://github.com/dzackgarza/formalization-corpus/blob/main/SOURCES.md) | Canonical evolving inventory of indexed formalization repositories, domains, and trust/provenance notes. Do not duplicate this inventory locally. |
 | [`formalization-corpus` browser](https://dzackgarza.github.io/formalization-corpus/) | Interactive Zoekt search over the live cross-repository corpus. |
-| [`formalization-corpus` API](https://dzackgarza.github.io/formalization-corpus/api.html) | Required systematic discovery surface. `POST https://formalization-corpus.dzackgarza.com/api/search` with `{"Q": ..., "Opts": ...}`; supports Zoekt `repo:`/`file:` filters. Use multiple semantic spellings before a negative verdict. |
+| [`formalization-corpus` API](https://dzackgarza.github.io/formalization-corpus/api.html) | First-class required systematic discovery surface. Use `python scripts/formalization_corpus.py search '<query>'` or a client generated from the live OpenAPI document. The OpenAPI contract, not this repository, owns paths/methods/schemas. Use multiple semantic spellings before a negative verdict. |
 | [Lean Reservoir](https://reservoir.lean-lang.org/) | Index of public Lake packages and supplementary package metadata; the formalization corpus also indexes hydrated Reservoir sources. |
 | [Loogle](https://loogle.lean-lang.org/) ([`nomeata/loogle`](https://github.com/nomeata/loogle)) | Type-pattern search over Mathlib; also the `lean_loogle` MCP tool. |
 | [LeanSearch](https://leansearch.net/) | Natural-language search over Mathlib; also the `lean_leansearch` MCP tool. |
