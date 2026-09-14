@@ -66,12 +66,20 @@ theorem not_isGradeSequence_one [IsLocalRing R] (M : ModuleCat.{v} R) :
 
 end IsLocalRing
 
-/-- A local ring is Cohen--Macaulay when the grade of the regular module equals its Krull
-dimension (Weibel, Definition 4.4.3). -/
-class IsCohenMacaulayLocalRing (R : Type u) [CommRing R] : Prop extends IsLocalRing R where
+/-- In Weibel §4.4, a local ring is by convention commutative Noetherian local.  Such a ring is
+Cohen--Macaulay when the grade of the regular module equals its Krull dimension (Definition
+4.4.3). -/
+class IsCohenMacaulayLocalRing (R : Type u) [CommRing R] : Prop
+    extends IsLocalRing R where
+  /-- The standing §4.4 convention includes Noetherianity.  This is an instance field so
+  downstream source units recover the convention directly from Cohen--Macaulayness. -/
+  isNoetherianRing : IsNoetherianRing R
   grade_eq_dim : ringKrullDim R = IsLocalRing.grade (ModuleCat.of R R)
 
-theorem isCohenMacaulayLocalRing_def (R : Type u) [CommRing R] [IsLocalRing R] :
+attribute [instance] IsCohenMacaulayLocalRing.isNoetherianRing
+
+theorem isCohenMacaulayLocalRing_def (R : Type u) [CommRing R] [IsLocalRing R]
+    [IsNoetherianRing R] :
     IsCohenMacaulayLocalRing R ↔
       ringKrullDim R = IsLocalRing.grade (ModuleCat.of R R) :=
-  ⟨fun h => h.grade_eq_dim, fun h => ⟨h⟩⟩
+  ⟨fun h => h.grade_eq_dim, fun h => ⟨inferInstance, h⟩⟩
