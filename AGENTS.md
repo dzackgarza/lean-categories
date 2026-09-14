@@ -74,22 +74,29 @@ obstruction — is deep theorem work on a single unit while the definitions its 
 are still missing. If a definition you need is absent, that absence *is* the next unit; add it
 with its source and mapping record rather than assuming it around.
 
-Mapping is an essential global prerequisite for greenfield Definitions. The current correction is
-**Mapping, not remapping**: its worklist is the definitional catalogue units whose current route is
-`unmatched`, because only those units would otherwise force this repository to invent mathematics.
-A definition that already has a real formalization source route — `mathlib`, `project-existing`,
-`package-import`, or `reference-port` — is not part of this fixing-the-mapping exercise unless
-concrete evidence falsifies that particular route. Do not spend the correction recursively
-re-auditing positive rows.
+Mapping is an essential prerequisite for greenfield Definitions, but it is **source-local**, not
+a corpus-wide serialization barrier. The active Mapping worklist for a source is its definitional
+catalogue units whose current route is `unmatched`, because only those units would otherwise force
+this repository to invent mathematics. A definition that already has a real formalization source
+route — `mathlib`, `project-existing`, `package-import`, or `reference-port` — is not part of this
+correction unless concrete evidence falsifies that route. Do not recursively re-audit positive rows.
 
-Before authoring any new definition, exhaust those unmatched definitional obligations against the
-live `formalization-corpus` under multiple mathematical formulations, pinned/current Mathlib and
-open work, Reservoir and discoverable Lean repositories, and the other proof-assistant repositories
-indexed by the corpus. A checked Rocq, Agda, Isabelle, or other prover implementation is still an
-existing reference implementation: record it as provenance to port/adapt rather than rederive the
-textbook construction. Definitions resume only after Mapping has either found an existing
-implementation for each such obligation or recorded genuinely exhaustive negative evidence. The
-point of the barrier is precisely to minimize how much new mathematics Sweep III must write.
+Use the v2 traversal order as a pipeline: close FC05 Mapping, immediately perform FC05 Definitions,
+then map FC13 immediately before FC13 Definitions, then FC06, FC07, and so on. Reuse all mapping
+evidence already delivered for later sources when their turn arrives. Do not hold a ready source's
+Definitions work behind negative-search work for unrelated later sources. The global barrier was
+reintroduced on 2026-09-14 after the repository had already measured roughly half a day of the same
+failure mode: high mapping-commit cadence with no definitions landing. That is scheduling progress,
+not mathematical progress, and it is not the execution order.
+
+Before authoring a new definition for the current source, exhaust that source's unmatched
+definitional obligations against the live `formalization-corpus` under multiple mathematical
+formulations, pinned/current Mathlib and open work, Reservoir and discoverable Lean repositories,
+and the other proof-assistant repositories indexed by the corpus. A checked Rocq, Agda, Isabelle,
+or other prover implementation is still an existing reference implementation: record it as
+provenance to port/adapt rather than rederive the textbook construction. That source's Definitions
+resume once its unmatched definitional obligations have either found an implementation or met the
+finite negative-search stopping rule below.
 
 ## A record update is not a unit of work
 
@@ -762,6 +769,17 @@ is `unmatched` when *every known source has been exhausted* — pinned Mathlib, 
 open PRs, the live `formalization-corpus` API under multiple formulations, Reservoir, every
 discoverable Lean repository, the other proof-assistant repositories indexed by the corpus, and
 the formalization atlas — not when the first search returned nothing convenient.
+
+**Negative search has a stopping rule.** For one unit, read the source obligation first, then make
+one scoped pass over each mandatory discovery surface using the source terminology and the distinct
+mathematical/declaration spellings suggested by that obligation; inspect the actual candidate
+declarations returned. Record the dated scopes/queries and the reason each plausible candidate fails.
+When every mandatory surface has been queried in that pass and no compatible candidate survives,
+the unit may remain `unmatched` and Mapping moves on. Do not repeat an unchanged query surface under
+endless paraphrases: repeat a channel only when new source information, a newly indexed revision, or
+a concrete candidate supplies a genuinely new search key. “Every discoverable repository” means the
+maintained corpus/index/search surfaces plus concrete repositories discovered from them; it does not
+mean an unbounded internet crawl.
 
 **"No single declaration realizes the whole bundled row" is not a ground for `unmatched`.** A
 source row that bundles several clauses is matched by the conjunction of the declarations that

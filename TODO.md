@@ -11,7 +11,7 @@ The linked whole-source ledger remains the sole source of sweep completion.
 | --- | --- | --- |
 | `corpus` | [Admitted sources, editions, scope and source acquisition](#0a-corpus-v2-amendment--four-admitted-sources) | none |
 | `catalogue` | [Sweep I: every source unit](#1-sweep-i--catalogue-every-corpus-unit) | `corpus` |
-| `mapping` | [Sweep II: map every unit onto an existing formalization where one exists](#2-sweep-ii--map-every-unit-onto-existing-formalizations). The initial coverage pass is not sufficient acceptance for pending definitions: Mapping remains open until every definitional unit still marked `unmatched` has exhausted the existing formalization ecosystem. | `catalogue` |
+| `mapping` | [Sweep II: map every unit onto an existing formalization where one exists](#2-sweep-ii--map-every-unit-onto-existing-formalizations). This is the semantic umbrella for the source-local Mapping nodes below, not a global prerequisite edge into FC05 Definitions. | `catalogue` |
 | `definitions` | [Sweep III: definitions and intrinsic laws](#3-sweep-iii--realize-the-complete-definitional-layer) | `fc16-definitions` |
 
 The definition rows below deliberately carry no counts. They used to, and every one of them was
@@ -19,25 +19,40 @@ wrong within the day: `fc05-definitions` still read "199 pending of 376" after t
 closed at 371 of 371, and the denominator had moved twice under classifier repairs. A count
 copied into this file is a second, frozen copy of something the frontier regenerates, and a
 worker reading the stale copy either redoes closed work or stops short of the real remainder.
-Read the frontier. `unmatched` is not a forecast of how much mathematics this repository should invent: it is the Mapping worklist of obligations for which no implementation source has yet been established. Before Sweep III authors anything new, Sweep II Mapping must exhaust the unmatched **definitional** obligations against the existing formalization ecosystem. Positive source routes are not part of that repair.
+Read the frontier. `unmatched` is not a forecast of how much mathematics this repository should
+invent: it is the source-local Mapping worklist of obligations for which no implementation source
+has yet been established. Search that worklist to the finite stopping rule in `AGENTS.md`, then
+move directly into that source's Definitions pass. Do not finish Mapping for later sources first.
 
 
 | `track-the-catalogue` | **Completed 2026-09-13.** The 378 Markdown records formerly reachable only through the private `.agents/references/` symlink are now tracked under `corpus/`: source catalogues, per-unit mappings, provenance contracts, the source atlas, source manifest, and whole-source ledger. `scripts/foundational_frontier.py` defaults to that tracked directory, and a fresh clone with no `.agents` or `.hermes` symlink regenerates `FOUNDATIONAL_FRONTIER.md` byte-for-byte. `.agents`, `.hermes`, and the known local probe scripts are explicitly ignored as scratch/private automation. **Acceptance:** every catalogue and mapping file is tracked, `git log` shows them, and a fresh clone regenerates `FOUNDATIONAL_FRONTIER.md` identically | none |
 | `retire-the-stale-catalogue-copy` | **Completed 2026-09-13.** Before deletion, the superior committed vault versions of `chapter-1-varieties-fc06.md`, `provenance-contract-for-fc06-c01.md`, and `index.md` were ported byte-for-byte into tracked `corpus/` and `FOUNDATIONAL_FRONTIER.md` regenerated from them. The vault commit `2965de28` then deleted the project `references/` subtree (378 files), leaving `corpus/` as the sole writable catalogue/mapping source. The `.agents` symlink intentionally remains because private `plans/` and `decisions/` still live behind it; `.agents/references` no longer exists and must not be recreated. **Acceptance:** `corpus/` is authoritative for all catalogue/mapping records; `.agents/references` is absent; `.agents/plans` and `.agents/decisions` remain live | `track-the-catalogue` |
-| `mapping-record-coverage` | **Completed 2026-09-13.** Every required catalogue unit has a parsed mapping row under the initial coverage pass. This proves row coverage only; it does not certify that every `unmatched` definitional verdict exhausted the external formalization ecosystem. That semantic Mapping acceptance remains open in `mapping`. **Acceptance:** zero required catalogue units lack parsed mapping rows. | `track-the-catalogue` |
-| `audit-authored-definitions` | **Separate from Mapping.** After Mapping closes, review locally authored definitions only when the completed mapping shows that an external owner already supplies the mathematics. Replace genuine reinvention with the checked owner or record the mathematical reason the external implementation cannot serve. This is cleanup of already-authored code, not part of Mapping and not a reason to reopen unrelated positive mapping rows. | `mapping` |
-| `fc05-definitions` | Sweep III for FC05: the pending count is the `## FC05 — Definitions` section of [FOUNDATIONAL_FRONTIER.md](FOUNDATIONAL_FRONTIER.md), which is regenerated; do not read a count from this row. Start only after Mapping has exhausted the definitions that would otherwise require invention. Reuse `mathlib`, `project-existing`, and `package-import`; port `reference-port`; author new Lean mathematics only for definitions that remain genuinely `unmatched` after Mapping. Close this source's definitional layer before any FC05 theorem work; each definition carries its source citation and mapping record in the same commit. | `mapping` |
-| `fc06-definitions` | Sweep III for FC06 under the same mapping-first rule; reuse or port every mapped source and author only genuinely unmatched mathematics. | `fc05-definitions` |
-| `fc07-definitions` | Sweep III for FC07 under the same mapping-first rule; reuse or port every mapped source and author only genuinely unmatched mathematics. | `fc06-definitions` |
-| `fc08-definitions` | Sweep III for FC08 under the same mapping-first rule; reuse or port every mapped source and author only genuinely unmatched mathematics. | `fc07-definitions` |
-| `fc09-definitions` | Sweep III for FC09 under the same mapping-first rule; reuse or port every mapped source and author only genuinely unmatched mathematics. | `fc08-definitions` |
-| `fc10-definitions` | Sweep III for FC10 under the same mapping-first rule; reuse or port every mapped source and author only genuinely unmatched mathematics. | `fc09-definitions` |
-| `fc11-definitions` | Sweep III for FC11 under the same mapping-first rule; reuse or port every mapped source and author only genuinely unmatched mathematics. | `fc10-definitions` |
-| `fc12-definitions` | Sweep III for FC12 under the same mapping-first rule; reuse or port every mapped source and author only genuinely unmatched mathematics. | `fc11-definitions` |
-| `fc13-definitions` | Sweep III for FC13 under the same mapping-first rule; reuse or port every mapped source and author only genuinely unmatched mathematics. | `fc12-definitions` |
-| `fc14-definitions` | Sweep III for FC14 under the same mapping-first rule; reuse or port every mapped source and author only genuinely unmatched mathematics. | `fc13-definitions` |
-| `fc15-definitions` | Sweep III for FC15 under the same mapping-first rule; reuse or port every mapped source and author only genuinely unmatched mathematics. | `fc14-definitions` |
-| `fc16-definitions` | Sweep III for FC16 under the same mapping-first rule; reuse or port every mapped source and author only genuinely unmatched mathematics. | `fc15-definitions` |
+| `mapping-record-coverage` | **Completed 2026-09-13.** Every required catalogue unit has a parsed mapping row under the initial coverage pass. This proves row coverage only; each source-local Mapping node below closes only after its remaining unmatched definitional rows meet the current search acceptance. **Acceptance:** zero required catalogue units lack parsed mapping rows. | `track-the-catalogue` |
+| `audit-authored-definitions` | **Separate from Mapping.** After a source's Mapping closes, review locally authored definitions only when that completed mapping shows that an external owner already supplies the mathematics. Replace genuine reinvention with the checked owner or record the mathematical reason the external implementation cannot serve. This is cleanup of already-authored code, not a reason to reopen unrelated positive mapping rows or later sources. | the current source's `fcNN-mapping` |
+| `fc05-mapping` | Finish only FC05's unmatched definitional discovery work using the finite negative-search stopping rule; reuse every already-delivered FC05 mapping and do not search later sources first. **Acceptance:** the FC05 Mapping cell is complete under current route semantics. | `mapping-record-coverage` |
+| `fc05-definitions` | Sweep III for FC05: use the regenerated `## FC05 — Definitions` frontier, reuse/import/port mapped owners, and author only definitions left genuinely unmatched after `fc05-mapping`. Close the definitional layer before FC05 theorem work. | `fc05-mapping` |
+| `fc13-mapping` | Finish only FC13's unmatched definitional discovery work, reusing all mapping evidence already delivered out of order. | `fc05-definitions` |
+| `fc13-definitions` | Sweep III for FC13 under the same mapping-first rule. | `fc13-mapping` |
+| `fc06-mapping` | Finish only FC06's unmatched definitional discovery work, reusing prior evidence. | `fc13-definitions` |
+| `fc06-definitions` | Sweep III for FC06 under the same mapping-first rule. | `fc06-mapping` |
+| `fc07-mapping` | Finish only FC07's unmatched definitional discovery work, reusing prior evidence. | `fc06-definitions` |
+| `fc07-definitions` | Sweep III for FC07 under the same mapping-first rule. | `fc07-mapping` |
+| `fc08-mapping` | Finish only FC08's unmatched definitional discovery work, reusing prior evidence. | `fc07-definitions` |
+| `fc08-definitions` | Sweep III for FC08 under the same mapping-first rule. | `fc08-mapping` |
+| `fc09-mapping` | Finish only FC09's unmatched definitional discovery work, reusing prior evidence. | `fc08-definitions` |
+| `fc09-definitions` | Sweep III for FC09 under the same mapping-first rule. | `fc09-mapping` |
+| `fc10-mapping` | Finish only FC10's unmatched definitional discovery work, reusing prior evidence. | `fc09-definitions` |
+| `fc10-definitions` | Sweep III for FC10 under the same mapping-first rule. | `fc10-mapping` |
+| `fc11-mapping` | Finish only FC11's unmatched definitional discovery work, reusing prior evidence. | `fc10-definitions` |
+| `fc11-definitions` | Sweep III for FC11 under the same mapping-first rule. | `fc11-mapping` |
+| `fc12-mapping` | Finish only FC12's unmatched definitional discovery work, reusing prior evidence. | `fc11-definitions` |
+| `fc12-definitions` | Sweep III for FC12 under the same mapping-first rule. | `fc12-mapping` |
+| `fc14-mapping` | Finish only FC14's unmatched definitional discovery work, reusing prior evidence. | `fc12-definitions` |
+| `fc14-definitions` | Sweep III for FC14 under the same mapping-first rule. | `fc14-mapping` |
+| `fc15-mapping` | Finish only FC15's unmatched definitional discovery work, reusing prior evidence. | `fc14-definitions` |
+| `fc15-definitions` | Sweep III for FC15 under the same mapping-first rule. | `fc15-mapping` |
+| `fc16-mapping` | Finish only FC16's unmatched definitional discovery work, reusing prior evidence. | `fc15-definitions` |
+| `fc16-definitions` | Sweep III for FC16 under the same mapping-first rule. | `fc16-mapping` |
 | `theorems` | [Sweep IV: remaining theorem obligations](#4-sweep-iv--formalize-the-remaining-lemmas-and-theorems) | `definitions`, and per source its own `fcNN-definitions` |
 | `arithmetic-lattice-foundations` | Execute [PLAN-ARITHMETIC-LATTICE-FOUNDATIONS](.agents/plans/features/FEATURE-ARITHMETIC-LATTICE-FOUNDATIONS/plans/PLAN-ARITHMETIC-LATTICE-FOUNDATIONS/PLAN-ARITHMETIC-LATTICE-FOUNDATIONS.md) at its stated natural generality after the foundational source programme: projective formed modules, metric I-duality/modularity, Dedekind/projective arithmetic, equivariant lattices, height-one/local realizations, intrinsic local invariants, ring adeles and adelic genus, local classification, signature loci, and the exact comparison maps back to their Mathlib/project owners. Preserve every distinction the plan calls out: separation vs perfection, primitive vs finite-index embeddings, algebraic vs metric duality, integral ring adeles vs field adeles, and bilinear vs quadratic discriminant data. Reuse Mathlib and external owners before project implementation. **Acceptance:** the plan success criteria and phase/task consumers are realized with kernel-checked comparisons; no familiar special case silently replaces a parameterized construction | `theorems` |
 
@@ -259,7 +274,7 @@ routes; its theorem/lemma content still belongs to Sweep I.
 
 Plan: [PLAN-FOUNDATIONAL-CORPUS-MAPPING-SWEEP](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/plans/PLAN-FOUNDATIONAL-CORPUS-MAPPING-SWEEP/PLAN-FOUNDATIONAL-CORPUS-MAPPING-SWEEP.md).
 
-The initial row-coverage pass is complete, but Mapping itself remains open: definitional rows that would otherwise authorize greenfield work must first be searched exhaustively against existing formalizations. Whole-source Mapping completion is stated only in [the corpus status ledger](corpus/foundational-corpus-status.md); per-unit routes live in the mapping records beside it. During this correction, work only definitional rows still classified `unmatched`; do not redo theorem rows or positive-source routes unless concrete evidence falsifies one.
+The initial row-coverage pass is complete, but each source's Mapping cell remains open until its definitional rows that would otherwise authorize greenfield work have been searched against existing formalizations to the stopping rule in `AGENTS.md`. Whole-source Mapping completion is stated only in [the corpus status ledger](corpus/foundational-corpus-status.md); per-unit routes live in the mapping records beside it. Execute this source-locally immediately before that source's Definitions pass. During this correction, work only definitional rows still classified `unmatched`; do not redo theorem rows or positive-source routes unless concrete evidence falsifies one.
 
 Take a source, not a chapter. Choose the first source in the v2 traversal order whose Mapping box
 is unticked and that no other agent has named as in progress, name it at the head of its mapping
@@ -309,7 +324,7 @@ Each unit must end in exactly one route class:
 
 Plan: [PLAN-FOUNDATIONAL-CORPUS-DEFINITION-SWEEP](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/plans/PLAN-FOUNDATIONAL-CORPUS-DEFINITION-SWEEP/PLAN-FOUNDATIONAL-CORPUS-DEFINITION-SWEEP.md).
 
-Start only after Sweep II Mapping completes. Traverse every definitional source unit according to its mapping:
+For each source, start its Definitions pass as soon as that source's Mapping cell completes; do not wait for Mapping of unrelated later sources. Traverse every definitional source unit according to its mapping:
 
 - reuse `mathlib`, `project-existing`, and `package-import` owners directly;
 - port/adapt `reference-port` implementations with exact provenance;
