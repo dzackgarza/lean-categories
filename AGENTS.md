@@ -74,6 +74,16 @@ obstruction — is deep theorem work on a single unit while the definitions its 
 are still missing. If a definition you need is absent, that absence *is* the next unit; add it
 with its source and mapping record rather than assuming it around.
 
+Exact-route remediation is likewise **source-local**, not a corpus-wide phase barrier. The
+2026-09-13/14 global `remap-strict-bundle` sweep ran for roughly half a day at high commit cadence
+while preventing any Definitions work from opening. That was a scheduling defect, not evidence
+that the mappings were unimportant. The durable pipeline is now just-in-time: close the current
+source's `fcNN-remap` node, immediately perform that source's Definitions work, then remap the next
+source when its Definitions pass is next. Already-delivered remap work for later sources remains
+valid prior work and must be reused rather than repeated. Do not resume a heaviest-unmatched-first
+corpus sweep while an earlier source's Definitions pass is ready or can be made ready by closing
+its own remap node.
+
 ## A record update is not a unit of work
 
 Advancing a frontier row, ticking a ledger cell, recording a mapping decision, closing a queue
