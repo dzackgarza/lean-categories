@@ -52,6 +52,8 @@ Sweep III C05-U045 is realized by `LeanCategories/Homological/DoubleComplexFiltr
 
 Sweep III C05-U046 is realized in the same owner by `firstQuadrantTotalComplexShapeSymmetry` and `rowFiltration`. The standard sign `(-1)^(pq)` gives Mathlib’s total-complex flip isomorphism for first-quadrant chain bicomplexes; `rowFiltration` is the image of `columnFiltration (flip K)` under the induced order isomorphism on subobjects. Focused elaboration succeeds, and temporary probes verify the `p=0` row cutoff retains row `0`, kills row `1`, and has bottom in negative filtration degree.
 
+Sweep III C06-U007 accepts the already-integrated TauCeti port in `LeanCategories/Algebra/MonoidAlgebra.lean`: `augmentation` is the coefficient-sum ring hom and `augmentationIdeal` its kernel, with `augmentationGenerators` recording the source elements `g-1`. The module builds successfully; temporary group-ring probes verify coefficient summation, `g-1 ∈ I`, and `1 ∉ I`. The TauCeti commit/license remain the implementation provenance, while the generator-spans-kernel statement stays in the theorem layer.
+
 Canonical catalogue: [[foundational-corpus-units-fc05-weibel|FC05 — Weibel, An Introduction to Homological Algebra]].
 
 Pinned project baseline: Mathlib `db584cd6d46c92f209a44c0f1c829460d327499d`, Lean 4.33.0. Current Mathlib was refreshed 2026-09-14 to `2ff8073df352b7cb74638403c464ed5cd3f97ce2`; declarations first appearing after the project pin are revision-specific reference-port routes unless an importable package route is independently justified.
