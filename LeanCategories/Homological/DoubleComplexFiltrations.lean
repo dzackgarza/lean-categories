@@ -8,6 +8,7 @@ public import LeanCategories.Homological.DoubleComplexFirstPages
 public import LeanCategories.Homological.FilteredComplex
 public import Mathlib.Algebra.Homology.TotalComplex
 public import Mathlib.Algebra.Homology.Embedding.StupidTrunc
+public import Mathlib.Algebra.Homology.TotalComplexSymmetry
 
 /-!
 # Column and row filtrations of a double complex
@@ -17,9 +18,10 @@ and 5.6.2, pp. 141--144 (FC05-C05-U045, FC05-C05-U046).
 
 For a first-quadrant double complex, the direct-sum total complex carries the
 increasing column filtration `F_p Tot_n = ⊕_{i≤p} C_{i,n-i}` and, dually, the
-increasing row filtration.  U045 below constructs the column filtration itself.
-The associated-graded identifications, spectral-sequence pages, and convergence
-are result-level content and are not asserted as part of that definition.
+increasing row filtration.  U045 constructs the column filtration, and U046
+constructs the row filtration by axis exchange.  The associated-graded
+identifications, spectral-sequence pages, and convergence are result-level
+content and are not asserted as part of these definitions.
 -/
 
 @[expose] public section
@@ -308,27 +310,41 @@ noncomputable def columnFiltration (K : FirstQuadrantDoubleComplex C) :
       omega
 
 
-/-- The horizontal row complex `C_{*,q}` in a first-quadrant double complex. -/
-noncomputable def horizontalRowComplex
-    (K : FirstQuadrantDoubleComplex C) (q : ℕ) : ChainComplex C ℕ :=
-  ((HomologicalComplex.eval C (ComplexShape.down ℕ) q).mapHomologicalComplex
-    (ComplexShape.down ℕ)).obj K
+/-- The standard symmetry of the first-quadrant chain totalization.  Under
+axis exchange, the summand in bidegree `(p,q)` is multiplied by `(-1)^(p*q)`. -/
+instance firstQuadrantTotalComplexShapeSymmetry :
+    TotalComplexShapeSymmetry (ComplexShape.down ℕ) (ComplexShape.down ℕ)
+      (ComplexShape.down ℕ) where
+  symm p q := Nat.add_comm q p
+  σ p q := (-1 : ℤˣ) ^ (p * q)
+  σ_ε₁ := by
+    rintro _ p rfl q
+    dsimp
+    rw [mul_one, Nat.add_mul, one_mul, pow_add, mul_comm]
+  σ_ε₂ := by
+    rintro p _ q rfl
+    dsimp
+    rw [Nat.mul_add, Nat.mul_one, pow_add, one_mul, mul_assoc,
+      Int.units_mul_self, mul_one]
 
-/-- A realization of Weibel's row filtration on the direct-sum total complex. -/
-structure RowFiltrationRealization
-    (K : FirstQuadrantDoubleComplex C)
-    [HomologicalComplex₂.HasTotal K (ComplexShape.down ℕ)] where
-  /-- The increasing filtration on `Tot K`. -/
-  filtration :
+/-- Weibel's canonical row filtration on the direct-sum total complex.  It is
+the column filtration after exchanging the two axes, transported back along
+the canonical total-complex symmetry.
+
+Source: Weibel, Definition 5.6.2 (FC05-C05-U046). -/
+noncomputable def rowFiltration (K : FirstQuadrantDoubleComplex C) :
     ChainComplexFiltration C (ComplexShape.down ℕ)
-      (HomologicalComplex₂.total K (ComplexShape.down ℕ))
-  /-- Negative row filtration is zero. -/
-  negative_isZero : ∀ (p : ℤ), p < 0 → ∀ n : ℕ,
-    IsZero (filtration.degreeObject p n)
-  /-- The associated graded object in filtration degree `p` is the `p`th
-  row, with total degree `p+q`. -/
-  graded_iso : ∀ (p q : ℕ),
-    (associatedGradedNat filtration (p : ℤ)).X (p + q) ≅ (K.X q).X p
+      (HomologicalComplex₂.total K (ComplexShape.down ℕ)) where
+  obj p :=
+    Subobject.mapIsoToOrderIso
+      (HomologicalComplex₂.totalFlipIso K (ComplexShape.down ℕ))
+        ((columnFiltration (HomologicalComplex₂.flip K)).obj p)
+  monotone := by
+    intro p q hpq
+    exact
+      (Subobject.mapIsoToOrderIso
+        (HomologicalComplex₂.totalFlipIso K (ComplexShape.down ℕ))).monotone
+          ((columnFiltration (HomologicalComplex₂.flip K)).monotone hpq)
 
 
 end LeanCategories.Homological
