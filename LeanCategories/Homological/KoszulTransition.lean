@@ -83,7 +83,7 @@ noncomputable def koszulHomologyTransition {n : ℕ} {x : Fin n → R}
       (isCentralSequence_power R hx i)}
     (T : KoszulPowerTransition R x hx i Knext Kcurr)
     (A : ModuleCat Rᵐᵒᵖ) (q : ℕ) :
-    koszulHomology R _ _ Knext A q ⟶ koszulHomology R _ _ Kcurr A q :=
+    koszulHomologyOf R _ _ Knext A q ⟶ koszulHomologyOf R _ _ Kcurr A q :=
   (HomologicalComplex.homologyFunctor (ModuleCat ℤ) (ComplexShape.down ℕ) q).map
     (((tensorLeftFunctor R A).mapHomologicalComplex (ComplexShape.down ℕ)).map T.map)
 
@@ -97,7 +97,7 @@ noncomputable def koszulCohomologyTransition {n : ℕ} {x : Fin n → R}
       (isCentralSequence_power R hx i)}
     (T : KoszulPowerTransition R x hx i Knext Kcurr)
     (B : ModuleCat R) (q : ℕ) :
-    koszulCohomology R _ _ Kcurr B q ⟶ koszulCohomology R _ _ Knext B q :=
+    koszulCohomologyOf R _ _ Kcurr B q ⟶ koszulCohomologyOf R _ _ Knext B q :=
   (HomologicalComplex.homologyFunctor AddCommGrpCat (ComplexShape.up ℕ) q).map
     (((preadditiveYoneda.obj B).mapHomologicalComplex (ComplexShape.up ℕ)).map
       ((HomologicalComplex.opFunctor (ModuleCat R) (ComplexShape.down ℕ)).map T.map.op))

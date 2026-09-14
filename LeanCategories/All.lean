@@ -124,6 +124,7 @@ public import LeanCategories.Homological.SpectralSequenceConvergence
 public import LeanCategories.Homological.SpectralSequenceInfinity
 public import LeanCategories.Homological.CentralHomLocalization
 public import LeanCategories.Homological.KoszulComplex
+public import LeanCategories.Homological.KoszulHomology
 public import LeanCategories.Homological.FiniteFreeResolution
 public import LeanCategories.Homological.ExactSequenceCategories
 public import LeanCategories.Homological.MappingCylinder

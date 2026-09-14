@@ -42,6 +42,8 @@ Sweep III C04-U050 is realized by the provenance-preserving port in `LeanCategor
 
 Sweep III C04-U068 is now realized by `LeanCategories/Homological/KoszulComplex.lean::koszulComplex` and `canonicalKoszulComplexRealization`. The owner constructs the arbitrary-associative-ring Koszul complex for a finite central sequence, proves the alternating boundary squares to zero via the deletion-pair involution, and records the exact free-degree/basis differential formula. `lake build LeanCategories.Homological.KoszulComplex` succeeds; temporary probes accept arbitrary sequences over commutative rings and reject an explicit noncentral `2×2` integer-matrix singleton. The earlier exhaustive search evidence and commutative/field external implementations remain recorded as prior art rather than substituted for the source-general owner.
 
+Sweep III C04-U069 now uses that canonical owner directly in `LeanCategories/Homological/KoszulHomology.lean`. `koszulHomology` and `koszulCohomology` take only the central sequence and coefficient module, exactly as Notation 4.5.1 does; the realization-parametrized `…Of` helpers are retained solely for comparison maps. Focused builds of `KoszulHomology` and the dependent `KoszulTransition` module both succeed.
+
 Canonical catalogue: [[foundational-corpus-units-fc05-weibel|FC05 — Weibel, An Introduction to Homological Algebra]].
 
 Pinned project baseline: Mathlib `db584cd6d46c92f209a44c0f1c829460d327499d`, Lean 4.33.0. Current Mathlib was refreshed 2026-09-14 to `2ff8073df352b7cb74638403c464ed5cd3f97ce2`; declarations first appearing after the project pin are revision-specific reference-port routes unless an importable package route is independently justified.
