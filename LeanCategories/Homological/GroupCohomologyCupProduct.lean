@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
+public import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 public import Mathlib.LinearAlgebra.Quotient.Bilinear
 public import Mathlib.LinearAlgebra.TensorProduct.Basic
 
@@ -532,5 +533,94 @@ private lemma groupCohomologyCup_boundary_right (p j : ℕ)
     (groupCohomologyCanonicalComplex G).homologyπ r) pre) = 0
   rw [(groupCohomologyCanonicalComplex G).toCycles_comp_homologyπ]
   rfl
+
+private abbrev groupCohomologyForgetToAddCommGrp :=
+  forget₂ (ModuleCat ℤ) AddCommGrpCat
+
+private lemma groupCohomologyCupCocycleAux_zero_right (p q r : ℕ) (hr : r = p + q)
+    (σ : groupCohomology.cocycles (groupCohomologyTrivialIntRep G) p) :
+    groupCohomologyCupCocycleAux G p q r hr σ 0 = 0 := by
+  have h := groupCohomologyCupCocycleAux_zsmul_right G p q r hr 0 σ
+    (0 : groupCohomology.cocycles (groupCohomologyTrivialIntRep G) q)
+  simpa using h
+
+/-- For a fixed left cocycle, cup product followed by the target homology projection,
+viewed first as an additive map.  Passing through `AddCommGrpCat` avoids choosing between the two
+definitionally distinct presentations of integer scalar multiplication exposed by the module API. -/
+private def groupCohomologyCupCyclesToHomologyAdd (p q : ℕ)
+    (σ : groupCohomology.cocycles (groupCohomologyTrivialIntRep G) p) :
+    (groupCohomologyForgetToAddCommGrp.obj
+        (groupCohomology.cocycles (groupCohomologyTrivialIntRep G) q)) ⟶
+      groupCohomologyForgetToAddCommGrp.obj
+        (groupCohomology (groupCohomologyTrivialIntRep G) (p + q)) :=
+  AddCommGrpCat.ofHom
+    { toFun := fun τ ↦
+        groupCohomology.π (groupCohomologyTrivialIntRep G) (p + q)
+          (groupCohomologyCupCocycleAux G p q (p + q) rfl σ τ)
+      map_zero' := by
+        rw [groupCohomologyCupCocycleAux_zero_right, map_zero]
+      map_add' := by
+        intro τ₁ τ₂
+        rw [groupCohomologyCupCocycleAux_add_right, map_add] }
+
+/-- For a fixed left cocycle, cup product followed by projection to target cohomology, bundled as
+a `ℤ`-linear morphism on the canonical cocycle object. -/
+private def groupCohomologyCupCyclesToHomology (p q : ℕ)
+    (σ : groupCohomology.cocycles (groupCohomologyTrivialIntRep G) p) :
+    groupCohomology.cocycles (groupCohomologyTrivialIntRep G) q ⟶
+      groupCohomology (groupCohomologyTrivialIntRep G) (p + q) :=
+  groupCohomologyForgetToAddCommGrp.preimage
+    (groupCohomologyCupCyclesToHomologyAdd G p q σ)
+
+@[simp]
+private lemma groupCohomologyCupCyclesToHomology_apply (p q : ℕ)
+    (σ : groupCohomology.cocycles (groupCohomologyTrivialIntRep G) p)
+    (τ : groupCohomology.cocycles (groupCohomologyTrivialIntRep G) q) :
+    groupCohomologyCupCyclesToHomology G p q σ τ =
+      groupCohomology.π (groupCohomologyTrivialIntRep G) (p + q)
+        (groupCohomologyCupCocycleAux G p q (p + q) rfl σ τ) := by
+  change (groupCohomologyForgetToAddCommGrp.map
+      (groupCohomologyForgetToAddCommGrp.preimage
+        (groupCohomologyCupCyclesToHomologyAdd G p q σ))) τ = _
+  rw [groupCohomologyForgetToAddCommGrp.map_preimage]
+  rfl
+
+/-- First homology-quotient descent: for a fixed left cocycle, the right cocycle variable descends
+through the canonical cokernel presentation of ordinary group cohomology. -/
+private def groupCohomologyCupRightDescData (p q : ℕ)
+    (σ : groupCohomology.cocycles (groupCohomologyTrivialIntRep G) p) :
+    { l : groupCohomology (groupCohomologyTrivialIntRep G) q ⟶
+        groupCohomology (groupCohomologyTrivialIntRep G) (p + q) //
+      groupCohomology.π (groupCohomologyTrivialIntRep G) q ≫ l =
+        groupCohomologyCupCyclesToHomology G p q σ } := by
+  cases q with
+  | zero =>
+      apply CokernelCofork.IsColimit.desc'
+        ((groupCohomologyCanonicalComplex G).homologyIsCokernel
+          (i := 0) (j := 0) (by simp))
+      simpa only [(groupCohomologyCanonicalComplex G).toCycles_eq_zero
+        (i := 0) (j := 0) (by simp), zero_comp]
+  | succ j =>
+      apply CokernelCofork.IsColimit.desc'
+        ((groupCohomologyCanonicalComplex G).homologyIsCokernel
+          (i := j) (j := j + 1) (by simp))
+      ext y
+      change groupCohomologyCupCyclesToHomology G p (j + 1) σ
+        ((groupCohomologyCanonicalComplex G).toCycles j (j + 1) y) = 0
+      rw [groupCohomologyCupCyclesToHomology_apply]
+      exact groupCohomologyCup_boundary_right G p j σ y
+
+private def groupCohomologyCupRightDesc (p q : ℕ)
+    (σ : groupCohomology.cocycles (groupCohomologyTrivialIntRep G) p) :
+    groupCohomology (groupCohomologyTrivialIntRep G) q ⟶
+      groupCohomology (groupCohomologyTrivialIntRep G) (p + q) :=
+  (groupCohomologyCupRightDescData G p q σ).1
+
+private lemma groupCohomologyCupRightDesc_π (p q : ℕ)
+    (σ : groupCohomology.cocycles (groupCohomologyTrivialIntRep G) p) :
+    groupCohomology.π (groupCohomologyTrivialIntRep G) q ≫
+        groupCohomologyCupRightDesc G p q σ =
+      groupCohomologyCupCyclesToHomology G p q σ :=
+  (groupCohomologyCupRightDescData G p q σ).2
 
 end LeanCategories.Homological
