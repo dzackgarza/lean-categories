@@ -190,6 +190,9 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # symmetric and quadratic dyadic discriminant forms need not determine
         # one another in exponent one, with the discrepancy disappearing later.
         "FC11-C11-U012",
+        # Peters--Sterk C12-U031 proves Minkowski-sum/parity behavior of the
+        # already-defined index sets.  It introduces no further set or invariant.
+        "FC11-C12-U031",
     }
 )
 
