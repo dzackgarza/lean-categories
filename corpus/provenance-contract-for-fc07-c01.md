@@ -33,3 +33,5 @@ project_id: github.com__dzackgarza__lean-categories
 - U092/U093 record Mathlib’s exact algebraic amalgamated-product/HNN constructions only as adjacent evidence: the units assert topological π₁(KΓ) computations, and no checked KΓ bridge was found.
 - `N=2026-09-06` denotes a dated unmatched result after the prescribed search layers. Strict whole-row semantics are applied uniformly.
 
+
+- **2026-09-15 definitional first-pass refresh.** The two remaining `action=search` definitions were reread against their exact source clauses under the current clause-wise policy. For U067, pinned Mathlib’s `SimpleGraph.mulCayley` is genuine ownership of the algebraic Cayley graph, but fresh live-corpus searches found no construction attaching the relator 2-cells and proving the resulting Cayley complex is the universal cover of the presentation complex. For U090, broad graph-of-groups/Bass–Serre searches found no topological `KΓ` implementation; the previously checked ComputationalPaths algebraic Bass–Serre machinery remains partial prior art only. Both rows therefore carry `[negative-search-complete]` as provisional State-1 residue, not final authorship authorization.
