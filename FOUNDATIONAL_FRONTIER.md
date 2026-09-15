@@ -423,8 +423,8 @@ Next 12 open units in source traversal order:
 
 ## FC12 — Mapping
 
-Definitions with an implementation source: **4/45**; source-discovery gaps: **41** (unmatched=41).
-Already-sourced definition spans: `FC12-C02-U004`, `FC12-C03-U001`, `FC12-C03-U004`, `FC12-C04-U017`.
+Definitions with an implementation source: **5/45**; source-discovery gaps: **40** (unmatched=40).
+Already-sourced definition spans: `FC12-C02-U004`, `FC12-C03-U001`, `FC12-C03-U004`, `FC12-C04-U017`, `FC12-C05-U003`.
 Phase blocker: none
 
 Next 12 open units in source traversal order:
@@ -446,8 +446,8 @@ Next 12 open units in source traversal order:
 
 ## FC12 — Definitions
 
-Delivered/directly reusable by mapping: **4/45**; pending realization: **41** (unmatched=41).
-Delivered/direct-reuse spans: `FC12-C02-U004`, `FC12-C03-U001`, `FC12-C03-U004`, `FC12-C04-U017`.
+Delivered/directly reusable by mapping: **5/45**; pending realization: **40** (unmatched=40).
+Delivered/direct-reuse spans: `FC12-C02-U004`, `FC12-C03-U001`, `FC12-C03-U004`, `FC12-C04-U017`, `FC12-C05-U003`.
 Phase blocker: Milestone 1 is open: definitional mapping/residue audit remains for FC01, FC03, FC04, FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
 Next 12 open units in source traversal order:
@@ -461,15 +461,15 @@ Next 12 open units in source traversal order:
 | `FC12-C03-U015` | Definition / construction III.14 | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC12-C03-U018` | Definition / construction III.17 | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC12-C03-U020` | Definition / notation | — | ready by recorded prerequisites | unmatched; residue audit |
-| `FC12-C05-U003` | Definition V.3 | `FC12-C02-U004` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC12-C06-U023` | Definition VI.19 | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC12-C07-U001` | Definition VII.1 | `FC12-C02-U004` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC12-C08-U024` | Construction | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC12-C09-U003` | Definition | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC12-B-U001` | Convention / notation | — | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC12 — Theorems
 
-Delivered/directly reusable by mapping: **0/177**; pending realization: **177** (mathlib=1, project-existing=3, unmatched=173).
+Delivered/directly reusable by mapping: **0/178**; pending realization: **178** (mathlib=1, project-existing=4, unmatched=173).
 Delivered/direct-reuse spans: none.
 Phase blocker: Sweep III is not complete corpus-wide: FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
