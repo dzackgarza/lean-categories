@@ -182,6 +182,10 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # class whose formula is introduced in U007.  Calling that class the
         # Arf invariant does not introduce a second mathematical construction.
         "FC11-C08-U008",
+        # Peters--Sterk C09-U024 proves properties of the doubling construction
+        # introduced in U023: its polar form is 2b and it is nondegenerate.  It
+        # introduces no further carrier, map, or invariant.
+        "FC11-C09-U024",
     }
 )
 
