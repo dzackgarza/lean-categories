@@ -423,31 +423,31 @@ Next 12 open units in source traversal order:
 
 ## FC12 — Mapping
 
-Definitions with an implementation source: **0/45**; source-discovery gaps: **45** (unmatched=45).
-Already-sourced definition spans: none.
+Definitions with an implementation source: **1/45**; source-discovery gaps: **44** (unmatched=44).
+Already-sourced definition spans: `FC12-C02-U004`.
 Phase blocker: none
 
 Next 12 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC12-C01-U002` | Definition I.2 | — | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC12-C01-U003` | Definition I.3 | `FC12-C01-U002` | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC12-C01-U008` | Notation | `FC12-C01-U004` | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC12-C01-U012` | Construction / interpretation I.10 | `FC12-C01-U001`, `FC12-C01-U004` | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC12-C01-U013` | Definition / construction | `FC12-C01-U012` | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC12-C02-U001` | Definition / construction II.1 | — | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC12-C02-U004` | Definition / construction II.4 | — | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC12-C02-U005` | Definition / construction II.5 | — | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC12-C02-U006` | Construction / correspondence II.6 | `FC12-C02-U004`, `FC12-C02-U005` | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC12-C02-U017` | Definition / convention | — | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC12-C02-U018` | Definition I.15 | `FC12-C02-U017` | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC12-C02-U020` | Definition / criterion | `FC12-C02-U001`, `FC12-C02-U018` | ready by recorded prerequisites | unmatched; search existing formalizations |
+| `FC12-C01-U002` | Definition I.2 | — | ready by recorded prerequisites | unmatched; open-ended residue audit required |
+| `FC12-C01-U003` | Definition I.3 | `FC12-C01-U002` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
+| `FC12-C01-U008` | Notation | `FC12-C01-U004` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
+| `FC12-C01-U012` | Construction / interpretation I.10 | `FC12-C01-U001`, `FC12-C01-U004` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
+| `FC12-C01-U013` | Definition / construction | `FC12-C01-U012` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
+| `FC12-C02-U001` | Definition / construction II.1 | — | ready by recorded prerequisites | unmatched; open-ended residue audit required |
+| `FC12-C02-U005` | Definition / construction II.5 | — | ready by recorded prerequisites | unmatched; open-ended residue audit required |
+| `FC12-C02-U006` | Construction / correspondence II.6 | `FC12-C02-U004`, `FC12-C02-U005` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
+| `FC12-C02-U017` | Definition / convention | — | ready by recorded prerequisites | unmatched; open-ended residue audit required |
+| `FC12-C02-U018` | Definition I.15 | `FC12-C02-U017` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
+| `FC12-C02-U020` | Definition / criterion | `FC12-C02-U001`, `FC12-C02-U018` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
+| `FC12-C03-U001` | Definition III.1 | — | ready by recorded prerequisites | unmatched; search existing formalizations |
 
 ## FC12 — Definitions
 
-Delivered/directly reusable by mapping: **0/45**; pending realization: **45** (unmatched=45).
-Delivered/direct-reuse spans: none.
+Delivered/directly reusable by mapping: **1/45**; pending realization: **44** (unmatched=44).
+Delivered/direct-reuse spans: `FC12-C02-U004`.
 Phase blocker: Milestone 1 is open: definitional mapping/residue audit remains for FC01, FC03, FC04, FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
 Next 12 open units in source traversal order:
@@ -456,20 +456,20 @@ Next 12 open units in source traversal order:
 | --- | --- | --- | --- | --- |
 | `FC12-C01-U002` | Definition I.2 | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC12-C02-U001` | Definition / construction II.1 | — | ready by recorded prerequisites | unmatched; residue audit |
-| `FC12-C02-U004` | Definition / construction II.4 | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC12-C02-U005` | Definition / construction II.5 | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC12-C02-U017` | Definition / convention | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC12-C03-U001` | Definition III.1 | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC12-C03-U015` | Definition / construction III.14 | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC12-C03-U018` | Definition / construction III.17 | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC12-C03-U020` | Definition / notation | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC12-C05-U003` | Definition V.3 | `FC12-C02-U004` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC12-C06-U023` | Definition VI.19 | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC12-C07-U001` | Definition VII.1 | `FC12-C02-U004` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC12-C08-U024` | Construction | — | ready by recorded prerequisites | unmatched; residue audit |
-| `FC12-C09-U003` | Definition | — | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC12 — Theorems
 
-Delivered/directly reusable by mapping: **0/173**; pending realization: **173** (unmatched=173).
+Delivered/directly reusable by mapping: **0/174**; pending realization: **174** (mathlib=1, unmatched=173).
 Delivered/direct-reuse spans: none.
 Phase blocker: Sweep III is not complete corpus-wide: FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
@@ -483,12 +483,12 @@ Next 12 open units in source traversal order:
 | `FC12-C01-U014` | Theorem I.11 | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC12-C01-U017` | Formula I.14 | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC12-C01-U020` | Fact I.17 | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC12-C02-U004` | Definition / construction II.4 | — | ready by recorded prerequisites | mathlib; theorem clause pending |
+| `FC12-C02-U009` | Lemma I1.9 | `FC12-C02-U004` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC12-C02-U010` | Lemma II.10 | `FC12-C02-U004` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC12-C02-U022` | Lemma I1.18 | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC12-C03-U010` | Lemma II1.9 | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC12-C03-U012` | Lemma III.11 | — | ready by recorded prerequisites | unmatched; residue audit |
-| `FC12-C03-U013` | Corollary III.12 | — | ready by recorded prerequisites | unmatched; residue audit |
-| `FC12-C03-U024` | Fact III.22 | — | ready by recorded prerequisites | unmatched; residue audit |
-| `FC12-C04-U004` | Fact IV.3 | — | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC13 — Definitions
 

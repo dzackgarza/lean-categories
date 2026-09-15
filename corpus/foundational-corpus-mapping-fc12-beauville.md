@@ -40,7 +40,7 @@ project_id: github.com__dzackgarza__lean-categories
 
 # FC12 — Beauville, *Complex Algebraic Surfaces*, 2nd ed. mapping
 
-Status: **First-pass definitional Mapping active.** The initial 2026-09-07 row-coverage pass exists for C01–C10 and Appendices A–B; semantic definition adjudication is proceeding in source order. Chapter I definition rows U002/U003/U008/U012/U013 were rechecked on 2026-09-15 and remain `[negative-search-complete]`; Chapter II is next.
+Status: **First-pass definitional Mapping active.** The initial 2026-09-07 row-coverage pass exists for C01–C10 and Appendices A–B; semantic definition adjudication is proceeding in source order. Chapter I definition rows U002/U003/U008/U012/U013 were rechecked on 2026-09-15 and remain `[negative-search-complete]`. Chapter II is also adjudicated: U004 is a direct pinned-Mathlib rational-map route, while U001/U005/U006/U017/U018/U020 remain first-pass residue. Chapter III is next.
 
 Canonical catalogue: [[foundational-corpus-units-fc12-beauville|FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.]].
 
