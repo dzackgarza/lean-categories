@@ -270,6 +270,18 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # C19-U042 is section-transition/classification context relating the
         # geometric supersingular NS lattices to the arithmetic class U043.
         "FC11-C19-U042",
+        # C20-U027 is the theorem/comparison that the two light-cone/Kähler
+        # choices are exchanged by negating the marking; it names no new object.
+        "FC11-C20-U027",
+        # C20-U039 repeats Definition 20.2.3 (U024) verbatim and introduces
+        # no second marked-surface notion.
+        "FC11-C20-U039",
+        # C20-U070 only fixes the standing surface/action/cohomology notation
+        # for the quotient section; the actual constructions are elsewhere.
+        "FC11-C20-U070",
+        # C20-U071 is setup/theorem context on linearization and du Val
+        # quotient singularities, not a new definition.
+        "FC11-C20-U071",
     }
 )
 
