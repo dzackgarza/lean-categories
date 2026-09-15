@@ -253,6 +253,15 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # C17-U047 only records basis-independence of the U046 subgroup; the
         # subgroup itself is already defined in the preceding unit.
         "FC11-C17-U047",
+        # C18-U045 is the Lefsche-type pi_1 surjectivity theorem for the
+        # line-section inclusion, not a definition.
+        "FC11-C18-U045",
+        # C18-U046 is the theorem embedding the local Milnor lattice into the
+        # global primitive-cohomology lattice.
+        "FC11-C18-U046",
+        # C18-U047 is the theorem that global monodromy fixes the hyperplane
+        # class and hence lands in the corresponding orthogonal stabilizer.
+        "FC11-C18-U047",
     }
 )
 
