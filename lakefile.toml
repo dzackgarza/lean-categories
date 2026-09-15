@@ -17,6 +17,11 @@ name = "mathlib"
 scope = "leanprover-community"
 rev = "v4.33.0"
 
+[[require]]
+name = "BrauerGroup"
+git = "https://github.com/Whysoserioushah/BrauerGroup.git"
+rev = "v4.33.0"
+
 [[lean_lib]]
 name = "LeanCategories"
 
