@@ -331,49 +331,49 @@ Next 12 open units in source traversal order:
 
 ## FC10 — Mapping
 
-Definitions with an implementation source: **136/229**; source-discovery gaps: **93** (unmatched=93).
-Already-sourced definition spans: `FC10-C01-U001`–`FC10-C01-U006`, `FC10-C01-U014`–`FC10-C01-U017`, `FC10-C01-U019`–`FC10-C01-U020`, `FC10-C01-U022`–`FC10-C01-U023`, `FC10-C01-U026`–`FC10-C01-U027`, `FC10-C01-U029`, `FC10-C01-U035`, `FC10-C01-U037`, `FC10-C01-U040`–`FC10-C01-U045`, `FC10-C01-U048`, `FC10-C01-U050`–`FC10-C01-U051`, `FC10-C01-U066`, `FC10-C01-U069`–`FC10-C01-U072`, `FC10-C01-U074`, `FC10-C01-U077`, `FC10-C01-U079`, `FC10-C01-U081`, `FC10-C02-U001`–`FC10-C02-U002`, `FC10-C02-U005`, `FC10-C02-U012`, `FC10-C02-U024`, `FC10-C02-U027`, `FC10-C02-U029`, `FC10-C02-U031`, `FC10-C02-U033`–`FC10-C02-U034`, `FC10-C02-U042`–`FC10-C02-U043`, `FC10-C02-U050`, `FC10-C03-U001`, `FC10-C03-U005`, `FC10-C03-U007`–`FC10-C03-U008`, `FC10-C03-U013`–`FC10-C03-U016`, `FC10-C03-U027`, `FC10-C03-U041`, `FC10-C04-U001`–`FC10-C04-U002`, `FC10-C04-U005`–`FC10-C04-U006`, `FC10-C04-U012`, `FC10-C04-U015`, `FC10-C04-U032`–`FC10-C04-U033`, `FC10-C05-U001`, `FC10-C05-U011`, `FC10-C06-U002`–`FC10-C06-U006`, `FC10-C07-U001`–`FC10-C07-U002`, `FC10-C07-U005`, `FC10-C07-U007`–`FC10-C07-U010`, `FC10-C07-U013`–`FC10-C07-U016`, `FC10-C07-U019`–`FC10-C07-U025`, `FC10-C07-U027`–`FC10-C07-U028`, `FC10-C07-U034`–`FC10-C07-U035`, `FC10-C08-U001`–`FC10-C08-U003`, `FC10-C08-U008`–`FC10-C08-U009`, `FC10-C08-U017`–`FC10-C08-U018`, `FC10-C08-U021`, `FC10-C09-U001`, `FC10-C10-U026`, `FC10-C11-U001`, `FC10-C11-U003`–`FC10-C11-U007`, `FC10-C11-U013`–`FC10-C11-U014`, `FC10-C11-U019`, `FC10-C11-U021`–`FC10-C11-U022`, `FC10-C11-U026`, `FC10-C11-U033`–`FC10-C11-U034`, `FC10-C11-U036`, `FC10-C12-U006`, `FC10-C13-U004`–`FC10-C13-U005`, `FC10-C13-U007`, `FC10-C13-U026`, `FC10-C13-U031`, `FC10-C13-U034`, `FC10-C13-U043`, `FC10-C14-U008`, `FC10-C14-U011`, `FC10-C14-U046`–`FC10-C14-U048`, `FC10-C15-U003`.
+Definitions with an implementation source: **142/229**; source-discovery gaps: **87** (unmatched=87).
+Already-sourced definition spans: `FC10-C01-U001`–`FC10-C01-U006`, `FC10-C01-U014`–`FC10-C01-U017`, `FC10-C01-U019`–`FC10-C01-U020`, `FC10-C01-U022`–`FC10-C01-U023`, `FC10-C01-U026`–`FC10-C01-U027`, `FC10-C01-U029`, `FC10-C01-U035`, `FC10-C01-U037`, `FC10-C01-U040`–`FC10-C01-U045`, `FC10-C01-U048`, `FC10-C01-U050`–`FC10-C01-U051`, `FC10-C01-U053`, `FC10-C01-U066`, `FC10-C01-U069`–`FC10-C01-U072`, `FC10-C01-U074`, `FC10-C01-U077`, `FC10-C01-U079`, `FC10-C01-U081`, `FC10-C02-U001`–`FC10-C02-U002`, `FC10-C02-U005`, `FC10-C02-U012`, `FC10-C02-U024`, `FC10-C02-U027`–`FC10-C02-U029`, `FC10-C02-U031`, `FC10-C02-U033`–`FC10-C02-U035`, `FC10-C02-U042`–`FC10-C02-U043`, `FC10-C02-U048`, `FC10-C02-U050`, `FC10-C03-U001`, `FC10-C03-U003`, `FC10-C03-U005`, `FC10-C03-U007`–`FC10-C03-U008`, `FC10-C03-U013`–`FC10-C03-U016`, `FC10-C03-U027`, `FC10-C03-U031`, `FC10-C03-U041`, `FC10-C04-U001`–`FC10-C04-U002`, `FC10-C04-U005`–`FC10-C04-U006`, `FC10-C04-U012`, `FC10-C04-U015`, `FC10-C04-U032`–`FC10-C04-U033`, `FC10-C05-U001`, `FC10-C05-U011`, `FC10-C06-U002`–`FC10-C06-U006`, `FC10-C07-U001`–`FC10-C07-U002`, `FC10-C07-U005`, `FC10-C07-U007`–`FC10-C07-U010`, `FC10-C07-U013`–`FC10-C07-U016`, `FC10-C07-U019`–`FC10-C07-U025`, `FC10-C07-U027`–`FC10-C07-U028`, `FC10-C07-U034`–`FC10-C07-U035`, `FC10-C08-U001`–`FC10-C08-U003`, `FC10-C08-U008`–`FC10-C08-U009`, `FC10-C08-U017`–`FC10-C08-U018`, `FC10-C08-U021`, `FC10-C09-U001`, `FC10-C10-U026`, `FC10-C11-U001`, `FC10-C11-U003`–`FC10-C11-U007`, `FC10-C11-U013`–`FC10-C11-U014`, `FC10-C11-U019`, `FC10-C11-U021`–`FC10-C11-U022`, `FC10-C11-U026`, `FC10-C11-U033`–`FC10-C11-U034`, `FC10-C11-U036`, `FC10-C12-U006`, `FC10-C13-U004`–`FC10-C13-U005`, `FC10-C13-U007`, `FC10-C13-U026`, `FC10-C13-U031`, `FC10-C13-U034`, `FC10-C13-U043`, `FC10-C14-U008`, `FC10-C14-U011`, `FC10-C14-U046`–`FC10-C14-U048`, `FC10-C15-U003`.
 Phase blocker: none
 
 Next 12 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC10-C01-U053` | Definition / construction | `FC10-C01-U050`, `FC10-C01-U051` | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC10-C02-U028` | Definition / construction | — | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC10-C02-U035` | Definition / construction | `FC10-C02-U019`, `FC10-C02-U034` | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC10-C02-U048` | Definition / construction | `FC10-C02-U027`, `FC10-C02-U034` | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC10-C02-U051` | Definition / construction | — | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC10-C03-U003` | Definition / construction | `FC10-C03-U001` | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC10-C03-U031` | Definition / construction | `FC10-C03-U030` | ready by recorded prerequisites | unmatched; search existing formalizations |
+| `FC10-C02-U051` | Definition / construction | — | ready by recorded prerequisites | unmatched; open-ended residue audit required |
 | `FC10-C04-U011` | Definition / construction | `FC10-C04-U005` | ready by recorded prerequisites | unmatched; search existing formalizations |
 | `FC10-C04-U017` | Definition / construction | — | ready by recorded prerequisites | unmatched; search existing formalizations |
 | `FC10-C04-U035` | Convention / notation | `FC10-C04-U033` | ready by recorded prerequisites | unmatched; search existing formalizations |
 | `FC10-C04-U037` | Definition / construction | `FC10-C04-U035` | ready by recorded prerequisites | unmatched; search existing formalizations |
 | `FC10-C04-U043` | Definition / construction | `FC10-C04-U037` | ready by recorded prerequisites | unmatched; search existing formalizations |
+| `FC10-C04-U044` | Definition / construction | `FC10-C04-U043` | ready by recorded prerequisites | unmatched; search existing formalizations |
+| `FC10-C04-U045` | Definition / construction | `FC10-C04-U039` | ready by recorded prerequisites | unmatched; search existing formalizations |
+| `FC10-C04-U049` | Definition / construction | — | ready by recorded prerequisites | unmatched; search existing formalizations |
+| `FC10-C04-U053` | Convention / notation | — | ready by recorded prerequisites | unmatched; search existing formalizations |
+| `FC10-C05-U026` | Definition / construction | — | ready by recorded prerequisites | unmatched; search existing formalizations |
+| `FC10-C05-U027` | Definition / construction | — | ready by recorded prerequisites | unmatched; search existing formalizations |
 
 ## FC10 — Definitions
 
-Delivered/directly reusable by mapping: **94/229**; pending realization: **135** (reference-port=42, unmatched=93).
-Delivered/direct-reuse spans: `FC10-C01-U001`–`FC10-C01-U006`, `FC10-C01-U014`–`FC10-C01-U017`, `FC10-C01-U019`–`FC10-C01-U020`, `FC10-C01-U022`–`FC10-C01-U023`, `FC10-C01-U026`–`FC10-C01-U027`, `FC10-C01-U029`, `FC10-C01-U035`, `FC10-C01-U037`, `FC10-C01-U040`–`FC10-C01-U045`, `FC10-C01-U048`, `FC10-C01-U050`–`FC10-C01-U051`, `FC10-C01-U066`, `FC10-C01-U069`–`FC10-C01-U072`, `FC10-C01-U074`, `FC10-C01-U077`, `FC10-C02-U001`–`FC10-C02-U002`, `FC10-C02-U005`, `FC10-C02-U024`, `FC10-C02-U027`, `FC10-C02-U029`, `FC10-C02-U031`, `FC10-C02-U033`–`FC10-C02-U034`, `FC10-C02-U042`–`FC10-C02-U043`, `FC10-C02-U050`, `FC10-C03-U001`, `FC10-C03-U005`, `FC10-C03-U007`, `FC10-C03-U013`, `FC10-C03-U015`–`FC10-C03-U016`, `FC10-C03-U027`, `FC10-C03-U041`, `FC10-C04-U001`, `FC10-C04-U006`, `FC10-C04-U015`, `FC10-C05-U011`, `FC10-C06-U002`–`FC10-C06-U006`, `FC10-C07-U001`–`FC10-C07-U002`, `FC10-C07-U005`, `FC10-C07-U007`–`FC10-C07-U010`, `FC10-C07-U013`–`FC10-C07-U016`, `FC10-C07-U019`, `FC10-C07-U022`–`FC10-C07-U025`, `FC10-C07-U027`, `FC10-C08-U001`–`FC10-C08-U003`, `FC10-C08-U008`–`FC10-C08-U009`, `FC10-C09-U001`, `FC10-C10-U026`, `FC10-C11-U005`, `FC10-C11-U034`, `FC10-C13-U004`, `FC10-C14-U011`, `FC10-C14-U047`, `FC10-C15-U003`.
+Delivered/directly reusable by mapping: **100/229**; pending realization: **129** (reference-port=42, unmatched=87).
+Delivered/direct-reuse spans: `FC10-C01-U001`–`FC10-C01-U006`, `FC10-C01-U014`–`FC10-C01-U017`, `FC10-C01-U019`–`FC10-C01-U020`, `FC10-C01-U022`–`FC10-C01-U023`, `FC10-C01-U026`–`FC10-C01-U027`, `FC10-C01-U029`, `FC10-C01-U035`, `FC10-C01-U037`, `FC10-C01-U040`–`FC10-C01-U045`, `FC10-C01-U048`, `FC10-C01-U050`–`FC10-C01-U051`, `FC10-C01-U053`, `FC10-C01-U066`, `FC10-C01-U069`–`FC10-C01-U072`, `FC10-C01-U074`, `FC10-C01-U077`, `FC10-C02-U001`–`FC10-C02-U002`, `FC10-C02-U005`, `FC10-C02-U024`, `FC10-C02-U027`–`FC10-C02-U029`, `FC10-C02-U031`, `FC10-C02-U033`–`FC10-C02-U035`, `FC10-C02-U042`–`FC10-C02-U043`, `FC10-C02-U048`, `FC10-C02-U050`, `FC10-C03-U001`, `FC10-C03-U003`, `FC10-C03-U005`, `FC10-C03-U007`, `FC10-C03-U013`, `FC10-C03-U015`–`FC10-C03-U016`, `FC10-C03-U027`, `FC10-C03-U031`, `FC10-C03-U041`, `FC10-C04-U001`, `FC10-C04-U006`, `FC10-C04-U015`, `FC10-C05-U011`, `FC10-C06-U002`–`FC10-C06-U006`, `FC10-C07-U001`–`FC10-C07-U002`, `FC10-C07-U005`, `FC10-C07-U007`–`FC10-C07-U010`, `FC10-C07-U013`–`FC10-C07-U016`, `FC10-C07-U019`, `FC10-C07-U022`–`FC10-C07-U025`, `FC10-C07-U027`, `FC10-C08-U001`–`FC10-C08-U003`, `FC10-C08-U008`–`FC10-C08-U009`, `FC10-C09-U001`, `FC10-C10-U026`, `FC10-C11-U005`, `FC10-C11-U034`, `FC10-C13-U004`, `FC10-C14-U011`, `FC10-C14-U047`, `FC10-C15-U003`.
 Phase blocker: Milestone 1 is open: definitional mapping/residue audit remains for FC01, FC03, FC04, FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
 Next 12 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC10-C01-U053` | Definition / construction | `FC10-C01-U050`, `FC10-C01-U051` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC10-C01-U079` | Definition / construction | `FC10-C01-U069`, `FC10-C01-U072` | ready by recorded prerequisites | reference-port; port |
-| `FC10-C02-U028` | Definition / construction | — | ready by recorded prerequisites | unmatched; residue audit |
-| `FC10-C02-U048` | Definition / construction | `FC10-C02-U027`, `FC10-C02-U034` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC10-C02-U051` | Definition / construction | — | ready by recorded prerequisites | unmatched; residue audit |
-| `FC10-C03-U003` | Definition / construction | `FC10-C03-U001` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC10-C03-U008` | Definition / construction | `FC10-C03-U007` | ready by recorded prerequisites | reference-port; port |
 | `FC10-C03-U014` | Convention / notation | — | ready by recorded prerequisites | reference-port; port |
 | `FC10-C04-U002` | Convention / notation | `FC10-C04-U001` | ready by recorded prerequisites | reference-port; port |
 | `FC10-C04-U017` | Definition / construction | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC10-C04-U049` | Definition / construction | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC10-C04-U053` | Convention / notation | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC10-C05-U001` | Convention / notation | `FC10-C04-U015` | ready by recorded prerequisites | reference-port; port |
+| `FC10-C05-U026` | Definition / construction | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC10-C05-U027` | Definition / construction | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC10-C05-U028` | Definition / construction | — | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC10 — Theorems
 
@@ -390,13 +390,13 @@ Next 12 open units in source traversal order:
 | `FC10-C01-U033` | Approximation Lemma | — | ready by recorded prerequisites | reference-port; port |
 | `FC10-C01-U049` | Proposition 11 | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC10-C01-U052` | Example / comparison | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC10-C01-U054` | Proposition 12 | `FC10-C01-U051`, `FC10-C01-U053` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC10-C01-U055` | Proposition 13 | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC10-C01-U057` | Lemma 3 | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC10-C01-U059` | Proposition 15 | — | ready by recorded prerequisites | reference-port; port |
 | `FC10-C01-U060` | Corollary 1 | — | ready by recorded prerequisites | reference-port; port |
 | `FC10-C01-U061` | Corollary 2 | — | ready by recorded prerequisites | reference-port; port |
 | `FC10-C01-U062` | Proposition 16 | — | ready by recorded prerequisites | unmatched; residue audit |
-| `FC10-C01-U063` | Proposition 17 | — | ready by recorded prerequisites | reference-port; port |
 
 ## FC11 — Mapping
 
