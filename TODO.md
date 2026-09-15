@@ -62,7 +62,7 @@ theorem/remark/example rows.
 | `fc08-definition-residue-pass2` | Same second-pass task for FC08. | `fc17-mapping` |
 | `fc09-definition-residue-pass2` | Same second-pass task for FC09. | `fc17-mapping` |
 | `fc10-definition-residue-pass2` | Same second-pass task for FC10. | `fc17-mapping` |
-| `fc11-definition-residue-pass2` | Same second-pass task for FC11. | `fc17-mapping` |
+| `fc11-definition-residue-pass2` | **Completed 2026-09-16.** Systematic second-pass search/adjudication has been recorded for every one of the 46 FC11 provisional residues surviving first-pass Mapping, using broader synonyms, candidate-derived terminology, pinned local APIs, the hosted formalization corpus, and external/package prior art where relevant. The pass recovered one additional direct project route, the lattice Nikulin involution `FC11-C20-U060`, and preserved 46 scoped residues with explicit second-pass rejection evidence. Regenerated canonical counts are 231 `mathlib`, 79 `project-existing`, 31 `reference-port`, 46 `unmatched`; no FC11 `search`/`review` row remains. These survivors still require the corpus-wide positive-route audit and final open-ended prior-art search before Milestone 1. | `fc17-mapping` |
 | `fc12-definition-residue-pass2` | Same second-pass task for FC12. | `fc17-mapping` |
 | `fc13-definition-residue-pass2` | Same second-pass task for FC13. | `fc17-mapping` |
 | `fc14-definition-residue-pass2` | Same second-pass task for FC14. | `fc17-mapping` |
