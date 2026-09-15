@@ -140,6 +140,18 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # C02-U034 is the asserted 11/8 consequence and complex-surface case,
         # expressed entirely in the previously introduced manifold invariants.
         "FC11-C02-U034",
+        # Peters--Sterk C04-U020 is the finite/affine crystallographic root-system
+        # classification statement; all named diagram data were introduced earlier.
+        "FC11-C04-U020",
+        # C04-U042 is the Poincare--Lefschetz/UCT comparison identifying boundary
+        # torsion with the cokernel of the already-defined intersection form.
+        "FC11-C04-U042",
+        # C04-U043 asserts that the boundary carries the pairing induced from the
+        # intersection lattice; the actual topological linking-number definition is U044.
+        "FC11-C04-U043",
+        # C04-U045 is Rohlin-based independence of the signature modulo 16 for
+        # two bounding four-manifolds, hence comparison/result content only.
+        "FC11-C04-U045",
     }
 )
 
