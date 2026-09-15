@@ -207,6 +207,22 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # C13-U034 records that the integral Spin-to-SO+ map need not be
         # surjective.  It is a theorem/comparison about U028/U033.
         "FC11-C13-U034",
+        # Peters--Sterk C14-U012 is the p-adic theorem that ordinary and
+        # proper equivalence coincide; it introduces no new equivalence relation.
+        "FC11-C14-U012",
+        # C14-U031 is a sufficient local criterion for an already-defined
+        # spinor-norm image inclusion, not a construction of a new invariant.
+        "FC11-C14-U031",
+        # C14-U032 is a consequence of the preceding class-number/local-spinor
+        # criteria: proper equivalence and an index-two statement only.
+        "FC11-C14-U032",
+        # C14-U047 and U048 are classification/table computations for the
+        # previously defined p-elementary discriminant forms and mod-eight index.
+        "FC11-C14-U047",
+        "FC11-C14-U048",
+        # Peters--Sterk C15-U012 merely compares the numerical rank bounds in
+        # Theorem 15.2.3 and Lemma 15.2.4; both embedding notions pre-exist.
+        "FC11-C15-U012",
     }
 )
 
