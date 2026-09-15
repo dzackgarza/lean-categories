@@ -262,6 +262,14 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # C18-U047 is the theorem that global monodromy fixes the hyperplane
         # class and hence lands in the corresponding orthogonal stabilizer.
         "FC11-C18-U047",
+        # C19-U005 is the normality theorem for the Weyl group defined in U004.
+        "FC11-C19-U005",
+        # C19-U016 is the strong-Torelli group identification, not a new
+        # automorphism/Hodge-isometry construction.
+        "FC11-C19-U016",
+        # C19-U042 is section-transition/classification context relating the
+        # geometric supersingular NS lattices to the arithmetic class U043.
+        "FC11-C19-U042",
     }
 )
 
