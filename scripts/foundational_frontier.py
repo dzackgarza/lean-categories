@@ -166,6 +166,14 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # C05-U059 is the division-algebra iff anisotropic-norm criterion for
         # an already-defined quaternion algebra and reduced norm.
         "FC11-C05-U059",
+        # Peters--Sterk C06-U006 is the theorem reconstructing a quadratic map
+        # from an even symmetric form when doubling on the value module is
+        # injective.  The form/quadratic-map notions are already defined.
+        "FC11-C06-U006",
+        # C06-U044 is the characteristic-two classification theorem for an
+        # already-defined nondegenerate binary quadratic form over a perfect
+        # field; it introduces no new mathematical datum.
+        "FC11-C06-U044",
     }
 )
 
