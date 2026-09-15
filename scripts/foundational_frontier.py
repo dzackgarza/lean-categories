@@ -241,6 +241,18 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # two-torsion/Weil pairing with a symplectic F₂-space and identifying
         # theta characteristics with its quadratic refinements.
         "FC11-C16-U037",
+        # C17-U005 is only the arithmetic comparison between the epsilon-root
+        # self-pairing convention and the half-pairing quadratic value.
+        "FC11-C17-U005",
+        # C17-U009 is the infinitude consequence for the already-defined
+        # epsilon-Weyl group, not another construction.
+        "FC11-C17-U009",
+        # C17-U037 proves isometry/inverse/degenerate-pair properties of the
+        # Eichler--Siegel map defined in U036.
+        "FC11-C17-U037",
+        # C17-U047 only records basis-independence of the U046 subgroup; the
+        # subgroup itself is already defined in the preceding unit.
+        "FC11-C17-U047",
     }
 )
 
