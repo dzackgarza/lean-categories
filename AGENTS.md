@@ -84,6 +84,18 @@ one-off API requests or wait for FC05 implementation before discovering candidat
 Discovery may run arbitrarily far ahead because finding prior art has no dependency on local Lean
 realization. A definition already carrying `mathlib`, `project-existing`, `package-import`, or
 `reference-port` is not re-searched unless concrete evidence falsifies that route.
+Mapping routes record where the implementation was found at adjudication time; they are not a
+post-hoc description of the current tree.  `project-existing` is reserved for a canonical
+LeanCategories owner that already existed before the current unit entered Mapping.  Code authored,
+ported, or imported while that source's Mapping phase is open cannot close its own mapping row and
+cannot be cited as `project-existing` for that row.  Preserve accidental implementation residue,
+finish Mapping from pre-existing/external evidence, and only then resume Definitions.  Likewise,
+a landed `reference-port` remains `reference-port`, and a landed package-backed alias remains
+`package-import`; realization never erases the provenance route that justified doing the work.
+When such a mapped port/import is actually accepted in Sweep III, append `[realized]` to that
+canonical mapping verdict.  The marker is Definition-completion state only: it does not change the
+route, does not count as Mapping evidence, and must never be inferred merely from the presence of a
+local file.  A premature or unaccepted implementation remains residue and receives no marker.
 
 The source traversal order governs **semantic adjudication and implementation**, not cheap
 retrieval. After the global candidate census, take the first source whose definition mapping is

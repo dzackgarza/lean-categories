@@ -120,7 +120,7 @@ class Mapping:
         if any(marker in verdict for marker in NEGATIVE_VERDICT_MARKERS):
             return False
         if self.route is not None:
-            return self.route in DIRECT_ROUTES
+            return self.route in DIRECT_ROUTES or self.realized
 
         # FC01 C00/C01 predate the explicit Route column. Positive legacy rows
         # are direct pinned/project matches unless provenance says the code only
@@ -129,6 +129,11 @@ class Mapping:
         if "external package" in row or "reference-port" in row:
             return False
         return any(marker in verdict for marker in POSITIVE_LEGACY_VERDICT_MARKERS)
+
+    @property
+    def realized(self) -> bool:
+        """Whether a mapped port/import has already been realized locally."""
+        return "[realized]" in self.row.lower()
 
     @property
     def definition_only(self) -> bool:
@@ -170,10 +175,19 @@ def clean_cell(cell: str) -> str:
 
 
 def split_table_row(line: str) -> list[str]:
-    # Unit IDs and kind columns precede source data, so pipes in later prose do
-    # not disturb the fields used below. Catalogue dependencies are always the
-    # final cell, so escaped pipes in source prose do not affect that field.
-    return [clean_cell(cell) for cell in line.strip().strip("|").split("|")]
+    # Split only on actual Markdown delimiters.  Source prose frequently
+    # contains LaTeX `\|` (for norms, field extensions, restrictions, etc.);
+    # treating those pipes as column separators silently truncates the
+    # mathematical statement and poisons downstream retrieval queries.
+    text = line.strip().strip("|")
+    cells: list[str] = []
+    start = 0
+    for index, character in enumerate(text):
+        if character == "|" and (index == 0 or text[index - 1] != "\\"):
+            cells.append(text[start:index])
+            start = index + 1
+    cells.append(text[start:])
+    return [clean_cell(cell) for cell in cells]
 
 
 def dependencies(text: str) -> tuple[str, ...]:

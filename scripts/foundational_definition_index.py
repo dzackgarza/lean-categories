@@ -214,12 +214,12 @@ def rows(corpus: Path) -> Iterable[list[str]]:
                 action = "search"
             elif route == "unmatched":
                 action = "author"
+            elif mapping.delivered:
+                action = "reuse"
             elif route == "reference-port":
                 action = "port"
             elif route == "package-import":
                 action = "import"
-            elif mapping.delivered:
-                action = "reuse"
             else:
                 action = "review"
             yield [

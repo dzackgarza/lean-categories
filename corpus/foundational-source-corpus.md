@@ -189,10 +189,20 @@ For each candidate, inspect the actual declaration and hypotheses; name similari
 Each unit ends in exactly one route class:
 
 - `mathlib`: use the canonical pinned Mathlib declaration/proof directly;
-- `project-existing`: an existing canonical LeanCategories declaration already owns it;
+- `project-existing`: a canonical LeanCategories declaration that **predated this unit's current Mapping adjudication** already owns it;
 - `package-import`: an external Lean package can be imported as a dependency;
 - `reference-port`: a checked implementation exists but is not directly importable, including implementations in another proof assistant; preserve exact provenance and port/adapt from that reference rather than rederive it;
 - `unmatched`: no acceptable implementation source was found after the exhaustive search.
+
+These route classes are provenance, not a moving description of the working tree.  A declaration
+written after Mapping opens (or reopens) for its unit cannot make that unit `project-existing`, and
+an implementation landed from a `reference-port` or `package-import` route does not later get
+reclassified as `project-existing`.  If implementation work occurs prematurely, preserve it as
+unaccepted residue while Mapping is completed from evidence that existed independently of that work.
+A successfully accepted Sweep-III realization of a `reference-port` or `package-import` row is
+recorded by appending `[realized]` to the mapping verdict.  That marker is orthogonal completion
+state, not a route change: the external provenance remains the route forever, while the Definitions
+scheduler may stop offering already-completed port/import work.
 
 Only `unmatched` definitional units are slated for genuinely new mathematical formalization. `reference-port` units are port/integration work, not greenfield mathematics. Mapping failures are scoped negative findings tied to the search date and corpus unit, never claims that no formalization exists anywhere forever.
 
