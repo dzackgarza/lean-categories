@@ -223,6 +223,24 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # Peters--Sterk C15-U012 merely compares the numerical rank bounds in
         # Theorem 15.2.3 and Lemma 15.2.4; both embedding notions pre-exist.
         "FC11-C15-U012",
+        # Peters--Sterk C16-U005 records comparison properties of the signed
+        # spinor norms (positive convention, definite case, and q↦-q), after
+        # the actual kernel/subgroup construction in U004.
+        "FC11-C16-U005",
+        # C16-U008 classifies real orthogonal-group components by determinant
+        # and signed spinor norm; it introduces none of those invariants.
+        "FC11-C16-U008",
+        # C16-U016 proves the Dickson cocycle/additivity law for the explicit
+        # invariant defined in U013.  The resulting kernel is U017/U018.
+        "FC11-C16-U016",
+        # C16-U032 is the period-coordinate/theta-divisor realization and
+        # Riemann-singularity comparison for theta characteristics already
+        # introduced in U030/U031; it adds no independent carrier.
+        "FC11-C16-U032",
+        # C16-U037 is the theorem identifying the already-defined Jacobian
+        # two-torsion/Weil pairing with a symplectic F₂-space and identifying
+        # theta characteristics with its quadratic refinements.
+        "FC11-C16-U037",
     }
 )
 
