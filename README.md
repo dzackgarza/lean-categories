@@ -3,6 +3,12 @@
 The centralized Lean baseline of categorical constructions. Downstream projects require
 this package and import the trees they need; no construction is duplicated downstream.
 
+The repository owns as little Lean as possible. It uses Mathlib directly, imports packaged
+libraries as Lake dependencies, and ports reference implementations with provenance when no
+package exists. It authors new Lean only for mathematics that a documented search has shown to
+exist nowhere else. A shorter repository that imports more is the better repository.
+[AGENTS.md](AGENTS.md) owns the reuse gate and the formalization source registry.
+
 `LeanCategories` is one category-theory library and one Lean namespace. The source tree
 uses mathematical owners and support roles:
 
@@ -86,12 +92,23 @@ just build
 lake exe lean-categories-export
 ```
 
+## The foundational corpus
+
+<https://dzackgarza.github.io/lean-categories/> publishes the survey behind the reuse
+gate: 16 graduate textbooks read unit by unit, each definition and theorem routed to the
+Lean declaration that owns it or recorded as having no owner, at a pinned Mathlib commit.
+Its unmatched rows are this repository's formalization roadmap.
+
+`site/` holds the pages. They are generated from the project's reference notes by
+`just site-build`, previewed with `just site-preview`, and deployed by
+[`.github/workflows/site.yml`](.github/workflows/site.yml) on every push that touches them.
+
 ## Mathematical design
 
 This repository builds one higher-categorical mathematical language and its Lean
 formalization. The broader programme has three coupled outputs with explicit ownership:
 
-1. **A Lean-owned mathematical foundation in this repository** in which categories,
+1. **A mathematical foundation in this repository, assembled in Lean from existing formalizations,** in which categories,
    higher categories, classifiers, functors, higher cells, limits, operations, and
    categories of structured objects have principled definitions.
 2. **A versioned Sage functionality and realization ledger in `lean-cas-dsl`** relating

@@ -1,0 +1,2976 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Chapter 5. Spectral Sequences – lean-categories · corpus</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-7335da993d57b01553edc5728a7cb5aa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">lean-categories · corpus</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../coverage.html" aria-current="page"> 
+<span class="menu-text">Every book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../corpus.html"> 
+<span class="menu-text">Reading list</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../catalogues/index.html"> 
+<span class="menu-text">Catalogues</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/dzackgarza/lean-categories"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc05/index.html">FC05</a></li><li class="breadcrumb-item"><a href="../../sources/fc05/c05.html">Chapter 5. Spectral Sequences</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="sidebar-tools-main">
+    <div id="quarto-search" class="quarto-navigation-tool px-1" title="Search"></div>
+</div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Graduate mathematics, and what Lean has of it</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../coverage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Every book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../corpus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational source corpus</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../status.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus status</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Sources</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC01 Dummit Foote</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/ai.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01 Appendix I — Cartesian Products and Zorn’s Lemma</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC03</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC03 Riehl Category Theory in Context</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Categories, Functors, and Natural Transformations (pp.&nbsp;1–48)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Representability and the Yoneda Lemma (pp.&nbsp;49–72)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Limits and Colimits (pp.&nbsp;73–114)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Adjunctions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Monads and Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. All Concepts are Kan Extensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/ce.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Epilogue: Theorems in Category Theory</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC04</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC04 Atiyah Macdonald</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Rings and Ideals (pp.&nbsp;1–9)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Modules (pp.&nbsp;17–30)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Rings and Modules of Fractions (pp.&nbsp;36–42)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Primary Decomposition (pp.&nbsp;50–54)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Integral Dependence and Valuations (pp.&nbsp;59–66)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Chain Conditions (pp.&nbsp;74–77)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Noetherian Rings (pp.&nbsp;80–83)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Artin Rings (pp.&nbsp;89–90)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Discrete Valuation Rings and Dedekind Domains (pp.&nbsp;93–98)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. Completions (pp.&nbsp;100–112)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Dimension Theory (pp.&nbsp;116–124)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC05</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC05 Weibel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Chain Complexes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Derived Functors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Tor and Ext</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homological Dimension</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c05.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Chapter 5. Spectral Sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Group Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Lie Algebra Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Simplicial Methods in Homological Algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Hochschild and Cyclic Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. The Derived Category</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Category Theory Language</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC06</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC06 Hartshorne</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter I: Varieties</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter II: Schemes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter III: Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter IV: Curves</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter V: Surfaces</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC07</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC07 Hatcher</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 0. Some Underlying Geometric Notions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. The Fundamental Group</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homotopy Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix. Topology of Cell Complexes</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC08 Lee</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c22.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC09 Neukirch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC10 Serre Local Fields</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc11/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC11 Peters Sterk</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc12/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC12 Beauville</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc13/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC13</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC13 Matsumura</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Front matter — conventions and terminology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Commutative rings and modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Prime ideals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Properties of extension rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Valuation rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Dimension theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Regular sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Regular rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Flatness revisited</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Derivations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. I-smoothness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Applications of complete local rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Tensor products, direct and inverse limits</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix B. Some homological algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix C. The exterior algebra</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc14/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC14</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC14 Humphreys</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Basic Concepts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Semisimple Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Root Systems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Isomorphism and Conjugacy Theorems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Existence Theorem</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Representation Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Chevalley Algebras and Groups</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc15/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC15</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Classification of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Polynomial invariants of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Affine reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Coxeter groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Special cases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Hecke algebras and Kazhdan–Lusztig polynomials</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Complements</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc16/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC16</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Algebraic Geometry</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Affine Algebraic Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Homogeneous Spaces</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Characteristic 0 Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Semisimple and Unipotent Elements</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Solvable Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VIII. Borel Subgroups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IX. Centralizers of Tori</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter X. Structure of Reductive Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XI. Representations and Classification of Semisimple Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XII. Survey of Rationality Properties and Appendix</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../catalogues/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Definition catalogues</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">catalogues/*.md</span>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Notes and audits</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">notes/*.md</span>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc05/index.html">FC05</a></li><li class="breadcrumb-item"><a href="../../sources/fc05/c05.html">Chapter 5. Spectral Sequences</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Chapter 5. Spectral Sequences</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>FC05 — Weibel, <em>An Introduction to Homological Algebra</em>.</p>
+<p>This chapter contains 23 definitions, 7 theorems, 5 propositions, 4 lemmas, 7 corollaries, 7 examples, 10 constructions and 17 other statements.</p>
+<p>Of the 80 statements checked against Lean, 7 are formalized somewhere and 73 are not.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 28%">
+<col style="width: 28%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Status</th>
+<th style="text-align: right;">Statements</th>
+<th style="text-align: right;">Share</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="route-unmatched">not formalized</span></td>
+<td style="text-align: right;">73</td>
+<td style="text-align: right;">91%</td>
+<td>A documented search found no Lean statement of it anywhere.</td>
+</tr>
+<tr class="even">
+<td><span class="route-mathlib">in Mathlib</span></td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">5%</td>
+<td>Mathlib states and proves it.</td>
+</tr>
+<tr class="odd">
+<td><span class="route-reference-port">in another Lean project</span></td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2%</td>
+<td>Some other Lean development has it; using it means porting that code.</td>
+</tr>
+<tr class="even">
+<td><span class="route-project-existing">in lean-categories</span></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1%</td>
+<td>This repository states and proves it.</td>
+</tr>
+<tr class="odd">
+<td><strong>checked in total</strong></td>
+<td style="text-align: right;"><strong>80</strong></td>
+<td style="text-align: right;"></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Which versions of Lean and Mathlib were searched
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li>Project-first search was performed at repo HEAD <a href="https://github.com/leanprover-community/mathlib4/commit/f90173886bc881c2d43c0a7eb2d9fe7f110ac9a5"><code>f90173886bc881c2d43c0a7eb2d9fe7f110ac9a5</code></a>. The project has no spectral-sequence, filtered-complex, exact-couple, Cartan–Eilenberg, hyperhomology, or Grothendieck-spectral-sequence implementation. <a href="https://github.com/dzackgarza/lean-categories/blob/main/LeanCategories/Homological/DerivedDimension.lean"><code>LeanCategories/Homological/DerivedDimension.lean::LeanCategories.Homological.IsAcyclicFor</code></a> exactly owns U062: it is explicitly documented as Weibel Definition 5.8.2 and states vanishing of all positive right-derived functors. No other C05 row is credited project-first merely from adjacent generic homological imports.</li>
+<li>Pinned Mathlib is <code>P=db584cd6d46c92f209a44c0f1c829460d327499d</code>, Lean 4.33.0. P already contains <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Homology/SpectralSequence/Basic.html"><code>Mathlib/Algebra/Homology/SpectralSequence/Basic.lean</code></a>: <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CategoryTheory.SpectralSequence#doc"><code>CategoryTheory.SpectralSequence</code></a> is a sequence of homological-complex pages with isomorphisms from page homology to the next page; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=SpectralSequence.Hom#doc"><code>SpectralSequence.Hom</code></a> is a compatible family of page maps; <code>pageHomologyNatIso</code> packages the next-page naturality. This exactly owns U002. The cohomological specialization <code>CohomologicalSpectralSequence</code>/<code>E₂CohomologicalSpectralSequence</code> has differential bidegree <code>(r,1-r)</code> and owns U004. The positive declaration set was compile-probed successfully against the project pin.</li>
+<li>U005 (Weibel’s Mapping Lemma) is credited to P by a checked source-shaped assembly, not by name similarity. In <code>/tmp/fc05-c05-map-lemma.lean</code>, from <code>[IsIso (f.hom r)]</code>, pinned <code>ShortComplex</code> homology functoriality makes <code>homologyMap (f.hom r)</code> an isomorphism; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=SpectralSequence.Hom.comm#doc"><code>SpectralSequence.Hom.comm</code></a> transports this through the page-homology isomorphisms; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=HomologicalComplex.isIso_of_components#doc"><code>HomologicalComplex.isIso_of_components</code></a> then makes the next page map an isomorphism. This compiled successfully against P and iterates page by page to all later pages.</li>
+<li>U061 is only the setup for the Grothendieck spectral sequence, not the theorem itself. P supplies abelian categories, enough injective resolutions, left exactness as preservation of finite limits, functor composition, and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Functor.rightDerived#doc"><code>Functor.rightDerived</code></a>, so this data row is <code>mathlib</code>. No spectral-sequence theorem is inferred from that setup.</li>
+<li>Current Mathlib was rechecked immediately before promotion at <code>H=5aedf732b6987e8c26ab3c9ebc855314f82b045f</code>. Targeted current-tree search found no generic convergence/abutment/E∞ interface, no filtered-chain-complex-to-spectral-sequence construction, no exact-couple owner, no multiplicative spectral sequence, no Cartan–Eilenberg resolutions/hyperderived functors, no Grothendieck spectral sequence, and no Leray–Serre/Wang/Gysin/Bockstein implementations. The only GroupCohomology occurrence of “Hochschild-Serre spectral sequence” is commentary indicating future/use-case direction, not a theorem owner.</li>
+<li>P/H do contain extensive <code>SpectralObject</code> machinery and construct E₂ homological/cohomological spectral sequences from spectral objects. This is not credited to filtered-complex, convergence, or double-complex rows unless a checked bridge with the source pages and abutment exists. Targeted search found no such bridge for U001 or U022–U050. In particular P’s bicomplex totalization is coproduct/direct-sum based and C01 already recorded the absence of product totalization, so C05 U045 cannot be upgraded by neighboring bicomplex infrastructure.</li>
+<li>Current/external search for “filtered complex spectral sequence”, Künneth spectral sequence, Cartan–Eilenberg resolution, hypertor, hypercohomology spectral sequence, Grothendieck spectral sequence, Leray–Serre, Bockstein spectral sequence, and Eilenberg–Moore spectral sequence found no acceptable Lean4 owner matching the relevant source rows. Searches were refreshed on 2026-09-06 rather than reused from earlier chapter audits.</li>
+<li>The one substantive external exact-couple development is the legacy HoTT/Lean repository <code>cmu-phil/Spectral@3b078f5f1de251637decf04bd3fc8aa01930a6b3</code>, rechecked at that HEAD immediately before promotion; the repository is Apache-2.0. <code>algebra/exact_couple.hlean::exact_couple.exact_couple</code> defines graded modules <code>D,E</code>, maps <code>i,j,k</code>, and exactness at each vertex, exactly U068. The same file’s <code>derived_couple</code> namespace defines <code>d=j∘k</code>, <code>D'=im(i)</code>, <code>E'=H(E,d)</code>, induced <code>i',j',k'</code>, and proves the three exactness conditions, exactly U069. These are <code>reference-port</code> routes because the code is legacy <code>.hlean</code>/HoTT Lean and not directly importable into the current Mathlib project.</li>
+<li>The same legacy repository is not used as blanket coverage. It has a bespoke <code>is_bounded</code>/<code>convergent_exact_couple</code> framework and a <code>convergent_spectral_sequence</code>, but no checked morphism category for exact couples giving the whole U070 functorial proposition; its convergence hypotheses/abutment data are not Weibel’s bounded-below exact-couple theorem with target <code>colim D</code>, so U073–U075 remain unmatched. Its <code>cohomology/gysin.hlean</code> and <code>cohomology/serre.hlean</code> concern HoTT/generalized cohomology and do not realize the homological Leray–Serre/Wang/Gysin rows U016–U021.</li>
+<li>The source’s convergence terminology is not collapsed into Mathlib’s use of the word “convergent” in comments around certain spectral-object constructions. Under strict bundle semantics, a page construction does not satisfy U006–U013 without the source filtration/abutment/E∞ data, and an internal cycles/boundaries implementation does not satisfy U009 without the stated generic nested-subobject and limit construction.</li>
+<li><code>N</code> denotes dated 2026-09-06 negative evidence after project-first inspection, P, H/current Mathlib, targeted open/current/indexed searches, and the legacy exact-couple repository above. A source row is not credited from adjacent spectral-object machinery, a topologically different generalized-cohomology theorem, or only part of a convergence/multiplicative/hyperderived bundle.</li>
+</ul>
+</div>
+</div>
+</div>
+<section id="fc05-c05-u001" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u001">Construction — First pages of the double-complex spectral sequence</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U001</code> · §5.1 Introduction; pp.&nbsp;120–121; L3646–3652 · after <a href="c01.html#fc05-c01-u016"><code>FC05-C01-U016</code></a>, <a href="c01.html#fc05-c01-u018"><code>FC05-C01-U018</code></a>, <a href="c01.html#fc05-c01-u002"><code>FC05-C01-U002</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a first-quadrant double complex E, set E¹_{pq}=H_q^v(E_{p,<em>}) and E²_{pq}=H_p^h(E¹_{</em>,q}); these are the first successive approximations to H_{p+q}(Tot E).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — P has bicomplexes, vertical/horizontal homology, total complexes, and generic spectral sequences, but no checked canonical double-complex spectral sequence whose first two pages are the stated iterated homologies and which abuts to total homology.</p>
+</div>
+</section>
+<section id="fc05-c05-u002" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u002">Definition 5.2.1 — Homology spectral sequence</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U002</code> · §5.2 Terminology; pp.&nbsp;122–126; L3685–3697 · after <a href="c01.html#fc05-c01-u013"><code>FC05-C01-U013</code></a>, <a href="c01.html#fc05-c01-u014"><code>FC05-C01-U014</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>In an abelian category A, a homology spectral sequence from E^a is a family E^r_{pq} with d<sup>r:E</sup>r_{pq}→E^r_{p-r,q+r-1}, (d<sup>r)</sup>2=0, and specified isomorphisms E<sup>{r+1}*{pq}≅H(E</sup>r,d^r)*{pq}; morphisms commute with d and induce the next-page maps.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Homology/SpectralSequence/Basic.html#CategoryTheory.SpectralSequence"><code>Mathlib/Algebra/Homology/SpectralSequence/Basic.lean::CategoryTheory.SpectralSequence</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=SpectralSequence.Hom#doc"><code>SpectralSequence.Hom</code></a>; <code>pageHomologyNatIso</code> — Pinned Mathlib defines pages as homological complexes, next-page homology isomorphisms, and morphisms commuting with those isomorphisms, exactly the source abstract spectral-sequence data.</p>
+</div>
+<p><span class="unit-provenance">Searched: P</span></p>
+</section>
+<section id="fc05-c05-u003" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u003">Example 5.2.2 — First-quadrant spectral sequence</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U003</code> · §5.2 Terminology; pp.&nbsp;122–126; L3699 · after <a href="#fc05-c05-u002"><code>FC05-C05-U002</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A homology spectral sequence is first quadrant when E^r_{pq}=0 unless p,q≥0. Then each fixed spot stabilizes for large r; its stable value is denoted E^∞_{pq}.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — P has first-quadrant spectral-sequence shapes, but no generic stabilization/E∞ object or theorem that every fixed first-quadrant spot stabilizes; the whole row is therefore not represented.</p>
+</div>
+</section>
+<section id="fc05-c05-u004" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u004">Dual Definition 5.2.3 — Cohomology spectral sequence</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U004</code> · §5.2 Terminology; pp.&nbsp;122–126; L3701–3709 · after <a href="#fc05-c05-u002"><code>FC05-C05-U002</code></a>, <a href="c01.html#fc05-c01-u005"><code>FC05-C01-U005</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A cohomology spectral sequence has d_r<sup>{pq}:E_r</sup>{pq}→E_r^{p+r,q-r+1}, hence raises total degree by one, and E_{r+1} is the homology of E_r; equivalently E_r<sup>{pq}=E</sup>r_{-p,-q} for a homology spectral sequence.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CategoryTheory.CohomologicalSpectralSequence#doc"><code>CategoryTheory.CohomologicalSpectralSequence</code></a>; <code>E₂CohomologicalSpectralSequence</code>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=ComplexShape.up'#doc"><code>ComplexShape.up'</code></a> — The pinned specialization has differential bidegree <code>(r,1-r)</code>, i.e.&nbsp;raises total cohomological degree by one, with next page given by homology.</p>
+</div>
+<p><span class="unit-provenance">Searched: P</span></p>
+</section>
+<section id="fc05-c05-u005" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u005">Mapping Lemma 5.2.4</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U005</code> · §5.2 Terminology; pp.&nbsp;122–126; L3711 · after <a href="#fc05-c05-u002"><code>FC05-C05-U002</code></a>, <a href="#fc05-c05-u004"><code>FC05-C05-U004</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A morphism of spectral sequences that is an isomorphism in every bidegree on one page r is an isomorphism on every later page s≥r.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=SpectralSequence.Hom.comm#doc"><code>SpectralSequence.Hom.comm</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=ShortComplex.isIso_homologyMap_of_isIso#doc"><code>ShortComplex.isIso_homologyMap_of_isIso</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=HomologicalComplex.isIso_of_components#doc"><code>HomologicalComplex.isIso_of_components</code></a> — If a page map is an isomorphism, its homology map is an isomorphism; compatibility with the next-page isomorphisms makes every component on the next page an isomorphism, hence the next page map is an isomorphism. The one-step source-shaped assembly compiled against P and iterates to all later pages.</p>
+</div>
+<p><span class="unit-provenance">Searched: P</span></p>
+</section>
+<section id="fc05-c05-u006" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u006">Definition 5.2.5 — Bounded spectral sequence and convergence</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U006</code> · §5.2 Terminology; pp.&nbsp;122–126; L3713–3731 · after <a href="#fc05-c05-u002"><code>FC05-C05-U002</code></a>, <a href="#fc05-c05-u004"><code>FC05-C05-U004</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Degree-bounded means finitely many nonzero E^a_{pq} in each total degree, hence every spot stabilizes. Such a spectral sequence converges to H_* when H_n has a finite filtration with E^∞<em>{pq}≅F_pH</em>{p+q}/F_{p-1}H_{p+q}; dually for cohomology.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — P/H define page-by-page spectral sequences but no boundedness/convergence/abutment structure identifying E∞ with graded pieces of a filtered target.</p>
+</div>
+</section>
+<section id="fc05-c05-u007" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u007">Example 5.2.6 — First-quadrant filtrations and edge maps</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U007</code> · §5.2 Terminology; pp.&nbsp;122–126; L3733–3745 · after <a href="#fc05-c05-u003"><code>FC05-C05-U003</code></a>, <a href="#fc05-c05-u006"><code>FC05-C05-U006</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a first-quadrant spectral sequence converging to H_*, H_n has filtration 0=F_{-1}⊂…⊂F_n=H_n; the y-axis gives F_0 and the x-axis gives H_n/F_{n-1}, producing the standard edge homomorphisms. The cohomological version is dual.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — Edge homomorphisms here depend on the missing convergence filtration/abutment layer; no checked P/H/external owner packages the first-quadrant edge-map statement.</p>
+</div>
+</section>
+<section id="fc05-c05-u008" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u008">Definition 5.2.7 — Collapse of a spectral sequence</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U008</code> · §5.2 Terminology; pp.&nbsp;122–126; L3747 · after <a href="#fc05-c05-u002"><code>FC05-C05-U002</code></a>, <a href="#fc05-c05-u006"><code>FC05-C05-U006</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A spectral sequence collapses at E^r when E^r has exactly one nonzero row or column; if it converges, the unique E^r_{pq} of total degree n identifies with H_n.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — P has finite-row spectral-sequence shapes but no source collapse predicate together with convergence-to-abutment identification of the unique term.</p>
+</div>
+</section>
+<section id="fc05-c05-u009" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u009">Construction 5.2.8 — E^∞ via nested cycles and boundaries</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U009</code> · §5.2 Terminology; pp.&nbsp;122–126; L3763–3777 · after <a href="#fc05-c05-u002"><code>FC05-C05-U002</code></a>, <a href="c03.html#fc05-c03-u045"><code>FC05-C03-U045</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For each bidegree there are nested subobjects B<sup>r⊂B</sup>{r+1}⊂Z<sup>{r+1}⊂Z</sup>r of E^a with E<sup>r≅Z</sup>r/B^r. Define B<sup>∞=∪_rB</sup>r, Z<sup>∞=∩_rZ</sup>r and E<sup>∞=Z</sup>∞/B^∞ when these exist; in bounded sequences they equal the stable page.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — The spectral-object implementation has internal cycle/boundary constructions, but no checked generic source interface for nested <code>B^r,Z^r</code>, unions/intersections, and <code>E∞=Z∞/B∞</code> for an arbitrary spectral sequence.</p>
+</div>
+</section>
+<section id="fc05-c05-u010" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u010">Definition 5.2.9 — Bounded-below spectral sequence</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U010</code> · §5.2 Terminology; pp.&nbsp;122–126; L3781–3783 · after <a href="#fc05-c05-u002"><code>FC05-C05-U002</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A homology spectral sequence is bounded below when, in every total degree n, E^a_{pq}=0 for all sufficiently small p; dually, a cohomology spectral sequence is bounded below when the terms of degree n vanish for sufficiently large p.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked P/H declaration defines Weibel’s total-degree bounded-below predicate for a spectral sequence.</p>
+</div>
+</section>
+<section id="fc05-c05-u011" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u011">Definition 5.2.10 — Regular spectral sequence</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U011</code> · §5.2 Terminology; pp.&nbsp;122–126; L3785 · after <a href="#fc05-c05-u002"><code>FC05-C05-U002</code></a>, <a href="#fc05-c05-u009"><code>FC05-C05-U009</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A spectral sequence is regular when for each (p,q) the outgoing differentials are zero for all sufficiently large r; equivalently Z<sup>∞*{pq}=Z</sup>r*{pq} eventually.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked P/H declaration defines regularity as eventual vanishing of outgoing differentials or the equivalent eventual-cycle condition.</p>
+</div>
+</section>
+<section id="fc05-c05-u012" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u012">Definition 5.2.11 — Weak convergence, abutment, and convergence</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U012</code> · §5.2 Terminology; pp.&nbsp;122–126; L3787–3799 · after <a href="#fc05-c05-u009"><code>FC05-C05-U009</code></a>, <a href="#fc05-c05-u011"><code>FC05-C05-U011</code></a>, <a href="c02.html#fc05-c02-u063"><code>FC05-C02-U063</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Weak convergence to H_* means a filtration F_pH_n with E^∞<em>{pq}≅F_pH</em>{p+q}/F_{p-1}H_{p+q}. It approaches H_* if the filtration is exhaustive and Hausdorff, and converges if additionally the spectral sequence is regular and H_n≅lim H_n/F_pH_n; bounded-below approach already implies convergence.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — P/H have no weak-convergence/approach/completeness package or inverse-limit target condition matching the source definition.</p>
+</div>
+</section>
+<section id="fc05-c05-u013" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u013">Comparison Theorem 5.2.12</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U013</code> · §5.2 Terminology; pp.&nbsp;122–126; L3801 · after <a href="#fc05-c05-u005"><code>FC05-C05-U005</code></a>, <a href="#fc05-c05-u012"><code>FC05-C05-U012</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For convergent spectral sequences E,E’ with compatible h:H_*→H’_* and f:E→E’, if f is an isomorphism on one page (hence on E^∞), then h is an isomorphism.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — The comparison theorem depends on the absent convergence/filtered-abutment infrastructure; the pagewise mapping lemma U005 alone does not identify the target map.</p>
+</div>
+</section>
+<section id="fc05-c05-u014" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u014">Construction 5.2.13 — Multiplicative spectral sequence</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U014</code> · §5.2 Terminology; pp.&nbsp;122–126; L3813–3825 · after <a href="#fc05-c05-u002"><code>FC05-C05-U002</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A bigraded product on E^a satisfying the graded Leibniz rule for d^a descends to every later page, yielding a multiplicative spectral sequence.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked P/H/current/external implementation equips spectral-sequence pages with products satisfying the graded Leibniz rule and descends them page by page.</p>
+</div>
+</section>
+<section id="fc05-c05-u015" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u015">Definition 5.3.1 — Serre fibration</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U015</code> · §5.3 The Leray-Serre Spectral Sequence; pp.&nbsp;127–130; L3831–3843 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A based sequence F→E→B is a Serre fibration when F is the fiber over the basepoint and π:E→B has the homotopy-lifting property for every finite polyhedron P and homotopy P×I→B; the section assumes B simply connected.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — Mathlib has homotopy lifting for covering maps but no Serre-fibration predicate with lifting against finite polyhedra matching the source definition.</p>
+</div>
+</section>
+<section id="fc05-c05-u016" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u016">Theorem 5.3.2 — Leray–Serre spectral sequence</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U016</code> · §5.3 The Leray-Serre Spectral Sequence; pp.&nbsp;127–130; L3845–3873 · after <a href="#fc05-c05-u015"><code>FC05-C05-U015</code></a>, <a href="#fc05-c05-u003"><code>FC05-C05-U003</code></a>, <a href="#fc05-c05-u006"><code>FC05-C05-U006</code></a>, <a href="c01.html#fc05-c01-u008"><code>FC05-C01-U008</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a Serre fibration F→E→B with B simply connected, there is a first-quadrant homology spectral sequence E²_{pq}=H_p(B;H_q(F))⇒H_{p+q}(E). Its edge maps are induced by F→E and E→B (under the stated connectivity hypothesis on F for the latter).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked P/H/current/external Leray–Serre homology spectral sequence with the source E² page, convergence, and edge maps was found. The legacy <code>cmu-phil/Spectral</code> code concerns a HoTT/generalized-cohomology Serre construction and does not realize this row.</p>
+</div>
+</section>
+<section id="fc05-c05-u017" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u017">Application 5.3.3 — Low-degree exact sequence of a fibration</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U017</code> · §5.3 The Leray-Serre Spectral Sequence; pp.&nbsp;127–130; L3875–3889 · after <a href="#fc05-c05-u016"><code>FC05-C05-U016</code></a>, <a href="#fc05-c05-u007"><code>FC05-C05-U007</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The lower-left corner of the Leray–Serre sequence gives an exact homology sequence through H_2(F), H_2(E), H_2(B), H_1(F), H_1(E), with d²:H_2(B)→H_1(F); the preceding term records the first obstruction to a homology LES for a fibration.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked low-degree homology exact sequence extracted from a Leray–Serre spectral sequence was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u018" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u018">Application 5.3.4 — Loop-space fibration</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U018</code> · §5.3 The Leray-Serre Spectral Sequence; pp.&nbsp;127–130; L3891–3897 · after <a href="#fc05-c05-u015"><code>FC05-C05-U015</code></a>, <a href="#fc05-c05-u016"><code>FC05-C05-U016</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For ΩB→PB→B with PB contractible and π_1(B)=0, the Leray–Serre sequence yields H_1(ΩB)≅H_2(B) and the displayed exact sequence H_4(B)→H_2(B)⊗H_2(B)→H_2(ΩB)→H_3(B)→0.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked loop-path fibration spectral-sequence calculation with the displayed H₂/H₃/H₄ exact sequence was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u019" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u019">Application 5.3.5 — Wang sequence</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U019</code> · §5.3 The Leray-Serre Spectral Sequence; pp.&nbsp;127–130; L3905–3911 · after <a href="#fc05-c05-u016"><code>FC05-C05-U016</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a fibration F→E→S^n with n≠0,1, only the p=0,n columns survive on E², giving the Wang long exact sequence …→H_q(F)→H_q(E)→H_{q-n}(F)→<sup>{d</sup>n}H_{q-1}(F)→…; in particular H_q(F)≅H_q(E) for 0≤q≤n−2.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked Wang sequence for a fibration over a sphere was found in P/H/current/external Lean.</p>
+</div>
+</section>
+<section id="fc05-c05-u020" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u020">Example 5.3.6 — Homology of SO(3) from the fibration over S²</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U020</code> · §5.3 The Leray-Serre Spectral Sequence; pp.&nbsp;127–130; L3927–3939 · after <a href="#fc05-c05-u019"><code>FC05-C05-U019</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Applying the Wang sequence to S¹→SO(3)→S² and using π_1SO(3)=Z/2 gives H_3(SO(3))≅Z, H_1(SO(3))≅Z/2, and H_2(SO(3))=0 (the extraction’s apparent Z is an OCR error contradicted by exactness).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked source calculation of <code>H_*(SO(3))</code> from the circle fibration over <code>S²</code> was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u021" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u021">Application 5.3.7 — Gysin sequence</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U021</code> · §5.3 The Leray-Serre Spectral Sequence; pp.&nbsp;127–130; L3941–3947 · after <a href="#fc05-c05-u016"><code>FC05-C05-U016</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a sphere fibration S^n→E→B with B simply connected and n≠0, the two-row Leray–Serre sequence yields the Gysin long exact sequence …→H_{p-n}(B)→H_p(E)→H_p(B)→<sup>{d</sup>{n+1}}H_{p-n-1}(B)→…; hence H_p(E)≅H_p(B) for p&lt;n.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked homological Gysin sequence for a sphere fibration matching the source row was found. The legacy HoTT repository contains a cohomological generalized-cohomology Gysin construction, not this whole statement.</p>
+</div>
+</section>
+<section id="fc05-c05-u022" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u022">Definition — Filtration of a chain complex</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U022</code> · §5.4 Spectral Sequence of a Filtration; pp.&nbsp;131–134; L3959 · after <a href="c01.html#fc05-c01-u002"><code>FC05-C01-U002</code></a>, <a href="c01.html#fc05-c01-u011"><code>FC05-C01-U011</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A filtration F on C is an increasing family of chain subcomplexes …⊂F_{p-1}C⊂F_pC⊂… .</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked P/H structure packages an increasing filtration by chain subcomplexes of a homological complex in the source form.</p>
+</div>
+</section>
+<section id="fc05-c05-u023" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u023">Definition — Exhaustive filtration</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U023</code> · §5.4 Spectral Sequence of a Filtration; pp.&nbsp;131–134; L3961 · after <a href="#fc05-c05-u022"><code>FC05-C05-U022</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A filtration F on C is exhaustive when C=∪_pF_pC; replacing C by ∪F_pC does not change the associated spectral sequence.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — The source exhaustive-union predicate depends on the missing filtered-complex owner; no checked declaration packages it.</p>
+</div>
+</section>
+<section id="fc05-c05-u024" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u024">Construction Theorem 5.4.1 — Spectral sequence of a filtered complex</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U024</code> · §5.4 Spectral Sequence of a Filtration; pp.&nbsp;131–134; L3963–3965 · after <a href="#fc05-c05-u022"><code>FC05-C05-U022</code></a>, <a href="#fc05-c05-u002"><code>FC05-C05-U002</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A filtration F on a chain complex C canonically yields a spectral sequence with E^0_{pq}=F_pC_{p+q}/F_{p-1}C_{p+q} and E<sup>1_{pq}=H_{p+q}(E</sup>0_{p,*}).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked construction turns an arbitrary filtered chain complex into the stated E⁰/E¹ spectral sequence. Mathlib’s spectral-object machinery is not connected to a filtered complex by such an owner.</p>
+</div>
+</section>
+<section id="fc05-c05-u025" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u025">Definition 5.4.2 — Bounded filtration</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U025</code> · §5.4 Spectral Sequence of a Filtration; pp.&nbsp;131–134; L3967 · after <a href="#fc05-c05-u022"><code>FC05-C05-U022</code></a>, <a href="#fc05-c05-u006"><code>FC05-C05-U006</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>F is bounded when for each degree n there are s&lt;t with F_sC_n=0 and F_tC_n=C_n; its associated spectral sequence is bounded.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked bounded-filtration predicate and theorem that its associated spectral sequence is bounded was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u026" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u026">Definitions — Bounded-below and bounded-above filtrations</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U026</code> · §5.4 Spectral Sequence of a Filtration; pp.&nbsp;131–134; L3969 · after <a href="#fc05-c05-u022"><code>FC05-C05-U022</code></a>, <a href="#fc05-c05-u010"><code>FC05-C05-U010</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>F is bounded below if each C_n has F_sC_n=0 for some s, and bounded above if each C_n has F_tC_n=C_n for some t. Bounded below induces a bounded-below spectral sequence; bounded above implies exhaustiveness.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked bounded-below/above filtered-complex predicates with the stated spectral-sequence/exhaustiveness consequences were found.</p>
+</div>
+</section>
+<section id="fc05-c05-u027" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u027">Example 5.4.3 — Canonically bounded filtration</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U027</code> · §5.4 Spectral Sequence of a Filtration; pp.&nbsp;131–134; L3971–3973 · after <a href="#fc05-c05-u022"><code>FC05-C05-U022</code></a>, <a href="#fc05-c05-u003"><code>FC05-C05-U003</code></a>, <a href="#fc05-c05-u025"><code>FC05-C05-U025</code></a>, <a href="#fc05-c05-u016"><code>FC05-C05-U016</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A filtration is canonically bounded when F_{-1}C=0 and F_nC_n=C_n.&nbsp;Its spectral sequence is first quadrant and converges to H_*(C); the Leray–Serre sequence arises this way from singular chains on E.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked canonical-bounded filtration construction or theorem recovering Leray–Serre from singular chains was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u028" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u028">Definition 5.4.4 — Hausdorff filtration</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U028</code> · §5.4 Spectral Sequence of a Filtration; pp.&nbsp;131–134; L3975 · after <a href="#fc05-c05-u022"><code>FC05-C05-U022</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A filtration is Hausdorff when ∩_pF_pC=0; C and the Hausdorff quotient C/(∩F_pC) have the same associated spectral sequence.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked Hausdorff filtered-complex predicate with invariance under quotient by the intersection was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u029" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u029">Definitions — Complete filtration and completion</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U029</code> · §5.4 Spectral Sequence of a Filtration; pp.&nbsp;131–134; L3977 · after <a href="#fc05-c05-u022"><code>FC05-C05-U022</code></a>, <a href="#fc05-c05-u028"><code>FC05-C05-U028</code></a>, <a href="c02.html#fc05-c02-u063"><code>FC05-C02-U063</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The completion of a filtered complex is Ĉ=lim_p C/F_pC; the filtration is complete when C→Ĉ is an isomorphism. Complete implies Hausdorff, and bounded-below filtrations are complete.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — P has inverse limits and completion infrastructure elsewhere, but no filtered-complex completion <code>lim C/F_pC</code> with the source completeness/Hausdorff/bounded-below theorem bundle.</p>
+</div>
+</section>
+<section id="fc05-c05-u030" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u030">Addendum 5.4.5 — Completion preserves the spectral sequence</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U030</code> · §5.4 Spectral Sequence of a Filtration; pp.&nbsp;131–134; L3979 · after <a href="#fc05-c05-u024"><code>FC05-C05-U024</code></a>, <a href="#fc05-c05-u029"><code>FC05-C05-U029</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The filtered complexes C and its completion Ĉ have naturally isomorphic associated spectral sequences on every page.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked theorem states that completion of a filtered complex preserves every page of its associated spectral sequence.</p>
+</div>
+</section>
+<section id="fc05-c05-u031" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u031">Construction 5.4.6 — Explicit Z^r, B^r, E^r of a filtered complex</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U031</code> · §5.4 Spectral Sequence of a Filtration; pp.&nbsp;131–134; L3981–4001 · after <a href="#fc05-c05-u024"><code>FC05-C05-U024</code></a>, <a href="#fc05-c05-u022"><code>FC05-C05-U022</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For A_p^r={c∈F_pC : dc∈F_{p-r}C}, define Z_p^r and B_p^r as their images in E_p^0 and E_p<sup>r=Z_p</sup>r/B_p^r; d on C induces d_p<sup>r:E_p</sup>r→E_{p-r}^r, producing the spectral sequence of 5.4.1.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked explicit <code>A_p^r,Z_p^r,B_p^r,E_p^r</code> construction for a filtered complex was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u032" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u032">Lemma 5.4.7 — Successive Z/B quotients</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U032</code> · §5.4 Spectral Sequence of a Filtration; pp.&nbsp;131–134; L4003–4007 · after <a href="#fc05-c05-u031"><code>FC05-C05-U031</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The differential induces isomorphisms Z_p<sup>r/Z_p</sup>{r+1}≅B_{p-r}<sup>{r+1}/B_{p-r}</sup>r, which identifies E^{r+1} with the homology of E^r in Construction 5.4.6.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — Without U031’s filtered construction, the successive cycle/boundary quotient isomorphism and next-page identification are not formalized in the source form.</p>
+</div>
+</section>
+<section id="fc05-c05-u033" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u033">Construction 5.4.8 — Multiplicative filtration</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U033</code> · §5.4 Spectral Sequence of a Filtration; pp.&nbsp;131–134; L4039–4045 · after <a href="#fc05-c05-u031"><code>FC05-C05-U031</code></a>, <a href="#fc05-c05-u014"><code>FC05-C05-U014</code></a>, <a href="c04.html#fc05-c04-u071"><code>FC05-C04-U071</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If C is a DG-algebra and F is multiplicative, the associated spectral sequence is multiplicative; when it weakly converges to H_<em>(C), E^∞ is the associated graded algebra of H_</em>(C) for the induced multiplicative filtration.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked multiplicative filtered-DG-algebra spectral sequence with associated-graded abutment exists; P also lacks the C04 DG-algebra bundle required by the row.</p>
+</div>
+</section>
+<section id="fc05-c05-u034" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u034">Classical Convergence Theorem 5.5.1</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U034</code> · §5.5 Convergence; pp.&nbsp;135–140; L4069–4079 · after <a href="#fc05-c05-u024"><code>FC05-C05-U024</code></a>, <a href="#fc05-c05-u025"><code>FC05-C05-U025</code></a>, <a href="#fc05-c05-u026"><code>FC05-C05-U026</code></a>, <a href="#fc05-c05-u012"><code>FC05-C05-U012</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For the spectral sequence of a filtered complex: a bounded filtration yields a bounded sequence converging to H_<em>(C); a bounded-below exhaustive filtration yields a bounded-below sequence converging to H_</em>(C). The convergence is natural for filtered chain maps.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked classical convergence theorem for bounded or bounded-below exhaustive filtered complexes, including naturality, was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u035" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u035">Example 5.5.2 — First-quadrant convergence</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U035</code> · §5.5 Convergence; pp.&nbsp;135–140; L4081 · after <a href="#fc05-c05-u027"><code>FC05-C05-U027</code></a>, <a href="#fc05-c05-u034"><code>FC05-C05-U034</code></a>, <a href="#fc05-c05-u007"><code>FC05-C05-U007</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a canonically bounded filtration, the associated first-quadrant spectral sequence converges to H_<em>(C); the y-axis and x-axis E^∞ terms are respectively controlled by H_</em>(F_0C) and the top quotient complex C_n/F_{n-1}C_n.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked first-quadrant filtered-complex convergence/edge-term example was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u036" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u036">Corollary 5.5.3 — Edge terms as image and quotient</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U036</code> · §5.5 Convergence; pp.&nbsp;135–140; L4083 · after <a href="#fc05-c05-u035"><code>FC05-C05-U035</code></a>, <a href="c01.html#fc05-c01-u022"><code>FC05-C01-U022</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a canonically bounded filtration, E^∞<em>{0q}=im(H_q(F_0C)→H_q(C)) and E^∞</em>{p0}=im(H_p(C)→H_p(C/F_{p-1}C))≅H_p(C)/F_{p-1}H_p(C).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked theorem identifies the two E∞ edge terms with the displayed image and quotient of homology.</p>
+</div>
+</section>
+<section id="fc05-c05-u037" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u037">Example 5.5.4 — Weak convergence without convergence</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U037</code> · §5.5 Convergence; pp.&nbsp;135–140; L4095 · after <a href="#fc05-c05-u029"><code>FC05-C05-U029</code></a>, <a href="#fc05-c05-u012"><code>FC05-C05-U012</code></a>, <a href="#fc05-c05-u030"><code>FC05-C05-U030</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For C=(0→Z→^3 Z→0) with F_pC=2^pC, the spectral sequence collapses to zero at E¹ and weakly converges to H_<em>(C), but the induced homology filtration is not Hausdorff; it converges instead to H_</em>(Ĉ)=0.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked formalization of Weibel’s <code>3</code>-map/<code>2^p</code> weak-but-not-strong convergence counterexample was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u038" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u038">Theorem 5.5.5 — Eilenberg–Moore filtration sequence</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U038</code> · §5.5 Convergence; pp.&nbsp;135–140; L4097–4107 · after <a href="#fc05-c05-u029"><code>FC05-C05-U029</code></a>, <a href="c03.html#fc05-c03-u054"><code>FC05-C03-U054</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If C is complete, the Milnor sequence for the tower C/F_pC identifies lim¹H_{n+1}(C/F_pC) with ∩_pF_pH_n(C), and identifies lim H_n(C/F_pC) with the Hausdorff completion H_n(C)/(∩F_pH_n(C)).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — P contains inverse-limit and lim¹ ingredients, but no checked Eilenberg–Moore filtered-complex exact sequence identifying the homology-filtration intersection and completion as stated.</p>
+</div>
+</section>
+<section id="fc05-c05-u039" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u039">Corollary 5.5.6 — Weak convergence and completion</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U039</code> · §5.5 Convergence; pp.&nbsp;135–140; L4117–4119 · after <a href="#fc05-c05-u038"><code>FC05-C05-U038</code></a>, <a href="#fc05-c05-u012"><code>FC05-C05-U012</code></a>, <a href="#fc05-c05-u030"><code>FC05-C05-U030</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If the spectral sequence of a complete filtered complex weakly converges, then H_<em>(C)≅H_</em>(Ĉ).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked weak-convergence/completion corollary for complete filtered complexes was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u040" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u040">Lemma 5.5.7 — The actual E^∞ subquotient for Hausdorff exhaustive filtrations</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U040</code> · §5.5 Convergence; pp.&nbsp;135–140; L4121–4129 · after <a href="#fc05-c05-u028"><code>FC05-C05-U028</code></a>, <a href="#fc05-c05-u023"><code>FC05-C05-U023</code></a>, <a href="#fc05-c05-u031"><code>FC05-C05-U031</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a Hausdorff exhaustive filtration, A^∞<em>{pq}=ker(d:F_pC_n→F_pC</em>{n-1}); the subquotient e<sup>∞*{pq}=η_p(A</sup>∞<em>{pq})/B^∞</em>{pq} is naturally F_pH_n(C)/F*{p-1}H_n(C).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked theorem realizes the actual E∞ subquotient <code>e∞</code> of a Hausdorff exhaustive filtered complex and identifies it with the associated graded homology filtration.</p>
+</div>
+</section>
+<section id="fc05-c05-u041" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u041">Corollary 5.5.8 — Boardman criterion</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U041</code> · §5.5 Convergence; pp.&nbsp;135–140; L4139–4145 · after <a href="#fc05-c05-u040"><code>FC05-C05-U040</code></a>, <a href="c03.html#fc05-c03-u046"><code>FC05-C03-U046</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For Q_p=lim¹_r A^r_{pq}, there is an exact sequence 0→e<sup>∞*{pq}→E</sup>∞<em>{pq}→Q_{p-1}→Q_p→lim¹_r Z^r_{pq}→0. For Hausdorff exhaustive F, weak convergence to H_</em>(C) is equivalent to injectivity of every Q_{p-1}→Q_p.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked Boardman six-term lim¹ exact sequence or its weak-convergence criterion was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u042" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u042">Proposition 5.5.9 — Boardman vanishing of the inverse limit of Qp</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U042</code> · §5.5 Convergence; pp.&nbsp;135–140; L4165 · after <a href="#fc05-c05-u041"><code>FC05-C05-U041</code></a>, <a href="#fc05-c05-u029"><code>FC05-C05-U029</code></a>, <a href="c03.html#fc05-c03-u052"><code>FC05-C03-U052</code></a>, <a href="c03.html#fc05-c03-u053"><code>FC05-C03-U053</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If the filtration on C_n is complete and Q_p=lim¹_r A^r_{p,n-p}, then lim_p Q_p=0.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked Boardman theorem proving <code>lim_p Q_p=0</code> under completeness was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u043" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u043">Complete Convergence Theorem 5.5.10</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U043</code> · §5.5 Convergence; pp.&nbsp;135–140; L4197–4203 · after <a href="#fc05-c05-u042"><code>FC05-C05-U042</code></a>, <a href="#fc05-c05-u041"><code>FC05-C05-U041</code></a>, <a href="#fc05-c05-u011"><code>FC05-C05-U011</code></a>, <a href="#fc05-c05-u029"><code>FC05-C05-U029</code></a>, <a href="#fc05-c05-u038"><code>FC05-C05-U038</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If F is complete and exhaustive and the associated spectral sequence is regular, then it weakly converges to H_<em>(C). If in addition the spectral sequence is bounded above, it converges to H_</em>(C).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked complete-convergence theorem under complete/exhaustive/regular hypotheses was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u044" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u044">Eilenberg–Moore Comparison Theorem 5.5.11</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U044</code> · §5.5 Convergence; pp.&nbsp;135–140; L4227 · after <a href="#fc05-c05-u043"><code>FC05-C05-U043</code></a>, <a href="#fc05-c05-u005"><code>FC05-C05-U005</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Let f:B→C be a filtered map of module complexes, with B,C complete and exhaustive. If f induces an isomorphism E<sup>r_{pq}(B)→E</sup>r_{pq}(C) for every p,q on some fixed page r, then f induces an isomorphism on homology.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked Eilenberg–Moore comparison theorem for complete exhaustive filtered complexes was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u045" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u045">Definition 5.6.1 — Column filtration of a double complex</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U045</code> · §5.6 Spectral Sequences of a Double Complex; pp.&nbsp;141–144; L4235–4267 · after <a href="c01.html#fc05-c01-u016"><code>FC05-C01-U016</code></a>, <a href="c01.html#fc05-c01-u018"><code>FC05-C01-U018</code></a>, <a href="#fc05-c05-u024"><code>FC05-C05-U024</code></a>, <a href="#fc05-c05-u034"><code>FC05-C05-U034</code></a>, <a href="#fc05-c05-u043"><code>FC05-C05-U043</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Filtering Tot(C) by columns gives a spectral sequence with <sup>IE</sup>0_{pq}=C_{pq}, <sup>IE</sup>1_{pq}=H_q^v(C_{p,*}), and <sup>IE²_{pq}=H_p</sup>hH_q^v(C). For first-quadrant C it converges to H_{p+q}(Tot C); the appropriate direct-sum/product totalization is required in other quadrants.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — P has bicomplexes and direct-sum totalization, but no checked column-filtration spectral-sequence construction with the stated E⁰/E¹/E² pages and convergence; product totalization is also absent.</p>
+</div>
+</section>
+<section id="fc05-c05-u046" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u046">Definition 5.6.2 — Row filtration of a double complex</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U046</code> · §5.6 Spectral Sequences of a Double Complex; pp.&nbsp;141–144; L4269–4283 · after <a href="#fc05-c05-u045"><code>FC05-C05-U045</code></a>, <a href="c01.html#fc05-c01-u016"><code>FC05-C01-U016</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Filtering Tot(C) by rows gives <sup>IIE</sup>0_{pq}=C_{qp}, <sup>IIE</sup>1_{pq}=H_q^h(C_{*,p}), and <sup>IIE²_{pq}=H_p</sup>vH_q^h(C), with convergence behavior dual to the column filtration.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked row-filtration spectral-sequence construction for bicomplexes was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u047" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u047">Application 5.6.3 — Spectral-sequence proof that Tor is balanced</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U047</code> · §5.6 Spectral Sequences of a Double Complex; pp.&nbsp;141–144; L4285–4297 · after <a href="#fc05-c05-u045"><code>FC05-C05-U045</code></a>, <a href="#fc05-c05-u046"><code>FC05-C05-U046</code></a>, <a href="c02.html#fc05-c02-u075"><code>FC05-C02-U075</code></a>, <a href="#fc05-c05-u008"><code>FC05-C05-U008</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For projective resolutions P→A and Q→B, the two spectral sequences of P⊗Q each collapse, identifying H_*(Tot(P⊗Q)) with the two possible derived tensor computations; hence they give the same Tor groups.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — Pinned Tor explicitly lacks the two-variable balancing theorem (already recorded in FC05 C03), and no spectral-sequence proof via a projective-resolution bicomplex is formalized.</p>
+</div>
+</section>
+<section id="fc05-c05-u048" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u048">Theorem 5.6.4 — Künneth spectral sequence</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U048</code> · §5.6 Spectral Sequences of a Double Complex; pp.&nbsp;141–144; L4299–4303 · after <a href="#fc05-c05-u045"><code>FC05-C05-U045</code></a>, <a href="#fc05-c05-u046"><code>FC05-C05-U046</code></a>, <a href="c03.html#fc05-c03-u009"><code>FC05-C03-U009</code></a>, <a href="c02.html#fc05-c02-u056"><code>FC05-C02-U056</code></a>, <a href="c03.html#fc05-c03-u018"><code>FC05-C03-U018</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If P is a bounded-below complex of flat right R-modules and M a left R-module, there is a boundedly convergent right-half-plane spectral sequence E²_{pq}=Tor_p^R(H_q(P),M)⇒H_{p+q}(P⊗_RM).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked Künneth spectral sequence <code>Tor_p(H_q(P),M) ⇒ H_{p+q}(P⊗M)</code> exists in the source generality.</p>
+</div>
+</section>
+<section id="fc05-c05-u049" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u049">Construction 5.6.5 — Künneth formula by collapse</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U049</code> · §5.6 Spectral Sequences of a Double Complex; pp.&nbsp;141–144; L4317–4327 · after <a href="#fc05-c05-u048"><code>FC05-C05-U048</code></a>, <a href="#fc05-c05-u008"><code>FC05-C05-U008</code></a>, <a href="c03.html#fc05-c03-u060"><code>FC05-C03-U060</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If the boundaries d(P) (hence cycles) are flat, each H_q(P) has flat dimension at most one; the Künneth spectral sequence has only columns p=0,1, collapses at E², and yields the Künneth short exact sequence of 3.6.1.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked collapse argument from the missing Künneth spectral sequence to the source Künneth short exact sequence was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u050" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u050">Theorem 5.6.6 — Base-change spectral sequence for Tor</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U050</code> · §5.6 Spectral Sequences of a Double Complex; pp.&nbsp;141–144; L4331–4337 · after <a href="#fc05-c05-u045"><code>FC05-C05-U045</code></a>, <a href="#fc05-c05-u046"><code>FC05-C05-U046</code></a>, <a href="c02.html#fc05-c02-u056"><code>FC05-C02-U056</code></a>, <a href="c02.html#fc05-c02-u015"><code>FC05-C02-U015</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a ring map R→S, A∈mod-R and B∈S-mod, there is a first-quadrant spectral sequence E²_{pq}=Tor_p<sup>S(Tor_q</sup>R(A,S),B)⇒Tor_{p+q}^R(A,B).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked Tor base-change spectral sequence for a ring map was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u051" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u051">Definition 5.7.1 — Left Cartan–Eilenberg resolution</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U051</code> · §5.7 Hyperhomology; pp.&nbsp;145–149; L4371–4380 · after <a href="c01.html#fc05-c01-u016"><code>FC05-C01-U016</code></a>, <a href="c02.html#fc05-c02-u009"><code>FC05-C02-U009</code></a>, <a href="c02.html#fc05-c02-u015"><code>FC05-C02-U015</code></a>, <a href="c01.html#fc05-c01-u002"><code>FC05-C01-U002</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For an abelian category A with enough projectives, a left Cartan–Eilenberg resolution of a chain complex A_* is an upper-half-plane double complex P of projectives with augmentation P_{<em>0}→A_</em> such that the induced boundary and homology complexes resolve B_p(A) and H_p(A) projectively (and P_{p,*}=0 when A_p=0).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked Cartan–Eilenberg resolution structure for chain complexes was found in P/H/current/external Lean.</p>
+</div>
+</section>
+<section id="fc05-c05-u052" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u052">Lemma 5.7.2 — Existence of Cartan–Eilenberg resolutions</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U052</code> · §5.7 Hyperhomology; pp.&nbsp;145–149; L4390 · after <a href="#fc05-c05-u051"><code>FC05-C05-U051</code></a>, <a href="c02.html#fc05-c02-u019"><code>FC05-C02-U019</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Every chain complex in an abelian category with enough projectives has a Cartan–Eilenberg resolution, constructed from projective resolutions of boundaries and homology using the Horseshoe Lemma twice.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked existence theorem for Cartan–Eilenberg resolutions was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u053" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u053">Definition 5.7.3 — Chain homotopy of double-complex maps</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U053</code> · §5.7 Hyperhomology; pp.&nbsp;145–149; L4420–4430 · after <a href="c01.html#fc05-c01-u016"><code>FC05-C01-U016</code></a>, <a href="c01.html#fc05-c01-u035"><code>FC05-C01-U035</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A homotopy f⇒g of double-complex maps consists of horizontal and vertical degree-raising maps s<sup>h,s</sup>v satisfying g−f=(d<sup>hs</sup>h+s<sup>hd</sup>h)+(d<sup>vs</sup>v+s<sup>vd</sup>v) and the mixed anticommutation identities; Tot(s<sup>h+s</sup>v) is an ordinary chain homotopy.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — P has bicomplexes and ordinary chain homotopy, but no checked double-complex homotopy with separate horizontal/vertical homotopies and mixed identities whose totalization is the stated homotopy.</p>
+</div>
+</section>
+<section id="fc05-c05-u054" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u054">Definition 5.7.4 — Left hyper-derived functors</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U054</code> · §5.7 Hyperhomology; pp.&nbsp;145–149; L4438–4442 · after <a href="#fc05-c05-u051"><code>FC05-C05-U051</code></a>, <a href="#fc05-c05-u053"><code>FC05-C05-U053</code></a>, <a href="c02.html#fc05-c02-u038"><code>FC05-C02-U038</code></a>, <a href="c01.html#fc05-c01-u019"><code>FC05-C01-U019</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For right exact F:A→B with A having enough projectives and P→A a Cartan–Eilenberg resolution, define 𝕃_iF(A)=H_i(Tot^⊕F(P)); comparison/homotopy makes this independent of P and functorial on complexes (subject to totalization existence).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked left hyper-derived-functor construction via Cartan–Eilenberg resolutions and direct-sum totalization was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u055" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u055">Lemma 5.7.5 — Long exact sequence for hyper-derived functors</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U055</code> · §5.7 Hyperhomology; pp.&nbsp;145–149; L4452–4456 · after <a href="#fc05-c05-u054"><code>FC05-C05-U054</code></a>, <a href="c01.html#fc05-c01-u022"><code>FC05-C01-U022</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A short exact sequence 0→A→B→C→0 of bounded-below complexes induces the natural long exact sequence …→𝕃_{i+1}F(C)→𝕃_iF(A)→𝕃_iF(B)→𝕃_iF(C)→… .</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked long exact sequence for the source hyper-derived functors was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u056" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u056">Proposition 5.7.6 — Hyperhomology spectral sequences</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U056</code> · §5.7 Hyperhomology; pp.&nbsp;145–149; L4460–4470 · after <a href="#fc05-c05-u054"><code>FC05-C05-U054</code></a>, <a href="#fc05-c05-u045"><code>FC05-C05-U045</code></a>, <a href="#fc05-c05-u046"><code>FC05-C05-U046</code></a>, <a href="c02.html#fc05-c02-u038"><code>FC05-C02-U038</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a chain complex A, ^IIE²_{pq}=(L_pF)(H_q(A))⇒𝕃_{p+q}F(A) always; if A is bounded below, also ^IE²_{pq}=H_p(L_qF(A))⇒𝕃_{p+q}F(A).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked pair of hyperhomology spectral sequences from a Cartan–Eilenberg resolution was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u057" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u057">Corollary 5.7.7 — Exactness, quasi-isomorphism invariance, and acyclic computation</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U057</code> · §5.7 Hyperhomology; pp.&nbsp;145–149; L4474–4487 · after <a href="#fc05-c05-u056"><code>FC05-C05-U056</code></a>, <a href="c01.html#fc05-c01-u004"><code>FC05-C01-U004</code></a>, <a href="c02.html#fc05-c02-u041"><code>FC05-C02-U041</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Hyper-derived functors vanish on exact complexes and send quasi-isomorphisms to isomorphisms. If A is bounded below and each A_p is F-acyclic, then 𝕃_pF(A)=H_p(F(A)).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked exact-complex vanishing/quasi-isomorphism invariance/F-acyclic computation theorem for the source hyper-derived functors was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u058" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u058">Application 5.7.8 — Hypertor</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U058</code> · §5.7 Hyperhomology; pp.&nbsp;145–149; L4489–4507 · after <a href="#fc05-c05-u054"><code>FC05-C05-U054</code></a>, <a href="c02.html#fc05-c02-u056"><code>FC05-C02-U056</code></a>, <a href="#fc05-c05-u056"><code>FC05-C05-U056</code></a>, <a href="#fc05-c05-u057"><code>FC05-C05-U057</code></a>, <a href="c02.html#fc05-c02-u080"><code>FC05-C02-U080</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a chain complex A of right R-modules and left R-module B, define Tor_i^R(A_<em>,B)=𝕃_i(-⊗</em>RB)(A**). This extends ordinary Tor, is computed by A⊗B for bounded-below flat A, and carries the two spectral sequences of 5.7.6; for two complexes use Cartan–Eilenberg resolutions in both variables.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked hypertor construction for complexes with the source spectral sequences and flat-complex computation was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u059" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u059">Construction 5.7.9 — Right Cartan–Eilenberg resolutions and right hyper-derived functors</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U059</code> · §5.7 Hyperhomology; pp.&nbsp;145–149; L4527–4531 · after <a href="#fc05-c05-u051"><code>FC05-C05-U051</code></a>, <a href="c02.html#fc05-c02-u027"><code>FC05-C02-U027</code></a>, <a href="c02.html#fc05-c02-u047"><code>FC05-C02-U047</code></a>, <a href="c01.html#fc05-c01-u019"><code>FC05-C01-U019</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Dually, in an abelian category with enough injectives, a cochain complex A^* admits an upper-half-plane Cartan–Eilenberg resolution A→I. For left exact F define 𝕽<sup>iF(A)=H</sup>i(Tot^ΠF(I)); this is functorial where the product totalization exists and has the dual hypercohomology spectral sequences.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked right Cartan–Eilenberg resolution/product-totalization hyper-derived-functor construction was found; product totalization was already absent in C01.</p>
+</div>
+</section>
+<section id="fc05-c05-u060" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u060">Application 5.7.10 — Hypercohomology of a complex of sheaves</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U060</code> · §5.7 Hyperhomology; pp.&nbsp;145–149; L4533 · after <a href="#fc05-c05-u059"><code>FC05-C05-U059</code></a>, <a href="c02.html#fc05-c02-u051"><code>FC05-C02-U051</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a space X and cochain complex of sheaves F^<em>, define 𝕳<sup>i(X,F</sup></em>)=𝕽<sup>iΓ(F</sup><em>). It extends sheaf cohomology; for bounded-below injective complexes it is H<sup>iΓ(F</sup></em>), and there is a spectral sequence E_2<sup>{pq}=H</sup>p(X,H<sup>q(F</sup><em>))⇒𝕳<sup>{p+q}(X,F</sup></em>).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — Mathlib formalizes ordinary sheaf cohomology, but no checked hypercohomology of a complex of sheaves or the stated hypercohomology spectral sequence was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u061" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u061">Construction 5.8.1 — Cohomological setup for composed derived functors</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U061</code> · §5.8 Grothendieck Spectral Sequences; pp.&nbsp;150–152; L4539–4543 · after <a href="c01.html#fc05-c01-u013"><code>FC05-C01-U013</code></a>, <a href="c02.html#fc05-c02-u021"><code>FC05-C02-U021</code></a>, <a href="c01.html#fc05-c01-u058"><code>FC05-C01-U058</code></a>, <a href="c02.html#fc05-c02-u047"><code>FC05-C02-U047</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Fix abelian categories A,B,C with A and B having enough injectives, and left exact functors G:A→B and F:B→C; the target is to compare R^<em>(F∘G) with R^</em>F and R^*G.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CategoryTheory.Abelian#doc"><code>CategoryTheory.Abelian</code></a>; <code>HasInjectiveResolutions</code>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CategoryTheory.leftExactFunctor#doc"><code>CategoryTheory.leftExactFunctor</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CategoryTheory.Functor.rightDerived#doc"><code>CategoryTheory.Functor.rightDerived</code></a> — Pinned Mathlib has the abelian/enough-injectives setting, left-exact functor property, composites, and right-derived functors appearing in the source setup; this row introduces data rather than the spectral-sequence theorem.</p>
+</div>
+<p><span class="unit-provenance">Searched: P</span></p>
+</section>
+<section id="fc05-c05-u062" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u062">Definition 5.8.2 — F-acyclic object for right derived functors</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U062</code> · §5.8 Grothendieck Spectral Sequences; pp.&nbsp;150–152; L4545 · after <a href="#fc05-c05-u061"><code>FC05-C05-U061</code></a>, <a href="c02.html#fc05-c02-u047"><code>FC05-C02-U047</code></a> · <span class="route-project-existing">in lean-categories</span></p>
+</div>
+<p>For a left exact F:B→C, an object B of B is F-acyclic when R^iF(B)=0 for all i≠0.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://github.com/dzackgarza/lean-categories/blob/main/LeanCategories/Homological/DerivedDimension.lean"><code>LeanCategories/Homological/DerivedDimension.lean::LeanCategories.Homological.IsAcyclicFor</code></a> — The project definition is explicitly Weibel 5.8.2: all positive right-derived functors vanish on the object.</p>
+</div>
+<p><span class="unit-provenance">Searched: repo HEAD</span></p>
+</section>
+<section id="fc05-c05-u063" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u063">Theorem 5.8.3 — Grothendieck spectral sequence</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U063</code> · §5.8 Grothendieck Spectral Sequences; pp.&nbsp;150–152; L4547–4565 · after <a href="#fc05-c05-u061"><code>FC05-C05-U061</code></a>, <a href="#fc05-c05-u062"><code>FC05-C05-U062</code></a>, <a href="#fc05-c05-u059"><code>FC05-C05-U059</code></a>, <a href="#fc05-c05-u004"><code>FC05-C05-U004</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>In the setup 5.8.1, if G sends injectives of A to F-acyclic objects of B, then for each A there is a convergent first-quadrant cohomology spectral sequence E_2<sup>{pq}=(R</sup>pF)(R<sup>qG)(A)⇒R</sup>{p+q}(FG)(A), with the stated edge maps and five-term exact sequence.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked Grothendieck spectral sequence <code>R^pF(R^qG A) ⇒ R^{p+q}(FG)A</code>, edge maps, or five-term exact sequence exists in P/H/current/external Lean.</p>
+</div>
+</section>
+<section id="fc05-c05-u064" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u064">Corollary 5.8.4 — Homological Grothendieck spectral sequence</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U064</code> · §5.8 Grothendieck Spectral Sequences; pp.&nbsp;150–152; L4587–4597 · after <a href="#fc05-c05-u063"><code>FC05-C05-U063</code></a>, <a href="c02.html#fc05-c02-u012"><code>FC05-C02-U012</code></a>, <a href="c02.html#fc05-c02-u038"><code>FC05-C02-U038</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Dually, if A,B have enough projectives, G:A→B and F:B→C are right exact, and G sends projectives to F-acyclic objects, then E²_{pq}=(L_pF)(L_qG)(A)⇒L_{p+q}(FG)(A), with the corresponding low-degree exact sequence.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked homological/left-derived Grothendieck spectral sequence was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u065" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u065">Applications 5.8.5 — Base-change spectral sequences as Grothendieck sequences</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U065</code> · §5.8 Grothendieck Spectral Sequences; pp.&nbsp;150–152; L4601–4607 · after <a href="#fc05-c05-u063"><code>FC05-C05-U063</code></a>, <a href="#fc05-c05-u064"><code>FC05-C05-U064</code></a>, <a href="#fc05-c05-u050"><code>FC05-C05-U050</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The Tor and Ext base-change spectral sequences are instances of the Grothendieck spectral sequence for the appropriate tensor/Hom composites associated to a ring map R→S.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked formalization realizes the Tor/Ext base-change spectral sequences as Grothendieck spectral sequences.</p>
+</div>
+</section>
+<section id="fc05-c05-u066" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u066">Theorem 5.8.6 — Leray spectral sequence for sheaf cohomology</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U066</code> · §5.8 Grothendieck Spectral Sequences; pp.&nbsp;150–152; L4609–4625 · after <a href="#fc05-c05-u063"><code>FC05-C05-U063</code></a>, <a href="c02.html#fc05-c02-u059"><code>FC05-C02-U059</code></a>, <a href="c02.html#fc05-c02-u051"><code>FC05-C02-U051</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a continuous f:X→Y and sheaf F on X, f_* is left exact and preserves injectives; the Grothendieck spectral sequence for Γ_Y∘f_*=Γ_X is E_2<sup>{pq}=H</sup>p(Y;R<sup>qf_*F)⇒H</sup>{p+q}(X;F).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked Leray spectral sequence for sheaf cohomology was found; P has direct images and sheaf cohomology but not this derived-composite spectral sequence.</p>
+</div>
+</section>
+<section id="fc05-c05-u067" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u067">Proposition 5.8.7 — Derived limits of a double tower</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U067</code> · §5.8 Grothendieck Spectral Sequences; pp.&nbsp;150–152; L4627–4635 · after <a href="#fc05-c05-u063"><code>FC05-C05-U063</code></a>, <a href="c03.html#fc05-c03-u043"><code>FC05-C03-U043</code></a>, <a href="c03.html#fc05-c03-u046"><code>FC05-C03-U046</code></a>, <a href="c03.html#fc05-c03-u049"><code>FC05-C03-U049</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a double tower A:I×I→Ab, lim_{I×I}=lim_i lim_j. The Grothendieck spectral sequence for these two inverse limits yields the stated short exact description of R¹lim, R²lim≅lim_i¹(lim_j¹A_{ij}), and R^nlim=0 for n≥3.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — P has inverse limits and derived-limit material, but without a Grothendieck spectral sequence no checked double-tower computation gives the stated <code>R¹lim</code>, <code>R²lim</code>, and higher vanishing bundle.</p>
+</div>
+</section>
+<section id="fc05-c05-u068" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u068">Definition — Exact couple</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U068</code> · §5.9 Exact Couples; pp.&nbsp;153–159; L4649–4655 · after <a href="c01.html#fc05-c01-u014"><code>FC05-C01-U014</code></a>, <a href="c02.html#fc05-c02-u070"><code>FC05-C02-U070</code></a> · <span class="route-reference-port">in another Lean project</span></p>
+</div>
+<p>An exact couple is a pair (D,E) with maps i:D→D, j:D→E, k:E→D forming an exact triangle (kernel=image at each vertex), in modules or more generally an AB5 abelian category.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <code>cmu-phil/Spectral@3b078f5f1de251637decf04bd3fc8aa01930a6b3::algebra/exact_couple.hlean::exact_couple.exact_couple</code> — The Apache-2.0 legacy Lean/HoTT development defines graded modules <code>D,E</code> with maps <code>i,j,k</code> and exactness at all three vertices, exactly the source exact-couple structure. It is not Mathlib-compatible and is preserved only as a revision-specific port source.</p>
+</div>
+<p><span class="unit-provenance">Searched: E</span></p>
+</section>
+<section id="fc05-c05-u069" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u069">Definition 5.9.1 — Derived couple</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U069</code> · §5.9 Exact Couples; pp.&nbsp;153–159; L4657–4679 · after <a href="#fc05-c05-u068"><code>FC05-C05-U068</code></a>, <a href="c01.html#fc05-c01-u002"><code>FC05-C01-U002</code></a> · <span class="route-reference-port">in another Lean project</span></p>
+</div>
+<p>For an exact couple, d=jk on E satisfies d²=0. The derived couple has D’=i(D), E’=H(E,d), with the induced maps i’,j’,k’; iterating gives D<sup>r=i</sup>rD and E<sup>r=H(E</sup>{r-1}).</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <code>cmu-phil/Spectral@3b078f5f1de251637decf04bd3fc8aa01930a6b3::algebra/exact_couple.hlean::exact_couple.derived_couple</code>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=derived_couple.d#doc"><code>derived_couple.d</code></a>; <code>D'</code>; <code>E'</code>; <code>i'</code>; <code>j'</code>; <code>k'</code> — The same Apache-2.0 legacy Lean/HoTT file constructs <code>d=jk</code>, <code>D'=im(i)</code>, <code>E'=H(E,d)</code>, the induced maps, and proves the three exactness conditions, matching Weibel’s derived couple.</p>
+</div>
+<p><span class="unit-provenance">Searched: E</span></p>
+</section>
+<section id="fc05-c05-u070" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u070">Proposition 5.9.2 — Spectral sequence from a bigraded exact couple</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U070</code> · §5.9 Exact Couples; pp.&nbsp;153–159; L4699 · after <a href="#fc05-c05-u069"><code>FC05-C05-U069</code></a>, <a href="#fc05-c05-u002"><code>FC05-C05-U002</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If i,k,j have bidegrees (1,−1), (−1,0), and (−a,a), repeated derivation gives a homology spectral sequence starting at E^a with d^r of bidegree (−r,r−1). Morphisms of exact couples induce morphisms of spectral sequences.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — The legacy exact-couple development iterates derived couples, but it does not package morphisms of exact couples inducing morphisms of spectral sequences as required by the whole source proposition; P/H have no exact-couple owner.</p>
+</div>
+</section>
+<section id="fc05-c05-u071" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u071">Example 5.9.3 — Exact couple of a filtered complex</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U071</code> · §5.9 Exact Couples; pp.&nbsp;153–159; L4701–4717 · after <a href="#fc05-c05-u068"><code>FC05-C05-U068</code></a>, <a href="#fc05-c05-u022"><code>FC05-C05-U022</code></a>, <a href="c01.html#fc05-c01-u022"><code>FC05-C01-U022</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a filtered chain complex C, the short exact sequences 0→F_{p-1}C→F_pC→F_pC/F_{p-1}C→0 give an exact couple with D^1_{pq}=H_{p+q}(F_pC) and E^1_{pq}=H_{p+q}(F_pC/F_{p-1}C).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked construction of the exact couple attached to a filtered complex was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u072" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u072">Theorem 5.9.4 — Exact-couple and filtered-complex constructions agree</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U072</code> · §5.9 Exact Couples; pp.&nbsp;153–159; L4719 · after <a href="#fc05-c05-u071"><code>FC05-C05-U071</code></a>, <a href="#fc05-c05-u024"><code>FC05-C05-U024</code></a>, <a href="#fc05-c05-u031"><code>FC05-C05-U031</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For any filtered chain complex, the spectral sequence starting at E¹ from the exact couple 5.9.3 is naturally isomorphic to the spectral sequence of §5.4 starting at E⁰; both have the same subquotients Z_p<sup>r/B_p</sup>r and differentials induced by d_C.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked theorem compares the exact-couple and filtered-complex spectral-sequence constructions; neither filtered construction is present.</p>
+</div>
+</section>
+<section id="fc05-c05-u073" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u073">Definition 5.9.5 — Convergence data of an exact couple</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U073</code> · §5.9 Exact Couples; pp.&nbsp;153–159; L4727–4733 · after <a href="#fc05-c05-u070"><code>FC05-C05-U070</code></a>, <a href="c02.html#fc05-c02-u060"><code>FC05-C02-U060</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a suitably bigraded exact couple, let H_n=colim_p D_{p,n-p} along i and F_pH_n be the image of the corresponding D-term. This is exhaustive and the associated E^∞ maps to gr_FH; weak convergence is characterized by Z<sup>∞=k</sup>{-1}(0)=j(D).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — The legacy repository has a separate bounded/convergent exact-couple framework, but not Weibel’s source convergence data with abutment <code>colim D</code> and the stated <code>Z∞=k⁻¹(0)=j(D)</code> criterion.</p>
+</div>
+</section>
+<section id="fc05-c05-u074" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u074">Definition — Bounded-below exact couple</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U074</code> · §5.9 Exact Couples; pp.&nbsp;153–159; L4749 · after <a href="#fc05-c05-u073"><code>FC05-C05-U073</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>An exact couple is bounded below when for each total degree n there is f(n) with D_{pq}=0 whenever p&lt;f(n); then the associated spectral sequence is bounded below.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked declaration matches Weibel’s total-degree bounded-below exact-couple predicate.</p>
+</div>
+</section>
+<section id="fc05-c05-u075" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u075">Classical Convergence Theorem 5.9.7</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U075</code> · §5.9 Exact Couples; pp.&nbsp;153–159; L4751–4757 · after <a href="#fc05-c05-u074"><code>FC05-C05-U074</code></a>, <a href="#fc05-c05-u073"><code>FC05-C05-U073</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A bounded-below exact couple has a bounded-below spectral sequence converging to H_*=colim D. If in each total degree some D_{p,n-p}→H_n is an isomorphism, the spectral sequence is bounded and convergent.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — The legacy HoTT development proves convergence under its stronger bespoke <code>is_bounded</code>/<code>convergent_exact_couple</code> data, not the source theorem for every bounded-below exact couple with abutment <code>colim D</code>; no exact whole-row owner was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u076" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u076">Application 5.9.8 — Exact couple from Tor of an exact complex</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U076</code> · §5.9 Exact Couples; pp.&nbsp;153–159; L4761–4779 · after <a href="#fc05-c05-u068"><code>FC05-C05-U068</code></a>, <a href="c02.html#fc05-c02-u056"><code>FC05-C02-U056</code></a>, <a href="c01.html#fc05-c01-u022"><code>FC05-C01-U022</code></a>, <a href="#fc05-c05-u058"><code>FC05-C05-U058</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For an exact complex C of left R-modules with cycles Z_p and a right module M, the long exact Tor sequences of 0→Z_p→C_p→Z_{p-1}→0 form an exact couple with E^0_{pq}=Tor_q(M,C_p) and E^1_{pq}=H_p(Tor_q(M,C_*)). If C is bounded below, the associated hyperhomology sequence converges to zero.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked exact couple formed from the long exact Tor sequences of an exact complex, nor its zero-abutment hyperhomology convergence, was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u077" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u077">Construction 5.9.9 — Bockstein spectral sequence</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U077</code> · §5.9 Exact Couples; pp.&nbsp;153–159; L4781–4804 · after <a href="#fc05-c05-u068"><code>FC05-C05-U068</code></a>, <a href="#fc05-c05-u070"><code>FC05-C05-U070</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Fix a prime ℓ. Any long exact sequence …→E_{n+1}→H_n→^ℓH_n→E_n→… forms an exact couple whose associated spectral sequence starts at E^0=E; standard examples come from mod-ℓ homology, homotopy, group homology, or C/ℓC.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked Bockstein exact couple/spectral sequence with the source examples was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u078" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u078">Proposition 5.9.10 — Bockstein pages and E^∞</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U078</code> · §5.9 Exact Couples; pp.&nbsp;153–159; L4806–4816 · after <a href="#fc05-c05-u077"><code>FC05-C05-U077</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For the Bockstein exact couple, each E_n^r fits into the stated exact sequence between a quotient of H_n and the ℓ^r-divisible ℓ-torsion in H_{n-1}; at E^∞ this becomes 0→H_n/(ℓH_n+T_n)→E_n^∞→Q_{n-1}→0, with T_n the ℓ-primary torsion and Q_n the infinitely ℓ-divisible part.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked description of Bockstein pages and E∞ in terms of ℓ-primary torsion/divisibility was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u079" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u079">Corollary 5.9.11 — Bockstein convergence for finitely generated H</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U079</code> · §5.9 Exact Couples; pp.&nbsp;153–159; L4832–4836 · after <a href="#fc05-c05-u078"><code>FC05-C05-U078</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If every H_n is finitely generated and d_n=dim_Q(H_n⊗Q), then the Bockstein sequence stabilizes and E_n<sup>∞≅(Z/ℓ)</sup>{d_n}.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked finite-generation stabilization theorem computing Bockstein E∞ as <code>(ℤ/ℓ)^d</code> was found.</p>
+</div>
+</section>
+<section id="fc05-c05-u080" class="level3">
+<h3 class="anchored" data-anchor-id="fc05-c05-u080">Corollary 5.9.12 — Reading ℓ-primary summands from Bockstein survival</h3>
+<div class="unit-meta">
+<p><code>FC05-C05-U080</code> · §5.9 Exact Couples; pp.&nbsp;153–159; L4838–4842 · after <a href="#fc05-c05-u078"><code>FC05-C05-U078</code></a>, <a href="#fc05-c05-u079"><code>FC05-C05-U079</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Classes surviving to E^r but not E^{r+1} detect exponent-ℓ classes in H_{n-1} divisible by ℓ^r but not ℓ^{r+1}; if j(y) dies precisely on page r, then y generates a direct summand Z/ℓ^r of H_n.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: adjacent spectral-sequence/homological infrastructure — No checked theorem reads exact ℓ-primary cyclic summands from Bockstein page survival/death as in the source corollary.</p>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/dzackgarza\.github\.io\/lean-categories\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Generated from the project’s reference notes by <code>site/build.py</code>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>The Lean is the authority; where this site differs, the Lean is right.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

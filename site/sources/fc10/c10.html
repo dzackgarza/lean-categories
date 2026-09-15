@@ -1,0 +1,2651 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>FC10 — Jean-Pierre Serre, Local Fields (1979) – lean-categories · corpus</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-7335da993d57b01553edc5728a7cb5aa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">lean-categories · corpus</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../coverage.html" aria-current="page"> 
+<span class="menu-text">Every book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../corpus.html"> 
+<span class="menu-text">Reading list</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../catalogues/index.html"> 
+<span class="menu-text">Catalogues</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/dzackgarza/lean-categories"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc10/index.html">FC10</a></li><li class="breadcrumb-item"><a href="../../sources/fc10/c10.html">FC10 — Jean-Pierre Serre, Local Fields (1979)</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="sidebar-tools-main">
+    <div id="quarto-search" class="quarto-navigation-tool px-1" title="Search"></div>
+</div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Graduate mathematics, and what Lean has of it</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../coverage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Every book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../corpus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational source corpus</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../status.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus status</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Sources</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC01 Dummit Foote</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/ai.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01 Appendix I — Cartesian Products and Zorn’s Lemma</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC03</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC03 Riehl Category Theory in Context</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Categories, Functors, and Natural Transformations (pp.&nbsp;1–48)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Representability and the Yoneda Lemma (pp.&nbsp;49–72)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Limits and Colimits (pp.&nbsp;73–114)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Adjunctions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Monads and Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. All Concepts are Kan Extensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/ce.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Epilogue: Theorems in Category Theory</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC04</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC04 Atiyah Macdonald</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Rings and Ideals (pp.&nbsp;1–9)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Modules (pp.&nbsp;17–30)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Rings and Modules of Fractions (pp.&nbsp;36–42)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Primary Decomposition (pp.&nbsp;50–54)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Integral Dependence and Valuations (pp.&nbsp;59–66)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Chain Conditions (pp.&nbsp;74–77)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Noetherian Rings (pp.&nbsp;80–83)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Artin Rings (pp.&nbsp;89–90)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Discrete Valuation Rings and Dedekind Domains (pp.&nbsp;93–98)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. Completions (pp.&nbsp;100–112)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Dimension Theory (pp.&nbsp;116–124)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC05</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC05 Weibel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Chain Complexes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Derived Functors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Tor and Ext</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homological Dimension</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Spectral Sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Group Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Lie Algebra Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Simplicial Methods in Homological Algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Hochschild and Cyclic Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. The Derived Category</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Category Theory Language</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC06</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC06 Hartshorne</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter I: Varieties</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter II: Schemes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter III: Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter IV: Curves</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter V: Surfaces</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC07</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC07 Hatcher</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 0. Some Underlying Geometric Notions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. The Fundamental Group</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homotopy Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix. Topology of Cell Complexes</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC08 Lee</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c22.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC09 Neukirch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC10 Serre Local Fields</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c10.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc11/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC11 Peters Sterk</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc12/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC12 Beauville</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc13/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC13</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC13 Matsumura</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Front matter — conventions and terminology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Commutative rings and modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Prime ideals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Properties of extension rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Valuation rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Dimension theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Regular sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Regular rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Flatness revisited</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Derivations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. I-smoothness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Applications of complete local rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Tensor products, direct and inverse limits</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix B. Some homological algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix C. The exterior algebra</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc14/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC14</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC14 Humphreys</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Basic Concepts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Semisimple Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Root Systems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Isomorphism and Conjugacy Theorems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Existence Theorem</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Representation Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Chevalley Algebras and Groups</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc15/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC15</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Classification of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Polynomial invariants of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Affine reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Coxeter groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Special cases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Hecke algebras and Kazhdan–Lusztig polynomials</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Complements</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc16/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC16</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Algebraic Geometry</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Affine Algebraic Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Homogeneous Spaces</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Characteristic 0 Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Semisimple and Unipotent Elements</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Solvable Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VIII. Borel Subgroups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IX. Centralizers of Tori</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter X. Structure of Reductive Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XI. Representations and Classification of Semisimple Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XII. Survey of Rationality Properties and Appendix</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../catalogues/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Definition catalogues</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">catalogues/*.md</span>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Notes and audits</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">notes/*.md</span>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc10/index.html">FC10</a></li><li class="breadcrumb-item"><a href="../../sources/fc10/c10.html">FC10 — Jean-Pierre Serre, Local Fields (1979)</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">FC10 — Jean-Pierre Serre, Local Fields (1979)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>FC10 — Serre, <em>Local Fields</em>.</p>
+<p>This chapter contains 16 definitions, 11 propositions, 1 lemma, 6 corollaries, 9 examples and 3 conventions.</p>
+<p>Of the 46 statements checked against Lean, 4 are formalized somewhere and 42 are not.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 28%">
+<col style="width: 28%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Status</th>
+<th style="text-align: right;">Statements</th>
+<th style="text-align: right;">Share</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="route-unmatched">not formalized</span></td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">91%</td>
+<td>A documented search found no Lean statement of it anywhere.</td>
+</tr>
+<tr class="even">
+<td><span class="route-mathlib">in Mathlib</span></td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">7%</td>
+<td>Mathlib states and proves it.</td>
+</tr>
+<tr class="odd">
+<td><span class="route-reference-port">in another Lean project</span></td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2%</td>
+<td>Some other Lean development has it; using it means porting that code.</td>
+</tr>
+<tr class="even">
+<td><strong>checked in total</strong></td>
+<td style="text-align: right;"><strong>46</strong></td>
+<td style="text-align: right;"></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Which versions of Lean and Mathlib were searched
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li>Canonical source block: FC10 Serre Chapter 10, “Galois Cohomology”, <code>FC10-C10-U001</code>–<code>FC10-C10-U046</code>, 46 units, in exact canonical order from <a href="../../sources/fc10/">Foundational corpus units FC10 Serre Local Fields</a>.</li>
+<li>Project code baseline: <code>A=3b2239e161592472b34e02ad3b7da308f9ce7280</code>. The live repository moved only documentation/coordination files after A during this audit; no Lean source changed, so A is the semantic project baseline.</li>
+<li>Pinned Mathlib: <code>P=db584cd6d46c92f209a44c0f1c829460d327499d</code>; current Mathlib checked at <code>H=71a80585ee495fc24472fd0eaffc89d94e4fd8d6</code>. Strict bundle semantics were used: partial ingredients never earn a route.</li>
+<li>External CFT reference where cited: <code>ClassFieldTheory@ccc3323c6750abca25b49b35106f54eb3a398509</code> (Apache-2.0). Open Mathlib class-formation reference where cited: PR <a href="https://github.com/leanprover-community/mathlib4/pull/42687">#42687</a> at <a href="https://github.com/leanprover-community/mathlib4/commit/a40561e249ebf45d2870f5d9d45bc2eb4d80b242"><code>a40561e249ebf45d2870f5d9d45bc2eb4d80b242</code></a> (Apache-2.0).</li>
+<li>Current Mathlib still marks higher ramification groups in lower numbering as TODO. Open/current local class-field-theory work does not supply a finished reciprocity/existence layer; unresolved/sorry-tainted downstream claims were not credited.</li>
+<li>Route totals for C10: <code>mathlib</code> 3, <code>project-existing</code> 0, <code>package-import</code> 0, <code>reference-port</code> 1, <code>unmatched</code> 42.</li>
+</ul>
+</div>
+</div>
+</div>
+<section id="fc10-c10-u001" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u001">Proposition 1</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U001</code> · Chapter X, source L5384 · <span class="route-reference-port">in another Lean project</span></p>
+</div>
+<p>Proposition 1. For every integer <span class="math inline">\(\eta , \hat { \mathsf { H } } ^ { \eta } ( \mathbf { G } , \mathbf { K } ) = 0 .\)</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <code>ClassFieldTheory/Cohomology/IndCoind/Finite.lean::iso_ind₁</code>; <code>ClassFieldTheory/Cohomology/IndCoind/TrivialCohomology.lean::trivialTateCohomology_ind₁</code> — Normal-basis identification makes the additive Galois module induced; the external Tate-Shapiro layer proves vanishing in every Tate degree.</p>
+</div>
+<p><span class="unit-provenance">Searched: RCFT=ccc3323c6750abca25b49b35106f54eb3a398509 (Apache-2.0)</span></p>
+</section>
+<section id="fc10-c10-u002" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u002">Proposition 2</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U002</code> · Chapter X, source L5390 · after <a href="c07.html#fc10-c07-u007"><code>FC10-C07-U007</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Proposition 2. <span class="math inline">\(\mathbb { H } ^ { 1 } \{ \mathbf { G } , \mathbb { K } ^ { * } \} = 0\)</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RepresentationTheory/Homological/GroupCohomology/Hilbert90.html"><code>Mathlib/RepresentationTheory/Homological/GroupCohomology/Hilbert90.lean::H1ofAutOnUnitsUnique</code></a> — This is multiplicative Hilbert 90: H¹(G,Kˣ) is trivial.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d</span></p>
+</section>
+<section id="fc10-c10-u003" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u003">Corollary</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U003</code> · Chapter X, source L5406 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Corollary.If G is cyclic,and s isa generator,and if <span class="math inline">\(x \in \mathbb { K } ^ { * }\)</span> has norm 1,then there exists <span class="math inline">\(y \in \mathbb { K } ^ { * }\)</span> such that <span class="math inline">\({ x } = { y } / { s } ( { y } )\)</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RepresentationTheory/Homological/GroupCohomology/Hilbert90.html"><code>Mathlib/RepresentationTheory/Homological/GroupCohomology/Hilbert90.lean::exists_div_of_norm_eq_one</code></a> — This is the cyclic norm-one equation x=y/s(y).</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d</span></p>
+</section>
+<section id="fc10-c10-u004" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u004">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U004</code> · Chapter X, source L5414 · after <a href="#fc10-c10-u002"><code>FC10-C10-U002</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Prop.2 generalises as follows (cf.Speiser [60]): let <span class="math inline">\(\mathbf { G L } ( n , \mathbf { K } )\)</span> be the group of invertible matrices of degreenwith entries from <span class="math inline">\(\mathbf { \delta K }\)</span> ; the group <span class="math inline">\(\mathbf { G }\)</span> acts in an obvious way on <span class="math inline">\(\mathbf { G L } ( n , \mathbb { K } )\)</span> ,which allows us to define the cohomology set <span class="math inline">\(\mathbb { H } ^ { 1 } \{ \mathbf { G } , \mathbf { G L } ( n , \mathbb { K } ) \}\)</span> –cf.Chap.VII,appendix.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u005" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u005">Proposition 3</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U005</code> · Chapter X, source L5416 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 3. <span class="math inline">\(\mathbf { H } ^ { 1 } ( \mathbf { G } , \mathbf { G L } ( n , \mathbf { K } ) ) = \{ 1 \} .\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u006" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u006">Corollary: Corollary</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U006</code> · Chapter X, source L5436 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary. <span class="math inline">\(\mathbf { H } ^ { 1 } ( \mathbf { G } , \mathbf { S L } ( n , \mathbf { K } ) ) = \{ 1 \} .\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u007" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u007">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U007</code> · Chapter X, source L5464 · after <a href="c07.html#fc10-c07-u009"><code>FC10-C07-U009</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Evidently <span class="math inline">\(p _ { s } \in A _ { \kappa }\)</span> ;furthermore,a simple computation shows that <span class="math inline">\({ \mathfrak { s } } \mapsto { \mathfrak { p } } _ { s }\)</span> is a 1-cocycle,and that changing <span class="math inline">\(f\)</span> has the effect ofreplacing <span class="math inline">\({ p } _ { s }\)</span> with an equivalent cocycle.Thus the class of <span class="math inline">\(\ p _ { s }\)</span> in <span class="math inline">\(\mathbb { H } ^ { 1 } \{ \mathbb { G } , \mathbb { A } _ { \mathbb { K } } \}\)</span> iswell-determined,and we have defined a map <span class="math display">\[ \theta \colon E(K/k) \to H^{1}(G, A_{K}). \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u008" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u008">Proposition 4</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U008</code> · Chapter X, source L5470 · after <a href="#fc10-c10-u007"><code>FC10-C10-U007</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 4.The map <span class="math inline">\(\boldsymbol { \theta }\)</span> justdefinedisbijective.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u009" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u009">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U009</code> · Chapter X, source L5490 · after <a href="#fc10-c10-u008"><code>FC10-C10-U008</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a non-degenerate quadratic form <span class="math inline">\(\phi\)</span>, the descent set <span class="math inline">\(E(K/k)\)</span> is the set of classes of quadratic <span class="math inline">\(k\)</span>-forms that become <span class="math inline">\(K\)</span>-isomorphic to <span class="math inline">\(\phi\)</span>, and the relevant automorphism group is the orthogonal group <span class="math inline">\(O_K(\phi)\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u010" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u010">Corollary 1</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U010</code> · Chapter X, source L5492 · after <a href="#fc10-c10-u009"><code>FC10-C10-U009</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary 1. The set <span class="math inline">\(\mathbb { H } ^ { 1 } ( \mathbb { G } , \mathbb { O } _ { \mathbb { K } } ( \mathcal { P } ) )\)</span> is in bijective correspondence with the set of classes of quadratic <span class="math inline">\(k\)</span> formsthat are <span class="math inline">\(\pmb { \kappa }\)</span> -isomorphicto <span class="math inline">\(\pmb { \phi }\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u011" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u011">Convention / notation</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U011</code> · Chapter X, source L5504 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Remark.Let A bea group scheme over <span class="math inline">\(k\)</span> (or,in the terminology of Weil, a”group variety defined over <span class="math inline">\(k ^ { \dag \dag }\)</span> .Foranycommutative <span class="math inline">\(k\)</span> -algebra <span class="math inline">\(\mathbf { K }\)</span> whatever, the set <span class="math inline">\(\mathsf { A } _ { \mathbb { X } }\)</span> of points ofA withvalues in <span class="math inline">\(\pmb { \ K }\)</span> isa group,depending functorially on K.In particular,if <span class="math inline">\({ \bf K } / k\)</span> isa finite Galois extension with Galois group <span class="math inline">\(\textbf { G }\)</span> ,then <span class="math inline">\(\mathbf { G }\)</span> acts on <span class="math inline">\(\mathbf { A } _ { \mathbf { K } }\)</span> ,and the cohomology <span class="math inline">\(\mathbf { H } ^ { q } ( \mathbf { G } , \mathbf { A } _ { \mathbf { K } } )\)</span> is defined (if A is non-abelian,only <span class="math inline">\(\mathbf { H } ^ { 0 }\)</span> and <span class="math inline">\(\sharp ^ { \tt t }\)</span> are defined,and <span class="math inline">\(\mathbf { H } ^ { 1 }\)</span> ismerelya“pointed set”).There is a simple geometric interpretation for <span class="math inline">\(\mathbf { H } ^ { \mathbf { i } } \{ \mathbf { G } , \mathbf { A } _ { \mathbf { k } } \}\)</span> it is the set of classes of principal homogeneous spaces for A,defined over <span class="math inline">\(k ,\)</span> which have a rational point in K (cf.[41],[113]).The cases treated above are <span class="math inline">\(\mathsf { A } = \mathsf { G } _ { \alpha }\)</span> <span class="math inline">\(\mathbb { G } _ { m }\)</span> ,GL(n), <span class="math inline">\({ \bf S L } ( n )\)</span> ；in <span class="math inline">\(\ S 2\)</span> we will examine the orthogonal and symplectic groups.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u012" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u012">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U012</code> · Chapter X, source L5515 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Let <span class="math inline">\(\mathbf { V }\)</span> be a vector space over <span class="math inline">\(k\)</span> provided with a fixed tensor <span class="math inline">\(x\)</span> of type <span class="math inline">\(( p , q )\)</span> (i.e., <span class="math inline">\(x \in \bigotimes ^ { p } \mathbb { V } \otimes \bigotimes ^ { q } \mathbb { V } ^ { * }\)</span> where <span class="math inline">\(\mathbf { V } ^ { * }\)</span> is thedual ofV).Two pairs <span class="math inline">\(( \mathbb { V } , x )\)</span> and <span class="math inline">\(( \mathbf { V } ^ { \prime } , x ^ { \prime } )\)</span> are called <span class="math inline">\(k\)</span> -isomorphicifthere isa <span class="math inline">\(k\)</span> -linearisomorphism <span class="math inline">\(f \colon V \to V'\)</span> with <span class="math inline">\(f^{*}(x) = x'\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u013" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u013">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U013</code> · Chapter X, source L5523 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Now let <span class="math inline">\({ \bf K } / k\)</span> be a finite Galois extension with group G.Let <span class="math inline">\(\mathbf { V _ { K } } = \mathbf { V } \otimes _ { \mathbf { k } } \mathbf { k }\)</span> be the vector space over <span class="math inline">\(\mathbf { K }\)</span> obtained by extending scalars；the tensor <span class="math inline">\(x\)</span> defines a tensor <span class="math inline">\(x _ { \kappa }\)</span> on <span class="math inline">\({ \bf { \cal V } } _ { \bf { \tilde { x } } }\)</span> in the obvious way,and we will often denote it simply as <span class="math inline">\(x\)</span> We say that <span class="math inline">\(( \mathbb { V } , x )\)</span> and <span class="math inline">\(( \mathbf { V } ^ { \prime } , x ^ { \prime } )\)</span> are <span class="math inline">\(\kappa\)</span> -isomorphic(or”become isomorphic over <span class="math inline">\({ \bf K } ^ { \mathbf { \pi } ^ { \mathbf { \pi } } } .\)</span> if <span class="math inline">\(\{ \mathbb { V } _ { \mathbb { K } } , \mathbb { x } _ { \mathbb { K } } \}\)</span> and <span class="math inline">\(( \mathbb { V } _ { \mathbb { K } } ^ { \prime } , x _ { \mathbb { K } } ^ { \prime } )\)</span> are isomorphic.Denote by <span class="math inline">\(\mathbb { E } _ { \mathbb { V } _ { s } \pmb { \imath } } \{ \mathbf { K } / k \}\)</span> the set of <span class="math inline">\(\pmb { k }\)</span> -isomorphismclasses of pairs <span class="math inline">\(( \boldsymbol { \nabla } ^ { \prime } , \boldsymbol { x } ^ { \prime } )\)</span> that are K-isomorphic to <span class="math inline">\(( \mathbb { V } , x ) .\)</span> We propose to interpret <span class="math inline">\(\mathbf { E } _ { \mathbf { V } , \mathbf { x } } { \left( \mathbf { K } / k \right) }\)</span> as an <span class="math inline">\(\mathbf { H } ^ { \downarrow }\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u014" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u014">Corollary</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U014</code> · Chapter X, source L5527 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary <span class="math inline">\(2 . \mathrm { H } ^ { 1 } ( \mathrm { G } , \mathrm { S p } ( n , \mathrm { K } ) ) = \{ \{ \} \} .\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u015" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u015">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U015</code> · Chapter X, source L5537 · after <a href="c07.html#fc10-c07-u001"><code>FC10-C07-U001</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A <span class="math inline">\(G\)</span>-module <span class="math inline">\(A\)</span> for a profinite Galois group is called topological when every element has open stabilizer; equivalently, <span class="math inline">\(A=\bigcup_H A^H\)</span> over the open normal subgroups <span class="math inline">\(H\triangleleft G\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u016" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u016">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U016</code> · Chapter X, source L5545 · after <a href="c07.html#fc10-c07-u007"><code>FC10-C07-U007</code></a>, <a href="#fc10-c10-u015"><code>FC10-C10-U015</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>IfA is a topological <span class="math inline">\(\mathbf { G }\)</span> module,define <span class="math inline">\(\mathbb { H } ^ { q } \{ \mathbf { G } , \mathbf { A } \}\)</span> by the formula <span class="math display">\[ H^{q}(G,A) = \varinjlim_{H} H^{q}(G/H, A^{H}), \]</span> the limit being over the open normal subgroups <span class="math inline">\(H\)</span> of <span class="math inline">\(G\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u017" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u017">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U017</code> · Chapter X, source L5573 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>In other words,the group <span class="math inline">\(\mathbf { H o m } ( \mathbf { G } , \mathbf { Z } / p \mathbf { Z } )\)</span> ofcontinuous homomorphisms of <span class="math inline">\(\mathbf { G }\)</span> into <span class="math inline">\(\mathbf { Z } / p \mathbf { Z }\)</span> isisomorphic to <span class="math inline">\(k / \wp \{ k \}\)</span> The isomorphism assigns to <span class="math inline">\(a \in k\)</span> the homomorphism <span class="math inline">\(\varphi _ { a } \colon { \mathrm { G } } \to { \mathbf { Z } } / p { \mathbf { Z } }\)</span> defined by solving the equation <span class="math inline">\(x ^ { p } - x = a\)</span> and setting <span class="math inline">\({ \varphi } _ { a } \{ s \} = s ( x ) - x\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u018" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u018">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U018</code> · Chapter X, source L5575 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Denote by <span class="math inline">\(k _ { p }\)</span> the composite of all the abelian extensions of type <span class="math inline">\(( p , \ldots , p )\)</span> of <span class="math inline">\(k\)</span> ；thenwe see that the Galois group <span class="math inline">\(\mathbb { G } \{ k _ { p } / k \}\)</span> is isomorphic to the compact dual <span class="math inline">\(( k / \xi ) \{ k \} \hat { \ }\)</span> of the discrete group <span class="math inline">\(k / \wp \{ k \}\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u019" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u019">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U019</code> · Chapter X, source L5593 · after <a href="#fc10-c10-u002"><code>FC10-C10-U002</code></a>, <a href="#fc10-c10-u016"><code>FC10-C10-U016</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>with <span class="math inline">\(\mu ( x ) = x ^ { n }\)</span> Applying proposition 2,we deduce an isomorphism <span class="math inline">\(k ^ { \ast } / k ^ { \ast \pi } \mapsto\)</span> <span class="math inline">\({ \mathrm { H o m } } \{ \mathbf { G } , \mu _ { n } \}\)</span> This isomorphism assigns to an element <span class="math inline">\(a \in k ^ { * }\)</span> the homomorphism <span class="math inline">\(\varphi _ { \alpha } \colon \mathrm { G } \to \mu _ { n }\)</span> defined by solving the equation <span class="math inline">\(x ^ { n } = a\)</span> and seting <span class="math inline">\(\varphi _ { a } \{ s \} =\)</span> <span class="math inline">\(s \{ x \} , x ^ { - 1 }\)</span> Denote by <span class="math inline">\(k _ { n }\)</span> the composite of all the abelian extensions of <span class="math inline">\(k\)</span> whose Galois group is annihilated by <span class="math inline">\(\pmb { n }\)</span> ;then we see that the Galois group <span class="math inline">\(\operatorname { G } \{ k _ { n } / k \}\)</span> is isomorphic to <span class="math inline">\(\mu _ { n } \otimes ( k ^ { * } / k ^ { * \eta } ) ^ { * }\)</span> ,which is itself isomorphic （noncanonically) to <span class="math inline">\(( k ^ { * } / k ^ { * } ) ^ { * } )\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u020" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u020">Convention / notation</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U020</code> · Chapter X, source L5597 · after <a href="#fc10-c10-u016"><code>FC10-C10-U016</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a finite or infinite Galois extension <span class="math inline">\(K/k\)</span> with group <span class="math inline">\(G\)</span>, write <span class="math inline">\(H^q(K/k)=H^q(G,K^*)\)</span>; these groups are functorial in morphisms of Galois extensions.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u021" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u021">Proposition 5</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U021</code> · Chapter X, source L5638 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 5.The homomorphisms <span class="math inline">\(f _ { q }\)</span> are independent of the choice of <span class="math inline">\(f\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u022" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u022">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U022</code> · Chapter X, source L5644 · after <a href="#fc10-c10-u020"><code>FC10-C10-U020</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The Brauer group <span class="math inline">\(B_k\)</span> is <span class="math inline">\(H^2(k_s/k)\)</span> for a separable closure <span class="math inline">\(k_s\)</span>; equivalently, it is the direct limit of <span class="math inline">\(H^2(K/k)\)</span> over finite Galois extensions <span class="math inline">\(K/k\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u023" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u023">Proposition 6</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U023</code> · Chapter X, source L5646-L5650 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 6. Let <span class="math inline">\(L / k\)</span> bea Galois extension containing the Galois extension <span class="math inline">\({ \mathrm { \bf K } } / k .\)</span> Then there is an exact sequence <span class="math display">\[ 0 \to \mathbb { H } ^ { 2 } ( \mathbb { K } / k ) \to \mathbb { H } ^ { 2 } ( \mathbb { L } / k ) \to \mathbb { H } ^ { 2 } ( \mathbb { L } / \mathbb { K } ) . \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u024" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u024">Corollary: Corollary</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U024</code> · Chapter X, source L5660-L5664 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary. There is an exact sequence <span class="math display">\[ \begin{array} { r } { { \boldsymbol { 0 } } { \mathbf { H } } ^ { 2 } ( { \mathbf { K } } / k ) { \mathbf { B } } _ { k } { \mathbf { B } } _ { \ k } . } \end{array} \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u025" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u025">Proposition 7</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U025</code> · Chapter X, source L5609-L5614 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition7.Let k bea field and A a finite dimensional <span class="math inline">\(k\)</span> -algebra.The ollowing conditions are equivalent: a)Ahasno non-trivial two-sided ideal,and its center is <span class="math inline">\(\pmb { k }\)</span> b) IfK is the algebraic closure of <span class="math inline">\(k _ { i }\)</span> thentheextendedalgebrais isomorphic to a matrix algebra over K. 5）There exists a finite Galois extension <span class="math inline">\({ \bf K } / k\)</span> such that <span class="math inline">\(\mathbf { A } _ { \mathbf { K } }\)</span> is isomorphic to a matrix algebra over K. c)A is isomorphic to a matrix algebra over a division algebra with center <span class="math inline">\(k .\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u026" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u026">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U026</code> · Chapter X, source L5616 · after <a href="#fc10-c10-u025"><code>FC10-C10-U025</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A finite-dimensional <span class="math inline">\(k\)</span>-algebra that is simple and has center <span class="math inline">\(k\)</span> is central simple over <span class="math inline">\(k\)</span>; two central simple algebras are equivalent when their associated division algebras are isomorphic.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/BrauerGroup/Defs.html"><code>Mathlib/Algebra/BrauerGroup/Defs.lean::CSA, IsBrauerEquivalent, BrauerGroup</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Central/Defs.html#Algebra.IsCentral"><code>Mathlib/Algebra/Central/Defs.lean::Algebra.IsCentral</code></a> — Mathlib has central simple algebras and the Brauer-equivalence quotient; no group law is credited to the following source row.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d</span></p>
+</section>
+<section id="fc10-c10-u027" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u027">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U027</code> · Chapter X, source L5618 · after <a href="#fc10-c10-u026"><code>FC10-C10-U026</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Let <span class="math inline">\(A _ { k }\)</span> be the set of classes of central simple algebras (for the equivalence :elation just defined)；the tensor product defines by passage to the quotient 1structure of abelian group on <span class="math inline">\(\mathsf { A } _ { \star }\)</span> .Thisis the group known classicially as :he“Brauer group”(cf.Bourbaki, loc.cit., <span class="math inline">\(\ S _ { \mathbf { I 0 } } )\)</span> .It isa covariant functor of ifK is an extension of <span class="math inline">\(k\)</span> ,then extension of scalars from <span class="math inline">\(k\)</span> to <span class="math inline">\(\mathbf { K }\)</span> defines a 1omomorphism</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u028" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u028">Convention / notation</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U028</code> · Chapter X, source L5624 · after <a href="#fc10-c10-u025"><code>FC10-C10-U025</code></a>, <a href="#fc10-c10-u027"><code>FC10-C10-U027</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Denote by <span class="math inline">\(\mathbb { A } \{ \mathbb { K } / k \}\)</span> thekernel ofthis homomorphism.Proposition 7implies hat <span class="math inline">\(A _ { k }\)</span> is the union of the <span class="math inline">\(\mathbf { A } \{ \mathbf { K } / \hbar \}\)</span> as <span class="math inline">\(\mathbf { K }\)</span> runsthrough the set of finite Galois xtensions of <span class="math inline">\(k\)</span> To show that <span class="math inline">\(\mathsf { A } _ { \pmb { k } }\)</span> is isomorphic to <span class="math inline">\(\mathbf { B } _ { \star }\)</span> itis enough to contruct isomorphisms <span class="math inline">\(\mathrm { A } \{ \mathrm { K } / k \} \to \mathrm { H } ^ { 2 } \{ \mathrm { K } / k \}\)</span> compatible with the injections <span class="math display">\[ A(K/k) \to A(K'/k) \qquad\text{and}\qquad H^{2}(K/k) \to H^{2}(K'/k). \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u029" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u029">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U029</code> · Chapter X, source L5672 · after <a href="#fc10-c10-u026"><code>FC10-C10-U026</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Let <span class="math inline">\(\mathsf { A } ( n , \mathsf { K } / k )\)</span> be the set of classes of <span class="math inline">\(k\)</span> -algebrasAsuch that <span class="math inline">\(A _ { \emptyset _ { k } } \subset\)</span> is isomorphictothe matrixalgebra <span class="math inline">\(\mathbf { M } _ { n } ( \mathbf { K } )\)</span> The group <span class="math inline">\(\mathsf { A } ( \mathbb { K } / k )\)</span> is the union of the subsets <span class="math inline">\(\mathrm { A } ( n , \mathbb { K } / \tilde { \kappa } )\)</span> for all positive <span class="math inline">\(\pmb { n }\)</span> The procedure of <span class="math inline">\(\ S 2\)</span> applies to <span class="math inline">\(\mathbb { A } \{ n , \mathbb { K } / k \}\)</span> :an element of <span class="math inline">\(\mathbb { A } \{ n , \mathbb { K } / k \}\)</span> can be considered as a pair <span class="math inline">\(( \mathbb { V } , x )\)</span> ,where <span class="math inline">\(\mathbf { V }\)</span> is a vector space of dimension <span class="math inline">\(n ^ { 2 }\)</span> and where <span class="math inline">\(\pmb { x }\)</span> is a tensor of type(1,2) (the law of composition),this pair being K-isomorphic to the standard pair defined by the matrix algebra <span class="math inline">\(\mathbf { M } _ { \pi }\)</span> .If <span class="math inline">\(\mathbf { G }\)</span> is the Galois group of <span class="math inline">\({ \mathbf { \tilde { K } } } / k .\)</span> and <span class="math inline">\(C _ { K }\)</span> denotes the group of <span class="math inline">\(\mathbf { K }\)</span> -automorphisms of <span class="math inline">\(\mathbf { M } _ { \mathbf { r } } ( \mathbf { K } )\)</span> we conclude that the map <span class="math display">\[ \theta \colon A(n, K/k) \to H^{2}(G, C_{K}) \]</span> defined in §2 is a bijection.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u030" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u030">Proposition 8</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U030</code> · Chapter X, source L5688-L5692 · after <a href="#fc10-c10-u029"><code>FC10-C10-U029</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 8.There isa canonical bijection <span class="math display">\[ \theta \colon \mathsf { A } ( n , \mathsf { K } / k ) \to \mathsf { H } ^ { 1 } ( G , \mathsf { P G L } ( n , \mathsf { K } ) ) . \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u031" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u031">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U031</code> · Chapter X, source L5694-L5715 · after <a href="#fc10-c10-u020"><code>FC10-C10-U020</code></a>, <a href="#fc10-c10-u030"><code>FC10-C10-U030</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The connecting map for <span class="math inline">\(1\to K^*\to GL_n(K)\to PGL_n(K)\to1\)</span>, composed with descent, gives compatible maps <span class="math inline">\(\delta_n:A(n,K/k)\to H^2(K/k)\)</span> and hence a homomorphism <span class="math inline">\(\delta:A(K/k)\to H^2(K/k)\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u032" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u032">Proposition 9</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U032</code> · Chapter X, source L5718 · after <a href="#fc10-c10-u031"><code>FC10-C10-U031</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 9.The homomorphism <span class="math inline">\(\delta : \mathrm { A } \{ \mathrm { K } / k \} \mathrm { H } ^ { 2 } ( \mathrm { K } / k )\)</span> is bijective.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u033" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u033">Lemma 1</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U033</code> · Chapter X, source L5722 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Lemma 1. 1f <span class="math inline">\(n = [ \mathbb { K } : \mathbb { k } ] .\)</span> then themap <span class="math inline">\(\hat { \delta } _ { \pi } \colon \mathrm { A } \{ n , \mathrm { K } / k \} \mathrm { H } ^ { 2 } \{ \mathrm { K } / k \}\)</span> is surjective.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u034" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u034">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U034</code> · Chapter X, source L5772 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A field <span class="math inline">\(k\)</span> is called quasi-algebraically closed (or <span class="math inline">\(\mathbf { C _ { 1 } }\)</span> if it satisfies the following condition：</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u035" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u035">Proposition 10</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U035</code> · Chapter X, source L5776 · after <a href="#fc10-c10-u022"><code>FC10-C10-U022</code></a>, <a href="#fc10-c10-u034"><code>FC10-C10-U034</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 10.1f the field <span class="math inline">\(k\)</span> has property <span class="math inline">\(\mathbf { C _ { 1 } }\)</span> ,then the Brauer group of every finiteextension K of <span class="math inline">\(k\)</span> is zero.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u036" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u036">Proposition 11</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U036</code> · Chapter X, source L5788-L5792 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 11. For a given field <span class="math inline">\(k _ { \mathrm { { \ell } } }\)</span> the following are equivalent: 1）The Brauer group of every finite separable extension of <span class="math inline">\(k\)</span> is zero. 2）IfKis finite separable over <span class="math inline">\(k ,\)</span> and <span class="math inline">\(L / \kappa\)</span> isafinite Galois extension,then the <span class="math inline">\(\mathbb { G } \{ { \bf L } / \mathbb { K } \} .\)</span> -module <span class="math inline">\({ \sf L } ^ { * }\)</span> is cohomologically trivial. 3）With the same hypotheses as in2),the norm homomorphism <span class="math inline">\(\Nu _ { \tt L / \tt K } : \mathbb { L } ^ { \ast } \to \mathbb { K } ^ { \ast }\)</span> is surjective.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u037" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u037">Definition / construction</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U037</code> · Chapter X, source L5798 · after <a href="#fc10-c10-u026"><code>FC10-C10-U026</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Let <span class="math inline">\(k\)</span> be a ground field,and let <span class="math inline">\(\mathbf { p _ { \mathfrak { s } - \mathfrak { t } } }\)</span> be the projective space of dimension <span class="math inline">\(n - 1\)</span> ,considered asa scheme over <span class="math inline">\(k ,\)</span> if <span class="math inline">\(\mathbf { v }\)</span> is any scheme over <span class="math inline">\(k , \mathrm { \Delta V }\)</span> is called a Severi-Brauer variety if there exists a separable algebraic extension <span class="math inline">\({ \tt K } / k\)</span> such that V is isomorphic to <span class="math inline">\({ \bf P } _ { n - 1 }\)</span> over <span class="math inline">\(\mathbf { K } ,\)</span> for some <span class="math inline">\(\pmb { n }\)</span> (i.e., <span class="math inline">\(\mathbf { V } \otimes _ { \mathbf { k } }\)</span> K and <span class="math inline">\(\mathbf { P } _ { n - \textrm { f } } \bigotimes _ { \textrm { h } } \mathbf { K }\)</span> are isomorphic K-schemes).This notion is due to Chatelet[15],[16].</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u038" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u038">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U038</code> · Chapter X, source L5800 · after <a href="#fc10-c10-u037"><code>FC10-C10-U037</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>EXAMPLEs.1 A non-singular conic in the projective plane is a Severi-Brauer variety of dimension 1:it is <span class="math inline">\(\mathbf { \check { K } }\)</span> -isomorphic to <span class="math inline">\(\mathbf { p _ { i } }\)</span> if and only if it has a rational point in K.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u039" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u039">Corollary: Corollary.Let <span class="math inline">\(L / \mathbb { K }\)</span> be anextension satisfying conditions…</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U039</code> · Chapter X, source L5832 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Corollary.Let <span class="math inline">\(L / \mathbb { K }\)</span> be anextension satisfying conditions 2).IfE isa torsionfree <span class="math inline">\(\mathrm { G } \{ { \bf E } / \mathrm { K } \}\)</span> -module,then the <span class="math inline">\(\mathrm { G } \{ { \bf L } / \Re \}\)</span> module <span class="math inline">\({ \mathbb { L } } ^ { * } \otimes { \mathbb { E } }\)</span> is cohomologically trivial.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u040" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u040">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U040</code> · Chapter X, source L5840-L5842 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>a)Afinite field.Indeed,in this case, <span class="math inline">\(\mathbb { H } ^ { 1 } \{ \mathbb { G } , \mathbb { K } ^ { * } \}\)</span> and <span class="math inline">\(\mathbb { H } ^ { 2 } \{ \mathbb { G } , \mathbb { K } ^ { * } \}\)</span> have the same order (cf.&nbsp;Chap.VII, prop. 8),and as the first group is zero (prop. 2), so is the second. [One could just as well obtain this result by proving the stronger result that a finite field is <span class="math inline">\(\mathbf { C _ { 1 } }\)</span> ; cf.[82],[115].]</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u041" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u041">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U041</code> · Chapter X, source L5844-L5846 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>b)Themaximal unramified extension <span class="math inline">\({ \mathbf { K } } _ { n r }\)</span> ofa field K complete under a discrete valuation and having perfect residue.field. Indeed,condition 3)of prop.11 holds (cf.&nbsp;Chap.V, <span class="math inline">\(\ S 4 .\)</span> prop.7).This applies in particular to the casewhere theresidue field is algebraically closed. [Again the fields <span class="math inline">\({ \bf K } _ { n r }\)</span> are actually <span class="math inline">\(\mathbf { C _ { 1 } }\)</span> ；the proof (which is far from trivial) can be found in Lang’s thesis [38].]</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u042" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u042">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U042</code> · Chapter X, source L5848 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>c)Anextension of transcendence degree l of an algebraically closed field In fact,such a field is <span class="math inline">\(\mathbf { C _ { j } }\)</span> (“Tsen’s theorem”,cf.Lang, loc.cit.).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u043" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u043">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U043</code> · Chapter X, source L5850 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>d）An algebraic extension of <span class="math inline">\(\mathbf { Q }\)</span> containing all the roots of unity. This follows,by passage to the limit,from the determination of the Brauer group ofa number field.[It has been conjectured by Artin that such a field is <span class="math inline">\(\mathbb { C } _ { 1 } . \mathbb { J }\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u044" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u044">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U044</code> · Chapter X, source L5854-L5864 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>e)The field R.Its Brauer group is equal to <span class="math inline">\(\mathbb { H } ^ { 2 } ( \mathbf { G } , \mathbf { C } ^ { * } )\)</span> where <span class="math inline">\(\mathbf { G } = \mathbf { G } \{ \mathbf { C } / \mathbf { R } \}\)</span> is cyclic of order 2.Hence(Chap.VIII, $4) <span class="math display">\[ { \sf B } _ { \mathtt { R } } = { \sf C } ^ { \ast \mathrm { G } } / \mathrm { N C } ^ { \ast } = { \sf R } ^ { \ast } / { \sf R } _ { + } ^ { \ast } = { \sf Z } / 2 { \sf Z } . \]</span> The non-zero element of <span class="math inline">\(\mathfrak { B } _ { \mathtt { R } }\)</span> corresponds to the quaternions <span class="math inline">\(\mathbf { H }\)</span> The corresponding Severi-Brauer variety is the conic <span class="math display">\[ x ^ { 2 } + y ^ { 2 } + z ^ { 2 } = 0 . \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u045" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u045">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U045</code> · Chapter X, source L5866 · after <a href="#fc10-c10-u022"><code>FC10-C10-U022</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A field complete under a discrete valuation with finite residue field has Brauer group isomorphic to <span class="math inline">\(\mathbf Q/\mathbf Z\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+</section>
+<section id="fc10-c10-u046" class="level3">
+<h3 class="anchored" data-anchor-id="fc10-c10-u046">Example / comparison</h3>
+<div class="unit-meta">
+<p><code>FC10-C10-U046</code> · Chapter X, source L5866-L5872 · after <a href="#fc10-c10-u022"><code>FC10-C10-U022</code></a>, <a href="#fc10-c10-u045"><code>FC10-C10-U045</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For an algebraic number field <span class="math inline">\(k\)</span>, the local Brauer groups fit into the exact sequence <span class="math inline">\(0\to B_k\to\bigoplus_i B_{k_i}\to\mathbf Q/\mathbf Z\to0\)</span>, where the last map sums the local invariants.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> The checked libraries have Hilbert 90, Kummer/Artin–Schreier ingredients and Brauer definitions, but not this full descent/cohomological-Brauer assertion.</p>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/dzackgarza\.github\.io\/lean-categories\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Generated from the project’s reference notes by <code>site/build.py</code>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>The Lean is the authority; where this site differs, the Lean is right.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

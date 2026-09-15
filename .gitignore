@@ -7,3 +7,4 @@ __pycache__/
 /.foundational-corpus-validate.py
 /.u045-*.lean
 *.lean.tmp
+_site/

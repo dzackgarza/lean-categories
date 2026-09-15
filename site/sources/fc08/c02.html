@@ -1,0 +1,2552 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013) – lean-categories · corpus</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-7335da993d57b01553edc5728a7cb5aa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">lean-categories · corpus</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../coverage.html" aria-current="page"> 
+<span class="menu-text">Every book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../corpus.html"> 
+<span class="menu-text">Reading list</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../catalogues/index.html"> 
+<span class="menu-text">Catalogues</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/dzackgarza/lean-categories"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/index.html">FC08</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/c02.html">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="sidebar-tools-main">
+    <div id="quarto-search" class="quarto-navigation-tool px-1" title="Search"></div>
+</div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Graduate mathematics, and what Lean has of it</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../coverage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Every book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../corpus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational source corpus</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../status.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus status</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Sources</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC01 Dummit Foote</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/ai.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01 Appendix I — Cartesian Products and Zorn’s Lemma</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC03</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC03 Riehl Category Theory in Context</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Categories, Functors, and Natural Transformations (pp.&nbsp;1–48)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Representability and the Yoneda Lemma (pp.&nbsp;49–72)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Limits and Colimits (pp.&nbsp;73–114)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Adjunctions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Monads and Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. All Concepts are Kan Extensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/ce.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Epilogue: Theorems in Category Theory</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC04</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC04 Atiyah Macdonald</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Rings and Ideals (pp.&nbsp;1–9)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Modules (pp.&nbsp;17–30)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Rings and Modules of Fractions (pp.&nbsp;36–42)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Primary Decomposition (pp.&nbsp;50–54)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Integral Dependence and Valuations (pp.&nbsp;59–66)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Chain Conditions (pp.&nbsp;74–77)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Noetherian Rings (pp.&nbsp;80–83)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Artin Rings (pp.&nbsp;89–90)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Discrete Valuation Rings and Dedekind Domains (pp.&nbsp;93–98)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. Completions (pp.&nbsp;100–112)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Dimension Theory (pp.&nbsp;116–124)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC05</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC05 Weibel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Chain Complexes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Derived Functors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Tor and Ext</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homological Dimension</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Spectral Sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Group Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Lie Algebra Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Simplicial Methods in Homological Algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Hochschild and Cyclic Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. The Derived Category</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Category Theory Language</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC06</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC06 Hartshorne</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter I: Varieties</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter II: Schemes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter III: Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter IV: Curves</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter V: Surfaces</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC07</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC07 Hatcher</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 0. Some Underlying Geometric Notions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. The Fundamental Group</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homotopy Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix. Topology of Cell Complexes</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC08 Lee</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c02.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c22.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC09 Neukirch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC10 Serre Local Fields</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc11/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC11 Peters Sterk</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc12/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC12 Beauville</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc13/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC13</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC13 Matsumura</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Front matter — conventions and terminology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Commutative rings and modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Prime ideals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Properties of extension rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Valuation rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Dimension theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Regular sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Regular rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Flatness revisited</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Derivations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. I-smoothness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Applications of complete local rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Tensor products, direct and inverse limits</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix B. Some homological algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix C. The exterior algebra</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc14/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC14</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC14 Humphreys</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Basic Concepts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Semisimple Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Root Systems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Isomorphism and Conjugacy Theorems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Existence Theorem</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Representation Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Chevalley Algebras and Groups</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc15/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC15</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Classification of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Polynomial invariants of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Affine reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Coxeter groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Special cases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Hecke algebras and Kazhdan–Lusztig polynomials</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Complements</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc16/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC16</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Algebraic Geometry</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Affine Algebraic Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Homogeneous Spaces</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Characteristic 0 Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Semisimple and Unipotent Elements</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Solvable Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VIII. Borel Subgroups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IX. Centralizers of Tori</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter X. Structure of Reductive Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XI. Representations and Classification of Semisimple Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XII. Survey of Rationality Properties and Appendix</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../catalogues/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Definition catalogues</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">catalogues/*.md</span>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Notes and audits</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">notes/*.md</span>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/index.html">FC08</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/c02.html">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>FC08 — Lee, <em>Introduction to Smooth Manifolds</em>.</p>
+<p>This chapter contains 16 definitions, 4 theorems, 8 propositions, 4 lemmas, 1 corollary and 2 examples.</p>
+<p>Of the 35 statements checked against Lean, 22 are formalized somewhere and 13 are not.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 28%">
+<col style="width: 28%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Status</th>
+<th style="text-align: right;">Statements</th>
+<th style="text-align: right;">Share</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="route-mathlib">in Mathlib</span></td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">63%</td>
+<td>Mathlib states and proves it.</td>
+</tr>
+<tr class="even">
+<td><span class="route-unmatched">not formalized</span></td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">37%</td>
+<td>A documented search found no Lean statement of it anywhere.</td>
+</tr>
+<tr class="odd">
+<td><strong>checked in total</strong></td>
+<td style="text-align: right;"><strong>35</strong></td>
+<td style="text-align: right;"></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Which versions of Lean and Mathlib were searched
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li>Canonical source block: FC08 Lee, Chapter 2, <code>FC08-C02-U001</code>–<code>FC08-C02-U035</code>, exactly 35 unique contiguous rows retrieved from <a href="../../sources/fc08/">FC08 — John M. Lee, Introduction to Smooth Manifolds</a> through <code>agent-memory</code>.</li>
+<li>Search order followed the Sweep-II plan: project source first at <code>A=3b2239e161592472b34e02ad3b7da308f9ce7280</code>, then pinned Mathlib <code>P=db584cd6d46c92f209a44c0f1c829460d327499d</code> (Apache-2.0, Lean 4.33.0), current upstream Mathlib <code>H=5315eef9e4ffb98e0f89f278b765c50a149f66ca</code> (Apache-2.0, Lean 4.34.0-rc2), current/open/indexed searches, Reservoir and broad discoverable Lean sources, then local reference mirrors. No <code>project-existing</code>, <code>package-import</code>, or <code>reference-port</code> C02 owner survived strict bundle checking.</li>
+<li>Every promoted path exists at exact <code>P</code>, and the promoted declaration set compiled through the project toolchain. <code>/tmp/fc08-c02-witness.lean</code> additionally compiled exact audit witnesses for U009 (smooth gluing over an arbitrary open cover), U022 (arbitrary two-threshold cutoff), U024 (radial Euclidean bump with the strict annular inequalities), U031 (closed-set bump with <code>tsupport</code> inside the prescribed open set), and U035 (closed set as an exact smooth zero locus). These witnesses only assemble pinned Mathlib declarations; they are audit evidence, not project source.</li>
+<li>C02 has 22 pinned <code>mathlib</code> rows and 13 dated <code>unmatched</code> rows. Positive rows are: U002, U003, U004, U005, U006, U007, U008, U009, U010, U011, U012, U016, U017, U021, U022, U024, U026, U027, U028, U029, U031, U035.</li>
+<li>Smooth-map rows U002–U012 are mapped through Mathlib’s charted-manifold <code>ContMDiff</code> interface rather than by name analogy. Extended charts/model-with-corners encode Lee’s boundary convention; maximal-atlas lemmas give chart independence; open-subtype and open-union lemmas supply locality and the gluing assembly.</li>
+<li>U017 is exact in both parts: <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=OpenPartialHomeomorph.univUnitBall#doc"><code>OpenPartialHomeomorph.univUnitBall</code></a> uses Lee’s explicit inverse square-root formulas and is proved smooth in both directions, while <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=OpenPartialHomeomorph.toStructomorph#doc"><code>OpenPartialHomeomorph.toStructomorph</code></a> turns every smooth atlas chart into a smooth diffeomorphism between its open source and target.</li>
+<li>U018 and U020 are deliberately not promoted. Mathlib proves most of U018 and proves <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Diffeomorph.image_boundary#doc"><code>Diffeomorph.image_boundary</code></a>/<code>image_interior</code> for U020, but the checked pin has no complete packaged restriction-to-an-open-submanifold/interior diffeomorphism interface closing the remaining clauses. Whole-row semantics reject those partial matches.</li>
+<li>U024 is not credited merely from <code>ContDiffBump</code>: that interface guarantees 1 on the inner closed ball and positivity in the outer ball but does not guarantee strict <code>&lt; 1</code> throughout the annulus (its base file explicitly does not assume an iff characterization of the one-locus). The promoted route instead uses <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Real.smoothTransition#doc"><code>Real.smoothTransition</code></a> composed with squared norm, and the audit witness checks all strict inequalities.</li>
+<li>U028 uses <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=PartitionOfUnity.IsSubordinate#doc"><code>PartitionOfUnity.IsSubordinate</code></a>, which is defined with <code>tsupport</code>, i.e.&nbsp;closure of nonzero support, exactly matching Lee’s support convention; <code>locallyFinite_tsupport</code> also proves local finiteness for those closed supports. U029 is then the direct smooth subordinate-partition existence theorem under the standard Lee manifold hypotheses.</li>
+<li>U031 is a short exact corollary of U029 using the two-set cover <code>U, Aᶜ</code>; the pinned witness verifies smoothness, <code>[0,1]</code> bounds, equality to 1 on <code>A</code>, and <code>tsupport ⊆ U</code>.</li>
+<li>U033 is not inferred from Tietze extension or <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Continuous.exists_contMDiff_approx_and_eqOn#doc"><code>Continuous.exists_contMDiff_approx_and_eqOn</code></a>: the latter starts with an ambient continuous function already smooth on a neighborhood of the closed set, while Lee starts only with a map defined on the closed subset that is locally extendable. Turning those ingredients into Lee’s global support-controlled extension is the substantive theorem itself.</li>
+<li>U034 remains unmatched after pinned/current/external search: no checked positive smooth exhaustion-function theorem was found. U035 is direct from <code>exists_contMDiff_zero_iff_one_iff_of_isClosed</code> with the second closed set specialized to <code>∅</code>.</li>
+<li>Current upstream <code>H=5315eef9e4ffb98e0f89f278b765c50a149f66ca</code> was fetched as an object only (no checkout); its <code>lean-toolchain</code> is Lean 4.34.0-rc2, and the C02 gap probes did not reveal a current-only owner for U033 or U034. The pinned Mathlib worktree remained clean.</li>
+<li><code>N=2026-09-07</code> denotes a dated unmatched result after the prescribed search layers. Strict whole-row semantics apply uniformly.</li>
+</ul>
+</div>
+</div>
+</div>
+<section id="fc08-c02-u001" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u001">Definition/convention — map</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U001</code> · Ch. 2, § Smooth Functions and Smooth Maps; source L983 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Although the terms function and map are technically synonymous, in studying smooth manifolds it is often convenient to make a slight distinction between them. Throughout this book we generally reserve the term function for a map whose codomain is R (a real-valued function) or <span class="math inline">\(\mathbb { R } ^ { k }\)</span> for some <span class="math inline">\(k &gt; 1\)</span> (a vector-valued function). Either of the words map or mapping can mean any type of map, such as a map between arbitrary manifolds. ##</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This is Lee-specific prose distinguishing “function” from “map”; Lean has no corresponding mathematical interface to own the terminology convention. Strict bundle semantics reject proper subsets, terminology-only analogies, specializations, and unbridged ingredients.</p>
+</div>
+<p><span class="unit-provenance">Searched: N=2026-09-07; A=3b2239e161592472b34e02ad3b7da308f9ce7280; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=5315eef9e4ffb98e0f89f278b765c50a149f66ca</span></p>
+</section>
+<section id="fc08-c02-u002" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u002">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U002</code> · Ch. 2, § Smooth Functions on Manifolds; source L987 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Suppose M is a smooth n-manifold, k is a nonnegative integer, and <span class="math inline">\(f \colon M \to \mathbb { R } ^ { k }\)</span> is any function. We say that f is a smooth function if for every <span class="math inline">\(p \in M\)</span> ; there exists a smooth chart <span class="math inline">\(( U , \varphi )\)</span> for M whose domain contains p and such that the composite function <span class="math inline">\(f \circ \varphi ^ { - 1 }\)</span> is smooth on the open subset <span class="math inline">\({ \widehat { U } } = \varphi ( U ) \subseteq \mathbb { R } ^ { n } { \mathrm { ~ ( F i g . ~ } } 2 . 1 )\)</span> If M is a smooth manifold with boundary, the definition is exactly the same, except that <span class="math inline">\(\varphi ( U )\)</span> is now an open subset of either <span class="math inline">\(\mathbb { R } ^ { n }\)</span> or <span class="math inline">\(\mathbb { H } ^ { n }\)</span> , and in the latter case we interpret smoothness of <span class="math inline">\(f \circ \varphi ^ { - 1 }\)</span> to mean that each point of <span class="math inline">\(\varphi ( U )\)</span> has a neighborhood <span class="math inline">\(( \mathrm { i n } \mathbb { R } ^ { n } )\)</span> on which <span class="math inline">\(f \circ \varphi ^ { - 1 }\)</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/ContMDiff/Defs.html"><code>Mathlib/Geometry/Manifold/ContMDiff/Defs.lean::ContMDiff, contMDiff_iff</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/ContMDiff/Atlas.html#OpenPartialHomeomorph.contMDiffOn_writtenInExtend_iff"><code>Mathlib/Geometry/Manifold/ContMDiff/Atlas.lean::OpenPartialHomeomorph.contMDiffOn_writtenInExtend_iff</code></a> — <code>ContMDiff</code> is the manifold-smoothness predicate. <code>contMDiff_iff</code> characterizes it by continuity plus smooth coordinate expressions, and the written-in-extended-chart theorem specializes this to real/vector-valued functions, including models with boundary.</p>
+</div>
+</section>
+<section id="fc08-c02-u003" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u003">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U003</code> · Ch. 2, § Smooth Functions on Manifolds; source L992 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>The most important special case is that of smooth real-valued functions <span class="math inline">\(f \colon M \to\)</span> R; the set of all such functions is denoted by <span class="math inline">\(C ^ { \infty } ( M )\)</span> . Because sums and constant multiples of smooth functions are smooth, <span class="math inline">\(C ^ { \infty } ( M )\)</span> is a vector space under pointwise addition and multiplication by constants.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/ContMDiffMap.html"><code>Mathlib/Geometry/Manifold/ContMDiffMap.lean::ContMDiffMap</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/Algebra/SmoothFunctions.html#ContMDiffMap.module"><code>Mathlib/Geometry/Manifold/Algebra/SmoothFunctions.lean::ContMDiffMap.module</code></a> — <code>ContMDiffMap I M 𝓘(ℝ) ℝ ∞</code> is the bundled space of smooth real-valued functions, and the module instance gives closure under addition and real scalar multiplication, exactly Lee’s <code>C^∞(M)</code> vector-space assertion.</p>
+</div>
+</section>
+<section id="fc08-c02-u004" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u004">Definition/convention — coordinate representation of f</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U004</code> · Ch. 2, § Smooth Functions on Manifolds; source L1000 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Given a function <span class="math inline">\(f \colon M \to \mathbb { R } ^ { k }\)</span> and a chart <span class="math inline">\(( U , \varphi )\)</span> for M; the function <span class="math inline">\({ \widehat { f } } \colon \varphi ( U ) \to \mathbb { R } ^ { k }\)</span> defined by <span class="math inline">\({ \hat { f } } ( x ) = f \circ \varphi ^ { - 1 } ( x )\)</span> is called the coordinate representation of f . By definition, f is smooth if and only if its coordinate representation is smooth in some smooth chart around each point. By the preceding exercise, smooth functions have smooth coordinate representat ures was to enable us to define smooth functions on manifolds and smooth maps between manifolds.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/ContMDiff/Atlas.html"><code>Mathlib/Geometry/Manifold/ContMDiff/Atlas.lean::OpenPartialHomeomorph.contMDiffOn_writtenInExtend_iff, IsManifold.mem_maximalAtlas_iff_contMDiffOn</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/ContMDiff/Defs.html"><code>Mathlib/Geometry/Manifold/ContMDiff/Defs.lean::contMDiff_iff</code></a> — Mathlib writes the coordinate representation as the target chart composed with <code>f</code> and the inverse source chart (using extended charts for corners). Membership in the maximal smooth atlas makes the criterion independent of the chosen smooth chart, matching both “some chart” and “every smooth chart” clauses.</p>
+</div>
+</section>
+<section id="fc08-c02-u005" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u005">Definition/convention — map</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U005</code> · Ch. 2, § Smooth Maps Between Manifolds; source L1009 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>The definition of smooth functions generalizes easily to maps between manifolds. Let M; N be smooth manifolds, and let <span class="math inline">\(F \colon M \to N\)</span> be any map. We say that F is a smooth map if for every <span class="math inline">\(p \in M\)</span> ; there exist smooth charts <span class="math inline">\(( U , \varphi )\)</span> containing p and .V; / containing <span class="math inline">\(F ( p )\)</span> such that <span class="math inline">\(F ( U ) \subseteq V\)</span> and the composite map <span class="math inline">\(F \circ\)</span> <span class="math inline">\(\varphi ^ { - 1 }\)</span> is smooth from <span class="math inline">\(\varphi ( U )\)</span> to .V / (Fig. 2.2). If M and N are smooth manifolds with boundary, smoothness of F is defined in exactly the same way, with the usual understanding that a map whose domain is a subset of <span class="math inline">\(\mathbb { H } ^ { n }\)</span> is smooth if it admits an extension to a smooth map in a neighborhood of each point, and a map whose codomain is a subset of <span class="math inline">\(\mathbb { H } ^ { n }\)</span> is smooth if it is smooth as a map into <span class="math inline">\(\mathbb { R } ^ { n }\)</span> . Note that our previous definition of smoothness of real-valued or vector-valued functions can be viewed as a special case of this one, by taking <span class="math inline">\(N = V = \mathbb { R } ^ { k }\)</span> and <span class="math inline">\(\psi = \mathrm { I d } \colon \mathbb { R } ^ { k } \to \mathbb { R } ^ { k }\)</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/ContMDiff/Defs.html"><code>Mathlib/Geometry/Manifold/ContMDiff/Defs.lean::ContMDiff, contMDiff_iff, contMDiffAt_iff_of_mem_maximalAtlas</code></a> — <code>ContMDiff I I′ ∞ F</code> is defined for maps between manifolds with arbitrary models with corners. Its chart characterization is exactly smoothness of the coordinate composite, including half-space/corner models through the model embeddings.</p>
+</div>
+</section>
+<section id="fc08-c02-u006" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u006">Proposition 2.4</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U006</code> · Ch. 2, § Smooth Maps Between Manifolds; source L1013 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Every smooth map is continuous.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/ContMDiff/Defs.html#ContMDiff.continuous"><code>Mathlib/Geometry/Manifold/ContMDiff/Defs.lean::ContMDiff.continuous</code></a> — Direct theorem: every <code>ContMDiff</code> map is continuous.</p>
+</div>
+</section>
+<section id="fc08-c02-u007" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u007">Proposition 2.5</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U007</code> · Ch. 2, § Smooth Maps Between Manifolds; source L1025 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>(Equivalent Characterizations of Smoothness). Suppose <span class="math inline">\(M\)</span> and <span class="math inline">\(N\)</span> are smooth manifolds with or without boundary and <span class="math inline">\(F \colon M \to N\)</span> is a map. Then <span class="math inline">\(F\)</span> is smooth if and only if either of the following holds. (a) For every <span class="math inline">\(p \in M\)</span> there exist smooth charts <span class="math inline">\((U,\varphi)\)</span> containing <span class="math inline">\(p\)</span> and <span class="math inline">\((V,\psi)\)</span> containing <span class="math inline">\(F(p)\)</span> such that <span class="math inline">\(U \cap F^{-1}(V)\)</span> is open in <span class="math inline">\(M\)</span> and the composite <span class="math inline">\(\psi \circ F \circ \varphi^{-1}\)</span> is smooth from <span class="math inline">\(\varphi(U \cap F^{-1}(V))\)</span> to <span class="math inline">\(\psi(V)\)</span>. (b) <span class="math inline">\(F\)</span> is continuous and there exist smooth atlases <span class="math inline">\(\{(U_{\alpha},\varphi_{\alpha})\}\)</span> and <span class="math inline">\(\{(V_{\beta},\psi_{\beta})\}\)</span> for <span class="math inline">\(M\)</span> and <span class="math inline">\(N\)</span> such that for each <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span>, <span class="math inline">\(\psi_{\beta} \circ F \circ \varphi_{\alpha}^{-1}\)</span> is a smooth map from <span class="math inline">\(\varphi_{\alpha}(U_{\alpha} \cap F^{-1}(V_{\beta}))\)</span> to <span class="math inline">\(\psi_{\beta}(V_{\beta})\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/ContMDiff/Defs.html"><code>Mathlib/Geometry/Manifold/ContMDiff/Defs.lean::contMDiff_iff, contMDiffAt_iff_of_mem_maximalAtlas</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/IsManifold/Basic.html#IsManifold.subset_maximalAtlas"><code>Mathlib/Geometry/Manifold/IsManifold/Basic.lean::IsManifold.subset_maximalAtlas</code></a> — <code>contMDiff_iff</code> gives continuity plus chartwise smoothness, while <code>contMDiffAt_iff_of_mem_maximalAtlas</code> permits arbitrary charts in the maximal smooth atlases. Atlas charts lie in that maximal atlas, yielding Lee’s two equivalent chart/atlas formulations.</p>
+</div>
+</section>
+<section id="fc08-c02-u008" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u008">Proposition 2.6</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U008</code> · Ch. 2, § Smooth Maps Between Manifolds; source L1031 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Proposition 2.6 (Smoothness Is Local). Let M and N be smooth manifolds with or without boundary, and let <span class="math inline">\(F \colon M \to N\)</span> be a map. (a) If every point <span class="math inline">\(p \in M\)</span> has a neighborhood U such that the restriction <span class="math inline">\(F | _ { U }\)</span> is smooth, then F is smooth. (b) Conversely, if F is smooth, then its restriction to every open subset is smoo een <span class="math inline">\(\hat { f }\)</span> and <span class="math inline">\(f\)</span> itself, and instead say something like <span class="math inline">\(^ { 6 6 } f\)</span> is smooth on <span class="math inline">\(U\)</span> because its coordinate representation <span class="math inline">\(f ( r , \theta ) = r ^ { 2 }\)</span> is smooth.” Fig.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/ContMDiff/Defs.html#ContMDiff.contMDiffOn"><code>Mathlib/Geometry/Manifold/ContMDiff/Defs.lean::ContMDiff.contMDiffOn, contMDiff_of_locally_contMDiffOn</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/ContMDiff/Basic.html#ContMDiffOn.iUnion_of_isOpen"><code>Mathlib/Geometry/Manifold/ContMDiff/Basic.lean::ContMDiffOn.iUnion_of_isOpen, contMDiff_of_contMDiffOn_iUnion_of_isOpen</code></a> — <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=ContMDiff.contMDiffOn#doc"><code>ContMDiff.contMDiffOn</code></a> gives restriction to any subset, and <code>contMDiff_of_locally_contMDiffOn</code>/the open-union theorem recover global smoothness from smoothness on neighborhoods. This is exactly the two directions of smoothness being local.</p>
+</div>
+</section>
+<section id="fc08-c02-u009" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u009">Corollary 2.8</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U009</code> · Ch. 2, § Smooth Maps Between Manifolds; source L1041 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Corollary 2.8 (Gluing Lemma for Smooth Maps). Let M and N be smooth manifolds with or without boundary, and let <span class="math inline">\(\{ U _ { \alpha } \} _ { \alpha \in A }\)</span> A .$ , we are given a smooth map <span class="math inline">\(F _ { \alpha } \colon U _ { \alpha } \to N\)</span> such that the maps agree on overlaps: <span class="math inline">\(F _ { \alpha } | _ { U _ { \alpha \cap U _ { \beta } } = F _ { \beta } | _ { U _ { \alpha \cap U _ { \beta } }\)</span> for all ˛ and ˇ. Then there exists a unique smooth map <span class="math inline">\(F \colon M \to N\)</span> such that <span class="math inline">\(F | _ { U _ { \alpha } } = F _ { \alpha }\)</span> for each ˛ $</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/ContMDiff/Basic.html#ContMDiffOn.iUnion_of_isOpen"><code>Mathlib/Geometry/Manifold/ContMDiff/Basic.lean::contMDiffAt_subtype_iff, ContMDiffOn.iUnion_of_isOpen, contMDiff_of_contMDiffOn_iUnion_of_isOpen</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/ContMDiff/Defs.html#ContMDiff.congr"><code>Mathlib/Geometry/Manifold/ContMDiff/Defs.lean::ContMDiff.congr</code></a> — The pinned APIs prove the exact gluing lemma: compatible local maps define a unique set-theoretic global map; <code>contMDiffAt_subtype_iff</code> transfers each local smooth map from its open subtype, <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=ContMDiff.congr#doc"><code>ContMDiff.congr</code></a> identifies it with the glued map there, and the open-union theorem proves global smoothness. This complete assembly was compiled in the C02 audit witness.</p>
+</div>
+</section>
+<section id="fc08-c02-u010" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u010">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U010</code> · Ch. 2, § Smooth Maps Between Manifolds; source L1043 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p><span class="math inline">\(F \colon M \to N\)</span> is a smooth map, and <span class="math inline">\(( U , \varphi )\)</span> and <span class="math inline">\(( V , \psi )\)</span> are any smooth charts for M and N , respectively, we call <span class="math inline">\(\widehat { F } = \psi \circ F \circ \varphi ^ { - 1 }\)</span> the coordinate representation of F with respect to the given coordinates. It maps the set <span class="math inline">\(\varphi \big ( U \cap F ^ { - 1 } ( V ) \big )\)</span> to <span class="math inline">\(\psi ( V )\)</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/ContMDiff/Defs.html"><code>Mathlib/Geometry/Manifold/ContMDiff/Defs.lean::contMDiffWithinAt_iff_of_mem_maximalAtlas, contMDiffOn_iff_of_mem_maximalAtlas</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/IsManifold/ExtChartAt.html#ModelWithCorners.extendCoordChange"><code>Mathlib/Geometry/Manifold/IsManifold/ExtChartAt.lean::ModelWithCorners.extendCoordChange</code></a> — The formal coordinate expression is the target extended chart composed with <code>F</code> and the inverse source extended chart on the relevant overlap. These theorems expose exactly that representation for arbitrary smooth charts.</p>
+</div>
+</section>
+<section id="fc08-c02-u011" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u011">Proposition 2.10</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U011</code> · Ch. 2, § Smooth Maps Between Manifolds; source L1054 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Proposition 2.10. Let M; N; and P be smooth manifolds with or without boundary. (a) Every constant map c <span class="math inline">\(M \to N\)</span> is smooth. (b) The identity map of M is smooth. (c) If <span class="math inline">\(U \subseteq M\)</span> is an open submanifold with or without boundary, then the inclusion map <span class="math inline">\(U \hookrightarrow M\)</span> is smooth. (d) If <span class="math inline">\(F \colon M \to N\)</span> and <span class="math inline">\(G \colon N \to P\)</span> are smooth, then s</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/ContMDiff/Basic.html#ContMDiff.comp"><code>Mathlib/Geometry/Manifold/ContMDiff/Basic.lean::contMDiff_const, contMDiff_id, contMDiff_subtype_val, ContMDiff.comp</code></a> — The four cited declarations are respectively Lee’s constant-map, identity-map, open-submanifold inclusion, and composition clauses.</p>
+</div>
+</section>
+<section id="fc08-c02-u012" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u012">Proposition 2.12</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U012</code> · Ch. 2, § Smooth Maps Between Manifolds; source L1068 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Exercise 2.11. Prove parts (a)–(c) of the preceding proposition. Proposition 2.12. Suppose <span class="math inline">\(M _ { 1 } , \ldots , M _ { k }\)</span> and N are smooth manifolds with or without boundary, such that at most one of <span class="math inline">\(M _ { 1 } , \dots , M _ { k }\)</span> has nonempty boundary. For each i, let <span class="math inline">\(\pi _ { i } \colon M _ { 1 } \times \cdots \times M _ { k } \to M _ { i }\)</span> denote the projection onto the <span class="math inline">\(M _ { i }\)</span> factor. A map <span class="math inline">\(F \colon N \to M _ { 1 } \times \cdots \times M _ { k }\)</span> is smooth if and only if each of the component maps <span class="math inline">\(F _ { i } = \pi _ { i } \circ F \colon N \to M _ { i }\)</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/ContMDiff/Constructions.html"><code>Mathlib/Geometry/Manifold/ContMDiff/Constructions.lean::contMDiff_fst, contMDiff_snd, contMDiff_prod_iff</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/IsManifold/Basic.html#IsManifold.prod"><code>Mathlib/Geometry/Manifold/IsManifold/Basic.lean::IsManifold.prod</code></a> — <code>contMDiff_prod_iff</code> says a map into a binary product is smooth iff both components are smooth; iteration gives the finite product. Mathlib’s product model with corners is stronger than Lee’s “at most one boundary factor” restriction.</p>
+</div>
+</section>
+<section id="fc08-c02-u013" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u013">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U013</code> · Ch. 2, § Smooth Maps Between Manifolds; source L1072 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Although most of our efforts in this book are devoted to the study of smooth manifolds and smooth maps, we also need to work with topological manifolds and continuous maps on occasion. For the sake of consistency, we adopt the following conventions: without further qualification, the words “function” and “map” are to be understood purely in the set-theoretic sense, and carry no assumptions of continuity or smoothness. Most other objects we study, however, will be understood to carry some minimal topological structure by default. Unless otherwise specified, a “manifold” or “manifold with boundary” is always to be understood as a topological one, and a “coordinate chart” is to be understood in the topological sense, as a homeomorphism from an open subset of the manifold to an open subset of <span class="math inline">\(\mathbb { R } ^ { n }\)</span> or <span class="math inline">\(\mathbb { H } ^ { n }\)</span> . If we wish to restrict attention to smooth manifolds or smooth coordinate charts, we will say so. Similarly, our default assumptions for many other specific types of geometric objects and the maps between them will be continuity at most; smoothness will not be assumed unless explicitly specified. The only exceptions will be a few concepts that require smoothness for their very definition.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This is a book-wide default-language convention about the unqualified words “map”, “manifold”, and “chart”, not a Lean mathematical declaration. Strict bundle semantics reject proper subsets, terminology-only analogies, specializations, and unbridged ingredients.</p>
+</div>
+<p><span class="unit-provenance">Searched: N=2026-09-07; A=3b2239e161592472b34e02ad3b7da308f9ce7280; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=5315eef9e4ffb98e0f89f278b765c50a149f66ca</span></p>
+</section>
+<section id="fc08-c02-u014" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u014">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U014</code> · Ch. 2, § Smooth Maps Between Manifolds; source L1076 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>On the other hand, because the definition of a smooth map requires smooth structures in the domain and codomain, if we say “F M N is a smooth map” without specifying what M and N are, it should always be understood that they are smooth manifolds with or without boundaries. W</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This is another source-language convention about omitted type assumptions, not a mathematical interface. Strict bundle semantics reject proper subsets, terminology-only analogies, specializations, and unbridged ingredients.</p>
+</div>
+<p><span class="unit-provenance">Searched: N=2026-09-07; A=3b2239e161592472b34e02ad3b7da308f9ce7280; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=5315eef9e4ffb98e0f89f278b765c50a149f66ca</span></p>
+</section>
+<section id="fc08-c02-u015" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u015">Example 2.13</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U015</code> · Ch. 2, § Smooth Maps Between Manifolds; source L1086 · after <a href="#fc08-c02-u012"><code>FC08-C02-U012</code></a>, <a href="c01.html#fc08-c01-u042"><code>FC08-C01-U042</code></a>, <a href="c01.html#fc08-c01-u045"><code>FC08-C01-U045</code></a>, <a href="c01.html#fc08-c01-u010"><code>FC08-C01-U010</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Example 2.13 (Smooth Maps). (a) Any map from a zero-dimensional manifold into a smooth manifold with or without boundary is automatically smooth, because each coordinate representation is constant. (b) If the circle <span class="math inline">\(\mathbb { S } ^ { 1 }\)</span> is given its standard smooth structure, the map <span class="math inline">\(\varepsilon \colon \mathbb { R } \to \mathbb { S } ^ { 1 }\)</span> defined by <span class="math inline">\(\varepsilon ( t ) = e ^ { 2 \pi i t }\)</span> is smooth, because with respect to any angle coordinate  for <span class="math inline">\(\mathbb { S } ^ { 1 }\)</span> (see Problem 1-8) it has a coordinate representation of the form <span class="math inline">\(\widehat { \varepsilon } ( t ) = 2 \pi t + c\)</span> for some constant c, as you can check. (c) The map <span class="math inline">\(\varepsilon ^ { n } \colon \mathbb { R } ^ { n } \to \mathbb { T } ^ { n }\)</span> defined by <span class="math inline">\(\varepsilon ^ { n } ( x ^ { 1 } , \ldots , x ^ { n } ) = \left( e ^ { 2 \pi i x ^ { 1 } } , \ldots , e ^ { 2 \pi i x ^ { n } } \right)\)</span> is smooth by Proposition 2.12. (d) Now consider the n-sphere <span class="math inline">\(\mathbb { S } ^ { n }\)</span> with its standard smooth structure. The inclusion map <span class="math inline">\(\iota \colon \mathbb { S } ^ { n } \hookrightarrow \mathbb { R } ^ { n + 1 }\)</span> is certainly continuous, because it is the inclusion map of a topological subspace. It is a smooth map because its coordinate representation with respect to any of the graph coordinates of Example 1.31 is <span class="math display">\[ \begin{array}{r l} &amp; {\widehat {\iota} (u ^ {1}, \ldots , u ^ {n}) = \iota \circ (\varphi_ {i} ^ {\pm}) ^ {- 1} (u ^ {1}, \ldots , u ^ {n})} \\ &amp; {\qquad = (u ^ {1}, \ldots , u ^ {i - 1}, \pm \sqrt {1 - | u | ^ {2}}, u ^ {i}, \ldots , u ^ {n}),} \end{array} \]</span> which is smooth on its domain (the set where <span class="math inline">\(| u | ^ { 2 } &lt; 1 )\)</span> . (e) The quotient map <span class="math inline">\(\pi \colon \mathbb { R } ^ { n + 1 } \setminus \{ 0 \} \to \mathbb { R P } ^ { n }\)</span> used to define <span class="math inline">\(\mathbb { R P } ^ { n }\)</span> is smooth, because its coordinate representation in terms of any of the coordinates for <span class="math inline">\(\mathbb { R P } ^ { n }\)</span> constructed in Example 1.33 and standard coordinates on <span class="math inline">\(\mathbb { R } ^ { n + 1 } \setminus \{ 0 \}\)</span> is <span class="math display">\[ \begin{array}{c} \hat {\pi} \left(x ^ {1}, \ldots , x ^ {n + 1}\right) = \varphi_ {i} \circ \pi \left(x ^ {1}, \ldots , x ^ {n + 1}\right) = \varphi_ {i} \left[ x ^ {1}, \ldots , x ^ {n + 1} \right] \\ = \left(\frac {x ^ {1}}{x ^ {i}}, \ldots , \frac {x ^ {i - 1}}{x ^ {i}}, \frac {x ^ {i + 1}}{x ^ {i}}, \ldots , \frac {x ^ {n + 1}}{x ^ {i}}\right). \end{array} \]</span> (f) Define <span class="math inline">\(q \colon \mathbb { S } ^ { n } \to \mathbb { R P } ^ { n }\)</span> as the restriction of <span class="math inline">\(\pi \colon \mathbb { R } ^ { n + 1 } \setminus \{ 0 \} \to \mathbb { R P } ^ { n }\)</span> to <span class="math inline">\(\mathbb { S } ^ { n } \subseteq\)</span> R <span class="math inline">\(\mathit { n } ^ { + 1 } \setminus \{ 0 \}\)</span> . It is a smooth map, because it is the composition <span class="math inline">\(q = \pi \circ \iota\)</span> of the maps in the preceding two examples. (g) If <span class="math inline">\(M _ { 1 } , \dots , M _ { k }\)</span> are smooth manifolds, then each projection map <span class="math inline">\(\pi _ { i } \colon M _ { 1 } \times \cdots \times\)</span> <span class="math inline">\(M _ { k } \to M _ { i }\)</span> is smooth, because its coordinate representation with respect to any of the product charts of Example 1.8 is just a coordinate projection. ## Diffeomorphisms If M and N are smooth manifolds with or without boundary, a diffeomorphism from M to N is a smooth bijective of geometric objects and the maps between them will be continuity at most; smoothness will not be assumed unless explicitly specified.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib owns several clauses (smooth sphere inclusion, product projections, and generic smooth-map composition) but no checked real-projective-space smooth manifold/quotient package realizes the full seven-part example. Strict bundle semantics reject proper subsets, terminology-only analogies, specializations, and unbridged ingredients.</p>
+</div>
+<p><span class="unit-provenance">Searched: N=2026-09-07; A=3b2239e161592472b34e02ad3b7da308f9ce7280; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=5315eef9e4ffb98e0f89f278b765c50a149f66ca</span></p>
+</section>
+<section id="fc08-c02-u016" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u016">Definition/convention — diffeomorphism</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U016</code> · Ch. 2, § Diffeomorphisms; source L1114 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If <span class="math inline">\(M\)</span> and <span class="math inline">\(N\)</span> are smooth manifolds with or without boundary, a diffeomorphism from <span class="math inline">\(M\)</span> to <span class="math inline">\(N\)</span> is a smooth bijective map <span class="math inline">\(F \colon M \to N\)</span> with a smooth inverse. <span class="math inline">\(M\)</span> and <span class="math inline">\(N\)</span> are diffeomorphic, written <span class="math inline">\(M \approx N\)</span>, if such a map exists.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/Diffeomorph.html"><code>Mathlib/Geometry/Manifold/Diffeomorph.lean::Diffeomorph</code></a> — <code>Diffeomorph I I′ M N ∞</code> extends an equivalence by smoothness of the forward and inverse maps, exactly Lee’s definition.</p>
+</div>
+</section>
+<section id="fc08-c02-u017" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u017">Example 2.14</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U017</code> · Ch. 2, § Diffeomorphisms; source L1116 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>(Diffeomorphisms). (a) The maps <span class="math inline">\(F \colon \mathbb{B}^{n} \to \mathbb{R}^{n}\)</span> and <span class="math inline">\(G \colon \mathbb{R}^{n} \to \mathbb{B}^{n}\)</span> given by <span class="math display">\[ F(x) = \frac{x}{\sqrt{1 - |x|^{2}}}, \qquad G(y) = \frac{y}{\sqrt{1 + |y|^{2}}} \tag{2.1} \]</span> are smooth and mutually inverse, so both are diffeomorphisms and <span class="math inline">\(\mathbb{B}^{n}\)</span> is diffeomorphic to <span class="math inline">\(\mathbb{R}^{n}\)</span>. (b) If <span class="math inline">\(M\)</span> is a smooth manifold and <span class="math inline">\((U,\varphi)\)</span> is a smooth chart on <span class="math inline">\(M\)</span>, then <span class="math inline">\(\varphi \colon U \to \varphi(U) \subseteq \mathbb{R}^{n}\)</span> is a diffeomorphism, its coordinate representation being the identity.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Normed/Module/Ball/Homeomorph.html"><code>Mathlib/Analysis/Normed/Module/Ball/Homeomorph.lean::OpenPartialHomeomorph.univUnitBall, Homeomorph.unitBall</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/InnerProductSpace/Calculus.html"><code>Mathlib/Analysis/InnerProductSpace/Calculus.lean::OpenPartialHomeomorph.contDiff_univUnitBall, OpenPartialHomeomorph.contDiffOn_univUnitBall_symm</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/HasGroupoid.html#OpenPartialHomeomorph.toStructomorph"><code>Mathlib/Geometry/Manifold/HasGroupoid.lean::OpenPartialHomeomorph.toStructomorph</code></a> — <code>univUnitBall</code> is exactly the homeomorphism <code>y ↦ y/√(1+‖y‖²)</code> from Euclidean space onto the unit ball, with inverse <code>x ↦ x/√(1-‖x‖²)</code>, and both directions are smooth. Separately, every chart in a smooth atlas becomes a smooth <code>Structomorph</code> between its open source and target, which is Lee’s chart-is-a-diffeomorphism clause.</p>
+</div>
+</section>
+<section id="fc08-c02-u018" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u018">Proposition 2.15</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U018</code> · Ch. 2, § Diffeomorphisms; source L1128 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>map as a coordinate representation.) ## Proposition 2.15 (Properties of Diffeomorphisms). (a) Every composition of diffeomorphisms is a diffeomorphism. (b) Every finite product of diffeomorphisms between smooth manifolds is a diffeomorphism. (c) Every diffeomorphism is a homeomorphism and an open map. (d) The restriction of a diffeomorphism to an open submanifold with or without boundary is a diffeomorphism onto its image. (e) “Diffeomorphic” is an equivalence relation on the class of all smooth manifolds with or without boundary. E</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <code>Diffeomorph.refl/symm/trans/prodCongr</code>, <code>toHomeomorph</code>, and local-diffeomorphism openness cover most clauses, but no checked declaration packages the restriction of an arbitrary diffeomorphism to an arbitrary open submanifold as a diffeomorphism onto its image. Strict bundle semantics therefore reject the partial match. Strict bundle semantics reject proper subsets, terminology-only analogies, specializations, and unbridged ingredients.</p>
+</div>
+<p><span class="unit-provenance">Searched: N=2026-09-07; A=3b2239e161592472b34e02ad3b7da308f9ce7280; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=5315eef9e4ffb98e0f89f278b765c50a149f66ca</span></p>
+</section>
+<section id="fc08-c02-u019" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u019">Theorem 2.17</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U019</code> · Ch. 2, § Diffeomorphisms; source L1144 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 2.17 (Diffeomorphism Invariance of Dimension). A nonempty smooth manifold of dimension m cannot be diffeomorphic to an n-dimensional smooth manifold unless m n.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — No checked theorem identifies dimensions of nonempty finite-dimensional real manifolds from existence of a diffeomorphism. Diffeomorphism and finite-dimensional manifold APIs are adjacent but do not supply Lee’s invariance-of-dimension conclusion. Strict bundle semantics reject proper subsets, terminology-only analogies, specializations, and unbridged ingredients.</p>
+</div>
+<p><span class="unit-provenance">Searched: N=2026-09-07; A=3b2239e161592472b34e02ad3b7da308f9ce7280; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=5315eef9e4ffb98e0f89f278b765c50a149f66ca</span></p>
+</section>
+<section id="fc08-c02-u020" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u020">Theorem 2.18</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U020</code> · Ch. 2, § Diffeomorphisms; source L1150 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 2.18 (Diffeomorphism Invariance of the Boundary). Suppose M and N are smooth manifolds with boundary and F <span class="math inline">\(M \to N\)</span> is a diffeomorphism. Then <span class="math inline">\(F ( \partial M ) = \partial N\)</span> , and F restricts to a diffeomorphism from Int M to Int</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Diffeomorph.image_boundary#doc"><code>Diffeomorph.image_boundary</code></a> and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Diffeomorph.image_interior#doc"><code>Diffeomorph.image_interior</code></a> prove the image equalities, but no checked declaration packages the induced restriction <code>Int M → Int N</code> as a <code>Diffeomorph</code>; the complete two-clause theorem is therefore not promoted. Strict bundle semantics reject proper subsets, terminology-only analogies, specializations, and unbridged ingredients.</p>
+</div>
+<p><span class="unit-provenance">Searched: N=2026-09-07; A=3b2239e161592472b34e02ad3b7da308f9ce7280; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=5315eef9e4ffb98e0f89f278b765c50a149f66ca</span></p>
+</section>
+<section id="fc08-c02-u021" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u021">Lemma 2.20</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U021</code> · Ch. 2, § Partitions of Unity; source L1190 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Lemma 2.20. The function f R R defined by <span class="math display">\[ f (t) = \left\{ \begin{array}{l l} e ^ {- 1 / t}, &amp; t &gt; 0, \\ 0, &amp; t \leq 0, \end{array} \right. \]</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/SpecialFunctions/SmoothTransition.html"><code>Mathlib/Analysis/SpecialFunctions/SmoothTransition.lean::expNegInvGlue, expNegInvGlue.zero_of_nonpos, expNegInvGlue.pos_of_pos, expNegInvGlue.contDiff</code></a> — <code>expNegInvGlue</code> is literally Lee’s piecewise function <code>exp (-1/t)</code> for <code>t&gt;0</code> and <code>0</code> for <code>t≤0</code>, and Mathlib proves it infinitely smooth.</p>
+</div>
+</section>
+<section id="fc08-c02-u022" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u022">Lemma 2.21</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U022</code> · Ch. 2, § Partitions of Unity; source L1234 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Lemma 2.21. Given any real numbers <span class="math inline">\(r _ { 1 }\)</span> and <span class="math inline">\(r _ { 2 }\)</span> such that <span class="math inline">\(r _ { 1 } &lt; r _ { 2 }\)</span> , there exists a smooth function <span class="math inline">\(h \colon { \mathbb { R } } \to { \mathbb { R } }\)</span> such that <span class="math inline">\(h ( t ) \equiv 1 \mathrm { ~ } f o r \mathrm { ~ } t \mathrm { ~ } \le r _ { 1 } , 0 &lt; h ( t ) &lt; 1 \mathrm { ~ } f o r \mathrm { ~ } r _ { 1 } &lt;\)</span> <span class="math inline">\(t &lt; r _ { 2 }\)</span> , and <span class="math inline">\(h ( t ) \equiv 0 f o r t \geq r _ { 2 }\)</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/SpecialFunctions/SmoothTransition.html"><code>Mathlib/Analysis/SpecialFunctions/SmoothTransition.lean::Real.smoothTransition, Real.smoothTransition.zero_of_nonpos, Real.smoothTransition.one_of_one_le, Real.smoothTransition.pos_of_pos, Real.smoothTransition.lt_one_of_lt_one, Real.smoothTransition.contDiff</code></a> — After the affine rescaling <code>(t-r₁)/(r₂-r₁)</code> and replacing <code>s</code> by <code>1-s</code>, <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Real.smoothTransition#doc"><code>Real.smoothTransition</code></a> gives exactly Lee’s cutoff: 1 on the left, strictly between 0 and 1 in the transition interval, and 0 on the right. The arbitrary-<code>r₁&lt;r₂</code> assembly was compiled at P.</p>
+</div>
+</section>
+<section id="fc08-c02-u023" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u023">Definition/convention — cutoff function</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U023</code> · Ch. 2, § Partitions of Unity; source L1244 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A function with the properties of h in the preceding lemma is usually called a cutoff function.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has the concrete <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Real.smoothTransition#doc"><code>Real.smoothTransition</code></a> used as a cutoff, but no checked <code>CutoffFunction</code> terminology/interface corresponding to Lee’s naming-only row. Strict bundle semantics reject proper subsets, terminology-only analogies, specializations, and unbridged ingredients.</p>
+</div>
+<p><span class="unit-provenance">Searched: N=2026-09-07; A=3b2239e161592472b34e02ad3b7da308f9ce7280; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=5315eef9e4ffb98e0f89f278b765c50a149f66ca</span></p>
+</section>
+<section id="fc08-c02-u024" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u024">Lemma 2.22</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U024</code> · Ch. 2, § Partitions of Unity; source L1246 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Given any positive real numbers <span class="math inline">\(r_{1} &lt; r_{2}\)</span>, there is a smooth function <span class="math inline">\(H \colon \mathbb{R}^{n} \to \mathbb{R}\)</span> with <span class="math inline">\(H \equiv 1\)</span> on <span class="math inline">\(\overline{B}_{r_{1}}(0)\)</span>, <span class="math inline">\(0 &lt; H(x) &lt; 1\)</span> for all <span class="math inline">\(x \in B_{r_{2}}(0) \setminus \overline{B}_{r_{1}}(0)\)</span>, and <span class="math inline">\(H \equiv 0\)</span> on <span class="math inline">\(\mathbb{R}^{n} \setminus B_{r_{2}}(0)\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/SpecialFunctions/SmoothTransition.html#Real.smoothTransition"><code>Mathlib/Analysis/SpecialFunctions/SmoothTransition.lean::Real.smoothTransition</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/InnerProductSpace/Calculus.html"><code>Mathlib/Analysis/InnerProductSpace/Calculus.lean::contDiff_norm_sq</code></a> — Composing <code>1-smoothTransition</code> with <code>(‖x‖²-r₁²)/(r₂²-r₁²)</code> gives Lee’s radial bump exactly: 1 on the closed inner ball, strictly between 0 and 1 on the annulus, and 0 outside the outer open ball. <code>contDiff_norm_sq</code> makes the radial parameter smooth at the origin; the complete inequalities and smoothness compiled at P.</p>
+</div>
+</section>
+<section id="fc08-c02-u025" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u025">Definition/convention — smooth real-valued function that</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U025</code> · Ch. 2, § Partitions of Unity; source L1250 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The function H constructed in this lemma is an example of a smooth bump function, a smooth real-valued function that is equal to 1 on a specified set and is zero outside a specified neighborhood of that set. Later in this chapter, we will generalize this notion to manifolds.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <code>ContDiffBump</code> is a bundled radial/centered bump and realizes the preceding Euclidean example, but it is a specialization of Lee’s generic “equal to 1 on a specified set and zero outside a specified neighborhood” notion; no general named predicate was found. Strict bundle semantics reject proper subsets, terminology-only analogies, specializations, and unbridged ingredients.</p>
+</div>
+<p><span class="unit-provenance">Searched: N=2026-09-07; A=3b2239e161592472b34e02ad3b7da308f9ce7280; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=5315eef9e4ffb98e0f89f278b765c50a149f66ca</span></p>
+</section>
+<section id="fc08-c02-u026" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u026">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U026</code> · Ch. 2, § Partitions of Unity; source L1252 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If f is any real-valued or vector-valued function on a topological space M; the support of f , denoted by supp f , is the closure of the set of points where f is nonzero: <span class="math display">\[ \operatorname{supp} f = \overline {{\left\{p \in M : f (p) \neq 0 \right\}}}. \]</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Algebra/Support.html"><code>Mathlib/Topology/Algebra/Support.lean::tsupport</code></a> — <code>tsupport f</code> is defined as <code>closure (Function.support f)</code>, and additive support is the nonzero locus, exactly Lee’s support convention.</p>
+</div>
+</section>
+<section id="fc08-c02-u027" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u027">Definition/convention — compactly supported</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U027</code> · Ch. 2, § Partitions of Unity; source L1258 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>(For example, if H is the function constructed in the preceding lemma, then supp <span class="math inline">\(H = \overline { { { B } } } _ { r _ { 2 } } ( 0 ) .\)</span> ) If supp f is contained in some set <span class="math inline">\(U \subseteq M ,\)</span> we say that f is supported in U . A function f is said to be compactly supported if supp f is a compact set. Clearly, every function on a compact space is compactly supported.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Algebra/Support.html#HasCompactSupport.of_compactSpace"><code>Mathlib/Topology/Algebra/Support.lean::tsupport, HasCompactSupport, HasCompactSupport.of_compactSpace</code></a> — <code>HasCompactSupport f</code> is compactness of <code>tsupport f</code>. Containment of <code>tsupport</code> expresses “supported in U”, and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=HasCompactSupport.of_compactSpace#doc"><code>HasCompactSupport.of_compactSpace</code></a> proves every function on a compact domain has compact support.</p>
+</div>
+</section>
+<section id="fc08-c02-u028" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u028">Definition/convention — partition of unity subordinate to mathcal X</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U028</code> · Ch. 2, § Partitions of Unity; source L1260 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>The next construction is the most important application of paracompactness. Suppose M is a topological space, and let <span class="math inline">\(\mathcal { X } = ( X _ { \alpha } ) _ { \alpha \in A }\)</span> be an arbitrary open cover of M; indexed by a set A. A partition of unity subordinate to <span class="math inline">\(\pmb { \mathcal X }\)</span> is an indexed family <span class="math inline">\(( \psi _ { \alpha } ) _ { \alpha \in A }\)</span> of continuous functions <span class="math inline">\(\psi _ { \alpha } \colon M \to \mathbb { R }\)</span> with the following properties: (i) <span class="math inline">\(0 \leq \psi _ { \alpha } ( x ) \leq 1\)</span> for all ˛ A and all <span class="math inline">\(x \in M .\)</span> (ii) supp <span class="math inline">\(\psi _ { \alpha } \subseteq X _ { \alpha }\)</span> for each <span class="math inline">\(\alpha \in A .\)</span> (iii) The family of supports .supp <span class="math inline">\(\psi _ { \alpha } ) _ { \alpha \in A }\)</span> is locally finite, meaning that every point has a neighborhood that intersects supp <span class="math inline">\(\psi _ { \alpha }\)</span> for only finitely many values of <span class="math inline">\(\alpha .\)</span> (iv) <span class="math inline">\(\textstyle \sum _ { { \boldsymbol { \alpha } } \in A } \psi _ { \boldsymbol { \alpha } } ( x ) = 1 { \mathrm { ~ f o r ~ a l l ~ } } x \in M .\)</span> Because of the local finiteness condition (iii), the sum in (iv) actually has only finitely many nonzero terms in a neighborhood of each point, so there is no issue of convergence. If M is a smooth manifold with or without boundary, a smooth partition of unity is one for which each <span class="math inline">\(\psi_{\alpha}\)</span> is smooth.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/PartitionOfUnity.html"><code>Mathlib/Topology/PartitionOfUnity.lean::PartitionOfUnity, PartitionOfUnity.IsSubordinate, PartitionOfUnity.locallyFinite_tsupport, PartitionOfUnity.nonneg, PartitionOfUnity.le_one, PartitionOfUnity.sum_eq_one</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/PartitionOfUnity.html"><code>Mathlib/Geometry/Manifold/PartitionOfUnity.lean::SmoothPartitionOfUnity</code></a> — <code>PartitionOfUnity</code> bundles continuous nonnegative functions with locally finite support and pointwise sum 1; <code>IsSubordinate</code> is exactly <code>tsupport (f i) ⊆ U i</code>, and <code>locallyFinite_tsupport</code> upgrades the stored raw supports to Lee’s closed supports. <code>SmoothPartitionOfUnity</code> adds smoothness of every member.</p>
+</div>
+</section>
+<section id="fc08-c02-u029" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u029">Theorem 2.23</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U029</code> · Ch. 2, § Partitions of Unity; source L1270 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Theorem 2.23 (Existence of Partitions of Unity). Suppose M is a smooth manifold with or without boundary, and <span class="math inline">\(\mathcal { X } = ( X _ { \alpha } ) _ { \alpha \in A }\)</span> is any indexed open cover of M . Then there exists a smooth partition of unity subordinate required form.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/PartitionOfUnity.html#SmoothPartitionOfUnity.exists_isSubordinate"><code>Mathlib/Geometry/Manifold/PartitionOfUnity.lean::SmoothPartitionOfUnity.exists_isSubordinate</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Compactness/SigmaCompact.html"><code>Mathlib/Topology/Compactness/SigmaCompact.lean::sigmaCompactSpace_of_locallyCompact_secondCountable</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/IsManifold/ExtChartAt.html#Manifold.locallyCompact_of_finiteDimensional"><code>Mathlib/Geometry/Manifold/IsManifold/ExtChartAt.lean::Manifold.locallyCompact_of_finiteDimensional</code></a> — <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=SmoothPartitionOfUnity.exists_isSubordinate#doc"><code>SmoothPartitionOfUnity.exists_isSubordinate</code></a> is the exact existence theorem for an indexed open cover. Lee’s finite-dimensional second-countable Hausdorff manifold hypotheses supply Mathlib’s <code>T2Space</code> and <code>SigmaCompactSpace</code> assumptions via local compactness plus second countability.</p>
+</div>
+</section>
+<section id="fc08-c02-u030" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u030">Definition/convention — bump function for A supported in U</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U030</code> · Ch. 2, § Applications of Partitions of Unity; source L1304 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>As our first application of partitions of unity, we extend the notion of bump functions to arbitrary closed subsets of manifolds. If M is a topological space, <span class="math inline">\(A \subseteq M\)</span> M$ is an open subset containing A, a continuous function <span class="math inline">\(\psi \colon \to \mathbb { R }\)</span> is called a bump function for A supported in U if $ $ on M; $ \mathrm {</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has all component notions (<code>ContinuousMap</code>, <code>[0,1]</code> bounds, <code>EqOn</code>, <code>tsupport</code>) and proves the existence theorem in U031, but no checked named predicate/structure owns Lee’s generic “bump function for A supported in U” definition as a first-class interface. Strict bundle semantics reject proper subsets, terminology-only analogies, specializations, and unbridged ingredients.</p>
+</div>
+<p><span class="unit-provenance">Searched: N=2026-09-07; A=3b2239e161592472b34e02ad3b7da308f9ce7280; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=5315eef9e4ffb98e0f89f278b765c50a149f66ca</span></p>
+</section>
+<section id="fc08-c02-u031" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u031">Proposition 2.25</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U031</code> · Ch. 2, § Applications of Partitions of Unity; source L1306 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Proposition 2.25 (Existence of Smooth Bump Functions). Let M be a smooth manifold with or without boundary. For any closed subset <span class="math inline">\(A \subseteq M\)</span> and any open subset U containing A, there exists a smooth bump function for A supported suppose for this proof that M is a smooth manifold without boundary; the general case is left as an exercise.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/PartitionOfUnity.html"><code>Mathlib/Geometry/Manifold/PartitionOfUnity.lean::SmoothPartitionOfUnity.exists_isSubordinate, SmoothPartitionOfUnity.IsSubordinate</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/PartitionOfUnity.html"><code>Mathlib/Topology/PartitionOfUnity.lean::PartitionOfUnity.sum_eq_one, PartitionOfUnity.nonneg, PartitionOfUnity.le_one</code></a> — Apply the smooth partition theorem to the two-set cover <code>U, Aᶜ</code>. The component subordinate to <code>U</code> has topological support inside <code>U</code>; the other component vanishes on <code>A</code>, so the sum-to-one law forces the first to equal 1 on <code>A</code>, with values in <code>[0,1]</code>. This exact closed-set bump theorem compiled in the C02 audit witness.</p>
+</div>
+</section>
+<section id="fc08-c02-u032" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u032">Definition/convention — there</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U032</code> · Ch. 2, § Applications of Partitions of Unity; source L1310 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Suppose <span class="math inline">\(M\)</span> and <span class="math inline">\(N\)</span> are smooth manifolds with or without boundary and <span class="math inline">\(A \subseteq M\)</span> is an arbitrary subset. A map <span class="math inline">\(F \colon A \to N\)</span> is smooth on <span class="math inline">\(A\)</span> if it has a smooth extension in a neighborhood of each point: for every <span class="math inline">\(p \in A\)</span> there is an open subset <span class="math inline">\(W \subseteq M\)</span> containing <span class="math inline">\(p\)</span> and a smooth map <span class="math inline">\(\widetilde{F} \colon W \to N\)</span> whose restriction to <span class="math inline">\(W \cap A\)</span> agrees with <span class="math inline">\(F\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has <code>ContMDiffOn</code>/<code>ContMDiffWithinAt</code>, but these mean differentiability of an ambiently defined map on a set, not Lee’s predicate for a map whose domain is only <code>A</code> and which locally extends off <code>A</code>. No checked equivalent interface was found. Strict bundle semantics reject proper subsets, terminology-only analogies, specializations, and unbridged ingredients.</p>
+</div>
+<p><span class="unit-provenance">Searched: N=2026-09-07; A=3b2239e161592472b34e02ad3b7da308f9ce7280; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=5315eef9e4ffb98e0f89f278b765c50a149f66ca</span></p>
+</section>
+<section id="fc08-c02-u033" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u033">Lemma 2.26</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U033</code> · Ch. 2, § Applications of Partitions of Unity; source L1312 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>(Extension Lemma for Smooth Functions). Suppose <span class="math inline">\(M\)</span> is a smooth manifold with or without boundary, <span class="math inline">\(A \subseteq M\)</span> is a closed subset, and <span class="math inline">\(f \colon A \to \mathbb{R}^{k}\)</span> is a smooth function. For any open subset <span class="math inline">\(U\)</span> containing <span class="math inline">\(A\)</span> there exists a smooth function <span class="math inline">\(\widetilde{f} \colon M \to \mathbb{R}^{k}\)</span> with <span class="math inline">\(\widetilde{f}|_{A} = f\)</span> and <span class="math inline">\(\operatorname{supp}\widetilde{f} \subseteq U\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has Tietze extension, smooth approximation with equality on a closed set when an ambient map is already smooth near that set, and partition-of-unity gluing. No single checked theorem takes Lee’s locally extendable map <code>A → ℝ^k</code> and returns a global smooth extension with topological support inside an arbitrary prescribed open <code>U</code>; proving that would reconstruct the substantive extension lemma rather than map an existing owner. Strict bundle semantics reject proper subsets, terminology-only analogies, specializations, and unbridged ingredients.</p>
+</div>
+<p><span class="unit-provenance">Searched: N=2026-09-07; A=3b2239e161592472b34e02ad3b7da308f9ce7280; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=5315eef9e4ffb98e0f89f278b765c50a149f66ca</span></p>
+</section>
+<section id="fc08-c02-u034" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u034">Proposition 2.28</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U034</code> · Ch. 2, § Applications of Partitions of Unity; source L1348 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 2.28 (Existence of Smooth Exhaustion Functions). Every smooth manifold with or without boundary admits a smooth positive exhaustion function.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has compact exhaustions, partitions of unity, and smooth approximation, but no checked theorem constructs a positive smooth proper/exhaustion function on every smooth manifold. No complete external Lean owner was found in the indexed/local reference search. Strict bundle semantics reject proper subsets, terminology-only analogies, specializations, and unbridged ingredients.</p>
+</div>
+<p><span class="unit-provenance">Searched: N=2026-09-07; A=3b2239e161592472b34e02ad3b7da308f9ce7280; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=5315eef9e4ffb98e0f89f278b765c50a149f66ca</span></p>
+</section>
+<section id="fc08-c02-u035" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c02-u035">Theorem 2.29</h3>
+<div class="unit-meta">
+<p><code>FC08-C02-U035</code> · Ch. 2, § Applications of Partitions of Unity; source L1368 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Example 1.32. Theorem 2.29 (Level Sets of Smooth Functions). Let M be a smooth manifold. If K is any closed subset of M; there is a smooth nonnegative function f <span class="math inline">\(M \to \mathbb { R }\)</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/PartitionOfUnity.html"><code>Mathlib/Geometry/Manifold/PartitionOfUnity.lean::exists_contMDiff_zero_iff_one_iff_of_isClosed</code></a> — Specializing the theorem to the closed pair <code>(K, ∅)</code> gives a smooth function with values in <code>[0,1]</code> whose zero locus is exactly <code>K</code>; hence it is nonnegative and realizes Lee’s theorem. The specialization compiled at P.</p>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/dzackgarza\.github\.io\/lean-categories\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Generated from the project’s reference notes by <code>site/build.py</code>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>The Lean is the authority; where this site differs, the Lean is right.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

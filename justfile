@@ -121,3 +121,15 @@ _lint-conventions:
 [private]
 test-push: test-ci
     @just -f {{ai_review_ci}}/justfiles/lean.just -d . lean-axiom-audit
+
+# Regenerate the corpus site pages from the agent-memory vault
+site-build:
+    @python3 site/build.py
+
+# Serve the corpus site locally with live reload
+site-preview: site-build
+    @uvx --from quarto-cli quarto preview site --port 7655
+
+# Render the corpus site to site/_site, as CI does
+site-render: site-build
+    @uvx --from quarto-cli quarto render site --output-dir _site

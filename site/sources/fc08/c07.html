@@ -1,0 +1,2716 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013) – lean-categories · corpus</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-7335da993d57b01553edc5728a7cb5aa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">lean-categories · corpus</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../coverage.html" aria-current="page"> 
+<span class="menu-text">Every book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../corpus.html"> 
+<span class="menu-text">Reading list</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../catalogues/index.html"> 
+<span class="menu-text">Catalogues</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/dzackgarza/lean-categories"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/index.html">FC08</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/c07.html">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="sidebar-tools-main">
+    <div id="quarto-search" class="quarto-navigation-tool px-1" title="Search"></div>
+</div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Graduate mathematics, and what Lean has of it</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../coverage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Every book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../corpus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational source corpus</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../status.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus status</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Sources</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC01 Dummit Foote</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/ai.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01 Appendix I — Cartesian Products and Zorn’s Lemma</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC03</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC03 Riehl Category Theory in Context</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Categories, Functors, and Natural Transformations (pp.&nbsp;1–48)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Representability and the Yoneda Lemma (pp.&nbsp;49–72)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Limits and Colimits (pp.&nbsp;73–114)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Adjunctions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Monads and Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. All Concepts are Kan Extensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/ce.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Epilogue: Theorems in Category Theory</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC04</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC04 Atiyah Macdonald</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Rings and Ideals (pp.&nbsp;1–9)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Modules (pp.&nbsp;17–30)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Rings and Modules of Fractions (pp.&nbsp;36–42)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Primary Decomposition (pp.&nbsp;50–54)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Integral Dependence and Valuations (pp.&nbsp;59–66)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Chain Conditions (pp.&nbsp;74–77)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Noetherian Rings (pp.&nbsp;80–83)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Artin Rings (pp.&nbsp;89–90)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Discrete Valuation Rings and Dedekind Domains (pp.&nbsp;93–98)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. Completions (pp.&nbsp;100–112)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Dimension Theory (pp.&nbsp;116–124)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC05</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC05 Weibel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Chain Complexes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Derived Functors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Tor and Ext</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homological Dimension</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Spectral Sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Group Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Lie Algebra Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Simplicial Methods in Homological Algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Hochschild and Cyclic Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. The Derived Category</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Category Theory Language</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC06</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC06 Hartshorne</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter I: Varieties</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter II: Schemes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter III: Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter IV: Curves</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter V: Surfaces</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC07</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC07 Hatcher</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 0. Some Underlying Geometric Notions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. The Fundamental Group</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homotopy Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix. Topology of Cell Complexes</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC08 Lee</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c07.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c22.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC09 Neukirch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC10 Serre Local Fields</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc11/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC11 Peters Sterk</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc12/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC12 Beauville</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc13/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC13</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC13 Matsumura</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Front matter — conventions and terminology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Commutative rings and modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Prime ideals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Properties of extension rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Valuation rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Dimension theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Regular sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Regular rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Flatness revisited</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Derivations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. I-smoothness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Applications of complete local rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Tensor products, direct and inverse limits</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix B. Some homological algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix C. The exterior algebra</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc14/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC14</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC14 Humphreys</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Basic Concepts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Semisimple Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Root Systems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Isomorphism and Conjugacy Theorems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Existence Theorem</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Representation Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Chevalley Algebras and Groups</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc15/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC15</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Classification of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Polynomial invariants of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Affine reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Coxeter groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Special cases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Hecke algebras and Kazhdan–Lusztig polynomials</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Complements</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc16/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC16</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Algebraic Geometry</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Affine Algebraic Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Homogeneous Spaces</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Characteristic 0 Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Semisimple and Unipotent Elements</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Solvable Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VIII. Borel Subgroups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IX. Centralizers of Tori</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter X. Structure of Reductive Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XI. Representations and Classification of Semisimple Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XII. Survey of Rationality Properties and Appendix</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../catalogues/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Definition catalogues</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">catalogues/*.md</span>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Notes and audits</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">notes/*.md</span>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/index.html">FC08</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/c07.html">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>FC08 — Lee, <em>Introduction to Smooth Manifolds</em>.</p>
+<p>This chapter contains 16 definitions, 6 theorems, 10 propositions, 1 lemma, 1 corollary, 13 examples, 2 constructions and 2 conventions.</p>
+<p>Of the 51 statements checked against Lean, 10 are formalized somewhere and 41 are not.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 28%">
+<col style="width: 28%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Status</th>
+<th style="text-align: right;">Statements</th>
+<th style="text-align: right;">Share</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="route-unmatched">not formalized</span></td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">80%</td>
+<td>A documented search found no Lean statement of it anywhere.</td>
+</tr>
+<tr class="even">
+<td><span class="route-mathlib">in Mathlib</span></td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">20%</td>
+<td>Mathlib states and proves it.</td>
+</tr>
+<tr class="odd">
+<td><strong>checked in total</strong></td>
+<td style="text-align: right;"><strong>51</strong></td>
+<td style="text-align: right;"></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Which versions of Lean and Mathlib were searched
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li>Canonical source block: FC08 Lee, Chapter 7, <code>FC08-C07-U001</code>–<code>FC08-C07-U051</code>, exactly 51 unique contiguous rows retrieved from <a href="../../sources/fc08/">FC08 — John M. Lee, Introduction to Smooth Manifolds</a> through <code>agent-memory</code>.</li>
+<li>Search order followed the Sweep-II plan: project source first at <code>A=3b2239e161592472b34e02ad3b7da308f9ce7280</code>, pinned Mathlib <code>P=db584cd6d46c92f209a44c0f1c829460d327499d</code> (Apache-2.0, Lean 4.33.0), current upstream Mathlib <code>H=5315eef9e4ffb98e0f89f278b765c50a149f66ca</code> (Apache-2.0, Lean 4.34.0-rc2), then targeted indexed/current/external Lean searches. No <code>project-existing</code>, <code>package-import</code>, or <code>reference-port</code> C07 owner survived strict whole-row checking.</li>
+<li>C07 has 10 pinned <code>mathlib</code> rows and 41 dated <code>unmatched</code> rows. Positive rows are: U001, U005, U016, U018, U025, U026, U029, U030, U034, U037.</li>
+<li><code>/tmp/fc08-c07-witness.lean</code> compiled through the project toolchain. It checks every positive interface and, for U037, proves definitionally that <code>MulAction.orbit G p</code> is the range of the orbit map <code>g ↦ g • p</code> and that <code>MulAction.stabilizer G p</code> is exactly the preimage of <code>p</code>. The witness is audit evidence only, not project source.</li>
+<li>U001 is directly Mathlib’s <code>LieGroup</code>: <code>LieGroup I ∞ G</code> extends <code>ContMDiffMul</code>, which extends <code>IsManifold</code>, and adds smooth inversion. Mathlib is more general about models with corners; Lee’s finite-dimensional real boundaryless convention is obtained by specializing the model, not by changing the operational definition.</li>
+<li>U005 is directly represented by <code>ContMDiffMonoidMorphism</code> in the group case, plus <code>Diffeomorph</code> for the isomorphism condition; generic <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=MonoidHom.inverse#doc"><code>MonoidHom.inverse</code></a> proves the inverse of a bijective group homomorphism is again a homomorphism. U009 is nevertheless unmatched because the nontrivial theorem that a bijective smooth homomorphism has <em>smooth</em> inverse is not present.</li>
+<li>U016 and U018 are generic group/topological-group interfaces: <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Subgroup.closure#doc"><code>Subgroup.closure</code></a> is the subgroup generated by a set and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Subgroup.connectedComponentOfOne#doc"><code>Subgroup.connectedComponentOfOne</code></a> is the identity component. The stronger Lie-group neighborhood-generation and identity-component structure theorems U017/U019 were not inferred from these primitives.</li>
+<li>U025, U026, U029, U030, U034, and U037 are direct action-theory interfaces: <code>MulAction</code>, <code>ContinuousSMul</code>/<code>ContMDiffSMul</code>, <code>IsPretransitive</code>, <code>IsCancelSMul</code>, <code>MulActionHom</code>, and orbit/stabilizer. Right actions/equivariance are represented equivalently as left actions of the opposite group. U027 remains unmatched because it is a source-specific left/right notation convention rather than this semantic interface.</li>
+<li>The decisive missing geometric layer begins with U008 and U013. P/H have no Lie-group constant-rank theorem, <code>LieSubgroup</code>/embedded-Lie-subgroup object, closed-subgroup theorem, or universal-covering-Lie-group construction. This matches the C05 finding that Mathlib still lacks a general embedded/immersed-submanifold package. Consequently U008–U015 and U019–U024 cannot be promoted from their algebraic/topological ingredients.</li>
+<li>The same boundary controls U036/U038: equivariance and orbit/stabilizer are formalized, but the Equivariant Rank Theorem and its constant-rank/Lie-subgroup/immersed-orbit consequences are not. Algebraic matrix groups exist for U039–U042, but their complete smooth Lie-subgroup examples and stated manifold properties are not bundled.</li>
+<li><a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/GroupTheory/SemidirectProduct.html"><code>Mathlib/GroupTheory/SemidirectProduct.lean</code></a> exactly supplies the algebraic semidirect-product carrier, multiplication, inclusions, projection, and complementary-subgroup isomorphisms. No checked P/H interface upgrades a smooth automorphism action to Lee’s semidirect-product Lie group or proves the closed Lie-subgroup/internal-product assertions, so U043–U047 remain unmatched under whole-row semantics.</li>
+<li>Mathlib’s <code>Representation</code> and project-local representation code are algebraic. P/H have no <code>ContMDiffRepresentation</code>/Lie-group-representation bundle or theorem relating smooth linear actions and smooth homomorphisms into <code>GL(V)</code>, and U048 additionally depends on the missing Lie-subgroup image theorem. Thus U048–U051 remain unmatched.</li>
+<li>Current upstream <code>H</code> was inspected without changing the pinned worktree. Targeted searches found no <code>LieSubgroup</code>, <code>IsEmbeddedLieSubgroup</code>, universal-covering-group, smooth Lie representation, Lie-group semidirect-product instance, or replacement for the missing rank/subgroup results. A current TauCeti Lie-groups roadmap independently lists the closed-subgroup theorem, simply-connected Lie-group covers, and related Lie-group structure as missing/upcoming; this was used only as secondary indexed evidence, not as a substitute for revision inspection.</li>
+<li>Project-first search found specialized complex-torus Lie-group work and algebraic action/representation code, but no general C07 interface closing an otherwise unmatched row. The project and pinned Mathlib worktrees remained unmodified.</li>
+<li><code>N=2026-09-07</code> marks a dated unmatched decision after the prescribed search layers. Strict whole-row semantics apply uniformly.</li>
+</ul>
+</div>
+</div>
+</div>
+<section id="fc08-c07-u001" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u001">Definition/convention — Lie group</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U001</code> · Ch. 7, § Basic Definitions; source L4100 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A Lie group is a smooth manifold <span class="math inline">\(G\)</span> (without boundary) that is also a group in the algebraic sense, such that the multiplication map <span class="math inline">\(m \colon G \times G \to G\)</span> and the inversion map <span class="math inline">\(i \colon G \to G\)</span>, given by <span class="math display">\[ m(g,h) = gh, \qquad i(g) = g^{-1}, \]</span> are both smooth. A Lie group is in particular a topological group.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/Algebra/LieGroup.html"><code>Mathlib/Geometry/Manifold/Algebra/LieGroup.lean::LieGroup</code></a> — <code>LieGroup I ∞ G</code> extends <code>ContMDiffMul</code>, which itself extends <code>IsManifold</code>, and adds smooth inversion; together with <code>Group G</code> this is exactly Lee’s group-plus-smooth-manifold compatibility. Mathlib permits models with corners, so Lee’s boundaryless finite-dimensional real convention is the corresponding specialization rather than an extra theorem.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c07-u002" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u002">Convention/notation — arbitrary Lie group</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U002</code> · Ch. 7, § Basic Definitions; source L4108 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The group operation in an arbitrary Lie group is denoted by juxtaposition, except in certain abelian groups such as <span class="math inline">\(\mathbb { R } ^ { n }\)</span> in which the operation is usually written additively. It is traditional to denote the identity element of an arbitrary Lie group by the symbol e (for German Einselement, “unit element”), and we follow this convention, except in specific examples in which there are more common notations (such as <span class="math inline">\(I _ { n }\)</span> for the identity matrix in a matrix group, or 0 for the identity element in <span class="math inline">\(\mathbb{R}^{n}\)</span>).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This row is a source notation convention (<code>e</code>, juxtaposition) rather than a mathematical interface. Mathlib uses <code>1</code> and <code>*</code>; no declaration owns Lee’s notation convention as a formal object. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u003" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u003">Proposition 7.1</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U003</code> · Ch. 7, § Basic Definitions; source L4112 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 7.1. If G is a smooth manifold with a group structure such that the map <span class="math inline">\(G \times G \to G\)</span> given by <span class="math inline">\(( g , h ) \mapsto g h ^ { - 1 }\)</span> is smooth, then G is a Lie group.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — The checked Lie-group API proves smooth multiplication and inversion separately but has no theorem giving Lee’s one-map criterion from smoothness of <code>(g,h) ↦ g*h⁻¹</code>. Reconstructing inversion and multiplication from that map would be new proof work. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u004" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u004">Example 7.3</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U004</code> · Ch. 7, § Basic Definitions; source L4130 · after <a href="c01.html#fc08-c01-u038"><code>FC08-C01-U038</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>(Lie Groups). Each of the following is a Lie group with the indicated operation. (a) The general linear group <span class="math inline">\(\mathrm{GL}(n,\mathbb{R})\)</span>, the invertible real <span class="math inline">\(n \times n\)</span> matrices: multiplication is smooth because the entries of <span class="math inline">\(AB\)</span> are polynomials in those of <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span>. (b) <span class="math inline">\(\mathrm{GL}^{+}(n,\mathbb{R})\)</span>, the matrices of positive determinant: since <span class="math inline">\(\det(AB) = (\det A)(\det B)\)</span> and <span class="math inline">\(\det(A^{-1}) = 1/\det A\)</span> it is a subgroup, and as the preimage of <span class="math inline">\((0,\infty)\)</span> under <span class="math inline">\(\det\)</span> it is open, hence an <span class="math inline">\(n^{2}\)</span>-dimensional manifold. (c) Any open subgroup <span class="math inline">\(H \subseteq G\)</span> of a Lie group, by the argument of (b). (d) The complex general linear group <span class="math inline">\(\mathrm{GL}(n,\mathbb{C})\)</span>, an open submanifold of <span class="math inline">\(M(n,\mathbb{C})\)</span> and so a <span class="math inline">\(2n^{2}\)</span>-dimensional manifold, since products and inverses are smooth in the real and imaginary parts of the entries. (e) <span class="math inline">\(\mathrm{GL}(V)\)</span>, the invertible linear maps of a real or complex vector space <span class="math inline">\(V\)</span> to itself; its smooth structure is independent of the choice of basis. (f) <span class="math inline">\(\mathbb{R}\)</span> and <span class="math inline">\(\mathbb{R}^{n}\)</span> under addition, the coordinates of <span class="math inline">\(x - y\)</span> being linear in <span class="math inline">\((x,y)\)</span>. (g) Likewise <span class="math inline">\(\mathbb{C}\)</span> and <span class="math inline">\(\mathbb{C}^{n}\)</span> under addition. (h) <span class="math inline">\(\mathbb{R}^{*}\)</span>, the nonzero reals under multiplication, a 1-dimensional Lie group — indeed <span class="math inline">\(\mathrm{GL}(1,\mathbb{R})\)</span> — with <span class="math inline">\(\mathbb{R}^{+}\)</span> an open subgroup. (i) <span class="math inline">\(\mathbb{C}^{*}\)</span>, the nonzero complex numbers, 2-dimensional, identified with <span class="math inline">\(\mathrm{GL}(1,\mathbb{C})\)</span>. (j) The circle <span class="math inline">\(\mathbb{S}^{1} \subseteq \mathbb{C}^{*}\)</span> under complex multiplication: in angle coordinates multiplication and inversion read <span class="math inline">\((\theta_{1},\theta_{2}) \mapsto \theta_{1} + \theta_{2}\)</span> and <span class="math inline">\(\theta \mapsto -\theta\)</span>, so <span class="math inline">\(\mathbb{S}^{1}\)</span> is a Lie group, the circle group. (k) The direct product <span class="math inline">\(G_{1} \times \cdots \times G_{k}\)</span> of Lie groups, with componentwise multiplication <span class="math inline">\((g_{1},\dots,g_{k})(g'_{1},\dots,g'_{k}) = (g_{1}g'_{1},\dots,g_{k}g'_{k})\)</span>. (l) The <span class="math inline">\(n\)</span>-torus <span class="math inline">\(\mathbb{T}^{n} = \mathbb{S}^{1} \times \cdots \times \mathbb{S}^{1}\)</span>, an <span class="math inline">\(n\)</span>-dimensional abelian Lie group. (m) Any group with the discrete topology is a topological group, and if finite or countable it is a zero-dimensional Lie group, a discrete Lie group.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has many individual group/manifold instances (products, normed spaces, units of normed algebras, matrix groups), and the project has complex tori as additive Lie groups, but no checked declaration owns this large multi-example bundle in full. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u005" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u005">Definition/convention — Lie group isomorphism</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U005</code> · Ch. 7, § Lie Group Homomorphisms; source L4166 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If G and H are Lie groups, a Lie group homomorphism from G to H is a smooth map <span class="math inline">\(F \colon G \to H\)</span> that is also a group homomorphism. It is called a Lie group isomorphism if it is also a diffeomorphism, which implies that it has an inverse that is also a Lie group homomorphism. In this case we say that G and H are isomorphic Lie groups. ##</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/Algebra/Monoid.html"><code>Mathlib/Geometry/Manifold/Algebra/Monoid.lean::ContMDiffMonoidMorphism</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/Diffeomorph.html"><code>Mathlib/Geometry/Manifold/Diffeomorph.lean::Diffeomorph</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Group/Hom/Defs.html#MonoidHom.inverse"><code>Mathlib/Algebra/Group/Hom/Defs.lean::MonoidHom.inverse</code></a> — For groups, <code>ContMDiffMonoidMorphism I I′ ∞ G H</code> is precisely a group homomorphism whose underlying map is smooth. Requiring the same underlying map to be a <code>Diffeomorph</code> is Lee’s Lie-group-isomorphism condition; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=MonoidHom.inverse#doc"><code>MonoidHom.inverse</code></a> records that the inverse of the resulting bijective group homomorphism is again a homomorphism.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c07-u006" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u006">Example 7.4</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U006</code> · Ch. 7, § Lie Group Homomorphisms; source L4168 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Example 7.4 (Lie Group Homomorphisms). (a) The inclusion map <span class="math inline">\(\mathbb { S } ^ { 1 } \hookrightarrow \mathbb { C } ^ { * }\)</span> is a Lie group homomorphism. (b) Considering R as a Lie group under addition, and <span class="math inline">\(\mathbb { R } ^ { * }\)</span> as a Lie group under multiplication, the map exp <span class="math inline">\(\mathbb { R } \to \mathbb { R } ^ { * }\)</span> given by <span class="math inline">\(\exp ( t ) = e ^ { t }\)</span> is smooth, and is a Lie group homomorphism because <span class="math inline">\(\overline { { e ^ { ( s + t ) } = e ^ { s } e ^ { t } } }\)</span> The image of exp is the open subgroup <span class="math inline">\(\mathbb { R } ^ { + }\)</span> consisting of positive real numbers, and exp <span class="math inline">\(\mathbb { R } \to \mathbb { R } ^ { + }\)</span> is a Lie group isomorphism with inverse log <span class="math inline">\(\mathbb { R } ^ { + } \to \mathbb { R }\)</span> (c) Similarly, exp <span class="math inline">\(\mathbb { C } \to \mathbb { C } ^ { * }\)</span> given by <span class="math inline">\(\exp ( z ) = e ^ { z }\)</span> is a Lie group homomorphism. It is surjective but not injective, because its kernel consists of the complex numbers of the form <span class="math inline">\(2 \pi i k\)</span> , where k is an integer. (d) The map <span class="math inline">\(\varepsilon \colon \mathbb { R } \to | \mathbb { S } ^ { 1 }\)</span> defined by <span class="math inline">\(\varepsilon ( t ) = e ^ { 2 \pi i t }\)</span> is a Lie group homomorphism whose kernel is the set Z of integers. Similarly, the map <span class="math inline">\(\varepsilon ^ { n } \colon \mathbb { R } ^ { n } \to \mathbb { T } ^ { n }\)</span> defined by <span class="math inline">\(\varepsilon ^ { n } ( x ^ { 1 } , \ldots , x ^ { n } ) = \left( e ^ { 2 \pi i x ^ { 1 } } , \ldots , e ^ { 2 \pi i x ^ { n } } \right)\)</span> is a Lie group homomorphism whose kernel is <span class="math inline">\(\mathbb { Z } ^ { n }\)</span> (e) The determinant function det <span class="math inline">\(\mathrm { G L } ( n , \mathbb { R } ) \to \mathbb { R } ^ { * }\)</span> is smooth because det A is a polynomial in the matrix entries of A. It is a Lie group homomorphism because det <span class="math inline">\(( A B ) = ( \operatorname* { d e t } A )\)</span> .det B/. Similarly, det <span class="math inline">\({ \mathrm { G L } } ( n , \mathbb { C } ) \to \mathbb { C } ^ { * }\)</span> is a Lie group homomorphism. (f) If G is a Lie group and <span class="math inline">\(g \in G\)</span> conjugation by g is the map <span class="math inline">\(C _ { g } \colon G \to G\)</span> given by <span class="math inline">\(C _ { g } ( h ) = g h g ^ { - 1 }\)</span> . Because group multiplication and inversion are smooth, <span class="math inline">\(C _ { g }\)</span> is smooth, and a simple computation shows that it is a group homomorphism.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — The library contains individual exponential/determinant/conjugation maps and algebraic homomorphisms, but no one checked declaration or existing bundle establishes every homomorphism and smoothness claim in Lee’s multi-part example. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u007" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u007">Definition/convention — normal subgroup</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U007</code> · Ch. 7, § Lie Group Homomorphisms; source L4180 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If <span class="math inline">\(G\)</span> is a Lie group and <span class="math inline">\(g \in G\)</span>, conjugation by <span class="math inline">\(g\)</span> is the map <span class="math inline">\(C_{g} \colon G \to G\)</span> given by <span class="math inline">\(C_{g}(h) = ghg^{-1}\)</span>. It is smooth because multiplication and inversion are, it is a group homomorphism, and it is an isomorphism with inverse <span class="math inline">\(C_{g^{-1}}\)</span>. A subgroup <span class="math inline">\(H \subseteq G\)</span> is normal if <span class="math inline">\(C_{g}(H) = H\)</span> for every <span class="math inline">\(g \in G\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Subgroup.Normal#doc"><code>Subgroup.Normal</code></a> and algebraic conjugation are formalized, and conjugation is constructibly smooth from Lie-group operations, but there is no existing bundled smooth conjugation Lie-group isomorphism owning the whole row. Strict mapping does not replace that missing interface by a new assembly proof. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u008" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u008">Theorem 7.5</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U008</code> · Ch. 7, § Lie Group Homomorphisms; source L4184 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>homomorphisms. ## Theorem 7.5. Every Lie group homomorphism has constant rank.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — No pinned/current theorem states that a smooth Lie-group homomorphism has constant manifold rank. This depends on the finite-dimensional equivariant/rank machinery that is absent from the checked manifold interface. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u009" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u009">Corollary 7.6</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U009</code> · Ch. 7, § Lie Group Homomorphisms; source L4200 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A Lie group homomorphism is a Lie group isomorphism if and only if it is bijective.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=MonoidHom.inverse#doc"><code>MonoidHom.inverse</code></a> gives the inverse homomorphism algebraically for a bijection, but no pinned/current theorem proves that every bijective smooth Lie-group homomorphism has smooth inverse. The missing analytic half is the substance of the row. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u010" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u010">Theorem 7.7</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U010</code> · Ch. 7, § The Universal Covering Group; source L4208 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 7.7 (Existence of a Universal Covering Group). Let G be a connected Lie group. There exists a simply connected Lie group <span class="math inline">\(\widetilde { G }\)</span> , called the universal covering group of G , that admits a smooth covering map <span class="math inline">\(\pi \colon { \tilde { G } } \to G\)</span> that is also a Lie group homomorphism.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Topology has covering-space and lifting machinery, but no checked construction of a universal covering <em>Lie group</em>, lifted group law, or uniqueness as a Lie-group isomorphism. Current indexed Lie-group roadmaps explicitly list simply-connected covers as missing; the examples therefore lack their required Lie-group owner. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u011" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u011">Theorem 7.9</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U011</code> · Ch. 7, § The Universal Covering Group; source L4256 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 7.9 (Uniqueness of the Universal Covering Group). For any connected Lie group <span class="math inline">\(G\)</span> , the universal covering group is unique in the following sense: <span class="math inline">\(i f { \widetilde { G } }\)</span> and <span class="math inline">\(\widetilde { G } ^ { \prime }\)</span> are simply connected Lie groups that admit smooth covering maps <span class="math inline">\(\pi \colon { \tilde { G } } \to G\)</span> and <span class="math inline">\(\pi ^ { \prime } \colon \widetilde { G } ^ { \prime } \to G\)</span> that are also Lie group homomorphisms, then there exists a Lie group isomorphism <span class="math inline">\(\phi \colon { \tilde { G } } { \tilde { G } } ^ { \prime }\)</span> such that <span class="math inline">\(\pi ^ { \prime } \circ \phi = \pi\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Topology has covering-space and lifting machinery, but no checked construction of a universal covering <em>Lie group</em>, lifted group law, or uniqueness as a Lie-group isomorphism. Current indexed Lie-group roadmaps explicitly list simply-connected covers as missing; the examples therefore lack their required Lie-group owner. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u012" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u012">Example 7.10</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U012</code> · Ch. 7, § The Universal Covering Group; source L4260 · after <a href="#fc08-c07-u006"><code>FC08-C07-U006</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>(Universal Covering Groups). (a) For each <span class="math inline">\(n\)</span> the map <span class="math inline">\(\varepsilon^{n} \colon \mathbb{R}^{n} \to \mathbb{T}^{n}\)</span> given by <span class="math inline">\(\varepsilon^{n}(x^{1},\dots,x^{n}) = (e^{2\pi i x^{1}},\dots,e^{2\pi i x^{n}})\)</span> is a Lie group homomorphism and a smooth covering map; since <span class="math inline">\(\mathbb{R}^{n}\)</span> is simply connected, the universal covering group of <span class="math inline">\(\mathbb{T}^{n}\)</span> is the additive Lie group <span class="math inline">\(\mathbb{R}^{n}\)</span>. (b) The homomorphism <span class="math inline">\(\exp \colon \mathbb{C} \to \mathbb{C}^{*}\)</span> is also a smooth covering map, so <span class="math inline">\(\mathbb{C}\)</span> is the universal covering group of <span class="math inline">\(\mathbb{C}^{*}\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Topology has covering-space and lifting machinery, but no checked construction of a universal covering <em>Lie group</em>, lifted group law, or uniqueness as a Lie-group isomorphism. Current indexed Lie-group roadmaps explicitly list simply-connected covers as missing; the examples therefore lack their required Lie-group owner. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u013" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u013">Definition/convention — Lie subgroup of G</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U013</code> · Ch. 7, § Lie Subgroups; source L4274 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Suppose G is a Lie group. A Lie subgroup of G is a subgroup of G endowed with a topology and smooth structure making it into a Lie group and an immersed submanifold of G. The following proposition shows that embedded subgroups are automatically Lie subgroups.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has <code>Subgroup</code>, <code>LieGroup</code>, and <code>IsSmoothEmbedding</code> predicates but no general Lie-subgroup object because the embedded/immersed-submanifold layer is absent. Hence the topology/smooth-structure and open/embedded Lie-subgroup claims cannot be stated as Lee does. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u014" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u014">Proposition 7.11</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U014</code> · Ch. 7, § Lie Subgroups; source L4276 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 7.11. Let G be a Lie group, and suppose <span class="math inline">\(H \subseteq G\)</span> is a subgroup that is also an embedded submanifold. Then H is a Lie subgroup.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has <code>Subgroup</code>, <code>LieGroup</code>, and <code>IsSmoothEmbedding</code> predicates but no general Lie-subgroup object because the embedded/immersed-submanifold layer is absent. Hence the topology/smooth-structure and open/embedded Lie-subgroup claims cannot be stated as Lee does. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u015" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u015">Lemma 7.12</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U015</code> · Ch. 7, § Lie Subgroups; source L4282 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Lemma 7.12. Suppose G is a Lie group and <span class="math inline">\(H \subseteq G\)</span> is an open subgroup. Then H is an embedded Lie subgroup. In addition, H is closed, so it is a union of connected components of G.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has <code>Subgroup</code>, <code>LieGroup</code>, and <code>IsSmoothEmbedding</code> predicates but no general Lie-subgroup object because the embedded/immersed-submanifold layer is absent. Hence the topology/smooth-structure and open/embedded Lie-subgroup claims cannot be stated as Lee does. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u016" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u016">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U016</code> · Ch. 7, § Lie Subgroups; source L4286 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If G is a group and <span class="math inline">\(S \subseteq G\)</span> , the subgroup generated by S is the smallest subgroup containing S (i.e., the intersection of all subgroups containing S).</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Group/Subgroup/Lattice.html"><code>Mathlib/Algebra/Group/Subgroup/Lattice.lean::Subgroup.closure, Subgroup.mem_closure, Subgroup.subset_closure</code></a> — <code>Subgroup.closure S</code> is documented and defined as the subgroup generated by <code>S</code>, namely the infimum/intersection of all subgroups containing <code>S</code>; <code>mem_closure</code> gives exactly the universal characterization Lee states.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c07-u017" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u017">Proposition 7.14</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U017</code> · Ch. 7, § Lie Subgroups; source L4290 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Suppose <span class="math inline">\(G\)</span> is a Lie group and <span class="math inline">\(W \subseteq G\)</span> is any neighborhood of the identity. (a) <span class="math inline">\(W\)</span> generates an open subgroup of <span class="math inline">\(G\)</span>. (b) If <span class="math inline">\(W\)</span> is connected, it generates a connected open subgroup of <span class="math inline">\(G\)</span>. (c) If <span class="math inline">\(G\)</span> is connected, then <span class="math inline">\(W\)</span> generates <span class="math inline">\(G\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Subgroup.closure#doc"><code>Subgroup.closure</code></a> supplies the algebraic subgroup generated by a neighborhood and topological-group APIs supply nearby ingredients, but no checked theorem packages Lee’s three conclusions: openness, connectedness under connected <code>W</code>, and generation of all connected <code>G</code>. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u018" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u018">Definition/convention — identity component of G</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U018</code> · Ch. 7, § Lie Subgroups; source L4316 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If G is a Lie group, the connected component of G containing the identity is called the identity component of G .</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Algebra/Group/Basic.html#Subgroup.connectedComponentOfOne"><code>Mathlib/Topology/Algebra/Group/Basic.lean::Subgroup.connectedComponentOfOne</code></a> — <code>Subgroup.connectedComponentOfOne G</code> has carrier <code>connectedComponent (1 : G)</code>, exactly Lee’s identity component (with Mathlib’s multiplicative identity <code>1</code> in place of <code>e</code>).</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c07-u019" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u019">Proposition 7.15</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U019</code> · Ch. 7, § Lie Subgroups; source L4318 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 7.15. Let G be a Lie group and let <span class="math inline">\(G _ { 0 }\)</span> be its identity component. Then G0 is a normal subgroup of G, and is the only connected open subgroup. Every connected component of G is diffeomorphic to <span class="math inline">\(G _ { 0 }\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Subgroup.connectedComponentOfOne#doc"><code>Subgroup.connectedComponentOfOne</code></a> owns the identity component itself (U018), but no checked theorem owns this full bundle of normality, uniqueness as the connected open subgroup, and diffeomorphic connected components. In particular, the open-subgroup library still records identity-component openness as missing in its general setting. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u020" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u020">Proposition 7.16</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U020</code> · Ch. 7, § Lie Subgroups; source L4324 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 7.16. Let F G H be a Lie group homomorphism. The kernel of F is a properly embedded Lie subgroup of G, whose codimension is equal to the rank of F . P</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — These rows require the missing Lie-subgroup/submanifold theory (kernel/image as Lie subgroups, induced smooth structures, embeddedness, or closed-subgroup characterization), and several also rely on the absent constant-rank theorem. Algebraic subgroup and matrix-group ingredients are only proper subsets. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u021" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u021">Proposition 7.17</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U021</code> · Ch. 7, § Lie Subgroups; source L4330 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p><span class="math inline">\(F \colon G \to H\)</span> is an injective Lie group homomorphism, the image of F has a unique smooth manifold structure such that F .G/ is a Lie subgroup of H and <span class="math inline">\(F \colon G \to F ( G )\)</span> is a Lie group isomorphism onto it.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — These rows require the missing Lie-subgroup/submanifold theory (kernel/image as Lie subgroups, induced smooth structures, embeddedness, or closed-subgroup characterization), and several also rely on the absent constant-rank theorem. Algebraic subgroup and matrix-group ingredients are only proper subsets. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u022" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u022">Example 7.18</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U022</code> · Ch. 7, § Lie Subgroups; source L4336 · after <a href="#fc08-c07-u004"><code>FC08-C07-U004</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>(Embedded Lie Subgroups). (a) <span class="math inline">\(\mathrm{GL}^{+}(n,\mathbb{R}) \subseteq \mathrm{GL}(n,\mathbb{R})\)</span> is an open subgroup and so an embedded Lie subgroup. (b) The circle <span class="math inline">\(\mathbb{S}^{1}\)</span> is an embedded Lie subgroup of <span class="math inline">\(\mathbb{C}^{*}\)</span>, being both a subgroup and an embedded submanifold. (c) The special linear group <span class="math inline">\(\mathrm{SL}(n,\mathbb{R})\)</span> of real <span class="math inline">\(n \times n\)</span> matrices of determinant <span class="math inline">\(1\)</span>: the determinant is a surjective smooth submersion by the global rank theorem, so <span class="math inline">\(\mathrm{SL}(n,\mathbb{R})\)</span> has dimension <span class="math inline">\(n^{2}-1\)</span>. (d) The map <span class="math inline">\(\beta \colon \mathrm{GL}(n,\mathbb{C}) \to \mathrm{GL}(2n,\mathbb{R})\)</span> replacing each entry <span class="math inline">\(a + ib\)</span> by the block <span class="math inline">\(\begin{pmatrix} a &amp; -b \\ b &amp; a \end{pmatrix}\)</span> is an injective Lie group homomorphism whose image is a properly embedded Lie subgroup of <span class="math inline">\(\mathrm{GL}(2n,\mathbb{R})\)</span>. (e) The complex special linear group <span class="math inline">\(\mathrm{SL}(n,\mathbb{C}) = \operatorname{Ker}(\det) \subseteq \mathrm{GL}(n,\mathbb{C})\)</span> is a properly embedded Lie subgroup of codimension <span class="math inline">\(\dim_{\mathbb{R}} \mathbb{C}^{*} = 2\)</span>, hence of dimension <span class="math inline">\(2n^{2}-2\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — These rows require the missing Lie-subgroup/submanifold theory (kernel/image as Lie subgroups, induced smooth structures, embeddedness, or closed-subgroup characterization), and several also rely on the absent constant-rank theorem. Algebraic subgroup and matrix-group ingredients are only proper subsets. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u023" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u023">Example 7.19</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U023</code> · Ch. 7, § Lie Subgroups; source L4356 · after <a href="c04.html#fc08-c04-u020"><code>FC08-C04-U020</code></a>, <a href="#fc08-c07-u021"><code>FC08-C07-U021</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Example 7.19 (A Dense Lie Subgroup of the Torus). Let <span class="math inline">\(H \subseteq \mathbb { T } ^ { 2 }\)</span> be the dense submanifold of the torus that is the image of the immersion <span class="math inline">\(\gamma \colon { \mathbb { R } } \to { \mathbb { T } } ^ { 2 }\)</span> defined in Example 4.20. It is easy to check that <span class="math inline">\(\gamma\)</span> is an injective Lie group homomorphism, and thus H is an immersed Lie subgroup of <span class="math inline">\(\mathbb { T } ^ { 2 }\)</span> by Proposition 7.17. Exercise 7.20. Let <span class="math inline">\(S \subseteq \mathbb { T } ^ { 3 }\)</span> be the image of the subgroup H of the preceding ith the discrete topology is a topological group, called a discrete group.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — These rows require the missing Lie-subgroup/submanifold theory (kernel/image as Lie subgroups, induced smooth structures, embeddedness, or closed-subgroup characterization), and several also rely on the absent constant-rank theorem. Algebraic subgroup and matrix-group ingredients are only proper subsets. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u024" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u024">Theorem 7.21</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U024</code> · Ch. 7, § Lie Subgroups; source L4367 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 7.21. Suppose G is a Lie group and <span class="math inline">\(H \subseteq G\)</span> is a Lie subgroup. Then H is closed in G if and only if it is embedded.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — These rows require the missing Lie-subgroup/submanifold theory (kernel/image as Lie subgroups, induced smooth structures, embeddedness, or closed-subgroup characterization), and several also rely on the absent constant-rank theorem. Algebraic subgroup and matrix-group ingredients are only proper subsets. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u025" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u025">Definition/convention — group</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U025</code> · Ch. 7, § Group Actions and Equivariant Maps; source L4410 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>The most important applications of Lie groups to smooth manifold theory involve actions by Lie groups on other manifolds. If G is a group and M is a set, a left action of G on M is a map <span class="math inline">\(G \times M \to M\)</span> ; often written as <span class="math inline">\(( g , p ) \mapsto g \cdot p\)</span> , that satisfies <span class="math display">\[ \begin{array}{c c} g _ {1} \cdot (g _ {2} \cdot p) = (g _ {1} g _ {2}) \cdot p &amp; \text { for all } g _ {1}, g _ {2} \in G \text { and } p \in M; \\ e \cdot p = p &amp; \text { for all } p \in M. \end{array}\tag{7.6} \]</span></p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Group/Action/Defs.html"><code>Mathlib/Algebra/Group/Action/Defs.lean::MulAction</code></a> — For a group <code>G</code>, <code>MulAction G M</code> is exactly a left action: its scalar multiplication satisfies identity and multiplication/associativity laws corresponding to <code>e·p=p</code> and <code>g₁·(g₂·p)=(g₁g₂)·p</code>.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c07-u026" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u026">Definition/convention — a continuous action</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U026</code> · Ch. 7, § Group Actions and Equivariant Maps; source L4422 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If M is a topological space and G is a topological group, an action of G on M is said to be a continuous action if the defining map <span class="math inline">\(G \times M \to M { \mathrm { ~ o r ~ } } M \times G \to M\)</span> is continuous. In this case, M is said to be a (left or right) G -space. If in addition M is a smooth manifold with or without boundary, G is a Lie group, and the defining map is smooth, then the action is said to be a smooth action. We are primarily interested in smooth actions of Lie groups on smooth manifolds.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Algebra/MulAction.html"><code>Mathlib/Topology/Algebra/MulAction.lean::ContinuousSMul</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/Manifold/Algebra/SMul.html#ContMDiffSMul.continuousSMul"><code>Mathlib/Geometry/Manifold/Algebra/SMul.lean::ContMDiffSMul, ContMDiffSMul.continuousSMul</code></a> — <code>ContinuousSMul</code> requires joint continuity of the action map, while <code>ContMDiffSMul I I′ ∞ G M</code> requires that same map <code>G × M → M</code> to be smooth; the latter file explicitly presents this as a smooth Lie-group action when combined with <code>LieGroup</code> and <code>IsManifold</code>. Right actions are equivalently left actions of the opposite group.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c07-u027" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u027">Convention/notation — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U027</code> · Ch. 7, § Group Actions and Equivariant Maps; source L4438 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For left actions, we generally use the notations <span class="math inline">\(g \cdot p\)</span> and <span class="math inline">\(\theta _ { g } ( p )\)</span> interchangeably. The latter notation contains a bit more information, and is useful when it is important to specify the particular action under consideration, while the former is often more convenient when the action is understood. For right actions, the notation <span class="math inline">\(p \cdot g\)</span> is generally preferred because of the way composition works.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — The smooth-action API provides the fixed left-action diffeomorphism <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Diffeomorph.smul#doc"><code>Diffeomorph.smul</code></a>, but Lee’s row is specifically a left/right notation convention (<code>g·p</code>, <code>θ_g(p)</code>, <code>p·g</code>). Mathlib has no matching right-action notation/interface, so the whole convention is not promoted. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u028" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u028">Definition/convention — symmetry group of the structure) frequently turns out to be a Lie</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U028</code> · Ch. 7, § Group Actions and Equivariant Maps; source L4442 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Lie group actions typically arise in situations involving some kind of symmetry. For example, if M is a vector space or smooth manifold endowed with a metric or other geometric structure, the set of diffeomorphisms of M that preserve the structure (called the symmetry group of the structure) frequently turns out to be a Lie group acting smoothly on M . T</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This is explanatory terminology about symmetry groups of geometric structures. Smooth action/diffeomorphism primitives exist, but there is no generic checked “symmetry group of a structure” Lie-group construction matching the row. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u029" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u029">Definition/convention — transitive</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U029</code> · Ch. 7, § Group Actions and Equivariant Maps; source L4460 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>The action is said to be transitive if for every pair of points <span class="math inline">\(p , q \in M\)</span> ; there exists <span class="math inline">\(g \in G\)</span> such that <span class="math inline">\(g \cdot p = q\)</span> , or equivalently if the only orbit is all of M .</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Group/Action/Pretransitive.html#MulAction.IsPretransitive"><code>Mathlib/Algebra/Group/Action/Pretransitive.lean::MulAction.IsPretransitive</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/GroupTheory/GroupAction/Transitive.html#MulAction.isPretransitive_iff_orbit_eq_univ"><code>Mathlib/GroupTheory/GroupAction/Transitive.lean::MulAction.isPretransitive_iff_orbit_eq_univ</code></a> — <code>IsPretransitive G M</code> says every pair of points is related by some group element, and <code>isPretransitive_iff_orbit_eq_univ</code> is exactly Lee’s equivalent “the only orbit is all of M” characterization.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c07-u030" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u030">Definition/convention — free</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U030</code> · Ch. 7, § Group Actions and Equivariant Maps; source L4462 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>The action is said to be free if the only element of G that fixes any element of M is the identity: <span class="math inline">\(g \cdot p = p\)</span> for some <span class="math inline">\(p \in M\)</span> implies <span class="math inline">\(g = e\)</span> , or equivalently if every isotropy group is trivial.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Group/Action/Defs.html"><code>Mathlib/Algebra/Group/Action/Defs.lean::IsCancelSMul</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Group/Action/Basic.html"><code>Mathlib/Algebra/Group/Action/Basic.lean::isCancelSMul_iff_eq_one_of_smul_eq</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/GroupTheory/GroupAction/Basic.html"><code>Mathlib/GroupTheory/GroupAction/Basic.lean::isCancelSMul_iff_stabilizer_eq_bot</code></a> — For a group action, <code>IsCancelSMul</code> is equivalent to <code>g • p = p → g = 1</code>, and also to every stabilizer being the trivial subgroup. These are precisely Lee’s two equivalent definitions of a free action.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c07-u031" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u031">Example 7.22</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U031</code> · Ch. 7, § Group Actions and Equivariant Maps; source L4466 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>(Lie Group Actions). (a) For any Lie group <span class="math inline">\(G\)</span> and smooth manifold <span class="math inline">\(M\)</span>, the trivial action <span class="math inline">\(g \cdot p = p\)</span> is smooth; each orbit is a point and each isotropy group is all of <span class="math inline">\(G\)</span>. (b) The natural action of <span class="math inline">\(\mathrm{GL}(n,\mathbb{R})\)</span> on <span class="math inline">\(\mathbb{R}^{n}\)</span> is matrix multiplication <span class="math inline">\((A,x) \mapsto Ax\)</span> on column vectors; since any nonzero vector goes to any other, there are exactly two orbits, <span class="math inline">\(\{0\}\)</span> and <span class="math inline">\(\mathbb{R}^{n} \setminus \{0\}\)</span>. (c) Every Lie group acts smoothly on itself by left translation; more generally, restricting multiplication to <span class="math inline">\(H \times G \to G\)</span> for a Lie subgroup <span class="math inline">\(H\)</span> gives a smooth free — generally not transitive — left action. (d) Every Lie group acts smoothly on itself by conjugation, <span class="math inline">\(g \cdot h = ghg^{-1}\)</span>. (e) An action of a discrete group <span class="math inline">\(\Gamma\)</span> on <span class="math inline">\(M\)</span> is smooth if and only if <span class="math inline">\(p \mapsto g \cdot p\)</span> is smooth for each <span class="math inline">\(g \in \Gamma\)</span>. An automorphism of a covering <span class="math inline">\(\pi\)</span>, also called a deck or covering transformation, is a homeomorphism <span class="math inline">\(\varphi \colon E \to E\)</span> with <span class="math inline">\(\pi \circ \varphi = \pi\)</span>; the set <span class="math inline">\(\operatorname{Aut}_{\pi}(E)\)</span> of all of them is a group under composition, acting on <span class="math inline">\(E\)</span> on the left. </p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib owns many individual algebraic actions and some smooth scalar actions, but not the complete multi-example bundle, especially the Lie-subgroup restriction and covering-automorphism examples. Whole-row semantics reject the partial examples. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u032" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u032">Definition/convention — normal covering map</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U032</code> · Ch. 7, § Group Actions and Equivariant Maps; source L4488 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The set <span class="math inline">\(\operatorname { A u t } _ { \pi } ( E )\)</span> of all automorphisms of <span class="math inline">\(\pi\)</span> , called the automorphism group of <span class="math inline">\(\pi ,\)</span> is a group under composition, acting on <span class="math inline">\(E\)</span> on the left. It can be shown that <span class="math inline">\(\operatorname { A u t } _ { \pi } ( E )\)</span> acts transitively on each fiber of  if and only if  is a normal covering map, which means that <span class="math inline">\(\pi _ { * } ( \pi _ { 1 } ( E , q ) )\)</span> is a normal subgroup of <span class="math inline">\(\pi _ { 1 } ( M , \pi ( q ) )\)</span> for every <span class="math inline">\(q \in E\)</span> (see, for example, [</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — The covering-space library has deck/lifting infrastructure, but no checked package makes the automorphism group of a smooth covering into the asserted discrete zero-dimensional Lie group with the full smooth/free action theorem, nor packages Lee’s normal-cover equivalence in this smooth setting. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u033" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u033">Proposition 7.23</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U033</code> · Ch. 7, § Group Actions and Equivariant Maps; source L4490 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Suppose <span class="math inline">\(E\)</span> and <span class="math inline">\(M\)</span> are smooth manifolds with or without boundary and <span class="math inline">\(\pi \colon E \to M\)</span> is a smooth covering map. With the discrete topology, the automorphism group <span class="math inline">\(\operatorname{Aut}_{\pi}(E)\)</span> is a zero-dimensional Lie group acting smoothly and freely on <span class="math inline">\(E\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — The covering-space library has deck/lifting infrastructure, but no checked package makes the automorphism group of a smooth covering into the asserted discrete zero-dimensional Lie group with the full smooth/free action theorem, nor packages Lee’s normal-cover equivalence in this smooth setting. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u034" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u034">Definition/convention — equivariant</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U034</code> · Ch. 7, § Equivariant Maps; source L4506 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For some manifolds with group actions, there is an easily verified sufficient condition for a smooth map to have constant rank. Suppose <span class="math inline">\(G\)</span> is a Lie group, and M and N are both smooth manifolds endowed with smooth left or right G-actions. A map <span class="math inline">\(F \colon M \to N\)</span> is said to be equivariant with respect to the given G-actions if for each <span class="math inline">\(g \in G ,\)</span> <span class="math display">\[ \begin{array}{l l} F (g \cdot p) = g \cdot F (p) &amp; (\text { for left actions }), \\ F (p \cdot g) = F (p) \cdot g &amp; (\text { for right actions }). \end{array} \]</span> Equivalently, if  and ’ are the given actions on M and <span class="math inline">\(N _ { : }\)</span> , respectively, <span class="math inline">\(F\)</span> is equivariant if the following diagram commutes for each <span class="math inline">\(g \in G \colon\)</span> <span class="math display">\[ \begin{array}{c} M \xrightarrow {F} N \\ \theta_ {g} \Big \downarrow \qquad \qquad \qquad \qquad \Big \downarrow \varphi_ {g} \\ M \xrightarrow {F} N. \end{array} \]</span> This condition is also expressed by sayi <span class="math inline">\({ \mathbb S } ^ { 1 }\)</span> is an embedded Lie subgroup of <span class="math inline">\(\mathbb { C } ^ { * }\)</span> because it is a subgroup and an embedded submanifold.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/GroupTheory/GroupAction/Hom.html"><code>Mathlib/GroupTheory/GroupAction/Hom.lean::MulActionHom</code></a> — <code>MulActionHom φ X Y</code> bundles exactly the equivariance equation <code>F(g • p) = φ(g) • F(p)</code>; with the identity scalar map this is Lee’s intertwining condition for two actions of the same group. Right actions are encoded by passing to the opposite group.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c07-u035" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u035">Example 7.24</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U035</code> · Ch. 7, § Equivariant Maps; source L4520 · after <a href="#fc08-c07-u008"><code>FC08-C07-U008</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Let <span class="math inline">\(v = (v^{1},\dots,v^{n}) \in \mathbb{R}^{n}\)</span> be a fixed nonzero vector. The formulas <span class="math display">\[ t \cdot (x^{1},\dots,x^{n}) = (x^{1}+tv^{1},\dots,x^{n}+tv^{n}), \qquad t \cdot (z^{1},\dots,z^{n}) = (e^{2\pi i t v^{1}}z^{1},\dots,e^{2\pi i t v^{n}}z^{n}) \]</span> define smooth left actions of <span class="math inline">\(\mathbb{R}\)</span> on <span class="math inline">\(\mathbb{R}^{n}\)</span> and on <span class="math inline">\(\mathbb{T}^{n}\)</span>, and the smooth map <span class="math inline">\(\varepsilon^{n}(x^{1},\dots,x^{n}) = (e^{2\pi i x^{1}},\dots,e^{2\pi i x^{n}})\)</span> is equivariant with respect to them.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Circle/additive-quotient covering maps and equivariance ingredients exist, but no checked declaration owns Lee’s specific real-to-torus action example and all of its stated equivariance identities as one existing formalization. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u036" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u036">Theorem 7.25</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U036</code> · Ch. 7, § Equivariant Maps; source L4537 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 7.5 is an extremely useful tool for proving that certain maps have constant rank. Theorem 7.25 (Equivariant Rank Theorem). Let M and N be smooth manifolds and let G be a Lie group. Suppose <span class="math inline">\(F \colon M \to N\)</span> is a smooth map that is equivariant with respect to a transitive smooth G-action on M and any smooth G-action on N . Then F has constant rank. Thus, if F is surjective, it is a smooth submersion; if it is injective, it is a smooth immersion; and if it is bijective, it is a diffeomorphi ight).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — No pinned/current manifold Equivariant Rank Theorem was found. The generic algebraic <code>MulActionHom</code> owns equivariance (U034), but the constant-rank, submersion, immersion, and diffeomorphism consequences require missing finite-dimensional rank theory. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u037" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u037">Definition/convention — orbit map</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U037</code> · Ch. 7, § Equivariant Maps; source L4547 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Here is an important application of the equivariant rank theorem. Suppose G is a Lie group, M is a smooth manifold, and <span class="math inline">\(\theta \colon G \times M \to M\)</span> is a smooth left action. (The definitions for right actions are analogous.) For each <span class="math inline">\(p \in M ,\)</span> ; define a map  G M by <span class="math display">\[ \theta^ {(p)} (g) = g \cdot p.\tag{7.9} \]</span> This is often called the orbit map, because its image is the orbit <span class="math inline">\(G \cdot p\)</span> . In addition, the preimage <span class="math inline">\(( \theta ^ { ( p ) } ) ^ { - 1 } ( p )\)</span> is the isotropy of the Torus).</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/GroupTheory/GroupAction/Defs.html"><code>Mathlib/GroupTheory/GroupAction/Defs.lean::MulAction.orbit, MulAction.stabilizer</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Group/Action/Basic.html#MulAction.toFun"><code>Mathlib/Algebra/Group/Action/Basic.lean::MulAction.toFun</code></a> — The fixed-point action map is literally <code>g ↦ g • p</code>; <code>MulAction.orbit G p</code> is its range and <code>MulAction.stabilizer G p</code> is the preimage of <code>p</code>. Both source equalities were compiled in <code>/tmp/fc08-c07-witness.lean</code>.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c07-u038" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u038">Proposition 7.26</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U038</code> · Ch. 7, § Equivariant Maps; source L4557 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 7.26 (Properties of the Orbit Map). Suppose  is a smooth left action of a Lie group G on a smooth manifold M . For each <span class="math inline">\(p \in M ,\)</span> ; the <span class="math inline">\(o r \mathrm { - }\)</span> bit map <span class="math inline">\(\theta ^ { ( p ) } \colon G \to M\)</span> is smooth and has constant rank, so the isotropy group <span class="math inline">\(G _ { p } = { \left( { \theta ^ { ( p ) } } \right) ^ { - 1 } } ( p )\)</span> is a properly embedded Lie subgroup of G. If <span class="math inline">\(G _ { p } = \{ e \}\)</span> , then <span class="math inline">\(\theta ^ { ( p ) }\)</span> is an injective smooth immersion, so the orbit G p is an immersed ample under the obvious embedding <span class="math inline">\(\mathbb { T } ^ { 2 } \hookrightarrow \mathbb { T } ^ { 3 }\)</span> .</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Orbit and stabilizer definitions are formalized (U037), but the asserted smooth constant rank, properly embedded isotropy Lie subgroup, and immersed-orbit conclusions require the missing rank and Lie-subgroup/submanifold layers. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u039" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u039">Example 7.27</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U039</code> · Ch. 7, § Equivariant Maps; source L4585 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>(The Orthogonal Group). A real <span class="math inline">\(n \times n\)</span> matrix <span class="math inline">\(A\)</span> is orthogonal if, as a linear map <span class="math inline">\(A \colon \mathbb{R}^{n} \to \mathbb{R}^{n}\)</span>, it preserves the Euclidean dot product: <span class="math inline">\((Ax) \cdot (Ay) = x \cdot y\)</span> for all <span class="math inline">\(x, y \in \mathbb{R}^{n}\)</span>; equivalently, if its columns are orthonormal. The set <span class="math inline">\(\mathrm{O}(n)\)</span> of such matrices is a subgroup of <span class="math inline">\(\mathrm{GL}(n,\mathbb{R})\)</span>, the orthogonal group of degree <span class="math inline">\(n\)</span>. It is compact, being closed — a level set of <span class="math inline">\(\Phi(A) = A^{T}A\)</span> — and bounded in <span class="math inline">\(M(n,\mathbb{R}) \cong \mathbb{R}^{n^{2}}\)</span>, since every <span class="math inline">\(A \in \mathrm{O}(n)\)</span> has columns of norm <span class="math inline">\(1\)</span> and so <span class="math inline">\(|A| = \sqrt{n}\)</span>. Equivariance of <span class="math inline">\(\Phi\)</span> under suitable right actions of <span class="math inline">\(\mathrm{GL}(n,\mathbb{R})\)</span> shows <span class="math inline">\(\Phi\)</span> has constant rank; computing <span class="math inline">\(d\Phi_{I_{n}}(B)\)</span> along the curve <span class="math inline">\(\gamma(t) = I_{n} + tB\)</span> shows its image is exactly the symmetric matrices, a subspace of dimension <span class="math inline">\(n(n+1)/2\)</span>. Hence <span class="math inline">\(\mathrm{O}(n)\)</span> is an embedded Lie subgroup of dimension <span class="math inline">\(n^{2} - n(n+1)/2 = n(n-1)/2\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has the corresponding algebraic matrix groups and substantial linear algebra, but the complete Lee examples additionally assert smooth Lie-subgroup structures, dimensions/connectedness and related manifold facts not packaged at P or H. No whole-row owner was found. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u040" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u040">Example 7.28</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U040</code> · Ch. 7, § Equivariant Maps; source L4615 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Example 7.28 (The Special Orthogonal Group). The special orthogonal group of degree n is defined as <span class="math inline">\(\operatorname { S O } ( n ) = \operatorname { O } ( n ) \cap \operatorname { S L } ( n , \mathbb { R } ) \subseteq \operatorname { G L } ( n , \mathbb { R } )\)</span> . Because every matrix <span class="math inline">\(A \in \mathrm { O } ( n )\)</span> satisfies <span class="math display">\[ 1 = \det I _ {n} = \det \left(A ^ {T} A\right) = (\det A) \left(\det A ^ {T}\right) = (\det A) ^ {2}, \]</span> it follows that det <span class="math inline">\(A = \pm 1\)</span> for all <span class="math inline">\(A \in \mathrm { O } ( n )\)</span> . Therefore, SO.n/ is the open subgroup of <span class="math inline">\({ \mathrm { O } } ( n )\)</span> consisting of matrices of positive determinant, and is therefore also an embedded Lie subgroup of dimension <span class="math inline">\(n ( n - 1 ) / 2\)</span> in GL.n; R/. It is a compact group because it is a closed subset of <span class="math inline">\({ \mathrm { O } } ( n )\)</span> Example 7.29 (The Unitary Group). For any complex matrix <span class="math inline">\(A ,\)</span> , the adjoint of A is the matrix <span class="math inline">\(A ^ { * }\)</span> formed by conjugating the entries of A and taking the transpose: <span class="math inline">\(\boldsymbol { A } ^ { * } = \overline { { \boldsymbol { A } } } ^ { T }\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has the corresponding algebraic matrix groups and substantial linear algebra, but the complete Lee examples additionally assert smooth Lie-subgroup structures, dimensions/connectedness and related manifold facts not packaged at P or H. No whole-row owner was found. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u041" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u041">Example 7.29</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U041</code> · Ch. 7, § Equivariant Maps; source L4623 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Example 7.29 (The Unitary Group). For any complex matrix <span class="math inline">\(A ,\)</span> , the adjoint of A is the matrix <span class="math inline">\(A ^ { * }\)</span> formed by conjugating the entries of A and taking the transpose: <span class="math inline">\(\boldsymbol { A } ^ { * } = \overline { { \boldsymbol { A } } } ^ { T }\)</span> Observe that <span class="math inline">\(( A B ) ^ { * } = \left( { \bar { A } } { \bar { B } } \right) ^ { T } = { \bar { B } } ^ { T } { \bar { A } } ^ { T } = B ^ { * } A ^ { * }\)</span> . For any positive integer n, the unitary group of degree n is the subgroup <span class="math inline">\(\mathrm { U } ( n ) \subseteq \mathrm { G L } ( n , \mathbb { C } )\)</span> consisting of complex <span class="math inline">\(n \times n\)</span> matrices whose columns form an orthonormal basis for <span class="math inline">\(\mathbb { C } ^ { n }\)</span> with respect to the Hermitian dot product <span class="math inline">\(\begin{array} { r } { z \cdot w = \sum _ { i } z ^ { i } \overline { { w ^ { i } } } } \end{array}\)</span> . It is straightforward to check that U.n/ consists of those matrices A such that <span class="math inline">\({ \overline { { A ^ { * } } } } A = I _ { n }\)</span> . Problem 7-13 shows that it is a properly embed explained at the beginning of the proof, the existence of such a neighborhood for one point of H implies that H is embedded.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has the corresponding algebraic matrix groups and substantial linear algebra, but the complete Lee examples additionally assert smooth Lie-subgroup structures, dimensions/connectedness and related manifold facts not packaged at P or H. No whole-row owner was found. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u042" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u042">Example 7.30</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U042</code> · Ch. 7, § Equivariant Maps; source L4625 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>embedded Lie subgroup of <span class="math inline">\(\mathrm { G L } ( n , \mathbb { C } )\)</span> of dimension <span class="math inline">\(n ^ { 2 }\)</span> Example 7.30 (The Special Unitary Group). The group <span class="math inline">\(\mathrm { S U } ( n ) = \mathrm { U } ( n ) \ \cap\)</span> SL.n; C/ is called the complex special unitary group of degree n.&nbsp;Problem 7-14 shows that it is a properly embedded <span class="math inline">\(( n ^ { 2 } - 1 )\)</span> /-dimensional Lie subgroup of U.n/. Since the composition of smooth embeddings <span class="math inline">\(\operatorname { S U } ( n ) \hookrightarrow \operatorname { U } ( n ) \hookrightarrow \operatorname { G L } ( n , \mathbb { C } )\)</span> is again a smooth embedding, this implies that SU.n/ is also embedded nvolve actions by Lie groups on other manifolds.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has the corresponding algebraic matrix groups and substantial linear algebra, but the complete Lee examples additionally assert smooth Lie-subgroup structures, dimensions/connectedness and related manifold facts not packaged at P or H. No whole-row owner was found. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u043" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u043">Construction/definition — semidirect product of H</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U043</code> · Ch. 7, § Semidirect Products; source L4629 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>also embedded in GL.n; C/. ## Semidirect Products Group actions give us a powerful new way to construct Lie groups. Suppose H and N are Lie groups, and <span class="math inline">\(\theta \colon H \times N \to N\)</span> is a smooth left action of H on N . is said to be an action by automorphisms if for each <span class="math inline">\(h \in H\)</span> , the map <span class="math inline">\(\theta _ { h } \colon N \to N\)</span> is a group automorphism of N (i.e., an isomorphism from N to itself). Given such an action, we define a new Lie group <span class="math inline">\(N \rtimes _ { \theta }\)</span> H , called a semidirect N , as follows. As a smooth manifold,  H is just the Cartesian product <span class="math inline">\(N \times H ;\)</span> but the group multiplication is defined by <span class="math display">\[ (n, h) (n ^ {\prime}, h ^ {\prime}) = \bigl (n \theta_ {h} (n ^ {\prime}), h h ^ {\prime} \bigr).\tag{7.10} \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <code>SemidirectProduct</code> formalizes the algebraic product and multiplication formula, with canonical inclusions/projection and complementary-subgroup isomorphisms. There is no pinned/current Lie-group instance from a smooth automorphism action, nor the required closed Lie-subgroup/internal semidirect-product geometry, so the Lee rows are not owned in full. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u044" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u044">Example 7.32</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U044</code> · Ch. 7, § Semidirect Products; source L4639 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Example 7.32 (The Euclidean Group). If we consider <span class="math inline">\(\mathbb { R } ^ { n }\)</span> as a Lie group under addition, then the natural action of O.n/ on <span class="math inline">\(\mathbb { R } ^ { n }\)</span> is an action by automorphisms. The resulting semidirect product <span class="math inline">\(\operatorname { E } ( n ) = \mathbb { R } ^ { n } \rtimes \mathbf { O } ( n )\)</span> is called the Euclidean group; its multiplication is given by <span class="math inline">\(( b , A ) ( b ^ { \prime } , A ^ { \prime } ) = ( b + A b ^ { \prime } , A A ^ { \prime } )\)</span> acts on <span class="math inline">\(\mathbb { R } ^ { n }\)</span> via <span class="math display">\[ (b, A) \cdot x = b + A x. \]</span> This action preserves lines, distances, and angle measures, and thus consists of rigid motions of <span class="math inline">\(\mathbb{R}^{n}\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <code>SemidirectProduct</code> formalizes the algebraic product and multiplication formula, with canonical inclusions/projection and complementary-subgroup isomorphisms. There is no pinned/current Lie-group instance from a smooth automorphism action, nor the required closed Lie-subgroup/internal semidirect-product geometry, so the Lee rows are not owned in full. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u045" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u045">Proposition 7.33</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U045</code> · Ch. 7, § Semidirect Products; source L4649 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 7.33 (Properties of Semidirect Products). Suppose N and H are Lie groups, and  is a smooth action of H on N by automorphisms. Let <span class="math inline">\(G = N \rtimes _ { \theta } H\)</span> (a) The subsets <span class="math inline">\(\widetilde { N } = N \times \{ e \}\)</span> and <span class="math inline">\(\tilde { H } = \{ e \} \times H\)</span> are closed Lie subgroups of <span class="math inline">\(G\)</span> isomorphic to N and H , respectively. (b) <span class="math inline">\(\widetilde { N }\)</span> is a normal subgroup of Gz. (c) <span class="math inline">\(\tilde { N } \cap \tilde { H } = \{ ( e , e ) \}\)</span> and Nz Hz G. Exercise 7.34. Prove the preceding proposition. Thanks to the next theorem, many Lie groups can be realized as semidirect products , and a left action can similarly be converted to a right action.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <code>SemidirectProduct</code> formalizes the algebraic product and multiplication formula, with canonical inclusions/projection and complementary-subgroup isomorphisms. There is no pinned/current Lie-group instance from a smooth automorphism action, nor the required closed Lie-subgroup/internal semidirect-product geometry, so the Lee rows are not owned in full. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u046" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u046">Theorem 7.35</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U046</code> · Ch. 7, § Semidirect Products; source L4661 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 7.35 (Characterization of Semidirect Products). Suppose G is a Lie group, and <span class="math inline">\(N , H \subseteq G\)</span> are closed Lie subgroups such that N is normal, N H e , and <span class="math inline">\(N H = G\)</span> . Then the map .n; h/ nh is a Lie group isomorphism between N H and G, where <span class="math inline">\(\theta \colon H \times N \to N\)</span> is the action by conjugation: <span class="math inline">\(\theta _ { h } ( n ) =\)</span> hnh.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <code>SemidirectProduct</code> formalizes the algebraic product and multiplication formula, with canonical inclusions/projection and complementary-subgroup isomorphisms. There is no pinned/current Lie-group instance from a smooth automorphism action, nor the required closed Lie-subgroup/internal semidirect-product geometry, so the Lee rows are not owned in full. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u047" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u047">Construction/definition — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U047</code> · Ch. 7, § Semidirect Products; source L4665 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Under the hypotheses of Theorem (7.35), we say that G is the internal semidirect product of N and H . Some examples are described in Problem</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — <code>SemidirectProduct</code> formalizes the algebraic product and multiplication formula, with canonical inclusions/projection and complementary-subgroup isomorphisms. There is no pinned/current Lie-group instance from a smooth automorphism action, nor the required closed Lie-subgroup/internal semidirect-product geometry, so the Lee rows are not owned in full. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u048" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u048">Definition/convention — faithful</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U048</code> · Ch. 7, § Representations; source L4673 · after <a href="#fc08-c07-u021"><code>FC08-C07-U021</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>a representation <span class="math inline">\(\rho \colon G \to \mathbf { G } \mathbf { L } ( V )\)</span> is injective, it is said to be faithful. In that case, it follows from Proposition 7.17 that the image of  is a Lie subgroup of GL.V /, and  gives a Lie group isomorphism between G and <span class="math inline">\(\rho ( G ) \subseteq { \mathrm { G L } } ( V ) \cong\)</span> GL.n; R/ or GL.n; C/. Thus, a Lie group admits a faithful representation if and only if it is isomorphic to a Lie subgroup of GL.n; R/ or GL.n; C/ for some n.&nbsp;Not every Lie group admits such a representation. We do not yet have the technology to construct a counterexample, but Problem 21-26 asks you to prove that the universal covering group of SL.2; R/ has no faithful representation and therefore is not isomorphic to any matrix manifolds.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has algebraic <code>Representation</code>, <code>FaithfulSMul</code>, linear actions, and smooth-action infrastructure, but no bundled smooth representation of a Lie group or bridge proving the associated <code>GL(V)</code> action smooth and conversely recovering a smooth representation. The Lie-subgroup consequences in U048 are also unavailable. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u049" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u049">Example 7.36</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U049</code> · Ch. 7, § Representations; source L4677 · after <a href="#fc08-c07-u044"><code>FC08-C07-U044</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+Example 7.36 (Lie Group Representations). (a) If G is any Lie subgroup of GL.n; R/, the inclusion G } ( n , ) = $ <span class="math inline">\(\mathbf { G L } ( \mathbb { R } ^ { n } )\)</span> is a faithful representation, called the defining representation of G . The defining representation of a Lie subgroup of $ ( n , <span class="math inline">\(\mathbb { S } ^ { 1 } \hookrightarrow \mathbb { C } ^ { * } \cong { \mathrm { G L } } ( 1 , \mathbb { C } )\)</span> representation of the circle group. More generally, the map ^ { n } ( n , (z ^ {1}, , z ^ {n}) = (
+<span class="math display">\[\begin{array}{c c c c} z ^ {1} &amp; 0 &amp; \ldots &amp; 0 \\ 0 &amp; z ^ {2} &amp; \ldots 0 \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ 0 &amp; 0 &amp; z ^ {n} \end{array}\]</span>
+) <span class="math display">\[ is a faithful representation of $\mathbb { T } ^ { n }$ (c) Let $\sigma \colon \mathbb { R } ^ { n } \to \mathbf { G L } ( n + 1 , \mathbb { R } )$ be the map that sends $x \in \mathbb { R } ^ { n }$ to the matrix $\sigma ( x )$ defined in block form by \]</span> (x) = (
+<span class="math display">\[\begin{array}{c c} I _ {n} &amp; x \\ 0 &amp; 1 \end{array}\]</span>
+), <span class="math display">\[ where $I _ { n }$ is the $n \times n$ identity matrix and x is regarded as an $n \times 1$ column matrix. A straightforward computation shows that  is a faithful representation of the additive Lie $\operatorname { g r o u p } \mathbb { R } ^ { n }$ (d) Another faithful representation of $\mathbb { R } ^ { n }$ is the map $\mathbb { R } ^ { n } \to { \mathrm { G L } } ( n , \mathbb { R } )$ that sends $( { \overline { { x ^ { 1 } } } } , \ldots , x ^ { n } )$ to the diagonal matrix whose diagonal entries are $( e ^ { x ^ { 1 } } , \dots , e ^ { x ^ { n } } )$ (e) Yet another representation of $\mathbb { R } ^ { n }$ is the map $\mathbb { R } ^ { n } \to \mathbf { G L } ( n , \mathbb { C } )$ sending x to the diagonal matrix with diagonal entries $\left( e ^ { 2 \pi i x ^ { 1 } } , \dots , e ^ { 2 \pi i x ^ { n } } \right)$ This one is not faithful, because its kernel is the subgroup $\mathbb { Z } ^ { n } \subseteq \mathbb { R } ^ { n } .$ (f) Let E.n/ be the Euclidean group (Example 7.32). A faithful representation of E.n/ is given by the map $\rho \colon \operatorname { E } ( n ) \operatorname { G L } ( n + 1 , \mathbb { R } )$ defined in block form by \]</span>
+<span class="math display">\[\begin{array}{c c} A &amp; b \\ 0 &amp; 1 \end{array}\]</span>
+<p>), <span class="math display">\[ where b is considered as a column matrix. (g) For positive integers n and $d .$ , let $\mathcal P _ { d } ^ { n }$ denote the vector space of real-valued polynomial functions $p \colon { \mathbb { R } } ^ { n } \to { \mathbb { R } }$ of degree at most $d$ . For any matrix $A \in$ GL $\left( n , \mathbb { R } \right)$ define a linear map $\tau _ { d } ^ { n } ( A ) \colon { \mathcal { P } } _ { d } ^ { n } \to { \mathcal { P } } _ { d } ^ { n }$ by \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has algebraic <code>Representation</code>, <code>FaithfulSMul</code>, linear actions, and smooth-action infrastructure, but no bundled smooth representation of a Lie group or bridge proving the associated <code>GL(V)</code> action smooth and conversely recovering a smooth representation. The Lie-subgroup consequences in U048 are also unavailable. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u050" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u050">Definition/convention — a linear action</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U050</code> · Ch. 7, § Representations; source L4717 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>There is a close connection between representations and group actions. Let G be a Lie group and V be a finite-dimensional vector space. An action of G on V is said to be a linear action if for each <span class="math inline">\(g \in G\)</span> , the map from V to itself given by <span class="math inline">\(x \mapsto g \cdot x\)</span> is linear. For example, if <span class="math inline">\(\rho \colon G \to \mathbf { G } \mathbf { L } ( V )\)</span> is a representation of G, there is an associated smooth linear action of G on V given by <span class="math inline">\(g \cdot x = \rho ( g ) x\)</span> . The next proposition shows that every linear action of this kind arises from a representation.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has algebraic <code>Representation</code>, <code>FaithfulSMul</code>, linear actions, and smooth-action infrastructure, but no bundled smooth representation of a Lie group or bridge proving the associated <code>GL(V)</code> action smooth and conversely recovering a smooth representation. The Lie-subgroup consequences in U048 are also unavailable. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+</section>
+<section id="fc08-c07-u051" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c07-u051">Proposition 7.37</h3>
+<div class="unit-meta">
+<p><code>FC08-C07-U051</code> · Ch. 7, § Representations; source L4719 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 7.37. Let G be a Lie group and V be a finite-dimensional vector space. A smooth left action of G on V is linear if and only if it is of the form <span class="math inline">\(g \cdot x = \rho ( g ) x\)</span> for some representation </p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has algebraic <code>Representation</code>, <code>FaithfulSMul</code>, linear actions, and smooth-action infrastructure, but no bundled smooth representation of a Lie group or bridge proving the associated <code>GL(V)</code> action smooth and conversely recovering a smooth representation. The Lie-subgroup consequences in U048 are also unavailable. Strict bundle semantics reject proper subsets, isolated ingredients, unbridged equivalent notions, stronger-hypothesis specializations, and reconstruction of the substantive source theorem.</p>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/dzackgarza\.github\.io\/lean-categories\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Generated from the project’s reference notes by <code>site/build.py</code>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>The Lean is the authority; where this site differs, the Lean is right.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

@@ -1,0 +1,190 @@
+/* A page here is a chapter of a mathematics book: a run of numbered statements,
+   each with its location in the source and, where the chapter has been swept,
+   the Lean declaration that owns it. The statement is the content; everything
+   else on the entry is apparatus and is styled to stay out of its way. */
+
+:root {
+  --corpus-rule: #e3e6ea;
+  --corpus-head: #f6f7f9;
+  --corpus-quiet: #5c636a;
+  --corpus-panel: #f7f9fb;
+  --corpus-panel-edge: #d7dde3;
+  --route-matched: #1a7f4b;
+  --route-owned: #6b4fbb;
+  --route-ported: #9a6212;
+  --route-unmatched: #b3261e;
+}
+
+body.quarto-dark {
+  --corpus-rule: #343a40;
+  --corpus-head: #22262a;
+  --corpus-quiet: #adb5bd;
+  --corpus-panel: #1e2226;
+  --corpus-panel-edge: #333a41;
+  --route-matched: #5dd39e;
+  --route-owned: #b9a3f2;
+  --route-ported: #e0b055;
+  --route-unmatched: #f28b82;
+}
+
+/* Units ------------------------------------------------------------------- */
+
+/* Each unit opens with its kind and short name: "Theorem: Theorem 28.1
+   (transitivity)". They run dense down the page, so they are set smaller than
+   an ordinary section heading and separated by a rule rather than by space. */
+main h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.35;
+  margin-top: 2.25rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--corpus-rule);
+}
+
+/* A unit linked to from elsewhere marks itself on arrival. */
+main h3:target {
+  border-top-color: var(--route-owned);
+}
+
+main h3:target::before {
+  content: "";
+  display: block;
+  height: 3px;
+  width: 3rem;
+  margin-bottom: 0.6rem;
+  background: var(--route-owned);
+}
+
+/* Where it is in the book, what it comes after, and how it routed. */
+.unit-meta {
+  font-size: 0.82rem;
+  color: var(--corpus-quiet);
+  margin: 0.35rem 0 0.75rem;
+}
+
+.unit-meta code {
+  background: none;
+  padding: 0;
+  font-size: 0.8rem;
+  color: inherit;
+}
+
+.unit-meta a code {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+/* The Lean verdict sits in a panel, so a reader scanning for formalization
+   state can find it without reading the mathematics, and the reverse. */
+.unit-lean {
+  border-left: 3px solid var(--corpus-panel-edge);
+  background: var(--corpus-panel);
+  padding: 0.6rem 0.85rem;
+  margin: 0.85rem 0 0.5rem;
+  font-size: 0.9rem;
+}
+
+.unit-lean code {
+  overflow-wrap: anywhere;
+  font-size: 0.83rem;
+}
+
+.unit-provenance {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--corpus-quiet);
+  margin-bottom: 0.5rem;
+}
+
+/* Routes ------------------------------------------------------------------ */
+
+/* Colour carries the verdict, so a chapter's state reads before its prose. */
+[class^="route-"] code {
+  font-weight: 600;
+  background: none;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.route-mathlib code { color: var(--route-matched); }
+.route-project-existing code { color: var(--route-owned); }
+.route-package-import code { color: var(--route-owned); }
+.route-reference-port code { color: var(--route-ported); }
+.route-unmatched code { color: var(--route-unmatched); }
+
+/* Tables ------------------------------------------------------------------ */
+
+/* Summary tables only: chapter listings and route counts. */
+main table {
+  font-size: 0.88rem;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+main thead th {
+  background: var(--corpus-head);
+  border-bottom: 2px solid var(--corpus-rule);
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+}
+
+main td,
+main th {
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid var(--corpus-rule);
+  vertical-align: top;
+}
+
+main td[align="right"],
+main th[align="right"] {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  width: 1%;
+}
+
+/* The first column of a summary table names a chapter or a book; without a
+   floor the counts squeeze it until the name wraps one letter per line. */
+main tbody td:first-child {
+  min-width: 18rem;
+}
+
+/* Anything wider than the measure scrolls in its own box, never the page. */
+main .table-scroll {
+  overflow-x: auto;
+}
+
+/* Page furniture ---------------------------------------------------------- */
+
+/* The line naming the source and block, above each chapter. */
+main > p:first-of-type {
+  color: var(--corpus-quiet);
+  margin-bottom: 1.1rem;
+}
+
+.callout-note .callout-body {
+  font-size: 0.86rem;
+}
+
+.callout-note .callout-body li {
+  margin-bottom: 0.4rem;
+}
+
+.sidebar-item-text {
+  font-size: 0.87rem;
+}
+
+#quarto-margin-sidebar {
+  font-size: 0.82rem;
+}
+
+/* A statement whose record is broken says so, in the place the mathematics
+   should have been. It is not styled to be ignorable. */
+.unit-defect {
+  border-left: 3px solid var(--route-unmatched);
+  background: color-mix(in srgb, var(--route-unmatched) 8%, transparent);
+  padding: 0.6rem 0.85rem;
+  margin: 0.85rem 0;
+  font-size: 0.88rem;
+}

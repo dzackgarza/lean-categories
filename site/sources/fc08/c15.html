@@ -1,0 +1,2751 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013) – lean-categories · corpus</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-7335da993d57b01553edc5728a7cb5aa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">lean-categories · corpus</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../coverage.html" aria-current="page"> 
+<span class="menu-text">Every book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../corpus.html"> 
+<span class="menu-text">Reading list</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../catalogues/index.html"> 
+<span class="menu-text">Catalogues</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/dzackgarza/lean-categories"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/index.html">FC08</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/c15.html">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="sidebar-tools-main">
+    <div id="quarto-search" class="quarto-navigation-tool px-1" title="Search"></div>
+</div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Graduate mathematics, and what Lean has of it</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../coverage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Every book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../corpus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational source corpus</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../status.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus status</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Sources</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC01 Dummit Foote</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/ai.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01 Appendix I — Cartesian Products and Zorn’s Lemma</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC03</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC03 Riehl Category Theory in Context</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Categories, Functors, and Natural Transformations (pp.&nbsp;1–48)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Representability and the Yoneda Lemma (pp.&nbsp;49–72)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Limits and Colimits (pp.&nbsp;73–114)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Adjunctions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Monads and Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. All Concepts are Kan Extensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/ce.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Epilogue: Theorems in Category Theory</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC04</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC04 Atiyah Macdonald</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Rings and Ideals (pp.&nbsp;1–9)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Modules (pp.&nbsp;17–30)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Rings and Modules of Fractions (pp.&nbsp;36–42)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Primary Decomposition (pp.&nbsp;50–54)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Integral Dependence and Valuations (pp.&nbsp;59–66)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Chain Conditions (pp.&nbsp;74–77)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Noetherian Rings (pp.&nbsp;80–83)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Artin Rings (pp.&nbsp;89–90)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Discrete Valuation Rings and Dedekind Domains (pp.&nbsp;93–98)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. Completions (pp.&nbsp;100–112)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Dimension Theory (pp.&nbsp;116–124)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC05</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC05 Weibel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Chain Complexes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Derived Functors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Tor and Ext</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homological Dimension</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Spectral Sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Group Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Lie Algebra Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Simplicial Methods in Homological Algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Hochschild and Cyclic Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. The Derived Category</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Category Theory Language</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC06</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC06 Hartshorne</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter I: Varieties</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter II: Schemes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter III: Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter IV: Curves</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter V: Surfaces</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC07</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC07 Hatcher</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 0. Some Underlying Geometric Notions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. The Fundamental Group</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homotopy Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix. Topology of Cell Complexes</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC08 Lee</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c15.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c22.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC09 Neukirch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC10 Serre Local Fields</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc11/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC11 Peters Sterk</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc12/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC12 Beauville</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc13/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC13</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC13 Matsumura</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Front matter — conventions and terminology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Commutative rings and modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Prime ideals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Properties of extension rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Valuation rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Dimension theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Regular sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Regular rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Flatness revisited</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Derivations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. I-smoothness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Applications of complete local rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Tensor products, direct and inverse limits</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix B. Some homological algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix C. The exterior algebra</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc14/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC14</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC14 Humphreys</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Basic Concepts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Semisimple Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Root Systems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Isomorphism and Conjugacy Theorems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Existence Theorem</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Representation Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Chevalley Algebras and Groups</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc15/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC15</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Classification of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Polynomial invariants of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Affine reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Coxeter groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Special cases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Hecke algebras and Kazhdan–Lusztig polynomials</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Complements</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc16/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC16</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Algebraic Geometry</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Affine Algebraic Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Homogeneous Spaces</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Characteristic 0 Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Semisimple and Unipotent Elements</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Solvable Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VIII. Borel Subgroups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IX. Centralizers of Tori</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter X. Structure of Reductive Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XI. Representations and Classification of Semisimple Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XII. Survey of Rationality Properties and Appendix</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../catalogues/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Definition catalogues</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">catalogues/*.md</span>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Notes and audits</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">notes/*.md</span>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/index.html">FC08</a></li><li class="breadcrumb-item"><a href="../../sources/fc08/c15.html">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>FC08 — Lee, <em>Introduction to Smooth Manifolds</em>.</p>
+<p>This chapter contains 20 definitions, 4 theorems, 18 propositions, 2 lemmas, 1 corollary, 8 examples, 2 constructions and 1 convention.</p>
+<p>Of the 56 statements checked against Lean, 5 are formalized somewhere and 51 are not.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 28%">
+<col style="width: 28%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Status</th>
+<th style="text-align: right;">Statements</th>
+<th style="text-align: right;">Share</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="route-unmatched">not formalized</span></td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">91%</td>
+<td>A documented search found no Lean statement of it anywhere.</td>
+</tr>
+<tr class="even">
+<td><span class="route-mathlib">in Mathlib</span></td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">9%</td>
+<td>Mathlib states and proves it.</td>
+</tr>
+<tr class="odd">
+<td><strong>checked in total</strong></td>
+<td style="text-align: right;"><strong>56</strong></td>
+<td style="text-align: right;"></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Which versions of Lean and Mathlib were searched
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li>Canonical source block: FC08 Lee, Chapter 15, <code>FC08-C15-U001</code>–<code>FC08-C15-U056</code>, exactly 56 unique contiguous rows retrieved from <a href="../../sources/fc08/">FC08 — John M. Lee, Introduction to Smooth Manifolds</a> through <code>agent-memory</code>.</li>
+<li>Search order: project at <code>A=3b2239e161592472b34e02ad3b7da308f9ce7280</code>, pinned Mathlib <code>P=db584cd6d46c92f209a44c0f1c829460d327499d</code> (Apache-2.0, Lean 4.33.0), current upstream <code>H=5315eef9e4ffb98e0f89f278b765c50a149f66ca</code> (Apache-2.0, Lean 4.34.0-rc2), then targeted indexed/external Lean searches. No <code>project-existing</code>, <code>package-import</code>, or <code>reference-port</code> owner survived strict whole-row checking.</li>
+<li>C15 has 5 pinned <code>mathlib</code> rows and 51 dated <code>unmatched</code> rows. Positive rows are: U003, U004, U006, U007, U048.</li>
+<li>Linear orientation algebra is mature at P. <code>Orientation</code> is a positive ray of top alternating forms; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Basis.orientation#doc"><code>Basis.orientation</code></a>, <code>orientation_eq_iff_det_pos</code>, and the negation lemmas make it equivalent to Lee’s ordered-basis equivalence classes. The zero-dimensional case is represented by <code>positiveOrientation</code> and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Orientation.eq_or_eq_neg_of_isEmpty#doc"><code>Orientation.eq_or_eq_neg_of_isEmpty</code></a>.</li>
+<li><code>/tmp/fc08-c15-witness.lean</code> compiled at exact P. Its central bridge proves <code>rayOfNeZero ℝ ω hω = e.orientation ↔︎ 0 &lt; ω e</code>, so Mathlib’s ray representation exactly realizes Lee Proposition 15.3; it also verifies that the determinant form of a basis lies in that basis orientation.</li>
+<li>U002 is deliberately unmatched because the canonical catalogue row is truncated after the transition-matrix formula and omits the determinant-sign condition. The adjacent Mathlib theorem is not used to repair source text silently.</li>
+<li>P and current H have no global smooth-manifold orientation/orientability API. Exact searches find no <code>Orientable</code>/<code>IsOrientable</code> manifold structure, orientation-preserving smooth-map predicate, orientation covering, or smooth manifold volume-form layer. Therefore U008–U047 and U050–U056 remain unmatched even when linear orientation, standard-tangent Riemannian, or generic covering ingredients are present.</li>
+<li>Tangent-based manifold rows also inherit the C03 boundary: Lee’s FC08 tangent spaces are point derivations, while Mathlib manifold tangent geometry uses standard <code>TangentSpace</code>; no checked bridge exists at P/H. Hypersurface/submanifold rows additionally inherit C05’s absent general submanifold API.</li>
+<li>U048 is independent of manifold orientation. Mathlib’s <code>IsCoveringMap</code> already permits disconnected total spaces and supplies the evenly-covered/continuity part, while Lee additionally requires local path connectedness and surjectivity. The exact conjunction was compiled in the witness. U049 is not inferred: no checked theorem provides Lee’s componentwise restriction result, and proving it would be substantive.</li>
+<li>Targeted current GitHub/indexed searches did not surface a compatible external Lean owner for manifold orientability or the orientation-covering theorems.</li>
+<li><code>N=2026-09-07</code> marks dated unmatched decisions. Strict whole-row semantics apply uniformly.</li>
+</ul>
+</div>
+</div>
+</div>
+<section id="fc08-c15-u001" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u001">Definition/convention — orientable</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U001</code> · Ch. 15; source L11474 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>As we will see in this chapter, a vector space always has exactly two choices of orientation. In R, there is a standard orientation that we can all agree on; but in other vector spaces, an arbitrary choice has to be made. For manifolds, the situation is much more complicated. On a sphere, it is possible to decide unambiguously which rotational direction is counterclockwise, by looking at the surface from the outside (Fig. 15.1). On the other hand, a Möbius band (Fig. 15.2) has the curious property that a figure moving around on the surface can come back to its starting point transformed into its mirror image, so it is impossible to decide consistently which of the two possible rotational directions on the surface to call “clockwise” and which “counterclockwise,” or which is the “front” side and which is the “back” side. The analogous phenomenon in a 3-manifold would be a right-handed person who takes a long trip and comes back left-handed. Manifolds like the sphere, in which it is possible to choose a consistent orientation, are said to be orientable; those like the Möbius band in which it is not possible are said to be nonorientable.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This introductory row mixes the manifold notion of orientability with sphere/Möbius examples. P/H has linear orientations but no manifold-orientation/orientability API owning the full row. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u002" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u002">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U002</code> · Ch. 15, § Orientations of Vector Spaces; source L11492 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Let <span class="math inline">\(V\)</span> be a real vector space of dimension <span class="math inline">\(n \geq 1\)</span>. Two ordered bases <span class="math inline">\((E_{1},\dots,E_{n})\)</span> and <span class="math inline">\((\widetilde{E}_{1},\dots,\widetilde{E}_{n})\)</span> for <span class="math inline">\(V\)</span> are consistently oriented if the transition matrix <span class="math inline">\((B^{j}_{i})\)</span>, defined by <span class="math display">\[ E_{i} = B^{j}_{i}\widetilde{E}_{j}, \tag{15.1} \]</span> has positive determinant.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — The canonical source row is truncated immediately after defining the transition matrix and omits the determinant-sign clause completing Lee’s definition. <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Module.Basis.orientation_eq_iff_det_pos#doc"><code>Module.Basis.orientation_eq_iff_det_pos</code></a> is the expected adjacent theorem, but the missing source text is not reconstructed. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u003" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u003">Convention/notation — oriented vector space</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U003</code> · Ch. 15, § Orientations of Vector Spaces; source L11502 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>dim <span class="math inline">\(V = n \geq 1\)</span> , we define an orientation for <span class="math inline">\(V\)</span> as an equivalence class of ordered bases. If <span class="math inline">\(( E _ { 1 } , \ldots , E _ { n } )\)</span> is any ordered basis for V , we denote the orientation that it determines by <span class="math inline">\([ E _ { 1 } , \ldots , E _ { n } ]\)</span> , and the opposite orientation by <span class="math inline">\(- [ E _ { 1 } , \dots , E _ { n } ]\)</span> A vector space together with a choice of orientation is called an oriented vector space. If V is oriented, then any ordered basis <span class="math inline">\(( E _ { 1 } , \ldots , E _ { n } )\)</span> that is in the given orientation is said to be oriented or positively oriented. Any basis that is not in the given orientation is said to be negatively oriented.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Orientation.html"><code>Mathlib/LinearAlgebra/Orientation.lean::Orientation, Module.Oriented, Module.Basis.orientation, Module.Basis.orientation_eq_iff_det_pos, Module.Basis.orientation_ne_iff_eq_neg</code></a> — <code>Orientation ℝ V (Fin n)</code> is Mathlib’s equivalent representation of an orientation: <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Basis.orientation#doc"><code>Basis.orientation</code></a> sends an ordered basis to its class; <code>orientation_eq_iff_det_pos</code> proves that two bases give the same class exactly when the change-of-basis determinant is positive; negation is the opposite orientation, and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Module.Oriented#doc"><code>Module.Oriented</code></a> records a chosen positive orientation.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c15-u004" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u004">Definition/convention — orientation of V to be simply a choice of one of the numbers</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U004</code> · Ch. 15, § Orientations of Vector Spaces; source L11504 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For the special case of a zero-dimensional vector space V , we define an orientation of V to be simply a choice of one of the numbers is smooth.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Orientation.html"><code>Mathlib/LinearAlgebra/Orientation.lean::IsEmpty.oriented, Orientation.eq_or_eq_neg_of_isEmpty</code></a> — For an empty index type (the zero-dimensional case), Mathlib supplies a canonical <code>positiveOrientation</code> and proves every orientation is either it or its negation. This is exactly Lee’s choice of <code>+1</code> or <code>-1</code>.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c15-u005" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u005">Example 15.2</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U005</code> · Ch. 15, § Orientations of Vector Spaces; source L11506 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The orientation <span class="math inline">\([e_{1},\dots,e_{n}]\)</span> of <span class="math inline">\(\mathbb{R}^{n}\)</span> determined by the standard basis is the standard orientation. In the usual graphical conventions, an oriented basis for <span class="math inline">\(\mathbb{R}\)</span> points to the right, an oriented basis for <span class="math inline">\(\mathbb{R}^{2}\)</span> is one whose rotation from the first vector to the second is counterclockwise, and an oriented basis for <span class="math inline">\(\mathbb{R}^{3}\)</span> is right-handed; these may be taken as the definitions of those words. The standard orientation of <span class="math inline">\(\mathbb{R}^{0}\)</span> is defined to be <span class="math inline">\(+1\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib can define the basis orientation of <code>ℝ^n</code>, but this example also packages the geometric right/counterclockwise/right-handed interpretations and the <code>ℝ^0</code> convention. No checked declaration owns the whole example. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u006" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u006">Proposition 15.3</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U006</code> · Ch. 15, § Orientations of Vector Spaces; source L11510 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Proposition 15.3. Let V be a vector space of dimension n.&nbsp;Each nonzero element <span class="math inline">\(\omega \in \Lambda ^ { n } ( V ^ { * } )\)</span> determines an orientation <span class="math inline">\(\mathcal { O } _ { \omega }\)</span> of V as follows: <span class="math inline">\(i f n \geq 1\)</span> , then <span class="math inline">\(\mathcal { O } _ { \omega }\)</span> is the set of ordered bases <span class="math inline">\(( E _ { 1 } , \ldots , E _ { n } )\)</span> such that ! <span class="math inline">\(( E _ { 1 } , \ldots , E _ { n } ) &gt; 0\)</span> ; while if <span class="math inline">\({ \dot { n } } = 0\)</span> , then <span class="math inline">\(\mathcal { O } _ { \omega } \ i s + 1 \ i f \omega &gt; 0 .\)</span> , and 1 if ! &lt; 0. Two nonzero n-covectors determine the same orientation if and only if each is a positive multiple of the other.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Orientation.html#Module.Basis.orientation"><code>Mathlib/LinearAlgebra/Orientation.lean::Orientation, Module.Basis.orientation</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Ray.html#SameRay.sameRay_smul_left_iff_of_ne"><code>Mathlib/LinearAlgebra/Ray.lean::rayOfNeZero, ray_eq_iff, SameRay.sameRay_smul_left_iff_of_ne</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Determinant.html#AlternatingMap.eq_smul_basis_det"><code>Mathlib/LinearAlgebra/Determinant.lean::AlternatingMap.eq_smul_basis_det</code></a> — Mathlib defines an orientation as a positive ray of nonzero top alternating forms. At exact P, <code>/tmp/fc08-c15-witness.lean</code> proves <code>rayOfNeZero ℝ ω hω = e.orientation ↔︎ 0 &lt; ω e</code>, and ray equality is precisely positive scalar proportionality. This is Lee’s Proposition 15.3 including the orientation selected by a nonzero top covector.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c15-u007" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u007">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U007</code> · Ch. 15, § Orientations of Vector Spaces; source L11522 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>If <span class="math inline">\(V\)</span> is an oriented <span class="math inline">\(n\)</span>-dimensional vector space and <span class="math inline">\(\omega\)</span> is an <span class="math inline">\(n\)</span>-covector determining the orientation of <span class="math inline">\(V\)</span>, then <span class="math inline">\(\omega\)</span> is called a positively oriented <span class="math inline">\(n\)</span>-covector. For example, <span class="math inline">\(e^{1} \wedge \cdots \wedge e^{n}\)</span> is positively oriented for the standard orientation on <span class="math inline">\(\mathbb{R}^{n}\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Orientation.html#Module.Basis.orientation"><code>Mathlib/LinearAlgebra/Orientation.lean::Module.Basis.orientation</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Ray.html"><code>Mathlib/LinearAlgebra/Ray.lean::rayOfNeZero</code></a> — A top covector is positively oriented exactly when its positive ray is the chosen <code>Orientation</code>. The compiled witness also checks <code>rayOfNeZero ℝ e.det e.det_ne_zero = e.orientation</code>, giving the basis determinant form as the canonical positively oriented top form.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c15-u008" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u008">Definition/convention — pointwise orientation</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U008</code> · Ch. 15, § Orientations of Manifolds; source L11531 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Let M be a smooth manifold with or without boundary. We define a pointwise orientation on M to be a choice of orientation of each tangent space. By itself, this is not a very useful concept, because the orientations of nearby points may have no relation to each other. For example, a pointwise orientation on <span class="math inline">\(\mathbb { R } ^ { n }\)</span> might switch randomly from point to point between the standard orientation and its opposite. In order for orientations to have some relationship with the smooth structure, we need an extra condition to ensure that the orientations of nearby tangent spaces are consistent with each ot smooth chart for the standard smooth structure on <span class="math inline">\(\mathbb { B } ^ { n }\)</span> .</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has no global smooth-manifold orientation or orientability structure. Its linear <code>Orientation</code> API does not provide Lee’s continuous pointwise orientations, oriented frames/charts, orientation forms, orientation-preserving local diffeomorphisms, product/pullback manifold orientations, or Lie-group orientation theorem. In addition, tangent-based clauses inherit the C03 point-derivation-vs-standard-<code>TangentSpace</code> boundary. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u009" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u009">Definition/convention — negatively oriented frame</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U009</code> · Ch. 15, § Orientations of Manifolds; source L11533 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Let M be a smooth n-manifold with or without boundary, endowed with a pointwise orientation. If <span class="math inline">\(\left( E _ { i } \right)\)</span> is a local frame for TM; we say that <span class="math inline">\(\left( E _ { i } \right)\)</span> is (positively) oriented if <span class="math inline">\(( E _ { 1 } | _ { p } , \ldots , E _ { n } | _ { p } )\)</span> is a positively oriented basis for <span class="math inline">\(T _ { p } M\)</span> at each point <span class="math inline">\(p \in U\)</span> . A negatively oriented frame is defi ition with F equal to the identity map of <span class="math inline">\(U \cap { \widetilde { U } }\)</span> , but using coordinates <span class="math inline">\(\left( x ^ { i } \right)\)</span> in the domain and <span class="math inline">\(\left( \widetilde { x } ^ { j } \right)\)</span> in the codomain.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has no global smooth-manifold orientation or orientability structure. Its linear <code>Orientation</code> API does not provide Lee’s continuous pointwise orientations, oriented frames/charts, orientation forms, orientation-preserving local diffeomorphisms, product/pullback manifold orientations, or Lie-group orientation theorem. In addition, tangent-based clauses inherit the C03 point-derivation-vs-standard-<code>TangentSpace</code> boundary. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u010" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u010">Definition/convention — continuous</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U010</code> · Ch. 15, § Orientations of Manifolds; source L11535 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A pointwise orientation is said to be continuous if every point of M is in the domain of an oriented local frame. (Recall that by definition the vector fields that make up a local frame are continuous.) An orientation of M is a continuous pointwise orientation. We say that M is orientable if there exists an orientation for it, and nonorientable if not. An oriented manifold is an ordered pair <span class="math inline">\(( M , { \mathcal { O } } )\)</span> , where M is an smooth manifold and is a choice of orientation for M ; an oriented manifold with boundary is defined similarly. For each <span class="math inline">\(p \in M\)</span> ; the orientation }$ M determined by is denoted by <span class="math inline">\(\mathcal { O } _ { p }\)</span> . When it is not important to name the orientation explicitly, we use the usual shorthand expression “M is an oriented smooth manifold” (or “manifold with boundary”). If M is zero-dimensional, this definition just means that an orientation of M is a choice of $</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has no global smooth-manifold orientation or orientability structure. Its linear <code>Orientation</code> API does not provide Lee’s continuous pointwise orientations, oriented frames/charts, orientation forms, orientation-preserving local diffeomorphisms, product/pullback manifold orientations, or Lie-group orientation theorem. In addition, tangent-based clauses inherit the C03 point-derivation-vs-standard-<code>TangentSpace</code> boundary. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u011" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u011">Definition/convention — orientation of M</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U011</code> · Ch. 15, § Orientations of Manifolds; source L11537 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If M is zero-dimensional, this definition just means that an orientation of M is a choice of <span class="math inline">\(\pm 1\)</span> attached to each of its points. The continuity condition is vacuous in this case, and the notion of oriented frames is not useful. Clearly, every 0-manifold is orientable.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has no global smooth-manifold orientation or orientability structure. Its linear <code>Orientation</code> API does not provide Lee’s continuous pointwise orientations, oriented frames/charts, orientation forms, orientation-preserving local diffeomorphisms, product/pullback manifold orientations, or Lie-group orientation theorem. In addition, tangent-based clauses inherit the C03 point-derivation-vs-standard-<code>TangentSpace</code> boundary. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u012" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u012">Proposition 15.5</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U012</code> · Ch. 15, § Orientations of Manifolds; source L11543 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 15.5 (The Orientation Determined by an n-Form). Let M be a smooth n-manifold with or without boundary. Any nonvanishing n-form ! on M determines a unique orientation of M for which ! is positively oriented at each point. Conversely, if M is given an orientation, then there is a smooth nonvanishing n-form on M that is positively oriented at each point.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has no global smooth-manifold orientation or orientability structure. Its linear <code>Orientation</code> API does not provide Lee’s continuous pointwise orientations, oriented frames/charts, orientation forms, orientation-preserving local diffeomorphisms, product/pullback manifold orientations, or Lie-group orientation theorem. In addition, tangent-based clauses inherit the C03 point-derivation-vs-standard-<code>TangentSpace</code> boundary. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u013" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u013">Definition/convention — orientation form</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U013</code> · Ch. 15, § Orientations of Manifolds; source L11545 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Remark. Because of this proposition, if M is a smooth n-manifold with or without boundary, any nonvanishing n-form on M is called an orientation form. If M is oriented and ω is an orientation form determining the given orientation, we also say that ω is (positively) oriented. It is easy to check that if ω and tilde(ω) are two positively oriented smooth forms on M , ; then tilde(ω) = f ω for some strictly positive smooth realvalued function f . If M is a 0-manifold, a nonvanishing 0-form (i.e., real-valued function) assigns the orientation 1 to points where it is positive and 1 to points where it is negative.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has no global smooth-manifold orientation or orientability structure. Its linear <code>Orientation</code> API does not provide Lee’s continuous pointwise orientations, oriented frames/charts, orientation forms, orientation-preserving local diffeomorphisms, product/pullback manifold orientations, or Lie-group orientation theorem. In addition, tangent-based clauses inherit the C03 point-derivation-vs-standard-<code>TangentSpace</code> boundary. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u014" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u014">Definition/convention — consistently oriented</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U014</code> · Ch. 15, § Orientations of Manifolds; source L11557 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A smooth chart on an oriented smooth manifold with or without boundary is positively oriented if its coordinate frame <span class="math inline">\((\partial/\partial x^{i})\)</span> is positively oriented, and negatively oriented if that frame is negatively oriented. A smooth atlas <span class="math inline">\(\{(U_{\alpha},\varphi_{\alpha})\}\)</span> is consistently oriented if for each <span class="math inline">\(\alpha, \beta\)</span> the transition map <span class="math inline">\(\varphi_{\beta} \circ \varphi_{\alpha}^{-1}\)</span> has positive Jacobian determinant everywhere on <span class="math inline">\(\varphi_{\alpha}(U_{\alpha} \cap U_{\beta})\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has no global smooth-manifold orientation or orientability structure. Its linear <code>Orientation</code> API does not provide Lee’s continuous pointwise orientations, oriented frames/charts, orientation forms, orientation-preserving local diffeomorphisms, product/pullback manifold orientations, or Lie-group orientation theorem. In addition, tangent-based clauses inherit the C03 point-derivation-vs-standard-<code>TangentSpace</code> boundary. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u015" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u015">Proposition 15.6</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U015</code> · Ch. 15, § Orientations of Manifolds; source L11559 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 15.6 (The Orientation Determined by a Coordinate Atlas). Let M be a smooth positive-dimensional manifold with or without boundary. Given any consistently oriented smooth atlas for M; there is a unique orientation for M with the property that each chart in the given atlas is positively oriented. Conversely, if M is oriented and either <span class="math inline">\(\partial M = \emptyset\)</span> or dim <span class="math inline">\(M &gt; 1\)</span> , then the collection of all oriented smooth charts is a consistently oriented atlas for M .</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has no global smooth-manifold orientation or orientability structure. Its linear <code>Orientation</code> API does not provide Lee’s continuous pointwise orientations, oriented frames/charts, orientation forms, orientation-preserving local diffeomorphisms, product/pullback manifold orientations, or Lie-group orientation theorem. In addition, tangent-based clauses inherit the C03 point-derivation-vs-standard-<code>TangentSpace</code> boundary. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u016" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u016">Proposition 15.7</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U016</code> · Ch. 15, § Orientations of Manifolds; source L11565 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 15.7 (Product Orientations). Suppose <span class="math inline">\(M _ { 1 } , \dots , M _ { k }\)</span> are orientable smooth manifolds. There is a unique orientation on <span class="math inline">\(M _ { 1 } \times \cdots \times M _ { k }\)</span> , called the product orientation, with the following property: if for each <span class="math inline">\(i = 1 , \ldots , k , \omega _ { i }\)</span> is an orientation form for the given orientation on <span class="math inline">\(M _ { i }\)</span> , then <span class="math inline">\(\pi _ { 1 } ^ { * } \omega _ { 1 } \wedge \cdots \wedge \pi _ { k } ^ { * } \omega _ { k }\)</span> is an orientation form for the product orientation.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has no global smooth-manifold orientation or orientability structure. Its linear <code>Orientation</code> API does not provide Lee’s continuous pointwise orientations, oriented frames/charts, orientation forms, orientation-preserving local diffeomorphisms, product/pullback manifold orientations, or Lie-group orientation theorem. In addition, tangent-based clauses inherit the C03 point-derivation-vs-standard-<code>TangentSpace</code> boundary. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u017" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u017">Proposition 15.9</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U017</code> · Ch. 15, § Orientations of Manifolds; source L11569 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 15.9. Let M be a connected, orientable, smooth manifold with or without boundary. Then M has exactly two orientations. If two orientations of M agree at one point, they are equal.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has no global smooth-manifold orientation or orientability structure. Its linear <code>Orientation</code> API does not provide Lee’s continuous pointwise orientations, oriented frames/charts, orientation forms, orientation-preserving local diffeomorphisms, product/pullback manifold orientations, or Lie-group orientation theorem. In addition, tangent-based clauses inherit the C03 point-derivation-vs-standard-<code>TangentSpace</code> boundary. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u018" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u018">Proposition 15.11</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U018</code> · Ch. 15, § Orientations of Manifolds; source L11573 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 15.11 (Orientations of Codimension-0 Submanifolds). Suppose M is an oriented smooth manifold with or without boundary, and <span class="math inline">\(D \subseteq M\)</span> is a smooth codimension-0 submanifold with or without boundary. Then the orientation of M restricts to an orientation of D. If ! is an orientation form for M; then <span class="math inline">\(\iota _ { D } ^ { * } \omega\)</span> is an orientation form for D.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has no global smooth-manifold orientation or orientability structure. Its linear <code>Orientation</code> API does not provide Lee’s continuous pointwise orientations, oriented frames/charts, orientation forms, orientation-preserving local diffeomorphisms, product/pullback manifold orientations, or Lie-group orientation theorem. In addition, tangent-based clauses inherit the C03 point-derivation-vs-standard-<code>TangentSpace</code> boundary. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u019" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u019">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U019</code> · Ch. 15, § Orientations of Manifolds; source L11577 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Let M and N be oriented smooth manifolds with or without boundary, and suppose <span class="math inline">\(F \colon M \to N\)</span> is a local diffeomorphism. If M and N are positive-dimensional, we say that F is orientation-preserving if for each <span class="math inline">\(p \in M ,\)</span> ; the isomorphism d <span class="math inline">\(F _ { p }\)</span> takes oriented bases of <span class="math inline">\(T _ { p } M\)</span> to oriented bases of <span class="math inline">\(T _ { F ( p ) } N\)</span> , and orientationreversing if it takes oriented bases of <span class="math inline">\(T _ { p } M\)</span> to negatively oriented bases of <span class="math inline">\(T _ { F ( p ) } N\)</span> If M and N are 0-manifolds, then F is orientation-preserving if for every <span class="math inline">\(p \in M\)</span> the points p and <span class="math inline">\(F ( p )\)</span> have the same orientation; and it is orientation-reversing if they have the opposite orientation.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has no global smooth-manifold orientation or orientability structure. Its linear <code>Orientation</code> API does not provide Lee’s continuous pointwise orientations, oriented frames/charts, orientation forms, orientation-preserving local diffeomorphisms, product/pullback manifold orientations, or Lie-group orientation theorem. In addition, tangent-based clauses inherit the C03 point-derivation-vs-standard-<code>TangentSpace</code> boundary. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u020" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u020">Proposition 15.15</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U020</code> · Ch. 15, § Orientations of Manifolds; source L11591 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 15.15 (The Pullback Orientation). Suppose M and N are smooth manifolds with or without boundary. If <span class="math inline">\(F \colon M \to N\)</span> is a local diffeomorphism and N is oriented, then M has a unique orientation, called the pullback orientation induced by F , such that F is orientation-preservi rties: (i) d is linear over R.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has no global smooth-manifold orientation or orientability structure. Its linear <code>Orientation</code> API does not provide Lee’s continuous pointwise orientations, oriented frames/charts, orientation forms, orientation-preserving local diffeomorphisms, product/pullback manifold orientations, or Lie-group orientation theorem. In addition, tangent-based clauses inherit the C03 point-derivation-vs-standard-<code>TangentSpace</code> boundary. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u021" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u021">Construction/definition — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U021</code> · Ch. 15, § Orientations of Manifolds; source L11595 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>In the situation of the preceding proposition, if denotes the given orientation on N , the pullback orientation on M is denoted b</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has no global smooth-manifold orientation or orientability structure. Its linear <code>Orientation</code> API does not provide Lee’s continuous pointwise orientations, oriented frames/charts, orientation forms, orientation-preserving local diffeomorphisms, product/pullback manifold orientations, or Lie-group orientation theorem. In addition, tangent-based clauses inherit the C03 point-derivation-vs-standard-<code>TangentSpace</code> boundary. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u022" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u022">Proposition 15.17</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U022</code> · Ch. 15, § Orientations of Manifolds; source L11601 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 15.17. Every parallelizable smooth manifold is orientable. P</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has no global smooth-manifold orientation or orientability structure. Its linear <code>Orientation</code> API does not provide Lee’s continuous pointwise orientations, oriented frames/charts, orientation forms, orientation-preserving local diffeomorphisms, product/pullback manifold orientations, or Lie-group orientation theorem. In addition, tangent-based clauses inherit the C03 point-derivation-vs-standard-<code>TangentSpace</code> boundary. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u023" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u023">Example 15.18</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U023</code> · Ch. 15, § Orientations of Manifolds; source L11608 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>vector field along a submanifold Example 15.18. The preceding proposition implies that Euclidean space <span class="math inline">\(\mathbb { R } ^ { n }\)</span> , the n-torus <span class="math inline">\(\mathbb { T } ^ { n }\)</span> , the spheres <span class="math inline">\(\mathrm { S } ^ { 1 } , \mathrm { S } ^ { \bar { 3 } }\)</span> , and <span class="math inline">\(\mathbb { S } ^ { 7 }\)</span> , and products of them are all orientable, because they are all parallelizable. Therefore, any codimension-0 submanifold of one of these manifolds is also orientable. Likewise, every Lie group is orientable beca ome neighborhood of <span class="math inline">\(p\)</span> and supported in <span class="math inline">\(U\)</span> .</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has no global smooth-manifold orientation or orientability structure. Its linear <code>Orientation</code> API does not provide Lee’s continuous pointwise orientations, oriented frames/charts, orientation forms, orientation-preserving local diffeomorphisms, product/pullback manifold orientations, or Lie-group orientation theorem. In addition, tangent-based clauses inherit the C03 point-derivation-vs-standard-<code>TangentSpace</code> boundary. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u024" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u024">Definition/convention — left-invariant orientation</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U024</code> · Ch. 15, § Orientations of Manifolds; source L11610 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>In the case of Lie groups, we can say more. If G is a Lie group, an orientation of G is said to be left-invariant if <span class="math inline">\(L _ { g }\)</span> is orientation-preserving ating this at <span class="math inline">\(p\)</span> and using the facts that <span class="math inline">\(\psi ( p ) = 1\)</span> and <span class="math inline">\({ \boldsymbol { l } } \psi _ { p } = 0\)</span> , we conclude that d!</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has no global smooth-manifold orientation or orientability structure. Its linear <code>Orientation</code> API does not provide Lee’s continuous pointwise orientations, oriented frames/charts, orientation forms, orientation-preserving local diffeomorphisms, product/pullback manifold orientations, or Lie-group orientation theorem. In addition, tangent-based clauses inherit the C03 point-derivation-vs-standard-<code>TangentSpace</code> boundary. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u025" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u025">Proposition 15.19</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U025</code> · Ch. 15, § Orientations of Manifolds; source L11612 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>every <span class="math inline">\(g \in G\)</span> Proposition 15.19. Every Lie group has precisely two left-invariant orientations, corresponding to the two orientations of its Lie algebra.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has no global smooth-manifold orientation or orientability structure. Its linear <code>Orientation</code> API does not provide Lee’s continuous pointwise orientations, oriented frames/charts, orientation forms, orientation-preserving local diffeomorphisms, product/pullback manifold orientations, or Lie-group orientation theorem. In addition, tangent-based clauses inherit the C03 point-derivation-vs-standard-<code>TangentSpace</code> boundary. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u026" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u026">Definition/convention — oriented smooth manifold</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U026</code> · Ch. 15, § Orientations of Hypersurfaces; source L11618 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If M is an oriented smooth manifold and S is a smooth submanifold of M (with or without boundary), S might not inherit an orientation from M; even if S is embedded. Clearly, it is not sufficient to restrict an orientation form from M to S , since the restriction of an n-form to a manifold of lower dimension must necessarily be zero. A useful example to consider is the Möbius band, which is not orientable (see Example 15.38 below), even though it can be embedded together with the observation in the preceding paragraph, it follows that (14.19) holds at <span class="math inline">\(p\)</span> .</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This row requires manifold orientations together with hypersurface/boundary or Riemannian tangent geometry. P/H has no manifold-orientation layer; hypersurface/submanifold claims also inherit C05’s missing general submanifold object and C03’s unbridged tangent model. Fiberwise orientation/volume-form ingredients are only proper subsets. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u027" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u027">Proposition 15.21</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U027</code> · Ch. 15, § Orientations of Hypersurfaces; source L11624 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 15.21. Suppose M is an oriented smooth n-manifold with or without boundary, S is an immersed hypersurface with or without boundary in M; and N is a vector field along S that is nowhere tangent to S. Then S has a unique orientation such that for each <span class="math inline">\(p \in S , ( E _ { 1 } , \ldots , E _ { n - 1 } )\)</span> is an oriented basis for <span class="math inline">\(T _ { p } S\)</span> if and only if <span class="math inline">\(( N _ { p } , E _ { 1 } , \dots , E _ { n - 1 } )\)</span> is an oriented basis for <span class="math inline">\(T _ { p } M\)</span> . If ! is an orientation form for M; then <span class="math inline">\(\iota _ { S } ^ { * } ( N \lrcorner \omega )\)</span> is an orientation form for S with respect to this orientation, where <span class="math inline">\(\iota _ { S } \colon S \hookrightarrow M\)</span> is inclusi esentation <span class="math inline">\(\psi \stackrel { - } { \circ } F \circ \varphi ^ { - 1 }\)</span> .</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This row requires manifold orientations together with hypersurface/boundary or Riemannian tangent geometry. P/H has no manifold-orientation layer; hypersurface/submanifold claims also inherit C05’s missing general submanifold object and C03’s unbridged tangent model. Fiberwise orientation/volume-form ingredients are only proper subsets. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u028" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u028">Example 15.22</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U028</code> · Ch. 15, § Orientations of Hypersurfaces; source L11639 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Example 15.22. The sphere <span class="math inline">\(\mathbb { S } ^ { n }\)</span> is a hypersurface in <span class="math inline">\(\mathbb { R } ^ { n + 1 }\)</span> , to which the vector field <span class="math inline">\(N = x ^ { i } \partial / \partial x ^ { i }\)</span> is nowhere tangent, so this vector field induces an orientation on <span class="math inline">\(\mathbb { S } ^ { n }\)</span> This shows that all spheres are orientable. We define the standard orientation of <span class="math inline">\(\mathbb { S } ^ { n }\)</span> to be the orientation determined by N . Unless otherwise specified, we always use this orientation. (The standard orientation on <span class="math inline">\(\mathbb { S } ^ { 0 }\)</span> is the one that assigns the orientation 1 to the point <span class="math inline">\(+ 1 \in \mathbb { S } ^ { 0 }\)</span> and <span class="math inline">\(- 1 \mathrm { ~ t o ~ } { - 1 } \in \mathbb { S } ^ { 0 } . )\)</span> Not every hypersurface admits a nowhere tangent vector field. (See Problem 15-6.) However, the following proposition gives a sufficient condition that holds in many cases. <!-- pages 401-600 --> Proposition 15.23. Let</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This row requires manifold orientations together with hypersurface/boundary or Riemannian tangent geometry. P/H has no manifold-orientation layer; hypersurface/submanifold claims also inherit C05’s missing general submanifold object and C03’s unbridged tangent model. Fiberwise orientation/volume-form ingredients are only proper subsets. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u029" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u029">Proposition 15.23</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U029</code> · Ch. 15, § Orientations of Hypersurfaces; source L11645 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Let M be an oriented smooth manifold, and suppose S ⊆ M is a regular level set of a smooth function f M → ℝ . Then S is orientable . The proof takes a Riemannian metric on <span class="math inline">\(M\)</span> and the vector field <span class="math inline">\(N = \operatorname{grad} f|_{S}\)</span>, which is nowhere tangent to <span class="math inline">\(S\)</span>, so Proposition 15.21 applies.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This row requires manifold orientations together with hypersurface/boundary or Riemannian tangent geometry. P/H has no manifold-orientation layer; hypersurface/submanifold claims also inherit C05’s missing general submanifold object and C03’s unbridged tangent model. Fiberwise orientation/volume-form ingredients are only proper subsets. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u030" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u030">Definition/convention — outward-pointing vector field</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U030</code> · Ch. 15, § Boundary Orientations; source L11651 · after <a href="c05.html#fc08-c05-u016"><code>FC08-C05-U016</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If M is a smooth manifold with boundary, then <span class="citation" data-cites="M">@M</span> is an embedded hypersurface in M (see Theorem 5.11), and Problem 8-4 showed that there is always a smooth outward-pointing vector field along <span class="citation" data-cites="M">@M</span> . Because an outward-pointing vector field is nowhere tangent to <span class="citation" data-cites="M">@M</span>; it determines an orientation on <span class="citation" data-cites="M">@M</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This row requires manifold orientations together with hypersurface/boundary or Riemannian tangent geometry. P/H has no manifold-orientation layer; hypersurface/submanifold claims also inherit C05’s missing general submanifold object and C03’s unbridged tangent model. Fiberwise orientation/volume-form ingredients are only proper subsets. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u031" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u031">Proposition 15.24</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U031</code> · Ch. 15, § Boundary Orientations; source L11653 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 15.24 (The Induced Orientation on a Boundary). Let M be an oriented smooth n-manifold with boundary, <span class="math inline">\(n \geq 1\)</span> . Then <span class="citation" data-cites="M">@M</span> is orientable, and all outward-pointing vector fields along <span class="citation" data-cites="M">@M</span> determine the same orientation on <span class="citation" data-cites="M">@M</span> .</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This row requires manifold orientations together with hypersurface/boundary or Riemannian tangent geometry. P/H has no manifold-orientation layer; hypersurface/submanifold claims also inherit C05’s missing general submanifold object and C03’s unbridged tangent model. Fiberwise orientation/volume-form ingredients are only proper subsets. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u032" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u032">Definition/convention — induced orientation</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U032</code> · Ch. 15, § Boundary Orientations; source L11655 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Remark. The orientation on <span class="citation" data-cites="M">@M</span> determined by any outward-pointing vector field is called the induced orientation or the Stokes orientation on <span class="citation" data-cites="M">@M</span> . (The second term is chosen because of the role this orientation plays in Stokes’s theorem, to be discussed in Chapter 16.)</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This row requires manifold orientations together with hypersurface/boundary or Riemannian tangent geometry. P/H has no manifold-orientation layer; hypersurface/submanifold claims also inherit C05’s missing general submanifold object and C03’s unbridged tangent model. Fiberwise orientation/volume-form ingredients are only proper subsets. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u033" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u033">Example 15.25</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U033</code> · Ch. 15, § Boundary Orientations; source L11661 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>they are both negative multiples of <span class="math inline">\(\partial / \partial x ^ { 1 } | _ { p \cdot } )\)</span> )  Example 15.25. This proposition gives a simpler proof that <span class="math inline">\(\mathbb { S } ^ { n }\)</span> is orientable, because it is the boundary of the closed unit ball. The orientation thus induced on <span class="math inline">\(\mathbb { S } ^ { n }\)</span> is the standard one, as you can check.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This row requires manifold orientations together with hypersurface/boundary or Riemannian tangent geometry. P/H has no manifold-orientation layer; hypersurface/submanifold claims also inherit C05’s missing general submanifold object and C03’s unbridged tangent model. Fiberwise orientation/volume-form ingredients are only proper subsets. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u034" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u034">Example 15.26</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U034</code> · Ch. 15, § Boundary Orientations; source L11663 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Give <span class="math inline">\(\mathbb{H}^{n}\)</span> the standard orientation inherited from <span class="math inline">\(\mathbb{R}^{n}\)</span> and identify <span class="math inline">\(\partial\mathbb{H}^{n}\)</span> with <span class="math inline">\(\mathbb{R}^{n-1}\)</span> by <span class="math inline">\((x^{1},\dots,x^{n-1},0) \leftrightarrow (x^{1},\dots,x^{n-1})\)</span>. The induced orientation satisfies <span class="math display">\[ \left[-\partial/\partial x^{n},\ \partial/\partial x^{1},\dots,\partial/\partial x^{n-1}\right] = -\left[\partial/\partial x^{n},\ \partial/\partial x^{1},\dots,\partial/\partial x^{n-1}\right] = (-1)^{n}\left[\partial/\partial x^{1},\dots,\partial/\partial x^{n-1},\ \partial/\partial x^{n}\right]. \]</span> So the induced orientation on <span class="math inline">\(\partial\mathbb{H}^{n}\)</span> agrees with the standard orientation of <span class="math inline">\(\mathbb{R}^{n-1}\)</span> when <span class="math inline">\(n\)</span> is even and is opposite to it when <span class="math inline">\(n\)</span> is odd; the standard coordinates on <span class="math inline">\(\partial\mathbb{H}^{n} \approx \mathbb{R}^{n-1}\)</span> are positively oriented if and only if <span class="math inline">\(n\)</span> is even.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This row requires manifold orientations together with hypersurface/boundary or Riemannian tangent geometry. P/H has no manifold-orientation layer; hypersurface/submanifold claims also inherit C05’s missing general submanifold object and C03’s unbridged tangent model. Fiberwise orientation/volume-form ingredients are only proper subsets. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u035" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u035">Lemma 15.27</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U035</code> · Ch. 15, § Boundary Orientations; source L11676 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Lemma 15.27. Let M be an oriented smooth n-manifold with boundary. Suppose <span class="math inline">\(U \subseteq \mathbb { R } ^ { n - 1 }\)</span> is open, a; b are real numbers with <span class="math inline">\(a &lt; b\)</span> , and F <span class="math inline">\(( a , b ] \times U \to M\)</span> is a smooth embedding that restricts to an embedding of <span class="math inline">\(\{ b \} \times U\)</span> into <span class="citation" data-cites="M">@M</span> . Then the parametrization <span class="math inline">\(f \colon U \to \partial M\)</span> given by <span class="math inline">\(f ( x ) = F ( b , x )\)</span> is orientation-preserving for <span class="citation" data-cites="M">@M</span> if and only if F is orientation-preservin rray}{c} d (u d v) (X, Y) = d u d v (X, Y) = d u (X) d v (Y) - d v (X) d u (Y) \ = X u Y v - X v Y u.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This row requires manifold orientations together with hypersurface/boundary or Riemannian tangent geometry. P/H has no manifold-orientation layer; hypersurface/submanifold claims also inherit C05’s missing general submanifold object and C03’s unbridged tangent model. Fiberwise orientation/volume-form ingredients are only proper subsets. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u036" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u036">Example 15.28</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U036</code> · Ch. 15, § Boundary Orientations; source L11705 · after <a href="#fc08-c15-u035"><code>FC08-C15-U035</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Example 15.28. Spherical coordinates (Example C.38) yield a smooth local parametrization of <span class="math inline">\(\mathbb { S } ^ { 2 }\)</span> as follows. Let U be the open rectangle <span class="math inline">\(( 0 , \pi ) \times ( 0 , 2 \pi ) \subseteq \mathbb { R } ^ { 2 }\)</span> U ^ { 3 }$ be the following map: <span class="math display">\[ X (\varphi , \theta) = (\sin \varphi \cos \theta , \sin \varphi \sin \theta , \cos \varphi) \]</span> (Fig. 15.7).We can check whether X preserves or reverses orientation by using the fact that it is the restriction of the 3-dimensional spherical coordinate parametrization $ 1 ] U ^ { 3 }$ defined by <span class="math display">\[ F (\rho , \varphi , \theta) = (\rho \sin \varphi \cos \theta , \rho \sin \varphi \sin \theta , \rho \cos \varphi). \]</span> Because <span class="math inline">\(F ( 1 , \varphi , \theta ) = X ( \varphi , \theta )\)</span> , the hypotheses of Lemma 15.27 are satisfied. By direct computation, the Jacobian determinant of <span class="math inline">\(F\)</span> is <span class="math inline">\(\rho ^ { 2 }\)</span> sin <span class="math inline">\(\varphi }\)</span> , which is positive on <span class="math inline">\(( 0 , 1 ] \times U\)</span> . By virtue of Lemma 15.27, X is orientation-preserving. ## The Riemannian Volume Form Let $</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This row requires manifold orientations together with hypersurface/boundary or Riemannian tangent geometry. P/H has no manifold-orientation layer; hypersurface/submanifold claims also inherit C05’s missing general submanifold object and C03’s unbridged tangent model. Fiberwise orientation/volume-form ingredients are only proper subsets. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u037" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u037">Proposition 15.29</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U037</code> · Ch. 15, § The Riemannian Volume Form; source L11723 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 15.29. Suppose <span class="math inline">\(( M , g )\)</span> is an oriented Riemannian n-manifold with or without boundary, and <span class="math inline">\(n \geq 1\)</span> . There is a unique smooth orientation form <span class="math inline">\(\omega _ { g } \in\)</span> <span class="math inline">\(\Omega ^ { n } ( M )\)</span> , called the Riemannian volume form, that satisfies <span class="math display">\[ \omega_ {g} (E _ {1}, \ldots , E _ {n}) = 1\tag{15.2} \]</span> for every local oriented orthonormal frame <span class="math inline">\(( E _ { i } )\)</span> for M .</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This row requires manifold orientations together with hypersurface/boundary or Riemannian tangent geometry. P/H has no manifold-orientation layer; hypersurface/submanifold claims also inherit C05’s missing general submanifold object and C03’s unbridged tangent model. Fiberwise orientation/volume-form ingredients are only proper subsets. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u038" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u038">Proposition 15.31</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U038</code> · Ch. 15, § The Riemannian Volume Form; source L11763 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 15.31. Let <span class="math inline">\(( M , g )\)</span> be an oriented Riemannian n-manifold with or without boundary, <span class="math inline">\(n \geq 1\)</span> . In any oriented smooth coordinates <span class="math inline">\(\left( x ^ { i } \right)\)</span> , the Riemannian volume form has the local coordinate expression <span class="math display">\[ \omega_ {g} = \sqrt {\det (g _ {i j})} d x ^ {1} \wedge \dots \wedge d x ^ {n}, \]</span> where <span class="math inline">\(g _ { i j }\)</span> are the components of <span class="math inline">\(_ g\)</span> in these coordinates.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This row requires manifold orientations together with hypersurface/boundary or Riemannian tangent geometry. P/H has no manifold-orientation layer; hypersurface/submanifold claims also inherit C05’s missing general submanifold object and C03’s unbridged tangent model. Fiberwise orientation/volume-form ingredients are only proper subsets. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u039" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u039">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U039</code> · Ch. 15, § Hypersurfaces in Riemannian Manifolds; source L11799 · after <a href="#fc08-c15-u027"><code>FC08-C15-U027</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Hypersurfaces in Riemannian Manifolds Let <span class="math inline">\(( M , g )\)</span> be an oriented Riemannian manifold with or without boundary, and suppose <span class="math inline">\(S \subseteq M\)</span> is an immersed hypersurface with or without boundary. Any unit normal vector field along S is nowhere tangent to <span class="math inline">\(S\)</span> , so it determines an orientation of S by Proposition 15.21. The next proposition gives a simple formula for the volume form of the induced metric on S with respect to this orientation.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This row requires manifold orientations together with hypersurface/boundary or Riemannian tangent geometry. P/H has no manifold-orientation layer; hypersurface/submanifold claims also inherit C05’s missing general submanifold object and C03’s unbridged tangent model. Fiberwise orientation/volume-form ingredients are only proper subsets. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u040" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u040">Proposition 15.32</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U040</code> · Ch. 15, § Hypersurfaces in Riemannian Manifolds; source L11801 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 15.32. Let <span class="math inline">\(( M , g )\)</span> be an oriented Riemannian manifold with or without boundary, let <span class="math inline">\(S \subseteq M\)</span> be an immersed hypersurface with or without boundary, and let <span class="math inline">\(\widetilde g\)</span> denote the induced metric on S. Suppose N is a smooth unit normal vector field along S. With respect to the orientation of S determined by N , the volume form of <span class="math inline">\(( S , { \widetilde { g } } )\)</span> is given by <span class="math display">\[ \omega_ {\widetilde {g}} = \iota_ {S} ^ {*} (N \lrcorner \omega_ {g}). \]</span> Proof.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This row requires manifold orientations together with hypersurface/boundary or Riemannian tangent geometry. P/H has no manifold-orientation layer; hypersurface/submanifold claims also inherit C05’s missing general submanifold object and C03’s unbridged tangent model. Fiberwise orientation/volume-form ingredients are only proper subsets. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u041" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u041">Proposition 15.33</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U041</code> · Ch. 15, § Hypersurfaces in Riemannian Manifolds; source L11820 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 15.33. Suppose M is any Riemannian manifold with boundary. There is a unique smooth outward-pointing unit normal vector field N along <span class="citation" data-cites="M">@M</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This row requires manifold orientations together with hypersurface/boundary or Riemannian tangent geometry. P/H has no manifold-orientation layer; hypersurface/submanifold claims also inherit C05’s missing general submanifold object and C03’s unbridged tangent model. Fiberwise orientation/volume-form ingredients are only proper subsets. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u042" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u042">Corollary 15.34</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U042</code> · Ch. 15, § Hypersurfaces in Riemannian Manifolds; source L11828 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If <span class="math inline">\((M,g)\)</span> is an oriented Riemannian manifold with boundary and <span class="math inline">\(\widetilde{g}\)</span> is the induced metric on <span class="math inline">\(\partial M\)</span>, then the volume form of <span class="math inline">\(\widetilde{g}\)</span> is <span class="math display">\[ \omega_{\widetilde{g}} = \iota_{\partial M}^{*}\left(N \lrcorner\, \omega_{g}\right), \]</span> where <span class="math inline">\(N\)</span> is the outward unit normal vector field along <span class="math inline">\(\partial M\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — This row requires manifold orientations together with hypersurface/boundary or Riemannian tangent geometry. P/H has no manifold-orientation layer; hypersurface/submanifold claims also inherit C05’s missing general submanifold object and C03’s unbridged tangent model. Fiberwise orientation/volume-form ingredients are only proper subsets. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u043" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u043">Proposition 15.35</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U043</code> · Ch. 15, § Orientations and Covering Maps; source L11842 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Proposition 15.35. If  <span class="math inline">\(E \to M\)</span> is a smooth covering map and M is orientable, then E is also orientable.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has topological covering-map infrastructure, but no smooth-manifold orientation-preserving predicate or orientability theorem with which to state the source result. Covering data alone is a proper subset. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u044" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u044">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U044</code> · Ch. 15, § Orientations and Covering Maps; source L11846 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The next theorem is more interesting. If G is a Lie group acting smoothly on a smooth manifold <span class="math inline">\(E\)</span> (on the left, say), we say the action is an orientation-preserving action if for each <span class="math inline">\(g \in G\)</span> , the diffeomorphism <span class="math inline">\(x \mapsto g \cdot x\)</span> is orientation-preserving.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has topological covering-map infrastructure, but no smooth-manifold orientation-preserving predicate or orientability theorem with which to state the source result. Covering data alone is a proper subset. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u045" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u045">Theorem 15.36</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U045</code> · Ch. 15, § Orientations and Covering Maps; source L11848 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 15.36. Suppose E is a connected, oriented, smooth manifold with <span class="math inline">\(o r\)</span> without boundary, and <span class="math inline">\(\pi \colon E \to M\)</span> is a smooth normal covering map. Then M is orientable if and only if the action of <span class="math inline">\(\operatorname { A u t } _ { \pi } ( E )\)</span> on E is orientat ) + d (V d ) = d (V d ); <span class="math display">\[ \]</span> d _ {V} = d (V d ) + d (d (V ) ) = d (V d ).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has topological covering-map infrastructure, but no smooth-manifold orientation-preserving predicate or orientability theorem with which to state the source result. Covering data alone is a proper subset. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u046" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u046">Example 15.37</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U046</code> · Ch. 15, § Orientations and Covering Maps; source L11862 · after <a href="c04.html#fc08-c04-u036"><code>FC08-C04-U036</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>(Orientability of Projective Spaces). For <span class="math inline">\(n \geq 1\)</span>, consider the smooth covering map <span class="math inline">\(q \colon \mathbb{S}^{n} \to \mathbb{RP}^{n}\)</span> of Example 4.35. Its only nontrivial covering automorphism is the antipodal map <span class="math inline">\(\alpha(x) = -x\)</span>, which is orientation-preserving if and only if <span class="math inline">\(n\)</span> is odd; hence <span class="math inline">\(\mathbb{RP}^{n}\)</span> is orientable if and only if <span class="math inline">\(n\)</span> is odd.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has topological covering-map infrastructure, but no smooth-manifold orientation-preserving predicate or orientability theorem with which to state the source result. Covering data alone is a proper subset. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u047" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u047">Example 15.38</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U047</code> · Ch. 15, § Orientations and Covering Maps; source L11864 · after <a href="c10.html#fc08-c10-u007"><code>FC08-C10-U007</code></a>, <a href="#fc08-c15-u045"><code>FC08-C15-U045</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Example 15.38 (The Möbius Bundle and the Möbius Band). Let E be the total space of the Möbius bundle (Example 10.3). The quotient map <span class="math inline">\(q \colon { \mathbb { R } } ^ { 2 } \to E\)</span> used to define <span class="math inline">\(E\)</span> is a smooth normal covering map, and the covering automorphism group is isomorphic to <span class="math inline">\(\mathbb { Z } ,\)</span> , acting on <span class="math inline">\(\mathbb { R } ^ { 2 }\)</span> by <span class="math inline">\(n \cdot ( x , y ) = \left( x + n , ( - 1 ) ^ { n } y \right)\)</span> . (You can check this directly from the definitions, or you can accept this for now and wait until we have developed more machinery in Chapter 21, where a simpler proof is available; see Problem 21-9.) For n odd, the diffeomorphism <span class="math inline">\(( x , y ) \mapsto n \cdot ( x , y )\)</span> of <span class="math inline">\(\mathbb { R } ^ { 2 }\)</span> pulls back the orientation form dx <span class="math inline">\(\wedge d y\)</span> to <span class="math inline">\(- d x \wedge d y\)</span> , so the action of <span class="math inline">\(\operatorname { A u t } _ { \pi } ( E )\)</span> is not orientation-preserving. Thu</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — Mathlib has topological covering-map infrastructure, but no smooth-manifold orientation-preserving predicate or orientability theorem with which to state the source result. Covering data alone is a proper subset. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u048" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u048">Definition/convention — neighborhood that</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U048</code> · Ch. 15, § The Orientation Covering; source L11872 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>In order to handle the orientable and nonorientable cases in a uniform way, it is useful to expand our definition of covering maps slightly, by allowing “covering spaces” that are not connected. If N and M are topological spaces, let us say that a map <span class="math inline">\(\pi \colon N \to M\)</span> is a generalized covering map if it satisfies all of the requirements for a covering map except that N might not be connected: this means that N is locally path-connected,  is surjective and continuous, and each point <span class="math inline">\(p \in M\)</span> has a neighborhood that is evenly covered by . If in addition N and M are smooth manifolds with or without boundary and  is a local diffeomorphism, we say it is a generalized smooth covering map.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Connected/LocallyPathConnected.html"><code>Mathlib/Topology/Connected/LocallyPathConnected.lean::LocallyPathConnectedSpace</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Covering/Basic.html#IsCoveringMap.continuous"><code>Mathlib/Topology/Covering/Basic.lean::IsEvenlyCovered, IsCoveringMap, IsCoveringMap.continuous</code></a>; <code>Lean core::Function.Surjective</code> — Mathlib’s <code>IsCoveringMap</code> already allows disconnected total spaces and states that every base point is evenly covered; unlike Lee’s generalized notion it does not require surjectivity. Thus Lee’s definition is exactly the short conjunction <code>LocallyPathConnectedSpace N ∧ Function.Surjective π ∧ IsCoveringMap π</code>. <code>/tmp/fc08-c15-witness.lean</code> compiles this definition and derives continuity from <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=IsCoveringMap.continuous#doc"><code>IsCoveringMap.continuous</code></a>.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0</span></p>
+</section>
+<section id="fc08-c15-u049" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u049">Lemma 15.39</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U049</code> · Ch. 15, § The Orientation Covering; source L11874 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Lemma 15.39. Suppose N and M are topological spaces and  <span class="math inline">\(N M\)</span> is a generalized covering map. If M is connected, then the restriction of  to each component of N is a covering map.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — No checked P/H theorem states that, for Lee’s generalized covering over a connected base, restriction to each connected component of the total space is a connected covering map. Proving surjectivity and the covering property componentwise would be substantive reconstruction. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u050" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u050">Definition/convention — source terminology/construction</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U050</code> · Ch. 15, § The Orientation Covering; source L11880 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Let <span class="math inline">\(M\)</span> be a connected smooth positive-dimensional manifold with or without boundary, and let <span class="math inline">\(\widehat{M}\)</span> denote the set of orientations of all tangent spaces to <span class="math inline">\(M\)</span>: <span class="math display">\[ \widehat{M} = \{(p,\mathcal{O}_{p}) : p \in M \text{ and } \mathcal{O}_{p} \text{ is an orientation of } T_{p}M\}. \]</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — P/H has no orientation-covering construction for manifolds, and no manifold-orientability API from which its smooth structure, two-sheeted covering theorem, uniqueness, or fundamental-group criterion can be stated. Generic covering-space results do not own these rows. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u051" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u051">Construction/definition — orientation covering of M</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U051</code> · Ch. 15, § The Orientation Covering; source L11886 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Define the projection <span class="math inline">\(\widehat { \pi } \colon \widehat { M } \to M\)</span> by sending an orientation of <span class="math inline">\(T _ { p } M\)</span> to the point <span class="math inline">\(p\)</span> itself: <span class="math inline">\(\hat { \pi } ( p , \mathcal { O } _ { p } ) = p\)</span> . Since each tangent space has exactly two orientations, each fiber of this map has cardinality 2. The map <span class="math inline">\(\widehat { \pi } \colon \widehat { M } \to M\)</span> is called the orientation covering of M . Proposition 15.40 (Properties of the Orientation Covering). Suppose</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — P/H has no orientation-covering construction for manifolds, and no manifold-orientability API from which its smooth structure, two-sheeted covering theorem, uniqueness, or fundamental-group criterion can be stated. Generic covering-space results do not own these rows. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u052" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u052">Proposition 15.40</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U052</code> · Ch. 15, § The Orientation Covering; source L11888 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>(Properties of the Orientation Covering). Suppose <span class="math inline">\(M\)</span> is a connected smooth positive-dimensional manifold with or without boundary and <span class="math inline">\(\widehat{\pi} \colon \widehat{M} \to M\)</span> is its orientation covering. Then <span class="math inline">\(\widehat{M}\)</span> can be given the structure of a smooth oriented manifold with or without boundary such that: (a) <span class="math inline">\(\widehat{\pi}\)</span> is a generalized smooth covering map; (b) a connected open subset <span class="math inline">\(U \subseteq M\)</span> is evenly covered by <span class="math inline">\(\widehat{\pi}\)</span> if and only if <span class="math inline">\(U\)</span> is orientable; (c) if <span class="math inline">\(U \subseteq M\)</span> is evenly covered, every orientation of <span class="math inline">\(U\)</span> is the pullback orientation induced by a local section of <span class="math inline">\(\widehat{\pi}\)</span> over <span class="math inline">\(U\)</span>.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — P/H has no orientation-covering construction for manifolds, and no manifold-orientability API from which its smooth structure, two-sheeted covering theorem, uniqueness, or fundamental-group criterion can be stated. Generic covering-space results do not own these rows. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u053" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u053">Theorem 15.41</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U053</code> · Ch. 15, § The Orientation Covering; source L11912 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>(Orientation Covering Theorem). Suppose <span class="math inline">\(M\)</span> is a connected smooth manifold with or without boundary and <span class="math inline">\(\widehat{\pi} \colon \widehat{M} \to M\)</span> is its orientation covering. (a) If <span class="math inline">\(M\)</span> is orientable, <span class="math inline">\(\widehat{M}\)</span> has exactly two components and the restriction of <span class="math inline">\(\widehat{\pi}\)</span> to each is a diffeomorphism onto <span class="math inline">\(M\)</span>. (b) If <span class="math inline">\(M\)</span> is nonorientable, <span class="math inline">\(\widehat{M}\)</span> is connected and <span class="math inline">\(\widehat{\pi}\)</span> is a two-sheeted smooth covering map.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — P/H has no orientation-covering construction for manifolds, and no manifold-orientability API from which its smooth structure, two-sheeted covering theorem, uniqueness, or fundamental-group criterion can be stated. Generic covering-space results do not own these rows. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u054" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u054">Definition/convention — oriented double covering of M</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U054</code> · Ch. 15, § The Orientation Covering; source L11925 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The orientation covering is sometimes called the oriented double covering of M . There are other ways of constructing it besides the one we have given here, but as the next theorem shows, the specific details of the construction do not matter, because they all yield isomorphic covering manifolds.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — P/H has no orientation-covering construction for manifolds, and no manifold-orientability API from which its smooth structure, two-sheeted covering theorem, uniqueness, or fundamental-group criterion can be stated. Generic covering-space results do not own these rows. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u055" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u055">Theorem 15.42</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U055</code> · Ch. 15, § The Orientation Covering; source L11927 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 15.42 (Uniqueness of the Orientation Covering). Let M be a nonorientable connected smooth manifold with or without boundary, and let <span class="math inline">\(\widehat { \pi } \colon \widehat { M } \to M\)</span> be its orientation covering. If <span class="math inline">\(\widetilde { M }\)</span> is an oriented smooth manifold with or without boundary that admits a two-sheeted smooth covering map <span class="math inline">\(\widetilde \pi \colon \widetilde { M } \to M\)</span> ; then there exists a unique orientation-preserving diffeomorphism ’ <span class="math inline">\(\widetilde M \to \widehat M\)</span> such that <span class="math inline">\({ \hat { \pi } } \circ \varphi = { \widetilde { \pi } }\)</span></p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — P/H has no orientation-covering construction for manifolds, and no manifold-orientability API from which its smooth structure, two-sheeted covering theorem, uniqueness, or fundamental-group criterion can be stated. Generic covering-space results do not own these rows. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+</section>
+<section id="fc08-c15-u056" class="level3">
+<h3 class="anchored" data-anchor-id="fc08-c15-u056">Theorem 15.43</h3>
+<div class="unit-meta">
+<p><code>FC08-C15-U056</code> · Ch. 15, § The Orientation Covering; source L11933 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Theorem 15.43. Let M be a connected smooth manifold with or without boundary, and suppose the fundamental group of M has no subgroup of index 2. Then M is orientable. In particular, if M is simply connected then it is orientable.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — P/H has no orientation-covering construction for manifolds, and no manifold-orientability API from which its smooth structure, two-sheeted covering theorem, uniqueness, or fundamental-group criterion can be stated. Generic covering-space results do not own these rows. Strict whole-row semantics reject proper subsets, missing converse directions, unbridged tangent models, and substantive reconstruction from generic ingredients.</p>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/dzackgarza\.github\.io\/lean-categories\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Generated from the project’s reference notes by <code>site/build.py</code>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>The Lean is the authority; where this site differs, the Lean is right.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

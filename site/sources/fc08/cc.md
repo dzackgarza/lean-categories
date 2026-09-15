@@ -1,0 +1,677 @@
+---
+title: "FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed. (2013)"
+---
+
+FC08 — Lee, *Introduction to Smooth Manifolds*.
+
+This chapter contains 19 definitions, 7 theorems, 13 propositions, 2 lemmas, 6 corollaries, 2 examples and 1 convention.
+
+Of the 50 statements checked against Lean, 23 are formalized somewhere and 27 are not.
+
+| Status | Statements | Share | What it means |
+| --- | ---: | ---: | --- |
+| [not formalized]{.route-unmatched} | 27 | 54% | A documented search found no Lean statement of it anywhere. |
+| [in Mathlib]{.route-mathlib} | 23 | 46% | Mathlib states and proves it. |
+| **checked in total** | **50** | | |
+
+::: {.callout-note collapse="true"}
+## Which versions of Lean and Mathlib were searched
+
+- Canonical source block: FC08 Lee, Appendix C, `FC08-CC-U001`–`FC08-CC-U050`, exactly 50 unique contiguous rows retrieved from [FC08 — John M. Lee, Introduction to Smooth Manifolds](/sources/fc08/) through `agent-memory`.
+- Search order: project at `A=3b2239e161592472b34e02ad3b7da308f9ce7280`, pinned Mathlib `P=db584cd6d46c92f209a44c0f1c829460d327499d` (Apache-2.0, Lean 4.33.0), current upstream `H=5315eef9e4ffb98e0f89f278b765c50a149f66ca` (Apache-2.0, Lean 4.34.0-rc2), then current/open/indexed services, Reservoir/package candidates, broad GitHub Lean repositories, and local reference sources. No `project-existing`, `package-import`, or `reference-port` route survived strict whole-row checking.
+- Appendix C has 23 pinned `mathlib` rows and 27 dated `unmatched` rows. Positive rows are: U001, U002, U003, U004, U005, U006, U007, U008, U011, U012, U014, U015, U016, U017, U027, U035, U041, U043, U044, U045, U046, U048, U050.
+- `/tmp/fc08-cc-witness.lean` compiles at exact P and checks the principal calculus routes: Fréchet derivatives and chain rule, line derivatives, second-derivative symmetry, Taylor/parametric-integral adjacency, Fubini/Bochner integration adjacency, local Lipschitz results, uniform-series M-test, inverse function theorem, Banach contraction, and implicit function theorem.
+- Mathlib’s Fréchet calculus provides exact coordinate-free owners for Lee’s total derivative, chain rule, `C^k` regularity, and local inverse/implicit-function results. `lineDeriv` supplies the exact one-variable derivative along a standard basis vector, so source partial derivatives and Jacobian entries are short canonical assemblies rather than new definitions.
+- The main negative boundary is representational and deliberate. Lee builds multidimensional integration through Darboux sums and a Riemann integral on bounded domains; pinned/current Mathlib uses Lebesgue/Bochner integration. Mathlib has stronger Fubini, vector-integral, norm-integral, set-volume, and Jacobian change-of-variables results, but no checked Riemann–Lebesgue equivalence for Lee’s interface. Therefore U021–U026 and U028–U039 remain unmatched except for the representation-independent null-set theorem U027 and Corollary U035.
+- `map_add_eq_sum_add_integral_iteratedFDeriv` gives a strong coordinate-free Taylor theorem, but Lee’s U019 is the explicit all-orders multi-index partial-derivative formula. Because the all-orders mixed-partial permutation bridge in U013 was not found, U019/U020 are not promoted by silently translating representations.
+- The polar-coordinate example U048 has an unusually exact pinned owner: `polarCoord` is the open partial homeomorphism between the slit plane and `(0,∞)×(-π,π)`, its inverse is Lee’s `(r cos θ,r sin θ)`, and `det_fderivPolarCoordSymm` computes determinant `r`. No corresponding full spherical-coordinate owner was found for U049.
+- Broad GitHub searches on 2026-09-07 did not surface a compatible Lean 4 implementation of Lee’s multidimensional Darboux/Riemann layer or a missing Jacobian/partial-derivative bundle. Current repositories found in the ODE/control direction either reuse Mathlib or explicitly axiomatize ODE existence results, so they do not improve Appendix C routes.
+- `N=2026-09-07` marks dated unmatched decisions. Strict whole-row semantics apply uniformly.
+:::
+
+### Definition/convention — differentiable at a {#fc08-cc-u001}
+
+::: {.unit-meta}
+`FC08-CC-U001` · Appendix C, § Total and Partial Derivatives; source L19458 · [in Mathlib]{.route-mathlib}
+:::
+
+Let V , W be finite-dimensional vector spaces, which we may assume to be endowed with norms. If $U \subseteq V$ is an open subset and $a \in U$ , a map $F \colon U \to W$ is said to be differentiable at a if there exists a linear map $L \colon V \to W$ such that $$ \lim _ {v \to 0} \frac {| F (a + v) - F (a) - L v |}{| v |} = 0.\tag{C.1} $$
+
+::: {.unit-lean}
+**Formalized.** [`Mathlib/Analysis/Calculus/FDeriv/Defs.lean::HasFDerivWithinAt, HasFDerivAt, fderivWithin, fderiv`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/FDeriv/Defs.html) — Mathlib’s Fréchet derivative is exactly Lee’s total derivative: `HasFDerivWithinAt` gives the little-o linear approximation on a set, and on an open domain it agrees with `HasFDerivAt`; `fderivWithin`/`fderiv` are the unique derivative maps.
+:::
+
+[Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0]{.unit-provenance}
+
+### Definition/convention — total derivative of F at a {#fc08-cc-u002}
+
+::: {.unit-meta}
+`FC08-CC-U002` · Appendix C, § Total and Partial Derivatives; source L19468 · [in Mathlib]{.route-mathlib}
+:::
+
+If F is differentiable at a, the linear map L satisfying (C.1) is denoted by D F ( a ) and is called the total derivative of F at a. Condition (C.1) can also be written $$ F(a+v) = F(a) + DF(a)v + R(v), \tag{C.2} $$ where the remainder $R(v) = F(a+v) - F(a) - DF(a)v$ satisfies $|R(v)|/|v| \to 0$ as $v \to 0$.
+
+::: {.unit-lean}
+**Formalized.** [`Mathlib/Analysis/Calculus/FDeriv/Defs.lean::HasFDerivWithinAt, HasFDerivAt, fderivWithin, fderiv`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/FDeriv/Defs.html) — Mathlib’s Fréchet derivative is exactly Lee’s total derivative: `HasFDerivWithinAt` gives the little-o linear approximation on a set, and on an open domain it agrees with `HasFDerivAt`; `fderivWithin`/`fderiv` are the unique derivative maps.
+:::
+
+[Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0]{.unit-provenance}
+
+### Proposition C.3 {#fc08-cc-u003}
+
+::: {.unit-meta}
+`FC08-CC-U003` · Appendix C, § Total and Partial Derivatives; source L19508 · [in Mathlib]{.route-mathlib}
+:::
+
+(The Chain Rule for Total Derivatives). Suppose $V$, $W$, $X$ are finite-dimensional vector spaces, $U \subseteq V$ and $\widetilde{U} \subseteq W$ are open, and $F \colon U \to \widetilde{U}$, $G \colon \widetilde{U} \to X$ are maps. If $F$ is differentiable at $a \in U$ and $G$ is differentiable at $F(a)$, then $G \circ F$ is differentiable at $a$ and $$ D(G \circ F)(a) = DG(F(a)) \circ DF(a). $$
+
+::: {.unit-lean}
+**Formalized.** [`Mathlib/Analysis/Calculus/FDeriv/Comp.lean::HasFDerivAt.comp, HasFDerivWithinAt.comp`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/FDeriv/Comp.html) — The Fréchet chain rule composes the derivative linear maps exactly as in Proposition C.3, and applies on open Euclidean domains via the within/at bridge.
+:::
+
+[Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0]{.unit-provenance}
+
+### Definition/convention — source terminology/construction {#fc08-cc-u004}
+
+::: {.unit-meta}
+`FC08-CC-U004` · Appendix C, § Partial Derivatives; source L19548 · [in Mathlib]{.route-mathlib}
+:::
+
+Now we specialize to maps between Euclidean spaces. Suppose $U \subseteq \mathbb { R } ^ { n }$ is open and $f \colon U \to \mathbb { R }$ is a real-valued function. For any $a = \left( a ^ { 1 } , \ldots , a ^ { n } \right) \in U$ and any $j \in \{ 1 , \dotsc , n \}$ , the j th partial derivative of f at a is defined to be the ordinary derivative of f with respect to $x ^ { j }$ while holding the other variables fixed: $$ \begin{array}{c} \frac {\partial f}{\partial x ^ {j}} (a) = \lim _ {h \to 0} \frac {f (a ^ {1} , \ldots , a ^ {j} + h , \ldots , a ^ {n}) - f (a ^ {1} , \ldots , a ^ {j} , \ldots , a ^ {n})}{h} \\ = \lim _ {h \to 0} \frac {f (a + h e _ {j}) - f (a)}{h}, \end{array} $$
+
+::: {.unit-lean}
+**Formalized.** [`Mathlib/Analysis/Calculus/LineDeriv/Basic.lean::lineDerivWithin, lineDeriv`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/LineDeriv/Basic.html) — Lee’s partial derivative is exactly the line derivative in the standard-basis direction `e_j`; `lineDerivWithin ℝ f U a e_j` is defined by the same one-variable difference quotient.
+:::
+
+[Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0]{.unit-provenance}
+
+### Definition/convention — component functions of F {#fc08-cc-u005}
+
+::: {.unit-meta}
+`FC08-CC-U005` · Appendix C, § Partial Derivatives; source L19556 · [in Mathlib]{.route-mathlib}
+:::
+
+More generally, for a vector-valued function $F \colon U \mathbb { R } ^ { m }$ , we can write the coordinates of $F ( x )$ as $F ( x ) = \left( F ^ { 1 } ( x ) , \ldots , F ^ { m } ( x ) \right)$ This defines m functions $F ^ { 1 } , \ldots , F ^ { m } \colon U $ R called the component functions of F . The partial derivatives of F are defined simply to be the partial derivatives $\partial F ^ { i } / \partial x ^ { j }$ of its component functions. The matrix $\left( { \partial F ^ { i } } / { \partial x ^ { j } } \right)$ of partial derivatives is called the Jacobian matrix of F , and its determinant is called the J
+
+::: {.unit-lean}
+**Formalized.** [`Mathlib/Analysis/Calculus/LineDeriv/Basic.lean::lineDerivWithin`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/LineDeriv/Basic.html); [`Mathlib/Data/Matrix/Basic.lean::Matrix`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Data/Matrix/Basic.html); [`Mathlib/LinearAlgebra/Matrix/Determinant/Basic.lean::Matrix.det`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/Determinant/Basic.html#Matrix.det) — For `F : ℝ^n → ℝ^m`, component functions are coordinate evaluations; the Jacobian is the matrix `(i,j) ↦ lineDerivWithin ℝ (fun x => F x i) U a e_j`, and [`Matrix.det`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Matrix.det#doc) is its determinant in the square case. This is an exact short assembly of canonical Mathlib objects even though Mathlib has no separately named `Jacobian` definition.
+:::
+
+[Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0]{.unit-provenance}
+
+### Definition/convention — of class C {#fc08-cc-u006}
+
+::: {.unit-meta}
+`FC08-CC-U006` · Appendix C, § Partial Derivatives; source L19558 · [in Mathlib]{.route-mathlib}
+:::
+
+If F : U ℝ ^m is a function for which each partial derivative exists at each point in U and the functions ∂ F ^i / ∂ x ^j : U → ℝ so defined are all continuous, then F is said to be of class C ^1 or continuously differentiable. If this is the case, we can differentiate the functions ∂ F ^i / ∂ x ^j to obtain second-order partial derivatives $$ \frac{\partial^{2}F^{i}}{\partial x^{k}\partial x^{j}} = \frac{\partial}{\partial x^{k}}\left(\frac{\partial F^{i}}{\partial x^{j}}\right), $$ and, continuing, partial derivatives of every order; $F$ is of class $C^{k}$ when all partial derivatives of order at most $k$ exist and are continuous.
+
+::: {.unit-lean}
+**Formalized.** [`Mathlib/Analysis/Calculus/ContDiff/Defs.lean::ContDiffOn, ContDiff`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/ContDiff/Defs.html) — `ContDiffOn ℝ k F U` is Mathlib’s `C^k` predicate and `ContDiffOn ℝ ∞ F U` is smoothness; the definition is local and agrees with the usual Euclidean partial-derivative formulation.
+:::
+
+[Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0]{.unit-provenance}
+
+### Definition/convention — of class C {#fc08-cc-u007}
+
+::: {.unit-meta}
+`FC08-CC-U007` · Appendix C, § Partial Derivatives; source L19566 · [in Mathlib]{.route-mathlib}
+:::
+
+general, if $U \subseteq \mathbb { R } ^ { n }$ is an open subset and $k \geq 0$ , a function $F \colon U \mathbb { R } ^ { m }$ is said to be of class $C ^ { k }$ or k times continuously differentiable if all the partial derivatives of $F$ of order less than or equal to $k$ exist and are continuous functions on $U$ . (Thus a function of class $C ^ { 0 }$ is just a continuous function.) Because existence and continuity of derivatives are local properties, clearly $F$ is $C ^ { k }$ if and only if it has that property in a neighborhood of ea between X and Y , the two spaces are said to be homotopy equivalent.
+
+::: {.unit-lean}
+**Formalized.** [`Mathlib/Analysis/Calculus/ContDiff/Defs.lean::ContDiffOn, ContDiff`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/ContDiff/Defs.html) — `ContDiffOn ℝ k F U` is Mathlib’s `C^k` predicate and `ContDiffOn ℝ ∞ F U` is smoothness; the definition is local and agrees with the usual Euclidean partial-derivative formulation.
+:::
+
+[Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0]{.unit-provenance}
+
+### Definition/convention — diffeomorphism {#fc08-cc-u008}
+
+::: {.unit-meta}
+`FC08-CC-U008` · Appendix C, § Partial Derivatives; source L19568 · [in Mathlib]{.route-mathlib}
+:::
+
+in $U$ A function that is of class $C ^ { k }$ for every $k \geq 0$ is said to be of class $C ^ { \infty }$ , smooth, or infinitely differentiable. If U and V are open subsets of Euclidean spaces, a function $F \colon U \to V$ is called a diffeomorphism if it is smooth and bijective and its inverse function is also smooth.
+
+::: {.unit-lean}
+**Formalized.** [`Mathlib/Analysis/Calculus/ContDiff/Defs.lean::ContDiffOn`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/ContDiff/Defs.html); `Lean core::Function.Bijective, Function.invFun` — Lee’s Euclidean diffeomorphism definition is the exact conjunction that `F` is smooth on `U`, bijective onto `V`, and its inverse is smooth on `V`; these are canonical Lean/Mathlib predicates, requiring no new mathematical owner.
+:::
+
+[Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0]{.unit-provenance}
+
+### Proposition C.4 {#fc08-cc-u009}
+
+::: {.unit-meta}
+`FC08-CC-U009` · Appendix C, § Partial Derivatives; source L19572 · [not formalized]{.route-unmatched}
+:::
+
+R } ^ { n }$ and $V \subseteq \mathbb { R } ^ { m }$ are open subsets and $F \colon U \to V$ is a diffeomorphism. Then $m = n$ , and for each $a \in U$ , the total derivative $D F ( a )$ is invertible, with $D F ( a ) ^ { - 1 } = D { \bigl ( } F ^ { - 1 } { \bigr ) } { \bigl ( }
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib has the Fréchet chain rule and local inverse theorems, but no checked theorem was found that starts from Lee’s source-level “smooth bijection with smooth inverse between open Euclidean subsets” bundle and simultaneously gives equality of ambient dimensions plus the exact inverse-total-derivative formula. Reconstructing the subtype/open-domain bookkeeping would be substantive. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Definition/convention — smooth {#fc08-cc-u010}
+
+::: {.unit-meta}
+`FC08-CC-U010` · Appendix C, § Partial Derivatives; source L19582 · [not formalized]{.route-unmatched}
+:::
+
+If $A \subseteq \mathbb{R}^{n}$ is an arbitrary subset, a function $F \colon A \to \mathbb{R}^{m}$ is smooth on $A$ if it admits a smooth extension near each point: for every $x \in A$ there are an open $U_{x} \subseteq \mathbb{R}^{n}$ containing $x$ and a smooth $\widetilde{F} \colon U_{x} \to \mathbb{R}^{m}$ agreeing with $F$ on $U_{x} \cap A$. Diffeomorphism extends accordingly: for arbitrary subsets $A, B \subseteq \mathbb{R}^{n}$, a diffeomorphism from $A$ to $B$ is a smooth bijection $f \colon A \to B$ with smooth inverse.
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib’s `ContDiffWithinAt` is an intrinsic within-set smoothness notion; the source defines smoothness on an arbitrary subset by existence of local smooth ambient extensions. No checked equivalence between these notions for arbitrary subsets was found. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Definition/convention — source terminology/construction {#fc08-cc-u011}
+
+::: {.unit-meta}
+`FC08-CC-U011` · Appendix C, § Partial Derivatives; source L19584 · [in Mathlib]{.route-mathlib}
+:::
+
+For an open $U \subseteq \mathbb{R}^{n}$, the real-valued functions of class $C^{k}$ on $U$ form the set $C^{k}(U)$, and the smooth ones $C^{\infty}(U)$. Sums, constant multiples and products are defined pointwise, for $f, g \colon U \to \mathbb{R}$ and $c \in \mathbb{R}$.
+
+::: {.unit-lean}
+**Formalized.** [`Mathlib/Analysis/Calculus/ContDiff/Defs.lean::ContDiffOn`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/ContDiff/Defs.html); [`Mathlib/Analysis/Calculus/ContDiff/Operations.lean::ContDiffOn.add, ContDiffOn.const_smul, ContDiffOn.mul`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/ContDiff/Operations.html) — `C^k(U)` is the set of real-valued maps satisfying `ContDiffOn`; Mathlib proves closure under pointwise addition, scalar multiplication, and multiplication exactly as stated.
+:::
+
+[Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0]{.unit-provenance}
+
+### Proposition C.6 {#fc08-cc-u012}
+
+::: {.unit-meta}
+`FC08-CC-U012` · Appendix C, § Partial Derivatives; source L19600 · [in Mathlib]{.route-mathlib}
+:::
+
+Proposition C.6 (Equality of Mixed Partial Derivatives). If U is an open subset $o f \mathbb { R } ^ { n }$ and F $U \to \mathbb { R } ^ { m }$ is a function of class $C ^ { 2 }$ , then the mixed second-order partial derivatives of F do not depend on the order of differentiation: $$ \frac {\partial^ {2} F ^ {i}}{\partial x ^ {j} \partial x ^ {k}} = \frac {\partial^ {2} F ^ {i}}{\partial x ^ {k} \partial x ^ {j}}. $$
+
+::: {.unit-lean}
+**Formalized.** [`Mathlib/Analysis/Calculus/FDeriv/Symmetric.lean::second_derivative_symmetric, ContDiffAt.isSymmSndFDerivAt`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/FDeriv/Symmetric.html#ContDiffAt.isSymmSndFDerivAt) — Mathlib proves symmetry of the second Fréchet derivative for `C²` maps. Evaluating the symmetric bilinear derivative on standard basis vectors gives equality of Lee’s mixed second partial derivatives componentwise.
+:::
+
+[Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0]{.unit-provenance}
+
+### Corollary C.7 {#fc08-cc-u013}
+
+::: {.unit-meta}
+`FC08-CC-U013` · Appendix C, § Partial Derivatives; source L19606 · [not formalized]{.route-unmatched}
+:::
+
+Corollary C.7. If $F \colon U \mathbb { R } ^ { m }$ is smooth, then the mixed partial derivatives of F of any order are independent of the order of differentiation.
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib directly proves symmetry of second Fréchet derivatives, but targeted P/H searches found no checked all-orders permutation-invariance theorem for coordinate mixed partials matching this row. Iterated Fréchet derivatives/Taylor-series infrastructure is adjacent but does not by itself certify the exact statement. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Proposition C.8 {#fc08-cc-u014}
+
+::: {.unit-meta}
+`FC08-CC-U014` · Appendix C, § Partial Derivatives; source L19610 · [in Mathlib]{.route-mathlib}
+:::
+
+Let $U \subseteq \mathbb{R}^{n}$ be open and suppose $F \colon U \to \mathbb{R}^{m}$ is differentiable at $a \in U$. Then all partial derivatives of $F$ at $a$ exist, and $DF(a)$ is the linear map whose matrix is the Jacobian of $F$ at $a$: $$ DF(a) = \left(\frac{\partial F^{j}}{\partial x^{i}}(a)\right). $$
+
+::: {.unit-lean}
+**Formalized.** [`Mathlib/Analysis/Calculus/LineDeriv/Basic.lean::DifferentiableAt.lineDeriv_eq_fderiv`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/LineDeriv/Basic.html#DifferentiableAt.lineDeriv_eq_fderiv); [`Mathlib/LinearAlgebra/Matrix/ToLin.lean::LinearMap.toMatrix`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Matrix/ToLin.html#LinearMap.toMatrix) — For a differentiable map, every line derivative equals evaluation of `fderiv`; in standard bases, [`LinearMap.toMatrix`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=LinearMap.toMatrix#doc) therefore has entries equal to the coordinate partial derivatives, exactly Proposition C.8.
+:::
+
+[Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0]{.unit-provenance}
+
+### Proposition C.10 {#fc08-cc-u015}
+
+::: {.unit-meta}
+`FC08-CC-U015` · Appendix C, § Partial Derivatives; source L19634 · [in Mathlib]{.route-mathlib}
+:::
+
+Let $U \subseteq \mathbb{R}^{n}$ be open. If $F \colon U \to \mathbb{R}^{m}$ is of class $C^{1}$, then it is differentiable at each point of $U$.
+
+::: {.unit-lean}
+**Formalized.** [`Mathlib/Analysis/Calculus/ContDiff/Defs.lean::ContDiffOn.differentiableOn, ContDiffOn.differentiableOn_one`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/ContDiff/Defs.html) — Mathlib directly proves that a `C¹` map is differentiable at every point of its domain.
+:::
+
+[Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0]{.unit-provenance}
+
+### Corollary C.11 {#fc08-cc-u016}
+
+::: {.unit-meta}
+`FC08-CC-U016` · Appendix C, § Partial Derivatives; source L19638 · [in Mathlib]{.route-mathlib}
+:::
+
+Corollary C.11 (The Chain Rule for Partial Derivatives). Let $U \subseteq \mathbb { R } ^ { n }$ and $\widetilde U \subseteq$ R be open subsets, and let $x = \left( x ^ { 1 } , \ldots , x ^ { n } \right)$ denote the standard coordinates on $U$ and $y = ( y ^ { 1 } , \ldots , y ^ { m } )$ those on $\widetilde { U }$ (a) A composition $o f C ^ { 1 }$ functions $F \colon U \to { \widetilde { U } }$ and $G \colon \widetilde { U } \to \mathbb { R } ^ { p }$ is again of class $C ^ { 1 }$ , with partial derivatives given by $$ \frac {\partial (G ^ {i} \circ F)}{\partial x ^ {j}} (x) = \sum_ {k = 1} ^ {m} \frac {\partial G ^ {i}}{\partial y ^ {k}} \bigl (F (x) \bigr) \frac {\partial F ^ {k}}{\partial x ^ {j}} (x). $$ (b) If F and G are smooth, then G F is smooth. Exercise C.12. Prove Corollary C.11. From the chain rule and induction one can derive them from vectors, elements of the underlying field (which is R unless otherwise specified) are called scalars.
+
+::: {.unit-lean}
+**Formalized.** [`Mathlib/Analysis/Calculus/ContDiff/Comp.lean::ContDiffOn.comp`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/ContDiff/Comp.html#ContDiffOn.comp); [`Mathlib/Analysis/Calculus/FDeriv/Comp.lean::fderiv_comp`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/FDeriv/Comp.html); [`Mathlib/Analysis/Calculus/LineDeriv/Basic.lean::DifferentiableAt.lineDeriv_eq_fderiv`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/LineDeriv/Basic.html#DifferentiableAt.lineDeriv_eq_fderiv) — [`ContDiffOn.comp`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=ContDiffOn.comp#doc) gives preservation of `C¹`/smoothness under composition; `fderiv_comp` and `lineDeriv_eq_fderiv` translate the Fréchet chain rule to the standard-coordinate partial-derivative sum in C.11(a).
+:::
+
+[Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0]{.unit-provenance}
+
+### Definition/convention — directional derivative of f in the direction v at a to be the {#fc08-cc-u017}
+
+::: {.unit-meta}
+`FC08-CC-U017` · Appendix C, § Partial Derivatives; source L19654 · [in Mathlib]{.route-mathlib}
+:::
+
+Now suppose f : U → ℝ is a smooth real-valued function on an open subset U ⊆ ℝ ^n , and a ∈ U . For each vector v ∈ ℝ ^n , we define the directional derivative of f in the direction v at a to be the number $$ D_{v}f(a) = \left.\frac{d}{dt}\right|_{t=0} f(a+tv), \tag{C.6} $$ which makes sense for any vector $v$, not only a unit vector.
+
+::: {.unit-lean}
+**Formalized.** [`Mathlib/Analysis/Calculus/LineDeriv/Basic.lean::lineDeriv, HasLineDerivAt`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/LineDeriv/Basic.html) — `lineDeriv ℝ f a v` is exactly Lee’s directional derivative along the line `a + t v`; for smooth `f` it equals `fderiv ℝ f a v`.
+:::
+
+[Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0]{.unit-provenance}
+
+### Theorem C.14 {#fc08-cc-u018}
+
+::: {.unit-meta}
+`FC08-CC-U018` · Appendix C, § Partial Derivatives; source L19670 · [not formalized]{.route-unmatched}
+:::
+
+Under an Integral Sign). Let $U \subseteq \mathbb { R } ^ { n }$ be an open subset, let $a , b \in \mathbb { R }$ , and let $f \colon U \times [ a , b ] \to \mathbb { R }$ be a continuous function such that the partial derivatives $\partial f / \partial x ^ { i } \colon U \times [ a , b ] \to \mathbb { R }$ exist and are continuous on $U \times$ Œa; b for $i = 1 , \ldots , n$ . Define $F \colon U \to$ R by $$ F (x) = \int_ {a} ^ {b} f (x, t) d t. $$ Then F is of class $C ^ { 1 }$ , and its partial derivatives can be computed by differentiating under the integral sign: $$ \frac {\partial F}{\partial x ^ {i}} (x) = \int_ {a} ^ {b} \frac {\partial f}{\partial x ^ {i}} (x, t) d t. $$ You are probably familiar with Taylor’s theorem, which shows how a sufficiently smooth function can be approximated near a point by a polynomial. We need a version of Taylor’s theorem in several variables that gives an explicit integral form for the remainder term. In order to express it concisely, it helps to introduce some shorthand notation. For any m-tuple $I = ( i _ { 1 } , \ldots , i _ { m } )$ of indices with $1 \leq i _ { j } \leq n$ , we let $\left| I \right| = m$ denote the number of indices in I , and $$ \begin{array}{c} \partial_ {I} = \frac {\partial^ {m}}{\partial x ^ {i _ {1}} \cdots \partial x ^ {i _ {m}}}, \\ (x - a) ^ {I} = \bigl (x ^ {i _ {1}} - a ^ {i _ {1}} \bigr) \dots \bigl (x ^ {i _ {m}} - a ^ {i _ {m}} \bigr). \end{array} $$ Theorem C.15 (Taylor’s Theorem). Let $U \subseteq \mathbb { R } ^ { n }$ be an open subset, and let $a \in U$ be fixed. Suppose $f \in C ^ { k + 1 } ( U )$ for some $k \geq 0$ . If W is any convex subset of U containing a, then for all $x \in W$
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib has a strong parametric differentiation-under-the-integral theorem, but this canonical row also introduces the multi-index notation used for Taylor’s theorem. No single checked route owns the whole bundle. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Theorem C.15 {#fc08-cc-u019}
+
+::: {.unit-meta}
+`FC08-CC-U019` · Appendix C, § Partial Derivatives; source L19688 · [not formalized]{.route-unmatched}
+:::
+
+Theorem C.15 (Taylor’s Theorem). Let $U \subseteq \mathbb { R } ^ { n }$ be an open subset, and let $a \in U$ be fixed. Suppose $f \in C ^ { k + 1 } ( U )$ for some $k \geq 0$ . If W is any convex subset of U containing a, then for all $x \in W$ $$ f (x) = P _ {k} (x) + R _ {k} (x),\tag{C.7} $$ where $P _ { k }$ is the kth-order Taylor polynomial of f at a, defined by $$ P _ {k} (x) = f (a) + \sum_ {m = 1} ^ {k} \frac {1}{m !} \sum_ {I: | I | = m} \partial_ {I} f (a) (x - a) ^ {I},\tag{C.8} $$ and $R _ { k }$ is the kth remainder term, given by $$ R _ {k} (x) = \frac {1}{k !} \sum_ {I: | I | = k + 1} (x - a) ^ {I} \int_ {0} ^ {1} (1 - t) ^ {k} \partial_ {I} f (a + t (x - a)) d t.\tag{C.9} $$
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — `map_add_eq_sum_add_integral_iteratedFDeriv` is a stronger coordinate-free Taylor formula with integral remainder, but the source row is the explicit multi-index partial-derivative expansion. Because U013’s all-orders mixed-partial bridge is not checked, the two interfaces are not silently identified. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Corollary C.16 {#fc08-cc-u020}
+
+::: {.unit-meta}
+`FC08-CC-U020` · Appendix C, § Partial Derivatives; source L19718 · [not formalized]{.route-unmatched}
+:::
+
+Suppose $U \subseteq \mathbb{R}^{n}$ is open, $a \in U$ and $f \in C^{k+1}(U)$ for some $k \geq 0$. If $W$ is a convex subset of $U$ containing $a$ on which all $(k+1)$st partial derivatives of $f$ are bounded in absolute value by $M$, then for all $x \in W$ $$ |f(x) - P_{k}(x)| \leq \frac{n^{k+1}M}{(k+1)!}|x-a|^{k+1}, $$ where $P_{k}$ is the $k$th Taylor polynomial of $f$ at $a$, defined by (C.8).
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib’s Taylor-integral and derivative-bound APIs are adjacent, but no checked theorem with Lee’s explicit `n^(k+1) M/(k+1)!` remainder constant and source partial-derivative hypotheses was found. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Definition/convention — open rectangle {#fc08-cc-u021}
+
+::: {.unit-meta}
+`FC08-CC-U021` · Appendix C, § Multiple Integrals; source L19732 · [not formalized]{.route-unmatched}
+:::
+
+rectangle in $\mathbb { R } ^ { n }$ is a product set of the form $\left[ a ^ { 1 } , b ^ { 1 } \right] \times \cdots \times \left[ a ^ { n } , b ^ { n } \right]$ , for real numbers $a ^ { i } < b ^ { i }$ . Analogously, an open rectangle is a set of the form $\left( a ^ { 1 } , b ^ { 1 } \right) \times$ $\cdots \times \left( a ^ { n } , b ^ { n } \right)$ . If A is a rectangle of either type, the volume of A, denoted by Vol.A/, is defined to be the product of the lengths of its component intervals: $$ \operatorname{Vol} (A) = \left(b ^ {1} - a ^ {1}\right) \dots \left(b ^ {n} - a ^ {n}\right).\tag{C.10} $$ A rectangle is called a cube if all of its side lengths $\left( b ^ { i } - a ^ { i } \right)$ are equal. Given a closed interval $[ a , b ] \subseteq \mathbb { R }$
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib represents coordinate boxes using products/Pi `Icc` and `Ioo` sets and Lebesgue volume, but no canonical owner packages Lee’s closed/open rectangle terminology together with the source side-length volume definition. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Definition/convention — cube {#fc08-cc-u022}
+
+::: {.unit-meta}
+`FC08-CC-U022` · Appendix C, § Multiple Integrals; source L19738 · [not formalized]{.route-unmatched}
+:::
+
+A rectangle is a cube if all of its side lengths $(b^{i}-a^{i})$ are equal.
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — No canonical Lean object was found for the source-specific term “cube” as a rectangle whose side lengths are all equal; the underlying interval/product ingredients are proper subsets. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Definition/convention — subinterval of P {#fc08-cc-u023}
+
+::: {.unit-meta}
+`FC08-CC-U023` · Appendix C, § Multiple Integrals; source L19740 · [not formalized]{.route-unmatched}
+:::
+
+partition of Œa; b is a finite sequence $P =$ $( a _ { 0 } , \ldots , a _ { k } )$ of real numbers such that $a = a _ { 0 } < a _ { 1 } < \cdots < a _ { k } = b$ . Each of the intervals $[ a _ { i - 1 } , a _ { i } ]$ for $i = 1 , \ldots , k$ is called a subinterval of P . Similarly, if $A =$ $\left[ a ^ { 1 } , b ^ { 1 } \right] \dot { \times } \dot { \cdots } \times \left[ \dot { a } ^ { n } , b ^ { n } \right]$ is a closed rectangle, a partition of A is an n-tuple $P =$ $( P _ { 1 } , \ldots , P _ { n } )$ , where each $P _ { i }$ is a partition of $\left[ a ^ { i } , b ^ { i } \right]$ . Each rectangle of the form $I _ { 1 } \times \cdots \times I _ { n }$ , where $I _ { j }$ is a subinterval of $P _ { j }$ , is called a subrectangle of P . Clearly, A is the union of all the subrectangles in any partition, and distinct subrectangles intersect et to $k = n$ , if we have not already shown that the $w _ { i } \textrm { \textmu { } }$ are dependent, we conclude that the set $\{ w _ { 1 } , \ldots , w _ { n } \}$ spans V .
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib has finite ordered sets, intervals, and finite box decompositions, but no checked canonical construction matching Lee’s Riemann partition/subrectangle bundle. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Definition/convention — lower sum of f {#fc08-cc-u024}
+
+::: {.unit-meta}
+`FC08-CC-U024` · Appendix C, § Multiple Integrals; source L19742 · [not formalized]{.route-unmatched}
+:::
+
+Suppose $A \subseteq \mathbb{R}^{n}$ is a closed rectangle and $f \colon A \to \mathbb{R}$ is bounded. For each partition $P$ of $A$, the lower sum of $f$ with respect to $P$ is $$ \mathrm{L}(f,P) = \sum_{j} \left(\inf_{R_{j}} f\right)\operatorname{Vol}(R_{j}), $$ the sum being over the subrectangles $R_{j}$ of $P$, and the upper sum is $$ \mathrm{U}(f,P) = \sum_{j} \left(\sup_{R_{j}} f\right)\operatorname{Vol}(R_{j}). $$
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib does not formalize Lee’s multidimensional Darboux lower/upper sums as the canonical integration interface. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Lemma C.17 {#fc08-cc-u025}
+
+::: {.unit-meta}
+`FC08-CC-U025` · Appendix C, § Multiple Integrals; source L19756 · [not formalized]{.route-unmatched}
+:::
+
+Let $A \subseteq \mathbb{R}^{n}$ be a closed rectangle and $f \colon A \to \mathbb{R}$ a bounded function. For any pair of partitions $P$ and $P'$ of $A$, $\mathrm{L}(f,P) \leq \mathrm{U}(f,P')$.
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — No checked multidimensional Darboux-sum theorem matching the source statement was found because the source lower/upper-sum layer itself is absent. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Convention/notation — integral of f {#fc08-cc-u026}
+
+::: {.unit-meta}
+`FC08-CC-U026` · Appendix C, § Multiple Integrals; source L19786 · [not formalized]{.route-unmatched}
+:::
+
+$f \colon A \to \mathbb { R }$ is a bounded function whose upper and lower integrals are equal, we say that $f$ is (Riemann) integrable over A, and their common value, denoted by $$ \int_ {A} f d V, $$ is called the integral of f over A. The $" d V "$ in this notation, like the $^ { 6 6 } d x ^ { , 5 9 }$ in the notation for single integrals, has no meaning on its own; it is just a “closing bracket” for the integral sign. Other common notations are $$ \int_ {A} f \quad \text {or} \quad \int_ {A} f d x ^ {1} \dots d x ^ {n} \quad \text {or} \quad \int_ {A} f (x ^ {1}, \ldots , x ^ {n}) d x ^ {1} \dots d x ^ {n}. $$ In $\mathbb { R } ^ { 2 }$ , th ar subspace of codimension 1.
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — Pinned/current Mathlib’s standard integral is Lebesgue/Bochner rather than Lee’s multidimensional Riemann integral defined by equality of Darboux upper/lower integrals. No checked equivalence layer was found. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Proposition C.18 {#fc08-cc-u027}
+
+::: {.unit-meta}
+`FC08-CC-U027` · Appendix C, § Multiple Integrals; source L19802 · [in Mathlib]{.route-mathlib}
+:::
+
+Proposition C.18 (Properties of Sets of Measure Zero). (a) $I f X \subseteq \mathbb { R } ^ { n }$ has measure zero and $x _ { 0 } \in \mathbb { R } ^ { n }$ , then the translated subset $x _ { 0 } + X =$ $\{ x _ { 0 } + a : a \in X \}$ also has measure zero. (b) Every subset of a set of measure zero in $\mathbb { R } ^ { n }$ has measure zero. (c) A countable union of sets of measure zero in $\mathbb { R } ^ { n }$ has measure zero. (d) $I f k < n$ , then every subset of $\mathbb { R } ^ { k }$ (viewed as the set of points $x \in \mathbb { R } ^ { n }$ with $x ^ { k + 1 } = \cdots = x ^ { n } = 0 )$ has sional complex Euclidean space $\mathbb { C } ^ { n }$ becomes a complex vector space.
+
+::: {.unit-lean}
+**Formalized.** [`Mathlib/MeasureTheory/Group/Measure.lean::Measure.IsAddLeftInvariant`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/MeasureTheory/Group/Measure.html#Measure.IsAddLeftInvariant); [`Mathlib/MeasureTheory/OuterMeasure/Basic.lean::measure_mono_null, measure_iUnion_null`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/MeasureTheory/OuterMeasure/Basic.html); [`Mathlib/MeasureTheory/Measure/Lebesgue/EqHaar.lean::addHaar_submodule`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/MeasureTheory/Measure/Lebesgue/EqHaar.html) — Lebesgue volume is translation invariant; nullity is inherited by subsets and countable unions; and every strict finite-dimensional real linear subspace has Haar/Lebesgue measure zero. The coordinate copy of `ℝ^k` for `k<n` is such a strict subspace, giving all four clauses.
+:::
+
+[Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0]{.unit-provenance}
+
+### Proposition C.20 {#fc08-cc-u028}
+
+::: {.unit-meta}
+`FC08-CC-U028` · Appendix C, § Multiple Integrals; source L19818 · [not formalized]{.route-unmatched}
+:::
+
+Proposition C.20 (Lebesgue’s Integrability Criterion). Let $A \subseteq \mathbb { R } ^ { n }$ be a closed rectangle, and let $f \colon A \to \mathbb { R }$ be a bounded function. If the set $$ S = \{x \in A: f \text { is not continuous at } x \} $$ has measure zero, th sum of S and T , and we write $V = S \oplus T$ .
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib has Lebesgue/Bochner integrability, but no checked formalization of Lebesgue’s criterion for Lee’s multidimensional Riemann integrability. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Definition/convention — integral of f {#fc08-cc-u029}
+
+::: {.unit-meta}
+`FC08-CC-U029` · Appendix C, § Multiple Integrals; source L19846 · [not formalized]{.route-unmatched}
+:::
+
+Suppose $D \subseteq \mathbb{R}^{n}$ is an arbitrary bounded set and $f \colon D \to \mathbb{R}$ is bounded. Define $f_{D} \colon \mathbb{R}^{n} \to \mathbb{R}$ by $$ f_{D}(x) = \begin{cases} f(x), & x \in D, \\ 0, & x \in \mathbb{R}^{n} \setminus D. \end{cases} \tag{C.11} $$ If $\int_{A} f_{D}\,dV$ exists for some closed rectangle $A$ containing $D$, then $f$ is integrable over $D$, and that integral, written $\int_{D} f\,dV$, is the integral of $f$ over $D$; neither integrability nor the value depends on the rectangle chosen.
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — No checked owner was found for Lee’s extension-by-zero definition of the multidimensional Riemann integral over an arbitrary bounded set. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Definition/convention — domain of integration {#fc08-cc-u030}
+
+::: {.unit-meta}
+`FC08-CC-U030` · Appendix C, § Multiple Integrals; source L19862 · after [`FC08-CC-U027`](#fc08-cc-u027) · [not formalized]{.route-unmatched}
+:::
+
+A subset $D \subseteq \mathbb{R}^{n}$ is a domain of integration if $D$ is bounded and $\partial D$ has $n$-dimensional measure zero. By Proposition C.18 every open or closed rectangle is a domain of integration, and a finite union of domains of integration is again one.
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib has bounded sets, topological boundary, and null sets, but no canonical `domain of integration` object bundling exactly “bounded with boundary of Lebesgue measure zero.” Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Proposition C.21 {#fc08-cc-u031}
+
+::: {.unit-meta}
+`FC08-CC-U031` · Appendix C, § Multiple Integrals; source L19864 · [not formalized]{.route-unmatched}
+:::
+
+If $D \subseteq \mathbb{R}^{n}$ is a domain of integration, then every bounded continuous real-valued function on $D$ is integrable over $D$.
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib proves bounded continuous functions on finite-measure sets are Bochner/Lebesgue integrable under standard hypotheses, but no checked bridge to Lee’s absent multidimensional Riemann integral exists. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Definition/convention — source terminology/construction {#fc08-cc-u032}
+
+::: {.unit-meta}
+`FC08-CC-U032` · Appendix C, § Multiple Integrals; source L19872 · [not formalized]{.route-unmatched}
+:::
+
+If D is a domain of integration, the volume of D is defined to be $$ \operatorname{Vol} (D) = \int_ {D} 1 d V.\tag{C.13} $$
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — `setIntegral_one_eq_measureReal` gives volume as the Lebesgue integral of `1`, but Lee’s row defines volume via the preceding Riemann integral. Without a checked Riemann–Lebesgue equivalence this is only an adjacent representation. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Proposition C.22 {#fc08-cc-u033}
+
+::: {.unit-meta}
+`FC08-CC-U033` · Appendix C, § Multiple Integrals; source L19882 · [not formalized]{.route-unmatched}
+:::
+
+(Properties of Volume). Let $D \subseteq \mathbb{R}^{n}$ be a domain of integration. (a) If $D$ is an open or closed rectangle, the definitions (C.10) and (C.13) of $\operatorname{Vol}(D)$ agree. (b) $\operatorname{Vol}(D) \geq 0$, with equality if and only if $D$ has measure zero. (c) If $D_{1},\dots,D_{k}$ are domains of integration whose union is $D$, then $\operatorname{Vol}(D) \leq \operatorname{Vol}(D_{1}) + \cdots + \operatorname{Vol}(D_{k})$, with equality if and only if $D_{i} \cap D_{j}$ has measure zero for each $i \neq j$. (d) If $D_{1} \subseteq D$ is a domain of integration, then $\operatorname{Vol}(D_{1}) \leq \operatorname{Vol}(D)$, with equality if and only if $D \setminus D_{1}$ has measure zero.
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib’s measure API has the corresponding monotonicity/subadditivity/null-set facts, but the row asserts them for Lee’s Riemann-defined volume and includes exact equality iff conditions. No checked whole-row bridge to that source interface exists. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Proposition C.23 {#fc08-cc-u034}
+
+::: {.unit-meta}
+`FC08-CC-U034` · Appendix C, § Multiple Integrals; source L19896 · [not formalized]{.route-unmatched}
+:::
+
+(Properties of Integrals). Let $D \subseteq \mathbb{R}^{n}$ be a domain of integration and $f, g \colon D \to \mathbb{R}$ continuous and bounded. (a) For $a, b \in \mathbb{R}$, $\int_{D}(af+bg)\,dV = a\int_{D} f\,dV + b\int_{D} g\,dV$. (b) If $D$ has measure zero, $\int_{D} f\,dV = 0$. (c) If $D_{1},\dots,D_{k}$ are domains of integration whose union is $D$ and whose pairwise intersections have measure zero, then $\int_{D} f\,dV = \int_{D_{1}} f\,dV + \cdots + \int_{D_{k}} f\,dV$. (d) If $f \geq 0$ on $D$, then $\int_{D} f\,dV \geq 0$, with equality if and only if $f \equiv 0$ on $\operatorname{Int} D$. (e) $\left(\inf_{D} f\right)\operatorname{Vol}(D) \leq \int_{D} f\,dV \leq \left(\sup_{D} f\right)\operatorname{Vol}(D)$. (f) $\left|\int_{D} f\,dV\right| \leq \int_{D} |f|\,dV$.
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib’s Bochner/Lebesgue integral has linearity, positivity, null-set invariance, finite additivity, bounds, and the norm inequality, but the source theorem is explicitly about Lee’s Riemann integral. No formal equivalence layer was found. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Corollary C.25 {#fc08-cc-u035}
+
+::: {.unit-meta}
+`FC08-CC-U035` · Appendix C, § Multiple Integrals; source L19920 · [in Mathlib]{.route-mathlib}
+:::
+
+Corollary C.25. A set of measure zero in $\mathbb { R } ^ { n }$ contains no nonempty open sub \\ \vdots & \ddots & \vdots \\ A _ {1} ^ {m} & \ldots & A _ {n} ^ {m} \end{array} \right) $$ whose j th column consists of the components of $T E _ { j }$ with respect to the basis $( F _ { i } )$ : $$ T E _ {j} = \sum_ {i = 1} ^ {m} A _ {j} ^ {i} F _ {i}.
+
+::: {.unit-lean}
+**Formalized.** [`Mathlib/MeasureTheory/Measure/OpenPos.lean::IsOpen.measure_pos, IsOpen.measure_pos_iff`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/MeasureTheory/Measure/OpenPos.html) — Lebesgue volume is positive on every nonempty open set, so a null set cannot contain a nonempty open subset; this is exactly Corollary C.25.
+:::
+
+[Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0]{.unit-provenance}
+
+### Theorem C.26 {#fc08-cc-u036}
+
+::: {.unit-meta}
+`FC08-CC-U036` · Appendix C, § Multiple Integrals; source L19926 · [not formalized]{.route-unmatched}
+:::
+
+Theorem C.26 (Change of Variables). Suppose D and E are open domains of integration in $\mathbb { R } ^ { n }$ , and $G \colon { \bar { D } } \to { \bar { E } }$ is smooth map that restricts to a diffeomorphism from D to E. For every continuous function $f \colon { \overline { { E } } } \to \mathbb { R }$ $$ \int_ {E} f d V = \int_ {D} (f \circ G) | \det D G | d V. $$
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib has the stronger Lebesgue/Bochner Jacobian change-of-variables theorem `integral_image_eq_integral_abs_det_fderiv_smul`, but no checked equivalence to Lee’s Riemann integral on domains of integration was found. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Theorem C.27 {#fc08-cc-u037}
+
+::: {.unit-meta}
+`FC08-CC-U037` · Appendix C, § Multiple Integrals; source L19932 · [not formalized]{.route-unmatched}
+:::
+
+b ^ { 1 } \right] \times \cdots \times \left[ a ^ { n } , b ^ { n } \right]$ be a closed rectangle in $\mathbb { R } ^ { n }$ , and let $f \colon A \to \mathbb { R }$ be continuous. Then $$ \int_ {A} f d V = \int_ {a ^ {n}} ^ {b ^ {n}} \left(\dots \left(\int_ {a ^ {1}} ^ {b ^ {1}} f (x ^ {1}, \dots , x ^ {n}) d x ^ {1}\right) \dots\right) d x ^ {n}, $$ and the same is true if the variables in the iterated integral on the right-hand side are reordered in any way. ## Integrals of Vector-Valued Functions If $D \subseteq \mathbb { R } ^ { n }$ is a domain of integration and $F \colon n-dimensional vector space is represented by the n - n identity matrix, which we denote by $I _ { n }$ ; it is the matrix with ones on the main diagona (where the row number equals the column number) and zeros elsewhere.
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib’s [`MeasureTheory.integral_prod`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=MeasureTheory.integral_prod#doc) is the general Bochner Fubini theorem, but the canonical row states equality for Lee’s Riemann integral on rectangles. Without a checked Riemann–Lebesgue bridge, the stronger theorem is adjacent rather than an exact route. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Definition/convention — integral of F {#fc08-cc-u038}
+
+::: {.unit-meta}
+`FC08-CC-U038` · Appendix C, § Integrals of Vector-Valued Functions; source L19942 · [not formalized]{.route-unmatched}
+:::
+
+If $D \subseteq \mathbb{R}^{n}$ is a domain of integration and $F \colon D \to \mathbb{R}^{k}$ is a bounded continuous vector-valued function, the integral of $F$ over $D$ is the vector obtained by integrating component by component: $$ \int_{D} F\,dV = \left(\int_{D} F^{1}\,dV,\ \dots,\ \int_{D} F^{k}\,dV\right). $$
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib’s Bochner integral is intrinsically vector-valued and its coordinate projections commute with integration, but Lee defines a vector-valued Riemann integral componentwise. No checked equivalence between the underlying scalar integrals was found. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Proposition C.28 {#fc08-cc-u039}
+
+::: {.unit-meta}
+`FC08-CC-U039` · Appendix C, § Integrals of Vector-Valued Functions; source L19950 · [not formalized]{.route-unmatched}
+:::
+
+Suppose $D \subseteq \mathbb{R}^{n}$ is a domain of integration and $F \colon D \to \mathbb{R}^{k}$ is a bounded continuous vector-valued function. Then $$ \left|\int_{D} F\,dV\right| \leq \int_{D} |F|\,dV. \tag{C.14} $$
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — `norm_integral_le_integral_norm` proves the stronger Bochner inequality, but the canonical statement uses the preceding vector-valued Riemann integral. No checked bridge identifies them. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Proposition C.29 {#fc08-cc-u040}
+
+::: {.unit-meta}
+`FC08-CC-U040` · Appendix C, § Integrals of Vector-Valued Functions; source L19972 · [not formalized]{.route-unmatched}
+:::
+
+(Lipschitz Estimate for $C^{1}$ Functions). Let $U \subseteq \mathbb{R}^{n}$ be open and suppose $F \colon U \to \mathbb{R}^{m}$ is of class $C^{1}$. Then $F$ is Lipschitz continuous on every compact convex subset $K \subseteq U$, with Lipschitz constant $\sup_{x \in K} |DF(x)|$.
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib proves that `C¹` maps on compact convex sets are Lipschitz and that any uniform derivative bound is a valid Lipschitz constant. The source additionally specifies the exact constant `sup_K ‖DF‖`; no single checked theorem with that bundled constant was found. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Corollary C.30 {#fc08-cc-u041}
+
+::: {.unit-meta}
+`FC08-CC-U041` · Appendix C, § Integrals of Vector-Valued Functions; source L19990 · [in Mathlib]{.route-mathlib}
+:::
+
+If $U \subseteq \mathbb{R}^{n}$ is open and $F \colon U \to \mathbb{R}^{m}$ is of class $C^{1}$, then $F$ is locally Lipschitz continuous.
+
+::: {.unit-lean}
+**Formalized.** [`Mathlib/Analysis/Calculus/ContDiff/RCLike.lean::ContDiff.locallyLipschitz, ContDiffOn.locallyLipschitzOn`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/ContDiff/RCLike.html) — Mathlib directly proves that a `C¹` real map is locally Lipschitz (and the corresponding within-set statement on convex domains), exactly Corollary C.30.
+:::
+
+[Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0]{.unit-provenance}
+
+### Theorem C.31 {#fc08-cc-u042}
+
+::: {.unit-meta}
+`FC08-CC-U042` · Appendix C, § Sequences and Series of Functions; source L19998 · [not formalized]{.route-unmatched}
+:::
+
+n }$ , and suppose $f _ { i } \colon S \to { \mathbb { R } } ^ { m }$ is continuous for each integer $i \geq 1$ (a) $I f f _ { i } \to f$ uniformly, then f is continuous. (b) If the sequence $( f _ { i } ) _ { i = 1 } ^ { \infty }$ is uniformly Cauchy, then it converges uniformly to a continuous function. (c) If $f _ { i } \to f$ uniformly and S is a compact domain of integration, then $$ \lim _ {i \to \infty} \int_ {S} f _ {i} d V = \int_ {S} f d V. $$ (d) If S is open, each f is of class $C ^ { 1 } , f _ { i } \to f$ pointwise, and $\left( { \partial f _ { i } } / { \partial x ^ { j } } \right)$ converges uniformly on S as $i \to \infty$ , then $\partial f / \partial x ^ { j }$ exists on S and $$ \frac {\partial f}{\partial x ^ {j}} = \lim _ {i \to \infty} \frac {\partial f _ {i}}{\partial x ^ {j}}. $$ For a proof, see [Apo74, Rud76, Str00]. Given an infinite series of (real-valued or vector-valued) functions $\textstyle \sum _ { i = 0 } ^ { \infty } f _ { i }$ on $S \subseteq \mathbb { R } ^ { n }$ , one says the series converges pointwise if the corresponding sequence of partial sums converges pointwise to some function $f { \mathrm { : } }$ : $$ f (x) = \lim _ {N \rightarrow \infty} \sum_ {i = 0} ^ {N} f _ {i} (x) \quad \text { for all } x \in S. $$ We say the series converges uniformly if its partial sums do so. Proposition C.32 (Weierstrass M -test). Suppose $S \subseteq \mathbb { R } ^ { n }$ , and $f _ { i } \colon S \to { \mathbb { R } } ^ { k }$ are functions. If there exist positive real numbers $M _ { i }$ such that $\operatorname* { s u p } _ { S } | f _ { i } | \leq M _ { i }$ and $\textstyle \sum _ { i }
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — Mathlib separately has uniform-limit continuity, completeness/uniform Cauchy convergence, integral convergence, smooth-series derivative convergence, and uniform-series notions, but this row bundles all four claims with the source Riemann integral/partial-derivative interfaces plus series terminology. No checked whole-row owner survives strict semantics. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Proposition C.32 {#fc08-cc-u043}
+
+::: {.unit-meta}
+`FC08-CC-U043` · Appendix C, § Sequences and Series of Functions; source L20026 · [in Mathlib]{.route-mathlib}
+:::
+
+(Weierstrass $M$-test). Suppose $S \subseteq \mathbb{R}^{n}$ and $f_{i} \colon S \to \mathbb{R}^{k}$ are functions. If there are positive real numbers $M_{i}$ with $\sup_{S}|f_{i}| \leq M_{i}$ and $\sum_{i} M_{i}$ convergent, then $\sum_{i} f_{i}$ converges uniformly on $S$.
+
+::: {.unit-lean}
+**Formalized.** [`Mathlib/Analysis/Normed/Group/FunctionSeries.lean::tendstoUniformlyOn_tsum_nat, tendstoUniformly_tsum_nat`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Normed/Group/FunctionSeries.html) — Mathlib’s uniform-series M-test states that a summable scalar majorant bounding every summand norm yields uniform convergence of the series, exactly Proposition C.32.
+:::
+
+[Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0]{.unit-provenance}
+
+### Theorem C.34 {#fc08-cc-u044}
+
+::: {.unit-meta}
+`FC08-CC-U044` · Appendix C, § The Inverse and Implicit Function Theorems; source L20034 · [in Mathlib]{.route-mathlib}
+:::
+
+Theorem C.34 (Inverse Function Theorem). Suppose U and V are open subsets $o f \mathbb { R } ^ { n }$ , and $F \colon U \to V$ is a smooth function. If $D F ( a )$ is invertible at some point $a \in U$ , then there exist connected neighborhoods $U _ { 0 } \subseteq U$ of a and $V _ { 0 } \subseteq V$ of $F ( a )$ such that $F | _ { U _ { 0 } } \colon U _ { 0 } \to V _ { 0 }$ is a d
+
+::: {.unit-lean}
+**Formalized.** [`Mathlib/Analysis/Calculus/InverseFunctionTheorem/FDeriv.lean::HasStrictFDerivAt.toOpenPartialHomeomorph, HasStrictFDerivAt.to_localInverse`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/InverseFunctionTheorem/FDeriv.html); [`Mathlib/Analysis/Calculus/InverseFunctionTheorem/ContDiff.lean::ContDiffAt.localInverse, ContDiffAt.to_localInverse`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/InverseFunctionTheorem/ContDiff.html) — Mathlib’s inverse function theorem gives mutually inverse maps on open neighborhoods when the derivative is a continuous linear equivalence; the `ContDiff` version gives the same smoothness to the inverse. In Euclidean space the neighborhoods can be shrunk to connected balls and their images, yielding Lee C.34.
+:::
+
+[Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0]{.unit-provenance}
+
+### Definition/convention — a contraction {#fc08-cc-u045}
+
+::: {.unit-meta}
+`FC08-CC-U045` · Appendix C, § The Inverse and Implicit Function Theorems; source L20038 · [in Mathlib]{.route-mathlib}
+:::
+
+Let X be a metric space. A map $G \colon X \to X$ is said to be a contraction if there is a constant $\lambda \in ( 0 , 1 )$ such that d $\bigl ( G ( x ) , G ( y ) \bigr ) \leq \lambda d ( x , y )$ for all $x , y \in X$ . Clearly, every contraction is continuous. A fixed point of a map $G \colon X \to X$ is a point $x \in X$ such that $G(x) = x$.
+
+::: {.unit-lean}
+**Formalized.** [`Mathlib/Topology/MetricSpace/Contracting.lean::ContractingWith, ContractingWith.toLipschitzWith, ContractingWith.fixedPoint, ContractingWith.fixedPoint_isFixedPt, ContractingWith.fixedPoint_unique`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/MetricSpace/Contracting.html) — `ContractingWith K G` is `K<1` plus the Lipschitz inequality, hence continuity; on a nonempty complete metric space `fixedPoint` exists, is fixed, and `fixedPoint_unique` proves uniqueness. This is exactly Lee’s contraction definition and Lemma C.35.
+:::
+
+[Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0]{.unit-provenance}
+
+### Lemma C.35 {#fc08-cc-u046}
+
+::: {.unit-meta}
+`FC08-CC-U046` · Appendix C, § The Inverse and Implicit Function Theorems; source L20040 · [in Mathlib]{.route-mathlib}
+:::
+
+(Contraction Lemma). Let $X$ be a nonempty complete metric space. Every contraction $G \colon X \to X$ has a unique fixed point.
+
+::: {.unit-lean}
+**Formalized.** [`Mathlib/Topology/MetricSpace/Contracting.lean::ContractingWith, ContractingWith.toLipschitzWith, ContractingWith.fixedPoint, ContractingWith.fixedPoint_isFixedPt, ContractingWith.fixedPoint_unique`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/MetricSpace/Contracting.html) — `ContractingWith K G` is `K<1` plus the Lipschitz inequality, hence continuity; on a nonempty complete metric space `fixedPoint` exists, is fixed, and `fixedPoint_unique` proves uniqueness. This is exactly Lee’s contraction definition and Lemma C.35.
+:::
+
+[Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0]{.unit-provenance}
+
+### Corollary C.36 {#fc08-cc-u047}
+
+::: {.unit-meta}
+`FC08-CC-U047` · Appendix C, § The Inverse and Implicit Function Theorems; source L20146 · [not formalized]{.route-unmatched}
+:::
+
+Corollary C.36. Suppose $U \subseteq \mathbb { R } ^ { n }$ is an open subset, and $F \colon U \to \mathbb { R } ^ { n }$ is a smooth function whose Jacobian determinant is nonzero at every point in $U$ (a) F is an open map. (b) If F is injective, then $F \colon U \to F ( U )$
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — The inverse function theorem plus the line-derivative Jacobian assembly gives the mathematical proof, but no checked theorem packages Lee’s nonzero-Jacobian-everywhere hypotheses with both openness and the global injective-diffeomorphism conclusion. Reconstructing it would be substantive. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Example C.37 {#fc08-cc-u048}
+
+::: {.unit-meta}
+`FC08-CC-U048` · Appendix C, § The Inverse and Implicit Function Theorems; source L20156 · after [`FC08-CC-U047`](#fc08-cc-u047) · [in Mathlib]{.route-mathlib}
+:::
+
+Example C.37 (Polar Coordinates). As you know from calculus, polar coordinates $( r , \theta )$ in the plane are defined implicitly by the relations $x = r \cos \theta$ $y = r \sin \theta$ . The map \mathbb { R } \to \mathbb { R } ^ { 2 }$ defined by $F ( r , \theta ) = ( r \cos \theta , r \sin \theta )$ is smooth and has Jacobian determinant equal to $r ,$ which is nonzero everywhere on the domain. Thus, Corollary C.36 shows that the restriction of $F$ to any open subset on which it is injective is a diffeomorphism onto its image. One such subset is $\{ ( r , \theta ) : r > 0 , - \pi < \theta < \pi \}$ , which is mapped bijectively by $F$ onto the complement of the nonpositive part of the x-axis. Example C.38 (Spherical Coordinates). Similarly, spherical coordinates on $
+
+::: {.unit-lean}
+**Formalized.** [`Mathlib/Analysis/SpecialFunctions/PolarCoord.lean::polarCoord, continuous_polarCoord_symm, fderivPolarCoordSymm, det_fderivPolarCoordSymm`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/SpecialFunctions/PolarCoord.html) — Mathlib’s `polarCoord` is an open partial homeomorphism between the slit plane and `(0,∞)×(-π,π)`; its inverse is `(r,θ) ↦ (r cos θ,r sin θ)`, and Mathlib computes its derivative determinant to be `r`. This realizes the complete polar-coordinate example.
+:::
+
+[Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0]{.unit-provenance}
+
+### Example C.38 {#fc08-cc-u049}
+
+::: {.unit-meta}
+`FC08-CC-U049` · Appendix C, § The Inverse and Implicit Function Theorems; source L20158 · [not formalized]{.route-unmatched}
+:::
+
+(Spherical Coordinates). Spherical coordinates on $\mathbb{R}^{3}$ are the functions $(\rho,\varphi,\theta)$ defined by $x = \rho\sin\varphi\cos\theta$, $y = \rho\sin\varphi\sin\theta$, $z = \rho\cos\varphi$. Defining $G \colon (0,\infty) \times (0,\pi) \times \mathbb{R} \to \mathbb{R}^{3}$ by $G(\rho,\varphi,\theta) = (\rho\sin\varphi\cos\theta,\ \rho\sin\varphi\sin\theta,\ \rho\cos\varphi)$, its Jacobian determinant is $\rho^{2}\sin\varphi \neq 0$, so the restriction of $G$ to any open subset on which it is injective is a diffeomorphism onto its image — for instance $\{(\rho,\varphi,\theta) : \rho > 0,\ 0 < \varphi < \pi,\ -\pi < \theta < \pi\}$.
+
+::: {.unit-lean}
+**Not formalized.** none; no complete checked declaration under strict bundle semantics — Targeted P/H and external searches found no spherical-coordinate partial diffeomorphism with the full formula, determinant `ρ² sin φ`, and stated injectivity region. Polar coordinates are formalized, but the 3-dimensional example is not inferred from analogy. Strict whole-row semantics reject proper subsets, unverified representation bridges, and substantive reconstruction from adjacent generic ingredients.
+:::
+
+### Theorem C.40 {#fc08-cc-u050}
+
+::: {.unit-meta}
+`FC08-CC-U050` · Appendix C, § The Inverse and Implicit Function Theorems; source L20184 · [in Mathlib]{.route-mathlib}
+:::
+
+(Implicit Function Theorem). Let $U \subseteq \mathbb{R}^{n} \times \mathbb{R}^{k}$ be open with standard coordinates $(x,y) = (x^{1},\dots,x^{n},y^{1},\dots,y^{k})$. Suppose $\Phi \colon U \to \mathbb{R}^{k}$ is smooth, $(a,b) \in U$ and $c = \Phi(a,b)$. If the $k \times k$ matrix $\left(\frac{\partial \Phi^{i}}{\partial y^{j}}(a,b)\right)$ is nonsingular, there are neighborhoods $V_{0} \subseteq \mathbb{R}^{n}$ of $a$ and $W_{0} \subseteq \mathbb{R}^{k}$ of $b$ and a smooth $F \colon V_{0} \to W_{0}$ such that $\Phi^{-1}(c) \cap (V_{0} \times W_{0})$ is the graph of $F$: for $(x,y) \in V_{0} \times W_{0}$, $\Phi(x,y) = c$ if and only if $y = F(x)$.
+
+::: {.unit-lean}
+**Formalized.** [`Mathlib/Analysis/Calculus/ImplicitContDiff.lean::ContDiffAt.implicitFunction, ContDiffAt.eventually_apply_implicitFunction, ContDiffAt.eventually_apply_eq_iff_implicitFunction, ContDiffAt.contDiffAt_implicitFunction`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Calculus/ImplicitContDiff.html) — Mathlib’s product-domain implicit-function theorem constructs a local `C^n` implicit function when the derivative in the second factor is invertible and proves the local level-set iff graph equation, exactly Lee C.40 after identifying the partial derivative block with the corresponding restriction of `fderiv`.
+:::
+
+[Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d; Apache-2.0; Lean 4.33.0]{.unit-provenance}
+

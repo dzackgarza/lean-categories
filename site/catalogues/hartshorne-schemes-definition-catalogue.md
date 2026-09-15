@@ -1,0 +1,263 @@
+---
+title: "Hartshorne schemes definition catalogue"
+---
+
+Title: *Algebraic Geometry*
+
+Author: Robin Hartshorne
+
+Zotero key: `6K3TGVE6`
+
+Citekey: `Har10a`
+
+Source attachment: `/home/dzack/Zotero/storage/AMY5NQZM/[Hartshorne 2008] Algebraic geometry.md`
+
+## Chapter I. Varieties
+
+- [x] Affine algebraic set — §1, Affine Varieties, pp. 1–7
+  - [`PrimeSpectrum.zeroLocus`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=PrimeSpectrum.zeroLocus#doc) — [`Mathlib/RingTheory/Spectrum/Prime/Basic.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Spectrum/Prime/Basic.html)
+- [x] Ideal of an affine algebraic set — §1, Affine Varieties, pp. 1–7
+  - [`PrimeSpectrum.vanishingIdeal`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=PrimeSpectrum.vanishingIdeal#doc) — [`Mathlib/RingTheory/Spectrum/Prime/Basic.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Spectrum/Prime/Basic.html)
+- [x] Affine variety — §1, Affine Varieties, pp. 1–7
+  - [`AlgebraicGeometry.AffineScheme`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlgebraicGeometry.AffineScheme#doc) — [`Mathlib/AlgebraicGeometry/AffineScheme.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/AffineScheme.html)
+- [x] Coordinate ring of an affine variety — §1, Affine Varieties, pp. 1–7
+  - `Scheme.Γ` — [`Mathlib/AlgebraicGeometry/Scheme.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/Scheme.html)
+- [x] Dimension of a variety — §1, Affine Varieties, pp. 1–7
+  - `topologicalKrullDim` — [`Mathlib/Topology/KrullDimension.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/KrullDimension.html)
+- [x] Projective space — §2, Projective Varieties, pp. 8–13
+  - `Projectivization` — [`Mathlib/LinearAlgebra/Projectivization/Basic.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/LinearAlgebra/Projectivization/Basic.html)
+- [x] Homogeneous ideal — §2, Projective Varieties, pp. 8–13
+  - `HomogeneousIdeal` — [`Mathlib/RingTheory/GradedAlgebra/Homogeneous/Ideal.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/GradedAlgebra/Homogeneous/Ideal.html)
+- [x] Projective algebraic set — §2, Projective Varieties, pp. 8–13
+  - [`ProjectiveSpectrum.zeroLocus`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=ProjectiveSpectrum.zeroLocus#doc) — [`Mathlib/AlgebraicGeometry/ProjectiveSpectrum/Topology.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/ProjectiveSpectrum/Topology.html)
+- [x] Projective variety — §2, Projective Varieties, pp. 8–13
+  - `Proj` — [`Mathlib/AlgebraicGeometry/ProjectiveSpectrum/Scheme.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/ProjectiveSpectrum/Scheme.html)
+- [x] Regular function — §3, Morphisms, pp. 14–23
+  - `Scheme.Γ` — [`Mathlib/AlgebraicGeometry/Scheme.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/Scheme.html)
+- [x] Morphism of varieties — §3, Morphisms, pp. 14–23
+  - [`Scheme.Hom`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Scheme.Hom#doc) — [`Mathlib/AlgebraicGeometry/Scheme.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/Scheme.html)
+- [x] Isomorphism of varieties — §3, Morphisms, pp. 14–23
+  - [`CategoryTheory.Iso`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CategoryTheory.Iso#doc) — [`Mathlib/CategoryTheory/Iso.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/CategoryTheory/Iso.html)
+- [x] Rational function — §4, Rational Maps, pp. 24–30
+  - [`Scheme.functionField`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Scheme.functionField#doc) — [`Mathlib/AlgebraicGeometry/FunctionField.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/FunctionField.html)
+- [x] Rational map — §4, Rational Maps, pp. 24–30
+  - [`AlgebraicGeometry.Scheme.RationalMap`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlgebraicGeometry.Scheme.RationalMap#doc) — [`Mathlib/AlgebraicGeometry/Birational/RationalMap.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/Birational/RationalMap.html)
+- [x] Birational map — §4, Rational Maps, pp. 24–30
+  - [`AlgebraicGeometry.Birational`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlgebraicGeometry.Birational#doc) — [`Mathlib/AlgebraicGeometry/Birational/Birational.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/Birational/Birational.html)
+- [x] Function field of a variety — §4, Rational Maps, pp. 24–30
+  - [`Scheme.functionField`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Scheme.functionField#doc) — [`Mathlib/AlgebraicGeometry/FunctionField.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/FunctionField.html)
+- [x] Tangent space — §5, Nonsingular Varieties, pp. 31–38
+  - [`TauCeti.AlgebraicGeometry.ZariskiTangentSpace`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=TauCeti.AlgebraicGeometry.ZariskiTangentSpace#doc) — `TauCeti/AlgebraicGeometry/TangentSpace/Basic.lean` (TauCeti)
+- [x] Nonsingular point — §5, Nonsingular Varieties, pp. 31–38
+  - [`Scheme.IsSmoothAtPoint`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Scheme.IsSmoothAtPoint#doc) — `Atlas/AlgebraicGeometryI/code/SmoothPointVariety.lean` (atlas-lean)
+  - [`Scheme.isSmoothAtPoint_iff_isRegularLocalRing`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Scheme.isSmoothAtPoint_iff_isRegularLocalRing#doc) ties it to regular local rings — `Atlas/AlgebraicGeometryI/code/SmoothPointVariety.lean`
+- [x] Singular point — §5, Nonsingular Varieties, pp. 31–38
+  - [`Scheme.IsSingularAtPoint`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Scheme.IsSingularAtPoint#doc) — `Atlas/AlgebraicGeometryI/code/SmoothPointVariety.lean` (atlas-lean)
+- [x] Nonsingular variety — §5, Nonsingular Varieties, pp. 31–38
+  - [`Scheme.IsSmooth`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Scheme.IsSmooth#doc) — `Atlas/AlgebraicGeometryI/code/SmoothPointVariety.lean` (atlas-lean)
+  - Mathlib morphism class: [`AlgebraicGeometry.Smooth`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlgebraicGeometry.Smooth#doc) — [`Mathlib/AlgebraicGeometry/Morphisms/Smooth.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/Morphisms/Smooth.html)
+- [x] Local parameter on a nonsingular curve — §6, Nonsingular Curves, pp. 39–46
+  - [`intValuation.Uniformizer`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=intValuation.Uniformizer#doc), `valuation_exists_uniformizer` (uniformizer of a DVR local ring) — [`Mathlib/RingTheory/DedekindDomain/AdicValuation.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/DedekindDomain/AdicValuation.html)
+- [ ] Intersection multiplicity of a curve and a hypersurface — §7, Intersections in Projective Space, pp. 47–54
+  - Partial reference: `intersectionMultiplicity` treats affine plane curves only — `Atlas/AlgebraicGeometryI/code/Lec5BezoutPascal.lean`
+  - Partial reference: `projIntersectionMultiplicity` treats projective plane curves only — `Atlas/AlgebraicGeometryI/code/IntersectionMultSingular.lean`; `totalIntersectionNumber`/`bezout_theorem` — `Atlas/AlgebraicGeometryI/code/BezoutIntersection.lean`
+- [ ] Degree of a projective variety — §7, Intersections in Projective Space, pp. 47–54
+
+## Chapter II. Schemes
+
+- [x] Presheaf — §1, Sheaves, pp. 60–68
+  - [`TopCat.Presheaf`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=TopCat.Presheaf#doc) — [`Mathlib/Topology/Sheaves/Presheaf.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Sheaves/Presheaf.html)
+- [x] Sheaf — §1, Sheaves, pp. 60–68
+  - [`TopCat.Sheaf`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=TopCat.Sheaf#doc) — [`Mathlib/Topology/Sheaves/Sheaf.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Sheaves/Sheaf.html)
+- [x] Stalk of a sheaf — §1, Sheaves, pp. 60–68
+  - [`TopCat.Presheaf.stalk`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=TopCat.Presheaf.stalk#doc) — [`Mathlib/Topology/Sheaves/Stalks.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Sheaves/Stalks.html)
+- [x] Germ of a section — §1, Sheaves, pp. 60–68
+  - [`TopCat.Presheaf.germ`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=TopCat.Presheaf.germ#doc) — [`Mathlib/Topology/Sheaves/Stalks.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Sheaves/Stalks.html)
+- [x] Morphism of sheaves — §1, Sheaves, pp. 60–68
+  - [`CategoryTheory.NatTrans`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CategoryTheory.NatTrans#doc) — [`Mathlib/CategoryTheory/NatTrans.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/CategoryTheory/NatTrans.html)
+- [x] Direct image sheaf — §1, Sheaves, pp. 60–68
+  - [`TopCat.Sheaf.pushforward`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=TopCat.Sheaf.pushforward#doc) — [`Mathlib/Topology/Sheaves/Functors.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Sheaves/Functors.html)
+- [x] Inverse image sheaf — §1, Sheaves, pp. 60–68
+  - [`TopCat.Sheaf.pullback`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=TopCat.Sheaf.pullback#doc) — [`Mathlib/Topology/Sheaves/Functors.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Sheaves/Functors.html)
+- [x] Sheafification — §1, Sheaves, pp. 60–68
+  - [`TopCat.Presheaf.sheafify`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=TopCat.Presheaf.sheafify#doc) — [`Mathlib/Topology/Sheaves/Sheafify.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Sheaves/Sheafify.html)
+- [x] Locally ringed space — §2, Schemes, pp. 69–81
+  - `LocallyRingedSpace` — [`Mathlib/Geometry/RingedSpace/LocallyRingedSpace.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Geometry/RingedSpace/LocallyRingedSpace.html)
+- [x] Spectrum of a ring — §2, Schemes, pp. 69–81
+  - `PrimeSpectrum` — [`Mathlib/RingTheory/Spectrum/Prime/Basic.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Spectrum/Prime/Basic.html)
+- [x] Structure sheaf of an affine scheme — §2, Schemes, pp. 69–81
+  - [`Spec.structureSheaf`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Spec.structureSheaf#doc) — [`Mathlib/AlgebraicGeometry/StructureSheaf.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/StructureSheaf.html)
+- [x] Affine scheme — §2, Schemes, pp. 69–81
+  - [`AlgebraicGeometry.AffineScheme`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlgebraicGeometry.AffineScheme#doc) — [`Mathlib/AlgebraicGeometry/AffineScheme.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/AffineScheme.html)
+- [x] Scheme — §2, Schemes, pp. 69–81
+  - [`AlgebraicGeometry.Scheme`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlgebraicGeometry.Scheme#doc) — [`Mathlib/AlgebraicGeometry/Scheme.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/Scheme.html)
+- [x] Morphism of schemes — §2, Schemes, pp. 69–81
+  - [`AlgebraicGeometry.Scheme.Hom`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlgebraicGeometry.Scheme.Hom#doc) — [`Mathlib/AlgebraicGeometry/Scheme.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/Scheme.html)
+- [x] Fibre of a morphism — §3, First Properties of Schemes, pp. 82–94
+  - [`Scheme.Hom.fiber`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Scheme.Hom.fiber#doc) — [`Mathlib/AlgebraicGeometry/Fiber.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/Fiber.html)
+- [x] Reduced scheme — §3, First Properties of Schemes, pp. 82–94
+  - [`AlgebraicGeometry.IsReduced`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlgebraicGeometry.IsReduced#doc) — [`Mathlib/AlgebraicGeometry/Properties.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/Properties.html)
+- [x] Integral scheme — §3, First Properties of Schemes, pp. 82–94
+  - [`AlgebraicGeometry.IsIntegral`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlgebraicGeometry.IsIntegral#doc) — [`Mathlib/AlgebraicGeometry/Properties.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/Properties.html)
+- [x] Noetherian scheme — §3, First Properties of Schemes, pp. 82–94
+  - [`AlgebraicGeometry.IsNoetherian`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlgebraicGeometry.IsNoetherian#doc) — [`Mathlib/AlgebraicGeometry/Noetherian.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/Noetherian.html)
+- [x] Scheme locally of finite type — §3, First Properties of Schemes, pp. 82–94
+  - [`AlgebraicGeometry.LocallyOfFiniteType`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlgebraicGeometry.LocallyOfFiniteType#doc) — [`Mathlib/AlgebraicGeometry/Morphisms/FiniteType.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/Morphisms/FiniteType.html)
+- [x] Scheme of finite type — §3, First Properties of Schemes, pp. 82–94
+  - Mathlib: [`AlgebraicGeometry.LocallyOfFiniteType`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlgebraicGeometry.LocallyOfFiniteType#doc) — [`Mathlib/AlgebraicGeometry/Morphisms/FiniteType.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/Morphisms/FiniteType.html)
+- [x] Dimension of a scheme — §3, First Properties of Schemes, pp. 82–94
+  - Mathlib: `topologicalKrullDim` — [`Mathlib/Topology/KrullDimension.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/KrullDimension.html)
+- [x] Separated morphism — §4, Separated and Proper Morphisms, pp. 95–107
+  - [`AlgebraicGeometry.IsSeparated`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlgebraicGeometry.IsSeparated#doc) — [`Mathlib/AlgebraicGeometry/Morphisms/Separated.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/Morphisms/Separated.html)
+- [x] Proper morphism — §4, Separated and Proper Morphisms, pp. 95–107
+  - [`AlgebraicGeometry.IsProper`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlgebraicGeometry.IsProper#doc) — [`Mathlib/AlgebraicGeometry/Morphisms/Proper.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/Morphisms/Proper.html)
+- [ ] Abstract variety — §4, Separated and Proper Morphisms, pp. 95–107
+  - Partial reference: [`AlgebraicGeometry.Scheme.IsAlgebraicVariety`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlgebraicGeometry.Scheme.IsAlgebraicVariety#doc) imposes a finite affine-cover scheme presentation — `Atlas/AlgebraicGeometryI/code/Lec2AlgebraicVariety.lean`
+- [x] Sheaf of modules — §5, Sheaves of Modules, pp. 108–128
+  - `SheafOfModules` — [`Mathlib/Algebra/Category/ModuleCat/Sheaf.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Category/ModuleCat/Sheaf.html)
+- [x] Quasi-coherent sheaf — §5, Sheaves of Modules, pp. 108–128
+  - [`SheafOfModules.IsQuasicoherent`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=SheafOfModules.IsQuasicoherent#doc) — [`Mathlib/Algebra/Category/ModuleCat/Sheaf/Quasicoherent.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Category/ModuleCat/Sheaf/Quasicoherent.html)
+- [x] Coherent sheaf — §5, Sheaves of Modules, pp. 108–128
+  - `CoherentModuleCat` — [`LeanCategories/Schemes/Coherent.lean`](https://github.com/dzackgarza/lean-categories/blob/main/LeanCategories/Schemes/Coherent.lean) (lean-categories-schemes)
+- [x] Locally free sheaf — §5, Sheaves of Modules, pp. 108–128
+  - [`SheafOfModules.IsLocallyFree`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=SheafOfModules.IsLocallyFree#doc) — [`Mathlib/Algebra/Category/ModuleCat/Sheaf/LocallyFree.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Category/ModuleCat/Sheaf/LocallyFree.html)
+- [x] Invertible sheaf — §5, Sheaves of Modules, pp. 108–128
+  - [`Module.Invertible`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Module.Invertible#doc) — [`Mathlib/RingTheory/PicardGroup.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/PicardGroup.html)
+- [x] Weil divisor — §6, Divisors, pp. 129–148
+  - [`IsDedekindDomain.Divisor`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=IsDedekindDomain.Divisor#doc) — `vaca22/riemann-roch-function-fields:RiemannRoch/Divisor.lean`
+- [x] Principal divisor — §6, Divisors, pp. 129–148
+  - [`FractionalIdeal.principalDivisor`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=FractionalIdeal.principalDivisor#doc) — `vaca22/riemann-roch-function-fields:RiemannRoch/Divisor.lean`
+- [x] Divisor class group — §6, Divisors, pp. 129–148
+  - `ClassGroup` — [`Mathlib/RingTheory/ClassGroup.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/ClassGroup.html)
+- [x] Cartier divisor — §6, Divisors, pp. 129–148
+  - `CartierDivisorGroup (X : Scheme) : Type u := X.carrier → ℤ` (arbitrary scheme) — `Atlas/AlgebraicGeometryI/code/AlgebraicEquivalence.lean` (atlas-lean)
+  - Units-of-fractional-ideals model for 1-dim: `CartierDivisorGroup` — `Atlas/AlgebraicGeometryI/code/CartierDivisorGroup.lean`
+  - [`CartierDivisorScheme.CartierDivisorDatum`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CartierDivisorScheme.CartierDivisorDatum#doc) is defined only for integral schemes — `Atlas/AlgebraicGeometryI/code/CartierDivisorScheme.lean`
+- [x] Cartier divisor class group — §6, Divisors, pp. 129–148
+  - `picardEquiv` — `Atlas/AlgebraicGeometryI/code/CartierDivisorGroup.lean` (atlas-lean)
+  - Mathlib: [`CommRing.Pic`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CommRing.Pic#doc) — [`Mathlib/RingTheory/PicardGroup.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/PicardGroup.html)
+- [x] Picard group — §6, Divisors, pp. 129–148
+  - [`CommRing.Pic`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CommRing.Pic#doc) — [`Mathlib/RingTheory/PicardGroup.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/PicardGroup.html)
+- [x] Proj of a graded ring — §7, Projective Morphisms, pp. 149–171
+  - `Proj` — [`Mathlib/AlgebraicGeometry/ProjectiveSpectrum/Scheme.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/ProjectiveSpectrum/Scheme.html)
+- [ ] Projective morphism — §7, Projective Morphisms, pp. 149–171
+  - Partial reference: [`ProjectiveRatMap.ProjectiveMorphism`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=ProjectiveRatMap.ProjectiveMorphism#doc) is a map between subsets of finite projective spaces — `Atlas/ArithmeticGeometry/code/ProjectiveMorphisms.lean`
+- [ ] Very ample invertible sheaf — §7, Projective Morphisms, pp. 149–171
+  - Partial reference: complex-Kähler analog only: `IsVeryAmple` — `Atlas/GeometryOfManifolds/code/AdvancedKahler.lean` (atlas-lean)
+- [ ] Ample invertible sheaf — §7, Projective Morphisms, pp. 149–171
+  - Partial reference: complex-Kähler analog only: `IsAmple` — `Atlas/GeometryOfManifolds/code/AdvancedKahler.lean` (atlas-lean)
+- [x] Derivation — §8, Differentials, pp. 172–189
+  - `Derivation` — [`Mathlib/RingTheory/Derivation/Basic.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Derivation/Basic.html)
+- [x] Module of Kähler differentials — §8, Differentials, pp. 172–189
+  - `KaehlerDifferential` — [`Mathlib/RingTheory/Kaehler/Basic.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Kaehler/Basic.html)
+- [x] Sheaf of relative differentials — §8, Differentials, pp. 172–189
+  - Mathlib: `KaehlerDifferential` on affine charts — [`Mathlib/RingTheory/Kaehler/Basic.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Kaehler/Basic.html)
+- [ ] Formal completion of a scheme along a closed subscheme — §9, Formal Schemes, pp. 190–200
+- [ ] Formal scheme — §9, Formal Schemes, pp. 190–200
+
+## Chapter III. Cohomology
+
+- [x] Additive functor — §1, Derived Functors, pp. 201–204
+  - [`Functor.Additive`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Functor.Additive#doc) — [`Mathlib/CategoryTheory/Preadditive/AdditiveFunctor.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/CategoryTheory/Preadditive/AdditiveFunctor.html)
+- [x] Left exact functor — §1, Derived Functors, pp. 201–204
+  - [`CategoryTheory.LeftExactFunctor`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CategoryTheory.LeftExactFunctor#doc) — [`Mathlib/CategoryTheory/Limits/ExactFunctor.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/CategoryTheory/Limits/ExactFunctor.html)
+- [x] Right derived functor — §1, Derived Functors, pp. 201–204
+  - [`CategoryTheory.Functor.rightDerived`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CategoryTheory.Functor.rightDerived#doc) — [`Mathlib/CategoryTheory/Abelian/RightDerived.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/CategoryTheory/Abelian/RightDerived.html)
+- [x] Injective object — §1, Derived Functors, pp. 201–204
+  - [`CategoryTheory.Injective`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CategoryTheory.Injective#doc) — [`Mathlib/CategoryTheory/Preadditive/Injective/Basic.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/CategoryTheory/Preadditive/Injective/Basic.html)
+- [x] Injective resolution — §1, Derived Functors, pp. 201–204
+  - [`CategoryTheory.InjectiveResolution`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CategoryTheory.InjectiveResolution#doc) — [`Mathlib/CategoryTheory/Abelian/Injective/Resolution.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/CategoryTheory/Abelian/Injective/Resolution.html)
+- [x] Cohomology of a sheaf — §2, Cohomology of Sheaves, pp. 205–211
+  - `cohomologyPresheafFunctor` — [`Mathlib/CategoryTheory/Sites/SheafCohomology/Basic.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/CategoryTheory/Sites/SheafCohomology/Basic.html)
+- [x] Acyclic sheaf — §2, Cohomology of Sheaves, pp. 205–211
+  - [`CategoryTheory.Functor.IsRightAcyclic`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CategoryTheory.Functor.IsRightAcyclic#doc) — `reservoir-sources/Vilin97__Clawristotle/coherent-cohomology-finite/CoherentCohomologyFinite/AcyclicResolution.lean` (Clawristotle; right-`G`-acyclic objects, `(RⁿG)(J) = 0` for all `n ≥ 1`; the acyclic-sheaf notion is the `G = Γ` instance)
+  - Partial reference: affine-coherence vanishing theorems, not the definition: `higherDirectImageVanishing` — `Atlas/AlgebraicGeometryI/code/AffinePushforwardHigher.lean`; `prop44_higher_direct_image_vanishing` — `Atlas/AlgebraicGeometryI/code/AffinePushforwardCohomology.lean` (atlas-lean)
+- [x] Flasque sheaf — §2, Cohomology of Sheaves, pp. 205–211
+  - [`TopCat.Sheaf.IsFlasque`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=TopCat.Sheaf.IsFlasque#doc) — [`Mathlib/Topology/Sheaves/Flasque.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Sheaves/Flasque.html)
+- [x] Čech complex — §4, Čech Cohomology, pp. 218–224
+  - `cechComplexFunctor` — [`Mathlib/CategoryTheory/Sites/SheafCohomology/Cech.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/CategoryTheory/Sites/SheafCohomology/Cech.html)
+- [x] Čech cohomology — §4, Čech Cohomology, pp. 218–224
+  - `cechComplexFunctor` — [`Mathlib/CategoryTheory/Sites/SheafCohomology/Cech.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/CategoryTheory/Sites/SheafCohomology/Cech.html)
+- [x] Ext functor — §6, Ext Groups and Sheaves, pp. 233–238
+  - [`CategoryTheory.extFunctor`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CategoryTheory.extFunctor#doc) — [`Mathlib/Algebra/Homology/DerivedCategory/Ext/Basic.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Homology/DerivedCategory/Ext/Basic.html)
+- [ ] Sheaf Ext — §6, Ext Groups and Sheaves, pp. 233–238
+  - Partial reference: abelian-category Ext, not sheaf-specific: `def Ext (n : ℕ) : Cᵒᵖ ⥤ C ⥤ ModuleCat R` — [`Mathlib/CategoryTheory/Abelian/Ext.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/CategoryTheory/Abelian/Ext.html)
+- [ ] Dualizing sheaf — §7, The Serre Duality Theorem, pp. 239–249
+- [ ] Higher direct image sheaf — §8, Higher Direct Images of Sheaves, pp. 250–252
+  - Partial reference: `higherDirectImageVanishing`, `affinePushforwardCohomologyIso` — `Atlas/AlgebraicGeometryI/code/AffinePushforwardHigher.lean`; `prop44_higher_direct_image_vanishing` — `Atlas/AlgebraicGeometryI/code/AffinePushforwardCohomology.lean` (atlas-lean)
+- [x] Flat module — §9, Flat Morphisms, pp. 253–267
+  - [`Module.Flat`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Module.Flat#doc) — [`Mathlib/RingTheory/Flat/Basic.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Flat/Basic.html)
+- [x] Flat morphism — §9, Flat Morphisms, pp. 253–267
+  - [`AlgebraicGeometry.Flat`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlgebraicGeometry.Flat#doc) — [`Mathlib/AlgebraicGeometry/Morphisms/Flat.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/Morphisms/Flat.html)
+- [x] Faithfully flat morphism — §9, Flat Morphisms, pp. 253–267
+  - [`RingHom.FaithfullyFlat`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=RingHom.FaithfullyFlat#doc) — [`Mathlib/RingTheory/RingHom/FaithfullyFlat.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/RingHom/FaithfullyFlat.html)
+- [x] Smooth morphism — §10, Smooth Morphisms, pp. 268–275
+  - [`AlgebraicGeometry.Smooth`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlgebraicGeometry.Smooth#doc) — [`Mathlib/AlgebraicGeometry/Morphisms/Smooth.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/Morphisms/Smooth.html)
+- [x] Unramified morphism — §10, Smooth Morphisms, pp. 268–275
+  - [`RingHom.Unramified`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=RingHom.Unramified#doc) — [`Mathlib/RingTheory/RingHom/Unramified.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/RingHom/Unramified.html)
+- [x] Étale morphism — §10, Smooth Morphisms, pp. 268–275
+  - [`AlgebraicGeometry.Etale`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlgebraicGeometry.Etale#doc) — [`Mathlib/AlgebraicGeometry/Morphisms/Etale.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/Morphisms/Etale.html)
+- [x] Upper semicontinuous function — §12, The Semicontinuity Theorem, pp. 281–292
+  - `UpperSemicontinuous` — [`Mathlib/Topology/Semicontinuity/Defs.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Semicontinuity/Defs.html)
+
+## Chapter IV. Curves
+
+- [x] Curve — §1, Riemann–Roch Theorem, pp. 294–298
+  - `SmoothCompleteCurve` (structure; `chi_eq_rr` Riemann–Roch, `serre_duality_chi_canonical`) — `Atlas/AlgebraicGeometryI/code/CanonicalSheafCurves.lean` (atlas-lean)
+- [x] Genus of a curve — §1, Riemann–Roch Theorem, pp. 294–298
+  - [`FunctionField.Chart.genus`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=FunctionField.Chart.genus#doc) — `RiemannRoch/Genus/Basic.lean` (riemann-roch-function-fields)
+- [x] Canonical divisor — §1, Riemann–Roch Theorem, pp. 294–298
+  - [`FunctionField.Chart.WeilDifferential.IsCanonical`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=FunctionField.Chart.WeilDifferential.IsCanonical#doc) — `RiemannRoch/WeilDifferential/Basic.lean` (riemann-roch-function-fields)
+- [x] Complete linear system — §1, Riemann–Roch Theorem, pp. 294–298
+  - [`FunctionField.Chart.RRspace`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=FunctionField.Chart.RRspace#doc) — `RiemannRoch/RRspace/Basic.lean` (riemann-roch-function-fields)
+- [x] Ramification index — §2, Hurwitz’s Theorem, pp. 299–306
+  - [`Ideal.ramificationIdx`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.ramificationIdx#doc) — [`Mathlib/RingTheory/RamificationInertia/Basic.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/RamificationInertia/Basic.html)
+- [x] Ramification divisor — §2, Hurwitz’s Theorem, pp. 299–306
+  - [`CurveMorphismData.ramificationDivisor`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CurveMorphismData.ramificationDivisor#doc) — `Atlas/AlgebraicGeometryI/code/RamificationDivisor.lean` (atlas-lean)
+  - `ramificationDivisorDegreeAt` — `Atlas/AlgebraicGeometryI/code/RiemannHurwitzFormula.lean`; `globalRamification` — `Atlas/AlgebraicGeometryI/code/CanonicalDivisorDecomposition.lean`
+- [ ] Base point of a linear system — §3, Embeddings in Projective Space, pp. 307–315
+  - Partial reference: linear systems exist: `completeLinearSystem` — `TauCeti/AlgebraicGeometry/WeilDivisor/LinearSystem/Basic.lean` (TauCeti); no base-point def
+- [ ] Base-point-free linear system — §3, Embeddings in Projective Space, pp. 307–315
+- [x] Elliptic curve — §4, Elliptic Curves, pp. 316–339
+  - `WeierstrassCurve` — [`Mathlib/AlgebraicGeometry/EllipticCurve/Weierstrass.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/EllipticCurve/Weierstrass.html)
+- [x] Isogeny of elliptic curves — §4, Elliptic Curves, pp. 316–339
+  - `EllipticCurveIsogeny` — `Atlas/ArithmeticGeometry/code/Isogenies.lean`
+- [x] Frobenius morphism of an elliptic curve — §4, Elliptic Curves, pp. 316–339
+  - `frobeniusIsogeny` — `Atlas/EllipticCurves/code/WeilPairing.lean` (atlas-lean)
+  - `frobeniusPointMap` — `Atlas/EllipticCurves/code/FrobeniusEndomorphism.lean`
+  - Mathlib ring-endomorphism: [`LinearMap.frobenius`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=LinearMap.frobenius#doc) — [`Mathlib/Algebra/CharP/Frobenius.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/CharP/Frobenius.html)
+- [ ] Canonical map of a curve — §5, The Canonical Embedding, pp. 340–348
+  - Partial reference: canonical sheaf/class exist, the map does not: `canonicalSheafClass`/`canonicalDeg` — `Atlas/AlgebraicGeometryI/code/CanonicalSheafCurves.lean`; `canonicalDivisorClass_dedekind` — `Atlas/AlgebraicGeometryI/code/CanonicalDivisorCurves.lean`; `canonicalModule` — `Atlas/AlgebraicGeometryI/code/CanonicalSheafDef.lean` (atlas-lean)
+- [x] Hyperelliptic curve — §5, The Canonical Embedding, pp. 340–348
+  - `hyperellipticData` (degree-two cover with branch data) — `Atlas/AlgebraicGeometryI/code/RiemannHurwitzFormula.lean` (atlas-lean)
+  - `genus_hyperelliptic_from_curves`/`hyperelliptic_genus_from_branch_points` — `Atlas/AlgebraicGeometryI/code/RiemannHurwitzDegree.lean`
+
+## Chapter V. Surfaces
+
+- [ ] Surface — §1, Geometry on a Surface, pp. 357–368
+- [ ] Intersection number of divisors on a surface — §1, Geometry on a Surface, pp. 357–368
+  - Partial reference: projective plane curves only: `localIntersectionMultiplicity`/`totalIntersectionNumber`/`bezout_theorem` — `Atlas/AlgebraicGeometryI/code/BezoutIntersection.lean` (atlas-lean)
+- [ ] Numerical equivalence of divisors — §1, Geometry on a Surface, pp. 357–368
+  - Partial reference: algebraic equivalence via `SPoint`/`ConnectedVariety` — `Atlas/AlgebraicGeometryI/code/AlgebraicEquivalence.lean` (atlas-lean); no numerical-equivalence def
+- [ ] Néron–Severi group — §1, Geometry on a Surface, pp. 357–368
+- [ ] Arithmetic genus of a surface — §1, Geometry on a Surface, pp. 357–368
+  - Partial reference: `arithmeticGenusP1` (ℙ¹ only) — `Atlas/AlgebraicGeometryI/code/ArithmeticGeometricGenus.lean` (atlas-lean)
+- [ ] Geometric genus of a surface — §1, Geometry on a Surface, pp. 357–368
+  - Partial reference: `geometricGenusP1` (ℙ¹ only) — `Atlas/AlgebraicGeometryI/code/ArithmeticGeometricGenus.lean` (atlas-lean)
+- [ ] Irregularity of a surface — §1, Geometry on a Surface, pp. 357–368
+- [ ] Ruled surface — §2, Ruled Surfaces, pp. 369–385
+- [ ] Geometrically ruled surface — §2, Ruled Surfaces, pp. 369–385
+- [ ] Normalized locally free sheaf on a curve — §2, Ruled Surfaces, pp. 369–385
+- [x] Monoidal transformation — §3, Monoidal Transformations, pp. 386–394
+  - `blowupScheme`/`blowupProjection`/`blowupAtPoint` — `Atlas/AlgebraicGeometryI/code/BlowupAtPoint.lean` (atlas-lean)
+  - Affine case: [`Blowup.blowupAlong`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Blowup.blowupAlong#doc) — `Atlas/AlgebraicGeometryI/code/BlowupDefinition.lean`
+- [x] Exceptional curve — §3, Monoidal Transformations, pp. 386–394
+  - `exceptionalLocus`/`blowupExceptionalLocus` — `Atlas/AlgebraicGeometryI/code/BlowupAtPoint.lean` (atlas-lean)
+- [x] Birational transformation of surfaces — §5, Birational Transformations, pp. 409–420
+  - `IsBirational` — `Atlas/AlgebraicGeometryI/code/ChowsLemma.lean` (atlas-lean)
+  - Mathlib: [`AlgebraicGeometry.Birational`](https://leanprover-community.github.io/mathlib4_docs/find/?pattern=AlgebraicGeometry.Birational#doc) — [`Mathlib/AlgebraicGeometry/Birational/Birational.lean`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/AlgebraicGeometry/Birational/Birational.html)
+- [ ] Contractible curve — §5, Birational Transformations, pp. 409–420
+- [ ] Relatively minimal model — §5, Birational Transformations, pp. 409–420
+- [ ] Minimal model — §5, Birational Transformations, pp. 409–420
+- [ ] Kodaira dimension — §6, Classification of Surfaces, pp. 421–423
+- [ ] Surface of general type — §6, Classification of Surfaces, pp. 421–423

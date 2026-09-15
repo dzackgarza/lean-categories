@@ -1,0 +1,2589 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Chapter 0. Some Underlying Geometric Notions – lean-categories · corpus</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-7335da993d57b01553edc5728a7cb5aa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">lean-categories · corpus</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../coverage.html" aria-current="page"> 
+<span class="menu-text">Every book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../corpus.html"> 
+<span class="menu-text">Reading list</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../catalogues/index.html"> 
+<span class="menu-text">Catalogues</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/dzackgarza/lean-categories"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc07/index.html">FC07</a></li><li class="breadcrumb-item"><a href="../../sources/fc07/c00.html">Chapter 0. Some Underlying Geometric Notions</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="sidebar-tools-main">
+    <div id="quarto-search" class="quarto-navigation-tool px-1" title="Search"></div>
+</div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Graduate mathematics, and what Lean has of it</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../coverage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Every book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../corpus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational source corpus</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../status.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus status</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Sources</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC01 Dummit Foote</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/ai.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01 Appendix I — Cartesian Products and Zorn’s Lemma</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC03</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC03 Riehl Category Theory in Context</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Categories, Functors, and Natural Transformations (pp.&nbsp;1–48)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Representability and the Yoneda Lemma (pp.&nbsp;49–72)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Limits and Colimits (pp.&nbsp;73–114)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Adjunctions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Monads and Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. All Concepts are Kan Extensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/ce.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Epilogue: Theorems in Category Theory</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC04</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC04 Atiyah Macdonald</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Rings and Ideals (pp.&nbsp;1–9)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Modules (pp.&nbsp;17–30)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Rings and Modules of Fractions (pp.&nbsp;36–42)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Primary Decomposition (pp.&nbsp;50–54)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Integral Dependence and Valuations (pp.&nbsp;59–66)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Chain Conditions (pp.&nbsp;74–77)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Noetherian Rings (pp.&nbsp;80–83)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Artin Rings (pp.&nbsp;89–90)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Discrete Valuation Rings and Dedekind Domains (pp.&nbsp;93–98)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. Completions (pp.&nbsp;100–112)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Dimension Theory (pp.&nbsp;116–124)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC05</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC05 Weibel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Chain Complexes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Derived Functors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Tor and Ext</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homological Dimension</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Spectral Sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Group Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Lie Algebra Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Simplicial Methods in Homological Algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Hochschild and Cyclic Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. The Derived Category</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Category Theory Language</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC06</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC06 Hartshorne</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter I: Varieties</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter II: Schemes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter III: Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter IV: Curves</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter V: Surfaces</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC07</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC07 Hatcher</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c00.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Chapter 0. Some Underlying Geometric Notions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. The Fundamental Group</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homotopy Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix. Topology of Cell Complexes</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC08 Lee</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c22.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC09 Neukirch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC10 Serre Local Fields</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc11/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC11 Peters Sterk</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc12/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC12 Beauville</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc13/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC13</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC13 Matsumura</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Front matter — conventions and terminology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Commutative rings and modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Prime ideals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Properties of extension rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Valuation rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Dimension theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Regular sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Regular rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Flatness revisited</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Derivations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. I-smoothness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Applications of complete local rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Tensor products, direct and inverse limits</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix B. Some homological algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix C. The exterior algebra</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc14/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC14</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC14 Humphreys</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Basic Concepts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Semisimple Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Root Systems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Isomorphism and Conjugacy Theorems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Existence Theorem</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Representation Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Chevalley Algebras and Groups</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc15/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC15</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Classification of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Polynomial invariants of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Affine reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Coxeter groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Special cases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Hecke algebras and Kazhdan–Lusztig polynomials</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Complements</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc16/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC16</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Algebraic Geometry</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Affine Algebraic Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Homogeneous Spaces</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Characteristic 0 Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Semisimple and Unipotent Elements</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Solvable Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VIII. Borel Subgroups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IX. Centralizers of Tori</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter X. Structure of Reductive Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XI. Representations and Classification of Semisimple Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XII. Survey of Rationality Properties and Appendix</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../catalogues/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Definition catalogues</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">catalogues/*.md</span>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Notes and audits</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">notes/*.md</span>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc07/index.html">FC07</a></li><li class="breadcrumb-item"><a href="../../sources/fc07/c00.html">Chapter 0. Some Underlying Geometric Notions</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Chapter 0. Some Underlying Geometric Notions</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>FC07 — Hatcher, <em>Algebraic Topology</em>.</p>
+<p>This chapter contains 10 definitions, 4 propositions, 2 corollaries, 15 examples and 10 constructions.</p>
+<p>Of the 41 statements checked against Lean, 11 are formalized somewhere and 30 are not.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 28%">
+<col style="width: 28%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Status</th>
+<th style="text-align: right;">Statements</th>
+<th style="text-align: right;">Share</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="route-unmatched">not formalized</span></td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">73%</td>
+<td>A documented search found no Lean statement of it anywhere.</td>
+</tr>
+<tr class="even">
+<td><span class="route-mathlib">in Mathlib</span></td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">17%</td>
+<td>Mathlib states and proves it.</td>
+</tr>
+<tr class="odd">
+<td><span class="route-reference-port">in another Lean project</span></td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">10%</td>
+<td>Some other Lean development has it; using it means porting that code.</td>
+</tr>
+<tr class="even">
+<td><strong>checked in total</strong></td>
+<td style="text-align: right;"><strong>41</strong></td>
+<td style="text-align: right;"></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Which versions of Lean and Mathlib were searched
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li>Canonical source block: FC07 Hatcher, Chapter 0, <code>FC07-C00-U001</code>–<code>FC07-C00-U041</code>, in canonical source-ID order, extracted from <a href="../../sources/fc07/">FC07 — Hatcher, Algebraic Topology</a> through <code>agent-memory</code>. The extraction contains exactly 41 contiguous rows. FC01–FC06 were left closed and no FC13 scratch or vault record was touched.</li>
+<li>Project-first inspection was refreshed at repository HEAD <code>A=3b2239e161592472b34e02ad3b7da308f9ce7280</code>. No project-owned declaration in <code>LeanCategories/**</code> owns a complete C00 source row, so no <code>project-existing</code> route is promoted.</li>
+<li>Pinned Mathlib is <code>P=db584cd6d46c92f209a44c0f1c829460d327499d</code>, Lean 4.33.0, Apache-2.0 and directly project-compatible. Every <code>mathlib</code> declaration promoted in the table was inspected at that exact revision.</li>
+<li>Current upstream Mathlib was refreshed on 2026-09-06 at <code>H=633b366493a76df88a2bff099ed0cbf711a59ec9</code>, Lean 4.34.0-rc2, Apache-2.0. Searches at H and in current open Mathlib PRs found ongoing classical-CW infrastructure work but no post-pin route completing the missing suspension/smash/mapping-cone, product/quotient-CW, or HEP proposition bundles.</li>
+<li><code>deancureton/sphere-six-complex@895c0a0661501581c34d42fea3c553d4f0ee43b1</code> is Apache-2.0 and uses Lean 4.34.0-rc1. It contains exact general-topology implementations of strong deformation retractions, mapping cylinders/pushout homotopies, HEP, and Hatcher Cor. 0.20. Because it is not the project pin and no direct package-compatibility import test against Lean 4.33.0 was established, all promoted uses are <code>reference-port</code>, not <code>package-import</code>.</li>
+<li><code>Vilin97/lean-pool@3fc79f0a795f19fffcc59eee3efaf5faa52de3c3</code> was inspected as a Reservoir/local reference source. Its Whitehead/HEP development has a target-specific HEP interface and supplies adjacent evidence but no stricter route than the promoted sphere-six declarations. <code>facebookresearch/atlas-lean@34ffed396f376454c1a9b297f3fd74c5c801fb50</code> was also checked for its deformation-retract interface; it uses Lean 4.29.0 and a noncommercial/no-training license, and no C00 row depends on it.</li>
+<li>Indexed/search-service probes (Mathlib docs, Loogle/LeanSearch-oriented searches, Reservoir/package search, GitHub-wide Lean search, and local reference-corpus scans) were used for the remaining gaps. Generic category-theoretic cones, joins, pushouts, and homological mapping cones were not conflated with Hatcher’s topological constructions.</li>
+<li>Strict bundle semantics govern every row. A route must own the complete stable-ID statement. A theorem for only one clause, one example, a specialization, or a semantically adjacent object is retained as adjacent evidence but does not promote the row.</li>
+<li>U008 is deliberately unmatched despite Mathlib’s <code>CWComplex</code>/<code>RelCWComplex</code> characteristic-map interface, skeletons, and skeleton-union theorems: the source row specifically gives the inductive discrete-0-skeleton/successive-cell-attachment construction, and no checked theorem bridges the complete source construction to the current classical-CW presentation.</li>
+<li>U009 is likewise not inferred from <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CWComplex.OneSkeletonGraph#doc"><code>CWComplex.OneSkeletonGraph</code></a>: that declaration extracts a combinatorial graph from the 1-skeleton, but the checked API does not identify an arbitrary one-dimensional CW complex with a topological graph realization as the source example states.</li>
+<li>U015 and U016 are promoted because Mathlib’s characteristic-map and subcomplex interfaces are direct equivalent representations rather than weaker consequences: closed-ball characteristic maps restrict to homeomorphisms on open cells, and subcomplexes are closed unions of cells with an induced CW structure.</li>
+<li>U028 is represented exactly by the topological pushout: the underlying type pushout is explicitly the quotient of the disjoint union by the attachment relation, and <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=TopCat.colimit_topology#doc"><code>TopCat.colimit_topology</code></a> equips it with the final topology.</li>
+<li>U036 remains unmatched even though <code>hasHomotopyExtensionProperty_of_relativeCWComplex_proved</code> proves its HEP consequence. The external proof constructs an ordinary retraction of the L-shaped cylinder and explicitly does not establish the stronger deformation-retract clause bundled into Hatcher Prop. 0.16.</li>
+<li>U040 is the exact external Cor. 0.20 theorem and returns the stronger stationary (strong) deformation retraction. U037–U039 remain unmatched because no searched declaration owns their respective quotient-collapse, homotopic-attachment, or relative-homotopy-equivalence statements in full.</li>
+<li>U041 remains unmatched under whole-row semantics: the external mapping-cylinder/HEP/strong-deformation-retract API supplies ingredients and directions, but no checked declaration packages both Hatcher’s iff and the common-ambient-space characterization.</li>
+<li><code>N=2026-09-06</code> marks a dated unmatched decision after project-first, P, H/current/open work, indexed search services, Reservoir/local reference sources and relevant external Lean repositories.</li>
+</ul>
+</div>
+</div>
+</div>
+<section id="fc07-c00-u001" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u001">Definition — deformation retraction</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U001</code> · Homotopy and Homotopy Type; source L218 · <span class="route-reference-port">in another Lean project</span></p>
+</div>
+<p>A deformation retraction of X onto A is a continuous family f_t:X→X with f_0=id_X, f_1(X)=A, and f_t|_A=id_A for all t.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <code>deancureton/sphere-six-complex::SphereSixComplex/Topology/EstablishedStrongDeformationRetracts.lean::SphereSixComplex.StrongDeformationRetraction</code> — The structure records a self-retraction with image in the specified subspace, identity on that subspace, and a homotopy from the identity to the retraction fixed pointwise on the subspace. Together <code>retract_mem</code> and <code>retract_fixed</code> give image exactly the subspace, matching Hatcher’s deformation-retraction convention.</p>
+</div>
+<p><span class="unit-provenance">Searched: R=895c0a0661501581c34d42fea3c553d4f0ee43b1; Apache-2.0; Lean 4.34.0-rc1</span></p>
+</section>
+<section id="fc07-c00-u002" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u002">Definition/construction — mapping cylinder</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U002</code> · Homotopy and Homotopy Type; source L226 · after <a href="#fc07-c00-u001"><code>FC07-C00-U001</code></a> · <span class="route-reference-port">in another Lean project</span></p>
+</div>
+<p>For f:X→Y, the mapping cylinder M_f is (X×I)⊔Y modulo (x,1)∼f(x); it deformation retracts onto Y.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <code>deancureton/sphere-six-complex::SphereSixComplex/Topology/MappingCylinderGluing.lean::TopCat.MappingCylinder</code>, <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=TopCat.mappingCylinderBase#doc"><code>TopCat.mappingCylinderBase</code></a>, <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=TopCat.cylinderZeroStrongDeformationRetract#doc"><code>TopCat.cylinderZeroStrongDeformationRetract</code></a>; <code>SphereSixComplex/Topology/PushoutHomotopy.lean::TopCat.StrongDeformationRetractData.pushoutRetraction</code>, <code>pushoutHomotopy</code>, <code>inr_pushoutRetraction</code>, <code>inr_pushoutPaths</code> — The mapping cylinder is the topological pushout of a cylinder endpoint and <code>f</code>; interval reversal identifies its zero-end convention with Hatcher’s one-end convention. The cited pushout data gives a retraction onto the target copy and a homotopy to the identity whose target branch stays fixed, so the target is a deformation retract as required.</p>
+</div>
+<p><span class="unit-provenance">Searched: R=895c0a0661501581c34d42fea3c553d4f0ee43b1; Apache-2.0; Lean 4.34.0-rc1</span></p>
+</section>
+<section id="fc07-c00-u003" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u003">Definition — homotopy and homotopic maps</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U003</code> · Homotopy and Homotopy Type; source L236 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A homotopy from f_0 to f_1 is a continuous F:X×I→Y, written F(x,t)=f_t(x); maps joined by such a family are homotopic, f_0≃f_1.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Homotopy/Basic.html#ContinuousMap.Homotopy"><code>Mathlib/Topology/Homotopy/Basic.lean::ContinuousMap.Homotopy</code></a>, <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=ContinuousMap.Homotopic#doc"><code>ContinuousMap.Homotopic</code></a> — Pinned Mathlib defines a homotopy as a continuous map on <code>I × X</code> with prescribed endpoint maps and defines <code>Homotopic</code> by existence of such a homotopy, exactly the source unit up to the order of product coordinates.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d</span></p>
+</section>
+<section id="fc07-c00-u004" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u004">Definition — retraction</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U004</code> · Homotopy and Homotopy Type; source L238 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A retraction onto A⊂X is a map r:X→A restricting to id_A; equivalently, viewed as X→X with image A, it satisfies r²=r.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: A retraction onto A⊂X is a map r:X→A restricting to id_A; equivalently, viewed as X→X with image A, it satisfies r²=r. <code>deancureton/sphere-six-complex::SphereSixComplex/Topology/RelativeHomotopy.lean::SphereSixComplex.DeformationRetractData.retractMap_idempotent</code> proves the idempotence direction for a deformation retraction, but no checked route supplies the complete general retraction definition together with Hatcher’s stated equivalence with image-idempotent self-maps. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u005" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u005">Definition — homotopy relative to A</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U005</code> · Homotopy and Homotopy Type; source L242 · after <a href="#fc07-c00-u003"><code>FC07-C00-U003</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A homotopy f_t:X→Y is rel A when f_t|_A is independent of t.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Homotopy/Basic.html#ContinuousMap.HomotopyRel"><code>Mathlib/Topology/Homotopy/Basic.lean::ContinuousMap.HomotopyRel</code></a>, <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=ContinuousMap.HomotopicRel#doc"><code>ContinuousMap.HomotopicRel</code></a> — A <code>HomotopyRel f₀ f₁ A</code> is a homotopy whose value on every point of <code>A</code> is independent of time, exactly Hatcher’s “rel A” condition.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d</span></p>
+</section>
+<section id="fc07-c00-u006" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u006">Definition — homotopy equivalence and homotopy type</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U006</code> · Homotopy and Homotopy Type; source L244 · after <a href="#fc07-c00-u003"><code>FC07-C00-U003</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A map f:X→Y is a homotopy equivalence if some g:Y→X satisfies fg≃id_Y and gf≃id_X; then X and Y have the same homotopy type.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Homotopy/Equiv.html#ContinuousMap.HomotopyEquiv"><code>Mathlib/Topology/Homotopy/Equiv.lean::ContinuousMap.HomotopyEquiv</code></a> (<code>X ≃ₕ Y</code>) — The structure consists of continuous maps in both directions whose two composites are homotopic to the appropriate identities. Existence of this structure is precisely equality of homotopy type in the source sense.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d</span></p>
+</section>
+<section id="fc07-c00-u007" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u007">Definition — contractible and nullhomotopic</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U007</code> · Homotopy and Homotopy Type; source L248 · after <a href="#fc07-c00-u006"><code>FC07-C00-U006</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A space is contractible when it has the homotopy type of a point, equivalently when its identity map is homotopic to a constant map (nullhomotopic).</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Homotopy/Contractible.html"><code>Mathlib/Topology/Homotopy/Contractible.lean::ContractibleSpace</code></a>, <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=ContinuousMap.Nullhomotopic#doc"><code>ContinuousMap.Nullhomotopic</code></a>, <code>contractible_iff_id_nullhomotopic</code> — <code>ContractibleSpace</code> is defined by a homotopy equivalence with <code>Unit</code>, and the cited iff theorem identifies this exactly with nullhomotopy of the identity map.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d</span></p>
+</section>
+<section id="fc07-c00-u008" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u008">Definition/construction — CW complex, cells, and skeleta</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U008</code> · Cell Complexes; source L272 · after <a href="#fc07-c00-u003"><code>FC07-C00-U003</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A CW complex is built inductively from a discrete 0-skeleton X^0 by attaching n-cells D^n along maps S<sup>{n-1}→X</sup>{n-1}; X^n is the n-skeleton and X=⋃_nX^n.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: A CW complex is built inductively from a discrete 0-skeleton X^0 by attaching n-cells D^n along maps S<sup>{n-1}→X</sup>{n-1}; X^n is the n-skeleton and X=⋃_nX^n.&nbsp;Pinned Mathlib has <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/CWComplex/Classical/Basic.html#Topology.CWComplex"><code>Mathlib/Topology/CWComplex/Classical/Basic.lean::Topology.CWComplex</code></a>, <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=RelCWComplex.skeleton#doc"><code>RelCWComplex.skeleton</code></a>, <code>skeleton_union_iUnion_closedCell_eq_skeleton_succ</code>, and <code>iUnion_skeleton_eq_complex</code>, but its classical CW interface is characteristic-map/weak-topology based; no checked bridge realizes the source’s full inductive “discrete 0-skeleton + successive sphere-to-disk attachments” construction. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u009" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u009">Example 0.1</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U009</code> · Cell Complexes; source L276 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A 1 dimensional cell complex X = X^{1} is what is called a graph in algebraic topology. It consists of vertices (the 0 cells) to which edges (the 1 cells) are attached. The two ends of an edge can be attached to the same vertex.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: A 1 dimensional cell complex X = X^{1} is what is called a graph in algebraic topology. It consists of vertices (the 0 cells) to which edges (the 1 cells) are attached. The two ends of an edge can be attached to the same vertex. Pinned Mathlib has <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/CWComplex/Classical/Graph.html#Topology.CWComplex.OneSkeletonGraph"><code>Mathlib/Topology/CWComplex/Classical/Graph.lean::Topology.CWComplex.OneSkeletonGraph</code></a> and loop-edge lemmas, extracting the combinatorial graph of a CW 1-skeleton. The checked interface does not identify an arbitrary 1-dimensional CW complex with a topological realization of that graph, so the whole source example is not promoted. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u010" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u010">Example 0.2</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U010</code> · Cell Complexes; source L278 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The house with two rooms, pictured earlier, has a visually obvious 2 dimensional cell complex structure. This gives the 1 skeleton X^{1}, and the 2 cells are the components of the remainder of the space, X - X^{1}.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: The house with two rooms, pictured earlier, has a visually obvious 2 dimensional cell complex structure. This gives the 1 skeleton X^{1}, and the 2 cells are the components of the remainder of the space, X - X^{1}. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u011" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u011">Example 0.3</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U011</code> · Cell Complexes; source L280 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The sphere S^{n} has the structure of a cell complex with just two cells, e^{0} and e^{n}, the n cell being attached by the constant map S^{n - 1} {→ } e^{0}. This is equivalent to regarding S^{n} as the quotient space D^{n} / ∂ D^{n}.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: The sphere S^{n} has the structure of a cell complex with just two cells, e^{0} and e^{n}, the n cell being attached by the constant map S^{n - 1} {→ } e^{0}. This is equivalent to regarding S^{n} as the quotient space D^{n} / ∂ D^{n}. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u012" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u012">Example 0.4</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U012</code> · Cell Complexes; source L282 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Real projective n space ℝP^{n} is defined to be the space of all lines through the origin in ℝ^{n + 1}. It follows by induction on n that ℝP^{n} has a cell complex structure e^{0} ∪ e^{1} ∪ … ∪ e^{n} with one cell e^{i} in each dimension i ≤ n.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: Real projective n space ℝP^{n} is defined to be the space of all lines through the origin in ℝ^{n + 1}. It follows by induction on n that ℝP^{n} has a cell complex structure e^{0} ∪ e^{1} ∪ … ∪ e^{n} with one cell e^{i} in each dimension i ≤ n.&nbsp;Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u013" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u013">Example 0.5</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U013</code> · Cell Complexes; source L284 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Since ℝP^{n} is obtained from ℝP^{n - 1} by attaching an n cell, the infinite union {ℝ } {P }^{∞} = ⋃<em>{n} {ℝ } {P }^{n} becomes a cell complex with one cell in each dimension. We can view ℝP^{∞} as the space of lines through the origin in ℝ^{∞} = ⋃</em>{n} ℝ^{n}.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: Since ℝP^{n} is obtained from ℝP^{n - 1} by attaching an n cell, the infinite union {ℝ } {P }^{∞} = ⋃<em>{n} {ℝ } {P }^{n} becomes a cell complex with one cell in each dimension. We can view ℝP^{∞} as the space of lines through the origin in ℝ^{∞} = ⋃</em>{n} ℝ^{n}. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u014" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u014">Example 0.6</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U014</code> · Cell Complexes; source L286 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Complex projective space ℂP^n is the quotient of S^{2n+1} by scalar multiplication by S^1. It is obtained from ℂP^{n−1} by attaching one 2n-cell, hence has CW structure e<sup>0∪e</sup>2∪⋯∪e^{2n}; ℂP^∞ has one cell in every even dimension.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: Complex projective space ℂP^n is the quotient of S^{2n+1} by scalar multiplication by S^1. It is obtained from ℂP^{n−1} by attaching one 2n-cell, hence has CW structure e<sup>0∪e</sup>2∪⋯∪e^{2n}; ℂP^∞ has one cell in every even dimension. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u015" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u015">Construction — characteristic map</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U015</code> · Cell Complexes; source L290 · after <a href="#fc07-c00-u008"><code>FC07-C00-U008</code></a>, <a href="#fc07-c00-u011"><code>FC07-C00-U011</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Each n-cell e_α^n has a characteristic map Φ_α:D^n→X extending its attaching map and restricting to a homeomorphism int(D<sup>n)→e_α</sup>n.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/CWComplex/Classical/Basic.html#Topology.RelCWComplex.map"><code>Mathlib/Topology/CWComplex/Classical/Basic.lean::Topology.RelCWComplex.map</code></a>, <code>source_eq</code>, <code>continuousOn</code>, <code>continuousOn_symm</code>, <code>openCell</code>, <code>mapsTo</code> — Mathlib represents each cell by a partial equivalence whose source is the open unit ball, continuous on the closed unit ball, with continuous inverse on the open cell; its sphere boundary maps into lower cells. Restricting the same map to the closed ball is the characteristic map and its open-ball restriction is a homeomorphism onto the cell.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d</span></p>
+</section>
+<section id="fc07-c00-u016" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u016">Definition — subcomplex and CW pair</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U016</code> · Cell Complexes; source L292 · after <a href="#fc07-c00-u008"><code>FC07-C00-U008</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A subcomplex A⊂X is a closed union of cells; a pair (X,A) with A a subcomplex is a CW pair.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/CWComplex/Classical/Basic.html#Topology.RelCWComplex.Subcomplex"><code>Mathlib/Topology/CWComplex/Classical/Basic.lean::Topology.RelCWComplex.Subcomplex</code></a>, <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Subcomplex.closed#doc"><code>Subcomplex.closed</code></a>, <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Subcomplex.union#doc"><code>Subcomplex.union</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/CWComplex/Classical/Subcomplex.html#Topology.CWComplex.Subcomplex.instCWComplex"><code>Mathlib/Topology/CWComplex/Classical/Subcomplex.lean::Topology.CWComplex.Subcomplex.instCWComplex</code></a>, <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=CWComplex.Subcomplex.union_closedCell#doc"><code>CWComplex.Subcomplex.union_closedCell</code></a> — A Mathlib CW subcomplex is exactly a closed subspace which is a union of cells; the induced CW-complex instance supplies the pair structure. Mathlib uses the subcomplex object itself rather than introducing a separate redundant <code>CWPair</code> predicate.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d</span></p>
+</section>
+<section id="fc07-c00-u017" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u017">Construction — product CW structure</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U017</code> · Operations on Spaces; source L304 · after <a href="#fc07-c00-u008"><code>FC07-C00-U008</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For CW complexes X,Y, the product has cells e_α<sup>m×e_β</sup>n; in general the resulting CW topology can be finer than the ordinary product topology.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: For CW complexes X,Y, the product has cells e_α<sup>m×e_β</sup>n; in general the resulting CW topology can be finer than the ordinary product topology. Pinned/current Mathlib has product topology and CW cells, but no checked construction equips the product of two CW complexes with the source product-cell CW structure or proves the stated comparison with the ordinary product topology. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u018" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u018">Construction — quotient CW structure</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U018</code> · Operations on Spaces; source L306 · after <a href="#fc07-c00-u016"><code>FC07-C00-U016</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a CW pair (X,A), X/A inherits cells from X−A together with one new 0-cell, with attaching maps obtained by composing with the quotient map.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: For a CW pair (X,A), X/A inherits cells from X−A together with one new 0-cell, with attaching maps obtained by composing with the quotient map. Pinned/current Mathlib has quotient topology and CW subcomplex infrastructure, but no checked theorem constructs the claimed quotient CW structure on <code>X/A</code> with exactly the inherited non-<code>A</code> cells plus a new 0-cell. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u019" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u019">Construction — suspension and cone</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U019</code> · Operations on Spaces; source L310 · after <a href="#fc07-c00-u008"><code>FC07-C00-U008</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The suspension SX is (X×I) with each end X×{0}, X×{1} collapsed to a point; the cone CX collapses X×{0} to one point.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: The suspension SX is (X×I) with each end X×{0}, X×{1} collapsed to a point; the cone CX collapses X×{0} to one point. Pinned/current Mathlib has generic quotient and product topology machinery, but no checked topological suspension/cone construction owning this source unit. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u020" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u020">Construction — join</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U020</code> · Operations on Spaces; source L316 · after <a href="#fc07-c00-u008"><code>FC07-C00-U008</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>The join X*Y is (X×Y×I)/∼, collapsing the t=0 end along Y and the t=1 end along X.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: The join X*Y is (X×Y×I)/∼, collapsing the t=0 end along Y and the t=1 end along X. Pinned/current Mathlib has generic quotient machinery, but no checked topological join construction with the stated two endpoint collapse relations. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u021" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u021">Construction — wedge sum</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U021</code> · Operations on Spaces; source L330 · after <a href="#fc07-c00-u008"><code>FC07-C00-U008</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For based spaces, X∨Y is the disjoint union with the chosen basepoints identified; arbitrary wedges are formed analogously.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: For based spaces, X∨Y is the disjoint union with the chosen basepoints identified; arbitrary wedges are formed analogously. Pinned/current Mathlib has coproduct/pushout infrastructure, but no checked based topological wedge construction owning the binary and arbitrary-wedge statement. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u022" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u022">Construction — smash product</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U022</code> · Operations on Spaces; source L334 · after <a href="#fc07-c00-u021"><code>FC07-C00-U021</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For based spaces, X∧Y=(X×Y)/(X∨Y).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: For based spaces, X∧Y=(X×Y)/(X∨Y). Pinned/current Mathlib has product/quotient infrastructure, but no checked based topological smash-product construction identifying the wedge subspace and quotient as stated. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u023" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u023">Example 0.7</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U023</code> · Collapsing Subspaces; source L350 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Graphs. The three graphs 0 → ∞ iff are homotopy equivalent since each is a deformation retract of a disk with two holes, but we can also deduce this from the collapsing criterion above since collapsing the middle edge of the first and third graphs produces the second graph.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: Graphs. The three graphs 0 → ∞ iff are homotopy equivalent since each is a deformation retract of a disk with two holes, but we can also deduce this from the collapsing criterion above since collapsing the middle edge of the first and third graphs produces the second graph. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u024" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u024">Example 0.8</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U024</code> · Collapsing Subspaces; source L356 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Consider the space X obtained from S^{2} by attaching the two ends of an arc A to two distinct points on the sphere, say the north and south poles. Hence S^{2} / S^{0} and S^{1} ∨ S^{2} are homotopy equivalent, a fact which may not be entirely obvious at first glance.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: Consider the space X obtained from S^{2} by attaching the two ends of an arc A to two distinct points on the sphere, say the north and south poles. Hence S^{2} / S^{0} and S^{1} ∨ S^{2} are homotopy equivalent, a fact which may not be entirely obvious at first glance. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u025" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u025">Example 0.9</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U025</code> · Collapsing Subspaces; source L362 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Let X be the union of a torus with n meridional disks. To obtain a CW structure on X, choose a longitudinal circle in the torus, intersecting each of the meridional disks in one point. Collapsing each meridional disk to a point yields a homotopy equivalent space Y consisting of n 2 spheres, each tangent to its two neighbors, a ‘necklace with n beads’.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: Let X be the union of a torus with n meridional disks. To obtain a CW structure on X, choose a longitudinal circle in the torus, intersecting each of the meridional disks in one point. Collapsing each meridional disk to a point yields a homotopy equivalent space Y consisting of n 2 spheres, each tangent to its two neighbors, a ‘necklace with n beads’. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u026" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u026">Construction — reduced suspension</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U026</code> · Collapsing Subspaces; source L366 · after <a href="#fc07-c00-u019"><code>FC07-C00-U019</code></a>, <a href="#fc07-c00-u008"><code>FC07-C00-U008</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For a based CW complex (X,x_0), the reduced suspension ΣX is obtained from SX by collapsing {x_0}×I; it is homotopy equivalent to SX.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: For a based CW complex (X,x_0), the reduced suspension ΣX is obtained from SX by collapsing {x_0}×I; it is homotopy equivalent to SX. The searches found no checked reduced-suspension object or theorem comparing it by homotopy equivalence to the unreduced suspension for based CW complexes. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u027" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u027">Example 0.10</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U027</code> · Collapsing Subspaces; source L366 · after <a href="#fc07-c00-u008"><code>FC07-C00-U008</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Reduced Suspension. Let X be a CW complex and x_{0} ∈ X a 0 cell. Inside the suspension S X we have the line segment { x_{0} } × I, and collapsing this to a point yields a space Σ X homotopy equivalent to S X, called the reduced suspension of X.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: Reduced Suspension. Let X be a CW complex and x_{0} ∈ X a 0 cell. Inside the suspension S X we have the line segment { x_{0} } × I, and collapsing this to a point yields a space Σ X homotopy equivalent to S X, called the reduced suspension of X. The searches found no checked realization of Hatcher’s reduced-suspension example; generic quotient machinery alone does not own the construction-and-equivalence bundle. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u028" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u028">Construction — attaching a space along a subspace</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U028</code> · Attaching Spaces; source L372 · after <a href="#fc07-c00-u008"><code>FC07-C00-U008</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Given A⊂X_1 and f:A→X_0, the attachment X_0⊔_fX_1 is the quotient of X_0⊔X_1 identifying a with f(a).</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/CategoryTheory/Limits/Types/Pushouts.html#CategoryTheory.Limits.Types.Pushout"><code>Mathlib/CategoryTheory/Limits/Types/Pushouts.lean::CategoryTheory.Limits.Types.Pushout</code></a>, <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Types.Pushout.Rel#doc"><code>Types.Pushout.Rel</code></a>, <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Types.Pushout.inl#doc"><code>Types.Pushout.inl</code></a>, <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Types.Pushout.inr#doc"><code>Types.Pushout.inr</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Topology/Category/TopCat/Limits/Basic.html#TopCat.colimit_topology"><code>Mathlib/Topology/Category/TopCat/Limits/Basic.lean::TopCat.colimit_topology</code></a>, <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=TopCat.topCat_hasColimits#doc"><code>TopCat.topCat_hasColimits</code></a> — For the inclusion <code>A → X₁</code> and map <code>f : A → X₀</code>, the <code>TopCat</code> pushout is the final-topology version of the type pushout, whose carrier is explicitly the quotient of <code>X₁ ⊕ X₀</code> by the relation identifying the two images of each <code>a</code>. This is Hatcher’s attachment quotient.</p>
+</div>
+<p><span class="unit-provenance">Searched: P=db584cd6d46c92f209a44c0f1c829460d327499d</span></p>
+</section>
+<section id="fc07-c00-u029" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u029">Construction — mapping cone</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U029</code> · Attaching Spaces; source L374 · after <a href="#fc07-c00-u002"><code>FC07-C00-U002</code></a>, <a href="#fc07-c00-u019"><code>FC07-C00-U019</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For f:X→Y, C_f=Y⊔_fCX; equivalently C_f=M_f/X.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: For f:X→Y, C_f=Y⊔_fCX; equivalently C_f=M_f/X. <code>deancureton/sphere-six-complex</code> supplies a mapping-cylinder construction, but neither it nor pinned/current Mathlib supplies the topological cone/mapping-cone construction and the stated identification <code>C_f = M_f/X</code> as a complete checked route. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u030" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u030">Example 0.11</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U030</code> · Attaching Spaces; source L384 · after <a href="#fc07-c00-u024"><code>FC07-C00-U024</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Let us rederive the result in Example 0.8 that a sphere with two points identified is homotopy equivalent to S^{1} ∨ S^{2}. Since A is contractible, this attaching map is homotopic to a constant map, and attaching S^{2} to S^{1} via a constant map of A yields S^{1} ∨ S^{2}.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: Let us rederive the result in Example 0.8 that a sphere with two points identified is homotopy equivalent to S^{1} ∨ S^{2}. Since A is contractible, this attaching map is homotopic to a constant map, and attaching S^{2} to S^{1} via a constant map of A yields S^{1} ∨ S^{2}. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u031" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u031">Example 0.12</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U031</code> · Attaching Spaces; source L388 · after <a href="#fc07-c00-u025"><code>FC07-C00-U025</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>In similar fashion we can see that the necklace in Example 0.9 is homotopy equivalent to the wedge sum of a circle with n 2 spheres. The necklace can be obtained from a circle by attaching n 2 spheres along arcs, so the necklace is homotopy equivalent to the space obtained by attaching n 2 spheres to a circle at points. Then we can slide these attaching points around the circle until they all coincide, producing the wedge sum.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: In similar fashion we can see that the necklace in Example 0.9 is homotopy equivalent to the wedge sum of a circle with n 2 spheres. The necklace can be obtained from a circle by attaching n 2 spheres along arcs, so the necklace is homotopy equivalent to the space obtained by attaching n 2 spheres to a circle at points. Then we can slide these attaching points around the circle until they all coincide, producing the wedge sum. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u032" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u032">Example 0.13</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U032</code> · Attaching Spaces; source L390 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Here is an application of the earlier fact that collapsing a contractible subcomplex is a homotopy equivalence: If (X, A) is a CW pair, consisting of a cell complex X and a subcomplex A, then X / A ≃ X ∪ C A, the mapping cone of the inclusion A ↪ X. For we have X / A = (X ∪ C A) / C A ≃ X ∪ C A since C A is a contractible subcomplex of X ∪ C A.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: Here is an application of the earlier fact that collapsing a contractible subcomplex is a homotopy equivalence: If (X, A) is a CW pair, consisting of a cell complex X and a subcomplex A, then X / A ≃ X ∪ C A, the mapping cone of the inclusion A ↪ X. For we have X / A = (X ∪ C A) / C A ≃ X ∪ C A since C A is a contractible subcomplex of X ∪ C A. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u033" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u033">Example 0.14</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U033</code> · Attaching Spaces; source L392 · after <a href="#fc07-c00-u024"><code>FC07-C00-U024</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If (X, A) is a CW pair and A is contractible in X, that is, the inclusion A ↪ X is homotopic to a constant map, then X / A ≃ X ∨ S A. Namely, by the previous example we have X / A ≃ X ∪ C A, and then since A is contractible in X, the mapping cone X ∪ C A of the inclusion A ↪ X is homotopy equivalent to the mapping cone of a constant map, which is X ∨ S A.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: If (X, A) is a CW pair and A is contractible in X, that is, the inclusion A ↪ X is homotopic to a constant map, then X / A ≃ X ∨ S A. Namely, by the previous example we have X / A ≃ X ∪ C A, and then since A is contractible in X, the mapping cone X ∪ C A of the inclusion A ↪ X is homotopy equivalent to the mapping cone of a constant map, which is X ∨ S A. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u034" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u034">Definition — homotopy extension property</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U034</code> · Homotopy Extension Property; source L396 · after <a href="#fc07-c00-u003"><code>FC07-C00-U003</code></a> · <span class="route-reference-port">in another Lean project</span></p>
+</div>
+<p>A pair (X,A) has the homotopy extension property if every compatible map on X×{0} and homotopy on A×I extends to X×I.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <code>deancureton/sphere-six-complex::SphereSixComplex/Topology/EstablishedStrongDeformationRetracts.lean::SphereSixComplex.HasHomotopyExtensionProperty</code>; <code>SphereSixComplex/Topology/CollarHomotopyExtension.lean::SphereSixComplex.HomotopyExtensionProperty</code> — The pair form quantifies over target spaces, an initial map on <code>X</code>, and a homotopy on <code>A</code>, and returns a homotopy on <code>X</code> restricting to the prescribed one on <code>A</code>; this is exactly Hatcher’s HEP. The map-form interface is the equivalent inclusion formulation.</p>
+</div>
+<p><span class="unit-provenance">Searched: R=895c0a0661501581c34d42fea3c553d4f0ee43b1; Apache-2.0; Lean 4.34.0-rc1</span></p>
+</section>
+<section id="fc07-c00-u035" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u035">Example 0.15</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U035</code> · Homotopy Extension Property; source L404 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A pair (X, A) has the homotopy extension property if A has a mapping cylinder neighborhood in X, by which we mean a closed neighborhood N containing a subspace B, thought of as the boundary of N, with N - B an open neighborhood of A, such that there exists a map f {: } B {→ } A and a homeomorphism h {: } M_{f} {→ } N with h | A ∪ B = 1. Hence so does the homeomorphic pair (N, A ∪ B).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: A pair (X, A) has the homotopy extension property if A has a mapping cylinder neighborhood in X, by which we mean a closed neighborhood N containing a subspace B, thought of as the boundary of N, with N - B an open neighborhood of A, such that there exists a map f {: } B {→ } A and a homeomorphism h {: } M_{f} {→ } N with h | A ∪ B = 1. Hence so does the homeomorphic pair (N, A ∪ B). <code>deancureton/sphere-six-complex::SphereSixComplex/Topology/MappingCylinderHomotopyExtension.lean::SphereSixComplex.mappingCylinderFree_homotopyExtensionProperty</code> proves HEP for the free-end inclusion of a mapping cylinder, but does not prove Hatcher’s ambient mapping-cylinder-neighborhood criterion for <code>(X,A)</code>. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u036" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u036">Proposition 0.16</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U036</code> · Homotopy Extension Property; source L408 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If (X, A) is a CW pair, then X × {0 } ∪ A × I is a deformation retract of X × I, hence (X, A) has the homotopy extension property.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: If (X, A) is a CW pair, then X × {0 } ∪ A × I is a deformation retract of X × I, hence (X, A) has the homotopy extension property. <code>deancureton/sphere-six-complex::SphereSixComplex/Topology/RelativeCWHomotopyExtensionProof.lean::SphereSixComplex.hasHomotopyExtensionProperty_of_relativeCWComplex_proved</code>, <code>exists_skeletalRetraction</code>, and <code>exists_cellAttachmentRetraction</code> prove the HEP consequence using a retraction of the L-shaped cylinder. The development explicitly requires only an ordinary retraction and does not prove the source row’s stronger assertion that <code>X×{0} ∪ A×I</code> is a deformation retract of <code>X×I</code>. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u037" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u037">Proposition 0.17</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U037</code> · Homotopy Extension Property; source L416 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If the pair (X, A) satisfies the homotopy extension property and 1 A is contractible, then the quotient map q {: } X {→ } X / A is a homotopy equivalence.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: If the pair (X, A) satisfies the homotopy extension property and 1 A is contractible, then the quotient map q {: } X {→ } X / A is a homotopy equivalence. The audited HEP developments prove HEP-to-strong-deformation-retract results under a homotopy-equivalence hypothesis, but no checked theorem gives the quotient-collapse homotopy equivalence from HEP plus contractibility of <code>A</code>. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u038" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u038">Proposition 0.18</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U038</code> · Homotopy Extension Property; source L428 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If (X_{1}, A) is a CW pair and we have attaching maps f, g: A → X_{0} that are homotopic, then X_{0} ⊔<em>{f} X</em>{1} ≃ X_{0} ⊔<em>{g} X</em>{1} rel X_{0}.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: If (X_{1}, A) is a CW pair and we have attaching maps f, g: A → X_{0} that are homotopic, then X_{0} ⊔<em>{f} X</em>{1} ≃ X_{0} ⊔<em>{g} X</em>{1} rel X_{0}. Topological pushouts and relative homotopy are available, but no checked declaration proves that homotopic attaching maps yield homotopy-equivalent attached spaces rel <code>X₀</code> under the stated CW-pair hypothesis. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u039" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u039">Proposition 0.19</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U039</code> · Homotopy Extension Property; source L436 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Suppose (X, A) and (Y, A) satisfy the homotopy extension property, and f: X {→ } Y is a homotopy equivalence with f | A = 1.. Then f is a homotopy equivalence rel A.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: Suppose (X, A) and (Y, A) satisfy the homotopy extension property, and f: X {→ } Y is a homotopy equivalence with f | A = 1.. Then f is a homotopy equivalence rel A. <code>deancureton/sphere-six-complex::SphereSixComplex/Topology/RelativeHomotopy.lean::SphereSixComplex.HomotopyExtensionProperty.exists_strongDeformationRetractData</code> proves the acyclic-cofibration strong-deformation-retract theorem for one map. No checked declaration packages the full two-pair relative homotopy-equivalence theorem for a map fixing <code>A</code>. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+</section>
+<section id="fc07-c00-u040" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u040">Corollary 0.20</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U040</code> · Homotopy Extension Property; source L438 · <span class="route-reference-port">in another Lean project</span></p>
+</div>
+<p>If (X, A) satisfies the homotopy extension property and the inclusion A ↪ X is a homotopy equivalence, then A is a deformation retract of X.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <code>deancureton/sphere-six-complex::SphereSixComplex/Topology/EstablishedStrongDeformationRetracts.lean::SphereSixComplex.strongDeformationRetraction_of_cofibration_homotopyEquivalence</code>, <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=HomotopyExtensionProperty.nonempty_strongDeformationRetraction#doc"><code>HomotopyExtensionProperty.nonempty_strongDeformationRetraction</code></a> — The first theorem assumes the pair HEP and that the subspace inclusion is a homotopy equivalence and returns a strong deformation retraction onto the subspace. It is exactly Hatcher Corollary 0.20, in fact with the stronger stationary homotopy conclusion.</p>
+</div>
+<p><span class="unit-provenance">Searched: R=895c0a0661501581c34d42fea3c553d4f0ee43b1; Apache-2.0; Lean 4.34.0-rc1</span></p>
+</section>
+<section id="fc07-c00-u041" class="level3">
+<h3 class="anchored" data-anchor-id="fc07-c00-u041">Corollary 0.21</h3>
+<div class="unit-meta">
+<p><code>FC07-C00-U041</code> · Homotopy Extension Property; source L442 · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>A map f: X {→ } Y is a homotopy equivalence iff X is a deformation retract of the mapping cylinder M_{f}. Hence, two spaces X and Y are homotopy equivalent iff there is a third space containing both X and Y as deformation retracts.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> none; no complete checked declaration under strict bundle semantics — As of 2026-09-06, no checked project/P/H/open/external/indexed Lean declaration realizes the whole source row: A map f: X {→ } Y is a homotopy equivalence iff X is a deformation retract of the mapping cylinder M_{f}. Hence, two spaces X and Y are homotopy equivalent iff there is a third space containing both X and Y as deformation retracts. <code>deancureton/sphere-six-complex</code> has <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=TopCat.MappingCylinder#doc"><code>TopCat.MappingCylinder</code></a>, <code>mappingCylinderBaseHomotopyEquiv</code>, <code>mappingCylinderFree_homotopyExtensionProperty</code>, <code>mappingCylinderFree_isHomotopyEquivalence</code>, and HEP+homotopy-equivalence ⇒ strong-deformation-retract data. These ingredients cover substantial directions, but no checked declaration owns the full iff plus the second common-ambient-space characterization required by this bundled row. Strict bundle semantics reject a specialization, a semantically adjacent construction, one clause/example of a bundled row, or a proper subset as the route for this ID.</p>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/dzackgarza\.github\.io\/lean-categories\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Generated from the project’s reference notes by <code>site/build.py</code>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>The Lean is the authority; where this site differs, the Lean is right.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

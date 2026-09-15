@@ -1,0 +1,2751 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Chapter 1. Rings and Ideals (pp.&nbsp;1–9) – lean-categories · corpus</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-7335da993d57b01553edc5728a7cb5aa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-99fd78ac52499e670be7c9f52d4fb8d4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">lean-categories · corpus</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../../coverage.html" aria-current="page"> 
+<span class="menu-text">Every book</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../corpus.html"> 
+<span class="menu-text">Reading list</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../catalogues/index.html"> 
+<span class="menu-text">Catalogues</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/dzackgarza/lean-categories"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc04/index.html">FC04</a></li><li class="breadcrumb-item"><a href="../../sources/fc04/c01.html">Chapter 1. Rings and Ideals (pp.&nbsp;1–9)</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="sidebar-tools-main">
+    <div id="quarto-search" class="quarto-navigation-tool px-1" title="Search"></div>
+</div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Graduate mathematics, and what Lean has of it</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../coverage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Every book</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../corpus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational source corpus</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../status.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus status</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Sources</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC01 Dummit Foote</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc01/ai.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC01 Appendix I — Cartesian Products and Zorn’s Lemma</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC03</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC03 Riehl Category Theory in Context</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Categories, Functors, and Natural Transformations (pp.&nbsp;1–48)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Representability and the Yoneda Lemma (pp.&nbsp;49–72)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Limits and Colimits (pp.&nbsp;73–114)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Adjunctions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Monads and Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. All Concepts are Kan Extensions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc03/ce.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Epilogue: Theorems in Category Theory</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC04</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC04 Atiyah Macdonald</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c01.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Chapter 1. Rings and Ideals (pp.&nbsp;1–9)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Modules (pp.&nbsp;17–30)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Rings and Modules of Fractions (pp.&nbsp;36–42)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Primary Decomposition (pp.&nbsp;50–54)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Integral Dependence and Valuations (pp.&nbsp;59–66)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Chain Conditions (pp.&nbsp;74–77)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Noetherian Rings (pp.&nbsp;80–83)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Artin Rings (pp.&nbsp;89–90)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Discrete Valuation Rings and Dedekind Domains (pp.&nbsp;93–98)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. Completions (pp.&nbsp;100–112)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc04/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Dimension Theory (pp.&nbsp;116–124)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC05</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC05 Weibel</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Chain Complexes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Derived Functors</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Tor and Ext</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homological Dimension</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Spectral Sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Group Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Lie Algebra Homology and Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Simplicial Methods in Homological Algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Hochschild and Cyclic Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. The Derived Category</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc05/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Category Theory Language</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC06</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC06 Hartshorne</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter I: Varieties</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter II: Schemes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter III: Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter IV: Curves</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc06/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Hartshorne, Algebraic Geometry — Chapter V: Surfaces</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC07</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC07 Hatcher</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 0. Some Underlying Geometric Notions</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. The Fundamental Group</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Homology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Cohomology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Homotopy Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc07/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix. Topology of Cell Complexes</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC08 Lee</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/c22.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc08/cd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC08 — John M. Lee, Introduction to Smooth Manifolds, 2nd ed.&nbsp;(2013)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC09 Neukirch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc09/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC09 — Jürgen Neukirch, Algebraic Number Theory (1999)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC10 Serre Local Fields</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc10/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC10 — Jean-Pierre Serre, Local Fields (1979)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc11/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC11 Peters Sterk</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c19.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c20.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c21.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc11/c.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc12/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-12" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC12 Beauville</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/a.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc12/b.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc13/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC13</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC13 Matsumura</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c00.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Front matter — conventions and terminology</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Commutative rings and modules</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Prime ideals</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Properties of extension rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Valuation rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Dimension theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Regular sequences</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Regular rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Flatness revisited</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 9. Derivations</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 10. I-smoothness</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 11. Applications of complete local rings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/ca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix A. Tensor products, direct and inverse limits</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix B. Some homological algebra</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc13/cc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Appendix C. The exterior algebra</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc14/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC14</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-14" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-14" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/mapping.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundational corpus mapping FC14 Humphreys</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Basic Concepts</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Semisimple Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Root Systems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Isomorphism and Conjugacy Theorems</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Existence Theorem</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Representation Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc14/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Chevalley Algebras and Groups</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc15/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC15</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-15" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-15" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 1. Finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 2. Classification of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 3. Polynomial invariants of finite reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 4. Affine reflection groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 5. Coxeter groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 6. Special cases</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 7. Hecke algebras and Kazhdan–Lusztig polynomials</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc15/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter 8. Complements</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../sources/fc16/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FC16</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-16" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-16" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter I. Algebraic Geometry</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter II. Affine Algebraic Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter III. Lie Algebras</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IV. Homogeneous Spaces</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter V. Characteristic 0 Theory</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VI. Semisimple and Unipotent Elements</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VII. Solvable Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter VIII. Borel Subgroups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter IX. Centralizers of Tori</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter X. Structure of Reductive Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XI. Representations and Classification of Semisimple Groups</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../sources/fc16/c12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Chapter XII. Survey of Rationality Properties and Appendix</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../catalogues/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Definition catalogues</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-17" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-17" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">catalogues/*.md</span>
+  </li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../notes/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Notes and audits</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-18" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-18" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+ <span class="menu-text">notes/*.md</span>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../sources/fc01/index.html">Sources</a></li><li class="breadcrumb-item"><a href="../../sources/fc04/index.html">FC04</a></li><li class="breadcrumb-item"><a href="../../sources/fc04/c01.html">Chapter 1. Rings and Ideals (pp.&nbsp;1–9)</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Chapter 1. Rings and Ideals (pp.&nbsp;1–9)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>FC04 — Atiyah &amp; Macdonald, <em>Introduction to Commutative Algebra</em>.</p>
+<p>This chapter contains 25 definitions, 1 theorem, 12 propositions, 2 corollaries, 10 constructions, 2 conventions, 1 notation and 6 other statements.</p>
+<p>Of the 59 statements checked against Lean, 53 are formalized somewhere and 6 are not.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 28%">
+<col style="width: 28%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Status</th>
+<th style="text-align: right;">Statements</th>
+<th style="text-align: right;">Share</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="route-mathlib">in Mathlib</span></td>
+<td style="text-align: right;">53</td>
+<td style="text-align: right;">90%</td>
+<td>Mathlib states and proves it.</td>
+</tr>
+<tr class="even">
+<td><span class="route-unmatched">not formalized</span></td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">10%</td>
+<td>A documented search found no Lean statement of it anywhere.</td>
+</tr>
+<tr class="odd">
+<td><strong>checked in total</strong></td>
+<td style="text-align: right;"><strong>59</strong></td>
+<td style="text-align: right;"></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Which versions of Lean and Mathlib were searched
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li>Project search: <code>LeanCategories/**</code> outside <code>.lake/.agents/.git</code> was searched first for the ring, ideal, quotient, local-ring, radical, Chinese-remainder, and extension/contraction material in this chapter. The project uses the Mathlib algebraic interfaces downstream but does not own a source-shaped replacement for these C01 units.</li>
+<li>Pinned Mathlib: project pin <a href="https://github.com/leanprover-community/mathlib4/commit/db584cd6d46c92f209a44c0f1c829460d327499d"><code>db584cd6d46c92f209a44c0f1c829460d327499d</code></a> (Apache-2.0, Lean v4.33.0), denoted <code>P</code>, was checked declaration-wise. It contains the foundational commutative-ring/ideal API and the theorem-level realizations cited below.</li>
+<li>Current/open Mathlib: upstream <a href="https://github.com/leanprover-community/mathlib4/commit/29ea5de9cb981cb62dfa7979aaff0851f50c603a"><code>29ea5de9cb981cb62dfa7979aaff0851f50c603a</code></a> (Apache-2.0, Lean v4.34.0-rc2), denoted <code>H</code>, was refreshed 2026-09-06. Targeted current-tree and open-work searches found no post-pin owner for the six negative source bundles below.</li>
+<li>External search: targeted GitHub/Reservoir and indexed Lean search was used for the strict negative boundaries, including maximal-ideal contraction, the multivariable-polynomial examples, arbitrary-subset radicals, radicals of annihilators, coprime radicals, and Gaussian-prime ideal splitting. Searches found only generic/partial ingredients or mirrors/forks of Mathlib, not declarations realizing those complete source units.</li>
+<li><code>N</code> denotes dated 2026-09-06 negative evidence after project-first search, pinned/current Mathlib, relevant open work, and external indexed search. A bundled source row is not credited merely because some of its clauses can be reconstructed from generic infrastructure.</li>
+</ul>
+</div>
+</div>
+</div>
+<section id="fc04-c01-u001" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u001">Definition: Ring</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U001</code> · Rings and ring homomorphisms; p.&nbsp;1; L133–149 · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A set with addition and multiplication satisfying the abelian-group, associative/distributive, commutative, and identity axioms.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Ring/Defs.html"><code>Mathlib/Algebra/Ring/Defs.lean::CommRing</code></a> — Mathlib’s <code>CommRing</code> is a commutative unital ring; as in Atiyah–Macdonald, the degenerate one-element ring is permitted unless <code>Nontrivial</code> is separately assumed.</p>
+</div>
+</section>
+<section id="fc04-c01-u002" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u002">Convention: “Ring” convention</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U002</code> · Rings and ring homomorphisms; p.&nbsp;1; L149 · after <a href="#fc04-c01-u001"><code>FC04-C01-U001</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Throughout FC04, rings are commutative and have identity.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Ring/Hom/Defs.html"><code>Mathlib/Algebra/Ring/Hom/Defs.lean::RingHom</code></a> — <code>RingHom</code> preserves <code>0</code>, <code>1</code>, addition, and multiplication, exactly the source convention for ring homomorphisms.</p>
+</div>
+</section>
+<section id="fc04-c01-u003" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u003">Definition: Zero ring</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U003</code> · Rings and ring homomorphisms; p.&nbsp;1; L151–157 · after <a href="#fc04-c01-u001"><code>FC04-C01-U001</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>The permitted case 1=0, hence the one-element ring, denoted 0.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Ring/Subring/Defs.html"><code>Mathlib/Algebra/Ring/Subring/Defs.lean::Subring</code></a> — A <code>Subring</code> is a subset closed under the ring operations and containing <code>1</code>, with inherited structure.</p>
+</div>
+</section>
+<section id="fc04-c01-u004" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u004">Definition: Ring homomorphism</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U004</code> · Rings and ring homomorphisms; p.&nbsp;1; L159–165 · after <a href="#fc04-c01-u001"><code>FC04-C01-U001</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Map preserving addition, multiplication, and 1.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Defs.html"><code>Mathlib/RingTheory/Ideal/Defs.lean::Ideal</code></a> — <code>Ideal R</code> is the additive submodule of <code>R</code> over itself, hence exactly an additive subgroup closed under multiplication by arbitrary ring elements.</p>
+</div>
+</section>
+<section id="fc04-c01-u005" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u005">Definition: Subring</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U005</code> · Rings and ring homomorphisms; p.&nbsp;1; L167 · after <a href="#fc04-c01-u001"><code>FC04-C01-U001</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Subset closed under addition and multiplication and containing the identity of the ambient ring.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <code>Ideal</code>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Submodule.add_mem#doc"><code>Submodule.add_mem</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Submodule.neg_mem#doc"><code>Submodule.neg_mem</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Submodule.smul_mem#doc"><code>Submodule.smul_mem</code></a> — The bundled closure fields give the stated additive-subgroup-plus-absorption criterion for ideals.</p>
+</div>
+</section>
+<section id="fc04-c01-u006" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u006">Definition: Ideal</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U006</code> · Ideals. Quotient rings; p.&nbsp;2; L173 · after <a href="#fc04-c01-u001"><code>FC04-C01-U001</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Additive subgroup 𝔞⊆A satisfying A𝔞⊆𝔞.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Span.html#Ideal.span"><code>Mathlib/RingTheory/Ideal/Span.lean::Ideal.span</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.subset_span#doc"><code>Ideal.subset_span</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.span_le#doc"><code>Ideal.span_le</code></a> — <code>span S</code> is the least ideal containing <code>S</code>, with the universal property used by the source.</p>
+</div>
+</section>
+<section id="fc04-c01-u007" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u007">Construction / definition: Quotient (residue-class) ring A/𝔞</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U007</code> · Ideals. Quotient rings; p.&nbsp;2; L173 · after <a href="#fc04-c01-u006"><code>FC04-C01-U006</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Cosets of an ideal with multiplication induced from A.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <code>Ideal.span ({x} : Set R)</code>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.mem_span_singleton#doc"><code>Ideal.mem_span_singleton</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.span_singleton_mul_span_singleton#doc"><code>Ideal.span_singleton_mul_span_singleton</code></a> — Singleton span is the principal ideal <code>(x)</code> and its membership API is divisibility by <code>x</code>.</p>
+</div>
+</section>
+<section id="fc04-c01-u008" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u008">Construction: Canonical quotient homomorphism A→A/𝔞</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U008</code> · Ideals. Quotient rings; p.&nbsp;2; L173 · after <a href="#fc04-c01-u004"><code>FC04-C01-U004</code></a>, <a href="#fc04-c01-u007"><code>FC04-C01-U007</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>x↦x+𝔞; a surjective ring homomorphism.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Quotient/Basic.html#Ideal.Quotient"><code>Mathlib/RingTheory/Ideal/Quotient/Basic.lean::Ideal.Quotient</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.Quotient.mk#doc"><code>Ideal.Quotient.mk</code></a> — The quotient ring and canonical map are exactly <code>R/I</code> by the ideal congruence.</p>
+</div>
+</section>
+<section id="fc04-c01-u009" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u009">Proposition 1.1: Ideal correspondence for a quotient</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U009</code> · Ideals. Quotient rings; p.&nbsp;2; L177 · after <a href="#fc04-c01-u007"><code>FC04-C01-U007</code></a>, <a href="#fc04-c01-u008"><code>FC04-C01-U008</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Ideals of A containing 𝔞 correspond order-preservingly to ideals of A/𝔞 by inverse image.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Maps.html#Ideal.relIsoOfSurjective"><code>Mathlib/RingTheory/Ideal/Maps.lean::Ideal.relIsoOfSurjective</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.Quotient.mk_surjective#doc"><code>Ideal.Quotient.mk_surjective</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.Quotient.mk_ker#doc"><code>Ideal.Quotient.mk_ker</code></a> — Applying the surjective correspondence order-isomorphism to <code>R → R/I</code> identifies ideals of the quotient with ideals of <code>R</code> containing <code>I</code>.</p>
+</div>
+</section>
+<section id="fc04-c01-u010" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u010">Construction / comparison: Kernel, image, and first isomorphism for ring homomorphisms</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U010</code> · Ideals. Quotient rings; p.&nbsp;2; L179 · after <a href="#fc04-c01-u004"><code>FC04-C01-U004</code></a>, <a href="#fc04-c01-u006"><code>FC04-C01-U006</code></a>, <a href="#fc04-c01-u007"><code>FC04-C01-U007</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For f:A→B, ker f is an ideal, f(A) a subring, and A/ker f≅f(A).</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Quotient/Operations.html#RingHom.quotientKerEquivRange"><code>Mathlib/RingTheory/Ideal/Quotient/Operations.lean::RingHom.quotientKerEquivRange</code></a> — This is the first isomorphism theorem <code>R/ker f ≃+* range f</code>.</p>
+</div>
+</section>
+<section id="fc04-c01-u011" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u011">Notation: Congruence modulo an ideal</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U011</code> · Ideals. Quotient rings; p.&nbsp;2; L181 · after <a href="#fc04-c01-u006"><code>FC04-C01-U006</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>x≡y (mod 𝔞) means x−y∈𝔞.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/GroupWithZero/Basic.html"><code>Mathlib/Algebra/GroupWithZero/Basic.lean::subsingleton_iff_zero_eq_one</code></a>; <code>subsingleton_of_zero_eq_one</code> — A commutative ring is the zero ring exactly when it is subsingleton, equivalently <code>0 = 1</code>; no global nontriviality assumption is built into <code>CommRing</code>.</p>
+</div>
+</section>
+<section id="fc04-c01-u012" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u012">Definition: Zero-divisor</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U012</code> · Zero-divisors. Nilpotent elements. Units; pp.&nbsp;2–2; L185 · after <a href="#fc04-c01-u001"><code>FC04-C01-U001</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>x is a zero-divisor if xy=0 for some y≠0.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/GroupWithZero/NonZeroDivisors.html"><code>Mathlib/Algebra/GroupWithZero/NonZeroDivisors.lean::nonZeroDivisors</code></a>; <code>notMem_nonZeroDivisors_iff_left</code> — The complement of <code>nonZeroDivisors</code> is exactly the elements annihilating some nonzero element; in a nontrivial ring this includes <code>0</code>, matching the source convention.</p>
+</div>
+</section>
+<section id="fc04-c01-u013" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u013">Definition: Integral domain</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U013</code> · Zero-divisors. Nilpotent elements. Units; pp.&nbsp;2–2; L185 · after <a href="#fc04-c01-u001"><code>FC04-C01-U001</code></a>, <a href="#fc04-c01-u012"><code>FC04-C01-U012</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Nonzero ring with no nonzero zero-divisors.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Ring/Defs.html"><code>Mathlib/Algebra/Ring/Defs.lean::IsDomain</code></a> — <code>IsDomain R</code> combines nontriviality with the no-zero-divisors property, exactly the integral-domain definition.</p>
+</div>
+</section>
+<section id="fc04-c01-u014" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u014">Definition: Nilpotent element</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U014</code> · Zero-divisors. Nilpotent elements. Units; pp.&nbsp;2–2; L187 · after <a href="#fc04-c01-u001"><code>FC04-C01-U001</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>x is nilpotent if x^n=0 for some n&gt;0.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/GroupWithZero/Defs.html"><code>Mathlib/Algebra/GroupWithZero/Defs.lean::mul_left_cancel₀</code></a>; <code>mul_right_cancel₀</code> — In a domain, multiplication by a nonzero element cancels on either side.</p>
+</div>
+</section>
+<section id="fc04-c01-u015" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u015">Definition: Unit and inverse</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U015</code> · Zero-divisors. Nilpotent elements. Units; pp.&nbsp;2–2; L189 · after <a href="#fc04-c01-u001"><code>FC04-C01-U001</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>x is a unit if xy=1 for some y; y is unique and written x⁻¹.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/GroupWithZero/Defs.html"><code>Mathlib/Algebra/GroupWithZero/Defs.lean::IsNilpotent</code></a> — <code>IsNilpotent x</code> means <code>x^n = 0</code> for some positive exponent (with the standard equivalent encoding used by Mathlib).</p>
+</div>
+</section>
+<section id="fc04-c01-u016" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u016">Definition / notation: Principal ideal</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U016</code> · Zero-divisors. Nilpotent elements. Units; pp.&nbsp;2–3; L196 · after <a href="#fc04-c01-u006"><code>FC04-C01-U006</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>The ideal of multiples ax of x, denoted (x) or Ax.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <code>IsNilpotent (I : Ideal R)</code>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Nilpotent/Lemmas.html"><code>Mathlib/RingTheory/Nilpotent/Lemmas.lean::mem_nilradical</code></a> — Ideals themselves carry multiplication, so <code>IsNilpotent I</code> is <code>I^n=0</code>; the condition that every element of <code>I</code> is nilpotent is equivalently <code>I ≤ nilradical R</code> via <code>mem_nilradical</code>.</p>
+</div>
+</section>
+<section id="fc04-c01-u017" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u017">Convention: Zero ideal notation</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U017</code> · Zero-divisors. Nilpotent elements. Units; pp.&nbsp;2–3; L196 · after <a href="#fc04-c01-u016"><code>FC04-C01-U016</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>The ideal (0) is usually denoted 0.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Group/Units/Defs.html"><code>Mathlib/Algebra/Group/Units/Defs.lean::IsUnit</code></a> — <code>IsUnit x</code> means <code>x</code> is represented by a unit, equivalently admits a multiplicative inverse in the commutative ring.</p>
+</div>
+</section>
+<section id="fc04-c01-u018" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u018">Definition: Field</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U018</code> · Zero-divisors. Nilpotent elements. Units; pp.&nbsp;2–3; L197 · after <a href="#fc04-c01-u001"><code>FC04-C01-U001</code></a>, <a href="#fc04-c01-u015"><code>FC04-C01-U015</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A nonzero ring in which every nonzero element is a unit.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Span.html#Ideal.span_singleton_eq_top"><code>Mathlib/RingTheory/Ideal/Span.lean::Ideal.span_singleton_eq_top</code></a> — <code>(x)=R ↔︎ IsUnit x</code> is exactly the source characterization.</p>
+</div>
+</section>
+<section id="fc04-c01-u019" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u019">Proposition 1.2: Characterizations of a field</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U019</code> · Zero-divisors. Nilpotent elements. Units; pp.&nbsp;2–3; L199–211 · after <a href="#fc04-c01-u006"><code>FC04-C01-U006</code></a>, <a href="#fc04-c01-u010"><code>FC04-C01-U010</code></a>, <a href="#fc04-c01-u018"><code>FC04-C01-U018</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For A≠0: A is a field iff its only ideals are 0,(1) iff every homomorphism A→B to B≠0 is injective.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Field/Defs.html"><code>Mathlib/Algebra/Field/Defs.lean::Field</code></a> — <code>Field</code> is the nontrivial commutative ring structure in which every nonzero element is invertible.</p>
+</div>
+</section>
+<section id="fc04-c01-u020" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u020">Definition: Prime ideal</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U020</code> · Prime ideals and maximal ideals; pp.&nbsp;3–4; L215 · after <a href="#fc04-c01-u006"><code>FC04-C01-U006</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>𝔭≠(1) and xy∈𝔭 implies x∈𝔭 or y∈𝔭.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Basic.html#Ring.isField_iff_isSimpleOrder_ideal"><code>Mathlib/RingTheory/Ideal/Basic.lean::Ring.isField_iff_isSimpleOrder_ideal</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=RingHom.injective_iff_ker_eq_bot#doc"><code>RingHom.injective_iff_ker_eq_bot</code></a>; field-source <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=RingHom.injective#doc"><code>RingHom.injective</code></a> — The ideal lattice is simple exactly for a field; a homomorphism is injective exactly when its kernel is zero, and a homomorphism from a field to a nontrivial ring has zero kernel, yielding the source’s three equivalent criteria.</p>
+</div>
+</section>
+<section id="fc04-c01-u021" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u021">Definition: Maximal ideal</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U021</code> · Prime ideals and maximal ideals; pp.&nbsp;3–4; L217 · after <a href="#fc04-c01-u006"><code>FC04-C01-U006</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>𝔪≠(1) with no ideal strictly between 𝔪 and (1).</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Maximal.html#Ideal.IsMaximal"><code>Mathlib/RingTheory/Ideal/Maximal.lean::Ideal.IsMaximal</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.isMaximal_iff#doc"><code>Ideal.isMaximal_iff</code></a> — This is maximality among proper ideals under inclusion.</p>
+</div>
+</section>
+<section id="fc04-c01-u022" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u022">Comparison: Prime/maximal ideals via quotients</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U022</code> · Prime ideals and maximal ideals; pp.&nbsp;3–4; L217–219 · after <a href="#fc04-c01-u007"><code>FC04-C01-U007</code></a>, <a href="#fc04-c01-u013"><code>FC04-C01-U013</code></a>, <a href="#fc04-c01-u018"><code>FC04-C01-U018</code></a>, <a href="#fc04-c01-u020"><code>FC04-C01-U020</code></a>, <a href="#fc04-c01-u021"><code>FC04-C01-U021</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>𝔭 prime iff A/𝔭 is a domain; 𝔪 maximal iff A/𝔪 is a field.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Quotient/Basic.html#Ideal.Quotient.isDomain_iff_prime"><code>Mathlib/RingTheory/Ideal/Quotient/Basic.lean::Ideal.Quotient.isDomain_iff_prime</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.Quotient.maximal_ideal_iff_isField_quotient#doc"><code>Ideal.Quotient.maximal_ideal_iff_isField_quotient</code></a> — The quotient is a domain exactly when the ideal is prime, and a field exactly when it is maximal.</p>
+</div>
+</section>
+<section id="fc04-c01-u023" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u023">Comparison: Maximal ideals are prime; 0 prime iff domain</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U023</code> · Prime ideals and maximal ideals; pp.&nbsp;3–4; L219 · after <a href="#fc04-c01-u013"><code>FC04-C01-U013</code></a>, <a href="#fc04-c01-u020"><code>FC04-C01-U020</code></a>, <a href="#fc04-c01-u021"><code>FC04-C01-U021</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Every maximal ideal is prime; the zero ideal is prime exactly for integral domains.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Maximal.html#Ideal.IsMaximal.isPrime"><code>Mathlib/RingTheory/Ideal/Maximal.lean::Ideal.IsMaximal.isPrime</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Prime.html#Ideal.isPrime_bot"><code>Mathlib/RingTheory/Ideal/Prime.lean::Ideal.isPrime_bot</code></a> — Maximal ideals are prime, and the zero ideal is prime precisely in the domain setting.</p>
+</div>
+</section>
+<section id="fc04-c01-u024" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u024">Construction / comparison: Contraction preserves prime ideals</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U024</code> · Prime ideals and maximal ideals; pp.&nbsp;3–4; L221 · after <a href="#fc04-c01-u004"><code>FC04-C01-U004</code></a>, <a href="#fc04-c01-u020"><code>FC04-C01-U020</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>For f:A→B and prime 𝔮⊂B, f⁻¹(𝔮) is prime; maximality need not contract (example Z→Q).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Maps.html#Ideal.IsPrime.comap"><code>Mathlib/RingTheory/Ideal/Maps.lean::Ideal.IsPrime.comap</code></a> — Prime contraction is pinned, but no checked declaration realizes the source’s accompanying failure of maximal contraction via the concrete inclusion <code>ℤ → ℚ</code>; current Mathlib and targeted GitHub search still expose only the general prime-comap theorem and unrelated ideal-contraction examples.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c01-u025" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u025">Theorem 1.3 / order-theory convention: Existence of maximal ideals</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U025</code> · Prime ideals and maximal ideals; pp.&nbsp;3–4; L225–229, 255 · after <a href="#fc04-c01-u021"><code>FC04-C01-U021</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Every nonzero ring has a maximal ideal. The source footnote defines a chain in a poset as a totally ordered subset and states the Zorn criterion used in the proof.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Maximal.html#Ideal.exists_maximal"><code>Mathlib/RingTheory/Ideal/Maximal.lean::Ideal.exists_maximal</code></a> — This is the Zorn-lemma existence of a maximal ideal in a nontrivial commutative ring.</p>
+</div>
+</section>
+<section id="fc04-c01-u026" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u026">Corollary 1.4: Proper ideals lie in maximal ideals</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U026</code> · Prime ideals and maximal ideals; pp.&nbsp;3–4; L231–233 · after <a href="#fc04-c01-u009"><code>FC04-C01-U009</code></a>, <a href="#fc04-c01-u025"><code>FC04-C01-U025</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Every ideal 𝔞≠(1) is contained in a maximal ideal.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Maximal.html#Ideal.exists_le_maximal"><code>Mathlib/RingTheory/Ideal/Maximal.lean::Ideal.exists_le_maximal</code></a> — Every proper ideal is contained in a maximal ideal.</p>
+</div>
+</section>
+<section id="fc04-c01-u027" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u027">Corollary 1.5: Non-units lie in maximal ideals</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U027</code> · Prime ideals and maximal ideals; pp.&nbsp;3–4; L235 · after <a href="#fc04-c01-u015"><code>FC04-C01-U015</code></a>, <a href="#fc04-c01-u026"><code>FC04-C01-U026</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Every non-unit belongs to a maximal ideal.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Nonunits.html"><code>Mathlib/RingTheory/Ideal/Nonunits.lean::exists_max_ideal_of_mem_nonunits</code></a>; <code>coe_subset_nonunits</code> — Every nonunit lies in a maximal ideal, while every proper ideal consists only of nonunits; together these identify the nonunits with the union of maximal ideals.</p>
+</div>
+</section>
+<section id="fc04-c01-u028" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u028">Definition: Local ring</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U028</code> · Prime ideals and maximal ideals; pp.&nbsp;3–4; L237 · after <a href="#fc04-c01-u021"><code>FC04-C01-U021</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A ring with exactly one maximal ideal 𝔪.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/LocalRing/Defs.html"><code>Mathlib/RingTheory/LocalRing/Defs.lean::IsLocalRing</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/LocalRing/Basic.html#IsLocalRing.of_unique_max_ideal"><code>Mathlib/RingTheory/LocalRing/Basic.lean::IsLocalRing.of_unique_max_ideal</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/LocalRing/MaximalIdeal/Basic.html#IsLocalRing.maximal_ideal_unique"><code>Mathlib/RingTheory/LocalRing/MaximalIdeal/Basic.lean::IsLocalRing.maximal_ideal_unique</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=IsLocalRing.of_nonunits_add#doc"><code>IsLocalRing.of_nonunits_add</code></a> — Mathlib proves equivalence between the local-ring unit criterion, a unique maximal ideal, and additive closure of the nonunits.</p>
+</div>
+</section>
+<section id="fc04-c01-u029" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u029">Definition: Residue field of a local ring</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U029</code> · Prime ideals and maximal ideals; pp.&nbsp;3–4; L237 · after <a href="#fc04-c01-u007"><code>FC04-C01-U007</code></a>, <a href="#fc04-c01-u018"><code>FC04-C01-U018</code></a>, <a href="#fc04-c01-u028"><code>FC04-C01-U028</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For local (A,𝔪), the field k=A/𝔪.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/LocalRing/ResidueField/Basic.html#IsLocalRing.ResidueField"><code>Mathlib/RingTheory/LocalRing/ResidueField/Basic.lean::IsLocalRing.ResidueField</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=IsLocalRing.residue#doc"><code>IsLocalRing.residue</code></a> — The residue field is the quotient by the unique maximal ideal, with its canonical residue map.</p>
+</div>
+</section>
+<section id="fc04-c01-u030" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u030">Proposition 1.6: Criteria for local rings</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U030</code> · Prime ideals and maximal ideals; pp.&nbsp;3–4; L239–245 · after <a href="#fc04-c01-u015"><code>FC04-C01-U015</code></a>, <a href="#fc04-c01-u021"><code>FC04-C01-U021</code></a>, <a href="#fc04-c01-u028"><code>FC04-C01-U028</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<ol type="i">
+<li>If every element outside 𝔪 is a unit then 𝔪 is the unique maximal ideal; (ii) if 𝔪 maximal and every element of 1+𝔪 is a unit then A is local.</li>
+</ol>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=IsLocalRing.isUnit_or_isUnit_of_add_one#doc"><code>IsLocalRing.isUnit_or_isUnit_of_add_one</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/LocalRing/Basic.html#IsLocalRing.isUnit_or_isUnit_one_sub_self"><code>Mathlib/RingTheory/LocalRing/Basic.lean::IsLocalRing.isUnit_or_isUnit_one_sub_self</code></a> — If <code>a+b=1</code>, one summand is a unit; equivalently a nonunit <code>a</code> forces <code>1-a</code> to be a unit.</p>
+</div>
+</section>
+<section id="fc04-c01-u031" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u031">Definition: Semi-local ring</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U031</code> · Prime ideals and maximal ideals; pp.&nbsp;3–4; L247 · after <a href="#fc04-c01-u021"><code>FC04-C01-U021</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>A ring with finitely many maximal ideals.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <code>[Finite (MaximalSpectrum R)]</code> as used throughout <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/LocalProperties/Semilocal.html"><code>Mathlib/RingTheory/LocalProperties/Semilocal.lean</code></a> — Mathlib’s semilocal hypotheses are exactly finiteness of the maximal spectrum, i.e.&nbsp;finitely many maximal ideals.</p>
+</div>
+</section>
+<section id="fc04-c01-u032" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u032">Reusable examples: Prime and maximal ideals in polynomial rings and Z</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U032</code> · Prime ideals and maximal ideals; pp.&nbsp;3–4; L249–257 · after <a href="#fc04-c01-u020"><code>FC04-C01-U020</code></a>, <a href="#fc04-c01-u021"><code>FC04-C01-U021</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>Irreducible f in k[x₁,…,xₙ] gives prime (f); in Z, (p) is maximal for prime p; the zero-constant-term ideal in k[x₁,…,xₙ] is maximal and for n&gt;1 nonprincipal.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: polynomial/MvPolynomial ideal, irreducibility, maximality, and principal-ideal APIs — P/H formalize many individual ingredients, but no checked declaration realizes the complete source bundle, in particular the zero-constant-term maximal ideal of <code>k[x₁,…,xₙ]</code> together with its nonprincipality for <code>n&gt;1</code>. Targeted GitHub search found no external Lean owner.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c01-u033" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u033">Definition / comparison: Principal ideal domain</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U033</code> · Prime ideals and maximal ideals; pp.&nbsp;3–4; L259 · after <a href="#fc04-c01-u013"><code>FC04-C01-U013</code></a>, <a href="#fc04-c01-u016"><code>FC04-C01-U016</code></a>, <a href="#fc04-c01-u020"><code>FC04-C01-U020</code></a>, <a href="#fc04-c01-u021"><code>FC04-C01-U021</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>An integral domain in which every ideal is principal; every nonzero prime ideal in a PID is maximal.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/PrincipalIdealDomain.html"><code>Mathlib/RingTheory/PrincipalIdealDomain.lean::IsPrincipalIdealRing</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=IsPrime.to_maximal_ideal#doc"><code>IsPrime.to_maximal_ideal</code></a> — A PID is a domain whose ideals are principal, and every nonzero prime ideal in such a ring is maximal.</p>
+</div>
+</section>
+<section id="fc04-c01-u034" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u034">Proposition 1.7: Nilpotents form an ideal</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U034</code> · Nilradical and Jacobson radical; p.&nbsp;5; L263–267 · after <a href="#fc04-c01-u007"><code>FC04-C01-U007</code></a>, <a href="#fc04-c01-u014"><code>FC04-C01-U014</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Nilpotent elements form an ideal 𝔑, and A/𝔑 has no nonzero nilpotent.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Nilpotent/Lemmas.html"><code>Mathlib/RingTheory/Nilpotent/Lemmas.lean::nilradical</code></a>; <code>mem_nilradical</code>; <code>nilradical_eq_bot_iff</code>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Quotient/Nilpotent.html#Ideal.isRadical_iff_quotient_reduced"><code>Mathlib/RingTheory/Ideal/Quotient/Nilpotent.lean::Ideal.isRadical_iff_quotient_reduced</code></a> — The nilpotent elements form <code>nilradical R</code>; quotienting by this radical ideal is reduced, matching the source construction.</p>
+</div>
+</section>
+<section id="fc04-c01-u035" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u035">Definition: Nilradical</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U035</code> · Nilradical and Jacobson radical; p.&nbsp;5; L269 · after <a href="#fc04-c01-u034"><code>FC04-C01-U034</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>The ideal 𝔑 of all nilpotent elements.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Nilpotent/Lemmas.html"><code>Mathlib/RingTheory/Nilpotent/Lemmas.lean::nilradical</code></a>; <code>mem_nilradical</code> — <code>mem_nilradical</code> identifies the nilradical with the nilpotent elements, and Mathlib’s ideal radical specializes at <code>⊥</code> to the same ideal.</p>
+</div>
+</section>
+<section id="fc04-c01-u036" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u036">Proposition 1.8: Nilradical as intersection of primes</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U036</code> · Nilradical and Jacobson radical; p.&nbsp;5; L271–287 · after <a href="#fc04-c01-u020"><code>FC04-C01-U020</code></a>, <a href="#fc04-c01-u035"><code>FC04-C01-U035</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>𝔑 is the intersection of all prime ideals of A.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Nilpotent/Lemmas.html"><code>Mathlib/RingTheory/Nilpotent/Lemmas.lean::nilradical_eq_sInf</code></a> — The nilradical is exactly the infimum/intersection of all prime ideals.</p>
+</div>
+</section>
+<section id="fc04-c01-u037" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u037">Definition: Jacobson radical</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U037</code> · Nilradical and Jacobson radical; p.&nbsp;5; L289 · after <a href="#fc04-c01-u021"><code>FC04-C01-U021</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Intersection of all maximal ideals of A, denoted ℜ.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Jacobson/Ideal.html#Ideal.jacobson"><code>Mathlib/RingTheory/Jacobson/Ideal.lean::Ideal.jacobson</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.jacobson_bot#doc"><code>Ideal.jacobson_bot</code></a> — <code>Ideal.jacobson ⊥</code> is the intersection of all maximal ideals, exactly the Jacobson radical of the ring.</p>
+</div>
+</section>
+<section id="fc04-c01-u038" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u038">Proposition 1.9: Unit characterization of the Jacobson radical</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U038</code> · Nilradical and Jacobson radical; p.&nbsp;5; L291–293 · after <a href="#fc04-c01-u015"><code>FC04-C01-U015</code></a>, <a href="#fc04-c01-u027"><code>FC04-C01-U027</code></a>, <a href="#fc04-c01-u037"><code>FC04-C01-U037</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>x∈ℜ iff 1−xy is a unit for every y∈A.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Jacobson/Ideal.html#Ideal.mem_jacobson_bot"><code>Mathlib/RingTheory/Jacobson/Ideal.lean::Ideal.mem_jacobson_bot</code></a> — Mathlib characterizes Jacobson-radical membership by unitness of <code>1+xy</code> for all <code>y</code>; replacing <code>y</code> by <code>-y</code> is exactly <code>1-xy</code> in the source.</p>
+</div>
+</section>
+<section id="fc04-c01-u039" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u039">Construction / definition: Sum of ideals</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U039</code> · Operations on ideals; pp.&nbsp;6–8; L297 · after <a href="#fc04-c01-u006"><code>FC04-C01-U006</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>𝔞+𝔟 consists of x+y; arbitrary sums are finite-support sums and are the smallest ideal containing the family.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Operations.html#Ideal.add_eq_sup"><code>Mathlib/RingTheory/Ideal/Operations.lean::Ideal.add_eq_sup</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Span.html#Ideal.iSup_eq_span"><code>Mathlib/RingTheory/Ideal/Span.lean::Ideal.iSup_eq_span</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.span_iUnion#doc"><code>Ideal.span_iUnion</code></a> — Binary ideal sum is lattice supremum, and arbitrary sums are the least ideal containing the union.</p>
+</div>
+</section>
+<section id="fc04-c01-u040" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u040">Construction / comparison: Intersections and complete lattice of ideals</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U040</code> · Operations on ideals; pp.&nbsp;6–8; L299 · after <a href="#fc04-c01-u006"><code>FC04-C01-U006</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Arbitrary intersections are ideals; ideals form a complete lattice under inclusion.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> complete-lattice instance on <code>Ideal R</code>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.mem_iInf#doc"><code>Ideal.mem_iInf</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.mem_sInf#doc"><code>Ideal.mem_sInf</code></a> — Arbitrary intersections are ideals and <code>Ideal R</code> is a complete lattice under inclusion.</p>
+</div>
+</section>
+<section id="fc04-c01-u041" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u041">Construction / convention: Product and powers of ideals</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U041</code> · Operations on ideals; pp.&nbsp;6–8; L301 · after <a href="#fc04-c01-u006"><code>FC04-C01-U006</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>𝔞𝔟 is generated by products xy; finite products and powers are defined, with 𝔞⁰=(1).</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Operations.html"><code>Mathlib/RingTheory/Ideal/Operations.lean</code></a> ideal multiplication and power instances; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.mul_assoc#doc"><code>Ideal.mul_assoc</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.prod_mem_prod#doc"><code>Ideal.prod_mem_prod</code></a> — Ideal multiplication is generated by finite sums of products, with finite products and powers and <code>I^0=⊤=(1)</code>.</p>
+</div>
+</section>
+<section id="fc04-c01-u042" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u042">Comparison: Ideal arithmetic laws and modular law</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U042</code> · Operations on ideals; pp.&nbsp;6–8; L307–323 · after <a href="#fc04-c01-u039"><code>FC04-C01-U039</code></a>, <a href="#fc04-c01-u040"><code>FC04-C01-U040</code></a>, <a href="#fc04-c01-u041"><code>FC04-C01-U041</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Sum/intersection/product are associative where defined; product distributes over sum; modular law 𝔞∩(𝔟+𝔠)=𝔞∩𝔟+𝔞∩𝔠 under the stated containment; 𝔞𝔟⊆𝔞∩𝔟, with equality when 𝔞+𝔟=(1).</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.mul_assoc#doc"><code>Ideal.mul_assoc</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.mul_sup#doc"><code>Ideal.mul_sup</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.sup_mul#doc"><code>Ideal.sup_mul</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.mul_le_inf#doc"><code>Ideal.mul_le_inf</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Order/ModularLattice.html"><code>Mathlib/Order/ModularLattice.lean::sup_inf_assoc_of_le</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.mul_eq_inf_of_isCoprime#doc"><code>Ideal.mul_eq_inf_of_isCoprime</code></a> — These give associativity/distributivity, the modular lattice identity under the source containment, <code>ab≤a∩b</code>, and equality for comaximal ideals.</p>
+</div>
+</section>
+<section id="fc04-c01-u043" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u043">Definition: Coprime/comaximal ideals</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U043</code> · Operations on ideals; pp.&nbsp;6–8; L325 · after <a href="#fc04-c01-u039"><code>FC04-C01-U039</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>𝔞 and 𝔟 are coprime iff 𝔞+𝔟=(1), equivalently 1=x+y with x∈𝔞,y∈𝔟.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Operations.html#Ideal.IsCoprime"><code>Mathlib/RingTheory/Ideal/Operations.lean::Ideal.IsCoprime</code></a>; <code>isCoprime_iff_sup_eq</code>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.isCoprime_iff_add#doc"><code>Ideal.isCoprime_iff_add</code></a> — Coprimality is exactly <code>a+b=⊤</code>; membership of <code>1</code> in the sum gives <code>1=x+y</code> with the stated memberships.</p>
+</div>
+</section>
+<section id="fc04-c01-u044" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u044">Construction: Finite direct product of rings</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U044</code> · Operations on ideals; pp.&nbsp;6–8; L327–333 · after <a href="#fc04-c01-u001"><code>FC04-C01-U001</code></a>, <a href="#fc04-c01-u004"><code>FC04-C01-U004</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>∏Aᵢ has componentwise operations and identity (1,…,1); coordinate projections are ring homomorphisms.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/Algebra/Ring/Prod.html"><code>Mathlib/Algebra/Ring/Prod.lean</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=RingHom.fst#doc"><code>RingHom.fst</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=RingHom.snd#doc"><code>RingHom.snd</code></a>; finite Pi ring instances — Finite products have componentwise ring operations and unit, and coordinate projections are ring homomorphisms.</p>
+</div>
+</section>
+<section id="fc04-c01-u045" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u045">Construction: Chinese-remainder comparison map</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U045</code> · Operations on ideals; pp.&nbsp;6–8; L335–341 · after <a href="#fc04-c01-u007"><code>FC04-C01-U007</code></a>, <a href="#fc04-c01-u044"><code>FC04-C01-U044</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>φ:A→∏(A/𝔞ᵢ), x↦(x+𝔞₁,…,x+𝔞ₙ).</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Quotient/Operations.html#Ideal.quotientInfToPiQuotient"><code>Mathlib/RingTheory/Ideal/Quotient/Operations.lean::Ideal.quotientInfToPiQuotient</code></a> — This is the canonical map <code>A → ∏ i, A/Iᵢ</code>, sending <code>x</code> to its quotient classes.</p>
+</div>
+</section>
+<section id="fc04-c01-u046" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u046">Proposition 1.10: Chinese remainder criteria</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U046</code> · Operations on ideals; pp.&nbsp;6–8; L343–369 · after <a href="#fc04-c01-u040"><code>FC04-C01-U040</code></a>, <a href="#fc04-c01-u041"><code>FC04-C01-U041</code></a>, <a href="#fc04-c01-u043"><code>FC04-C01-U043</code></a>, <a href="#fc04-c01-u045"><code>FC04-C01-U045</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Pairwise coprime ideals satisfy ∏𝔞ᵢ=∩𝔞ᵢ; φ is surjective iff pairwise coprime and injective iff ∩𝔞ᵢ=0.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.prod_eq_iInf_of_pairwise_isCoprime#doc"><code>Ideal.prod_eq_iInf_of_pairwise_isCoprime</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.quotientInfToPiQuotient_surj#doc"><code>Ideal.quotientInfToPiQuotient_surj</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.quotientInfRingEquivPiQuotient#doc"><code>Ideal.quotientInfRingEquivPiQuotient</code></a>; kernel of <code>quotientInfToPiQuotient</code> — Pairwise comaximal ideals have product equal to intersection; the CRT map is surjective exactly in the pairwise-coprime setting and its kernel is the intersection, so injectivity is equivalent to zero intersection.</p>
+</div>
+</section>
+<section id="fc04-c01-u047" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u047">Proposition 1.11: Prime avoidance / prime over finite intersection</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U047</code> · Operations on ideals; pp.&nbsp;6–8; L373–391 · after <a href="#fc04-c01-u020"><code>FC04-C01-U020</code></a>, <a href="#fc04-c01-u040"><code>FC04-C01-U040</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Finite prime avoidance for an ideal; a prime containing a finite intersection contains one member, with equality consequence.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Operations.html#Ideal.subset_union_prime"><code>Mathlib/RingTheory/Ideal/Operations.lean::Ideal.subset_union_prime</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.subset_union_prime_finite#doc"><code>Ideal.subset_union_prime_finite</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.IsPrime.prod_le#doc"><code>Ideal.IsPrime.prod_le</code></a> — Mathlib supplies finite prime avoidance and the prime-containing-a-finite-product/intersection consequence used in Proposition 1.11.</p>
+</div>
+</section>
+<section id="fc04-c01-u048" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u048">Definition: Ideal quotient (𝔞:𝔟)</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U048</code> · Operations on ideals; pp.&nbsp;6–8; L393–397 · after <a href="#fc04-c01-u006"><code>FC04-C01-U006</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>(𝔞:𝔟)={x∈A : x𝔟⊆𝔞}.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Colon.html#Submodule.colon"><code>Mathlib/RingTheory/Ideal/Colon.lean::Submodule.colon</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.mem_colon#doc"><code>Ideal.mem_colon</code></a> — The colon ideal consists exactly of <code>x</code> such that <code>x • I ≤ J</code>, i.e.&nbsp;<code>xI⊆J</code> in the commutative ring.</p>
+</div>
+</section>
+<section id="fc04-c01-u049" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u049">Definition / notation: Annihilator ideal</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U049</code> · Operations on ideals; pp.&nbsp;6–8; L399–405 · after <a href="#fc04-c01-u017"><code>FC04-C01-U017</code></a>, <a href="#fc04-c01-u048"><code>FC04-C01-U048</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Ann(𝔟)=(0:𝔟); for principal (x), write (𝔞:x) for (𝔞:(x)).</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Maps.html#Module.annihilator"><code>Mathlib/RingTheory/Ideal/Maps.lean::Module.annihilator</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Colon.html#Submodule.bot_colon"><code>Mathlib/RingTheory/Ideal/Colon.lean::Submodule.bot_colon</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.mem_colon_span_singleton#doc"><code>Ideal.mem_colon_span_singleton</code></a> — The annihilator is <code>(0:I)</code>, and the singleton colon specializes to the source notation <code>(a:x)</code>.</p>
+</div>
+</section>
+<section id="fc04-c01-u050" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u050">Definition: Radical of an ideal</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U050</code> · Operations on ideals; pp.&nbsp;6–8; L425–431 · after <a href="#fc04-c01-u007"><code>FC04-C01-U007</code></a>, <a href="#fc04-c01-u014"><code>FC04-C01-U014</code></a>, <a href="#fc04-c01-u035"><code>FC04-C01-U035</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>r(𝔞)={x:xⁿ∈𝔞 for some n&gt;0}; equivalently inverse image of the nilradical of A/𝔞.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Operations.html#Ideal.radical"><code>Mathlib/RingTheory/Ideal/Operations.lean::Ideal.radical</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.mem_radical_iff#doc"><code>Ideal.mem_radical_iff</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Maps.html#Ideal.comap_radical"><code>Mathlib/RingTheory/Ideal/Maps.lean::Ideal.comap_radical</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Nilpotent/Lemmas.html"><code>Mathlib/RingTheory/Nilpotent/Lemmas.lean::nilradical</code></a> — Ideal radical has exactly the positive-power membership condition; the quotient characterization identifies it as the pullback of the quotient nilradical.</p>
+</div>
+</section>
+<section id="fc04-c01-u051" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u051">Proposition 1.14: Radical as intersection of containing primes</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U051</code> · Operations on ideals; pp.&nbsp;6–8; L447–449 · after <a href="#fc04-c01-u020"><code>FC04-C01-U020</code></a>, <a href="#fc04-c01-u036"><code>FC04-C01-U036</code></a>, <a href="#fc04-c01-u050"><code>FC04-C01-U050</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>r(𝔞) equals the intersection of prime ideals containing 𝔞.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Operations.html#Ideal.radical_eq_sInf"><code>Mathlib/RingTheory/Ideal/Operations.lean::Ideal.radical_eq_sInf</code></a> — The radical is the infimum/intersection of all prime ideals containing the ideal.</p>
+</div>
+</section>
+<section id="fc04-c01-u052" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u052">Construction: Radical of an arbitrary subset</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U052</code> · Operations on ideals; pp.&nbsp;6–8; L451 · after <a href="#fc04-c01-u050"><code>FC04-C01-U050</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>r(E) is defined by the same power condition; generally not an ideal; radicals commute with arbitrary unions.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.radical#doc"><code>Ideal.radical</code></a> for ideals only — P/H have ideal radicals but no checked construction of the source’s power-radical for an arbitrary subset <code>E</code>, together with the fact it need not be an ideal and the arbitrary-union law. Targeted external search found no exact Lean owner.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c01-u053" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u053">Proposition 1.15: Zero-divisors via radicals of annihilators</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U053</code> · Operations on ideals; pp.&nbsp;6–8; L453 · after <a href="#fc04-c01-u012"><code>FC04-C01-U012</code></a>, <a href="#fc04-c01-u049"><code>FC04-C01-U049</code></a>, <a href="#fc04-c01-u052"><code>FC04-C01-U052</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>D=⋃_{x≠0} r(Ann(x)).</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Module.annihilator#doc"><code>Module.annihilator</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.radical#doc"><code>Ideal.radical</code></a>; <code>nonZeroDivisors</code>; Noetherian associated-prime results — No checked P/H or external declaration proves the source-general identity <code>D = ⋃_{x≠0} radical(Ann(x))</code>; the available associated-prime description of zero divisors has stronger finiteness/Noetherian hypotheses and is not this theorem.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c01-u054" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u054">Proposition 1.16: Coprimality from coprime radicals</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U054</code> · Operations on ideals; pp.&nbsp;6–8; L457–459 · after <a href="#fc04-c01-u043"><code>FC04-C01-U043</code></a>, <a href="#fc04-c01-u050"><code>FC04-C01-U050</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<p>If r(𝔞) and r(𝔟) are coprime, then 𝔞 and 𝔟 are coprime.</p>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.radical#doc"><code>Ideal.radical</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.IsCoprime#doc"><code>Ideal.IsCoprime</code></a> — Neither P nor H nor targeted external Lean search contains the implication that coprime radicals force the original ideals to be coprime as a named/source-shaped theorem.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c01-u055" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u055">Definition: Extension of an ideal</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U055</code> · Extension and contraction; p.&nbsp;9; L463 · after <a href="#fc04-c01-u004"><code>FC04-C01-U004</code></a>, <a href="#fc04-c01-u006"><code>FC04-C01-U006</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For f:A→B, 𝔞ᵉ=Bf(𝔞), the ideal generated by the image of 𝔞.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Maps.html#Ideal.map"><code>Mathlib/RingTheory/Ideal/Maps.lean::Ideal.map</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.map_span#doc"><code>Ideal.map_span</code></a> — <code>I.map f</code> is the ideal generated by the image <code>f(I)</code>, exactly extension <code>Iᵉ</code>.</p>
+</div>
+</section>
+<section id="fc04-c01-u056" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u056">Definition: Contraction of an ideal</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U056</code> · Extension and contraction; p.&nbsp;9; L465 · after <a href="#fc04-c01-u004"><code>FC04-C01-U004</code></a>, <a href="#fc04-c01-u006"><code>FC04-C01-U006</code></a>, <a href="#fc04-c01-u020"><code>FC04-C01-U020</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>For ideal 𝔟⊂B, 𝔟ᶜ=f⁻¹(𝔟); prime ideals contract to prime ideals.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Maps.html#Ideal.comap"><code>Mathlib/RingTheory/Ideal/Maps.lean::Ideal.comap</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.IsPrime.comap#doc"><code>Ideal.IsPrime.comap</code></a> — <code>J.comap f</code> is inverse image/contraction, and prime ideals contract to prime ideals.</p>
+</div>
+</section>
+<section id="fc04-c01-u057" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u057">Comparison: Surjective versus injective behavior of ideals under a ring homomorphism</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U057</code> · Extension and contraction; p.&nbsp;9; L467–471 · after <a href="#fc04-c01-u009"><code>FC04-C01-U009</code></a>, <a href="#fc04-c01-u055"><code>FC04-C01-U055</code></a>, <a href="#fc04-c01-u056"><code>FC04-C01-U056</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>Factor f as A↠f(A)↪B: ideals over the surjective part correspond by Proposition 1.1, while extension across the inclusion is generally subtler.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=RingHom.range#doc"><code>RingHom.range</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=RingHom.rangeSRestrict#doc"><code>RingHom.rangeSRestrict</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.relIsoOfSurjective#doc"><code>Ideal.relIsoOfSurjective</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.map#doc"><code>Ideal.map</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.comap#doc"><code>Ideal.comap</code></a> — Mathlib factors a ring map through its range and gives the full ideal correspondence for the surjective factor, while extension across the range inclusion remains the general <code>map</code> operation, exactly the source comparison.</p>
+</div>
+</section>
+<section id="fc04-c01-u058" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u058">Reusable example: Prime extension in Z⊂Z[i]</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U058</code> · Extension and contraction; p.&nbsp;9; L473–485 · after <a href="#fc04-c01-u033"><code>FC04-C01-U033</code></a>, <a href="#fc04-c01-u055"><code>FC04-C01-U055</code></a> · <span class="route-unmatched">not formalized</span></p>
+</div>
+<ol start="2" type="1">
+<li>ramifies as ((1+i)²); p≡1 mod4 splits into two distinct prime ideals; p≡3 mod4 remains prime; relates splitting to sums of two squares.</li>
+</ol>
+<div class="unit-lean">
+<p><strong>Not formalized.</strong> partial: <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/NumberTheory/Zsqrtd/QuadraticReciprocity.html#GaussianInt.prime_iff_mod_four_eq_three_of_nat_prime"><code>Mathlib/NumberTheory/Zsqrtd/QuadraticReciprocity.lean::GaussianInt.prime_iff_mod_four_eq_three_of_nat_prime</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/NumberTheory/SumTwoSquares.html#Nat.Prime.sq_add_sq"><code>Mathlib/NumberTheory/SumTwoSquares.lean::Nat.Prime.sq_add_sq</code></a> — P/H prove that a rational prime stays prime in <code>ℤ[i]</code> exactly in the <code>3 mod 4</code> case and supply the sum-of-two-squares theorem, but no checked declaration realizes the full ideal-factorization bundle <code>(2)=((1+i)^2)</code> plus the two-distinct-prime-ideal splitting for <code>p≡1 mod4</code>. Targeted GitHub search found only Mathlib/mirrors and no complete external owner.</p>
+</div>
+<p><span class="unit-provenance">Searched: N</span></p>
+</section>
+<section id="fc04-c01-u059" class="level3">
+<h3 class="anchored" data-anchor-id="fc04-c01-u059">Proposition 1.17: Extension–contraction identities and bijection on fixed ideals</h3>
+<div class="unit-meta">
+<p><code>FC04-C01-U059</code> · Extension and contraction; p.&nbsp;9; L489–495 · after <a href="#fc04-c01-u055"><code>FC04-C01-U055</code></a>, <a href="#fc04-c01-u056"><code>FC04-C01-U056</code></a> · <span class="route-mathlib">in Mathlib</span></p>
+</div>
+<p>𝔞⊆𝔞ᵉᶜ, 𝔟⊇𝔟ᶜᵉ; iterated ec/ce stabilize, giving inverse bijections between contracted ideals of A and extended ideals of B.</p>
+<div class="unit-lean">
+<p><strong>Formalized.</strong> <a href="https://leanprover-community.github.io/mathlib4_docs/Mathlib/RingTheory/Ideal/Maps.html#Ideal.gc_map_comap"><code>Mathlib/RingTheory/Ideal/Maps.lean::Ideal.gc_map_comap</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.le_comap_map#doc"><code>Ideal.le_comap_map</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.map_comap_le#doc"><code>Ideal.map_comap_le</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.map_comap_map#doc"><code>Ideal.map_comap_map</code></a>; <a href="https://leanprover-community.github.io/mathlib4_docs/find/?pattern=Ideal.comap_map_comap#doc"><code>Ideal.comap_map_comap</code></a> — Extension and contraction form a Galois connection; its unit/counit inequalities and closure/interior idempotence are exactly the stated <code>a⊆aᵉᶜ</code>, <code>b⊇bᶜᵉ</code>, stabilization, and fixed-point bijection.</p>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/dzackgarza\.github\.io\/lean-categories\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Generated from the project’s reference notes by <code>site/build.py</code>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>The Lean is the authority; where this site differs, the Lean is right.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
