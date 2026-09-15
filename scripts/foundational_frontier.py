@@ -174,6 +174,10 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # already-defined nondegenerate binary quadratic form over a perfect
         # field; it introduces no new mathematical datum.
         "FC11-C06-U044",
+        # Peters--Sterk C07-U019 is the theorem that Witt decomposition has a
+        # split-inner-product replacement when two is not invertible.  The
+        # split/hyperbolic formed-module notions are introduced elsewhere.
+        "FC11-C07-U019",
     }
 )
 
