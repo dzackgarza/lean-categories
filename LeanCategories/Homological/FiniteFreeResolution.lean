@@ -1,11 +1,17 @@
-import LeanCategories.Modules.Mathlib
-import Mathlib.Algebra.Category.ModuleCat.Abelian
-import Mathlib.Algebra.Category.ModuleCat.Kernels
-import Mathlib.Algebra.Homology.HomologicalComplex
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
-import Mathlib.Algebra.Homology.ShortComplex.Exact
-import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.RingTheory.Noetherian.Basic
+/-
+Copyright (c) 2026 Dzack Garza. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+-/
+module
+
+public import LeanCategories.Modules.Mathlib
+public import Mathlib.Algebra.Category.ModuleCat.Abelian
+public import Mathlib.Algebra.Category.ModuleCat.Kernels
+public import Mathlib.Algebra.Homology.HomologicalComplex
+public import Mathlib.Algebra.Homology.ShortComplex.Abelian
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
+public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.RingTheory.Noetherian.Basic
 
 @[expose] public section
 
