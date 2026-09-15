@@ -19,7 +19,27 @@ UNIT_RE = re.compile(r"FC\d{2}-[A-Z0-9]+-U\d+")
 HEADING_UNIT_RE = re.compile(r"^###\s+(FC\d{2}-[A-Z0-9]+-U\d+)\b")
 ROUTES = {"mathlib", "project-existing", "package-import", "reference-port", "unmatched"}
 DIRECT_ROUTES = {"mathlib", "project-existing"}
-NEGATIVE_VERDICT_MARKERS = ("unmatched", "partial", "wrong interface", "missing")
+NEGATIVE_VERDICT_MARKERS = ("unmatched", "wrong interface", "missing")
+NEGATIVE_PARTIAL_VERDICT_PATTERNS = (
+    r"^\s*partial(?:\s|$)",
+    r"\bpartially\b",
+    r"\bpartial\s+(?:match|comparison|interface|owner|route|implementation|formalization|coverage|clause)\b",
+    r"\bremains?\s+partial\b",
+)
+
+
+def is_negative_verdict(verdict: str) -> bool:
+    """Recognize evaluative negative verdicts without matching mathematical `partial` terms.
+
+    `partial flow`, `partial zeta`, and `partial Hecke theta` are mathematical nouns, not
+    Mapping status.  Older code used the raw substring `partial`, which turned such positive
+    direct routes into spurious `review` work.
+    """
+
+    value = verdict.lower()
+    return any(marker in value for marker in NEGATIVE_VERDICT_MARKERS) or any(
+        re.search(pattern, value) is not None for pattern in NEGATIVE_PARTIAL_VERDICT_PATTERNS
+    )
 POSITIVE_LEGACY_VERDICT_MARKERS = ("exact", "broad")
 DEFINITION_MARKERS = ("definition", "construction", "convention", "notation", "terminology")
 # Labels that unambiguously announce result content.  If one of these is the
@@ -129,7 +149,7 @@ class Mapping:
             # route to `project-existing`.
             return True
         verdict = self.verdict.lower()
-        if any(marker in verdict for marker in NEGATIVE_VERDICT_MARKERS):
+        if is_negative_verdict(verdict):
             return False
         if self.route is not None:
             return self.route in DIRECT_ROUTES or self.realized
@@ -279,9 +299,10 @@ def mapping_from_row(path: Path, line: str) -> tuple[str, Mapping] | None:
     # are closed vocabulary, so locate the first exact token after the verdict.
     route = next((cell for cell in cells[2:] if cell in ROUTES), None)
     verdict_lower = verdict.lower()
-    looks_like_mapping = route is not None or any(
-        marker in verdict_lower
-        for marker in (*NEGATIVE_VERDICT_MARKERS, *POSITIVE_LEGACY_VERDICT_MARKERS)
+    looks_like_mapping = (
+        route is not None
+        or is_negative_verdict(verdict_lower)
+        or any(marker in verdict_lower for marker in POSITIVE_LEGACY_VERDICT_MARKERS)
     )
     if not looks_like_mapping:
         return None
