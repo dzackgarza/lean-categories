@@ -454,11 +454,16 @@ def is_definition(unit: Unit, mapping: Mapping | None = None) -> bool:
     return any(marker in kind for marker in DEFINITION_MARKERS)
 
 
-def is_theorem(unit: Unit) -> bool:
+def is_theorem(unit: Unit, mapping: Mapping | None = None) -> bool:
     kind = unit.kind.lower()
     # Mixed rows can contribute both a Sweep-III definition and a Sweep-IV
     # theorem clause; the definition sweep explicitly leaves theorem clauses to IV.
-    return any(marker in kind for marker in THEOREM_MARKERS) or not any(
+    # `[definition-only]` is itself a source-audited assertion that the positive
+    # mapping discharges only the definitional part, so it must force the row into
+    # Sweep IV even when Sweep I gave it a plain `Definition / construction` label.
+    return (mapping is not None and mapping.definition_only) or any(
+        marker in kind for marker in THEOREM_MARKERS
+    ) or not any(
         marker in kind for marker in DEFINITION_MARKERS
     )
 
@@ -476,7 +481,7 @@ def phase_units(
     if phase == "Definitions":
         return [unit for unit in units if is_definition(unit, mappings.get(unit.unit_id))]
     if phase == "Theorems":
-        return [unit for unit in units if is_theorem(unit)]
+        return [unit for unit in units if is_theorem(unit, mappings.get(unit.unit_id))]
     if phase == "Mapping":
         # Sweep-II ultimately maps every corpus unit, but only definitional rows
         # can force Sweep III to invent an object.  Discovery for that gate is
