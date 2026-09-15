@@ -140,6 +140,32 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # C02-U034 is the asserted 11/8 consequence and complex-surface case,
         # expressed entirely in the previously introduced manifold invariants.
         "FC11-C02-U034",
+        # Peters--Sterk Appendix B U004 is the Kähler Hodge theorem identifying
+        # already-defined H^{p,q} with de-Rham classes and proving decomposition/
+        # conjugation. It introduces no new cohomology carrier beyond U003.
+        "FC11-B-U004",
+        # Appendix B U008 is just the degree-one/two specialization of U004's
+        # Hodge decomposition and conjugation statements.
+        "FC11-B-U008",
+        # Appendix B U010 applies the Hodge-index theorem to the light cone;
+        # the actual positive/Kähler-cone notation is introduced in U011.
+        "FC11-B-U010",
+        # Appendix B U012 is Noether's formula, an equality among invariants.
+        "FC11-B-U012",
+        # Appendix B U013 consists of Betti/Hodge/signature identities.
+        "FC11-B-U013",
+        # Appendix B U015 classifies the already-defined integral intersection form.
+        "FC11-B-U015",
+        # Appendix B U021 characterizes the already-defined Néron--Severi lattice
+        # as a maximal primitive Hodge sublattice; it is not a second definition.
+        "FC11-B-U021",
+        # Appendix B U030 derives the Riemann bilinear relations from the surface
+        # intersection form and Hodge decomposition.
+        "FC11-B-U030",
+        # Appendix B U033 is the homogeneous-space/connectedness theorem for U032.
+        "FC11-B-U033",
+        # Appendix B U041 is the surface ampleness criterion for U040's predicate.
+        "FC11-B-U041",
         # Peters--Sterk C04-U020 is the finite/affine crystallographic root-system
         # classification statement; all named diagram data were introduced earlier.
         "FC11-C04-U020",
