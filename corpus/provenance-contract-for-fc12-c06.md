@@ -21,4 +21,5 @@ project_id: github.com__dzackgarza__lean-categories
 - Result: 0 positive routes and 24 dated `unmatched` rows.
 - P/H has substantial generic elliptic-curve, finite-group, quotient, and étale infrastructure, but no algebraic surface-fibration theory or the chapter's classification/invariant packages. Targeted searches also found no compatible external Lean implementation of those missing statements.
 - Strict whole-row semantics apply uniformly; generic ingredients are not promoted across missing surface-level interfaces.
+- **First-pass definitional adjudication (2026-09-15):** U023 was re-read semantically. Current hosted searches under bielliptic/hyperelliptic terminology returned no formalization, and neither pinned/current Mathlib nor the project constructs a scheme/geometric quotient of a scheme by a finite group action. Thus the component elliptic curves, finite groups, products and projective line cannot assemble Beauville's `(E×F)/G` with `F/G ≃ P¹`; U023 remains `[negative-search-complete]`. The old strict-bundle rationale is superseded for this definition row only.
 
