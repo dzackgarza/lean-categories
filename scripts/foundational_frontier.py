@@ -178,6 +178,10 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # split-inner-product replacement when two is not invertible.  The
         # split/hyperbolic formed-module notions are introduced elsewhere.
         "FC11-C07-U019",
+        # Peters--Sterk C08-U008 is the basis-independence theorem for the Arf
+        # class whose formula is introduced in U007.  Calling that class the
+        # Arf invariant does not introduce a second mathematical construction.
+        "FC11-C08-U008",
     }
 )
 
