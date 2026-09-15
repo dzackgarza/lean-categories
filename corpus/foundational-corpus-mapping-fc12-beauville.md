@@ -40,13 +40,13 @@ project_id: github.com__dzackgarza__lean-categories
 
 # FC12 — Beauville, *Complex Algebraic Surfaces*, 2nd ed. mapping
 
-Status: **Sweep II complete.** C01–C10 and Appendices A–B mapped.
+Status: **First-pass definitional Mapping active.** The initial 2026-09-07 row-coverage pass exists for C01–C10 and Appendices A–B; semantic definition adjudication is proceeding in source order. Chapter I definition rows U002/U003/U008/U012/U013 were rechecked on 2026-09-15 and remain `[negative-search-complete]`; Chapter II is next.
 
 Canonical catalogue: [[foundational-corpus-units-fc12-beauville|FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.]].
 
 Pinned project baseline: Mathlib `db584cd6d46c92f209a44c0f1c829460d327499d`, Lean 4.33.0. Current Mathlib checked at `71a80585ee495fc24472fd0eaffc89d94e4fd8d6`. Declarations first appearing after the project pin are revision-specific `reference-port` routes unless independently importable.
 
-Every canonical unit receives exactly one Sweep-II route: `mathlib`, `project-existing`, `package-import`, `reference-port`, or `unmatched`. Project source is searched first, followed by pinned/current Mathlib, open/current work, indexed search services, Reservoir/packages, broad GitHub Lean discovery, and local reference corpora. Strict bundle semantics apply throughout.
+Every canonical unit receives exactly one Sweep-II route: `mathlib`, `project-existing`, `package-import`, `reference-port`, or `unmatched`. Project source is searched first, followed by pinned/current Mathlib, open/current work, indexed search services, Reservoir/packages, broad GitHub Lean discovery, and local reference corpora. The 2026-09-07 records used strict-bundle semantics; current first-pass definitional Mapping supersedes that rationale row by row with source-faithful semantic comparisons and current proof-assistant search evidence.
 
 [Provenance contract for FC12 C01](provenance-contract-for-fc12-c01)
 
