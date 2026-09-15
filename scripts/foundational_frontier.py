@@ -193,6 +193,20 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # Peters--Sterk C12-U031 proves Minkowski-sum/parity behavior of the
         # already-defined index sets.  It introduces no further set or invariant.
         "FC11-C12-U031",
+        # Peters--Sterk C13-U001 is the chapter overview: every construction it
+        # names is introduced precisely in U002/U005/U011.  It adds no second
+        # Clifford algebra, grading, or Clifford-group definition.
+        "FC11-C13-U001",
+        # C13-U022 classifies the scalar elements of the already-defined
+        # Pin/Spin groups as ±1.  This is theorem content, not another group.
+        "FC11-C13-U022",
+        # C13-U030 is functoriality under an ambient isometry: conjugation
+        # transports lattice orthogonal groups and preserves the spinor norm.
+        # No new map family or invariant is introduced.
+        "FC11-C13-U030",
+        # C13-U034 records that the integral Spin-to-SO+ map need not be
+        # surjective.  It is a theorem/comparison about U028/U033.
+        "FC11-C13-U034",
     }
 )
 
