@@ -95,6 +95,12 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # to Hom_R(S,-), asserting an isomorphism of already-defined derived Hom
         # objects.  The comparison-map construction itself is C10-U086.
         "FC05-C10-U096",
+        # Hartshorne II.7.12.1 is only the comparison identifying the already-defined
+        # relative-Proj/Rees blowup with the Chapter-I incidence model.
+        "FC06-C02-U240",
+        # Hartshorne II.9.5 is a proposition about ideals of definition introduced
+        # in U319; it introduces no further object or notation.
+        "FC06-C02-U320",
     }
 )
 
@@ -359,12 +365,15 @@ def is_definition(unit: Unit, mapping: Mapping | None = None) -> bool:
     """Whether the source unit carries Sweep-III definitional content."""
     source_id = unit.unit_id.split("-", 1)[0]
     kind = unit.kind.lower()
+    # Explicit source-audited result-only exceptions override the legacy lexical
+    # classifier for every source, not only sources that have completed a full
+    # mixed-unit classification audit.
+    if unit.unit_id in RESULT_ONLY_DEFINITION_UNITS:
+        return False
     if source_id not in CONTENT_CLASSIFIED_DEFINITION_SOURCES:
         return any(marker in kind for marker in DEFINITION_MARKERS)
     if mapping is not None and mapping.definition_only:
         return True
-    if unit.unit_id in RESULT_ONLY_DEFINITION_UNITS:
-        return False
     label = kind_label(unit.kind)
     # An explicit definitional source label wins, including mixed labels such
     # as `Construction/result`; the theorem clause is classified separately.
