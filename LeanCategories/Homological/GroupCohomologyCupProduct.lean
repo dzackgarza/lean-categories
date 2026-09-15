@@ -424,4 +424,52 @@ private lemma groupCohomologyCupCocycleAux_zsmul_right (p q r : ℕ) (hr : r = p
       rw [groupCohomologyCupCochain_zsmul_right, groupCohomology_iCocycles_zsmul,
         groupCohomology_iCocycles_cupAux]
 
+/-- A coboundary in the left variable cups with a cocycle to a coboundary in the target.
+This is the first quotient-descent step in the checked FLT proof spine. -/
+private lemma groupCohomologyCup_boundary_left (i q : ℕ)
+    (x : (groupCohomologyCanonicalComplex G).X i)
+    (τ : groupCohomology.cocycles (groupCohomologyTrivialIntRep G) q) :
+    groupCohomology.π (groupCohomologyTrivialIntRep G) (i + q + 1)
+        (groupCohomologyCupCocycleAux G (i + 1) q (i + q + 1) (by omega)
+          ((groupCohomologyCanonicalComplex G).toCycles i (i + 1) x) τ) = 0 := by
+  let s := i + q
+  let r := s + 1
+  let pre : (groupCohomologyCanonicalComplex G).X s :=
+    groupCohomologyCupCochain G i q s rfl x
+      (groupCohomology.iCocycles (groupCohomologyTrivialIntRep G) q τ)
+  have hboundary :
+      groupCohomologyCupCocycleAux G (i + 1) q r (by omega)
+          ((groupCohomologyCanonicalComplex G).toCycles i (i + 1) x) τ =
+        (groupCohomologyCanonicalComplex G).toCycles s r pre := by
+    apply (ModuleCat.mono_iff_injective
+      ((groupCohomologyCanonicalComplex G).iCycles r)).1 inferInstance
+    rw [groupCohomology_iCocycles_cupAux]
+    change
+      groupCohomologyCupCochain G (i + 1) q r (by omega)
+          (((groupCohomologyCanonicalComplex G).toCycles i (i + 1) ≫
+            (groupCohomologyCanonicalComplex G).iCycles (i + 1)) x)
+          (groupCohomology.iCocycles (groupCohomologyTrivialIntRep G) q τ) =
+        (((groupCohomologyCanonicalComplex G).toCycles s r ≫
+          (groupCohomologyCanonicalComplex G).iCycles r) pre)
+    rw [(groupCohomologyCanonicalComplex G).toCycles_i,
+      (groupCohomologyCanonicalComplex G).toCycles_i]
+    change
+      groupCohomologyCupCochain G (i + 1) q r (by omega)
+          ((groupCohomologyCanonicalComplex G).d i (i + 1) x)
+          (groupCohomology.iCocycles (groupCohomologyTrivialIntRep G) q τ) =
+        (groupCohomologyCanonicalComplex G).d s r pre
+    have h := groupCohomologyCup_d_comm G i q s rfl x
+      (groupCohomology.iCocycles (groupCohomologyTrivialIntRep G) q τ)
+    rw [groupCohomology_iCocycles_d_eq_zero G q τ] at h
+    simp at h
+    simpa [groupCohomology.inhomogeneousCochains.d_def, s, r, pre] using h.symm
+  change (groupCohomologyCanonicalComplex G).homologyπ r
+      (groupCohomologyCupCocycleAux G (i + 1) q r (by omega)
+        ((groupCohomologyCanonicalComplex G).toCycles i (i + 1) x) τ) = 0
+  rw [hboundary]
+  change (((groupCohomologyCanonicalComplex G).toCycles s r ≫
+    (groupCohomologyCanonicalComplex G).homologyπ r) pre) = 0
+  rw [(groupCohomologyCanonicalComplex G).toCycles_comp_homologyπ]
+  rfl
+
 end LeanCategories.Homological
