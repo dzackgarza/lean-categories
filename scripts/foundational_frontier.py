@@ -81,11 +81,11 @@ THEOREM_MARKERS = (
     "calculation",
 )
 
-# Sweep-I occasionally preserves Weibel's label "Construction" for a unit whose
-# mathematical content is only an argument/result, not a construction of new
-# data.  These exceptions are source-audited rather than inferred from the word
-# "Construction" alone.  Keep this set small: new ambiguities should be resolved
-# against the source before being added here.
+# Sweep I occasionally preserves a label containing "Construction" for a unit
+# whose mathematical content is only an argument/result, not a construction of
+# new data.  These exceptions are source-audited rather than inferred from the
+# word "Construction" alone.  Keep this set small: new ambiguities should be
+# resolved against the source before being added here.
 RESULT_ONLY_DEFINITION_UNITS = frozenset(
     {
         # Construction 5.6.5 is the collapse argument deriving the Künneth short
@@ -121,6 +121,25 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # Hartshorne II.9.5 is a proposition about ideals of definition introduced
         # in U319; it introduces no further object or notation.
         "FC06-C02-U320",
+        # Peters--Sterk C01-U114 only asserts rational isometry of same-genus
+        # lattices and existence of distinct integral classes.  Both are result
+        # clauses about the genus/isometry predicates already introduced in U113.
+        "FC11-C01-U114",
+        # Peters--Sterk C01-U119 is the localization-compatibility theorem for
+        # already-defined global/local discriminant forms, not a new carrier.
+        "FC11-C01-U119",
+        # Peters--Sterk C02-U020 is the simply-connected torsion-freeness and
+        # indefinite-classification result for the U018 intersection form.
+        "FC11-C02-U020",
+        # C02-U023 is the Donaldson/classification consequence restricting the
+        # possible already-defined intersection forms of smooth four-manifolds.
+        "FC11-C02-U023",
+        # C02-U030 consists of the c2/Euler and Hirzebruch signature identities
+        # for an already-given compact complex surface; it defines no new datum.
+        "FC11-C02-U030",
+        # C02-U034 is the asserted 11/8 consequence and complex-surface case,
+        # expressed entirely in the previously introduced manifold invariants.
+        "FC11-C02-U034",
     }
 )
 
