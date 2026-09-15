@@ -156,6 +156,16 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # to an orientation-reversing lens-space diffeomorphism.  It introduces
         # no new carrier, map family, predicate, or notation.
         "FC11-C04-U052",
+        # Peters--Sterk C05-U019 is the dimension lower bound for the code of a
+        # nodal-curve configuration.  It is an inequality theorem, not a new
+        # code or lattice construction.
+        "FC11-C05-U019",
+        # C05-U037 is the signature theorem for the already-defined trace form
+        # in terms of real and complex embeddings.
+        "FC11-C05-U037",
+        # C05-U059 is the division-algebra iff anisotropic-norm criterion for
+        # an already-defined quaternion algebra and reduced norm.
+        "FC11-C05-U059",
     }
 )
 
