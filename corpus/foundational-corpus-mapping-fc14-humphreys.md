@@ -18,13 +18,13 @@ project_id: github.com__dzackgarza__lean-categories
 
 # FC14 — Humphreys, *Introduction to Lie Algebras and Representation Theory* mapping
 
-Status: **Sweep II complete.** C01–C07 mapped.
+Status: **First-pass definitional Mapping active.** The initial 2026-09-07 row-coverage mapping exists for C01–C07; semantic definition adjudication is proceeding in source order. The first Chapter-I definition batch (U007/U008/U009/U010/U011/U014/U019/U029/U034/U036/U042/U050) was rechecked on 2026-09-15; eight now have accepted implementation sources and four remain `[negative-search-complete]`.
 
 Canonical catalogue: [[foundational-corpus-units-fc14-humphreys|FC14 — Humphreys, Introduction to Lie Algebras and Representation Theory]].
 
-Pinned project baseline: Mathlib `db584cd6d46c92f209a44c0f1c829460d327499d`, Lean 4.33.0. Current Mathlib checked at `71a80585ee495fc24472fd0eaffc89d94e4fd8d6`. Declarations first appearing after the project pin are revision-specific `reference-port` routes unless independently importable.
+Pinned project baseline: Mathlib `db584cd6d46c92f209a44c0f1c829460d327499d`, Lean 4.33.0. Current Mathlib checked through `fd634dd29761b5d32af50e2b8f6d8ad043024303` during the 2026-09-15 first-pass adjudication. Declarations first appearing after the project pin are revision-specific `reference-port` routes unless independently importable.
 
-Every canonical unit receives exactly one Sweep-II route: `mathlib`, `project-existing`, `package-import`, `reference-port`, or `unmatched`. Project source is searched first, followed by pinned/current Mathlib, open/current work, indexed services, Reservoir/packages, broad GitHub Lean repositories, and local reference corpora. Strict whole-row semantics apply throughout.
+Every canonical unit receives exactly one Sweep-II route: `mathlib`, `project-existing`, `package-import`, `reference-port`, or `unmatched`. Project source is searched first, followed by pinned/current Mathlib, open/current work, indexed services, Reservoir/packages, broad GitHub Lean repositories, and local reference corpora. The 2026-09-07 records used strict whole-row semantics; the current first-pass definitional Mapping supersedes that rationale row by row with source-clause semantic comparison and expanded current/external searches.
 
 [Provenance contract for FC14 C01](provenance-contract-for-fc14-c01)
 

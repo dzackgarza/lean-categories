@@ -515,53 +515,53 @@ Next 12 open units in source traversal order:
 
 ## FC14 — Mapping
 
-Definitions with an implementation source: **107/176**; source-discovery gaps: **69** (unmatched=69).
-Already-sourced definition spans: `FC14-C01-U001`–`FC14-C01-U006`, `FC14-C01-U012`–`FC14-C01-U013`, `FC14-C01-U015`–`FC14-C01-U016`, `FC14-C01-U018`, `FC14-C01-U021`–`FC14-C01-U025`, `FC14-C01-U027`–`FC14-C01-U028`, `FC14-C01-U030`, `FC14-C01-U032`, `FC14-C01-U035`, `FC14-C01-U039`, `FC14-C01-U043`, `FC14-C01-U046`, `FC14-C02-U001`, `FC14-C02-U006`, `FC14-C02-U008`, `FC14-C02-U015`, `FC14-C02-U017`, `FC14-C02-U021`, `FC14-C02-U026`–`FC14-C02-U031`, `FC14-C02-U033`–`FC14-C02-U035`, `FC14-C02-U044`, `FC14-C02-U046`, `FC14-C02-U050`, `FC14-C02-U062`–`FC14-C02-U063`, `FC14-C03-U001`–`FC14-C03-U002`, `FC14-C03-U004`–`FC14-C03-U005`, `FC14-C03-U007`–`FC14-C03-U009`, `FC14-C03-U013`–`FC14-C03-U014`, `FC14-C03-U030`, `FC14-C03-U036`, `FC14-C03-U051`, `FC14-C03-U055`–`FC14-C03-U056`, `FC14-C03-U060`, `FC14-C04-U004`, `FC14-C04-U008`, `FC14-C04-U010`, `FC14-C04-U012`, `FC14-C04-U015`, `FC14-C04-U029`, `FC14-C05-U002`–`FC14-C05-U003`, `FC14-C05-U005`–`FC14-C05-U006`, `FC14-C05-U019`–`FC14-C05-U021`, `FC14-C05-U031`, `FC14-C05-U035`, `FC14-C06-U001`–`FC14-C06-U002`, `FC14-C06-U004`–`FC14-C06-U005`, `FC14-C06-U009`–`FC14-C06-U011`, `FC14-C06-U015`–`FC14-C06-U016`, `FC14-C06-U025`–`FC14-C06-U026`, `FC14-C06-U032`–`FC14-C06-U033`, `FC14-C06-U036`–`FC14-C06-U038`, `FC14-C06-U041`, `FC14-C06-U043`–`FC14-C06-U044`, `FC14-C06-U052`–`FC14-C06-U053`, `FC14-C06-U061`, `FC14-C07-U005`, `FC14-C07-U008`, `FC14-C07-U012`–`FC14-C07-U013`, `FC14-C07-U025`–`FC14-C07-U026`, `FC14-C07-U028`, `FC14-C07-U032`, `FC14-C07-U040`–`FC14-C07-U042`.
+Definitions with an implementation source: **115/176**; source-discovery gaps: **61** (unmatched=61).
+Already-sourced definition spans: `FC14-C01-U001`–`FC14-C01-U016`, `FC14-C01-U018`, `FC14-C01-U021`–`FC14-C01-U025`, `FC14-C01-U027`–`FC14-C01-U028`, `FC14-C01-U030`, `FC14-C01-U032`, `FC14-C01-U035`, `FC14-C01-U039`, `FC14-C01-U042`–`FC14-C01-U043`, `FC14-C01-U046`, `FC14-C01-U050`, `FC14-C02-U001`, `FC14-C02-U006`, `FC14-C02-U008`, `FC14-C02-U015`, `FC14-C02-U017`, `FC14-C02-U021`, `FC14-C02-U026`–`FC14-C02-U031`, `FC14-C02-U033`–`FC14-C02-U035`, `FC14-C02-U044`, `FC14-C02-U046`, `FC14-C02-U050`, `FC14-C02-U062`–`FC14-C02-U063`, `FC14-C03-U001`–`FC14-C03-U002`, `FC14-C03-U004`–`FC14-C03-U005`, `FC14-C03-U007`–`FC14-C03-U009`, `FC14-C03-U013`–`FC14-C03-U014`, `FC14-C03-U030`, `FC14-C03-U036`, `FC14-C03-U051`, `FC14-C03-U055`–`FC14-C03-U056`, `FC14-C03-U060`, `FC14-C04-U004`, `FC14-C04-U008`, `FC14-C04-U010`, `FC14-C04-U012`, `FC14-C04-U015`, `FC14-C04-U029`, `FC14-C05-U002`–`FC14-C05-U003`, `FC14-C05-U005`–`FC14-C05-U006`, `FC14-C05-U019`–`FC14-C05-U021`, `FC14-C05-U031`, `FC14-C05-U035`, `FC14-C06-U001`–`FC14-C06-U002`, `FC14-C06-U004`–`FC14-C06-U005`, `FC14-C06-U009`–`FC14-C06-U011`, `FC14-C06-U015`–`FC14-C06-U016`, `FC14-C06-U025`–`FC14-C06-U026`, `FC14-C06-U032`–`FC14-C06-U033`, `FC14-C06-U036`–`FC14-C06-U038`, `FC14-C06-U041`, `FC14-C06-U043`–`FC14-C06-U044`, `FC14-C06-U052`–`FC14-C06-U053`, `FC14-C06-U061`, `FC14-C07-U005`, `FC14-C07-U008`, `FC14-C07-U012`–`FC14-C07-U013`, `FC14-C07-U025`–`FC14-C07-U026`, `FC14-C07-U028`, `FC14-C07-U032`, `FC14-C07-U040`–`FC14-C07-U042`.
 Phase blocker: none
 
 Next 12 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC14-C01-U007` | Construction: special linear algebra A_l | `FC14-C01-U005`, `FC14-C01-U006` | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC14-C01-U008` | Construction: symplectic algebra C_l | `FC14-C01-U006` | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC14-C01-U009` | Construction: odd orthogonal algebra B_l | `FC14-C01-U006` | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC14-C01-U010` | Construction: even orthogonal algebra D_l | `FC14-C01-U006` | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC14-C01-U011` | Construction: triangular, strictly triangular, and diagonal Lie algebras | `FC14-C01-U005` | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC14-C01-U014` | Definition: derivation and Der(A) | `FC14-C01-U005`, `FC14-C01-U013` | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC14-C01-U019` | Construction: structure constants | `FC14-C01-U002` | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC14-C01-U029` | Definition: centralizer | `FC14-C01-U004`, `FC14-C01-U022` | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC14-C01-U034` | Definition: automorphism group | `FC14-C01-U003` | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC14-C01-U036` | Definition: inner automorphisms and Int(L) | `FC14-C01-U035` | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC14-C01-U042` | Definition: radical and semisimple Lie algebra | `FC14-C01-U021`, `FC14-C01-U041` | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC14-C01-U050` | Definition: flag and stabilization | `FC14-C01-U001` | ready by recorded prerequisites | unmatched; search existing formalizations |
+| `FC14-C01-U019` | Construction: structure constants | `FC14-C01-U002` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
+| `FC14-C01-U029` | Definition: centralizer | `FC14-C01-U004`, `FC14-C01-U022` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
+| `FC14-C01-U034` | Definition: automorphism group | `FC14-C01-U003` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
+| `FC14-C01-U036` | Definition: inner automorphisms and Int(L) | `FC14-C01-U035` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
+| `FC14-C02-U025` | Definition: abstract Jordan decomposition in a semisimple Lie algebra | `FC14-C02-U009`, `FC14-C02-U010`, `FC14-C02-U024` | ready by recorded prerequisites | unmatched; search existing formalizations |
+| `FC14-C02-U036` | Definition/proposition: faithful representation and its trace form | `FC14-C02-U013`, `FC14-C02-U020` | ready by recorded prerequisites | unmatched; search existing formalizations |
+| `FC14-C02-U037` | Definition: Casimir element | `FC14-C02-U032`, `FC14-C02-U036` | ready by recorded prerequisites | unmatched; search existing formalizations |
+| `FC14-C02-U039` | Construction: Casimir element for a nonfaithful representation | `FC14-C02-U022`, `FC14-C02-U037` | ready by recorded prerequisites | unmatched; search existing formalizations |
+| `FC14-C02-U052` | Definition: toral and maximal toral subalgebra | `FC14-C02-U025` | ready by recorded prerequisites | unmatched; search existing formalizations |
+| `FC14-C02-U054` | Definition: root spaces, roots, and root-space decomposition | `FC14-C01-U029`, `FC14-C02-U053` | ready by recorded prerequisites | unmatched; search existing formalizations |
+| `FC14-C03-U017` | Definition: regular and singular vectors; decomposable positive root | `FC14-C03-U002` | ready by recorded prerequisites | unmatched; search existing formalizations |
+| `FC14-C03-U019` | Definition: Weyl chambers and fundamental chamber | `FC14-C03-U017`, `FC14-C03-U018` | ready by recorded prerequisites | unmatched; search existing formalizations |
 
 ## FC14 — Definitions
 
-Delivered/directly reusable by mapping: **74/176**; pending realization: **102** (mathlib=1, reference-port=32, unmatched=69).
-Delivered/direct-reuse spans: `FC14-C01-U001`–`FC14-C01-U006`, `FC14-C01-U012`–`FC14-C01-U013`, `FC14-C01-U015`–`FC14-C01-U016`, `FC14-C01-U018`, `FC14-C01-U021`–`FC14-C01-U025`, `FC14-C01-U027`–`FC14-C01-U028`, `FC14-C01-U030`, `FC14-C01-U032`, `FC14-C01-U035`, `FC14-C01-U039`, `FC14-C01-U043`, `FC14-C01-U046`, `FC14-C02-U001`, `FC14-C02-U006`, `FC14-C02-U008`, `FC14-C02-U015`, `FC14-C02-U017`, `FC14-C02-U021`, `FC14-C02-U026`–`FC14-C02-U029`, `FC14-C02-U031`, `FC14-C02-U033`–`FC14-C02-U035`, `FC14-C02-U046`, `FC14-C02-U062`, `FC14-C03-U001`–`FC14-C03-U002`, `FC14-C03-U004`–`FC14-C03-U005`, `FC14-C03-U007`–`FC14-C03-U009`, `FC14-C03-U013`–`FC14-C03-U014`, `FC14-C03-U030`, `FC14-C03-U036`, `FC14-C03-U051`, `FC14-C03-U055`–`FC14-C03-U056`, `FC14-C04-U010`, `FC14-C04-U012`, `FC14-C04-U015`, `FC14-C05-U002`–`FC14-C05-U003`, `FC14-C05-U005`–`FC14-C05-U006`, `FC14-C05-U019`–`FC14-C05-U021`, `FC14-C05-U031`, `FC14-C05-U035`, `FC14-C06-U002`, `FC14-C06-U016`, `FC14-C06-U036`–`FC14-C06-U037`, `FC14-C06-U041`, `FC14-C06-U044`, `FC14-C06-U052`–`FC14-C06-U053`.
+Delivered/directly reusable by mapping: **80/176**; pending realization: **96** (mathlib=1, reference-port=34, unmatched=61).
+Delivered/direct-reuse spans: `FC14-C01-U001`–`FC14-C01-U010`, `FC14-C01-U012`–`FC14-C01-U013`, `FC14-C01-U015`–`FC14-C01-U016`, `FC14-C01-U018`, `FC14-C01-U021`–`FC14-C01-U025`, `FC14-C01-U027`–`FC14-C01-U028`, `FC14-C01-U030`, `FC14-C01-U032`, `FC14-C01-U035`, `FC14-C01-U039`, `FC14-C01-U042`–`FC14-C01-U043`, `FC14-C01-U046`, `FC14-C01-U050`, `FC14-C02-U001`, `FC14-C02-U006`, `FC14-C02-U008`, `FC14-C02-U015`, `FC14-C02-U017`, `FC14-C02-U021`, `FC14-C02-U026`–`FC14-C02-U029`, `FC14-C02-U031`, `FC14-C02-U033`–`FC14-C02-U035`, `FC14-C02-U046`, `FC14-C02-U062`, `FC14-C03-U001`–`FC14-C03-U002`, `FC14-C03-U004`–`FC14-C03-U005`, `FC14-C03-U007`–`FC14-C03-U009`, `FC14-C03-U013`–`FC14-C03-U014`, `FC14-C03-U030`, `FC14-C03-U036`, `FC14-C03-U051`, `FC14-C03-U055`–`FC14-C03-U056`, `FC14-C04-U010`, `FC14-C04-U012`, `FC14-C04-U015`, `FC14-C05-U002`–`FC14-C05-U003`, `FC14-C05-U005`–`FC14-C05-U006`, `FC14-C05-U019`–`FC14-C05-U021`, `FC14-C05-U031`, `FC14-C05-U035`, `FC14-C06-U002`, `FC14-C06-U016`, `FC14-C06-U036`–`FC14-C06-U037`, `FC14-C06-U041`, `FC14-C06-U044`, `FC14-C06-U052`–`FC14-C06-U053`.
 Phase blocker: Milestone 1 is open: definitional mapping/residue audit remains for FC01, FC03, FC04, FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
 Next 12 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC14-C01-U007` | Construction: special linear algebra A_l | `FC14-C01-U005`, `FC14-C01-U006` | ready by recorded prerequisites | unmatched; residue audit |
-| `FC14-C01-U008` | Construction: symplectic algebra C_l | `FC14-C01-U006` | ready by recorded prerequisites | unmatched; residue audit |
-| `FC14-C01-U009` | Construction: odd orthogonal algebra B_l | `FC14-C01-U006` | ready by recorded prerequisites | unmatched; residue audit |
-| `FC14-C01-U010` | Construction: even orthogonal algebra D_l | `FC14-C01-U006` | ready by recorded prerequisites | unmatched; residue audit |
-| `FC14-C01-U011` | Construction: triangular, strictly triangular, and diagonal Lie algebras | `FC14-C01-U005` | ready by recorded prerequisites | unmatched; residue audit |
-| `FC14-C01-U014` | Definition: derivation and Der(A) | `FC14-C01-U005`, `FC14-C01-U013` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC14-C01-U011` | Construction: triangular, strictly triangular, and diagonal Lie algebras | `FC14-C01-U005` | ready by recorded prerequisites | reference-port; port |
+| `FC14-C01-U014` | Definition: derivation and Der(A) | `FC14-C01-U005`, `FC14-C01-U013` | ready by recorded prerequisites | reference-port; port |
 | `FC14-C01-U019` | Construction: structure constants | `FC14-C01-U002` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC14-C01-U029` | Definition: centralizer | `FC14-C01-U004`, `FC14-C01-U022` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC14-C01-U034` | Definition: automorphism group | `FC14-C01-U003` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC14-C01-U036` | Definition: inner automorphisms and Int(L) | `FC14-C01-U035` | ready by recorded prerequisites | unmatched; residue audit |
-| `FC14-C01-U050` | Definition: flag and stabilization | `FC14-C01-U001` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC14-C02-U030` | Definition: completely reducible L-module | `FC14-C02-U029` | ready by recorded prerequisites | reference-port; port |
+| `FC14-C02-U044` | Definition: weights and weight spaces for sl(2,F) | `FC14-C02-U027` | ready by recorded prerequisites | reference-port; port |
+| `FC14-C02-U063` | Construction: rational and Euclidean root spaces | `FC14-C02-U059`, `FC14-C02-U061` | ready by recorded prerequisites | reference-port; port |
+| `FC14-C03-U017` | Definition: regular and singular vectors; decomposable positive root | `FC14-C03-U002` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC14-C03-U034` | Definition: long and short roots | `FC14-C03-U033` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC14-C03-U039` | Definition: Coxeter graph | `FC14-C03-U036` | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC14 — Theorems
 
-Delivered/directly reusable by mapping: **44/217**; pending realization: **173** (package-import=2, reference-port=32, unmatched=139).
+Delivered/directly reusable by mapping: **44/224**; pending realization: **180** (mathlib=6, package-import=2, reference-port=33, unmatched=139).
 Delivered/direct-reuse spans: `FC14-C01-U033`, `FC14-C01-U045`, `FC14-C01-U047`–`FC14-C01-U049`, `FC14-C02-U002`, `FC14-C02-U012`, `FC14-C02-U014`, `FC14-C02-U016`, `FC14-C02-U019`–`FC14-C02-U020`, `FC14-C02-U022`, `FC14-C02-U024`, `FC14-C02-U055`–`FC14-C02-U057`, `FC14-C02-U059`–`FC14-C02-U061`, `FC14-C02-U064`, `FC14-C03-U003`, `FC14-C03-U006`, `FC14-C03-U011`–`FC14-C03-U013`, `FC14-C03-U015`–`FC14-C03-U016`, `FC14-C03-U018`, `FC14-C03-U022`, `FC14-C03-U032`–`FC14-C03-U033`, `FC14-C03-U037`, `FC14-C04-U001`, `FC14-C04-U011`, `FC14-C04-U013`–`FC14-C04-U014`, `FC14-C04-U016`, `FC14-C05-U023`, `FC14-C05-U030`–`FC14-C05-U032`, `FC14-C06-U003`, `FC14-C07-U002`–`FC14-C07-U003`.
 Phase blocker: Sweep III is not complete corpus-wide: FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
@@ -569,18 +569,18 @@ Next 12 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
+| `FC14-C01-U007` | Construction: special linear algebra A_l | `FC14-C01-U005`, `FC14-C01-U006` | ready by recorded prerequisites | mathlib; theorem clause pending |
+| `FC14-C01-U008` | Construction: symplectic algebra C_l | `FC14-C01-U006` | ready by recorded prerequisites | mathlib; theorem clause pending |
+| `FC14-C01-U009` | Construction: odd orthogonal algebra B_l | `FC14-C01-U006` | ready by recorded prerequisites | mathlib; theorem clause pending |
+| `FC14-C01-U010` | Construction: even orthogonal algebra D_l | `FC14-C01-U006` | ready by recorded prerequisites | mathlib; theorem clause pending |
+| `FC14-C01-U011` | Construction: triangular, strictly triangular, and diagonal Lie algebras | `FC14-C01-U005` | ready by recorded prerequisites | reference-port; theorem clause pending |
 | `FC14-C01-U017` | Theorem/recorded result: Ado–Iwasawa linearity theorem | `FC14-C01-U006` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC14-C01-U020` | Classification: Lie algebras of dimension at most two | `FC14-C01-U002`, `FC14-C01-U003`, `FC14-C01-U018` | ready by recorded prerequisites | package-import; import |
+| `FC14-C01-U026` | Example: simplicity of sl(2,F) | `FC14-C01-U007`, `FC14-C01-U025` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC14-C01-U031` | Proposition: homomorphism theorems | `FC14-C01-U021`, `FC14-C01-U027`, `FC14-C01-U030` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC14-C01-U038` | Formula: conjugation-exponential identity | `FC14-C01-U005`, `FC14-C01-U035` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC14-C01-U041` | Proposition: closure properties of solvability | `FC14-C01-U027`, `FC14-C01-U030`, `FC14-C01-U039` | ready by recorded prerequisites | package-import; import |
-| `FC14-C02-U007` | Proposition: Jordan–Chevalley decomposition | `FC14-C02-U006` | ready by recorded prerequisites | unmatched; residue audit |
-| `FC14-C02-U023` | Corollary: ideals and quotients of a semisimple Lie algebra | `FC14-C01-U023`, `FC14-C01-U030`, `FC14-C02-U022` | ready by recorded prerequisites | unmatched; residue audit |
-| `FC14-C02-U032` | Lemma: Schur’s Lemma | `FC14-C02-U029` | ready by recorded prerequisites | reference-port; port |
-| `FC14-C02-U058` | Proposition: centralizer of a maximal toral subalgebra | `FC14-C01-U047`, `FC14-C02-U020`, `FC14-C02-U056`, `FC14-C02-U057` | ready by recorded prerequisites | unmatched; residue audit |
-| `FC14-C03-U010` | Examples: root systems of rank one and two | `FC14-C03-U004`, `FC14-C03-U009` | ready by recorded prerequisites | unmatched; residue audit |
-| `FC14-C03-U020` | Lemma: subtracting a simple root from a nonsimple positive root | `FC14-C03-U012`, `FC14-C03-U014` | ready by recorded prerequisites | unmatched; residue audit |
-| `FC14-C03-U023` | Corollary: action of a simple reflection on the half-sum/sum of positive roots | `FC14-C03-U022` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC14-C01-U050` | Definition: flag and stabilization | `FC14-C01-U001` | ready by recorded prerequisites | mathlib; theorem clause pending |
 
 ## FC15 — Mapping
 
