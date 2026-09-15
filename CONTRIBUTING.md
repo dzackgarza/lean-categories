@@ -74,3 +74,27 @@ killed session. Staged changes you did not create belong to the worker who
 created them under `LC-06`; record a stranded staged tree under `LC-05` and leave
 it in place. A gate that answers red is `LC-07`; a gate that never answers is
 this rule.
+
+## LC-09 — Exhaust prior art before greenfield definitions
+
+Apply the two-stage negative-search rule in
+[AGENTS.md](AGENTS.md#a-bundled-row-is-matched-clause-by-clause-and-unmatched-is-the-last-resort).
+`[negative-search-complete]` closes only the bounded source-local search pass and
+does not authorize authorship. Before any definitional row may remain greenfield,
+the corpus-wide residue audit must search beyond the known indexes and local
+engines, follow newly discovered repositories/projects/branches/PRs and other
+proof-assistant implementations, and record reproducible dated search evidence in
+the canonical mapping row. Only `unmatched [residue-search-audited]` may enter the
+new-mathematics queue. A worker that cannot access a relevant search surface leaves
+that part open rather than treating absence of access as a negative result.
+
+## LC-10 — Match every realized definition to the complete prose source
+
+Apply [definition acceptance](AGENTS.md#establish-the-definition-before-dependent-use)
+locally and the final corpus-wide `definition-source-conformance` milestone in
+[TODO.md](TODO.md#execution-dag). Re-read the original prose reference and inspect
+the actual reused/imported/ported/authored Lean realization clause-by-clause. Preserve
+all data, hypotheses, quantifiers, equations/coherences, variance, quotient or
+representative conditions, and claimed generality; discharge intrinsic construction
+laws. Build success, familiar names, downstream theorems, and absence of `sorry` do
+not establish semantic fidelity.

@@ -19,8 +19,8 @@ Next 5 open units in source traversal order:
 | --- | --- | --- | --- | --- |
 | `FC01-C01-U037` | Recorded classification | `FC01-C01-U033`, `FC01-C01-U017` | ready by recorded prerequisites | legacy-direct; resolve legacy mapping |
 | `FC01-C01-U040` | Reusable comparison | `FC01-C01-U015`, `FC01-C01-U017`, `FC01-C01-U033` | ready by recorded prerequisites | legacy-direct; resolve legacy mapping |
-| `FC01-C02-U011` | Reusable example | `FC01-C01-U047`, `FC01-C02-U009`, `FC01-C02-U010` | ready by recorded prerequisites | unmatched; author |
-| `FC01-C02-U012` | Reusable example | `FC01-C01-U041`, `FC01-C02-U009`, `FC01-C02-U010` | ready by recorded prerequisites | unmatched; author |
+| `FC01-C02-U011` | Reusable example | `FC01-C01-U047`, `FC01-C02-U009`, `FC01-C02-U010` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC01-C02-U012` | Reusable example | `FC01-C01-U041`, `FC01-C02-U009`, `FC01-C02-U010` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC01-C02-U014` | Comparison | `FC01-C02-U004`, `FC01-C02-U008`, `FC01-C02-U010` | ready by recorded prerequisites | mathlib; repair mapping/interface |
 
 ## FC02 — Theorems
@@ -33,11 +33,11 @@ Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC02-C01-U047` | Example 1 | `FC02-C01-U046` | ready by recorded prerequisites | unmatched; author |
-| `FC02-C01-U049` | Example 2 | `FC02-C01-U046` | ready by recorded prerequisites | unmatched; author |
+| `FC02-C01-U047` | Example 1 | `FC02-C01-U046` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC02-C01-U049` | Example 2 | `FC02-C01-U046` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC02-C01-U060` | Example 7 | `FC02-C01-U046` | ready by recorded prerequisites | mathlib; repair mapping/interface |
-| `FC02-C01-U062` | Example 8 | `FC02-C01-U046` | ready by recorded prerequisites | unmatched; author |
-| `FC02-C01-U067` | Example 9 | `FC02-C01-U046` | ready by recorded prerequisites | unmatched; author |
+| `FC02-C01-U062` | Example 8 | `FC02-C01-U046` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC02-C01-U067` | Example 9 | `FC02-C01-U046` | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC03 — Theorems
 
@@ -49,11 +49,11 @@ Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC03-C01-U002` | Remark | `FC03-C01-U001` | ready by recorded prerequisites | unmatched; author |
-| `FC03-C01-U003` | Example | `FC03-C01-U001` | ready by recorded prerequisites | unmatched; author |
-| `FC03-C01-U004` | Example | `FC03-C01-U001` | ready by recorded prerequisites | unmatched; author |
-| `FC03-C01-U026` | Example | `FC03-C01-U009`, `FC03-C01-U022`, `FC03-C01-U025` | ready by recorded prerequisites | unmatched; author |
-| `FC03-C01-U031` | Example | `FC03-C01-U028` | ready by recorded prerequisites | unmatched; author |
+| `FC03-C01-U002` | Remark | `FC03-C01-U001` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC03-C01-U003` | Example | `FC03-C01-U001` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC03-C01-U004` | Example | `FC03-C01-U001` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC03-C01-U026` | Example | `FC03-C01-U009`, `FC03-C01-U022`, `FC03-C01-U025` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC03-C01-U031` | Example | `FC03-C01-U028` | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC04 — Theorems
 
@@ -65,27 +65,27 @@ Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC04-C01-U053` | Proposition 1.15: Zero-divisors via radicals of annihilators | `FC04-C01-U012`, `FC04-C01-U049`, `FC04-C01-U052` | ready by recorded prerequisites | unmatched; author |
-| `FC04-C02-U028` | Proposition 2.3: Finite generation via finite free quotient | `FC04-C02-U008`, `FC04-C02-U022`, `FC04-C02-U027` | ready by recorded prerequisites | unmatched; author |
-| `FC04-C02-U037` | Proposition 2.9: Exactness detected by Hom | `FC04-C02-U004`, `FC04-C02-U005`, `FC04-C02-U035` | ready by recorded prerequisites | unmatched; author |
-| `FC04-C02-U042` | Proposition 2.11: Euler relation for an exact sequence | `FC04-C02-U035`, `FC04-C02-U040` | ready by recorded prerequisites | unmatched; author |
-| `FC04-C02-U050` | Proposition 2.12*: Universal property of the multi-tensor product | `FC04-C02-U049` | ready by recorded prerequisites | unmatched; author |
+| `FC04-C01-U053` | Proposition 1.15: Zero-divisors via radicals of annihilators | `FC04-C01-U012`, `FC04-C01-U049`, `FC04-C01-U052` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC04-C02-U028` | Proposition 2.3: Finite generation via finite free quotient | `FC04-C02-U008`, `FC04-C02-U022`, `FC04-C02-U027` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC04-C02-U037` | Proposition 2.9: Exactness detected by Hom | `FC04-C02-U004`, `FC04-C02-U005`, `FC04-C02-U035` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC04-C02-U042` | Proposition 2.11: Euler relation for an exact sequence | `FC04-C02-U035`, `FC04-C02-U040` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC04-C02-U050` | Proposition 2.12*: Universal property of the multi-tensor product | `FC04-C02-U049` | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC05 — Definitions
 
 Delivered/directly reusable by mapping: **316/368**; pending realization: **52** (mathlib=1, reference-port=4, unmatched=47).
 Delivered/direct-reuse spans: `FC05-C01-U001`–`FC05-C01-U006`, `FC05-C01-U009`–`FC05-C01-U014`, `FC05-C01-U019`, `FC05-C01-U025`, `FC05-C01-U027`, `FC05-C01-U029`–`FC05-C01-U031`, `FC05-C01-U033`–`FC05-C01-U035`, `FC05-C01-U038`–`FC05-C01-U039`, `FC05-C01-U043`, `FC05-C01-U046`, `FC05-C01-U048`, `FC05-C01-U054`, `FC05-C01-U056`–`FC05-C01-U058`, `FC05-C01-U064`, `FC05-C02-U001`, `FC05-C02-U006`, `FC05-C02-U008`–`FC05-C02-U009`, `FC05-C02-U012`, `FC05-C02-U014`–`FC05-C02-U015`, `FC05-C02-U020`–`FC05-C02-U021`, `FC05-C02-U025`, `FC05-C02-U027`, `FC05-C02-U030`, `FC05-C02-U032`, `FC05-C02-U035`–`FC05-C02-U036`, `FC05-C02-U038`, `FC05-C02-U041`, `FC05-C02-U045`, `FC05-C02-U047`–`FC05-C02-U049`, `FC05-C02-U056`, `FC05-C02-U067`, `FC05-C02-U070`, `FC05-C02-U080`–`FC05-C02-U081`, `FC05-C03-U009`, `FC05-C03-U011`, `FC05-C03-U014`–`FC05-C03-U015`, `FC05-C03-U031`, `FC05-C03-U033`, `FC05-C03-U036`, `FC05-C03-U040`, `FC05-C03-U043`–`FC05-C03-U046`, `FC05-C03-U052`, `FC05-C04-U001`–`FC05-C04-U004`, `FC05-C04-U014`, `FC05-C04-U017`, `FC05-C04-U019`, `FC05-C04-U022`, `FC05-C04-U027`, `FC05-C04-U035`, `FC05-C04-U040`, `FC05-C04-U047`–`FC05-C04-U048`, `FC05-C04-U050`, `FC05-C04-U068`–`FC05-C04-U071`, `FC05-C04-U076`, `FC05-C04-U080`–`FC05-C04-U081`, `FC05-C05-U001`–`FC05-C05-U002`, `FC05-C05-U004`, `FC05-C05-U006`, `FC05-C05-U008`–`FC05-C05-U012`, `FC05-C05-U014`–`FC05-C05-U015`, `FC05-C05-U022`–`FC05-C05-U026`, `FC05-C05-U028`–`FC05-C05-U029`, `FC05-C05-U031`, `FC05-C05-U033`, `FC05-C05-U045`–`FC05-C05-U046`, `FC05-C05-U051`, `FC05-C05-U053`–`FC05-C05-U054`, `FC05-C05-U059`, `FC05-C05-U061`–`FC05-C05-U062`, `FC05-C05-U068`–`FC05-C05-U070`, `FC05-C05-U073`–`FC05-C05-U074`, `FC05-C05-U077`, `FC05-C06-U001`–`FC05-C06-U002`, `FC05-C06-U004`, `FC05-C06-U007`, `FC05-C06-U010`, `FC05-C06-U017`–`FC05-C06-U018`, `FC05-C06-U021`, `FC05-C06-U025`, `FC05-C06-U028`, `FC05-C06-U037`, `FC05-C06-U045`–`FC05-C06-U046`, `FC05-C06-U048`–`FC05-C06-U050`, `FC05-C06-U064`, `FC05-C06-U066`, `FC05-C06-U068`, `FC05-C06-U072`, `FC05-C06-U075`–`FC05-C06-U078`, `FC05-C06-U080`–`FC05-C06-U082`, `FC05-C06-U084`–`FC05-C06-U085`, `FC05-C06-U093`, `FC05-C06-U095`–`FC05-C06-U096`, `FC05-C06-U104`, `FC05-C06-U106`–`FC05-C06-U107`, `FC05-C06-U110`, `FC05-C06-U120`–`FC05-C06-U121`, `FC05-C06-U125`, `FC05-C06-U134`–`FC05-C06-U136`, `FC05-C06-U138`, `FC05-C06-U141`, `FC05-C06-U143`, `FC05-C06-U146`–`FC05-C06-U147`, `FC05-C07-U001`–`FC05-C07-U002`, `FC05-C07-U004`, `FC05-C07-U009`–`FC05-C07-U010`, `FC05-C07-U013`, `FC05-C07-U015`–`FC05-C07-U017`, `FC05-C07-U021`–`FC05-C07-U022`, `FC05-C07-U033`, `FC05-C07-U039`, `FC05-C07-U043`–`FC05-C07-U044`, `FC05-C07-U047`, `FC05-C07-U052`, `FC05-C07-U054`, `FC05-C07-U059`, `FC05-C07-U067`, `FC05-C08-U001`, `FC05-C08-U007`, `FC05-C08-U010`–`FC05-C08-U012`, `FC05-C08-U014`, `FC05-C08-U019`–`FC05-C08-U020`, `FC05-C08-U022`–`FC05-C08-U025`, `FC05-C08-U029`, `FC05-C08-U032`–`FC05-C08-U033`, `FC05-C08-U039`, `FC05-C08-U042`, `FC05-C08-U045`–`FC05-C08-U047`, `FC05-C08-U049`–`FC05-C08-U052`, `FC05-C08-U058`–`FC05-C08-U059`, `FC05-C08-U062`, `FC05-C08-U079`, `FC05-C08-U083`, `FC05-C08-U085`, `FC05-C08-U092`, `FC05-C08-U096`–`FC05-C08-U097`, `FC05-C08-U099`, `FC05-C09-U001`, `FC05-C09-U004`, `FC05-C09-U012`, `FC05-C09-U016`, `FC05-C09-U020`, `FC05-C09-U026`, `FC05-C09-U031`, `FC05-C09-U034`–`FC05-C09-U035`, `FC05-C09-U045`, `FC05-C09-U047`, `FC05-C09-U058`, `FC05-C09-U060`, `FC05-C09-U066`, `FC05-C09-U069`, `FC05-C09-U073`, `FC05-C09-U079`, `FC05-C09-U082`, `FC05-C09-U086`, `FC05-C09-U113`, `FC05-C09-U115`, `FC05-C09-U123`, `FC05-C09-U153`, `FC05-C09-U156`, `FC05-C10-U001`–`FC05-C10-U004`, `FC05-C10-U007`, `FC05-C10-U012`–`FC05-C10-U014`, `FC05-C10-U018`, `FC05-C10-U020`, `FC05-C10-U022`–`FC05-C10-U023`, `FC05-C10-U026`, `FC05-C10-U028`–`FC05-C10-U031`, `FC05-C10-U037`, `FC05-C10-U042`, `FC05-C10-U053`–`FC05-C10-U057`, `FC05-C10-U060`, `FC05-C10-U066`, `FC05-C10-U068`–`FC05-C10-U069`, `FC05-C10-U078`–`FC05-C10-U080`, `FC05-C10-U100`–`FC05-C10-U101`, `FC05-C10-U103`–`FC05-C10-U104`, `FC05-CA-U001`, `FC05-CA-U004`–`FC05-CA-U005`, `FC05-CA-U008`–`FC05-CA-U009`, `FC05-CA-U011`–`FC05-CA-U013`, `FC05-CA-U015`–`FC05-CA-U023`, `FC05-CA-U025`–`FC05-CA-U026`, `FC05-CA-U029`–`FC05-CA-U032`, `FC05-CA-U035`, `FC05-CA-U040`–`FC05-CA-U044`, `FC05-CA-U046`, `FC05-CA-U051`.
-Phase blocker: none
+Phase blocker: Milestone 1 is open: definitional mapping/residue audit remains for FC01, FC03, FC04, FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
 Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
 | `FC05-C06-U016` | Construction 6.1.14 — Cohomological cross product | `FC05-C06-U004`, `FC05-C06-U015`, `FC05-C01-U016` | ready by recorded prerequisites | reference-port; port |
-| `FC05-C07-U048` | Definition 7.7.1 — Chevalley–Eilenberg differential | `FC05-C07-U047`, `FC05-C07-U001` | ready by recorded prerequisites | unmatched; author |
-| `FC05-C07-U068` | Construction 7.9.1 — Universal central extension from a free presentation | `FC05-C07-U008`, `FC05-C07-U020`, `FC05-C07-U042`, `FC05-C07-U067` | ready by recorded prerequisites | unmatched; author |
+| `FC05-C07-U048` | Definition 7.7.1 — Chevalley–Eilenberg differential | `FC05-C07-U047`, `FC05-C07-U001` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC05-C07-U068` | Construction 7.9.1 — Universal central extension from a free presentation | `FC05-C07-U008`, `FC05-C07-U020`, `FC05-C07-U042`, `FC05-C07-U067` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC05-C07-U073` | Construction — Current Lie algebra and base-change homology | `FC05-C07-U049`, `FC05-C07-U057`, `FC05-C07-U063` | ready by recorded prerequisites | mathlib; repair mapping/interface |
-| `FC05-C08-U030` | Construction — normalized complex of a simplicial group/module | `FC05-C08-U021`, `FC05-C08-U025`, `FC05-C08-U024` | ready by recorded prerequisites | unmatched; author |
+| `FC05-C08-U030` | Construction — normalized complex of a simplicial group/module | `FC05-C08-U021`, `FC05-C08-U025`, `FC05-C08-U024` | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC05 — Theorems
 
@@ -97,11 +97,11 @@ Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC05-C01-U007` | Application 1.1.3 — Simplicial homology | `FC05-C01-U002` | ready by recorded prerequisites | unmatched; author |
-| `FC05-C01-U008` | Application 1.1.4 — Singular homology | `FC05-C01-U002`, `FC05-C01-U004` | ready by recorded prerequisites | unmatched; author |
-| `FC05-C01-U016` | Example 1.2.4 — Double complexes | `FC05-C01-U002` | ready by recorded prerequisites | unmatched; author |
-| `FC05-C01-U028` | Proposition 1.3.4 — Functoriality of the long exact sequence | `FC05-C01-U022`, `FC05-C01-U027` | ready by recorded prerequisites | unmatched; author |
-| `FC05-C01-U032` | Example 1.4.2 — Acyclic complex that is not split exact | `FC05-C01-U031` | ready by recorded prerequisites | unmatched; author |
+| `FC05-C01-U007` | Application 1.1.3 — Simplicial homology | `FC05-C01-U002` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC05-C01-U008` | Application 1.1.4 — Singular homology | `FC05-C01-U002`, `FC05-C01-U004` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC05-C01-U016` | Example 1.2.4 — Double complexes | `FC05-C01-U002` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC05-C01-U028` | Proposition 1.3.4 — Functoriality of the long exact sequence | `FC05-C01-U022`, `FC05-C01-U027` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC05-C01-U032` | Example 1.4.2 — Acyclic complex that is not split exact | `FC05-C01-U031` | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC06 — Mapping
 
@@ -123,7 +123,7 @@ Next 5 open units in source traversal order:
 
 Delivered/directly reusable by mapping: **150/252**; pending realization: **102** (mathlib=15, reference-port=10, unmatched=77).
 Delivered/direct-reuse spans: `FC06-C01-U001`–`FC06-C01-U003`, `FC06-C01-U005`, `FC06-C01-U007`, `FC06-C01-U011`–`FC06-C01-U012`, `FC06-C01-U021`, `FC06-C01-U023`, `FC06-C01-U027`, `FC06-C01-U029`, `FC06-C01-U038`–`FC06-C01-U039`, `FC06-C01-U043`, `FC06-C01-U045`, `FC06-C01-U054`–`FC06-C01-U056`, `FC06-C01-U058`–`FC06-C01-U059`, `FC06-C01-U063`, `FC06-C01-U071`–`FC06-C01-U072`, `FC06-C01-U079`, `FC06-C01-U092`, `FC06-C01-U094`, `FC06-C01-U096`, `FC06-C01-U099`, `FC06-C01-U102`, `FC06-C01-U108`–`FC06-C01-U111`, `FC06-C01-U113`, `FC06-C01-U115`, `FC06-C01-U137`–`FC06-C01-U138`, `FC06-C01-U143`, `FC06-C02-U001`–`FC06-C02-U004`, `FC06-C02-U008`–`FC06-C02-U009`, `FC06-C02-U011`–`FC06-C02-U017`, `FC06-C02-U019`–`FC06-C02-U021`, `FC06-C02-U023`–`FC06-C02-U026`, `FC06-C02-U028`, `FC06-C02-U031`, `FC06-C02-U038`, `FC06-C02-U040`–`FC06-C02-U042`, `FC06-C02-U045`, `FC06-C02-U047`–`FC06-C02-U049`, `FC06-C02-U052`, `FC06-C02-U055`–`FC06-C02-U056`, `FC06-C02-U059`–`FC06-C02-U060`, `FC06-C02-U065`, `FC06-C02-U068`–`FC06-C02-U069`, `FC06-C02-U071`–`FC06-C02-U074`, `FC06-C02-U078`, `FC06-C02-U087`, `FC06-C02-U091`, `FC06-C02-U095`–`FC06-C02-U096`, `FC06-C02-U099`–`FC06-C02-U102`, `FC06-C02-U104`–`FC06-C02-U106`, `FC06-C02-U108`, `FC06-C02-U111`, `FC06-C02-U125`, `FC06-C02-U142`, `FC06-C02-U151`–`FC06-C02-U154`, `FC06-C02-U171`, `FC06-C02-U241`, `FC06-C02-U253`–`FC06-C02-U255`, `FC06-C02-U273`, `FC06-C02-U291`, `FC06-C02-U297`, `FC06-C02-U299`–`FC06-C02-U300`, `FC06-C02-U304`, `FC06-C02-U307`–`FC06-C02-U308`, `FC06-C03-U001`, `FC06-C03-U009`–`FC06-C03-U010`, `FC06-C03-U012`–`FC06-C03-U013`, `FC06-C03-U017`–`FC06-C03-U018`, `FC06-C03-U020`, `FC06-C03-U026`–`FC06-C03-U027`, `FC06-C03-U040`, `FC06-C03-U049`, `FC06-C03-U051`, `FC06-C03-U078`, `FC06-C03-U109`, `FC06-C03-U119`, `FC06-C03-U124`, `FC06-C03-U129`, `FC06-C03-U132`, `FC06-C03-U144`, `FC06-C03-U164`, `FC06-C03-U174`, `FC06-C03-U188`, `FC06-C03-U195`, `FC06-C04-U001`, `FC06-C04-U005`, `FC06-C04-U018`–`FC06-C04-U019`, `FC06-C04-U021`, `FC06-C04-U061`, `FC06-C04-U086`, `FC06-C04-U093`–`FC06-C04-U094`, `FC06-C05-U001`, `FC06-C05-U026`, `FC06-C05-U074`, `FC06-C05-U116`.
-Phase blocker: Sweep II definition mapping is not complete for this source.
+Phase blocker: Milestone 1 is open: definitional mapping/residue audit remains for FC01, FC03, FC04, FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
 Next 5 open units in source traversal order:
 
@@ -146,7 +146,7 @@ Next 5 open units in source traversal order:
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
 | `FC06-C01-U006` | Example 1.1.1 — Zariski topology on A^1 | `FC06-C01-U005` | ready by recorded prerequisites | mathlib; repair mapping/interface |
-| `FC06-C01-U020` | Example 1.4.5 — algebraic closure is essential | `FC06-C01-U013`, `FC06-C01-U014` | ready by recorded prerequisites | unmatched; author |
+| `FC06-C01-U020` | Example 1.4.5 — algebraic closure is essential | `FC06-C01-U013`, `FC06-C01-U014` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC06-C01-U022` | Remark 1.4.6 — affine varieties and finitely generated domains | `FC06-C01-U011`, `FC06-C01-U015`, `FC06-C01-U021` | ready by recorded prerequisites | mathlib; repair mapping/interface |
 | `FC06-C01-U030` | Proposition 1.7 — geometric and ring dimension agree | `FC06-C01-U015`, `FC06-C01-U021`, `FC06-C01-U027`, `FC06-C01-U029` | ready by recorded prerequisites | mathlib; repair mapping/interface |
 | `FC06-C01-U031` | Theorem 1.8A — dimension theorem for finitely generated domains | `FC06-C01-U029` | ready by recorded prerequisites | mathlib; repair mapping/interface |
@@ -171,16 +171,16 @@ Next 5 open units in source traversal order:
 
 Delivered/directly reusable by mapping: **113/197**; pending realization: **84** (reference-port=25, unmatched=59).
 Delivered/direct-reuse spans: `FC07-C00-U003`, `FC07-C00-U005`–`FC07-C00-U007`, `FC07-C00-U015`–`FC07-C00-U016`, `FC07-C00-U028`, `FC07-C01-U001`, `FC07-C01-U004`–`FC07-C01-U006`, `FC07-C01-U008`–`FC07-C01-U009`, `FC07-C01-U014`–`FC07-C01-U015`, `FC07-C01-U022`, `FC07-C01-U030`–`FC07-C01-U031`, `FC07-C01-U042`, `FC07-C01-U044`, `FC07-C01-U055`, `FC07-C01-U059`–`FC07-C01-U060`, `FC07-C01-U062`, `FC07-C01-U072`–`FC07-C01-U073`, `FC07-C01-U078`, `FC07-C01-U088`, `FC07-C02-U002`, `FC07-C02-U004`, `FC07-C02-U009`–`FC07-C02-U011`, `FC07-C02-U015`–`FC07-C02-U016`, `FC07-C02-U021`–`FC07-C02-U022`, `FC07-C02-U026`–`FC07-C02-U028`, `FC07-C02-U043`, `FC07-C02-U045`, `FC07-C02-U064`, `FC07-C02-U071`, `FC07-C02-U076`, `FC07-C02-U078`–`FC07-C02-U080`, `FC07-C02-U090`, `FC07-C02-U095`, `FC07-C03-U002`–`FC07-C03-U003`, `FC07-C03-U008`, `FC07-C03-U010`, `FC07-C03-U025`, `FC07-C03-U037`–`FC07-C03-U039`, `FC07-C03-U046`, `FC07-C03-U054`–`FC07-C03-U055`, `FC07-C03-U065`, `FC07-C03-U080`, `FC07-C03-U091`–`FC07-C03-U093`, `FC07-C03-U096`, `FC07-C03-U107`–`FC07-C03-U108`, `FC07-C03-U113`–`FC07-C03-U114`, `FC07-C03-U126`, `FC07-C03-U135`, `FC07-C03-U145`, `FC07-C03-U151`, `FC07-C03-U154`–`FC07-C03-U155`, `FC07-C03-U158`, `FC07-C04-U001`, `FC07-C04-U012`–`FC07-C04-U013`, `FC07-C04-U022`–`FC07-C04-U023`, `FC07-C04-U028`, `FC07-C04-U042`, `FC07-C04-U055`, `FC07-C04-U069`, `FC07-C04-U077`, `FC07-C04-U079`, `FC07-C04-U083`, `FC07-C04-U085`, `FC07-C04-U088`, `FC07-C04-U090`, `FC07-C04-U095`, `FC07-C04-U119`, `FC07-C04-U121`, `FC07-C04-U123`, `FC07-C04-U137`, `FC07-C04-U141`, `FC07-C04-U147`–`FC07-C04-U148`, `FC07-C04-U150`–`FC07-C04-U151`, `FC07-C04-U163`, `FC07-C04-U179`, `FC07-C04-U184`–`FC07-C04-U185`, `FC07-CA-U001`, `FC07-CA-U018`, `FC07-CA-U027`–`FC07-CA-U028`, `FC07-CA-U030`–`FC07-CA-U031`.
-Phase blocker: Sweep II definition mapping is not complete for this source.
+Phase blocker: Milestone 1 is open: definitional mapping/residue audit remains for FC01, FC03, FC04, FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
 Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
 | `FC07-C00-U001` | Definition — deformation retraction | — | ready by recorded prerequisites | reference-port; port |
-| `FC07-C00-U004` | Definition — retraction | — | ready by recorded prerequisites | unmatched; author |
-| `FC07-C00-U008` | Definition/construction — CW complex, cells, and skeleta | `FC07-C00-U003` | ready by recorded prerequisites | unmatched; author |
-| `FC07-C00-U018` | Construction — quotient CW structure | `FC07-C00-U016` | ready by recorded prerequisites | unmatched; author |
+| `FC07-C00-U004` | Definition — retraction | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC07-C00-U008` | Definition/construction — CW complex, cells, and skeleta | `FC07-C00-U003` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC07-C00-U018` | Construction — quotient CW structure | `FC07-C00-U016` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC07-C00-U034` | Definition — homotopy extension property | `FC07-C00-U003` | ready by recorded prerequisites | reference-port; port |
 
 ## FC07 — Theorems
@@ -193,11 +193,11 @@ Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC07-C00-U009` | Example 0.1 | — | ready by recorded prerequisites | unmatched; author |
-| `FC07-C00-U010` | Example 0.2 | — | ready by recorded prerequisites | unmatched; author |
-| `FC07-C00-U011` | Example 0.3 | — | ready by recorded prerequisites | unmatched; author |
-| `FC07-C00-U012` | Example 0.4 | — | ready by recorded prerequisites | unmatched; author |
-| `FC07-C00-U013` | Example 0.5 | — | ready by recorded prerequisites | unmatched; author |
+| `FC07-C00-U009` | Example 0.1 | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC07-C00-U010` | Example 0.2 | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC07-C00-U011` | Example 0.3 | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC07-C00-U012` | Example 0.4 | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC07-C00-U013` | Example 0.5 | — | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC08 — Mapping
 
@@ -219,17 +219,17 @@ Next 5 open units in source traversal order:
 
 Delivered/directly reusable by mapping: **492/627**; pending realization: **135** (mathlib=5, reference-port=16, unmatched=114).
 Delivered/direct-reuse spans: `FC08-C01-U001`–`FC08-C01-U002`, `FC08-C01-U004`–`FC08-C01-U005`, `FC08-C01-U007`, `FC08-C01-U015`, `FC08-C01-U019`–`FC08-C01-U022`, `FC08-C01-U024`–`FC08-C01-U026`, `FC08-C01-U028`, `FC08-C01-U033`–`FC08-C01-U034`, `FC08-C01-U037`, `FC08-C01-U043`, `FC08-C01-U049`–`FC08-C01-U051`, `FC08-C01-U053`–`FC08-C01-U054`, `FC08-C01-U058`–`FC08-C01-U059`, `FC08-C02-U001`–`FC08-C02-U005`, `FC08-C02-U010`, `FC08-C02-U013`–`FC08-C02-U014`, `FC08-C02-U016`, `FC08-C02-U023`, `FC08-C02-U025`–`FC08-C02-U028`, `FC08-C02-U030`, `FC08-C02-U032`, `FC08-C03-U001`–`FC08-C03-U003`, `FC08-C03-U007`–`FC08-C03-U008`, `FC08-C03-U010`, `FC08-C03-U018`, `FC08-C03-U025`–`FC08-C03-U027`, `FC08-C03-U030`, `FC08-C03-U032`, `FC08-C03-U034`, `FC08-C03-U037`–`FC08-C03-U038`, `FC08-C03-U043`–`FC08-C03-U048`, `FC08-C03-U050`–`FC08-C03-U057`, `FC08-C04-U001`–`FC08-C04-U003`, `FC08-C04-U006`, `FC08-C04-U012`, `FC08-C04-U016`, `FC08-C04-U026`–`FC08-C04-U027`, `FC08-C04-U034`, `FC08-C05-U001`–`FC08-C05-U003`, `FC08-C05-U008`, `FC08-C05-U012`–`FC08-C05-U013`, `FC08-C05-U017`, `FC08-C05-U020`, `FC08-C05-U028`–`FC08-C05-U031`, `FC08-C05-U036`, `FC08-C05-U048`, `FC08-C05-U060`, `FC08-C05-U067`–`FC08-C05-U068`, `FC08-C06-U005`, `FC08-C06-U021`–`FC08-C06-U022`, `FC08-C06-U025`, `FC08-C06-U028`, `FC08-C06-U032`, `FC08-C06-U035`, `FC08-C06-U040`, `FC08-C06-U042`, `FC08-C07-U001`–`FC08-C07-U002`, `FC08-C07-U005`, `FC08-C07-U007`, `FC08-C07-U013`, `FC08-C07-U016`, `FC08-C07-U018`, `FC08-C07-U025`–`FC08-C07-U030`, `FC08-C07-U034`, `FC08-C07-U037`, `FC08-C07-U043`, `FC08-C07-U047`, `FC08-C07-U050`, `FC08-C08-U001`–`FC08-C08-U003`, `FC08-C08-U009`, `FC08-C08-U012`–`FC08-C08-U013`, `FC08-C08-U015`, `FC08-C08-U018`, `FC08-C08-U023`, `FC08-C08-U025`, `FC08-C08-U029`, `FC08-C08-U043`, `FC08-C08-U045`–`FC08-C08-U048`, `FC08-C08-U050`–`FC08-C08-U051`, `FC08-C08-U053`, `FC08-C08-U055`, `FC08-C08-U067`, `FC08-C09-U001`–`FC08-C09-U002`, `FC08-C09-U004`, `FC08-C09-U009`–`FC08-C09-U012`, `FC08-C09-U019`, `FC08-C09-U021`, `FC08-C09-U026`, `FC08-C09-U033`–`FC08-C09-U034`, `FC08-C09-U040`, `FC08-C09-U051`, `FC08-C09-U054`, `FC08-C09-U057`, `FC08-C09-U062`, `FC08-C09-U066`–`FC08-C09-U067`, `FC08-C09-U070`–`FC08-C09-U074`, `FC08-C09-U077`–`FC08-C09-U078`, `FC08-C09-U081`, `FC08-C10-U001`–`FC08-C10-U005`, `FC08-C10-U010`, `FC08-C10-U014`–`FC08-C10-U018`, `FC08-C10-U020`–`FC08-C10-U021`, `FC08-C10-U023`, `FC08-C10-U027`, `FC08-C10-U031`, `FC08-C10-U034`, `FC08-C10-U036`–`FC08-C10-U037`, `FC08-C10-U040`–`FC08-C10-U041`, `FC08-C10-U044`–`FC08-C10-U045`, `FC08-C10-U048`, `FC08-C10-U052`–`FC08-C10-U054`, `FC08-C11-U001`, `FC08-C11-U003`–`FC08-C11-U004`, `FC08-C11-U008`–`FC08-C11-U010`, `FC08-C11-U012`–`FC08-C11-U013`, `FC08-C11-U017`, `FC08-C11-U019`, `FC08-C11-U023`, `FC08-C11-U026`–`FC08-C11-U027`, `FC08-C11-U034`–`FC08-C11-U036`, `FC08-C11-U041`, `FC08-C11-U043`, `FC08-C11-U045`, `FC08-C11-U050`, `FC08-C11-U059`, `FC08-C11-U065`, `FC08-C12-U001`, `FC08-C12-U005`, `FC08-C12-U007`–`FC08-C12-U008`, `FC08-C12-U013`–`FC08-C12-U015`, `FC08-C12-U017`–`FC08-C12-U019`, `FC08-C12-U021`–`FC08-C12-U023`, `FC08-C12-U025`, `FC08-C12-U027`–`FC08-C12-U032`, `FC08-C12-U036`–`FC08-C12-U038`, `FC08-C12-U042`, `FC08-C13-U001`–`FC08-C13-U003`, `FC08-C13-U007`–`FC08-C13-U010`, `FC08-C13-U015`, `FC08-C13-U019`–`FC08-C13-U020`, `FC08-C13-U022`, `FC08-C13-U028`, `FC08-C13-U030`, `FC08-C13-U032`, `FC08-C13-U037`, `FC08-C13-U046`, `FC08-C14-U001`, `FC08-C14-U003`, `FC08-C14-U006`–`FC08-C14-U007`, `FC08-C14-U010`, `FC08-C14-U013`–`FC08-C14-U014`, `FC08-C14-U017`, `FC08-C14-U019`–`FC08-C14-U021`, `FC08-C14-U023`–`FC08-C14-U024`, `FC08-C14-U026`, `FC08-C14-U033`, `FC08-C15-U002`–`FC08-C15-U004`, `FC08-C15-U007`–`FC08-C15-U011`, `FC08-C15-U014`, `FC08-C15-U019`, `FC08-C15-U024`, `FC08-C15-U044`, `FC08-C15-U048`, `FC08-C15-U050`–`FC08-C15-U051`, `FC08-C16-U023`–`FC08-C16-U025`, `FC08-C16-U027`, `FC08-C16-U047`, `FC08-C17-U011`, `FC08-C17-U017`, `FC08-C17-U019`, `FC08-C17-U026`–`FC08-C17-U027`, `FC08-C17-U047`–`FC08-C17-U049`, `FC08-C17-U051`–`FC08-C17-U054`, `FC08-C18-U001`–`FC08-C18-U007`, `FC08-C18-U009`, `FC08-C18-U012`, `FC08-C18-U015`, `FC08-C19-U001`, `FC08-C19-U003`, `FC08-C19-U005`, `FC08-C19-U007`, `FC08-C19-U011`, `FC08-C19-U015`, `FC08-C19-U024`, `FC08-C19-U029`, `FC08-C19-U031`, `FC08-C20-U019`, `FC08-C20-U022`, `FC08-C20-U026`, `FC08-C20-U029`, `FC08-C21-U001`, `FC08-C21-U005`, `FC08-C21-U015`, `FC08-C21-U019`, `FC08-C21-U021`, `FC08-C21-U033`, `FC08-C21-U041`, `FC08-C22-U001`–`FC08-C22-U002`, `FC08-C22-U004`, `FC08-C22-U006`, `FC08-C22-U010`, `FC08-C22-U053`, `FC08-CA-U001`–`FC08-CA-U017`, `FC08-CA-U020`–`FC08-CA-U022`, `FC08-CA-U024`–`FC08-CA-U026`, `FC08-CA-U029`–`FC08-CA-U035`, `FC08-CA-U037`, `FC08-CA-U039`–`FC08-CA-U040`, `FC08-CA-U044`–`FC08-CA-U045`, `FC08-CA-U047`–`FC08-CA-U049`, `FC08-CA-U051`–`FC08-CA-U054`, `FC08-CA-U058`, `FC08-CA-U060`–`FC08-CA-U061`, `FC08-CA-U063`, `FC08-CA-U065`, `FC08-CA-U067`, `FC08-CA-U069`, `FC08-CA-U073`, `FC08-CA-U075`–`FC08-CA-U076`, `FC08-CA-U080`, `FC08-CA-U082`–`FC08-CA-U086`, `FC08-CA-U092`, `FC08-CA-U094`–`FC08-CA-U095`, `FC08-CA-U099`, `FC08-CA-U101`, `FC08-CB-U001`–`FC08-CB-U010`, `FC08-CB-U013`–`FC08-CB-U014`, `FC08-CB-U017`–`FC08-CB-U025`, `FC08-CB-U027`–`FC08-CB-U038`, `FC08-CB-U041`–`FC08-CB-U042`, `FC08-CB-U044`, `FC08-CB-U046`–`FC08-CB-U047`, `FC08-CB-U049`–`FC08-CB-U050`, `FC08-CB-U052`, `FC08-CB-U057`, `FC08-CB-U059`, `FC08-CB-U061`, `FC08-CB-U063`, `FC08-CB-U065`–`FC08-CB-U069`, `FC08-CB-U071`–`FC08-CB-U075`, `FC08-CB-U078`–`FC08-CB-U083`, `FC08-CB-U085`–`FC08-CB-U086`, `FC08-CB-U088`–`FC08-CB-U089`, `FC08-CC-U001`–`FC08-CC-U002`, `FC08-CC-U004`–`FC08-CC-U008`, `FC08-CC-U011`, `FC08-CC-U017`, `FC08-CC-U021`–`FC08-CC-U023`, `FC08-CC-U026`, `FC08-CC-U030`, `FC08-CC-U032`, `FC08-CC-U038`, `FC08-CC-U045`, `FC08-CD-U001`–`FC08-CD-U002`, `FC08-CD-U006`, `FC08-CD-U010`.
-Phase blocker: Sweep II definition mapping is not complete for this source.
+Phase blocker: Milestone 1 is open: definitional mapping/residue audit remains for FC01, FC03, FC04, FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
 Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC08-C01-U057` | Definition/convention — smooth | — | ready by recorded prerequisites | unmatched; author |
-| `FC08-C03-U014` | Comparison/convention — source terminology/construction | — | ready by recorded prerequisites | unmatched; author |
-| `FC08-C03-U022` | Convention/notation — smooth manifold | — | ready by recorded prerequisites | unmatched; author |
-| `FC08-C03-U024` | Convention/notation — coordinate basis for | — | ready by recorded prerequisites | unmatched; author |
-| `FC08-C03-U028` | Convention/notation — source terminology/construction | — | ready by recorded prerequisites | unmatched; author |
+| `FC08-C01-U057` | Definition/convention — smooth | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC08-C03-U014` | Comparison/convention — source terminology/construction | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC08-C03-U022` | Convention/notation — smooth manifold | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC08-C03-U024` | Convention/notation — coordinate basis for | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC08-C03-U028` | Convention/notation — source terminology/construction | — | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC08 — Theorems
 
@@ -241,11 +241,11 @@ Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC08-C01-U003` | Theorem 1.2 | — | ready by recorded prerequisites | unmatched; author |
-| `FC08-C01-U009` | Example 1.5 | — | ready by recorded prerequisites | unmatched; author |
-| `FC08-C01-U011` | Example 1.9 | — | ready by recorded prerequisites | unmatched; author |
-| `FC08-C01-U012` | Lemma 1.10 | — | ready by recorded prerequisites | unmatched; author |
-| `FC08-C01-U017` | Theorem 1.15 | — | ready by recorded prerequisites | unmatched; author |
+| `FC08-C01-U003` | Theorem 1.2 | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC08-C01-U009` | Example 1.5 | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC08-C01-U011` | Example 1.9 | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC08-C01-U012` | Lemma 1.10 | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC08-C01-U017` | Theorem 1.15 | — | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC09 — Mapping
 
@@ -267,17 +267,17 @@ Next 5 open units in source traversal order:
 
 Delivered/directly reusable by mapping: **242/358**; pending realization: **116** (mathlib=2, reference-port=8, unmatched=106).
 Delivered/direct-reuse spans: `FC09-C01-U003`, `FC09-C01-U005`, `FC09-C01-U008`–`FC09-C01-U009`, `FC09-C01-U013`–`FC09-C01-U014`, `FC09-C01-U017`, `FC09-C01-U020`, `FC09-C01-U026`–`FC09-C01-U027`, `FC09-C01-U031`, `FC09-C01-U033`–`FC09-C01-U034`, `FC09-C01-U037`–`FC09-C01-U038`, `FC09-C01-U041`–`FC09-C01-U042`, `FC09-C01-U044`–`FC09-C01-U045`, `FC09-C01-U047`, `FC09-C01-U050`, `FC09-C01-U052`, `FC09-C01-U055`, `FC09-C01-U061`, `FC09-C01-U063`, `FC09-C01-U067`–`FC09-C01-U068`, `FC09-C01-U074`, `FC09-C01-U076`, `FC09-C01-U080`, `FC09-C01-U089`–`FC09-C01-U090`, `FC09-C01-U093`–`FC09-C01-U094`, `FC09-C01-U099`, `FC09-C01-U101`, `FC09-C01-U104`–`FC09-C01-U105`, `FC09-C01-U114`, `FC09-C01-U119`–`FC09-C01-U121`, `FC09-C01-U123`–`FC09-C01-U126`, `FC09-C01-U128`–`FC09-C01-U130`, `FC09-C01-U132`–`FC09-C01-U133`, `FC09-C01-U135`, `FC09-C02-U001`–`FC09-C02-U002`, `FC09-C02-U004`–`FC09-C02-U005`, `FC09-C02-U007`, `FC09-C02-U009`, `FC09-C02-U011`–`FC09-C02-U012`, `FC09-C02-U014`–`FC09-C02-U016`, `FC09-C02-U018`, `FC09-C02-U020`–`FC09-C02-U021`, `FC09-C02-U026`, `FC09-C02-U028`–`FC09-C02-U030`, `FC09-C02-U033`, `FC09-C02-U036`, `FC09-C02-U038`–`FC09-C02-U039`, `FC09-C02-U043`–`FC09-C02-U044`, `FC09-C02-U048`, `FC09-C02-U050`, `FC09-C02-U056`, `FC09-C02-U078`–`FC09-C02-U079`, `FC09-C02-U082`, `FC09-C02-U084`, `FC09-C02-U088`–`FC09-C02-U089`, `FC09-C02-U098`, `FC09-C02-U101`, `FC09-C02-U103`, `FC09-C02-U105`, `FC09-C02-U107`, `FC09-C02-U114`, `FC09-C02-U116`, `FC09-C02-U118`, `FC09-C02-U121`, `FC09-C02-U124`, `FC09-C03-U001`–`FC09-C03-U004`, `FC09-C03-U007`–`FC09-C03-U011`, `FC09-C03-U014`–`FC09-C03-U016`, `FC09-C03-U018`–`FC09-C03-U019`, `FC09-C03-U022`, `FC09-C03-U026`–`FC09-C03-U027`, `FC09-C03-U030`, `FC09-C03-U034`–`FC09-C03-U035`, `FC09-C03-U037`–`FC09-C03-U038`, `FC09-C03-U042`, `FC09-C03-U050`–`FC09-C03-U053`, `FC09-C03-U057`–`FC09-C03-U058`, `FC09-C03-U062`, `FC09-C03-U064`, `FC09-C03-U068`–`FC09-C03-U070`, `FC09-C03-U072`–`FC09-C03-U073`, `FC09-C03-U076`–`FC09-C03-U077`, `FC09-C03-U079`, `FC09-C03-U083`, `FC09-C03-U085`–`FC09-C03-U087`, `FC09-C03-U089`–`FC09-C03-U090`, `FC09-C03-U092`–`FC09-C03-U094`, `FC09-C03-U096`, `FC09-C03-U102`, `FC09-C03-U105`–`FC09-C03-U106`, `FC09-C03-U121`, `FC09-C03-U126`, `FC09-C04-U001`, `FC09-C04-U003`, `FC09-C04-U006`–`FC09-C04-U009`, `FC09-C04-U011`, `FC09-C04-U027`–`FC09-C04-U030`, `FC09-C04-U033`, `FC09-C04-U040`, `FC09-C04-U044`, `FC09-C04-U052`, `FC09-C04-U054`–`FC09-C04-U055`, `FC09-C04-U057`–`FC09-C04-U058`, `FC09-C04-U067`, `FC09-C04-U073`, `FC09-C04-U082`, `FC09-C05-U005`, `FC09-C05-U033`, `FC09-C06-U001`–`FC09-C06-U003`, `FC09-C06-U005`, `FC09-C06-U012`–`FC09-C06-U013`, `FC09-C06-U015`, `FC09-C06-U028`, `FC09-C06-U032`, `FC09-C06-U090`, `FC09-C07-U002`, `FC09-C07-U004`, `FC09-C07-U006`, `FC09-C07-U011`, `FC09-C07-U016`–`FC09-C07-U017`, `FC09-C07-U019`–`FC09-C07-U020`, `FC09-C07-U024`–`FC09-C07-U025`, `FC09-C07-U029`–`FC09-C07-U030`, `FC09-C07-U033`–`FC09-C07-U038`, `FC09-C07-U041`, `FC09-C07-U043`, `FC09-C07-U046`–`FC09-C07-U047`, `FC09-C07-U049`, `FC09-C07-U052`, `FC09-C07-U054`, `FC09-C07-U069`–`FC09-C07-U070`, `FC09-C07-U073`–`FC09-C07-U074`, `FC09-C07-U079`–`FC09-C07-U081`, `FC09-C07-U084`–`FC09-C07-U085`, `FC09-C07-U091`–`FC09-C07-U094`, `FC09-C07-U097`–`FC09-C07-U098`, `FC09-C07-U102`, `FC09-C07-U104`, `FC09-C07-U106`–`FC09-C07-U107`, `FC09-C07-U112`, `FC09-C07-U115`, `FC09-C07-U120`, `FC09-C07-U124`–`FC09-C07-U126`, `FC09-C07-U128`, `FC09-C07-U131`, `FC09-C07-U148`, `FC09-C07-U153`, `FC09-C07-U155`, `FC09-C07-U157`, `FC09-C07-U163`, `FC09-C07-U167`, `FC09-C07-U169`.
-Phase blocker: Sweep II definition mapping is not complete for this source.
+Phase blocker: Milestone 1 is open: definitional mapping/residue audit remains for FC01, FC03, FC04, FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
 Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC09-C01-U065` | Definition / construction | `FC09-C01-U062` | ready by recorded prerequisites | unmatched; author |
-| `FC09-C01-U070` | Definition / construction | — | ready by recorded prerequisites | unmatched; author |
-| `FC09-C01-U077` | Definition / construction | — | ready by recorded prerequisites | unmatched; author |
+| `FC09-C01-U065` | Definition / construction | `FC09-C01-U062` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC09-C01-U070` | Definition / construction | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC09-C01-U077` | Definition / construction | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC09-C01-U096` | Definition / construction | — | ready by recorded prerequisites | reference-port; port |
-| `FC09-C01-U115` | Definition / construction | — | ready by recorded prerequisites | unmatched; author |
+| `FC09-C01-U115` | Definition / construction | — | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC09 — Theorems
 
@@ -289,11 +289,11 @@ Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC09-C01-U007` | Proposition (1.5) | — | ready by recorded prerequisites | unmatched; author |
-| `FC09-C01-U024` | Example / comparison | — | ready by recorded prerequisites | unmatched; author |
-| `FC09-C01-U040` | Lemma (4.3) | — | ready by recorded prerequisites | unmatched; author |
-| `FC09-C01-U066` | Proposition (8.3) | — | ready by recorded prerequisites | unmatched; author |
-| `FC09-C01-U072` | Proposition (8.5) | — | ready by recorded prerequisites | unmatched; author |
+| `FC09-C01-U007` | Proposition (1.5) | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC09-C01-U024` | Example / comparison | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC09-C01-U040` | Lemma (4.3) | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC09-C01-U066` | Proposition (8.3) | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC09-C01-U072` | Proposition (8.5) | — | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC10 — Mapping
 
@@ -315,17 +315,17 @@ Next 5 open units in source traversal order:
 
 Delivered/directly reusable by mapping: **94/229**; pending realization: **135** (reference-port=42, unmatched=93).
 Delivered/direct-reuse spans: `FC10-C01-U001`–`FC10-C01-U006`, `FC10-C01-U014`–`FC10-C01-U017`, `FC10-C01-U019`–`FC10-C01-U020`, `FC10-C01-U022`–`FC10-C01-U023`, `FC10-C01-U026`–`FC10-C01-U027`, `FC10-C01-U029`, `FC10-C01-U035`, `FC10-C01-U037`, `FC10-C01-U040`–`FC10-C01-U045`, `FC10-C01-U048`, `FC10-C01-U050`–`FC10-C01-U051`, `FC10-C01-U066`, `FC10-C01-U069`–`FC10-C01-U072`, `FC10-C01-U074`, `FC10-C01-U077`, `FC10-C02-U001`–`FC10-C02-U002`, `FC10-C02-U005`, `FC10-C02-U024`, `FC10-C02-U027`, `FC10-C02-U029`, `FC10-C02-U031`, `FC10-C02-U033`–`FC10-C02-U034`, `FC10-C02-U042`–`FC10-C02-U043`, `FC10-C02-U050`, `FC10-C03-U001`, `FC10-C03-U005`, `FC10-C03-U007`, `FC10-C03-U013`, `FC10-C03-U015`–`FC10-C03-U016`, `FC10-C03-U027`, `FC10-C03-U041`, `FC10-C04-U001`, `FC10-C04-U006`, `FC10-C04-U015`, `FC10-C05-U011`, `FC10-C06-U002`–`FC10-C06-U006`, `FC10-C07-U001`–`FC10-C07-U002`, `FC10-C07-U005`, `FC10-C07-U007`–`FC10-C07-U010`, `FC10-C07-U013`–`FC10-C07-U016`, `FC10-C07-U019`, `FC10-C07-U022`–`FC10-C07-U025`, `FC10-C07-U027`, `FC10-C08-U001`–`FC10-C08-U003`, `FC10-C08-U008`–`FC10-C08-U009`, `FC10-C09-U001`, `FC10-C10-U026`, `FC10-C11-U005`, `FC10-C11-U034`, `FC10-C13-U004`, `FC10-C14-U011`, `FC10-C14-U047`, `FC10-C15-U003`.
-Phase blocker: Sweep II definition mapping is not complete for this source.
+Phase blocker: Milestone 1 is open: definitional mapping/residue audit remains for FC01, FC03, FC04, FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
 Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC10-C01-U053` | Definition / construction | `FC10-C01-U050`, `FC10-C01-U051` | ready by recorded prerequisites | unmatched; author |
+| `FC10-C01-U053` | Definition / construction | `FC10-C01-U050`, `FC10-C01-U051` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC10-C01-U079` | Definition / construction | `FC10-C01-U069`, `FC10-C01-U072` | ready by recorded prerequisites | reference-port; port |
-| `FC10-C02-U028` | Definition / construction | — | ready by recorded prerequisites | unmatched; author |
-| `FC10-C02-U048` | Definition / construction | `FC10-C02-U027`, `FC10-C02-U034` | ready by recorded prerequisites | unmatched; author |
-| `FC10-C02-U051` | Definition / construction | — | ready by recorded prerequisites | unmatched; author |
+| `FC10-C02-U028` | Definition / construction | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC10-C02-U048` | Definition / construction | `FC10-C02-U027`, `FC10-C02-U034` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC10-C02-U051` | Definition / construction | — | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC10 — Theorems
 
@@ -337,11 +337,11 @@ Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC10-C01-U010` | Example / comparison | — | ready by recorded prerequisites | unmatched; author |
-| `FC10-C01-U011` | Example / comparison | — | ready by recorded prerequisites | unmatched; author |
+| `FC10-C01-U010` | Example / comparison | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC10-C01-U011` | Example / comparison | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC10-C01-U033` | Approximation Lemma | — | ready by recorded prerequisites | reference-port; port |
-| `FC10-C01-U049` | Proposition 11 | — | ready by recorded prerequisites | unmatched; author |
-| `FC10-C01-U052` | Example / comparison | — | ready by recorded prerequisites | unmatched; author |
+| `FC10-C01-U049` | Proposition 11 | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC10-C01-U052` | Example / comparison | — | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC11 — Mapping
 
@@ -363,17 +363,17 @@ Next 5 open units in source traversal order:
 
 Delivered/directly reusable by mapping: **196/451**; pending realization: **255** (reference-port=3, unmatched=252).
 Delivered/direct-reuse spans: `FC11-C01-U001`–`FC11-C01-U004`, `FC11-C01-U006`–`FC11-C01-U008`, `FC11-C01-U010`–`FC11-C01-U011`, `FC11-C01-U013`, `FC11-C01-U016`–`FC11-C01-U017`, `FC11-C01-U019`–`FC11-C01-U021`, `FC11-C01-U024`–`FC11-C01-U029`, `FC11-C01-U032`–`FC11-C01-U033`, `FC11-C01-U037`, `FC11-C01-U039`–`FC11-C01-U044`, `FC11-C01-U046`–`FC11-C01-U048`, `FC11-C01-U050`–`FC11-C01-U051`, `FC11-C01-U056`–`FC11-C01-U057`, `FC11-C01-U060`–`FC11-C01-U062`, `FC11-C01-U064`–`FC11-C01-U066`, `FC11-C01-U069`–`FC11-C01-U070`, `FC11-C01-U072`, `FC11-C01-U075`–`FC11-C01-U078`, `FC11-C01-U080`–`FC11-C01-U084`, `FC11-C01-U086`, `FC11-C01-U090`–`FC11-C01-U092`, `FC11-C01-U097`, `FC11-C01-U101`, `FC11-C01-U108`–`FC11-C01-U113`, `FC11-C01-U115`–`FC11-C01-U116`, `FC11-C01-U125`, `FC11-C01-U127`, `FC11-C01-U129`, `FC11-C01-U135`, `FC11-C01-U139`, `FC11-C01-U141`–`FC11-C01-U142`, `FC11-C01-U145`–`FC11-C01-U146`, `FC11-C02-U002`–`FC11-C02-U003`, `FC11-C02-U006`, `FC11-C02-U031`, `FC11-C03-U001`–`FC11-C03-U002`, `FC11-C04-U008`, `FC11-C04-U012`, `FC11-C04-U015`, `FC11-C04-U026`, `FC11-C04-U032`, `FC11-C05-U001`–`FC11-C05-U002`, `FC11-C05-U004`–`FC11-C05-U005`, `FC11-C05-U009`, `FC11-C05-U011`–`FC11-C05-U012`, `FC11-C05-U025`, `FC11-C05-U030`, `FC11-C05-U034`, `FC11-C05-U039`, `FC11-C05-U041`, `FC11-C06-U001`–`FC11-C06-U005`, `FC11-C06-U007`–`FC11-C06-U010`, `FC11-C06-U013`–`FC11-C06-U016`, `FC11-C06-U022`–`FC11-C06-U023`, `FC11-C06-U025`, `FC11-C06-U027`–`FC11-C06-U028`, `FC11-C06-U035`, `FC11-C06-U042`, `FC11-C06-U049`, `FC11-C06-U051`–`FC11-C06-U052`, `FC11-C06-U054`–`FC11-C06-U055`, `FC11-C06-U058`, `FC11-C07-U001`, `FC11-C07-U008`, `FC11-C08-U004`, `FC11-C09-U009`, `FC11-C10-U013`, `FC11-C12-U004`, `FC11-C13-U002`, `FC11-C13-U004`–`FC11-C13-U005`, `FC11-C14-U001`–`FC11-C14-U002`, `FC11-C14-U005`–`FC11-C14-U007`, `FC11-C14-U014`, `FC11-C14-U016`, `FC11-C14-U028`, `FC11-C14-U035`, `FC11-C14-U037`–`FC11-C14-U038`, `FC11-C16-U001`–`FC11-C16-U002`, `FC11-C16-U006`, `FC11-C16-U010`, `FC11-C16-U013`, `FC11-C16-U017`–`FC11-C16-U018`, `FC11-C16-U022`, `FC11-C16-U038`–`FC11-C16-U039`, `FC11-C17-U003`–`FC11-C17-U004`, `FC11-C17-U007`, `FC11-C17-U014`, `FC11-C18-U001`–`FC11-C18-U005`, `FC11-C18-U007`, `FC11-C18-U011`–`FC11-C18-U012`, `FC11-C18-U014`–`FC11-C18-U015`, `FC11-C18-U024`, `FC11-C18-U029`, `FC11-C19-U001`, `FC11-C19-U043`, `FC11-C20-U019`, `FC11-C21-U021`, `FC11-A-U001`–`FC11-A-U002`, `FC11-A-U005`–`FC11-A-U008`, `FC11-A-U014`, `FC11-A-U016`–`FC11-A-U017`, `FC11-A-U019`, `FC11-A-U021`, `FC11-A-U029`, `FC11-A-U033`, `FC11-A-U035`–`FC11-A-U036`, `FC11-A-U040`, `FC11-A-U044`, `FC11-A-U049`, `FC11-C-U001`.
-Phase blocker: Sweep II definition mapping is not complete for this source.
+Phase blocker: Milestone 1 is open: definitional mapping/residue audit remains for FC01, FC03, FC04, FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
 Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC11-C01-U067` | Definition / construction | — | ready by recorded prerequisites | unmatched; author |
-| `FC11-C01-U068` | Definition / construction / notation | — | ready by recorded prerequisites | unmatched; author |
-| `FC11-C01-U098` | Construction / comparison | — | ready by recorded prerequisites | unmatched; author |
-| `FC11-C01-U114` | Construction / comparison | `FC11-C01-U113` | ready by recorded prerequisites | unmatched; author |
-| `FC11-C01-U119` | Construction / comparison | `FC11-C01-U075`, `FC11-C01-U082`, `FC11-C01-U108` | ready by recorded prerequisites | unmatched; author |
+| `FC11-C01-U067` | Definition / construction | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC11-C01-U068` | Definition / construction / notation | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC11-C01-U098` | Construction / comparison | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC11-C01-U114` | Construction / comparison | `FC11-C01-U113` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC11-C01-U119` | Construction / comparison | `FC11-C01-U075`, `FC11-C01-U082`, `FC11-C01-U108` | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC11 — Theorems
 
@@ -386,10 +386,10 @@ Next 5 open units in source traversal order:
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
 | `FC11-C01-U022` | Lemma 1.2.2 | — | ready by recorded prerequisites | reference-port; port |
-| `FC11-C01-U034` | Lemma 1.3.1 | `FC11-C01-U026` | ready by recorded prerequisites | unmatched; author |
-| `FC11-C01-U038` | Corollary 1.3.4 | — | ready by recorded prerequisites | unmatched; author |
-| `FC11-C01-U049` | Example / comparison | — | ready by recorded prerequisites | unmatched; author |
-| `FC11-C01-U052` | Example / comparison | — | ready by recorded prerequisites | unmatched; author |
+| `FC11-C01-U034` | Lemma 1.3.1 | `FC11-C01-U026` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC11-C01-U038` | Corollary 1.3.4 | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC11-C01-U049` | Example / comparison | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC11-C01-U052` | Example / comparison | — | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC12 — Mapping
 
@@ -411,17 +411,17 @@ Next 5 open units in source traversal order:
 
 Delivered/directly reusable by mapping: **0/45**; pending realization: **45** (unmatched=45).
 Delivered/direct-reuse spans: none.
-Phase blocker: Sweep II definition mapping is not complete for this source.
+Phase blocker: Milestone 1 is open: definitional mapping/residue audit remains for FC01, FC03, FC04, FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
 Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC12-C01-U002` | Definition I.2 | — | ready by recorded prerequisites | unmatched; author |
-| `FC12-C02-U001` | Definition / construction II.1 | — | ready by recorded prerequisites | unmatched; author |
-| `FC12-C02-U004` | Definition / construction II.4 | — | ready by recorded prerequisites | unmatched; author |
-| `FC12-C02-U005` | Definition / construction II.5 | — | ready by recorded prerequisites | unmatched; author |
-| `FC12-C02-U017` | Definition / convention | — | ready by recorded prerequisites | unmatched; author |
+| `FC12-C01-U002` | Definition I.2 | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC12-C02-U001` | Definition / construction II.1 | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC12-C02-U004` | Definition / construction II.4 | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC12-C02-U005` | Definition / construction II.5 | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC12-C02-U017` | Definition / convention | — | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC12 — Theorems
 
@@ -433,11 +433,11 @@ Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC12-C01-U001` | Fact I.1 | — | ready by recorded prerequisites | unmatched; author |
-| `FC12-C01-U005` | Lemma I.5 | — | ready by recorded prerequisites | unmatched; author |
-| `FC12-C01-U007` | Fact I.7 | — | ready by recorded prerequisites | unmatched; author |
-| `FC12-C01-U014` | Theorem I.11 | — | ready by recorded prerequisites | unmatched; author |
-| `FC12-C01-U017` | Formula I.14 | — | ready by recorded prerequisites | unmatched; author |
+| `FC12-C01-U001` | Fact I.1 | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC12-C01-U005` | Lemma I.5 | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC12-C01-U007` | Fact I.7 | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC12-C01-U014` | Theorem I.11 | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC12-C01-U017` | Formula I.14 | — | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC13 — Mapping
 
@@ -459,17 +459,17 @@ Next 5 open units in source traversal order:
 
 Delivered/directly reusable by mapping: **157/244**; pending realization: **87** (mathlib=1, reference-port=14, unmatched=72).
 Delivered/direct-reuse spans: `FC13-C00-U001`–`FC13-C00-U005`, `FC13-C01-U001`–`FC13-C01-U002`, `FC13-C01-U004`–`FC13-C01-U006`, `FC13-C01-U008`, `FC13-C01-U010`, `FC13-C01-U012`, `FC13-C01-U014`–`FC13-C01-U015`, `FC13-C01-U017`, `FC13-C01-U019`, `FC13-C01-U023`–`FC13-C01-U024`, `FC13-C01-U026`–`FC13-C01-U027`, `FC13-C01-U030`–`FC13-C01-U033`, `FC13-C01-U038`, `FC13-C01-U045`–`FC13-C01-U046`, `FC13-C01-U049`, `FC13-C01-U051`–`FC13-C01-U053`, `FC13-C02-U001`–`FC13-C02-U002`, `FC13-C02-U004`–`FC13-C02-U005`, `FC13-C02-U007`, `FC13-C02-U013`, `FC13-C02-U015`, `FC13-C02-U021`–`FC13-C02-U024`, `FC13-C02-U026`–`FC13-C02-U027`, `FC13-C02-U033`, `FC13-C02-U038`–`FC13-C02-U039`, `FC13-C02-U044`–`FC13-C02-U045`, `FC13-C02-U051`, `FC13-C02-U054`, `FC13-C02-U057`, `FC13-C02-U059`, `FC13-C02-U061`, `FC13-C02-U063`, `FC13-C02-U066`–`FC13-C02-U067`, `FC13-C02-U074`–`FC13-C02-U075`, `FC13-C02-U077`, `FC13-C02-U079`, `FC13-C02-U081`, `FC13-C02-U083`, `FC13-C02-U085`–`FC13-C02-U086`, `FC13-C02-U089`, `FC13-C03-U001`–`FC13-C03-U002`, `FC13-C03-U008`, `FC13-C03-U010`, `FC13-C03-U031`, `FC13-C03-U038`, `FC13-C03-U058`, `FC13-C03-U070`, `FC13-C04-U001`, `FC13-C04-U004`, `FC13-C04-U011`–`FC13-C04-U013`, `FC13-C04-U020`, `FC13-C04-U022`, `FC13-C04-U025`, `FC13-C04-U030`, `FC13-C04-U032`, `FC13-C05-U001`–`FC13-C05-U002`, `FC13-C05-U009`, `FC13-C05-U017`, `FC13-C05-U024`, `FC13-C05-U028`–`FC13-C05-U029`, `FC13-C05-U036`, `FC13-C05-U038`, `FC13-C05-U049`, `FC13-C05-U052`, `FC13-C06-U001`, `FC13-C06-U015`, `FC13-C07-U009`, `FC13-C07-U028`, `FC13-C07-U038`, `FC13-C09-U001`, `FC13-C09-U003`, `FC13-C09-U005`, `FC13-C09-U007`, `FC13-C09-U022`–`FC13-C09-U023`, `FC13-C10-U001`, `FC13-C10-U007`–`FC13-C10-U008`, `FC13-C10-U011`, `FC13-C10-U017`, `FC13-C10-U019`, `FC13-C10-U023`, `FC13-C10-U028`, `FC13-C10-U032`, `FC13-C10-U035`, `FC13-C10-U046`, `FC13-C10-U050`, `FC13-C10-U052`, `FC13-C10-U056`, `FC13-C11-U006`, `FC13-C11-U010`, `FC13-C11-U022`–`FC13-C11-U023`, `FC13-C11-U034`, `FC13-C11-U040`, `FC13-CA-U001`–`FC13-CA-U002`, `FC13-CA-U004`, `FC13-CA-U009`–`FC13-CA-U010`, `FC13-CA-U013`, `FC13-CA-U015`, `FC13-CA-U017`–`FC13-CA-U020`, `FC13-CA-U023`–`FC13-CA-U025`, `FC13-CB-U001`–`FC13-CB-U005`, `FC13-CB-U008`–`FC13-CB-U009`, `FC13-CB-U011`, `FC13-CB-U013`, `FC13-CB-U017`, `FC13-CB-U019`, `FC13-CB-U021`, `FC13-CB-U028`, `FC13-CC-U001`–`FC13-CC-U002`, `FC13-CC-U011`.
-Phase blocker: Sweep II definition mapping is not complete for this source.
+Phase blocker: Milestone 1 is open: definitional mapping/residue audit remains for FC01, FC03, FC04, FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
 Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC13-C02-U046` | Definition: saturated prime chain and catenary ring | `FC13-C02-U039` | ready by recorded prerequisites | unmatched; author |
-| `FC13-C03-U025` | Definition: pure submodule | — | ready by recorded prerequisites | unmatched; author |
-| `FC13-C03-U032` | Definition: separated quotient associated to a linear topology | `FC13-C03-U031` | ready by recorded prerequisites | unmatched; author |
-| `FC13-C03-U033` | Definition: completion and complete module | `FC13-C03-U031` | ready by recorded prerequisites | unmatched; author |
-| `FC13-C03-U035` | Construction: closure and quotient topology | `FC13-C03-U031` | ready by recorded prerequisites | unmatched; author |
+| `FC13-C02-U046` | Definition: saturated prime chain and catenary ring | `FC13-C02-U039` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC13-C03-U025` | Definition: pure submodule | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC13-C03-U032` | Definition: separated quotient associated to a linear topology | `FC13-C03-U031` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC13-C03-U033` | Definition: completion and complete module | `FC13-C03-U031` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC13-C03-U035` | Construction: closure and quotient topology | `FC13-C03-U031` | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC13 — Theorems
 
@@ -481,11 +481,11 @@ Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC13-C01-U022` | Example: formal power-series units and local rings | `FC13-C01-U002`, `FC13-C01-U015`, `FC13-C01-U017` | ready by recorded prerequisites | unmatched; author |
-| `FC13-C01-U028` | Example: polynomial UFDs | `FC13-C01-U024`, `FC13-C01-U026` | ready by recorded prerequisites | unmatched; author |
-| `FC13-C01-U029` | Example: Z[√−5] is not a UFD | `FC13-C01-U024`, `FC13-C01-U026` | ready by recorded prerequisites | unmatched; author |
-| `FC13-C01-U039` | Theorem: Theorem 2.3 (minimal bases over a local ring) | `FC13-C01-U017`, `FC13-C01-U037`, `FC13-C01-U038` | ready by recorded prerequisites | unmatched; author |
-| `FC13-C01-U041` | Theorem: Theorem 2.5 (Kaplansky) | `FC13-C01-U017` | ready by recorded prerequisites | unmatched; author |
+| `FC13-C01-U022` | Example: formal power-series units and local rings | `FC13-C01-U002`, `FC13-C01-U015`, `FC13-C01-U017` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC13-C01-U028` | Example: polynomial UFDs | `FC13-C01-U024`, `FC13-C01-U026` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC13-C01-U029` | Example: Z[√−5] is not a UFD | `FC13-C01-U024`, `FC13-C01-U026` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC13-C01-U039` | Theorem: Theorem 2.3 (minimal bases over a local ring) | `FC13-C01-U017`, `FC13-C01-U037`, `FC13-C01-U038` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC13-C01-U041` | Theorem: Theorem 2.5 (Kaplansky) | `FC13-C01-U017` | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC14 — Mapping
 
@@ -507,17 +507,17 @@ Next 5 open units in source traversal order:
 
 Delivered/directly reusable by mapping: **74/176**; pending realization: **102** (mathlib=1, reference-port=32, unmatched=69).
 Delivered/direct-reuse spans: `FC14-C01-U001`–`FC14-C01-U006`, `FC14-C01-U012`–`FC14-C01-U013`, `FC14-C01-U015`–`FC14-C01-U016`, `FC14-C01-U018`, `FC14-C01-U021`–`FC14-C01-U025`, `FC14-C01-U027`–`FC14-C01-U028`, `FC14-C01-U030`, `FC14-C01-U032`, `FC14-C01-U035`, `FC14-C01-U039`, `FC14-C01-U043`, `FC14-C01-U046`, `FC14-C02-U001`, `FC14-C02-U006`, `FC14-C02-U008`, `FC14-C02-U015`, `FC14-C02-U017`, `FC14-C02-U021`, `FC14-C02-U026`–`FC14-C02-U029`, `FC14-C02-U031`, `FC14-C02-U033`–`FC14-C02-U035`, `FC14-C02-U046`, `FC14-C02-U062`, `FC14-C03-U001`–`FC14-C03-U002`, `FC14-C03-U004`–`FC14-C03-U005`, `FC14-C03-U007`–`FC14-C03-U009`, `FC14-C03-U013`–`FC14-C03-U014`, `FC14-C03-U030`, `FC14-C03-U036`, `FC14-C03-U051`, `FC14-C03-U055`–`FC14-C03-U056`, `FC14-C04-U010`, `FC14-C04-U012`, `FC14-C04-U015`, `FC14-C05-U002`–`FC14-C05-U003`, `FC14-C05-U005`–`FC14-C05-U006`, `FC14-C05-U019`–`FC14-C05-U021`, `FC14-C05-U031`, `FC14-C05-U035`, `FC14-C06-U002`, `FC14-C06-U016`, `FC14-C06-U036`–`FC14-C06-U037`, `FC14-C06-U041`, `FC14-C06-U044`, `FC14-C06-U052`–`FC14-C06-U053`.
-Phase blocker: Sweep II definition mapping is not complete for this source.
+Phase blocker: Milestone 1 is open: definitional mapping/residue audit remains for FC01, FC03, FC04, FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
 Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC14-C01-U007` | Construction: special linear algebra A_l | `FC14-C01-U005`, `FC14-C01-U006` | ready by recorded prerequisites | unmatched; author |
-| `FC14-C01-U008` | Construction: symplectic algebra C_l | `FC14-C01-U006` | ready by recorded prerequisites | unmatched; author |
-| `FC14-C01-U009` | Construction: odd orthogonal algebra B_l | `FC14-C01-U006` | ready by recorded prerequisites | unmatched; author |
-| `FC14-C01-U010` | Construction: even orthogonal algebra D_l | `FC14-C01-U006` | ready by recorded prerequisites | unmatched; author |
-| `FC14-C01-U011` | Construction: triangular, strictly triangular, and diagonal Lie algebras | `FC14-C01-U005` | ready by recorded prerequisites | unmatched; author |
+| `FC14-C01-U007` | Construction: special linear algebra A_l | `FC14-C01-U005`, `FC14-C01-U006` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC14-C01-U008` | Construction: symplectic algebra C_l | `FC14-C01-U006` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC14-C01-U009` | Construction: odd orthogonal algebra B_l | `FC14-C01-U006` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC14-C01-U010` | Construction: even orthogonal algebra D_l | `FC14-C01-U006` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC14-C01-U011` | Construction: triangular, strictly triangular, and diagonal Lie algebras | `FC14-C01-U005` | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC14 — Theorems
 
@@ -529,10 +529,10 @@ Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC14-C01-U017` | Theorem/recorded result: Ado–Iwasawa linearity theorem | `FC14-C01-U006` | ready by recorded prerequisites | unmatched; author |
+| `FC14-C01-U017` | Theorem/recorded result: Ado–Iwasawa linearity theorem | `FC14-C01-U006` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC14-C01-U020` | Classification: Lie algebras of dimension at most two | `FC14-C01-U002`, `FC14-C01-U003`, `FC14-C01-U018` | ready by recorded prerequisites | package-import; import |
-| `FC14-C01-U031` | Proposition: homomorphism theorems | `FC14-C01-U021`, `FC14-C01-U027`, `FC14-C01-U030` | ready by recorded prerequisites | unmatched; author |
-| `FC14-C01-U038` | Formula: conjugation-exponential identity | `FC14-C01-U005`, `FC14-C01-U035` | ready by recorded prerequisites | unmatched; author |
+| `FC14-C01-U031` | Proposition: homomorphism theorems | `FC14-C01-U021`, `FC14-C01-U027`, `FC14-C01-U030` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC14-C01-U038` | Formula: conjugation-exponential identity | `FC14-C01-U005`, `FC14-C01-U035` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC14-C01-U041` | Proposition: closure properties of solvability | `FC14-C01-U027`, `FC14-C01-U030`, `FC14-C01-U039` | ready by recorded prerequisites | package-import; import |
 
 ## FC15 — Mapping
@@ -555,17 +555,17 @@ Next 5 open units in source traversal order:
 
 Delivered/directly reusable by mapping: **19/122**; pending realization: **103** (reference-port=2, unmatched=101).
 Delivered/direct-reuse spans: `FC15-C01-U001`–`FC15-C01-U002`, `FC15-C01-U011`–`FC15-C01-U013`, `FC15-C01-U016`, `FC15-C01-U019`, `FC15-C01-U022`–`FC15-C01-U023`, `FC15-C01-U029`, `FC15-C01-U034`–`FC15-C01-U035`, `FC15-C01-U037`, `FC15-C01-U040`, `FC15-C02-U005`, `FC15-C02-U018`, `FC15-C05-U001`, `FC15-C05-U005`, `FC15-C08-U015`.
-Phase blocker: Sweep II definition mapping is not complete for this source.
+Phase blocker: Milestone 1 is open: definitional mapping/residue audit remains for FC01, FC03, FC04, FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
 Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC15-C01-U005` | Definition: essential reflection-group action | `FC15-C01-U002` | ready by recorded prerequisites | unmatched; author |
-| `FC15-C01-U009` | Definition: root system for a finite reflection group | `FC15-C01-U001` | ready by recorded prerequisites | unmatched; author |
+| `FC15-C01-U005` | Definition: essential reflection-group action | `FC15-C01-U002` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC15-C01-U009` | Definition: root system for a finite reflection group | `FC15-C01-U001` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC15-C01-U038` | Definition: Poincaré polynomial | `FC15-C01-U022` | ready by recorded prerequisites | reference-port; port |
-| `FC15-C01-U049` | Construction: hyperplane arrangement complex | — | ready by recorded prerequisites | unmatched; author |
-| `FC15-C02-U006` | Construction: bilinear form associated to a Coxeter graph | `FC15-C02-U005` | ready by recorded prerequisites | unmatched; author |
+| `FC15-C01-U049` | Construction: hyperplane arrangement complex | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC15-C02-U006` | Construction: bilinear form associated to a Coxeter graph | `FC15-C02-U005` | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC15 — Theorems
 
@@ -577,11 +577,11 @@ Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC15-C01-U003` | Example: dihedral reflection group I_2(m) | `FC15-C01-U002` | ready by recorded prerequisites | unmatched; author |
-| `FC15-C01-U004` | Example: symmetric group as type A_{n-1} | `FC15-C01-U002` | ready by recorded prerequisites | unmatched; author |
-| `FC15-C01-U006` | Example: type B_n signed permutation group | `FC15-C01-U002` | ready by recorded prerequisites | unmatched; author |
-| `FC15-C01-U014` | Theorem: existence and uniqueness of positive/simple systems | `FC15-C01-U012`, `FC15-C01-U013` | ready by recorded prerequisites | unmatched; author |
-| `FC15-C01-U026` | Theorem: Deletion Theorem | `FC15-C01-U024`, `FC15-C01-U025` | ready by recorded prerequisites | unmatched; author |
+| `FC15-C01-U003` | Example: dihedral reflection group I_2(m) | `FC15-C01-U002` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC15-C01-U004` | Example: symmetric group as type A_{n-1} | `FC15-C01-U002` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC15-C01-U006` | Example: type B_n signed permutation group | `FC15-C01-U002` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC15-C01-U014` | Theorem: existence and uniqueness of positive/simple systems | `FC15-C01-U012`, `FC15-C01-U013` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC15-C01-U026` | Theorem: Deletion Theorem | `FC15-C01-U024`, `FC15-C01-U025` | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC16 — Mapping
 
@@ -603,17 +603,17 @@ Next 5 open units in source traversal order:
 
 Delivered/directly reusable by mapping: **57/169**; pending realization: **112** (reference-port=22, unmatched=90).
 Delivered/direct-reuse spans: `FC16-C01-U001`–`FC16-C01-U002`, `FC16-C01-U005`, `FC16-C01-U007`–`FC16-C01-U008`, `FC16-C01-U014`, `FC16-C01-U016`, `FC16-C01-U018`–`FC16-C01-U021`, `FC16-C01-U023`–`FC16-C01-U025`, `FC16-C01-U027`, `FC16-C01-U029`–`FC16-C01-U031`, `FC16-C01-U033`–`FC16-C01-U034`, `FC16-C01-U037`–`FC16-C01-U039`, `FC16-C01-U041`–`FC16-C01-U045`, `FC16-C01-U047`–`FC16-C01-U049`, `FC16-C01-U051`, `FC16-C01-U054`, `FC16-C01-U056`, `FC16-C01-U059`, `FC16-C01-U065`, `FC16-C01-U067`, `FC16-C01-U071`, `FC16-C01-U077`–`FC16-C01-U078`, `FC16-C01-U080`, `FC16-C01-U085`, `FC16-C01-U087`, `FC16-C01-U090`, `FC16-C02-U011`, `FC16-C02-U014`, `FC16-C02-U026`, `FC16-C03-U007`, `FC16-C10-U001`, `FC16-C10-U032`, `FC16-C12-U001`–`FC16-C12-U002`, `FC16-C12-U004`–`FC16-C12-U005`, `FC16-C12-U038`, `FC16-C12-U044`–`FC16-C12-U045`.
-Phase blocker: Sweep II definition mapping is not complete for this source.
+Phase blocker: Milestone 1 is open: definitional mapping/residue audit remains for FC01, FC03, FC04, FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
 Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC16-C01-U036` | Proposition/construction | `FC16-C01-U034` | ready by recorded prerequisites | unmatched; author |
+| `FC16-C01-U036` | Proposition/construction | `FC16-C01-U034` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC16-C02-U001` | Definition | `FC16-C01-U051`, `FC16-C01-U045` | ready by recorded prerequisites | reference-port; port |
-| `FC16-C04-U005` | Definition | `FC16-C02-U011`, `FC16-C02-U003` | ready by recorded prerequisites | unmatched; author |
-| `FC16-C06-U001` | Definition | `FC16-C01-U001` | ready by recorded prerequisites | unmatched; author |
-| `FC16-C07-U033` | Definition | `FC16-C02-U003` | ready by recorded prerequisites | unmatched; author |
+| `FC16-C04-U005` | Definition | `FC16-C02-U011`, `FC16-C02-U003` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC16-C06-U001` | Definition | `FC16-C01-U001` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC16-C07-U033` | Definition | `FC16-C02-U003` | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC16 — Theorems
 
@@ -625,11 +625,11 @@ Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC16-C01-U012` | Theorem/recorded result | `FC16-C01-U008` | ready by recorded prerequisites | unmatched; author |
-| `FC16-C01-U036` | Proposition/construction | `FC16-C01-U034` | ready by recorded prerequisites | unmatched; author |
-| `FC16-C01-U055` | Proposition | `FC16-C01-U054`, `FC16-C01-U050` | ready by recorded prerequisites | unmatched; author |
-| `FC16-C01-U057` | Proposition | `FC16-C01-U054`, `FC16-C01-U028` | ready by recorded prerequisites | unmatched; author |
-| `FC16-C01-U062` | Corollary | `FC16-C01-U061`, `FC16-C01-U056` | ready by recorded prerequisites | unmatched; author |
+| `FC16-C01-U012` | Theorem/recorded result | `FC16-C01-U008` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC16-C01-U036` | Proposition/construction | `FC16-C01-U034` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC16-C01-U055` | Proposition | `FC16-C01-U054`, `FC16-C01-U050` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC16-C01-U057` | Proposition | `FC16-C01-U054`, `FC16-C01-U028` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC16-C01-U062` | Corollary | `FC16-C01-U061`, `FC16-C01-U056` | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC17 — Mapping
 
@@ -651,17 +651,17 @@ Next 5 open units in source traversal order:
 
 Delivered/directly reusable by mapping: **138/861**; pending realization: **723** (missing=683, unmatched=40).
 Delivered/direct-reuse spans: `FC17-KER-U00010`–`FC17-KER-U00011`, `FC17-KER-U00013`–`FC17-KER-U00014`, `FC17-KER-U00018`, `FC17-KER-U05752`, `FC17-KER-U05754`, `FC17-KER-U05756`, `FC17-KER-U05759`–`FC17-KER-U05761`, `FC17-KER-U05766`–`FC17-KER-U05767`, `FC17-KER-U00037`, `FC17-KER-U05772`, `FC17-KER-U00044`, `FC17-KER-U01059`, `FC17-KER-U00040`, `FC17-KER-U00026`, `FC17-KER-U00537`, `FC17-KER-U00544`, `FC17-KER-U00546`, `FC17-KER-U00049`, `FC17-KER-U00053`, `FC17-KER-U05792`, `FC17-KER-U00060`, `FC17-KER-U00067`, `FC17-KER-U00069`, `FC17-KER-U00073`, `FC17-KER-U00029`, `FC17-KER-U00086`, `FC17-KER-U00091`, `FC17-KER-U05168`, `FC17-KER-U00400`, `FC17-KER-U05169`, `FC17-KER-U00109`, `FC17-KER-U00255`, `FC17-KER-U00155`–`FC17-KER-U00156`, `FC17-KER-U00598`, `FC17-KER-U00604`–`FC17-KER-U00605`, `FC17-KER-U00113`, `FC17-KER-U00119`–`FC17-KER-U00120`, `FC17-KER-U04526`, `FC17-KER-U00124`–`FC17-KER-U00125`, `FC17-KER-U00132`, `FC17-KER-U00139`, `FC17-KER-U00141`, `FC17-KER-U00147`, `FC17-KER-U00149`, `FC17-KER-U00153`, `FC17-KER-U00162`, `FC17-KER-U00166`, `FC17-KER-U00177`, `FC17-KER-U00189`, `FC17-KER-U00193`, `FC17-KER-U00199`, `FC17-KER-U00205`, `FC17-KER-U00212`, `FC17-KER-U00217`, `FC17-KER-U00219`–`FC17-KER-U00220`, `FC17-KER-U00222`, `FC17-KER-U00226`, `FC17-KER-U00231`, `FC17-KER-U00235`, `FC17-KER-U00241`, `FC17-KER-U00251`, `FC17-KER-U00421`, `FC17-KER-U00424`, `FC17-KER-U00426`, `FC17-KER-U00459`, `FC17-KER-U00463`, `FC17-KER-U00470`, `FC17-KER-U00475`, `FC17-KER-U00483`, `FC17-KER-U00491`, `FC17-KER-U00627`–`FC17-KER-U00628`, `FC17-KER-U00259`, `FC17-KER-U00263`, `FC17-KER-U00271`, `FC17-KER-U00507`, `FC17-KER-U00284`, `FC17-KER-U00290`, `FC17-KER-U00292`, `FC17-KER-U00297`–`FC17-KER-U00298`, `FC17-KER-U00303`, `FC17-KER-U00331`, `FC17-KER-U00361`, `FC17-KER-U02688`, `FC17-KER-U02695`, `FC17-KER-U00638`, `FC17-KER-U00640`, `FC17-KER-U00643`, `FC17-KER-U00645`, `FC17-KER-U00648`, `FC17-KER-U00763`–`FC17-KER-U00767`, `FC17-KER-U00770`–`FC17-KER-U00771`, `FC17-KER-U00774`, `FC17-KER-U00776`–`FC17-KER-U00778`, `FC17-KER-U00784`, `FC17-KER-U00786`, `FC17-KER-U00790`, `FC17-KER-U00793`, `FC17-KER-U00796`, `FC17-KER-U00800`, `FC17-KER-U00816`, `FC17-KER-U00828`, `FC17-KER-U00831`, `FC17-KER-U00833`–`FC17-KER-U00834`, `FC17-KER-U00844`, `FC17-KER-U00848`, `FC17-KER-U00852`, `FC17-KER-U00857`, `FC17-KER-U00886`, `FC17-KER-U00920`, `FC17-KER-U00970`, `FC17-KER-U00955`, `FC17-KER-U00992`, `FC17-KER-U01095`, `FC17-KER-U01541`, `FC17-KER-U03043`, `FC17-KER-U05460`, `FC17-KER-U05463`, `FC17-KER-U05477`.
-Phase blocker: Sweep II definition mapping is not complete for this source.
+Phase blocker: Milestone 1 is open: definitional mapping/residue audit remains for FC01, FC03, FC04, FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
 Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC17-KER-U00551` | Definition | — | ready by recorded prerequisites | unmatched; author |
-| `FC17-KER-U00556` | Definition | — | ready by recorded prerequisites | unmatched; author |
-| `FC17-KER-U00558` | Definition | — | ready by recorded prerequisites | unmatched; author |
-| `FC17-KER-U00568` | Construction | — | ready by recorded prerequisites | unmatched; author |
-| `FC17-KER-U00612` | Definition | — | ready by recorded prerequisites | unmatched; author |
+| `FC17-KER-U00551` | Definition | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC17-KER-U00556` | Definition | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC17-KER-U00558` | Definition | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC17-KER-U00568` | Construction | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC17-KER-U00612` | Definition | — | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC17 — Theorems
 

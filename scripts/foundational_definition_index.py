@@ -201,18 +201,20 @@ def rows(corpus: Path) -> Iterable[list[str]]:
                 unit.unit_id, (unit.unit_id, "", unit.unit_id)
             )
             route = mapping.route if mapping is not None and mapping.route else "missing"
-            # Reopening a source's Mapping phase reopens discovery for every
-            # unmatched definition in that source.  An old
-            # `[negative-search-complete]` marker remains the authoring gate
-            # only after Mapping is closed again; while Mapping is open it is
-            # prior evidence to recheck, not a reason to omit the row from the
-            # bulk candidate census.
-            if mapping is None or (
-                route == "unmatched"
-                and (not status.mapping or not mapping.negative_search_complete)
-            ):
+            # A source-local negative pass is only provisional.  Keep every
+            # unmatched definition in discovery until the separate open-ended
+            # residue audit records `[residue-search-audited]`.  Only then may
+            # it enter the greenfield queue; `[realized]` later moves it to reuse
+            # without rewriting its historical Sweep-II route.
+            if mapping is None:
                 action = "search"
-            elif route == "unmatched":
+            elif route == "unmatched" and not mapping.residue_search_audited:
+                action = (
+                    "residue-search"
+                    if mapping.negative_search_complete
+                    else "search"
+                )
+            elif route == "unmatched" and not mapping.realized:
                 action = "author"
             elif mapping.delivered:
                 action = "reuse"

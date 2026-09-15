@@ -444,7 +444,7 @@ def main() -> None:
     selected = [
         dict(row)
         for row in all_rows
-        if row["action"] == "search"
+        if row["action"] in {"search", "residue-search"}
         and (not args.source or row["source_id"] in set(args.source))
     ]
     if args.retry_zero_from is not None:

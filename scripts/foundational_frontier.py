@@ -116,6 +116,12 @@ class Mapping:
     @property
     def delivered(self) -> bool:
         """Whether the mapping already supplies a canonical usable owner."""
+        if self.realized:
+            # Sweep-II provenance is causal and does not change when a later
+            # port/import/greenfield definition is realized.  `[realized]`
+            # therefore closes Sweep III without rewriting the historical
+            # route to `project-existing`.
+            return True
         verdict = self.verdict.lower()
         if any(marker in verdict for marker in NEGATIVE_VERDICT_MARKERS):
             return False
@@ -147,6 +153,12 @@ class Mapping:
         return "[negative-search-complete]" in self.row.lower()
 
     @property
+    def residue_search_audited(self) -> bool:
+        """Whether a negative definition survived the open-ended prior-art audit."""
+
+        return "[residue-search-audited]" in self.row.lower()
+
+    @property
     def action(self) -> str:
         if self.delivered:
             return "reuse"
@@ -155,7 +167,7 @@ class Mapping:
         if self.route == "package-import":
             return "import"
         if self.route == "unmatched":
-            return "author"
+            return "author" if self.residue_search_audited else "residue audit"
         if self.route in DIRECT_ROUTES:
             return "repair mapping/interface"
         return "resolve legacy mapping"
@@ -423,7 +435,7 @@ def definition_mapping_incomplete(
             continue
         if mapping is None:
             return True
-        if mapping.route == "unmatched" and not mapping.negative_search_complete:
+        if mapping.route == "unmatched" and not mapping.residue_search_audited:
             return True
     return False
 
@@ -435,7 +447,7 @@ def unit_delivered(phase: str, unit: Unit, mappings: dict[str, Mapping]) -> bool
         # still needs a port/import.  Only absent records and explicit `unmatched`
         # verdicts remain source-discovery work here.
         return mapping is not None and (
-            mapping.route != "unmatched" or mapping.negative_search_complete
+            mapping.route != "unmatched" or mapping.residue_search_audited
         )
     if phase == "Theorems" and mapping is not None and mapping.definition_only:
         return False
@@ -448,11 +460,22 @@ def phase_blocker(
     statuses: list[SourceStatus],
     units: list[Unit],
     mappings: dict[str, Mapping],
+    catalogues: dict[str, list[Unit]],
 ) -> str:
     if phase == "Mapping" and not status.catalogue:
         return "Sweep I catalogue is not complete for this source."
-    if phase == "Definitions" and not status.mapping and definition_mapping_incomplete(units, mappings):
-        return "Sweep II definition mapping is not complete for this source."
+    if phase == "Definitions":
+        open_definition_mapping = [
+            source_id
+            for source_id, source_units in catalogues.items()
+            if definition_mapping_incomplete(source_units, mappings)
+        ]
+        if open_definition_mapping:
+            return (
+                "Milestone 1 is open: definitional mapping/residue audit remains for "
+                + ", ".join(open_definition_mapping)
+                + "."
+            )
     if phase == "Theorems":
         open_definitions = [entry.source_id for entry in statuses if not entry.definitions]
         if open_definitions:
@@ -466,6 +489,10 @@ def mapping_label(mapping: Mapping | None, phase: str) -> str:
     route = mapping.route or "legacy-direct"
     if phase == "Mapping":
         if mapping.route == "unmatched":
+            if mapping.residue_search_audited:
+                return "unmatched; residue search audited"
+            if mapping.negative_search_complete:
+                return "unmatched; open-ended residue audit required"
             return "unmatched; search existing formalizations"
         return f"{route}; source already found"
     if phase == "Theorems" and mapping.definition_only:
@@ -642,7 +669,7 @@ def render(reference_dir: Path, limit: int) -> str:
                     f"Canonical mapping rows present: **{len(delivered)}/{len(units)}**; "
                     f"row-coverage gaps: **{len(pending)}** ({counts}).",
                     f"Mapped source-unit spans: {compact_unit_ids(delivered)}.",
-                    f"Phase blocker: {phase_blocker(phase, status, statuses, source_units, mappings)}",
+                    f"Phase blocker: {phase_blocker(phase, status, statuses, source_units, mappings, catalogues)}",
                     "",
                 ]
             else:
@@ -652,7 +679,7 @@ def render(reference_dir: Path, limit: int) -> str:
                     f"Definitions with an implementation source: **{len(delivered)}/{len(units)}**; "
                     f"source-discovery gaps: **{len(pending)}** ({counts}).",
                     f"Already-sourced definition spans: {compact_unit_ids(delivered)}.",
-                    f"Phase blocker: {phase_blocker(phase, status, statuses, source_units, mappings)}",
+                    f"Phase blocker: {phase_blocker(phase, status, statuses, source_units, mappings, catalogues)}",
                     "",
                 ]
         else:
@@ -662,7 +689,7 @@ def render(reference_dir: Path, limit: int) -> str:
                 f"Delivered/directly reusable by mapping: **{len(delivered)}/{len(units)}**; "
                 f"pending realization: **{len(pending)}** ({counts}).",
                 f"Delivered/direct-reuse spans: {compact_unit_ids(delivered)}.",
-                f"Phase blocker: {phase_blocker(phase, status, statuses, source_units, mappings)}",
+                f"Phase blocker: {phase_blocker(phase, status, statuses, source_units, mappings, catalogues)}",
                 "",
             ]
         lines.extend(summary_lines)

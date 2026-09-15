@@ -11,8 +11,10 @@ The linked whole-source ledger remains the sole source of sweep completion.
 | --- | --- | --- |
 | `corpus` | [Admitted sources, editions, scope and source acquisition](#0-foundational-corpus-and-in-force-amendments) | none |
 | `catalogue` | [Sweep I: every source unit](#1-sweep-i--catalogue-every-corpus-unit) | `corpus` |
-| `mapping` | [Sweep II: map every unit onto an existing formalization where one exists](#2-sweep-ii--map-every-unit-onto-existing-formalizations). Bulk candidate discovery is corpus-wide; semantic acceptance and implementation remain source-ordered. | `catalogue` |
-| `definitions` | [Sweep III: definitions and intrinsic laws](#3-sweep-iii--realize-the-complete-definitional-layer) | `fc17-definitions` |
+| `mapping` | [Sweep II: map every unit onto an existing formalization where one exists](#2-sweep-ii--map-every-unit-onto-existing-formalizations). Bulk candidate discovery is corpus-wide; semantic adjudication remains source-ordered. | `catalogue` |
+| `definition-mapping-convergence` | **MILESTONE 1 / STATE TRANSITION.** State 1 is complete: every definitional mapping is semantically verified, systematic second-pass search has converged, and the final unconstrained open-ended prior-art search found no further viable implementation/reference for the surviving residue. This node performs no search itself; it is the gate from “minimize the definitional work” to “do the minimized definitional work.” | `definition-open-ended-prior-art-search` |
+| `definitions` | [Sweep III: definitions and intrinsic laws](#3-sweep-iii--realize-the-complete-definitional-layer) | `definition-realization-convergence` |
+| `definition-realization-convergence` | **MILESTONE 2 / TERMINAL DEFINITION STATE.** State 2 is complete: every definitional unit is realized and source-faithful. Reused, imported, ported, and newly authored definitions collectively realize every clause of the original prose reference, with intrinsic well-definedness/structure laws discharged and the final source-conformance audit complete. This node performs no implementation itself; it certifies convergence of State 2. | `definition-source-conformance` |
 
 The definition rows below deliberately carry no counts. They used to, and every one of them was
 wrong within the day: `fc05-definitions` still read "199 pending of 376" after the source had
@@ -22,42 +24,67 @@ worker reading the stale copy either redoes closed work or stops short of the re
 Read the frontier. `unmatched` is not a forecast of how much mathematics this repository should
 invent. The cheap discovery pass is the corpus-wide `FOUNDATIONAL_DEFINITIONS.tsv` worklist plus its
 generated candidate census; run that pass in bulk for all sources. Semantic acceptance of candidates
-and the finite negative-search stopping rule are then discharged source-by-source. Do not serialize
-API retrieval behind earlier-source implementation, and do not serialize a source's Definitions
-behind mapping its non-definitional theorem/remark/example rows.
+and the bounded first-stage negative-search pass are then discharged source-by-source. After the last
+source-local mapping pass, systematic second-pass search works the residue in source/topic batches;
+then `definition-open-ended-prior-art-search` performs the final unconstrained search for anything
+the structured passes missed. Milestone 1 closes only after that final task reaches a fixed point,
+and **no** Sweep-III authoring begins before the gate. Do not serialize API retrieval
+behind source order, and do not block this definitional milestone on mapping unrelated
+theorem/remark/example rows.
 
 
 | `track-the-catalogue` | **Completed 2026-09-13.** The 378 Markdown records formerly reachable only through the private `.agents/references/` symlink are now tracked under `corpus/`: source catalogues, per-unit mappings, provenance contracts, the source atlas, source manifest, and whole-source ledger. `scripts/foundational_frontier.py` defaults to that tracked directory, and a fresh clone with no `.agents` or `.hermes` symlink regenerates `FOUNDATIONAL_FRONTIER.md` byte-for-byte. `.agents`, `.hermes`, and the known local probe scripts are explicitly ignored as scratch/private automation. **Acceptance:** every catalogue and mapping file is tracked, `git log` shows them, and a fresh clone regenerates `FOUNDATIONAL_FRONTIER.md` identically | none |
 | `retire-the-stale-catalogue-copy` | **Completed 2026-09-13.** Before deletion, the superior committed vault versions of `chapter-1-varieties-fc06.md`, `provenance-contract-for-fc06-c01.md`, and `index.md` were ported byte-for-byte into tracked `corpus/` and `FOUNDATIONAL_FRONTIER.md` regenerated from them. The vault commit `2965de28` then deleted the project `references/` subtree (378 files), leaving `corpus/` as the sole writable catalogue/mapping source. The `.agents` symlink intentionally remains because private `plans/` and `decisions/` still live behind it; `.agents/references` no longer exists and must not be recreated. **Acceptance:** `corpus/` is authoritative for all catalogue/mapping records; `.agents/references` is absent; `.agents/plans` and `.agents/decisions` remain live | `track-the-catalogue` |
 | `mapping-record-coverage` | **Completed for FC01–FC16 on 2026-09-13; FC17 was admitted later.** The original sources have parsed mapping rows for their catalogue units. FC17's 7,673 units were added by the v3 amendment and deliberately do not retroactively make that historical claim false. Its 861 definitional rows are handled by `definition-discovery`/`fc17-mapping`; its non-definitional rows remain Sweep-II obligations before Sweep IV. | `track-the-catalogue` |
-| `definition-discovery` | Build the corpus-wide definitional retrieval surface before further serial mapping work. `python scripts/foundational_definition_index.py` must generate one row for every Sweep-III definition/construction/notation/convention, joining source data, current route and mapping hint; `python scripts/foundational_definition_candidates.py` must search every `action=search` row through the OpenAPI-resolved `formalization-corpus` batch operation with resumable checkpoints. This is candidate discovery, not semantic acceptance: hits still require source-clause comparison and zero hits do not authorize invention. **Acceptance:** the generated definition table has the exact frontier denominator and every search row has a completed candidate-census entry or an explicit transport failure to repair. | `catalogue`, `mapping-record-coverage` |
-| `audit-authored-definitions` | **Separate from Mapping.** After a source's Mapping closes, review locally authored definitions only when that completed mapping shows that an external owner already supplies the mathematics. Replace genuine reinvention with the checked owner or record the mathematical reason the external implementation cannot serve. This is cleanup of already-authored code, not a reason to reopen unrelated positive mapping rows or later sources. | the current source's `fcNN-mapping` |
+| `definition-discovery` | Build the corpus-wide definitional retrieval surface before serial semantic mapping work. `python scripts/foundational_definition_index.py` must generate one row for every Sweep-III definition/construction/notation/convention, joining source data, current route and mapping hint; `python scripts/foundational_definition_candidates.py` must search every `action=search` row through the OpenAPI-resolved `formalization-corpus` batch operation with resumable checkpoints. This is cheap candidate discovery, not semantic acceptance and not the final residue audit: hits still require source-clause comparison and zero hits do not authorize invention. **Acceptance:** the generated definition table has the exact frontier denominator and every search row has a completed candidate-census entry or an explicit transport failure to repair. | `catalogue`, `mapping-record-coverage` |
+| `audit-authored-definitions` | **Separate from Mapping.** After Milestone 1 closes, review locally authored definitions when the verified mapping shows that an external owner already supplies the mathematics. Replace genuine reinvention with the checked owner or record the mathematical reason the external implementation cannot serve. This is realization cleanup, not Mapping evidence. | `definition-mapping-convergence` |
 | `fc05-mapping` | **Completed after provenance correction.** Reopened the stale negative definition routes for live discovery and re-adjudicated them through the OpenAPI corpus plus targeted source inspection. Mapping routes are causal: implementations landed after the reopen do not rewrite their own provenance. FC05 now has 368/368 definition mappings accepted: 229 `mathlib`, 86 `project-existing`, 1 `package-import`, 5 `reference-port`, and 47 scoped `unmatched [negative-search-complete]`; the complete 1,059-unit FC05 catalogue retains a canonical mapping row for every unit. | `definition-discovery` |
-| `fc05-definitions` | Sweep III for FC05: use the regenerated `## FC05 — Definitions` frontier, reuse/import/port mapped owners, and author only definitions left genuinely unmatched after `fc05-mapping`. Close the definitional layer before FC05 theorem work. | `fc05-mapping` |
-| `fc13-mapping` | Finish only FC13's unmatched definitional discovery work, reusing all mapping evidence already delivered out of order. | `fc05-definitions` |
-| `fc13-definitions` | Sweep III for FC13 under the same mapping-first rule. | `fc13-mapping` |
-| `fc06-mapping` | Finish only FC06's unmatched definitional discovery work, reusing prior evidence. | `fc13-definitions` |
-| `fc06-definitions` | Sweep III for FC06 under the same mapping-first rule. | `fc06-mapping` |
-| `fc07-mapping` | Finish only FC07's unmatched definitional discovery work, reusing prior evidence. | `fc06-definitions` |
-| `fc07-definitions` | Sweep III for FC07 under the same mapping-first rule. | `fc07-mapping` |
-| `fc08-mapping` | Finish only FC08's unmatched definitional discovery work, reusing prior evidence. | `fc07-definitions` |
-| `fc08-definitions` | Sweep III for FC08 under the same mapping-first rule. | `fc08-mapping` |
-| `fc09-mapping` | Finish only FC09's unmatched definitional discovery work, reusing prior evidence. | `fc08-definitions` |
-| `fc09-definitions` | Sweep III for FC09 under the same mapping-first rule. | `fc09-mapping` |
-| `fc10-mapping` | Finish only FC10's unmatched definitional discovery work, reusing prior evidence. | `fc09-definitions` |
-| `fc10-definitions` | Sweep III for FC10 under the same mapping-first rule. | `fc10-mapping` |
-| `fc11-mapping` | Finish only FC11's unmatched definitional discovery work, reusing prior evidence. | `fc10-definitions` |
-| `fc11-definitions` | Sweep III for FC11 under the same mapping-first rule. | `fc11-mapping` |
-| `fc12-mapping` | Finish only FC12's unmatched definitional discovery work, reusing prior evidence. | `fc11-definitions` |
-| `fc12-definitions` | Sweep III for FC12 under the same mapping-first rule. | `fc12-mapping` |
-| `fc14-mapping` | Finish only FC14's unmatched definitional discovery work, reusing prior evidence. | `fc12-definitions` |
-| `fc14-definitions` | Sweep III for FC14 under the same mapping-first rule. | `fc14-mapping` |
-| `fc15-mapping` | Finish only FC15's unmatched definitional discovery work, reusing prior evidence. | `fc14-definitions` |
-| `fc15-definitions` | Sweep III for FC15 under the same mapping-first rule. | `fc15-mapping` |
-| `fc16-mapping` | Finish only FC16's unmatched definitional discovery work, reusing prior evidence. | `fc15-definitions` |
-| `fc16-definitions` | Sweep III for FC16 under the same mapping-first rule. | `fc16-mapping` |
-| `fc17-mapping` | Adjudicate the 861 FC17 definitional units through the same definition-mapping gate. Read each permanent-tag source statement; use Kerodon's defined terminology plus the corpus-wide candidate census, pinned/current Mathlib and targeted follow-up before any `unmatched` verdict. Mapping the remaining 6,812 theorem/remark/example/equation units is still Sweep-II work, but it does not block FC17 Definitions. | `fc16-definitions`, `definition-discovery` |
-| `fc17-definitions` | Sweep III for the Kerodon definitional layer. Reuse/import/port the accepted FC17 mappings and author only mathematics that remains genuinely unmatched after `fc17-mapping`. | `fc17-mapping` |
+| `fc13-mapping` | Finish FC13 definitional semantic adjudication, reusing all prior evidence and comparing every accepted route to the complete source obligation. Rows not resolved positively may carry `[negative-search-complete]` only as provisional residue pending the corpus-wide open-ended audit. | `fc05-mapping`, `definition-discovery` |
+| `fc06-mapping` | Finish FC06 definitional semantic adjudication under the same rule. | `fc13-mapping` |
+| `fc07-mapping` | Finish FC07 definitional semantic adjudication under the same rule. | `fc06-mapping` |
+| `fc08-mapping` | Finish FC08 definitional semantic adjudication under the same rule. | `fc07-mapping` |
+| `fc09-mapping` | Finish FC09 definitional semantic adjudication under the same rule. | `fc08-mapping` |
+| `fc10-mapping` | Finish FC10 definitional semantic adjudication under the same rule. | `fc09-mapping` |
+| `fc11-mapping` | Finish FC11 definitional semantic adjudication under the same rule. | `fc10-mapping` |
+| `fc12-mapping` | Finish FC12 definitional semantic adjudication under the same rule. | `fc11-mapping` |
+| `fc14-mapping` | Finish FC14 definitional semantic adjudication under the same rule. | `fc12-mapping` |
+| `fc15-mapping` | Finish FC15 definitional semantic adjudication under the same rule. | `fc14-mapping` |
+| `fc16-mapping` | Finish FC16 definitional semantic adjudication under the same rule. | `fc15-mapping` |
+| `fc17-mapping` | Adjudicate the 861 FC17 definitional units. Read each permanent-tag source statement and compare every positive route clause-by-clause; unresolved rows may become provisional negative-search residue but do not authorize authorship. Mapping the remaining 6,812 theorem/remark/example/equation units remains Sweep-II work before Sweep IV and does not enter this definitional milestone. | `fc16-mapping`, `definition-discovery` |
+| `definition-positive-route-audit` | **Verify every positive definitional Mapping claim before Milestone 1.** Traverse the positive-route population from the canonical definition index. Reuse an existing comparison when it already records the complete source/declaration match; otherwise read the prose statement and actual declaration(s), verify every clause and the claimed generality, and repair false/partial/name-only routes. Exact repository/revision/path/declaration provenance must be present for external owners. This node is an audit of existing evidence, not an instruction to manufacture a new marker on already-good rows. **Acceptance:** no positive definitional route remains whose canonical row fails to demonstrate the complete source match. | `fc17-mapping` |
+| `fc01-definition-residue-pass2` | Systematic second-pass search of FC01 provisional definitional residue from `FOUNDATIONAL_DEFINITIONS.tsv`. Use broader source synonyms, nearby constructions, current/open upstream work, package registries, and candidate-derived terminology; inspect candidates and update the canonical mapping rows. This is still structured State-1 minimization work, not the final unconstrained search. | `fc17-mapping` |
+| `fc02-definition-residue-pass2` | Same second-pass task for FC02. If the generated residue is empty, verify that from the current index and close without manufacturing work. | `fc17-mapping` |
+| `fc03-definition-residue-pass2` | Same second-pass task for FC03. | `fc17-mapping` |
+| `fc04-definition-residue-pass2` | Same second-pass task for FC04. | `fc17-mapping` |
+| `fc05-definition-residue-pass2` | Same second-pass task for FC05, treating its older `[negative-search-complete]` rows as prior evidence rather than grandfathered final negatives. | `fc17-mapping` |
+| `fc06-definition-residue-pass2` | Same second-pass task for FC06. | `fc17-mapping` |
+| `fc07-definition-residue-pass2` | Same second-pass task for FC07. | `fc17-mapping` |
+| `fc08-definition-residue-pass2` | Same second-pass task for FC08. | `fc17-mapping` |
+| `fc09-definition-residue-pass2` | Same second-pass task for FC09. | `fc17-mapping` |
+| `fc10-definition-residue-pass2` | Same second-pass task for FC10. | `fc17-mapping` |
+| `fc11-definition-residue-pass2` | Same second-pass task for FC11. | `fc17-mapping` |
+| `fc12-definition-residue-pass2` | Same second-pass task for FC12. | `fc17-mapping` |
+| `fc13-definition-residue-pass2` | Same second-pass task for FC13. | `fc17-mapping` |
+| `fc14-definition-residue-pass2` | Same second-pass task for FC14. | `fc17-mapping` |
+| `fc15-definition-residue-pass2` | Same second-pass task for FC15. | `fc17-mapping` |
+| `fc16-definition-residue-pass2` | Same second-pass task for FC16. | `fc17-mapping` |
+| `fc17-definition-residue-pass2` | Same second-pass task for FC17/Kerodon, beginning from permanent-tag terminology but searching equivalent and historically different names as well. | `fc17-mapping` |
+| `definition-residue-pass2` | **Join for the systematic second-pass residue searches.** Source children may run independently. After they close, regenerate `FOUNDATIONAL_DEFINITIONS.tsv`; any newly positive route is semantically adjudicated and removed from residue, and any rows still lacking a completed first-stage mapping are sent back to the relevant `fcNN-mapping` node. This node does not certify final absence of prior art. | `fc01-definition-residue-pass2`, `fc02-definition-residue-pass2`, `fc03-definition-residue-pass2`, `fc04-definition-residue-pass2`, `fc05-definition-residue-pass2`, `fc06-definition-residue-pass2`, `fc07-definition-residue-pass2`, `fc08-definition-residue-pass2`, `fc09-definition-residue-pass2`, `fc10-definition-residue-pass2`, `fc11-definition-residue-pass2`, `fc12-definition-residue-pass2`, `fc13-definition-residue-pass2`, `fc14-definition-residue-pass2`, `fc15-definition-residue-pass2`, `fc16-definition-residue-pass2`, `fc17-definition-residue-pass2` |
+| `definition-open-ended-prior-art-search` | **Final unconstrained State-1 search immediately before Milestone 1.** Take the complete residue surviving the structured mapping and second-pass DAG and task agents explicitly with finding *anything* that can avoid fresh definition work. Search beyond the known corpus/local engines without precommitting to repositories or query vocabularies: broad web/GitHub/repository discovery, author/project pages, papers and citations that point to code, current/open branches and PRs, histories, package ecosystems, theorem-prover communities, and newly discovered formalization projects. Follow plausible leads recursively and let one discovery generate new names/repositories/search directions for other residue rows. Record auditable evidence in the canonical mapping row: date, mathematical object, queries/search terms, surfaces, revisions where relevant, projects/repositories/branches/PRs inspected, candidates followed, and rejection reasons. Only survivors of this task receive `[residue-search-audited]`. If a viable reference is found, replace the negative route and continue searching the reduced residue. Regenerate the definition index and repeat until this task reaches a fixed point: no `action=search` or `action=residue-search` row remains and an unconstrained pass finds no new viable implementation/reference. | `definition-residue-pass2`, `definition-positive-route-audit` |
+| `fc05-definitions` | Sweep III for FC05. Reuse/import/port accepted owners; author only rows that survived Milestone 1. Every port/new definition is checked against the complete original prose clauses and intrinsic laws before downstream use. | `definition-mapping-convergence`, `audit-authored-definitions` |
+| `fc13-definitions` | Sweep III for FC13 under the same source-faithful realization rule. | `fc05-definitions` |
+| `fc06-definitions` | Sweep III for FC06 under the same rule. | `fc13-definitions` |
+| `fc07-definitions` | Sweep III for FC07 under the same rule. | `fc06-definitions` |
+| `fc08-definitions` | Sweep III for FC08 under the same rule. | `fc07-definitions` |
+| `fc09-definitions` | Sweep III for FC09 under the same rule. | `fc08-definitions` |
+| `fc10-definitions` | Sweep III for FC10 under the same rule. | `fc09-definitions` |
+| `fc11-definitions` | Sweep III for FC11 under the same rule. | `fc10-definitions` |
+| `fc12-definitions` | Sweep III for FC12 under the same rule. | `fc11-definitions` |
+| `fc14-definitions` | Sweep III for FC14 under the same rule. | `fc12-definitions` |
+| `fc15-definitions` | Sweep III for FC15 under the same rule. | `fc14-definitions` |
+| `fc16-definitions` | Sweep III for FC16 under the same rule. | `fc15-definitions` |
+| `fc17-definitions` | Sweep III for the Kerodon definitional layer under the same rule. | `fc16-definitions` |
+| `definition-source-conformance` | **Final corpus-wide definitional source audit.** Return to the original prose statement for every open-programme definition/construction/notation/convention and inspect the actual Lean realization (or reused owner plus specialization/comparison), not merely its name or mapping label. Verify all data, hypotheses, quantifiers, equations/coherences, variance, universe/generalization choices, quotient/representative conditions, and intrinsic construction laws. Check at least one intended and one separating/excluded example where meaningful. Repair any mismatch at its mathematical owner and revisit dependent realizations. **Acceptance:** no definitional row remains merely plausible/partial; every row has a usable realization whose complete mathematical content agrees with the source, and all source Definitions cells can be checked without relying on build success as semantic evidence. | `fc17-definitions` |
 | `theorems` | [Sweep IV: remaining theorem obligations](#4-sweep-iv--formalize-the-remaining-lemmas-and-theorems) | `definitions`, and per source its own `fcNN-definitions` |
 | `arithmetic-lattice-foundations` | Execute [PLAN-ARITHMETIC-LATTICE-FOUNDATIONS](.agents/plans/features/FEATURE-ARITHMETIC-LATTICE-FOUNDATIONS/plans/PLAN-ARITHMETIC-LATTICE-FOUNDATIONS/PLAN-ARITHMETIC-LATTICE-FOUNDATIONS.md) at its stated natural generality after the foundational source programme: projective formed modules, metric I-duality/modularity, Dedekind/projective arithmetic, equivariant lattices, height-one/local realizations, intrinsic local invariants, ring adeles and adelic genus, local classification, signature loci, and the exact comparison maps back to their Mathlib/project owners. Preserve every distinction the plan calls out: separation vs perfection, primitive vs finite-index embeddings, algebraic vs metric duality, integral ring adeles vs field adeles, and bilinear vs quadratic discriminant data. Reuse Mathlib and external owners before project implementation. **Acceptance:** the plan success criteria and phase/task consumers are realized with kernel-checked comparisons; no familiar special case silently replaces a parameterized construction | `theorems` |
 
@@ -298,12 +325,27 @@ current implementation source. Do not recreate a one-query/one-row or one-source
 loop around an index designed for bulk retrieval.
 
 After the candidate census, take a source, not a chapter, in v3 traversal order for semantic
-adjudication. Compare candidates against each source statement; record a positive route with exact
-provenance or complete the targeted negative-search rule and mark the canonical unmatched row
-`[negative-search-complete]`. Once every definitional unit for that source is so disposed, its
-Definitions pass may begin even if non-definitional Sweep-II rows remain unmapped. Whole-source
-Mapping completion is still stated only in [the corpus status ledger](corpus/foundational-corpus-status.md)
-and still ultimately requires every source unit before the programme finishes Sweep II.
+adjudication. Compare candidates against each source statement and record positive routes with exact
+provenance. A bounded mandatory-surface pass may mark a still-unresolved row
+`[negative-search-complete]`, but that marker now means **provisional residue only**. It does not
+authorize greenfield implementation.
+
+After every source's definitional rows have undergone that semantic pass, State 1 continues through
+two further layers. First run the source/topic-batched second-pass nodes, which revisit provisional
+residue systematically with broader terminology, current/open work, package registries, and leads
+from the first pass. Then run `definition-open-ended-prior-art-search`, the intentionally
+unconstrained search task immediately before the gate. Its agents are asked to find *anything* that
+can avoid fresh definition work, including sources outside the known corpus and local search
+engines, and to follow newly discovered repositories/projects/citations recursively. Exact dated
+search evidence stays in the canonical mapping row. Only a survivor carrying
+`[residue-search-audited]` may remain `unmatched`. Repeat until the final open-ended task finds no
+new viable route and the generated search/residue-search population is empty. Only then does
+Milestone 1 (`definition-mapping-convergence`) transition the programme into Sweep III.
+
+Whole-source Mapping completion is still stated only in
+[the corpus status ledger](corpus/foundational-corpus-status.md) and still ultimately requires every
+source unit before the programme finishes Sweep II. The definitional milestone is narrower: it gates
+Sweep III and does not wait on unrelated theorem/remark/example mappings.
 
 For **every** source-unit ID, search existing formalization work before constructing any local formalization queue.
 
@@ -337,7 +379,9 @@ Each unit must end in exactly one route class:
 - `project-existing` — use the existing canonical LeanCategories owner;
 - `package-import` — import an external Lean package;
 - `reference-port` — a proof-assistant implementation exists but is not directly importable here; preserve the exact repository/revision/path/declaration/license provenance and port/adapt it later rather than rederive it;
-- `unmatched` — no acceptable implementation source was found after the exhaustive multi-source search.
+- `unmatched` — no acceptable implementation source was found. During source-local adjudication this
+  is provisional even after `[negative-search-complete]`; it becomes greenfield-eligible only after
+  the separate open-ended residue audit records `[residue-search-audited]` with auditable evidence.
 
 - [x] Record declaration names, repository/package, commit/tag, path, license,
   toolchain/Mathlib compatibility, and mathematical generality for every mapping.
@@ -350,25 +394,35 @@ Each unit must end in exactly one route class:
 
 Plan: [PLAN-FOUNDATIONAL-CORPUS-DEFINITION-SWEEP](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/plans/PLAN-FOUNDATIONAL-CORPUS-DEFINITION-SWEEP/PLAN-FOUNDATIONAL-CORPUS-DEFINITION-SWEEP.md).
 
-For each source, start its Definitions pass as soon as that source's Mapping cell completes; do not wait for Mapping of unrelated later sources. Traverse every definitional source unit according to its mapping:
+Sweep III starts only after **Milestone 1**, `definition-mapping-convergence`, closes corpus-wide for
+the definitional layer. This is deliberate: the greenfield queue is the complement of discovered
+prior art, so realizing early sources while later residue has not yet undergone open-ended search
+would freeze avoidable owned definitions into the dependency graph.
+
+Then traverse each source in v3 order according to its verified mapping:
 
 - reuse `mathlib`, `project-existing`, and `package-import` owners directly;
 - port/adapt `reference-port` implementations with exact provenance;
-- author new Lean mathematics only for `unmatched` units.
+- author new Lean mathematics only for `unmatched [residue-search-audited]` units.
 
 - [ ] Realize every definition, construction, category, morphism class, functor, natural
   transformation, predicate, notation-bearing object, and universal construction.
 - [ ] Define missing ambient categories and structural functors rather than introducing local
   stand-ins inside downstream subjects.
 - [ ] Place every definition at the lowest mathematical owner that generates it.
+- [ ] Re-read the original prose source after implementation and verify the actual Lean declaration
+  clause-by-clause: data, hypotheses, quantifiers, equations/coherences, variance, representative
+  conditions, and claimed generality. Do not infer fidelity from a familiar name or successful build.
 
 Sweep III includes proofs intrinsic to making definitions well-defined: category/functor laws,
 quotient well-definedness, independence of representatives, closure, and analogous structural
 obligations. It does not absorb the source's general lemma/theorem programme.
 
-Completion of Sweep III is the broad foundational-DSL milestone. Advanced definitional work may
-draw on this vocabulary even while Sweep IV is incomplete; a consumer requiring an unfinished
-theorem depends on that theorem specifically.
+After the last source realization, run `definition-source-conformance` across the complete open
+programme. Milestone 2 (`definition-realization-convergence`) closes only when every definitional
+unit survives that final source audit. Completion of that milestone is the broad foundational-DSL
+milestone. Advanced definitional work may draw on this vocabulary even while Sweep IV is incomplete;
+a consumer requiring an unfinished theorem depends on that theorem specifically.
 
 ## 4. Sweep IV — formalize the remaining lemmas and theorems
 

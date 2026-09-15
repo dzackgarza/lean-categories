@@ -40,10 +40,15 @@ results are discovery evidence, not final provenance: open the returned upstream
 repository/revision/path/name/license/toolchain plus the mathematical comparison
 to the full Kerodon obligation.
 
-An `unmatched` route requires the complete negative-search stopping rule in
-`AGENTS.md`, including the Formalization Corpus API under multiple source names,
-standard synonyms, expected declaration/type fragments, and nearby constructions.
-An API outage cannot support `unmatched`.
+An `unmatched [negative-search-complete]` route records only the bounded
+source-local negative pass. It does **not** authorize greenfield implementation.
+After all definitional Mapping passes finish, every such row enters the corpus-wide
+open-ended residue audit in `AGENTS.md`/`TODO.md`. A row may remain greenfield only
+after its canonical row records the dated reproducible search evidence from that
+audit and carries `[residue-search-audited]`. The audit explicitly searches beyond
+the Formalization Corpus/local indexes and follows newly discovered repositories,
+projects, branches/PRs, cross-prover sources, and web leads. An API outage or a zero
+result from any one search surface cannot support the final negative verdict.
 
 ## Canonical row schema
 

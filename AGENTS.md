@@ -74,6 +74,28 @@ obstruction — is deep theorem work on a single unit while the definitions its 
 are still missing. If a definition you need is absent, that absence *is* the next unit; add it
 with its source and mapping record rather than assuming it around.
 
+### The definitional programme is a two-state machine
+
+There are only two substantive states before theorem work:
+
+1. **State 1 — minimize the definitional work.** Everything in the Mapping/search DAG belongs to
+   this state: bulk candidate discovery, source-ordered semantic mapping, positive-route verification,
+   source/topic-batched second searches, and finally the unconstrained open-ended prior-art search.
+   These tasks may fan out, repeat, or feed newly discovered repositories back into earlier mapping
+   work. None of them is definition implementation. The terminal gate is
+   `definition-mapping-convergence` (Milestone 1). It performs no work; it certifies that the set of
+   definitions that still require ports or fresh authorship has been minimized to a fixed point.
+2. **State 2 — realize the minimized definitional work.** Only after Milestone 1 closes do the
+   source-order Definitions nodes run. They reuse direct owners, import packages, port references,
+   and author only the final audited residue. A final corpus-wide source-conformance pass feeds
+   `definition-realization-convergence` (Milestone 2). That gate likewise performs no work; it
+   certifies that every definitional obligation is completely realized and source-faithful.
+
+Do not create intermediate “milestones” for search passes. A second pass, per-source batch, or
+specialist repository search is ordinary State-1 work feeding Milestone 1. Likewise a local
+definition audit is ordinary State-2 work feeding Milestone 2. The milestones are state transitions,
+not task buckets.
+
 Mapping is an essential prerequisite for greenfield Definitions, but **candidate discovery is a
 corpus-wide batch retrieval problem, not a source-by-source serial workflow**. Regenerate
 `FOUNDATIONAL_DEFINITIONS.tsv` with `scripts/foundational_definition_index.py`; it is the derived
@@ -90,22 +112,28 @@ LeanCategories owner that already existed before the current unit entered Mappin
 ported, or imported while that source's Mapping phase is open cannot close its own mapping row and
 cannot be cited as `project-existing` for that row.  Preserve accidental implementation residue,
 finish Mapping from pre-existing/external evidence, and only then resume Definitions.  Likewise,
-a landed `reference-port` remains `reference-port`, and a landed package-backed alias remains
-`package-import`; realization never erases the provenance route that justified doing the work.
-When such a mapped port/import is actually accepted in Sweep III, append `[realized]` to that
-canonical mapping verdict.  The marker is Definition-completion state only: it does not change the
-route, does not count as Mapping evidence, and must never be inferred merely from the presence of a
-local file.  A premature or unaccepted implementation remains residue and receives no marker.
+a landed `reference-port` remains `reference-port`, a landed package-backed alias remains
+`package-import`, and a newly authored definition remains causally `unmatched`; realization never
+erases the provenance route that justified doing the work. When a port/import/new definition is
+actually accepted in Sweep III, append `[realized]` to that canonical mapping verdict. The marker is
+Definition-completion state only: it does not change the route, does not count as Mapping evidence,
+and must never be inferred merely from the presence of a local file. A premature or unaccepted
+implementation remains residue and receives no marker.
 
 The source traversal order governs **semantic adjudication and implementation**, not cheap
 retrieval. After the global candidate census, take the first source whose definition mapping is
 open, compare its candidates to the actual source clauses, and resolve every definitional row.
-Positive hits receive exact provenance. An `unmatched` row is accepted for greenfield authoring
-only after the finite negative-search rule has been applied and its canonical mapping row contains
-`[negative-search-complete]`; a zero-result lexical query is not such evidence. Once all definition
-rows for a source have either a positive route or that explicit negative-search marker, begin that
-source's Definitions pass immediately. Mapping of its theorem/remark/example rows remains a Sweep-II
-obligation but **does not block Sweep III**; those rows are resolved before their Sweep-IV use.
+Positive hits receive exact provenance. A finite mandatory-surface pass may leave a row
+`unmatched [negative-search-complete]`, but that is only **provisional residue** and no longer
+authorizes greenfield work.
+
+After every source's definitional mapping has received that source-local semantic pass, remain in
+State 1. Run the structured second-pass DAG over the provisional residue, then run the final
+unconstrained open-ended prior-art search immediately before Milestone 1. Only a survivor whose
+canonical mapping record carries `[residue-search-audited]` may enter the greenfield queue. Sweep III
+begins only after the Milestone-1 gate closes. Mapping of theorem/remark/example rows remains a
+Sweep-II obligation but does not block that definitional state transition; those rows are resolved
+before their Sweep-IV use.
 
 Before authoring a new definition, therefore, consult the corpus-wide candidate table first, then
 finish targeted searches for that unit under multiple mathematical formulations against pinned and
@@ -779,6 +807,14 @@ does not actually implement the recorded obligation, repair that factual mapping
 That exception is evidence-driven correction, not the worklist for the current Mapping correction.
 Auditing already-authored project definitions for reinvention is a separate downstream quality task.
 
+Before Milestone 1 closes, however, run the dedicated `definition-positive-route-audit` once over
+the complete positive definitional population. This is not a request to re-search already-good rows
+or add ceremonial markers. Reuse existing evidence when the canonical row already records the full
+source/declaration comparison; otherwise read the prose and actual declaration(s), verify every
+defining clause and the claimed generality, and repair partial/name-only/false routes. Milestone 1
+means both sides are finished: the positive routes are genuinely verified, and the negative residue
+has survived the open-ended audit below.
+
 #### A bundled row is matched clause by clause, and `unmatched` is the last resort
 
 Authorship is cleared only for a unit whose mapping is `unmatched`, so `unmatched` is the most
@@ -788,16 +824,46 @@ open PRs, the live `formalization-corpus` API under multiple formulations, Reser
 discoverable Lean repository, the other proof-assistant repositories indexed by the corpus, and
 the formalization atlas — not when the first search returned nothing convenient.
 
-**Negative search has a stopping rule.** For one unit, read the source obligation first, then make
-one scoped pass over each mandatory discovery surface using the source terminology and the distinct
-mathematical/declaration spellings suggested by that obligation; inspect the actual candidate
-declarations returned. Record the dated scopes/queries and the reason each plausible candidate fails.
-When every mandatory surface has been queried in that pass and no compatible candidate survives,
-the unit may remain `unmatched` and Mapping moves on. Do not repeat an unchanged query surface under
-endless paraphrases: repeat a channel only when new source information, a newly indexed revision, or
-a concrete candidate supplies a genuinely new search key. “Every discoverable repository” means the
-maintained corpus/index/search surfaces plus concrete repositories discovered from them; it does not
-mean an unbounded internet crawl.
+**Negative search has two stages.** The first stage is the bounded source-local pass: read the source
+obligation, query every mandatory discovery surface under the source terminology and genuinely
+distinct mathematical/declaration spellings, inspect the actual candidate declarations returned,
+and record dated scopes/queries plus the reason each plausible candidate fails. When that pass is
+complete, the row may be marked `[negative-search-complete]` so source-local Mapping can move on.
+That marker means only “all currently mandatory/indexed surfaces were exhausted”; it does **not**
+authorize authorship.
+
+Before the final audit, the DAG may run as many **structured second passes** as are useful: source-
+batched searches, topic clusters, candidate-derived synonym passes, current/open upstream checks,
+package-registry sweeps, or repository-specific follow-ups. These remain ordinary State-1 work. They
+shrink the residue and improve its evidence, but they do not certify final absence of prior art.
+
+The second stage is the corpus-wide **open-ended residue audit**, run only after every definitional
+row has received its source-local Mapping pass and the structured second-pass DAG has converged. This
+task sits immediately before Milestone 1. Assign the remaining residue to workers and explicitly ask
+them to find anything that can avoid fresh definition work, without constraining them to the known
+corpus, known repositories, local search engines, or the vocabulary used by earlier passes. They must
+use broad repository/code search, current branches and open PRs, package registries, project histories,
+web search, project/paper pages that may point to formal code, and other proof-assistant ecosystems;
+they must follow newly discovered plausible repositories and names rather than treating the starting
+registry as exhaustive. Search terminology can expand from candidate code, citations, author/project
+names, historical nomenclature, equivalent formulations, and characteristic type signatures. A zero
+result from the formalization corpus, local grep, Loogle, or GitHub alone is never enough.
+
+The proof of that work lives in the **canonical mapping row**, not a second residue ledger. Before a
+row may retain `unmatched`, the row must record enough information for another reviewer to reproduce
+the search: date; the mathematical object sought; exact or faithfully summarized query formulations;
+the surfaces used; revisions/snapshots where relevant; repositories/projects/branches/PRs inspected;
+plausible candidates followed; and the mathematical reason each candidate fails the source clauses.
+Only then add `[residue-search-audited]`. If a worker lacks access to a relevant search surface, that
+surface is not silently counted as searched; the row stays open for another worker. Discovery of a
+new plausible source sends the row back to semantic adjudication. Re-run the residue population until
+a full open-ended pass finds no newly viable implementation/reference route.
+
+Do not generate dozens of meaningless paraphrases merely to inflate search evidence. The audit is
+open-ended in **where it looks and what new leads it follows**, not in repetitive query count. Its
+termination condition is a fixed point under serious prior-art search: no newly discovered viable
+owner/reference remains, and every surviving negative row has reproducible evidence of what was
+actually searched.
 
 **"No single declaration realizes the whole bundled row" is not a ground for `unmatched`.** A
 source row that bundles several clauses is matched by the conjunction of the declarations that
@@ -856,6 +922,22 @@ to inhabit its claimed mathematical class. An arbitrary output is not a normal-f
 construction until the required normal-form property is established. A source-defined
 predicate expressing that property is a different, legitimate obligation.
 
+The source comparison is not a one-time design note. After the source-order Definitions
+passes finish, run the corpus-wide `definition-source-conformance` milestone: re-open the
+original prose statement and the actual exported realization for every definitional unit in
+the open programme. Check the complete data and hypotheses, all quantifiers, equations and
+coherences, covariance/contravariance, representative or quotient conditions, ambient
+category assumptions, and the exact generality claimed. For imported/reused owners, check
+the specialization/comparison that makes the source notion a genuine instance. For ports and
+new definitions, inspect the implementation itself. Require an intended example and a nearby
+separating/excluded example whenever they are mathematically meaningful. A mismatch reopens
+the owning definition and every dependent realization that used the wrong meaning.
+
+Milestone 2 closes only when this global pass finds no merely plausible, partial, weakened, or
+over-specialized realization. A green build, exported declaration, no-`sorry` scan, or theorem
+proved downstream is integration evidence only; none is evidence that the Lean definition
+means exactly what the prose reference means.
+
 General classification and other theorems may remain in Sweep IV when the definition
 does not depend on them. If a source theorem is required to construct or use the named
 object, record its exact source-unit dependency and discharge that prerequisite.
@@ -875,12 +957,21 @@ discharges that phase's obligation. Reuse the existing catalogue and mapping rec
 Do not create aliases or a parallel completion table to make this check easy.
 
 Catalogue closure requires complete admitted source coverage, identities, statements,
-hypotheses/data, and source-unit dependencies. Mapping closure requires an inspected
-route and supporting comparison or a scoped, dated negative search for every unit;
-an admissible `unmatched` mapping does not require a Lean implementation in Sweep II.
-Definition closure requires usable realizations of all definitional content. Theorem
-closure requires the remaining source results with their original hypotheses and
-conclusions proved. Do not apply a later phase's acceptance burden to an earlier one.
+hypotheses/data, and source-unit dependencies. Source-local Mapping closure requires an
+inspected route and supporting comparison or a scoped, dated first-stage negative search
+for every unit. For **definitional** work, that source-local negative result is still
+provisional until the later corpus-wide residue audit. Milestone 1 closes only when every
+definitional positive route is semantically accepted and every surviving negative row has
+the reproducible open-ended evidence plus `[residue-search-audited]`. An admissible
+negative mapping still does not require a Lean implementation in Sweep II.
+
+Definition closure requires usable realizations of all definitional content and complete
+agreement with the original prose obligation. The final definition-source-conformance pass
+re-reads the source and actual realization globally after all source implementations have
+landed; it is not replaced by local typechecking. Theorem closure requires the remaining
+source results with their original hypotheses and conclusions proved. Do not apply an
+implementation burden to Mapping, but do not weaken either definitional convergence
+milestone to make an earlier box turn green.
 
 In Sweep III, direct Mathlib/project routes need the accepted semantic match and
 required reachability. Package routes need the actual accepted dependency. Reference
@@ -1126,8 +1217,9 @@ Before writing any **foundational-corpus** construct, in order:
 3. **Reuse before authorship.** A Mathlib or existing project route is used directly. An
    importable external package is imported. A non-importable Lean implementation is preserved
    with exact repository/commit/path/license provenance and ported/adapted from that reference.
-   Only a unit with a completed `unmatched` mapping record is eligible for genuinely new Lean
-   mathematics.
+   A source-local `unmatched [negative-search-complete]` row is still provisional. Only a unit
+   that also survived the corpus-wide open-ended residue audit and carries
+   `[residue-search-audited]` is eligible for genuinely new Lean mathematics.
 
 4. **Then realize the definition at its mathematical owner.** A new construct with no stated
    relationship to the standard/source notion is a red flag. Reuse Mathlib's typeclasses,
@@ -1138,8 +1230,10 @@ Before writing any **foundational-corpus** construct, in order:
 
 5. **Keep search evidence in the mapping record.** The corpus catalogue owns mathematical
    source content; Sweep II owns implementation provenance. Do not create separate ad hoc route
-   notes per downstream consumer. `unmatched` is a dated scoped negative search result, never a
-   timeless claim that no formalization exists anywhere.
+   notes or a residue ledger per downstream consumer. `unmatched` is a dated scoped negative
+   search result, never a timeless claim that no formalization exists anywhere. A final
+   greenfield-eligible negative row must also contain the reproducible open-ended residue-audit
+   evidence required above and the `[residue-search-audited]` marker.
 
 For genuinely new work outside the admitted corpus, the same reuse search applies, but first make
 an explicit source/corpus-scope decision rather than silently extending the in-force corpus.
