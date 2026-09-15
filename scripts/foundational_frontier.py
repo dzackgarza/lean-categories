@@ -282,6 +282,15 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # C20-U071 is setup/theorem context on linearization and du Val
         # quotient singularities, not a new definition.
         "FC11-C20-U071",
+        # C21-U005 is the geometric invariance theorem for nodal classes in an
+        # adapted root pair; the root-pair/nodal-set definitions are U004.
+        "FC11-C21-U005",
+        # C21-U023 is only an editorial lead-in attributing the terminology
+        # whose actual definition is U024.
+        "FC11-C21-U023",
+        # C21-U025 is the generic-period/Picard-rank comparison used to derive
+        # semisymplecticity, not a new construction.
+        "FC11-C21-U025",
     }
 )
 
