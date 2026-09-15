@@ -259,7 +259,6 @@ theorem centralHomLocalizationComparison_mk {R : Type u} [Ring R]
   rfl
 
 /-- The defining fraction formula `(f/s)(a/t)=f(a)/(st)` for the localization comparison. -/
-@[simp]
 theorem centralHomLocalizationComparison_fraction {R : Type u} [Ring R]
     (S : Submonoid R) (hS : IsCentralSubmonoid S)
     {A : Type v} [AddCommGroup A] [Module R A]

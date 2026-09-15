@@ -46,16 +46,16 @@ noncomputable def associatedGradedNat {K : ChainComplex C ℕ}
 
 /-- The total-degree fibers in a first-quadrant double complex are finite, so
 the direct-sum total complex exists in every abelian category. -/
-private def totalFiber (n : ℕ) :=
-  (fun x : ℕ × ℕ => x.1 + x.2) ⁻¹' ({n} : Set ℕ)
+private abbrev totalFiber (n : ℕ) :=
+  { x : ℕ × ℕ // x.1 + x.2 = n }
 
 private def totalFiberToFin (n : ℕ) : totalFiber n → Fin (n + 1) × Fin (n + 1) :=
   fun x =>
     (⟨x.1.1, by
-      have hx : x.1.1 + x.1.2 = n := by simpa [totalFiber] using x.2
+      have hx : x.1.1 + x.1.2 = n := x.2
       omega⟩,
      ⟨x.1.2, by
-      have hx : x.1.1 + x.1.2 = n := by simpa [totalFiber] using x.2
+      have hx : x.1.1 + x.1.2 = n := x.2
       omega⟩)
 
 private theorem totalFiberToFin_injective (n : ℕ) : Function.Injective (totalFiberToFin n) := by

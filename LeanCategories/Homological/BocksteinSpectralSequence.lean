@@ -617,11 +617,11 @@ derivation data required by the U070 constructor. -/
 noncomputable def bigradedDerivedData (D : BocksteinExactCoupleData ℓ) :
     (bigraded D).DerivedData where
   couple := bigraded (derived D)
-  D_iso p := by
+  dIso p := by
     change H D p.2 ≅ Abelian.image ((bigraded D).incomingI p)
     simpa [BigradedExactCouple.incomingI, bigradedIncoming, bigraded, zeroShift] using
       (Iso.refl (Abelian.image (bocksteinPrimeMap ℓ (D.H p.2))))
-  E_iso p := pageHomologyIso D p
+  eIso p := pageHomologyIso D p
 
 /-- The recursive tower of bigraded Bockstein exact couples. -/
 noncomputable def bigradedTower (D : BocksteinExactCoupleData ℓ) :

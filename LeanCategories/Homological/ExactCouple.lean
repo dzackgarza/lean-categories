@@ -117,21 +117,21 @@ structure DerivedCoupleData (𝓔 : ExactCouple (C := C)) where
   /-- The candidate derived exact couple. -/
   couple : ExactCouple (C := C)
   /-- Identification `D' ≅ i(D)`. -/
-  D_iso : couple.D ≅ Abelian.image 𝓔.i
+  dIso : couple.D ≅ Abelian.image 𝓔.i
   /-- Identification `E' ≅ H(E,jk)`. -/
-  E_iso : couple.E ≅ (𝓔.differentialComplex differential_sq_zero).homology
+  eIso : couple.E ≅ (𝓔.differentialComplex differential_sq_zero).homology
   /-- `i'` is the restriction of `i` to its image. -/
   i_restriction :
-    D_iso.hom ≫ Abelian.image.ι 𝓔.i ≫ 𝓔.i =
-      couple.i ≫ D_iso.hom ≫ Abelian.image.ι 𝓔.i
+    dIso.hom ≫ Abelian.image.ι 𝓔.i ≫ 𝓔.i =
+      couple.i ≫ dIso.hom ≫ Abelian.image.ι 𝓔.i
   /-- Under the chosen identifications, `j'(i(d)) = [j(d)]`. -/
   j_induced :
-    Abelian.factorThruImage 𝓔.i ≫ D_iso.inv ≫ couple.j ≫ E_iso.hom =
+    Abelian.factorThruImage 𝓔.i ≫ dIso.inv ≫ couple.j ≫ eIso.hom =
       𝓔.jClass differential_sq_zero
   /-- Under the chosen identifications, `k'([e]) = k(e)` on cycles. -/
   k_induced :
-    (𝓔.differentialComplex differential_sq_zero).homologyπ ≫ E_iso.inv ≫ couple.k ≫
-        D_iso.hom ≫ Abelian.image.ι 𝓔.i =
+    (𝓔.differentialComplex differential_sq_zero).homologyπ ≫ eIso.inv ≫ couple.k ≫
+        dIso.hom ≫ Abelian.image.ι 𝓔.i =
       (𝓔.differentialComplex differential_sq_zero).iCycles ≫ 𝓔.k
 
 end LeanCategories.Homological

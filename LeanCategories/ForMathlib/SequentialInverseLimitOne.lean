@@ -50,7 +50,7 @@ theorem mem_ker_difference_iff (a : ∀ n, A n) :
 /-- The degree-zero term in Eilenberg's model: the kernel of the difference map. -/
 abbrev limZero := (difference A θ).ker
 
-@[simp] theorem mem_limZero_iff (a : ∀ n, A n) :
+theorem mem_limZero_iff (a : ∀ n, A n) :
     a ∈ limZero A θ ↔ ∀ n, θ n (a (n + 1)) = a n :=
   mem_ker_difference_iff A θ a
 

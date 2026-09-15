@@ -172,9 +172,9 @@ structure DerivedData where
   /-- The next exact couple. -/
   couple : BigradedExactCouple (C := C)
   /-- The next `D` term is the image of the incoming `i` map. -/
-  D_iso : ∀ p, couple.D p ≅ Abelian.image (X.incomingI p)
+  dIso : ∀ p, couple.D p ≅ Abelian.image (X.incomingI p)
   /-- The next `E` term is the homology of the current exact-couple page. -/
-  E_iso : ∀ p, couple.E p ≅ X.page.homology p
+  eIso : ∀ p, couple.E p ≅ X.page.homology p
 
 /-- A recursively derived exact-couple tower rooted at `X`.
 
@@ -214,7 +214,7 @@ def spectralPageIso (a r r' : ℤ) (p : ExactCoupleBidegree)
   have hnext : (T.step n).couple.E p = (T.couple (r' - a).toNat).E p := by
     rw [T.succ_eq n]
     exact congrArg (fun m : ℕ => (T.couple m).E p) hnat.symm
-  exact ((T.step n).E_iso p).symm ≪≫ eqToIso hnext
+  exact ((T.step n).eIso p).symm ≪≫ eqToIso hnext
 
 /-- The spectral sequence intrinsically constructed from a rooted derived
 exact-couple tower. -/
@@ -267,7 +267,7 @@ def spectralPageIso (a r r' : ℤ) (p : ExactCoupleBidegree)
       (iterate X derive (r' - a).toNat).E p
     exact congrArg (fun Y : BigradedExactCouple (C := C) => Y.E p)
       (congrArg (iterate X derive) (Eq.symm hnat))
-  exact ((derive (iterate X derive (r - a).toNat)).E_iso p).symm ≪≫ eqToIso hobj
+  exact ((derive (iterate X derive (r - a).toNat)).eIso p).symm ≪≫ eqToIso hobj
 
 /-- The spectral sequence constructed by repeated derivation of a bigraded
 exact couple.  No spectral-sequence page or differential is supplied as input:
