@@ -140,6 +140,9 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # C02-U034 is the asserted 11/8 consequence and complex-surface case,
         # expressed entirely in the previously introduced manifold invariants.
         "FC11-C02-U034",
+        # Peters--Sterk C13-U006 is the PBW/associated-graded comparison theorem
+        # for the already-defined Clifford algebra and filtration, not a new definition.
+        "FC11-C13-U006",
         # Peters--Sterk Appendix B U004 is the Kähler Hodge theorem identifying
         # already-defined H^{p,q} with de-Rham classes and proving decomposition/
         # conjugation. It introduces no new cohomology carrier beyond U003.
