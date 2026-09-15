@@ -6,6 +6,7 @@ module
 
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 public import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 public import Mathlib.LinearAlgebra.Quotient.Bilinear
 public import Mathlib.LinearAlgebra.TensorProduct.Basic
 
@@ -39,6 +40,7 @@ noncomputable section
 namespace LeanCategories.Homological
 
 open CategoryTheory
+open MonoidalCategory
 open scoped TensorProduct
 
 variable (G : Type) [Group G]
@@ -675,9 +677,8 @@ private lemma groupCohomologyCupRightDesc_zero_left
   simp
 
 private abbrev groupCohomologyCupHomTarget (q r : ℕ) : ModuleCat ℤ :=
-  ModuleCat.of ℤ
-    (groupCohomology (groupCohomologyTrivialIntRep G) q ⟶
-      groupCohomology (groupCohomologyTrivialIntRep G) r)
+  (ihom (groupCohomology (groupCohomologyTrivialIntRep G) q)).obj
+    (groupCohomology (groupCohomologyTrivialIntRep G) r)
 
 /-- The once-descended cup pairing, regarded additively in its remaining left cocycle variable. -/
 private def groupCohomologyCupLeftCyclesAdd (p q r : ℕ) (hr : r = p + q) :
@@ -728,9 +729,14 @@ private lemma groupCohomologyCupLeftCyclesMap_boundary
     groupCohomologyCupLeftCyclesMap G (i + 1) q r hr
         ((groupCohomologyCanonicalComplex G).toCycles i (i + 1) x) = 0 := by
   rw [groupCohomologyCupLeftCyclesMap_apply]
+  change groupCohomologyCupRightDesc G (i + 1) q r hr
+      ((groupCohomologyCanonicalComplex G).toCycles i (i + 1) x) =
+    (0 : groupCohomology (groupCohomologyTrivialIntRep G) q ⟶
+      groupCohomology (groupCohomologyTrivialIntRep G) r)
   apply (cancel_epi (groupCohomology.π (groupCohomologyTrivialIntRep G) q)).1
   rw [groupCohomologyCupRightDesc_π]
-  simpa using groupCohomologyCupCyclesToHomology_boundary_left G i q r hr x
+  rw [groupCohomologyCupCyclesToHomology_boundary_left]
+  simp
 
 /-- Second homology-quotient descent: the remaining left cocycle variable descends through the
 canonical cokernel presentation of ordinary group cohomology. -/
@@ -767,5 +773,58 @@ private lemma groupCohomologyCupLeftDesc_π (p q r : ℕ) (hr : r = p + q) :
         groupCohomologyCupLeftDesc G p q r hr =
       groupCohomologyCupLeftCyclesMap G p q r hr :=
   (groupCohomologyCupLeftDescData G p q r hr).2
+
+private lemma groupCohomologyCupLeftDesc_apply_π (p q r : ℕ) (hr : r = p + q)
+    (σ : groupCohomology.cocycles (groupCohomologyTrivialIntRep G) p) :
+    groupCohomologyCupLeftDesc G p q r hr
+        (groupCohomology.π (groupCohomologyTrivialIntRep G) p σ) =
+      groupCohomologyCupRightDesc G p q r hr σ := by
+  change ((groupCohomology.π (groupCohomologyTrivialIntRep G) p ≫
+    groupCohomologyCupLeftDesc G p q r hr) σ) = _
+  rw [groupCohomologyCupLeftDesc_π, groupCohomologyCupLeftCyclesMap_apply]
+
+private lemma groupCohomologyCupRightDesc_apply_π (p q r : ℕ) (hr : r = p + q)
+    (σ : groupCohomology.cocycles (groupCohomologyTrivialIntRep G) p)
+    (τ : groupCohomology.cocycles (groupCohomologyTrivialIntRep G) q) :
+    groupCohomologyCupRightDesc G p q r hr σ
+        (groupCohomology.π (groupCohomologyTrivialIntRep G) q τ) =
+      groupCohomology.π (groupCohomologyTrivialIntRep G) r
+        (groupCohomologyCupCocycleAux G p q r hr σ τ) := by
+  change ((groupCohomology.π (groupCohomologyTrivialIntRep G) q ≫
+    groupCohomologyCupRightDesc G p q r hr σ) τ) = _
+  rw [groupCohomologyCupRightDesc_π, groupCohomologyCupCyclesToHomology_apply]
+
+/-- The all-degree cup product on ordinary integral group cohomology.  The two quotient descents
+above produce a morphism `H^p → Hom(H^q,H^r)`; Mathlib's closed symmetric monoidal structure
+uncurries it to `H^q ⊗ H^p → H^r`, and the braiding restores the conventional source order. -/
+noncomputable def groupCohomologyCupProduct (p q r : ℕ) (hr : r = p + q) :
+    (groupCohomology (groupCohomologyTrivialIntRep G) p ⊗
+        groupCohomology (groupCohomologyTrivialIntRep G) q) ⟶
+      groupCohomology (groupCohomologyTrivialIntRep G) r :=
+  (β_ (groupCohomology (groupCohomologyTrivialIntRep G) p)
+      (groupCohomology (groupCohomologyTrivialIntRep G) q)).hom ≫
+    MonoidalClosed.uncurry (groupCohomologyCupLeftDesc G p q r hr)
+
+@[simp]
+lemma groupCohomologyCupProduct_tmul (p q r : ℕ) (hr : r = p + q)
+    (x : groupCohomology (groupCohomologyTrivialIntRep G) p)
+    (y : groupCohomology (groupCohomologyTrivialIntRep G) q) :
+    groupCohomologyCupProduct G p q r hr (x ⊗ₜ[ℤ] y) =
+      (groupCohomologyCupLeftDesc G p q r hr x).hom y := by
+  simp [groupCohomologyCupProduct, ModuleCat.MonoidalCategory.braiding_hom_apply,
+    ModuleCat.monoidalClosed_uncurry]
+
+/-- On classes represented by cocycles, the descended cup product is represented by the
+inhomogeneous cochain cup product. -/
+lemma groupCohomologyCupProduct_π_tmul_π (p q r : ℕ) (hr : r = p + q)
+    (σ : groupCohomology.cocycles (groupCohomologyTrivialIntRep G) p)
+    (τ : groupCohomology.cocycles (groupCohomologyTrivialIntRep G) q) :
+    groupCohomologyCupProduct G p q r hr
+        (groupCohomology.π (groupCohomologyTrivialIntRep G) p σ ⊗ₜ[ℤ]
+          groupCohomology.π (groupCohomologyTrivialIntRep G) q τ) =
+      groupCohomology.π (groupCohomologyTrivialIntRep G) r
+        (groupCohomologyCupCocycleAux G p q r hr σ τ) := by
+  rw [groupCohomologyCupProduct_tmul, groupCohomologyCupLeftDesc_apply_π,
+    groupCohomologyCupRightDesc_apply_π]
 
 end LeanCategories.Homological
