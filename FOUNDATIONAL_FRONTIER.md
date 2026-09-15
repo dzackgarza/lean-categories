@@ -181,7 +181,7 @@ Next 5 open units in source traversal order:
 | `FC08-C03-U022` | Convention/notation — smooth manifold | — | ready by recorded prerequisites | unmatched; open-ended residue audit required |
 | `FC08-C03-U028` | Convention/notation — source terminology/construction | — | ready by recorded prerequisites | unmatched; open-ended residue audit required |
 | `FC08-C03-U039` | Definition/convention — velocity of at t (Fig | — | ready by recorded prerequisites | unmatched; open-ended residue audit required |
-| `FC08-C04-U025` | Definition/convention — topological immersion | `FC08-C04-U024`, `FC08-C04-U018` | ready by recorded prerequisites | unmatched; search existing formalizations |
+| `FC08-C04-U025` | Definition/convention — topological immersion | `FC08-C04-U024`, `FC08-C04-U018` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
 
 ## FC08 — Definitions
 
