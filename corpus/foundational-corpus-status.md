@@ -35,7 +35,7 @@ Corpus: [[foundational-source-corpus|Foundational source corpus, including in-fo
 | FC09 | [Foundational corpus units FC09 Neukirch](foundational-corpus-units-fc09-neukirch) · [Foundational corpus mapping FC09 Neukirch](foundational-corpus-mapping-fc09-neukirch)                                                                          | [x]       | [x]     | [ ]         | [ ]      |
 | FC10 | [Foundational corpus units FC10 Serre Local Fields](foundational-corpus-units-fc10-serre-local-fields) · [Foundational corpus mapping FC10 Serre Local Fields](foundational-corpus-mapping-fc10-serre-local-fields)                                  | [x]       | [x]     | [ ]         | [ ]      |
 | FC11 | [FC11 — Peters–Sterk, Symmetric and Quadratic Forms (June 2024)](foundational-corpus-units-fc11-peters-sterk) · [Foundational corpus mapping FC11 Peters Sterk](foundational-corpus-mapping-fc11-peters-sterk)                                  | [x]       | [x]     | [ ]         | [ ]      |
-| FC12 | [FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.](foundational-corpus-units-fc12-beauville) · [Foundational corpus mapping FC12 Beauville](foundational-corpus-mapping-fc12-beauville)                                                        | [x]       | [ ]     | [ ]         | [ ]      |
+| FC12 | [FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.](foundational-corpus-units-fc12-beauville) · [Foundational corpus mapping FC12 Beauville](foundational-corpus-mapping-fc12-beauville)                                                        | [x]       | [x]     | [ ]         | [ ]      |
 
 Corpus v2 amendment (traversed after `FC05`, before `FC06` for `FC13`; after `FC12` for the rest):
 

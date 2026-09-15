@@ -4,7 +4,7 @@
 
 This is derived scheduling output, not a completion ledger. Sweep completion is read only from `corpus/foundational-corpus-status.md`. The frontier is regenerated from the canonical Sweep-I unit catalogues and Sweep-II mapping records.
 
-Current whole-source ledger: **35 unticked Mapping/Definitions/Theorems cells**.
+Current whole-source ledger: **34 unticked Mapping/Definitions/Theorems cells**.
 For Mapping, a definitional unit is complete once it has a positive implementation source: `mathlib`, `project-existing`, `package-import`, or `reference-port`; only missing/`unmatched` definitions remain discovery work. For Definitions and Theorems, realization is stricter: `reference-port`, `package-import`, partial-interface, and `unmatched` rows can still require work.
 
 ## FC01 — Theorems
@@ -420,29 +420,6 @@ Next 12 open units in source traversal order:
 | `FC11-C01-U102` | Proposition 1.7.4 | `FC11-C01-U075`, `FC11-C01-U082`, `FC11-C01-U101` | ready by recorded prerequisites | reference-port; port |
 | `FC11-C01-U105` | Lemma 1.7.6 | `FC11-C01-U024`, `FC11-C01-U080`, `FC11-C01-U082` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC11-C01-U106` | Proposition 1.7.7 | `FC11-C01-U075`, `FC11-C01-U101` | ready by recorded prerequisites | reference-port; port |
-
-## FC12 — Mapping
-
-Definitions with an implementation source: **5/45**; source-discovery gaps: **40** (unmatched=40).
-Already-sourced definition spans: `FC12-C02-U004`, `FC12-C03-U001`, `FC12-C03-U004`, `FC12-C04-U017`, `FC12-C05-U003`.
-Phase blocker: none
-
-Next 12 open units in source traversal order:
-
-| Unit | Kind | Prerequisites | Unit blockers | Mapping action |
-| --- | --- | --- | --- | --- |
-| `FC12-C01-U002` | Definition I.2 | — | ready by recorded prerequisites | unmatched; open-ended residue audit required |
-| `FC12-C01-U003` | Definition I.3 | `FC12-C01-U002` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
-| `FC12-C01-U008` | Notation | `FC12-C01-U004` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
-| `FC12-C01-U012` | Construction / interpretation I.10 | `FC12-C01-U001`, `FC12-C01-U004` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
-| `FC12-C01-U013` | Definition / construction | `FC12-C01-U012` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
-| `FC12-C02-U001` | Definition / construction II.1 | — | ready by recorded prerequisites | unmatched; open-ended residue audit required |
-| `FC12-C02-U005` | Definition / construction II.5 | — | ready by recorded prerequisites | unmatched; open-ended residue audit required |
-| `FC12-C02-U006` | Construction / correspondence II.6 | `FC12-C02-U004`, `FC12-C02-U005` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
-| `FC12-C02-U017` | Definition / convention | — | ready by recorded prerequisites | unmatched; open-ended residue audit required |
-| `FC12-C02-U018` | Definition I.15 | `FC12-C02-U017` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
-| `FC12-C02-U020` | Definition / criterion | `FC12-C02-U001`, `FC12-C02-U018` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
-| `FC12-C03-U015` | Definition / construction III.14 | — | ready by recorded prerequisites | unmatched; open-ended residue audit required |
 
 ## FC12 — Definitions
 

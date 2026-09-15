@@ -21,4 +21,5 @@ project_id: github.com__dzackgarza__lean-categories
 - Result: 0 positive routes and 7 dated `unmatched` rows.
 - Targeted searches found no compatible Lean implementation of the appendix's algebraic/compact-complex surface classification layer. Generic algebra, topology, Frobenius, group-action, manifold, or bilinear-form infrastructure is only partial.
 - `N=2026-09-07` marks dated unmatched decisions; strict whole-row semantics apply uniformly.
+- **First-pass definitional adjudication (2026-09-15):** B-U001/B-U005/B-U006/B-U007 remain `[negative-search-complete]`. Current hosted searches found no primary/secondary Kodaira surfaces, Hopf/Inoue/class-VII surface package, or compact-complex-surface Hodge/intersection package. The apparent intersection-form hits are unrelated generic surface/Jacobian developments and do not instantiate Beauville's compact complex surface objects. The old strict-bundle rationale is superseded for these definition/mixed rows only.
 
