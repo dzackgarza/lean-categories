@@ -152,6 +152,10 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # C04-U045 is Rohlin-based independence of the signature modulo 16 for
         # two bounding four-manifolds, hence comparison/result content only.
         "FC11-C04-U045",
+        # C04-U052 is the comparison theorem that complex conjugation descends
+        # to an orientation-reversing lens-space diffeomorphism.  It introduces
+        # no new carrier, map family, predicate, or notation.
+        "FC11-C04-U052",
     }
 )
 
