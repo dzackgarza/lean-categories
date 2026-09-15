@@ -186,6 +186,10 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # introduced in U023: its polar form is 2b and it is nondegenerate.  It
         # introduces no further carrier, map, or invariant.
         "FC11-C09-U024",
+        # Peters--Sterk C11-U012 is entirely comparison/classification content:
+        # symmetric and quadratic dyadic discriminant forms need not determine
+        # one another in exponent one, with the discrepancy disappearing later.
+        "FC11-C11-U012",
     }
 )
 
