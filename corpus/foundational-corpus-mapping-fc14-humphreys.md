@@ -18,7 +18,7 @@ project_id: github.com__dzackgarza__lean-categories
 
 # FC14 — Humphreys, *Introduction to Lie Algebras and Representation Theory* mapping
 
-Status: **First-pass definitional Mapping active.** Chapters I–V are fully first-pass adjudicated. The Chapter-V tail records U038 as the exact 14-dimensional orthogonal-image/root-vector residual, U040 as the proof-complete TauCeti Zorn-matrix octonion reference implementation, and U041 as a strong partial TauCeti derivation-algebra route with only the full `sl₃` embedding/self-centralizing Cartan construction still absent. The next source-order first-pass definition is FC14-C06-U001.
+Status: **First-pass definitional Mapping active.** Chapters I–V are fully first-pass adjudicated. Chapter VI has started at U001: the representation-theory setting is a direct pinned Mathlib route carrying the algebraically-closed characteristic-zero semisimple Lie algebra, Cartan/root-system/base/Weyl data while leaving module dimensions optional exactly as Humphreys does. The next source-order first-pass definition is U022.
 
 Canonical catalogue: [[foundational-corpus-units-fc14-humphreys|FC14 — Humphreys, Introduction to Lie Algebras and Representation Theory]].
 
