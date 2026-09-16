@@ -423,24 +423,24 @@ Next 5 open units in source traversal order:
 
 ## FC16 — Mapping
 
-Definitions with an implementation source: **85/169**; source-discovery gaps: **84** (unmatched=84).
-Already-sourced definition spans: `FC16-C01-U001`–`FC16-C01-U002`, `FC16-C01-U005`, `FC16-C01-U007`–`FC16-C01-U008`, `FC16-C01-U014`, `FC16-C01-U016`, `FC16-C01-U018`–`FC16-C01-U021`, `FC16-C01-U023`–`FC16-C01-U025`, `FC16-C01-U027`, `FC16-C01-U029`–`FC16-C01-U031`, `FC16-C01-U033`–`FC16-C01-U034`, `FC16-C01-U036`–`FC16-C01-U039`, `FC16-C01-U041`–`FC16-C01-U045`, `FC16-C01-U047`–`FC16-C01-U049`, `FC16-C01-U051`, `FC16-C01-U054`, `FC16-C01-U056`, `FC16-C01-U059`, `FC16-C01-U065`, `FC16-C01-U067`, `FC16-C01-U071`, `FC16-C01-U077`–`FC16-C01-U078`, `FC16-C01-U080`, `FC16-C01-U085`, `FC16-C01-U087`, `FC16-C01-U090`, `FC16-C02-U001`–`FC16-C02-U002`, `FC16-C02-U004`, `FC16-C02-U006`, `FC16-C02-U011`, `FC16-C02-U013`–`FC16-C02-U014`, `FC16-C02-U017`–`FC16-C02-U018`, `FC16-C02-U020`–`FC16-C02-U021`, `FC16-C02-U024`, `FC16-C02-U026`–`FC16-C02-U027`, `FC16-C03-U007`, `FC16-C03-U011`, `FC16-C03-U016`, `FC16-C06-U013`, `FC16-C06-U016`, `FC16-C06-U021`–`FC16-C06-U022`, `FC16-C06-U026`, `FC16-C07-U005`, `FC16-C07-U011`, `FC16-C07-U029`–`FC16-C07-U030`, `FC16-C08-U004`, `FC16-C10-U001`, `FC16-C10-U032`, `FC16-C10-U041`, `FC16-C11-U019`, `FC16-C12-U001`–`FC16-C12-U002`, `FC16-C12-U004`–`FC16-C12-U005`, `FC16-C12-U019`, `FC16-C12-U031`, `FC16-C12-U038`, `FC16-C12-U044`–`FC16-C12-U045`.
+Definitions with an implementation source: **88/169**; source-discovery gaps: **81** (unmatched=81).
+Already-sourced definition spans: `FC16-C01-U001`–`FC16-C01-U002`, `FC16-C01-U005`, `FC16-C01-U007`–`FC16-C01-U008`, `FC16-C01-U014`, `FC16-C01-U016`, `FC16-C01-U018`–`FC16-C01-U021`, `FC16-C01-U023`–`FC16-C01-U025`, `FC16-C01-U027`, `FC16-C01-U029`–`FC16-C01-U031`, `FC16-C01-U033`–`FC16-C01-U034`, `FC16-C01-U036`–`FC16-C01-U039`, `FC16-C01-U041`–`FC16-C01-U045`, `FC16-C01-U047`–`FC16-C01-U049`, `FC16-C01-U051`, `FC16-C01-U054`, `FC16-C01-U056`, `FC16-C01-U059`, `FC16-C01-U065`, `FC16-C01-U067`, `FC16-C01-U071`, `FC16-C01-U077`–`FC16-C01-U078`, `FC16-C01-U080`, `FC16-C01-U085`, `FC16-C01-U087`, `FC16-C01-U090`, `FC16-C02-U001`–`FC16-C02-U002`, `FC16-C02-U004`, `FC16-C02-U006`, `FC16-C02-U011`, `FC16-C02-U013`–`FC16-C02-U014`, `FC16-C02-U017`–`FC16-C02-U018`, `FC16-C02-U020`–`FC16-C02-U021`, `FC16-C02-U024`, `FC16-C02-U026`–`FC16-C02-U027`, `FC16-C03-U001`, `FC16-C03-U003`, `FC16-C03-U007`–`FC16-C03-U008`, `FC16-C03-U011`, `FC16-C03-U016`, `FC16-C06-U013`, `FC16-C06-U016`, `FC16-C06-U021`–`FC16-C06-U022`, `FC16-C06-U026`, `FC16-C07-U005`, `FC16-C07-U011`, `FC16-C07-U029`–`FC16-C07-U030`, `FC16-C08-U004`, `FC16-C10-U001`, `FC16-C10-U032`, `FC16-C10-U041`, `FC16-C11-U019`, `FC16-C12-U001`–`FC16-C12-U002`, `FC16-C12-U004`–`FC16-C12-U005`, `FC16-C12-U019`, `FC16-C12-U031`, `FC16-C12-U038`, `FC16-C12-U044`–`FC16-C12-U045`.
 Phase blocker: none
 
 Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC16-C03-U001` | Definition | `FC16-C02-U027`, `FC16-C01-U019` | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC16-C03-U003` | Definition/construction | `FC16-C03-U002`, `FC16-C02-U027` | ready by recorded prerequisites | unmatched; search existing formalizations |
-| `FC16-C03-U008` | Construction | `FC16-C03-U007`, `FC16-C03-U002` | ready by recorded prerequisites | unmatched; search existing formalizations |
 | `FC16-C04-U001` | Construction | `FC16-C02-U004`, `FC16-C03-U023` | ready by recorded prerequisites | unmatched; search existing formalizations |
 | `FC16-C04-U004` | Construction | `FC16-C04-U003`, `FC16-C02-U025`, `FC16-C01-U033` | ready by recorded prerequisites | unmatched; search existing formalizations |
+| `FC16-C04-U005` | Definition | `FC16-C02-U011`, `FC16-C02-U003` | ready by recorded prerequisites | unmatched; search existing formalizations |
+| `FC16-C04-U006` | Definition | `FC16-C04-U005`, `FC16-C02-U013` | ready by recorded prerequisites | unmatched; search existing formalizations |
+| `FC16-C04-U009` | Construction | `FC16-C04-U004`, `FC16-C04-U003` | ready by recorded prerequisites | unmatched; search existing formalizations |
 
 ## FC16 — Definitions
 
-Delivered/directly reusable by mapping: **63/169**; pending realization: **106** (reference-port=22, unmatched=84).
-Delivered/direct-reuse spans: `FC16-C01-U001`–`FC16-C01-U002`, `FC16-C01-U005`, `FC16-C01-U007`–`FC16-C01-U008`, `FC16-C01-U014`, `FC16-C01-U016`, `FC16-C01-U018`–`FC16-C01-U021`, `FC16-C01-U023`–`FC16-C01-U025`, `FC16-C01-U027`, `FC16-C01-U029`–`FC16-C01-U031`, `FC16-C01-U033`–`FC16-C01-U034`, `FC16-C01-U036`–`FC16-C01-U039`, `FC16-C01-U041`–`FC16-C01-U045`, `FC16-C01-U047`–`FC16-C01-U049`, `FC16-C01-U051`, `FC16-C01-U054`, `FC16-C01-U056`, `FC16-C01-U059`, `FC16-C01-U065`, `FC16-C01-U067`, `FC16-C01-U071`, `FC16-C01-U077`–`FC16-C01-U078`, `FC16-C01-U080`, `FC16-C01-U085`, `FC16-C01-U087`, `FC16-C01-U090`, `FC16-C02-U011`, `FC16-C02-U014`, `FC16-C02-U018`, `FC16-C02-U020`–`FC16-C02-U021`, `FC16-C02-U024`, `FC16-C02-U026`–`FC16-C02-U027`, `FC16-C03-U007`, `FC16-C10-U001`, `FC16-C10-U032`, `FC16-C12-U001`–`FC16-C12-U002`, `FC16-C12-U004`–`FC16-C12-U005`, `FC16-C12-U038`, `FC16-C12-U044`–`FC16-C12-U045`.
+Delivered/directly reusable by mapping: **64/169**; pending realization: **105** (reference-port=24, unmatched=81).
+Delivered/direct-reuse spans: `FC16-C01-U001`–`FC16-C01-U002`, `FC16-C01-U005`, `FC16-C01-U007`–`FC16-C01-U008`, `FC16-C01-U014`, `FC16-C01-U016`, `FC16-C01-U018`–`FC16-C01-U021`, `FC16-C01-U023`–`FC16-C01-U025`, `FC16-C01-U027`, `FC16-C01-U029`–`FC16-C01-U031`, `FC16-C01-U033`–`FC16-C01-U034`, `FC16-C01-U036`–`FC16-C01-U039`, `FC16-C01-U041`–`FC16-C01-U045`, `FC16-C01-U047`–`FC16-C01-U049`, `FC16-C01-U051`, `FC16-C01-U054`, `FC16-C01-U056`, `FC16-C01-U059`, `FC16-C01-U065`, `FC16-C01-U067`, `FC16-C01-U071`, `FC16-C01-U077`–`FC16-C01-U078`, `FC16-C01-U080`, `FC16-C01-U085`, `FC16-C01-U087`, `FC16-C01-U090`, `FC16-C02-U011`, `FC16-C02-U014`, `FC16-C02-U018`, `FC16-C02-U020`–`FC16-C02-U021`, `FC16-C02-U024`, `FC16-C02-U026`–`FC16-C02-U027`, `FC16-C03-U001`, `FC16-C03-U007`, `FC16-C10-U001`, `FC16-C10-U032`, `FC16-C12-U001`–`FC16-C12-U002`, `FC16-C12-U004`–`FC16-C12-U005`, `FC16-C12-U038`, `FC16-C12-U044`–`FC16-C12-U045`.
 Phase blocker: Milestone 1 is open: definitional mapping/residue audit remains for FC01, FC03, FC04, FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
 Next 5 open units in source traversal order:
@@ -448,14 +448,14 @@ Next 5 open units in source traversal order:
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
 | `FC16-C02-U001` | Definition | `FC16-C01-U051`, `FC16-C01-U045` | ready by recorded prerequisites | reference-port; port |
-| `FC16-C03-U001` | Definition | `FC16-C02-U027`, `FC16-C01-U019` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC16-C04-U005` | Definition | `FC16-C02-U011`, `FC16-C02-U003` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC16-C05-U020` | Definition | `FC16-C02-U020`, `FC16-C02-U027` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC16-C06-U001` | Definition | `FC16-C01-U001` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC16-C07-U033` | Definition | `FC16-C02-U003` | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC16 — Theorems
 
-Delivered/directly reusable by mapping: **53/353**; pending realization: **300** (mathlib=2, reference-port=16, unmatched=282).
+Delivered/directly reusable by mapping: **53/354**; pending realization: **301** (mathlib=3, reference-port=16, unmatched=282).
 Delivered/direct-reuse spans: `FC16-C01-U002`–`FC16-C01-U011`, `FC16-C01-U013`–`FC16-C01-U019`, `FC16-C01-U021`–`FC16-C01-U024`, `FC16-C01-U026`–`FC16-C01-U029`, `FC16-C01-U031`–`FC16-C01-U032`, `FC16-C01-U035`, `FC16-C01-U039`–`FC16-C01-U040`, `FC16-C01-U045`–`FC16-C01-U046`, `FC16-C01-U049`–`FC16-C01-U050`, `FC16-C01-U052`–`FC16-C01-U054`, `FC16-C01-U058`, `FC16-C01-U060`–`FC16-C01-U061`, `FC16-C01-U063`–`FC16-C01-U064`, `FC16-C01-U072`, `FC16-C01-U078`, `FC16-C01-U082`, `FC16-C01-U085`, `FC16-C01-U091`–`FC16-C01-U092`, `FC16-C01-U095`, `FC16-C02-U003`, `FC16-C02-U008`, `FC16-C06-U002`, `FC16-C12-U044`.
 Phase blocker: Sweep III is not complete corpus-wide: FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
