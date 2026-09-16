@@ -320,6 +320,11 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # C21-U025 is the generic-period/Picard-rank comparison used to derive
         # semisymplecticity, not a new construction.
         "FC11-C21-U025",
+        # Humphreys C05-U017 is an existence/decomposition theorem: the
+        # already-defined simple Lie ideals integrate to connected normal
+        # almost-simple subgroups with the stated product/intersection
+        # properties.  It introduces no new carrier, predicate, or notation.
+        "FC16-C05-U017",
     }
 )
 
