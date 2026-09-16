@@ -18,7 +18,7 @@ project_id: github.com__dzackgarza__lean-categories
 
 # FC14 — Humphreys, *Introduction to Lie Algebras and Representation Theory* mapping
 
-Status: **First-pass definitional Mapping active.** Chapters I–IV are fully first-pass adjudicated. Chapter V has reached U022: U001 is the direct arbitrary-field/arbitrary-dimension convention; U004 is a proof-complete TauCeti+Linglib symmetric-tensor reference port; U008 is a proof-complete current TauCeti PBW filtration/associated-graded reference route; and U022 is the direct pinned §18 semisimple/algebraically-closed/characteristic-zero convention, without imposing finite-dimensionality on the intermediate free/quotient Lie algebras. The next source-order first-pass definition is U024.
+Status: **First-pass definitional Mapping active.** Chapters I–IV are fully first-pass adjudicated. Chapter V has now reached U029: U004/U008 have current external symmetric-tensor/PBW routes; U022 is the direct §18 convention; U024 is a clause-wise pinned construction of the S1–S3 quotient; U025 and U029 retain only their explicit tensor-model and locally-nilpotent-exponential residuals. The next source-order first-pass definition is U034.
 
 Canonical catalogue: [[foundational-corpus-units-fc14-humphreys|FC14 — Humphreys, Introduction to Lie Algebras and Representation Theory]].
 
