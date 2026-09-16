@@ -6,14 +6,13 @@ Read [TODO.md](TODO.md) for the execution DAG and existing sweep records,
 Record new issues when encountered under `LC-05`; logging never discharges the
 mathematical obligation. Continue independent work whose prerequisites hold.
 
-## Owner pause — 2026-09-16
+## Owner resume — 2026-09-16
 
-The repository owner has paused this workstream. Do not start, select, continue,
-revive, wake, route, or push new work while this pause stands. If a turn was already
-mid-unit when the pause arrived, bank only that coherent unit and stop before selecting
-another. Preserve the existing dirty/shared tree. Only a later explicit owner instruction
-resumes this repository; recurrence of an older scheduled continuation does not supersede
-the pause.
+The repository owner explicitly resumed this workstream later on 2026-09-16. The
+earlier owner pause is superseded. Resume the ordinary repository execution DAG under
+the one-stream-per-repository rule, preserving the existing dirty/shared tree. A later
+explicit owner stop supersedes this resume; recurrence of an older scheduled pause does
+not.
 
 # Start here: corpus execution
 
