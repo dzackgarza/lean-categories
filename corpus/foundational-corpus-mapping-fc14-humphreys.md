@@ -18,7 +18,7 @@ project_id: github.com__dzackgarza__lean-categories
 
 # FC14 — Humphreys, *Introduction to Lie Algebras and Representation Theory* mapping
 
-Status: **First-pass definitional Mapping active.** Chapters I–V are fully first-pass adjudicated. Chapter VI has reached U022: U001 is the exact pinned representation-theory setting, and U022 is no longer an annihilator-interface gap—pinned noncommutative `Ideal`, `toSpanSingleton`, `ker`, and `liftQ`, together with TauCeti's proof-complete Verma universal-property construction, give exactly `J(λ)`, `I(λ) ⊆ J(λ)`, and the induced quotient map. The next source-order first-pass definition is U048.
+Status: **First-pass definitional Mapping active.** Chapters I–V are fully first-pass adjudicated. Chapter VI has reached U022: U001 is the exact pinned representation-theory setting, and U022 is no longer an annihilator-interface gap—pinned noncommutative `Ideal`, `toSpanSingleton`, `ker`, and `liftQ`, together with TauCeti's proof-complete Verma universal-property construction, give exactly `J(λ)`, `I(λ) ⊆ J(λ)`, and the induced quotient map. U048 has now been exhaustively checked: Atlas supplies the exact triangular PBW/Harish–Chandra carrier but its invariance/bijectivity chain contains admitted proofs, while current TauCeti supplies only the proof-complete abelian `U(H)≃S(H)` comparison. U048 therefore remains `[negative-search-complete]`. The next source-order first-pass definition is U056.
 
 Canonical catalogue: [[foundational-corpus-units-fc14-humphreys|FC14 — Humphreys, Introduction to Lie Algebras and Representation Theory]].
 
