@@ -18,7 +18,7 @@ project_id: github.com__dzackgarza__lean-categories
 
 # FC14 — Humphreys, *Introduction to Lie Algebras and Representation Theory* mapping
 
-Status: **First-pass definitional Mapping active.** Chapters I–V are fully first-pass adjudicated. Chapter VI has started at U001: the representation-theory setting is a direct pinned Mathlib route carrying the algebraically-closed characteristic-zero semisimple Lie algebra, Cartan/root-system/base/Weyl data while leaving module dimensions optional exactly as Humphreys does. The next source-order first-pass definition is U022.
+Status: **First-pass definitional Mapping active.** Chapters I–V are fully first-pass adjudicated. Chapter VI has reached U022: U001 is the direct pinned representation-theory ambient setting, and U022 is the native noncommutative left annihilator `Ideal.torsionOf` of the highest-weight vector, with the specific `I(λ)≤J(λ)` inclusion reserved for theorem work. The next source-order first-pass definition is U048.
 
 Canonical catalogue: [[foundational-corpus-units-fc14-humphreys|FC14 — Humphreys, Introduction to Lie Algebras and Representation Theory]].
 
