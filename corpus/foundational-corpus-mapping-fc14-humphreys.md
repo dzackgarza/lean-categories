@@ -18,7 +18,7 @@ project_id: github.com__dzackgarza__lean-categories
 
 # FC14 — Humphreys, *Introduction to Lie Algebras and Representation Theory* mapping
 
-Status: **First-pass definitional Mapping active.** Chapters I–III are fully first-pass adjudicated. Chapter IV first-pass has now reached its last definitional unit U033: U009/U021 conventions and U026 Borel definition are direct pinned-Mathlib routes; U018/U022/U023/U033 retain only their explicit current theorem/construction residuals after TauCeti and live-corpus search. Regenerate the definition index/frontier and continue with the first source-order first-pass definition in Chapter V; do not take Chapter-IV residue rows yet.
+Status: **First-pass definitional Mapping active.** Chapters I–IV are fully first-pass adjudicated. Chapter V has started: U001 is the direct pinned arbitrary-field/arbitrary-dimension convention from Humphreys §17. Regenerate the canonical index/frontier for the next source-order Chapter-V definition; do not take earlier residue-search rows until the FC14 first pass closes.
 
 Canonical catalogue: [[foundational-corpus-units-fc14-humphreys|FC14 — Humphreys, Introduction to Lie Algebras and Representation Theory]].
 
