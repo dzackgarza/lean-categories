@@ -4,7 +4,7 @@
 
 This is derived scheduling output, not a completion ledger. Sweep completion is read only from `corpus/foundational-corpus-status.md`. The frontier is regenerated from the canonical Sweep-I unit catalogues and Sweep-II mapping records.
 
-Current whole-source ledger: **34 unticked Mapping/Definitions/Theorems cells**.
+Current whole-source ledger: **33 unticked Mapping/Definitions/Theorems cells**.
 For Mapping, a definitional unit is complete once it has a positive implementation source: `mathlib`, `project-existing`, `package-import`, or `reference-port`; only missing/`unmatched` definitions remain discovery work. For Definitions and Theorems, realization is stricter: `reference-port`, `package-import`, partial-interface, and `unmatched` rows can still require work.
 
 ## FC01 — Theorems
@@ -359,26 +359,10 @@ Next 5 open units in source traversal order:
 | `FC13-C01-U029` | Example: Z[√−5] is not a UFD | `FC13-C01-U024`, `FC13-C01-U026` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC13-C01-U039` | Theorem: Theorem 2.3 (minimal bases over a local ring) | `FC13-C01-U017`, `FC13-C01-U037`, `FC13-C01-U038` | ready by recorded prerequisites | unmatched; residue audit |
 
-## FC14 — Mapping
-
-Definitions with an implementation source: **144/176**; source-discovery gaps: **32** (unmatched=32).
-Already-sourced definition spans: `FC14-C01-U001`–`FC14-C01-U016`, `FC14-C01-U018`, `FC14-C01-U021`–`FC14-C01-U025`, `FC14-C01-U027`–`FC14-C01-U028`, `FC14-C01-U030`, `FC14-C01-U032`, `FC14-C01-U035`, `FC14-C01-U039`, `FC14-C01-U042`–`FC14-C01-U043`, `FC14-C01-U046`, `FC14-C01-U050`, `FC14-C02-U001`, `FC14-C02-U006`, `FC14-C02-U008`, `FC14-C02-U015`, `FC14-C02-U017`, `FC14-C02-U021`, `FC14-C02-U026`–`FC14-C02-U031`, `FC14-C02-U033`–`FC14-C02-U037`, `FC14-C02-U044`, `FC14-C02-U046`, `FC14-C02-U050`, `FC14-C02-U052`, `FC14-C02-U054`, `FC14-C02-U062`–`FC14-C02-U063`, `FC14-C03-U001`–`FC14-C03-U002`, `FC14-C03-U004`–`FC14-C03-U005`, `FC14-C03-U007`–`FC14-C03-U009`, `FC14-C03-U013`–`FC14-C03-U014`, `FC14-C03-U017`, `FC14-C03-U027`, `FC14-C03-U030`, `FC14-C03-U034`, `FC14-C03-U036`, `FC14-C03-U039`–`FC14-C03-U040`, `FC14-C03-U043`–`FC14-C03-U044`, `FC14-C03-U051`, `FC14-C03-U055`–`FC14-C03-U057`, `FC14-C03-U060`, `FC14-C04-U004`, `FC14-C04-U008`–`FC14-C04-U010`, `FC14-C04-U012`, `FC14-C04-U015`, `FC14-C04-U021`, `FC14-C04-U026`, `FC14-C04-U029`, `FC14-C05-U001`–`FC14-C05-U006`, `FC14-C05-U008`, `FC14-C05-U019`–`FC14-C05-U022`, `FC14-C05-U024`, `FC14-C05-U031`, `FC14-C05-U034`–`FC14-C05-U035`, `FC14-C05-U040`, `FC14-C06-U001`–`FC14-C06-U002`, `FC14-C06-U004`–`FC14-C06-U005`, `FC14-C06-U009`–`FC14-C06-U011`, `FC14-C06-U015`–`FC14-C06-U016`, `FC14-C06-U022`, `FC14-C06-U025`–`FC14-C06-U026`, `FC14-C06-U032`–`FC14-C06-U033`, `FC14-C06-U036`–`FC14-C06-U038`, `FC14-C06-U041`, `FC14-C06-U043`–`FC14-C06-U044`, `FC14-C06-U052`–`FC14-C06-U053`, `FC14-C06-U056`, `FC14-C06-U060`–`FC14-C06-U061`, `FC14-C07-U001`, `FC14-C07-U005`, `FC14-C07-U008`, `FC14-C07-U012`–`FC14-C07-U014`, `FC14-C07-U020`, `FC14-C07-U025`–`FC14-C07-U026`, `FC14-C07-U028`–`FC14-C07-U029`, `FC14-C07-U032`, `FC14-C07-U040`–`FC14-C07-U042`.
-Phase blocker: none
-
-Next 5 open units in source traversal order:
-
-| Unit | Kind | Prerequisites | Unit blockers | Mapping action |
-| --- | --- | --- | --- | --- |
-| `FC14-C01-U019` | Construction: structure constants | `FC14-C01-U002` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
-| `FC14-C01-U029` | Definition: centralizer | `FC14-C01-U004`, `FC14-C01-U022` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
-| `FC14-C01-U034` | Definition: automorphism group | `FC14-C01-U003` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
-| `FC14-C01-U036` | Definition: inner automorphisms and Int(L) | `FC14-C01-U035` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
-| `FC14-C02-U025` | Definition: abstract Jordan decomposition in a semisimple Lie algebra | `FC14-C02-U009`, `FC14-C02-U010`, `FC14-C02-U024` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
-
 ## FC14 — Definitions
 
-Delivered/directly reusable by mapping: **101/176**; pending realization: **75** (reference-port=43, unmatched=32).
-Delivered/direct-reuse spans: `FC14-C01-U001`–`FC14-C01-U010`, `FC14-C01-U012`–`FC14-C01-U013`, `FC14-C01-U015`–`FC14-C01-U016`, `FC14-C01-U018`, `FC14-C01-U021`–`FC14-C01-U025`, `FC14-C01-U027`–`FC14-C01-U028`, `FC14-C01-U030`, `FC14-C01-U032`, `FC14-C01-U035`, `FC14-C01-U039`, `FC14-C01-U042`–`FC14-C01-U043`, `FC14-C01-U046`, `FC14-C01-U050`, `FC14-C02-U001`, `FC14-C02-U006`, `FC14-C02-U008`, `FC14-C02-U015`, `FC14-C02-U017`, `FC14-C02-U021`, `FC14-C02-U026`–`FC14-C02-U029`, `FC14-C02-U031`, `FC14-C02-U033`–`FC14-C02-U037`, `FC14-C02-U046`, `FC14-C02-U052`, `FC14-C02-U054`, `FC14-C02-U062`, `FC14-C03-U001`–`FC14-C03-U002`, `FC14-C03-U004`–`FC14-C03-U005`, `FC14-C03-U007`–`FC14-C03-U009`, `FC14-C03-U013`–`FC14-C03-U014`, `FC14-C03-U017`, `FC14-C03-U030`, `FC14-C03-U034`, `FC14-C03-U036`, `FC14-C03-U043`–`FC14-C03-U044`, `FC14-C03-U051`, `FC14-C03-U055`–`FC14-C03-U056`, `FC14-C04-U009`–`FC14-C04-U010`, `FC14-C04-U012`, `FC14-C04-U015`, `FC14-C04-U021`, `FC14-C04-U026`, `FC14-C05-U001`–`FC14-C05-U003`, `FC14-C05-U005`–`FC14-C05-U006`, `FC14-C05-U019`–`FC14-C05-U022`, `FC14-C05-U024`, `FC14-C05-U031`, `FC14-C05-U034`–`FC14-C05-U035`, `FC14-C06-U001`–`FC14-C06-U002`, `FC14-C06-U016`, `FC14-C06-U036`–`FC14-C06-U037`, `FC14-C06-U041`, `FC14-C06-U044`, `FC14-C06-U052`–`FC14-C06-U053`, `FC14-C06-U056`, `FC14-C07-U001`, `FC14-C07-U014`, `FC14-C07-U020`, `FC14-C07-U029`.
+Delivered/directly reusable by mapping: **104/176**; pending realization: **72** (reference-port=43, unmatched=29).
+Delivered/direct-reuse spans: `FC14-C01-U001`–`FC14-C01-U010`, `FC14-C01-U012`–`FC14-C01-U013`, `FC14-C01-U015`–`FC14-C01-U016`, `FC14-C01-U018`, `FC14-C01-U021`–`FC14-C01-U025`, `FC14-C01-U027`–`FC14-C01-U028`, `FC14-C01-U030`, `FC14-C01-U032`, `FC14-C01-U035`, `FC14-C01-U039`, `FC14-C01-U042`–`FC14-C01-U043`, `FC14-C01-U046`, `FC14-C01-U050`, `FC14-C02-U001`, `FC14-C02-U006`, `FC14-C02-U008`, `FC14-C02-U015`, `FC14-C02-U017`, `FC14-C02-U021`, `FC14-C02-U026`–`FC14-C02-U029`, `FC14-C02-U031`, `FC14-C02-U033`–`FC14-C02-U037`, `FC14-C02-U046`, `FC14-C02-U052`, `FC14-C02-U054`, `FC14-C02-U062`, `FC14-C03-U001`–`FC14-C03-U002`, `FC14-C03-U004`–`FC14-C03-U005`, `FC14-C03-U007`–`FC14-C03-U009`, `FC14-C03-U013`–`FC14-C03-U014`, `FC14-C03-U017`, `FC14-C03-U030`, `FC14-C03-U034`, `FC14-C03-U036`, `FC14-C03-U043`–`FC14-C03-U044`, `FC14-C03-U051`, `FC14-C03-U055`–`FC14-C03-U056`, `FC14-C04-U009`–`FC14-C04-U010`, `FC14-C04-U012`, `FC14-C04-U015`, `FC14-C04-U021`, `FC14-C04-U026`, `FC14-C05-U001`–`FC14-C05-U003`, `FC14-C05-U005`–`FC14-C05-U006`, `FC14-C05-U019`–`FC14-C05-U022`, `FC14-C05-U024`, `FC14-C05-U031`, `FC14-C05-U034`–`FC14-C05-U035`, `FC14-C06-U001`–`FC14-C06-U002`, `FC14-C06-U016`, `FC14-C06-U036`–`FC14-C06-U037`, `FC14-C06-U041`, `FC14-C06-U044`, `FC14-C06-U052`–`FC14-C06-U053`, `FC14-C06-U056`, `FC14-C07-U001`, `FC14-C07-U014`, `FC14-C07-U020`, `FC14-C07-U029`, `FC14-C07-U033`–`FC14-C07-U034`, `FC14-C07-U038`.
 Phase blocker: Milestone 1 is open: definitional mapping/residue audit remains for FC01, FC03, FC04, FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
 Next 5 open units in source traversal order:
@@ -393,7 +377,7 @@ Next 5 open units in source traversal order:
 
 ## FC14 — Theorems
 
-Delivered/directly reusable by mapping: **44/243**; pending realization: **199** (mathlib=26, package-import=2, reference-port=36, unmatched=135).
+Delivered/directly reusable by mapping: **44/246**; pending realization: **202** (mathlib=29, package-import=2, reference-port=36, unmatched=135).
 Delivered/direct-reuse spans: `FC14-C01-U033`, `FC14-C01-U045`, `FC14-C01-U047`–`FC14-C01-U049`, `FC14-C02-U002`, `FC14-C02-U012`, `FC14-C02-U014`, `FC14-C02-U016`, `FC14-C02-U019`–`FC14-C02-U020`, `FC14-C02-U022`, `FC14-C02-U024`, `FC14-C02-U055`–`FC14-C02-U057`, `FC14-C02-U059`–`FC14-C02-U061`, `FC14-C02-U064`, `FC14-C03-U003`, `FC14-C03-U006`, `FC14-C03-U011`–`FC14-C03-U013`, `FC14-C03-U015`–`FC14-C03-U016`, `FC14-C03-U018`, `FC14-C03-U022`, `FC14-C03-U032`–`FC14-C03-U033`, `FC14-C03-U037`, `FC14-C04-U001`, `FC14-C04-U011`, `FC14-C04-U013`–`FC14-C04-U014`, `FC14-C04-U016`, `FC14-C05-U023`, `FC14-C05-U030`–`FC14-C05-U032`, `FC14-C06-U003`, `FC14-C07-U002`–`FC14-C07-U003`.
 Phase blocker: Sweep III is not complete corpus-wide: FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
