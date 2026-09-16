@@ -18,7 +18,7 @@ project_id: github.com__dzackgarza__lean-categories
 
 # FC14 — Humphreys, *Introduction to Lie Algebras and Representation Theory* mapping
 
-Status: **First-pass definitional Mapping active.** Chapters I–V are fully first-pass adjudicated. Chapter VI has reached U059: U001/U022/U056 are positive exact routes; U048 remains `[negative-search-complete]` after the admitted Atlas Harish–Chandra skeleton was rejected as proof evidence; U059 has now been searched against current TauCeti and the live/indexed corpus and retains only the infinite cone-supported completion plus locally-finite convolution construction absent from finite-support formal-character libraries. The next source-order first-pass definition is U060.
+Status: **First-pass definitional Mapping active.** Chapters I–V are fully first-pass adjudicated. Chapter VI has reached U060: U059 remains `[negative-search-complete]` only for Humphreys's infinite cone-supported convolution completion, while U060 is now an exact proof-complete current-TauCeti reference route for the numerical Kostant partition function, with Humphreys's sign convention `p(λ)=P(-λ)` and the `X`/Verma-character comparisons reserved for later theorem work. The next source-order first-pass definition is U067.
 
 Canonical catalogue: [[foundational-corpus-units-fc14-humphreys|FC14 — Humphreys, Introduction to Lie Algebras and Representation Theory]].
 
