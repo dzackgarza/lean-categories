@@ -16,7 +16,7 @@ project_id: github.com__dzackgarza__lean-categories
 
 Pinned source: J. E. Humphreys, *Reflection Groups and Coxeter Groups*, Cambridge Studies in Advanced Mathematics 29.
 
-Status: **Sweep II complete.** C01–C08 mapped under strict whole-row semantics.
+Status: **First-pass definitional Mapping active.** Chapters I–II are fully first-pass adjudicated under source-clause semantics. Chapter I recovered direct native definitions for essentiality, finite root systems, chambers/facets, and the abstract/hyperplane complexes. Chapter II now routes Coxeter graph/form/positivity, crystallographic stabilization, dual/root/weight lattices, and root order directly to pinned Mathlib; explicit classical/exceptional root-vector models and the quaternionic H4 realization remain `[negative-search-complete]` provisional residue after fresh current/indexed searches. The next source-order first-pass definition is FC15-C03-U001.
 
 [Provenance contract for FC15 C01](provenance-contract-for-fc15-c01)
 
