@@ -336,6 +336,24 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # named predicate or carrier beyond proving the extension and its
         # minimum/maximum-weight formula.
         "FC16-C09-U014",
+        # Humphreys C11-U010 is the tensor-product highest-weight result: the
+        # tensor of two maximal vectors is maximal of the summed weight.  It
+        # introduces no new carrier or predicate beyond the tensor product and
+        # maximal-vector notion already indexed separately.
+        "FC16-C11-U010",
+        # C11-U011 is an existence application of Chevalley's stabilizer
+        # theorem producing representations with highest weight d_i ω_i; no
+        # canonical representation is defined by the source.
+        "FC16-C11-U011",
+        # C11-U026 packages three rank-two compatibility obligations in the
+        # proof of the semisimple isomorphism theorem.  They are proof
+        # conditions on already-chosen maps, not a reusable foundational
+        # carrier/predicate whose implementation should enter Sweep III.
+        "FC16-C11-U026",
+        # C11-U042 records Chevalley's existence programme for all semisimple
+        # types.  It asserts existence of models rather than defining one
+        # source-canonical object.
+        "FC16-C11-U042",
     }
 )
 
