@@ -43,7 +43,7 @@ Corpus v2 amendment (traversed after `FC05`, before `FC06` for `FC13`; after `FC
 | ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------- | ----------- | -------- |
 | FC13 | [Foundational corpus units FC13 Matsumura](foundational-corpus-units-fc13-matsumura)                                                                           | [x]       | [x]     | [ ]         | [ ]      |
 | FC14 | [Foundational corpus units FC14 Humphreys](foundational-corpus-units-fc14-humphreys)                                                                           | [x]       | [x]     | [ ]         | [ ]      |
-| FC15 | [Foundational corpus units FC15 Humphreys Reflection Groups and Coxeter Groups](foundational-corpus-units-fc15-humphreys-reflection-groups-and-coxeter-groups) | [x]       | [ ]     | [ ]         | [ ]      |
+| FC15 | [Foundational corpus units FC15 Humphreys Reflection Groups and Coxeter Groups](foundational-corpus-units-fc15-humphreys-reflection-groups-and-coxeter-groups) | [x]       | [x]     | [ ]         | [ ]      |
 | FC16 | [Foundational corpus units FC16 Humphreys Linear Algebraic Groups](foundational-corpus-units-fc16-humphreys-linear-algebraic-groups)                           | [x]       | [ ]     | [ ]         | [ ]      |
 
 Corpus v3 amendment (appended after the v2 traversal):

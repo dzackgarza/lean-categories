@@ -4,7 +4,7 @@
 
 This is derived scheduling output, not a completion ledger. Sweep completion is read only from `corpus/foundational-corpus-status.md`. The frontier is regenerated from the canonical Sweep-I unit catalogues and Sweep-II mapping records.
 
-Current whole-source ledger: **33 unticked Mapping/Definitions/Theorems cells**.
+Current whole-source ledger: **32 unticked Mapping/Definitions/Theorems cells**.
 For Mapping, a definitional unit is complete once it has a positive implementation source: `mathlib`, `project-existing`, `package-import`, or `reference-port`; only missing/`unmatched` definitions remain discovery work. For Definitions and Theorems, realization is stricter: `reference-port`, `package-import`, partial-interface, and `unmatched` rows can still require work.
 
 ## FC01 — Theorems
@@ -391,41 +391,23 @@ Next 5 open units in source traversal order:
 | `FC14-C01-U010` | Construction: even orthogonal algebra D_l | `FC14-C01-U006` | ready by recorded prerequisites | mathlib; theorem clause pending |
 | `FC14-C01-U011` | Construction: triangular, strictly triangular, and diagonal Lie algebras | `FC14-C01-U005` | ready by recorded prerequisites | reference-port; theorem clause pending |
 
-## FC15 — Mapping
-
-Definitions with an implementation source: **90/122**; source-discovery gaps: **32** (unmatched=32).
-Already-sourced definition spans: `FC15-C01-U001`–`FC15-C01-U002`, `FC15-C01-U005`, `FC15-C01-U009`, `FC15-C01-U011`–`FC15-C01-U013`, `FC15-C01-U016`, `FC15-C01-U019`, `FC15-C01-U022`–`FC15-C01-U023`, `FC15-C01-U028`–`FC15-C01-U029`, `FC15-C01-U034`–`FC15-C01-U035`, `FC15-C01-U037`–`FC15-C01-U038`, `FC15-C01-U040`, `FC15-C01-U043`, `FC15-C01-U046`, `FC15-C01-U048`–`FC15-C01-U049`, `FC15-C02-U001`, `FC15-C02-U003`, `FC15-C02-U005`–`FC15-C02-U007`, `FC15-C02-U011`–`FC15-C02-U012`, `FC15-C02-U016`, `FC15-C02-U018`, `FC15-C02-U020`–`FC15-C02-U024`, `FC15-C03-U001`, `FC15-C03-U003`, `FC15-C03-U008`, `FC15-C03-U011`, `FC15-C03-U018`, `FC15-C03-U022`, `FC15-C03-U025`, `FC15-C03-U027`, `FC15-C03-U031`, `FC15-C03-U033`, `FC15-C03-U043`, `FC15-C04-U001`–`FC15-C04-U002`, `FC15-C04-U004`, `FC15-C04-U006`, `FC15-C04-U008`, `FC15-C04-U010`–`FC15-C04-U011`, `FC15-C04-U013`, `FC15-C04-U015`–`FC15-C04-U016`, `FC15-C04-U022`, `FC15-C04-U025`, `FC15-C05-U001`–`FC15-C05-U002`, `FC15-C05-U005`, `FC15-C05-U007`–`FC15-C05-U008`, `FC15-C05-U010`–`FC15-C05-U012`, `FC15-C05-U017`, `FC15-C05-U022`, `FC15-C05-U025`, `FC15-C05-U030`–`FC15-C05-U031`, `FC15-C05-U034`, `FC15-C05-U038`, `FC15-C06-U001`, `FC15-C06-U005`, `FC15-C06-U010`, `FC15-C06-U016`, `FC15-C06-U020`, `FC15-C07-U001`–`FC15-C07-U002`, `FC15-C07-U007`, `FC15-C07-U014`, `FC15-C07-U018`, `FC15-C07-U024`, `FC15-C07-U029`, `FC15-C07-U038`–`FC15-C07-U040`, `FC15-C08-U015`.
-Phase blocker: none
-
-Next 5 open units in source traversal order:
-
-| Unit | Kind | Prerequisites | Unit blockers | Mapping action |
-| --- | --- | --- | --- | --- |
-| `FC15-C02-U027` | Construction: root systems A_n,B_n,C_n,D_n | `FC15-C02-U018`, `FC15-C02-U021` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
-| `FC15-C02-U028` | Construction: exceptional crystallographic root systems G_2,F_4,E_6,E_7,E_8 | `FC15-C02-U018`, `FC15-C02-U021` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
-| `FC15-C02-U032` | Construction: quaternionic realization of H_4 roots | `FC15-C01-U009`, `FC15-C02-U031` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
-| `FC15-C02-U034` | Theorem/result: orders of H_3 and H_4 from the root construction | `FC15-C01-U042`, `FC15-C02-U032`, `FC15-C02-U033` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
-| `FC15-C03-U035` | Construction/result: bipartite factorization and Coxeter plane | `FC15-C02-U013`, `FC15-C03-U031` | ready by recorded prerequisites | unmatched; open-ended residue audit required |
-
 ## FC15 — Definitions
 
-Delivered/directly reusable by mapping: **87/122**; pending realization: **35** (reference-port=3, unmatched=32).
-Delivered/direct-reuse spans: `FC15-C01-U001`–`FC15-C01-U002`, `FC15-C01-U005`, `FC15-C01-U009`, `FC15-C01-U011`–`FC15-C01-U013`, `FC15-C01-U016`, `FC15-C01-U019`, `FC15-C01-U022`–`FC15-C01-U023`, `FC15-C01-U029`, `FC15-C01-U034`–`FC15-C01-U035`, `FC15-C01-U037`, `FC15-C01-U040`, `FC15-C01-U043`, `FC15-C01-U046`, `FC15-C01-U048`–`FC15-C01-U049`, `FC15-C02-U001`, `FC15-C02-U003`, `FC15-C02-U005`–`FC15-C02-U007`, `FC15-C02-U011`–`FC15-C02-U012`, `FC15-C02-U016`, `FC15-C02-U018`, `FC15-C02-U020`–`FC15-C02-U024`, `FC15-C03-U001`, `FC15-C03-U003`, `FC15-C03-U008`, `FC15-C03-U011`, `FC15-C03-U018`, `FC15-C03-U022`, `FC15-C03-U025`, `FC15-C03-U027`, `FC15-C03-U031`, `FC15-C03-U033`, `FC15-C03-U043`, `FC15-C04-U001`–`FC15-C04-U002`, `FC15-C04-U004`, `FC15-C04-U006`, `FC15-C04-U008`, `FC15-C04-U010`–`FC15-C04-U011`, `FC15-C04-U013`, `FC15-C04-U015`–`FC15-C04-U016`, `FC15-C04-U022`, `FC15-C04-U025`, `FC15-C05-U001`–`FC15-C05-U002`, `FC15-C05-U005`, `FC15-C05-U007`–`FC15-C05-U008`, `FC15-C05-U010`–`FC15-C05-U012`, `FC15-C05-U017`, `FC15-C05-U022`, `FC15-C05-U025`, `FC15-C05-U030`–`FC15-C05-U031`, `FC15-C05-U034`, `FC15-C05-U038`, `FC15-C06-U001`, `FC15-C06-U005`, `FC15-C06-U010`, `FC15-C06-U016`, `FC15-C06-U020`, `FC15-C07-U001`–`FC15-C07-U002`, `FC15-C07-U014`, `FC15-C07-U018`, `FC15-C07-U024`, `FC15-C07-U029`, `FC15-C07-U038`–`FC15-C07-U040`, `FC15-C08-U015`.
+Delivered/directly reusable by mapping: **100/122**; pending realization: **22** (reference-port=3, unmatched=19).
+Delivered/direct-reuse spans: `FC15-C01-U001`–`FC15-C01-U002`, `FC15-C01-U005`, `FC15-C01-U009`, `FC15-C01-U011`–`FC15-C01-U013`, `FC15-C01-U016`, `FC15-C01-U019`, `FC15-C01-U022`–`FC15-C01-U023`, `FC15-C01-U029`, `FC15-C01-U034`–`FC15-C01-U035`, `FC15-C01-U037`, `FC15-C01-U040`, `FC15-C01-U043`, `FC15-C01-U046`, `FC15-C01-U048`–`FC15-C01-U049`, `FC15-C02-U001`, `FC15-C02-U003`, `FC15-C02-U005`–`FC15-C02-U007`, `FC15-C02-U011`–`FC15-C02-U012`, `FC15-C02-U016`, `FC15-C02-U018`, `FC15-C02-U020`–`FC15-C02-U024`, `FC15-C03-U001`, `FC15-C03-U003`, `FC15-C03-U008`, `FC15-C03-U011`, `FC15-C03-U018`, `FC15-C03-U022`, `FC15-C03-U025`, `FC15-C03-U027`, `FC15-C03-U031`, `FC15-C03-U033`, `FC15-C03-U043`, `FC15-C04-U001`–`FC15-C04-U002`, `FC15-C04-U004`, `FC15-C04-U006`, `FC15-C04-U008`, `FC15-C04-U010`–`FC15-C04-U011`, `FC15-C04-U013`, `FC15-C04-U015`–`FC15-C04-U016`, `FC15-C04-U022`, `FC15-C04-U025`, `FC15-C05-U001`–`FC15-C05-U002`, `FC15-C05-U005`, `FC15-C05-U007`–`FC15-C05-U008`, `FC15-C05-U010`–`FC15-C05-U012`, `FC15-C05-U017`, `FC15-C05-U022`, `FC15-C05-U025`, `FC15-C05-U030`–`FC15-C05-U031`, `FC15-C05-U034`, `FC15-C05-U038`, `FC15-C06-U001`, `FC15-C06-U005`, `FC15-C06-U010`, `FC15-C06-U016`, `FC15-C06-U020`, `FC15-C07-U001`–`FC15-C07-U002`, `FC15-C07-U014`, `FC15-C07-U018`, `FC15-C07-U024`, `FC15-C07-U029`, `FC15-C07-U038`–`FC15-C07-U040`, `FC15-C08-U001`–`FC15-C08-U002`, `FC15-C08-U005`–`FC15-C08-U006`, `FC15-C08-U008`, `FC15-C08-U011`, `FC15-C08-U013`, `FC15-C08-U015`, `FC15-C08-U019`, `FC15-C08-U024`, `FC15-C08-U026`–`FC15-C08-U027`, `FC15-C08-U036`–`FC15-C08-U037`.
 Phase blocker: Milestone 1 is open: definitional mapping/residue audit remains for FC01, FC03, FC04, FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
-Next 5 open units in source traversal order:
+Next 3 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
 | `FC15-C01-U038` | Definition: Poincaré polynomial | `FC15-C01-U022` | ready by recorded prerequisites | reference-port; port |
 | `FC15-C02-U027` | Construction: root systems A_n,B_n,C_n,D_n | `FC15-C02-U018`, `FC15-C02-U021` | ready by recorded prerequisites | unmatched; residue audit |
 | `FC15-C02-U028` | Construction: exceptional crystallographic root systems G_2,F_4,E_6,E_7,E_8 | `FC15-C02-U018`, `FC15-C02-U021` | ready by recorded prerequisites | unmatched; residue audit |
-| `FC15-C08-U001` | Convention: chapter-wide Coxeter-system setting | `FC15-C05-U001` | ready by recorded prerequisites | unmatched; residue audit |
-| `FC15-C08-U005` | Definition: reflection subgroup | `FC15-C05-U017` | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC15 — Theorems
 
-Delivered/directly reusable by mapping: **10/264**; pending realization: **254** (mathlib=68, reference-port=4, unmatched=182).
+Delivered/directly reusable by mapping: **10/275**; pending realization: **265** (mathlib=81, reference-port=4, unmatched=180).
 Delivered/direct-reuse spans: `FC15-C01-U008`, `FC15-C01-U015`, `FC15-C01-U017`, `FC15-C01-U020`–`FC15-C01-U021`, `FC15-C01-U024`–`FC15-C01-U025`, `FC15-C01-U027`, `FC15-C05-U006`, `FC15-C08-U015`.
 Phase blocker: Sweep III is not complete corpus-wide: FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
