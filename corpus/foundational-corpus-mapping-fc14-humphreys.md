@@ -18,11 +18,11 @@ project_id: github.com__dzackgarza__lean-categories
 
 # FC14 — Humphreys, *Introduction to Lie Algebras and Representation Theory* mapping
 
-Status: **First-pass definitional Mapping active.** Chapters I–IV are fully first-pass adjudicated. Chapter V has reached U008: U001 is the direct arbitrary-field/arbitrary-dimension convention; U004 has proof-complete per-degree symmetric tensors/symmetrization and full symmetric-algebra grading but retains only the missing canonical homogeneous-submodule↔`Sym^m` bridge; U008 is a proof-complete current TauCeti PBW filtration/associated-graded reference route. The next source-order first-pass definition is U022.
+Status: **First-pass definitional Mapping active.** Chapters I–IV are fully first-pass adjudicated. Chapter V has reached U022: U001 is the direct arbitrary-field/arbitrary-dimension convention; U004 is a proof-complete TauCeti+Linglib symmetric-tensor reference port; U008 is a proof-complete current TauCeti PBW filtration/associated-graded reference route; and U022 is the direct pinned §18 semisimple/algebraically-closed/characteristic-zero convention, without imposing finite-dimensionality on the intermediate free/quotient Lie algebras. The next source-order first-pass definition is U024.
 
 Canonical catalogue: [[foundational-corpus-units-fc14-humphreys|FC14 — Humphreys, Introduction to Lie Algebras and Representation Theory]].
 
-Pinned project baseline: Mathlib `db584cd6d46c92f209a44c0f1c829460d327499d`, Lean 4.33.0. Current Mathlib checked through `fd634dd29761b5d32af50e2b8f6d8ad043024303` during the 2026-09-15 first-pass adjudication. Declarations first appearing after the project pin are revision-specific `reference-port` routes unless independently importable.
+Pinned project baseline: Mathlib `db584cd6d46c92f209a44c0f1c829460d327499d`, Lean 4.33.0. Current Mathlib checked through `e06e14b71d82002ee32ce854c8ec9ebba95f9627` during the 2026-09-16 first-pass adjudication. Declarations first appearing after the project pin are revision-specific `reference-port` routes unless independently importable.
 
 Every canonical unit receives exactly one Sweep-II route: `mathlib`, `project-existing`, `package-import`, `reference-port`, or `unmatched`. Project source is searched first, followed by pinned/current Mathlib, open/current work, indexed services, Reservoir/packages, broad GitHub Lean repositories, and local reference corpora. The 2026-09-07 records used strict whole-row semantics; the current first-pass definitional Mapping supersedes that rationale row by row with source-clause semantic comparison and expanded current/external searches.
 
