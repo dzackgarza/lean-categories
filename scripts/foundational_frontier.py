@@ -330,6 +330,12 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # decomposition.  It introduces no semisimple/unipotent carrier or
         # quotient notion beyond definitions already present in C06/C07.
         "FC16-C07-U024",
+        # Humphreys C09-U014 is the extension/limit theorem for a
+        # cocharacter orbit in projective space.  The orbit map, P¹, and its
+        # endpoint evaluations are already-defined objects; the unit adds no
+        # named predicate or carrier beyond proving the extension and its
+        # minimum/maximum-weight formula.
+        "FC16-C09-U014",
     }
 )
 
