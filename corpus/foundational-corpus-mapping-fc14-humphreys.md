@@ -18,7 +18,7 @@ project_id: github.com__dzackgarza__lean-categories
 
 # FC14 — Humphreys, *Introduction to Lie Algebras and Representation Theory* mapping
 
-Status: **First-pass definitional Mapping active.** Chapter I and Chapter II definition batches are banked. Chapter III first-pass adjudication has now reached U050. U045–U048 have proof-complete current TauCeti classical root/base models but retain only their explicit Weyl-group/duality residuals; U049 retains the Euclidean E-lattice/subsystem identification gap; U050 retains the orthonormal half-sum F4 coordinate-model gap. The next source-order first-pass definition is U057.
+Status: **First-pass definitional Mapping active.** Chapter I, Chapter II, and Chapter III definition batches are now banked/adjudicated through the final Chapter-III definition U062. U057 is a clause-wise pinned-Mathlib/current-TauCeti quotient/determinant route; U062 retains only the explicit saturation→Weyl-stability/highest-weight residual. Continue with the first source-order first-pass definition in Chapter IV; do not take earlier residue-search rows until the first pass finishes FC14.
 
 Canonical catalogue: [[foundational-corpus-units-fc14-humphreys|FC14 — Humphreys, Introduction to Lie Algebras and Representation Theory]].
 
