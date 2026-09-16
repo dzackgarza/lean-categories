@@ -4668,7 +4668,7 @@ FC17-KER-U04539	FC17	Definition	Kerodon 03XG	6.2.7.4; §6.2 Adjoint Functors Bet
 FC17-KER-U04541	FC17	Notation	Kerodon 03XJ	6.2.7.6; §6.2 Adjoint Functors Between $\infty $-Categories › §6.2.7 Digression: $\infty $-Categories with Short Morphisms	Kerodon 03XJ	missing	search	Kerodon 03XJ		—
 FC17-KER-U04547	FC17	Notation	Kerodon 03XQ	6.2.7.12; §6.2 Adjoint Functors Between $\infty $-Categories › §6.2.7 Digression: $\infty $-Categories with Short Morphisms	Kerodon 03XQ	missing	search	Kerodon 03XQ		—
 FC17-KER-U04550	FC17	Notation	Kerodon 03XT	6.2.7.14; §6.2 Adjoint Functors Between $\infty $-Categories › §6.2.7 Digression: $\infty $-Categories with Short Morphisms	Kerodon 03XT	missing	search	Kerodon 03XT		—
-FC17-KER-U01876	FC17	Definition	Kerodon 01M5	6.3.0.1; §6.3 Localization	Kerodon 01M5	missing	search	Kerodon 01M5		—
+FC17-KER-U01876	FC17	Definition	Kerodon 01M5	6.3.0.1; §6.3 Localization	Kerodon 01M5	mathlib	reuse	Kerodon 01M5	strict localization is the quantified strict universal property for functors inverting W	foundational-corpus-mapping-fc17-kerodon.md
 FC17-KER-U01880	FC17	Definition	Kerodon 01M9	6.3.0.6; §6.3 Localization	Kerodon 01M9	missing	search	Kerodon 01M9		—
 FC17-KER-U01886	FC17	Notation	Kerodon 01MF	6.3.1.1; §6.3 Localization › §6.3.1 Localizations of $\infty $-Categories	Kerodon 01MF	missing	search	Kerodon 01MF		—
 FC17-KER-U01894	FC17	Definition	Kerodon 01MP	6.3.1.9; §6.3 Localization › §6.3.1 Localizations of $\infty $-Categories	Kerodon 01MP	missing	search	Kerodon 01MP		—
