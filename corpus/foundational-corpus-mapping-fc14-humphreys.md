@@ -18,7 +18,7 @@ project_id: github.com__dzackgarza__lean-categories
 
 # FC14 — Humphreys, *Introduction to Lie Algebras and Representation Theory* mapping
 
-Status: **First-pass definitional Mapping active.** Chapters I–IV are fully first-pass adjudicated. Chapter V has reached U034: U024 is the pinned S1–S3 free-Lie quotient, U025/U029 retain only their current source-specific construction residuals, and U034 is the direct pinned algebraically-closed characteristic-zero finite-dimensional simple-Lie setting; its A–G classification assertion is theorem-layer content rather than a missing definition. The next source-order first-pass definition is U038.
+Status: **First-pass definitional Mapping active.** Chapters I–IV are fully first-pass adjudicated. Chapter V has reached U038: U034 is the direct pinned simple-Lie ambient convention with classification reserved for theorem work; U038 was searched against current TauCeti, the live Formalization Corpus, and the generated candidate census and retains only the exact 14-dimensional orthogonal-image/root-vector construction residual. The next source-order first-pass definition is U040.
 
 Canonical catalogue: [[foundational-corpus-units-fc14-humphreys|FC14 — Humphreys, Introduction to Lie Algebras and Representation Theory]].
 
