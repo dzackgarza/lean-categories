@@ -325,6 +325,11 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # almost-simple subgroups with the stated product/intersection
         # properties.  It introduces no new carrier, predicate, or notation.
         "FC16-C05-U017",
+        # Humphreys C07-U024 is the structural exact-sequence/decomposition
+        # result for a connected solvable group obtained from Jordan
+        # decomposition.  It introduces no semisimple/unipotent carrier or
+        # quotient notion beyond definitions already present in C06/C07.
+        "FC16-C07-U024",
     }
 )
 
