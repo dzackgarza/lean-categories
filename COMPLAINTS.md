@@ -400,3 +400,8 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
 - **Evidence:** Definition 10.7.2 on Weibel p.399 fixes any complex A and defines R⁺Hom(A,−):D⁺(C)→D(Ab). The previous mapping instead required a D⁺-valued output and considered only the narrower `rightDerivedFunctorPlus` constructor.
 - **Correction:** the canonical source and mapping now retain the unbounded target. Pinned `DerivabilityStructureInjectives.lean` already supplies a right derived functor for every functor from `HomotopyCategory.Plus C`, with its unit invertible on bounded-below injective complexes. The mapping gives the Hom-functor descent using the actual cochain Leibniz and homotopy identities, then applies that theorem.
 - **Boundary:** this repairs the State-1 route; it does not assert a local RHom implementation or discharge U082/U083.
+
+### FC05 spectrum constructions omitted by non-definitional source labels
+
+- **Evidence:** Weibel pp.408–411 explicitly constructs the sphere spectra, spectrification, coproduct spectra and suspension spectra. U102/U108/U109 were labelled only Example, and U105 had an unrecognized numeric label. All four were absent from the generated definition index, although U106/U110 already required their constructions.
+- **Correction:** retain the four source IDs and restore their construction kinds and exact clauses. U108/U109 and the cylinder-specific U110 construction have explicit native comparisons over the separately catalogued spectrification/adjunction; U102/U105 remain visible State-1 search obligations. The CW colimit formula is not imposed on general prespectra.
