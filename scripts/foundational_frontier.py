@@ -143,6 +143,26 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # Peters--Sterk C13-U006 is the PBW/associated-graded comparison theorem
         # for the already-defined Clifford algebra and filtration, not a new definition.
         "FC11-C13-U006",
+        # Humphreys RGCG §2.13 only computes the orders of the already-defined
+        # H3/H4 reflection groups from the quaternionic model; it introduces no
+        # new carrier, map, predicate, or notation.
+        "FC15-C02-U034",
+        # The §7.5 R-polynomial recursion is a theorem about the coefficient
+        # family introduced by the preceding inverse-expansion proposition.
+        "FC15-C07-U016",
+        # §7.10 is the triangular recurrence/uniqueness proof for the
+        # Kazhdan--Lusztig polynomials already named in U026.
+        "FC15-C07-U028",
+        # §7.11 is the recursive existence proof for the canonical basis of
+        # U025, not a second definition of a basis or polynomial family.
+        "FC15-C07-U030",
+        # §8.9 identifies already-defined affine distinguished representatives
+        # with the coroot lattice and invokes Bott's theorem; this is comparison
+        # and result content, not a new construction for Sweep III.
+        "FC15-C08-U030",
+        # §8.10 compares the already-defined Springer and KL representations;
+        # the word "constructions" in the title must not make it a definition.
+        "FC15-C08-U035",
         # Peters--Sterk Appendix B U004 is the Kähler Hodge theorem identifying
         # already-defined H^{p,q} with de-Rham classes and proving decomposition/
         # conjugation. It introduces no new cohomology carrier beyond U003.
