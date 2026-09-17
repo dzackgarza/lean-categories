@@ -431,3 +431,7 @@ The canonical source summary described all automorphisms congruent to the identi
 ### FC09 relative discriminant duplicated a later comparison obligation
 
 C01-U070 was held unmatched for lack of the norm-of-different comparison, while C03-U038 already intended the basis-generated ideal but cited the base-ring trace and integral/module bases. Both source statements use field bases of L/K contained in the integral closure, not module bases over the Dedekind base. The canonical mappings now share the exact native generator span, with integrality and unique descent proved in the comparison; C03-U039 and C03-U043 retain the full norm and ramification theorem obligations.
+
+### FC09-C01-U115 extraction confuses length additivity with multiplication
+
+The extracted source says module length is multiplicative on short exact sequences. The split sequence 0→κ→κ²→κ→0 has lengths 1,2,1, whereas the native owner `Module.length_eq_add_of_exact` proves the required additive identity. The canonical source now marks the extraction correction explicitly. The mapping uses that actual owner through `Ring.ordFrac` and does not attribute the erroneous word to an uninspected printed edition.
