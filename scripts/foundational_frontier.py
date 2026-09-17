@@ -154,6 +154,11 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # kind refers to the proof maneuver x ↦ x+1; no reusable mathematical
         # object, predicate, or notation is introduced by this unit.
         "FC01-C09-U030",
+        # Dummit--Foote C06-U042 is a recognition criterion for a proposed
+        # finite presentation: the relations give a surjection and an order
+        # bound forces it to be an isomorphism.  It introduces no new
+        # presentation carrier, predicate, or notation beyond U039--U040.
+        "FC01-C06-U042",
         # Humphreys RGCG §2.13 only computes the orders of the already-defined
         # H3/H4 reflection groups from the quaternionic model; it introduces no
         # new carrier, map, predicate, or notation.
