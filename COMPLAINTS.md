@@ -1,5 +1,11 @@
 # Mathematical issues and papercuts
 
+### FC05-C09-U149/U150 require the later Koszul sign, not the ordinary weight-graded cyclic operator
+
+- **Need:** the last Hochschild face and cyclic rotation must be chain maps for the internal tensor differential.
+- **Evidence:** Weibel 9.9.10 initially refers on p.359 to the ordinary graded cyclic module; the continuation on p.360 explicitly inserts the sign `(-1)^(a_q(a₀+⋯+a_(q−1)))` in the last face and rotation. These conventions cannot be identified without correction. For the free graded algebra over Q on x of degree 1 and y of degree 0, with dx=y and dy=0 extended by graded Leibniz, the unsigned differential has b₁(x⊗x)=0 but b₁∂(x⊗x)=2(yx−xy)≠0. Distinct free words are linearly independent. The signed last face instead gives b₁(x⊗x)=2x² and restores ∂b=b∂ on this specimen. The differential squares to zero on the free algebra because its square is a derivation vanishing on both generators.
+- **Repair:** the U149/U150 catalogue and canonical mapping now retain p.360's sign and explicitly compare all chain, cyclic and totalization laws. No unsigned U137-to-DG identification is credited. The two local `DGHochschildHomology.lean` / `DGCyclicHomology.lean` files still supply their realizations as fields; they remain unaccepted realization residue for the existing State-2 obligations, not definitions verified by this State-1 mapping. The interpretation of the preliminary d=0 warning must likewise not erase the distinction between signed graded and ordinary ungraded Hochschild complexes.
+
 Capture issues as they arise under [LC-05](CONTRIBUTING.md#lc-05--record-mathematical-issues-and-papercuts-when-encountered).
 Use this file for unresolved observations; [TODO.md](TODO.md) and its linked
 sweep records own execution dependencies and completion. Entries are not a
