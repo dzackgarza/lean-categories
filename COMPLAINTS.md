@@ -421,3 +421,5 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
 
 - The C06-U050/U057 negative mappings duplicated the already catalogued CB-U024/U025 constructions. The Appendix routes cited TauCeti predicates and uniqueness while explicitly leaving envelope existence and the minimal-resolution constructor open; those predicates do not supply either object.
 - The 2026-09-17 owner comparison now gives the full native maximal-essential-submodule/retraction construction at CB-U024 and the exact recursive minimal resolution at CB-U025. Their source IDs and all existence/uniqueness obligations are preserved. The B4 dependency is reversed only after its use is eliminated from the construction, so there is no circular existence claim. Chapter 18 reuses these owners; no Lean realization is accepted by the mapping changes.
+
+- The C06-U057 comparison additionally confused decomposition of injective terms with minimality. The corrected mapping uses essential successive embeddings from CB-U025 and counts the U054 prime-labelled summands without imposing finite multiplicities. U054 remains a separate, explicitly unresolved theorem prerequisite.
