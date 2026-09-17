@@ -143,6 +143,17 @@ RESULT_ONLY_DEFINITION_UNITS = frozenset(
         # Peters--Sterk C13-U006 is the PBW/associated-graded comparison theorem
         # for the already-defined Clifford algebra and filtration, not a new definition.
         "FC11-C13-U006",
+        # Dummit--Foote C14-U067 is the Kummer classification theorem: under
+        # the stated roots-of-unity hypotheses it classifies finite abelian
+        # exponent-n extensions by subgroups of F^×/(F^×)^n.  It introduces
+        # no new carrier, predicate, notation, or construction beyond the
+        # Kummer-extension data already catalogued earlier in the chapter.
+        "FC01-C14-U067",
+        # Dummit--Foote C09-U030 is the worked translation/Eisenstein argument
+        # proving x^4+1 irreducible.  The word "construction" in the catalogue
+        # kind refers to the proof maneuver x ↦ x+1; no reusable mathematical
+        # object, predicate, or notation is introduced by this unit.
+        "FC01-C09-U030",
         # Humphreys RGCG §2.13 only computes the orders of the already-defined
         # H3/H4 reflection groups from the quaternionic model; it introduces no
         # new carrier, map, predicate, or notation.
