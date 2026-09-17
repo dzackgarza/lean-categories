@@ -297,8 +297,8 @@ Next 5 open units in source traversal order:
 
 ## FC12 — Definitions
 
-Delivered/directly reusable by mapping: **5/45**; pending realization: **40** (unmatched=40).
-Delivered/direct-reuse spans: `FC12-C02-U004`, `FC12-C03-U001`, `FC12-C03-U004`, `FC12-C04-U017`, `FC12-C05-U003`.
+Delivered/directly reusable by mapping: **16/45**; pending realization: **29** (unmatched=29).
+Delivered/direct-reuse spans: `FC12-C01-U013`, `FC12-C02-U004`, `FC12-C03-U001`, `FC12-C03-U004`, `FC12-C03-U020`, `FC12-C04-U001`, `FC12-C04-U017`, `FC12-C05-U003`, `FC12-C07-U001`, `FC12-C08-U003`–`FC12-C08-U004`, `FC12-C09-U003`, `FC12-A-U003`–`FC12-A-U004`, `FC12-A-U006`, `FC12-B-U001`.
 Phase blocker: Milestone 1 is open: definitional mapping/residue audit remains for FC01, FC03, FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
 Next 5 open units in source traversal order:
@@ -313,7 +313,7 @@ Next 5 open units in source traversal order:
 
 ## FC12 — Theorems
 
-Delivered/directly reusable by mapping: **0/178**; pending realization: **178** (mathlib=1, project-existing=4, unmatched=173).
+Delivered/directly reusable by mapping: **0/180**; pending realization: **180** (mathlib=5, project-existing=4, unmatched=171).
 Delivered/direct-reuse spans: none.
 Phase blocker: Sweep III is not complete corpus-wide: FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 

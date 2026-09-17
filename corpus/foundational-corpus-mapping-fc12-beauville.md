@@ -40,13 +40,19 @@ project_id: github.com__dzackgarza__lean-categories
 
 # FC12 — Beauville, *Complex Algebraic Surfaces*, 2nd ed. mapping
 
-Status: **First-pass definitional Mapping complete 2026-09-15.** All 45 FC12 definitional obligations have source-clause semantic adjudication: 1 routes directly to pinned Mathlib, 4 route to existing canonical project owners, and 40 remain scoped `unmatched [negative-search-complete]`. The 40 negatives are provisional State-1 residue for `fc12-definition-residue-pass2` and the later unconstrained prior-art audit; they do not authorize Sweep III. The regenerated definition index contains no FC12 first-pass `search` or `review` action.
+Status: **Structured definitional residue pass 2 complete 2026-09-17.** All 45 FC12 definitional obligations have source-clause semantic adjudication: 12 route to generic/pinned Mathlib constructions, 4 route to existing canonical project owners, and 29 remain scoped `unmatched [negative-search-complete]`. The 29 negatives are provisional State-1 residue for the later unconstrained prior-art audit; they do not authorize Sweep III. The regenerated definition index contains no FC12 first-pass `search` or `review` action.
 
 Canonical catalogue: [[foundational-corpus-units-fc12-beauville|FC12 — Beauville, Complex Algebraic Surfaces, 2nd ed.]].
 
 Pinned project baseline: Mathlib `db584cd6d46c92f209a44c0f1c829460d327499d`, Lean 4.33.0. Current Mathlib checked through `fd634dd29761b5d32af50e2b8f6d8ad043024303` during the 2026-09-15 first-pass adjudication. Declarations first appearing after the project pin are revision-specific `reference-port` routes unless independently importable.
 
 Every canonical unit receives exactly one Sweep-II route: `mathlib`, `project-existing`, `package-import`, `reference-port`, or `unmatched`. Project source is searched first, followed by pinned/current Mathlib, open/current work, indexed search services, Reservoir/packages, broad GitHub Lean discovery, and local reference corpora. The 2026-09-07 records used strict-bundle semantics; current first-pass definitional Mapping supersedes that rationale row by row with source-faithful semantic comparisons and current proof-assistant search evidence.
+
+## Structured definitional residue pass 2 — 2026-09-17
+
+The 40 provisional first-pass residues were re-read against their exact Beauville source clauses and catalogue prerequisites, then re-searched in surface-intersection, birational/blow-up, linear-system/projective-bundle, Albanese/quotient-surface, K3/Enriques/elliptic, positive-characteristic and compact-complex-surface batches. Fresh live-corpus searches remained negative for the construction-heavy surface geometry, and a current-upstream Mathlib/GitHub check still found only object-level `Scheme.Birational`/`PartialIso`, not a predicate that a specified scheme morphism is birational. Accordingly the point-blowup, birational-domination/minimality, relative projective-bundle, Albanese, quotient-surface, double-cover and related geometric constructors remain residue.
+
+Eleven first-pass negatives were instead dependency-accounting errors under the definition-only policy already applied in FC08/FC11. The pass now routes the Néron--Severi image/restricted-form construction, standard numerical invariants, Hirzebruch notation, Kodaira dimension, Beauville's Enriques and K3 predicates, elliptic-surface predicate, the definition-only parts of the positive-characteristic K3/quasi-elliptic/non-classical-Enriques rows, and compact-surface `h,b⁺,b⁻` notation to native generic constructions. These rows introduce only images/restrictions, dimensions/signatures, suprema/maxima, conjunctions, existential predicates or terminology once their separately catalogued geometric inputs exist. Missing geometric carriers and all mixed-row comparison/classification assertions remain at their own upstream or Sweep-IV obligations rather than being duplicated as new definitions. No definition authoring occurred.
 
 [Provenance contract for FC12 C01](provenance-contract-for-fc12-c01)
 
@@ -95,4 +101,3 @@ Every canonical unit receives exactly one Sweep-II route: `mathlib`, `project-ex
 [Provenance contract for FC12 B](provenance-contract-for-fc12-b)
 
 [Appendix B. Compact Complex Surfaces FC12](appendix-b-compact-complex-surfaces-fc12)
-
