@@ -22,6 +22,14 @@ Pinned project baseline: Mathlib `db584cd6d46c92f209a44c0f1c829460d327499d`, Lea
 
 Every canonical unit receives exactly one route: `mathlib`, `project-existing`, `package-import`, `reference-port`, or `unmatched`. Project source is searched first, followed by pinned/current Mathlib, open/current work, indexed search services, Reservoir/packages, broad discoverable Lean repositories, and local reference mirrors. The exact-route remap credits native definitions, short checked representation bridges, and independently supplied clauses; `unmatched` records only the residual mathematical/interface gap. Missing convenience wrappers or source-specific one-theorem bundles are not negative evidence by themselves.
 
+## Structured definitional residue pass 2 — 2026-09-16
+
+The 87 FC08 provisional definitional residues were re-adjudicated in source/topic batches against the current pinned Mathlib, project history, the live Formalization Corpus, and current manifold/differential-geometry work. Fourteen rows were false negatives caused by mixed-unit bundling rather than missing definitions. Their actual defining predicates are direct/native and are now routed definition-only: topological immersion and topological submersion; regular points/values/level sets; defining maps; weakly embedded submanifolds; boundary-defining functions; regular domains and regular sublevel sets; faithful representations; space-filling-curve terminology; parallelizability; equilibrium points; exact one-forms/potentials; and Riemannian completeness/boundedness. The bundled existence, implication, classification, sphere-example, or comparison claims remain theorem/example obligations and were not discharged by those definition routes.
+
+The remaining manifold-form/integration/search clusters were also refreshed under broader terminology. Current Mathlib now supplies a Riemannian distance/metric-space layer, which justified the Riemannian definition split above, but it still has no source-complete manifold orientation-form/integration/density, exterior-calculus/de Rham, arbitrary covariant-tensor pullback, or Lee-general contact/symplectic/Hamiltonian/jet package. TauCeti's checked manifold two-form layer gives smooth two-forms and fiberwise nondegeneracy, but its source explicitly says closedness is absent because the exterior-derivative layer is not available; accordingly it is positive partial evidence, not a symplectic-manifold route. Tangent-bundle and Lie-group developments provide useful special cases but do not realize Lee's arbitrary immersed-submanifold tangent inclusion or general homogeneous-space/quotient definitions. Searches for orientation/density, compactly supported de Rham theory, Darboux/Riemann integration, space-filling constructions, and the appendix ODE/Jordan bundles produced no source-complete checked owner; timed-out batch queries were rerun individually before being treated as negative evidence.
+
+After regeneration, FC08 has 73 provisional `unmatched [negative-search-complete]` definitional rows, all exposed as `residue-search`. They remain for the final unconstrained open-ended prior-art search; no definition authoring occurred.
+
 [Provenance contract for FC08 C01](provenance-contract-for-fc08-c01)
 
 [Chapter 1. Smooth Manifolds FC08](chapter-1-smooth-manifolds-fc08)
@@ -125,4 +133,3 @@ Every canonical unit receives exactly one route: `mathlib`, `project-existing`, 
 [Provenance contract for FC08 CD](provenance-contract-for-fc08-cd)
 
 [Appendix D. Ordinary Differential Equations FC08](appendix-d-ordinary-differential-equations-fc08)
-
