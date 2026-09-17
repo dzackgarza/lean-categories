@@ -427,3 +427,7 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
 ### FC13-C09-U041 omitted the variable-fixing requirement
 
 The canonical source summary described all automorphisms congruent to the identity modulo t, without requiring them to fix t. Over A=k=Q, the automorphism t↦2t satisfies that congruence but restricts to the identity higher derivation on A, so the stated correspondence is not injective. The source summary and mapping now specify k-algebra automorphisms fixing t, retain infinite length, and prove the extension and both inverse laws through the native operator-series construction. This corrects the catalogue summary, not a claimed error in the printed source; no Lean realization is accepted here.
+
+### FC09 relative discriminant duplicated a later comparison obligation
+
+C01-U070 was held unmatched for lack of the norm-of-different comparison, while C03-U038 already intended the basis-generated ideal but cited the base-ring trace and integral/module bases. Both source statements use field bases of L/K contained in the integral closure, not module bases over the Dedekind base. The canonical mappings now share the exact native generator span, with integrality and unique descent proved in the comparison; C03-U039 and C03-U043 retain the full norm and ramification theorem obligations.
