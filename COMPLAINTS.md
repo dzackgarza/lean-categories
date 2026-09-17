@@ -32,6 +32,12 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Mathematical issues
 
+### FC08 standard symplectic matrix sign
+
+- **Need:** FC08-C22-U003/U009/U015 must retain Lee's convention `omega = sum_i dx_i wedge dy_i`, including `omega(A_i,B_j)=delta_ij`.
+- **Evidence:** pinned `Mathlib/LinearAlgebra/SymplecticGroup.lean::Matrix.J` is `fromBlocks 0 (-1) 1 0`; `Matrix.toBilin'_apply'` evaluates it as `v dot (J*w)`. Hence Lee's matrix in grouped x/y coordinates is `-J`. The inherited U003/U009 records instead identified it with J.
+- **Repair:** the 2026-09-17 Chapter 22 mapping revision corrects the sign and basis grouping in U003/U009/U015. Alternation and nondegeneracy remain native. No Lean implementation was changed in this State-1 correction; later cotangent/Hamiltonian realization must preserve the recorded sign.
+
 ### FC07 relative homotopy reference omits the group structure
 
 - **Need:** `FC07-C04-U007`, Hatcher pp. 343–344, includes relative cube concatenation, group laws for n≥2 and commutativity for n≥3; U008 and U011 use this structure.
