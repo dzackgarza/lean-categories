@@ -394,3 +394,9 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
 
 - **Evidence:** `HochschildWeightGrading.lean` fixes the grading and weight index to ℕ and only supplies degreewise spans. Weibel p.354 begins with a general graded algebra and only specializes to positive grading on p.355. The source construction also requires an actual direct-sum grading and cyclic submodules; those are not supplied by the local span definitions.
 - **Mapping/source repair, 2026-09-17:** the native tensor-of-direct-sums equivalence and reindexing by the total-degree fibre construct the full grading, including negative weights. Explicit degree calculations give all cyclic restrictions and their laws; the finite-support cycle/boundary argument gives the homology decomposition. The unchanged positive-weight local file is not credited as the general realization, and a Koszul-signed braiding is not substituted for this paragraph's ordinary cyclic rotation.
+
+### FC05-C10-U081 restricted the RHom target and overlooked generic derivability
+
+- **Evidence:** Definition 10.7.2 on Weibel p.399 fixes any complex A and defines R⁺Hom(A,−):D⁺(C)→D(Ab). The previous mapping instead required a D⁺-valued output and considered only the narrower `rightDerivedFunctorPlus` constructor.
+- **Correction:** the canonical source and mapping now retain the unbounded target. Pinned `DerivabilityStructureInjectives.lean` already supplies a right derived functor for every functor from `HomotopyCategory.Plus C`, with its unit invertible on bounded-below injective complexes. The mapping gives the Hom-functor descent using the actual cochain Leibniz and homotopy identities, then applies that theorem.
+- **Boundary:** this repairs the State-1 route; it does not assert a local RHom implementation or discharge U082/U083.
