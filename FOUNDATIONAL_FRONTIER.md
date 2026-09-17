@@ -25,7 +25,7 @@ Next 5 open units in source traversal order:
 
 ## FC02 — Theorems
 
-Delivered/directly reusable by mapping: **243/351**; pending realization: **108** (mathlib=61, reference-port=6, unmatched=41).
+Delivered/directly reusable by mapping: **243/405**; pending realization: **162** (mathlib=115, reference-port=6, unmatched=41).
 Delivered/direct-reuse spans: `FC02-C01-U014`, `FC02-C01-U018`, `FC02-C01-U020`–`FC02-C01-U021`, `FC02-C01-U036`, `FC02-C01-U038`, `FC02-C01-U041`–`FC02-C01-U042`, `FC02-C01-U045`, `FC02-C01-U052`, `FC02-C01-U054`–`FC02-C01-U058`, `FC02-C01-U061`, `FC02-C01-U070`, `FC02-C01-U075`, `FC02-C01-U080`, `FC02-C01-U083`–`FC02-C01-U084`, `FC02-C01-U089`–`FC02-C01-U090`, `FC02-C01-U094`, `FC02-C01-U098`–`FC02-C01-U105`, `FC02-C01-U108`–`FC02-C01-U109`, `FC02-C01-U111`–`FC02-C01-U112`, `FC02-C01-U114`–`FC02-C01-U124`, `FC02-C01-U126`–`FC02-C01-U130`, `FC02-C01-U134`–`FC02-C01-U139`, `FC02-C01-U142`, `FC02-C01-U144`, `FC02-C01-U147`, `FC02-C01-U152`, `FC02-C02-U003`–`FC02-C02-U006`, `FC02-C02-U010`–`FC02-C02-U016`, `FC02-C02-U021`, `FC02-C02-U025`–`FC02-C02-U028`, `FC02-C02-U032`–`FC02-C02-U033`, `FC02-C02-U035`, `FC02-C02-U037`–`FC02-C02-U042`, `FC02-C02-U044`, `FC02-C02-U046`–`FC02-C02-U053`, `FC02-C02-U055`, `FC02-C02-U057`, `FC02-C02-U059`–`FC02-C02-U060`, `FC02-C02-U062`–`FC02-C02-U065`, `FC02-C02-U068`, `FC02-C02-U070`–`FC02-C02-U071`, `FC02-C02-U073`, `FC02-C02-U075`–`FC02-C02-U078`, `FC02-C02-U082`, `FC02-C02-U086`–`FC02-C02-U089`, `FC02-C02-U091`, `FC02-C02-U103`, `FC02-C02-U107`–`FC02-C02-U108`, `FC02-C02-U112`–`FC02-C02-U113`, `FC02-C02-U117`, `FC02-C02-U122`–`FC02-C02-U123`, `FC02-C02-U127`–`FC02-C02-U132`, `FC02-C02-U134`, `FC02-C02-U138`, `FC02-C02-U142`, `FC02-C02-U148`–`FC02-C02-U149`, `FC02-C03-U003`–`FC02-C03-U006`, `FC02-C03-U008`–`FC02-C03-U014`, `FC02-C03-U016`, `FC02-C03-U018`–`FC02-C03-U019`, `FC02-C03-U023`, `FC02-C03-U025`–`FC02-C03-U026`, `FC02-C03-U031`, `FC02-C03-U038`–`FC02-C03-U040`, `FC02-C03-U043`–`FC02-C03-U056`, `FC02-C03-U058`, `FC02-C03-U060`–`FC02-C03-U063`, `FC02-C03-U065`, `FC02-C03-U067`, `FC02-C03-U070`, `FC02-C03-U073`, `FC02-C03-U076`, `FC02-C03-U080`, `FC02-C03-U086`, `FC02-C03-U088`–`FC02-C03-U092`, `FC02-C04-U003`, `FC02-C04-U005`, `FC02-C04-U007`, `FC02-C04-U009`–`FC02-C04-U010`, `FC02-C04-U017`–`FC02-C04-U018`, `FC02-C04-U020`–`FC02-C04-U025`, `FC02-C04-U028`, `FC02-C04-U031`, `FC02-C04-U033`, `FC02-C04-U036`, `FC02-C04-U041`, `FC02-C05-U001`–`FC02-C05-U003`, `FC02-C05-U005`, `FC02-C05-U007`, `FC02-C05-U011`–`FC02-C05-U013`, `FC02-C06-U002`–`FC02-C06-U003`, `FC02-C06-U010`, `FC02-C06-U014`, `FC02-C06-U016`–`FC02-C06-U019`, `FC02-C06-U022`, `FC02-C06-U028`–`FC02-C06-U029`, `FC02-C07-U003`–`FC02-C07-U006`, `FC02-C07-U010`, `FC02-C07-U013`, `FC02-C07-U015`, `FC02-C07-U019`, `FC02-C07-U022`, `FC02-C07-U027`–`FC02-C07-U028`, `FC02-C07-U030`, `FC02-C07-U033`, `FC02-C07-U038`–`FC02-C07-U040`, `FC02-C07-U043`.
 Phase blocker: Sweep III is not complete corpus-wide: FC05, FC06, FC07, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
@@ -33,11 +33,11 @@ Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC02-C01-U027` | Convention | `FC02-C01-U008`, `FC02-C01-U025`, `FC02-C01-U026` | ready by recorded prerequisites | mathlib; theorem clause pending |
-| `FC02-C01-U047` | Example 1 | `FC02-C01-U046` | ready by recorded prerequisites | unmatched; residue audit |
-| `FC02-C01-U049` | Example 2 | `FC02-C01-U046` | ready by recorded prerequisites | unmatched; residue audit |
-| `FC02-C01-U060` | Example 7 | `FC02-C01-U046` | ready by recorded prerequisites | mathlib; repair mapping/interface |
-| `FC02-C01-U062` | Example 8 | `FC02-C01-U046` | ready by recorded prerequisites | unmatched; residue audit |
+| `FC02-C01-U001` | Convention/notation | — | ready by recorded prerequisites | mathlib; theorem clause pending |
+| `FC02-C01-U004` | Convention/notation | — | ready by recorded prerequisites | mathlib; theorem clause pending |
+| `FC02-C01-U006` | Logical convention | — | ready by recorded prerequisites | mathlib; theorem clause pending |
+| `FC02-C01-U010` | Logical convention | — | ready by recorded prerequisites | mathlib; theorem clause pending |
+| `FC02-C01-U011` | Convention | — | ready by recorded prerequisites | mathlib; theorem clause pending |
 
 ## FC03 — Theorems
 
