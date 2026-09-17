@@ -32,6 +32,12 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Mathematical issues
 
+### FC07 relative homotopy reference omits the group structure
+
+- **Need:** `FC07-C04-U007`, Hatcher pp. 343–344, includes relative cube concatenation, group laws for n≥2 and commutativity for n≥3; U008 and U011 use this structure.
+- **Evidence:** LeanPool `WhiteheadTheorem/RelHomotopyGroup/Defs.lean` at both the cited `3fc79f0a` and current `749a5ba6` explicitly constructs only a pointed quotient set. Its `Algebra.lean` and `LongExactSeq.lean` supply pointed maps and pointed-set exactness, not the omitted algebra.
+- **Repair:** the false complete-group mapping and omitted catalogue clauses were corrected during the 2026-09-17 open-ended search. State-2 U007 must reuse the checked quotient and complete its relative algebra before group-valued consumers; neither a new quotient nor a pointed-set weakening discharges this obligation. The search scope and retained references are in the canonical U007/U011 rows.
+
 ### `IsJordanCanonicalInBasis` weakens the chosen-basis Jordan condition
 
 - **Need:** FC01-C12-U039 defines a Jordan canonical form for a linear transformation as a basis in which the representing matrix itself is block diagonal with Jordan blocks.
