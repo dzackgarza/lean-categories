@@ -38,6 +38,12 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Mathematical issues
 
+### FC05-C09-U162's primitive subcomplex needs a chain-level distinguished element
+
+- **Need:** interpret the distinguished 1 and primitive-subcomplex assertion in Weibel 9.10.8, pp.365–366, without silently changing the source's generality.
+- **Evidence:** the printed DG-coalgebra definition requires ε and Δ to be chain maps, while the primitive calculation also uses d1=0. The local `DifferentialGradedCoalgebra.lean` only asks for an arbitrary `[One H]` and then supplies primitive preservation as an extra hypothesis. The canonical U162 comparison now contains a four-dimensional Q-coalgebra satisfying coassociativity, both counit laws, d²=0 and both chain-map laws, with a degree-zero counital grouplike e chosen as 1, but with primitive y and nonprimitive dy. Exact tensor-basis calculations verify every claimed law.
+- **Scope and repair:** the source's exterior and coinvariant examples are nonnegative and have d1=0. The generic integer-graded reading is not justified by those examples. Resolve whether the prose implicitly requires a DG-coaugmentation or another condition forcing d1=0; do not substitute that additional hypothesis without recording it. The native exterior diagonal and coinvariant descent are independently recovered in U162 using `CliffordAlgebra.prodEquiv` at zero quadratic forms. U162 remains open in State 1 for the full source comparison; no arbitrary-One realization is accepted and no Lean implementation was changed.
+
 ### FC08 standard symplectic matrix sign
 
 - **Need:** FC08-C22-U003/U009/U015 must retain Lee's convention `omega = sum_i dx_i wedge dy_i`, including `omega(A_i,B_j)=delta_ij`.
