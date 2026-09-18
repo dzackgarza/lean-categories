@@ -62,8 +62,9 @@ def OrderedDivisionStep {σ : Type*} (m : MonomialOrder σ) {k : Type*} [Field k
       next = (state.1 - m.leadingTerm state.1, state.2 + m.leadingTerm state.1))
 
 /-- `r` is the remainder produced by the textbook ordered multivariate-division
-procedure applied to `f` and the ordered divisor family `b`.  This realizes the
-order-sensitive relation denoted `f ≡ r mod G` in Dummit--Foote FC01-C09-U057.
+procedure applied to `f` and the ordered divisor family `b`.  This is the
+definition-level relation underlying the ordered division algorithm FC01-C09-U052;
+FC01-C09-U057 is only the notation `f ≡ r mod G` for this output relation.
 Termination and comparison with Gröbner normal forms are theorem-level facts. -/
 def IsOrderedRemainder {σ : Type*} (m : MonomialOrder σ) {k : Type*} [Field k]
     {n : ℕ} (b : Fin n → MvPolynomial σ k)
