@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Homological.LocalizingSubcategory
+public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 public import Mathlib.CategoryTheory.Equivalence
 
 /-!
@@ -44,7 +44,9 @@ structure DerivedDomainConvention
   /-- The corresponding full subcategory of the derived category. -/
   derivedDomain : ObjectProperty D
   /-- The source domain is localizing for the chosen weak equivalences. -/
-  localizing : IsLocalizingFullSubcategory homotopyDomain W
+  localizing :
+    (LocalizerMorphism.ofEq
+      (W₁ := W.inverseImage homotopyDomain.ι) (W₂ := W) rfl).IsLocalizedFullyFaithful
   /-- Restriction of the localization functor to the paired full subcategories. -/
   restricted : homotopyDomain.FullSubcategory ⥤ derivedDomain.FullSubcategory
   /-- Forgetting the full-subcategory wrappers recovers the ambient localization. -/
