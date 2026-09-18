@@ -53,16 +53,6 @@ def IsAcyclicFor {C D : Type*} [Category C] [Category D] [Abelian C]
     (F : C ⥤ D) [F.Additive] (X : C) : Prop :=
   ∀ n > 0, IsZero ((F.rightDerived n).obj X)
 
-/-- An object `X` is **coacyclic** for the functor `F` if all higher left
-    derived functors vanish at `X` (dual to Weibel, Def. 5.8.2).
-
-    Explicitly, `IsCoacyclicFor F X` holds when `L^i F(X) ≅ 0` for every
-    `i > 0`. -/
-def IsCoacyclicFor {C D : Type*} [Category C] [Category D] [Abelian C]
-    [HasProjectiveResolutions C] [Abelian D]
-    (F : C ⥤ D) [F.Additive] (X : C) : Prop :=
-  ∀ n > 0, IsZero ((F.leftDerived n).obj X)
-
 /-!
 ## Cohomological dimension of a functor
 -/
