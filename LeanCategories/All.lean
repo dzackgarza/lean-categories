@@ -8,7 +8,6 @@ public import LeanCategories
 public import LeanCategories.CategoryTheory.WalkingArrow
 public import LeanCategories.CategoryTheory.EssentiallyDiscrete
 public import LeanCategories.CategoryTheory.FiniteDimensionalCoordinates
-public import LeanCategories.CategoryTheory.InitialRepresentable
 public import LeanCategories.CategoryTheory.AlgebraicTheoryModels
 public import LeanCategories.CategoryTheory.CommutativeGraph
 public import LeanCategories.CategoryTheory.Subcategory
