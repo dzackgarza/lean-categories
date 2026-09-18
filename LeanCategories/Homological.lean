@@ -14,6 +14,7 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 public import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 public import Mathlib.CategoryTheory.Sites.Sheafification
 public import LeanCategories.Homological.AlexanderWhitney
+public import LeanCategories.Homological.CotripleResolution
 public import LeanCategories.Homological.FreeLieCentralExtension
 public import LeanCategories.Homological.GroupCohomologyExternalProduct
 
