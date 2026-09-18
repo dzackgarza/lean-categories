@@ -210,7 +210,7 @@ noncomputable def chevalleyEilenbergDifferentialCurry (p : ℕ) :
   map_add' u v := by
     rw [add_smul]
   map_smul' u v := by
-    rw [smul_eq_mul, mul_smul]
+    simp only [smul_eq_mul, RingHom.id_apply, mul_smul]
 
 /-- The actual `U(L)`-linear Chevalley--Eilenberg differential
 `U(L) ⊗ Λ^{p+1}L → U(L) ⊗ Λ^pL`. -/
