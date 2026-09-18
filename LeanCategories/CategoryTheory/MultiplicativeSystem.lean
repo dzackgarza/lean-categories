@@ -8,35 +8,18 @@ public import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 
 /-!
-# Multiplicative systems in the sense of Weibel
+# Locally small denominator systems in the sense of Weibel
 
-Weibel, *An Introduction to Homological Algebra*, Definition 10.3.4, pp. 379--384
-(FC05-C10-U026).
+Weibel, *An Introduction to Homological Algebra*, Set-Theoretic Considerations 10.3.6
+and §10.3, pp. 379--384 (FC05-C10-U029, FC05-C10-U030).
 
-Mathlib splits Weibel's two-sided axioms into a multiplicative morphism property together with left
-and right calculi of fractions.  The latter classes contain the corresponding Ore square and
-cancellation axioms and each extends multiplicativity.
+Mathlib owns the calculus-of-fractions axioms.  This file records Weibel's additional
+set-sized cofinal denominator-family data and the associated small colimit presentation.
 -/
 
 @[expose] public section
 
 open CategoryTheory
-
-namespace LeanCategories.CategoryTheory
-
-universe u v
-
-variable {C : Type u} [Category.{v} C]
-
-/-- Weibel's two-sided multiplicative system: a morphism property admitting both the left and right
-calculus of fractions.  Mathlib's two calculus classes include identities/composition and exactly
-the source Ore and cancellation axioms.
-
-Source: Weibel, Definition 10.3.4, pp. 379--384 (FC05-C10-U026). -/
-def IsMultiplicativeSystem (W : MorphismProperty C) : Prop :=
-  W.HasLeftCalculusOfFractions ∧ W.HasRightCalculusOfFractions
-
-end LeanCategories.CategoryTheory
 
 namespace LeanCategories.CategoryTheory
 
