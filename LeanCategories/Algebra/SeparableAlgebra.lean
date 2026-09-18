@@ -10,34 +10,19 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
-# Finite-dimensional separable algebras
+# Separability compatibility ports
 
-Weibel, *An Introduction to Homological Algebra*, §9.2, pp. 306--310
-(FC05-C09-U020).
+Weibel, *An Introduction to Homological Algebra*, §9.3, pp. 311--318
+(FC05-C09-U038, FC05-C09-U041).
 
-Weibel calls a finite-dimensional semisimple `k`-algebra `R` separable when every scalar extension
-`R ⊗[k] l` along a field extension `l/k` is again semisimple.  The definition below records this
-criterion directly, using Mathlib's `FiniteDimensional` and `IsSemisimpleRing` predicates.
+These declarations port exact definitions from newer Mathlib to the repository's pinned revision.
 -/
 
 @[expose] public section
 
-open scoped TensorProduct
-
 namespace LeanCategories.Algebra
 
 universe u v
-
-/-- A finite-dimensional separable `k`-algebra in the sense of Weibel §9.2: `R` is
-finite-dimensional and semisimple over `k`, and every scalar extension to a field extension of `k`
-in the ambient universe remains semisimple.
-
-Source: Weibel, §9.2, pp. 306--310 (FC05-C09-U020). -/
-def IsFiniteDimensionalSeparableAlgebra
-    (k : Type u) (R : Type v) [Field k] [Ring R] [Algebra k R] : Prop :=
-  FiniteDimensional k R ∧ IsSemisimpleRing R ∧
-    ∀ (l : Type u) [Field l] [Algebra k l], IsSemisimpleRing (R ⊗[k] l)
-
 
 /-- A field extension is separably generated when there is a transcendence basis over which the
 remaining algebraic extension is separable.
