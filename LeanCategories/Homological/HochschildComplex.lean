@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Homological.SimplicialChainComplexes
+public import Mathlib.AlgebraicTopology.MooreComplex
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.Algebra.Module.Bimodule
 public import Mathlib.LinearAlgebra.TensorPower.Basic
@@ -110,7 +110,8 @@ structure HochschildSimplicialRealization where
 /-- Hochschild homology of a standard simplicial realization. -/
 noncomputable def hochschildHomology
     (S : HochschildSimplicialRealization k R M) (n : ℕ) : ModuleCat k :=
-  simplicialHomotopyObject S.obj n
+  (HomologicalComplex.homologyFunctor (ModuleCat k) (ComplexShape.down ℕ) n).obj
+    ((AlgebraicTopology.normalizedMooreComplex (ModuleCat k)).obj S.obj)
 
 /-- The degree-`n` Hochschild cochain module `Hom_k(R^{⊗n},M)`. -/
 abbrev HochschildCochainDegree (n : ℕ) : Type max u v w :=

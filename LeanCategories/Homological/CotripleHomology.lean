@@ -5,7 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Homological.CotripleResolution
-public import LeanCategories.Homological.SimplicialChainComplexes
+public import Mathlib.AlgebraicTopology.MooreComplex
 
 /-!
 # Cotriple homology
@@ -61,6 +61,7 @@ variable {D : Type uD} [Category.{vD} D] [Abelian D]
 simplicial realization of the canonical cotriple resolution. -/
 noncomputable def cotripleHomology (T : Comonad C) (A : C)
     (S : T.SimplicialResolution A) (E : C ⥤ D) (n : ℕ) : D :=
-  simplicialHomotopyObject (S.obj ⋙ E) n
+  (HomologicalComplex.homologyFunctor D (ComplexShape.down ℕ) n).obj
+    ((AlgebraicTopology.normalizedMooreComplex D).obj (S.obj ⋙ E))
 
 end LeanCategories.Homological

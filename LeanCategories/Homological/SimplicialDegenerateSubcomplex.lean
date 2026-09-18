@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Homological.SimplicialChainComplexes
+public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.Algebra.Category.ModuleCat.Images
 public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
@@ -124,7 +124,8 @@ noncomputable abbrev simplicialDegenerateComplex
 /-- The canonical inclusion `D(A) ↪ C(A)`. -/
 noncomputable def simplicialDegenerateInclusion
     (A : SimplicialObject (ModuleCat.{v} R)) :
-    simplicialDegenerateComplex R A ⟶ simplicialUnnormalizedChainComplex A :=
+    simplicialDegenerateComplex R A ⟶
+      AlgebraicTopology.AlternatingFaceMapComplex.obj A :=
   Abelian.image.ι (QInfty (X := A))
 
 /-- In each degree, the categorical image subcomplex is canonically the

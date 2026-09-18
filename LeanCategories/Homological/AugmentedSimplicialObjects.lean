@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Homological.SimplicialChainComplexes
+public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 public import Mathlib.AlgebraicTopology.ExtraDegeneracy
 public import Mathlib.AlgebraicTopology.SimplicialObject.Op
 
@@ -52,14 +52,17 @@ variable [Abelian C]
 /-- The augmentation from the normalized Moore complex to the augmentation point
 concentrated in degree zero. -/
 noncomputable def normalizedAugmentation (X : SimplicialObject.Augmented C) :
-    simplicialNormalizedChainComplex X.left ⟶ (ChainComplex.single₀ C).obj X.right :=
+    (AlgebraicTopology.normalizedMooreComplex C).obj X.left ⟶
+      (ChainComplex.single₀ C).obj X.right :=
   AlgebraicTopology.inclusionOfMooreComplexMap X.left ≫
     AlgebraicTopology.AlternatingFaceMapComplex.ε.app X
 
 /-- An augmented simplicial object is aspherical when its positive homotopy
 objects vanish and its augmentation induces an isomorphism on `π₀`. -/
 def IsAspherical (X : SimplicialObject.Augmented C) : Prop :=
-  (∀ n : ℕ, 0 < n → IsZero (simplicialHomotopyObject X.left n)) ∧
+  (∀ n : ℕ, 0 < n → IsZero
+    ((HomologicalComplex.homologyFunctor C (ComplexShape.down ℕ) n).obj
+      ((AlgebraicTopology.normalizedMooreComplex C).obj X.left))) ∧
     IsIso ((HomologicalComplex.homologyFunctor C (ComplexShape.down ℕ) 0).map
       (normalizedAugmentation X))
 
