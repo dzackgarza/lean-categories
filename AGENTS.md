@@ -32,16 +32,20 @@ plans, including plans that describe their input mappings as “verified.”
    reconcile source IDs with the mapping and worklist. Resolve unparsed or ambiguous
    entries before treating the selected list as exhaustive.
 3. In Mapping, Definitions, and Theorems, read the next unit's source statement before
-   choosing its Lean encoding. Compare the candidate's actual inputs, output,
-   hypotheses, and laws with every clause of that statement. A “verified” or “exact”
-   mapping is usable only when that comparison holds. Reuse an established comparison
-   for unchanged declarations; correct a defeated mapping at its existing owner and
-   preserve useful prior art. Catalogue establishes the obligation independently.
+   choosing its Lean encoding. Split mixed source rows by grammatical/mathematical role
+   before doing anything else. In Definitions, compare only the source's definitional
+   data, constructors, predicates, fields, notation, maps, hypotheses, and quantified
+   parameters with the candidate declaration. In Theorems, compare the proposition/result
+   clauses. A “verified” or “exact” mapping is usable only when the phase-appropriate
+   comparison holds. Reuse an established comparison for unchanged declarations; correct
+   a defeated mapping at its existing owner and preserve useful prior art. Catalogue
+   establishes the obligation independently.
 4. In Definitions and Theorems, implement the actual obligation at its mathematical
-   owner. Check the meaning of project definitions used as premises. Before exporting
-   a new definition or building on it, compare its clauses to the source, try an
-   intended example and a nearby excluded example, and complete its intrinsic
-   construction laws. Repair a faulty owner and affected uses before extending that
+   owner. Check the meaning of project definitions used as premises. In the Definitions
+   sweep, write the source's declarations/constructions only. Proof terms that are
+   fields of the declaration being constructed are ordinary implementation detail;
+   standalone propositions about the constructed object are theorem work and do not
+   belong to Sweep III. Repair a faulty owner and affected uses before extending that
    dependency chain. Continue independent mathematics while another worker owns the
    repair.
 5. Commit coherent work using the repository's existing checks. Continue
@@ -317,15 +321,24 @@ including aliases, instances, exports, and mapping claims. A downstream build ca
 restore a missing condition. Repair that owner and affected uses instead of adding
 consumer-specific compensations. Unrelated work remains usable and can continue.
 
-### Phase labels do not decide what a construction owes
+### Sweep III is declarations only
 
-A quotient needs representative independence to define its map. A category needs its
-composition laws. A normal-form construction needs the property making its output
-normal. These are intrinsic definition work even when Lean expresses them as theorems.
-General classification results can remain in Sweep IV. Discharge an exact prerequisite
-theorem when a construction needs it, without absorbing the surrounding theorem corpus.
-Conversely, an admissible unmatched route can finish a Mapping obligation without yet
-implementing it. Apply each sweep's own completion condition.
+Sweep III does not select, author, or discharge standalone propositions. It writes the
+source's definitions, structures, classes, predicates, notation, maps, functors,
+categories, and named constructions. If Lean requires a proof-valued field in order to
+construct one of those declarations, that term is written inside the declaration as an
+implementation detail; it does not create a separate theorem/lemma obligation.
+
+Do not prove representative independence, closure, centrality, surjectivity,
+injectivity, exactness, square-zero, universality, existence, uniqueness, comparison
+isomorphisms, normal-form properties, functor laws stated as propositions, or any other
+claim *about* an already-declared object during Sweep III. Those are Sweep-IV units when
+they belong to the admitted corpus. If a proposition is required before a later
+definition can even be stated, record the dependency and leave that later definition
+blocked; do not prove the proposition inside the Definitions sweep.
+
+An admissible unmatched route can finish a Mapping obligation without yet implementing
+it. Apply each sweep's own completion condition.
 
 ### Judge progress by what later mathematics can safely use
 
@@ -710,9 +723,9 @@ independent sequential plans.
    Only `unmatched` units are greenfield mathematics.
 3. **Definition sweep.** Traverse every definitional unit using its mapping. Reuse canonical
    owners directly, port reference implementations rather than rederive them, and author new
-   mathematics only for unmatched units. Place every notion at its correct categorical owner,
+   declarations only for unmatched units. Place every notion at its correct categorical owner,
    defining any missing categories, morphism classes, functors, or universal constructions.
-   Prove what is intrinsic to well-definedness and categorical laws. Establish the
+   Write no standalone theorem or lemma in order to close a Definitions unit. Establish the
    [definition's source meaning](#establish-the-definition-before-dependent-use) before
    exporting it or building another construction on it.
 4. **Theorem sweep.** Only after the definitional sweep, traverse the catalogue's non-definitional
@@ -932,18 +945,19 @@ transcribing a textbook into Lean, and nothing downstream can tell the two apart
 
 #### Establish the definition before dependent use
 
-Before writing a new definition, derive its data, laws, hypotheses, and quantified
-conditions from the source independently of the prospective Lean encoding. Ground this
-in the catalogue's source unit and its mapping record; do not create a second local
-account of the source.
+Before writing a new definition, derive its definitional data, constructors, fields,
+hypotheses, notation, maps, and quantified parameters from the source independently of
+the prospective Lean encoding. Separate every proposition/result clause from that list
+before implementation. Ground this in the catalogue's source unit and its mapping
+record; do not create a second local account of the source.
 
 After implementation, compare the actual declaration with that derivation. Run the
 [wrong-model test](#apply-the-wrong-model-test) and the
 [positive and separating examples](#require-one-positive-and-one-separating-example)
 before adding the definition to `LeanCategories.All` or using it in another named
 construction. Inspect mixed boundary cases, not only conditions within each part of
-a partition. The examples supplement the full clause comparison and intrinsic proofs;
-they do not establish equivalence by themselves.
+a partition. These examples are semantic reading checks, not formalization obligations
+for Sweep III; do not author theorem/example proofs to satisfy them.
 
 For a simple loop, injectivity on `(0,1)` plus endpoint equality leaves endpoint/interior
 collisions unchecked. A traversal of two circles meeting at the basepoint passes that
@@ -957,33 +971,36 @@ construction, or inspect its still-valid source comparison. A standard name and 
 successful dependency build do not establish that meaning. Reuse canonical dependency
 declarations directly once the mapping comparison establishes the match.
 
-Complete construction laws in Sweep III: existence where required, representative
-independence, closure, category/functor laws, and the properties needed for the output
-to inhabit its claimed mathematical class. An arbitrary output is not a normal-form
-construction until the required normal-form property is established. A source-defined
-predicate expressing that property is a different, legitimate obligation.
+Sweep III declares the source's data, predicates, notation, maps, structures, and
+constructions. It has no standalone proof programme. If the target type itself has
+proof-valued fields, fill them only as constructor fields of the declaration being
+defined. Do not export or select a theorem/lemma to establish a property of that
+declaration. Claims such as surjectivity, injectivity, exactness, centrality,
+independence, universality, normal-form properties, square-zero, comparison
+isomorphisms, existence, or uniqueness are Sweep-IV content.
 
 The source comparison is not a one-time design note. After the source-order Definitions
 passes finish, run the corpus-wide `definition-source-conformance` milestone: re-open the
 original prose statement and the actual exported realization for every definitional unit in
-the open programme. Check the complete data and hypotheses, all quantifiers, equations and
-coherences, covariance/contravariance, representative or quotient conditions, ambient
-category assumptions, and the exact generality claimed. For imported/reused owners, check
-the specialization/comparison that makes the source notion a genuine instance. For ports and
-new definitions, inspect the implementation itself. Require an intended example and a nearby
-separating/excluded example whenever they are mathematically meaningful. A mismatch reopens
-the owning definition and every dependent realization that used the wrong meaning.
+the open programme. Check the complete definitional data, hypotheses, quantified parameters,
+constructors, fields, notation, maps, variance, ambient category assumptions, and exact
+generality claimed. For imported/reused owners, check the specialization/comparison that
+makes the source notion a genuine instance. For ports and new definitions, inspect the
+declaration itself. Source examples may be used to detect a wrong model, but they do not
+become formal proof obligations in Sweep III. A mismatch reopens the owning definition and
+every dependent realization that used the wrong meaning.
 
 Milestone 2 closes only when this global pass finds no merely plausible, partial, weakened, or
 over-specialized realization. A green build, exported declaration, no-`sorry` scan, or theorem
 proved downstream is integration evidence only; none is evidence that the Lean definition
 means exactly what the prose reference means.
 
-General classification and other theorems may remain in Sweep IV when the definition
-does not depend on them. If a source theorem is required to construct or use the named
-object, record its exact source-unit dependency and discharge that prerequisite.
-Neither deferral of intrinsic laws nor expansion into an unrelated theorem programme
-satisfies the definition sweep.
+All propositions remain in Sweep IV. The only proof terms that may occur during Sweep
+III are terms required *inside the declaration being defined* because its Lean target
+type has proof-valued fields. They are not separately selected theorem obligations. If a
+source theorem is required before a named object can be defined, record its exact
+source-unit dependency and leave that definition blocked; do not prove the theorem
+inside Sweep III.
 
 Only after semantic acceptance should aggregate builds, exporters, and existing QC
 be used as integration evidence. Targeted elaboration during implementation remains
@@ -1016,8 +1033,9 @@ milestone to make an earlier box turn green.
 
 In Sweep III, direct Mathlib/project routes need the accepted semantic match and
 required reachability. Package routes need the actual accepted dependency. Reference
-ports need the integrated implementation and comparison, not a downloaded file or a
-citation. New mathematics needs its source-grounded definition and intrinsic laws.
+ports need the integrated declaration, not a downloaded file or a citation. New
+mathematics needs its source-grounded declaration only; proposition/result clauses are
+not Definition-sweep acceptance conditions.
 For later mixed or terminology units, classification must follow their content even
 when their metadata spelling differs from early chapters.
 
@@ -1266,8 +1284,8 @@ Before writing any **foundational-corpus** construct, in order:
    relationship to the standard/source notion is a red flag. Reuse Mathlib's typeclasses,
    category conventions, and morphism classes so the result composes with the library instead of
    shadowing it. Do not create project-local aliases merely to rename dependency declarations.
-   Establish the source comparison and intrinsic laws before exporting the definition or
-   allowing another construction to consume it.
+   Establish the source comparison before exporting the definition or allowing another
+   construction to consume it. Do not add theorem proofs to the definition unit.
 
 5. **Keep search evidence in the mapping record.** The corpus catalogue owns mathematical
    source content; Sweep II owns implementation provenance. Do not create separate ad hoc route
