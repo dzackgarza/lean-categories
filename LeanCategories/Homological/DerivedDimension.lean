@@ -40,20 +40,6 @@ namespace LeanCategories.Homological
 open CategoryTheory Limits
 
 /-!
-## Acyclic objects for a functor
--/
-
-/-- An object `X` is **acyclic** for the functor `F` if all higher right
-    derived functors vanish at `X` (Weibel, Def. 5.8.2).
-
-    Explicitly, `IsAcyclicFor F X` holds when `R^i F(X) ≅ 0` for every
-    `i > 0`. -/
-def IsAcyclicFor {C D : Type*} [Category C] [Category D] [Abelian C]
-    [HasInjectiveResolutions C] [Abelian D]
-    (F : C ⥤ D) [F.Additive] (X : C) : Prop :=
-  ∀ n > 0, IsZero ((F.rightDerived n).obj X)
-
-/-!
 ## Cohomological dimension of a functor
 -/
 
