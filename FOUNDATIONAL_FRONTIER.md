@@ -297,8 +297,8 @@ Next 5 open units in source traversal order:
 
 ## FC12 — Definitions
 
-Delivered/directly reusable by mapping: **16/45**; pending realization: **29** (unmatched=29).
-Delivered/direct-reuse spans: `FC12-C01-U013`, `FC12-C02-U004`, `FC12-C03-U001`, `FC12-C03-U004`, `FC12-C03-U020`, `FC12-C04-U001`, `FC12-C04-U017`, `FC12-C05-U003`, `FC12-C07-U001`, `FC12-C08-U003`–`FC12-C08-U004`, `FC12-C09-U003`, `FC12-A-U003`–`FC12-A-U004`, `FC12-A-U006`, `FC12-B-U001`.
+Delivered/directly reusable by mapping: **17/45**; pending realization: **28** (unmatched=28).
+Delivered/direct-reuse spans: `FC12-C01-U013`, `FC12-C02-U004`, `FC12-C03-U001`, `FC12-C03-U004`, `FC12-C03-U020`, `FC12-C04-U001`, `FC12-C04-U017`, `FC12-C05-U003`, `FC12-C05-U014`, `FC12-C07-U001`, `FC12-C08-U003`–`FC12-C08-U004`, `FC12-C09-U003`, `FC12-A-U003`–`FC12-A-U004`, `FC12-A-U006`, `FC12-B-U001`.
 Phase blocker: Milestone 1 is open: definitional mapping/residue audit remains for FC12, FC14, FC15, FC16, FC17.
 
 Next 5 open units in source traversal order:
