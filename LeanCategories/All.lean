@@ -116,7 +116,6 @@ public import LeanCategories.Homological
 public import LeanCategories.Homological.DeltaFunctor
 public import LeanCategories.Homological.DeltaFunctorMorphisms
 public import LeanCategories.Homological.SatelliteFunctors
-public import LeanCategories.Homological.Syzygy
 public import LeanCategories.Homological.BalancedFunctor
 public import LeanCategories.Homological.GrothendieckAB4Star
 public import LeanCategories.Homological.SheafAB4StarCounterexample
