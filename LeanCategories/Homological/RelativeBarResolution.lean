@@ -198,13 +198,7 @@ def relativeInductionHomEquiv (f : k →+* R)
       (N ⟶ (ModuleCat.restrictScalars.{max w v} f).obj M) where
   toFun := relativeInductionRestrict f
   invFun := relativeInductionDesc f
-  left_inv g := by
-    apply ModuleCat.hom_ext
-    apply LinearMap.ext
-    intro n
-    change (1 : R) • g.hom n = g.hom n
-    rw [one_smul]
-  right_inv h := by
+  left_inv h := by
     apply ModuleCat.hom_ext
     apply LinearMap.ext
     intro x
@@ -222,6 +216,12 @@ def relativeInductionHomEquiv (f : k →+* R)
             simp [TensorProduct.smul_tmul', smul_eq_mul, mul_one]
         | add x y hx hy =>
             simpa only [Submodule.Quotient.mk_add, map_add] using congrArg₂ (· + ·) hx hy
+  right_inv g := by
+    apply ModuleCat.hom_ext
+    apply LinearMap.ext
+    intro n
+    change (1 : R) • g.hom n = g.hom n
+    rw [one_smul]
 
 /-- The induction-restriction adjunction for an arbitrary ring homomorphism
 `f : k →+* R`. -/
