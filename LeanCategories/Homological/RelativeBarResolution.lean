@@ -93,7 +93,7 @@ def relativeInductionMap (f : k →+* R)
 
 /-- Induction of modules along an arbitrary ring homomorphism. -/
 def relativeInductionFunctor (f : k →+* R) :
-    ModuleCat.{max w v} k ⟶ ModuleCat.{max w v} R where
+    ModuleCat.{max w v} k ⥤ ModuleCat.{max w v} R where
   obj N := relativeInductionModule f N
   map g := relativeInductionMap f g
   map_id N := by
