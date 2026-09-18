@@ -65,15 +65,4 @@ def hochschildInternalShufflePure {p q : ℕ}
   hochschildInternalCollapse k R M N p q
     (hochschildShufflePure k R R M N m a n b)
 
-/-- The degreewise internal Hochschild product associated to a realization of
-the external shuffle product.  Differential compatibility is Proposition
-9.4.2-level content and is not asserted here. -/
-def HochschildShuffleExternalProductRealization.internalMap
-    (E : HochschildShuffleExternalProductRealization k R R M N) (p q : ℕ) :
-    ModuleCat.of k
-        (HochschildChainDegree (k := k) (R := R) (M := M) p ⊗[k]
-          HochschildChainDegree (k := k) (R := R) (M := N) q) ⟶
-      ModuleCat.of k ((M ⊗[k] N) ⊗[k] TensorPower k (p + q) R) :=
-  E.map p q ≫ ModuleCat.ofHom (hochschildInternalCollapse k R M N p q)
-
 end LeanCategories.Homological

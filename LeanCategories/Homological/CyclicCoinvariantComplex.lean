@@ -47,20 +47,4 @@ noncomputable def cyclicCoinvariantQuotient
     A.obj.obj (op ⦋n⦌) ⟶ cyclicCoinvariantDegree R A n :=
   ModuleCat.ofHom (Submodule.mkQ (cyclicDifferenceSubmodule R A n))
 
-/-- Definition-layer realization of the quotient Hochschild complex
-`A_*/(1-t)`.  The displayed square says the differential is induced from the
-ordinary Hochschild differential. -/
-structure CyclicCoinvariantComplexRealization
-    (A : CyclicObject (C := ModuleCat.{v} R)) where
-  /-- The quotient chain complex. -/
-  complex : ChainComplex (ModuleCat.{v} R) ℕ
-  /-- Identification of degree `n` with `A_n/(1-t_n)`. -/
-  degreeIso : ∀ n : ℕ, complex.X n ≅ cyclicCoinvariantDegree R A n
-  /-- The quotient map followed by the chosen degree identification. -/
-  differential : ∀ n : ℕ,
-    cyclicCoinvariantQuotient R A (n + 1) ≫ (degreeIso (n + 1)).inv ≫
-        complex.d (n + 1) n =
-      (cyclicHochschildComplex A).d (n + 1) n ≫
-        cyclicCoinvariantQuotient R A n ≫ (degreeIso n).inv
-
 end LeanCategories.Homological
