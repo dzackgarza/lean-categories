@@ -5,7 +5,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.Algebra.Homology.HomologicalBicomplex
-public import LeanCategories.Homological.FilteredComplex
+public import LeanCategories.Homological.SpectralSequenceConvergence
+public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 public import Mathlib.Algebra.Homology.TotalComplex
 public import Mathlib.Algebra.Homology.Embedding.StupidTrunc
 public import Mathlib.Algebra.Homology.TotalComplexSymmetry
@@ -40,7 +41,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 /-- The associated graded complex of an increasing filtration on a
 nonnegatively graded chain complex. -/
 noncomputable def associatedGradedNat {K : ChainComplex C ℕ}
-    (F : ChainComplexFiltration C (ComplexShape.down ℕ) K) (p : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) :
     ChainComplex C ℕ :=
   cokernel (Subobject.ofLE (F.obj (p - 1)) (F.obj p) (F.monotone (by omega)))
 
@@ -308,8 +309,7 @@ lemma columnFiltrationLevelNat_mono
 Source: Weibel, Definition 5.6.1 (FC05-C05-U045). -/
 noncomputable def columnFiltration
     (K : ChainComplex (ChainComplex C ℕ) ℕ) :
-    ChainComplexFiltration C (ComplexShape.down ℕ)
-      (HomologicalComplex₂.total K (ComplexShape.down ℕ)) where
+    IncreasingFiltration (HomologicalComplex₂.total K (ComplexShape.down ℕ)) where
   obj p := if p < 0 then ⊥ else columnFiltrationLevelNat K p.toNat
   monotone := by
     intro p q hpq
@@ -345,8 +345,7 @@ the canonical total-complex symmetry.
 Source: Weibel, Definition 5.6.2 (FC05-C05-U046). -/
 noncomputable def rowFiltration
     (K : ChainComplex (ChainComplex C ℕ) ℕ) :
-    ChainComplexFiltration C (ComplexShape.down ℕ)
-      (HomologicalComplex₂.total K (ComplexShape.down ℕ)) where
+    IncreasingFiltration (HomologicalComplex₂.total K (ComplexShape.down ℕ)) where
   obj p :=
     Subobject.mapIsoToOrderIso
       (HomologicalComplex₂.totalFlipIso K (ComplexShape.down ℕ))

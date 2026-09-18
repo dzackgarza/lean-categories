@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Homological.FilteredComplex
+public import LeanCategories.Homological.SpectralSequenceConvergence
 public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.CategoryTheory.Subobject.Limits
@@ -32,21 +32,21 @@ open CategoryTheory CategoryTheory.Limits
 
 universe v u
 
-namespace ChainComplexFiltration
+namespace IncreasingFiltration
 
 variable {A : Type u} [Category.{v, u} A] [Abelian A] {K : ChainComplex A ℤ}
 
 /-- The degree-`n` filtration subobject `F_p C_n ⊆ C_n`.
 
 Source: Weibel, Construction 5.4.6 (FC05-C05-U031). -/
-noncomputable def degreeSubobject (F : ChainComplexFiltration A (ComplexShape.down ℤ) K)
+noncomputable def degreeSubobject (F : IncreasingFiltration K)
     (p n : ℤ) : Subobject (K.X n) :=
   Subobject.mk ((F.obj p).arrow.f n)
 
 /-- The canonical isomorphism from the chosen representative of `F_p C_n` as a subobject back to
 the degree-`n` object of the filtered subcomplex. -/
 noncomputable def degreeSubobjectIso
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p n : ℤ) :
+    (F : IncreasingFiltration K) (p n : ℤ) :
     (F.degreeSubobject p n : A) ≅ (Subobject.underlying.obj (F.obj p)).X n := by
   rw [degreeSubobject]
   exact Subobject.underlyingIso ((F.obj p).arrow.f n)
@@ -54,7 +54,7 @@ noncomputable def degreeSubobjectIso
 
 /-- Degreewise filtration subobjects are monotone in the filtration index. -/
 theorem degreeSubobject_mono
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) {p q : ℤ} (h : p ≤ q) (n : ℤ) :
+    (F : IncreasingFiltration K) {p q : ℤ} (h : p ≤ q) (n : ℤ) :
     F.degreeSubobject p n ≤ F.degreeSubobject q n := by
   let m := (Subobject.ofLE (F.obj p) (F.obj q) (F.monotone h)).f n
   apply Subobject.mk_le_mk_of_comm m
@@ -70,7 +70,7 @@ Categorically this is the intersection of `F_p C_n` with the inverse image of
 
 Source: Weibel, Construction 5.4.6 (FC05-C05-U031). -/
 noncomputable def approximateCycles
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) (r : ℕ) (n : ℤ) :
     Subobject (K.X n) :=
   F.degreeSubobject p n ⊓
     (Subobject.pullback (K.d n n.pred)).obj
@@ -78,7 +78,7 @@ noncomputable def approximateCycles
 
 /-- Every approximate cycle lies in the `p`th filtration term. -/
 theorem approximateCycles_le_degree
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) (r : ℕ) (n : ℤ) :
     F.approximateCycles p r n ≤ F.degreeSubobject p n := by
   rw [approximateCycles]
   exact inf_le_left
@@ -86,7 +86,7 @@ theorem approximateCycles_le_degree
 
 /-- The differential of an approximate cycle lands in the prescribed lower filtration term. -/
 theorem approximateCycles_d_factors
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) (r : ℕ) (n : ℤ) :
     (F.degreeSubobject (p - (r : ℤ)) n.pred).Factors
       ((F.approximateCycles p r n).arrow ≫ K.d n n.pred) := by
   rw [approximateCycles]
@@ -98,7 +98,7 @@ theorem approximateCycles_d_factors
 /-- Raising both the filtration and approximation indices by one gives an inclusion
 `A_{p-1}^r ⊆ A_p^{r+1}`. -/
 theorem approximateCycles_previous_le
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) (r : ℕ) (n : ℤ) :
     F.approximateCycles (p - 1) r n ≤ F.approximateCycles p (r + 1) n := by
   rw [approximateCycles]
   apply le_inf
@@ -117,14 +117,14 @@ theorem approximateCycles_previous_le
 
 /-- The quotient map `η_p : F_p C ⟶ F_p C/F_{p-1}C = E_p^0`. -/
 noncomputable def associatedGradedProjection
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) :
     Subobject.underlying.obj (F.obj p) ⟶
       cokernel (Subobject.ofLE (F.obj (p - 1)) (F.obj p) (F.monotone (by omega))) :=
   cokernel.π (Subobject.ofLE (F.obj (p - 1)) (F.obj p) (F.monotone (by omega)))
 
 /-- The map from `A_p^r(n)` to `E_p^0(n)` whose image is `Z_p^r(n)`. -/
 noncomputable def approximateCycleToE0
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) (r : ℕ) (n : ℤ) :
     (F.approximateCycles p r n : A) ⟶
       (cokernel (Subobject.ofLE (F.obj (p - 1)) (F.obj p) (F.monotone (by omega)))).X n :=
   Subobject.ofLE (F.approximateCycles p r n) (F.degreeSubobject p n)
@@ -137,7 +137,7 @@ For `r=0` Weibel sets `Z_p^0=E_p^0`; for positive `r` it is the image of `A_p^r`
 
 Source: Weibel, Construction 5.4.6 (FC05-C05-U031). -/
 noncomputable def cycleSubobject
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) (r : ℕ) (n : ℤ) :
     Subobject
       ((cokernel (Subobject.ofLE (F.obj (p - 1)) (F.obj p) (F.monotone (by omega)))).X n) :=
   match r with
@@ -149,20 +149,20 @@ noncomputable def cycleSubobject
 
 Source: Weibel, Construction 5.4.6 (FC05-C05-U031). -/
 noncomputable def boundaryApproximateCycles
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) (r : ℕ) (n : ℤ) :
     Subobject (K.X n.succ) :=
   F.degreeSubobject (p + (r : ℤ)) n.succ ⊓
     (Subobject.pullback (K.d n.succ n)).obj (F.degreeSubobject p n)
 
 /-- The differential of an element of `A_{p+r}^r(n+1)`, viewed as a map into `C_n`. -/
 noncomputable def boundaryDifferential
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) (r : ℕ) (n : ℤ) :
     (F.boundaryApproximateCycles p r n : A) ⟶ K.X n :=
   (F.boundaryApproximateCycles p r n).arrow ≫ K.d n.succ n
 
 /-- By construction of `A_{p+r}^r`, its differential factors through `F_p C_n`. -/
 theorem boundaryDifferential_factors_degree
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) (r : ℕ) (n : ℤ) :
     (F.degreeSubobject p n).Factors (F.boundaryDifferential p r n) := by
   apply (pullback_factors_iff (K.d n.succ n) (F.degreeSubobject p n)
     (F.boundaryApproximateCycles p r n).arrow).mp
@@ -173,7 +173,7 @@ it lies in `F_p` by definition of the source pullback and its own differential i
 
 Source: Weibel, Construction 5.4.6 (FC05-C05-U031). -/
 theorem boundaryDifferential_factors_approximateCycles
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) (r : ℕ) (n : ℤ) :
     (F.approximateCycles p (r + 1) n).Factors (F.boundaryDifferential p r n) := by
   rw [approximateCycles, Subobject.inf_factors]
   constructor
@@ -189,7 +189,7 @@ theorem boundaryDifferential_factors_approximateCycles
 
 Source: Weibel, Construction 5.4.6 (FC05-C05-U031). -/
 noncomputable def boundaryToE0
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) (r : ℕ) (n : ℤ) :
     (F.boundaryApproximateCycles p r n : A) ⟶
       (cokernel (Subobject.ofLE (F.obj (p - 1)) (F.obj p) (F.monotone (by omega)))).X n :=
   (F.degreeSubobject p n).factorThru (F.boundaryDifferential p r n)
@@ -201,7 +201,7 @@ noncomputable def boundaryToE0
 
 /-- The canonical factorization `d A_{p+r}^r ⟶ A_p^{r+1}`. -/
 noncomputable def boundaryToApproximateCycles
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) (r : ℕ) (n : ℤ) :
     (F.boundaryApproximateCycles p r n : A) ⟶ (F.approximateCycles p (r + 1) n : A) :=
   (F.approximateCycles p (r + 1) n).factorThru (F.boundaryDifferential p r n)
     (F.boundaryDifferential_factors_approximateCycles p r n)
@@ -209,7 +209,7 @@ noncomputable def boundaryToApproximateCycles
 /-- The two descriptions of a boundary in `E_p^0` agree: first factor through
 `A_p^{r+1}` and then map to `E_p^0`, or first factor through `F_p` and then quotient. -/
 theorem boundaryToApproximateCycles_comp_toE0
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) (r : ℕ) (n : ℤ) :
     F.boundaryToApproximateCycles p r n ≫ F.approximateCycleToE0 p (r + 1) n =
       F.boundaryToE0 p r n := by
   rw [boundaryToApproximateCycles, approximateCycleToE0, boundaryToE0]
@@ -222,7 +222,7 @@ theorem boundaryToApproximateCycles_comp_toE0
 
 Source: Weibel, Construction 5.4.6 (FC05-C05-U031). -/
 noncomputable def boundarySubobject
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) (r : ℕ) (n : ℤ) :
     Subobject
       ((cokernel (Subobject.ofLE (F.obj (p - 1)) (F.obj p) (F.monotone (by omega)))).X n) :=
   match r with
@@ -235,7 +235,7 @@ noncomputable def boundarySubobject
 This is the intrinsic containment needed to form Weibel's quotient `E_p^r=Z_p^r/B_p^r`.
 Source: Weibel, Construction 5.4.6 (FC05-C05-U031). -/
 theorem boundarySubobject_le_cycleSubobject
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) (r : ℕ) (n : ℤ) :
     F.boundarySubobject p r n ≤ F.cycleSubobject p r n := by
   cases r with
   | zero =>
@@ -251,13 +251,13 @@ of the `(r+1)`st page.
 
 Source: Weibel, Construction 5.4.6 (FC05-C05-U031). -/
 noncomputable def boundaryImageInComplex
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) (r : ℕ) (n : ℤ) :
     Subobject (K.X n) :=
   imageSubobject (F.boundaryDifferential p r n)
 
 /-- The image `d(A_{p+r}^r)` is contained in `A_p^{r+1}`. -/
 theorem boundaryImageInComplex_le_approximateCycles
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) (r : ℕ) (n : ℤ) :
     F.boundaryImageInComplex p r n ≤ F.approximateCycles p (r + 1) n := by
   apply imageSubobject_le (F.boundaryDifferential p r n)
     (F.boundaryToApproximateCycles p r n)
@@ -266,13 +266,13 @@ theorem boundaryImageInComplex_le_approximateCycles
 /-- The denominator in Weibel's alternate presentation
 `E_p^{r+1} ≅ A_p^{r+1}/(d(A_{p+r}^r)+A_{p-1}^r)`. -/
 noncomputable def pageDenominator
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) (r : ℕ) (n : ℤ) :
     Subobject (K.X n) :=
   F.boundaryImageInComplex p r n ⊔ F.approximateCycles (p - 1) r n
 
 /-- The alternate-page denominator is contained in its numerator `A_p^{r+1}`. -/
 theorem pageDenominator_le_approximateCycles
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) (r : ℕ) (n : ℤ) :
     F.pageDenominator p r n ≤ F.approximateCycles p (r + 1) n := by
   rw [pageDenominator]
   apply sup_le
@@ -281,13 +281,13 @@ theorem pageDenominator_le_approximateCycles
 
 /-- The ambient differential of an approximate cycle. -/
 noncomputable def approximateCycleDifferentialAmbient
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) (r : ℕ) (n : ℤ) :
     (F.approximateCycles p r n : A) ⟶ K.X n.pred :=
   (F.approximateCycles p r n).arrow ≫ K.d n n.pred
 
 /-- The differential sends `A_p^r(n)` into `A_{p-r}^r(n-1)`. -/
 theorem approximateCycleDifferential_factors
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) (r : ℕ) (n : ℤ) :
     (F.approximateCycles (p - (r : ℤ)) r n.pred).Factors
       (F.approximateCycleDifferentialAmbient p r n) := by
   change (F.degreeSubobject (p - (r : ℤ)) n.pred ⊓
@@ -306,7 +306,7 @@ theorem approximateCycleDifferential_factors
 /-- The differential restricted to approximate cycles,
 `A_p^r(n) ⟶ A_{p-r}^r(n-1)`. -/
 noncomputable def approximateCycleDifferential
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
+    (F : IncreasingFiltration K) (p : ℤ) (r : ℕ) (n : ℤ) :
     (F.approximateCycles p r n : A) ⟶
       (F.approximateCycles (p - (r : ℤ)) r n.pred : A) :=
   (F.approximateCycles (p - (r : ℤ)) r n.pred).factorThru
@@ -318,15 +318,15 @@ noncomputable def approximateCycleDifferential
 
 Source: Weibel, Construction 5.4.6 (FC05-C05-U031). -/
 noncomputable def pageObject
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) : A :=
+    (F : IncreasingFiltration K) (p : ℤ) (r : ℕ) (n : ℤ) : A :=
   cokernel (Subobject.ofLE (F.boundarySubobject p r n) (F.cycleSubobject p r n)
     (F.boundarySubobject_le_cycleSubobject p r n))
 
 /-- Bigraded notation for the page object: `E^r_{p,q}=E_p^r(p+q)`. -/
 abbrev spectralSequenceEr
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (r : ℕ) (p q : ℤ) : A :=
+    (F : IncreasingFiltration K) (r : ℕ) (p q : ℤ) : A :=
   F.pageObject p r (p + q)
 
-end ChainComplexFiltration
+end IncreasingFiltration
 
 end LeanCategories.Homological
