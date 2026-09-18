@@ -114,7 +114,7 @@ variable (V : Type v) [AddCommGroup V] [Module K V]
 /-- A linear map has Jordan canonical matrix in the chosen finite basis. -/
 def IsJordanCanonicalInBasis {n : Type w} [Fintype n] [DecidableEq n]
     (f : V →ₗ[K] V) (b : Module.Basis n K V) : Prop :=
-  IsJordanCanonical K (LinearMap.toMatrix b b f)
+  IsJordanMatrix K (LinearMap.toMatrix b b f)
 
 /-- A finite-dimensional endomorphism admits a chosen basis with Jordan matrix. -/
 def HasJordanCanonicalForm [Module.Finite K V] (f : V →ₗ[K] V) : Prop :=
