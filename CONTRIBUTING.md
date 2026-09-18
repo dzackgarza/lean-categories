@@ -98,3 +98,12 @@ all data, hypotheses, quantifiers, equations/coherences, variance, quotient or
 representative conditions, and claimed generality; discharge intrinsic construction
 laws. Build success, familiar names, downstream theorems, and absence of `sorry` do
 not establish semantic fidelity.
+
+## LC-11 — Keep bulk execution state repository-local
+
+Apply [build and probe storage locality](AGENTS.md#build-and-probe-storage-stays-inside-this-repository).
+Lean build state belongs in `.lake/`; probes and disposable package experiments
+belong in repository-owned ignored scratch such as `.tmp-*/`. Do not create
+global-`/tmp` checkouts, throwaway worktrees/environments, or user-global caches
+for repository work. A workflow that would write hundreds of megabytes outside
+the repository must be redirected or redesigned before it runs.

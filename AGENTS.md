@@ -364,6 +364,21 @@ your own earlier one that you may believe has finished. If memory is already tig
 say so and wait; a gate started into 125 MB of headroom does not finish, it dies, and it
 takes the index lock down with it.
 
+### Build and probe storage stays inside this repository
+
+This repository already owns its heavy build state in `.lake/`. Keep every
+additional probe, package experiment, generated comparison tree, and temporary
+environment under a repository-owned ignored scratch path such as `.tmp-*/`.
+Do not create Lean package checkouts, worktrees, virtual environments, or
+model/tool caches under global `/tmp` or `~/.cache`, and do not duplicate the
+whole repository merely to obtain a clean validation tree.
+
+If an upstream command defaults to a host-global temp/cache directory, set its
+`TMPDIR`, cache, or equivalent variable to a project-owned path before running
+it. Delete disposable probe state when the unit that needed it is finished.
+Persistent `.lake/` artifacts are different: they are the repository's shared
+build cache and must not be thrown away merely to make disk numbers look smaller.
+
 ### A wait is only delivery while the process is alive
 
 An aggregate `lake build` prints `4760/4761` and stops. Hours later the transcript
