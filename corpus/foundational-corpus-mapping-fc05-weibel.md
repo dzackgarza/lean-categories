@@ -58,6 +58,8 @@ Sweep III C05-U077 is realized by `LeanCategories/Homological/BocksteinSpectralS
 
 Sweep III C06-U007 accepts the already-integrated TauCeti port in `LeanCategories/Algebra/MonoidAlgebra.lean`: `augmentation` is the coefficient-sum ring hom and `augmentationIdeal` its kernel, with `augmentationGenerators` recording the source elements `g-1`. The module builds successfully; temporary group-ring probes verify coefficient summation, `g-1 ∈ I`, and `1 ∉ I`. The TauCeti commit/license remain the implementation provenance, while the generator-spans-kernel statement stays in the theorem layer.
 
+Sweep III C08-U069 is realized by `LeanCategories/Homological/RelativeBarResolution.lean` at the source's arbitrary-associative-ring generality. The owner constructs the balanced induction module `R ⊗_k N` as an integral tensor quotient, its functorial action, the induction/restriction Hom equivalence and adjunction, the induced bar comonad, and—through the separately realized U061 cotriple operators—the relative-bar degrees, faces, degeneracies, and augmentation. Focused elaboration of `RelativeBarResolution.lean` succeeds. Contractibility/asphericity, tensor comparisons, and other resolution properties remain Sweep IV content and are not credited to U069.
+
 Canonical catalogue: [[foundational-corpus-units-fc05-weibel|FC05 — Weibel, An Introduction to Homological Algebra]].
 
 Pinned project baseline: Mathlib `db584cd6d46c92f209a44c0f1c829460d327499d`, Lean 4.33.0. Current Mathlib was refreshed 2026-09-14 to `2ff8073df352b7cb74638403c464ed5cd3f97ce2`; declarations first appearing after the project pin are revision-specific reference-port routes unless an importable package route is independently justified.
