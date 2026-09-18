@@ -134,7 +134,7 @@ def relativeInductionTensorDesc (f : k →+* R)
           map_smul' := by
             intro z n
             change r • g.hom (z • n) = z • (r • g.hom n)
-            rw [map_zsmul, smul_comm] }
+            simpa only [map_zsmul] using (smul_comm r z (g.hom n)) }
       map_add' := by
         intro r s
         ext n
@@ -180,14 +180,14 @@ def relativeInductionRestrict (f : k →+* R)
         change h.hom (Submodule.Quotient.mk ((1 : R) ⊗ₜ[ℤ] (a • n))) =
           f a • h.hom (Submodule.Quotient.mk ((1 : R) ⊗ₜ[ℤ] n))
         rw [← h.hom.map_smul]
-        congr 1
+        apply congrArg h.hom
         rw [← Submodule.Quotient.mk_smul]
         apply (Submodule.Quotient.eq _).2
         have hrel :
             (1 * f a) ⊗ₜ[ℤ] n - (1 : R) ⊗ₜ[ℤ] (a • n) ∈
               relativeInductionRelations f N :=
           Submodule.subset_span ⟨1, a, n, rfl⟩
-        simpa [TensorProduct.smul_tmul', one_mul] using
+        simpa [TensorProduct.smul_tmul', smul_eq_mul, one_mul, mul_one] using
           (relativeInductionRelations f N).neg_mem hrel }
 
 /-- The tensor-Hom equivalence for induction and restriction of scalars over
@@ -216,10 +216,10 @@ def relativeInductionHomEquiv (f : k →+* R)
             change r • h.hom (Submodule.Quotient.mk ((1 : R) ⊗ₜ[ℤ] n)) =
               h.hom (Submodule.Quotient.mk (r ⊗ₜ[ℤ] n))
             rw [← h.hom.map_smul]
-            congr 1
+            apply congrArg h.hom
             rw [← Submodule.Quotient.mk_smul]
-            congr 1
-            simp [TensorProduct.smul_tmul']
+            apply congrArg Submodule.Quotient.mk
+            simp [TensorProduct.smul_tmul', smul_eq_mul, mul_one]
         | add x y hx hy =>
             simpa only [Submodule.Quotient.mk_add, map_add] using congrArg₂ (· + ·) hx hy
 
