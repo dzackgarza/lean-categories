@@ -26,6 +26,20 @@ NEGATIVE_PARTIAL_VERDICT_PATTERNS = (
     r"\bpartial\s+(?:match|comparison|interface|owner|route|implementation|formalization|coverage|clause)\b",
     r"\bremains?\s+partial\b",
 )
+RESULT_LAYER_MARKERS = (
+    "theorem clause",
+    "theorem content",
+    "theorem work",
+    "result clause",
+    "result content",
+    "result layer",
+    "construction theorems",
+)
+RESULT_LAYER_PATTERNS = (
+    r"\b(?:theorem|result|example|comparison|classification)(?:/[a-z-]+)?\s+"
+    r"(?:clause|clauses|content|work|assertion|assertions)\b",
+    r"\b(?:theorem|result|example)/(?:theorem|result|example)\s+clauses?\b",
+)
 
 
 def is_negative_verdict(verdict: str) -> bool:
@@ -59,11 +73,10 @@ STRICT_RESULT_LABEL_MARKERS = (
     "addendum",
     "calculation",
 )
-# Sources for which the richer mixed-unit phase classification below has been
-# checked against the canonical source/mapping records.  Do not silently apply
-# an FC05 audit result to another corpus source: extend this set only together
-# with that source's own phase-classification audit.
-CONTENT_CLASSIFIED_DEFINITION_SOURCES = frozenset({"FC05"})
+# Every admitted source now carries source-audited phase labels.  Classification
+# uses the label before the descriptive title, so theorem/result prose appearing
+# later in a title cannot promote a result-only unit into Sweep III.
+CONTENT_CLASSIFIED_DEFINITION_SOURCES = frozenset({f"FC{i:02d}" for i in range(1, 18)})
 THEOREM_MARKERS = (
     "lemma",
     "proposition",
@@ -81,323 +94,11 @@ THEOREM_MARKERS = (
     "calculation",
 )
 
-# Sweep I occasionally preserves a label containing "Construction" for a unit
-# whose mathematical content is only an argument/result, not a construction of
-# new data.  These exceptions are source-audited rather than inferred from the
-# word "Construction" alone.  Keep this set small: new ambiguities should be
-# resolved against the source before being added here.
-RESULT_ONLY_DEFINITION_UNITS = frozenset(
-    {
-        # Construction 5.6.5 is the collapse argument deriving the Künneth short
-        # exact sequence; it introduces no new object, map, predicate, or notation.
-        "FC05-C05-U049",
-        # 6.8.3 is the pair of low-degree exact sequences extracted from the LHS
-        # spectral sequences; it is result content despite the Sweep-I label.
-        "FC05-C06-U100",
-        # The §7.4 augmentation-ideal passage applies Tor to an already-defined
-        # short exact sequence and states the resulting isomorphisms/exact sequence.
-        "FC05-C07-U030",
-        # 7.5.3 likewise consists of the low-degree exact sequences extracted
-        # from the Hochschild--Serre spectral sequences.
-        "FC05-C07-U042",
-        # The §9.4 Hodge/λ row is a theorem-level preview of the decomposition;
-        # the actual Hodge-subcomplex definition is Definition 9.4.15 (C09-U072).
-        "FC05-C09-U064",
-        # The §9.8 convention merely reuses the already-defined mixed-complex
-        # operator B to name the d¹ map of Connes' spectral sequence.  Existence
-        # of that induced homology differential is result content, not new data.
-        "FC05-C09-U122",
-        # The §10.8 convention merely says later applications use the dual
-        # Composition Theorem isomorphism LF ∘ LG ≅ L(FG) without restating it.
-        # That is theorem-level comparison data, not a new definition.
-        "FC05-C10-U092",
-        # The §10.8 change-of-rings RHom row is the Composition Theorem applied
-        # to Hom_R(S,-), asserting an isomorphism of already-defined derived Hom
-        # objects.  The comparison-map construction itself is C10-U086.
-        "FC05-C10-U096",
-        # Hartshorne II.7.12.1 is only the comparison identifying the already-defined
-        # relative-Proj/Rees blowup with the Chapter-I incidence model.
-        "FC06-C02-U240",
-        # Hartshorne II.9.5 is a proposition about ideals of definition introduced
-        # in U319; it introduces no further object or notation.
-        "FC06-C02-U320",
-        # Peters--Sterk C01-U114 only asserts rational isometry of same-genus
-        # lattices and existence of distinct integral classes.  Both are result
-        # clauses about the genus/isometry predicates already introduced in U113.
-        "FC11-C01-U114",
-        # Peters--Sterk C01-U119 is the localization-compatibility theorem for
-        # already-defined global/local discriminant forms, not a new carrier.
-        "FC11-C01-U119",
-        # Peters--Sterk C02-U020 is the simply-connected torsion-freeness and
-        # indefinite-classification result for the U018 intersection form.
-        "FC11-C02-U020",
-        # C02-U023 is the Donaldson/classification consequence restricting the
-        # possible already-defined intersection forms of smooth four-manifolds.
-        "FC11-C02-U023",
-        # C02-U030 consists of the c2/Euler and Hirzebruch signature identities
-        # for an already-given compact complex surface; it defines no new datum.
-        "FC11-C02-U030",
-        # C02-U034 is the asserted 11/8 consequence and complex-surface case,
-        # expressed entirely in the previously introduced manifold invariants.
-        "FC11-C02-U034",
-        # Peters--Sterk C13-U006 is the PBW/associated-graded comparison theorem
-        # for the already-defined Clifford algebra and filtration, not a new definition.
-        "FC11-C13-U006",
-        # Dummit--Foote C14-U067 is the Kummer classification theorem: under
-        # the stated roots-of-unity hypotheses it classifies finite abelian
-        # exponent-n extensions by subgroups of F^×/(F^×)^n.  It introduces
-        # no new carrier, predicate, notation, or construction beyond the
-        # Kummer-extension data already catalogued earlier in the chapter.
-        "FC01-C14-U067",
-        # Dummit--Foote C09-U030 is the worked translation/Eisenstein argument
-        # proving x^4+1 irreducible.  The word "construction" in the catalogue
-        # kind refers to the proof maneuver x ↦ x+1; no reusable mathematical
-        # object, predicate, or notation is introduced by this unit.
-        "FC01-C09-U030",
-        # Dummit--Foote C06-U042 is a recognition criterion for a proposed
-        # finite presentation: the relations give a surjection and an order
-        # bound forces it to be an isomorphism.  It introduces no new
-        # presentation carrier, predicate, or notation beyond U039--U040.
-        "FC01-C06-U042",
-        # Humphreys RGCG §2.13 only computes the orders of the already-defined
-        # H3/H4 reflection groups from the quaternionic model; it introduces no
-        # new carrier, map, predicate, or notation.
-        "FC15-C02-U034",
-        # The §7.5 R-polynomial recursion is a theorem about the coefficient
-        # family introduced by the preceding inverse-expansion proposition.
-        "FC15-C07-U016",
-        # §7.10 is the triangular recurrence/uniqueness proof for the
-        # Kazhdan--Lusztig polynomials already named in U026.
-        "FC15-C07-U028",
-        # §7.11 is the recursive existence proof for the canonical basis of
-        # U025, not a second definition of a basis or polynomial family.
-        "FC15-C07-U030",
-        # §8.9 identifies already-defined affine distinguished representatives
-        # with the coroot lattice and invokes Bott's theorem; this is comparison
-        # and result content, not a new construction for Sweep III.
-        "FC15-C08-U030",
-        # §8.10 compares the already-defined Springer and KL representations;
-        # the word "constructions" in the title must not make it a definition.
-        "FC15-C08-U035",
-        # Peters--Sterk Appendix B U004 is the Kähler Hodge theorem identifying
-        # already-defined H^{p,q} with de-Rham classes and proving decomposition/
-        # conjugation. It introduces no new cohomology carrier beyond U003.
-        "FC11-B-U004",
-        # Appendix B U008 is just the degree-one/two specialization of U004's
-        # Hodge decomposition and conjugation statements.
-        "FC11-B-U008",
-        # Appendix B U010 applies the Hodge-index theorem to the light cone;
-        # the actual positive/Kähler-cone notation is introduced in U011.
-        "FC11-B-U010",
-        # Appendix B U012 is Noether's formula, an equality among invariants.
-        "FC11-B-U012",
-        # Appendix B U013 consists of Betti/Hodge/signature identities.
-        "FC11-B-U013",
-        # Appendix B U015 classifies the already-defined integral intersection form.
-        "FC11-B-U015",
-        # Appendix B U021 characterizes the already-defined Néron--Severi lattice
-        # as a maximal primitive Hodge sublattice; it is not a second definition.
-        "FC11-B-U021",
-        # Appendix B U030 derives the Riemann bilinear relations from the surface
-        # intersection form and Hodge decomposition.
-        "FC11-B-U030",
-        # Appendix B U033 is the homogeneous-space/connectedness theorem for U032.
-        "FC11-B-U033",
-        # Appendix B U041 is the surface ampleness criterion for U040's predicate.
-        "FC11-B-U041",
-        # Peters--Sterk C04-U020 is the finite/affine crystallographic root-system
-        # classification statement; all named diagram data were introduced earlier.
-        "FC11-C04-U020",
-        # C04-U042 is the Poincare--Lefschetz/UCT comparison identifying boundary
-        # torsion with the cokernel of the already-defined intersection form.
-        "FC11-C04-U042",
-        # C04-U043 asserts that the boundary carries the pairing induced from the
-        # intersection lattice; the actual topological linking-number definition is U044.
-        "FC11-C04-U043",
-        # C04-U045 is Rohlin-based independence of the signature modulo 16 for
-        # two bounding four-manifolds, hence comparison/result content only.
-        "FC11-C04-U045",
-        # C04-U052 is the comparison theorem that complex conjugation descends
-        # to an orientation-reversing lens-space diffeomorphism.  It introduces
-        # no new carrier, map family, predicate, or notation.
-        "FC11-C04-U052",
-        # Peters--Sterk C05-U019 is the dimension lower bound for the code of a
-        # nodal-curve configuration.  It is an inequality theorem, not a new
-        # code or lattice construction.
-        "FC11-C05-U019",
-        # C05-U037 is the signature theorem for the already-defined trace form
-        # in terms of real and complex embeddings.
-        "FC11-C05-U037",
-        # C05-U059 is the division-algebra iff anisotropic-norm criterion for
-        # an already-defined quaternion algebra and reduced norm.
-        "FC11-C05-U059",
-        # Peters--Sterk C06-U006 is the theorem reconstructing a quadratic map
-        # from an even symmetric form when doubling on the value module is
-        # injective.  The form/quadratic-map notions are already defined.
-        "FC11-C06-U006",
-        # C06-U044 is the characteristic-two classification theorem for an
-        # already-defined nondegenerate binary quadratic form over a perfect
-        # field; it introduces no new mathematical datum.
-        "FC11-C06-U044",
-        # Peters--Sterk C07-U019 is the theorem that Witt decomposition has a
-        # split-inner-product replacement when two is not invertible.  The
-        # split/hyperbolic formed-module notions are introduced elsewhere.
-        "FC11-C07-U019",
-        # Peters--Sterk C08-U008 is the basis-independence theorem for the Arf
-        # class whose formula is introduced in U007.  Calling that class the
-        # Arf invariant does not introduce a second mathematical construction.
-        "FC11-C08-U008",
-        # Peters--Sterk C09-U024 proves properties of the doubling construction
-        # introduced in U023: its polar form is 2b and it is nondegenerate.  It
-        # introduces no further carrier, map, or invariant.
-        "FC11-C09-U024",
-        # Peters--Sterk C11-U012 is entirely comparison/classification content:
-        # symmetric and quadratic dyadic discriminant forms need not determine
-        # one another in exponent one, with the discrepancy disappearing later.
-        "FC11-C11-U012",
-        # Peters--Sterk C12-U031 proves Minkowski-sum/parity behavior of the
-        # already-defined index sets.  It introduces no further set or invariant.
-        "FC11-C12-U031",
-        # Peters--Sterk C13-U001 is the chapter overview: every construction it
-        # names is introduced precisely in U002/U005/U011.  It adds no second
-        # Clifford algebra, grading, or Clifford-group definition.
-        "FC11-C13-U001",
-        # C13-U022 classifies the scalar elements of the already-defined
-        # Pin/Spin groups as ±1.  This is theorem content, not another group.
-        "FC11-C13-U022",
-        # C13-U030 is functoriality under an ambient isometry: conjugation
-        # transports lattice orthogonal groups and preserves the spinor norm.
-        # No new map family or invariant is introduced.
-        "FC11-C13-U030",
-        # C13-U034 records that the integral Spin-to-SO+ map need not be
-        # surjective.  It is a theorem/comparison about U028/U033.
-        "FC11-C13-U034",
-        # Peters--Sterk C14-U012 is the p-adic theorem that ordinary and
-        # proper equivalence coincide; it introduces no new equivalence relation.
-        "FC11-C14-U012",
-        # C14-U031 is a sufficient local criterion for an already-defined
-        # spinor-norm image inclusion, not a construction of a new invariant.
-        "FC11-C14-U031",
-        # C14-U032 is a consequence of the preceding class-number/local-spinor
-        # criteria: proper equivalence and an index-two statement only.
-        "FC11-C14-U032",
-        # C14-U047 and U048 are classification/table computations for the
-        # previously defined p-elementary discriminant forms and mod-eight index.
-        "FC11-C14-U047",
-        "FC11-C14-U048",
-        # Peters--Sterk C15-U012 merely compares the numerical rank bounds in
-        # Theorem 15.2.3 and Lemma 15.2.4; both embedding notions pre-exist.
-        "FC11-C15-U012",
-        # Peters--Sterk C16-U005 records comparison properties of the signed
-        # spinor norms (positive convention, definite case, and q↦-q), after
-        # the actual kernel/subgroup construction in U004.
-        "FC11-C16-U005",
-        # C16-U008 classifies real orthogonal-group components by determinant
-        # and signed spinor norm; it introduces none of those invariants.
-        "FC11-C16-U008",
-        # C16-U016 proves the Dickson cocycle/additivity law for the explicit
-        # invariant defined in U013.  The resulting kernel is U017/U018.
-        "FC11-C16-U016",
-        # C16-U032 is the period-coordinate/theta-divisor realization and
-        # Riemann-singularity comparison for theta characteristics already
-        # introduced in U030/U031; it adds no independent carrier.
-        "FC11-C16-U032",
-        # C16-U037 is the theorem identifying the already-defined Jacobian
-        # two-torsion/Weil pairing with a symplectic F₂-space and identifying
-        # theta characteristics with its quadratic refinements.
-        "FC11-C16-U037",
-        # C17-U005 is only the arithmetic comparison between the epsilon-root
-        # self-pairing convention and the half-pairing quadratic value.
-        "FC11-C17-U005",
-        # C17-U009 is the infinitude consequence for the already-defined
-        # epsilon-Weyl group, not another construction.
-        "FC11-C17-U009",
-        # C17-U037 proves isometry/inverse/degenerate-pair properties of the
-        # Eichler--Siegel map defined in U036.
-        "FC11-C17-U037",
-        # C17-U047 only records basis-independence of the U046 subgroup; the
-        # subgroup itself is already defined in the preceding unit.
-        "FC11-C17-U047",
-        # C18-U045 is the Lefsche-type pi_1 surjectivity theorem for the
-        # line-section inclusion, not a definition.
-        "FC11-C18-U045",
-        # C18-U046 is the theorem embedding the local Milnor lattice into the
-        # global primitive-cohomology lattice.
-        "FC11-C18-U046",
-        # C18-U047 is the theorem that global monodromy fixes the hyperplane
-        # class and hence lands in the corresponding orthogonal stabilizer.
-        "FC11-C18-U047",
-        # C19-U005 is the normality theorem for the Weyl group defined in U004.
-        "FC11-C19-U005",
-        # C19-U016 is the strong-Torelli group identification, not a new
-        # automorphism/Hodge-isometry construction.
-        "FC11-C19-U016",
-        # C19-U042 is section-transition/classification context relating the
-        # geometric supersingular NS lattices to the arithmetic class U043.
-        "FC11-C19-U042",
-        # C20-U027 is the theorem/comparison that the two light-cone/Kähler
-        # choices are exchanged by negating the marking; it names no new object.
-        "FC11-C20-U027",
-        # C20-U039 repeats Definition 20.2.3 (U024) verbatim and introduces
-        # no second marked-surface notion.
-        "FC11-C20-U039",
-        # C20-U070 only fixes the standing surface/action/cohomology notation
-        # for the quotient section; the actual constructions are elsewhere.
-        "FC11-C20-U070",
-        # C20-U071 is setup/theorem context on linearization and du Val
-        # quotient singularities, not a new definition.
-        "FC11-C20-U071",
-        # C21-U005 is the geometric invariance theorem for nodal classes in an
-        # adapted root pair; the root-pair/nodal-set definitions are U004.
-        "FC11-C21-U005",
-        # C21-U023 is only an editorial lead-in attributing the terminology
-        # whose actual definition is U024.
-        "FC11-C21-U023",
-        # C21-U025 is the generic-period/Picard-rank comparison used to derive
-        # semisymplecticity, not a new construction.
-        "FC11-C21-U025",
-        # Humphreys C05-U017 is an existence/decomposition theorem: the
-        # already-defined simple Lie ideals integrate to connected normal
-        # almost-simple subgroups with the stated product/intersection
-        # properties.  It introduces no new carrier, predicate, or notation.
-        "FC16-C05-U017",
-        # Humphreys C07-U024 is the structural exact-sequence/decomposition
-        # result for a connected solvable group obtained from Jordan
-        # decomposition.  It introduces no semisimple/unipotent carrier or
-        # quotient notion beyond definitions already present in C06/C07.
-        "FC16-C07-U024",
-        # Humphreys C09-U014 is the extension/limit theorem for a
-        # cocharacter orbit in projective space.  The orbit map, P¹, and its
-        # endpoint evaluations are already-defined objects; the unit adds no
-        # named predicate or carrier beyond proving the extension and its
-        # minimum/maximum-weight formula.
-        "FC16-C09-U014",
-        # Humphreys C11-U010 is the tensor-product highest-weight result: the
-        # tensor of two maximal vectors is maximal of the summed weight.  It
-        # introduces no new carrier or predicate beyond the tensor product and
-        # maximal-vector notion already indexed separately.
-        "FC16-C11-U010",
-        # C11-U011 is an existence application of Chevalley's stabilizer
-        # theorem producing representations with highest weight d_i ω_i; no
-        # canonical representation is defined by the source.
-        "FC16-C11-U011",
-        # C11-U026 packages three rank-two compatibility obligations in the
-        # proof of the semisimple isomorphism theorem.  They are proof
-        # conditions on already-chosen maps, not a reusable foundational
-        # carrier/predicate whose implementation should enter Sweep III.
-        "FC16-C11-U026",
-        # C11-U042 records Chevalley's existence programme for all semisimple
-        # types.  It asserts existence of models rather than defining one
-        # source-canonical object.
-        "FC16-C11-U042",
-    }
-)
-
-
 @dataclass(frozen=True)
 class Unit:
     unit_id: str
     kind: str
+    source_data: str
     dependencies: tuple[str, ...]
 
 
@@ -516,21 +217,27 @@ def parse_catalogue(path: Path) -> list[Unit]:
         while end < len(lines) and HEADING_UNIT_RE.match(lines[end]) is None:
             end += 1
         kind = ""
+        source_data = ""
         deps = ""
         for entry in lines[index + 1 : end]:
             entry_lower = entry.lower()
             if entry_lower.startswith("- **kind:**"):
                 kind = entry.split(":**", 1)[1].strip().rstrip(".")
+            elif entry_lower.startswith("- **statement/data:**"):
+                source_data = entry.split(":**", 1)[1].strip().rstrip(".")
             elif entry_lower.startswith("- **dependencies:**"):
                 deps = entry.split(":**", 1)[1].strip().rstrip(".")
         if not kind:
             raise ValueError(f"{path}: no kind for {unit_id}")
-        units.append(Unit(unit_id, kind, dependencies(deps)))
+        if not source_data:
+            raise ValueError(f"{path}: no statement/data for {unit_id}")
+        units.append(Unit(unit_id, kind, source_data, dependencies(deps)))
         seen.add(unit_id)
 
     # FC03+ use Markdown tables. Track the kind-column index from each table
     # header; dependencies are consistently the final column.
     kind_index: int | None = None
+    data_index: int | None = None
     for line in lines:
         if not line.startswith("|"):
             continue
@@ -542,12 +249,33 @@ def parse_catalogue(path: Path) -> list[Unit]:
                     (i for i, cell in enumerate(lowered) if cell == "kind" or cell.startswith("kind /")),
                     None,
                 )
+                data_index = next(
+                    (
+                        i
+                        for i, cell in enumerate(lowered)
+                        if cell
+                        in {
+                            "unit / hypotheses-data",
+                            "mathematical unit",
+                            "concise data",
+                            "concise data / hypotheses",
+                            "canonical statement / definition",
+                            "data / hypotheses",
+                            "source statement",
+                        }
+                    ),
+                    None,
+                )
             continue
         if not cells or UNIT_RE.fullmatch(cells[0]) is None or cells[0] in seen:
             continue
         if kind_index is None or kind_index >= len(cells):
             raise ValueError(f"{path}: cannot locate kind column for {cells[0]}")
-        units.append(Unit(cells[0], cells[kind_index], dependencies(cells[-1])))
+        if data_index is None or data_index >= len(cells):
+            raise ValueError(f"{path}: cannot locate source-data column for {cells[0]}")
+        units.append(
+            Unit(cells[0], cells[kind_index], cells[data_index], dependencies(cells[-1]))
+        )
         seen.add(cells[0])
 
     if not units:
@@ -655,11 +383,6 @@ def is_definition(unit: Unit, mapping: Mapping | None = None) -> bool:
     """Whether the source unit carries Sweep-III definitional content."""
     source_id = unit.unit_id.split("-", 1)[0]
     kind = unit.kind.lower()
-    # Explicit source-audited result-only exceptions override the legacy lexical
-    # classifier for every source, not only sources that have completed a full
-    # mixed-unit classification audit.
-    if unit.unit_id in RESULT_ONLY_DEFINITION_UNITS:
-        return False
     if source_id not in CONTENT_CLASSIFIED_DEFINITION_SOURCES:
         return any(marker in kind for marker in DEFINITION_MARKERS)
     if mapping is not None and mapping.definition_only:
@@ -690,6 +413,53 @@ def is_theorem(unit: Unit, mapping: Mapping | None = None) -> bool:
     ) or not any(
         marker in kind for marker in DEFINITION_MARKERS
     )
+
+
+def mapping_declares_result_layer(mapping: Mapping | None) -> bool:
+    """Whether Mapping explicitly records theorem/result content in this source unit."""
+
+    if mapping is None:
+        return False
+    row = mapping.row.lower()
+    return any(marker in row for marker in RESULT_LAYER_MARKERS) or any(
+        re.search(pattern, row) is not None for pattern in RESULT_LAYER_PATTERNS
+    )
+
+
+def validate_phase_classification(units: list[Unit], mappings: dict[str, Mapping]) -> None:
+    """Reject source rows whose recorded result layer would disappear from Sweep IV.
+
+    Mapping is allowed to split a mixed source unit into a definition route plus
+    later theorem work, but the frozen Sweep-I kind must still expose that mixed
+    role.  Otherwise a bad catalogue label silently promotes propositions into
+    Sweep III or drops them from Sweep IV.
+    """
+
+    defects = [
+        unit
+        for unit in units
+        if mapping_declares_result_layer(mappings.get(unit.unit_id))
+        and not is_theorem(unit, mappings.get(unit.unit_id))
+    ]
+    if defects:
+        rendered = ", ".join(f"{unit.unit_id} ({unit.kind})" for unit in defects)
+        raise ValueError(
+            "source/mapping phase-classification mismatch: Mapping records a "
+            f"theorem/result layer but Sweep IV would omit {rendered}"
+        )
+
+    exercise_leaks = [
+        unit
+        for unit in units
+        if is_definition(unit, mappings.get(unit.unit_id))
+        and re.search(r"\bexercise\b", f"{unit.kind} {unit.source_data}", re.I)
+    ]
+    if exercise_leaks:
+        rendered = ", ".join(unit.unit_id for unit in exercise_leaks)
+        raise ValueError(
+            "excluded exercise material leaked into Sweep III source payload: "
+            f"{rendered}"
+        )
 
 
 def source_file(reference_dir: Path, prefix: str, source_id: str) -> Path:
@@ -893,6 +663,10 @@ def render(reference_dir: Path, limit: int) -> str:
         )
         for status in statuses
     }
+    validate_phase_classification(
+        [unit for source_units in catalogues.values() for unit in source_units],
+        mappings,
+    )
 
     missing_mappings = [
         unit.unit_id

@@ -781,6 +781,24 @@ its definitional and theorem obligations to the appropriate sweeps. Unknown kind
 missing metadata, duplicate IDs, unparsed records, and unread regions must be resolved
 before claiming exhaustive coverage. An empty result is not proof that nothing is owed.
 
+Classify clauses by their grammatical and mathematical role, not by adjacency to a
+definition heading. A clause that introduces data, a predicate, notation, or a
+construction belongs to the definition layer. A clause asserting that the introduced
+object has a property is proposition/theorem content unless that property is literally
+part of the source definition of the structure or predicate. Phrases such as “this
+makes ... a complex”, “hence ...”, “is independent”, “is exact”, or “is an
+isomorphism” do not become definition obligations merely because they occur in the same
+paragraph. Proving descent, closure, or representative-independence needed for an
+expression to define the claimed object is still definition work; proving an additional
+property of that already-defined object is not.
+
+Respect the admitted source scope at the clause level. If exercises are excluded for a
+source, a proposition assigned to an exercise cannot be promoted into Sweep III as an
+“intrinsic law”, dependency, or acceptance condition. If the main text states a
+proposition and merely leaves its proof as an exercise, retain the proposition as
+result/theorem content and keep it out of the definition layer. The generated frontier
+must fail rather than silently accept either kind of phase leak.
+
 Reconcile source identities with classified and mapped identities. Equal counts do
 not establish equal sets, and a checker that consumes only the selector's output
 cannot detect the selector's omissions. Prefer existing source-aware tooling; for a
