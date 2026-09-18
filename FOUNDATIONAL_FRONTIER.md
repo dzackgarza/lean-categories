@@ -242,7 +242,7 @@ Next 5 open units in source traversal order:
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
 | `FC10-C01-U079` | Definition / construction | `FC10-C01-U069`, `FC10-C01-U072` | ready by recorded prerequisites | reference-port; port |
-| `FC10-C02-U051` | Definition / construction | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC10-C02-U051` | Definition / construction | — | ready by recorded prerequisites | unmatched; author |
 | `FC10-C03-U008` | Definition / construction | `FC10-C03-U007` | ready by recorded prerequisites | reference-port; port |
 | `FC10-C03-U014` | Convention / notation | — | ready by recorded prerequisites | reference-port; port |
 | `FC10-C04-U002` | Convention / notation | `FC10-C04-U001` | ready by recorded prerequisites | reference-port; port |
