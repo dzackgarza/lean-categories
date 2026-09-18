@@ -152,21 +152,32 @@ theorem chevalleyEilenbergWedgeLeft_tmul (p : ℕ) (x : L) (w : ⋀[k]^p L) :
         simpa [Nat.one_add] using SetLike.mul_mem_graded hx w.2⟩ := by
   rfl
 
-/-- The bracket part of the Chevalley--Eilenberg differential as an alternating
-map.  In positive target degree this is minus the exterior product of the Lie
-bracket with the residual pure wedge; the minus sign is the one appearing in
-Weibel's `p = 2` formula. -/
-noncomputable def chevalleyEilenbergBracketAlternating : (p : ℕ) →
-    L [⋀^Fin (p + 1)]→ₗ[k]
-      (UniversalEnvelopingAlgebra k L ⊗[k] (⋀[k]^p L))
+/-- The bracket part of the Chevalley--Eilenberg boundary as an alternating
+map on `p+1` inputs.  In positive target degree this is the exterior product
+of the Lie bracket with the universal `(p-1)`-fold wedge, followed by exterior
+multiplication.  The leading minus sign is the zero-based form of Weibel's
+`(-1)^{i+j}` convention. -/
+noncomputable def chevalleyEilenbergBracketAlternating :
+    (p : ℕ) → L [⋀^Fin (p + 1)]→ₗ[k] (⋀[k]^p L)
   | 0 => 0
-  | p + 1 =>
-      -((TensorProduct.mk k (UniversalEnvelopingAlgebra k L) (⋀[k]^(p + 1) L) 1).
-          compAlternatingMap <|
-        (chevalleyEilenbergWedgeLeft k L p).compAlternatingMap <|
-          ((chevalleyEilenbergLieBracket k L).domCoprod
-              (exteriorPower.ιMulti k p)).domDomCongr <|
-            finSumFinEquiv.trans (finCongr (by omega)))
+  | n + 1 =>
+      -((chevalleyEilenbergWedgeLeft k L n).compAlternatingMap <|
+        AlternatingMap.domDomCongr
+          ((finSumFinEquiv : Fin 2 ⊕ Fin n ≃ Fin (2 + n)).trans
+            (finCongr (by omega))) <|
+          (chevalleyEilenbergLieBracket k L).domCoprod
+            (exteriorPower.ιMulti k n))
+
+@[simp]
+theorem chevalleyEilenbergBracketAlternating_zero :
+    chevalleyEilenbergBracketAlternating k L 0 = 0 := rfl
+
+/-- The exterior-valued bracket term embedded in `U(L) ⊗ Λ^p L` by `w ↦ 1 ⊗ w`. -/
+noncomputable def chevalleyEilenbergBracketTensorAlternating (p : ℕ) :
+    L [⋀^Fin (p + 1)]→ₗ[k]
+      (UniversalEnvelopingAlgebra k L ⊗[k] (⋀[k]^p L)) :=
+  (TensorProduct.mk k (UniversalEnvelopingAlgebra k L) (⋀[k]^p L) 1).compAlternatingMap
+    (chevalleyEilenbergBracketAlternating k L p)
 
 /-- The full source differential on the exterior generators, before extending
 `U(L)`-linearly. -/
@@ -174,7 +185,57 @@ noncomputable def chevalleyEilenbergAlternating (p : ℕ) :
     L [⋀^Fin (p + 1)]→ₗ[k]
       (UniversalEnvelopingAlgebra k L ⊗[k] (⋀[k]^p L)) :=
   chevalleyEilenbergActionAlternating k L p +
-    chevalleyEilenbergBracketAlternating k L p
+    chevalleyEilenbergBracketTensorAlternating k L p
+
+/-- The descended `k`-linear Chevalley--Eilenberg differential on the exterior
+power factor. -/
+noncomputable def chevalleyEilenbergExteriorDifferential (p : ℕ) :
+    (⋀[k]^(p + 1) L) →ₗ[k]
+      (UniversalEnvelopingAlgebra k L ⊗[k] (⋀[k]^p L)) :=
+  exteriorPower.alternatingMapLinearEquiv (chevalleyEilenbergAlternating k L p)
+
+@[simp]
+theorem chevalleyEilenbergExteriorDifferential_ιMulti (p : ℕ)
+    (x : Fin (p + 1) → L) :
+    chevalleyEilenbergExteriorDifferential k L p (exteriorPower.ιMulti k _ x) =
+      chevalleyEilenbergAlternating k L p x := by
+  exact exteriorPower.alternatingMapLinearEquiv_apply_ιMulti _ _
+
+/-- Currying the differential with respect to the left `U(L)`-action. -/
+noncomputable def chevalleyEilenbergDifferentialCurry (p : ℕ) :
+    UniversalEnvelopingAlgebra k L →ₗ[UniversalEnvelopingAlgebra k L]
+      ((⋀[k]^(p + 1) L) →ₗ[k]
+        (UniversalEnvelopingAlgebra k L ⊗[k] (⋀[k]^p L))) where
+  toFun u := u • chevalleyEilenbergExteriorDifferential k L p
+  map_add' u v := by
+    rw [add_smul]
+  map_smul' u v := by
+    rw [smul_eq_mul, mul_smul]
+
+/-- The actual `U(L)`-linear Chevalley--Eilenberg differential
+`U(L) ⊗ Λ^{p+1}L → U(L) ⊗ Λ^pL`. -/
+noncomputable def chevalleyEilenbergDifferential (p : ℕ) :
+    (UniversalEnvelopingAlgebra k L ⊗[k] (⋀[k]^(p + 1) L))
+      →ₗ[UniversalEnvelopingAlgebra k L]
+    (UniversalEnvelopingAlgebra k L ⊗[k] (⋀[k]^p L)) :=
+  TensorProduct.AlgebraTensorModule.lift
+    (chevalleyEilenbergDifferentialCurry k L p)
+
+@[simp]
+theorem chevalleyEilenbergDifferential_tmul (p : ℕ)
+    (u : UniversalEnvelopingAlgebra k L) (w : ⋀[k]^(p + 1) L) :
+    chevalleyEilenbergDifferential k L p (u ⊗ₜ[k] w) =
+      u • chevalleyEilenbergExteriorDifferential k L p w := by
+  rfl
+
+@[simp]
+theorem chevalleyEilenbergDifferential_pure (p : ℕ)
+    (u : UniversalEnvelopingAlgebra k L) (x : Fin (p + 1) → L) :
+    chevalleyEilenbergDifferential k L p
+        (u ⊗ₜ[k] exteriorPower.ιMulti k _ x) =
+      u • chevalleyEilenbergAlternating k L p x := by
+  rw [chevalleyEilenbergDifferential_tmul,
+    chevalleyEilenbergExteriorDifferential_ιMulti]
 
 /-- Delete the `i`th factor from a wedge tuple. -/
 def chevalleyEilenbergOmit {p : ℕ} (x : Fin (p + 1) → L)
