@@ -275,7 +275,7 @@ Next 5 open units in source traversal order:
 | --- | --- | --- | --- | --- |
 | `FC11-C01-U131` | Definition / construction / notation | — | ready by recorded prerequisites | unmatched; author |
 | `FC11-C02-U018` | Definition / construction / notation | — | ready by recorded prerequisites | reference-port; port |
-| `FC11-C02-U029` | Definition / construction | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC11-C02-U029` | Definition / construction | — | ready by recorded prerequisites | unmatched; author |
 | `FC11-C03-U003` | Convention / notation | — | ready by recorded prerequisites | reference-port; port |
 | `FC11-C03-U008` | Definition / construction / notation | — | ready by recorded prerequisites | reference-port; port |
 
