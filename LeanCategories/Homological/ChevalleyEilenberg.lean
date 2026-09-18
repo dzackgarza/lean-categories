@@ -6,8 +6,13 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.Algebra.Homology.HomologicalComplex
+public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.Algebra.Lie.UniversalEnveloping
+public import Mathlib.LinearAlgebra.Alternating.DomCoprod
+public import Mathlib.LinearAlgebra.Alternating.Uncurry.Fin
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
+public import Mathlib.LinearAlgebra.ExteriorPower.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 # The Chevalley--Eilenberg complex
@@ -33,9 +38,21 @@ namespace LeanCategories.Homological
 open CategoryTheory
 open scoped BigOperators TensorProduct
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 universe u
 
 variable (k L : Type u) [CommRing k] [LieRing L] [LieAlgebra k L]
+
+/-- The Lie bracket as the canonical alternating bilinear map. -/
+noncomputable def chevalleyEilenbergLieBracket : L [⋀^Fin 2]→ₗ[k] L where
+  toMultilinearMap :=
+    LinearMap.uncurryLeft <|
+      (MultilinearMap.ofSubsingletonₗ k k L L (0 : Fin 1)).toLinearMap.comp
+        (LieAlgebra.ad k L).toLinearMap
+  map_eq_zero_of_eq' := by
+    intro x i j hij hne
+    fin_cases i <;> fin_cases j <;> simp_all [Fin.tail, lie_self]
 
 /-- The pure wedge `x₀ ∧ ⋯ ∧ x_{p-1}` as an element of `Λ^p L`. -/
 def chevalleyEilenbergWedge {p : ℕ} (x : Fin p → L) :
@@ -43,11 +60,121 @@ def chevalleyEilenbergWedge {p : ℕ} (x : Fin p → L) :
   ⟨ExteriorAlgebra.ιMulti k p x,
     ExteriorAlgebra.ιMulti_range k p ⟨x, rfl⟩⟩
 
+@[simp]
+theorem chevalleyEilenbergWedge_eq_ιMulti {p : ℕ} (x : Fin p → L) :
+    chevalleyEilenbergWedge k L x = exteriorPower.ιMulti k p x := by
+  apply Subtype.ext
+  rfl
+
 /-- A pure tensor `u ⊗ (x₀ ∧ ⋯ ∧ x_{p-1})` in `V_p(L)`. -/
 def chevalleyEilenbergPure {p : ℕ}
     (u : UniversalEnvelopingAlgebra k L) (x : Fin p → L) :
     UniversalEnvelopingAlgebra k L ⊗[k] (⋀[k]^p L) :=
   u ⊗ₜ[k] chevalleyEilenbergWedge k L x
+
+/-- The action summand before alternation: `x` acts by the image of `x` in
+`U(L)` on the left tensor factor, while the remaining `p` inputs form their
+pure wedge. -/
+noncomputable def chevalleyEilenbergActionSeed (p : ℕ) :
+    L →ₗ[k] L [⋀^Fin p]→ₗ[k]
+      (UniversalEnvelopingAlgebra k L ⊗[k] (⋀[k]^p L)) where
+  toFun x :=
+    (TensorProduct.mk k _ _ (UniversalEnvelopingAlgebra.ι k x)).compAlternatingMap
+      (exteriorPower.ιMulti k p)
+  map_add' x y := by
+    ext v
+    simp
+  map_smul' r x := by
+    ext v
+    simp [TensorProduct.smul_tmul']
+
+/-- The alternating action part of the Chevalley--Eilenberg differential in
+degree `p + 1`. Mathlib's alternating uncurrying supplies exactly the source
+sum `∑ i, (-1)^i ι(x_i) ⊗ x_0∧⋯∧x̂_i∧⋯`. -/
+noncomputable def chevalleyEilenbergActionAlternating (p : ℕ) :
+    L [⋀^Fin (p + 1)]→ₗ[k]
+      (UniversalEnvelopingAlgebra k L ⊗[k] (⋀[k]^p L)) :=
+  AlternatingMap.alternatizeUncurryFin (chevalleyEilenbergActionSeed k L p)
+
+@[simp]
+theorem chevalleyEilenbergActionAlternating_apply (p : ℕ) (x : Fin (p + 1) → L) :
+    chevalleyEilenbergActionAlternating k L p x =
+      ∑ i : Fin (p + 1), ((-1 : ℤ) ^ i.val) •
+        chevalleyEilenbergPure k L
+          (UniversalEnvelopingAlgebra.ι k (x i)) (i.removeNth x) := by
+  simp [chevalleyEilenbergActionAlternating, chevalleyEilenbergActionSeed,
+    AlternatingMap.alternatizeUncurryFin_apply, chevalleyEilenbergPure,
+    chevalleyEilenbergWedge_eq_ιMulti]
+
+/-- Left exterior multiplication, restricted to homogeneous exterior powers.
+This is the linear map `x ⊗ w ↦ x ∧ w`. -/
+noncomputable def chevalleyEilenbergWedgeLeft (p : ℕ) :
+    L ⊗[k] (⋀[k]^p L) →ₗ[k] (⋀[k]^(p + 1) L) :=
+  TensorProduct.lift <| LinearMap.mk₂ k
+    (fun x w =>
+      ⟨ExteriorAlgebra.ι k x * (w : ExteriorAlgebra k L), by
+        have hx : ExteriorAlgebra.ι k x ∈ (⋀[k]^1 L) := by
+          simpa only [pow_one] using
+            (LinearMap.mem_range_self (ExteriorAlgebra.ι k) x)
+        simpa [Nat.one_add] using SetLike.mul_mem_graded hx w.2⟩)
+    (by
+      intro x y w
+      apply Subtype.ext
+      change ExteriorAlgebra.ι k (x + y) * (w : ExteriorAlgebra k L) =
+        ExteriorAlgebra.ι k x * (w : ExteriorAlgebra k L) +
+          ExteriorAlgebra.ι k y * (w : ExteriorAlgebra k L)
+      rw [map_add, add_mul])
+    (by
+      intro r x w
+      apply Subtype.ext
+      change ExteriorAlgebra.ι k (r • x) * (w : ExteriorAlgebra k L) =
+        r • (ExteriorAlgebra.ι k x * (w : ExteriorAlgebra k L))
+      rw [map_smul, Algebra.smul_def, Algebra.smul_def, mul_assoc])
+    (by
+      intro x y z
+      apply Subtype.ext
+      simp [mul_add])
+    (by
+      intro r x w
+      apply Subtype.ext
+      change ExteriorAlgebra.ι k x * (r • (w : ExteriorAlgebra k L)) =
+        r • (ExteriorAlgebra.ι k x * (w : ExteriorAlgebra k L))
+      rw [Algebra.smul_def, Algebra.smul_def, ← mul_assoc,
+        ← Algebra.commutes r (ExteriorAlgebra.ι k x), mul_assoc])
+
+@[simp]
+theorem chevalleyEilenbergWedgeLeft_tmul (p : ℕ) (x : L) (w : ⋀[k]^p L) :
+    chevalleyEilenbergWedgeLeft k L p (x ⊗ₜ[k] w) =
+      ⟨ExteriorAlgebra.ι k x * (w : ExteriorAlgebra k L), by
+        have hx : ExteriorAlgebra.ι k x ∈ (⋀[k]^1 L) := by
+          simpa only [pow_one] using
+            (LinearMap.mem_range_self (ExteriorAlgebra.ι k) x)
+        simpa [Nat.one_add] using SetLike.mul_mem_graded hx w.2⟩ := by
+  rfl
+
+/-- The bracket part of the Chevalley--Eilenberg differential as an alternating
+map.  In positive target degree this is minus the exterior product of the Lie
+bracket with the residual pure wedge; the minus sign is the one appearing in
+Weibel's `p = 2` formula. -/
+noncomputable def chevalleyEilenbergBracketAlternating : (p : ℕ) →
+    L [⋀^Fin (p + 1)]→ₗ[k]
+      (UniversalEnvelopingAlgebra k L ⊗[k] (⋀[k]^p L))
+  | 0 => 0
+  | p + 1 =>
+      -((TensorProduct.mk k (UniversalEnvelopingAlgebra k L) (⋀[k]^(p + 1) L) 1).
+          compAlternatingMap <|
+        (chevalleyEilenbergWedgeLeft k L p).compAlternatingMap <|
+          ((chevalleyEilenbergLieBracket k L).domCoprod
+              (exteriorPower.ιMulti k p)).domDomCongr <|
+            finSumFinEquiv.trans (finCongr (by omega)))
+
+/-- The full source differential on the exterior generators, before extending
+`U(L)`-linearly. -/
+noncomputable def chevalleyEilenbergAlternating (p : ℕ) :
+    L [⋀^Fin (p + 1)]→ₗ[k]
+      (UniversalEnvelopingAlgebra k L ⊗[k] (⋀[k]^p L)) :=
+  chevalleyEilenbergActionAlternating k L p +
+    chevalleyEilenbergBracketAlternating k L p
 
 /-- Delete the `i`th factor from a wedge tuple. -/
 def chevalleyEilenbergOmit {p : ℕ} (x : Fin (p + 1) → L)
