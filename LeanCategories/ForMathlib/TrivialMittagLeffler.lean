@@ -26,17 +26,9 @@ universe u v
 
 variable {J : Type u} [Category* J]
 
-/-- Weibel's trivial Mittag--Leffler condition for a diagram of additive commutative groups.
-
-For every stage `j`, some transition map from a later stage into `j` is the zero morphism. For a
-countable inverse tower indexed by `ℕᵒᵖ`, this says exactly that for every `n` there is a
-sufficiently large `m ≥ n` for which the transition `A_m ⟶ A_n` is zero. -/
-def IsTriviallyMittagLeffler (F : J ⥤ AddCommGrpCat.{v}) : Prop :=
-  ∀ j : J, ∃ (i : J) (f : i ⟶ j), F.map f = 0
-
 /-- A trivially Mittag--Leffler system is Mittag--Leffler after forgetting to sets. -/
-theorem IsTriviallyMittagLeffler.isMittagLeffler {F : J ⥤ AddCommGrpCat.{v}}
-    (h : F.IsTriviallyMittagLeffler) :
+theorem isMittagLeffler_of_trivial {F : J ⥤ AddCommGrpCat.{v}}
+    (h : ∀ j : J, ∃ (i : J) (f : i ⟶ j), F.map f = 0) :
     (F ⋙ forget AddCommGrpCat).IsMittagLeffler := by
   intro j
   obtain ⟨i, f, hf⟩ := h j
