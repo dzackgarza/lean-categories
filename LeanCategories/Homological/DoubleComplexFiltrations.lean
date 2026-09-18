@@ -41,9 +41,9 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 /-- The associated graded complex of an increasing filtration on a
 nonnegatively graded chain complex. -/
 noncomputable def associatedGradedNat {K : ChainComplex C ℕ}
-    (F : IncreasingFiltration K) (p : ℤ) :
+    (F : ℤ →o Subobject K) (p : ℤ) :
     ChainComplex C ℕ :=
-  cokernel (Subobject.ofLE (F.obj (p - 1)) (F.obj p) (F.monotone (by omega)))
+  cokernel (Subobject.ofLE (F (p - 1)) (F p) (F.monotone (by omega)))
 
 /-- The total-degree fibers in a first-quadrant double complex are finite, so
 the direct-sum total complex exists in every abelian category. -/
@@ -309,9 +309,9 @@ lemma columnFiltrationLevelNat_mono
 Source: Weibel, Definition 5.6.1 (FC05-C05-U045). -/
 noncomputable def columnFiltration
     (K : ChainComplex (ChainComplex C ℕ) ℕ) :
-    IncreasingFiltration (HomologicalComplex₂.total K (ComplexShape.down ℕ)) where
-  obj p := if p < 0 then ⊥ else columnFiltrationLevelNat K p.toNat
-  monotone := by
+    ℤ →o Subobject (HomologicalComplex₂.total K (ComplexShape.down ℕ)) where
+  toFun p := if p < 0 then ⊥ else columnFiltrationLevelNat K p.toNat
+  monotone' := by
     intro p q hpq
     by_cases hp : p < 0
     · simp [hp]
@@ -345,12 +345,12 @@ the canonical total-complex symmetry.
 Source: Weibel, Definition 5.6.2 (FC05-C05-U046). -/
 noncomputable def rowFiltration
     (K : ChainComplex (ChainComplex C ℕ) ℕ) :
-    IncreasingFiltration (HomologicalComplex₂.total K (ComplexShape.down ℕ)) where
-  obj p :=
+    ℤ →o Subobject (HomologicalComplex₂.total K (ComplexShape.down ℕ)) where
+  toFun p :=
     Subobject.mapIsoToOrderIso
       (HomologicalComplex₂.totalFlipIso K (ComplexShape.down ℕ))
-        ((columnFiltration (HomologicalComplex₂.flip K)).obj p)
-  monotone := by
+        ((columnFiltration (HomologicalComplex₂.flip K)) p)
+  monotone' := by
     intro p q hpq
     exact
       (Subobject.mapIsoToOrderIso
