@@ -13,8 +13,8 @@ The linked whole-source ledger remains the sole source of sweep completion.
 | `catalogue` | [Sweep I: every source unit](#1-sweep-i--catalogue-every-corpus-unit) | `corpus` |
 | `mapping` | [Sweep II: map every unit onto an existing formalization where one exists](#2-sweep-ii--map-every-unit-onto-existing-formalizations). Bulk candidate discovery is corpus-wide; semantic adjudication remains source-ordered. | `catalogue` |
 | `definition-mapping-convergence` | **Completed 2026-09-18 — MILESTONE 1 / STATE TRANSITION.** State 1 is complete. The canonical definition index has zero `action=search`/`action=residue-search` rows after the systematic second pass and the final unconstrained open-ended search reached a fixed point at `6db7285`; every surviving unmatched definition is explicitly `[residue-search-audited]`, while viable native/import/reference routes retain source-clause provenance. This closes the gate from “minimize the definitional work” to “do the minimized definitional work”; State 2 / Sweep III is now open. | `definition-open-ended-prior-art-search` |
-| `definitions` | [Sweep III: definitions and intrinsic laws](#3-sweep-iii--realize-the-complete-definitional-layer) | `definition-mapping-convergence` |
-| `definition-realization-convergence` | **MILESTONE 2 / TERMINAL DEFINITION STATE.** State 2 is complete: every definitional unit is realized and source-faithful. Reused, imported, ported, and newly authored definitions collectively realize every clause of the original prose reference, with intrinsic well-definedness/structure laws discharged and the final source-conformance audit complete. This node performs no implementation itself; it certifies convergence of State 2. | `definition-source-conformance` |
+| `definitions` | [Sweep III: definitions and constructions](#3-sweep-iii--realize-the-complete-definitional-layer) | `definition-mapping-convergence` |
+| `definition-realization-convergence` | **MILESTONE 2 / TERMINAL DEFINITION STATE.** State 2 is complete: every definitional unit is realized and source-faithful. Reused, imported, ported, and newly authored declarations collectively realize the definitional clauses of the original prose reference, and the final source-conformance audit is complete. Proposition/result clauses remain Sweep-IV work. This node performs no implementation itself; it certifies convergence of State 2. | `definition-source-conformance` |
 
 The definition rows below deliberately carry no counts. They used to, and every one of them was
 wrong within the day: `fc05-definitions` still read "199 pending of 376" after the source had
@@ -71,7 +71,7 @@ theorem/remark/example rows.
 | `fc17-definition-residue-pass2` | **Completed 2026-09-17.** Re-read all 45 first-pass FC17 residues at their permanent Kerodon tags and searched equivalent/current terminology across pinned/current Mathlib and the live Formalization Corpus. Thirty false gaps were corrected under the established source-clause/dependency policy: many rows merely require direct native tuples/predicates/finite formulas or name an induced construction whose well-definedness is a separately catalogued preceding proposition. This includes simplicial summands/components, nonunital monoidal predicates/data, strict bicategory predicates, DG-nerve simplex data, shuffle/Eilenberg--Zilber/Alexander--Whitney formulas, cube-chain notation, and the exact comma-category owner for oriented fiber products. The current FC17 definition index has 861 units (`844 mathlib`, `2 reference-port`, `15 unmatched`). The 15 survivors require genuine new category/bicategory/enrichment/quotient or intrinsic well-definedness constructions: nonunital-functor category/composition, conjugate/category/twisting/coarse-homotopy/core bicategories, Duskin nerve, path bicategory, semisimplicial Moore complex, underlying simplicial category of a DG category, simplicial connecting homomorphism, ordered interval-complement components, and simplicially enriched geometric realization. No definition authoring occurred. | `fc17-mapping` |
 | `definition-residue-pass2` | **Join for the systematic second-pass residue searches.** Source children may run independently. After they close, regenerate `FOUNDATIONAL_DEFINITIONS.tsv`; any newly positive route is semantically adjudicated and removed from residue, and any rows still lacking a completed first-stage mapping are sent back to the relevant `fcNN-mapping` node. This node does not certify final absence of prior art. | `fc01-definition-residue-pass2`, `fc02-definition-residue-pass2`, `fc03-definition-residue-pass2`, `fc04-definition-residue-pass2`, `fc05-definition-residue-pass2`, `fc06-definition-residue-pass2`, `fc07-definition-residue-pass2`, `fc08-definition-residue-pass2`, `fc09-definition-residue-pass2`, `fc10-definition-residue-pass2`, `fc11-definition-residue-pass2`, `fc12-definition-residue-pass2`, `fc13-definition-residue-pass2`, `fc14-definition-residue-pass2`, `fc15-definition-residue-pass2`, `fc16-definition-residue-pass2`, `fc17-definition-residue-pass2` |
 | `definition-open-ended-prior-art-search` | **Completed 2026-09-18.** The final unconstrained State-1 search has converged. The source-ordered pass recursively searched current/pinned Mathlib, formalization-corpus discoveries, external prover repositories, project histories/branches/PRs and newly surfaced implementations; viable references replaced stale negatives, while genuine survivors carry `[residue-search-audited]` with source-local evidence. The final FC17 batch at `6db7285` reduced the canonical selector to zero `action=search` or `action=residue-search` rows. **Acceptance met:** regeneration is at a fixed point and a final unconstrained pass found no further viable implementation/reference. | `definition-residue-pass2`, `definition-positive-route-audit` |
-| `fc05-definitions` | Sweep III for FC05. Reuse/import/port accepted owners; author only rows that survived Milestone 1. Every port/new definition is checked against the complete original prose clauses and intrinsic laws before downstream use. Source-local external-owner conflicts are repaired as part of the affected unit rather than waiting on the later corpus-wide ownership audit. | `definition-mapping-convergence` |
+| `fc05-definitions` | Sweep III for FC05. Reuse/import/port accepted owners; author only rows that survived Milestone 1. Every port/new definition is checked against the source's actual definitional clauses before downstream use; proposition/result clauses stay in Sweep IV. Source-local external-owner conflicts are repaired as part of the affected unit rather than waiting on the later corpus-wide ownership audit. | `definition-mapping-convergence` |
 | `fc13-definitions` | Sweep III for FC13 under the same source-faithful realization rule. | `fc05-definitions` |
 | `fc06-definitions` | Sweep III for FC06 under the same rule. | `fc13-definitions` |
 | `fc07-definitions` | Sweep III for FC07 under the same rule. | `fc06-definitions` |
@@ -148,8 +148,8 @@ four sweep plans below. Then:
 If an omitted unit exposes a faulty selector, revisit the coverage claims made with
 that selector before declaring a new exhaustive residue. Keep the already-correct
 mathematics. Apply the current sweep's own obligations: mapping can end in a supported
-`unmatched` route, definitions include intrinsic laws, and independent source theorems
-remain in Sweep IV.
+`unmatched` route, Sweep III writes declarations/constructions only, and every
+proposition/result clause remains in Sweep IV.
 
 ## Where the plans live
 
@@ -412,12 +412,16 @@ Then traverse each source in v3 order according to its verified mapping:
   stand-ins inside downstream subjects.
 - [ ] Place every definition at the lowest mathematical owner that generates it.
 - [ ] Re-read the original prose source after implementation and verify the actual Lean declaration
-  clause-by-clause: data, hypotheses, quantifiers, equations/coherences, variance, representative
-  conditions, and claimed generality. Do not infer fidelity from a familiar name or successful build.
+  against the definitional layer only: data, hypotheses, quantified parameters, constructors,
+  fields, notation, maps, variance, and claimed generality. Do not infer fidelity from a familiar
+  name or successful build.
 
-Sweep III includes proofs intrinsic to making definitions well-defined: category/functor laws,
-quotient well-definedness, independence of representatives, closure, and analogous structural
-obligations. It does not absorb the source's general lemma/theorem programme.
+Sweep III has no standalone proof programme. It writes definitions and constructions only.
+If Lean's constructor requires a proposition-valued field, fill that field inside the
+declaration being defined; do not select or author a separate theorem/lemma to close the
+definition unit. Surjectivity, injectivity, exactness, centrality, square-zero,
+independence, universality, existence, uniqueness, comparison isomorphisms, and every
+other proposition about the declared object remain Sweep-IV work.
 
 After the last source realization, run `definition-source-conformance` across the complete open
 programme. Milestone 2 (`definition-realization-convergence`) closes only when every definitional
