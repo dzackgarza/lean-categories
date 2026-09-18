@@ -52,30 +52,6 @@ noncomputable def associatedGradedComplex (F : ChainComplexFiltration A (Complex
     (p : ℤ) : ChainComplex A ℤ :=
   cokernel (Subobject.ofLE (F.obj (p - 1)) (F.obj p) (F.monotone (by omega)))
 
-/-- The zeroth-page term
-`E⁰_{p,q} = F_p C_{p+q} / F_{p-1} C_{p+q}`.
-
-Source: Weibel, Construction Theorem 5.4.1 (FC05-C05-U024). -/
-abbrev spectralSequenceE0 (F : ChainComplexFiltration A (ComplexShape.down ℤ) K)
-    (p q : ℤ) : A :=
-  (F.associatedGradedComplex p).X (p + q)
-
-/-- The zeroth-page differential in fixed filtration degree `p`; it is the differential of the
-quotient complex `F_p C / F_{p-1} C` and therefore sends bidegree `(p,q)` to `(p,q-1)`.
-
-Source: Weibel, Construction Theorem 5.4.1 (FC05-C05-U024). -/
-abbrev spectralSequenceD0 (F : ChainComplexFiltration A (ComplexShape.down ℤ) K)
-    (p q : ℤ) : F.spectralSequenceE0 p q ⟶ F.spectralSequenceE0 p (q - 1) :=
-  (F.associatedGradedComplex p).d (p + q) (p + (q - 1))
-
-/-- The first-page term
-`E¹_{p,q} = H_{p+q}(F_p C/F_{p-1} C)`, equivalently the homology of the `p`th `E⁰` row.
-
-Source: Weibel, Construction Theorem 5.4.1 (FC05-C05-U024). -/
-noncomputable abbrev spectralSequenceE1
-    (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p q : ℤ) : A :=
-  (F.associatedGradedComplex p).homology (p + q)
-
 end ChainComplexFiltration
 
 end LeanCategories.Homological
