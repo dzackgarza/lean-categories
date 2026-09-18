@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Homological.LeftHyperDerived
+public import LeanCategories.Homological.CEResolution
 public import LeanCategories.Homological.RightCEResolution
+public import Mathlib.Algebra.Homology.TotalComplex
 public import Mathlib.RepresentationTheory.Coinvariants
 public import Mathlib.RepresentationTheory.Invariants
 
@@ -40,13 +41,28 @@ C--E resolution of a chain complex of integral `G`-modules. -/
 noncomputable def groupHyperhomology
   {A : ChainComplex (Rep.{u} ℤ G) ℕ} (P : LeftCEResolution A) (n : ℕ) :
     ModuleCat ℤ :=
-  leftHyperDerivedObject (Rep.coinvariantsFunctor ℤ G) P n
+  let F := Rep.coinvariantsFunctor ℤ G
+  let K : ChainComplex (ChainComplex (ModuleCat ℤ) ℕ) ℕ :=
+    let H := F.mapHomologicalComplex (ComplexShape.down ℕ)
+    (H.mapHomologicalComplex (ComplexShape.down ℕ)).obj P.P
+  (HomologicalComplex.homologyFunctor (ModuleCat ℤ) (ComplexShape.down ℕ) n).obj
+    (HomologicalComplex₂.total K (ComplexShape.down ℕ))
 
 /-- Weibel's group hypercohomology `𝕳^n(G;A^*)`, computed from a chosen right
 C--E resolution of a cochain complex of integral `G`-modules. -/
 noncomputable def groupHypercohomology
   {A : CochainComplex (Rep.{u} ℤ G) ℕ} (I : RightCEResolution A) (n : ℕ) :
     ModuleCat ℤ :=
-  rightHyperDerivedObject (Rep.invariantsFunctor ℤ G) I n
+  let F := Rep.invariantsFunctor ℤ G
+  let K₀ : CochainComplex (CochainComplex (ModuleCat ℤ) ℕ) ℕ :=
+    let H := F.mapHomologicalComplex (ComplexShape.up ℕ)
+    (H.mapHomologicalComplex (ComplexShape.up ℕ)).obj I.I
+  let innerExtend := ComplexShape.embeddingUpNat.extendFunctor (ModuleCat ℤ)
+  let K₁ : CochainComplex (CochainComplex (ModuleCat ℤ) ℤ) ℕ :=
+    (innerExtend.mapHomologicalComplex (ComplexShape.up ℕ)).obj K₀
+  let K : CochainComplex (CochainComplex (ModuleCat ℤ) ℤ) ℤ :=
+    (ComplexShape.embeddingUpNat.extendFunctor (CochainComplex (ModuleCat ℤ) ℤ)).obj K₁
+  (HomologicalComplex.homologyFunctor (ModuleCat ℤ) (ComplexShape.up ℤ) (n : ℤ)).obj
+    (HomologicalComplex₂.total K (ComplexShape.up ℤ))
 
 end LeanCategories.Homological
