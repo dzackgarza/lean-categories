@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Homological.AndreQuillen
 public import LeanCategories.Homological.AugmentedSimplicialObjects
+public import Mathlib.Algebra.Category.CommAlgCat.Basic
 public import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.RingTheory.MvPolynomial.Basic
 
