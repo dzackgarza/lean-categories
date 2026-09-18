@@ -305,11 +305,11 @@ Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC12-C01-U002` | Definition I.2 | — | ready by recorded prerequisites | unmatched; residue audit |
-| `FC12-C02-U001` | Definition / construction II.1 | — | ready by recorded prerequisites | unmatched; residue audit |
-| `FC12-C02-U005` | Definition / construction II.5 | — | ready by recorded prerequisites | unmatched; residue audit |
-| `FC12-C02-U017` | Definition / convention | — | ready by recorded prerequisites | unmatched; residue audit |
-| `FC12-C03-U015` | Definition / construction III.14 | — | ready by recorded prerequisites | unmatched; residue audit |
+| `FC12-C01-U002` | Definition I.2 | — | ready by recorded prerequisites | unmatched; author |
+| `FC12-C02-U001` | Definition / construction II.1 | — | ready by recorded prerequisites | unmatched; author |
+| `FC12-C02-U005` | Definition / construction II.5 | — | ready by recorded prerequisites | unmatched; author |
+| `FC12-C02-U017` | Definition / convention | — | ready by recorded prerequisites | unmatched; author |
+| `FC12-C03-U015` | Definition / construction III.14 | — | ready by recorded prerequisites | unmatched; author |
 
 ## FC12 — Theorems
 
