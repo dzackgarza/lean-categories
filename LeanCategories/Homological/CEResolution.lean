@@ -36,7 +36,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 /-- Source-faithful data of a left C--E resolution. -/
 structure LeftCEResolution (A : ChainComplex C ℕ) where
   /-- The resolving first-quadrant double complex. -/
-  P : FirstQuadrantDoubleComplex C
+  P : ChainComplex (ChainComplex C ℕ) ℕ
   /-- Its degree-zero resolution row augments to the original complex. -/
   augmentation : horizontalRowComplex P 0 ⟶ A
   /-- Each column is identified with a projective resolution of the

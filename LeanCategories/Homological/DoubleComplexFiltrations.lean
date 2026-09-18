@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Homological.DoubleComplexFirstPages
+public import Mathlib.Algebra.Homology.HomologicalBicomplex
 public import LeanCategories.Homological.FilteredComplex
 public import Mathlib.Algebra.Homology.TotalComplex
 public import Mathlib.Algebra.Homology.Embedding.StupidTrunc
@@ -67,7 +67,8 @@ private instance (n : ℕ) : Finite (totalFiber n) :=
   Finite.of_injective (totalFiberToFin n) (totalFiberToFin_injective n)
 
 
-noncomputable instance firstQuadrantHasTotal (K : FirstQuadrantDoubleComplex C) :
+noncomputable instance firstQuadrantHasTotal
+    (K : ChainComplex (ChainComplex C ℕ) ℕ) :
     HomologicalComplex₂.HasTotal K (ComplexShape.down ℕ) := by
   intro n
   let _ : Finite (((ComplexShape.π (ComplexShape.down ℕ) (ComplexShape.down ℕ)
@@ -102,18 +103,20 @@ lemma exists_columnPrefixEmbedding_iff (p i : ℕ) :
   · intro hi
     exact ⟨⟨i, by omega⟩, rfl⟩
 
-noncomputable abbrev columnPrefix (K : FirstQuadrantDoubleComplex C) (p : ℕ) :
-    FirstQuadrantDoubleComplex C :=
+noncomputable abbrev columnPrefix
+    (K : ChainComplex (ChainComplex C ℕ) ℕ) (p : ℕ) :
+    ChainComplex (ChainComplex C ℕ) ℕ :=
   K.stupidTrunc (columnPrefixEmbedding p)
 
 noncomputable def columnPrefixInclusionF
-    (K : FirstQuadrantDoubleComplex C) (p i' : ℕ) :
+    (K : ChainComplex (ChainComplex C ℕ) ℕ) (p i' : ℕ) :
     (columnPrefix K p).X i' ⟶ K.X i' :=
   if hi' : ∃ i, (columnPrefixEmbedding p).f i = i' then
     (K.stupidTruncXIso (columnPrefixEmbedding p) hi'.choose_spec).hom
   else 0
 
-lemma columnPrefixInclusionF_eq (K : FirstQuadrantDoubleComplex C) (p : ℕ)
+lemma columnPrefixInclusionF_eq
+    (K : ChainComplex (ChainComplex C ℕ) ℕ) (p : ℕ)
     {i : Fin (p + 1)} {i' : ℕ} (hi : (columnPrefixEmbedding p).f i = i') :
     columnPrefixInclusionF K p i' =
       (K.stupidTruncXIso (columnPrefixEmbedding p) hi).hom := by
@@ -124,7 +127,8 @@ lemma columnPrefixInclusionF_eq (K : FirstQuadrantDoubleComplex C) (p : ℕ)
   subst hki
   rfl
 
-noncomputable def columnPrefixInclusion (K : FirstQuadrantDoubleComplex C) (p : ℕ) :
+noncomputable def columnPrefixInclusion
+    (K : ChainComplex (ChainComplex C ℕ) ℕ) (p : ℕ) :
     columnPrefix K p ⟶ K where
   f := columnPrefixInclusionF K p
   comm' i' j' hij := by
@@ -144,13 +148,14 @@ noncomputable def columnPrefixInclusion (K : FirstQuadrantDoubleComplex C) (p : 
         (by simpa using hi')).eq_of_src _ _
 
 noncomputable def columnPrefixRetractionF
-    (K : FirstQuadrantDoubleComplex C) (p i j : ℕ) :
+    (K : ChainComplex (ChainComplex C ℕ) ℕ) (p i j : ℕ) :
     (K.X i).X j ⟶ ((columnPrefix K p).X i).X j :=
   if hi : ∃ k, (columnPrefixEmbedding p).f k = i then
     (K.stupidTruncXIso (columnPrefixEmbedding p) hi.choose_spec).inv.f j
   else 0
 
-lemma columnPrefixRetractionF_eq (K : FirstQuadrantDoubleComplex C) (p j : ℕ)
+lemma columnPrefixRetractionF_eq
+    (K : ChainComplex (ChainComplex C ℕ) ℕ) (p j : ℕ)
     {k : Fin (p + 1)} {i : ℕ} (hk : (columnPrefixEmbedding p).f k = i) :
     columnPrefixRetractionF K p i j =
       (K.stupidTruncXIso (columnPrefixEmbedding p) hk).inv.f j := by
@@ -162,7 +167,7 @@ lemma columnPrefixRetractionF_eq (K : FirstQuadrantDoubleComplex C) (p j : ℕ)
   rfl
 
 noncomputable def columnPrefixRetractionDegree
-    (K : FirstQuadrantDoubleComplex C) (p n : ℕ) :
+    (K : ChainComplex (ChainComplex C ℕ) ℕ) (p n : ℕ) :
     (HomologicalComplex₂.total K (ComplexShape.down ℕ)).X n ⟶
       (HomologicalComplex₂.total (columnPrefix K p) (ComplexShape.down ℕ)).X n :=
   HomologicalComplex₂.totalDesc K (fun i j h =>
@@ -170,7 +175,7 @@ noncomputable def columnPrefixRetractionDegree
       HomologicalComplex₂.ιTotal (columnPrefix K p) (ComplexShape.down ℕ) i j n h)
 
 lemma columnPrefixTotalMap_retraction
-    (K : FirstQuadrantDoubleComplex C) (p n : ℕ) :
+    (K : ChainComplex (ChainComplex C ℕ) ℕ) (p n : ℕ) :
     (HomologicalComplex₂.total.map (columnPrefixInclusion K p) (ComplexShape.down ℕ)).f n ≫
         columnPrefixRetractionDegree K p n = 𝟙 _ := by
   apply HomologicalComplex₂.total.hom_ext
@@ -204,7 +209,7 @@ lemma columnPrefixTotalMap_retraction
     exact ((HomologicalComplex.eval C (ComplexShape.down ℕ) j).map_isZero hz).eq_of_src _ _
 
 noncomputable instance columnPrefixTotalMapMono
-    (K : FirstQuadrantDoubleComplex C) (p : ℕ) :
+    (K : ChainComplex (ChainComplex C ℕ) ℕ) (p : ℕ) :
     Mono (HomologicalComplex₂.total.map (columnPrefixInclusion K p) (ComplexShape.down ℕ)) :=
   HomologicalComplex.mono_of_mono_f _ (fun n => by
     let _ : IsSplitMono
@@ -215,7 +220,7 @@ noncomputable instance columnPrefixTotalMapMono
     infer_instance)
 
 noncomputable instance columnPrefixInclusionComponentMono
-    (K : FirstQuadrantDoubleComplex C) (p i : ℕ) :
+    (K : ChainComplex (ChainComplex C ℕ) ℕ) (p i : ℕ) :
     Mono ((columnPrefixInclusion K p).f i) := by
   by_cases hi : i ≤ p
   · let k : Fin (p + 1) := ⟨i, by omega⟩
@@ -229,7 +234,8 @@ noncomputable instance columnPrefixInclusionComponentMono
       exact hi ((exists_columnPrefixEmbedding_iff p i).1 ⟨k, hk⟩)
     exact (K.isZero_stupidTrunc_X (columnPrefixEmbedding p) i hnot).mono _
 
-noncomputable def columnPrefixMapF (K : FirstQuadrantDoubleComplex C)
+noncomputable def columnPrefixMapF
+    (K : ChainComplex (ChainComplex C ℕ) ℕ)
     {p q : ℕ} (hpq : p ≤ q) (i : ℕ) :
     (columnPrefix K p).X i ⟶ (columnPrefix K q).X i :=
   if hi : i ≤ p then
@@ -241,7 +247,8 @@ noncomputable def columnPrefixMapF (K : FirstQuadrantDoubleComplex C)
         (show (columnPrefixEmbedding q).f kq = i from rfl)).inv
   else 0
 
-lemma columnPrefixMapF_comp_inclusion (K : FirstQuadrantDoubleComplex C)
+lemma columnPrefixMapF_comp_inclusion
+    (K : ChainComplex (ChainComplex C ℕ) ℕ)
     {p q : ℕ} (hpq : p ≤ q) (i : ℕ) :
     columnPrefixMapF K hpq i ≫ (columnPrefixInclusion K q).f i =
       (columnPrefixInclusion K p).f i := by
@@ -262,7 +269,8 @@ lemma columnPrefixMapF_comp_inclusion (K : FirstQuadrantDoubleComplex C)
       exact hi ((exists_columnPrefixEmbedding_iff p i).1 ⟨k, hk⟩)
     exact (K.isZero_stupidTrunc_X (columnPrefixEmbedding p) i hnot).eq_of_src _ _
 
-noncomputable def columnPrefixMap (K : FirstQuadrantDoubleComplex C)
+noncomputable def columnPrefixMap
+    (K : ChainComplex (ChainComplex C ℕ) ℕ)
     {p q : ℕ} (hpq : p ≤ q) : columnPrefix K p ⟶ columnPrefix K q where
   f := columnPrefixMapF K hpq
   comm' i j _ := by
@@ -272,7 +280,8 @@ noncomputable def columnPrefixMap (K : FirstQuadrantDoubleComplex C)
     rw [Category.assoc, columnPrefixMapF_comp_inclusion K hpq j]
     exact (columnPrefixInclusion K p).comm i j
 
-lemma columnPrefixMap_comp_inclusion (K : FirstQuadrantDoubleComplex C)
+lemma columnPrefixMap_comp_inclusion
+    (K : ChainComplex (ChainComplex C ℕ) ℕ)
     {p q : ℕ} (hpq : p ≤ q) :
     columnPrefixMap K hpq ≫ columnPrefixInclusion K q = columnPrefixInclusion K p := by
   apply HomologicalComplex.hom_ext
@@ -280,11 +289,12 @@ lemma columnPrefixMap_comp_inclusion (K : FirstQuadrantDoubleComplex C)
   exact columnPrefixMapF_comp_inclusion K hpq i
 
 noncomputable def columnFiltrationLevelNat
-    (K : FirstQuadrantDoubleComplex C) (p : ℕ) :
+    (K : ChainComplex (ChainComplex C ℕ) ℕ) (p : ℕ) :
     Subobject (HomologicalComplex₂.total K (ComplexShape.down ℕ)) :=
   Subobject.mk (HomologicalComplex₂.total.map (columnPrefixInclusion K p) (ComplexShape.down ℕ))
 
-lemma columnFiltrationLevelNat_mono (K : FirstQuadrantDoubleComplex C)
+lemma columnFiltrationLevelNat_mono
+    (K : ChainComplex (ChainComplex C ℕ) ℕ)
     {p q : ℕ} (hpq : p ≤ q) :
     columnFiltrationLevelNat K p ≤ columnFiltrationLevelNat K q := by
   apply Subobject.mk_le_mk_of_comm
@@ -296,7 +306,8 @@ lemma columnFiltrationLevelNat_mono (K : FirstQuadrantDoubleComplex C)
 `F_p Tot_n = ⊕_{i≤p} C_{i,n-i}` for `p ≥ 0`, and zero for `p < 0`.
 
 Source: Weibel, Definition 5.6.1 (FC05-C05-U045). -/
-noncomputable def columnFiltration (K : FirstQuadrantDoubleComplex C) :
+noncomputable def columnFiltration
+    (K : ChainComplex (ChainComplex C ℕ) ℕ) :
     ChainComplexFiltration C (ComplexShape.down ℕ)
       (HomologicalComplex₂.total K (ComplexShape.down ℕ)) where
   obj p := if p < 0 then ⊥ else columnFiltrationLevelNat K p.toNat
@@ -332,7 +343,8 @@ the column filtration after exchanging the two axes, transported back along
 the canonical total-complex symmetry.
 
 Source: Weibel, Definition 5.6.2 (FC05-C05-U046). -/
-noncomputable def rowFiltration (K : FirstQuadrantDoubleComplex C) :
+noncomputable def rowFiltration
+    (K : ChainComplex (ChainComplex C ℕ) ℕ) :
     ChainComplexFiltration C (ComplexShape.down ℕ)
       (HomologicalComplex₂.total K (ComplexShape.down ℕ)) where
   obj p :=

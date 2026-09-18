@@ -45,7 +45,7 @@ Source: Weibel, §9.8 immediately before Definition 9.8.14
 (FC05-C09-U130). -/
 structure HodgeConnesDoubleComplexRealization (i : ℕ) where
   /-- The realized first-quadrant Hodge sub-double-complex. -/
-  bicomplex : FirstQuadrantDoubleComplex (ModuleCat ℚ)
+  bicomplex : ChainComplex (ChainComplex (ModuleCat ℚ) ℕ) ℕ
   /-- In bidegree `(p,q)` with `p ≤ q` and `p ≤ i`, the term is the
   `(i-p)`th Hodge summand of Hochschild degree `q-p`. -/
   nonzeroIso : ∀ (p q : ℕ), p ≤ q → p ≤ i →

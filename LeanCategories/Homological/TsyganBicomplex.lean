@@ -43,7 +43,7 @@ def cyclicSignedDifference (A : CyclicObject (C := C)) (q : ℕ) :
 /-- A source-faithful realization of Tsygan's first-quadrant bicomplex. -/
 structure TsyganBicomplexRealization (A : CyclicObject (C := C)) where
   /-- The realized first-quadrant bicomplex. -/
-  bicomplex : FirstQuadrantDoubleComplex C
+  bicomplex : ChainComplex (ChainComplex C ℕ) ℕ
   /-- Every bidegree `(p,q)` is a copy of `A_q`. -/
   degreeIso : ∀ (p q : ℕ), (bicomplex.X p).X q ≅ A.obj.obj (op ⦋q⦌)
   /-- Even columns carry the Hochschild differential `b`. -/

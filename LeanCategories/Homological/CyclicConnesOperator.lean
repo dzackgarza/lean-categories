@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Homological.DoubleComplexFirstPages
+public import Mathlib.Algebra.Homology.HomologicalBicomplex
 public import LeanCategories.Homological.CyclicOperators
 public import LeanCategories.Homological.MixedComplex
 
@@ -71,7 +71,7 @@ is the Hochschild differential `b`, and the horizontal differential is the
 operator `B` above. -/
 structure CyclicConnesDoubleComplexRealization (A : CyclicObject (C := C)) where
   /-- The first-quadrant double complex. -/
-  bicomplex : FirstQuadrantDoubleComplex C
+  bicomplex : ChainComplex (ChainComplex C ℕ) ℕ
   /-- On and below the diagonal, bidegree `(p,q)` is `A_{q-p}`. -/
   nonzeroIso : ∀ (p q : ℕ), p ≤ q →
     CategoryTheory.Iso ((bicomplex.X p).X q) (A.obj.obj (op ⦋q - p⦌))
