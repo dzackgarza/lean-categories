@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Homological.FilteredComplexSpectralSequence
+public import LeanCategories.Homological.FilteredComplex
+public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!
@@ -116,13 +118,15 @@ theorem approximateCycles_previous_le
 /-- The quotient map `η_p : F_p C ⟶ F_p C/F_{p-1}C = E_p^0`. -/
 noncomputable def associatedGradedProjection
     (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) :
-    Subobject.underlying.obj (F.obj p) ⟶ F.associatedGradedComplex p :=
+    Subobject.underlying.obj (F.obj p) ⟶
+      cokernel (Subobject.ofLE (F.obj (p - 1)) (F.obj p) (F.monotone (by omega))) :=
   cokernel.π (Subobject.ofLE (F.obj (p - 1)) (F.obj p) (F.monotone (by omega)))
 
 /-- The map from `A_p^r(n)` to `E_p^0(n)` whose image is `Z_p^r(n)`. -/
 noncomputable def approximateCycleToE0
     (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
-    (F.approximateCycles p r n : A) ⟶ (F.associatedGradedComplex p).X n :=
+    (F.approximateCycles p r n : A) ⟶
+      (cokernel (Subobject.ofLE (F.obj (p - 1)) (F.obj p) (F.monotone (by omega)))).X n :=
   Subobject.ofLE (F.approximateCycles p r n) (F.degreeSubobject p n)
       (F.approximateCycles_le_degree p r n) ≫
     (F.degreeSubobjectIso p n).hom ≫
@@ -134,7 +138,8 @@ For `r=0` Weibel sets `Z_p^0=E_p^0`; for positive `r` it is the image of `A_p^r`
 Source: Weibel, Construction 5.4.6 (FC05-C05-U031). -/
 noncomputable def cycleSubobject
     (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
-    Subobject ((F.associatedGradedComplex p).X n) :=
+    Subobject
+      ((cokernel (Subobject.ofLE (F.obj (p - 1)) (F.obj p) (F.monotone (by omega)))).X n) :=
   match r with
   | 0 => ⊤
   | r + 1 => imageSubobject (F.approximateCycleToE0 p (r + 1) n)
@@ -186,7 +191,7 @@ Source: Weibel, Construction 5.4.6 (FC05-C05-U031). -/
 noncomputable def boundaryToE0
     (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
     (F.boundaryApproximateCycles p r n : A) ⟶
-      (F.associatedGradedComplex p).X n :=
+      (cokernel (Subobject.ofLE (F.obj (p - 1)) (F.obj p) (F.monotone (by omega)))).X n :=
   (F.degreeSubobject p n).factorThru (F.boundaryDifferential p r n)
       (Subobject.factors_of_le (F.boundaryDifferential p r n)
         (F.approximateCycles_le_degree p (r + 1) n)
@@ -218,7 +223,8 @@ theorem boundaryToApproximateCycles_comp_toE0
 Source: Weibel, Construction 5.4.6 (FC05-C05-U031). -/
 noncomputable def boundarySubobject
     (F : ChainComplexFiltration A (ComplexShape.down ℤ) K) (p : ℤ) (r : ℕ) (n : ℤ) :
-    Subobject ((F.associatedGradedComplex p).X n) :=
+    Subobject
+      ((cokernel (Subobject.ofLE (F.obj (p - 1)) (F.obj p) (F.monotone (by omega)))).X n) :=
   match r with
   | 0 => ⊥
   | r + 1 => imageSubobject (F.boundaryToE0 p r n)
