@@ -231,32 +231,32 @@ lemma face_comp_degeneracy_of_gt (n i j : ℕ) (hij : j < i)
           ih i j (by omega) (by omega) (by omega), T.map_comp, faceMap_succ,
           degeneracyMap_succ]
 
-private lemma relation₁ {n : ℕ} (i j : Fin (n + 2)) (h : i ≤ j) :
+lemma relation₁ {n : ℕ} (i j : Fin (n + 2)) (h : i ≤ j) :
     T.face A (n + 2) j.succ ≫ T.face A (n + 1) i =
       T.face A (n + 2) i.castSucc ≫ T.face A (n + 1) j :=
   face_comp_face T A n i j h i.isLt j.isLt
 
-private lemma relation₂ {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1))
+lemma relation₂ {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1))
     (h : i ≤ j.castSucc) :
     T.degeneracy A (n + 1) j.succ ≫ T.face A (n + 2) i.castSucc =
       T.face A (n + 1) i ≫ T.degeneracy A n j :=
   face_comp_degeneracy_of_le T A n i j h i.isLt j.isLt
 
-private lemma relation₃₁ {n : ℕ} (i : Fin (n + 1)) :
+lemma relation₃₁ {n : ℕ} (i : Fin (n + 1)) :
     T.degeneracy A n i ≫ T.face A (n + 1) i.castSucc = 𝟙 (T.simplicialDegree A n) :=
   degeneracy_comp_face_self T A n i i.isLt
 
-private lemma relation₃₂ {n : ℕ} (i : Fin (n + 1)) :
+lemma relation₃₂ {n : ℕ} (i : Fin (n + 1)) :
     T.degeneracy A n i ≫ T.face A (n + 1) i.succ = 𝟙 (T.simplicialDegree A n) :=
   degeneracy_comp_face_succ T A n i i.isLt
 
-private lemma relation₄ {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1))
+lemma relation₄ {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1))
     (h : j.castSucc < i) :
     T.degeneracy A (n + 1) j.castSucc ≫ T.face A (n + 2) i.succ =
       T.face A (n + 1) i ≫ T.degeneracy A n j :=
   face_comp_degeneracy_of_gt T A n i j h i.isLt j.isLt
 
-private lemma relation₅ {n : ℕ} (i j : Fin (n + 1)) (h : i ≤ j) :
+lemma relation₅ {n : ℕ} (i j : Fin (n + 1)) (h : i ≤ j) :
     T.degeneracy A n j ≫ T.degeneracy A (n + 1) i.castSucc =
       T.degeneracy A n i ≫ T.degeneracy A (n + 1) j.succ :=
   (degeneracy_comp_degeneracy T A n i j h i.isLt j.isLt).symm
@@ -337,7 +337,7 @@ lemma augmentationCondition
       fin_cases x
       rfl
     rw [hg₁, hg₂]
-    simp only [← op_comp, Functor.map_comp, Category.assoc]
+    simp only [op_comp, Functor.map_comp, Category.assoc]
     rw [h]
   · let e := SimplexCategory.mkOfLe b a hba
     have hg₁ : g₁ = SimplexCategory.δ 0 ≫ e := by
@@ -349,7 +349,7 @@ lemma augmentationCondition
       fin_cases x
       rfl
     rw [hg₁, hg₂]
-    simp only [← op_comp, Functor.map_comp, Category.assoc]
+    simp only [op_comp, Functor.map_comp, Category.assoc]
     rw [h]
 
 /-- Weibel's canonical augmented simplicial object associated to a cotriple. -/
