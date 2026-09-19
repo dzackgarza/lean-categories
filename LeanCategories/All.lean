@@ -71,6 +71,7 @@ public import LeanCategories.ForMathlib.AdicCompletionIntegers
 public import LeanCategories.ForMathlib.AddSubgroupCompletion
 public import LeanCategories.ForMathlib.AdicCompletionUniform
 public import LeanCategories.ForMathlib.DenseIntegralCompletion
+public import LeanCategories.ForMathlib.DemocraticArfInvariant
 public import LeanCategories.ForMathlib.FiltrationTopology
 public import LeanCategories.ForMathlib.FiltrationGraded
 public import LeanCategories.ForMathlib.GaussianPrimeIdeals
@@ -78,6 +79,7 @@ public import LeanCategories.ForMathlib.MvPolynomialIdealOfVars
 public import LeanCategories.ForMathlib.QuadraticMapHyperbolicPlane
 public import LeanCategories.ForMathlib.QuadraticMapRepresentation
 public import LeanCategories.ForMathlib.QuadraticReflection
+public import LeanCategories.ForMathlib.QuaternionAlgebraPresentation
 public import LeanCategories.ForMathlib.QuotientAnnihilator
 public import LeanCategories.ForMathlib.QuotientManifold
 public import LeanCategories.ForMathlib.RestrictedProductMeasure
