@@ -32,4 +32,11 @@ noncomputable abbrev representationCharacterDegree
     {k : Type u} [Field k] {G : Type v} [Group G] (V : FDRep k G) : ℕ :=
   Module.finrank k V
 
+abbrev CharacterTableData (ι : Type*) (G : Type v) [Group G] (F : Type u) :=
+  ι → ConjClasses G → F
+
+def characterTableOfClassFunctions {ι : Type*} {G : Type v} [Group G] {F : Type u}
+    (χ : ι → ClassFunctionData G F) : CharacterTableData ι G F :=
+  χ
+
 end LeanCategories.Algebra
