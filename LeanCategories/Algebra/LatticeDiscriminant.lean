@@ -6,6 +6,7 @@ module
 
 public import Mathlib.Algebra.Module.Lattice
 public import Mathlib.RingTheory.Discriminant
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 
 /-!
 # Lattice discriminant carrier
@@ -45,5 +46,10 @@ def latticeDiscriminantGenerators (X : Submodule A L) : Set K :=
 discriminants. -/
 def latticeDiscriminant (X : Submodule A L) : Submodule A K :=
   Submodule.span A (latticeDiscriminantGenerators A K L X)
+
+/-- Serre's discriminant of the integral closure, obtained by applying the
+lattice-discriminant carrier to the integral-closure submodule. -/
+def integralClosureDiscriminant : Submodule A K :=
+  latticeDiscriminant A K L (integralClosure A L).toSubmodule
 
 end LeanCategories.Algebra
