@@ -45,12 +45,12 @@ abbrev SymplecticPresentation (V : Type*) :=
 
 section
 
-variable {k V : Type*} [Field k] [CharP k 2]
-  [AddCommGroup V] [Module k V] [FiniteDimensional k V]
+variable {k V : Type*} [Field k] [AddCommGroup V] [Module k V]
 
 /-- A candidate presentation is a symplectic basis for the polar form of `q`, ordered as
 `(e_i, f_i)`. -/
-def IsSymplecticPresentation (q : QuadraticForm k V) (p : SymplecticPresentation V) : Prop :=
+def IsSymplecticPresentation [CharP k 2]
+    (q : QuadraticForm k V) (p : SymplecticPresentation V) : Prop :=
   ∃ b : Basis (Fin p.1 ⊕ Fin p.1) k V,
     (fun i => b i) = p.2 ∧
       (∀ i j, q.polarBilin (p.2 (Sum.inl i)) (p.2 (Sum.inl j)) = 0) ∧
@@ -63,7 +63,8 @@ def IsSymplecticPresentation (q : QuadraticForm k V) (p : SymplecticPresentation
 /-- A chosen candidate symplectic presentation. Once the source's existence result is supplied,
 `Classical.epsilon_spec` shows that this candidate satisfies `IsSymplecticPresentation`.
 No such result, nor basis independence, is part of this definition module. -/
-noncomputable def chosenSymplecticPresentation (q : QuadraticForm k V)
+noncomputable def chosenSymplecticPresentation [CharP k 2] [FiniteDimensional k V]
+    (q : QuadraticForm k V)
     (_hq : q.polarBilin.Nondegenerate) : SymplecticPresentation V := by
   letI : Nonempty (SymplecticPresentation V) :=
     ⟨⟨0, Sum.elim Fin.elim0 Fin.elim0⟩⟩
@@ -71,7 +72,8 @@ noncomputable def chosenSymplecticPresentation (q : QuadraticForm k V)
 
 /-- The source's characteristic-two Arf class: choose a symplectic presentation, form
 `∑ i, q(e_i)q(f_i)`, and pass to the Artin--Schreier quotient. -/
-noncomputable def arfClass (q : QuadraticForm k V) (hq : q.polarBilin.Nondegenerate) :
+noncomputable def arfClass [CharP k 2] [FiniteDimensional k V]
+    (q : QuadraticForm k V) (hq : q.polarBilin.Nondegenerate) :
     ArtinSchreierQuotient k :=
   let p := chosenSymplecticPresentation q hq
   QuotientAddGroup.mk' (artinSchreierHom k).range
