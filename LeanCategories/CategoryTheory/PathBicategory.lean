@@ -91,7 +91,9 @@ def comp (S : PosetPath Q x y) (T : PosetPath Q y z) : PosetPath Q x z := by
 end PosetPath
 
 /-- Kerodon's strict path bicategory `Path_(2)[Q]`. -/
-abbrev PathBicategory := ULift Q
+structure PathBicategory where
+  /-- The underlying element of the source partially ordered set. -/
+  as : Q
 
 namespace PathBicategory
 
@@ -101,30 +103,30 @@ local instance : DecidableEq Q := Classical.decEq Q
 
 @[reducible]
 instance : Quiver (PathBicategory Q) where
-  Hom x y := PosetPath Q x.down y.down
+  Hom x y := PosetPath Q x.as y.as
 
 instance (x y : PathBicategory Q) : PartialOrder (x ⟶ y) := by
-  change PartialOrder (PosetPath Q x.down y.down)
+  change PartialOrder (PosetPath Q x.as y.as)
   infer_instance
 
 @[reducible]
 instance : CategoryStruct (PathBicategory Q) where
-  id x := PosetPath.identity x.down
+  id x := PosetPath.identity x.as
   comp S T := PosetPath.comp S T
 
 instance posetPathHomCategory (x y : PathBicategory Q) : SmallCategory (x ⟶ y) := by
-  change SmallCategory (PosetPath Q x.down y.down)
+  change SmallCategory (PosetPath Q x.as y.as)
   infer_instance
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : Bicategory.{u, u} (PathBicategory Q) where
   homCategory := fun x y ↦ posetPathHomCategory Q x y
-  whiskerLeft S η := homOfLE <| by
+  whiskerLeft {_ _ _} S {_ _} η := homOfLE <| by
     intro q hq
     simp only [CategoryStruct.comp, PosetPath.comp, Finset.mem_union] at hq ⊢
     exact hq.elim Or.inl (fun h ↦ Or.inr (η.le h))
-  whiskerRight η T := homOfLE <| by
+  whiskerRight {_ _ _} {_ _} η T := homOfLE <| by
     intro q hq
     simp only [CategoryStruct.comp, PosetPath.comp, Finset.mem_union] at hq ⊢
     exact hq.elim (fun h ↦ Or.inl (η.le h)) Or.inr
@@ -163,25 +165,25 @@ set_option backward.isDefEq.respectTransparency false in
 instance : Bicategory.Strict (PathBicategory Q) where
   id_comp := by
     intro x y S
-    let S' : PosetPath Q x.down y.down := S
-    change PosetPath.comp (PosetPath.identity x.down) S' = S'
+    let S' : PosetPath Q x.as y.as := S
+    change PosetPath.comp (PosetPath.identity x.as) S' = S'
     apply PosetPath.ext
     apply PartialOrder.NonemptyFiniteChains.ext
     change insert _ ∅ ∪ S.chain.finset = S.chain.finset
     rw [Finset.insert_union, Finset.empty_union, Finset.insert_eq_of_mem S.source_mem]
   comp_id := by
     intro x y S
-    let S' : PosetPath Q x.down y.down := S
-    change PosetPath.comp S' (PosetPath.identity y.down) = S'
+    let S' : PosetPath Q x.as y.as := S
+    change PosetPath.comp S' (PosetPath.identity y.as) = S'
     apply PosetPath.ext
     apply PartialOrder.NonemptyFiniteChains.ext
     change S.chain.finset ∪ insert _ ∅ = S.chain.finset
     rw [Finset.union_insert, Finset.union_empty, Finset.insert_eq_of_mem S.target_mem]
   assoc := by
     intro w x y z R S T
-    let R' : PosetPath Q w.down x.down := R
-    let S' : PosetPath Q x.down y.down := S
-    let T' : PosetPath Q y.down z.down := T
+    let R' : PosetPath Q w.as x.as := R
+    let S' : PosetPath Q x.as y.as := S
+    let T' : PosetPath Q y.as z.as := T
     change PosetPath.comp (PosetPath.comp R' S') T' =
       PosetPath.comp R' (PosetPath.comp S' T')
     apply PosetPath.ext
