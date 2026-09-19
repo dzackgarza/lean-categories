@@ -102,8 +102,9 @@ Within a sweep, source dependencies and traversal order come from the existing
 [source manifest](corpus/foundational-source-corpus.md); unit IDs and
 their mathematical prerequisites come from the complete source catalogues.
 Use `(sweep, source-unit ID)` to distinguish a unit's successive obligations.
-Only an absolutely indispensable proof needed to formalize the exact definition may
-be a Sweep-III prerequisite; other theorem/result units remain Sweep IV.
+No proof or theorem/result unit may be a Sweep-III prerequisite. If a chosen Lean API
+appears to require one, use a source-faithful data-level representation or a located reference
+definition that separates the data from the proposition. All result clauses remain Sweep IV.
 Legacy catalogues are references, not another execution branch.
 
 Preserve task identities and full obligations when recording dependencies.
@@ -124,7 +125,7 @@ ready units. After a unit completes, immediately select the next ready unit here
 
 ### Scope and acceptance
 
-Realize every admitted definitional clause, preserving its source inputs and generality. Reuse the mapped declaration, import the mapped package, port the located implementation, or transcribe the located source construction. A theorem enters only when the exact definition cannot otherwise be formalized; name the required constructor field or quotient descent and the located proof before assigning it. Classification, comparison, independence and other results about an already declared object remain Sweep IV.
+Realize every admitted definitional clause, preserving its source inputs and generality. Reuse the mapped declaration, import the mapped package, port the located implementation, or transcribe the located source construction. **No theorem enters Sweep III.** If an API asks for a proof-valued constructor argument, quotient descent proof, law, identity, well-definedness result, or similar proposition, that API route is wrong for this sweep; represent the source-defined data without proving the result. Classification, comparison, independence and every other result about an already declared object remain Sweep IV.
 
 `corpus/` remains the canonical source, mapping and completion record. `FOUNDATIONAL_DEFINITIONS.tsv` is a derived work selector, not proof that every `port` row lacks code: FC01–FC04 have closed whole-source definition boxes and must consume their existing owners before any new implementation. Existing Lean files alone likewise do not prove acceptance. Preserve the causal route when adding `[realized]`.
 
@@ -176,7 +177,7 @@ Each completed declaration is banked with explicit paths and source evidence. In
 
 
 - Ready lane: small source-faithful declarations and pinned reference ports. Give lower-tier workers a coherent source/API batch and the exact mapped paths. Consume existing searches; do not commission discovery reports.
-- Kernel lane: one missing mathematical constructor per assignment, with dependent source IDs and an exact output type. Locate or transcribe existing mathematics. If no located implementation/argument supports the next step, record that exact unresolved edge and keep the ready lane moving.
+- Kernel lane: one missing mathematical constructor per assignment, with dependent source IDs and an exact output type. Locate or transcribe the source/reference definition. This lane still writes definitions only; it does not prove laws or supporting results. If the proposed representation requires theorem work, change the representation and keep the ready lane moving.
 - Integration lane: one Lean process for the entire shared host/repository. Transfer that slot directly between workers. Source drafting and planner work continue while compilation runs. Workers own focused validation and explicit-path commits; the coordinator consumes their evidence and checks the changed mathematical boundary once.
 
 ## Begin each continuation here

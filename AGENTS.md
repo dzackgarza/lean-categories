@@ -43,10 +43,13 @@ plans, including plans that describe their input mappings as “verified.”
    establishes the obligation independently.
 4. In Definitions and Theorems, implement the actual obligation at its mathematical
    owner. Check the meaning of project definitions used as premises. In the Definitions
-   sweep, transcribe only the source's definitions and constructions. Proof work is allowed
-   only when absolutely required to formalize the source definition, under the
-   [construction boundary](#sweep-iii-construction-boundary). Reuse an existing formalization
-   first; a preferred Lean API does not itself justify additional proof work.
+   sweep, transcribe only the source's definitions and constructions. **There is no proof
+   work in Sweep III.** If a proposed Lean representation asks the worker to prove an
+   identity, law, descent statement, well-definedness theorem, existence/uniqueness claim,
+   universal property, or any other proposition in order to construct the value, that
+   representation is not an admissible Sweep-III route. Use the source's data-level
+   presentation or a located reference definition that keeps those results separate.
+   Reuse an existing formalization first.
    Repair a faulty owner and affected uses before
    extending that dependency chain. Continue independent mathematics while another worker
    owns the repair.
@@ -83,8 +86,7 @@ definitions pending against 3959 theorems.
 
 So within a source, the Definitions sweep finishes before Theorems work begins.
 Definitions contain no supporting-proof programme: the sweep writes declarations and
-constructions only, with the narrow necessity exception in the
-[construction boundary](#sweep-iii-construction-boundary). Properties and consequences of
+constructions only, with **no proof exception**. Properties and consequences of
 an already formalized definition belong to Sweep IV. Examples,
 counterexamples and witness constructions are theorem work and wait with the rest: a run of
 commits building one counterexample — a product that fails to be epi, a witness space, an
@@ -336,33 +338,29 @@ consumer-specific compensations. Unrelated work remains usable and can continue.
 
 Sweep III is transcription of definitions and constructions, not a proof programme. It
 records the source's data, parameters, constructors, predicates, notation, maps, and other
-definitional content at the correct owner. A proof is in scope only when it is absolutely
-required to formalize that exact source definition.
-
-Before doing proof work, identify the source-defined input and output and the precise fact
-without which that definition cannot be formalized. First seek an existing formalization,
-a packaged construction, or a simpler source-faithful representation. A preferred API,
-later consumer, convenient lemma, or adjacent textbook theorem does not establish necessity.
-If a proof is unavoidable, reuse or port the smallest required part of an existing
-formalization, or transcribe a located source argument. Do not invent an argument or expand
-the exception into a background theorem programme.
+definitional content at the correct owner. **No proof is in scope.** Definitions specify
+data; they do not establish results about that data. If the first attempted Lean API would
+force proof work, change the representation rather than turning that proof into a prerequisite.
+Use the source's data-level definition, or a located reference implementation whose interface
+separates the data from the later propositions.
 
 Defining a predicate or a structure with a law field does not require proving that law for
 an instance. For example, stating the definition of a complex requires no square-zero
-theorem. Constructing a particular complex may require square-zero evidence if that complex
-is itself the requested source construction and no reused owner already supplies it.
+theorem. Constructing a particular object by a bundled API that demands square-zero evidence
+does not make that evidence definition work; use a source-faithful data representation and
+leave the assertion that the data satisfy square-zero to Sweep IV.
 Recording formulas does not require proving their later properties; conversely, a data-only
-record cannot discharge a source obligation that actually asks for the resulting object.
+record must contain all data that the source definition specifies.
 
 Normal forms, identities, functoriality, existence/uniqueness, exactness, centrality,
-square-zero, universality, comparison isomorphisms, and examples remain Sweep-IV work unless
-the exact fact passes that necessity test. Importing a reference file does not make all its
-theorems part of the current task. Extract only the construction and its necessary support.
+square-zero, universality, comparison isomorphisms, well-definedness results, descent results,
+and examples remain Sweep-IV work without exception. Importing a reference file does not make
+its theorems part of the current task. Extract only the definitional data/construction.
 
 Mixed source units are split by grammatical/mathematical role. Only the definitional clause
-is realized in Sweep III; proposition/result clauses remain for Sweep IV except for the
-minimum support absolutely required by that definition. Record any such prerequisite at
-the affected definition. It cannot block independent definitions.
+is realized in Sweep III; every proposition/result clause remains for Sweep IV. A theorem
+cannot become a Sweep-III prerequisite merely because a chosen Lean encoding bundles it into
+the constructor.
 
 ### Judge progress by what later mathematics can safely use
 
