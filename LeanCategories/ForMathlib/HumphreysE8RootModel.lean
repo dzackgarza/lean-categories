@@ -10,6 +10,8 @@ public import Mathlib.LinearAlgebra.Span.Defs
 
 @[expose] public section
 
+noncomputable section
+
 /-!
 # Humphreys' Euclidean models for the roots of type E6, E7, and E8
 

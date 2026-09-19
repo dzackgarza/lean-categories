@@ -51,7 +51,7 @@ structure DeltaComplex (X : Type u) [TopologicalSpace X] where
   Simplex : ℕ → Type v
   characteristic : ∀ n, Simplex n → C(stdSimplex ℝ (Fin (n + 1)), X)
   interior_partition : ∀ x : X,
-    ∃! p : Σ n : ℕ, Σ s : Simplex n,
+    ∃! p : Σ n : ℕ, Σ _s : Simplex n,
       {y : stdSimplex ℝ (Fin (n + 1)) // IsStdSimplexInterior y},
       characteristic p.1 p.2.1 p.2.2 = x
   face : ∀ (n : ℕ) (s : Simplex (n + 1)) (i : Fin (n + 2)),

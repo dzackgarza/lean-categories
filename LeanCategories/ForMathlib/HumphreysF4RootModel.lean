@@ -9,6 +9,8 @@ public import Mathlib.Data.Real.Basic
 
 @[expose] public section
 
+noncomputable section
+
 /-!
 # Humphreys' Euclidean model for the roots of type F4
 
