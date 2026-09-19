@@ -37,8 +37,10 @@ def RealizesQuadraticTorsionForm
     (q : NonsingularFiniteTorsionQuadModuleCat ℤ (DoubleFractionValueQuotient ℤ))
     (L : FiniteProjectiveLatticeCat ℤ ℤ) : Prop := by
   letI : Module.Finite ℤ L.obj.obj.carrier := L.property
+  let qFinite : FiniteTorsionQuadModuleCat ℤ (DoubleFractionValueQuotient ℤ) :=
+    ⟨q.obj, ⟨q.property.1, q.property.2.1⟩⟩
   exact ∃ (hL : IsFractionFieldPerfect ℤ L.obj) (hEven : IsEven L.obj),
-    Nonempty (evenDiscriminantQuadraticFormModuleInt L.obj hL hEven ≅ q)
+    Nonempty (evenDiscriminantQuadraticFormModuleInt L.obj hL hEven ≅ qFinite)
 
 /-- A classically chosen finite projective integral lattice intended to realize `q`.
 
