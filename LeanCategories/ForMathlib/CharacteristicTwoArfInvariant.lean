@@ -51,7 +51,7 @@ variable {k V : Type*} [Field k] [AddCommGroup V] [Module k V]
 `(e_i, f_i)`. -/
 def IsSymplecticPresentation [CharP k 2]
     (q : QuadraticForm k V) (p : SymplecticPresentation V) : Prop :=
-  ∃ b : Basis (Fin p.1 ⊕ Fin p.1) k V,
+  ∃ b : Module.Basis (Fin p.1 ⊕ Fin p.1) k V,
     (fun i => b i) = p.2 ∧
       (∀ i j, q.polarBilin (p.2 (Sum.inl i)) (p.2 (Sum.inl j)) = 0) ∧
       (∀ i j, q.polarBilin (p.2 (Sum.inr i)) (p.2 (Sum.inr j)) = 0) ∧
