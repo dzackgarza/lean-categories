@@ -44,6 +44,8 @@ structure IsFormalGroupEndomorphism (F : FormalGroup O) (f : PowerSeries O) : Pr
 structure FormalModule (O : Type*) [CommRing O] where
   /-- The underlying one-dimensional formal group law. -/
   formalGroup : FormalGroup O
+  /-- Neukirch's standing formal-group definition includes commutativity. -/
+  formalGroup_comm : formalGroup.IsComm
   /-- The scalar endomorphism `[a]_F(X)`. -/
   bracket : O → PowerSeries O
   /-- Every bracket series is an endomorphism of the underlying formal group. -/
