@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 # Algebraic de Rham complex
 
 Weibel, *An Introduction to Homological Algebra* (1994), Definition 9.8.9,
-pp. 344--353 (FC05-C09-U124).
+p. 349 (FC05-C09-U124).
 
 For a commutative `k`-algebra `R`, the algebraic de Rham differential is
 characterized on generators by

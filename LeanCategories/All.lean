@@ -75,6 +75,8 @@ public import LeanCategories.ForMathlib.FiltrationTopology
 public import LeanCategories.ForMathlib.FiltrationGraded
 public import LeanCategories.ForMathlib.GaussianPrimeIdeals
 public import LeanCategories.ForMathlib.MvPolynomialIdealOfVars
+public import LeanCategories.ForMathlib.QuadraticMapHyperbolicPlane
+public import LeanCategories.ForMathlib.QuadraticMapRepresentation
 public import LeanCategories.ForMathlib.QuadraticReflection
 public import LeanCategories.ForMathlib.QuotientAnnihilator
 public import LeanCategories.ForMathlib.QuotientManifold
@@ -112,6 +114,7 @@ public import LeanCategories.Topology.UniformMetric
 public import LeanCategories.Topology.WindingNumber
 public import LeanCategories.Schemes
 public import LeanCategories.Homological
+public import LeanCategories.Homological.AlgebraicDeRham
 public import LeanCategories.Homological.DeltaFunctor
 public import LeanCategories.Homological.DeltaFunctorMorphisms
 public import LeanCategories.Homological.SatelliteFunctors
