@@ -29,10 +29,8 @@ universe u
 
 variable {Q : Type u} [PartialOrder Q]
 
-namespace PosetPath
-
 /-- The path associated to an order relation: its vertices are its two endpoints. -/
-private noncomputable def ofLE {x y : Q} (h : x ≤ y) : PosetPath Q x y := by
+private noncomputable def posetPathOfLE {x y : Q} (h : x ≤ y) : PosetPath Q x y := by
   classical
   exact {
     chain :=
@@ -54,8 +52,6 @@ private noncomputable def ofLE {x y : Q} (h : x ≤ y) : PosetPath Q x y := by
       simp only [Finset.mem_insert, Finset.mem_singleton] at hz
       exact hz.elim (fun hzx ↦ hzx ▸ h) (fun hzy ↦ hzy ▸ le_rfl) }
 
-end PosetPath
-
 /-- Kerodon's canonical strictly unitary lax functor
 `T_Q : Q → Path_(2)[Q]`.
 
@@ -64,21 +60,20 @@ def posetPathLaxFunctor :
     StrictlyUnitaryLaxFunctor (LocallyDiscrete Q) (PathBicategory Q) :=
   StrictlyUnitaryLaxFunctor.mk'
     { obj := fun x ↦ ⟨x.as⟩
-      map := fun f ↦ PosetPath.ofLE f.as.le
+      map := fun f ↦ posetPathOfLE f.as.le
       map_id := by
         intro x
         apply PosetPath.ext
         apply PartialOrder.NonemptyFiniteChains.ext
-        simp [PosetPath.ofLE, PosetPath.identity]
-      map₂ := fun η ↦ eqToHom (by
-        congr 1
-        exact LocallyDiscrete.eq_of_hom η)
+        simp [posetPathOfLE, PosetPath.identity]
+      map₂ := fun η ↦ eqToHom <|
+        congrArg (fun f ↦ posetPathOfLE f.as.le) (LocallyDiscrete.eq_of_hom η)
       map₂_id := by intros; apply Subsingleton.elim
       map₂_comp := by intros; apply Subsingleton.elim
       mapComp := fun f g ↦ homOfLE <| by
         intro q hq
-        simp only [PosetPath.ofLE, Finset.mem_insert, Finset.mem_singleton] at hq
-        simp only [CategoryStruct.comp, PosetPath.comp, PosetPath.ofLE,
+        simp only [posetPathOfLE, Finset.mem_insert, Finset.mem_singleton] at hq
+        simp only [CategoryStruct.comp, PosetPath.comp, posetPathOfLE,
           Finset.mem_union, Finset.mem_insert, Finset.mem_singleton]
         rcases hq with rfl | rfl
         · exact Or.inl (Or.inl rfl)
