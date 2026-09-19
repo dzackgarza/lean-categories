@@ -39,6 +39,15 @@ namespace LeanCategories.Homological
 
 open CategoryTheory Limits
 
+/-- An object `X` is right-acyclic for an additive functor `F` when every
+positive right-derived functor vanishes on `X`.
+
+Hartshorne, *Algebraic Geometry*, III.1, p. 205 (FC06-C03-U015). -/
+def IsRightAcyclic {C D : Type*} [Category C] [Category D] [Abelian C]
+    [HasInjectiveResolutions C] [Abelian D]
+    (F : C ⥤ D) [F.Additive] (X : C) : Prop :=
+  ∀ i : ℕ, 0 < i → IsZero ((F.rightDerived i).obj X)
+
 /-!
 ## Cohomological dimension of a functor
 -/
