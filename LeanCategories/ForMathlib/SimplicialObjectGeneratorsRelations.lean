@@ -54,6 +54,7 @@ variable (X : ℕ → C)
       σ i.castSucc ≫ σ j = σ j.succ ≫ σ i)
 
 /-- Making a cosimplicial object out of generators and relations. -/
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def ofGeneratorsAndRelations: CosimplicialObject C :=
   SimplexCategoryGenRel.equivSimplexCategory.inverse ⋙ (
     CategoryTheory.Quotient.lift FreeSimplexQuiver.homRel
@@ -133,6 +134,7 @@ variable (X Y : CosimplicialObject C)
 open SimplexCategoryGenRel in
 /-- Construct a natural transformation between cosimplicial objects out of an application that
 commutes with cofaces and codegeneracies. -/
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def mkNatTrans: X ⟶ Y :=
     letI : equivSimplexCategory.functor ⋙ X ⟶ equivSimplexCategory.functor ⋙ Y :=
       Quotient.natTransLift _ {
@@ -154,9 +156,10 @@ noncomputable def mkNatTrans: X ⟶ Y :=
               rw [Category.assoc]
               congr 1
               exact hσ j }
-    (Functor.rightUnitor _).inv ≫ (whiskerRight equivSimplexCategory.counitInv X) ≫
-      (Functor.associator _ _ _).hom ≫ (whiskerLeft equivSimplexCategory.inverse this) ≫
-        (Functor.associator _ _ _).inv ≫ (whiskerRight equivSimplexCategory.counit Y) ≫
+    (Functor.rightUnitor _).inv ≫ (Functor.whiskerRight equivSimplexCategory.counitInv X) ≫
+      (Functor.associator _ _ _).hom ≫
+        (Functor.whiskerLeft equivSimplexCategory.inverse this) ≫
+        (Functor.associator _ _ _).inv ≫ (Functor.whiskerRight equivSimplexCategory.counit Y) ≫
           (Functor.rightUnitor _).hom
 
 variable {hδ} {hσ}
@@ -426,4 +429,3 @@ end MkNatIso
 end SimplicialObject
 
 end CategoryTheory
-
