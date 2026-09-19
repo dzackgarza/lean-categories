@@ -38,6 +38,14 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Mathematical issues
 
+### FC11-C05-U052 mapping replaced the source presentation by an unbridged characterization
+
+- **Need:** Definition 5.4.1 requires a central algebra with a quadratic-extension symbol presentation: in characteristic different from two, `D = K + K j`, `K = k[i]`, `i²,j² ∈ kˣ`, and `jz = z* j`.
+- **Evidence:** Peters--Sterk, printed pp.136--137/PDF pp.142--143, gives these clauses explicitly and then derives `ij=-ji` and the notation `(a,b)_k`. The former canonical mapping instead cited FLT commit `81d8bee0f708ac41cb975da76ed3c43ad99fae72`, whose `FLT/Mathlib/Algebra/IsQuaternionAlgebra.lean::IsQuaternionAlgebra` has only `IsSimpleRing D`, `Algebra.IsCentral k D`, and `Module.rank k D = 4`.
+- **Gap and impact:** central-simple-rank-four is a characterization of a supplied algebra, while the source definition includes the generators-and-relations presentation consumed by U053--U057. Crediting the FLT class without a checked structure theorem reversed that dependency and left those consumers without generators. Mathlib's concrete `QuaternionAlgebra k a 0 b`, `QuaternionAlgebra.Basis.self`, and `basisOneIJK` directly supply the source presentation for existential nonzero parameters, so no classification theorem belongs in Sweep III.
+- **Coverage:** **Searched:** the complete pinned FLT files with quaternion, central, or simple in their paths; pinned Mathlib's `Quaternion.lean` and `QuaternionBasis.lean`; the local project. **Found:** the FLT characterization and Mathlib's complete concrete symbol presentation, but no theorem from the former to the latter. **Conclusion:** FLT is partial characterization evidence only; the source predicate must use the native existential presentation. **Confidence:** high for the pinned revisions and local tree. **Gaps:** this is not a claim that no such classification theorem exists in every external formalization.
+- **Repair link:** `FC11-C05-U052`; the canonical mapping now records the native presentation route, and `LeanCategories/ForMathlib/QuaternionAlgebraPresentation.lean` exposes centrality and the existential symbol presentation without proving the classification theorem.
+
 ### FC09-C04-U012 conflates topological-space and topological-group direct limits
 
 - **Need:** preserve Neukirch's actual directed-limit quotient and group law without asserting that the final topology from the preceding topological-space construction automatically makes that group a topological group.
