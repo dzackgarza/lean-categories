@@ -33,7 +33,7 @@ sections. This is the standard homogeneous form of being locally generated as an
 
 @[expose] public section
 
-open AlgebraicGeometry CategoryTheory MonoidalCategory
+open AlgebraicGeometry CategoryTheory MonoidalCategory TopologicalSpace
 
 namespace LeanCategories.AlgebraicGeometry
 
@@ -62,7 +62,7 @@ component. -/
 structure GradedAlgebraSheaf where
   algebra : CommMon (GradedObject ℕ (GradedAlgebraPresheafModules X))
   isSheaf (d : ℕ) :
-    Presheaf.IsSheaf (TopologicalSpace.Opens.grothendieckTopology X) (algebra.X d).presheaf
+    Presheaf.IsSheaf (Opens.grothendieckTopology X) (algebra.X d).presheaf
 
 namespace GradedAlgebraSheaf
 
@@ -80,8 +80,8 @@ abbrev Sections (S : GradedAlgebraSheaf X) (d : ℕ) (U : X.Opens) :=
 /-- Multiplication of homogeneous sections. -/
 noncomputable def mulSections (S : GradedAlgebraSheaf X) {i j : ℕ} (U : X.Opens)
     (x : S.Sections i U) (y : S.Sections j U) : S.Sections (i + j) U :=
-  (((GradedObject.Monoidal.ιTensorObj S.algebra.X S.algebra.X i j (i + j) rfl ≫
-      MonObj.mul) (i + j)).app (.op U)) (x ⊗ₜ y)
+  ((GradedObject.Monoidal.ιTensorObj S.algebra.X S.algebra.X i j (i + j) rfl ≫
+      MonObj.mul (X := S.algebra.X) (i + j)).app (.op U)) (x ⊗ₜ y)
 
 /-- The canonical `O_X`-module map from the structure sheaf to the degree-zero
 component, obtained from the unit of the graded algebra. -/
@@ -111,7 +111,8 @@ For degree zero this is the unit transported through the specified identificatio
 `S_0 ≅ O_X`; the successor step uses the graded multiplication. -/
 noncomputable def degreeOneProduct (S : RelativeProjAlgebraData X) (U : X.Opens) :
     ∀ d : ℕ, (Fin d → S.algebra.Sections 1 U) → S.algebra.Sections d U
-  | 0, _ => S.algebra.degreeZeroHom.val.app (.op U) 1
+  | 0, _ => S.algebra.degreeZeroHom.val.app (.op U)
+      (show X.presheaf.obj (.op U) from 1)
   | d + 1, x =>
       S.algebra.mulSections U
         (S.degreeOneProduct U d (fun i => x i.castSucc))
