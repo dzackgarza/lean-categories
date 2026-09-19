@@ -38,8 +38,6 @@ namespace CategoryTheory
 
 open CategoryTheory SimplexCategory
 
-attribute [local reducible] CosimplicialObject
-
 namespace CosimplicialObject
 
 variable {C : Type*} [Category C]
@@ -138,7 +136,7 @@ end MkCosimplicialObject
 
 section MkNatTrans
 
-variable (X Y : CosimplicialObject C)
+variable (X Y : SimplexCategory ⥤ C)
   (app : ∀ (Δ : SimplexCategory), X.obj Δ ⟶ Y.obj Δ)
   (hδ : ∀ {n : ℕ} (i : Fin (n + 2)), X.δ i ≫ app (.mk (n + 1)) = app (.mk n) ≫ Y.δ i)
   (hσ : ∀ {n : ℕ} (i : Fin (n + 1)), X.σ i ≫ app (.mk n) = app (.mk (n + 1)) ≫ Y.σ i)
@@ -208,7 +206,7 @@ lemma mkNatTrans_app (Δ : SimplexCategory) : (mkNatTrans X Y app hδ hσ).app �
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.types false in
-lemma mkNatTrans_comp X Y (Z : CosimplicialObject C) app
+lemma mkNatTrans_comp X Y (Z : SimplexCategory ⥤ C) app
     (app' : ∀ (Δ : SimplexCategory), Y.obj Δ ⟶ Z.obj Δ)
     {hδ} {hσ}
     {hδ' : ∀ {n : ℕ} (i : Fin (n + 2)), Y.δ i ≫ app' (.mk (n + 1)) = app' (.mk n) ≫ Z.δ i}
@@ -233,7 +231,7 @@ end MkNatTrans
 
 section MkNatIso
 
-variable (X Y : CosimplicialObject C)
+variable (X Y : SimplexCategory ⥤ C)
   (app : ∀ (Δ : SimplexCategory), X.obj Δ ≅ Y.obj Δ)
   (hδ : ∀ {n : ℕ} (i : Fin (n + 2)), X.δ i ≫ (app (.mk (n + 1))).hom = (app (.mk n)).hom ≫ Y.δ i)
   (hσ : ∀ {n : ℕ} (i : Fin (n + 1)), X.σ i ≫ (app (.mk n)).hom = (app (.mk (n + 1))).hom ≫ Y.σ i)
