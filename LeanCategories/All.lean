@@ -9,6 +9,10 @@ public import LeanCategories.AlgebraicGeometry.RelativeProjHypothesis
 public import LeanCategories.ForMathlib.AbstractJordanDecomposition
 public import LeanCategories.ForMathlib.HumphreysE8RootModel
 public import LeanCategories.ForMathlib.HumphreysF4RootModel
+public import LeanCategories.ForMathlib.HumphreysH4RootModel
+public import LeanCategories.ForMathlib.HumphreysLieAlgebraRank
+public import LeanCategories.ForMathlib.FormalModule
+public import LeanCategories.Lattices.Valued.TorsionIndex
 public import LeanCategories.CategoryTheory.WalkingArrow
 public import LeanCategories.CategoryTheory.EssentiallyDiscrete
 public import LeanCategories.CategoryTheory.FiniteDimensionalCoordinates
