@@ -58,7 +58,7 @@ structure DeltaComplex (X : Type u) [TopologicalSpace X] where
     ∃ t : Simplex n,
       (characteristic (n + 1) s).comp (stdSimplexFaceInclusion i) = characteristic n t
   topology_eq :
-    (⋁ n : ℕ, ⋁ s : Simplex n,
+    (⨆ n : ℕ, ⨆ s : Simplex n,
       TopologicalSpace.coinduced (characteristic n s) inferInstance) =
       inferInstanceAs (TopologicalSpace X)
 

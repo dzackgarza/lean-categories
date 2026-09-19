@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Orthonormal
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.LinearAlgebra.Dimension.Constructions
 public import Mathlib.Topology.Constructions
 
@@ -22,11 +23,15 @@ noncomputable section
 
 namespace LeanCategories.Topology
 
-open Set Submodule
+open Set Submodule Module
 
 /-- The real Stiefel space `V_n(ℝ^k)`, represented by orthonormal `n`-frames in `ℝ^k`. -/
 def RealStiefel (n k : ℕ) :=
   {v : Fin n → EuclideanSpace ℝ (Fin k) // Orthonormal ℝ v}
+
+instance (n k : ℕ) : TopologicalSpace (RealStiefel n k) :=
+  inferInstanceAs (TopologicalSpace
+    {v : Fin n → EuclideanSpace ℝ (Fin k) // Orthonormal ℝ v})
 
 /-- The underlying set of the real Grassmann manifold: the `n`-dimensional linear subspaces
 of `ℝ^k`. Its topology is installed below from the Stiefel projection. -/
