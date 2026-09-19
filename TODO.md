@@ -279,9 +279,10 @@ v2 traverses:
 
 `FC17` is appended as the higher/homotopy-coherent category-theory branch. Its canonical
 Sweep-I population is the pinned stable-tag snapshot under `corpus/`; definitions are not
-allowed to bypass Sweep II merely because Kerodon is online. Its source-local Mapping and
-Definitions nodes therefore follow `fc16-definitions` in the terminal definition programme.
-Corpus v3 traverses the v2 order above and then `FC17`.
+allowed to bypass Sweep II merely because Kerodon is online. After Milestone 1, its Definitions
+units join the same corpus-wide readiness frontier as every other source: actual construction
+prerequisites determine eligibility, and v3 source order breaks ties among equally ready units.
+Corpus v3 source traversal appends `FC17` to the v2 order above.
 
 Two further sources are admitted as **supplementary only**, not as corpus members: Folland,
 *Real Analysis: Modern Techniques and Their Applications*, and Conway, *A Course in Functional

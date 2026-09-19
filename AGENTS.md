@@ -101,8 +101,9 @@ There are only two substantive states before theorem work:
    `definition-mapping-convergence` (Milestone 1). It performs no work; it certifies that the set of
    definitions that still require ports or fresh authorship has been minimized to a fixed point.
 2. **State 2 — realize the minimized definitional work.** Only after Milestone 1 closes do the
-   source-order Definitions nodes run. They reuse direct owners, import packages, port references,
-   and author only the final audited residue. A final corpus-wide source-conformance pass feeds
+   Definitions nodes join the corpus-wide dependency-ready frontier, with source order breaking
+   ties. They reuse direct owners, import packages, port references, and author only the final
+   audited residue. A final corpus-wide source-conformance pass feeds
    `definition-realization-convergence` (Milestone 2). That gate likewise performs no work; it
    certifies that every definitional obligation is completely realized and source-faithful.
 
