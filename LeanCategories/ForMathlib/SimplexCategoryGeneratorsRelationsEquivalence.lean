@@ -15,6 +15,9 @@ an equivalence of categories. We introduce `equivSimplexCategory` as this equiva
 
 ## References:
 * [Kerodon Tag 04FW](https://kerodon.net/tag/04FW)
+* Robin Carlier, mathlib PR #25741, commit
+  `9534b44562a606e5a371284ccdf051f6cd47fdda`,
+  `Mathlib/AlgebraicTopology/SimplexCategory/GeneratorsRelations/Equivalence.lean`.
 
 -/
 namespace SimplexCategoryGenRel
@@ -227,6 +230,8 @@ theorem existsUnique_toSimplexCategory_map
   let epi₀ := strong_fac_f.toMonoFactorisation.e
   let mono₀ := strong_fac_f.toMonoFactorisation.m
   have fac : epi₀ ≫ mono₀ = f := strong_fac_f.fac
+  letI : Epi epi₀ := strong_fac_f.e_strong_epi.epi
+  letI : Mono mono₀ := strong_fac_f.m_mono
   have h_epi : z.len ≤ n := by
     simpa [epi₀, z, strong_fac_f] using SimplexCategory.len_le_of_epi epi₀
   obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_le h_epi
@@ -255,10 +260,6 @@ theorem existsUnique_toSimplexCategory_map
     simp [q₂, eqToHom_map]
   have hp₂' : toSimplexCategory.map (eqToHom p₂.symm) = eqToHom q₂.symm := by
     simp [q₂, eqToHom_map]
-  have hEpi₀ : Epi epi₀ := strong_fac_f.e_strong_epi.epi
-  have hMono₀ : Mono mono₀ := strong_fac_f.m_mono
-  letI : Epi epi₀ := hEpi₀
-  letI : Mono mono₀ := hMono₀
   haveI : Epi (eqToHom q₁.symm) := by infer_instance
   haveI : Mono (eqToHom q₂.symm) := by infer_instance
   have hEpi₁ : Epi epi₁ := by
@@ -325,9 +326,9 @@ theorem existsUnique_toSimplexCategory_map
     change Mono ((eqToHom im₂ ≫ mono₁) ≫ eqToHom q₂)
     infer_instance
   have he₄ : e₄ = epi₀ ≫ eqToHom im₂.symm := by
-    simp [e₄, epi₁, Category.assoc]
+    simp [e₄, epi₁, Category.assoc, eqToHom_trans_assoc]
   have hm₄ : m₄ = eqToHom im₂ ≫ mono₀ := by
-    simp [m₄, mono₁, Category.assoc]
+    simp [m₄, mono₁, Category.assoc, eqToHom_trans]
   have fac₄ : e₄ ≫ m₄ = f := by
     rw [he₄, hm₄]
     rw [Category.assoc]
@@ -353,14 +354,18 @@ theorem existsUnique_toSimplexCategory_map
     exact P_δ.comp_mem _ _
       (hPδEq eq_z₁.symm) (P_δ.comp_mem _ _ P_δ_m₂ (hPδEq p₂.symm))
   have hemap : toSimplexCategory.map e₂' = epi₁ := by
-    simp only [e₂', Functor.map_comp, eqToHom_map, Category.assoc, e₄, e₃] at eq2 eq4 ⊢
+    simp only [e₂', toSimplexCategory_obj_mk, SimplexCategory.mk_len,
+      Functor.map_comp, eqToHom_map, Category.assoc, eqToHom_trans,
+      eqToHom_refl, Category.comp_id, e₄, e₃, epi₁, epi₀, z] at eq2 eq4 ⊢
     rw [← heq_iff_eq] at eq2 eq4 ⊢
     simp only [heq_comp_eqToHom_iff, eqToHom_comp_heq_iff, comp_eqToHom_heq_iff,
       heq_eqToHom_comp_iff] at eq2 eq4 ⊢
     rw [HEq.comm] at eq4 ⊢
     exact HEq.trans eq4 eq2
   have hmmap : toSimplexCategory.map m₂' = mono₁ := by
-    simp only [m₂', Functor.map_comp, eqToHom_map, Category.assoc, m₄, m₃] at eq1 eq3 ⊢
+    simp only [m₂', toSimplexCategory_obj_mk, SimplexCategory.mk_len,
+      Functor.map_comp, eqToHom_map, Category.assoc, eqToHom_trans,
+      eqToHom_refl, Category.comp_id, m₄, m₃, mono₁, mono₀, z] at eq1 eq3 ⊢
     rw [← heq_iff_eq] at eq1 eq3 ⊢
     simp only [heq_comp_eqToHom_iff, eqToHom_comp_heq_iff, comp_eqToHom_heq_iff,
       heq_eqToHom_comp_iff] at eq1 eq3 ⊢
