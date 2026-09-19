@@ -44,4 +44,19 @@ def typeBSimpleRoot (l : ℕ) (i : Fin l) : Fin l → ℝ := by
   else
     exact standardCoordinate i
 
+def typeCRootSet (l : ℕ) : Set (Fin l → ℝ) :=
+  {x |
+    (∃ i : Fin l, ∃ s : Bool,
+      x = (2 * coordinateSign s) • standardCoordinate i) ∨
+    (∃ i j : Fin l, i ≠ j ∧ ∃ s t : Bool,
+      x = coordinateSign s • standardCoordinate i +
+        coordinateSign t • standardCoordinate j)}
+
+def typeCSimpleRoot (l : ℕ) (i : Fin l) : Fin l → ℝ := by
+  classical
+  if h : i.1 + 1 < l then
+    exact standardCoordinate i - standardCoordinate ⟨i.1 + 1, h⟩
+  else
+    exact (2 : ℝ) • standardCoordinate i
+
 end LeanCategories.Algebra
