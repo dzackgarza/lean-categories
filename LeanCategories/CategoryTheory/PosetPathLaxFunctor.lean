@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.CategoryTheory.PathBicategory
 public import Mathlib.CategoryTheory.Bicategory.Functor.StrictlyUnitary
+public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 
 /-!
 # The canonical lax functor to the path bicategory
@@ -31,8 +32,10 @@ variable {Q : Type u} [PartialOrder Q]
 namespace PosetPath
 
 /-- The path associated to an order relation: its vertices are its two endpoints. -/
-private def ofLE {x y : Q} (h : x ≤ y) : PosetPath Q x y where
-  chain :=
+private noncomputable def ofLE {x y : Q} (h : x ≤ y) : PosetPath Q x y := by
+  classical
+  exact {
+    chain :=
     { finset := {x, y}
       comparable := by
         rintro ⟨a, ha⟩ ⟨b, hb⟩
@@ -42,14 +45,14 @@ private def ofLE {x y : Q} (h : x ≤ y) : PosetPath Q x y where
         · exact Or.inl h
         · exact Or.inr h
         · exact Or.inl le_rfl }
-  source_mem := by simp
-  target_mem := by simp
-  source_le z hz := by
-    simp only [Finset.mem_insert, Finset.mem_singleton] at hz
-    exact hz.elim (fun hzx ↦ hzx ▸ le_rfl) (fun hzy ↦ hzy ▸ h)
-  le_target z hz := by
-    simp only [Finset.mem_insert, Finset.mem_singleton] at hz
-    exact hz.elim (fun hzx ↦ hzx ▸ h) (fun hzy ↦ hzy ▸ le_rfl)
+    source_mem := by simp
+    target_mem := by simp
+    source_le z hz := by
+      simp only [Finset.mem_insert, Finset.mem_singleton] at hz
+      exact hz.elim (fun hzx ↦ hzx ▸ le_rfl) (fun hzy ↦ hzy ▸ h)
+    le_target z hz := by
+      simp only [Finset.mem_insert, Finset.mem_singleton] at hz
+      exact hz.elim (fun hzx ↦ hzx ▸ h) (fun hzy ↦ hzy ▸ le_rfl) }
 
 end PosetPath
 
