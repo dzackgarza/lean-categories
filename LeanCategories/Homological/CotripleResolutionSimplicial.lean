@@ -324,6 +324,7 @@ lemma augmentationCondition
     ∀ (i : SimplexCategory) (g₁ g₂ : .mk 0 ⟶ i),
       X.map g₁.op ≫ f = X.map g₂.op ≫ f := by
   intro i g₁ g₂
+  simp only [SimplicialObject.δ] at h
   let a := g₁.toOrderHom 0
   let b := g₂.toOrderHom 0
   rcases le_total a b with hab | hba
