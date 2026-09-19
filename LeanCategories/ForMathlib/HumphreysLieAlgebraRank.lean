@@ -26,8 +26,7 @@ noncomputable section
 
 namespace LeanCategories.LieAlgebra
 
-variable (K L : Type*) [Field K] [CharZero K] [IsAlgClosed K]
-  [LieRing L] [LieAlgebra K L] [FiniteDimensional K L]
+variable (K L : Type*) [Field K] [LieRing L] [LieAlgebra K L]
 
 /-- A classically selected Cartan subalgebra of `L` in the source's setting. -/
 def chosenCartanSubalgebra [CharZero K] [IsAlgClosed K] [FiniteDimensional K L] :
