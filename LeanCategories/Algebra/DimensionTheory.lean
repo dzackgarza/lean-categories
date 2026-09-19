@@ -244,26 +244,12 @@ that finiteness result separate by using the total `toNat` projection. -/
 noncomputable def SamuelFunction (n : ℕ) : ℤ :=
   ((Module.length R (M ⧸ (I ^ (n + 1) • ⊤ : Submodule R M))).toNat : ℤ)
 
-/-- A proof-free data-level choice of the eventual Samuel polynomial.
-
-Sweep IV proves that, under Matsumura's semilocal Noetherian finite-module
-hypotheses and for an ideal of definition, the defining predicate is inhabited
-and hence this choice has the required eventual values. -/
-noncomputable def SamuelPolynomial : ℚ[X] :=
-  Classical.epsilon (IsEventuallyPolynomial (SamuelFunction I M))
-
-/-- The degree attached to the Samuel polynomial for a chosen ideal. -/
-noncomputable def SamuelPolynomialDegree : ℕ :=
-  (SamuelPolynomial I M).natDegree
-
-variable [Finite (MaximalSpectrum R)] [IsNoetherianRing R] [Module.Finite R M]
-
-/-- Matsumura's `d(M)`, represented without a proof-valued constructor by
-using the Jacobson radical as the canonical ideal of definition.
-
-Independence from the chosen ideal of definition is a Sweep-IV result. -/
-noncomputable def SamuelDimension : ℕ :=
-  SamuelPolynomialDegree (Ideal.jacobson (⊥ : Ideal R)) M
+/- The source next proves eventual polynomiality and independence of the
+resulting degree from the ideal of definition.  Those are Sweep-IV results.
+Accordingly Sweep III does not manufacture a polynomial or a canonical `d(M)`
+before those results are available.  The existing `CharacteristicPolynomial`
+interface above remains the downstream conditional constructor when such
+eventual-polynomial data are explicitly supplied. -/
 
 end MatsumuraSamuel
 
