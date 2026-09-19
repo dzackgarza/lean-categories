@@ -67,7 +67,7 @@ noncomputable def algebraicDeRhamComplex : CochainComplex (ModuleCat k) ℕ :=
       change (Algebra.DeRham.differential k R (n + 1)).comp
           (Algebra.DeRham.differential k R n) = 0
       ext x
-      exact Algebra.DeRham.differential_squared k R n x)
+      exact congrArg Subtype.val (Algebra.DeRham.differential_squared k R n x))
 
 @[simp]
 theorem algebraicDeRhamComplex_X (n : ℕ) :
@@ -93,9 +93,12 @@ noncomputable def algebraicDeRhamComplexMap {S : Type u} [CommRing S] [Algebra k
   CochainComplex.ofHom
     (fun n => ModuleCat.ofHom (Algebra.DeRham.map k f n))
     (fun n => by
+      simp only [algebraicDeRhamComplex, CochainComplex.of_d]
       apply ModuleCat.hom_ext
+      change (Algebra.DeRham.differential k S n).comp (Algebra.DeRham.map k f n) =
+        (Algebra.DeRham.map k f (n + 1)).comp (Algebra.DeRham.differential k R n)
       ext x
-      exact (Algebra.DeRham.map_differential k f n x).symm)
+      exact congrArg Subtype.val (Algebra.DeRham.map_differential k f n x).symm)
 
 /-- Algebraic de Rham cohomology `H^n_dR(R/k)=H^n(Ω^*_{R/k},d)` as a `k`-module. -/
 noncomputable def algebraicDeRhamCohomology (n : ℕ) : ModuleCat k :=

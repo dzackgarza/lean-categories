@@ -325,14 +325,14 @@ def extDeriv : ExtAlg R A →ₗ[R] ExtAlg R A :=
 @[simp] lemma extDeriv_algebraMap (a : A) :
     extDeriv R A (algebraMap A (ExtAlg R A) a) =
       ExteriorAlgebra.ι A (KaehlerDifferential.D R A a) := by
-  show Sq.snd (deRhamHom R A (algebraMap A (ExtAlg R A) a)) = _
+  change Sq.snd (deRhamHom R A (algebraMap A (ExtAlg R A) a)) = _
   rw [AlgHom.commutes]
   rfl
 
 lemma extDeriv_mul (x y : ExtAlg R A) :
     extDeriv R A (x * y) =
       involute x * extDeriv R A y + extDeriv R A x * y := by
-  show Sq.snd (deRhamHom R A (x * y)) = _
+  change Sq.snd (deRhamHom R A (x * y)) = _
   simp only [map_mul, Sq.snd_mul, fst_deRhamHom]
   rfl
 
@@ -555,7 +555,7 @@ def mapTower (p : ℕ) : Form R A p →ₗ[R] Form R B p where
   toFun x := ⟨extAlgMap R A B x, extAlgMap_mem R A B p x.2⟩
   map_add' x y := Subtype.ext (map_add (extAlgMap R A B) _ _)
   map_smul' r x := Subtype.ext (by
-    show extAlgMap R A B (r • (x : ExtAlg R A)) = r • extAlgMap R A B (x : ExtAlg R A)
+    change extAlgMap R A B (r • (x : ExtAlg R A)) = r • extAlgMap R A B (x : ExtAlg R A)
     rw [Algebra.smul_def, map_mul, extAlgMap_algebraMap_base, Algebra.smul_def])
 
 @[simp] lemma coe_mapTower (p : ℕ) (x : Form R A p) :
@@ -577,7 +577,7 @@ def map (f : A →ₐ[R] B) (p : ℕ) : Form R A p →ₗ[R] Form R B p :=
     map R f p (mk R A p a₀ v) = mk R B p (f a₀) fun i => f (v i) := by
   let _ := f.toAlgebra
   refine Subtype.ext ?_
-  show extAlgMap R A B (mk R A p a₀ v : ExtAlg R A) =
+  change extAlgMap R A B (mk R A p a₀ v : ExtAlg R A) =
     ((mk R B p (f a₀) fun i => f (v i) : Form R B p) : ExtAlg R B)
   rw [coe_mk, coe_mk, map_smul, extAlgMap_ιMulti]
   have hfam :
