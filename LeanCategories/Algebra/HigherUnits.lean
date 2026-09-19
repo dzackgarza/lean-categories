@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.RingTheory.Ideal.Operations
+public import Mathlib.Algebra.Order.Floor.Ring
 
 /-!
 # Higher-unit filtration data
@@ -33,5 +34,12 @@ def higherUnitSet (I : Ideal R) (n : ℕ) : Set Rˣ :=
 
 /-- Principal units are the first higher-unit layer. -/
 abbrev principalUnitSet (I : Ideal R) : Set Rˣ := higherUnitSet I 1
+
+/-- Serre's real-index higher-unit notation: use the least natural level at
+least `v`.  For the source's intended range `0 ≤ v`, this is exactly
+`U^v = U^⌈v⌉`.  The definition is total on `ℝ`, avoiding a proof-valued
+nonnegative-real index. -/
+def realHigherUnitSet (I : Ideal R) (v : ℝ) : Set Rˣ :=
+  higherUnitSet I ⌈v⌉₊
 
 end LeanCategories.Algebra
