@@ -7,11 +7,10 @@ lists immediate prerequisites; an entry `A` on node `B` means `A -> B`.
 These edges express the existing sweep order, not new completion claims.
 The linked whole-source ledger remains the sole source of sweep completion.
 
-For current unit-level dependencies, ready port batches, and collected constructor
-evidence, use the [continuous definition execution DAG](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/plans/PLAN-FOUNDATIONAL-CORPUS-DEFINITION-SWEEP/PLAN-FOUNDATIONAL-CORPUS-DEFINITION-SWEEP.md#continuous-definition-realization).
-Before dispatching work, apply the [definition execution traps](.agents/traps/wasteful-definition-execution-is-prohibited.md).
-The planner maintains this live graph while workers continue implementation; a
-completed unit immediately releases the next ready unit.
+This TODO is the sole executable DAG for the foundational programme, including the
+[active definition units](#active-definition-units). The [vault plan](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/plans/PLAN-FOUNDATIONAL-CORPUS-DEFINITION-SWEEP/PLAN-FOUNDATIONAL-CORPUS-DEFINITION-SWEEP.md)
+holds supporting source findings and rationale. Before dispatching work, apply the
+[definition execution traps](.agents/traps/wasteful-definition-execution-is-prohibited.md).
 
 | ID | Obligation | Needs |
 | --- | --- | --- |
@@ -103,7 +102,8 @@ Within a sweep, source dependencies and traversal order come from the existing
 [source manifest](corpus/foundational-source-corpus.md); unit IDs and
 their mathematical prerequisites come from the complete source catalogues.
 Use `(sweep, source-unit ID)` to distinguish a unit's successive obligations.
-Theorem/result units are never prerequisites for Sweep-III definition realization.
+Only an absolutely indispensable proof needed to formalize the exact definition may
+be a Sweep-III prerequisite; other theorem/result units remain Sweep IV.
 Legacy catalogues are references, not another execution branch.
 
 Preserve task identities and full obligations when recording dependencies.
@@ -112,6 +112,72 @@ select work only when its required inputs are delivered, retaining active claims
 Read [contribution policies](CONTRIBUTING.md) and record newly observed issues in
 [COMPLAINTS.md](COMPLAINTS.md), linking the affected unit rather than duplicating
 its worklist or completion state.
+
+## Active definition units
+
+This section refines the source-level nodes above and is the sole executable unit DAG.
+The planner maintains dependencies here; workers select ready nodes here. Vault notes
+supply source evidence and rationale, never another queue or scheduling graph.
+Every unit inherits the completed `definition-mapping-convergence` gate. The table's
+required inputs are mathematical dependencies; source order only breaks ties among
+ready units. After a unit completes, immediately select the next ready unit here.
+
+### Scope and acceptance
+
+Realize every admitted definitional clause, preserving its source inputs and generality. Reuse the mapped declaration, import the mapped package, port the located implementation, or transcribe the located source construction. A theorem enters only when the exact definition cannot otherwise be formalized; name the required constructor field or quotient descent and the located proof before assigning it. Classification, comparison, independence and other results about an already declared object remain Sweep IV.
+
+`corpus/` remains the canonical source, mapping and completion record. `FOUNDATIONAL_DEFINITIONS.tsv` is a derived work selector, not proof that every `port` row lacks code: FC01–FC04 have closed whole-source definition boxes and must consume their existing owners before any new implementation. Existing Lean files alone likewise do not prove acceptance. Preserve the causal route when adding `[realized]`.
+
+The full population is every row in the committed definition index. Every unresolved row belongs to its source workstream below, even when its detailed dependencies are not yet known. Unknown dependencies are explicitly unresolved, never an assertion that the unit is ready. No unit disappears because it was expensive or received a blocker note.
+
+
+### Immediate nodes
+
+| Node | Required input | Output and acceptance | Owner/continuation |
+| --- | --- | --- | --- |
+| `padic-realization-acceptance` | Existing `74aaf90` plus visibility fix `3cdada1`, FC11-C11-U005 | **Complete at `9eb4cbc`:** exact source-domain comparison, focused build and standard-axiom check; exported and accepted. No realization/uniqueness theorem claimed. | Continue to `small-reference-ports` |
+| `poset-path-lax-functor` | Accepted `PathBicategory`, Kerodon `00BC` / FC17-KER-U00387; banked green `51cb209` | **Complete at `9eb4cbc`:** source-exact identity objects, endpoint-chain arrows, reverse-inclusion composition constraint; exported after the combined axiom/import check. No nerve/universal-property theorem. | Continue to `small-reference-ports` |
+| `small-reference-ports` | Canonical positive-route rows and already existing local owners | FC01-C07-U057/U068 augmentation and C09-U051/U060/U061 Gröbner predicates were found in their mapped local owners; consume that evidence for acceptance. Then select the next dependency-ready mapped batch. Preserve mixed result clauses for IV. | `prior_art`; source-order tie-break among ready items |
+| `relative-proj-owner` | Accepted `RelativeProjHypothesis`, existing scheme/sheaf owners and issue #22 | The actual relative-Proj construction from its graded algebra; feeds FC06-C02-U231/U236 and FC12-C03-U018. Do not substitute a supplied scheme or universal-property record for the construction. | Kernel worker scoped to the existing owner |
+| `lower-ramification-owner` | Pinned TauCeti lower filtration and its import closure | Source-general lower ramification groups; only then FC09-C02-U133 Herbrand functions. | Arithmetic kernel worker |
+
+
+### Source workstreams and shared prerequisites
+
+Each workstream's exact membership is all current non-reuse rows with the specified source ID. Completed/accepted members are removed only by canonical realization evidence. The generated definition index enumerates every ID; do not maintain a copied population.
+
+| Workstream | Membership | Known prerequisite edges and execution rule |
+| --- | --- | --- |
+| Algebra and basic categories | FC01–FC04 | Consume mapped pre-existing owners before new code; closed source boxes conflict with unmarked port routes and need row-level acceptance reconciliation, not wholesale reimplementation. Augmentation and Gröbner predicates are first bounded batches. |
+| Homological constructions | FC05 | Simplex presentation → Hochschild/cyclic objects; native Hom complex → RHom. Spectrification telescope/loop compatibility → U105 → U116/U120. Preserve concurrent FC05 work and do not take its files without coordination. |
+| Commutative algebra | FC13 | Associated graded owner → I-adic specializations/comparison maps/normal flatness; Koszul complex → Koszul homology → dependent depth/deviation definitions. Port the cited owners, not their surrounding theorem libraries. |
+| Schemes and surfaces | FC06, FC12 | Principal divisor → linear equivalence/class group → complete linear systems; relative Proj → projective bundles and ruled surfaces; blowup → strict transform/exceptional curve/resolution-dependent surface constructions. Generic topology or a supplied surface does not close these nodes. |
+| Algebraic topology | FC07 | Existing singular homology/cohomology and mapped products feed degree, orientations and homology theories. Cross-prover references remain ports; group laws/descent belong only where required by the exact output. |
+| Smooth geometry | FC08 | Tangent-model comparison → coordinate derivations/covectors; exterior derivative → de Rham complex/cohomology; metric duality → musical maps/gradient/volume. Share each owner across all consumer rows. |
+| Arithmetic and local fields | FC09, FC10 | Mapped place/DVR/ramification stack → lower and upper ramification; field/group cohomology owners → local class-field constructions. Import the sole package route separately from authored residue. |
+| Forms and lattices | FC11 | Stable-isometry equivalence/congruence → Witt ring → localization; torsion filtration subquotients → graded torsion forms → halving/doubling; geometric intersection maps → linking/tau16; actual holomorphic geometry → K3/period/Milnor constructions. Detailed evidence is in the linked supporting plan. |
+| Lie and Coxeter theory | FC14, FC15 | Mapped Cartan/root/weight/UEA owners → representation definitions; local nilpotent exponential requires its actual map laws; generic Hecke operators → specialization; canonical basis and left preorder → left-cell quotient/action. Arbitrary operators/bases as new inputs do not discharge those rows. |
+| Algebraic groups | FC16 | Coordinate Hopf algebra/group scheme → tangent/adjoint/rational representation; diagonalizable owner → weights/tori; subgroup constructors → radicals/Borel/Cartan/Levi and root-kernel centralizers. Reuse the common owner across the batch. |
+| Higher categories | FC17 | Path bicategory → canonical lax functor; strictly unitary lax functors on ordinals → Duskin nerve simplicial assembly. Other rows retain their canonical mappings and explicit unsolved dependencies. |
+
+These are workstream edges, not a claim that every row-level dependency has been established. A worker refines only the next concrete batch; do not perform another corpus-wide dependency-discovery sweep before producing declarations.
+
+
+### Worker contract and stopping conditions
+
+Select the next ready node here while preserving active claims. A dispatch names source IDs, source clause, mapped owner/revision, allowed output, exact dependencies, and exclusive file ownership. It asks for declarations, not a survey. Use a lower-tier model for mechanical ports and reserve escalation for a specific unresolved mathematical interface.
+
+Read the exact clause and implementation once, record the comparison at the existing owner, and reuse it while unchanged. Run one focused build; if a local compiler diagnostic appears, make one evidence-based correction. Repeated failure on the same issue exits that unit to its named kernel edge; it does not authorize an expanding proof/search programme. A new line of investigation needs a concrete changed input or falsifiable question.
+
+Each completed declaration is banked with explicit paths and source evidence. Integration must preserve the shared index and foreign work. A validation failure is reported with the exact diagnostic and source obligation. Acceptance never follows solely from worker confidence, a file's existence, or a smaller residual count.
+
+
+### Execution lanes
+
+
+- Ready lane: small source-faithful declarations and pinned reference ports. Give lower-tier workers a coherent source/API batch and the exact mapped paths. Consume existing searches; do not commission discovery reports.
+- Kernel lane: one missing mathematical constructor per assignment, with dependent source IDs and an exact output type. Locate or transcribe existing mathematics. If no located implementation/argument supports the next step, record that exact unresolved edge and keep the ready lane moving.
+- Integration lane: one Lean process for the entire shared host/repository. Transfer that slot directly between workers. Source drafting and planner work continue while compilation runs. Workers own focused validation and explicit-path commits; the coordinator consumes their evidence and checks the changed mathematical boundary once.
 
 ## Begin each continuation here
 
@@ -184,7 +250,8 @@ The plan tree has three levels:
 
 To find plans:
 
-- Read [plan-dag.md](.agents/plans/plan-dag.md) for the full inventory and dependency edges.
+- Read [plan-dag.md](.agents/plans/plan-dag.md) for the plan inventory. For the foundational
+  programme, executable dependencies and next-unit selection belong to this TODO only.
 - List the features: `ls .agents/plans/features`.
 - Each plan file's frontmatter carries `status`, `dependsOn`, `parents`, and `successCriteria`.
   Status is one of `unstarted`, `in-progress`, or `complete`.
@@ -194,9 +261,11 @@ To find plans:
   agent-memory search --scope project "<plan or subsystem>"
   ```
 
-Progress belongs to two surfaces and no others: a plan's own `status`, and the whole-source
-[corpus status ledger](corpus/foundational-corpus-status.md) for the four sweeps
-below. Reference material — source catalogues, mapping records, the Lean source atlas — lives in
+The foundational programme is scheduled only by this TODO DAG. Definition acceptance
+is recorded in canonical mapping rows; whole-source sweep completion belongs to the
+[corpus status ledger](corpus/foundational-corpus-status.md). Vault plan metadata is
+organizational context and never selects work or overrides those records.
+Reference material — source catalogues, mapping records, the Lean source atlas — lives in
 the tracked `corpus/` directory. Changes to those records are ordinary repository changes and
 must be committed with the work they describe; `.agents/` is never their canonical owner.
 
