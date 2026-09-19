@@ -25,30 +25,34 @@ noncomputable section
 
 namespace LeanCategories.LieAlgebra
 
-variable (K L : Type*) [Field K] [CharZero K] [AddCommGroup L] [Module K L]
-  [LieRing L] [LieAlgebra K L] [FiniteDimensional K L] [LieAlgebra.IsSemisimple K L]
+variable (K L : Type*) [Field K] [AddCommGroup L] [Module K L]
+  [LieRing L] [LieAlgebra K L]
 
 /-- The source predicate characterizing the abstract Jordan parts of `x`.
 
 The first component is the ad-semisimple part and the second is the ad-nilpotent part. The
 equations say that they sum to `x` and commute in the Lie algebra; their adjoint endomorphisms
 therefore give the ordinary Jordan decomposition of `ad x`. -/
-def IsAbstractJordanPair (x : L) (parts : L × L) : Prop :=
+def IsAbstractJordanPair [CharZero K] [IsAlgClosed K] [FiniteDimensional K L]
+    [LieAlgebra.IsSemisimple K L] (x : L) (parts : L × L) : Prop :=
   x = parts.1 + parts.2 ∧
     ⁅parts.1, parts.2⁆ = 0 ∧
     (LieAlgebra.ad K L parts.1).IsSemisimple ∧
     IsNilpotent (LieAlgebra.ad K L parts.2)
 
 /-- Humphreys' abstract Jordan pair, selected from its intrinsic characterization. -/
-def abstractJordanPair (x : L) : L × L :=
+def abstractJordanPair [CharZero K] [IsAlgClosed K] [FiniteDimensional K L]
+    [LieAlgebra.IsSemisimple K L] (x : L) : L × L :=
   Classical.epsilon (IsAbstractJordanPair K L x)
 
 /-- The abstract ad-semisimple part of `x`. -/
-def abstractSemisimplePart (x : L) : L :=
+def abstractSemisimplePart [CharZero K] [IsAlgClosed K] [FiniteDimensional K L]
+    [LieAlgebra.IsSemisimple K L] (x : L) : L :=
   (abstractJordanPair K L x).1
 
 /-- The abstract ad-nilpotent part of `x`. -/
-def abstractNilpotentPart (x : L) : L :=
+def abstractNilpotentPart [CharZero K] [IsAlgClosed K] [FiniteDimensional K L]
+    [LieAlgebra.IsSemisimple K L] (x : L) : L :=
   (abstractJordanPair K L x).2
 
 end LeanCategories.LieAlgebra
