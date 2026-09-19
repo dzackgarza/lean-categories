@@ -41,14 +41,28 @@ universe u
 
 variable (X : Scheme.{u})
 
+/-- The presheaves of modules over `O_X`, displayed in the form expected by
+Mathlib's symmetric monoidal instance. -/
+abbrev GradedAlgebraPresheafModules :=
+  PresheafOfModules (X.presheaf ⋙ forget₂ CommRingCat RingCat)
+
+noncomputable local instance gradedAlgebraGradedMonoidalCategory :
+    MonoidalCategory (GradedObject ℕ (GradedAlgebraPresheafModules X)) :=
+  GradedObject.monoidalCategory
+
+noncomputable local instance gradedAlgebraGradedSymmetricCategory :
+    SymmetricCategory (GradedObject ℕ (GradedAlgebraPresheafModules X)) :=
+  GradedObject.symmetricCategory
+
 /-- A graded `O_X`-algebra whose homogeneous components are sheaves of modules.
 
 The commutative monoid object supplies the graded unit and multiplication and all
 their laws. The second field records the sheaf condition on every homogeneous
 component. -/
 structure GradedAlgebraSheaf where
-  algebra : CommMon (GradedObject ℕ X.PresheafOfModules)
-  isSheaf (d : ℕ) : Presheaf.IsSheaf _ (algebra.X d).presheaf
+  algebra : CommMon (GradedObject ℕ (GradedAlgebraPresheafModules X))
+  isSheaf (d : ℕ) :
+    Presheaf.IsSheaf (TopologicalSpace.Opens.grothendieckTopology X) (algebra.X d).presheaf
 
 namespace GradedAlgebraSheaf
 
@@ -69,6 +83,13 @@ noncomputable def mulSections (S : GradedAlgebraSheaf X) {i j : ℕ} (U : X.Open
   (((GradedObject.Monoidal.ιTensorObj S.algebra.X S.algebra.X i j (i + j) rfl ≫
       MonObj.mul) (i + j)).app (.op U)) (x ⊗ₜ y)
 
+/-- The canonical `O_X`-module map from the structure sheaf to the degree-zero
+component, obtained from the unit of the graded algebra. -/
+noncomputable def degreeZeroHom (S : GradedAlgebraSheaf X) :
+    SheafOfModules.unit X.ringCatSheaf ⟶ S.component 0 where
+  val := (GradedObject.Monoidal.tensorUnit₀ (I := ℕ)
+    (C := GradedAlgebraPresheafModules X)).inv ≫ MonObj.one (X := S.algebra.X) 0
+
 end GradedAlgebraSheaf
 
 /-- The data in Hartshorne's relative-Proj condition (+), before its local
@@ -77,7 +98,7 @@ structure RelativeProjAlgebraData (X : Scheme.{u}) where
   algebra : GradedAlgebraSheaf X
   isNoetherian : AlgebraicGeometry.IsNoetherian X
   isQuasicoherent (d : ℕ) : (algebra.component d).IsQuasicoherent
-  degreeZero : algebra.component 0 ≅ SheafOfModules.unit X.ringCatSheaf
+  degreeZeroIsIso : IsIso algebra.degreeZeroHom
   degreeOneCoherent : (algebra.component 1).IsFinitePresentation
 
 namespace RelativeProjAlgebraData
@@ -90,7 +111,7 @@ For degree zero this is the unit transported through the specified identificatio
 `S_0 ≅ O_X`; the successor step uses the graded multiplication. -/
 noncomputable def degreeOneProduct (S : RelativeProjAlgebraData X) (U : X.Opens) :
     ∀ d : ℕ, (Fin d → S.algebra.Sections 1 U) → S.algebra.Sections d U
-  | 0, _ => S.degreeZero.inv.val.app (.op U) 1
+  | 0, _ => S.algebra.degreeZeroHom.val.app (.op U) 1
   | d + 1, x =>
       S.algebra.mulSections U
         (S.degreeOneProduct U d (fun i => x i.castSucc))
