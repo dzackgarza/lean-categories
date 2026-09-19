@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
+public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 public import Mathlib.AlgebraicTopology.MooreComplex
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.Algebra.Module.Bimodule
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.LinearAlgebra.TensorPower.Basic
 
 /-!
@@ -21,9 +23,12 @@ outer faces using the right and left actions on `M`; degeneracies insert `1`.
 The dual cosimplicial object has degree `Hom_k(R^{⊗ n}, M)` with the dual
 coface/codegeneracy formulas.
 
-As with the cotriple construction, this Definitions-sweep owner records an actual
-simplicial/cosimplicial realization together with the exact pure-tensor formulas.
-The verification of all simplicial identities is result-level work.
+For Sweep III this owner records the graded chain/cochain objects and the exact
+pure-tensor face, degeneracy, coface, and codegeneracy formulas. The simplicial
+and cosimplicial identities, assembly of those data into functors/complexes, and
+the resulting canonical homology objects are result-layer work. The conditional
+realization records below are retained as downstream interfaces; they are not
+credited as construction evidence for FC05-C09-U002.
 -/
 
 @[expose] public section
