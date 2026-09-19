@@ -138,8 +138,10 @@ section MkNatTrans
 
 variable (X Y : SimplexCategory ⥤ C)
   (app : ∀ (Δ : SimplexCategory), X.obj Δ ⟶ Y.obj Δ)
-  (hδ : ∀ {n : ℕ} (i : Fin (n + 2)), X.δ i ≫ app (.mk (n + 1)) = app (.mk n) ≫ Y.δ i)
-  (hσ : ∀ {n : ℕ} (i : Fin (n + 1)), X.σ i ≫ app (.mk n) = app (.mk (n + 1)) ≫ Y.σ i)
+  (hδ : ∀ {n : ℕ} (i : Fin (n + 2)), CosimplicialObject.δ X i ≫ app (.mk (n + 1)) =
+    app (.mk n) ≫ CosimplicialObject.δ Y i)
+  (hσ : ∀ {n : ℕ} (i : Fin (n + 1)), CosimplicialObject.σ X i ≫ app (.mk n) =
+    app (.mk (n + 1)) ≫ CosimplicialObject.σ Y i)
 
 open SimplexCategoryGenRel in
 set_option backward.isDefEq.respectTransparency false in
@@ -209,8 +211,10 @@ set_option backward.isDefEq.respectTransparency.types false in
 lemma mkNatTrans_comp X Y (Z : SimplexCategory ⥤ C) app
     (app' : ∀ (Δ : SimplexCategory), Y.obj Δ ⟶ Z.obj Δ)
     {hδ} {hσ}
-    {hδ' : ∀ {n : ℕ} (i : Fin (n + 2)), Y.δ i ≫ app' (.mk (n + 1)) = app' (.mk n) ≫ Z.δ i}
-    {hσ' : ∀ {n : ℕ} (i : Fin (n + 1)), Y.σ i ≫ app' (.mk n) = app' (.mk (n + 1)) ≫ Z.σ i}
+    {hδ' : ∀ {n : ℕ} (i : Fin (n + 2)), CosimplicialObject.δ Y i ≫ app' (.mk (n + 1)) =
+      app' (.mk n) ≫ CosimplicialObject.δ Z i}
+    {hσ' : ∀ {n : ℕ} (i : Fin (n + 1)), CosimplicialObject.σ Y i ≫ app' (.mk n) =
+      app' (.mk (n + 1)) ≫ CosimplicialObject.σ Z i}
     : mkNatTrans X Z (fun n ↦ app n ≫ app' n)
         (by intro n i; rw [reassoc_of%(hδ i), hδ' i]; simp)
         (by intro n i; rw [reassoc_of%(hσ i), hσ' i]; simp)
@@ -233,8 +237,10 @@ section MkNatIso
 
 variable (X Y : SimplexCategory ⥤ C)
   (app : ∀ (Δ : SimplexCategory), X.obj Δ ≅ Y.obj Δ)
-  (hδ : ∀ {n : ℕ} (i : Fin (n + 2)), X.δ i ≫ (app (.mk (n + 1))).hom = (app (.mk n)).hom ≫ Y.δ i)
-  (hσ : ∀ {n : ℕ} (i : Fin (n + 1)), X.σ i ≫ (app (.mk n)).hom = (app (.mk (n + 1))).hom ≫ Y.σ i)
+  (hδ : ∀ {n : ℕ} (i : Fin (n + 2)), CosimplicialObject.δ X i ≫
+    (app (.mk (n + 1))).hom = (app (.mk n)).hom ≫ CosimplicialObject.δ Y i)
+  (hσ : ∀ {n : ℕ} (i : Fin (n + 1)), CosimplicialObject.σ X i ≫
+    (app (.mk n)).hom = (app (.mk (n + 1))).hom ≫ CosimplicialObject.σ Y i)
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.types false in
