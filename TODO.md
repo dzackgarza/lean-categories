@@ -7,6 +7,12 @@ lists immediate prerequisites; an entry `A` on node `B` means `A -> B`.
 These edges express the existing sweep order, not new completion claims.
 The linked whole-source ledger remains the sole source of sweep completion.
 
+For current unit-level dependencies, ready port batches, and collected constructor
+evidence, use the [continuous definition execution DAG](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/plans/PLAN-FOUNDATIONAL-CORPUS-DEFINITION-SWEEP/PLAN-FOUNDATIONAL-CORPUS-DEFINITION-SWEEP.md#continuous-definition-realization).
+Before dispatching work, apply the [definition execution traps](.agents/traps/wasteful-definition-execution-is-prohibited.md).
+The planner maintains this live graph while workers continue implementation; a
+completed unit immediately releases the next ready unit.
+
 | ID | Obligation | Needs |
 | --- | --- | --- |
 | `corpus` | [Admitted sources, editions, scope and source acquisition](#0-foundational-corpus-and-in-force-amendments) | none |
