@@ -29,4 +29,11 @@ def standardLieGeneratorSetWithCartan {I : Type u} {L : Type v}
     (x y h : I → L) : Set L :=
   Set.range x ∪ Set.range y ∪ Set.range h
 
+/-- Humphreys FC14-C07-U005: after a compatible root-vector family has
+been chosen, a Chevalley basis consists of all root vectors together with
+the simple Cartan generators. -/
+def chevalleyBasisSet {Phi : Type u} {I : Type*} {L : Type v}
+    (x : Phi → L) (h : I → L) : Set L :=
+  Set.range x ∪ Set.range h
+
 end LeanCategories.Algebra
