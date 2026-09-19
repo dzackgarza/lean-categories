@@ -21,6 +21,11 @@ Mathlib's `QuaternionAlgebra k a 0 b` is the corresponding symbol algebra. Its c
 `QuaternionAlgebra.basisOneIJK` supplies the four-coordinate basis. The definition below says
 that a supplied algebra has this presentation; it does not replace the presentation by the
 abstract central-simple-rank-four characterization.
+
+Definition 5.4.1 literally calls `D` a skew field, but the same section immediately declares
+the split algebra `M₂(k)` to be a quaternion algebra and later treats being a division algebra as
+a separate property. Accordingly, this declaration follows the displayed symbol presentation and
+the split example: `D` is a ring, with no `DivisionRing D` assumption.
 -/
 
 @[expose] public section
