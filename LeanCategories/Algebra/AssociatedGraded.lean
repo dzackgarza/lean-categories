@@ -45,6 +45,34 @@ namespace Ideal
 
 variable {R : Type*} [CommRing R]
 
+/-! ### Associated graded object of a multiplicative ideal filtration -/
+
+/-- Matsumura's definition of a multiplicative decreasing filtration
+`R = J₀ ⊇ J₁ ⊇ ⋯`: the sequence starts at the unit ideal, is decreasing, and
+products in degrees `i` and `j` land in degree `i + j` (`FC13-C05-U005`). -/
+def IsMultiplicativeFiltration (J : ℕ → Ideal R) : Prop :=
+  J 0 = ⊤ ∧
+    (∀ n : ℕ, J (n + 1) ≤ J n) ∧
+    ∀ i j : ℕ, J i * J j ≤ J (i + j)
+
+/-- The copy of `J_(n+1)` inside `J_n`.  For a decreasing filtration this is
+the denominator in the source quotient `J_n / J_(n+1)`. -/
+abbrev filtrationAssociatedGradedLower (J : ℕ → Ideal R) (n : ℕ) :
+    Submodule R ↥((J n : Ideal R) : Submodule R R) :=
+  Submodule.comap (((J n : Ideal R) : Submodule R R).subtype)
+    ((J (n + 1) : Ideal R) : Submodule R R)
+
+/-- Degree `n` of the associated graded object of a filtration. -/
+abbrev FiltrationAssociatedGradedPiece (J : ℕ → Ideal R) (n : ℕ) :=
+  ↥((J n : Ideal R) : Submodule R R) ⧸ filtrationAssociatedGradedLower J n
+
+/-- The source carrier `gr_J(R) = ⨁ n, J_n / J_(n+1)`.
+
+Multiplicativity is recorded separately by `IsMultiplicativeFiltration`; no
+ring-law or quotient well-definedness result is part of Sweep III. -/
+abbrev FiltrationAssociatedGraded (J : ℕ → Ideal R) :=
+  ⨁ n : ℕ, FiltrationAssociatedGradedPiece J n
+
 /-- The copy of `I^(n+1)` inside `I^n`. -/
 abbrev associatedGradedRingLower (I : Ideal R) (n : ℕ) :
     Submodule R ↥((I ^ n : Ideal R) : Submodule R R) :=
