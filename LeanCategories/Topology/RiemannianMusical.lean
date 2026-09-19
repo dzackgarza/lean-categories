@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 /-!
 # Riemannian metric dual data
@@ -59,5 +60,15 @@ the chart components of `metricDualAt` is a separate comparison statement. -/
 def lowerIndexCoordinates {ι : Type*} [Fintype ι]
     (g : Matrix ι ι ℝ) (X : ι → ℝ) : ι → ℝ :=
   fun j => ∑ i, g i j * X i
+
+/-- Lee's inverse metric-coordinate matrix `(g^ij)` (FC08-C13-U042).
+
+`Matrix.inv` is a total construction, so this declaration does not require a
+proof that the supplied matrix is invertible. For a Riemannian Gram matrix,
+nonsingularity and the inverse identities are separate result-layer facts. -/
+noncomputable def inverseMetricCoordinates {ι : Type*} [Fintype ι]
+    (g : Matrix ι ι ℝ) : Matrix ι ι ℝ := by
+  classical
+  exact g⁻¹
 
 end LeanCategories.Topology
