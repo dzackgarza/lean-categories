@@ -35,6 +35,16 @@ def higherUnitSet (I : Ideal R) (n : ℕ) : Set Rˣ :=
 /-- Principal units are the first higher-unit layer. -/
 abbrev principalUnitSet (I : Ideal R) : Set Rˣ := higherUnitSet I 1
 
+/-- Serre's higher-unit notation for a local ring:
+`U_R^n = {u : Rˣ | u - 1 ∈ m_R^n}` (FC10-C12-U006). -/
+abbrev localHigherUnitSet [IsLocalRing R] (n : ℕ) : Set Rˣ :=
+  higherUnitSet (IsLocalRing.maximalIdeal R) n
+
+/-- Serre's principal-unit layer `U_R^1` for a local ring
+(FC10-C12-U006). -/
+abbrev localPrincipalUnitSet [IsLocalRing R] : Set Rˣ :=
+  localHigherUnitSet (R := R) 1
+
 /-- Serre's real-index higher-unit notation: use the least natural level at
 least `v`.  For the source's intended range `0 ≤ v`, this is exactly
 `U^v = U^⌈v⌉`.  The definition is total on `ℝ`, avoiding a proof-valued
