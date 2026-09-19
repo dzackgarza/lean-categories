@@ -79,6 +79,7 @@ public import LeanCategories.Algebra.ZariskiRing
 public import LeanCategories.Algebra.PolynomialPowerSeries
 public import LeanCategories.Algebra.MatrixFamilies
 public import LeanCategories.Algebra.MonoidAlgebra
+public import LeanCategories.Algebra.PureSubmodule
 public import LeanCategories.ForMathlib.AdicCompletionIntegers
 public import LeanCategories.ForMathlib.AddSubgroupCompletion
 public import LeanCategories.ForMathlib.AdicCompletionUniform
