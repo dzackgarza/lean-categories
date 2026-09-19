@@ -107,9 +107,9 @@ does not justify weakening a dependent theorem or starting unrelated work.
   Sweep-III gates. Examples include Construction 5.9.9 blocked by Proposition
   5.9.2, Construction 6.8.3 blocked by the LHS spectral-sequence theorem, and
   DG-Hochschild construction 9.9.10 blocked by Goodwillie's theorem. This is
-  incompatible with the repository invariant that Definitions close before
-  theorem work opens: theorem-only prerequisites may motivate or prove a later
-  property of the construction, but cannot be required to state its definition.
+  an overbroad use of catalogue edges: those particular results motivate or prove
+  later properties rather than supply the specified construction. The theorem label
+  alone does not establish this; a construction can need a supporting theorem.
 - **Coverage:** the named false positives, the newly restored
   `[definition-only]` rows, and the regenerated FC05 frontier were checked
   directly against the canonical catalogue/mapping records. This is not a
@@ -141,10 +141,15 @@ does not justify weakening a dependent theorem or starting unrelated work.
   source-unit label separately from its descriptive title, honors explicit
   `[definition-only]` mapping evidence for mixed/nonstandard labels, and records
   the audited result-only `FC05-C05-U049` exception. For audited FC05 Sweep III,
-  dependency blocking now ignores prerequisites that carry no definitional
-  content while retaining mixed/definition prerequisites as real blockers.
-  Keep future exceptions source-grounded and do not infer theorem obligations
-  from definition-sweep progress.
+  dependency blocking ignores contextual theorem edges while retaining definition
+  edges and explicit `Construction prerequisites:` in canonical mapping rows.
+  `FC05-C10-U085` exposed the missing distinction: its catalogue edge points to
+  theorem U083, but its mapping requires the still-unrealized RHom object U081.
+  The scheduler had returned no blockers. The regression in
+  `tests/test_foundational_frontier.py` exercises that real parsed case, an explicit
+  theorem prerequisite, and independent de Rham readiness. Ordinary provenance
+  citations stay inert; malformed or unknown explicit prerequisite IDs fail loudly.
+  This repair preserves construction inputs without opening unrelated theorem work.
 
 ### FC03 source manifest points to a missing extracted source file
 

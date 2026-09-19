@@ -1,5 +1,7 @@
+import re
 import sys
 import unittest
+from dataclasses import replace
 from pathlib import Path
 
 
@@ -17,6 +19,22 @@ class DefinitionReadinessTest(unittest.TestCase):
             corpus / "foundational-corpus-units-fc05-weibel.md"
         )
         cls.mappings = frontier.parse_mappings(corpus)
+        for unit_id in (
+            "FC05-C09-U124",
+            "FC05-C10-U081",
+            "FC05-C10-U083",
+            "FC05-C10-U085",
+        ):
+            mapping = cls.mappings[unit_id]
+            cls.mappings[unit_id] = replace(
+                mapping,
+                row=re.sub(r"\s*\[realized\]", "", mapping.row, flags=re.I),
+            )
+            if cls.mappings[unit_id].delivered:
+                raise AssertionError(
+                    f"{unit_id}: regression fixture requires its real route in an "
+                    "unrealized state"
+                )
         cls.catalogue = {unit.unit_id: unit for unit in cls.units}
 
     def blockers(self, unit_id: str) -> tuple[str, ...]:
@@ -30,8 +48,96 @@ class DefinitionReadinessTest(unittest.TestCase):
     def test_mapping_prerequisite_survives_theorem_labelled_catalogue_edge(self) -> None:
         self.assertEqual(self.blockers("FC05-C10-U085"), ("FC05-C10-U081",))
 
+    def test_effective_prerequisites_explain_the_blocker(self) -> None:
+        unit = self.catalogue["FC05-C10-U085"]
+        self.assertEqual(
+            frontier.effective_dependencies(
+                "Definitions", unit, self.mappings[unit.unit_id]
+            ),
+            ("FC05-C10-U083", "FC05-C10-U081"),
+        )
+
+    def test_explicit_theorem_prerequisite_is_retained(self) -> None:
+        unit = self.catalogue["FC05-C10-U085"]
+        mappings = dict(self.mappings)
+        mappings[unit.unit_id] = replace(
+            mappings[unit.unit_id],
+            row=mappings[unit.unit_id].row.replace(
+                "Construction prerequisites: `FC05-C10-U081`.",
+                "Construction prerequisites: `FC05-C10-U083`.",
+            ),
+        )
+        self.assertEqual(
+            frontier.unit_blockers("Definitions", unit, mappings, self.catalogue),
+            ("FC05-C10-U083",),
+        )
+
+    def test_ordinary_mapping_citation_is_not_a_scheduler_edge(self) -> None:
+        unit = self.catalogue["FC05-C10-U030"]
+        mapping = self.mappings[unit.unit_id]
+        self.assertIn("FC05-C10-U029", mapping.row)
+        self.assertEqual(frontier.construction_dependencies(unit, mapping), ())
+
+    def test_malformed_construction_prerequisite_fails_loudly(self) -> None:
+        unit = self.catalogue["FC05-C10-U085"]
+        mappings = dict(self.mappings)
+        mappings[unit.unit_id] = replace(
+            self.mappings[unit.unit_id],
+            row=self.mappings[unit.unit_id].row.replace(
+                "Construction prerequisites: `FC05-C10-U081`.",
+                "Construction prerequisites: FC05-C10-U081",
+            ),
+        )
+        with self.assertRaises(ValueError):
+            frontier.validate_phase_classification(self.units, mappings)
+
+    def test_duplicate_markers_in_one_cell_fail_loudly(self) -> None:
+        unit = self.catalogue["FC05-C10-U085"]
+        mappings = dict(self.mappings)
+        mappings[unit.unit_id] = replace(
+            mappings[unit.unit_id],
+            row=mappings[unit.unit_id].row.replace(
+                "Construction prerequisites: `FC05-C10-U081`.",
+                "Construction prerequisites: `FC05-C10-U083`. "
+                "Construction prerequisites: `FC05-C10-U081`.",
+            ),
+        )
+        with self.assertRaises(ValueError):
+            frontier.validate_phase_classification(self.units, mappings)
+
+    def test_unknown_explicit_prerequisite_fails_loudly(self) -> None:
+        unit = self.catalogue["FC05-C10-U085"]
+        mappings = dict(self.mappings)
+        mappings[unit.unit_id] = replace(
+            mappings[unit.unit_id],
+            row=mappings[unit.unit_id].row.replace(
+                "FC05-C10-U081`.", "FC05-C10-U999`.",
+            ),
+        )
+        with self.assertRaises(ValueError):
+            frontier.validate_phase_classification(self.units, mappings)
+
     def test_independent_reference_port_remains_ready(self) -> None:
         self.assertEqual(self.blockers("FC05-C09-U124"), ())
+
+    def test_ready_selection_keeps_independent_unit_and_excludes_blocked_unit(self) -> None:
+        pending = [
+            unit
+            for unit in frontier.phase_units("Definitions", self.units, self.mappings)
+            if not frontier.unit_delivered("Definitions", unit, self.mappings)
+        ]
+        selected = {
+            unit.unit_id
+            for unit in frontier.next_open_units(
+                "Definitions",
+                pending,
+                self.mappings,
+                self.catalogue,
+                limit=len(pending),
+            )
+        }
+        self.assertIn("FC05-C09-U124", selected)
+        self.assertNotIn("FC05-C10-U085", selected)
 
 
 if __name__ == "__main__":

@@ -4,6 +4,9 @@
 The whole-source status ledger remains the only completion authority. This tool
 derives scheduling state from the frozen Sweep-I catalogues and Sweep-II mapping
 records; it never checks or infers a whole-source completion box.
+
+Mapping may add an exact construction edge with one sentence-final clause:
+"Construction prerequisites: `FCxx-Cyy-Uzzz`, `...`." Other cited IDs are inert.
 """
 
 from __future__ import annotations
@@ -17,6 +20,11 @@ from pathlib import Path
 
 UNIT_RE = re.compile(r"FC\d{2}-[A-Z0-9]+-U\d+")
 HEADING_UNIT_RE = re.compile(r"^###\s+(FC\d{2}-[A-Z0-9]+-U\d+)\b")
+CONSTRUCTION_PREREQUISITES_MARKER = "Construction prerequisites:"
+CONSTRUCTION_PREREQUISITES_RE = re.compile(
+    r"Construction prerequisites:\s+"
+    r"(`FC\d{2}-[A-Z0-9]+-U\d+`(?:,\s*`FC\d{2}-[A-Z0-9]+-U\d+`)*)\.\s*$"
+)
 ROUTES = {"mathlib", "project-existing", "package-import", "reference-port", "unmatched"}
 DIRECT_ROUTES = {"mathlib", "project-existing"}
 NEGATIVE_VERDICT_MARKERS = ("unmatched", "wrong interface", "missing")
@@ -200,6 +208,51 @@ def split_table_row(line: str) -> list[str]:
 
 def dependencies(text: str) -> tuple[str, ...]:
     return tuple(dict.fromkeys(UNIT_RE.findall(text)))
+
+
+def construction_dependencies(unit: Unit, mapping: Mapping | None) -> tuple[str, ...]:
+    """Parse Mapping's explicit construction-prerequisite annotation.
+
+    Other unit IDs in Mapping are provenance, comparisons, or historical notes
+    and never become scheduler edges implicitly.
+    """
+    if mapping is None or CONSTRUCTION_PREREQUISITES_MARKER not in mapping.row:
+        return ()
+
+    if mapping.row.count(CONSTRUCTION_PREREQUISITES_MARKER) != 1:
+        raise ValueError(
+            f"{unit.unit_id}: expected exactly one sentence-final "
+            f"{CONSTRUCTION_PREREQUISITES_MARKER} annotation"
+        )
+
+    annotated_cells = [
+        cell
+        for cell in split_table_row(mapping.row)
+        if CONSTRUCTION_PREREQUISITES_MARKER in cell
+    ]
+    if len(annotated_cells) != 1:
+        raise ValueError(
+            f"{unit.unit_id}: expected exactly one sentence-final "
+            f"{CONSTRUCTION_PREREQUISITES_MARKER} annotation"
+        )
+    match = CONSTRUCTION_PREREQUISITES_RE.search(annotated_cells[0])
+    if match is None:
+        raise ValueError(
+            f"{unit.unit_id}: malformed {CONSTRUCTION_PREREQUISITES_MARKER} annotation; "
+            "use comma-separated backticked full unit IDs and a final period"
+        )
+    return tuple(dict.fromkeys(UNIT_RE.findall(match.group(1))))
+
+
+def effective_dependencies(
+    phase: str, unit: Unit, mapping: Mapping | None
+) -> tuple[str, ...]:
+    """Combine catalogue edges with explicit construction edges for Definitions."""
+    if phase != "Definitions":
+        return unit.dependencies
+    return tuple(
+        dict.fromkeys((*unit.dependencies, *construction_dependencies(unit, mapping)))
+    )
 
 
 def parse_catalogue(path: Path) -> list[Unit]:
@@ -461,6 +514,19 @@ def validate_phase_classification(units: list[Unit], mappings: dict[str, Mapping
             f"{rendered}"
         )
 
+    known_unit_ids = {unit.unit_id for unit in units}
+    for unit in units:
+        explicit_dependencies = construction_dependencies(
+            unit, mappings.get(unit.unit_id)
+        )
+        unknown = [dep for dep in explicit_dependencies if dep not in known_unit_ids]
+        if unknown:
+            rendered = ", ".join(unknown)
+            raise ValueError(
+                f"{unit.unit_id}: construction prerequisites are not catalogue units: "
+                f"{rendered}"
+            )
+
 
 def source_file(reference_dir: Path, prefix: str, source_id: str) -> Path:
     matches = sorted(reference_dir.glob(f"{prefix}-{source_id.lower()}-*.md"))
@@ -582,10 +648,10 @@ def unit_blockers(
 ) -> tuple[str, ...]:
     """Return phase-relevant prerequisites that do not yet have a usable owner.
 
-    In the audited FC05 Definitions sweep, theorem-only source dependencies are
-    not admissible blockers: Definitions must close before theorem work opens.
-    Mixed dependencies that themselves carry definitional content still block
-    until that definition layer has an owner.
+    Catalogue theorem edges do not ordinarily block Definitions: Definitions
+    must close before theorem work opens. Mapping may preserve a theorem or
+    definition that constructs the named output through the explicit
+    `Construction prerequisites:` annotation.
     """
     if phase == "Mapping":
         # Discovery of an existing implementation does not depend on whether a
@@ -593,11 +659,16 @@ def unit_blockers(
         return ()
 
     source_id = unit.unit_id.split("-", 1)[0]
+    explicit_dependencies = construction_dependencies(unit, mappings.get(unit.unit_id))
     blockers: list[str] = []
-    for dep in unit.dependencies:
+    for dep in effective_dependencies(phase, unit, mappings.get(unit.unit_id)):
         if phase == "Definitions" and source_id in CONTENT_CLASSIFIED_DEFINITION_SOURCES:
             dep_unit = catalogue_index.get(dep)
-            if dep_unit is not None and not is_definition(dep_unit, mappings.get(dep)):
+            if (
+                dep not in explicit_dependencies
+                and dep_unit is not None
+                and not is_definition(dep_unit, mappings.get(dep))
+            ):
                 continue
         if dep not in mappings or not mappings[dep].delivered:
             blockers.append(dep)
@@ -791,7 +862,12 @@ def render(reference_dir: Path, limit: int) -> str:
             ]
         )
         for unit in next_units:
-            prerequisites = ", ".join(f"`{dep}`" for dep in unit.dependencies) or "—"
+            prerequisites = ", ".join(
+                f"`{dep}`"
+                for dep in effective_dependencies(
+                    phase, unit, mappings.get(unit.unit_id)
+                )
+            ) or "—"
             blockers = unit_blockers(phase, unit, mappings, catalogue_index)
             blocker_text = (
                 ", ".join(f"`{dep}`" for dep in blockers)

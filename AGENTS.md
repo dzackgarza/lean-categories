@@ -357,6 +357,14 @@ theorem programme. Definition completion proves only the claimed construction, n
 every result in a mixed source row. An unresolved prerequisite blocks its dependents,
 not independent definitions elsewhere in the corpus.
 
+For prerequisites not captured by the catalogue's definition edges, end one cell of the
+canonical mapping row with `Construction prerequisites: ` followed by comma-separated,
+backticked full unit IDs and a final period. For example:
+``Construction prerequisites: `FC05-C10-U081`.`` The frontier validates these IDs and keeps
+them as required inputs even when a prerequisite is classified as a theorem. Ordinary
+unit citations in mapping prose do not create dependencies. Keep the list limited to
+inputs the source construction actually consumes.
+
 Within State 2, choose ready work by the remaining construction, not by route label:
 complete external ports and predicate packages can be delegated to lower-effort workers;
 generic constructors with missing relations need bounded integration; missing ambient
