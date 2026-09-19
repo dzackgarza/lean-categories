@@ -10,7 +10,10 @@ The linked whole-source ledger remains the sole source of sweep completion.
 This TODO is the sole executable DAG for the foundational programme, including the
 [active definition units](#active-definition-units). The [vault plan](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/plans/PLAN-FOUNDATIONAL-CORPUS-DEFINITION-SWEEP/PLAN-FOUNDATIONAL-CORPUS-DEFINITION-SWEEP.md)
 holds supporting source findings and rationale. Before dispatching work, apply the
-[definition execution traps](.agents/traps/wasteful-definition-execution-is-prohibited.md).
+[definition execution traps](.agents/traps/wasteful-definition-execution-is-prohibited.md)
+only where they agree with this repository's current controls. In particular, any older trap
+wording that permits a proof as a definition prerequisite is superseded by the no-proof
+Sweep-III boundary in `AGENTS.md` and this TODO.
 
 | ID | Obligation | Needs |
 | --- | --- | --- |
