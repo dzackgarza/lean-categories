@@ -9,6 +9,7 @@ public import Mathlib.RepresentationTheory.Homological.GroupHomology.Shapiro
 public import Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Shapiro
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
+public import Mathlib.RepresentationTheory.Invariants
 
 /-!
 # Transfer in group homology and cohomology
@@ -78,5 +79,17 @@ def groupCohomologyTransfer (A : Rep k G) (n : ℕ) :
 noncomputable abbrev groupCohomologyCorestriction (A : Rep k G) (n : ℕ) :
     groupCohomology (res S.subtype A) n ⟶ groupCohomology A n :=
   groupCohomologyTransfer S A n
+
+/-- The raw finite-coset norm formula
+`a ↦ ∑_{g ∈ G/S} g • a` from Serre (FC10-C07-U035).
+
+The choice-independence of representatives, membership of the sum in
+`A^G`, and its identification with degree-zero corestriction are theorem
+content and are intentionally not bundled into this Sweep-III construction. -/
+omit [DecidableRel (QuotientGroup.rightRel S)] in
+noncomputable def relativeNormRaw
+    (A : Rep k G) (a : (res S.subtype A).ρ.invariants) : A := by
+  letI := S.fintypeQuotientOfFiniteIndex
+  exact ∑ q : G ⧸ S, A.ρ (Quotient.out q) a.1
 
 end LeanCategories.Homological
