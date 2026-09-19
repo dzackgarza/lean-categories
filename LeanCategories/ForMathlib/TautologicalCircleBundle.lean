@@ -7,6 +7,7 @@ module
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.LinearAlgebra.Projectivization.Basic
 public import Mathlib.Topology.Constructions
+public import Mathlib.Topology.ContinuousMap.Defs
 
 /-!
 # The unit-circle total space of the tautological line over the complex projective line
@@ -29,6 +30,11 @@ namespace LeanCategories.ForMathlib
 /-- The complex projective line, using Hermitian `ℂ²` as its coordinate space. -/
 abbrev ComplexProjectiveLine := Projectivization ℂ (EuclideanSpace ℂ (Fin 2))
 
+/-- The quotient topology from the nonzero vectors in Hermitian `ℂ²`. -/
+instance : TopologicalSpace ComplexProjectiveLine :=
+  inferInstanceAs (TopologicalSpace
+    (Quotient (projectivizationSetoid ℂ (EuclideanSpace ℂ (Fin 2)))))
+
 /-- The total space formed by the unit circles in the fibers of the tautological line over
 the complex projective line.
 
@@ -40,9 +46,13 @@ def TautologicalUnitCircleBundle :=
   {x : ComplexProjectiveLine × EuclideanSpace ℂ (Fin 2) //
     x.2 ∈ x.1.submodule ∧ ‖x.2‖ = 1}
 
+/-- The subspace topology on the unit-circle total space. -/
+instance : TopologicalSpace TautologicalUnitCircleBundle :=
+  TopologicalSpace.induced Subtype.val inferInstance
+
 /-- Projection of the tautological unit-circle total space to the complex projective line. -/
 def tautologicalUnitCircleProjection :
-    TautologicalUnitCircleBundle →C ComplexProjectiveLine where
+    ContinuousMap TautologicalUnitCircleBundle ComplexProjectiveLine where
   toFun x := x.1.1
   continuous_toFun := continuous_fst.comp continuous_subtype_val
 
