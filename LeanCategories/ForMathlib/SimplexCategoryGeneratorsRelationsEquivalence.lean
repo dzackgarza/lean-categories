@@ -225,6 +225,7 @@ theorem existsUnique_toSimplexCategory_map
   induction x using SimplexCategoryGenRel.rec <;>
     induction y using SimplexCategoryGenRel.rec
   rename_i n m
+  change SimplexCategory.mk n ⟶ SimplexCategory.mk m at f
   let strong_fac_f := (Limits.HasStrongEpiMonoFactorisations.has_fac f).some
   let z := strong_fac_f.I
   let epi₀ := strong_fac_f.toMonoFactorisation.e
@@ -240,17 +241,13 @@ theorem existsUnique_toSimplexCategory_map
   obtain ⟨l, hl⟩ := Nat.exists_eq_add_of_le h_mono
   let p₁ : mk n = mk (z.len + k) := SimplexCategoryGenRel.ext hk
   let p₂ : mk (z.len + l) = mk m := SimplexCategoryGenRel.ext hl.symm
-  let q₁ : toSimplexCategory.obj (mk n) =
-      toSimplexCategory.obj (mk (z.len + k)) :=
-    congrArg toSimplexCategory.obj p₁
-  let q₂ : toSimplexCategory.obj (mk (z.len + l)) =
-      toSimplexCategory.obj (mk m) :=
-    congrArg toSimplexCategory.obj p₂
-  let epi₁ : toSimplexCategory.obj (mk (z.len + k)) ⟶
-      toSimplexCategory.obj (mk z.len) :=
+  let q₁ : SimplexCategory.mk n = SimplexCategory.mk (z.len + k) :=
+    SimplexCategory.ext hk
+  let q₂ : SimplexCategory.mk (z.len + l) = SimplexCategory.mk m :=
+    SimplexCategory.ext hl.symm
+  let epi₁ : SimplexCategory.mk (z.len + k) ⟶ SimplexCategory.mk z.len :=
     eqToHom q₁.symm ≫ epi₀
-  let mono₁ : toSimplexCategory.obj (mk z.len) ⟶
-      toSimplexCategory.obj (mk (z.len + l)) :=
+  let mono₁ : SimplexCategory.mk z.len ⟶ SimplexCategory.mk (z.len + l) :=
     mono₀ ≫ eqToHom q₂.symm
   have hp₁ : toSimplexCategory.map (eqToHom p₁) = eqToHom q₁ := by
     simp [q₁, eqToHom_map]
