@@ -221,18 +221,22 @@ lemma mkNatTrans_comp X Y (Z : SimplexCategory ⥤ C) app
         (by intro n i; rw [reassoc_of%(hδ i), hδ' i]; simp)
         (by intro n i; rw [reassoc_of%(hσ i), hσ' i]; simp)
       = (mkNatTrans X Y app hδ hσ) ≫ (mkNatTrans Y Z app' hδ' hσ') := by
+  generalize_proofs hδcomp hσcomp
   ext Δ
   simp only [NatTrans.comp_app]
-  erw [mkNatTrans_app, mkNatTrans_app, mkNatTrans_app]
+  erw [mkNatTrans_app X Z _ (hδ := hδcomp) (hσ := hσcomp),
+    mkNatTrans_app X Y app (hδ := hδ) (hσ := hσ),
+    mkNatTrans_app Y Z app' (hδ := hδ') (hσ := hσ')]
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma mkNatTrans_id :
   mkNatTrans X X (fun x ↦ 𝟙 _) (by simp) (by simp) = 𝟙 X := by
+    generalize_proofs hδid hσid
     ext x
     simp only [NatTrans.id_app]
-    erw [mkNatTrans_app]
+    erw [mkNatTrans_app X X _ (hδ := hδid) (hσ := hσid)]
 
 end MkNatTrans
 
@@ -259,14 +263,18 @@ noncomputable def mkNatIso: X ≅ Y where
         rw [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp]
         exact (hσ i).symm)
   hom_inv_id := by
+    generalize_proofs hδinv hσinv
     ext Δ
     simp only [NatTrans.comp_app, NatTrans.id_app]
-    erw [mkNatTrans_app, mkNatTrans_app]
+    erw [mkNatTrans_app X Y _ (hδ := hδ) (hσ := hσ),
+      mkNatTrans_app Y X _ (hδ := hδinv) (hσ := hσinv)]
     exact Iso.hom_inv_id _
   inv_hom_id := by
+    generalize_proofs hδinv hσinv
     ext Δ
     simp only [NatTrans.comp_app, NatTrans.id_app]
-    erw [mkNatTrans_app, mkNatTrans_app]
+    erw [mkNatTrans_app Y X _ (hδ := hδinv) (hσ := hσinv),
+      mkNatTrans_app X Y _ (hδ := hδ) (hσ := hσ)]
     exact Iso.inv_hom_id _
 
 variable {hδ} {hσ}
@@ -432,18 +440,22 @@ lemma mkNatTrans_comp X Y (Z : SimplicialObject C) app
         (by intro n i; rw [reassoc_of%(hδ i), hδ' i]; simp)
         (by intro n i; rw [reassoc_of%(hσ i), hσ' i]; simp)
       = (mkNatTrans X Y app hδ hσ) ≫ (mkNatTrans Y Z app' hδ' hσ') := by
+  generalize_proofs hδcomp hσcomp
   ext Δ
   simp only [NatTrans.comp_app]
-  erw [mkNatTrans_app, mkNatTrans_app, mkNatTrans_app]
+  erw [mkNatTrans_app X Z _ (hδ := hδcomp) (hσ := hσcomp),
+    mkNatTrans_app X Y app (hδ := hδ) (hσ := hσ),
+    mkNatTrans_app Y Z app' (hδ := hδ') (hσ := hσ')]
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma mkNatTrans_id :
   mkNatTrans X X (fun x ↦ 𝟙 _) (by simp) (by simp) = 𝟙 X := by
+    generalize_proofs hδid hσid
     ext x
     simp only [NatTrans.id_app]
-    erw [mkNatTrans_app]
+    erw [mkNatTrans_app X X _ (hδ := hδid) (hσ := hσid)]
 
 end MkNatTrans
 
@@ -470,14 +482,18 @@ noncomputable def mkNatIso: X ≅ Y where
         rw [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp]
         exact (hσ i).symm)
   hom_inv_id := by
+    generalize_proofs hδinv hσinv
     ext Δ
     simp only [NatTrans.comp_app, NatTrans.id_app]
-    erw [mkNatTrans_app, mkNatTrans_app]
+    erw [mkNatTrans_app X Y _ (hδ := hδ) (hσ := hσ),
+      mkNatTrans_app Y X _ (hδ := hδinv) (hσ := hσinv)]
     exact Iso.hom_inv_id _
   inv_hom_id := by
+    generalize_proofs hδinv hσinv
     ext Δ
     simp only [NatTrans.comp_app, NatTrans.id_app]
-    erw [mkNatTrans_app, mkNatTrans_app]
+    erw [mkNatTrans_app Y X _ (hδ := hδinv) (hσ := hσinv),
+      mkNatTrans_app X Y _ (hδ := hδ) (hσ := hσ)]
     exact Iso.inv_hom_id _
 
 variable {hδ} {hσ}
