@@ -6,7 +6,7 @@ module
 
 public import Mathlib.Algebra.Quaternion
 public import Mathlib.Data.Fin.VecNotation
-public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.GroupTheory.Perm.Sign
 
 @[expose] public section
@@ -48,7 +48,7 @@ def seedOne : Fin 4 → ℝ :=
   ![1, 0, 0, 0]
 
 /-- The coordinate vector of `(1 + i + j + k) / 2`. -/
-def seedHalf : Fin 4 → ℝ :=
+noncomputable def seedHalf : Fin 4 → ℝ :=
   ![1 / 2, 1 / 2, 1 / 2, 1 / 2]
 
 /-- The coordinate vector of `a + i / 2 + b * j`. -/

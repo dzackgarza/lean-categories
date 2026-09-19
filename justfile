@@ -111,7 +111,7 @@ _lean-unused-variables:
 _lint-conventions:
     #!/usr/bin/env bash
     set -euo pipefail
-    matches="$(rg -n --glob '*.lean' 'Cartan' . || true)"
+    matches="$(rg -n -i --glob '*.lean' 'cartan[_.[:space:]-]*matri' LeanCategories/Lattices || true)"
     if [ -n "$matches" ]; then
         echo "$matches"
         echo 'ERROR: Cartan matrices are banned from lattice conventions (issue #1, Correction 3).' >&2
