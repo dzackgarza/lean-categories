@@ -15,11 +15,12 @@ This ports the hyperbolic-plane construction from
 `mariainesdff/HassePrinciple@47df8f51939b364e678893d54e8a3faf6ec52302`,
 `HassePrinciple/QuadraticForm/Basic.lean`. The reference is released under Apache-2.0.
 
-The construction realizes the split binary quadratic form called the hyperbolic plane in
-Peters--Sterk, *Symmetric and Quadratic Forms* (June 2024), Chapter 3 (`FC11-C03-U003`).
-Over the source's fields of characteristic different from two, the associated symmetric
-bilinear form uses half the polarization. The reference formula itself works over any
-commutative ring; this does not assert nondegeneracy for arbitrary coefficient modules.
+The reference construction `XY` is the split form `q(a, b) = ab`. Peters--Sterk,
+*Symmetric and Quadratic Forms* (June 2024), Chapter 3 (`FC11-C03-U003`), use half the
+polarization as their associated symmetric form and normalize the displayed hyperbolic basis by
+`e · f = 1`. Their literal quadratic-form normalization is therefore `q(a, b) = 2ab`, provided
+below as `hyperbolicPlane`. Over the source's fields of characteristic different from two, the two
+forms are equivalent by rescaling one basis vector by `2`.
 -/
 
 @[expose] public section
@@ -46,6 +47,19 @@ noncomputable abbrev XY (b : Basis (Fin 2) R V) : QuadraticForm R V where
         map_add' w z := by ext; simp; ring
         map_smul' r w := by ext; simp; ring }
     exact ⟨B, fun v w ↦ by simp [B]; ring⟩
+
+/-- The Peters--Sterk hyperbolic plane in a supplied basis: `q(a, b) = 2ab`.
+
+With the source convention `x · y = (q (x + y) - q x - q y) / 2`, the two basis vectors
+are isotropic and pair to `1`.
+-/
+noncomputable abbrev hyperbolicPlane (b : Basis (Fin 2) R V) : QuadraticForm R V :=
+  (2 : R) • XY b
+
+@[simp]
+lemma hyperbolicPlane_apply (b : Basis (Fin 2) R V) (v : V) :
+    hyperbolicPlane b v = 2 * (b.repr v 0 * b.repr v 1) := by
+  simp [hyperbolicPlane, XY]
 
 /-- A quadratic form is hyperbolic when it is equivalent to the split binary form `XY`. -/
 def IsHyperbolic (Q : QuadraticForm R V) : Prop :=
