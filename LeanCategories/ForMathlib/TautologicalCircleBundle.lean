@@ -47,7 +47,7 @@ def TautologicalUnitCircleBundle :=
     x.2 ∈ x.1.submodule ∧ ‖x.2‖ = 1}
 
 /-- The subspace topology on the unit-circle total space. -/
-instance : TopologicalSpace TautologicalUnitCircleBundle :=
+noncomputable instance : TopologicalSpace TautologicalUnitCircleBundle :=
   TopologicalSpace.induced Subtype.val inferInstance
 
 /-- Projection of the tautological unit-circle total space to the complex projective line. -/
