@@ -6,6 +6,7 @@ module
 
 public import Mathlib.Algebra.Lie.AdjointAction.JordanChevalley
 public import Mathlib.Algebra.Lie.Semisimple.Defs
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 @[expose] public section
 
