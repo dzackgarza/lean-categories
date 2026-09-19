@@ -25,6 +25,7 @@ sharp/gradient constructions are separate result/dependent-definition content.
 namespace LeanCategories.Topology
 
 open Bundle
+open scoped BigOperators
 
 universe uB uF
 
@@ -50,5 +51,13 @@ def metricDualAt (g : ContMDiffRiemannianMetric IB n F E) (b : B) (v : E b) :
 abbrev metricFlatAt (g : ContMDiffRiemannianMetric IB n F E) (b : B) (v : E b) :
     E b →L[ℝ] ℝ :=
   metricDualAt g b v
+
+/-- Coordinate lowering for a metric matrix: `X_j = Σ_i g_ij X^i`.
+
+This is Lee FC08-C13-U040 at the data level. Identifying `g` and `X` with
+the chart components of `metricDualAt` is a separate comparison statement. -/
+def lowerIndexCoordinates {ι : Type*} [Fintype ι]
+    (g : Matrix ι ι ℝ) (X : ι → ℝ) : ι → ℝ :=
+  fun j => ∑ i, g i j * X i
 
 end LeanCategories.Topology
