@@ -167,4 +167,33 @@ def IsMinimal.reduceByRemainders {hG : m.IsGroebnerBasis G I}
 
 end IsGroebnerBasis
 
+/-- The ordered divisor family obtained by suppressing one positional basis
+entry. Repeated equal polynomials at other positions remain distinct. -/
+def orderedDivisionWithout {σ : Type*} {k : Type*} [Field k] {n : ℕ}
+    (b : Fin n → MvPolynomial σ k) (i : Fin n) : Fin n → MvPolynomial σ k :=
+  Function.update b i 0
+
+/-- Scale an `m`-leading coefficient to one when it is nonzero.
+
+This is only the source normalization operation; the assertion that a
+particular input is nonzero or becomes monic is result content. -/
+noncomputable def normalizeLeadingCoeff {σ : Type*} (m : MonomialOrder σ)
+    {k : Type*} [Field k] (f : MvPolynomial σ k) : MvPolynomial σ k :=
+  C (m.leadingCoeff f)⁻¹ * f
+
+/-- Data-level form of Dummit--Foote's reduction of a minimal Gröbner basis
+(FC01-C09-U062).
+
+For each positional generator `b i`, run a supplied finite number of ordered
+division steps against the same ordered family with position `i` suppressed,
+take the accumulated remainder, and normalize its leading coefficient.
+Minimality, termination to the unique normal remainder, and the assertion that
+the resulting family is a reduced Gröbner basis are all result-layer facts. -/
+noncomputable def reducedGroebnerDataAfter {σ : Type*} (m : MonomialOrder σ)
+    {k : Type*} [Field k] {n : ℕ} (b : Fin n → MvPolynomial σ k)
+    (steps : Fin n → ℕ) : Fin n → MvPolynomial σ k :=
+  fun i =>
+    normalizeLeadingCoeff m
+      (orderedDivisionStateAfter m (orderedDivisionWithout b i) (b i) (steps i)).remainder
+
 end MonomialOrder
