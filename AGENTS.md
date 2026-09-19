@@ -43,13 +43,11 @@ plans, including plans that describe their input mappings as “verified.”
    establishes the obligation independently.
 4. In Definitions and Theorems, implement the actual obligation at its mathematical
    owner. Check the meaning of project definitions used as premises. In the Definitions
-   sweep, transcribe only the source's declaration/construction data. Do not prove, port,
-   schedule, or depend on propositions in order to realize a definition: identities,
-   well-definedness, existence/uniqueness, functoriality, exactness, square-zero,
-   universality, comparison statements, and other results remain Sweep-IV work. If the
-   chosen Lean representation appears to require new theorem work, the representation or
-   reuse route is wrong for Sweep III; use the source data or a reference implementation
-   that already packages the construction. Repair a faulty owner and affected uses before
+   sweep, transcribe only the source's definitions and constructions. Proof work is allowed
+   only when absolutely required to formalize the source definition, under the
+   [construction boundary](#sweep-iii-construction-boundary). Reuse an existing formalization
+   first; a preferred Lean API does not itself justify additional proof work.
+   Repair a faulty owner and affected uses before
    extending that dependency chain. Continue independent mathematics while another worker
    owns the repair.
 5. Commit coherent work using the repository's existing checks. Continue
@@ -85,9 +83,9 @@ definitions pending against 3959 theorems.
 
 So within a source, the Definitions sweep finishes before Theorems work begins.
 Definitions contain no supporting-proof programme: the sweep writes declarations and
-construction data only. Any proposition asserting that the declared data are well defined,
-functorial, exact, square-zero, universal, independent of choices, or satisfy identities belongs
-to Sweep IV unless it is already packaged by the reused implementation. Examples,
+constructions only, with the narrow necessity exception in the
+[construction boundary](#sweep-iii-construction-boundary). Properties and consequences of
+an already formalized definition belong to Sweep IV. Examples,
 counterexamples and witness constructions are theorem work and wait with the rest: a run of
 commits building one counterexample — a product that fails to be epi, a witness space, an
 obstruction — is deep theorem work on a single unit while the definitions its source depends on
@@ -338,26 +336,33 @@ consumer-specific compensations. Unrelated work remains usable and can continue.
 
 Sweep III is transcription of definitions and constructions, not a proof programme. It
 records the source's data, parameters, constructors, predicates, notation, maps, and other
-definitional content at the correct owner. It does not prove anything.
+definitional content at the correct owner. A proof is in scope only when it is absolutely
+required to formalize that exact source definition.
 
-Do not create, port, schedule, or depend on standalone propositions, lemmas, normal-form
-results, well-definedness proofs, identities, functoriality laws, existence/uniqueness
-results, exactness, centrality, square-zero, universality, comparison isomorphisms, or
-examples in order to close a definition unit. Those are Sweep-IV obligations when they are
-part of the admitted corpus. Source prose such as “this makes ... a complex”, “is
-independent”, “is exact”, or “is an isomorphism” is result content, not part of the
-definition merely because it is adjacent to the definition.
+Before doing proof work, identify the source-defined input and output and the precise fact
+without which that definition cannot be formalized. First seek an existing formalization,
+a packaged construction, or a simpler source-faithful representation. A preferred API,
+later consumer, convenient lemma, or adjacent textbook theorem does not establish necessity.
+If a proof is unavoidable, reuse or port the smallest required part of an existing
+formalization, or transcribe a located source argument. Do not invent an argument or expand
+the exception into a background theorem programme.
 
-When the target Lean API seems to require new theorem infrastructure to package a source
-definition, do not build that infrastructure in Sweep III. Change the representation, reuse
-an existing owner, or port a reference implementation that already supplies the packaged
-construction. The absence of a prior Lean implementation does not turn a definition into a
-research problem.
+Defining a predicate or a structure with a law field does not require proving that law for
+an instance. For example, stating the definition of a complex requires no square-zero
+theorem. Constructing a particular complex may require square-zero evidence if that complex
+is itself the requested source construction and no reused owner already supplies it.
+Recording formulas does not require proving their later properties; conversely, a data-only
+record cannot discharge a source obligation that actually asks for the resulting object.
+
+Normal forms, identities, functoriality, existence/uniqueness, exactness, centrality,
+square-zero, universality, comparison isomorphisms, and examples remain Sweep-IV work unless
+the exact fact passes that necessity test. Importing a reference file does not make all its
+theorems part of the current task. Extract only the construction and its necessary support.
 
 Mixed source units are split by grammatical/mathematical role. Only the definitional clause
-is realized in Sweep III; every proposition/result clause remains for Sweep IV. Readiness
-depends only on prerequisite definitions/construction data, never on an unproved theorem.
-An unresolved theorem therefore cannot block an independent definition.
+is realized in Sweep III; proposition/result clauses remain for Sweep IV except for the
+minimum support absolutely required by that definition. Record any such prerequisite at
+the affected definition. It cannot block independent definitions.
 
 ### Judge progress by what later mathematics can safely use
 
@@ -744,7 +749,8 @@ independent sequential plans.
    owners directly, port reference implementations rather than rederive them, and author new
    declarations only for unmatched units. Place every notion at its correct categorical owner,
    defining any missing categories, morphism classes, functors, or universal constructions.
-   Do not introduce proof dependencies; Sweep III contains declaration/construction data only. Establish the
+   Apply the narrow proof-necessity test in the
+   [construction boundary](#sweep-iii-construction-boundary). Establish the
    [definition's source meaning](#establish-the-definition-before-dependent-use) before
    exporting it or building another construction on it.
 4. **Theorem sweep.** Only after the definitional sweep, traverse the catalogue's non-definitional
@@ -985,8 +991,8 @@ successful dependency build do not establish that meaning. Reuse canonical depen
 declarations directly once the mapping comparison establishes the match.
 
 Apply the [construction boundary](#sweep-iii-construction-boundary) to the exact source
-inputs and output. The boundary contains no new proof obligations; propositions and
-applications remain in Sweep IV.
+inputs and output. Only proof support absolutely required to formalize that definition is
+admissible; other propositions and applications remain in Sweep IV.
 
 The source comparison is not a one-time design note. After the source-order Definitions
 passes finish, run the corpus-wide `definition-source-conformance` milestone: re-open the
@@ -1291,7 +1297,8 @@ Before writing any **foundational-corpus** construct, in order:
    category conventions, and morphism classes so the result composes with the library instead of
    shadowing it. Do not create project-local aliases merely to rename dependency declarations.
    Establish the source comparison before exporting the definition or allowing another
-   construction to consume it. Do not add supporting theorem work to Sweep III.
+   construction to consume it. Apply the
+   [construction boundary](#sweep-iii-construction-boundary) before any proof work.
 
 5. **Keep search evidence in the mapping record.** The corpus catalogue owns mathematical
    source content; Sweep II owns implementation provenance. Do not create separate ad hoc route

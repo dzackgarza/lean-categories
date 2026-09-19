@@ -425,14 +425,16 @@ work.
   name or successful build.
 
 Apply [AGENTS.md's construction boundary](AGENTS.md#sweep-iii-construction-boundary): produce
-only the specified declaration/construction data from the source's allowed inputs. Sweep III
-does not prove, port, or schedule supporting propositions. If a chosen encoding demands new
-theorem work, change the encoding or reuse/port a reference implementation that already
-packages the construction.
+only the specified definitions and constructions from the source's allowed inputs. Proof
+work is admitted only when absolutely required to formalize the exact source definition,
+after seeking an existing formalization or a simpler source-faithful representation. Reuse
+the minimum necessary proof support or transcribe a located source argument; a preferred
+API does not justify a supporting theorem programme.
 
 All open source-definition nodes become eligible after Milestone 1. Their unit-level
-definition/construction-data prerequisites determine readiness; theorem/result units never
-block Sweep III. Completion of an earlier book is not an input to an unrelated definition.
+definition/construction prerequisites determine readiness. An absolutely required proof
+prerequisite affects only its dependent definition; it never blocks independent definitions.
+Completion of an earlier book is not an input to an unrelated definition.
 The coordinator serializes Lean checks and integration. Record missing constructions and
 their dependent units in the existing mapping records, retaining source order as the
 tie-breaker. Close the whole-source ledger only after all its obligations are realized.

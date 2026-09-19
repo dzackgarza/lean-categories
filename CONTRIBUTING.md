@@ -24,8 +24,9 @@ does not construct the required object.
 Apply [definition acceptance](AGENTS.md#establish-the-definition-before-dependent-use).
 Compare all defining clauses with the source and preserve the source's actual
 declaration/construction data before export or downstream use. Source examples may
-be used as semantic checks, but Sweep III does not add standalone proof obligations;
-result clauses remain Sweep IV work. Compilation establishes formal derivability,
+be used as semantic checks. Proof work in Sweep III must pass the
+[absolute-necessity test](AGENTS.md#sweep-iii-construction-boundary);
+other result clauses remain Sweep IV work. Compilation establishes formal derivability,
 not fidelity to the named concept.
 
 ## LC-04 — Follow the execution DAG
@@ -99,8 +100,10 @@ the actual reused/imported/ported/authored Lean realization clause-by-clause. Pr
 all declaration data, hypotheses, quantifiers, variance, universe/generalization
 choices, quotient or representative data, and claimed generality. Well-definedness,
 identities, functoriality, existence/uniqueness, exactness, square-zero, universality,
-comparison statements, and analogous propositions remain Sweep IV work unless they
-are already packaged by a reused implementation. Build success, familiar names,
+comparison statements, and analogous propositions remain Sweep IV work unless the exact
+fact is absolutely required to formalize the source definition under the
+[construction boundary](AGENTS.md#sweep-iii-construction-boundary). Reuse existing
+formalizations first. Build success, familiar names,
 downstream theorems, and absence of `sorry` do not establish semantic fidelity.
 
 ## LC-11 — Keep bulk execution state repository-local
