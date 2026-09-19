@@ -178,9 +178,13 @@ look back and ask:
 - **Did this session deliver units, or discuss them?** Mapping comparisons, catalogue
   reconciliation and handoff notes are part of delivering a unit; they are not a unit. A run of
   commits with no new Lean declaration in them means the session drifted into administration.
-- **Did the ledger move, and in source order?** Units delivered out of order are drift even
-  when each one is correct, because the order is what keeps definitions ahead of the theorems
-  that depend on them.
+- **Did the ledger move along the dependency-ready frontier?** Sweep III definitions stay ahead of
+  Sweep IV theorems because the phase boundary enforces that globally; independent definitions do
+  not need an artificial serial order inside Sweep III. Source order is the deterministic
+  tie-breaker among equally ready units, not a back-edge. If the earliest source-order definition
+  is expensive, blocked, or waiting on an owner repair while another definition unit has all of
+  its recorded prerequisites, continue the ready independent definition instead of idling the
+  whole corpus behind one unit.
 - **What made this source cost more than it should have?** A search you repeated, a mapping you
   could not trust, a tool that answered nothing. That is an obstruction; fix it at its owner
   and commit the fix. Working around it silently guarantees the next worker pays it again.

@@ -122,8 +122,11 @@ four sweep plans below. Then:
    them. An open §4a item costs every subsequent source, so it is taken first; if all are
    closed, this step is one glance.
 1. Read the current sweep's plan and the existing source handoff. Resume your claimed
-   source or claim the next available source in the admitted traversal order. Start
-   from the latest delivered mathematics and the next unresolved source unit.
+   source or claim the next available source. Dependency readiness governs selection;
+   admitted source order is the deterministic tie-breaker among units that are equally ready,
+   not a serialization constraint. Start from the latest delivered mathematics and a ready
+   unresolved source unit. Do not hold independent ready definitions behind one expensive or
+   blocked earlier unit.
 2. In Sweep I, catalogue the complete admitted source independently of Lean availability.
    In later sweeps, read that complete catalogue before filtering by kind or route.
    Include terminology, named constructions, mixed definition/theorem units, and later
@@ -400,7 +403,12 @@ the definitional layer. This is deliberate: the greenfield queue is the compleme
 prior art, so realizing early sources while later residue has not yet undergone open-ended search
 would freeze avoidable owned definitions into the dependency graph.
 
-Then traverse each source in v3 order according to its verified mapping:
+Use v3 source order as the default traversal and tie-breaker among equally ready work, according
+to the verified mappings. The dependency frontier is authoritative: if an earlier definition is
+expensive or blocked and a later definition has all recorded prerequisites, continue the ready
+definition rather than serializing the entire Sweep-III corpus behind the earlier unit. The phase
+boundary, not source-order serialization, is what keeps all definitions ahead of Sweep-IV theorem
+work.
 
 - reuse `mathlib`, `project-existing`, and `package-import` owners directly;
 - port/adapt `reference-port` implementations with exact provenance;
