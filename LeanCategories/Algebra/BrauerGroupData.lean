@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import BrauerGroup.BrauerGroup
+public import BrauerGroup.RelativeBrauer
 
 /-!
 # Brauer-group source data
@@ -35,5 +35,10 @@ noncomputable abbrev serreBrauerBaseChange
     (K E : Type u) [Field K] [Field E] [Algebra K E] :
     serreBrauerGroup K →* serreBrauerGroup E :=
   BrauerGroupHom.BaseChange
+
+/-- Dummit--Foote's relative Brauer-group carrier, the kernel of scalar extension
+(FC01-C17-U085). The splitting criterion remains theorem content. -/
+abbrev relativeBrauerGroup (K F : Type u) [Field K] [Field F] [Algebra F K] :=
+  RelativeBrGroup K F
 
 end LeanCategories.Algebra
