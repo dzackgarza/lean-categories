@@ -153,7 +153,7 @@ noncomputable def mkNatTrans: X ⟶ Y :=
         naturality {x y} f := by
           induction f using Paths.induction with
           | id => simp
-          | @comp z t a f g h_rec =>
+          | comp f g h_rec =>
             simp only [Paths.of_obj, Functor.comp_obj, Paths.of_map, Functor.comp_map,
               Functor.map_comp, Category.assoc] at h_rec ⊢
             cases g with
