@@ -26,12 +26,16 @@ namespace LeanCategories.HumphreysE8
 /-- The ambient Euclidean coordinate space in Humphreys' construction. -/
 abbrev Space := Fin 8 → ℝ
 
-/-- Humphreys' parity-constrained half-integral lattice `I''`.
+/-- The parity-constrained half-integral lattice intended by Humphreys' `E8` construction.
 
-Its points have coordinates `zᵢ + c/2`, with `c + ∑ᵢ zᵢ` even. This is the source's subgroup of
-`I + ℤ (ε₁ + ⋯ + ε₈) / 2`. -/
+Its points have coordinates `zᵢ + c/2`, with `∑ᵢ zᵢ` even. This is the subgroup of
+`I + ℤ (ε₁ + ⋯ + ε₈) / 2` whose integral and half-integral vectors have even coordinate sum.
+
+The printed condition `c + ∑ᵢ zᵢ` even is a source typo: it gives half-integral norm-two vectors
+with an odd number of minus signs, contradicting both the immediately displayed even-sign root
+list and the displayed first simple root. -/
 def lattice : Set Space :=
-  {x | ∃ (z : Fin 8 → ℤ) (c : ℤ), Even (c + ∑ i, z i) ∧
+  {x | ∃ (z : Fin 8 → ℤ) (c : ℤ), Even (∑ i, z i) ∧
     x = fun i ↦ (z i : ℝ) + (c : ℝ) / 2}
 
 /-- The squared Euclidean length of a vector in the coordinate model. -/
@@ -44,8 +48,8 @@ def roots : Set Space :=
 
 /-- Humphreys' displayed ordered base for the `E8` carrier. -/
 def simpleRoot : Fin 8 → Space := ![
-  ![-(1 : ℝ) / 2, (1 : ℝ) / 2, (1 : ℝ) / 2, (1 : ℝ) / 2,
-    (1 : ℝ) / 2, (1 : ℝ) / 2, (1 : ℝ) / 2, -(1 : ℝ) / 2],
+  ![(1 : ℝ) / 2, -(1 : ℝ) / 2, -(1 : ℝ) / 2, -(1 : ℝ) / 2,
+    -(1 : ℝ) / 2, -(1 : ℝ) / 2, -(1 : ℝ) / 2, (1 : ℝ) / 2],
   ![1, 1, 0, 0, 0, 0, 0, 0],
   ![-1, 1, 0, 0, 0, 0, 0, 0],
   ![0, -1, 1, 0, 0, 0, 0, 0],
