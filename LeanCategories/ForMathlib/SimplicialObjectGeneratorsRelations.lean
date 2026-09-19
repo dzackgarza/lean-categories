@@ -177,6 +177,8 @@ noncomputable def mkNatTrans: X ⟶ Y :=
 variable {hδ} {hσ}
 
 open SimplexCategoryGenRel in
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The natural transformation built using `mkNatTrans` have the expected application. -/
 @[simp]
 lemma mkNatTrans_app (Δ : SimplexCategory) : (mkNatTrans X Y app hδ hσ).app Δ = app Δ := by
@@ -202,6 +204,8 @@ lemma mkNatTrans_app (Δ : SimplexCategory) : (mkNatTrans X Y app hδ hσ).app �
     CategoryTheory.Functor.map_id, Category.id_comp, this]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 lemma mkNatTrans_comp X Y (Z : CosimplicialObject C) app
     (app' : ∀ (Δ : SimplexCategory), Y.obj Δ ⟶ Z.obj Δ)
     {hδ} {hσ}
@@ -210,16 +214,18 @@ lemma mkNatTrans_comp X Y (Z : CosimplicialObject C) app
     : mkNatTrans X Z (fun n ↦ app n ≫ app' n)
         (by intro n i; rw [reassoc_of%(hδ i), hδ' i]; simp)
         (by intro n i; rw [reassoc_of%(hσ i), hσ' i]; simp)
-      = (mkNatTrans X Y app hδ hσ) ≫ (mkNatTrans Y Z app' hδ' hσ') := by
+  = (mkNatTrans X Y app hδ hσ) ≫ (mkNatTrans Y Z app' hδ' hσ') := by
   ext Δ
-  simp only [mkNatTrans_app, instCategoryCosimplicialObject_comp_app]
+  simp only [mkNatTrans_app, NatTrans.comp_app]
   rw [mkNatTrans_app] <;> assumption
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma mkNatTrans_id :
   mkNatTrans X X (fun x ↦ 𝟙 _) (by simp) (by simp) = 𝟙 X := by
     ext x
-    simp
+    simp only [mkNatTrans_app, NatTrans.id_app]
 
 end MkNatTrans
 
@@ -230,6 +236,8 @@ variable (X Y : CosimplicialObject C)
   (hδ : ∀ {n : ℕ} (i : Fin (n + 2)), X.δ i ≫ (app (.mk (n + 1))).hom = (app (.mk n)).hom ≫ Y.δ i)
   (hσ : ∀ {n : ℕ} (i : Fin (n + 1)), X.σ i ≫ (app (.mk n)).hom = (app (.mk (n + 1))).hom ≫ Y.σ i)
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Construct a natural isomorphism between cosimplicial objects out of an isomorphism that commutes
 with cofaces and codegeneracies. -/
 noncomputable def mkNatIso: X ≅ Y where
@@ -241,12 +249,22 @@ noncomputable def mkNatIso: X ≅ Y where
     (by intro n i
         rw [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp]
         exact (hσ i).symm)
+  hom_inv_id := by
+    ext Δ
+    simp only [NatTrans.comp_app, mkNatTrans_app, NatTrans.id_app, Iso.hom_inv_id]
+  inv_hom_id := by
+    ext Δ
+    simp only [NatTrans.comp_app, mkNatTrans_app, NatTrans.id_app, Iso.inv_hom_id]
 
 variable {hδ} {hσ}
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma mkNatIso_hom_app (Δ : SimplexCategory) :
     (mkNatIso X Y app hδ hσ).hom.app Δ = (app Δ).hom := by simp [mkNatIso]
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma mkNatIso_inv_app (Δ : SimplexCategory) :
     (mkNatIso X Y app hδ hσ).inv.app Δ = (app Δ).inv := by
@@ -375,6 +393,8 @@ noncomputable def mkNatTrans: X ⟶ Y :=
         exact (hσ j).symm)
 
 variable {hδ} {hσ}
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The natural transformation built using mkNatTrans have the expected application. -/
 @[simp]
 lemma mkNatTrans_app (Δ : SimplexCategoryᵒᵖ) : (mkNatTrans X Y app hδ hσ).app Δ = app Δ := by
@@ -385,6 +405,8 @@ lemma mkNatTrans_app (Δ : SimplexCategoryᵒᵖ) : (mkNatTrans X Y app hδ hσ)
   · assumption
   · assumption
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 lemma mkNatTrans_comp X Y (Z : SimplicialObject C) app
     (app' : ∀ (Δ : SimplexCategoryᵒᵖ), Y.obj Δ ⟶ Z.obj Δ)
     {hδ} {hσ}
@@ -395,16 +417,18 @@ lemma mkNatTrans_comp X Y (Z : SimplicialObject C) app
     : mkNatTrans X Z (fun n ↦ app n ≫ app' n)
         (by intro n i; rw [reassoc_of%(hδ i), hδ' i]; simp)
         (by intro n i; rw [reassoc_of%(hσ i), hσ' i]; simp)
-      = (mkNatTrans X Y app hδ hσ) ≫ (mkNatTrans Y Z app' hδ' hσ') := by
+  = (mkNatTrans X Y app hδ hσ) ≫ (mkNatTrans Y Z app' hδ' hσ') := by
   ext Δ
-  simp only [mkNatTrans_app, instCategorySimplicialObject_comp_app]
+  simp only [mkNatTrans_app, NatTrans.comp_app]
   rw [mkNatTrans_app] <;> assumption
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma mkNatTrans_id :
   mkNatTrans X X (fun x ↦ 𝟙 _) (by simp) (by simp) = 𝟙 X := by
     ext x
-    simp
+    simp only [mkNatTrans_app, NatTrans.id_app]
 
 end MkNatTrans
 
@@ -417,6 +441,8 @@ variable (X Y: SimplicialObject C)
   (hσ : ∀ {n : ℕ} (i : Fin (n + 1)),
     X.σ i ≫ (app (.op (.mk (n + 1)))).hom = (app (.op (.mk n))).hom ≫ Y.σ i)
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Construct a natural isomorphism between simplicial objects out of an isomorphism that commutes
 with faces and degeneracies. -/
 noncomputable def mkNatIso: X ≅ Y where
@@ -428,13 +454,23 @@ noncomputable def mkNatIso: X ≅ Y where
     (by intro n i
         rw [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp]
         exact (hσ i).symm)
+  hom_inv_id := by
+    ext Δ
+    simp only [NatTrans.comp_app, mkNatTrans_app, NatTrans.id_app, Iso.hom_inv_id]
+  inv_hom_id := by
+    ext Δ
+    simp only [NatTrans.comp_app, mkNatTrans_app, NatTrans.id_app, Iso.inv_hom_id]
 
 variable {hδ} {hσ}
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma mkNatIso_hom_app (Δ : SimplexCategoryᵒᵖ) :
     (mkNatIso X Y app hδ hσ).hom.app Δ = (app Δ).hom := by simp [mkNatIso]
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma mkNatIso_inv_app (Δ : SimplexCategoryᵒᵖ) :
     (mkNatIso X Y app hδ hσ).inv.app Δ = (app Δ).inv := by
