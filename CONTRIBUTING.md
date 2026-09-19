@@ -102,8 +102,9 @@ the actual reused/imported/ported/authored Lean realization clause-by-clause. Pr
 all declaration data, hypotheses, quantifiers, variance, universe/generalization
 choices, quotient or representative data, and claimed generality. Well-definedness,
 identities, functoriality, existence/uniqueness, exactness, square-zero, universality,
-comparison statements, and analogous propositions remain Sweep IV work unless the exact
-fact is absolutely required to formalize the source definition under the
+comparison statements, and analogous propositions remain Sweep IV work without a
+Sweep-III exception. If a proposed representation requires any such proposition to
+construct the value, use the source-faithful data-level representation required by the
 [construction boundary](AGENTS.md#sweep-iii-construction-boundary). Reuse existing
 formalizations first. Build success, familiar names,
 downstream theorems, and absence of `sorry` do not establish semantic fidelity.
