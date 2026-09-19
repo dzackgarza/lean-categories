@@ -14,9 +14,9 @@ Weibel, *An Introduction to Homological Algebra*, Construction 8.6.4, pp. 278--2
 
 For a cotriple `T` and object `A`, Weibel sets `(T_* A)_n = T^{n+1} A`.  The `i`th face applies the
 counit after `i` outer copies of `T`, and the `i`th degeneracy applies the comultiplication after
-`i` outer copies of `T`.  This file records those construction formulas directly.  The assertion
-that the formulas satisfy the simplicial identities and hence assemble into an augmented
-simplicial object is result-level content of the construction theorem and belongs to Sweep IV.
+`i` outer copies of `T`. This file records those formulas. Their simplicial relations and the
+resulting simplicial object are constructed in `CotripleResolutionSimplicial`; the augmentation
+natural transformation and augmented simplicial object remain to be constructed.
 -/
 
 @[expose] public section
