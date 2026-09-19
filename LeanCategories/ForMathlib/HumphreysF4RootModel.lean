@@ -30,8 +30,8 @@ abbrev Space := Fin 4 → ℝ
 
 Writing a point as `z + n(1,1,1,1)/2` makes the source's generated-lattice description explicit
 without choosing a separate presentation of the additive subgroup. -/
-def lattice (x : Space) : Prop :=
-  ∃ (z : Fin 4 → ℤ) (n : ℤ), x = fun i ↦ (z i : ℝ) + (n : ℝ) / 2
+def lattice : Set Space :=
+  {x | ∃ (z : Fin 4 → ℤ) (n : ℤ), x = fun i ↦ (z i : ℝ) + (n : ℝ) / 2}
 
 /-- The squared Euclidean length of a vector in the coordinate model. -/
 def squaredLength (x : Space) : ℝ :=
@@ -39,7 +39,7 @@ def squaredLength (x : Space) : ℝ :=
 
 /-- Humphreys' root carrier: the vectors in `lattice` of squared length one or two. -/
 def roots : Set Space :=
-  {x | lattice x ∧ (squaredLength x = 1 ∨ squaredLength x = 2)}
+  {x | x ∈ lattice ∧ (squaredLength x = 1 ∨ squaredLength x = 2)}
 
 /-- The displayed ordered base
 `(ε₂-ε₃, ε₃-ε₄, ε₄, (ε₁-ε₂-ε₃-ε₄)/2)` of Humphreys' `F4` model. -/
