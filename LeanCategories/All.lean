@@ -9,6 +9,7 @@ public import LeanCategories.CategoryTheory.PathBicategory
 public import LeanCategories.CategoryTheory.PosetPathLaxFunctor
 public import LeanCategories.ForMathlib.CharacteristicTwoArfInvariant
 public import LeanCategories.AlgebraicGeometry.RelativeProjHypothesis
+public import LeanCategories.AlgebraicGeometry.ValuationCurveData
 public import LeanCategories.ForMathlib.AbstractJordanDecomposition
 public import LeanCategories.ForMathlib.HumphreysE8RootModel
 public import LeanCategories.ForMathlib.HumphreysF4RootModel
