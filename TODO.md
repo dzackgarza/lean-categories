@@ -97,8 +97,7 @@ Within a sweep, source dependencies and traversal order come from the existing
 [source manifest](corpus/foundational-source-corpus.md); unit IDs and
 their mathematical prerequisites come from the complete source catalogues.
 Use `(sweep, source-unit ID)` to distinguish a unit's successive obligations.
-A theorem needed for a definition's construction is an intrinsic prerequisite
-of that construction, not a back-edge requiring all of Sweep IV first.
+Theorem/result units are never prerequisites for Sweep-III definition realization.
 Legacy catalogues are references, not another execution branch.
 
 Preserve task identities and full obligations when recording dependencies.
@@ -426,16 +425,14 @@ work.
   name or successful build.
 
 Apply [AGENTS.md's construction boundary](AGENTS.md#sweep-iii-construction-boundary): produce
-the specified object from the source's allowed inputs, including its necessary proof
-dependencies. Reuse complete formalizations and preserve their supporting lemmas when
-porting; transcribe cited arguments only for the remaining source-specific work. Named
-lemmas and inline proof fields obey the same boundary. Independent results about the
-constructed object remain Sweep-IV work.
+only the specified declaration/construction data from the source's allowed inputs. Sweep III
+does not prove, port, or schedule supporting propositions. If a chosen encoding demands new
+theorem work, change the encoding or reuse/port a reference implementation that already
+packages the construction.
 
 All open source-definition nodes become eligible after Milestone 1. Their unit-level
-construction prerequisites determine readiness; completion of an earlier book is not an
-input to an unrelated definition. Prepare disjoint complete ports and predicate packages
-with lower-effort workers while a separate worker handles a missing shared construction.
+definition/construction-data prerequisites determine readiness; theorem/result units never
+block Sweep III. Completion of an earlier book is not an input to an unrelated definition.
 The coordinator serializes Lean checks and integration. Record missing constructions and
 their dependent units in the existing mapping records, retaining source order as the
 tie-breaker. Close the whole-source ledger only after all its obligations are realized.
