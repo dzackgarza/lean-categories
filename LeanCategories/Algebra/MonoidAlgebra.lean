@@ -72,3 +72,40 @@ def augmentationGenerators (K : Type v) [Monoid K] : Set (MonoidAlgebra R K) :=
   Set.range fun k : K => single k 1 - 1
 
 end MonoidAlgebra
+
+namespace MonoidAlgebra
+
+universe v
+
+/-!
+## Integral group rings
+
+Serre's notation in *Local Fields*, Chapter VII, specializes the preceding
+monoid-algebra constructions to the integral group ring `ℤ[G]`.
+-/
+
+/-- The coefficient-sum augmentation `ℤ[G] → ℤ` used by Serre
+(FC10-C07-U020). -/
+noncomputable abbrev groupAugmentation (G : Type v) [Group G] :
+    MonoidAlgebra ℤ G →+* ℤ :=
+  augmentation ℤ G
+
+/-- Serre's augmentation ideal `I_G = ker(ℤ[G] → ℤ)` (FC10-C07-U020). -/
+noncomputable abbrev groupAugmentationIdeal (G : Type v) [Group G] :
+    Ideal (MonoidAlgebra ℤ G) :=
+  augmentationIdeal ℤ G
+
+/-- Serre's distinguished augmentation element `i_g = g - 1`
+(FC10-C07-U020). -/
+def groupAugmentationGenerator (G : Type v) [Group G] (g : G) :
+    MonoidAlgebra ℤ G :=
+  single g 1 - 1
+
+/-- The raw set of Serre's elements `i_g = g - 1`.
+
+The assertion that these elements generate `I_G` is theorem content and is
+not part of this Sweep-III construction. -/
+def groupAugmentationGenerators (G : Type v) [Group G] : Set (MonoidAlgebra ℤ G) :=
+  Set.range (groupAugmentationGenerator G)
+
+end MonoidAlgebra
