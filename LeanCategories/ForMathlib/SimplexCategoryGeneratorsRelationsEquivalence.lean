@@ -354,6 +354,7 @@ theorem existsUnique_toSimplexCategory_map
   have hemap : toSimplexCategory.map e₂' = epi₁ := by
     have h := congrArg (fun e => eqToHom q₁.symm ≫ e ≫ eqToHom im₂)
       (eq2.symm.trans eq4)
+    simp only [e₂', Functor.map_comp, eqToHom_map]
     change eqToHom q₁.symm ≫ toSimplexCategory.map e₂ ≫
       eqToHom (im₁.symm.trans im₂) = epi₁
     simpa only [e₃, e₄, Category.assoc, eqToHom_trans_assoc, eqToHom_trans,
@@ -361,6 +362,7 @@ theorem existsUnique_toSimplexCategory_map
   have hmmap : toSimplexCategory.map m₂' = mono₁ := by
     have h := congrArg (fun m => eqToHom im₂.symm ≫ m ≫ eqToHom q₂.symm)
       (eq1.symm.trans eq3)
+    simp only [m₂', Functor.map_comp, eqToHom_map]
     change eqToHom (im₂.symm.trans im₁) ≫ toSimplexCategory.map m₂ ≫
       eqToHom q₂.symm = mono₁
     simpa only [m₃, m₄, Category.assoc, eqToHom_trans_assoc, eqToHom_trans,
