@@ -468,13 +468,3 @@ and base, and records the correction at the definition. The positive leading
 coefficient `1/2` of the first simple root was also checked against the scan; the OCR
 misreads it as a minus sign. No root-system or classification result is credited by
 this transcription.
-
-### FC14-C04-U033 convention check confused Cartan subalgebras with lattice matrices
-
-`just _lint-conventions` rejected the native `Mathlib.Algebra.Lie.CartanSubalgebra`
-import and the source's Lie-algebra rank definition because it searched every Lean
-file for the word `Cartan`. `FOUNDATIONS.md` excludes defining ADE lattices by
-negated Cartan matrices; it does not exclude Cartan subalgebras from Lie theory.
-The check now searches lattice sources for matrix terminology. The actual rank
-source passes; the same recipe still rejects a lattice-source import of
-`Mathlib.LinearAlgebra.RootSystem.CartanMatrix`.

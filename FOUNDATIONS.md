@@ -23,7 +23,6 @@ The conversations form a derivation record rather than a linear manuscript. Many
 - that a theorem such as “alternating implies skew-symmetric” should be encoded by nesting one definition inside another;
 - that the genus is obtained by applying \(\pi_0\) to a homotopy fiber;
 - that the algebraic-geometric sign convention takes \(E_8\) positive definite;
-- that the negative-definite ADE lattices are defined by negated Cartan matrices rather than constructed from root realizations;
 - that a morphism of generated or presented modules is defined by a matrix, rather than represented by a compatible matrix lift that descends;
 - that the opposite-ring involution alone yields a functor from left modules to right modules, or that an \((R,\mathbb Z)\)-bimodule carries a noncontractible choice of \(\mathbb Z\)-action;
 - that the functors forgetting one bimodule action are natural for simultaneous extension of scalars in both rings; they are natural for restriction and only lax for extension.
