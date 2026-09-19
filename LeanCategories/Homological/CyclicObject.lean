@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+public import Mathlib.Data.Fin.Tuple.Basic
 
 /-!
 # Cyclic objects
@@ -52,5 +53,73 @@ structure CyclicObject where
   /-- `s_i t_n = t_{n+1} s_{i-1}` for `i>0`. -/
   degeneracy_succ : ∀ (n : ℕ) (i : Fin n),
     (t n).hom ≫ obj.σ i.succ = obj.σ i.castSucc ≫ (t (n + 1)).hom
+
+/-! ## The group examples of 9.6.2: construction data
+
+Sweep III records only the degreewise sets and displayed operators from Weibel's
+Example 9.6.2. Showing that these operators satisfy the simplicial/cyclic
+identities, assembling them into `CyclicObject`s, and identifying the free
+linearization of `ZG` with the cyclic module of the group algebra are result
+clauses and are deliberately not part of these definitions.
+-/
+
+section GroupCyclicSetData
+
+variable (G : Type*) [Group G]
+
+/-- Degree `n` of Weibel's cyclic set `ZG`: an `(n+1)`-tuple of group elements. -/
+abbrev groupCyclicDegree (n : ℕ) := Fin (n + 1) → G
+
+/-- Degree `n` of the classifying simplicial set `BG`: an `n`-tuple of group elements. -/
+abbrev groupClassifyingDegree (n : ℕ) := Fin n → G
+
+/-- The ordered product of a finite tuple. The order matters for noncommutative groups. -/
+def groupTupleProduct {n : ℕ} (g : Fin n → G) : G :=
+  (List.ofFn g).prod
+
+/-- The adjacent face of `ZG`, multiplying entries `i` and `i+1` and deleting the latter. -/
+def groupCyclicAdjacentFace {n : ℕ} (i : Fin (n + 1))
+    (g : groupCyclicDegree G (n + 1)) : groupCyclicDegree G n :=
+  Fin.removeNth i.succ
+    (Function.update g i.castSucc (g i.castSucc * g i.succ))
+
+/-- The last face of `ZG`,
+`(g₀,…,gₙ₊₁) ↦ (gₙ₊₁g₀,g₁,…,gₙ)`. -/
+def groupCyclicLastFace {n : ℕ}
+    (g : groupCyclicDegree G (n + 1)) : groupCyclicDegree G n :=
+  Fin.cons (g (Fin.last (n + 1)) * g 0) (fun i : Fin n => g i.succ.castSucc)
+
+/-- The displayed face data of `ZG`: adjacent multiplication except at the last face. -/
+def groupCyclicFace {n : ℕ} (i : Fin (n + 2))
+    (g : groupCyclicDegree G (n + 1)) : groupCyclicDegree G n :=
+  Fin.lastCases (groupCyclicLastFace G g)
+    (fun j => groupCyclicAdjacentFace G j g) i
+
+/-- The displayed degeneracy of `ZG`, inserting the identity immediately after entry `i`. -/
+def groupCyclicDegeneracy {n : ℕ} (i : Fin (n + 1))
+    (g : groupCyclicDegree G n) : groupCyclicDegree G (n + 1) :=
+  Fin.insertNth i.succ 1 g
+
+/-- The displayed cyclic rotation of `ZG`, moving the last entry to the front. -/
+def groupCyclicRotate {n : ℕ}
+    (g : groupCyclicDegree G n) : groupCyclicDegree G n :=
+  Fin.cons (g (Fin.last n)) (Fin.init g)
+
+/-- The displayed cyclic rotation on `BG`.
+In positive degree it sends
+`(g₁,…,gₙ)` to `((g₁⋯gₙ)⁻¹,g₁,…,gₙ₋₁)`; degree zero is the unique endomap. -/
+def groupClassifyingRotate :
+    (n : ℕ) → groupClassifyingDegree G n → groupClassifyingDegree G n
+  | 0 => id
+  | _n + 1 => fun g =>
+      Fin.cons (groupTupleProduct G g)⁻¹ (Fin.init g)
+
+/-- The degreewise map `BG → ZG` from Example 9.6.2, obtained by prepending the
+inverse ordered product. -/
+def groupClassifyingToCyclic {n : ℕ}
+    (g : groupClassifyingDegree G n) : groupCyclicDegree G n :=
+  Fin.cons (groupTupleProduct G g)⁻¹ g
+
+end GroupCyclicSetData
 
 end LeanCategories.Homological
