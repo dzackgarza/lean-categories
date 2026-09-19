@@ -25,6 +25,13 @@ variable [TopologicalSpace E] [TopologicalSpace E'] [TopologicalSpace B]
 def CoveringEquivalent (p : E → B) (q : E' → B) : Prop :=
   ∃ h : E ≃ₜ E', p = q ∘ h
 
+/-- A universal covering map is a covering map with simply connected total space.
+
+This is the definition-level clause of Hatcher FC07-C01-U043.  The theorem that
+such a cover factors through every connected covering is result content. -/
+def IsUniversalCover (p : E → B) : Prop :=
+  IsCoveringMap p ∧ SimplyConnectedSpace E
+
 /-- Covering transformations of a map, bundled as a subgroup of self-homeomorphisms
 (FC02-C13-U014). -/
 def deckGroup (p : E → B) : Subgroup (E ≃ₜ E) where
