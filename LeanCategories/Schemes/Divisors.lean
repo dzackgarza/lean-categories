@@ -89,6 +89,13 @@ namespace WeilDivisor
 /-- A Weil divisor is effective when every prime-divisor coefficient is nonnegative. -/
 def IsEffective (D : WeilDivisor X) : Prop := ∀ Y, 0 ≤ D Y
 
+/-- Hartshorne's degree of a divisor on a nonsingular curve: the sum of its
+integer coefficients (FC06-C02-U174). This declaration records only the
+finite-support construction already carried by `WeilDivisor`; compatibility
+with finite curve maps is result content. -/
+def degree (D : WeilDivisor X) : ℤ :=
+  D.sum fun _ n => n
+
 /-- The basis Weil divisor associated to a prime divisor. -/
 noncomputable def prime (Y : PrimeDivisor X) : WeilDivisor X := by
   classical
