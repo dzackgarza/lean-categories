@@ -456,3 +456,15 @@ C01-U070 was held unmatched for lack of the norm-of-different comparison, while 
 ### FC09-C01-U115 extraction confuses length additivity with multiplication
 
 The extracted source says module length is multiplicative on short exact sequences. The split sequence 0→κ→κ²→κ→0 has lengths 1,2,1, whereas the native owner `Module.length_eq_add_of_exact` proves the required additive identity. The canonical source now marks the extraction correction explicitly. The mapping uses that actual owner through `Ring.ordFrac` and does not attribute the erroneous word to an uninspected printed edition.
+
+### FC14-C03-U049 printed E8 parity condition conflicts with its displayed roots
+
+The [scanned p. 65 of Humphreys](https://djvu.online/jpg2/X/w/7/Xw7ovfkTWqu21/077.webp)
+requires `c + ∑ c_i` even for vectors `∑ c_i ε_i + (c/2)∑ ε_i`, then lists
+half-integral roots with an even number of minus signs. Its first simple root has
+`c=1` and six coefficients `c_i=-1`, so the printed condition excludes that root.
+`HumphreysE8RootModel.lean` uses `∑ c_i` even, agreeing with the displayed root list
+and base, and records the correction at the definition. The positive leading
+coefficient `1/2` of the first simple root was also checked against the scan; the OCR
+misreads it as a minus sign. No root-system or classification result is credited by
+this transcription.

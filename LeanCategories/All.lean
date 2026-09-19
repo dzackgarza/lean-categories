@@ -5,6 +5,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories
+public import LeanCategories.AlgebraicGeometry.RelativeProjHypothesis
+public import LeanCategories.ForMathlib.AbstractJordanDecomposition
+public import LeanCategories.ForMathlib.HumphreysE8RootModel
+public import LeanCategories.ForMathlib.HumphreysF4RootModel
 public import LeanCategories.CategoryTheory.WalkingArrow
 public import LeanCategories.CategoryTheory.EssentiallyDiscrete
 public import LeanCategories.CategoryTheory.FiniteDimensionalCoordinates
