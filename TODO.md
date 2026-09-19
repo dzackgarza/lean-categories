@@ -213,10 +213,12 @@ four sweep plans below. Then:
    this point; reuse an existing still-valid comparison, and repair a false match in
    its current mapping record.
 4. In Sweeps III–IV, implement the unit at its canonical owner. Before a definition is
-   exported or consumed, compare it with the source, check intended and excluded examples, and
-   finish the laws needed for the construction. Inspect the meaning of project-owned
-   premises before extending them. Repair an incorrect owner and affected uses before
-   continuing that dependency chain; proceed with independent work when another agent
+   exported or consumed, compare it with the source and check intended and excluded examples.
+   In Sweep III, transcribe declaration/construction data only; laws, identities,
+   well-definedness, descent, existence/uniqueness, and other propositions remain Sweep IV
+   even if a convenient API bundles them into a constructor. Inspect the meaning of
+   project-owned premises before extending them. Repair an incorrect owner and affected uses
+   before continuing that dependency chain; proceed with independent work when another agent
    owns the repair.
 5. Commit coherent work through the existing repository checks and continue through the
    source. Before ticking its box, return to every source unit required by this sweep,

@@ -24,10 +24,12 @@ does not construct the required object.
 Apply [definition acceptance](AGENTS.md#establish-the-definition-before-dependent-use).
 Compare all defining clauses with the source and preserve the source's actual
 declaration/construction data before export or downstream use. Source examples may
-be used as semantic checks. Proof work in Sweep III must pass the
-[absolute-necessity test](AGENTS.md#sweep-iii-construction-boundary);
-other result clauses remain Sweep IV work. Compilation establishes formal derivability,
-not fidelity to the named concept.
+be used as semantic checks. Sweep III contains no proof work: if a proposed Lean
+representation requires a law, identity, well-definedness theorem, descent proof,
+existence/uniqueness result, or other proposition in order to build the value, use a
+source-faithful data-level representation instead. All proposition/result clauses remain
+Sweep IV work. Compilation establishes formal derivability, not fidelity to the named
+concept.
 
 ## LC-04 — Follow the execution DAG
 

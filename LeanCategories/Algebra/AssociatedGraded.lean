@@ -73,6 +73,14 @@ ring-law or quotient well-definedness result is part of Sweep III. -/
 abbrev FiltrationAssociatedGraded (J : ℕ → Ideal R) :=
   ⨁ n : ℕ, FiltrationAssociatedGradedPiece J n
 
+/-- Degree `n` of the `I`-adic associated graded object (`FC13-C05-U006`). -/
+abbrev IAdicAssociatedGradedPiece (I : Ideal R) (n : ℕ) :=
+  FiltrationAssociatedGradedPiece (fun k : ℕ => I ^ k) n
+
+/-- The source carrier `gr_I(R) = ⨁ n, I^n / I^(n+1)`. -/
+abbrev IAdicAssociatedGraded (I : Ideal R) :=
+  FiltrationAssociatedGraded (fun n : ℕ => I ^ n)
+
 /-- The copy of `I^(n+1)` inside `I^n`. -/
 abbrev associatedGradedRingLower (I : Ideal R) (n : ℕ) :
     Submodule R ↥((I ^ n : Ideal R) : Submodule R R) :=
@@ -546,5 +554,16 @@ example (n : ℕ) (m : F.associatedGradedModuleLower n) :
   exact m.2
 
 end Filtration
+
+/-- Degree `n` of the `I`-adic associated graded module of `M`
+(`FC13-C05-U014`). -/
+abbrev IAdicAssociatedGradedModulePiece (I : Ideal R) (M : Type*)
+    [AddCommGroup M] [Module R M] (n : ℕ) :=
+  (I.stableFiltration (⊤ : Submodule R M)).AssociatedGradedModulePiece n
+
+/-- The source carrier `gr_I(M) = ⨁ n, I^n M / I^(n+1) M`. -/
+abbrev IAdicAssociatedGradedModule (I : Ideal R) (M : Type*)
+    [AddCommGroup M] [Module R M] :=
+  (I.stableFiltration (⊤ : Submodule R M)).AssociatedGradedModule
 
 end Ideal
