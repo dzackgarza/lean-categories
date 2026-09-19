@@ -61,6 +61,75 @@ def OrderedDivisionStep {σ : Type*} (m : MonomialOrder σ) {k : Type*} [Field k
       (∀ i : Fin n, b i = 0 ∨ ¬m.degree (b i) ≤ m.degree state.1) ∧
       next = (state.1 - m.leadingTerm state.1, state.2 + m.leadingTerm state.1))
 
+/-- Data carried by the source ordered multivariate-division procedure.
+
+`current` is the polynomial still to be reduced, `quotients i` is the
+coefficient accumulated at the `i`th divisor, and `remainder` is the
+accumulated remainder. Divisor positions are retained, so repeated equal
+polynomials remain distinct entries exactly as in the ordered source list
+(FC01-C09-U052). -/
+structure OrderedDivisionState (σ : Type*) (k : Type*) [Field k] (n : ℕ) where
+  current : MvPolynomial σ k
+  quotients : Fin n → MvPolynomial σ k
+  remainder : MvPolynomial σ k
+
+/-- The initial state of ordered multivariate division. -/
+def orderedDivisionInitialState {σ : Type*} {k : Type*} [Field k] {n : ℕ}
+    (f : MvPolynomial σ k) : OrderedDivisionState σ k n where
+  current := f
+  quotients := 0
+  remainder := 0
+
+/-- The first divisor position whose leading monomial divides the current
+leading monomial. This is the source's ordered first-applicable-divisor
+choice; no termination statement is part of this definition. -/
+noncomputable def orderedDivisionFirstDivisor? {σ : Type*} (m : MonomialOrder σ)
+    {k : Type*} [Field k] {n : ℕ} (b : Fin n → MvPolynomial σ k)
+    (f : MvPolynomial σ k) : Option (Fin n) := by
+  classical
+  exact (List.finRange n).find? fun i =>
+    decide (b i ≠ 0 ∧ m.degree (b i) ≤ m.degree f)
+
+/-- The quotient monomial used when the `i`th divisor cancels the current
+leading term. -/
+noncomputable def orderedDivisionQuotientTerm {σ : Type*} (m : MonomialOrder σ)
+    {k : Type*} [Field k] {n : ℕ} (b : Fin n → MvPolynomial σ k)
+    (state : OrderedDivisionState σ k n) (i : Fin n) : MvPolynomial σ k :=
+  monomial (m.degree state.current - m.degree (b i))
+    ((m.leadingCoeff (b i))⁻¹ * m.leadingCoeff state.current)
+
+/-- One deterministic data step of Dummit--Foote's ordered multivariate
+division algorithm (FC01-C09-U052).
+
+If an ordered divisor applies, the first such position is used and its
+positional quotient accumulator is increased. Otherwise the current leading
+term is moved to the remainder. Termination and every equation satisfied by
+the eventual output are result-layer statements. -/
+noncomputable def orderedDivisionDataStep {σ : Type*} (m : MonomialOrder σ)
+    {k : Type*} [Field k] {n : ℕ} (b : Fin n → MvPolynomial σ k)
+    (state : OrderedDivisionState σ k n) : OrderedDivisionState σ k n := by
+  classical
+  match orderedDivisionFirstDivisor? m b state.current with
+  | some i =>
+      let q := orderedDivisionQuotientTerm m b state i
+      exact
+        { current := state.current - q * b i
+          quotients := Function.update state.quotients i (state.quotients i + q)
+          remainder := state.remainder }
+  | none =>
+      exact
+        { current := state.current - m.leadingTerm state.current
+          quotients := state.quotients
+          remainder := state.remainder + m.leadingTerm state.current }
+
+/-- The complete quotient/remainder state after a specified number of source
+division steps. This fuelled construction keeps Sweep III free of the
+well-founded termination proof. -/
+noncomputable def orderedDivisionStateAfter {σ : Type*} (m : MonomialOrder σ)
+    {k : Type*} [Field k] {n : ℕ} (b : Fin n → MvPolynomial σ k)
+    (f : MvPolynomial σ k) (steps : ℕ) : OrderedDivisionState σ k n :=
+  (orderedDivisionDataStep m b)^[steps] (orderedDivisionInitialState f)
+
 /-- `r` is the remainder produced by the textbook ordered multivariate-division
 procedure applied to `f` and the ordered divisor family `b`.  This is the
 definition-level relation underlying the ordered division algorithm FC01-C09-U052;
