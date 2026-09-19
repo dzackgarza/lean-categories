@@ -36,7 +36,7 @@ structure IsFormalGroupEndomorphism (F : FormalGroup O) (f : PowerSeries O) : Pr
   zero_constantCoeff : f.constantCoeff = 0
   /-- The equation `f(F(X,Y)) = F(f(X),f(Y))`. -/
   map_formalGroup : f.subst F.toPowerSeries =
-    F.toPowerSeries.subst (f.toMvPowerSeries ·)
+    F.toPowerSeries.subst (fun i => PowerSeries.subst (MvPowerSeries.X i) f)
 
 /-- A formal `O`-module: a formal group over `O` together with the scalar endomorphisms
 `[a]_F(X)`, written as the equations expressing the ring homomorphism
