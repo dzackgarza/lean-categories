@@ -443,7 +443,7 @@ lemma mkNatTrans_comp X Y (Z : SimplicialObject C) app
   generalize_proofs hδcomp hσcomp
   ext Δ
   simp only [NatTrans.comp_app]
-  erw [mkNatTrans_app X Z _ (hδ := hδcomp) (hσ := hσcomp),
+  rw [mkNatTrans_app X Z _ (hδ := hδcomp) (hσ := hσcomp),
     mkNatTrans_app X Y app (hδ := hδ) (hσ := hσ),
     mkNatTrans_app Y Z app' (hδ := hδ') (hσ := hσ')]
 
@@ -455,7 +455,7 @@ lemma mkNatTrans_id :
     generalize_proofs hδid hσid
     ext x
     simp only [NatTrans.id_app]
-    erw [mkNatTrans_app X X _ (hδ := hδid) (hσ := hσid)]
+    rw [mkNatTrans_app X X _ (hδ := hδid) (hσ := hσid)]
 
 end MkNatTrans
 
@@ -485,14 +485,14 @@ noncomputable def mkNatIso: X ≅ Y where
     generalize_proofs hδinv hσinv
     ext Δ
     simp only [NatTrans.comp_app, NatTrans.id_app]
-    erw [mkNatTrans_app X Y _ (hδ := hδ) (hσ := hσ),
+    rw [mkNatTrans_app X Y _ (hδ := hδ) (hσ := hσ),
       mkNatTrans_app Y X _ (hδ := hδinv) (hσ := hσinv)]
     exact Iso.hom_inv_id _
   inv_hom_id := by
     generalize_proofs hδinv hσinv
     ext Δ
     simp only [NatTrans.comp_app, NatTrans.id_app]
-    erw [mkNatTrans_app Y X _ (hδ := hδinv) (hσ := hσinv),
+    rw [mkNatTrans_app Y X _ (hδ := hδinv) (hσ := hσinv),
       mkNatTrans_app X Y _ (hδ := hδ) (hσ := hσ)]
     exact Iso.inv_hom_id _
 
