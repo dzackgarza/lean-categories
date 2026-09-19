@@ -16,11 +16,11 @@ This ports the majority-count construction from
 `GQ2/QuadraticFp2.lean`. The reference is released under Apache-2.0.
 
 Peters--Sterk, *Symmetric and Quadratic Forms* (June 2024), §16.3
-(`FC11-C16-U023`), call the Arf invariant of a finite nonsingular quadratic space over `𝔽₂`
+(`FC11-C16-U023`), call the Arf invariant of a finite quadratic space of type I or II over `𝔽₂`
 the democratic invariant: it is the value taken by the quadratic form on the majority of
-vectors. The construction below records that convention for Mathlib quadratic forms. It is
-total on finite quadratic forms; the source comparison applies on the stated nonsingular domain,
-where the two fibers have different cardinalities.
+vectors. These are precisely the even-dimensional cases in Table 16.3.2, where the polar form
+is nondegenerate. The odd semi-unimodular type III spaces in the surrounding section have tied
+fiber counts and are outside this convention.
 -/
 
 @[expose] public section
@@ -33,13 +33,16 @@ variable {V : Type*} [AddCommGroup V] [Module (ZMod 2) V] [Finite V]
 noncomputable def zeroCount (q : QuadraticForm (ZMod 2) V) : ℕ :=
   Nat.card {v : V // q v = 0}
 
-/-- The democratic, or majority-value, invariant of a finite quadratic form over `𝔽₂`.
+/-- The democratic, or majority-value, invariant of a finite quadratic form over `𝔽₂`
+with nondegenerate polar form.
 
-It is zero exactly when the zero fiber is a strict majority; otherwise it is one. On the
-nonsingular spaces in Peters--Sterk §16.3, a tie cannot occur and this is the classical Arf
-invariant.
+It is zero when the zero fiber is a strict majority and one otherwise. The nondegeneracy
+hypothesis records the source's type-I/type-II domain and excludes its tied type-III case. This
+is the source's democratic convention; no theorem comparing it with another Arf construction
+is asserted here.
 -/
-noncomputable def democraticArfInvariant (q : QuadraticForm (ZMod 2) V) : ZMod 2 :=
+noncomputable def democraticArfInvariant (q : QuadraticForm (ZMod 2) V)
+    (_hq : q.polarBilin.Nondegenerate) : ZMod 2 :=
   if 2 * zeroCount q > Nat.card V then 0 else 1
 
 end LeanCategories.ForMathlib.QuadraticMap
