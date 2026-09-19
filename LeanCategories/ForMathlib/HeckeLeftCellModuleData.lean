@@ -9,15 +9,18 @@ public import Mathlib.LinearAlgebra.Quotient.Basic
 @[expose] public section
 
 /-!
-# Underlying modules of left-cell modules
+# Generic span and quotient helpers for left-cell modules
 
 Humphreys, *Reflection Groups and Coxeter Groups*, Section 7.15, pp. 169--170
 (FC15-C07-U043), forms two spans in the Hecke algebra from a left cell `Z`: the span of canonical
 basis elements weakly below `Z`, and the span of those strictly below `Z`. The left-cell module is
 their quotient.
 
-This file records the two spans and the underlying `A`-module quotient. Their stability under the
-Hecke action, the basis indexed by `Z`, and the resulting representation are subsequent results.
+This file records generic set, span, and underlying `A`-module quotient operations for a supplied
+preorder and family of vectors. It does not by itself realize FC15-C07-U043: that unit uses the
+specific Kazhdan--Lusztig basis and left-cell preorder, and its quotient carries the Hecke-module
+action induced by the two spans being left ideals. The canonical basis, ideal stability, free basis
+indexed by `Z`, Hecke action, and right-cell and two-sided analogues are absent here.
 -/
 
 namespace LeanCategories.Hecke
@@ -45,8 +48,8 @@ def leftCellLowerInUpper (canonicalBasis : W → H) (Z : Set W) :
     Submodule A (leftCellUpperSpan canonicalBasis Z) :=
   (leftCellLowerSpan canonicalBasis Z).comap (leftCellUpperSpan canonicalBasis Z).subtype
 
-/-- The underlying `A`-module of Humphreys' left-cell module. -/
-def leftCellModule (canonicalBasis : W → H) (Z : Set W) : Type _ :=
+/-- The scalar-module quotient underlying a prospective left-cell module. -/
+def leftCellModuleCarrier (canonicalBasis : W → H) (Z : Set W) : Type _ :=
   (leftCellUpperSpan canonicalBasis Z) ⧸ (leftCellLowerInUpper canonicalBasis Z)
 
 end LeanCategories.Hecke
