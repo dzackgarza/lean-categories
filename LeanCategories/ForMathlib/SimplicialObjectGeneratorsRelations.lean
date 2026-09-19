@@ -106,10 +106,10 @@ noncomputable def ofGeneratorsAndRelationsObjMkIso (n : ℕ) :
   exact ((_ : SimplexCategoryGenRel ⥤ C).mapIso (equivSimplexCategory_inverse_objIsoMk n)).trans
     (Iso.refl _)
 
-/-- Up to the same isomorphisms, a cosimplicial object defined by generators and relations
-has the provided functoriality maps for `σ`. -/
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.types false in
+/-- Up to the same isomorphisms, a cosimplicial object defined by generators and relations
+has the provided functoriality maps for `σ`. -/
 @[reassoc (attr := simp)]
 lemma ofGeneratorsAndRelations_map_σ {n : ℕ} (i : Fin (n + 1)) :
     (ofGeneratorsAndRelationsObjMkIso X σ δ s1 s2 s3₁ s3₂ s4 s5 (n + 1)).inv ≫
@@ -119,10 +119,10 @@ lemma ofGeneratorsAndRelations_map_σ {n : ℕ} (i : Fin (n + 1)) :
   simp [CosimplicialObject.σ, ofGeneratorsAndRelations, ofGeneratorsAndRelationsObjMkIso,
     ← Functor.map_comp, Quotient.lift_map_functor_map]
 
-/-- Up to the same isomorphisms, a cosimplicial object defined by generators and relations
-has the provided functoriality maps for `δ`. -/
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.types false in
+/-- Up to the same isomorphisms, a cosimplicial object defined by generators and relations
+has the provided functoriality maps for `δ`. -/
 @[reassoc (attr := simp)]
 lemma ofGeneratorsAndRelations_map_δ {n : ℕ} (i : Fin (n + 2)) :
     (ofGeneratorsAndRelationsObjMkIso X σ δ s1 s2 s3₁ s3₂ s4 s5 n).inv ≫
@@ -325,10 +325,10 @@ lemma ofGeneratorsAndRelations_map_σ {n : ℕ} (i : Fin (n + 1)) :
       (fun n ↦ Opposite.op (X n)) (fun j ↦ (σ j).op) (fun j ↦ (δ j).op) p₁ p₂ p₃ p₄ p₅ p₆ i]
   simp
 
-/-- Up to the same isomorphisms, a simplicial object defined by generators and relations
-has the provided functoriality maps for `δ`. -/
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.types false in
+/-- Up to the same isomorphisms, a simplicial object defined by generators and relations
+has the provided functoriality maps for `δ`. -/
 @[reassoc (attr := simp)]
 lemma ofGeneratorsAndRelations_map_δ {n : ℕ} (i : Fin (n + 2)) :
     (ofGeneratorsAndRelationsObjMkIso X σ δ s1 s2 s3₁ s3₂ s4 s5 (n + 1)).hom ≫
