@@ -156,6 +156,7 @@ noncomputable def mkNatTrans: X ⟶ Y :=
           | comp f g h_rec =>
             simp only [Paths.of_obj, Functor.comp_obj, Paths.of_map, Functor.comp_map,
               Functor.map_comp, Category.assoc] at h_rec ⊢
+            change FreeSimplexQuiver.Hom _ _ at g
             cases g with
             | @δ n i =>
               slice_rhs 1 2 => rw [← h_rec]
