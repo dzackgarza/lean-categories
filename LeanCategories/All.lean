@@ -74,6 +74,7 @@ public import LeanCategories.ForMathlib.BicategoryHomotopyCategory
 public import LeanCategories.ForMathlib.DenseIntegralCompletion
 public import LeanCategories.ForMathlib.DemocraticArfInvariant
 public import LeanCategories.ForMathlib.TautologicalCircleBundle
+public import LeanCategories.ForMathlib.RiemannIntegralOverBoundedSet
 public import LeanCategories.ForMathlib.FiltrationTopology
 public import LeanCategories.ForMathlib.FiltrationGraded
 public import LeanCategories.ForMathlib.GaussianPrimeIdeals
