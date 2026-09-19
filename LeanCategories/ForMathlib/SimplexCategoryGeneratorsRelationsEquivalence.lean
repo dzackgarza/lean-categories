@@ -218,6 +218,7 @@ theorem existsUnique_P_δ_of_mono {m k : ℕ} (f : SimplexCategory.mk m ⟶ .mk 
     exact hv.symm
   · exact hL₁.trans hL₂.symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem existsUnique_toSimplexCategory_map
     {x y : SimplexCategoryGenRel}
     (f : toSimplexCategory.obj x ⟶ toSimplexCategory.obj y)
