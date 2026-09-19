@@ -29,51 +29,50 @@ universe u
 
 variable {Q : Type u} [PartialOrder Q]
 
-/-- The path associated to an order relation: its vertices are its two endpoints. -/
-private noncomputable def posetPathOfLE {x y : Q} (h : x ≤ y) : PosetPath Q x y := by
-  classical
-  exact {
-    chain :=
-    { finset := {x, y}
-      comparable := by
-        rintro ⟨a, ha⟩ ⟨b, hb⟩
-        simp only [Finset.mem_insert, Finset.mem_singleton] at ha hb
-        rcases ha with rfl | rfl <;> rcases hb with rfl | rfl
-        · exact Or.inl le_rfl
-        · exact Or.inl h
-        · exact Or.inr h
-        · exact Or.inl le_rfl }
-    source_mem := by simp
-    target_mem := by simp
-    source_le z hz := by
-      simp only [Finset.mem_insert, Finset.mem_singleton] at hz
-      exact hz.elim (fun hzx ↦ hzx ▸ le_rfl) (fun hzy ↦ hzy ▸ h)
-    le_target z hz := by
-      simp only [Finset.mem_insert, Finset.mem_singleton] at hz
-      exact hz.elim (fun hzx ↦ hzx ▸ h) (fun hzy ↦ hzy ▸ le_rfl) }
-
 /-- Kerodon's canonical strictly unitary lax functor
 `T_Q : Q → Path_(2)[Q]`.
 
 The source category is regarded as a locally discrete bicategory. -/
 def posetPathLaxFunctor :
-    StrictlyUnitaryLaxFunctor (LocallyDiscrete Q) (PathBicategory Q) :=
-  StrictlyUnitaryLaxFunctor.mk'
+    StrictlyUnitaryLaxFunctor (LocallyDiscrete Q) (PathBicategory Q) := by
+  classical
+  let edge : ∀ {x y : Q}, x ≤ y → PosetPath Q x y := fun {x y} h ↦
+    { chain :=
+        { finset := {x, y}
+          comparable := by
+            rintro ⟨a, ha⟩ ⟨b, hb⟩
+            simp only [Finset.mem_insert, Finset.mem_singleton] at ha hb
+            rcases ha with rfl | rfl <;> rcases hb with rfl | rfl
+            · exact Or.inl le_rfl
+            · exact Or.inl h
+            · exact Or.inr h
+            · exact Or.inl le_rfl }
+      source_mem := by simp
+      target_mem := by simp
+      source_le := by
+        intro z hz
+        simp only [Finset.mem_insert, Finset.mem_singleton] at hz
+        exact hz.elim (fun hzx ↦ hzx ▸ le_rfl) (fun hzy ↦ hzy ▸ h)
+      le_target := by
+        intro z hz
+        simp only [Finset.mem_insert, Finset.mem_singleton] at hz
+        exact hz.elim (fun hzx ↦ hzx ▸ h) (fun hzy ↦ hzy ▸ le_rfl) }
+  exact StrictlyUnitaryLaxFunctor.mk'
     { obj := fun x ↦ ⟨x.as⟩
-      map := fun f ↦ posetPathOfLE f.as.le
+      map := fun f ↦ edge f.as.le
       map_id := by
         intro x
         apply PosetPath.ext
         apply PartialOrder.NonemptyFiniteChains.ext
-        simp [posetPathOfLE, PosetPath.identity]
+        simp [edge, PosetPath.identity]
       map₂ := fun η ↦ eqToHom <|
-        congrArg (fun f ↦ posetPathOfLE f.as.le) (LocallyDiscrete.eq_of_hom η)
+        congrArg (fun f ↦ edge f.as.le) (LocallyDiscrete.eq_of_hom η)
       map₂_id := by intros; apply Subsingleton.elim
       map₂_comp := by intros; apply Subsingleton.elim
       mapComp := fun f g ↦ homOfLE <| by
         intro q hq
-        simp only [posetPathOfLE, Finset.mem_insert, Finset.mem_singleton] at hq
-        simp only [CategoryStruct.comp, PosetPath.comp, posetPathOfLE,
+        simp only [edge, Finset.mem_insert, Finset.mem_singleton] at hq
+        simp only [CategoryStruct.comp, PosetPath.comp, edge,
           Finset.mem_union, Finset.mem_insert, Finset.mem_singleton]
         rcases hq with rfl | rfl
         · exact Or.inl (Or.inl rfl)
