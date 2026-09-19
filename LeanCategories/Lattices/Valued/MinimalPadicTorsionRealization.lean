@@ -33,7 +33,7 @@ namespace LeanCategories.Lattices.Valued
 
 /-- The rank-zero p-adic lattice, used only to witness that the ambient lattice category is
 nonempty before making the source's classical choice. -/
-private def padicRankZeroFiniteLattice (p : ℕ) [Fact p.Prime] :
+def padicRankZeroFiniteLattice (p : ℕ) [Fact p.Prime] :
     FiniteProjectiveLatticeCat ℤ_[p] ℤ_[p] := by
   let A : Matrix (Fin 0) (Fin 0) ℤ_[p] := 0
   have hA : A.IsSymm := Matrix.IsSymm.ext fun i ↦ Fin.elim0 i
