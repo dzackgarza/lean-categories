@@ -83,20 +83,17 @@ def comp (S : PosetPath Q x y) (T : PosetPath Q y z) : PosetPath Q x z where
     simp only [Finset.mem_union] at hq
     exact hq.elim (fun h ↦ (S.le_target q h).trans (T.source_le y T.source_mem)) (T.le_target q)
 
-@[simp]
-lemma identity_comp (S : PosetPath Q x y) : comp (identity x) S = S := by
+private lemma identity_comp (S : PosetPath Q x y) : comp (identity x) S = S := by
   ext q
   simp only [comp, identity, Finset.mem_union, Finset.mem_singleton]
   exact or_iff_right_of_imp (fun h ↦ h ▸ S.source_mem)
 
-@[simp]
-lemma comp_identity (S : PosetPath Q x y) : comp S (identity y) = S := by
+private lemma comp_identity (S : PosetPath Q x y) : comp S (identity y) = S := by
   ext q
   simp only [comp, identity, Finset.mem_union, Finset.mem_singleton]
   exact or_iff_left_of_imp (fun h ↦ h ▸ S.target_mem)
 
-@[simp]
-lemma comp_assoc (R : PosetPath Q w x) (S : PosetPath Q x y) (T : PosetPath Q y z) :
+private lemma comp_assoc (R : PosetPath Q w x) (S : PosetPath Q x y) (T : PosetPath Q y z) :
     comp (comp R S) T = comp R (comp S T) := by
   ext q
   simp only [comp, Finset.mem_union]
