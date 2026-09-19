@@ -76,4 +76,30 @@ Source: Weibel, Construction 8.6.4 (FC05-C08-U061). -/
 abbrev augmentation (T : Comonad C) (A : C) : T.iterObj A 1 ⟶ A :=
   T.ε.app A
 
+/-- The declaration data of Weibel's cotriple resolution, before imposing any simplicial
+identities.
+
+Sweep III records only the degree objects, face maps, degeneracy maps, and augmentation. The
+relations among these maps and any packaging as a simplicial or augmented simplicial object are
+result-level obligations.
+
+Source: Weibel, Construction 8.6.4 (FC05-C08-U061). -/
+structure CotripleResolutionData (T : Comonad C) (A : C) where
+  /-- Degree `n` is `T^(n+1)(A)`. -/
+  degree : ℕ → C
+  /-- The `n+2` faces from degree `n+1` to degree `n`. -/
+  face : (n : ℕ) → Fin (n + 2) → (degree (n + 1) ⟶ degree n)
+  /-- The `n+1` degeneracies from degree `n` to degree `n+1`. -/
+  degeneracy : (n : ℕ) → Fin (n + 1) → (degree n ⟶ degree (n + 1))
+  /-- The augmentation from degree zero to the original object. -/
+  augmentation : degree 0 ⟶ A
+
+/-- Weibel's canonical cotriple-resolution data:
+`T^(n+1)(A)` with the counit faces, comultiplication degeneracies, and counit augmentation. -/
+def resolutionData (T : Comonad C) (A : C) : CotripleResolutionData T A where
+  degree := T.simplicialDegree A
+  face n := T.face A (n + 1)
+  degeneracy n := T.degeneracy A n
+  augmentation := T.augmentation A
+
 end CategoryTheory.Comonad
