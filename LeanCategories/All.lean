@@ -137,6 +137,7 @@ public import LeanCategories.Topology.DeltaComplex
 public import LeanCategories.Topology.RealGrassmannian
 public import LeanCategories.Homological
 public import LeanCategories.Homological.CyclicCategoryData
+public import LeanCategories.Homological.DGCyclicHomology
 public import LeanCategories.Homological.AlgebraicDeRham
 public import LeanCategories.Homological.DeltaFunctor
 public import LeanCategories.Homological.DeltaFunctorMorphisms
