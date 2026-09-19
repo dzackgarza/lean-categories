@@ -315,7 +315,7 @@ lemma face_comp_simplicialAugmentation :
     (simplicialObject T A).δ 0 ≫ simplicialAugmentation T A =
       (simplicialObject T A).δ 1 ≫ simplicialAugmentation T A := by
   apply (cancel_epi (simplicialObjectObjIso T A 1).hom).1
-  simpa only [simplicialAugmentation, Category.assoc, simplicialObject_map_face] using
+  simpa only [simplicialAugmentation, Category.assoc, simplicialObject_map_face_assoc] using
     face_comp_augmentation T A
 
 lemma augmentationCondition
