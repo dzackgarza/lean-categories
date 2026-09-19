@@ -53,8 +53,8 @@ variable (X : ℕ → C)
   (s5: ∀ {n : ℕ} (i j : Fin (n + 1)) (_ : i ≤ j),
       σ i.castSucc ≫ σ j = σ j.succ ≫ σ i)
 
-/-- Making a cosimplicial object out of generators and relations. -/
 set_option backward.isDefEq.respectTransparency false in
+/-- Making a cosimplicial object out of generators and relations. -/
 noncomputable def ofGeneratorsAndRelations: CosimplicialObject C :=
   SimplexCategoryGenRel.equivSimplexCategory.inverse ⋙ (
     CategoryTheory.Quotient.lift FreeSimplexQuiver.homRel
@@ -132,9 +132,9 @@ variable (X Y : CosimplicialObject C)
   (hσ : ∀ {n : ℕ} (i : Fin (n + 1)), X.σ i ≫ app (.mk n) = app (.mk (n + 1)) ≫ Y.σ i)
 
 open SimplexCategoryGenRel in
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct a natural transformation between cosimplicial objects out of an application that
 commutes with cofaces and codegeneracies. -/
-set_option backward.isDefEq.respectTransparency false in
 noncomputable def mkNatTrans: X ⟶ Y :=
     letI : equivSimplexCategory.functor ⋙ X ⟶ equivSimplexCategory.functor ⋙ Y :=
       Quotient.natTransLift _ {
