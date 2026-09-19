@@ -35,8 +35,9 @@ namespace LeanCategories.Lattices.Valued
 quadratic discriminant form is isometric to `q`. -/
 def RealizesQuadraticTorsionForm
     (q : NonsingularFiniteTorsionQuadModuleCat ℤ (DoubleFractionValueQuotient ℤ))
-    (L : FiniteProjectiveLatticeCat ℤ ℤ) : Prop :=
-  ∃ (hL : IsFractionFieldPerfect ℤ L.obj) (hEven : IsEven L.obj),
+    (L : FiniteProjectiveLatticeCat ℤ ℤ) : Prop := by
+  letI : Module.Finite ℤ L.obj.obj.carrier := L.property
+  exact ∃ (hL : IsFractionFieldPerfect ℤ L.obj) (hEven : IsEven L.obj),
     Nonempty (evenDiscriminantQuadraticFormModuleInt L.obj hL hEven ≅ q)
 
 /-- A classically chosen finite projective integral lattice intended to realize `q`.
