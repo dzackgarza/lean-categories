@@ -2,6 +2,10 @@
 Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
+
+Ported from mathlib4 PR #25741, commit
+`9534b44562a606e5a371284ccdf051f6cd47fdda`, file
+`Mathlib/AlgebraicTopology/SimplicialObject/GeneratorsRelations.lean`.
 -/
 module
 
@@ -12,7 +16,7 @@ public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 /-! # Simplicial objects by generators and relations
 
 This file provides the basic API for leveraging the equivalence obtained in
-`Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.Equivalence`. This is
+`LeanCategories.ForMathlib.SimplexCategoryGeneratorsRelationsEquivalence`. This is
 the intended way of using this equivalence.
 
 ## Main results
@@ -92,6 +96,8 @@ noncomputable def ofGeneratorsAndRelations: CosimplicialObject C :=
           exact s5 _ _ H ))
 
 open SimplexCategoryGenRel in
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The cosimplicial object defined by generators and relations has the expected value on objects
 up to isomorphism. -/
 noncomputable def ofGeneratorsAndRelationsObjMkIso (n : ℕ) :
@@ -102,6 +108,8 @@ noncomputable def ofGeneratorsAndRelationsObjMkIso (n : ℕ) :
 
 /-- Up to the same isomorphisms, a cosimplicial object defined by generators and relations
 has the provided functoriality maps for `σ`. -/
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma ofGeneratorsAndRelations_map_σ {n : ℕ} (i : Fin (n + 1)) :
     (ofGeneratorsAndRelationsObjMkIso X σ δ s1 s2 s3₁ s3₂ s4 s5 (n + 1)).inv ≫
@@ -113,6 +121,8 @@ lemma ofGeneratorsAndRelations_map_σ {n : ℕ} (i : Fin (n + 1)) :
 
 /-- Up to the same isomorphisms, a cosimplicial object defined by generators and relations
 has the provided functoriality maps for `δ`. -/
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma ofGeneratorsAndRelations_map_δ {n : ℕ} (i : Fin (n + 2)) :
     (ofGeneratorsAndRelationsObjMkIso X σ δ s1 s2 s3₁ s3₂ s4 s5 n).inv ≫
@@ -133,6 +143,7 @@ variable (X Y : CosimplicialObject C)
 
 open SimplexCategoryGenRel in
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Construct a natural transformation between cosimplicial objects out of an application that
 commutes with cofaces and codegeneracies. -/
 noncomputable def mkNatTrans: X ⟶ Y :=
@@ -280,6 +291,8 @@ noncomputable def ofGeneratorsAndRelations: SimplicialObject C :=
       (by intros; simp only [← op_comp]; congr 1; apply s5; assumption)
 
 open SimplexCategoryGenRel in
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The simplicial object defined by generators and relations has the expected value on objects
 up to isomorphism. -/
 noncomputable def ofGeneratorsAndRelationsObjMkIso (n : ℕ) :
@@ -291,6 +304,8 @@ noncomputable def ofGeneratorsAndRelationsObjMkIso (n : ℕ) :
     (fun n ↦ Opposite.op (X n)) (fun j ↦ (σ j).op) (fun j ↦ (δ j).op) p₁ p₂ p₃ p₄ p₅ p₆ n
 
 open SimplexCategoryGenRel in
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Up to the same isomorphisms, a simplicial object defined by generators and relations
 has the provided functoriality maps for `σ`. -/
 @[reassoc (attr := simp)]
@@ -312,6 +327,8 @@ lemma ofGeneratorsAndRelations_map_σ {n : ℕ} (i : Fin (n + 1)) :
 
 /-- Up to the same isomorphisms, a simplicial object defined by generators and relations
 has the provided functoriality maps for `δ`. -/
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma ofGeneratorsAndRelations_map_δ {n : ℕ} (i : Fin (n + 2)) :
     (ofGeneratorsAndRelationsObjMkIso X σ δ s1 s2 s3₁ s3₂ s4 s5 (n + 1)).hom ≫
