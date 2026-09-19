@@ -274,6 +274,7 @@ theorem existsUnique_toSimplexCategory_map
   refine ⟨eqToHom p₁ ≫ e₁ ≫ m₁ ≫ eqToHom p₂, ?_, ?_⟩
   · simp only [Functor.map_comp, he₁, hm₁]
     rw [hp₁, hp₂]
+    change eqToHom q₁ ≫ epi₁ ≫ mono₁ ≫ eqToHom q₂ = f
     simpa only [epi₁, mono₁, Category.assoc, eqToHom_trans_assoc,
       eqToHom_trans, eqToHom_refl, Category.id_comp, Category.comp_id] using fac
   intro g hg
@@ -351,23 +352,19 @@ theorem existsUnique_toSimplexCategory_map
     exact P_δ.comp_mem _ _
       (hPδEq eq_z₁.symm) (P_δ.comp_mem _ _ P_δ_m₂ (hPδEq p₂.symm))
   have hemap : toSimplexCategory.map e₂' = epi₁ := by
-    simp only [e₂', toSimplexCategory_obj_mk, SimplexCategory.mk_len,
-      Functor.map_comp, eqToHom_map, Category.assoc, eqToHom_trans,
-      eqToHom_refl, Category.comp_id, e₄, e₃, epi₁, epi₀, z] at eq2 eq4 ⊢
-    rw [← heq_iff_eq] at eq2 eq4 ⊢
-    simp only [heq_comp_eqToHom_iff, eqToHom_comp_heq_iff, comp_eqToHom_heq_iff,
-      heq_eqToHom_comp_iff] at eq2 eq4 ⊢
-    rw [HEq.comm] at eq4 ⊢
-    exact HEq.trans eq4 eq2
+    have h := congrArg (fun e => eqToHom q₁.symm ≫ e ≫ eqToHom im₂)
+      (eq2.symm.trans eq4)
+    change eqToHom q₁.symm ≫ toSimplexCategory.map e₂ ≫
+      eqToHom (im₁.symm.trans im₂) = epi₁
+    simpa only [e₃, e₄, Category.assoc, eqToHom_trans_assoc, eqToHom_trans,
+      eqToHom_refl, Category.id_comp, Category.comp_id] using h
   have hmmap : toSimplexCategory.map m₂' = mono₁ := by
-    simp only [m₂', toSimplexCategory_obj_mk, SimplexCategory.mk_len,
-      Functor.map_comp, eqToHom_map, Category.assoc, eqToHom_trans,
-      eqToHom_refl, Category.comp_id, m₄, m₃, mono₁, mono₀, z] at eq1 eq3 ⊢
-    rw [← heq_iff_eq] at eq1 eq3 ⊢
-    simp only [heq_comp_eqToHom_iff, eqToHom_comp_heq_iff, comp_eqToHom_heq_iff,
-      heq_eqToHom_comp_iff] at eq1 eq3 ⊢
-    rw [HEq.comm] at eq3 ⊢
-    exact HEq.trans eq3 eq1
+    have h := congrArg (fun m => eqToHom im₂.symm ≫ m ≫ eqToHom q₂.symm)
+      (eq1.symm.trans eq3)
+    change eqToHom (im₂.symm.trans im₁) ≫ toSimplexCategory.map m₂ ≫
+      eqToHom q₂.symm = mono₁
+    simpa only [m₃, m₄, Category.assoc, eqToHom_trans_assoc, eqToHom_trans,
+      eqToHom_refl, Category.id_comp, Category.comp_id] using h
   have heq := he₁' e₂' ⟨hPσ, hemap⟩
   have hmeq := hm₁' m₂' ⟨hPδ, hmmap⟩
   rw [fac₂]
