@@ -31,7 +31,11 @@ open LeanCategories.Modules.Quadratic.Valued
 
 namespace LeanCategories.Lattices.Valued
 
-local instance : Module ℤ (DoubleFractionValueQuotient ℤ) :=
+local instance (priority := 10000) moduleIntFractionRing : Module ℤ (FractionRing ℤ) :=
+  Algebra.toModule
+
+local instance (priority := 10000) moduleIntDoubleFractionValueQuotient :
+    Module ℤ (DoubleFractionValueQuotient ℤ) :=
   Submodule.Quotient.module (doubleAlgebraMap ℤ).range
 
 /-- A finite projective integral lattice realizes `q` when it is nondegenerate and even and its
