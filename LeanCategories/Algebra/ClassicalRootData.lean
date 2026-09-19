@@ -25,4 +25,23 @@ def typeARootSet (l : ℕ) : Set (Fin (l + 1) → ℝ) :=
 def typeASimpleRoot (l : ℕ) (i : Fin l) : Fin (l + 1) → ℝ :=
   standardCoordinate i.castSucc - standardCoordinate i.succ
 
+def coordinateSign : Bool → ℝ
+  | true => 1
+  | false => -1
+
+def typeBRootSet (l : ℕ) : Set (Fin l → ℝ) :=
+  {x |
+    (∃ i : Fin l, ∃ s : Bool,
+      x = coordinateSign s • standardCoordinate i) ∨
+    (∃ i j : Fin l, i ≠ j ∧ ∃ s t : Bool,
+      x = coordinateSign s • standardCoordinate i +
+        coordinateSign t • standardCoordinate j)}
+
+def typeBSimpleRoot (l : ℕ) (i : Fin l) : Fin l → ℝ := by
+  classical
+  if h : i.1 + 1 < l then
+    exact standardCoordinate i - standardCoordinate ⟨i.1 + 1, h⟩
+  else
+    exact standardCoordinate i
+
 end LeanCategories.Algebra
