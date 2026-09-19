@@ -25,7 +25,12 @@ That reference proves the relations and constructs a functor on its generators-a
 presentation. We use the native `SimplicialObject.ofGeneratorsAndRelations` constructor instead
 of porting its arbitrary-simplex-map factorization.
 
-The augmentation natural transformation is not constructed here.
+The augmentation follows the standard equivalent presentation of an augmented simplicial object:
+an arrow from degree zero whose composites with the two degree-one faces agree. See Weibel,
+Construction 8.6.4, and the Cornell lecture notes *The Bar Construction*, §5.1
+(`bar-construction-typed.pdf`), which state this compatibility criterion explicitly. For the
+cotriple construction the equality is counit naturality. Mathlib's `SimplicialObject.augment`
+extends it to every degree.
 -/
 
 @[expose] public section
@@ -257,5 +262,66 @@ lemma simplicialObject_map_face {n : ℕ} (i : Fin (n + 2)) :
     (T.simplicialObjectObjIso A (n + 1)).hom ≫ (T.simplicialObject A).δ i ≫
       (T.simplicialObjectObjIso A n).inv = T.face A (n + 1) i := by
   apply SimplicialObject.ofGeneratorsAndRelations_map_δ
+
+/-- The two degree-one faces have equal composites with the cotriple counit. This is the
+augmentation identity in the standard degree-zero presentation of an augmented simplicial
+object, and is exactly naturality of the counit applied to `T.ε.app A`. -/
+lemma face_comp_augmentation :
+    faceMap T A 0 0 ≫ T.augmentation A = faceMap T A 0 1 ≫ T.augmentation A := by
+  exact (@Comonad.counit_naturality C _ T (T.iterObj A 1) (T.iterObj A 0)
+    (T.ε.app A)).symm
+
+/-- The degree-zero augmentation transported to the assembled simplicial object. -/
+noncomputable def simplicialAugmentation :
+    (T.simplicialObject A).obj (.op (.mk 0)) ⟶ A :=
+  (T.simplicialObjectObjIso A 0).inv ≫ T.augmentation A
+
+lemma face_comp_simplicialAugmentation :
+    (T.simplicialObject A).δ 0 ≫ T.simplicialAugmentation A =
+      (T.simplicialObject A).δ 1 ≫ T.simplicialAugmentation A := by
+  apply (cancel_epi (T.simplicialObjectObjIso A 1).hom).1
+  simpa only [simplicialAugmentation, Category.assoc, simplicialObject_map_face] using
+    face_comp_augmentation T A
+
+private lemma augmentationCondition
+    (X : SimplicialObject C) (X₀ : C) (f : X.obj (.op (.mk 0)) ⟶ X₀)
+    (h : X.δ 0 ≫ f = X.δ 1 ≫ f) :
+    ∀ (i : SimplexCategory) (g₁ g₂ : .mk 0 ⟶ i),
+      X.map g₁.op ≫ f = X.map g₂.op ≫ f := by
+  intro i g₁ g₂
+  let a := g₁.toOrderHom 0
+  let b := g₂.toOrderHom 0
+  rcases le_total a b with hab | hba
+  · let e := SimplexCategory.mkOfLe a b hab
+    have hg₁ : g₁ = SimplexCategory.δ 1 ≫ e := by
+      ext x
+      fin_cases x
+      rfl
+    have hg₂ : g₂ = SimplexCategory.δ 0 ≫ e := by
+      ext x
+      fin_cases x
+      rfl
+    subst g₁
+    subst g₂
+    simp only [Quiver.Hom.op_comp, Functor.map_comp, Category.assoc]
+    rw [h]
+  · let e := SimplexCategory.mkOfLe b a hba
+    have hg₁ : g₁ = SimplexCategory.δ 0 ≫ e := by
+      ext x
+      fin_cases x
+      rfl
+    have hg₂ : g₂ = SimplexCategory.δ 1 ≫ e := by
+      ext x
+      fin_cases x
+      rfl
+    subst g₁
+    subst g₂
+    simp only [Quiver.Hom.op_comp, Functor.map_comp, Category.assoc]
+    rw [h]
+
+/-- Weibel's canonical augmented simplicial object associated to a cotriple. -/
+noncomputable def augmentedSimplicialObject : SimplicialObject.Augmented C :=
+  SimplicialObject.augment (T.simplicialObject A) A (T.simplicialAugmentation A)
+    (augmentationCondition _ _ _ (face_comp_simplicialAugmentation T A))
 
 end CategoryTheory.Comonad
