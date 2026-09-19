@@ -39,4 +39,12 @@ def characterTableOfClassFunctions {ι : Type*} {G : Type v} [Group G] {F : Type
     (χ : ι → ClassFunctionData G F) : CharacterTableData ι G F :=
   χ
 
+abbrev VirtualCharacterData (ι : Type*) := ι →₀ ℤ
+
+def virtualCharacterClassFunction
+    {ι : Type*} {G : Type v} [Group G] {F : Type u} [AddCommGroup F]
+    (χ : ι → ClassFunctionData G F) (z : VirtualCharacterData ι) :
+    ClassFunctionData G F :=
+  fun c => z.sum fun i n => n • χ i c
+
 end LeanCategories.Algebra
