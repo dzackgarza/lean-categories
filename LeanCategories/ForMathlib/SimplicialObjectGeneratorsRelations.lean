@@ -202,8 +202,10 @@ lemma mkNatTrans_app (Δ : SimplexCategory) : (mkNatTrans X Y app hδ hσ).app �
     rfl
   rw [←SimplexCategory.mk_len Δ, h, ← h_nat, ← Functor.map_comp_assoc]
   rw [← equivSimplexCategory.counit_app_functor]
-  simp only [equivSimplexCategory_functor_obj_mk, Iso.inv_hom_id_app, Functor.id_obj,
-    CategoryTheory.Functor.map_id, Category.id_comp, this]
+  change X.map (equivSimplexCategory.counitInv.app (.mk Δ.len) ≫
+      equivSimplexCategory.counit.app (.mk Δ.len)) ≫
+    this.app (SimplexCategoryGenRel.mk Δ.len) = app (.mk Δ.len)
+  erw [equivSimplexCategory.counitIso_inv_hom_id_app, Functor.map_id, Category.id_comp]
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -220,8 +222,8 @@ lemma mkNatTrans_comp X Y (Z : SimplexCategory ⥤ C) app
         (by intro n i; rw [reassoc_of%(hσ i), hσ' i]; simp)
       = (mkNatTrans X Y app hδ hσ) ≫ (mkNatTrans Y Z app' hδ' hσ') := by
   ext Δ
-  simp only [mkNatTrans_app, NatTrans.comp_app]
-  rw [mkNatTrans_app] <;> assumption
+  simp only [NatTrans.comp_app]
+  erw [mkNatTrans_app, mkNatTrans_app, mkNatTrans_app]
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.types false in
@@ -229,7 +231,8 @@ set_option backward.isDefEq.respectTransparency.types false in
 lemma mkNatTrans_id :
   mkNatTrans X X (fun x ↦ 𝟙 _) (by simp) (by simp) = 𝟙 X := by
     ext x
-    simp only [mkNatTrans_app, NatTrans.id_app]
+    simp only [NatTrans.id_app]
+    erw [mkNatTrans_app]
 
 end MkNatTrans
 
@@ -257,10 +260,14 @@ noncomputable def mkNatIso: X ≅ Y where
         exact (hσ i).symm)
   hom_inv_id := by
     ext Δ
-    simp only [NatTrans.comp_app, mkNatTrans_app, NatTrans.id_app, Iso.hom_inv_id]
+    simp only [NatTrans.comp_app, NatTrans.id_app]
+    erw [mkNatTrans_app, mkNatTrans_app]
+    exact Iso.hom_inv_id _
   inv_hom_id := by
     ext Δ
-    simp only [NatTrans.comp_app, mkNatTrans_app, NatTrans.id_app, Iso.inv_hom_id]
+    simp only [NatTrans.comp_app, NatTrans.id_app]
+    erw [mkNatTrans_app, mkNatTrans_app]
+    exact Iso.inv_hom_id _
 
 variable {hδ} {hσ}
 set_option backward.isDefEq.respectTransparency false in
@@ -426,8 +433,8 @@ lemma mkNatTrans_comp X Y (Z : SimplicialObject C) app
         (by intro n i; rw [reassoc_of%(hσ i), hσ' i]; simp)
       = (mkNatTrans X Y app hδ hσ) ≫ (mkNatTrans Y Z app' hδ' hσ') := by
   ext Δ
-  simp only [mkNatTrans_app, NatTrans.comp_app]
-  rw [mkNatTrans_app] <;> assumption
+  simp only [NatTrans.comp_app]
+  erw [mkNatTrans_app, mkNatTrans_app, mkNatTrans_app]
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.types false in
@@ -435,7 +442,8 @@ set_option backward.isDefEq.respectTransparency.types false in
 lemma mkNatTrans_id :
   mkNatTrans X X (fun x ↦ 𝟙 _) (by simp) (by simp) = 𝟙 X := by
     ext x
-    simp only [mkNatTrans_app, NatTrans.id_app]
+    simp only [NatTrans.id_app]
+    erw [mkNatTrans_app]
 
 end MkNatTrans
 
@@ -463,10 +471,14 @@ noncomputable def mkNatIso: X ≅ Y where
         exact (hσ i).symm)
   hom_inv_id := by
     ext Δ
-    simp only [NatTrans.comp_app, mkNatTrans_app, NatTrans.id_app, Iso.hom_inv_id]
+    simp only [NatTrans.comp_app, NatTrans.id_app]
+    erw [mkNatTrans_app, mkNatTrans_app]
+    exact Iso.hom_inv_id _
   inv_hom_id := by
     ext Δ
-    simp only [NatTrans.comp_app, mkNatTrans_app, NatTrans.id_app, Iso.inv_hom_id]
+    simp only [NatTrans.comp_app, NatTrans.id_app]
+    erw [mkNatTrans_app, mkNatTrans_app]
+    exact Iso.inv_hom_id _
 
 variable {hδ} {hσ}
 
