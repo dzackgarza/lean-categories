@@ -46,4 +46,9 @@ def metricDualAt (g : ContMDiffRiemannianMetric IB n F E) (b : B) (v : E b) :
     E b →L[ℝ] ℝ :=
   g.inner b v
 
+/-- Lee's flat/lowering-index notation at a fiber, naming the metric-dual map. -/
+abbrev metricFlatAt (g : ContMDiffRiemannianMetric IB n F E) (b : B) (v : E b) :
+    E b →L[ℝ] ℝ :=
+  metricDualAt g b v
+
 end LeanCategories.Topology
