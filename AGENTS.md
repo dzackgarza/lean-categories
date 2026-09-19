@@ -755,8 +755,8 @@ independent sequential plans.
 Whole-source ownership and closure remain in the existing sweep record. Within Sweep III,
 the coordinator may assign disjoint ready units across sources while retaining those
 source responsibilities. Respect active unit/file ownership and select only units whose
-actual construction prerequisites are available; source order breaks ties among equally
-ready work. Continue independent units when a difficult construction is unresolved.
+prerequisite definitions/construction data are available; source order breaks ties among equally
+ready work. Continue independent units when an earlier definition is unresolved.
 Tick a source only after the [whole-source closure check](#close-a-source-from-its-complete-obligations)
 establishes that every required unit is discharged. Unit dispatch does not narrow that
 completion standard.
@@ -1004,10 +1004,9 @@ over-specialized realization. A green build, exported declaration, no-`sorry` sc
 proved downstream is integration evidence only; none is evidence that the Lean definition
 means exactly what the prose reference means.
 
-Unresolved construction prerequisites remain explicit dependencies. Complete their
-required proof closure by reuse, porting, or source-backed transcription before accepting
-the consuming definition; continue independent ready work while that closure is open.
-Independent source propositions remain in Sweep IV.
+Unresolved prerequisite definitions/construction data remain explicit dependencies. Realize
+those declarations before accepting the consuming definition; continue independent ready work
+while they are open. Propositions never become Sweep-III prerequisites and remain in Sweep IV.
 
 Only after semantic acceptance should aggregate builds, exporters, and existing QC
 be used as integration evidence. Targeted elaboration during implementation remains
