@@ -22,9 +22,11 @@ does not construct the required object.
 ## LC-03 — Establish meaning before dependent use
 
 Apply [definition acceptance](AGENTS.md#establish-the-definition-before-dependent-use).
-Compare all defining clauses with the source, supply an intended and a separating
-example, and prove intrinsic construction laws before export or downstream use.
-Compilation establishes formal derivability, not fidelity to the named concept.
+Compare all defining clauses with the source and preserve the source's actual
+declaration/construction data before export or downstream use. Source examples may
+be used as semantic checks, but Sweep III does not add standalone proof obligations;
+result clauses remain Sweep IV work. Compilation establishes formal derivability,
+not fidelity to the named concept.
 
 ## LC-04 — Follow the execution DAG
 
@@ -94,10 +96,12 @@ Apply [definition acceptance](AGENTS.md#establish-the-definition-before-dependen
 locally and the final corpus-wide `definition-source-conformance` milestone in
 [TODO.md](TODO.md#execution-dag). Re-read the original prose reference and inspect
 the actual reused/imported/ported/authored Lean realization clause-by-clause. Preserve
-all data, hypotheses, quantifiers, equations/coherences, variance, quotient or
-representative conditions, and claimed generality; discharge intrinsic construction
-laws. Build success, familiar names, downstream theorems, and absence of `sorry` do
-not establish semantic fidelity.
+all declaration data, hypotheses, quantifiers, variance, universe/generalization
+choices, quotient or representative data, and claimed generality. Well-definedness,
+identities, functoriality, existence/uniqueness, exactness, square-zero, universality,
+comparison statements, and analogous propositions remain Sweep IV work unless they
+are already packaged by a reused implementation. Build success, familiar names,
+downstream theorems, and absence of `sorry` do not establish semantic fidelity.
 
 ## LC-11 — Keep bulk execution state repository-local
 
