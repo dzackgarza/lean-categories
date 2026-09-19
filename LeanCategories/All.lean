@@ -119,6 +119,9 @@ public import LeanCategories.Topology.SurfaceTriangulation
 public import LeanCategories.Topology.UniformMetric
 public import LeanCategories.Topology.WindingNumber
 public import LeanCategories.Schemes
+public import LeanCategories.Schemes.BirationalSurfaceModels
+public import LeanCategories.Topology.DeltaComplex
+public import LeanCategories.Topology.RealGrassmannian
 public import LeanCategories.Homological
 public import LeanCategories.Homological.AlgebraicDeRham
 public import LeanCategories.Homological.DeltaFunctor
