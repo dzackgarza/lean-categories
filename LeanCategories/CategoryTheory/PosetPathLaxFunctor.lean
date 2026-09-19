@@ -62,6 +62,7 @@ def posetPathLaxFunctor :
       map := fun f ↦ edge f.as.le
       map_id := by
         intro x
+        change edge _ = PosetPath.identity x.as
         apply PosetPath.ext
         apply PartialOrder.NonemptyFiniteChains.ext
         simp [edge, PosetPath.identity]
