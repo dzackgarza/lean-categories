@@ -2662,7 +2662,7 @@ Units: 95.
 
 ### FC01-C07-U057 — `augmentation-map-ideal`
 
-- **Kind:** Definition/construction.
+- **Kind:** Definition/construction/result.
 - **Locator:** §7.3 “Ring Homomorphisms and Quotient Rings”; printed pp. 239–250 (section span); extraction L9418.
 - **Statement/data:** For finite G and commutative unital R, the augmentation map RG→R sends Σa_i g_i↦Σa_i. It is surjective; its kernel is the augmentation ideal, so RG/I≅R.
 - **Dependencies:** FC01-C07-U034 (`group-ring`), FC01-C07-U040 (`ring-homomorphism`), FC01-C07-U050 (`first-isomorphism-ring`)
@@ -3741,14 +3741,14 @@ Units: 71.
 
 ### FC01-C09-U060 — `minimal-groebner-basis`
 
-- **Kind:** Definition/properties.
+- **Kind:** Definition/result.
 - **Locator:** §9.6 “Polynomials in Several Variables over a Field and Gröbner Bases”; printed pp. 315–335 (section span); extraction L11896.
 - **Statement/data:** A Gröbner basis is minimal if every leading term is monic and no LT(g_j) is divisible by LT(g_i) for i≠j. Redundant generators may be deleted to obtain one. Minimal Gröbner bases need not be unique, but their number of elements and leading terms are unique for a fixed monomial order.
 - **Dependencies:** FC01-C09-U051 (`groebner-basis`), FC01-C09-U054 (`groebner-LT-criterion-existence`)
 
 ### FC01-C09-U061 — `reduced-groebner-basis`
 
-- **Kind:** Definition.
+- **Kind:** Definition/result.
 - **Locator:** §9.6 “Polynomials in Several Variables over a Field and Gröbner Bases”; printed pp. 315–335 (section span); extraction L11934.
 - **Statement/data:** A Gröbner basis {g_1,…,g_m} is reduced if each LT(g_i) is monic and no term of g_j is divisible by LT(g_i) for j≠i. Every reduced basis is minimal.
 - **Dependencies:** FC01-C09-U060 (`minimal-groebner-basis`)
