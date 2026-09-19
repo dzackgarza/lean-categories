@@ -1,6 +1,11 @@
 /-
-Copyright (c) 2026 Dzack Garza. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
+Copyright (c) 2025 Terence Rokop.
+Copyright (c) 2026 Dzack Garza.
+
+The six relation proofs in this file are adapted from
+`anoma/geb@21f75e8bd4ef1ba387840c41d6b694a49a7d7526::geb-lean/GebLean/BarResolution.lean`,
+distributed under the GNU General Public License, version 3. This derived file is distributed
+under the same license.
 -/
 module
 
