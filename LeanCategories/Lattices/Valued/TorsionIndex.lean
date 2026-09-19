@@ -31,6 +31,9 @@ open LeanCategories.Modules.Quadratic.Valued
 
 namespace LeanCategories.Lattices.Valued
 
+local instance : Module ℤ (DoubleFractionValueQuotient ℤ) :=
+  Submodule.Quotient.module (doubleAlgebraMap ℤ).range
+
 /-- A finite projective integral lattice realizes `q` when it is nondegenerate and even and its
 quadratic discriminant form is isometric to `q`. -/
 def RealizesQuadraticTorsionForm
