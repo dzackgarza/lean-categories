@@ -96,6 +96,7 @@ noncomputable def ofGeneratorsAndRelations: CosimplicialObject C :=
           exact s5 _ _ H ))
 
 open SimplexCategoryGenRel in
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The cosimplicial object defined by generators and relations has the expected value on objects
@@ -177,12 +178,12 @@ noncomputable def mkNatTrans: X ⟶ Y :=
 variable {hδ} {hσ}
 
 open SimplexCategoryGenRel in
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The natural transformation built using `mkNatTrans` have the expected application. -/
 @[simp]
 lemma mkNatTrans_app (Δ : SimplexCategory) : (mkNatTrans X Y app hδ hσ).app Δ = app Δ := by
-  dsimp only [CosimplicialObject] at X Y
   dsimp [mkNatTrans]
   simp only [Category.comp_id, Category.id_comp]
   generalize_proofs p
@@ -205,6 +206,7 @@ lemma mkNatTrans_app (Δ : SimplexCategory) : (mkNatTrans X Y app hδ hσ).app �
     CategoryTheory.Functor.map_id, Category.id_comp, this]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.types false in
 lemma mkNatTrans_comp X Y (Z : CosimplicialObject C) app
@@ -216,17 +218,16 @@ lemma mkNatTrans_comp X Y (Z : CosimplicialObject C) app
         (by intro n i; rw [reassoc_of%(hδ i), hδ' i]; simp)
         (by intro n i; rw [reassoc_of%(hσ i), hσ' i]; simp)
       = (mkNatTrans X Y app hδ hσ) ≫ (mkNatTrans Y Z app' hδ' hσ') := by
-  dsimp only [CosimplicialObject] at X Y Z
   ext Δ
   simp only [mkNatTrans_app, NatTrans.comp_app]
   rw [mkNatTrans_app] <;> assumption
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma mkNatTrans_id :
   mkNatTrans X X (fun x ↦ 𝟙 _) (by simp) (by simp) = 𝟙 X := by
-    dsimp only [CosimplicialObject] at X
     ext x
     simp only [mkNatTrans_app, NatTrans.id_app]
 
@@ -239,6 +240,7 @@ variable (X Y : CosimplicialObject C)
   (hδ : ∀ {n : ℕ} (i : Fin (n + 2)), X.δ i ≫ (app (.mk (n + 1))).hom = (app (.mk n)).hom ≫ Y.δ i)
   (hσ : ∀ {n : ℕ} (i : Fin (n + 1)), X.σ i ≫ (app (.mk n)).hom = (app (.mk (n + 1))).hom ≫ Y.σ i)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Construct a natural isomorphism between cosimplicial objects out of an isomorphism that commutes
@@ -253,29 +255,27 @@ noncomputable def mkNatIso: X ≅ Y where
         rw [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp]
         exact (hσ i).symm)
   hom_inv_id := by
-    dsimp only [CosimplicialObject] at X Y
     ext Δ
     simp only [NatTrans.comp_app, mkNatTrans_app, NatTrans.id_app, Iso.hom_inv_id]
   inv_hom_id := by
-    dsimp only [CosimplicialObject] at X Y
     ext Δ
     simp only [NatTrans.comp_app, mkNatTrans_app, NatTrans.id_app, Iso.inv_hom_id]
 
 variable {hδ} {hσ}
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma mkNatIso_hom_app (Δ : SimplexCategory) :
     (mkNatIso X Y app hδ hσ).hom.app Δ = (app Δ).hom := by
-  dsimp only [CosimplicialObject] at X Y
   simp [mkNatIso]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma mkNatIso_inv_app (Δ : SimplexCategory) :
     (mkNatIso X Y app hδ hσ).inv.app Δ = (app Δ).inv := by
-  dsimp only [CosimplicialObject] at X Y
   simp only [mkNatIso]
   generalize_proofs p p'
   rw [mkNatTrans_app] <;> assumption
@@ -318,6 +318,7 @@ noncomputable def ofGeneratorsAndRelations: SimplicialObject C :=
       (by intros; simp only [← op_comp]; congr 1; apply s5; assumption)
 
 open SimplexCategoryGenRel in
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The simplicial object defined by generators and relations has the expected value on objects
@@ -401,12 +402,12 @@ noncomputable def mkNatTrans: X ⟶ Y :=
         exact (hσ j).symm)
 
 variable {hδ} {hσ}
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The natural transformation built using mkNatTrans have the expected application. -/
 @[simp]
 lemma mkNatTrans_app (Δ : SimplexCategoryᵒᵖ) : (mkNatTrans X Y app hδ hσ).app Δ = app Δ := by
-  dsimp only [SimplicialObject] at X Y
   dsimp [mkNatTrans]
   generalize_proofs p p'
   rw [CosimplicialObject.mkNatTrans_app Y.rightOp X.rightOp (fun Δ ↦ (app (.op Δ)).op)]
@@ -414,6 +415,7 @@ lemma mkNatTrans_app (Δ : SimplexCategoryᵒᵖ) : (mkNatTrans X Y app hδ hσ)
   · assumption
   · assumption
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.types false in
 lemma mkNatTrans_comp X Y (Z : SimplicialObject C) app
@@ -427,17 +429,16 @@ lemma mkNatTrans_comp X Y (Z : SimplicialObject C) app
         (by intro n i; rw [reassoc_of%(hδ i), hδ' i]; simp)
         (by intro n i; rw [reassoc_of%(hσ i), hσ' i]; simp)
       = (mkNatTrans X Y app hδ hσ) ≫ (mkNatTrans Y Z app' hδ' hσ') := by
-  dsimp only [SimplicialObject] at X Y Z
   ext Δ
   simp only [mkNatTrans_app, NatTrans.comp_app]
   rw [mkNatTrans_app] <;> assumption
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma mkNatTrans_id :
   mkNatTrans X X (fun x ↦ 𝟙 _) (by simp) (by simp) = 𝟙 X := by
-    dsimp only [SimplicialObject] at X
     ext x
     simp only [mkNatTrans_app, NatTrans.id_app]
 
@@ -452,6 +453,7 @@ variable (X Y: SimplicialObject C)
   (hσ : ∀ {n : ℕ} (i : Fin (n + 1)),
     X.σ i ≫ (app (.op (.mk (n + 1)))).hom = (app (.op (.mk n))).hom ≫ Y.σ i)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.types false in
 /-- Construct a natural isomorphism between simplicial objects out of an isomorphism that commutes
@@ -466,30 +468,28 @@ noncomputable def mkNatIso: X ≅ Y where
         rw [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp]
         exact (hσ i).symm)
   hom_inv_id := by
-    dsimp only [SimplicialObject] at X Y
     ext Δ
     simp only [NatTrans.comp_app, mkNatTrans_app, NatTrans.id_app, Iso.hom_inv_id]
   inv_hom_id := by
-    dsimp only [SimplicialObject] at X Y
     ext Δ
     simp only [NatTrans.comp_app, mkNatTrans_app, NatTrans.id_app, Iso.inv_hom_id]
 
 variable {hδ} {hσ}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma mkNatIso_hom_app (Δ : SimplexCategoryᵒᵖ) :
     (mkNatIso X Y app hδ hσ).hom.app Δ = (app Δ).hom := by
-  dsimp only [SimplicialObject] at X Y
   simp [mkNatIso]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma mkNatIso_inv_app (Δ : SimplexCategoryᵒᵖ) :
     (mkNatIso X Y app hδ hσ).inv.app Δ = (app Δ).inv := by
-  dsimp only [SimplicialObject] at X Y
   simp only [mkNatIso]
   generalize_proofs p p'
   rw [mkNatTrans_app] <;> assumption
