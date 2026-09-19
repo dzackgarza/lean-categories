@@ -5,6 +5,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.GroupTheory.Coxeter.Length
+public import Mathlib.LinearAlgebra.Finsupp.LSum
 
 @[expose] public section
 
@@ -38,5 +40,42 @@ def evaluationAt (lambda : S → Module.End A E) (T_one : E) :
   toFun f := f.1 T_one
   map_add' f g := by simp
   map_smul' a f := by simp
+
+/-- The free parameter module `E` with basis `T_w`. -/
+abbrev GenericModule (A W : Type*) [CommRing A] := W →₀ A
+
+noncomputable def genericLeftOnBasis
+    {B W A : Type*} [Group W] [CommRing A] {M : CoxeterMatrix B}
+    (cs : CoxeterSystem M W) (a b : B → A) (s : B) (w : W) : GenericModule A W := by
+  classical
+  let sw := cs.simple s * w
+  exact if cs.length sw > cs.length w then
+    Finsupp.single sw 1
+  else
+    Finsupp.single w (a s) + Finsupp.single sw (b s)
+
+noncomputable def genericRightOnBasis
+    {B W A : Type*} [Group W] [CommRing A] {M : CoxeterMatrix B}
+    (cs : CoxeterSystem M W) (a b : B → A) (t : B) (w : W) : GenericModule A W := by
+  classical
+  let wt := w * cs.simple t
+  exact if cs.length wt > cs.length w then
+    Finsupp.single wt 1
+  else
+    Finsupp.single w (a t) + Finsupp.single wt (b t)
+
+/-- Linear extension of the left generic basis rule, recorded as raw function data. -/
+noncomputable def genericLeftOperator
+    {B W A : Type*} [Group W] [CommRing A] {M : CoxeterMatrix B}
+    (cs : CoxeterSystem M W) (a b : B → A) (s : B) (x : GenericModule A W) :
+    GenericModule A W :=
+  x.sum fun w c => c • genericLeftOnBasis cs a b s w
+
+/-- Linear extension of the right generic basis rule, recorded as raw function data. -/
+noncomputable def genericRightOperator
+    {B W A : Type*} [Group W] [CommRing A] {M : CoxeterMatrix B}
+    (cs : CoxeterSystem M W) (a b : B → A) (t : B) (x : GenericModule A W) :
+    GenericModule A W :=
+  x.sum fun w c => c • genericRightOnBasis cs a b t w
 
 end LeanCategories.Hecke
