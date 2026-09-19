@@ -52,6 +52,13 @@ def deckGroup (p : E → B) : Subgroup (E ≃ₜ E) where
     have hhx := congrFun hh (h⁻¹ x)
     simpa using hhx.symm
 
+/-- A covering is normal when its deck group acts transitively on every fiber.
+
+This is Hatcher FC07-C01-U057. -/
+def IsNormalCovering (p : E → B) : Prop :=
+  IsCoveringMap p ∧
+    ∀ e₁ e₂ : E, p e₁ = p e₂ → ∃ h : deckGroup p, h.1 e₁ = e₂
+
 /-- Fiber of a map over a basepoint. -/
 abbrev coveringFiber (p : E → B) (b : B) := p ⁻¹' {b}
 
