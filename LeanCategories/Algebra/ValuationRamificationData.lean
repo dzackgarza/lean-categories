@@ -5,6 +5,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.RingTheory.Valuation.RamificationGroup
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 
 /-!
 # Valuation ramification congruence data
@@ -44,5 +46,25 @@ def valuationRamificationSet (A : ValuationSubring L) :
     Set (A.decompositionSubgroup K) :=
   {σ | ∀ x : Lˣ,
     σ.1 (x : L) / (x : L) - 1 ∈ valuationMaximalIdealImage A}
+
+/-- Serre's unramified intermediate-field datum (FC10-C04-U012): the fixed
+field of the inertia subgroup, viewed inside the full `K`-automorphism group
+of `L`.
+
+The assertion that this fixed field is the largest unramified subextension is
+result content and is not bundled into the Sweep-III declaration. -/
+noncomputable def serreUnramifiedFixedFieldData (A : ValuationSubring L) :
+    IntermediateField K L :=
+  IntermediateField.fixedField <|
+    (A.inertiaSubgroup K).map (A.decompositionSubgroup K).subtype
+
+/-- A chosen DVR element serving as Serre's uniformizer datum
+(FC10-C04-U012).
+
+Its irreducibility / maximal-ideal-generator property is supplied by the
+existing DVR theory and remains outside this data declaration. -/
+noncomputable def serreUniformizerData
+    (A : ValuationSubring L) [IsDiscreteValuationRing A] : A :=
+  Classical.choose (IsDiscreteValuationRing.exists_irreducible A)
 
 end LeanCategories.Algebra
