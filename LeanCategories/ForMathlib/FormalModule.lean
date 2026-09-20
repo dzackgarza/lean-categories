@@ -58,6 +58,20 @@ def IsFormalGroupIso (F G : FormalGroup O) (e : FormalGroupIsoSeries F G) : Prop
     IsFormalGroupHom G F e.2 ∧
       e.1.subst e.2 = PowerSeries.X ∧ e.2.subst e.1 = PowerSeries.X
 
+/-- Raw homomorphism-series carrier after extension of coefficients
+(FC09-C05-U037). -/
+abbrev FormalGroupHomSeriesOver {O' : Type*} [CommRing O']
+    (phi : O →+* O') (F G : FormalGroup O) :=
+  FormalGroupHomSeries (F.map phi) (G.map phi)
+
+/-- Neukirch's notion of a formal-group homomorphism defined over an
+extension ring: the U034 compatibility predicate after coefficient base
+change. -/
+def IsFormalGroupHomOver {O' : Type*} [CommRing O']
+    (phi : O →+* O') (F G : FormalGroup O)
+    (f : FormalGroupHomSeriesOver phi F G) : Prop :=
+  IsFormalGroupHom (F.map phi) (G.map phi) f
+
 /-- A power series which is an endomorphism of the formal group `F`. -/
 structure IsFormalGroupEndomorphism (F : FormalGroup O) (f : PowerSeries O) : Prop where
   /-- A formal-group endomorphism has zero constant coefficient. -/
