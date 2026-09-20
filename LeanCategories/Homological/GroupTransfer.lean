@@ -86,7 +86,6 @@ noncomputable abbrev groupCohomologyCorestriction (A : Rep k G) (n : ℕ) :
 The choice-independence of representatives, membership of the sum in
 `A^G`, and its identification with degree-zero corestriction are theorem
 content and are intentionally not bundled into this Sweep-III construction. -/
-omit [DecidableRel (QuotientGroup.rightRel S)] in
 noncomputable def relativeNormRaw
     (A : Rep k G) (a : (res S.subtype A).ρ.invariants) : A := by
   letI := S.fintypeQuotientOfFiniteIndex
