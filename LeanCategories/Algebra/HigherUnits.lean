@@ -5,7 +5,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.RingTheory.Ideal.Operations
-public import Mathlib.Algebra.Order.Floor.Ring
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 
 /-!
 # Higher-unit filtration data
