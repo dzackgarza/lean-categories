@@ -10,7 +10,7 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 
 @[expose] public noncomputable section
 
-open scoped BigOperators nonZeroDivisors
+open scoped BigOperators nonZeroDivisors NumberField
 
 namespace LeanCategories.Algebra
 
@@ -39,7 +39,7 @@ normalization and avoids the `2^(-r₂)` coordinate-volume convention of
 the unscaled mixed embedding. -/
 def idealThetaPairingData
     (z : (K →+* ℂ) → ℂ) (a : K) : ℂ :=
-  ∑ τ : K →+* ℂ, τ a * z τ * Complex.conj (τ a)
+  ∑ τ : K →+* ℂ, τ a * z τ * (starRingEnd ℂ) (τ a)
 
 /-- One summand of Neukirch's normalized ideal theta series
 (FC09-C07-U057). -/
