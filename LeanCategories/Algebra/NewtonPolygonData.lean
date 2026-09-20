@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Analysis.Convex.Hull
 
 @[expose] public noncomputable section
