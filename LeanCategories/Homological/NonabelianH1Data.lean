@@ -54,4 +54,61 @@ stored in this Sweep-III datum. -/
 def serreNonabelianUnitCocycleData : G → A :=
   fun _ => 1
 
+/-- Raw degree-zero functoriality data for a homomorphism of coefficient
+groups (FC10-C07-U040).
+
+Restricting this function to fixed-point loci requires equivariance of f;
+that preservation statement is result content. -/
+def serreNonabelianH0MapData {B : Type*} [Group B] (f : A →* B) : A → B :=
+  f
+
+/-- Raw pointwise map on nonabelian one-cocycle functions
+(FC10-C07-U040).
+
+For an equivariant homomorphism f, proving that this sends cocycles to
+cocycles, respects Serre's cohomology relation, and descends to the pointed
+quotient is result content. -/
+def serreNonabelianH1CocycleMapData {B : Type*} [Group B]
+    (f : A →* B) (c : G → A) : G → B :=
+  fun s => f (c s)
+
+/-- The ambient B-valued boundary associated to a chosen lift b in a
+nonabelian extension (FC10-C07-U044), namely s ↦ b⁻¹ * s • b.
+
+The source's exact-sequence hypotheses imply that these values lie in the
+embedded kernel A, form a cocycle there, and determine a lift-independent
+class in H¹(G,A). Those implications are result content. -/
+def serreNonabelianConnectingAmbientData {B : Type*} [Group B]
+    [MulDistribMulAction G B] (b : B) : G → B :=
+  fun s => b⁻¹ * (s • b)
+
+/-- Raw predicate selecting an A-valued lift of Serre's ambient connecting
+boundary through a supplied inclusion A → B (FC10-C07-U044).
+
+Existence and independence of such a lift are not construction fields. -/
+def serreIsNonabelianConnectingLiftData {B : Type*} [Group B]
+    [MulDistribMulAction G B] (i : A →* B) (b : B) (a : G → A) : Prop :=
+  ∀ s : G, i (a s) = serreNonabelianConnectingAmbientData G b s
+
+/-- The ambient B-valued factor set associated to chosen lifts of a
+nonabelian one-cocycle (FC10-C07-U045):
+  (s,t) ↦ b_s * s(b_t) * b_(st)⁻¹.
+
+Under Serre's central exact-extension hypotheses these values lie in the
+embedded subgroup A and define an abelian two-cocycle there. Those statements
+are result content. -/
+def serreNonabelianConnectingTwoAmbientData {B : Type*} [Group B]
+    [MulDistribMulAction G B] (b : G → B) : G → G → B :=
+  fun s t => b s * (s • b t) * (b (s * t))⁻¹
+
+/-- Raw predicate selecting an A-valued lift of the ambient factor set through
+the supplied inclusion A → B (FC10-C07-U045).
+
+Existence, the two-cocycle equation, independence of the chosen lifts, and
+descent to H²(G,A) remain theorem-layer obligations. -/
+def serreIsNonabelianConnectingTwoLiftData {B : Type*} [Group B]
+    [MulDistribMulAction G B] (i : A →* B) (b : G → B)
+    (a : G → G → A) : Prop :=
+  ∀ s t : G, i (a s t) = serreNonabelianConnectingTwoAmbientData G b s t
+
 end LeanCategories.Homological
