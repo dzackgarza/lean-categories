@@ -117,6 +117,43 @@ class DefinitionReadinessTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             frontier.validate_phase_classification(self.units, mappings)
 
+    def test_unmatched_local_realization_must_preserve_residue_audit(self) -> None:
+        unit = frontier.Unit(
+            "FC99-C01-U001",
+            "Definition / construction",
+            "raw construction",
+            (),
+        )
+        mapping = frontier.Mapping(
+            "[definition-only] transcribed locally",
+            "unmatched",
+            "synthetic.md",
+            "FC99-C01-U001 [definition-only] unmatched "
+            "local source transcription 2026-09-20",
+        )
+        with self.assertRaisesRegex(
+            ValueError, "erased State-1 residue-search provenance"
+        ):
+            frontier.validate_phase_classification(
+                [unit], {unit.unit_id: mapping}
+            )
+
+    def test_unmatched_local_realization_accepts_preserved_residue_audit(self) -> None:
+        unit = frontier.Unit(
+            "FC99-C01-U001",
+            "Definition / construction",
+            "raw construction",
+            (),
+        )
+        mapping = frontier.Mapping(
+            "[definition-only] transcribed locally [residue-search-audited]",
+            "unmatched",
+            "synthetic.md",
+            "FC99-C01-U001 [definition-only] unmatched [residue-search-audited] "
+            "local source transcription 2026-09-20",
+        )
+        frontier.validate_phase_classification([unit], {unit.unit_id: mapping})
+
     def test_independent_reference_port_remains_ready(self) -> None:
         self.assertEqual(self.blockers("FC05-C09-U124"), ())
 

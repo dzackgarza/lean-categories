@@ -501,6 +501,28 @@ def validate_phase_classification(units: list[Unit], mappings: dict[str, Mapping
             f"theorem/result layer but Sweep IV would omit {rendered}"
         )
 
+    erased_residue_audits = [
+        unit
+        for unit in units
+        if (mapping := mappings.get(unit.unit_id)) is not None
+        and mapping.route == "unmatched"
+        and not mapping.residue_search_audited
+        and (
+            mapping.realized
+            or (
+                mapping.definition_only
+                and "local source transcription" in mapping.row.lower()
+            )
+        )
+    ]
+    if erased_residue_audits:
+        rendered = ", ".join(unit.unit_id for unit in erased_residue_audits)
+        raise ValueError(
+            "Sweep-III realization erased State-1 residue-search provenance for "
+            f"{rendered}; unmatched realization must preserve "
+            "[residue-search-audited] and append realization state instead"
+        )
+
     exercise_leaks = [
         unit
         for unit in units
