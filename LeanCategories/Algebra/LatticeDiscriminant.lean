@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.Algebra.Module.Lattice
+public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.RingTheory.Discriminant
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 
@@ -39,7 +40,7 @@ variable
 
 /-- Discriminants of `K`-bases of `L` whose basis vectors all lie in `X`. -/
 def latticeDiscriminantGenerators (X : Submodule A L) : Set K :=
-  {d | ∃ b : Basis (Fin (Module.finrank K L)) K L,
+  {d | ∃ b : Module.Basis (Fin (Module.finrank K L)) K L,
     (∀ i, b i ∈ X) ∧ d = Algebra.discr K b}
 
 /-- The lattice-discriminant carrier: the `A`-span of all admissible basis

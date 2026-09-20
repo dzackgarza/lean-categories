@@ -97,7 +97,7 @@ noncomputable abbrev groupAugmentationIdeal (G : Type v) [Group G] :
 
 /-- Serre's distinguished augmentation element `i_g = g - 1`
 (FC10-C07-U020). -/
-def groupAugmentationGenerator (G : Type v) [Group G] (g : G) :
+noncomputable def groupAugmentationGenerator (G : Type v) [Group G] (g : G) :
     MonoidAlgebra ℤ G :=
   single g 1 - 1
 
@@ -105,7 +105,7 @@ def groupAugmentationGenerator (G : Type v) [Group G] (g : G) :
 
 The assertion that these elements generate `I_G` is theorem content and is
 not part of this Sweep-III construction. -/
-def groupAugmentationGenerators (G : Type v) [Group G] : Set (MonoidAlgebra ℤ G) :=
+noncomputable def groupAugmentationGenerators (G : Type v) [Group G] : Set (MonoidAlgebra ℤ G) :=
   Set.range (groupAugmentationGenerator G)
 
 end MonoidAlgebra
