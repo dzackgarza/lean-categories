@@ -40,4 +40,15 @@ noncomputable abbrev serreFrobeniusSubstitution
     (Q : Ideal S) [Q.IsPrime] [Finite (S ⧸ Q)] : G :=
   arithFrobAt R G Q
 
+/-- Neukirch's chosen-prime representative for the unramified Frobenius / Artin
+element (FC09-C06-U074).
+
+In an abelian extension the representative is independent of the chosen prime
+above the base prime.  That independence, the decomposition-group generation
+statement, and the residue-congruence characterization are result-layer facts;
+the Sweep-III datum is just the chosen arithmetic Frobenius element itself. -/
+noncomputable abbrev neukirchArtinRepresentative
+    (Q : Ideal S) [Q.IsPrime] [Finite (S ⧸ Q)] : G :=
+  serreFrobeniusSubstitution (R := R) (S := S) (G := G) Q
+
 end LeanCategories.Algebra
