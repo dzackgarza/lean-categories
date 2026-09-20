@@ -31,11 +31,12 @@ variable {C : Set X} {D : Set Y} [CWComplex C] [CWComplex D]
 `(n-m)`-cell of `D`. -/
 abbrev CWProductCellIndex (C : Set X) (D : Set Y)
     [CWComplex C] [CWComplex D] (n : ℕ) : Type (max u v) :=
-  Σ m : Fin (n + 1), CWComplex.cell C m.1 × CWComplex.cell D (n - m.1)
+  Σ m : Fin (n + 1), _root_.Topology.CWComplex.cell C m.1 ×
+    _root_.Topology.CWComplex.cell D (n - m.1)
 
 /-- The open product cell attached to a product-cell index. -/
 def cwProductOpenCell (n : ℕ) (e : CWProductCellIndex C D n) : Set (X × Y) :=
-  {p | p.1 ∈ CWComplex.openCell e.1.1 e.2.1 ∧
-    p.2 ∈ CWComplex.openCell (n - e.1.1) e.2.2}
+  {p | p.1 ∈ _root_.Topology.RelCWComplex.openCell (C := C) e.1.1 e.2.1 ∧
+    p.2 ∈ _root_.Topology.RelCWComplex.openCell (C := D) (n - e.1.1) e.2.2}
 
 end LeanCategories.Topology

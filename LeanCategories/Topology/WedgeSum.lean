@@ -32,8 +32,9 @@ inductive WedgeClass (ι : Type u) (X : ι → Type v)
 
 /-- Classify every chosen point into one common class and every other point separately. -/
 noncomputable def wedgeClassify {ι : Type u} (X : ι → Type v) (p : ∀ i, X i)
-    (q : WedgePre ι X) : WedgeClass ι X :=
-  if q.2 = p q.1 then WedgeClass.base else WedgeClass.point q
+    (q : WedgePre ι X) : WedgeClass ι X := by
+  classical
+  exact if q.2 = p q.1 then WedgeClass.base else WedgeClass.point q
 
 /-- The equivalence relation defining the wedge of a family of pointed spaces. -/
 noncomputable def wedgeSetoid {ι : Type u} (X : ι → Type v) (p : ∀ i, X i) :
