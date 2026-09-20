@@ -58,6 +58,11 @@ abbrev IsNeighborhood (T : FormationNormTopologyData A) : Set A → Prop :=
 abbrev IsOpen (T : FormationNormTopologyData A) : Set A → Prop :=
   IsFormationNormOpenData T.normSubgroups
 
+/-- Serre's universal norm subgroup: the intersection of every designated
+norm subgroup (FC10-C11-U026). -/
+def universalNormSubgroup (T : FormationNormTopologyData A) : Subgroup A :=
+  sInf T.normSubgroups
+
 end FormationNormTopologyData
 
 end LeanCategories.Homological

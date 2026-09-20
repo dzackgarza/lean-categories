@@ -151,6 +151,18 @@ class Mapping:
         return "[definition-only]" in self.row.lower()
 
     @property
+    def sweep_iii_blocked(self) -> bool:
+        """Whether this named object still requires result-layer input.
+
+        A mixed source row can have its raw carrier realized in Sweep III while
+        a later definition/convention depends on a theorem about that carrier.
+        The explicit marker keeps the later unit out of the executable
+        Definitions frontier without pretending that the carrier realization
+        itself is undelivered.
+        """
+        return "[sweep-iii-blocked]" in self.row.lower()
+
+    @property
     def negative_search_complete(self) -> bool:
         """Whether an unmatched row has passed the finite negative-search gate."""
 
@@ -461,7 +473,7 @@ def is_theorem(unit: Unit, mapping: Mapping | None = None) -> bool:
     # `[definition-only]` is itself a source-audited assertion that the positive
     # mapping discharges only the definitional part, so it must force the row into
     # Sweep IV even when Sweep I gave it a plain `Definition / construction` label.
-    return (mapping is not None and mapping.definition_only) or any(
+    return (mapping is not None and (mapping.definition_only or mapping.sweep_iii_blocked)) or any(
         marker in kind for marker in THEOREM_MARKERS
     ) or not any(
         marker in kind for marker in DEFINITION_MARKERS
@@ -680,10 +692,14 @@ def unit_blockers(
         # prerequisite unit has itself been realized locally.
         return ()
 
+    mapping = mappings.get(unit.unit_id)
+    if phase == "Definitions" and mapping is not None and mapping.sweep_iii_blocked:
+        return ("Sweep-IV result layer",)
+
     source_id = unit.unit_id.split("-", 1)[0]
-    explicit_dependencies = construction_dependencies(unit, mappings.get(unit.unit_id))
+    explicit_dependencies = construction_dependencies(unit, mapping)
     blockers: list[str] = []
-    for dep in effective_dependencies(phase, unit, mappings.get(unit.unit_id)):
+    for dep in effective_dependencies(phase, unit, mapping):
         if phase == "Definitions" and source_id in CONTENT_CLASSIFIED_DEFINITION_SOURCES:
             dep_unit = catalogue_index.get(dep)
             if (
