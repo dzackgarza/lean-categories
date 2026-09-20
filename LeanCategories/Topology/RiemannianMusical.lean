@@ -23,9 +23,12 @@ sharp/gradient constructions are separate result/dependent-definition content.
 
 @[expose] public section
 
+noncomputable section
+
 namespace LeanCategories.Topology
 
 open Bundle
+open scoped ContDiff
 open scoped BigOperators
 
 universe uB uF
