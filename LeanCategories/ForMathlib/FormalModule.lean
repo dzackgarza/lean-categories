@@ -30,6 +30,20 @@ namespace LeanCategories
 
 variable {O : Type*} [CommRing O]
 
+/-- Raw power-series carrier for a homomorphism between one-dimensional
+formal group laws (FC09-C05-U034). -/
+abbrev FormalGroupHomSeries (_F _G : FormalGroup O) := PowerSeries O
+
+/-- Neukirch's defining condition for a formal-group homomorphism.
+
+The source object is represented without a proof-bearing bundled constructor:
+a supplied power series has zero constant coefficient and satisfies
+`f(F(X,Y)) = G(f(X),f(Y))`. -/
+def IsFormalGroupHom (F G : FormalGroup O) (f : FormalGroupHomSeries F G) : Prop :=
+  f.constantCoeff = 0 ∧
+    f.subst F.toPowerSeries =
+      G.toPowerSeries.subst (fun i => PowerSeries.subst (MvPowerSeries.X i) f)
+
 /-- A power series which is an endomorphism of the formal group `F`. -/
 structure IsFormalGroupEndomorphism (F : FormalGroup O) (f : PowerSeries O) : Prop where
   /-- A formal-group endomorphism has zero constant coefficient. -/
