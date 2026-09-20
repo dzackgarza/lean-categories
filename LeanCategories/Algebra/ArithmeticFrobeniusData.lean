@@ -40,6 +40,16 @@ noncomputable abbrev serreFrobeniusSubstitution
     (Q : Ideal S) [Q.IsPrime] [Finite (S ⧸ Q)] : G :=
   arithFrobAt R G Q
 
+/-- Serre's chosen-prime representative for the Artin symbol
+(FC10-C01-U081).
+
+In an abelian extension the independence from the chosen prime above the base
+prime is a theorem; the Sweep-III datum is the same arithmetic Frobenius
+element already named in U079. -/
+noncomputable abbrev serreArtinRepresentative
+    (Q : Ideal S) [Q.IsPrime] [Finite (S ⧸ Q)] : G :=
+  serreFrobeniusSubstitution (R := R) (S := S) (G := G) Q
+
 /-- Neukirch's chosen-prime representative for the unramified Frobenius / Artin
 element (FC09-C06-U074).
 

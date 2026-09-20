@@ -32,4 +32,14 @@ def idealArtinProductData
     (a : FractionalIdeal R⁰ K) : G :=
   ∏ᶠ p : HeightOneSpectrum R, primeArtin p ^ FractionalIdeal.count K p a
 
+/-- Serre's raw ideal Artin-symbol extension (FC10-C01-U081), using the same
+finite prime-factor product as `idealArtinProductData`.
+
+The source's assertion that this product is independent of choices and defines
+a homomorphism on ideals away from ramification remains result content. -/
+abbrev serreIdealArtinProductData
+    (primeArtin : HeightOneSpectrum R → G)
+    (a : FractionalIdeal R⁰ K) : G :=
+  idealArtinProductData primeArtin a
+
 end LeanCategories.Algebra
