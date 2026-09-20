@@ -44,6 +44,20 @@ def IsFormalGroupHom (F G : FormalGroup O) (f : FormalGroupHomSeries F G) : Prop
     f.subst F.toPowerSeries =
       G.toPowerSeries.subst (fun i => PowerSeries.subst (MvPowerSeries.X i) f)
 
+/-- Raw forward/inverse power-series data for a formal-group isomorphism
+(FC09-C05-U036). -/
+abbrev FormalGroupIsoSeries (F G : FormalGroup O) :=
+  FormalGroupHomSeries F G × FormalGroupHomSeries G F
+
+/-- Neukirch's inverse-series definition of a formal-group isomorphism.
+
+The equivalent unit-linear-coefficient criterion is deliberately not part of
+this Sweep-III declaration. -/
+def IsFormalGroupIso (F G : FormalGroup O) (e : FormalGroupIsoSeries F G) : Prop :=
+  IsFormalGroupHom F G e.1 ∧
+    IsFormalGroupHom G F e.2 ∧
+      e.1.subst e.2 = PowerSeries.X ∧ e.2.subst e.1 = PowerSeries.X
+
 /-- A power series which is an endomorphism of the formal group `F`. -/
 structure IsFormalGroupEndomorphism (F : FormalGroup O) (f : PowerSeries O) : Prop where
   /-- A formal-group endomorphism has zero constant coefficient. -/
