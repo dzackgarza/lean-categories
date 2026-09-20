@@ -5,8 +5,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
-public import Mathlib.Algebra.Category.ModuleCat.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+public import Mathlib.Algebra.Category.ModuleCat.Abelian
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
+public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 
 /-!
 # Local singular homology
@@ -31,7 +32,7 @@ abbrev singularChainFunctor (R : Type) [CommRing R] :
 /-- The inclusion of a subspace as a morphism of topological spaces. -/
 def subspaceInclusion (X : Type) [TopologicalSpace X] (A : Set X) :
     TopCat.of A ⟶ TopCat.of X :=
-  ⟨Subtype.val, continuous_subtype_val⟩
+  TopCat.ofHom ⟨Subtype.val, continuous_subtype_val⟩
 
 /-- Relative singular chains `S_*(X,A;R)`, as the cokernel of the chain map
 induced by `A ↪ X`. -/
