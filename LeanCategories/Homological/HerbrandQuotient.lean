@@ -12,9 +12,10 @@ public import Mathlib.RepresentationTheory.Homological.TateCohomology.Basic
 Definition-level realization of Neukirch FC09-C04-U080 and Serre
 FC10-C08-U018.
 
-The checked class-field-theory reference defines the Herbrand quotient as the
-ratio of the cardinalities of Tate cohomology in degrees `0` and `-1`,
-under the source hypothesis that both groups are finite.
+The checked class-field-theory reference defines the Herbrand quotient for a
+finite cyclic group as the ratio of the cardinalities of Tate cohomology in
+degrees `0` and `-1`, under the source hypothesis that both groups are
+finite.
 
 Sweep III records only this ratio.  Periodicity, multiplicativity in short
 exact sequences, and the value on finite modules are result content.
@@ -26,7 +27,7 @@ noncomputable section
 
 namespace LeanCategories.Homological
 
-variable {G : Type} [Group G] [Fintype G]
+variable {G : Type} [Group G] [Fintype G] [IsCyclic G]
 
 /-- The Herbrand cardinality ratio `#Hhat^0(G,A) / #Hhat^(-1)(G,A)`.
 
