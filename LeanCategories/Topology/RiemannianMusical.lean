@@ -64,6 +64,16 @@ def lowerIndexCoordinates {ι : Type*} [Fintype ι]
     (g : Matrix ι ι ℝ) (X : ι → ℝ) : ι → ℝ :=
   fun j => ∑ i, g i j * X i
 
+/-- Lee's sharp/raising-index value at a fiber (FC08-C13-U043).
+
+This is selected from the exact source equation `v♭ = ω`. For a Riemannian
+metric the source/reference proves existence and uniqueness; Sweep III records
+only the value selected by that defining relation, not those propositions. -/
+noncomputable def metricSharpAtData
+    (g : ContMDiffRiemannianMetric IB n F E) (b : B)
+    (alpha : E b →L[ℝ] ℝ) : E b :=
+  @Classical.epsilon (E b) ⟨0⟩ (fun v => metricDualAt g b v = alpha)
+
 /-- Lee's inverse metric-coordinate matrix `(g^ij)` (FC08-C13-U042).
 
 `Matrix.inv` is a total construction, so this declaration does not require a
@@ -73,5 +83,12 @@ noncomputable def inverseMetricCoordinates {ι : Type*} [Fintype ι]
     (g : Matrix ι ι ℝ) : Matrix ι ι ℝ := by
   classical
   exact g⁻¹
+
+/-- Coordinate raising for a metric matrix: `ω^i = Σ_j g^ij ω_j`, using
+Lee's inverse metric-coordinate matrix. Identifying this with
+`metricSharpAtData` for chart components is result/comparison content. -/
+noncomputable def raiseIndexCoordinates {ι : Type*} [Fintype ι]
+    (g : Matrix ι ι ℝ) (alpha : ι → ℝ) : ι → ℝ :=
+  fun i => ∑ j, inverseMetricCoordinates g i j * alpha j
 
 end LeanCategories.Topology
