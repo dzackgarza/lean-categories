@@ -28,6 +28,7 @@ class DefinitionReadinessTest(unittest.TestCase):
             mapping = cls.mappings[unit_id]
             cls.mappings[unit_id] = replace(
                 mapping,
+                verdict=re.sub(r"\s*\[realized\]", "", mapping.verdict, flags=re.I),
                 row=re.sub(r"\s*\[realized\]", "", mapping.row, flags=re.I),
             )
             if cls.mappings[unit_id].delivered:
@@ -156,6 +157,26 @@ class DefinitionReadinessTest(unittest.TestCase):
 
     def test_independent_reference_port_remains_ready(self) -> None:
         self.assertEqual(self.blockers("FC05-C09-U124"), ())
+
+    def test_negative_realized_mention_does_not_deliver_reference_port(self) -> None:
+        mapping = frontier.Mapping(
+            "[definition-only] [sweep-iii-blocked] pending port",
+            "reference-port",
+            "synthetic.md",
+            "pending port; not marked `[realized]` until theorem-layer input exists",
+        )
+        self.assertFalse(mapping.realized)
+        self.assertFalse(mapping.delivered)
+
+    def test_legacy_realized_by_provenance_remains_supported(self) -> None:
+        mapping = frontier.Mapping(
+            "exact reference port",
+            "reference-port",
+            "synthetic.md",
+            "exact reference port; [realized] by `Owner.definition`",
+        )
+        self.assertTrue(mapping.realized)
+        self.assertTrue(mapping.delivered)
 
     def test_ready_selection_keeps_independent_unit_and_excludes_blocked_unit(self) -> None:
         pending = [

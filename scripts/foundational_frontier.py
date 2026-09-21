@@ -143,12 +143,19 @@ class Mapping:
     @property
     def realized(self) -> bool:
         """Whether a mapped port/import has already been realized locally."""
-        return "[realized]" in self.row.lower()
+        verdict = self.verdict.lower()
+        if "[realized]" in verdict:
+            return True
+        # Two legacy rows predate the rule that completion markers live in the
+        # canonical verdict cell and record the state as ``[realized] by ...``
+        # in their provenance cell.  Keep accepting that exact historical form,
+        # but do not let prose such as ``not marked [realized]`` close a unit.
+        return re.search(r"\[realized\]\s+by\b", self.row, re.I) is not None
 
     @property
     def definition_only(self) -> bool:
         """Whether this direct owner discharges only a mixed unit's definition layer."""
-        return "[definition-only]" in self.row.lower()
+        return "[definition-only]" in self.verdict.lower()
 
     @property
     def sweep_iii_blocked(self) -> bool:
@@ -160,19 +167,17 @@ class Mapping:
         Definitions frontier without pretending that the carrier realization
         itself is undelivered.
         """
-        return "[sweep-iii-blocked]" in self.row.lower()
+        return "[sweep-iii-blocked]" in self.verdict.lower()
 
     @property
     def negative_search_complete(self) -> bool:
         """Whether an unmatched row has passed the finite negative-search gate."""
-
-        return "[negative-search-complete]" in self.row.lower()
+        return "[negative-search-complete]" in self.verdict.lower()
 
     @property
     def residue_search_audited(self) -> bool:
         """Whether a negative definition survived the open-ended prior-art audit."""
-
-        return "[residue-search-audited]" in self.row.lower()
+        return "[residue-search-audited]" in self.verdict.lower()
 
     @property
     def action(self) -> str:

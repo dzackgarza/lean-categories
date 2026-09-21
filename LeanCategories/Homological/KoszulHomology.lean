@@ -9,6 +9,7 @@ public import LeanCategories.Homological.NoncommutativeTensor
 public import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.Algebra.Homology.Opposite
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+public import Mathlib.CategoryTheory.Monoidal.Preadditive
 
 /-!
 # Koszul homology and cohomology
@@ -77,5 +78,24 @@ noncomputable def koszulHomCochainComplex (B : ModuleCat R) :
 /-- Weibel's Koszul cohomology `H^q(x,B) = H^q(Hom_R(K(x),B))`. -/
 noncomputable def koszulCohomology (B : ModuleCat R) (q : ℕ) : AddCommGrpCat :=
   koszulCohomologyOf R x hx (canonicalKoszulComplexRealization R x hx) B q
+
+section HartshorneCoefficientComplex
+
+variable (A : Type u) [CommRing A]
+variable {r : ℕ} (f : Fin r → A)
+
+/-- Hartshorne's coefficient Koszul complex
+`K_•(f; M) = K_•(f) ⊗_A M` (`FC06-C03-U095`).
+
+For a commutative ring every finite sequence is central, so the underlying
+Koszul complex is canonical.  Applying the additive tensor-right functor to
+that chain complex transports the differential and its square-zero relation;
+no new result about the coefficient differential is required here. -/
+noncomputable def koszulCoefficientComplex (M : ModuleCat A) :
+    ChainComplex (ModuleCat A) ℕ :=
+  ((MonoidalCategory.tensorRight M).mapHomologicalComplex (ComplexShape.down ℕ)).obj
+    (koszulComplex A f (fun _ _ ↦ mul_comm _ _))
+
+end HartshorneCoefficientComplex
 
 end LeanCategories.Homological
