@@ -66,6 +66,25 @@ def lowerIndexCoordinates {ι : Type*} [Fintype ι]
     (g : Matrix ι ι ℝ) (X : ι → ℝ) : ι → ℝ :=
   fun j => ∑ i, g i j * X i
 
+/-- The raw total-space metric-dual map underlying Lee's
+`hat(M) : TQ → T*Q` in FC08-C22-U033.
+
+For the constant positive mass metric this sends `(q,v)` to the covector
+`(q, M(v,-))`. Sweep III records only this dependent-pair map. Smoothness
+and fibrewise invertibility are result-layer statements. -/
+def metricDualBundleData (g : ContMDiffRiemannianMetric IB n F E) :
+    (Σ b : B, E b) → (Σ b : B, E b →L[ℝ] ℝ) :=
+  fun v => ⟨v.1, metricDualAt g v.1 v.2⟩
+
+/-- Lee's mass-matrix coordinate form of the metric-dual construction
+(FC08-C22-U033): `p_i = Σ_j M_ij v^j`.
+
+No positivity, invertibility, or symmetry proof is needed to state the source
+construction data. -/
+def massMetricDualCoordinates {ι : Type*} [Fintype ι]
+    (M : Matrix ι ι ℝ) (v : ι → ℝ) : ι → ℝ :=
+  fun i => ∑ j, M i j * v j
+
 /-- Lee's sharp/raising-index value at a fiber (FC08-C13-U043).
 
 This is selected from the exact source equation `v♭ = ω`. For a Riemannian
