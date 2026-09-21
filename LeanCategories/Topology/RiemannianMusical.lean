@@ -5,6 +5,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
+public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 /-!
@@ -28,7 +30,7 @@ noncomputable section
 namespace LeanCategories.Topology
 
 open Bundle
-open scoped ContDiff
+open scoped ContDiff Manifold
 open scoped BigOperators
 
 universe uB uF
@@ -90,5 +92,24 @@ Lee's inverse metric-coordinate matrix. Identifying this with
 noncomputable def raiseIndexCoordinates {ι : Type*} [Fintype ι]
     (g : Matrix ι ι ℝ) (alpha : ι → ℝ) : ι → ℝ :=
   fun i => ∑ j, inverseMetricCoordinates g i j * alpha j
+
+/-- Lee's gradient at a point (FC08-C13-U044): the sharp of the differential.
+
+`mvfderiv` is Mathlib's manifold differential with normed-space target, so for
+a smooth `f : B → ℝ` it is already a covector on `T_b B`. Smoothness of the resulting
+section and the identity `g(grad f, v) = df(v)` are result content. -/
+noncomputable def riemannianGradientAtData [IsManifold IB ∞ B]
+    (g : ContMDiffRiemannianMetric IB ∞ EB
+      (fun b : B => TangentSpace IB b))
+    (f : C^∞⟮IB, B; ℝ⟯) (b : B) : TangentSpace IB b :=
+  metricSharpAtData g b (mvfderiv IB f b)
+
+/-- The pointwise vector field underlying Lee's gradient construction.
+Smoothness is not bundled into this Sweep-III datum. -/
+noncomputable def riemannianGradientData [IsManifold IB ∞ B]
+    (g : ContMDiffRiemannianMetric IB ∞ EB
+      (fun b : B => TangentSpace IB b))
+    (f : C^∞⟮IB, B; ℝ⟯) : ∀ b : B, TangentSpace IB b :=
+  riemannianGradientAtData g f
 
 end LeanCategories.Topology
