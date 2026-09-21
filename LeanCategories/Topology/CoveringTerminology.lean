@@ -74,6 +74,14 @@ normal (FC02-C13-U021). -/
 def IsRegularCoveringAt (p : E → B) (hp : IsCoveringMap p) (e₀ : E) : Prop :=
   (FundamentalGroup.map ⟨p, hp.continuous⟩ e₀).range.Normal
 
+/-- Lee's normal-covering criterion (FC08-C07-U032): a covering is normal
+when the image of the induced fundamental-group map is a normal subgroup at
+every point of the total space.
+
+The equivalence with deck-group transitivity is result content. -/
+def IsFundamentalGroupNormalCovering (p : E → B) : Prop :=
+  ∃ hp : IsCoveringMap p, ∀ e : E, IsRegularCoveringAt p hp e
+
 /-- Semilocal simple connectivity at a point, expressed by a neighborhood whose inclusion has
 trivial fundamental-group image (FC02-C13-U029). -/
 def SemilocallySimplyConnectedAt (b : B) : Prop :=
