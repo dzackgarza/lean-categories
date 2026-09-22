@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Topology.ContinuedFractionPlumbingData
+public import LeanCategories.Topology.ComplexSurfaceResolutionData
 public import LeanCategories.Topology.HirzebruchJungSingularityData
 public import Mathlib.Combinatorics.SimpleGraph.Basic
 
@@ -37,27 +38,6 @@ result-layer work.
 namespace LeanCategories.Topology
 
 universe u
-
-/-- The analytic predicates needed to state the source definition of a
-resolution and the geometry of its exceptional curves.
-
-They are deliberately predicates rather than manufactured structures: the
-target library has the underlying topological spaces but not the required
-singular complex-analytic surface layer. -/
-structure ComplexSurfaceResolutionInterface where
-  IsSmoothComplexSurface : TopCat.{u} → Prop
-  IsIsolatedSurfaceSingularity :
-    (X : TopCat.{u}) → X → Prop
-  IsHolomorphicMap :
-    {X Y : TopCat.{u}} → (X → Y) → Prop
-  IsBiholomorphicOutsideFiber :
-    {X Y : TopCat.{u}} → (f : X → Y) → (p : Y) → Prop
-  IsProjectiveLineCurve :
-    {X : TopCat.{u}} → Set X → Prop
-  HasSelfIntersection :
-    {X : TopCat.{u}} → Set X → ℤ → Prop
-  MeetTransverselyInOnePoint :
-    {X : TopCat.{u}} → Set X → Set X → Prop
 
 /-- Peters--Sterk's definition of a resolution of an isolated surface
 singularity, expressed against the missing analytic interface.
