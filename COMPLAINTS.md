@@ -483,3 +483,29 @@ from the recorded source clause and inspected pinned references, but remain
 unaccepted pending the original-text comparison. Target-pin checks were not
 started with only 423 MB available memory; this is not a passing check. The
 existing Chapter-16 handoff owns the exact declarations and validation debt.
+
+### FC11 period-domain mapping conflated two polarization conventions
+
+The 2026-09-22 source-interface read for C19-U021 found that the mapped
+TauCeti `Hodge.PeriodDomain.Point` is not the full K3 intersection-form
+period domain. Its `IsPolarization` requires Hodge--Riemann positivity on
+every component, with `i^(2p-n)` sign convention. The source instead uses
+positive isotropic period lines for the intersection form, with a
+Lorentzian `(1,1)` part. Neither copying the full-polarization predicate nor
+merely negating the entire K3 form gives the intended full-lattice carrier.
+
+The originally cited `bc404ebee90736d974da54ffd8fb7c7993d2f86d` file URL
+returned 404. The already recorded valid revision
+`f962d4a1e6a5eb6a87cd76a3900bc845df3f5950`, Apache-2.0, supplied the actual
+`Geometry/Hodge/{PeriodDomain,Polarization,Conjugation}.lean` definitions.
+The exact comparison and affected pending consumers are recorded in
+`corpus/chapter-19-application-to-moduli-of-k3-surfaces-fc11.md`.
+
+The repair constructs the source's native complexified projective-line
+locus in `Lattices/Valued/PeriodDomainData.lean` and specializes its
+positive-class, sublattice and integral-orthogonality definitions in
+`K3PeriodDomainData.lean`. Only the reference's tensor-conjugation data is
+adapted; no polarization theorem is introduced. Original-source acceptance
+and target-pin checks remain open; elaboration was not started with only
+320 MB available. The higher-dimensional plane and arithmetic quotient
+clauses are not credited by these line-level definitions.
