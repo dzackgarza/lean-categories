@@ -131,6 +131,23 @@ ready units. After a unit completes, immediately select the next ready unit here
 
 Realize every admitted definitional clause, preserving its source inputs and generality. Reuse the mapped declaration, import the mapped package, port the located implementation, or transcribe the located source construction. **No theorem enters Sweep III.** If an API asks for a proof-valued constructor argument, quotient descent proof, law, identity, well-definedness result, or similar proposition, that API route is wrong for this sweep; represent the source-defined data without proving the result. Classification, comparison, independence and every other result about an already declared object remain Sweep IV.
 
+Top-level unmatched status does not authorize a locally invented support stack. During
+realization, every substantial supporting mathematical owner newly required by the selected
+encoding creates a prerequisite edge for that unit. Before any such support is authored, search
+Mathlib/project owners, importable packages, the live formalization corpus, and reference
+implementations in Lean or other proof assistants; inspect and record the exact candidate
+declarations. Prefer direct reuse, then import, then port/adaptation. The parent unit remains
+blocked until this support lookup is resolved. Only the irreducible residue after those searches
+may be owned locally, with reproducible negative-search evidence and an explicit minimality
+justification in the canonical mapping/comparison record. A negative search for the parent
+construction never counts as a negative search for its supporting mathematics.
+
+For this gate, substantial includes any new reusable interface/structure/predicate, replacement
+for a missing mathematical theory, generic quotient/construction framework, classification
+surrogate, or other owner intended to support more than thin source-specific assembly. It is not
+measured by line count. Such a support layer cannot be hidden inside the selected unit and then
+cited as evidence that the unit is realized.
+
 `corpus/` remains the canonical source, mapping and completion record. `FOUNDATIONAL_DEFINITIONS.tsv` is a derived work selector, not proof that every `port` row lacks code: FC01–FC04 have closed whole-source definition boxes and must consume their existing owners before any new implementation. Existing Lean files alone likewise do not prove acceptance. Preserve the causal route when adding `[realized]`.
 
 The full population is every row in the committed definition index. Every unresolved row belongs to its source workstream below, even when its detailed dependencies are not yet known. Unknown dependencies are explicitly unresolved, never an assertion that the unit is ready. No unit disappears because it was expensive or received a blocker note.
@@ -174,6 +191,12 @@ Select the next ready node here while preserving active claims. A dispatch names
 
 Read the exact clause and implementation once, record the comparison at the existing owner, and reuse it while unchanged. Run one focused build; if a local compiler diagnostic appears, make one evidence-based correction. Repeated failure on the same issue exits that unit to its named kernel edge; it does not authorize an expanding proof/search programme. A new line of investigation needs a concrete changed input or falsifiable question.
 
+Before adding substantial owned support, add the newly exposed support requirement as a
+prerequisite of the selected unit and resolve its prior-art route first. This lookup is not
+optional implementation research and is not discharged by the parent unit's earlier Mapping
+search. Record either the reused/imported/ported owner or the reproducible negative evidence that
+justifies the minimal local residue. Until then the selected definition is blocked, not realized.
+
 Each completed declaration is banked with explicit paths and source evidence. Integration must preserve the shared index and foreign work. A validation failure is reported with the exact diagnostic and source obligation. Acceptance never follows solely from worker confidence, a file's existence, or a smaller residual count.
 
 
@@ -181,7 +204,7 @@ Each completed declaration is banked with explicit paths and source evidence. In
 
 
 - Ready lane: small source-faithful declarations and pinned reference ports. Give lower-tier workers a coherent source/API batch and the exact mapped paths. Consume existing searches; do not commission discovery reports.
-- Kernel lane: one missing mathematical constructor per assignment, with dependent source IDs and an exact output type. Locate or transcribe the source/reference definition. This lane still writes definitions only; it does not prove laws or supporting results. If the proposed representation requires theorem work, change the representation and keep the ready lane moving.
+- Kernel lane: one missing mathematical constructor per assignment, with dependent source IDs and an exact output type. First resolve that constructor's own reuse/import/reference search; only an independently audited irreducible residue may be transcribed or authored. A newly exposed substantial support layer becomes another prerequisite edge rather than expanding the current assignment. This lane still writes definitions only; it does not prove laws or supporting results. If the proposed representation requires theorem work, change the representation and keep the ready lane moving.
 - Integration lane: one Lean process for the entire shared host/repository. Transfer that slot directly between workers. Source drafting and planner work continue while compilation runs. Workers own focused validation and explicit-path commits; the coordinator consumes their evidence and checks the changed mathematical boundary once.
 
 ## Begin each continuation here

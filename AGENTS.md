@@ -344,6 +344,29 @@ force proof work, change the representation rather than turning that proof into 
 Use the source's data-level definition, or a located reference implementation whose interface
 separates the data from the later propositions.
 
+**An unmatched top-level definition is not permission to invent its support stack.**
+During realization, decompose the proposed Lean encoding into the mathematical owners it needs.
+If the selected source unit would require a substantial new project-owned supporting interface,
+structure, predicate, constructor, quotient model, classification surrogate, or other reusable
+layer, stop before authoring that support. Treat the missing support as a newly exposed
+prerequisite and run the same reuse search that guards top-level definitions: search
+pinned/current Mathlib and existing project owners; importable Lean packages and the live
+formalization corpus; then non-importable Lean and other proof assistants for a reference
+implementation to port or adapt. Inspect the actual candidates and record exact
+repository/commit/path/license provenance plus the mathematical comparison.
+
+Prefer a direct owner, then an import, then a port/adaptation. Only after those routes fail may
+the irreducible supporting residue be authored locally. The parent source unit stays blocked on
+that support-search prerequisite until the route is recorded. A negative search for the parent
+object does **not** justify owning lower-level mathematics that was never searched independently.
+
+Substantial support is determined by mathematical responsibility, not line count. An invented
+abstraction standing in for a missing theory, a reusable bundled data model, or a project-owned
+implementation of a standard construction is substantial even when short. Thin source-specific
+assembly from already justified owners is not. Every local support addition must therefore be
+traceable either to an imported/reference owner or to its own reproducible negative-search
+evidence and a statement of why the remaining owned code is minimal.
+
 Defining a predicate or a structure with a law field does not require proving that law for
 an instance. For example, stating the definition of a complex requires no square-zero
 theorem. Constructing a particular object by a bundled API that demands square-zero evidence
