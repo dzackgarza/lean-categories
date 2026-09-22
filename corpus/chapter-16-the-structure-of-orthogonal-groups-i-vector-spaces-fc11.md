@@ -81,3 +81,26 @@ rather than treating that helper as a global integral or supplying an arbitrary
 period lattice. The manifest's local Peters--Sterk extraction path was absent
 on this host; this continuation used the exact indexed source clause, and the
 complete source re-read remains part of U026 acceptance.
+
+The next checked slice is
+`LeanCategories/Algebra/RiemannSurfacePeriodIntegralData.lean`: the pinned
+strong analytic-arc predicate, analytic arcs and based loops, subordinate
+chart partitions, chart-segment integrals and their finite sum, and the
+canonical moving-chart scalar integral. The sole coefficient adapter uses
+native inverse-chart `mfderiv` and `NormedSpace.fromTangentSpace` to evaluate
+the intrinsic cotangent section; no second one-form space or local proof is
+introduced. Native/project owner searches found no existing exact analytic-arc
+or subordinate-partition declarations, so those definitions are ported from
+the already located reference rather than re-authored.
+
+`LeanCategories/Algebra/RiemannSurfaceJacobianQuotientData.lean` forms an actual
+additive quotient from the loop-period equations using native
+`AddSubgroup.closure` and `QuotientAddGroup.mk'`. This is an integral generated
+subgroup, not a complex-linear span or topological closure. Both owner-local
+Lean checks pass at Mathlib `db584cd6d46c92f209a44c0f1c829460d327499d`.
+The source's homology-class-to-functional map has not yet been transcribed;
+the generated-loop quotient is recorded as a model, not accepted as a substitute
+for that missing source data. The pinned `Homology.H1` and
+`PeriodCycleBasis.loopToHomology` provide its already located native
+abelianization/loop-class route. Independence, linearity and descent results
+remain Sweep IV, not new Sweep-III prerequisites.
