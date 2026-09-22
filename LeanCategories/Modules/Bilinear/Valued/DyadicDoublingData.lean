@@ -22,9 +22,7 @@ content.
 
 namespace LeanCategories.Modules.Bilinear.Valued
 
-universe u
-
-variable {W : Type u} [AddCommGroup W] [Module ℤ W]
+variable {W : Type} [AddCommGroup W] [Module ℤ W]
 
 /-- The order-two torsion subgroup `G₁ = G[2]` in the dyadic doubling
 construction (FC11-C09-U023). -/
@@ -35,6 +33,12 @@ def dyadicDoublingKernelData (A : BilinModuleCat ℤ W) :
 /-- The raw doubling carrier `2G = G/G₁` (FC11-C09-U023). -/
 abbrev dyadicDoublingCarrierData (A : BilinModuleCat ℤ W) :=
   A.carrier ⧸ dyadicDoublingKernelData A
+
+/-- The coset `x̄` of a representative `x ∈ G` in the doubling carrier
+`2G = G/G₁`. -/
+def dyadicDoublingClassData (A : BilinModuleCat ℤ W) (x : A.carrier) :
+    dyadicDoublingCarrierData A :=
+  Submodule.Quotient.mk x
 
 /-- The representative-level diagonal value `b(x,x)` used to define
 `q([x])` in the doubling construction (FC11-C09-U023).
