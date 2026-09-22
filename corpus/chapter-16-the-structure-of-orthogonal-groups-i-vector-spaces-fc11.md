@@ -255,3 +255,39 @@ No larger-cap retry or dependent parity compilation was launched; the
 previously unverified U030/Abel--Jacobi import closure remains unchanged.
 `git diff --check` passed. U031 retains its `reference-port` route without a
 realization marker; the original June-2024 extraction is still absent.
+
+### U036: divisor-representative Weil-pairing formula
+
+The 2026-09-22 continuation transcribes the defining quotient from source
+lines 8291--8295 in
+`LeanCategories/Algebra/RiemannSurfaceWeilPairingData.lean`.
+`CurveWeilPairingAdmissibleData` records the two degree-zero divisors,
+disjoint divisor supports, and the exact coefficient predicates
+`div(f₁) = k D₁` and `div(f₂) = k D₂` for chosen nonzero rational functions.
+`curveWeilPairingRepresentativeData` computes `f₁(D₂) / f₂(D₁)`, and
+`curveWeilPairingData` restricts that formula to the recorded source inputs.
+
+The supporting owners were read before assembly: U024's
+`RiemannSurfaceDivisorData.lean` supplies the free-abelian divisor carrier,
+degree, support, nonzero chartwise meromorphic functions and principal-divisor
+coefficient predicate; U025's `RiemannSurfaceDivisorEvaluationData.lean`
+supplies the finite product of regular germ values with integral exponents.
+The latter intentionally does not use arbitrary point values of meromorphic
+representatives. These are existing source-mapped owners; the new module
+adds no function field, quotient, evaluation theory, or other support stack.
+
+This is the representative-level construction, not a claimed descended
+pairing on Jacobian torsion. Existence of the chosen functions from torsion,
+moving to disjoint representatives, cross-evaluation admissibility,
+nonvanishing, choice-independence, the roots-of-unity target, bilinearity,
+and nondegeneracy remain result clauses. No proof or new result is added.
+
+The canonical selector was recomputed into ignored repository-local scratch;
+earlier ready U017/U007/U026/U027/U029--U031 already have inherited or banked
+source work and retain their unresolved acceptance. U036 is the next
+untranscribed definition in the active chapter. Its causal route remains
+`unmatched [negative-search-complete] [residue-search-audited]`, without a
+`[realized]` marker. The original Peters--Sterk extraction is still absent.
+Available host memory was 349 MB before this transcription, so no Lean
+process was started. The new owner is banked as **unverified**, with no
+aggregate export and no modification of inherited generated selectors.
