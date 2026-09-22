@@ -28,6 +28,6 @@ variable [AddCommGroup V] [Module K V] [LieRingModule H V] [LieModule K H V]
 
 /-- Humphreys' multiplicity `m(lambda) = dim V_lambda`. -/
 def weightMultiplicity (lambda : H → K) : ℕ :=
-  finrank K (LieModule.weightSpace V lambda)
+  Module.finrank K (LieModule.weightSpace V lambda)
 
 end LeanCategories.Algebra
