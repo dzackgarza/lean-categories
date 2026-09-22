@@ -133,7 +133,26 @@ is asserted. These remain result content, not Sweep-III prerequisites.
 
 U029 retains its causal `reference-port` route and is not marked `[realized]`.
 The pinned original Peters--Sterk extraction was checked and is absent on this
-host, so complete original-prose acceptance remains open. The focused Lean
-check was not started because the shared Lean slot was occupied; compiler
-validation is pending. The inherited staged selectors and global imports
-remain untouched.
+host, so complete original-prose acceptance remains open. After the shared
+Lean slot became free, two bounded checks of the existing imported owner
+`RiemannSurfaceJacobianQuotientData.lean` failed with
+`lean::memory_exception: excessive memory consumption detected at 'interpreter'`,
+first at a 768 MB cap and then at 1536 MB. Neither produced its `.olean`,
+so the new Abel--Jacobi module was not reached. No further compiler attempt
+was made; this is a resource-limited validation failure, not a passing check
+or a Lean source diagnostic. `git diff --check` and the ordinary commit hook
+passed for the explicit-path commit. The inherited staged selectors and
+global imports remain untouched.
+
+### Next definition input: U030 canonical-divisor owner
+
+The next source-interface lookup located `RS.canonicalDivisorOf` at
+`Vilin97/lean-pool@3fc79f0a795f19fffcc59eee3efaf5faa52de3c3`,
+`LeanPool/JacobianDiffgeo/CanonicalForms/OneDimensional.lean`, lines 202–205.
+It is the abbreviation `Θ₀.divisor` on the reference's meromorphic-one-form
+carrier `RS.MForm`, with a chosen nonzero reference form in applications.
+That carrier is not the holomorphic-section input used by the U026 owners.
+The U030 port must therefore inspect and reuse/adapt the cited meromorphic
+form's order/divisor construction rather than supply an arbitrary canonical
+divisor or copy the surrounding one-dimensionality/Riemann--Roch proofs.
+No new supporting interface has been authored by this lookup.
