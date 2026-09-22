@@ -28,6 +28,7 @@ variable [LieRingModule L M] [LieModule R L M]
 the module is an internal direct sum of irreducible Lie submodules. -/
 def IsCompletelyReducibleLieModuleData : Prop :=
   ∃ (ι : Type) (N : ι → LieSubmodule R L M),
+    letI := Classical.decEq ι
     (∀ i, LieModule.IsIrreducible R L (N i)) ∧ DirectSum.IsInternal N
 
 end LeanCategories.Algebra
