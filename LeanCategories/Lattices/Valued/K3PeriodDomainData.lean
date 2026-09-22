@@ -33,24 +33,24 @@ acceptance and target-pin validation remain open.
 namespace LeanCategories.Lattices.Valued
 
 /-- Period points of the repository's fixed K3 intersection lattice. -/
-abbrev K3PeriodPointData := LatticePeriodPointData k3Lattice.obj.pairing
+abbrev K3PeriodPointData := LatticePeriodPointData k3Lattice.obj.bilinMap
 
 /-- The positive-class period locus from U021. The chosen class remains
 of type `(1,1)` through the defining orthogonality condition. -/
 def k3PolarizedPeriodDomainData (ℓ : k3Lattice.obj.carrier)
     (_hℓ : 0 < k3Lattice.obj.pairing ℓ ℓ) : Set K3PeriodPointData :=
-  {p | ℓ ∈ latticePeriodNeronSeveriData k3Lattice.obj.pairing p}
+  {p | ℓ ∈ latticePeriodNeronSeveriData k3Lattice.obj.bilinMap p}
 
 /-- The U025 period locus orthogonal to the specified sublattice of the
 actual K3 lattice. The source's primitive-embedding and signature conditions
 specialize this construction; they are not replaced by classification data. -/
 def k3LatticeMarkedPeriodDomainData
     (S : Submodule ℤ k3Lattice.obj.carrier) : Set K3PeriodPointData :=
-  latticePeriodOrthogonalDomainData k3Lattice.obj.pairing S
+  latticePeriodOrthogonalDomainData k3Lattice.obj.bilinMap S
 
 /-- The U033 integral orthogonality lattice at a K3 period point. -/
 def k3NeronSeveriLatticeData (p : K3PeriodPointData) :
     Submodule ℤ k3Lattice.obj.carrier :=
-  latticePeriodNeronSeveriData k3Lattice.obj.pairing p
+  latticePeriodNeronSeveriData k3Lattice.obj.bilinMap p
 
 end LeanCategories.Lattices.Valued

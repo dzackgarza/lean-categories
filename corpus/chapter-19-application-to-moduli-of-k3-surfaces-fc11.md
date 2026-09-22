@@ -80,6 +80,16 @@ owner, and every direct import resolves to an existing source file. These
 are static checks, not successful Lean elaboration. `git diff --check`
 passes for the explicit source/provenance paths.
 
+The subsequent exact owner-interface read caught and corrected a source
+error in the K3 wrappers: `BilinModuleCat.pairing` is an unbundled two-input
+function, while the period constructions require `LinearMap.BilinForm`.
+They now consume `BilinModuleCat.bilinMap`, the existing bundled adjoint
+from `Modules/Bilinear/Valued/Fixed.lean`, lines 244--258. The positive-square
+test still legitimately evaluates `pairing ℓ ℓ`. The generic owner retains
+the integral-module instance explicitly, so these constructions consume
+the bundled lattice's module structure rather than fixing a separately
+inferred instance. This was a static source correction, not a compiler pass.
+
 | FC11 ID | Verdict | Route | Lean target(s) | Provenance | Interface comparison |
 | --- | --- | --- | --- | --- | --- |
 | `FC11-C19-U001` | genuine project K3-lattice construction with explicit matrix/orthogonal-sum route | `project-existing` | `LeanCategories/Lattices/Valued/Standard.lean::k3Lattice`, `k3FiniteLattice`; route: mapped `FC11-C01-U125` (hyperbolic plane); explicit `e8GramMatrix` + `latticeOfGramMatrix`; `Mathlib/LinearAlgebra/Matrix/BilinearForm.lean::Matrix.toBilin'`; product/finite-power module and bilinear-form constructions; mapped `FC11-C01-U039` for signature; Mathlib determinant/unit and evenness criteria for unimodularity/evenness | P=db584cd6d46c92f209a44c0f1c829460d327499d; A=current; remap 2026-09-13 | The named K3 lattice is genuine project mathematical data: `3U ⊥ 2E₈(-1)`. `U` is already routed in U125; the selected negative `E₈` is given by an explicit symmetric integral Gram matrix and the generic matrix-to-bilinear-form construction. Orthogonal powers/sums assemble the carrier. The signature `(3,19)`, unit determinant/unimodularity, and evenness proofs reduce to the corresponding routed Mathlib invariants of the summands. Thus the project owner is retained with its complete upstream route rather than cited as its own evidence. |

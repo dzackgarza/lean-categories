@@ -44,7 +44,7 @@ namespace LeanCategories.Lattices.Valued
 
 universe u
 
-variable (L : Type u) [AddCommGroup L]
+variable (L : Type u) [AddCommGroup L] [Module ℤ L]
 
 /-- The tensor-product complexification of the integral module. -/
 abbrev LatticeComplexificationData := ℂ ⊗[ℤ] L
