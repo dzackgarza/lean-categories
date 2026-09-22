@@ -29,7 +29,7 @@ variable (P : RootPairing ι R M N)
 def baseWeylWordLengths (b : P.Base) (w : P.weylGroup) : Set ℕ :=
   {n | ∃ omega : List b.support,
     omega.length = n ∧
-      (omega.map fun i => P.weylGroup.ofIdx i.1).prod = w}
+      (omega.map fun i => RootPairing.weylGroup.ofIdx P i.1).prod = w}
 
 /-- Humphreys' length: the least length of a simple-reflection word representing `w`.
 
