@@ -16,6 +16,17 @@ project_id: github.com__dzackgarza__lean-categories
 
 ## Chapter 16. The Structure of Orthogonal Groups I, Vector Spaces
 
+### FC11-C16-U007 continuation, 2026-09-22
+
+`LeanCategories/Modules/Quadratic/Orientation.lean` now defines
+`PositiveOrientationFamily`, `IsCoherentPositiveOrientation`,
+`PositiveOrientation`, and `NegativeOrientation`, using native orientations,
+`sigPos`, and the orthogonal-projection equation. No transport framework or
+theorem proof is introduced. The focused Lean 4.33.0 check passed in 14.91s.
+The recorded June-2024 source extraction is absent on this host; the normalized
+catalogue clause does not settle the exact coherence convention. Original-text
+acceptance remains pending, with no realization marker or aggregate export.
+
 | FC11 ID | Verdict | Route | Lean target(s) | Provenance | Interface comparison |
 | --- | --- | --- | --- | --- | --- |
 | `FC11-C16-U001` | rotations/reflections and the hyperplane-reflection formula are direct linear algebra | `mathlib` | `Mathlib/LinearAlgebra/Reflection.lean::Module.reflection`, `Module.reflection_apply`; `Mathlib/LinearAlgebra/RootSystem/OfBilinear.lean::LinearMap.IsReflective.isOrthogonal_reflection`; `LinearEquiv.det`; diagonal quadratic map `x ↦ (2:ℝ)⁻¹ * b x x` | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d | For anisotropic `x`, take the linear functional `v ↦ b(x,v)/q(x)`; it evaluates to `2` on `x`, so `Module.reflection` is exactly `v ↦ v - b(x,v)/q(x) • x`, and the bilinear-form reflection theorem gives orthogonality. Rotation/reflection terminology is then the determinant `±1` predicate. The project reflection wrappers are unnecessary as routes. |

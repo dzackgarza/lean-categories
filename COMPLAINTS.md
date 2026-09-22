@@ -469,3 +469,10 @@ and base, and records the correction at the definition. The positive leading
 coefficient `1/2` of the first simple root was also checked against the scan; the OCR
 misreads it as a minus sign. No root-system or classification result is credited by
 this transcription.
+
+### FC11-C16-U007 original source is unavailable on the continuation host
+
+On 2026-09-22 the recorded Peters--Sterk extraction under Zotero `ANG3AN65`
+was absent. The canonical Chapter-16 continuation records the compiled
+orientation definitions and the outstanding original-text comparison.
+The unit remains unaccepted; source access is not a theorem prerequisite.
