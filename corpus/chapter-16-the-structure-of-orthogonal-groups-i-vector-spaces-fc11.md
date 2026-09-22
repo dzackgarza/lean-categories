@@ -60,3 +60,24 @@ project_id: github.com__dzackgarza__lean-categories
 | `FC11-C16-U040` | Arf-invariant counting theorem remains absent | `unmatched` | partial: U022 value counts, U038/U039 refinement torsor; no Arf invariant owner | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=87befc843c2b3a1be12dfa7979aaff0851f50c603a | No checked theorem defines/classifies the Arf invariant and counts the two orbits of quadratic refinements by `2^(g-1)(2^g±1)`. |
 | `FC11-C16-U041` | theta-characteristic count and Arf-parity correspondence remain absent | `unmatched` | partial: U031 theta parity, U037 refinement bridge, U040 count theorem | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=87befc843c2b3a1be12dfa7979aaff0851f50c603a | No checked general-curve theorem identifies theta-characteristic parity with Arf invariant or transfers the finite quadratic-form count to the curve. |
 | `FC11-C16-U042` | Mumford geometric characteristic-not-two comparison remains literature-only | `unmatched` | partial: U041 target and algebraic-curve infrastructure | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=87befc843c2b3a1be12dfa7979aaff0851f50c603a | No checked formalization of Mumford’s geometric proof or its extension to all characteristics different from two was found. |
+
+## U026 realization continuation — 2026-09-22
+
+`LeanCategories/Algebra/RiemannSurfaceJacobianData.lean` now supplies
+`CurveHolomorphicOneFormData` and `CurveJacobianDualData` by direct reuse of
+Mathlib's analytic cotangent sections and complex module dual. The pinned
+reference's `Jacobians/RiemannSurface/OneForm.lean`, lines 7–32, explicitly
+identifies this native section representation; no chart-cocycle submodule,
+closure proof, finite-dimensionality argument, or basis-transfer owner is copied.
+The focused command `lake env lean LeanCategories/Algebra/RiemannSurfaceJacobianData.lean`
+passes on Lean 4.33.0 after adding the explicit complex-analysis import.
+
+This realizes the numerator in the indexed source formula, not the Jacobian.
+U026 retains its causal `reference-port` route and remains unaccepted: the global
+integral-period map and its quotient are still required. The pinned
+`PathIntegral.lean::pathIntegralOnChart` is explicitly single-chart-only;
+continue at its referenced `MultiChartIntegral`/`CanonicalArcIntegral` owners
+rather than treating that helper as a global integral or supplying an arbitrary
+period lattice. The manifest's local Peters--Sterk extraction path was absent
+on this host; this continuation used the exact indexed source clause, and the
+complete source re-read remains part of U026 acceptance.
