@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
+public import Mathlib.Data.Fintype.Perm
 
 /-!
 # Homogeneous symmetric tensor data
@@ -28,7 +29,7 @@ variable [CommRing R] [AddCommGroup V] [Module R V]
 /-- The order-`m` tensors fixed by every permutation of tensor factors. -/
 def homogeneousSymmetricTensors (m : ℕ) :
     Submodule R (⨂[R] (_ : Fin m), V) :=
-  ⨅ sigma : Equiv.Perm (Fin m),
+  iInf fun sigma : Equiv.Perm (Fin m) =>
     LinearMap.ker <|
       (PiTensorProduct.reindex R (fun _ : Fin m => V) sigma).toLinearMap - LinearMap.id
 
