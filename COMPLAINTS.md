@@ -484,6 +484,14 @@ unaccepted pending the original-text comparison. Target-pin checks were not
 started with only 423 MB available memory; this is not a passing check. The
 existing Chapter-16 handoff owns the exact declarations and validation debt.
 
+Source access was recovered on 2026-09-22 from the author's publication
+page: the linked PDF is explicitly labeled Version JUNE 2024. The exact
+download URL, SHA-256 and printed-page comparison are recorded in
+`corpus/provenance-contract-for-fc11-c09.md`. The Zotero extraction remains
+absent, but subsequent source comparisons can use this original-text route;
+they must not inherit source unavailability as a blocker. This resolves
+access, not the outstanding unit-specific checks or conformance comparisons.
+
 ### FC11 period-domain mapping conflated two polarization conventions
 
 The 2026-09-22 source-interface read for C19-U021 found that the mapped

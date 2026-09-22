@@ -25,3 +25,28 @@ project_id: github.com__dzackgarza__lean-categories
 - HassePrinciple candidates, when used, are pinned at `47df8f51939b364e678893d54e8a3faf6ec52302` (Apache-2.0, Lean 4.34.0-rc2, Mathlib `2fbace17aa59d5dd7d99fc4af3849722f69272df`) and likewise route as `reference-port`; declarations whose proof or required dependency remains `sorry` are not accepted as positive evidence.
 - Route totals after the 2026-09-13 exact-route remap: `mathlib` 1, `project-existing` 0, `package-import` 0, `reference-port` 0, `unmatched` 27; total 28.
 - Negative-result scope is the dated 2026-09-13 remap evidence in each current `unmatched` row. Search-service errors, rate limits, and timeouts are not negative evidence; only inspected revisions and successful search surfaces cited by the row support its residual gap.
+
+## Original-source recovery and U017 comparison, 2026-09-22
+
+The missing Zotero extraction does not prevent access to the admitted text.
+The author's publication page links to
+<https://www-fourier.univ-grenoble-alpes.fr/~peters/Books/QuadraticForms/QuadForms.pdf>.
+Its title page says **Version JUNE 2024**, with a September 16, 2024 footnote;
+the downloaded 491-page PDF has SHA-256
+`5bc968dad21b0288f2b3d49612d94e750cd759724a16c8c25724c79410641a33`.
+This is a source-access route, not a change of admitted edition or scope.
+
+Printed pages 188--189 (PDF pages 195--196, one-based) give the torsion
+filtration, the denominator `G_(k-1) + p G_(k+1)`, the quotient classes,
+the target `p^(-1) Z / Z`, and the value `p^(k-1) b(x,y)`. These agree
+with the canonical U017 clause and its surrounding source context.
+Equation (9.6) and the subsequent nondegeneracy statements are results,
+not constructor requirements for Sweep III.
+
+`ResidueFormData.lean` reuses native `Submodule.torsionBy`, map/comap,
+quotients, `Set.range`, and a set inverse image. The last inverse image
+records the specified `p`-torsion value target rather than just its ambient
+module. No new supporting algebra, quotient model, or descent mechanism
+is introduced. For the original source, specialize the value module to
+`Q/Z`, take prime `p` and positive `k`; the raw data are defined more
+generally without claiming form laws in that greater generality.

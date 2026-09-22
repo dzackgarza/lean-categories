@@ -15,10 +15,14 @@ The source defines the residue form on the quotient
 
 `G_k / (G_{k-1} + p G_{k+1})`
 
-of the `p^k`-torsion filtration. Sweep III records that quotient carrier and
-the displayed representative formula. Representative-independence, descent
-of the formula to the quotient, the finite-field target identification, and
-bilinearity are result-layer obligations.
+of the `p^k`-torsion filtration. Sweep III records that quotient carrier,
+the displayed representative formula, and its graph with values in the
+`p`-torsion subgroup of the value module. For the source value module `ℚ/ℤ`,
+this is the target `p⁻¹ℤ/ℤ` displayed on printed page 188 of the June 2024
+version. The source uses prime `p` and positive layer indices.
+Representative-independence, totality and single-valuedness of the graph,
+the finite-field target identification, and bilinearity are result-layer
+obligations.
 -/
 
 @[expose] public section
@@ -90,5 +94,27 @@ def residueFormGraphData (A : BilinModuleCat ℤ W) (p k : ℕ) :
     ((residueTorsionClassData A p k xy.1,
       residueTorsionClassData A p k xy.2),
       residueFormRepresentativeData A p k xy.1 xy.2)
+
+/-- The native `p`-torsion value subgroup used by the residue form.
+
+For Peters--Sterk's value module `ℚ/ℤ`, this records the target
+`p⁻¹ℤ/ℤ` in the paragraph preceding the formula on printed page 189.
+The identification with the finite field, when `p` is prime, is not
+part of this declaration. -/
+def residueFormValueSubmoduleData (p : ℕ) : Submodule ℤ W :=
+  Submodule.torsionBy ℤ W (p : ℤ)
+
+/-- The graph of the residue-form formula with its specified torsion target.
+
+This is the inverse image of `residueFormGraphData` under the inclusion
+of the native `p`-torsion value subgroup. It keeps the actual quotient
+classes and the complete representative equation, without choosing a
+representative or requiring a proof that its value is killed by `p`.
+Totality under the source hypotheses and single-valuedness remain results. -/
+def residueFormTorsionGraphData (A : BilinModuleCat ℤ W) (p k : ℕ) :
+    Set ((residueTorsionQuotientData A p k ×
+      residueTorsionQuotientData A p k) ×
+      residueFormValueSubmoduleData (W := W) p) :=
+  {z | (z.1, (z.2 : W)) ∈ residueFormGraphData A p k}
 
 end LeanCategories.Modules.Bilinear.Valued
