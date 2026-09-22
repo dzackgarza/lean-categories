@@ -8,6 +8,7 @@ revision 8ce1ec28aed1c78b3b39d0bae26e2858c82f5143.
 module
 
 public import LeanCategories.Algebra.RiemannSurfaceJacobianQuotientData
+public import LeanCategories.Algebra.RiemannSurfaceDivisorData
 
 /-!
 # Abel--Jacobi map data for a compact complex curve
@@ -75,5 +76,14 @@ def curveAbelJacobiData (X : Type u) [TopologicalSpace X] [T2Space X]
     [IsManifold 𝓘(ℂ) ω X] (x₀ : X) (x : X) : CurveJacobianData X :=
   curveJacobianPeriodClassData X (Classical.arbitrary X)
     (curveAbelJacobiLiftData x₀ x)
+
+/-- Additive extension of the based pointwise Abel--Jacobi map to
+finite integral divisors: `Σ n_x x` is sent to `Σ n_x α(x)`.
+Descent through linear equivalence remains a separate result. -/
+def curveDivisorAbelJacobiData (X : Type u) [TopologicalSpace X] [T2Space X]
+    [CompactSpace X] [ConnectedSpace X] [ChartedSpace ℂ X]
+    [IsManifold 𝓘(ℂ) ω X] (x₀ : X) :
+    CurveDivisorData X →+ CurveJacobianData X :=
+  FreeAbelianGroup.lift (curveAbelJacobiData X x₀)
 
 end LeanCategories.Algebra

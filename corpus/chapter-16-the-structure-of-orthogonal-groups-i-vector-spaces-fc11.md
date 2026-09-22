@@ -167,3 +167,52 @@ The U030 port must therefore inspect and reuse/adapt the cited meromorphic
 form's order/divisor construction rather than supply an arbitrary canonical
 divisor or copy the surrounding one-dimensionality/Riemann--Roch proofs.
 No new supporting interface has been authored by this lookup.
+
+### U030: canonical divisor, theta characteristic, and Riemann-constant data
+
+The 2026-09-22 continuation transcribes the complete declaration/formula
+portion of the catalogue's U030 clause. The mathematical owners are:
+
+- `RiemannSurfaceCanonicalDivisorData.lean`: the order of the existing
+  holomorphic one-form's chart coefficient, the canonical-divisor coefficient
+  predicate, its selection from an explicit nonzero form on a compact connected
+  complex curve, and its class in the existing Picard carrier.
+- `RiemannSurfaceAbelJacobiData.lean`: `curveDivisorAbelJacobiData`, the native
+  free-abelian-group extension of the existing based point map. The divisor map
+  belongs here, not in the theta-characteristic consumer.
+- `RiemannSurfaceThetaCharacteristicData.lean`: the predicate `2θ ∼ K_C`, its
+  divisor-representative subtype, and `curveRiemannConstantData` for the
+  explicitly chosen half-canonical divisor and basepoint.
+
+The support lookup read the pinned LeanPool
+`CanonicalForms/{OneDimensional,Differential,Quotient}.lean` files at
+`3fc79f0a795f19fffcc59eee3efaf5faa52de3c3` (Apache-2.0).
+`RS.canonicalDivisorOf` is the divisor of its chosen reference form;
+`MForm.ord` descends the meromorphic order of the chart coefficient.
+`Differential.lean` identifies holomorphic forms as the special case with the
+same coefficient transformation. For this source's holomorphic input, the
+existing intrinsic `CurveHolomorphicOneFormData` and
+`curveOneFormChartCoefficientData` therefore supply the needed data directly.
+The implementation reuses native `meromorphicOrderAt`, `FreeAbelianGroup`, and
+the prior divisor/Picard/Abel--Jacobi owners. It does not introduce another
+meromorphic-form quotient, support theory, module structure, or supplied
+canonical-divisor/Abel--Jacobi-map parameter.
+
+Finite support, the selection specification, chart independence, degree
+`2g - 2`, linear-equivalence independence, half-canonical existence, class
+descent, and Riemann-constant translation identities remain results. No proof
+of any of them has been introduced. The chosen nonzero holomorphic form is
+an explicit source input, not a claim that one exists on every genus.
+
+The pinned original Peters--Sterk extraction is still absent on this host.
+Available host memory fell from 723 MB to 423 MB while the source was written;
+no Lean process was started into that pressure. The Abel--Jacobi import
+closure also retains its previously recorded memory-limited validation.
+These sources are banked as **unverified**. U030 retains its causal
+`reference-port` mapping without `[realized]`; original-text acceptance and
+target-pin validation are still open, and no aggregate export is added.
+
+The next U031 clause has been read: parity is `Even`/`Odd` applied to
+`h⁰(C,θ)`. Its mapped owner is pinned LeanPool `RS.l`, not an arbitrary
+dimension supplied by the caller. Inspect that linear-system owner before
+introducing its parity consumer; the U030 definitions do not construct it.
