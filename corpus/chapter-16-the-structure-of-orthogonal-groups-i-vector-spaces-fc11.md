@@ -63,44 +63,46 @@ project_id: github.com__dzackgarza__lean-categories
 
 ## U026 realization continuation — 2026-09-22
 
-`LeanCategories/Algebra/RiemannSurfaceJacobianData.lean` now supplies
-`CurveHolomorphicOneFormData` and `CurveJacobianDualData` by direct reuse of
-Mathlib's analytic cotangent sections and complex module dual. The pinned
-reference's `Jacobians/RiemannSurface/OneForm.lean`, lines 7–32, explicitly
-identifies this native section representation; no chart-cocycle submodule,
-closure proof, finite-dimensionality argument, or basis-transfer owner is copied.
-The focused command `lake env lean LeanCategories/Algebra/RiemannSurfaceJacobianData.lean`
-passes on Lean 4.33.0 after adding the explicit complex-analysis import.
+The local definition data now occupy four owners under `LeanCategories/Algebra/`:
 
-This realizes the numerator in the indexed source formula, not the Jacobian.
-U026 retains its causal `reference-port` route and remains unaccepted: the global
-integral-period map and its quotient are still required. The pinned
-`PathIntegral.lean::pathIntegralOnChart` is explicitly single-chart-only;
-continue at its referenced `MultiChartIntegral`/`CanonicalArcIntegral` owners
-rather than treating that helper as a global integral or supplying an arbitrary
-period lattice. The manifest's local Peters--Sterk extraction path was absent
-on this host; this continuation used the exact indexed source clause, and the
-complete source re-read remains part of U026 acceptance.
+- `RiemannSurfaceJacobianData.lean`: `CurveHolomorphicOneFormData` and
+  `CurveJacobianDualData`, directly reusing native analytic cotangent sections
+  and the complex module dual. The pinned `OneForm.lean`, lines 7–32, explicitly
+  identifies this representation; no chart-cocycle submodule or closure proof
+  is copied.
+- `RiemannSurfacePeriodIntegralData.lean`: the pinned strong analytic-arc and
+  loop data, subordinate chart partitions, segment integrals and their finite
+  sum, and the moving-chart scalar integral. The intrinsic coefficient adapter
+  uses native `mfderiv` and `NormedSpace.fromTangentSpace`. The exact analytic-arc
+  and partition owners were located in the reference after native/project
+  name searches, not authored as a new supporting framework.
+- `RiemannSurfaceHomologyPeriodData.lean`: the reference's native abelianized
+  fundamental-group carrier, analytic-loop path and homology-class maps, and
+  `curveHomologyPeriodFunctionalData`. Its defining predicate specifies the
+  integral on every analytic-loop representative of the supplied homology
+  class; the functional is selected from that intrinsic equation.
+- `RiemannSurfaceJacobianQuotientData.lean`: the actual range of that raw
+  homology-period map, the subgroup selected by its exact image carrier,
+  `CurveJacobianPeriodQuotientData`, the native additive quotient projection,
+  and `CurveJacobianData` with the reference's chosen-basepoint convention.
+  The earlier generated-loop quotient model has been replaced; no arbitrary
+  period lattice, complex-linear span, or topological closure remains.
 
-The next checked slice is
-`LeanCategories/Algebra/RiemannSurfacePeriodIntegralData.lean`: the pinned
-strong analytic-arc predicate, analytic arcs and based loops, subordinate
-chart partitions, chart-segment integrals and their finite sum, and the
-canonical moving-chart scalar integral. The sole coefficient adapter uses
-native inverse-chart `mfderiv` and `NormedSpace.fromTangentSpace` to evaluate
-the intrinsic cotangent section; no second one-form space or local proof is
-introduced. Native/project owner searches found no existing exact analytic-arc
-or subordinate-partition declarations, so those definitions are ported from
-the already located reference rather than re-authored.
+Reference provenance is `mrdouglasny/jacobian-challenge` at
+`8ce1ec28aed1c78b3b39d0bae26e2858c82f5143`, Apache-2.0, including the exact
+`Homology.H1`, `PeriodCycleBasis.loopToHomology`, `MultiChartIntegral`, and
+`CanonicalArcIntegral` owners. All four focused `lake env lean` checks pass
+on Lean 4.33.0 with Mathlib `db584cd6d46c92f209a44c0f1c829460d327499d`.
+The only native-path constructor evidence is already carried by the loop data
+or supplied by native continuous-map restriction; no new proof block is added.
 
-`LeanCategories/Algebra/RiemannSurfaceJacobianQuotientData.lean` forms an actual
-additive quotient from the loop-period equations using native
-`AddSubgroup.closure` and `QuotientAddGroup.mk'`. This is an integral generated
-subgroup, not a complex-linear span or topological closure. Both owner-local
-Lean checks pass at Mathlib `db584cd6d46c92f209a44c0f1c829460d327499d`.
-The source's homology-class-to-functional map has not yet been transcribed;
-the generated-loop quotient is recorded as a model, not accepted as a substitute
-for that missing source data. The pinned `Homology.H1` and
-`PeriodCycleBasis.loopToHomology` provide its already located native
-abelianization/loop-class route. Independence, linearity and descent results
-remain Sweep IV, not new Sweep-III prerequisites.
+The two `Classical.epsilon` selections record definitions, not their
+specification theorems. Representability, integrability, independence,
+linearity, subgroup closure, selection specifications and complex-torus
+properties remain Sweep IV and must not become Sweep-III prerequisites.
+U026 retains the causal `reference-port` route and is **not yet marked realized**:
+the manifest's original Peters--Sterk extraction is absent on this host, and
+the complete source-conformance acceptance of these data remains open. This
+continuation used the exact indexed clause and the pinned implementations.
+The inherited staged/unstaged generated selectors and global import file were
+left untouched rather than absorbing other workers' changes into this unit.

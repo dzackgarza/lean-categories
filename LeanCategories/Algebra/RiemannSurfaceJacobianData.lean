@@ -27,10 +27,12 @@ owner rather than porting its chart-cocycle submodule, closure proofs, finite
 basis, or universe-transfer machinery. The cotangent bundle is the native Hom
 bundle from the tangent bundle to the trivial complex line.
 
-This file first records the holomorphic one-form space and its complex dual.
-The integral-period map and quotient are separate, still pending parts of
-FC11-C16-U026; this ambient space alone is not the Jacobian. No finite-dimensional,
-period-lattice, complex-torus, or projectivity result is asserted here.
+This file records the holomorphic one-form space and its complex dual.
+The integral, raw homology-period map, and quotient are at the separate
+`RiemannSurfacePeriodIntegralData`, `RiemannSurfaceHomologyPeriodData`, and
+`RiemannSurfaceJacobianQuotientData` owners. This ambient space alone is not
+the Jacobian. No finite-dimensional, period-lattice, complex-torus, or
+projectivity result is asserted here.
 -/
 
 @[expose] public noncomputable section
