@@ -5,7 +5,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-public import Mathlib.LinearAlgebra.Basic
+public import Mathlib.Algebra.Module.Basic
+public import Mathlib.Data.Real.Basic
+public import Mathlib.SetTheory.Cardinal.NatCard
 
 @[expose] public noncomputable section
 
