@@ -106,3 +106,34 @@ the complete source-conformance acceptance of these data remains open. This
 continuation used the exact indexed clause and the pinned implementations.
 The inherited staged/unstaged generated selectors and global import file were
 left untouched rather than absorbing other workers' changes into this unit.
+
+## U029 realization continuation — 2026-09-22
+
+`LeanCategories/Algebra/RiemannSurfaceAbelJacobiData.lean` now defines the
+arc-integral equation, the endpoint-constrained path-integral lift, its
+basepoint normalization, and the Abel--Jacobi map into the existing period
+quotient. `curveAbelJacobiMapData` keeps the homology basepoint explicit;
+`curveAbelJacobiData` uses the compact-curve and fixed-homology-basepoint
+convention of the pinned reference. No new supporting theory is introduced.
+
+The exact reference is `Jacobians/Axioms/AbelJacobiMap.lean` at
+`8ce1ec28aed1c78b3b39d0bae26e2858c82f5143` (Apache-2.0):
+`pathIntegralBasepointFunctional` computes the existing scalar arc integral,
+and lines 542–555 define `ofCurveAmbient` and `ofCurveImpl`, including the
+subtraction of the lift at the basepoint. The local intrinsic dual replaces
+basis coordinates, using the already ported U026 owners. The lift predicate
+quantifies existentially over an arc with the required endpoints; requiring
+all arcs to give the same dual vector would incorrectly remove period ambiguity.
+
+The intended input is a compact connected Hausdorff complex curve with a
+chosen Abel--Jacobi basepoint. A bare arbitrary functional or supplied lattice
+is not an input. Integrals along different paths may differ by periods, and
+no global primitive, path independence, selection specification, or holomorphy
+is asserted. These remain result content, not Sweep-III prerequisites.
+
+U029 retains its causal `reference-port` route and is not marked `[realized]`.
+The pinned original Peters--Sterk extraction was checked and is absent on this
+host, so complete original-prose acceptance remains open. The focused Lean
+check was not started because the shared Lean slot was occupied; compiler
+validation is pending. The inherited staged selectors and global imports
+remain untouched.
