@@ -216,3 +216,42 @@ The next U031 clause has been read: parity is `Even`/`Odd` applied to
 `h⁰(C,θ)`. Its mapped owner is pinned LeanPool `RS.l`, not an arbitrary
 dimension supplied by the caller. Inspect that linear-system owner before
 introducing its parity consumer; the U030 definitions do not construct it.
+
+### U031: Riemann--Roch space and theta-characteristic parity
+
+The 2026-09-22 continuation resolved the mapped supporting input by reading
+`LeanPool/JacobianDiffgeo/Meromorphic/LinearSystem.lean`, lines 60–106,
+and `Meromorphic/GermSpace.lean`, lines 57–85, at the existing pinned
+`3fc79f0a795f19fffcc59eee3efaf5faa52de3c3` revision (Apache-2.0,
+Rado Kirov). `RS.LinSys D` is the submodule of meromorphic codiscrete germs
+with `-D(p) ≤ ord_p(f)` at every point; `RS.l D` is its complex `finrank`.
+The already inspected native `Filter.Germ`, `Filter.codiscrete`, their
+module instances, and the local U024 chart-order/divisor owner supply the
+supporting data. No new generic function field or germ algebra is required.
+
+`RiemannSurfaceLinearSystemData.lean` combines the reference's meromorphic
+germ membership and order bound in one carrier inside that native module,
+selects the submodule by its exact carrier, and defines
+`curveSectionDimensionData` as its `Module.finrank`. This retains the zero
+germ through its `WithTop` order and identifies representatives differing
+at isolated points; it does not count arbitrary pointwise values as extra
+sections. The sign of the bound is `-D(p)`, permitting the poles allowed by
+an effective divisor rather than forcing additional zeros.
+
+`RiemannSurfaceThetaParityData.lean` defines
+`CurveThetaCharacteristicData.IsEvenData` and `.IsOddData` on the existing
+half-canonical divisor subtype, using the constructed section dimension.
+Closure, representative independence, the selection specification,
+finite dimensionality, divisor-class invariance, theta multiplicity and
+theta-characteristic counting remain Sweep-IV results. No proofs are added.
+
+Both owners remain unverified. The focused command
+`timeout --signal=TERM --kill-after=5s 75s lake env lean -M 1024 -o <scratch-olean> LeanCategories/Algebra/RiemannSurfaceLinearSystemData.lean`
+exited 134 during import loading with
+`lean::memory_exception: excessive memory consumption detected at 'interpreter'`.
+There was no Lean source diagnostic and no successful `.olean` output.
+The host had 1236 MB available before the single Lean process started.
+No larger-cap retry or dependent parity compilation was launched; the
+previously unverified U030/Abel--Jacobi import closure remains unchanged.
+`git diff --check` passed. U031 retains its `reference-port` route without a
+realization marker; the original June-2024 extraction is still absent.
