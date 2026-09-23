@@ -24,14 +24,15 @@ of the order function and proves that principal divisors form a subgroup.
 
 Sweep III records only the source data. A nonzero rational function is
 represented by the same chartwise meromorphic/nonzero-germ data used by
-the reference. Its principal divisor is selected from the intrinsic
-coefficient formula
+the reference. Principal-divisor and linear-equivalence predicates are
+stated directly through the intrinsic coefficient formula
 
   coeff_p(div(f)) = ord_p(f).
 
-Finite support, the specification theorem for that selection, additivity of
-f ↦ div(f), degree zero of principal divisors, and the equivalence-relation
-laws are result content and are not proved here.
+Finite support of the order function, existence/uniqueness of an actual
+finite divisor with those coefficients, additivity of f ↦ div(f), degree
+zero of principal divisors, subgroup closure, and the equivalence-relation
+laws are result content and are not used to manufacture values here.
 -/
 
 @[expose] public noncomputable section
@@ -104,27 +105,19 @@ def IsCurvePrincipalDivisorData
     FreeAbelianGroup.coeff p D =
       (curveOrderAtData p f.toFun).untop₀
 
-/-- Principal divisor selected by the source coefficient formula.
-
-The reference proves the order function has finite support. Sweep III
-does not re-prove that result merely to manufacture a finite formal sum. -/
-def curvePrincipalDivisorData
-    (f : NonzeroCurveRationalFunctionData X) : CurveDivisorData X :=
-  Classical.epsilon (IsCurvePrincipalDivisorData f)
-
 namespace CurveDivisorData
 
-/-- A divisor is principal when it is the selected divisor of some nonzero
-rational function. -/
+/-- A divisor is principal when its coefficients are the orders of some
+nonzero rational function. This avoids selecting a finite divisor before
+the finite-support result is available. -/
 def IsPrincipalData (D : CurveDivisorData X) : Prop :=
   ∃ f : NonzeroCurveRationalFunctionData X,
-    D = curvePrincipalDivisorData f
+    IsCurvePrincipalDivisorData f D
 
 /-- Peters--Sterk linear equivalence:
 D₁ ~ D₂ iff D₁ - D₂ = div(f) for some nonzero rational function f. -/
 def LinearlyEquivalentData (D₁ D₂ : CurveDivisorData X) : Prop :=
-  ∃ f : NonzeroCurveRationalFunctionData X,
-    D₁ - D₂ = curvePrincipalDivisorData f
+  (D₁ - D₂).IsPrincipalData
 
 end CurveDivisorData
 
@@ -132,18 +125,5 @@ end CurveDivisorData
 def IsCurvePrincipalDivisorSubgroupData
     (P : AddSubgroup (CurveDivisorData X)) : Prop :=
   ∀ D : CurveDivisorData X, D ∈ P ↔ D.IsPrincipalData
-
-/-- Principal-divisor subgroup selected by its source carrier.
-
-Closure under addition and negation follows from the result-level
-principal-divisor homomorphism and is intentionally not reproved here. -/
-def curvePrincipalDivisorSubgroupData :
-    AddSubgroup (CurveDivisorData X) :=
-  Classical.epsilon (IsCurvePrincipalDivisorSubgroupData (X := X))
-
-/-- Picard group at the source's divisor-class level. -/
-abbrev CurvePicardGroupData (X : Type u) [TopologicalSpace X]
-    [ChartedSpace ℂ X] : Type u :=
-  CurveDivisorData X ⧸ curvePrincipalDivisorSubgroupData (X := X)
 
 end LeanCategories.Algebra

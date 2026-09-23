@@ -18,16 +18,15 @@ Supporting definitions for Peters--Sterk FC11-C16-U026. The homology carrier
 and loop-class map reuse the exact native owners used by the pinned reference's
 `RiemannSurface/Homology.lean` and `Axioms/PeriodCycleBasis.lean`.
 
-The scalar integral already lives at the analytic-arc owner. A functional on a
-homology class is specified by its values on every analytic loop representing
-that class, then selected by that intrinsic equation. This is the same
-definition-only selection boundary used for principal divisors elsewhere in
-this corpus: no representative is supplied in place of a homology class, and
-no unspecified functional is an input.
+The scalar integral already lives at the analytic-arc owner. A candidate
+functional on a homology class is specified by its values on every analytic
+loop representing that class. Sweep III does not select such a functional:
+existence and linearity are exactly the result-layer facts needed before the
+source period map can be constructed.
 
-Representability by analytic loops, linearity, homotopy invariance, existence
-and uniqueness of the selected functional, its specification, and additivity
-in homology are result content. None is assumed as a new axiom or proved here.
+Representability by analytic loops, linearity, homotopy invariance, existence,
+uniqueness, and additivity in homology are result content. None is assumed as
+a new axiom or used here to manufacture a value.
 -/
 
 @[expose] public noncomputable section
@@ -74,11 +73,12 @@ def IsCurveHomologyPeriodFunctionalData {x₀ : X}
     ∀ form : CurveHolomorphicOneFormData X,
       φ form = curveCanonicalArcIntegralData γ.arc form
 
-/-- The raw homology-to-dual period map selected by the source integral
-equation. Its specification and homomorphism laws are deliberately not
-asserted by this definition. -/
-def curveHomologyPeriodFunctionalData {x₀ : X}
-    (h : CurveIntegralFirstHomologyData X x₀) : CurveJacobianDualData X :=
-  Classical.epsilon (IsCurveHomologyPeriodFunctionalData h)
+/-- Candidate period functionals arising from some integral homology class.
+This is only a set until existence/uniqueness and additivity of the period
+functional are established in the result layer. -/
+def curveIntegralPeriodCandidateSetData {x₀ : X} :
+    Set (CurveJacobianDualData X) :=
+  {φ | ∃ h : CurveIntegralFirstHomologyData X x₀,
+    IsCurveHomologyPeriodFunctionalData h φ}
 
 end LeanCategories.Algebra

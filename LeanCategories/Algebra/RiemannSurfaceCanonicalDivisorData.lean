@@ -29,9 +29,9 @@ owner. Its finite support, selection specification, chart independence,
 degree, and independence up to linear equivalence are separate results.
 
 The compact connected curve and the chosen nonzero form are explicit.
-No existence of such a form is asserted; in particular this construction
-does not assert that a genus-zero curve has one. Complete original-prose
-acceptance and target-pin validation remain open.
+Sweep III keeps a canonical divisor as certified divisor data rather than
+selecting a finite divisor before finite support of the order function has
+been proved. No existence of such a divisor is asserted.
 -/
 
 @[expose] public noncomputable section
@@ -59,19 +59,10 @@ def IsCurveCanonicalDivisorData (form : CurveHolomorphicOneFormData X)
   ∀ p : X, FreeAbelianGroup.coeff p D =
     (curveHolomorphicOneFormOrderData form p).untop₀
 
-/-- Canonical divisor seeded by a specified nonzero holomorphic form.
-Selection is by the local order formula; the assertion that it satisfies
-that formula is not proved in the definitions sweep. -/
-def curveCanonicalDivisorData [T2Space X] [CompactSpace X] [ConnectedSpace X]
-    (form : CurveHolomorphicOneFormData X) (_hform : form ≠ 0) :
-    CurveDivisorData X :=
-  Classical.epsilon (IsCurveCanonicalDivisorData form)
-
-/-- Class of the specified canonical divisor in the existing curve
-Picard-group carrier. Independence of the chosen form remains a result. -/
-def curveCanonicalDivisorClassData [T2Space X] [CompactSpace X] [ConnectedSpace X]
-    (form : CurveHolomorphicOneFormData X) (hform : form ≠ 0) :
-    CurvePicardGroupData X :=
-  QuotientAddGroup.mk (curveCanonicalDivisorData form hform)
+/-- Certified canonical-divisor representative for a specified nonzero
+holomorphic one-form. Existence/finite support is result content. -/
+abbrev CurveCanonicalDivisorData
+    (form : CurveHolomorphicOneFormData X) (_hform : form ≠ 0) :=
+  {D : CurveDivisorData X // IsCurveCanonicalDivisorData form D}
 
 end LeanCategories.Algebra

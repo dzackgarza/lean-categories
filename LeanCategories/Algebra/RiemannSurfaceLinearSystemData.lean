@@ -27,10 +27,11 @@ it does not take the dimension of a space of pointwise representatives:
 changing finitely many irrelevant values must not create extra sections.
 The zero meromorphic germ is included, with order `⊤`.
 
-The submodule is selected by this exact carrier. Closure, representative
-independence, the selection specification, finite dimensionality and the
-comparison with sheaf cohomology remain result content. No new germ algebra,
-quotient framework, module laws, or Riemann--Roch theorem is introduced.
+The exact carrier condition is recorded, but Sweep III does not select a
+submodule before closure has been proved. A certified submodule may be supplied
+as data for downstream predicates. Closure, representative independence,
+existence, finite dimensionality and the comparison with sheaf cohomology
+remain result content.
 -/
 
 @[expose] public noncomputable section
@@ -68,16 +69,16 @@ def IsCurveLinearSystemData (D : CurveDivisorData X)
 
 variable [T1Space X] [IsManifold 𝓘(ℂ) ω X]
 
-/-- `L(D)`, selected from its source-defined meromorphic germ carrier.
-The selection specification and submodule-closure results are not proved here. -/
-def curveLinearSystemData (D : CurveDivisorData X) :
-    Submodule ℂ (Filter.Germ (Filter.codiscrete X) ℂ) :=
-  Classical.epsilon (IsCurveLinearSystemData D)
+/-- Certified Riemann--Roch space with the source-defined carrier.
+Existence and closure are result content. -/
+abbrev CurveLinearSystemData (D : CurveDivisorData X) :=
+  {L : Submodule ℂ (Filter.Germ (Filter.codiscrete X) ℂ) //
+    IsCurveLinearSystemData D L}
 
-/-- The source dimension `h⁰(C,D) = l(D)`, computed from `L(D)` rather
-than supplied by the caller. As in the reference, `Module.finrank` is total;
-finite dimensionality on compact curves is a separate result. -/
-def curveSectionDimensionData (D : CurveDivisorData X) : ℕ :=
-  Module.finrank ℂ (curveLinearSystemData D)
+/-- Dimension of a certified Riemann--Roch space. As in the reference,
+`Module.finrank` is total; finite dimensionality is a separate result. -/
+def curveSectionDimensionData {D : CurveDivisorData X}
+    (L : CurveLinearSystemData D) : ℕ :=
+  Module.finrank ℂ L.val
 
 end LeanCategories.Algebra
