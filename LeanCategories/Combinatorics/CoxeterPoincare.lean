@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import Mathlib.Data.Polynomial.Basic
+public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.GroupTheory.Coxeter.Length
 
 /-!

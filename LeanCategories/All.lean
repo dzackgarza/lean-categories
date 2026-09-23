@@ -11,6 +11,7 @@ public import LeanCategories.ForMathlib.CharacteristicTwoArfInvariant
 public import LeanCategories.AlgebraicGeometry.RelativeProjHypothesis
 public import LeanCategories.AlgebraicGeometry.ValuationCurveData
 public import LeanCategories.ForMathlib.AbstractJordanDecomposition
+public import LeanCategories.ForMathlib.HumphreysClassicalRootModels
 public import LeanCategories.ForMathlib.HumphreysE8RootModel
 public import LeanCategories.ForMathlib.HumphreysF4RootModel
 public import LeanCategories.ForMathlib.HumphreysH4RootModel
@@ -46,6 +47,7 @@ public import LeanCategories.Catalogue.Interpretation
 public import LeanCategories.Catalogue.Standard
 public import LeanCategories.CategoryTheory.StandardConstructions
 public import LeanCategories.Combinatorics.Configuration
+public import LeanCategories.Combinatorics.CoxeterPoincare
 public import LeanCategories.Algebra.Concrete.Magmas
 public import LeanCategories.Algebra.Concrete.Rings
 public import LeanCategories.Algebra.FractionalIdeals
