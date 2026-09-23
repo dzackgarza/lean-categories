@@ -18,7 +18,10 @@ The divisor, nonzero rational-function, principal-divisor coefficient, and
 function-on-divisor evaluation owners already exist. This file only assembles
 their source-specific input predicate and the displayed quotient. In
 particular, evaluation uses the regular value of the meromorphic germ, not
-the arbitrary point value stored in a representative.
+the arbitrary point value stored in a representative. The source derives the
+two cross-evaluation support conditions from disjoint divisor supports and
+the principal-divisor equations; that implication is result content, so
+Sweep III records the cross-evaluation conditions explicitly as input data.
 
 The chosen functions and the disjoint representatives are explicit. Their
 existence from torsion Jacobian points, moving divisors, independence of
@@ -41,11 +44,14 @@ universe u
 variable {X : Type u} [TopologicalSpace X] [ChartedSpace ℂ X]
 
 /-- The source's chosen divisor/function presentation: the divisors have
-degree zero and disjoint supports, and the chosen nonzero functions have
-principal divisors `k D₁` and `k D₂`.
+degree zero and disjoint supports, the chosen nonzero functions have
+principal divisors `k D₁` and `k D₂`, and both cross-evaluations satisfy
+the existing divisor-evaluation admissibility predicate.
 
 No existence or equivalence with the Jacobian torsion condition is asserted.
-The level enters these principal-divisor equations, not the value formula. -/
+The source proves the two cross-evaluation conditions from the preceding
+data; requiring them here keeps that proof out of the construction. The level
+enters the principal-divisor equations, not the value formula. -/
 def CurveWeilPairingAdmissibleData (k : ℕ)
     (D₁ D₂ : CurveDivisorData X)
     (f₁ f₂ : NonzeroCurveRationalFunctionData X) : Prop :=
@@ -53,7 +59,9 @@ def CurveWeilPairingAdmissibleData (k : ℕ)
     curveDivisorDegreeData X D₂ = 0 ∧
     IsCurvePrincipalDivisorData f₁ (k • D₁) ∧
     IsCurvePrincipalDivisorData f₂ (k • D₂) ∧
-    Disjoint (curveDivisorSupportData D₁) (curveDivisorSupportData D₂)
+    Disjoint (curveDivisorSupportData D₁) (curveDivisorSupportData D₂) ∧
+    CurveDivisorEvaluationAdmissibleData f₁ D₂ ∧
+    CurveDivisorEvaluationAdmissibleData f₂ D₁
 
 /-- The displayed representative formula, computed from the existing
 finite-product evaluation. Total complex division does not assert that
@@ -63,15 +71,5 @@ def curveWeilPairingRepresentativeData
     (f₁ f₂ : NonzeroCurveRationalFunctionData X) : ℂ :=
   curveDivisorEvaluationComplexData f₁ D₂ /
     curveDivisorEvaluationComplexData f₂ D₁
-
-/-- The source-restricted representative value at torsion level `k`.
-
-Only the defining hypotheses are supplied. No proof of the cross-support
-conditions, nonvanishing, or descent is required to record this formula. -/
-def curveWeilPairingData (k : ℕ)
-    (D₁ D₂ : CurveDivisorData X)
-    (f₁ f₂ : NonzeroCurveRationalFunctionData X)
-    (_source : CurveWeilPairingAdmissibleData k D₁ D₂ f₁ f₂) : ℂ :=
-  curveWeilPairingRepresentativeData D₁ D₂ f₁ f₂
 
 end LeanCategories.Algebra

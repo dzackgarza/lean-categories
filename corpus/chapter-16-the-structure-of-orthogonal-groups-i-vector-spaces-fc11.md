@@ -78,7 +78,7 @@ reused rather than rerun. No aggregate export is changed here.
 | `FC11-C16-U033` | theta-characteristic parity dot-product lemma remains absent | `unmatched` | partial: finite `F₂` dot product; U032 period-coordinate/theta multiplicity theory missing | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=87befc843c2b3a1be12dfa7979aaff0851f50c603a | The finite-field dot product is native, but no checked theorem identifies it with parity of theta characteristics. |
 | `FC11-C16-U034` | genus-one theta-characteristic count remains absent as curve geometry | `unmatched` | partial: finite combinatorics and U031 parity target | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=87befc843c2b3a1be12dfa7979aaff0851f50c603a | The numerical `3/1` split is elementary after the parity classification, but no checked genus-one theta-characteristic correspondence supplies the objects being counted. |
 | `FC11-C16-U035` | genus-three theta-characteristic/bitangent count remains absent | `unmatched` | partial: finite combinatorics and plane-curve/projective geometry; U031-U033 missing | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=87befc843c2b3a1be12dfa7979aaff0851f50c603a | No checked theorem counts `36/28` theta characteristics or identifies the 28 odd ones of a smooth plane quartic with its bitangents. |
-| `FC11-C16-U036` | general-Jacobian divisor-theoretic Weil pairing remains unmatched `[negative-search-complete]` `[residue-search-audited]` | unmatched | partial: current Jacobian divisor/Abel--Jacobi scaffolding; generic divisor/function evaluation; elliptic torsion/division-polynomial infrastructure; no checked Jacobian Weil pairing | Final open-ended audit 2026-09-18: inspected `mrdouglasny/jacobian-challenge@8ce1ec28aed1c78b3b39d0bae26e2858c82f5143`; its pairing files are Serre/Dolbeault pairings, not Weil pairings. Current FLT issue #1065 explicitly records even the elliptic Weil pairing as unfinished with sketchy `sorry`s, and no general Jacobian implementation surfaced in current GitHub/web searches. | The source pairing requires divisors representing torsion Jacobian points, rational functions with prescribed divisors, disjoint-support moving, function-on-divisor evaluation, and choice-independence. Current Jacobian work does not provide this construction, and the elliptic special case is itself unfinished upstream. U036 survives as audited residue. |
+| `FC11-C16-U036` | `[definition-only] [negative-search-complete] [residue-search-audited] [sweep-iii-blocked]` representative-level divisor/function data and the displayed quotient are transcribed locally, but descent to the Jacobian-torsion pairing remains result-layer work | unmatched | local `LeanCategories/Algebra/RiemannSurfaceWeilPairingData.lean::{LeanCategories.Algebra.CurveWeilPairingAdmissibleData,LeanCategories.Algebra.curveWeilPairingRepresentativeData}`; current Jacobian divisor/Abel--Jacobi scaffolding; generic divisor/function evaluation; no checked descended Jacobian Weil pairing | Final open-ended audit 2026-09-18: inspected `mrdouglasny/jacobian-challenge@8ce1ec28aed1c78b3b39d0bae26e2858c82f5143`; its pairing files are Serre/Dolbeault pairings, not Weil pairings. Current FLT issue #1065 explicitly records even the elliptic Weil pairing as unfinished with sketchy `sorry`s, and no general Jacobian implementation surfaced in current GitHub/web searches. | The source pairing requires divisors representing torsion Jacobian points, rational functions with prescribed divisors, disjoint-support moving, function-on-divisor evaluation, and choice-independence. Current Jacobian work does not provide this construction, and the elliptic special case is itself unfinished upstream. U036 survives as audited residue at the no-proof boundary. Construction prerequisites: `FC11-C16-U026`. |
 | `FC11-C16-U037` | Jacobian two-torsion as symplectic `F₂` space with theta quadratic refinements remains absent | `unmatched` | partial: Mathlib symplectic groups/forms and quadratic maps; U026/U031/U036 geometric bridge missing | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=87befc843c2b3a1be12dfa7979aaff0851f50c603a | The abstract algebra is expressible, but no checked theorem transports the general Jacobian Weil pairing and theta characteristics to this symplectic/quadratic-refinement structure. |
 | `FC11-C16-U038` | affine action on quadratic refinements is direct quadratic-map/linear-form algebra | `mathlib` | `Mathlib/LinearAlgebra/QuadraticForm/Basic.lean::QuadraticMap.polarBilin`; linear forms; addition of quadratic maps; nondegenerate alternating form identifies vectors with linear functionals | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=87befc843c2b3a1be12dfa7979aaff0851f50c603a | For a fixed symplectic form `J`, adding the linear form `x ↦ J(x,v)` preserves the polar form, giving the stated action of `V` on the set of quadratic refinements. This is direct existing algebra. |
 | `FC11-C16-U039` | difference-vector/torsor construction for quadratic refinements is direct linear algebra | `mathlib` | `QuadraticMap.polarBilin`; subtraction/addition of maps; nondegeneracy equivalence `V ≃ V*`; sum-type/vector-space constructions | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=87befc843c2b3a1be12dfa7979aaff0851f50c603a | Two refinements with the same polar form differ by a linear functional, hence by a unique vector via nondegeneracy of `J`; the affine-torsor addition rules are generic linear algebra. |
@@ -284,10 +284,12 @@ The 2026-09-22 continuation transcribes the defining quotient from source
 lines 8291--8295 in
 `LeanCategories/Algebra/RiemannSurfaceWeilPairingData.lean`.
 `CurveWeilPairingAdmissibleData` records the two degree-zero divisors,
-disjoint divisor supports, and the exact coefficient predicates
-`div(f₁) = k D₁` and `div(f₂) = k D₂` for chosen nonzero rational functions.
-`curveWeilPairingRepresentativeData` computes `f₁(D₂) / f₂(D₁)`, and
-`curveWeilPairingData` restricts that formula to the recorded source inputs.
+disjoint divisor supports, the exact coefficient predicates
+`div(f₁) = k D₁` and `div(f₂) = k D₂` for chosen nonzero rational functions,
+and the two cross-evaluation admissibility conditions. The source derives
+those cross-support conditions from the preceding data; Sweep III carries
+them explicitly rather than importing that proof. The raw
+`curveWeilPairingRepresentativeData` computes `f₁(D₂) / f₂(D₁)`.
 
 The supporting owners were read before assembly: U024's
 `RiemannSurfaceDivisorData.lean` supplies the free-abelian divisor carrier,
@@ -300,16 +302,16 @@ adds no function field, quotient, evaluation theory, or other support stack.
 
 This is the representative-level construction, not a claimed descended
 pairing on Jacobian torsion. Existence of the chosen functions from torsion,
-moving to disjoint representatives, cross-evaluation admissibility,
-nonvanishing, choice-independence, the roots-of-unity target, bilinearity,
-and nondegeneracy remain result clauses. No proof or new result is added.
+moving to disjoint representatives, derivation of the recorded
+cross-evaluation admissibility conditions, nonvanishing, choice-independence,
+the roots-of-unity target, bilinearity, and nondegeneracy remain result
+clauses. No proof or new result is added.
 
-The canonical selector was recomputed into ignored repository-local scratch;
-earlier ready U017/U007/U026/U027/U029--U031 already have inherited or banked
-source work and retain their unresolved acceptance. U036 is the next
-untranscribed definition in the active chapter. Its causal route remains
-`unmatched [negative-search-complete] [residue-search-audited]`, without a
-`[realized]` marker. The original Peters--Sterk extraction is still absent.
-Available host memory was 349 MB before this transcription, so no Lean
-process was started. The new owner is banked as **unverified**, with no
-aggregate export and no modification of inherited generated selectors.
+The canonical selector was recomputed into ignored repository-local scratch.
+U036 is no longer treated as a proof-free ready construction: the local owner
+realizes the representative-level data and formula, while the complete source
+unit remains `[sweep-iii-blocked]` and deliberately carries no
+`[realized]` marker. Its first explicit construction prerequisite is U026,
+whose Jacobian quotient is itself blocked at the result layer. The original
+Peters--Sterk extraction is still absent; the indexed source clause above is
+the current transcription authority.
