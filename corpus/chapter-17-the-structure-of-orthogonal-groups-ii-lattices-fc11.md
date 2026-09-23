@@ -52,6 +52,17 @@ the source is banked as **unverified**, not credited as a passing check.
 No generated selector, inherited staged file, aggregate import, or
 result-layer row is changed by this work.
 
+After the source commits, available memory rose to 1105 MiB and the shared
+Lean slot was free. One bounded, single-thread target-pin check was run:
+`timeout --signal=TERM --kill-after=5s 75s lake env lean -j 1 -M 768 -o <scratch-olean> LeanCategories/Lattices/Valued/LeechLatticeData.lean`.
+It exited 134 after 58.54 seconds, with maximum RSS 1,051,948 KiB and
+`lean::memory_exception: excessive memory consumption detected at 'interpreter'`.
+There was no Lean source diagnostic and no output `.olean`. This is a
+resource-limited validation failure, not evidence that the definitions pass
+or fail elaboration at the target pin. No larger-cap retry or dependent
+Leech-root check was launched. The source remains **unverified**; the
+Milnor-fibre owners also retain their separate pending validation.
+
 | FC11 ID | Verdict | Route | Lean target(s) | Provenance | Interface comparison |
 | --- | --- | --- | --- | --- | --- |
 | `FC11-C17-U001` | [definition-only] primitive k-roots, the root sublattice, reflection group, and root-lattice predicate are direct existing project constructions | `project-existing` | `LeanCategories/Lattices/Valued/RootSystem.lean::{IsReflectiveRoot,ReflectiveRoot,reflectiveWeylSubgroup}`; `Constructions.lean::IsRoot`; `RootLattice.lean::rootSet`; generic primitive-vector normalization, `Submodule.span`, and subgroup generation | source-clause split 2026-09-16; P=db584cd6d46c92f209a44c0f1c829460d327499d | The actual definitions need no new owner: a primitive reflective vector carries the integer `k=b(x,x)=2q(x)`; fixed-k roots are the corresponding primitive reflective roots, their span is the root sublattice, and their reflections generate the reflection group. Uniqueness up to sign, the exact order of the induced discriminant class, and the unimodular restriction `k=±1,±2` are theorem clauses and remain for Sweep IV rather than blocking Mapping. |
