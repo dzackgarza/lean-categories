@@ -536,6 +536,9 @@ variables, and project to the parameter base. This preserves the displayed
 constant parameter and its sign. `Topology/HypersurfaceUnfoldingData.lean`
 records exactly those data with native `HasFDerivAt`; it does not use the
 always-submersive ambient map, assume a discriminant, or claim semiuniversality.
-The U030 mapping/handoff retains the original display and the interpretation;
-source acceptance and target-pin validation remain open. C18-U035/U036 still
-need their actual geometric transport and vanishing-cycle constructions.
+The U030 mapping/handoff retains both the original display and the
+zero-hypersurface interpretation. Source acceptance is now against that
+coherent family interpretation, and focused target-pin validation is green;
+the printed ambient-map display remains recorded here as a source defect.
+C18-U035/U036 still need their actual geometric transport and vanishing-cycle
+constructions.
