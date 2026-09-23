@@ -16,6 +16,57 @@ project_id: github.com__dzackgarza__lean-categories
 
 ## Chapter 18. Applications to Singularities
 
+### U035 regular family and reference homology, 2026-09-23
+
+After banking U030 at `535188e`, the same-source continuation read U035
+and the original printed p. 336. The next missing input is no longer an
+abstract supplied family: `HypersurfaceUnfoldingRegularFamilyData.lean`
+constructs `U \ D_F`, restricts the existing zero-family and projection to
+that base, constructs the reference fibre inside the chosen neighbourhood,
+and applies native integral singular homology in degree `n` to it.
+
+This is thin assembly from U030 and the existing native homology owner,
+whose signature was inspected together with `MilnorFiberHomologyData.lean`.
+No second chain complex, quotient theory, intersection form or local-system
+owner is introduced. The source fibre and homology are outputs, not
+caller-supplied replacements. Source existence, smoothness, local triviality,
+freeness and rank results are not proved.
+
+U035 is still incomplete: geometric parallel transport, its action on
+this actual homology object, and the resulting monodromy group have not
+been constructed. Generic covering-space monodromy or the image of an
+arbitrary supplied representation would not discharge that obligation.
+These six supporting declarations remain **unverified**, without an
+aggregate export or realization marker, and retain U030's source-map
+ambiguity. No compiler process was started under the recorded memory
+pressure. The inherited staged/generated/source changes remain separate.
+
+### Bounded dependency check after banking, 2026-09-23
+
+Host availability subsequently recovered to 1932 MB. With no existing Lean
+process, one focused check attempted the immediate `MilnorFiberData.lean`
+dependency, whose local object was absent, before either new consumer:
+
+```sh
+lake env sh -c 'export LEAN_PATH="$PWD/.tmp/continuation-wl-Fo6QGt63/check:$LEAN_PATH";
+  exec timeout --signal=TERM --kill-after=3s 60s lean -M 1280 \
+    -o .tmp/continuation-wl-Fo6QGt63/check/LeanCategories/Topology/MilnorFiberData.olean \
+    LeanCategories/Topology/MilnorFiberData.lean'
+```
+
+The check exited **134**, reporting `lean::memory_exception: excessive memory
+consumption detected at 'interpreter'`. It produced neither a source diagnostic
+nor the requested object file. No larger-cap retry or dependent compilation
+was started. The recorded source declarations therefore remain unverified;
+this is an import-loading memory-limit failure, not a reported source error.
+Owned whitespace checks passed. The inherited staged delta was compared
+byte-for-byte after both source commits, and all 48 inherited non-scratch
+paths matched their initial content hashes (including initially deleted paths).
+
+U035 explicitly depends on U030's actual family/discriminant data; its
+remaining transport representation is a construction, not a Sweep-IV proof
+prerequisite. The canonical annotation now exposes that edge to the selector.
+
 ### U030 explicit unfolding and discriminant data, 2026-09-23
 
 `HypersurfaceUnfoldingData.lean` constructs equation (18.3), its zero-locus
@@ -118,7 +169,7 @@ critical point and sufficiently small positive parameters.
 | `FC11-C18-U032` | Du Val Tjurina/Milnor-number and modality calculations remain unformalized | `unmatched` | partial: `MvPolynomial`, ideals/quotients, finite bases/dimension; U028 Du Val target; U030 unfolding terminology | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; live formalization-corpus queries `Milnor number Jacobian algebra isolated singularity`, `Du Val singularity ADE resolution` found no matching calculations | Mathlib can express the Jacobian quotient and verify a proposed basis, but no checked theorem carries out the E₆/other Du Val Milnor=Tjurina computations or connects them to modality. |
 | `FC11-C18-U033` | hyperbolic T_{p,q,r} singularity Milnor/Tjurina/unimodality computation remains absent | `unmatched` | partial: multivariate power series/polynomial algebra, Jacobian ideals, quotient modules, finite-dimensional linear algebra; U029 multi-index notation | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; live formalization-corpus singularity/Jacobian searches negative | The displayed Euler/Jacobian relations are algebraic ingredients, but no checked implementation proves the quotient spanning result, `μ=τ=p+q+r-2`, or the variation-with-`a` unimodality assertion. |
 | `FC11-C18-U034` | parabolic singularity Milnor-lattice/nullspace table remains absent | `unmatched` | partial: generic lattice radicals/nullspaces; U025/U026 Milnor lattice targets | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; live formalization-corpus isolated-singularity/Milnor searches found no parabolic singularity implementation | Generic degenerate bilinear forms are available, but no checked source constructs the parabolic singularities, computes their Milnor lattices, or proves the table/nullspace assertions. |
-| `FC11-C18-U035` | local monodromy group remains blocked by the absent discriminant-complement representation `[negative-search-complete]` `[residue-search-audited]` | unmatched | partial: fundamental groups, group representations and generic covering monodromy; prerequisites U025/U026/U030; no geometric family over the discriminant complement | Final open-ended audit 2026-09-18: rechecked current Mathlib fundamental-group/covering monodromy APIs and current searches for Milnor/discriminant-complement monodromy formalizations. No checked source constructs the local singularity family and its homology representation. | Once a representation `π₁(U\D_F) → Aut(H_n(M_*))` is supplied, taking its image is generic group theory. The substantive source content is the geometric parallel-transport representation itself, which depends on the missing unfolding/Milnor-fibre layer. U035 survives as audited residue. |
+| `FC11-C18-U035` | `[definition-only] [negative-search-complete] [residue-search-audited]` discriminant-complement family, reference fibre and native integral middle homology are transcribed; the geometric transport representation and monodromy group remain missing | unmatched | local `LeanCategories/Topology/HypersurfaceUnfoldingRegularFamilyData.lean::{hypersurfaceUnfoldingRegularBaseSetData,HypersurfaceUnfoldingRegularFamilyData,hypersurfaceUnfoldingRegularProjectionData,hypersurfaceUnfoldingReferenceFiberSetData,HypersurfaceUnfoldingReferenceFiberData,hypersurfaceUnfoldingReferenceHomologyData}` in `LeanCategories.Topology`; U030 explicit family; native subspace topology, `TopCat.of`, `AlgebraicTopology.singularHomologyFunctor`, `ModuleCat ℤ`; actual geometric transport remains the missing prerequisite | Final open-ended audit 2026-09-18 retained. Original June-2024 PDF, printed p. 336, inspected on 2026-09-23; native homology owner at the pinned Mathlib revision and existing `MilnorFiberHomologyData.lean` read before assembly. | The regular base is the actual set difference `U \ D_F`; the family is the existing zero-family restricted to that base, and a reference fibre is constructed from its defining equation at an actual base point. Its integral homology is obtained by applying the native degree-n singular-homology functor, not supplied as a module. No caller-supplied representation, generic covering monodromy or arbitrary action is accepted as the missing geometric transport. These supporting definitions are unverified and do not realize U035 or bypass U030 source acceptance. Construction prerequisites: `FC11-C18-U030`. |
 | `FC11-C18-U036` | distinguished vanishing-cycle construction from a generic line remains absent `[negative-search-complete]` `[residue-search-audited]` | unmatched | partial: generic paths, transport and homology; U030 discriminant-unfolding target; no transversality/ordinary-double-point/vanishing-cycle package | Final open-ended audit 2026-09-18: current searches for `vanishing cycles Lean`, `Picard Lefschetz Lean formalization`, `Milnor vanishing cycle proof assistant` returned no checked implementation. Current Mathlib has path/monodromy abstractions but no analytic transversality theorem for a generic line through the unfolding base or ordinary-double-point vanishing sphere construction. | The source chooses a generic line meeting the discriminant transversely in exactly μ simple critical values, forms local vanishing cycles at the corresponding ordinary double points, and transports them along distinguished paths into a reference fibre. None of those geometric choices/existence theorems is supplied by generic path transport. U036 survives as audited residue. |
 | `FC11-C18-U037` | [definition-only] standard loops around chosen critical values are direct path/loop constructions; generation is theorem content | `mathlib` | Mathlib path/loop concatenation and reversal; circle/interval parameterizations in `ℂ`; fundamental-group loop classes; U036 chosen critical values/base paths | source-clause split 2026-09-16; P=db584cd6d46c92f209a44c0f1c829460d327499d | Given the critical values and the standard system of disjoint base paths, `γ_j` is the usual path out, small positively oriented circle about `t_j`, and reverse path back. That loop is a native construction. The assertion that these loop classes form a generating system of the punctured-line fundamental group is a theorem and does not block the definition. |
 | `FC11-C18-U038` | distinguished vanishing cycles form a basis and one monodromy orbit remains the Picard–Lefschetz theorem gap | `unmatched` | partial: U007 vanishing-lattice predicate; U025/U026 lattice/monodromy targets; U036/U037 cycles and loops | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; live formalization-corpus queries `vanishing cycle Picard Lefschetz`, `Milnor lattice monodromy vanishing cycles` found no theorem | The two substantive claims—basis of the Milnor lattice and transitivity under local monodromy—are not present in checked Lean sources; U007 would package the resulting vanishing lattice once proved. |
