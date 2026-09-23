@@ -7,6 +7,7 @@ module
 public import LeanCategories.Topology.MilnorFiberData
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
 
 /-!
 # Integral middle homology of the Milnor fibre
