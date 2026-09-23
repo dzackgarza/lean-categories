@@ -16,6 +16,36 @@ project_id: github.com__dzackgarza__lean-categories
 
 ## Chapter 18. Applications to Singularities
 
+### U030 explicit unfolding and discriminant data, 2026-09-23
+
+`HypersurfaceUnfoldingData.lean` constructs equation (18.3), its zero-locus
+family over chosen neighbourhoods, the parameter projection, the fibre-critical
+locus and its image in the base. It reuses the existing Euclidean coordinate
+owner and native finite sums/products, `HasFDerivAt`, subtypes and set images.
+The source's chosen monomial exponents are inputs; the family and discriminant
+are outputs. This is thin source-specific assembly, not a new support theory.
+
+The original June-2024 PDF was read at printed p. 334 / PDF page 341; its
+SHA-256 is `5bc968dad21b0288f2b3d49612d94e750cd759724a16c8c25724c79410641a33`.
+Its printed map `(z,u₀,u) ↦ (F(z,u₀,u),u)` has the independent constant
+source parameter `u₀`, supplying the first target direction; the remaining
+parameters supply the others. That ambient map cannot literally have the
+intended critical values for a holomorphic family. The following sentence
+also calls a locus in the base a locus of critical points. The implementation
+uses the preceding zero-hypersurface family: project `F=0, d_z F=0` to its
+parameter base. This source ambiguity is recorded under LC-05 rather than
+silently treated as accepted text. `HasFDerivAt` records an actual zero
+differential, excluding nondifferentiable points without a totalized-derivative
+convention or new proof.
+
+The source specializes to holomorphic `f`, chosen Tjurina-basis monomials and
+sufficiently small neighbourhoods. No basis-existence, semiuniversality,
+hypersurface, local-triviality or monodromy result is proved here. Target-pin
+validation remains open: only 408 MB of host memory was available, so no Lean
+process was launched. This owner is **unverified**, with no aggregate export
+or `[realized]` marker. The inherited generated selectors remain untouched;
+the current combined selector is regenerated in repository-local scratch.
+
 ### U025 fibre and homology construction, 2026-09-23
 
 The original June-2024 author PDF was read on printed pp. 332--333
@@ -83,7 +113,7 @@ critical point and sufficiently small positive parameters.
 | `FC11-C18-U027` | ordinary-double-point Milnor number/intersection/reflection computation remains unformalized | `unmatched` | partial: complex polynomial derivatives; spheres/homology; U025/U026 Milnor targets; reflection formula from Chapter 6 | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; live formalization-corpus queries `isolated hypersurface singularity Milnor lattice`, `Milnor number Jacobian algebra isolated singularity` returned no matching theorem | The analytic identification of the Milnor fibre, its middle homology generator, self-intersection `2ε`, and Picard–Lefschetz monodromy are all absent as checked results. |
 | `FC11-C18-U028` | Du Val resolution-to-Milnor-lattice ADE comparison remains absent despite routed ADE lattice combinatorics | `unmatched` | partial: project ADE root lattices/root-base classification; algebraic-geometric resolution infrastructure; U025/U026 Milnor targets | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; live formalization-corpus queries `Du Val singularity ADE resolution`, `Milnor lattice monodromy vanishing cycles` found no singularity bridge | ADE lattices are formalized combinatorially, but no checked theorem constructs Du Val singularities/minimal resolutions/Milnor fibres and identifies their Milnor lattices with the ADE forms in the table. |
 | `FC11-C18-U029` | multi-index monomial notation is native finitely supported exponentiation | `mathlib` | `Fin`; functions/Finsupp into `ℕ`; `Finset.prod`; monomial notation in `MvPolynomial` | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d | `z^B=∏ᵢ zᵢ^(Bᵢ)` is exactly the usual multi-index/monomial product already represented by finite functions or `MvPolynomial.monomial`. |
-| `FC11-C18-U030` | discriminant locus of a semi-universal unfolding lacks the analytic-germ/unfolding layer `[negative-search-complete]` `[residue-search-audited]` | unmatched | partial: generic critical-point/value and algebraic discriminant constructions; no analytic germ, deformation functor or semi-universal unfolding of isolated complex singularities | Final open-ended audit 2026-09-18: fresh GitHub/web searches `semiuniversal deformation singularity Lean`, `versal unfolding Lean singularity`, `discriminant locus singularity proof assistant` and current project/Mathlib symbol inspection returned no proof-assistant implementation of analytic singularity germs or semi-universal unfoldings. | Calling a critical-value set a discriminant locus is direct only after a semi-universal unfolding object exists. That deformation-theoretic analytic carrier is exactly what is missing; generic polynomial discriminants are not the source object. U030 survives as audited residue. |
+| `FC11-C18-U030` | `[definition-only] [negative-search-complete] [residue-search-audited]` equation (18.3), its zero-hypersurface family, projection, fibre-critical locus and discriminant image are transcribed; target-pin validation and the printed-map ambiguity remain open | unmatched | local `LeanCategories/Topology/HypersurfaceUnfoldingData.lean::{HypersurfaceUnfoldingParameterData,hypersurfaceUnfoldingFunctionData,hypersurfaceUnfoldingTotalSpaceSetData,HypersurfaceUnfoldingTotalSpaceData,hypersurfaceUnfoldingProjectionData,hypersurfaceUnfoldingCriticalSetData,hypersurfaceUnfoldingDiscriminantData}` in `LeanCategories.Topology`; existing `MilnorCoordinateSpaceData`; native finite sums/products, `HasFDerivAt`, subtypes and set image | Final open-ended audit 2026-09-18 retained. Original June-2024 PDF, printed p. 334, and pinned Mathlib `Analysis/Calculus/FDeriv/Defs.lean` at `db584cd6d46c92f209a44c0f1c829460d327499d` read on 2026-09-23. Scoped owner search found no project unfolding definition or named native critical-value owner. | The chosen exponent vectors produce the actual function `f(z)+u₀+Σu_j z^(B_j)`, not a supplied family. The discriminant is the parameter image of its zero locus with zero complex differential in the fibre variables, restricted to chosen neighbourhoods. `HasFDerivAt` avoids the default-zero derivative at nondifferentiable points. No analytic-germ layer, generic quotient framework, supplied discriminant or semiuniversality witness is introduced. The printed ambient map has an independent constant source parameter and cannot literally give this discriminant; the zero-family interpretation and exact ambiguity are recorded in the handoff and `COMPLAINTS.md`. No realization marker is added. |
 | `FC11-C18-U031` | ordinary-double-point semi-universal unfolding example remains blocked by the absent analytic unfolding layer | `unmatched` | partial: polynomial `Σ z_i²-t`, derivatives/Jacobian ideal arithmetic; U027 ordinary-double-point target; U030 discriminant-locus target | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; live formalization-corpus unfolding/Milnor searches negative | The polynomial calculation is elementary, but no checked semi-universal-deformation theorem identifies this family as the semi-universal unfolding or derives modality zero in the source sense. |
 | `FC11-C18-U032` | Du Val Tjurina/Milnor-number and modality calculations remain unformalized | `unmatched` | partial: `MvPolynomial`, ideals/quotients, finite bases/dimension; U028 Du Val target; U030 unfolding terminology | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; live formalization-corpus queries `Milnor number Jacobian algebra isolated singularity`, `Du Val singularity ADE resolution` found no matching calculations | Mathlib can express the Jacobian quotient and verify a proposed basis, but no checked theorem carries out the E₆/other Du Val Milnor=Tjurina computations or connects them to modality. |
 | `FC11-C18-U033` | hyperbolic T_{p,q,r} singularity Milnor/Tjurina/unimodality computation remains absent | `unmatched` | partial: multivariate power series/polynomial algebra, Jacobian ideals, quotient modules, finite-dimensional linear algebra; U029 multi-index notation | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; live formalization-corpus singularity/Jacobian searches negative | The displayed Euler/Jacobian relations are algebraic ingredients, but no checked implementation proves the quotient spanning result, `μ=τ=p+q+r-2`, or the variation-with-`a` unimodality assertion. |

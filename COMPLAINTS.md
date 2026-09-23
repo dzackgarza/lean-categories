@@ -517,3 +517,25 @@ adapted; no polarization theorem is introduced. Original-source acceptance
 and target-pin checks remain open; elaboration was not started with only
 320 MB available. The higher-dimensional plane and arithmetic quotient
 clauses are not credited by these line-level definitions.
+
+### FC11-C18-U030: printed unfolding map and discriminant ambiguity
+
+The original June-2024 Peters--Sterk PDF, printed p. 334, defines
+`F(z,u₀,u)=f(z)+u₀+Σu_j z^(B_j)` and displays
+`(z,u₀,u) ↦ (F(z,u₀,u),u)`. As written, the independent `u₀` direction
+supplies the first target coordinate and the other parameters supply the
+remaining coordinates. For the holomorphic family that ambient map cannot
+have the critical values needed for the following discriminant. The text
+also places a locus of critical points in the base rather than distinguishing
+it from its image. This is a source-map ambiguity, not a missing theorem to
+prove in Sweep III.
+
+The preceding family of zero hypersurfaces supplies a concrete definition
+route: construct `F=0`, take its points with zero differential in the `z`
+variables, and project to the parameter base. This preserves the displayed
+constant parameter and its sign. `Topology/HypersurfaceUnfoldingData.lean`
+records exactly those data with native `HasFDerivAt`; it does not use the
+always-submersive ambient map, assume a discriminant, or claim semiuniversality.
+The U030 mapping/handoff retains the original display and the interpretation;
+source acceptance and target-pin validation remain open. C18-U035/U036 still
+need their actual geometric transport and vanishing-cycle constructions.
