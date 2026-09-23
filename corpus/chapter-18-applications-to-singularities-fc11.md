@@ -16,6 +16,42 @@ project_id: github.com__dzackgarza__lean-categories
 
 ## Chapter 18. Applications to Singularities
 
+### U025 fibre and homology construction, 2026-09-23
+
+The original June-2024 author PDF was read on printed pp. 332--333
+(PDF pages 339--340), including the section's even-dimensional convention.
+Its exact URL/hash is retained in `provenance-contract-for-fc11-c09.md`.
+The source uses an open neighbourhood `‖z‖² < η`, not a closed ball or
+a bound `‖z‖ < η`, and the parameter belongs to the punctured open disk.
+
+`LeanCategories/Topology/MilnorFiberData.lean` constructs those subsets,
+the tube's restricted projection, and the actual level-set fibre with its
+subspace topology. The ambient owner is native `EuclideanSpace ℂ (Fin (n+1))`,
+whose norm is Euclidean rather than the finite-product sup norm.
+`MilnorFiberHomologyData.lean` then applies the native
+`AlgebraicTopology.singularHomologyFunctor (ModuleCat ℤ) n` with integral
+coefficients to that fibre. No abstract supplied fibre, free module of
+chosen rank, or alternative singular-chain theory is introduced.
+
+The supporting-owner read inspected pinned Mathlib
+`Analysis/InnerProductSpace/PiL2.lean`,
+`AlgebraicTopology/SingularHomology/Basic.lean` (lines 32--57), and
+`Algebra/Category/ModuleCat/Abelian.lean`. The project intersection search
+also read the inherited, untracked `FourManifoldIntersectionData.lean`:
+its supplied degree-four evaluation functional on raw cochains does not
+construct the geometric intersection pairing on this fibre's `H_n`.
+That inherited owner was not modified or imported.
+
+The new definitions are partial source work, **unverified** at the target
+pin. U025 remains unaccepted because its actual complex-orientation-induced
+intersection pairing is still a missing construction. No arbitrary form,
+fundamental-evaluation map, or pairing predicate is supplied as a replacement.
+Freeness, rank, homotopy type, local triviality, symmetry and other form laws
+remain results; none is made a new Sweep-III prerequisite. The defining
+topological subsets and homology are meaningful for general `f` and radii;
+the source specializes to a holomorphic representative with isolated
+critical point and sufficiently small positive parameters.
+
 | FC11 ID | Verdict | Route | Lean target(s) | Provenance | Interface comparison |
 | --- | --- | --- | --- | --- | --- |
 | `FC11-C18-U001` | generalized Dynkin/root-lattice setup is assembled from the routed lattice root and graph primitives | `mathlib` | `SimpleGraph`; `Matrix.toBilin'`; `Submodule.span`; project comparison `LeanCategories/Lattices/Valued/RootLattice.lean::rootSet`, `rootGraph`; `RootSystem.lean::reflectiveWeylSubgroup` | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; live formalization-corpus root/Dynkin searches | Vertices/root vectors, their Gram-pairing graph, the lattice they span, and the generated reflection subgroup are existing graph/module/group-action constructions. Later vanishing-lattice assertions are isolated in U007/U017. |
@@ -42,7 +78,7 @@ project_id: github.com__dzackgarza__lean-categories
 | `FC11-C18-U022` | T¹_{p,q,r} completeness/maximality example remains absent | `unmatched` | partial: U018 T-graph target; project three-arm diagram arithmetic; U011 completeness; U019 maximal reflection group theorem | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; live formalization-corpus root/Dynkin searches found no `T^1_{p,q,r}` family | The orthogonal decomposition and parameter-range argument are source-specific and no checked declaration supplies the displayed `T_{p,q,4}⊕U⊕U'⊕A_{r-6}(-1)` identification or its maximality conclusion. |
 | `FC11-C18-U023` | containment of a complete T-lattice implies completeness by the already routed containment lemma | `mathlib` | U007 containment; U011 completeness; U013 containment-transitivity lemma | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d | Once U022 supplies a complete contained `T^1_{p,q,r}`, this row is exactly U013: completeness propagates through vanishing-lattice containment. |
 | `FC11-C18-U024` | complex-coordinate vector notation is native finite-function/product notation | `mathlib` | `Fin`; `Fin (n+1) → ℂ`; finite products/tuples | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d | Writing `z=(z₁,…,z_{n+1})` is ordinary finite-function notation and introduces no singularity-theoretic construction. |
-| `FC11-C18-U025` | Milnor-fibre middle-homology intersection lattice has no checked singularity/intersection-form owner `[negative-search-complete]` `[residue-search-audited]` | unmatched | partial: generic singular homology and manifold intersection-form ingredients; no formal Milnor fibre of an isolated hypersurface singularity or its middle-dimensional geometric intersection pairing | Final open-ended audit 2026-09-18: reran current GitHub/web searches `Milnor fiber Lean formalization`, `singularity theory Lean Milnor lattice`, `Milnor fibre proof assistant`, and inspected current project/Mathlib symbols. No checked singularity-theory source constructs a Milnor fibre and its middle-homology intersection form. | The source lattice is not simply `H_n` with an arbitrary bilinear form: it is the geometric intersection pairing on the middle homology of the Milnor fibre, with sign conventions coming from the fibre orientation. Generic singular homology alone cannot manufacture that object. U025 survives as audited residue. |
+| `FC11-C18-U025` | `[definition-only] [negative-search-complete] [residue-search-audited]` actual Milnor-tube/fibre subspaces and native integral middle homology are transcribed; the geometric intersection pairing remains missing and target-pin validation is pending | unmatched | local `LeanCategories/Topology/{MilnorFiberData,MilnorFiberHomologyData}.lean::{MilnorCoordinateSpaceData,milnorPuncturedDiskData,milnorTubeSetData,MilnorTubeData,milnorTubeProjectionData,milnorFiberSetData,MilnorFiberData,milnorIntegralMiddleHomologyData}` in `LeanCategories.Topology`; native `EuclideanSpace`, set intersection/preimage, subspace topology, `TopCat.of`, `AlgebraicTopology.singularHomologyFunctor`, `ModuleCat ℤ` | Final open-ended audit 2026-09-18 retained. Source/data continuation 2026-09-23 inspected the native support owners and compared the original June-2024 PDF, printed pp. 332--333. The inherited raw four-manifold cup-evaluation helper was read but not modified or treated as the missing geometric pairing. | The tube is exactly `{z : ℂ^(n+1) : ‖z‖² < η} ∩ f⁻¹(Δ*(r))`; the fibre over the chosen nonzero parameter is its actual level-set subspace. Its middle homology is constructed by applying the native integral singular-homology functor, not supplied as an input. The source's even-dimensional, complex-oriented geometric intersection pairing has not yet been constructed, so this is not credited as a Milnor lattice. No arbitrary bilinear form or fundamental-evaluation map is substituted. Local triviality, homotopy type, freeness/rank, and the pairing's laws remain Sweep-IV results. |
 | `FC11-C18-U026` | Milnor lattice with geometric monodromy operator remains absent `[negative-search-complete]` `[residue-search-audited]` | unmatched | partial: generic covering/path monodromy APIs and U025 target Milnor lattice; no Milnor fibration/parallel-transport action on middle homology | Final open-ended audit 2026-09-18: current Mathlib `Topology/Homotopy/Lifting.lean` was inspected as generic monodromy prior art, and broad current searches for `Milnor monodromy Lean`, `singularity monodromy formalization`, and `Picard Lefschetz Lean` found no checked Milnor-fibration implementation. | Mathlib’s monodromy acts on fibres of a supplied covering map. Peters--Sterk’s operator is induced by taking the Milnor fibre once around the punctured parameter disc and acting on its middle homology. The required Milnor fibration and induced homology transport are absent, so generic covering-space monodromy does not close the row. U026 survives as audited residue. |
 | `FC11-C18-U027` | ordinary-double-point Milnor number/intersection/reflection computation remains unformalized | `unmatched` | partial: complex polynomial derivatives; spheres/homology; U025/U026 Milnor targets; reflection formula from Chapter 6 | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; live formalization-corpus queries `isolated hypersurface singularity Milnor lattice`, `Milnor number Jacobian algebra isolated singularity` returned no matching theorem | The analytic identification of the Milnor fibre, its middle homology generator, self-intersection `2ε`, and Picard–Lefschetz monodromy are all absent as checked results. |
 | `FC11-C18-U028` | Du Val resolution-to-Milnor-lattice ADE comparison remains absent despite routed ADE lattice combinatorics | `unmatched` | partial: project ADE root lattices/root-base classification; algebraic-geometric resolution infrastructure; U025/U026 Milnor targets | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; live formalization-corpus queries `Du Val singularity ADE resolution`, `Milnor lattice monodromy vanishing cycles` found no singularity bridge | ADE lattices are formalized combinatorially, but no checked theorem constructs Du Val singularities/minimal resolutions/Milnor fibres and identifies their Milnor lattices with the ADE forms in the table. |
