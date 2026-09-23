@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.Analysis.Complex.Exponential
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Data.Matrix.Mul
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 
@@ -28,7 +29,7 @@ def riemannThetaSummand {g : ℕ} (Z : Matrix (Fin g) (Fin g) ℂ)
   let xc : Fin g → ℂ := fun i => x i
   Complex.exp <|
     2 * (Real.pi : ℂ) * Complex.I *
-      Matrix.dotProduct xc (z + (1 / 2 : ℂ) • (Z *ᵥ xc))
+      dotProduct xc (z + (1 / 2 : ℂ) • (Z *ᵥ xc))
 
 /-- Peters--Sterk FC11-C16-U027: `theta_Z(z)` as the total lattice `tsum`.
 
