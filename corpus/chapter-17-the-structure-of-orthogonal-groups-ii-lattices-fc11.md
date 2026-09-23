@@ -16,6 +16,42 @@ project_id: github.com__dzackgarza__lean-categories
 
 ## Chapter 17. The Structure of Orthogonal Groups II, Lattices
 
+### U030 concrete carrier and Leech-root construction, 2026-09-23
+
+The ready-unit selector exposes U030 after the earlier FC11 owners whose
+source work is already banked or inherited. The missing supporting input
+was the actual Leech carrier, not a classification proof. The focused
+owner search inspected `LeanCategories` and the pinned Mathlib
+linear-algebra/combinatorics directories for Leech, Golay and Niemeier
+constructions, and read the existing lattice/Gram owners and native
+matrix-to-form constructors before the new definitions were written.
+
+The concrete reference is Gabriele Nebe and N. J. A. Sloane's catalogue:
+<https://www.math.rwth-aachen.de/~Gabriele.Nebe/LATTICES/Leech.html>,
+`LAMBDA24`, `GRAM`, entry last modified 18 July 2014. The inspected HTML
+has SHA-256 `0d5967713c09e2fda1ba06fc183ca376eccc73b9e4612e88d36c5fe70d13479c`.
+All 576 integer entries in the new owner were compared with that section.
+The integer `BASIS` elsewhere on the page has a different normalization;
+it is not used. This is mathematical coordinate data, not an external
+Lean implementation, so the causal audited `unmatched` route is retained.
+
+`LeechLatticeData.lean` supplies the fixed free carrier, Gram form and
+integral quadratic polynomial. `LeechRootData.lean` constructs the
+hyperbolic/negative-Leech block sum, its standard vectors and inclusion,
+the source root map and its range. The original source was checked on
+printed p. 314 (PDF page 321) of the recovered June-2024 edition whose
+URL and SHA-256 are recorded in `provenance-contract-for-fc11-c09.md`.
+In particular, the source half-norm belongs to the negative Leech block,
+which fixes the sign of the second hyperbolic coordinate.
+
+The two owners contain definitions only and passed whitespace and
+literal-data comparison checks. Target-pin elaboration is pending.
+At the pre-commit resource check, the host had 391 MiB available memory
+and no Lean process running. No compiler was launched under that pressure;
+the source is banked as **unverified**, not credited as a passing check.
+No generated selector, inherited staged file, aggregate import, or
+result-layer row is changed by this work.
+
 | FC11 ID | Verdict | Route | Lean target(s) | Provenance | Interface comparison |
 | --- | --- | --- | --- | --- | --- |
 | `FC11-C17-U001` | [definition-only] primitive k-roots, the root sublattice, reflection group, and root-lattice predicate are direct existing project constructions | `project-existing` | `LeanCategories/Lattices/Valued/RootSystem.lean::{IsReflectiveRoot,ReflectiveRoot,reflectiveWeylSubgroup}`; `Constructions.lean::IsRoot`; `RootLattice.lean::rootSet`; generic primitive-vector normalization, `Submodule.span`, and subgroup generation | source-clause split 2026-09-16; P=db584cd6d46c92f209a44c0f1c829460d327499d | The actual definitions need no new owner: a primitive reflective vector carries the integer `k=b(x,x)=2q(x)`; fixed-k roots are the corresponding primitive reflective roots, their span is the root sublattice, and their reflections generate the reflection group. Uniqueness up to sign, the exact order of the induced discriminant class, and the unimodular restriction `k=±1,±2` are theorem clauses and remain for Sweep IV rather than blocking Mapping. |
@@ -47,7 +83,7 @@ project_id: github.com__dzackgarza__lean-categories
 | `FC11-C17-U027` | reflectivity range for the hyperbolic T-shaped/Enriques lattices remains absent | `unmatched` | partial: standard root-lattice/ADE infrastructure and Lorentzian signatures; mapped U014 reflectivity | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=87befc843c2b3a1be12f7fe9ba274d212b544348 | The checked project contains many standard lattices but no formalized `T_{2,3,n-2}` family with the source reflectivity/nonreflectivity classification, including the Enriques case. |
 | `FC11-C17-U028` | classification and extra-root generators for hyperbolic T-shaped lattices remains absent | `unmatched` | partial: root-base graph/ADE machinery; mapped U014/U018 | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=87befc843c2b3a1be12f7fe9ba274d212b544348 | No checked source formalizes the listed `(2,4,r)` and `(3,3,r)` reflective cases, the three root-basis cases, or the additional-root generating sets such as the `T_{2,3,8}` example. |
 | `FC11-C17-U029` | Leech-lattice Lorentzian reflection-group example remains absent | `unmatched` | partial: hyperbolic plane and E8 lattices are project-existing; orthogonal sums/root spanning infrastructure; no Leech lattice object or Conway chamber theorem | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=87befc843c2b3a1be12f7fe9ba274d212b544348 | The source needs the Leech lattice, `II_{1,25}`, Leech roots, a reflection fundamental domain, its infinite symmetry group, and the quotient `O⁻/W⁻`. Live Leech/reflection searches returned no checked implementation. |
-| `FC11-C17-U030` | Leech-root construction remains blocked by the absence of a checked Leech-lattice carrier `[negative-search-complete]` `[residue-search-audited]` | unmatched | partial: project hyperbolic plane, E8/root-lattice/reflection infrastructure and Lorentzian orthogonal groups; no proof-assistant `Γ24`/Leech lattice with its quadratic form | Final open-ended audit 2026-09-18: reran current web/GitHub searches for `Leech lattice Lean formalization`, `Conway Leech lattice theorem prover`, and related proof-assistant terms. Results were Sage/Python/C computational repositories such as `btw-47/Leech-lattice` and decoder/data projects, not Lean/Agda/Rocq formalizations. Rechecked current project/Mathlib/TauCeti symbols; no Leech carrier surfaced. | The displayed Leech-root formula itself is elementary once `Γ24(-1)` exists, but Peters--Sterk’s source uses the actual positive-definite rank-24 Leech lattice and its quadratic form inside `II_{1,25}`. Neither a checked carrier nor the rootless/unimodular characterization needed to identify one is present. U030 therefore survives State 1 as audited residue. |
+| `FC11-C17-U030` | `[definition-only] [negative-search-complete] [residue-search-audited]` concrete Leech Gram/half-norm data, Lorentzian extension, standard hyperbolic vectors, root map and full root range are transcribed; target-pin validation is pending | unmatched | local `LeanCategories/Lattices/Valued/{LeechLatticeData,LeechRootData}.lean::{LeechCarrierData,leechGramMatrixData,leechBilinearData,leechQuadraticCoefficientData,leechQuadraticData,LeechLorentzianCarrierData,leechLorentzianGramMatrixData,leechLorentzianBilinearData,leechHyperbolicEData,leechHyperbolicFData,leechNegativeInclusionData,leechRootData,leechRootsData}` in `LeanCategories.Lattices.Valued`; native matrices, `Matrix.toBilin'`, `LinearMap.BilinMap.toQuadraticMap`, `Matrix.fromBlocks`, `Sum.elim`, and `Set.range` | Final open-ended audit 2026-09-18 retained. Independent supporting-carrier lookup 2026-09-23 found no Leech/Golay/Niemeier owner in the inspected local project and pinned Mathlib directories; the primary Nebe--Sloane lattice catalogue supplies the explicit integer `GRAM` data. Original June-2024 Peters--Sterk PDF, printed p. 314, Example 17.2.10.4, was visually compared before transcription. All 576 local matrix entries agree with the catalogue. | The actual carrier is `ℤ²⁴` in the catalogue's fixed basis, not an arbitrary supplied lattice. Its upper-triangular quadratic coefficients give the integral half-norm without a constructor proof or division of vectors. The ambient Gram matrix is the block sum of `[[0,1],[1,0]]` and the negative Leech matrix. Since the source's `q` is on `Γ24(-1)`, its vector `e-(1+q(v))f+v` has coordinates `(1,leechQuadraticData(v)-1,v)`. Root norms, the polar-form comparison, positivity, unimodularity, rootlessness, lattice classification and chamber/nonreflectivity results remain Sweep IV, not definition prerequisites. No realization marker is added before target-pin acceptance. |
 | `FC11-C17-U031` | Borcherds rank-22 reflective lattice example remains absent | `unmatched` | partial: hyperbolic plane and type-D lattices, orthogonal sums, evenness, reflectivity predicate | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=87befc843c2b3a1be12f7fe9ba274d212b544348 | No checked declaration constructs the parity sublattice `L_{1,21}`, proves its isometry with `U⊕D20(-1)`, exhibits 210 generating roots, or computes the finite quotient order. The live Borcherds/reflective-lattice search returned no implementation. |
 | `FC11-C17-U032` | Kneser reflection/discriminant subgroup theorem remains absent | `unmatched` | partial: mapped U004/U006/U007 reflection, spinor-sign, stable-orthogonal infrastructure; discriminant ideals and sublattice ranks | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=87befc843c2b3a1be12f7fe9ba274d212b544348 | The project can state every group and arithmetic hypothesis, but no checked theorem proves `W⁺(L)∩SO⁺(L)=SO⁺(L)∩O#(L)` under the rank/discriminant divisibility assumptions. |
 | `FC11-C17-U033` | normal-subgroup congruence theorem for integral spin groups remains absent | `unmatched` | partial: Mathlib `CliffordAlgebra.spinGroup`, project Clifford/spinor-norm infrastructure, Mathlib normal subgroups and congruence-group primitives | remap 2026-09-13; P=db584cd6d46c92f209a44c0f1c829460d327499d; H=87befc843c2b3a1be12f7fe9ba274d212b544348 | No checked source proves that a noncentral normal subgroup of the integral spin group of Witt index at least two is congruence. This is arithmetic-group rigidity, not supplied by the Clifford construction. |
