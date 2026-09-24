@@ -50,10 +50,17 @@ def dualNumberReduction
     ClassicalPoint (K := K) (A := A) :=
   toConv ((TrivSqZeroExt.fstHom K K K).comp ψ.ofConv)
 
+/-- The fibre of the dual-number tangent-bundle projection over a
+classical `K`-point. -/
+def dualNumberFiberAt
+    (g : ClassicalPoint (K := K) (A := A)) :
+    Set (DualNumberPoint (K := K) (A := A)) :=
+  {ψ | dualNumberReduction ψ = g}
+
 /-- Humphreys' tangent fiber at the identity: the dual-number points
 whose reduction is the identity `K`-point. -/
 def dualNumberTangentFiber : Set (DualNumberPoint (K := K) (A := A)) :=
-  {ψ | dualNumberReduction ψ = 1}
+  dualNumberFiberAt 1
 
 /-- The raw carrier of the identity tangent fiber. -/
 abbrev DualNumberTangentPoint :=
