@@ -6,11 +6,12 @@ module
 
 public import Mathlib.RingTheory.Bialgebra.Convolution
 public import Mathlib.RingTheory.Derivation.Basic
+public import Mathlib.RingTheory.HopfAlgebra.Convolution
 
 /-!
 # Tangent convolution data
 
-Definition-level realization of Humphreys FC16-C03-U003.
+Definition-level realization of Humphreys FC16-C03-U003 and FC16-C03-U011.
 
 For the coordinate bialgebra `A = K[G]`, a tangent functional at the
 identity is a `K`-linear functional satisfying the Leibniz rule with
@@ -34,7 +35,11 @@ universe u v
 
 variable
   {K : Type u} {A : Type v}
-  [CommRing K] [CommRing A] [Bialgebra K A]
+  [CommRing K] [CommRing A]
+
+section Bialgebra
+
+variable [Bialgebra K A]
 
 /-- A linear tangent functional at the identity of an affine group,
 written directly as the counit-Leibniz predicate. -/
@@ -71,5 +76,27 @@ def tangentConvolutionCommutator
     (x y : CounitTangentFunctional (K := K) (A := A)) : A →ₗ[K] K :=
   WithConv.ofConv
     (toConv x.1 * toConv y.1 - toConv y.1 * toConv x.1)
+
+end Bialgebra
+
+section Hopf
+
+variable [HopfAlgebra K A]
+
+/-- The raw adjoint action of a group point on a tangent functional:
+convolution conjugation `g * x * g⁻¹`.
+
+The statement that this map again satisfies the counit-Leibniz condition
+and hence defines an invertible linear endomorphism of the tangent space
+is result-layer content. -/
+noncomputable def adjointConvolutionOperator
+    (g : WithConv (A →ₐ[K] K))
+    (x : CounitTangentFunctional (K := K) (A := A)) : A →ₗ[K] K :=
+  WithConv.ofConv
+    (toConv g.ofConv.toLinearMap *
+      toConv x.1 *
+      toConv ((g⁻¹).ofConv.toLinearMap))
+
+end Hopf
 
 end LeanCategories.AlgebraicGeometry
