@@ -7,6 +7,9 @@ records; it never checks or infers a whole-source completion box.
 
 Mapping may add an exact construction edge with one sentence-final clause:
 "Construction prerequisites: `FCxx-Cyy-Uzzz`, `...`." Other cited IDs are inert.
+In Sweep III, an explicitly named theorem/result unit diagnoses a result-layer
+dependency in the proposed construction route; it never becomes executable
+definition work.
 """
 
 from __future__ import annotations
@@ -688,9 +691,9 @@ def unit_blockers(
     """Return phase-relevant prerequisites that do not yet have a usable owner.
 
     Catalogue theorem edges do not ordinarily block Definitions: Definitions
-    must close before theorem work opens. Mapping may preserve a theorem or
-    definition that constructs the named output through the explicit
-    `Construction prerequisites:` annotation.
+    must close before theorem work opens. An explicit construction edge to a
+    theorem/result unit records why that proposed route is inadmissible in
+    Sweep III; surface the result-layer stop instead of scheduling the theorem.
     """
     if phase == "Mapping":
         # Discovery of an existing implementation does not depend on whether a
@@ -707,15 +710,13 @@ def unit_blockers(
     for dep in effective_dependencies(phase, unit, mapping):
         if phase == "Definitions" and source_id in CONTENT_CLASSIFIED_DEFINITION_SOURCES:
             dep_unit = catalogue_index.get(dep)
-            if (
-                dep not in explicit_dependencies
-                and dep_unit is not None
-                and not is_definition(dep_unit, mappings.get(dep))
-            ):
+            if dep_unit is not None and not is_definition(dep_unit, mappings.get(dep)):
+                if dep in explicit_dependencies:
+                    blockers.append("Sweep-IV result layer")
                 continue
         if dep not in mappings or not mappings[dep].delivered:
             blockers.append(dep)
-    return tuple(blockers)
+    return tuple(dict.fromkeys(blockers))
 
 
 def next_open_units(
@@ -781,6 +782,11 @@ def render(reference_dir: Path, limit: int) -> str:
         [unit for source_units in catalogues.values() for unit in source_units],
         mappings,
     )
+    catalogue_index = {
+        unit.unit_id: unit
+        for source_units in catalogues.values()
+        for unit in source_units
+    }
 
     missing_mappings = [
         unit.unit_id
@@ -889,7 +895,6 @@ def render(reference_dir: Path, limit: int) -> str:
             lines.extend(["No per-unit residue remains; the whole-source ledger is still authoritative.", ""])
             continue
 
-        catalogue_index = {unit.unit_id: unit for unit in catalogues[status.source_id]}
         next_units = next_open_units(phase, pending, mappings, catalogue_index, limit)
         if not next_units:
             raise ValueError(

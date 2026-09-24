@@ -58,7 +58,7 @@ class DefinitionReadinessTest(unittest.TestCase):
             ("FC05-C10-U083", "FC05-C10-U081"),
         )
 
-    def test_explicit_theorem_prerequisite_is_retained(self) -> None:
+    def test_explicit_theorem_prerequisite_is_result_layer_blocker(self) -> None:
         unit = self.catalogue["FC05-C10-U085"]
         mappings = dict(self.mappings)
         mappings[unit.unit_id] = replace(
@@ -70,7 +70,7 @@ class DefinitionReadinessTest(unittest.TestCase):
         )
         self.assertEqual(
             frontier.unit_blockers("Definitions", unit, mappings, self.catalogue),
-            ("FC05-C10-U083",),
+            ("Sweep-IV result layer",),
         )
 
     def test_ordinary_mapping_citation_is_not_a_scheduler_edge(self) -> None:
@@ -196,6 +196,29 @@ class DefinitionReadinessTest(unittest.TestCase):
         }
         self.assertIn("FC05-C09-U124", selected)
         self.assertNotIn("FC05-C10-U085", selected)
+
+    def test_current_result_units_do_not_become_definition_prerequisites(self) -> None:
+        corpus = REPO_ROOT / "corpus"
+        cases = (
+            ("FC10", "foundational-corpus-units-fc10-serre-local-fields.md", "FC10-C04-U002"),
+            ("FC10", "foundational-corpus-units-fc10-serre-local-fields.md", "FC10-C04-U005"),
+            ("FC17", "foundational-corpus-units-fc17-kerodon.md", "FC17-KER-U02698"),
+        )
+        source_indexes = {}
+        for source_id, filename, unit_id in cases:
+            if source_id not in source_indexes:
+                units = frontier.parse_catalogue(corpus / filename)
+                source_indexes[source_id] = {unit.unit_id: unit for unit in units}
+            catalogue = source_indexes[source_id]
+            self.assertEqual(
+                frontier.unit_blockers(
+                    "Definitions",
+                    catalogue[unit_id],
+                    self.mappings,
+                    catalogue,
+                ),
+                ("Sweep-IV result layer",),
+            )
 
 
 if __name__ == "__main__":
