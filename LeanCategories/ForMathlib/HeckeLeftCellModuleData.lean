@@ -16,11 +16,11 @@ Humphreys, *Reflection Groups and Coxeter Groups*, Section 7.15, pp. 169--170
 basis elements weakly below `Z`, and the span of those strictly below `Z`. The left-cell module is
 their quotient.
 
-This file records generic set, span, and underlying `A`-module quotient operations for a supplied
-preorder and family of vectors. It does not by itself realize FC15-C07-U043: that unit uses the
-specific Kazhdan--Lusztig basis and left-cell preorder, and its quotient carries the Hecke-module
-action induced by the two spans being left ideals. The canonical basis, ideal stability, free basis
-indexed by `Z`, Hecke action, and right-cell and two-sided analogues are absent here.
+This file records the construction layer of FC15-C07-U043.  Given the Kazhdan--Lusztig canonical
+basis family and the left, right, or two-sided cell preorder, it forms the weakly-lower and
+strictly-lower spans and their quotient.  The assertions that these spans are ideals, that the
+quotients are free on the corresponding cell, and that the Hecke action descends to a left module,
+right module, or bimodule are result-layer statements and are deliberately not bundled here.
 -/
 
 namespace LeanCategories.Hecke
@@ -101,6 +101,30 @@ def cellModuleCarrierBy (le : W → W → Prop) (canonicalBasis : W → H) (Z : 
     Type _ :=
   (cellUpperSpanBy (A := A) le canonicalBasis Z) ⧸
     (cellLowerInUpperBy (A := A) le canonicalBasis Z)
+
+/-- The scalar quotient carrier attached to a left cell in FC15-C07-U043.
+
+`leftLE` is the Kazhdan--Lusztig left-cell preorder supplied by the preceding
+cell construction; no ideal-stability or descended Hecke action is asserted. -/
+def leftCellModuleCarrierBy (leftLE : W → W → Prop) (canonicalBasis : W → H) (Z : Set W) :
+    Type _ :=
+  cellModuleCarrierBy (A := A) leftLE canonicalBasis Z
+
+/-- The scalar quotient carrier attached to a right cell in FC15-C07-U043.
+
+The right-module structure asserted by the source is result-layer data and is
+not required to construct this quotient. -/
+def rightCellModuleCarrierBy (rightLE : W → W → Prop) (canonicalBasis : W → H) (Z : Set W) :
+    Type _ :=
+  cellModuleCarrierBy (A := A) rightLE canonicalBasis Z
+
+/-- The scalar quotient carrier attached to a two-sided cell in FC15-C07-U043.
+
+The source's induced Hecke bimodule structure is a subsequent result; this
+declaration records only the defining span quotient. -/
+def twoSidedCellBimoduleCarrierBy (twoSidedLE : W → W → Prop)
+    (canonicalBasis : W → H) (Z : Set W) : Type _ :=
+  cellModuleCarrierBy (A := A) twoSidedLE canonicalBasis Z
 
 end Relation
 
