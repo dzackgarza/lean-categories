@@ -162,13 +162,13 @@ class Mapping:
 
     @property
     def sweep_iii_blocked(self) -> bool:
-        """Whether this named object still requires result-layer input.
+        """Whether the currently recorded realization route requires result-layer input.
 
-        A mixed source row can have its raw carrier realized in Sweep III while
-        a later definition/convention depends on a theorem about that carrier.
-        The explicit marker keeps the later unit out of the executable
-        Definitions frontier without pretending that the carrier realization
-        itself is undelivered.
+        The marker preserves that result-layer residue for Sweep IV, but it does
+        not excuse the source's definitional content from Sweep III.  Once the
+        genuine definition prerequisites are ready, the scheduler must surface
+        the unit so its representation can be changed instead of waiting for a
+        theorem.
         """
         return "[sweep-iii-blocked]" in self.verdict.lower()
 
@@ -701,9 +701,6 @@ def unit_blockers(
         return ()
 
     mapping = mappings.get(unit.unit_id)
-    if phase == "Definitions" and mapping is not None and mapping.sweep_iii_blocked:
-        return ("Sweep-IV result layer",)
-
     source_id = unit.unit_id.split("-", 1)[0]
     explicit_dependencies = construction_dependencies(unit, mapping)
     blockers: list[str] = []

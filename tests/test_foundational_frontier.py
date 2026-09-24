@@ -49,6 +49,12 @@ class DefinitionReadinessTest(unittest.TestCase):
     def test_mapping_prerequisite_survives_theorem_labelled_catalogue_edge(self) -> None:
         self.assertEqual(self.blockers("FC05-C10-U085"), ("FC05-C10-U081",))
 
+    def test_blocked_marker_schedules_representation_repair(self) -> None:
+        mapping = self.mappings["FC05-C10-U105"]
+        self.assertTrue(mapping.sweep_iii_blocked)
+        self.assertEqual(self.blockers("FC05-C10-U105"), ())
+        self.assertTrue(frontier.is_theorem(self.catalogue["FC05-C10-U105"], mapping))
+
     def test_effective_prerequisites_explain_the_blocker(self) -> None:
         unit = self.catalogue["FC05-C10-U085"]
         self.assertEqual(
