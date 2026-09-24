@@ -1,0 +1,70 @@
+/-
+Copyright (c) 2026 Dzack Garza. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+-/
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+
+/-!
+# Root-sign product data
+
+Definition-level realization of the construction clause in Humphreys
+FC16-C10-U015.
+
+For a Weyl element `w`, the positive roots split according to whether
+`w⁻¹ α` is negative or positive.  After an ordering of either finite root
+set is supplied, the source construction is the corresponding ordered
+product of root-subgroup carriers.  Independence of the ordering, the fact
+that these carriers are closed T-stable subgroups, direct spanning, and the
+factorizations of the full unipotent radical are result-layer statements.
+-/
+
+@[expose] public section
+
+namespace LeanCategories.AlgebraicGeometry
+
+open scoped Pointwise
+
+universe u v
+
+variable {G : Type u} [Group G]
+variable {Φ : Type v}
+
+/-- Positive roots sent to negative roots by `w⁻¹`. -/
+def rootsSentNegative
+    (positiveRoots negativeRoots : Set Φ) (wInv : Φ → Φ) : Set Φ :=
+  {α | α ∈ positiveRoots ∧ wInv α ∈ negativeRoots}
+
+/-- Positive roots that remain positive under `w⁻¹`. -/
+def rootsSentPositive
+    (positiveRoots : Set Φ) (wInv : Φ → Φ) : Set Φ :=
+  {α | α ∈ positiveRoots ∧ wInv α ∈ positiveRoots}
+
+/-- A list presents a finite root set exactly once.  Sweep III keeps the
+ordering as explicit source data rather than proving that a canonical choice
+exists or that the resulting product is independent of it. -/
+def IsRootOrdering (S : Set Φ) (roots : List Φ) : Prop :=
+  roots.Nodup ∧ ∀ α, α ∈ roots ↔ α ∈ S
+
+/-- Ordered product carrier of a list of root subgroups. -/
+def orderedRootSubgroupProductCarrier
+    (rootSubgroup : Φ → Subgroup G) : List Φ → Set G
+  | [] => {1}
+  | α :: roots =>
+      (rootSubgroup α : Set G) *
+        orderedRootSubgroupProductCarrier rootSubgroup roots
+
+/-- The order-parameterized carrier denoted `U_w` once `negativeOrder`
+lists the positive roots sent negative by `w⁻¹`. -/
+def rootSignNegativeProductCarrier
+    (rootSubgroup : Φ → Subgroup G) (negativeOrder : List Φ) : Set G :=
+  orderedRootSubgroupProductCarrier rootSubgroup negativeOrder
+
+/-- The order-parameterized carrier denoted `U_w⁺` once `positiveOrder`
+lists the positive roots kept positive by `w⁻¹`. -/
+def rootSignPositiveProductCarrier
+    (rootSubgroup : Φ → Subgroup G) (positiveOrder : List Φ) : Set G :=
+  orderedRootSubgroupProductCarrier rootSubgroup positiveOrder
+
+end LeanCategories.AlgebraicGeometry
