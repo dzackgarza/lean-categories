@@ -6,9 +6,11 @@ module
 
 public import LeanCategories.Homological.CWSpectrum
 public import Mathlib.Algebra.Category.Grp.Abelian
+public import Mathlib.Algebra.Homology.CochainComplexOpposite
+public import Mathlib.Algebra.Homology.Embedding.TruncLE
+public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.AlgebraicTopology.DoldKan.Equivalence
 public import Mathlib.AlgebraicTopology.SingularSet
-public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-!
 # Geometric realization of chain complexes as CW spectra
@@ -22,16 +24,21 @@ applying inverse Dold--Kan, and geometrically realizing the resulting
 simplicial abelian group.  These levels assemble into a CW spectrum, functorial
 in the chain complex.
 
-The facts that this functor takes quasi-isomorphisms to weak equivalences and
-intertwines translation with looping are theorem-layer statements and are not
-asserted here.
+Sweep III records the canonical shifted/truncated Dold--Kan realization stages
+and their functorial maps.  The truncated-cone argument which produces the
+bonding maps, proves them cellular, and thereby upgrades the stages to a CW
+prespectrum is result-layer content; the corresponding spectrification and
+derived-category comparison remain downstream of that result.
 -/
 
 @[expose] public noncomputable section
 
-open CategoryTheory
+open CategoryTheory Opposite
+open scoped Simplicial
 
 namespace LeanCategories.Homological
+
+open LeanCategories.Topology
 
 universe u
 
@@ -53,89 +60,146 @@ def doldKanGeometricTop
   SSet.toTop.obj
     (simplicialAbelianUnderlyingSSet (doldKanSimplicialAbelian K))
 
-/-- Source-faithful data of the shift and good truncation used for the `n`th
-space in Weibel's realization.
+/-- The cochain presentation of Weibel's shift `C[-n]`.
 
-The shifted complex has degree `i` identified with the original degree
-`i+n`.  Its good truncation keeps the positive degrees and replaces degree
-zero by the cycle object, with the differential `1 → 0` induced by the
-original differential.
--/
-structure GoodTruncationStage
-    (C : ChainComplex AddCommGrpCat.{u} ℤ) (n : ℕ) where
-  /-- The shifted integer-indexed complex. -/
-  shifted : ChainComplex AddCommGrpCat.{u} ℤ
-  /-- Degree identification for the shift. -/
-  shiftedDegreeIso : ∀ i : ℤ,
-    shifted.X i ≅ C.X (i + (n : ℤ))
-  /-- Compatibility of the shifted differential with the original one. -/
-  shifted_d : ∀ i : ℤ,
-    (shiftedDegreeIso i).hom ≫
-        C.d (i + (n : ℤ)) (i - 1 + (n : ℤ)) =
-      shifted.d i (i - 1) ≫ (shiftedDegreeIso (i - 1)).hom
-  /-- The good nonnegative truncation. -/
-  truncated : ChainComplex AddCommGrpCat.{u} ℕ
-  /-- Degree zero is the cycle object of the shifted complex. -/
-  zeroIso : truncated.X 0 ≅ shifted.cycles 0
-  /-- Positive degrees agree with the shifted complex. -/
-  positiveIso : ∀ i : ℕ,
-    truncated.X (i + 1) ≅ shifted.X ((i + 1 : ℕ) : ℤ)
-  /-- The differential from degree one to zero is the canonical map to cycles. -/
-  d_one_zero :
-    (positiveIso 0).hom ≫ shifted.toCycles 1 0 =
-      truncated.d 1 0 ≫ zeroIso.hom
-  /-- Positive differentials are inherited from the shifted complex. -/
-  d_positive : ∀ i : ℕ,
-    (positiveIso (i + 1)).hom ≫
-        shifted.d ((i + 2 : ℕ) : ℤ) ((i + 1 : ℕ) : ℤ) =
-      truncated.d (i + 2) (i + 1) ≫ (positiveIso i).hom
+The chain/cochain reindexing sends chain degree `i` to cochain degree `-i`.
+Consequently the native cochain shift by `n` has chain degree `i` equal to
+`C_{i-n}`.  The native shift also carries the factor `(-1)^n` on the
+differential, so no separately supplied compatibility law is needed.
 
-/-- The Dold--Kan/geometric-realization stage producing one based spectrum
-level from a shifted good truncation. -/
-structure DoldKanGeometricLevel
-    (C : ChainComplex AddCommGrpCat.{u} ℤ) (n : ℕ) where
-  /-- The shifted good truncation. -/
-  truncation : GoodTruncationStage C n
-  /-- The based realization; its basepoint is induced by the zero simplex. -/
-  basedSpace : LeanCategories.Topology.BasedTop.{u}
-  /-- The underlying space is the geometric realization of inverse Dold--Kan. -/
-  realizationIso : basedSpace.right ≅ doldKanGeometricTop truncation.truncated
+Source: Weibel, shift convention 1.2.8 and Geometric Realization 10.9.19
+(FC05-C10-U120). -/
+def chainComplexRealizationShift
+    (C : ChainComplex AddCommGrpCat.{u} ℤ) (n : ℕ) :
+    CochainComplex AddCommGrpCat.{u} ℤ :=
+  (CategoryTheory.shiftFunctor (CochainComplex AddCommGrpCat.{u} ℤ) (n : ℤ)).obj
+    ((ChainComplex.cochainComplexEquivalence AddCommGrpCat.{u}).functor.obj C)
 
-/-- A source-faithful realization of the spectrum associated to one chain
-complex by Weibel's construction. -/
-structure ChainComplexSpectrumRealization
-    (C : ChainComplex AddCommGrpCat.{u} ℤ) where
-  /-- Dold--Kan/geometric-realization data in every spectrum degree. -/
-  level : ∀ n : ℕ, DoldKanGeometricLevel C n
-  /-- The spectrum assembled from those spaces. -/
-  spectrum : Spectrum.{u}
-  /-- Identification of its levels with the realized spaces above. -/
-  levelIso : ∀ n : ℕ, spectrum.space n ≅ (level n).basedSpace
-  /-- The resulting spectrum lies in `S_CW`. -/
-  isCW : IsCWSpectrum spectrum
+/-- The good nonnegative truncation `τ_{≥0}(C[-n])` used by Weibel.
 
-/-- Definition-layer realization of Weibel's geometric realization functor
-`Ch(Ab) → S_CW`. -/
-structure ChainComplexGeometricRealization where
-  /-- The underlying functor to spectra. -/
-  functor : ChainComplex AddCommGrpCat.{u} ℤ ⥤ Spectrum.{u}
-  /-- Source construction data for each object. -/
-  objectData : ∀ C : ChainComplex AddCommGrpCat.{u} ℤ,
-    ChainComplexSpectrumRealization C
-  /-- The functor object is the spectrum assembled by the source construction. -/
-  objectIso : ∀ C : ChainComplex AddCommGrpCat.{u} ℤ,
-    (objectData C).spectrum ≅ functor.obj C
-  /-- Every functor value is a CW spectrum. -/
-  isCW : ∀ C : ChainComplex AddCommGrpCat.{u} ℤ,
-    IsCWSpectrum (functor.obj C)
-
-/-- Weibel's geometric-realization functor with codomain restricted to the
-full subcategory `S_CW`.
+After the chain/cochain reindexing, nonnegative chain degrees correspond to
+nonpositive cochain degrees.  Mathlib's canonical `truncLE'` along
+`embeddingDownNat` therefore replaces degree zero by the cycle object and
+retains the positive chain degrees exactly as required.
 
 Source: Weibel, Geometric Realization 10.9.19 (FC05-C10-U120). -/
-def ChainComplexGeometricRealization.toCWFunctor
-    (G : ChainComplexGeometricRealization.{u}) :
-    ChainComplex AddCommGrpCat.{u} ℤ ⥤ CWSpectrum.{u} :=
-  ObjectProperty.lift cwSpectrumProperty G.functor G.isCW
+noncomputable def chainComplexRealizationTruncation
+    (C : ChainComplex AddCommGrpCat.{u} ℤ) (n : ℕ) :
+    ChainComplex AddCommGrpCat.{u} ℕ :=
+  (chainComplexRealizationShift C n).truncLE' ComplexShape.embeddingDownNat
+
+/-- Inverse Dold--Kan applied to `τ_{≥0}(C[-n])`. -/
+noncomputable def chainComplexRealizationSimplicialAbelian
+    (C : ChainComplex AddCommGrpCat.{u} ℤ) (n : ℕ) :
+    SimplicialObject AddCommGrpCat.{u} :=
+  doldKanSimplicialAbelian (chainComplexRealizationTruncation C n)
+
+/-- The underlying simplicial set of inverse Dold--Kan at realization stage
+`n`. -/
+noncomputable def chainComplexRealizationSSet
+    (C : ChainComplex AddCommGrpCat.{u} ℤ) (n : ℕ) : SSet.{u} :=
+  simplicialAbelianUnderlyingSSet (chainComplexRealizationSimplicialAbelian C n)
+
+/-- The unbased geometric realization `|Γ(τ_{≥0}(C[-n]))|`. -/
+noncomputable def chainComplexRealizationTop
+    (C : ChainComplex AddCommGrpCat.{u} ℤ) (n : ℕ) : TopCat.{u} :=
+  SSet.toTop.obj (chainComplexRealizationSSet C n)
+
+/-- The point in a geometric realization represented by a chosen zero-simplex. -/
+noncomputable def geometricRealizationVertex {X : SSet.{u}}
+    (x : X.obj (op ⦋0⦌)) : (SSet.toTop.obj X) :=
+  ((SSet.toTopSimplex.inv.app ⦋0⦌) ≫
+      SSet.toTop.map (SSet.yonedaEquiv.symm x)) default
+
+/-- The canonical basepoint of `|Γ(K)|`, represented by the zero zero-simplex
+of the simplicial abelian group `Γ(K)`. -/
+noncomputable def doldKanGeometricPoint
+    (K : ChainComplex AddCommGrpCat.{u} ℕ) : doldKanGeometricTop K :=
+  geometricRealizationVertex
+    (X := simplicialAbelianUnderlyingSSet (doldKanSimplicialAbelian K))
+    (0 : (doldKanSimplicialAbelian K).obj (op ⦋0⦌))
+
+/-- The based geometric realization of inverse Dold--Kan. -/
+noncomputable def doldKanGeometricBased
+    (K : ChainComplex AddCommGrpCat.{u} ℕ) :
+    LeanCategories.Topology.BasedTop.{u} :=
+  Under.mk
+    (TopCat.ofHom
+      (ContinuousMap.const (TopCat.of PUnit) (doldKanGeometricPoint K)))
+
+/-- Weibel's canonical raw level
+`P(C)_n = |Γ(τ_{≥0}(C[-n]))|`, based at the zero simplex.
+
+Source: Weibel, Geometric Realization 10.9.19 (FC05-C10-U120). -/
+noncomputable def chainComplexGeometricLevel
+    (C : ChainComplex AddCommGrpCat.{u} ℤ) (n : ℕ) :
+    LeanCategories.Topology.BasedTop.{u} :=
+  doldKanGeometricBased (chainComplexRealizationTruncation C n)
+
+/-- The chain map on shifted cochain presentations induced by `f : C ⟶ D`. -/
+def chainComplexRealizationShiftMap
+    {C D : ChainComplex AddCommGrpCat.{u} ℤ} (f : C ⟶ D) (n : ℕ) :
+    chainComplexRealizationShift C n ⟶ chainComplexRealizationShift D n :=
+  (CategoryTheory.shiftFunctor (CochainComplex AddCommGrpCat.{u} ℤ) (n : ℤ)).map
+    ((ChainComplex.cochainComplexEquivalence AddCommGrpCat.{u}).functor.map f)
+
+/-- The canonical map on good truncations induced by a chain map. -/
+noncomputable def chainComplexRealizationTruncationMap
+    {C D : ChainComplex AddCommGrpCat.{u} ℤ} (f : C ⟶ D) (n : ℕ) :
+    chainComplexRealizationTruncation C n ⟶
+      chainComplexRealizationTruncation D n :=
+  HomologicalComplex.truncLE'Map (chainComplexRealizationShiftMap f n)
+    ComplexShape.embeddingDownNat
+
+/-- The induced map of simplicial sets on the `n`th realization stage. -/
+noncomputable def chainComplexRealizationSSetMap
+    {C D : ChainComplex AddCommGrpCat.{u} ℤ} (f : C ⟶ D) (n : ℕ) :
+    chainComplexRealizationSSet C n ⟶ chainComplexRealizationSSet D n :=
+  Functor.whiskerRight
+    (CategoryTheory.Abelian.DoldKan.Γ.map
+      (chainComplexRealizationTruncationMap f n))
+    (forget AddCommGrpCat)
+
+/-- The induced continuous map on the unbased geometric-realization stages. -/
+noncomputable def chainComplexRealizationTopMap
+    {C D : ChainComplex AddCommGrpCat.{u} ℤ} (f : C ⟶ D) (n : ℕ) :
+    chainComplexRealizationTop C n ⟶ chainComplexRealizationTop D n :=
+  SSet.toTop.map (chainComplexRealizationSSetMap f n)
+
+/-- Result-layer bonding data singled out by Weibel's truncated-cone argument.
+
+The canonical level objects above are definition data.  The source next proves,
+using the truncated cone sequence, that there are cellular adjoint maps
+`ΣP(C)_n ⟶ P(C)_{n+1}`.  That proof is outside Sweep III, so this structure is
+only the precise interface consumed once those maps have been established; it
+is not the construction owner for the levels.
+
+Source: Weibel, Geometric Realization 10.9.19 (FC05-C10-U120). -/
+structure ChainComplexGeometricBondingData
+    (C : ChainComplex AddCommGrpCat.{u} ℤ) where
+  structureMap : ∀ n : ℕ,
+    suspensionObj (chainComplexGeometricLevel C n) ⟶
+      chainComplexGeometricLevel C (n + 1)
+
+/-- The prespectrum determined by the canonical realization levels once the
+result-layer truncated-cone bonding maps are supplied. -/
+noncomputable def chainComplexGeometricPrespectrum
+    {C : ChainComplex AddCommGrpCat.{u} ℤ}
+    (B : ChainComplexGeometricBondingData C) : Prespectrum.{u} where
+  space := chainComplexGeometricLevel C
+  structureMap := B.structureMap
+
+/-- The raw spectrification data of the geometric-realization prespectrum.
+
+This uses FC05-C10-U105's canonical colimit construction and deliberately does
+not package a `Spectrum`: the colimit/loop homeomorphism and CW assertions are
+Sweep-IV comparison results.
+-/
+noncomputable def chainComplexGeometricSpectrificationData
+    {C : ChainComplex AddCommGrpCat.{u} ℤ}
+    (B : ChainComplexGeometricBondingData C)
+    (hCW : (chainComplexGeometricPrespectrum B).IsCW) :
+    SpectrificationData (chainComplexGeometricPrespectrum B) :=
+  spectrificationData (chainComplexGeometricPrespectrum B) hCW
 
 end LeanCategories.Homological
