@@ -5,8 +5,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.GroupTheory.Solvable
+public import Mathlib.GroupTheory.Subgroup.Centralizer
 public import Mathlib.Topology.Algebra.Group.Basic
 public import Mathlib.Topology.Connected.Basic
+public import Mathlib.Topology.Irreducible
 
 /-!
 # Borel subgroup data
@@ -38,5 +40,19 @@ def IsClosedConnectedSolvableSubgroup (H : Subgroup G) : Prop :=
 /-- A Borel subgroup is a maximal closed connected solvable subgroup. -/
 def IsBorelSubgroup (B : Subgroup G) : Prop :=
   Maximal IsClosedConnectedSolvableSubgroup B
+
+/-- The carrier in the ambient group of the irreducible component of the
+identity inside a subgroup.  For algebraic subgroups over an algebraically
+closed field this is the classical identity-component carrier `H°`. -/
+noncomputable def subgroupIdentityComponentCarrier (H : Subgroup G) : Set G :=
+  ((↑) : H → G) '' irreducibleComponent (1 : H)
+
+/-- The provisional Cartan-subgroup carrier attached to a torus `T`:
+the identity component of its centralizer.
+
+When `T` is maximal this is Humphreys FC16-C08-U015.  Nilpotence and
+self-normalizing properties are result-layer statements. -/
+noncomputable def cartanSubgroupCarrier (T : Subgroup G) : Set G :=
+  subgroupIdentityComponentCarrier (Subgroup.centralizer (T : Set G))
 
 end LeanCategories.AlgebraicGeometry
