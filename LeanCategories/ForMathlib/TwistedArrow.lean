@@ -22,13 +22,11 @@ is exactly their composite carrier.
 
 namespace LeanCategories.CategoryTheory
 
-open CategoryTheory
-
 universe v u
 
 /-- The ordinary twisted-arrow category of C (FC17-KER-U00374), realized
 as the category of elements of the Hom bifunctor. -/
-abbrev TwistedArrow (C : Type u) [Category.{v} C] : Type (max u v) :=
-  (Functor.hom C).Elements
+abbrev TwistedArrow (C : Type u) [_root_.CategoryTheory.Category.{v} C] : Type (max u v) :=
+  (_root_.CategoryTheory.Functor.hom C).Elements
 
 end LeanCategories.CategoryTheory
