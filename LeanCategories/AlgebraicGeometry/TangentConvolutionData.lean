@@ -11,7 +11,8 @@ public import Mathlib.RingTheory.HopfAlgebra.Convolution
 /-!
 # Tangent convolution data
 
-Definition-level realization of Humphreys FC16-C03-U003 and FC16-C03-U011.
+Definition-level realization of Humphreys FC16-C03-U003, FC16-C03-U011,
+and FC16-C03-U016.
 
 For the coordinate bialgebra `A = K[G]`, a tangent functional at the
 identity is a `K`-linear functional satisfying the Leibniz rule with
@@ -76,6 +77,13 @@ def tangentConvolutionCommutator
     (x y : CounitTangentFunctional (K := K) (A := A)) : A →ₗ[K] K :=
   WithConv.ofConv
     (toConv x.1 * toConv y.1 - toConv y.1 * toConv x.1)
+
+/-- The raw infinitesimal adjoint action `ad x (y) = [x,y]`,
+expressed before the theorem that convolution commutators close in the
+tangent-functional carrier. -/
+def infinitesimalAdjointAction
+    (x y : CounitTangentFunctional (K := K) (A := A)) : A →ₗ[K] K :=
+  tangentConvolutionCommutator x y
 
 end Bialgebra
 
