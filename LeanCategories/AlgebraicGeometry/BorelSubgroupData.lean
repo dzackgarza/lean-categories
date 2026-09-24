@@ -55,4 +55,13 @@ self-normalizing properties are result-layer statements. -/
 noncomputable def cartanSubgroupCarrier (T : Subgroup G) : Set G :=
   subgroupIdentityComponentCarrier (Subgroup.centralizer (T : Set G))
 
+/-- The stable Cartan-subgroup construction of FC16-C08-U021: for a
+maximal torus `T`, take its centralizer `C_G(T)`.
+
+Maximality of `T` is source input.  The assertions that every Cartan subgroup
+arises this way, that this agrees with the provisional `C_G(T)°` carrier, and
+that all Cartan subgroups are conjugate are result-layer statements. -/
+def cartanSubgroupOfMaximalTorus (T : Subgroup G) : Subgroup G :=
+  Subgroup.centralizer (T : Set G)
+
 end LeanCategories.AlgebraicGeometry
