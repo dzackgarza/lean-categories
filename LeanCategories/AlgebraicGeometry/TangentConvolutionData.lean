@@ -20,7 +20,8 @@ convolution, equivalently by contracting the second tensor factor of
 
 Closure of convolution commutators in the tangent-functional carrier,
 the induced Lie bracket, and the Lie-ring/Lie-algebra laws are result
-content and are not included here.
+content and are not included here.  The raw commutator linear map itself
+is construction data and is recorded below.
 -/
 
 @[expose] public noncomputable section
@@ -61,5 +62,14 @@ def rightConvolutionOperator (x : CounitTangentFunctional (K := K) (A := A)) :
 def rightConvolution
     (x : CounitTangentFunctional (K := K) (A := A)) (f : A) : A :=
   rightConvolutionOperator x f
+
+/-- The raw convolution commutator underlying Humphreys' tangent Lie
+bracket.  Showing that this linear map again satisfies the counit-Leibniz
+condition is the closure result needed to descend it to
+`CounitTangentFunctional`; that proposition is not part of Sweep III. -/
+def tangentConvolutionCommutator
+    (x y : CounitTangentFunctional (K := K) (A := A)) : A →ₗ[K] K :=
+  WithConv.ofConv
+    (toConv x.1 * toConv y.1 - toConv y.1 * toConv x.1)
 
 end LeanCategories.AlgebraicGeometry
