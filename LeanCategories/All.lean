@@ -228,6 +228,7 @@ public import LeanCategories.Homological.KoszulHomology
 public import LeanCategories.Homological.KoszulExteriorDescription
 public import LeanCategories.Homological.KoszulTransition
 public import LeanCategories.Homological.FiniteFreeResolution
+public import LeanCategories.Homological.FactorSetExtensionData
 public import LeanCategories.Homological.SheafPresheafComparison
 public import LeanCategories.Homological.SheafExtData
 public import LeanCategories.Homological.WeaklyEffaceable
