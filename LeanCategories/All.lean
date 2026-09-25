@@ -117,6 +117,7 @@ public import LeanCategories.Algebra.CoxeterRootRescalingData
 public import LeanCategories.Algebra.CoxeterAffineSliceData
 public import LeanCategories.Algebra.CoxeterPlaneData
 public import LeanCategories.Algebra.CrossedProductData
+public import LeanCategories.Algebra.ClassFunctionData
 public import LeanCategories.Algebra.MatrixFamilies
 public import LeanCategories.Algebra.MonoidAlgebra
 public import LeanCategories.Algebra.PureSubmodule
