@@ -98,34 +98,7 @@ def IsProjectiveBundleData
     (P : RelativeProjCandidateData X) : Prop :=
   ∃ S : RelativeProjHypothesis X,
     IsSymmetricAlgebraRelativeProjData E S ∧
-      P = relativeProjData S
-
-/-- The projective-space-bundle datum `P(E)=Proj Sym(E)`, selected by the exact
-definition-level specification above. -/
-def projectiveBundleData
-    [IsNoetherian X] (E : X.Modules)
-    [E.IsLocallyFree] [E.IsFinitePresentation] :
-    RelativeProjCandidateData X :=
-  Classical.epsilon (IsProjectiveBundleData E)
-
-/-- The scheme underlying `P(E)`. -/
-abbrev projectiveBundleSchemeData
-    [IsNoetherian X] (E : X.Modules)
-    [E.IsLocallyFree] [E.IsFinitePresentation] : Scheme.{u} :=
-  (projectiveBundleData E).scheme
-
-/-- The structural projection `P(E) → X`. -/
-def projectiveBundleProjectionData
-    [IsNoetherian X] (E : X.Modules)
-    [E.IsLocallyFree] [E.IsFinitePresentation] :
-    projectiveBundleSchemeData E ⟶ X :=
-  (projectiveBundleData E).projection
-
-/-- The selected twisting sheaf `O_{P(E)}(1)`. -/
-def projectiveBundleTwistingSheafOneData
-    [IsNoetherian X] (E : X.Modules)
-    [E.IsLocallyFree] [E.IsFinitePresentation] :
-    (projectiveBundleSchemeData E).Modules :=
-  (projectiveBundleData E).twistOne
+      ∃ D : RelativeProjPresentationData X,
+        IsRelativeProjPresentationData S D ∧ P = relativeProjData D
 
 end LeanCategories.Schemes

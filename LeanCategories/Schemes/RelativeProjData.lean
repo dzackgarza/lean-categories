@@ -168,21 +168,8 @@ def IsRelativeProjData (S : RelativeProjHypothesis X)
 /-- Raw relative-gluing data over the canonical directed affine cover of the
 base.  Unlike `RelativeProjCandidateData`, this carrier has an actual gluing
 construction: `RelativeGluingData.glued`. -/
-abbrev RelativeProjGluingCandidateData (X : Scheme.{u}) :=
+public abbrev RelativeProjGluingCandidateData (X : Scheme.{u}) :=
   Scheme.Cover.RelativeGluingData X.directedAffineCover
-
-/-- A harmless inhabitant of the relative-gluing carrier, used only to make
-exact-graph selection available before the relative-Proj existence theorem.
-It is the directed affine cover itself with identity transition data. -/
-noncomputable def relativeProjFallbackGluingData (X : Scheme.{u}) :
-    RelativeProjGluingCandidateData X where
-  functor := X.directedAffineCover.functorOfLocallyDirected
-  natTrans := 𝟙 _
-  equifibered := CategoryTheory.NatTrans.Equifibered.of_isIso _
-
-instance (X : Scheme.{u}) :
-    Nonempty (RelativeProjGluingCandidateData X) :=
-  ⟨relativeProjFallbackGluingData X⟩
 
 /-- Exact local specification of the relative-Proj gluing datum.
 
@@ -191,7 +178,7 @@ For every affine open `U`, the corresponding chart is ordinary
 identification its map to `U` is the standard degree-zero Proj map.
 The `RelativeGluingData.equifibered` field records the required base-change
 compatibility between these charts. -/
-def IsRelativeProjGluingData
+public def IsRelativeProjGluingData
     (S : RelativeProjHypothesis X)
     (d : RelativeProjGluingCandidateData X) : Prop :=
   ∀ U : X.affineOpens,
@@ -204,53 +191,29 @@ def IsRelativeProjGluingData
           e.hom ≫ affineRelativeProjToBaseData U.1 U.2 A =
             d.natTrans.app U
 
-/-- The source-prescribed relative gluing datum selected by its exact affine
-Proj chart graph.  Existence of a datum satisfying this graph is theorem
-content; the selected datum itself contains actual compatible transition
-maps, not a supplied global scheme. -/
-noncomputable def relativeProjGluingData (S : RelativeProjHypothesis X) :
-    RelativeProjGluingCandidateData X :=
-  Classical.epsilon (IsRelativeProjGluingData S)
+/-- Proof-free presentation data for relative `Proj`: an actual compatible
+relative gluing datum together with a supplied global `O(1)` candidate on
+its glued scheme.  Whether these data realize the source construction is kept
+in the separate predicate `IsRelativeProjPresentationData`. -/
+public structure RelativeProjPresentationData (X : Scheme.{u}) where
+  gluing : RelativeProjGluingCandidateData X
+  twistOne : gluing.glued.Modules
 
-/-- The actual relative `Proj S` scheme: glue the selected ordinary affine
-Proj charts using Mathlib's relative-gluing construction. -/
-noncomputable abbrev relativeProjSchemeData
-    (S : RelativeProjHypothesis X) : Scheme.{u} :=
-  (relativeProjGluingData S).glued
+/-- The relative-Proj candidate determined by supplied presentation data. -/
+public noncomputable def relativeProjData
+    (D : RelativeProjPresentationData X) : RelativeProjCandidateData X :=
+  { scheme := D.gluing.glued
+    projection := D.gluing.toBase
+    twistOne := D.twistOne }
 
-/-- The actual structural projection of the glued relative Proj to its base. -/
-noncomputable def relativeProjProjectionData
-    (S : RelativeProjHypothesis X) :
-    relativeProjSchemeData S ⟶ X :=
-  (relativeProjGluingData S).toBase
-
-/-- Exact specification of the remaining global twisting sheaf on the
-constructed relative-Proj scheme.  The scheme and projection are now fixed by
-the actual gluing construction; only the sheaf gluing is selected here. -/
-def IsRelativeProjGlobalTwistOneData
+/-- Exact source-faithfulness predicate for supplied relative-Proj
+presentation data.  It requires both the affine `Proj` gluing graph and the
+global relative-Proj/`O(1)` local specification; no existence theorem is
+hidden in the constructor. -/
+public def IsRelativeProjPresentationData
     (S : RelativeProjHypothesis X)
-    (L : (relativeProjSchemeData S).Modules) : Prop :=
-  IsRelativeProjData S
-    { scheme := relativeProjSchemeData S
-      projection := relativeProjProjectionData S
-      twistOne := L }
-
-/-- The selected global `O(1)` on the actually glued relative-Proj scheme.
-Its local shifted-module description is exactly `IsRelativeProjData`; the
-existence/gluing theorem remains result content. -/
-noncomputable def relativeProjTwistingSheafOneData
-    (S : RelativeProjHypothesis X) :
-    (relativeProjSchemeData S).Modules := by
-  letI : Nonempty ((relativeProjSchemeData S).Modules) :=
-    ⟨schemeModuleUnit (relativeProjSchemeData S)⟩
-  exact Classical.epsilon (IsRelativeProjGlobalTwistOneData S)
-
-/-- Hartshorne's relative-Proj datum with scheme and projection constructed by
-relative gluing, and the twisting sheaf selected by its exact local graph. -/
-noncomputable def relativeProjData (S : RelativeProjHypothesis X) :
-    RelativeProjCandidateData X :=
-  { scheme := relativeProjSchemeData S
-    projection := relativeProjProjectionData S
-    twistOne := relativeProjTwistingSheafOneData S }
+    (D : RelativeProjPresentationData X) : Prop :=
+  IsRelativeProjGluingData S D.gluing ∧
+    IsRelativeProjData S (relativeProjData D)
 
 end LeanCategories.Schemes
