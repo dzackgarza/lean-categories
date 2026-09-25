@@ -23,12 +23,12 @@ quotient map is `residueSum`.
 
 Constructing that factorization directly with `Submodule.liftQ` would require
 the residue theorem as a proof argument.  Sweep III must not prove or import
-that result.  This file therefore records the quotient carrier and the exact
-factorization graph, then names the source trace by `Classical.epsilon`.
+that result.  This file therefore records the quotient carrier, the candidate
+trace type, and the exact factorization graph without selecting a trace whose
+existence has not yet been established.
 
-The residue theorem, the fact that the selected trace satisfies the graph, and
-the comparison of this quotient model with native sheaf `H^1` are all
-result-layer statements.
+The residue theorem and the comparison of this quotient model with native
+sheaf `H^1` are result-layer statements.
 -/
 
 @[expose] public noncomputable section
@@ -93,19 +93,5 @@ def IsDualityTraceFromResiduesData
     (D : ResidueTracePresentationData k Ω V)
     (trace : DualityTraceFromResiduesHomData D) : Prop :=
   trace.comp (residueCohomologyQuotientMapData D) = D.residueSum
-
-/-- Hartshorne's residue trace, selected from its exact quotient-factorization
-graph.
-
-The later theorem layer proves that this selected linear map satisfies
-`IsDualityTraceFromResiduesData D`; no residue theorem or quotient-descent
-proof is required to name it here. -/
-def dualityTraceFromResiduesData
-    {k : Type u} [Field k]
-    {Ω : Type v} [AddCommGroup Ω] [Module k Ω]
-    {V : Type w} [AddCommGroup V] [Module k V]
-    (D : ResidueTracePresentationData k Ω V) :
-    DualityTraceFromResiduesHomData D :=
-  Classical.epsilon (IsDualityTraceFromResiduesData D)
 
 end LeanCategories.Homological
