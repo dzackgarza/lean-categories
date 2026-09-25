@@ -95,6 +95,7 @@ public import LeanCategories.Algebra.CayleyDerivationData
 public import LeanCategories.Algebra.OneDimensionalBorelActionData
 public import LeanCategories.Algebra.VermaModuleData
 public import LeanCategories.Algebra.VermaCentralCharacterData
+public import LeanCategories.Algebra.VermaAnnihilatorData
 public import LeanCategories.Algebra.MatrixFamilies
 public import LeanCategories.Algebra.MonoidAlgebra
 public import LeanCategories.Algebra.PureSubmodule
