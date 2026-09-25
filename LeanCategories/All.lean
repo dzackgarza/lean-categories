@@ -105,6 +105,7 @@ public import LeanCategories.Algebra.AdjointChevalleyGroupData
 public import LeanCategories.Algebra.ChevalleyReductionData
 public import LeanCategories.Algebra.ModuleRootElementData
 public import LeanCategories.Algebra.ModuleChevalleyGroupData
+public import LeanCategories.Algebra.SerreFiniteExtensionData
 public import LeanCategories.Algebra.MatrixFamilies
 public import LeanCategories.Algebra.MonoidAlgebra
 public import LeanCategories.Algebra.PureSubmodule
