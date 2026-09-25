@@ -98,7 +98,7 @@ def IsProjectiveBundleData
     (P : RelativeProjCandidateData X) : Prop :=
   ∃ S : RelativeProjHypothesis X,
     IsSymmetricAlgebraRelativeProjData E S ∧
-      IsRelativeProjData S P
+      P = relativeProjData S
 
 /-- The projective-space-bundle datum `P(E)=Proj Sym(E)`, selected by the exact
 definition-level specification above. -/
