@@ -233,8 +233,8 @@ Next 5 open units in source traversal order:
 
 ## FC12 — Definitions
 
-Delivered/directly reusable by mapping: **26/44**; pending realization: **18** (unmatched=18).
-Delivered/direct-reuse spans: `FC12-C01-U002`–`FC12-C01-U003`, `FC12-C01-U013`, `FC12-C02-U001`, `FC12-C02-U004`, `FC12-C02-U017`–`FC12-C02-U018`, `FC12-C02-U020`, `FC12-C03-U001`, `FC12-C03-U004`, `FC12-C03-U018`, `FC12-C03-U020`, `FC12-C04-U001`, `FC12-C04-U017`, `FC12-C05-U003`, `FC12-C05-U014`, `FC12-C07-U001`, `FC12-C08-U003`–`FC12-C08-U004`, `FC12-C08-U021`, `FC12-C09-U003`, `FC12-A-U003`–`FC12-A-U004`, `FC12-A-U006`, `FC12-B-U001`, `FC12-B-U005`.
+Delivered/directly reusable by mapping: **28/44**; pending realization: **16** (unmatched=16).
+Delivered/direct-reuse spans: `FC12-C01-U002`–`FC12-C01-U003`, `FC12-C01-U013`, `FC12-C02-U001`, `FC12-C02-U004`, `FC12-C02-U017`–`FC12-C02-U018`, `FC12-C02-U020`, `FC12-C03-U001`, `FC12-C03-U004`, `FC12-C03-U018`, `FC12-C03-U020`, `FC12-C04-U001`, `FC12-C04-U017`, `FC12-C05-U003`, `FC12-C05-U014`, `FC12-C06-U023`, `FC12-C07-U001`, `FC12-C08-U003`–`FC12-C08-U004`, `FC12-C08-U021`, `FC12-C09-U003`, `FC12-A-U003`–`FC12-A-U004`, `FC12-A-U006`–`FC12-A-U007`, `FC12-B-U001`, `FC12-B-U005`.
 Phase blocker: none
 
 Next 5 open units in source traversal order:
@@ -249,7 +249,7 @@ Next 5 open units in source traversal order:
 
 ## FC12 — Theorems
 
-Delivered/directly reusable by mapping: **0/194**; pending realization: **194** (mathlib=7, project-existing=4, unmatched=183).
+Delivered/directly reusable by mapping: **0/195**; pending realization: **195** (mathlib=7, project-existing=4, unmatched=184).
 Delivered/direct-reuse spans: none.
 Phase blocker: Sweep III is not complete corpus-wide: FC06, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
