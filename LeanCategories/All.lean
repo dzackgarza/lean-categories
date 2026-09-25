@@ -107,6 +107,7 @@ public import LeanCategories.Algebra.ModuleRootElementData
 public import LeanCategories.Algebra.ModuleChevalleyGroupData
 public import LeanCategories.Algebra.SerreFiniteExtensionData
 public import LeanCategories.Algebra.SerreLowerRamificationData
+public import LeanCategories.Algebra.CoxeterRootRescalingData
 public import LeanCategories.Algebra.MatrixFamilies
 public import LeanCategories.Algebra.MonoidAlgebra
 public import LeanCategories.Algebra.PureSubmodule
