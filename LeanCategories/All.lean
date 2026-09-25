@@ -100,6 +100,7 @@ public import LeanCategories.Algebra.ChevalleyRestrictionData
 public import LeanCategories.Algebra.HarishChandraData
 public import LeanCategories.Algebra.FormalWeightConvolutionData
 public import LeanCategories.Algebra.WeylFunctionData
+public import LeanCategories.Algebra.IntegralInnerReductionData
 public import LeanCategories.Algebra.MatrixFamilies
 public import LeanCategories.Algebra.MonoidAlgebra
 public import LeanCategories.Algebra.PureSubmodule
