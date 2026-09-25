@@ -22,12 +22,12 @@ cohomology modules.
 Constructing a cone and applying limit.lift would require the compatibility
 equations as proof arguments. Those equations come from the base-change and
 restriction results preceding the construction and belong to the result layer.
-Sweep III therefore keeps the finite-stage maps as data, characterizes the
-comparison map by its composites with the native limit projections, and names
-that map by Classical.epsilon.
+Sweep III therefore keeps the finite-stage maps as data and characterizes the
+comparison map by its composites with the native limit projections, without
+selecting a morphism whose existence has not yet been established.
 
-No compatibility theorem, cone construction, or claim that the selected map is
-an isomorphism is proved here.
+No compatibility theorem, cone construction, or isomorphism claim is made
+here.
 -/
 
 @[expose] public noncomputable section
@@ -73,17 +73,5 @@ def IsFormalCohomologyComparisonData
     (D : FormalCohomologyComparisonPresentationData R completedStalk)
     (φ : FormalCohomologyComparisonHomData D) : Prop :=
   ∀ n : ℕ, φ ≫ limit.π D.cohomologySystem (op n) = D.toStage n
-
-/-- Hartshorne's completion-to-formal-cohomology comparison map, selected from
-its finite-stage projection graph.
-
-The theorem layer proves that this selected morphism satisfies
-IsFormalCohomologyComparisonData D; Theorem 11.1 further proves that it is an
-isomorphism. -/
-def formalCohomologyComparisonData
-    {R : Type u} [CommRing R] {completedStalk : ModuleCat.{u} R}
-    (D : FormalCohomologyComparisonPresentationData R completedStalk) :
-    FormalCohomologyComparisonHomData D :=
-  Classical.epsilon (IsFormalCohomologyComparisonData D)
 
 end LeanCategories.Homological
