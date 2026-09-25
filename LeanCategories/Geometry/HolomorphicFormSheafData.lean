@@ -194,35 +194,6 @@ def IsHolomorphicPFormLinearSheafPresentationData
         (holomorphicPFormTransportSectionData (X := X) I p D h U
           ((D.scalar c).hom.app U s))
 
-/-- Definition-layer selection of the canonical additive/complex-linear
-presentation of `Ω_X^p` from its exact graph.
-
-No existence, additive-closure, scalar-closure or well-definedness theorem is
-asserted here.  Those are theorem-layer obligations. -/
-def holomorphicPFormLinearSheafPresentationData (p : ℕ) :
-    HolomorphicPFormLinearSheafPresentationData (X := X) := by
-  let fallback : HolomorphicPFormLinearSheafPresentationData (X := X) :=
-    { sheaf := smoothSheafAddCommGroup I 𝓘(ℂ, E) X E,
-      scalar := fun _ => 𝟙 _ }
-  letI : Nonempty (HolomorphicPFormLinearSheafPresentationData (X := X)) :=
-    ⟨fallback⟩
-  exact Classical.epsilon
-    (IsHolomorphicPFormLinearSheafPresentationData (X := X) I p)
-
-/-- The canonical additive sheaf underlying `Ω_X^p`, selected by the exact
-pointwise presentation above.  This is directly admissible as a coefficient
-object for Mathlib's native `CategoryTheory.Sheaf.H`. -/
-def holomorphicPFormAdditiveSheafData (p : ℕ) :
-    TopCat.Sheaf AddCommGrpCat.{u} (TopCat.of X) :=
-  (holomorphicPFormLinearSheafPresentationData (X := X) I p).sheaf
-
-/-- Complex scalar endomorphism on the selected additive holomorphic-form
-sheaf, as carried by the exact presentation. -/
-def holomorphicPFormScalarData (p : ℕ) (c : ℂ) :
-    holomorphicPFormAdditiveSheafData (X := X) I p ⟶
-      holomorphicPFormAdditiveSheafData (X := X) I p :=
-  (holomorphicPFormLinearSheafPresentationData (X := X) I p).scalar c
-
 /-- Native holomorphic cotangent bundle (`p = 1`). -/
 abbrev HolomorphicCotangentBundleData :=
   HolomorphicPFormBundleData (X := X) I 1
