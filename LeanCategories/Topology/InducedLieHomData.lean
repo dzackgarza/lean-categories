@@ -30,16 +30,16 @@ noncomputable section
 
 namespace LeanCategories.Topology
 
-open scoped Manifold
+open scoped ContDiff Manifold
 
 universe u v w u' v' w'
 
 variable
-  {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   {H : Type v} [TopologicalSpace H]
   {G : Type w} [TopologicalSpace G] [ChartedSpace H G] [Group G]
   {I : ModelWithCorners ℝ E H}
-  {E' : Type u'} [NormedAddCommGroup E'] [NormedSpace ℝ E']
+  {E' : Type u'} [NormedAddCommGroup E'] [NormedSpace ℝ E'] [CompleteSpace E']
   {H' : Type v'} [TopologicalSpace H']
   {G' : Type w'} [TopologicalSpace G'] [ChartedSpace H' G'] [Group G']
   {I' : ModelWithCorners ℝ E' H'}
@@ -53,7 +53,8 @@ homomorphism. The codomain rewrite uses only the monoid-homomorphism datum
 def inducedLieLinearMapData
     (F : ContMDiffMonoidMorphism I I' ∞ G G') :
     GroupLieAlgebra I G →ₗ[ℝ] GroupLieAlgebra I' G' := by
-  simpa only [map_one] using (mfderiv I I' F (1 : G)).toLinearMap
+  rw [← map_one F]
+  exact (mfderiv I I' F (1 : G)).toLinearMap
 
 /-- Intrinsic characterization of the induced Lie-algebra homomorphism:
 its underlying linear map is the differential at the identity. -/
