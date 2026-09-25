@@ -53,6 +53,7 @@ public import LeanCategories.Algebra.Concrete.Rings
 public import LeanCategories.Algebra.FractionalIdeals
 public import LeanCategories.Algebra.GlobalArtinData
 public import LeanCategories.Algebra.AbsoluteInertiaLimitData
+public import LeanCategories.Algebra.ArchimedeanReciprocityData
 public import LeanCategories.Algebra.ProcyclicExponentData
 public import LeanCategories.Algebra.ProfiniteLocalReciprocityData
 public import LeanCategories.Algebra.QuasiFiniteFrobeniusData
