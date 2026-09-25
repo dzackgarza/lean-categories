@@ -207,6 +207,26 @@ Each completed declaration is banked with explicit paths and source evidence. In
 - Kernel lane: one missing mathematical constructor per assignment, with dependent source IDs and an exact output type. First resolve that constructor's own reuse/import/reference search; only an independently audited irreducible residue may be transcribed or authored. A newly exposed substantial support layer becomes another prerequisite edge rather than expanding the current assignment. This lane still writes definitions only; it does not prove laws or supporting results. If the proposed representation requires theorem work, change the representation and keep the ready lane moving.
 - Integration lane: one Lean process for the entire shared host/repository. Transfer that slot directly between workers. Source drafting and planner work continue while compilation runs. Workers own focused validation and explicit-path commits; the coordinator consumes their evidence and checks the changed mathematical boundary once.
 
+### Subagent buckets for the definition tail
+
+The remaining open rows of the canonical selector (`action` other than `reuse` in `FOUNDATIONAL_DEFINITIONS.tsv`) are cleared by this workstream acting as prime: spawn one worker per bucket through `agents action=spawn` and keep the prime on coordination, integration and acceptance. This is the subagent case of the fleet's one-stream-per-repository rule, so the conditions below are what make it safe in one checkout, not advice.
+
+| Bucket | Open rows | Worker owns |
+| --- | --- | --- |
+| `tail-fc01` | FC01 ports (Chapters 5, 9, 12, 13, 17–19) | FC01 mapping record and the Lean files those rows realize |
+| `tail-fc11` | FC11 authored rows and its one port | FC11 mapping record and its `Lattices/` realization files |
+| `tail-fc12` | FC12 authored rows | FC12 mapping record and chapter notes, and its surface realization files |
+| `tail-misc` | FC03 U060, FC04 C05-U031, FC13 C07/C08, FC16 C11-U034, FC17 KER-U02698 | Those sources' mapping records and realization files |
+
+Recompute each bucket's rows from the selector when dispatching; the rows above are the 2026-09-25 population, not a frozen list.
+
+- **Prime keeps the shared surfaces.** `TODO.md`, `LeanCategories/All.lean`, `FOUNDATIONAL_DEFINITIONS.tsv`, `FOUNDATIONAL_FRONTIER.md` and the corpus status ledger are edited and regenerated only by the prime, after it integrates a worker's result. A worker that needs a new import in `All.lean` reports it.
+- **Disjoint paths.** Each dispatch names the exact files the worker may create or edit. A worker that finds it needs a file outside its bucket stops and reports the edge to the prime instead of editing it; a shared owner becomes a prime-scheduled prerequisite.
+- **One Lean process.** Every elaboration or build runs through `flock .tmp/lean.lock lake env lean <file>` (or `lake build` under the same lock), so only one Lean process runs on the host at a time. Reading, porting and drafting continue while waiting for the lock.
+- **Commits.** Workers commit only their own paths, by explicit pathspec, and never reset, checkout, stash, clean or switch branches.
+- **Acceptance stays with the prime.** A worker's report is evidence, not closure: the prime checks the realized declaration against its source clause, updates the shared surfaces, and only then treats the row as realized.
+- Kernel-lane rows (a missing constructor such as relative Proj behind FC12, or the coroot construction behind FC16) are dispatched as their own kernel assignment, not buried inside a bucket.
+
 ## Begin each continuation here
 
 Read [AGENTS.md — Start here: corpus execution](AGENTS.md#start-here-corpus-execution)
