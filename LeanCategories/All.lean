@@ -125,6 +125,7 @@ public import LeanCategories.Orders
 public import LeanCategories.Topology.BundleLocalCohomologyData
 public import LeanCategories.Topology.BoundaryPointingVectorData
 public import LeanCategories.Topology.ChartCoordinateVectorData
+public import LeanCategories.Topology.ClosedExactFormData
 public import LeanCategories.Topology.CoveringDimension
 public import LeanCategories.Topology.CoveringTerminology
 public import LeanCategories.Topology.DunceCap
