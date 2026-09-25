@@ -64,4 +64,63 @@ def IsHirzebruchProjectiveLineData
     letI := hFP
     IsProjectiveBundleData hirzebruchProjectiveLineModuleData P
 
+/-- The selected projective-line projective-bundle datum
+`P_{Spec ℂ}(O ⊕ O)`.
+
+As for the generic relative-Proj and projective-bundle owners, the existence
+theorem establishing `IsHirzebruchProjectiveLineData` is deliberately not
+proved in Sweep III. -/
+def hirzebruchProjectiveLineData :
+    RelativeProjCandidateData hirzebruchComplexPointData :=
+  Classical.epsilon IsHirzebruchProjectiveLineData
+
+/-- The selected tautological `O(1)` on the projective line. -/
+abbrev hirzebruchProjectiveLineTwistData :
+    hirzebruchProjectiveLineData.scheme.Modules :=
+  hirzebruchProjectiveLineData.twistOne
+
+/-- The rank-two bundle `O ⊕ O(n)` on the selected projective line. -/
+abbrev hirzebruchBundleModuleData (n : ℕ) :
+    hirzebruchProjectiveLineData.scheme.Modules :=
+  schemeModuleUnit hirzebruchProjectiveLineData.scheme ⊞
+    schemeModuleTensorPower hirzebruchProjectiveLineTwistData n
+
+/-- The canonical line quotient `O ⊕ O(n) → O` whose projectivized
+quotient section is the distinguished negative section of `F_n`. -/
+def hirzebruchNegativeSectionQuotientData (n : ℕ) :
+    hirzebruchBundleModuleData n ⟶
+      schemeModuleUnit hirzebruchProjectiveLineData.scheme :=
+  biprod.fst
+
+/-- Exact projective-bundle specification for
+`F_n = P_{P¹}(O ⊕ O(n))`.
+
+The noetherian/local-freeness/finite-presentation hypotheses needed by the
+generic projective-bundle owner remain propositionally quantified.  Proving
+them is result work, not part of this definition-level construction. -/
+def IsHirzebruchSurfaceBundleData (n : ℕ)
+    (P : RelativeProjCandidateData hirzebruchProjectiveLineData.scheme) : Prop :=
+  ∃ (hN : AlgebraicGeometry.IsNoetherian hirzebruchProjectiveLineData.scheme)
+      (hLF : (hirzebruchBundleModuleData n).IsLocallyFree)
+      (hFP : (hirzebruchBundleModuleData n).IsFinitePresentation),
+    letI := hN
+    letI := hLF
+    letI := hFP
+    IsProjectiveBundleData (hirzebruchBundleModuleData n) P
+
+/-- The selected Hirzebruch-surface projective-bundle datum
+`P_{P¹}(O ⊕ O(n))`. -/
+def hirzebruchSurfaceBundleData (n : ℕ) :
+    RelativeProjCandidateData hirzebruchProjectiveLineData.scheme :=
+  Classical.epsilon (IsHirzebruchSurfaceBundleData n)
+
+/-- The scheme underlying the selected Hirzebruch-surface bundle. -/
+abbrev hirzebruchSurfaceSchemeData (n : ℕ) : Scheme :=
+  (hirzebruchSurfaceBundleData n).scheme
+
+/-- The structural projection `F_n → P¹`. -/
+def hirzebruchSurfaceProjectionData (n : ℕ) :
+    hirzebruchSurfaceSchemeData n ⟶ hirzebruchProjectiveLineData.scheme :=
+  (hirzebruchSurfaceBundleData n).projection
+
 end LeanCategories.Schemes
