@@ -89,6 +89,7 @@ public import LeanCategories.Algebra.SquarefreePart
 public import LeanCategories.Algebra.Polynomial
 public import LeanCategories.Algebra.ZariskiRing
 public import LeanCategories.Algebra.PolynomialPowerSeries
+public import LeanCategories.Algebra.PBWFiltrationData
 public import LeanCategories.Algebra.MatrixFamilies
 public import LeanCategories.Algebra.MonoidAlgebra
 public import LeanCategories.Algebra.PureSubmodule
