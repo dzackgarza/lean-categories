@@ -53,4 +53,19 @@ abbrev AreBrauerEquivalent
     (K : Type u) [Field K] (A B : CSA K) : Prop :=
   IsBrauerEquivalent A B
 
+/-- Candidate data for the Wedderburn division-ring part of a central simple
+algebra (Dummit--Foote FC01-C17-U082).  Existence and uniqueness are the
+Wedderburn--Artin results and are intentionally not selected here. -/
+structure DivisionPartCandidateData
+    (F : Type u) [Field F] (A : Type u) [Ring A] [Algebra F A] where
+  n : ℕ
+  hn : n ≠ 0
+  divisionRing : Type u
+  instDivisionRing : DivisionRing divisionRing
+  instAlgebra : Algebra F divisionRing
+  matrixEquiv : A ≃ₐ[F] Matrix (Fin n) (Fin n) divisionRing
+
+attribute [instance] DivisionPartCandidateData.instDivisionRing
+  DivisionPartCandidateData.instAlgebra
+
 end LeanCategories.Algebra
