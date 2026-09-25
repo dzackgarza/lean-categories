@@ -161,6 +161,7 @@ public import LeanCategories.Homological.AssociatedOmegaSpectrumData
 public import LeanCategories.Homological.PrespectrumHomotopyData
 public import LeanCategories.Homological.SpacePuppeData
 public import LeanCategories.Homological.SuspensionSumData
+public import LeanCategories.Homological.TateLowDegreeClassData
 public import LeanCategories.Homological.CyclicCategoryData
 public import LeanCategories.Homological.DGCyclicHomology
 public import LeanCategories.Homological.AlgebraicDeRham
