@@ -233,8 +233,8 @@ Next 5 open units in source traversal order:
 
 ## FC12 — Definitions
 
-Delivered/directly reusable by mapping: **23/44**; pending realization: **21** (unmatched=21).
-Delivered/direct-reuse spans: `FC12-C01-U002`–`FC12-C01-U003`, `FC12-C01-U013`, `FC12-C02-U004`, `FC12-C02-U017`–`FC12-C02-U018`, `FC12-C03-U001`, `FC12-C03-U004`, `FC12-C03-U020`, `FC12-C04-U001`, `FC12-C04-U017`, `FC12-C05-U003`, `FC12-C05-U014`, `FC12-C07-U001`, `FC12-C08-U003`–`FC12-C08-U004`, `FC12-C08-U021`, `FC12-C09-U003`, `FC12-A-U003`–`FC12-A-U004`, `FC12-A-U006`, `FC12-B-U001`, `FC12-B-U005`.
+Delivered/directly reusable by mapping: **24/44**; pending realization: **20** (unmatched=20).
+Delivered/direct-reuse spans: `FC12-C01-U002`–`FC12-C01-U003`, `FC12-C01-U013`, `FC12-C02-U004`, `FC12-C02-U017`–`FC12-C02-U018`, `FC12-C03-U001`, `FC12-C03-U004`, `FC12-C03-U018`, `FC12-C03-U020`, `FC12-C04-U001`, `FC12-C04-U017`, `FC12-C05-U003`, `FC12-C05-U014`, `FC12-C07-U001`, `FC12-C08-U003`–`FC12-C08-U004`, `FC12-C08-U021`, `FC12-C09-U003`, `FC12-A-U003`–`FC12-A-U004`, `FC12-A-U006`, `FC12-B-U001`, `FC12-B-U005`.
 Phase blocker: none
 
 Next 5 open units in source traversal order:

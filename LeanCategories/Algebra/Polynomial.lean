@@ -45,7 +45,7 @@ def IsRemainder {σ : Type*} (m : MonomialOrder σ) {R : Type*} [CommRing R]
 The first divisor whose leading monomial divides the current leading monomial
 is used; if no divisor applies, the current leading term is moved to the
 remainder accumulator. -/
-def OrderedDivisionStep {σ : Type*} (m : MonomialOrder σ) {k : Type*} [Field k]
+noncomputable def OrderedDivisionStep {σ : Type*} (m : MonomialOrder σ) {k : Type*} [Field k]
     {n : ℕ} (b : Fin n → MvPolynomial σ k) :
     (MvPolynomial σ k × MvPolynomial σ k) →
       (MvPolynomial σ k × MvPolynomial σ k) → Prop :=
@@ -74,7 +74,7 @@ structure OrderedDivisionState (σ : Type*) (k : Type*) [Field k] (n : ℕ) wher
   remainder : MvPolynomial σ k
 
 /-- The initial state of ordered multivariate division. -/
-def orderedDivisionInitialState {σ : Type*} {k : Type*} [Field k] {n : ℕ}
+noncomputable def orderedDivisionInitialState {σ : Type*} {k : Type*} [Field k] {n : ℕ}
     (f : MvPolynomial σ k) : OrderedDivisionState σ k n where
   current := f
   quotients := 0
@@ -135,7 +135,7 @@ procedure applied to `f` and the ordered divisor family `b`.  This is the
 definition-level relation underlying the ordered division algorithm FC01-C09-U052;
 FC01-C09-U057 is only the notation `f ≡ r mod G` for this output relation.
 Termination and comparison with Gröbner normal forms are theorem-level facts. -/
-def IsOrderedRemainder {σ : Type*} (m : MonomialOrder σ) {k : Type*} [Field k]
+noncomputable def IsOrderedRemainder {σ : Type*} (m : MonomialOrder σ) {k : Type*} [Field k]
     {n : ℕ} (b : Fin n → MvPolynomial σ k)
     (f r : MvPolynomial σ k) : Prop :=
   Relation.ReflTransGen (m.OrderedDivisionStep b) (f, 0) (0, r)
@@ -169,7 +169,7 @@ end IsGroebnerBasis
 
 /-- The ordered divisor family obtained by suppressing one positional basis
 entry. Repeated equal polynomials at other positions remain distinct. -/
-def orderedDivisionWithout {σ : Type*} {k : Type*} [Field k] {n : ℕ}
+noncomputable def orderedDivisionWithout {σ : Type*} {k : Type*} [Field k] {n : ℕ}
     (b : Fin n → MvPolynomial σ k) (i : Fin n) : Fin n → MvPolynomial σ k :=
   Function.update b i 0
 
