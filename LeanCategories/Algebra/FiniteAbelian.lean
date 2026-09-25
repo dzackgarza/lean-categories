@@ -48,6 +48,16 @@ abbrev OfOrder (n : ℕ) := {t : FiniteAbelianType // t.order = n}
 
 end FiniteAbelianType
 
+/-- The admissible invariant-factor sequences for finite abelian groups of
+order `n`: nontrivial factors in Dummit--Foote divisibility order whose
+product is `n`.
+
+This is the construction/data part of FC01-C05-U010.  The assertion that these
+sequences classify isomorphism classes of finite abelian groups is a result and
+is deliberately not bundled into the Sweep-III definition. -/
+abbrev FiniteAbelianClassificationSequence (n : ℕ) :=
+  FiniteAbelianType.OfOrder n
+
 
 /-- Elementary-divisor data for a finite abelian group.  Each factor is a
 nontrivial prime power; order is irrelevant at the level of the mathematical
