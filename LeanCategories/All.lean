@@ -97,6 +97,7 @@ public import LeanCategories.ForMathlib.AddSubgroupCompletion
 public import LeanCategories.ForMathlib.AdicCompletionUniform
 public import LeanCategories.ForMathlib.BicategoryHomotopyCategory
 public import LeanCategories.ForMathlib.BicategoryCoarseHomotopyCategoryData
+public import LeanCategories.ForMathlib.DuskinNerveData
 public import LeanCategories.ForMathlib.DenseIntegralCompletion
 public import LeanCategories.ForMathlib.DemocraticArfInvariant
 public import LeanCategories.ForMathlib.TautologicalCircleBundle
