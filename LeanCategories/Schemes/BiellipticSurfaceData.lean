@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 Definition-level realization of Beauville FC12-C06-U023.
 
 Beauville defines a bielliptic surface as a quotient (E × F) / G for
-elliptic curves E,F, with the finite group G acting by translations on E and
+elliptic curves E,F, with G acting by translations on E and
 with F/G isomorphic to P¹.
 
 Sweep III does not construct finite-group quotients. Instead this file states
@@ -109,7 +109,7 @@ def IsBiellipticSurfaceData (S : SmoothProjectiveComplexSurface) : Prop :=
   ∃ (E F : AbelianVariety ℂ),
     IsEllipticCurveData E ∧
       IsEllipticCurveData F ∧
-      ∃ (G : Type) (_ : Group G) (_ : Fintype G)
+      ∃ (G : Type) (_ : Group G)
         (ρE : GroupActionHomData G E.toOver)
         (ρF : GroupActionHomData G F.toOver)
         (q : E.toOver ⊗ F.toOver ⟶ smoothProjectiveSurfaceOverData S)
