@@ -112,4 +112,35 @@ def IsPointBlowupData
       B.strictTransform C =
         closure (B.projection.base ⁻¹' (C \ ({p} : Set S.scheme)))
 
+/-- Beauville II.16's definition of an exceptional curve on a smooth
+projective complex surface: it is the exceptional curve of a blow-up of
+another smooth surface at a point.
+
+The target surface, center, blow-down morphism, exceptional subscheme, and
+strict-transform assignment are existential data.  The condition that they
+really satisfy the blow-up graph is exactly `IsPointBlowupData`; no
+contraction or Castelnuovo theorem is used here. -/
+def IsExceptionalCurveData
+    (S : SmoothProjectiveComplexSurface) (E : Set S.scheme) : Prop :=
+  ∃ (T : SmoothProjectiveComplexSurface) (p : T.scheme)
+    (projection : S.scheme ⟶ T.scheme)
+    (exceptionalScheme : Scheme)
+    (exceptionalι : exceptionalScheme ⟶ S.scheme)
+    (strictTransform : Set T.scheme → Set S.scheme),
+    let B : PointBlowupCandidateData T p := {
+      surface := S
+      projection := projection
+      exceptionalScheme := exceptionalScheme
+      exceptionalι := exceptionalι
+      strictTransform := strictTransform
+    }
+    IsPointBlowupData T p B ∧ Set.range exceptionalι.base = E
+
+/-- The definition-level predicate that a surface contains no exceptional
+curve.  Beauville's assertion that this is equivalent to minimality is
+result-layer content. -/
+def HasNoExceptionalCurveData
+    (S : SmoothProjectiveComplexSurface) : Prop :=
+  ∀ E : Set S.scheme, ¬ IsExceptionalCurveData S E
+
 end LeanCategories.Schemes
