@@ -22,6 +22,8 @@ content.
 
 @[expose] public section
 
+noncomputable section
+
 namespace LeanCategories.Homological
 
 universe u v w
@@ -41,5 +43,37 @@ theorem identifying this quotient with `G(F/E)^a` is not constructor data. -/
 abbrev formationNormQuotientData
     (A_E : Type w) [CommGroup A_E] (N : Subgroup A_E) :=
   A_E ⧸ N
+
+/-- Characterization of Serre's finite reciprocity map as the inverse of the
+class-formation map `theta`.
+
+The two equations are result content: this predicate states them but does not
+prove them for the selected map. -/
+def IsFormationReciprocityInverseData
+    {GAb NormQuotient : Type*}
+    (theta : GAb → NormQuotient)
+    (reciprocity : NormQuotient → GAb) : Prop :=
+  Function.LeftInverse reciprocity theta ∧
+    Function.RightInverse reciprocity theta
+
+/-- Serre's finite reciprocity function, selected by the source
+characterization that it is inverse to the supplied class-formation map
+`theta`.
+
+No inverse law, homomorphism property, or isomorphism structure is bundled
+into this Sweep-III value. -/
+def formationReciprocityInverseData
+    {GAb NormQuotient : Type*} [Inhabited GAb]
+    (theta : GAb → NormQuotient) : NormQuotient → GAb := by
+  letI : Nonempty (NormQuotient → GAb) := ⟨fun _ => default⟩
+  exact Classical.epsilon (IsFormationReciprocityInverseData theta)
+
+/-- Serre's norm-residue/reciprocity symbol `{a,F/E}` relative to the supplied
+finite class-formation map `theta`: apply its selected inverse to the norm
+class of `a`. -/
+def formationReciprocitySymbolData
+    {GAb NormQuotient : Type*} [Inhabited GAb]
+    (theta : GAb → NormQuotient) (a : NormQuotient) : GAb :=
+  formationReciprocityInverseData theta a
 
 end LeanCategories.Homological
