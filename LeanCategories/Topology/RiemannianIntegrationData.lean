@@ -53,4 +53,19 @@ def riemannianVolume
     (g : RiemannianMetric) : ℝ :=
   integralTopForm (volumeForm g)
 
+/-- The orientation-free version of Lee's Riemannian function integral, using
+the Riemannian density instead of the oriented volume form.
+
+The notation `dV_g` in FC08-C16-U065 names `riemannianDensity g`; this function
+records the displayed integral formula and no comparison with the oriented
+volume-form presentation. -/
+def riemannianDensityFunctionIntegral
+    {RiemannianMetric CompactlySupportedContinuousFunction Density : Type*}
+    (riemannianDensity : RiemannianMetric → Density)
+    (functionTimesDensity : CompactlySupportedContinuousFunction → Density → Density)
+    (integralDensity : Density → ℝ)
+    (g : RiemannianMetric)
+    (f : CompactlySupportedContinuousFunction) : ℝ :=
+  integralDensity (functionTimesDensity f (riemannianDensity g))
+
 end LeanCategories.Topology
