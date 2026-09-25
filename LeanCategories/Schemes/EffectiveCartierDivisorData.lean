@@ -19,11 +19,12 @@ non-zero-divisor generators of the associated ideal sheaf.  That ideal sheaf
 defines the associated closed subscheme through Mathlib's native
 `Scheme.IdealSheafData.subscheme` construction.
 
-Sweep III records these clauses as predicates and selects the ideal-sheaf
-datum by its local principal-generator specification.  Compatibility of the
-local generators, local principality, codimension statements, and the
-bijection with locally principal closed subschemes are result-layer content
-(FC06-C02-U199) and are not proved here.
+Sweep III records these clauses as predicates.  Compatibility of the local
+generators and existence of the associated ideal sheaf are part of the later
+locally-principal closed-subscheme result (FC06-C02-U199), so no ideal sheaf
+is selected before that result is available.  Local principality, codimension
+statements, and the bijection with locally principal closed subschemes likewise
+remain result-layer content.
 -/
 
 @[expose] public noncomputable section
@@ -71,17 +72,6 @@ def IsAssociatedEffectiveCartierIdealData (D : CartierDivisorData X)
       (f : Additive (TotalQuotientUnitSectionsData X U)),
       IsRegularCartierLocalEquationData D U a f ∧
         I.ideal ⟨U, hU⟩ = Ideal.span {a}
-
-/-- The ideal-sheaf datum associated to `D`, selected by its local
-principal-generator specification.  For an effective Cartier divisor,
-FC06-C02-U199 supplies the later existence/specification theorem. -/
-def associatedEffectiveCartierIdealData (D : CartierDivisorData X) :
-    X.IdealSheafData :=
-  Classical.epsilon (IsAssociatedEffectiveCartierIdealData D)
-
-/-- The closed subscheme associated to an effective Cartier divisor. -/
-def associatedEffectiveCartierSubschemeData (D : CartierDivisorData X) : Scheme :=
-  (associatedEffectiveCartierIdealData D).subscheme
 
 /-- Graph form of the associated closed-subscheme construction, retaining the
 ideal-sheaf specification propositionally. -/
