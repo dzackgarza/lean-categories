@@ -103,6 +103,7 @@ public import LeanCategories.Algebra.WeylFunctionData
 public import LeanCategories.Algebra.IntegralInnerReductionData
 public import LeanCategories.Algebra.AdjointChevalleyGroupData
 public import LeanCategories.Algebra.ChevalleyReductionData
+public import LeanCategories.Algebra.ModuleRootElementData
 public import LeanCategories.Algebra.MatrixFamilies
 public import LeanCategories.Algebra.MonoidAlgebra
 public import LeanCategories.Algebra.PureSubmodule
