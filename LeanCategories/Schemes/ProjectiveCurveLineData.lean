@@ -19,9 +19,8 @@ the tangent subspace of the curve.
 The current projective-space API supplies spans and projective subspaces, but
 does not supply the scheme-theoretic embedded-tangent comparison. Sweep III
 therefore keeps that already source-defined tangent-space assignment as
-presentation data and selects the tangent line from Hartshorne's exact graph.
-Existence, uniqueness, and identification of the selected line remain result
-content.
+presentation data and records Hartshorne's exact tangent-line graph without
+selecting a line whose existence has not been established.
 -/
 
 @[expose] public noncomputable section
@@ -71,16 +70,5 @@ def IsProjectiveCurveTangentLineData
   P ∈ L ∧
     Module.finrank k L.submodule = 2 ∧
       D.lineTangent L P hP = D.curveTangent P hP
-
-/-- The tangent line selected from Hartshorne's defining graph.
-Existence and uniqueness are theorem-layer facts and are not proved here. -/
-def projectiveCurveTangentLineData
-    {curve : Set (ℙ k V)}
-    {T : ℙ k V → Type w}
-    [∀ P, AddCommGroup (T P)] [∀ P, Module k (T P)]
-    (D : ProjectiveCurveTangentPresentationData k V curve T)
-    (P : ℙ k V) (hP : P ∈ curve) :
-    Projectivization.Subspace k V :=
-  Classical.epsilon (IsProjectiveCurveTangentLineData k V D P hP)
 
 end LeanCategories.Schemes
