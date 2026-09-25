@@ -196,6 +196,7 @@ public import LeanCategories.Schemes.BiellipticSurfaceData
 public import LeanCategories.Schemes.QuasiBiellipticSurfaceData
 public import LeanCategories.Schemes.HirzebruchSurfaceBundleData
 public import LeanCategories.Geometry.HolomorphicFormSheafData
+public import LeanCategories.Geometry.HolomorphicFormPullbackData
 public import LeanCategories.Topology.DeltaComplex
 public import LeanCategories.Topology.ComplexOfSpacesData
 public import LeanCategories.Topology.RealGrassmannian

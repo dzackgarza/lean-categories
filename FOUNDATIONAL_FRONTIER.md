@@ -209,15 +209,15 @@ Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC11-C20-U064` | Definition / construction / notation | — | ready by recorded prerequisites | unmatched; author |
 | `FC11-A-U052` | Construction / comparison | — | ready by recorded prerequisites | unmatched; author |
 | `FC11-B-U003` | Definition / construction / notation | — | ready by recorded prerequisites | unmatched; author |
 | `FC11-B-U016` | Definition / construction / notation | — | ready by recorded prerequisites | unmatched; author |
 | `FC11-B-U024` | Definition / construction / notation | — | ready by recorded prerequisites | unmatched; author |
+| `FC11-B-U042` | Definition / construction / notation | — | ready by recorded prerequisites | unmatched; author |
 
 ## FC11 — Theorems
 
-Delivered/directly reusable by mapping: **104/866**; pending realization: **762** (mathlib=29, project-existing=15, reference-port=33, unmatched=685).
+Delivered/directly reusable by mapping: **104/867**; pending realization: **763** (mathlib=29, project-existing=16, reference-port=33, unmatched=685).
 Delivered/direct-reuse spans: `FC11-C01-U005`, `FC11-C01-U009`, `FC11-C01-U012`, `FC11-C01-U014`–`FC11-C01-U015`, `FC11-C01-U018`, `FC11-C01-U023`, `FC11-C01-U030`–`FC11-C01-U031`, `FC11-C01-U035`–`FC11-C01-U036`, `FC11-C01-U045`, `FC11-C01-U054`–`FC11-C01-U055`, `FC11-C01-U057`–`FC11-C01-U059`, `FC11-C01-U061`, `FC11-C01-U063`–`FC11-C01-U064`, `FC11-C01-U067`–`FC11-C01-U068`, `FC11-C01-U071`, `FC11-C01-U073`–`FC11-C01-U074`, `FC11-C01-U076`, `FC11-C01-U079`, `FC11-C01-U081`, `FC11-C01-U083`, `FC11-C01-U085`, `FC11-C01-U087`–`FC11-C01-U089`, `FC11-C01-U092`–`FC11-C01-U093`, `FC11-C01-U095`–`FC11-C01-U096`, `FC11-C01-U099`, `FC11-C01-U103`, `FC11-C01-U115`–`FC11-C01-U117`, `FC11-C01-U122`, `FC11-C01-U126`, `FC11-C01-U128`, `FC11-C01-U137`, `FC11-C01-U153`, `FC11-C02-U003`, `FC11-C02-U005`, `FC11-C02-U007`, `FC11-C03-U007`, `FC11-C04-U013`, `FC11-C04-U059`, `FC11-C05-U013`, `FC11-C05-U035`, `FC11-C06-U017`, `FC11-C06-U029`, `FC11-C06-U031`, `FC11-C06-U034`, `FC11-C06-U036`, `FC11-C06-U038`–`FC11-C06-U041`, `FC11-C06-U053`, `FC11-C06-U056`, `FC11-C07-U007`, `FC11-C07-U018`, `FC11-C08-U001`, `FC11-C08-U003`, `FC11-C08-U005`, `FC11-C14-U009`, `FC11-C14-U011`, `FC11-C14-U022`, `FC11-C17-U036`, `FC11-C18-U006`, `FC11-C18-U008`, `FC11-C18-U010`, `FC11-C18-U013`, `FC11-C18-U021`, `FC11-C18-U023`, `FC11-C19-U004`, `FC11-C19-U007`, `FC11-C21-U002`–`FC11-C21-U003`, `FC11-C21-U014`, `FC11-C21-U024`, `FC11-A-U008`, `FC11-A-U012`, `FC11-A-U018`, `FC11-A-U020`, `FC11-A-U022`, `FC11-A-U026`, `FC11-A-U030`–`FC11-A-U031`, `FC11-A-U034`–`FC11-A-U036`, `FC11-A-U041`–`FC11-A-U043`, `FC11-A-U046`–`FC11-A-U047`, `FC11-C-U015`.
 Phase blocker: Sweep III is not complete corpus-wide: FC06, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
