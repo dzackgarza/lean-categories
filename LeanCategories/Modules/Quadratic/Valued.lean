@@ -15,5 +15,6 @@ public import LeanCategories.Modules.Quadratic.Valued.Framed
 public import LeanCategories.Modules.Quadratic.Valued.Presented
 public import LeanCategories.Modules.Quadratic.Valued.SemiDiscriminantData
 public import LeanCategories.Modules.Quadratic.Valued.WittRingData
+public import LeanCategories.Modules.Quadratic.Valued.RationalWittResidueData
 
 @[expose] public section
