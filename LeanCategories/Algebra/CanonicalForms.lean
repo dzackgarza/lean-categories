@@ -6,6 +6,7 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
+public import Mathlib.LinearAlgebra.Matrix.Reindex
 public import Mathlib.RingTheory.Polynomial.Basic
 public import LeanCategories.Algebra.Polynomial
 
@@ -73,5 +74,20 @@ def rationalCanonicalMatrix {r : ℕ} (d : InvariantFactorData R r) :
     Matrix (invariantFactorIndex R d) (invariantFactorIndex R d) R :=
   Matrix.blockDiagonal' fun i =>
     companionMatrix R ⟨d.monic i, d.nonconstant i⟩
+
+/-- `d` is invariant-factor data for the square matrix `A` when, after
+reindexing the companion-block matrix determined by `d` to the index set of
+`A`, it is similar to `A`.
+
+This is the definition-level content of Dummit--Foote FC01-C12-U031.  The
+existence and uniqueness of such data are the rational-canonical-form theorem
+and remain result-layer obligations.  In particular this predicate introduces
+no proof-valued constructor for a chosen canonical form. -/
+def AreInvariantFactorsOfMatrix {n r : ℕ} (A : Matrix (Fin n) (Fin n) R)
+    (d : InvariantFactorData R r) : Prop :=
+  ∃ e : invariantFactorIndex R d ≃ Fin n,
+    ∃ P Q : Matrix (Fin n) (Fin n) R,
+      P * Q = 1 ∧ Q * P = 1 ∧
+        Q * A * P = Matrix.reindex e e (rationalCanonicalMatrix R d)
 
 end LeanCategories.Algebra
