@@ -124,6 +124,7 @@ public import LeanCategories.Topology.BundleLocalCohomologyData
 public import LeanCategories.Topology.CoveringDimension
 public import LeanCategories.Topology.CoveringTerminology
 public import LeanCategories.Topology.DunceCap
+public import LeanCategories.Topology.HomotopyBasepointData
 public import LeanCategories.Topology.LocallyMetrizable
 public import LeanCategories.Topology.LinearGraph
 public import LeanCategories.Topology.GraphReduction
@@ -138,6 +139,9 @@ public import LeanCategories.Schemes.FormalCompletionData
 public import LeanCategories.Topology.DeltaComplex
 public import LeanCategories.Topology.RealGrassmannian
 public import LeanCategories.Homological
+public import LeanCategories.Homological.PrespectrumHomotopyData
+public import LeanCategories.Homological.SpacePuppeData
+public import LeanCategories.Homological.SuspensionSumData
 public import LeanCategories.Homological.CyclicCategoryData
 public import LeanCategories.Homological.DGCyclicHomology
 public import LeanCategories.Homological.AlgebraicDeRham
