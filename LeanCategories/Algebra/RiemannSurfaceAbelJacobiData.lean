@@ -18,10 +18,15 @@ ofCurveAmbient,ofCurveImpl}`. The intrinsic dual replaces its coordinate
 basis. Its basepoint normalization and integral-period quotient are retained.
 
 The pinned reference constructs its single-form path-integral `LinearMap` by
-proving additivity and scalar compatibility. Those are result-layer facts, so
-Sweep III cannot reproduce that construction or form the Jacobian quotient.
-This file therefore records only endpoint-constrained analytic arcs and their
-raw integral functions. No Abel--Jacobi map into the Jacobian is asserted.
+proving additivity and scalar compatibility. Those are result-layer facts.
+Sweep III therefore does not select a dual-valued path integral or a function
+from the curve to the Jacobian.
+
+Instead, after the raw Jacobian quotient is available, this file records the
+source map by its exact graph: a quotient class is related to a point when it
+has a representative dual functional whose values are the path integrals from
+the basepoint to that point. Existence, path independence, uniqueness, and
+functionality of this graph remain result-layer statements.
 -/
 
 @[expose] public noncomputable section
@@ -74,5 +79,26 @@ def curveAbelJacobiLiftFunctionData {x₀ x : X}
   fun form =>
     curvePathIntegralFunctionData γ form -
       curvePathIntegralFunctionData γ₀ form
+
+/-- Exact graph of the Abel--Jacobi construction at a point.
+
+The quotient class `q` represents the source value `α(x)` precisely when it
+has a dual-functional representative given by integration along an analytic
+arc from the fixed basepoint `x₀` to `x`. No such representative is selected
+here. -/
+def IsCurveAbelJacobiClassData (x₀ x : X)
+    (q : CurveJacobianQuotientData X x₀) : Prop :=
+  ∃ φ : CurveJacobianDualData X,
+    IsCurvePathIntegralFunctionalData x₀ x φ ∧
+      curveJacobianClassData X x₀ φ = q
+
+/-- Graph predicate for a proposed Abel--Jacobi function.
+
+This does not assert that such a function exists. Once Sweep IV proves the
+pointwise graph is inhabited and single-valued, the source Abel--Jacobi map is
+the unique function satisfying this predicate. -/
+def IsCurveAbelJacobiMapData (x₀ : X)
+    (α : X → CurveJacobianQuotientData X x₀) : Prop :=
+  ∀ x, IsCurveAbelJacobiClassData x₀ x (α x)
 
 end LeanCategories.Algebra
