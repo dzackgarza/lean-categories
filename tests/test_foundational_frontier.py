@@ -221,26 +221,36 @@ class DefinitionReadinessTest(unittest.TestCase):
 
     def test_current_result_units_do_not_become_definition_prerequisites(self) -> None:
         corpus = REPO_ROOT / "corpus"
-        cases = (
-            ("FC10", "foundational-corpus-units-fc10-serre-local-fields.md", "FC10-C04-U002"),
-            ("FC10", "foundational-corpus-units-fc10-serre-local-fields.md", "FC10-C04-U005"),
-            ("FC17", "foundational-corpus-units-fc17-kerodon.md", "FC17-KER-U02698"),
+        fc10_units = frontier.parse_catalogue(
+            corpus / "foundational-corpus-units-fc10-serre-local-fields.md"
         )
-        source_indexes = {}
-        for source_id, filename, unit_id in cases:
-            if source_id not in source_indexes:
-                units = frontier.parse_catalogue(corpus / filename)
-                source_indexes[source_id] = {unit.unit_id: unit for unit in units}
-            catalogue = source_indexes[source_id]
+        fc10 = {unit.unit_id: unit for unit in fc10_units}
+        for unit_id in ("FC10-C04-U002", "FC10-C04-U005"):
+            self.assertTrue(self.mappings[unit_id].realized)
             self.assertEqual(
                 frontier.unit_blockers(
                     "Definitions",
-                    catalogue[unit_id],
+                    fc10[unit_id],
                     self.mappings,
-                    catalogue,
+                    fc10,
                 ),
-                ("Sweep-IV result layer",),
+                (),
             )
+
+        fc17_units = frontier.parse_catalogue(
+            corpus / "foundational-corpus-units-fc17-kerodon.md"
+        )
+        fc17 = {unit.unit_id: unit for unit in fc17_units}
+        self.assertFalse(self.mappings["FC17-KER-U02698"].realized)
+        self.assertEqual(
+            frontier.unit_blockers(
+                "Definitions",
+                fc17["FC17-KER-U02698"],
+                self.mappings,
+                fc17,
+            ),
+            ("Sweep-IV result layer",),
+        )
 
 
 if __name__ == "__main__":
