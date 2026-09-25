@@ -87,4 +87,18 @@ def deRhamCohomologyCandidateData (p : ℕ) :
 abbrev DeRhamCohomologyData (p : ℕ) : Type u :=
   (deRhamCohomologyCandidateData Form d p).carrier
 
+/-- Lee's cohomology class `[ω]` of a closed p-form. -/
+def deRhamCohomologyClass
+    (p : ℕ) (ω : deRhamClosedForms Form d p) :
+    DeRhamCohomologyData Form d p :=
+  (deRhamCohomologyCandidateData Form d p).classOf ω
+
+/-- Two closed p-forms are cohomologous when they determine the same de Rham
+cohomology class.  The exact-difference characterization is part of
+`IsDeRhamCohomologyData`, not a proof bundled into this definition. -/
+def AreDeRhamCohomologous
+    (p : ℕ) (ω η : deRhamClosedForms Form d p) : Prop :=
+  deRhamCohomologyClass Form d p ω =
+    deRhamCohomologyClass Form d p η
+
 end LeanCategories.Topology
