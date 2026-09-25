@@ -70,4 +70,60 @@ def mappingCylinderMkTarget {X : Type u} {Y : Type v}
     (y : Y) : MappingCylinder f :=
   Quotient.mk _ (.inr y)
 
+/-- The target-end inclusion `Y → M_f` as a continuous map. -/
+def mappingCylinderTargetInclusion {X : Type u} {Y : Type v}
+    [TopologicalSpace X] [TopologicalSpace Y] (f : C(X, Y)) :
+    C(Y, MappingCylinder f) where
+  toFun := mappingCylinderMkTarget f
+  continuous_toFun := continuous_quotient_mk'.comp continuous_inr
+
+/-- Evaluation of a mapping-cylinder classifier at the target end. -/
+def mappingCylinderClassValue {X : Type u} {Y : Type v}
+    [TopologicalSpace X] [TopologicalSpace Y] (f : C(X, Y)) :
+    MappingCylinderClass X Y → Y
+  | .target y => y
+  | .cylinder p => f p.1
+
+/-- The representative-level projection of a mapping cylinder onto its target
+end.  It sends the whole cylinder line over `x` to `f x` and is the
+identity on the target summand. -/
+def mappingCylinderProjectionPre {X : Type u} {Y : Type v}
+    [TopologicalSpace X] [TopologicalSpace Y] (f : C(X, Y))
+    (z : MappingCylinderPre X Y) : Y :=
+  mappingCylinderClassValue f (mappingCylinderClassify f z)
+
+/-- Hatcher's canonical projection `M_f → Y` onto the target end. -/
+def mappingCylinderProjection {X : Type u} {Y : Type v}
+    [TopologicalSpace X] [TopologicalSpace Y] (f : C(X, Y)) :
+    C(MappingCylinder f, Y) where
+  toFun :=
+    Quotient.lift
+      (mappingCylinderProjectionPre f)
+      (by
+        intro a b h
+        change mappingCylinderClassify f a = mappingCylinderClassify f b at h
+        exact congrArg (mappingCylinderClassValue f) h)
+  continuous_toFun :=
+    have hpre : Continuous (mappingCylinderProjectionPre f) := by
+      have hleft : Continuous (fun p : X × unitInterval => f p.1) :=
+        f.continuous.comp continuous_fst
+      have hright : Continuous (fun y : Y => y) := continuous_id
+      have heq :
+          mappingCylinderProjectionPre f =
+            Sum.elim (fun p : X × unitInterval => f p.1) (fun y : Y => y) := by
+        funext z
+        rcases z with p | y
+        · by_cases hp : p.2 = 1
+          · simp [mappingCylinderProjectionPre, mappingCylinderClassValue,
+              mappingCylinderClassify, hp]
+          · simp [mappingCylinderProjectionPre, mappingCylinderClassValue,
+              mappingCylinderClassify, hp]
+        · rfl
+      rw [heq]
+      exact Continuous.sumElim hleft hright
+    hpre.quotient_lift (by
+      intro a b h
+      change mappingCylinderClassify f a = mappingCylinderClassify f b at h
+      exact congrArg (mappingCylinderClassValue f) h)
+
 end LeanCategories.Topology
