@@ -122,6 +122,7 @@ public import LeanCategories.Modules.Quadratic.Valued
 public import LeanCategories.Lattices.Valued
 public import LeanCategories.Orders
 public import LeanCategories.Topology.BundleLocalCohomologyData
+public import LeanCategories.Topology.ChartCoordinateVectorData
 public import LeanCategories.Topology.CoveringDimension
 public import LeanCategories.Topology.CoveringTerminology
 public import LeanCategories.Topology.DunceCap
