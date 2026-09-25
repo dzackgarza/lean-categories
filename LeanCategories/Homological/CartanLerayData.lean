@@ -46,34 +46,41 @@ def IsCartanLerayCochainRepresentationData
       ((LeanCategories.Topology.singularCochainMapData ℤ
         (TopCat.ofHom ⟨a g⁻¹, (a g⁻¹).continuous⟩)).f q).hom
 
-noncomputable def cartanLerayCochainRepresentationData
-    (a : CartanLerayActionData G X) (q : ℕ) :
-    CartanLerayCochainRepresentationCandidateData G X q :=
-  Classical.epsilon (IsCartanLerayCochainRepresentationData a q)
-
+/-- Regard supplied degree-`q` action data as a representation object.  The
+separate exact predicate records whether it is the pullback action required by
+Cartan--Leray. -/
 noncomputable abbrev cartanLerayCochainRepData
-    (a : CartanLerayActionData G X) (q : ℕ) : Rep ℤ G :=
-  Rep.of (cartanLerayCochainRepresentationData a q)
+    {q : ℕ} (ρ : CartanLerayCochainRepresentationCandidateData G X q) : Rep ℤ G :=
+  Rep.of ρ
 
+/-- Proof-free presentation of the coefficient complex used by Cartan--Leray.
+The representation family and the complex are data; source-faithfulness is
+recorded separately by `IsCartanLerayCoefficientComplexData`. -/
+structure CartanLerayCoefficientComplexPresentationData
+    (G X : Type) [Group G] [TopologicalSpace X] where
+  representation : ∀ q : ℕ, CartanLerayCochainRepresentationCandidateData G X q
+  complex : CochainComplex (Rep ℤ G) ℕ
+
+/-- Exact graph specifying that a supplied coefficient-complex presentation is
+the singular cochain complex with the inverse-pullback `G`-action. -/
 def IsCartanLerayCoefficientComplexData
     (a : CartanLerayActionData G X)
-    (K : CochainComplex (Rep ℤ G) ℕ) : Prop :=
-  ∃ e : ∀ q : ℕ, K.X q ≅ cartanLerayCochainRepData a q,
+    (D : CartanLerayCoefficientComplexPresentationData G X) : Prop :=
+  (∀ q : ℕ, IsCartanLerayCochainRepresentationData a q (D.representation q)) ∧
+  ∃ e : ∀ q : ℕ, D.complex.X q ≅ cartanLerayCochainRepData (D.representation q),
     ∀ q : ℕ,
-      ((e q).inv ≫ K.d q (q + 1) ≫ (e (q + 1)).hom).hom.toLinearMap =
+      ((e q).inv ≫ D.complex.d q (q + 1) ≫ (e (q + 1)).hom).hom.toLinearMap =
         ((LeanCategories.Topology.singularCochainComplexData
           ℤ (TopCat.of X) (ModuleCat.of ℤ ℤ)).d q (q + 1)).hom
 
-noncomputable def cartanLerayCoefficientComplexData
-    (a : CartanLerayActionData G X) :
-    CochainComplex (Rep ℤ G) ℕ :=
-  Classical.epsilon (IsCartanLerayCoefficientComplexData a)
-
+/-- Apply group cochains degreewise to a supplied Cartan--Leray coefficient
+complex presentation.  No claim that the supplied presentation satisfies its
+exact graph is made here. -/
 noncomputable def cartanLerayDoubleComplexData
-    (a : CartanLerayActionData G X) :
+    (D : CartanLerayCoefficientComplexPresentationData G X) :
     CochainComplex (CochainComplex (ModuleCat ℤ) ℕ) ℕ :=
   ((groupCohomology.cochainsFunctor ℤ G).mapHomologicalComplex
-    (ComplexShape.up ℕ)).obj (cartanLerayCoefficientComplexData a)
+    (ComplexShape.up ℕ)).obj D.complex
 
 def IsFreeCartanLerayActionData (a : CartanLerayActionData G X) : Prop :=
   ∀ g : G, g ≠ 1 → ∀ x : X, a g x ≠ x
