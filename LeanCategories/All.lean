@@ -98,6 +98,7 @@ public import LeanCategories.Algebra.VermaCentralCharacterData
 public import LeanCategories.Algebra.VermaAnnihilatorData
 public import LeanCategories.Algebra.ChevalleyRestrictionData
 public import LeanCategories.Algebra.HarishChandraData
+public import LeanCategories.Algebra.FormalWeightConvolutionData
 public import LeanCategories.Algebra.MatrixFamilies
 public import LeanCategories.Algebra.MonoidAlgebra
 public import LeanCategories.Algebra.PureSubmodule
