@@ -108,4 +108,34 @@ def kummerSurfaceResolutionMap
     KummerSurface I A → kummerQuotientTopCat A :=
   (kummerSurfaceResolutionData I A).map
 
+/-- The source domain on which the canonical torus-to-Kummer rational map is
+represented without the sixteen inversion-fixed points.
+
+The source later proves that these are exactly the points over which the
+quotient has to be resolved.  Their cardinality and the density of this
+complement are result content. -/
+def kummerCanonicalRationalMapDomainData
+    (A : ComplexTorus.{u}) : Set A.carrier :=
+  (kummerInversionFixedLocus A)ᶜ
+
+/-- Exact graph of the canonical rational map from a complex torus to its
+selected Kummer surface.
+
+A torus point x and a Kummer-surface point y are related precisely when they
+have the same image in the inversion quotient:
+
+    resolution(y) = quotient(x).
+
+Restricting x to the complement of the inversion-fixed locus is the source
+regular domain.  Proving that this relation is single-valued there, hence gives
+the canonical rational map, and that the resulting rational map has degree two
+are result-layer obligations. -/
+def kummerCanonicalRationalMapGraphData
+    (I : ComplexSurfaceResolutionInterface.{u})
+    (A : ComplexTorus.{u}) :
+    Set (A.carrier × KummerSurface I A) :=
+  {p |
+    p.1 ∈ kummerCanonicalRationalMapDomainData A ∧
+      kummerSurfaceResolutionMap I A p.2 = kummerQuotientMk A p.1}
+
 end LeanCategories.Topology
