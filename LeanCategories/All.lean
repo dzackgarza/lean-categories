@@ -10,6 +10,7 @@ public import LeanCategories.CategoryTheory.PosetPathLaxFunctor
 public import LeanCategories.ForMathlib.CharacteristicTwoArfInvariant
 public import LeanCategories.AlgebraicGeometry.RelativeProjHypothesis
 public import LeanCategories.AlgebraicGeometry.ValuationCurveData
+public import LeanCategories.AlgebraicGeometry.GeneralLinearGroupData
 public import LeanCategories.ForMathlib.AbstractJordanDecomposition
 public import LeanCategories.ForMathlib.HumphreysClassicalRootModels
 public import LeanCategories.ForMathlib.HumphreysE8RootModel
