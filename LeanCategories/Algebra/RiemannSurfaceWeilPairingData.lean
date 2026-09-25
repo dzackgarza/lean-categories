@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Algebra.RiemannSurfaceDivisorEvaluationData
+public import LeanCategories.Algebra.RiemannSurfaceAbelJacobiData
 
 /-!
 # Divisor-representative data for the Weil pairing
@@ -38,6 +39,8 @@ as part of this representative formula.
 -/
 
 @[expose] public noncomputable section
+
+open scoped Manifold ContDiff
 
 namespace LeanCategories.Algebra
 
@@ -73,5 +76,22 @@ def curveWeilPairingRepresentativeData
     (f₁ f₂ : NonzeroCurveRationalFunctionData X) : ℂ :=
   curveDivisorEvaluationComplexData f₁ D₂ /
     curveDivisorEvaluationComplexData f₂ D₁
+
+/-- Exact graph of the Weil-pairing value on raw Jacobian classes.
+
+The graph retains the source's divisor representatives and rational functions.
+It does not assert that every torsion class has such representatives or that
+the resulting value is independent of any of the choices. -/
+def IsCurveWeilPairingClassValueData
+    [IsManifold 𝓘(ℂ) ω X]
+    (x₀ : X) (k : ℕ)
+    (q₁ q₂ : CurveJacobianQuotientData X x₀)
+    (z : ℂ) : Prop :=
+  ∃ (D₁ D₂ : CurveDivisorData X)
+      (f₁ f₂ : NonzeroCurveRationalFunctionData X),
+    IsCurveDivisorAbelJacobiClassData x₀ D₁ q₁ ∧
+    IsCurveDivisorAbelJacobiClassData x₀ D₂ q₂ ∧
+    CurveWeilPairingAdmissibleData k D₁ D₂ f₁ f₂ ∧
+    z = curveWeilPairingRepresentativeData D₁ D₂ f₁ f₂
 
 end LeanCategories.Algebra

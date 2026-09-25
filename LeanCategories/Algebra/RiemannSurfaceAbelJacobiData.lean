@@ -7,6 +7,7 @@ revision 8ce1ec28aed1c78b3b39d0bae26e2858c82f5143.
 -/
 module
 
+public import LeanCategories.Algebra.RiemannSurfaceDivisorData
 public import LeanCategories.Algebra.RiemannSurfaceJacobianQuotientData
 
 /-!
@@ -100,5 +101,25 @@ the unique function satisfying this predicate. -/
 def IsCurveAbelJacobiMapData (x₀ : X)
     (α : X → CurveJacobianQuotientData X x₀) : Prop :=
   ∀ x, IsCurveAbelJacobiClassData x₀ x (α x)
+
+/-- Additive extension of pointwise dual functionals from points of the curve
+to finite integral divisors. -/
+def curveDivisorAbelJacobiLiftData
+    (φ : X → CurveJacobianDualData X) :
+    CurveDivisorData X →+ CurveJacobianDualData X :=
+  FreeAbelianGroup.lift φ
+
+/-- Exact graph of Abel--Jacobi on a divisor representative.
+
+Only points in the finite support of `D` are required to carry the source
+path-integral functional. Values of `φ` away from the support are irrelevant
+to the resulting free-abelian-group sum. -/
+def IsCurveDivisorAbelJacobiClassData (x₀ : X)
+    (D : CurveDivisorData X)
+    (q : CurveJacobianQuotientData X x₀) : Prop :=
+  ∃ φ : X → CurveJacobianDualData X,
+    (∀ x ∈ curveDivisorSupportData D,
+      IsCurvePathIntegralFunctionalData x₀ x (φ x)) ∧
+    curveJacobianClassData X x₀ (curveDivisorAbelJacobiLiftData φ D) = q
 
 end LeanCategories.Algebra
