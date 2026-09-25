@@ -135,7 +135,9 @@ public import LeanCategories.Topology.CoveringDimension
 public import LeanCategories.Topology.CoveringTerminology
 public import LeanCategories.Topology.DunceCap
 public import LeanCategories.Topology.HomotopyBasepointData
+public import LeanCategories.Topology.InducedLieHomData
 public import LeanCategories.Topology.LieActionFlowData
+public import LeanCategories.Topology.LieFunctorData
 public import LeanCategories.Topology.LocallyMetrizable
 public import LeanCategories.Topology.LinearGraph
 public import LeanCategories.Topology.GraphReduction
