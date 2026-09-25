@@ -5,9 +5,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.Geometry.Manifold.Sheaf.Basic
+public import Mathlib.Geometry.Manifold.Sheaf.Smooth
 public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 public import Mathlib.Topology.VectorBundle.ContinuousAlternatingMap
 public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.CategoryTheory.Sites.Adjunction
 
 /-!
 # Holomorphic differential-form sheaf data on complex manifolds
@@ -29,6 +31,7 @@ pluricanonical result is asserted here.
 @[expose] public noncomputable section
 
 open Bundle
+open CategoryTheory
 open scoped ContDiff Manifold Topology
 
 namespace LeanCategories.Geometry
@@ -77,6 +80,148 @@ continuous alternating complex `p`-covectors. -/
 def holomorphicPFormSheafData (p : ℕ) :
     TopCat.Sheaf (Type u) (TopCat.of X) :=
   TopCat.subsheafToTypes (holomorphicPFormLocalPredicateData (X := X) I p)
+
+/-- Raw additive/complex-linear presentation data for the holomorphic
+`p`-form sheaf.
+
+The additive sheaf is the coefficient object needed by Mathlib's native sheaf
+cohomology.  The family `scalar c` records scalar multiplication by
+`c : ℂ` as endomorphisms of that same sheaf; using sheaf morphisms makes
+compatibility with restriction maps part of the ambient categorical data. -/
+structure HolomorphicPFormLinearSheafPresentationData where
+  sheaf : TopCat.Sheaf AddCommGrpCat.{u} (TopCat.of X)
+  scalar : ℂ → (sheaf ⟶ sheaf)
+
+/-- Forget the additive structure of a proposed linear presentation. -/
+def holomorphicPFormForgottenSheafData
+    (D : HolomorphicPFormLinearSheafPresentationData (X := X)) :
+    TopCat.Sheaf (Type u) (TopCat.of X) :=
+  (CategoryTheory.sheafForget
+    (D := AddCommGrpCat.{u})
+    (Opens.grothendieckTopology (TopCat.of X))).obj D.sheaf
+
+/-- Transport a section of an additive presentation to the already-realized
+Type-valued sheaf, under an exact equality of the forgotten sheaves. -/
+def holomorphicPFormTransportSectionData
+    (p : ℕ) (D : HolomorphicPFormLinearSheafPresentationData (X := X))
+    (h : holomorphicPFormForgottenSheafData (X := X) D =
+      holomorphicPFormSheafData (X := X) I p)
+    (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ)
+    (s : D.sheaf.presheaf.obj U) :
+    (holomorphicPFormSheafData (X := X) I p).presheaf.obj U :=
+  cast
+    (congrArg
+      (fun F : TopCat.Sheaf (Type u) (TopCat.of X) => F.presheaf.obj U)
+      h)
+    s
+
+/-- Fibre value of a section of the realized Type-valued holomorphic-form
+sheaf.  The section equation supplies the transport from the total-space fibre
+over its recorded base point to the fibre over the actual point of the open
+set. -/
+def holomorphicPFormSectionValueData
+    (p : ℕ) (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ)
+    (s : (holomorphicPFormSheafData (X := X) I p).presheaf.obj U)
+    (x : U.unop) :
+    HolomorphicPFormFiberData (X := X) I p x.1 :=
+  cast
+    (congrArg
+      (HolomorphicPFormFiberData (X := X) I p)
+      (congrFun s.2.2 x))
+    (s.1 x).2
+
+/-- Exact pointwise graph for zero in the holomorphic-form sheaf. -/
+def IsHolomorphicPFormZeroSectionData
+    (p : ℕ) (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ)
+    (s : (holomorphicPFormSheafData (X := X) I p).presheaf.obj U) : Prop :=
+  ∀ x : U.unop, holomorphicPFormSectionValueData (X := X) I p U s x = 0
+
+/-- Exact pointwise graph for addition of holomorphic `p`-forms. -/
+def IsHolomorphicPFormAddSectionData
+    (p : ℕ) (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ)
+    (s t r : (holomorphicPFormSheafData (X := X) I p).presheaf.obj U) : Prop :=
+  ∀ x : U.unop,
+    holomorphicPFormSectionValueData (X := X) I p U r x =
+      holomorphicPFormSectionValueData (X := X) I p U s x +
+        holomorphicPFormSectionValueData (X := X) I p U t x
+
+/-- Exact pointwise graph for additive inverse of a holomorphic `p`-form. -/
+def IsHolomorphicPFormNegSectionData
+    (p : ℕ) (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ)
+    (s r : (holomorphicPFormSheafData (X := X) I p).presheaf.obj U) : Prop :=
+  ∀ x : U.unop,
+    holomorphicPFormSectionValueData (X := X) I p U r x =
+      -holomorphicPFormSectionValueData (X := X) I p U s x
+
+/-- Exact pointwise graph for constant complex scalar multiplication of a
+holomorphic `p`-form. -/
+def IsHolomorphicPFormSMulSectionData
+    (p : ℕ) (c : ℂ) (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ)
+    (s r : (holomorphicPFormSheafData (X := X) I p).presheaf.obj U) : Prop :=
+  ∀ x : U.unop,
+    holomorphicPFormSectionValueData (X := X) I p U r x =
+      c • holomorphicPFormSectionValueData (X := X) I p U s x
+
+/-- Exact presentation predicate for the canonical additive and complex-linear
+refinement of `Ω_X^p`.
+
+The forgotten sheaf is required to be exactly the already-realized
+`holomorphicPFormSheafData`.  Its zero, addition and inverse are required to
+have the fibrewise graphs inherited from the alternating-form fibres, and each
+complex scalar is required to act pointwise by the native scalar multiplication.
+Because scalar maps are sheaf endomorphisms and the additive restrictions are
+morphisms in `AddCommGrpCat`, restriction compatibility is already carried by
+the ambient sheaf structure rather than reproved here. -/
+def IsHolomorphicPFormLinearSheafPresentationData
+    (p : ℕ) (D : HolomorphicPFormLinearSheafPresentationData (X := X)) : Prop :=
+  ∃ h : holomorphicPFormForgottenSheafData (X := X) D =
+      holomorphicPFormSheafData (X := X) I p,
+    (∀ U,
+      IsHolomorphicPFormZeroSectionData (X := X) I p U
+        (holomorphicPFormTransportSectionData (X := X) I p D h U 0)) ∧
+    (∀ U (s t : D.sheaf.presheaf.obj U),
+      IsHolomorphicPFormAddSectionData (X := X) I p U
+        (holomorphicPFormTransportSectionData (X := X) I p D h U s)
+        (holomorphicPFormTransportSectionData (X := X) I p D h U t)
+        (holomorphicPFormTransportSectionData (X := X) I p D h U (s + t))) ∧
+    (∀ U (s : D.sheaf.presheaf.obj U),
+      IsHolomorphicPFormNegSectionData (X := X) I p U
+        (holomorphicPFormTransportSectionData (X := X) I p D h U s)
+        (holomorphicPFormTransportSectionData (X := X) I p D h U (-s))) ∧
+    ∀ (c : ℂ) U (s : D.sheaf.presheaf.obj U),
+      IsHolomorphicPFormSMulSectionData (X := X) I p c U
+        (holomorphicPFormTransportSectionData (X := X) I p D h U s)
+        (holomorphicPFormTransportSectionData (X := X) I p D h U
+          ((D.scalar c).hom.app U s))
+
+/-- Definition-layer selection of the canonical additive/complex-linear
+presentation of `Ω_X^p` from its exact graph.
+
+No existence, additive-closure, scalar-closure or well-definedness theorem is
+asserted here.  Those are theorem-layer obligations. -/
+def holomorphicPFormLinearSheafPresentationData (p : ℕ) :
+    HolomorphicPFormLinearSheafPresentationData (X := X) := by
+  let fallback : HolomorphicPFormLinearSheafPresentationData (X := X) :=
+    { sheaf := smoothSheafAddCommGroup I 𝓘(ℂ, E) X E,
+      scalar := fun _ => 𝟙 _ }
+  letI : Nonempty (HolomorphicPFormLinearSheafPresentationData (X := X)) :=
+    ⟨fallback⟩
+  exact Classical.epsilon
+    (IsHolomorphicPFormLinearSheafPresentationData (X := X) I p)
+
+/-- The canonical additive sheaf underlying `Ω_X^p`, selected by the exact
+pointwise presentation above.  This is directly admissible as a coefficient
+object for Mathlib's native `CategoryTheory.Sheaf.H`. -/
+def holomorphicPFormAdditiveSheafData (p : ℕ) :
+    TopCat.Sheaf AddCommGrpCat.{u} (TopCat.of X) :=
+  (holomorphicPFormLinearSheafPresentationData (X := X) I p).sheaf
+
+/-- Complex scalar endomorphism on the selected additive holomorphic-form
+sheaf, as carried by the exact presentation. -/
+def holomorphicPFormScalarData (p : ℕ) (c : ℂ) :
+    holomorphicPFormAdditiveSheafData (X := X) I p ⟶
+      holomorphicPFormAdditiveSheafData (X := X) I p :=
+  (holomorphicPFormLinearSheafPresentationData (X := X) I p).scalar c
 
 /-- Native holomorphic cotangent bundle (`p = 1`). -/
 abbrev HolomorphicCotangentBundleData :=
