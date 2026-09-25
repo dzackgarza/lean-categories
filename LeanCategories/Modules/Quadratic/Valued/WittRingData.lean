@@ -194,11 +194,77 @@ def quadraticWittOneRepresentativeData :
     FiniteFreeQuadModuleCat R R :=
   unitFiniteFreeQuadraticSpace R
 
+/-- Zero-dimensional split representative prescribed for the additive zero. -/
+def quadraticWittZeroRepresentativeData :
+    FiniteFreeQuadModuleCat R R :=
+  hyperbolicFiniteFreeQuadraticSpace R 0
+
 /-- Tensor-product representative prescribed for multiplication in the Witt
 ring. -/
 noncomputable def quadraticWittMulRepresentativeData
     (Q P : QuadraticInnerProductSpaceData R) :
     FiniteFreeQuadModuleCat R R :=
   finiteFreeQuadraticTensorProductData R Q.formed P.formed
+
+/-- A raw Witt class admits the displayed finite-free quadratic form as a
+representative.
+
+This is intentionally a relation rather than a selected representative.  It
+does not require proving that the displayed form is perfect: a witness is an
+actual quadratic inner-product space whose underlying formed module is the
+displayed one. -/
+def IsQuadraticWittRepresentativeData
+    (x : QuadraticWittClass R)
+    (Q : FiniteFreeQuadModuleCat R R) : Prop :=
+  ∃ P : QuadraticInnerProductSpaceData R,
+    quadraticWittClassMk R P = x ∧ P.formed = Q
+
+/-- Exact graph of the additive zero on the raw Witt quotient. -/
+def IsQuadraticWittZeroData
+    (z : QuadraticWittClass R) : Prop :=
+  IsQuadraticWittRepresentativeData R z
+    (quadraticWittZeroRepresentativeData R)
+
+/-- Exact representative graph of orthogonal-sum addition on the raw Witt
+quotient.
+
+Sweep IV proves that this graph is total and single-valued, hence descends to
+an actual binary operation. -/
+def IsQuadraticWittAddData
+    (x y z : QuadraticWittClass R) : Prop :=
+  ∃ Q P : QuadraticInnerProductSpaceData R,
+    quadraticWittClassMk R Q = x ∧
+    quadraticWittClassMk R P = y ∧
+    IsQuadraticWittRepresentativeData R z
+      (quadraticWittAddRepresentativeData R Q P)
+
+/-- Exact representative graph of additive inversion on the raw Witt
+quotient. -/
+def IsQuadraticWittNegData
+    (x z : QuadraticWittClass R) : Prop :=
+  ∃ Q : QuadraticInnerProductSpaceData R,
+    quadraticWittClassMk R Q = x ∧
+    IsQuadraticWittRepresentativeData R z
+      (quadraticWittNegRepresentativeData R Q)
+
+/-- Exact representative graph of the multiplicative unit on the raw Witt
+quotient. -/
+def IsQuadraticWittOneData
+    (z : QuadraticWittClass R) : Prop :=
+  IsQuadraticWittRepresentativeData R z
+    (quadraticWittOneRepresentativeData R)
+
+/-- Exact representative graph of tensor-product multiplication on the raw
+Witt quotient.
+
+No quotient descent, independence-of-companion assertion, or ring law is
+proved here. -/
+noncomputable def IsQuadraticWittMulData
+    (x y z : QuadraticWittClass R) : Prop :=
+  ∃ Q P : QuadraticInnerProductSpaceData R,
+    quadraticWittClassMk R Q = x ∧
+    quadraticWittClassMk R P = y ∧
+    IsQuadraticWittRepresentativeData R z
+      (quadraticWittMulRepresentativeData R Q P)
 
 end LeanCategories.Modules.Quadratic.Valued
