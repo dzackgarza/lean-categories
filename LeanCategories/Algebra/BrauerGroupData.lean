@@ -41,4 +41,16 @@ noncomputable abbrev serreBrauerBaseChange
 abbrev relativeBrauerGroup (K F : Type u) [Field K] [Field F] [Algebra F K] :=
   RelativeBrGroup K F
 
+/-- A field extension splits a central simple algebra when scalar extension is
+isomorphic to a full matrix algebra (Dummit--Foote FC01-C17-U081). -/
+abbrev SplitsCentralSimpleAlgebra
+    (F K : Type u) [Field F] [Field K] [Algebra F K] (A : CSA F) : Prop :=
+  isSplit F A K
+
+/-- Brauer equivalence of central simple algebras, i.e. stable matrix
+equivalence (Dummit--Foote FC01-C17-U083). -/
+abbrev AreBrauerEquivalent
+    (K : Type u) [Field K] (A B : CSA K) : Prop :=
+  IsBrauerEquivalent A B
+
 end LeanCategories.Algebra
