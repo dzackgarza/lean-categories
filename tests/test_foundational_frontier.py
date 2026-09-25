@@ -50,10 +50,26 @@ class DefinitionReadinessTest(unittest.TestCase):
         self.assertEqual(self.blockers("FC05-C10-U085"), ("FC05-C10-U081",))
 
     def test_blocked_marker_schedules_representation_repair(self) -> None:
-        mapping = self.mappings["FC05-C10-U105"]
+        unit = frontier.Unit(
+            "FC99-C01-U001",
+            "Definition/result — synthetic representation repair fixture",
+            "synthetic mixed source unit",
+            (),
+        )
+        mapping = frontier.Mapping(
+            "[definition-only] [sweep-iii-blocked] synthetic representation repair",
+            "unmatched",
+            "synthetic.md",
+            "[definition-only] [sweep-iii-blocked] [residue-search-audited]",
+        )
+        mappings = {unit.unit_id: mapping}
+        catalogue = {unit.unit_id: unit}
         self.assertTrue(mapping.sweep_iii_blocked)
-        self.assertEqual(self.blockers("FC05-C10-U105"), ())
-        self.assertTrue(frontier.is_theorem(self.catalogue["FC05-C10-U105"], mapping))
+        self.assertEqual(
+            frontier.unit_blockers("Definitions", unit, mappings, catalogue),
+            (),
+        )
+        self.assertTrue(frontier.is_theorem(unit, mapping))
 
     def test_effective_prerequisites_explain_the_blocker(self) -> None:
         unit = self.catalogue["FC05-C10-U085"]
