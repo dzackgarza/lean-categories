@@ -27,8 +27,8 @@ product scheme and its projections are supplied by the native fibre-product
 owner. A supplied fibre-degree map records the already-defined restriction
 and degree operation. Candidate relative-Picard data consist only of a carrier
 and a class map. The source quotient is characterized propositionally by
-surjectivity and by the exact base-twist equality graph, then selected by
-Classical.epsilon.
+surjectivity and by the exact base-twist equality graph; no quotient carrier
+is selected before those quotient facts are established.
 
 No quotient equivalence laws, Picard group laws, representability, or
 Jacobian theorem are proved in Sweep III.
@@ -90,14 +90,6 @@ structure RelativePicardZeroCandidateData
   carrier : Type u
   classOf : RelativePicardZeroSheafData D → carrier
 
-/-- There is always ambient candidate data; the source-specified quotient can
-therefore be named without asking the caller for an existence theorem. -/
-instance
-    {X T product : Scheme.{u}}
-    (D : RelativePicardFibreDegreeData X T product) :
-    Nonempty (RelativePicardZeroCandidateData D) :=
-  ⟨⟨PUnit, fun _ => PUnit.unit⟩⟩
-
 /-- Exact source specification of the relative degree-zero Picard quotient.
 
 Every candidate class is represented by a fibrewise-degree-zero invertible
@@ -111,22 +103,12 @@ def IsRelativePicardZeroData
     ∀ L M : RelativePicardZeroSheafData D,
       P.classOf L = P.classOf M ↔ RelativePicardBaseTwistData D L M
 
-/-- Hartshorne's Pic^0(X/T) quotient presentation, selected from its exact
-fibre-degree-zero/base-twist specification.
-
-The theorem layer proves that this selected candidate satisfies
-IsRelativePicardZeroData D and subsequently installs the group/functor
-structure. -/
-def relativePicardZeroCandidateData
-    {X T product : Scheme.{u}}
-    (D : RelativePicardFibreDegreeData X T product) :
-    RelativePicardZeroCandidateData D :=
-  Classical.epsilon (IsRelativePicardZeroData D)
-
-/-- The source-facing carrier of Pic^0(X/T). -/
+/-- The source-facing carrier of supplied Pic^0(X/T) candidate data.
+Source-faithfulness is recorded separately by `IsRelativePicardZeroData`. -/
 abbrev RelativePicardZeroData
     {X T product : Scheme.{u}}
-    (D : RelativePicardFibreDegreeData X T product) : Type u :=
-  (relativePicardZeroCandidateData D).carrier
+    {D : RelativePicardFibreDegreeData X T product}
+    (P : RelativePicardZeroCandidateData D) : Type u :=
+  P.carrier
 
 end LeanCategories.Schemes

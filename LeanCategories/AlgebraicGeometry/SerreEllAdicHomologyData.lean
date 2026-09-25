@@ -57,11 +57,12 @@ representatives are result-layer obligations. -/
 def RelativePicardZeroTensorClassData
     {Y T product : Scheme.{u}}
     (D : RelativePicardFibreDegreeData Y T product)
-    (a b c : RelativePicardZeroData D) : Prop :=
+    (P : RelativePicardZeroCandidateData D)
+    (a b c : RelativePicardZeroData (D := D) P) : Prop :=
   ∃ L M N : RelativePicardZeroSheafData D,
-    (relativePicardZeroCandidateData D).classOf L = a ∧
-    (relativePicardZeroCandidateData D).classOf M = b ∧
-    (relativePicardZeroCandidateData D).classOf N = c ∧
+    P.classOf L = a ∧
+    P.classOf M = b ∧
+    P.classOf N = c ∧
     Nonempty
       (N.sheaf ≅ schemeModuleTensor L.sheaf M.sheaf)
 
@@ -75,12 +76,13 @@ constructed in Sweep III. -/
 def IsSerreJacobianPointGroupData
     {Y T product : Scheme.{u}}
     (D : RelativePicardFibreDegreeData Y T product)
+    (P : RelativePicardZeroCandidateData D)
     (J : AddCommGrpCat.{u})
-    (classOf : RelativePicardZeroData D → J) : Prop :=
+    (classOf : RelativePicardZeroData (D := D) P → J) : Prop :=
   Function.Bijective classOf ∧
-  ∀ a b : RelativePicardZeroData D,
-    ∃! c : RelativePicardZeroData D,
-      RelativePicardZeroTensorClassData D a b c ∧
+  ∀ a b : RelativePicardZeroData (D := D) P,
+    ∃! c : RelativePicardZeroData (D := D) P,
+      RelativePicardZeroTensorClassData D P a b c ∧
         classOf c = classOf a + classOf b
 
 /-- A candidate for the ell-adic Tate module of the Jacobian point group.
@@ -126,8 +128,10 @@ structure SerreEllAdicHomologyCandidateData
     (G : Type v) [Group G]
     {Y T product : Scheme.{u}}
     (D : RelativePicardFibreDegreeData Y T product) where
+  picardZeroCandidate : RelativePicardZeroCandidateData D
   jacobianPoints : AddCommGrpCat.{u}
-  picardClass : RelativePicardZeroData D → jacobianPoints
+  picardClass :
+    RelativePicardZeroData (D := D) picardZeroCandidate → jacobianPoints
   tate : SerreJacobianTateCandidateData ell jacobianPoints
   homology : Fin 3 → ModuleCat.{u} ℤ_[ell]
   action : ∀ i : Fin 3, Representation ℤ_[ell] G (homology i)
@@ -144,7 +148,8 @@ def IsSerreEllAdicHomologyData
     {Y T product : Scheme.{u}}
     (D : RelativePicardFibreDegreeData Y T product)
     (P : SerreEllAdicHomologyCandidateData residueChar ell hEll G D) : Prop :=
-  IsSerreJacobianPointGroupData D P.jacobianPoints P.picardClass ∧
+  IsSerreJacobianPointGroupData D P.picardZeroCandidate
+      P.jacobianPoints P.picardClass ∧
   IsSerreJacobianTateCandidateData ell P.jacobianPoints P.tate ∧
   Nonempty ((P.homology 0 : Type u) ≃ₗ[ℤ_[ell]] ℤ_[ell]) ∧
   Nonempty ((P.homology 1 : Type u) ≃ₗ[ℤ_[ell]] P.tate.carrier) ∧
@@ -161,6 +166,10 @@ instance
   let J : AddCommGrpCat.{u} := AddCommGrpCat.of (ULift.{u} Int)
   let M : ModuleCat.{u} ℤ_[ell] := ModuleCat.of ℤ_[ell] (ULift.{u} ℤ_[ell])
   refine ⟨{
+    picardZeroCandidate := {
+      carrier := PUnit
+      classOf := fun _ => PUnit.unit
+    }
     jacobianPoints := J
     picardClass := fun _ => 0
     tate := {
