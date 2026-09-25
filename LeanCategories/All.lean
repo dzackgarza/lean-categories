@@ -88,6 +88,8 @@ public import LeanCategories.Algebra.GroupTheory
 public import LeanCategories.Algebra.GroupGeneration
 public import LeanCategories.Algebra.SubgroupIncidence
 public import LeanCategories.Algebra.FiniteAbelian
+public import LeanCategories.Algebra.ConstructibleNumberData
+public import LeanCategories.Algebra.PartialHomomorphism
 public import LeanCategories.Algebra.SquarefreePart
 public import LeanCategories.Algebra.Polynomial
 public import LeanCategories.Algebra.ZariskiRing
