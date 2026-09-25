@@ -11,6 +11,10 @@ mathematical obligation. Continue independent work whose prerequisites hold.
 The repository owner explicitly resumed this workstream later on 2026-09-16. The
 earlier owner pause is superseded. Resume the ordinary repository execution DAG under
 the one-integration-stream-per-repository rule, preserving the existing dirty/shared tree.
+Preserving it means never discarding it, not leaving it unbanked: the uncommitted and
+untracked modules earlier chats left behind are this stream's own work. Before starting a
+new unit, bank each inherited module that elaborates and matches its frontier row, and
+record in the frontier any that do not.
 Disjoint delegated preparation is permitted under the construction boundary below. A later
 explicit owner stop supersedes this resume; recurrence of an older scheduled pause does
 not.
