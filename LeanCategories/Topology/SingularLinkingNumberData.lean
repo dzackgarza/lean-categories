@@ -46,13 +46,18 @@ def integralSingularBoundary {n : ℕ} :
 def IsIntegralSingularOneCycle (γ : IntegralSingularChain X 1) : Prop :=
   integralSingularBoundary X γ = 0
 
-/-- Geometric input needed for the chain-level linking formula: a predicate
-saying when a two-chain and a one-cycle meet transversely, together with their
-oriented intersection number in that case. -/
-structure SingularChainIntersectionData where
-  Transverse : IntegralSingularChain X 2 → IntegralSingularChain X 1 → Prop
+/-- Geometric input for an oriented intersection number between singular
+chains in prescribed degrees. Mathlib does not currently supply the
+manifold-chain transversality layer, so Sweep III keeps that geometric
+operation explicit and uses it only through source formulas. -/
+structure SingularChainIntersectionDataInDegrees (p q : ℕ) where
+  Transverse : IntegralSingularChain X p → IntegralSingularChain X q → Prop
   intersectionNumber :
     ∀ sigma gamma, Transverse sigma gamma → ℤ
+
+/-- The degree-(2,1) specialization used by the linking-number construction. -/
+abbrev SingularChainIntersectionData :=
+  SingularChainIntersectionDataInDegrees X 2 1
 
 /-- Representative data entering the chain-level definition of a linking
 number.  The proof-valued fields state the hypotheses of the source
