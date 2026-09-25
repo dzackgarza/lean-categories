@@ -90,6 +90,7 @@ public import LeanCategories.Algebra.SubgroupIncidence
 public import LeanCategories.Algebra.FiniteAbelian
 public import LeanCategories.Algebra.ConstructibleNumberData
 public import LeanCategories.Algebra.PartialHomomorphism
+public import LeanCategories.Algebra.MinimalRegularPresentationData
 public import LeanCategories.Algebra.SquarefreePart
 public import LeanCategories.Algebra.Polynomial
 public import LeanCategories.Algebra.ZariskiRing
@@ -187,6 +188,7 @@ public import LeanCategories.Schemes.BirationalSurfaceModels
 public import LeanCategories.Schemes.FormalCompletionData
 public import LeanCategories.Schemes.LocalIntersectionMultiplicityData
 public import LeanCategories.Schemes.CurveIntersectionNumberData
+public import LeanCategories.Schemes.PointBlowupData
 public import LeanCategories.Topology.DeltaComplex
 public import LeanCategories.Topology.ComplexOfSpacesData
 public import LeanCategories.Topology.RealGrassmannian
