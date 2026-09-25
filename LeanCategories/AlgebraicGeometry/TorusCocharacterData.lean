@@ -57,12 +57,12 @@ noncomputable def characterCocharacterExponentData
     {K : Type u} [Field K] [IsAlgClosed K]
     (G : AffineAlgebraicGroup K)
     (χ : GroupLike K (AffineAlgebraicGroup.coordinateHopfAlgebra G))
-    (λ : AlgebraicGroupCocharacterData G) :
+    (lam : AlgebraicGroupCocharacterData G) :
     {n : ℤ //
-      AddMonoidAlgebra.single n (1 : K) = λ.hom χ.val} := by
+      AddMonoidAlgebra.single n (1 : K) = lam.hom χ.val} := by
   have hχ :
-      IsGroupLikeElem K (λ.hom χ.val) :=
-    χ.isGroupLikeElem_val.map λ.hom
+      IsGroupLikeElem K (lam.hom χ.val) :=
+    χ.isGroupLikeElem_val.map lam.hom
   exact
     let h := (AddMonoidAlgebra.isGroupLikeElem_iff_mem_range_single_one).1 hχ
     ⟨Classical.choose h, Classical.choose_spec h⟩
@@ -73,7 +73,7 @@ noncomputable def characterCocharacterPairingData
     {K : Type u} [Field K] [IsAlgClosed K]
     (G : AffineAlgebraicGroup K)
     (χ : GroupLike K (AffineAlgebraicGroup.coordinateHopfAlgebra G))
-    (λ : AlgebraicGroupCocharacterData G) : ℤ :=
-  characterCocharacterExponentData G χ λ
+    (lam : AlgebraicGroupCocharacterData G) : ℤ :=
+  characterCocharacterExponentData G χ lam
 
 end LeanCategories.AlgebraicGeometry
