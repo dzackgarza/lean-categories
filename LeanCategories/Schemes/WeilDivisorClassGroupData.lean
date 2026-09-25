@@ -12,14 +12,14 @@ public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 Definition-level realization of Hartshorne FC06-C02-U157.
 
-The principal divisors form an additive subgroup of `Div X`; linear
-equivalence is congruence modulo that subgroup, and `Cl X` is the resulting
-quotient group.
+Linear equivalence is the relation whose difference is principal, and
+`Cl X` has the corresponding quotient carrier.
 
 The preceding principal-divisor homomorphism theorem is what proves that the
 intrinsically characterized principal divisors are closed under the group
-operations.  Sweep III therefore selects the subgroup by that carrier
-characterization rather than requiring a caller to provide the closure proof.
+operations and that linear equivalence is an additive congruence.  Sweep III
+therefore records the relation and a raw quotient carrier without selecting a
+subgroup or installing the quotient-group structure before those results.
 -/
 
 @[expose] public section
@@ -34,23 +34,15 @@ universe u
 
 variable {X : Scheme.{u}} [DivisorStandingHypothesis X]
 
-/-- Predicate saying that an additive subgroup of `Div X` has exactly the
-principal divisors as its elements. -/
-def IsPrincipalDivisorSubgroupData (P : AddSubgroup (WeilDivisor X)) : Prop :=
-  ∀ D : WeilDivisor X, D ∈ P ↔ D.IsPrincipalData
-
-/-- The principal-divisor subgroup, selected by its intrinsic carrier.
-The U156 homomorphism theorem later proves this selection satisfies the
-displayed predicate. -/
-def principalDivisorSubgroupData : AddSubgroup (WeilDivisor X) :=
-  Classical.epsilon (IsPrincipalDivisorSubgroupData (X := X))
-
 /-- Hartshorne's linear equivalence relation `D ~ D'`. -/
 def WeilDivisor.LinearlyEquivalentData (D E : WeilDivisor X) : Prop :=
-  D - E ∈ principalDivisorSubgroupData (X := X)
+  (D - E).IsPrincipalData
 
-/-- Hartshorne's Weil divisor class group `Cl X = Div X / Prin X`. -/
-abbrev WeilDivisorClassGroupData : Type _ :=
-  WeilDivisor X ⧸ principalDivisorSubgroupData (X := X)
+/-- Proof-free quotient carrier of Weil divisors by the source linear
+equivalence relation.  Once the principal-divisor homomorphism theorem proves
+that the relation is an additive congruence, this carrier acquires the source
+class-group structure. -/
+abbrev WeilDivisorClassCarrierData : Type _ :=
+  Quot (WeilDivisor.LinearlyEquivalentData (X := X))
 
 end LeanCategories.Schemes
