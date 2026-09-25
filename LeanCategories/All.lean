@@ -139,6 +139,7 @@ public import LeanCategories.Schemes.FormalCompletionData
 public import LeanCategories.Topology.DeltaComplex
 public import LeanCategories.Topology.ComplexOfSpacesData
 public import LeanCategories.Topology.RealGrassmannian
+public import LeanCategories.Topology.SteenrodOperationData
 public import LeanCategories.Homological
 public import LeanCategories.Homological.AssociatedOmegaSpectrumData
 public import LeanCategories.Homological.PrespectrumHomotopyData
