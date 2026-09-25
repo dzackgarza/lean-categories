@@ -60,20 +60,21 @@ abbrev modTwoSingularChainComplex (X : Type) [TopologicalSpace X] :
 map degreewise in the singular simplicial set gives `σ`. -/
 def IsSingularSimplexLift {E X : Type} [TopologicalSpace E] [TopologicalSpace X]
     (p : C(E, X)) {n : ℕ}
-    (σ : (singularSSet X).obj (.op ⦋n⦌))
-    (σ' : (singularSSet E).obj (.op ⦋n⦌)) : Prop :=
-  (TopCat.toSSet.map (TopCat.ofHom p)).app (.op ⦋n⦌) σ' = σ
+    (σ : (singularSSet X).obj (Opposite.op (SimplexCategory.mk n)))
+    (σ' : (singularSSet E).obj (Opposite.op (SimplexCategory.mk n))) : Prop :=
+  (TopCat.toSSet.map (TopCat.ofHom p)).app
+      (Opposite.op (SimplexCategory.mk n)) σ' = σ
 
 /-- `σ₀,σ₁` are exactly the two singular-simplex lifts of `σ`. -/
 def AreExactlyTwoSingularSimplexLifts
     {E X : Type} [TopologicalSpace E] [TopologicalSpace X]
     (p : C(E, X)) {n : ℕ}
-    (σ : (singularSSet X).obj (.op ⦋n⦌))
-    (σ₀ σ₁ : (singularSSet E).obj (.op ⦋n⦌)) : Prop :=
+    (σ : (singularSSet X).obj (Opposite.op (SimplexCategory.mk n)))
+    (σ₀ σ₁ : (singularSSet E).obj (Opposite.op (SimplexCategory.mk n))) : Prop :=
   IsSingularSimplexLift p σ σ₀ ∧
     IsSingularSimplexLift p σ σ₁ ∧
     σ₀ ≠ σ₁ ∧
-      ∀ τ : (singularSSet E).obj (.op ⦋n⦌),
+      ∀ τ : (singularSSet E).obj (Opposite.op (SimplexCategory.mk n)),
         IsSingularSimplexLift p σ τ → τ = σ₀ ∨ τ = σ₁
 
 /-- The source generator formula characterizing the degree-`n`
@@ -84,8 +85,8 @@ def IsTwoSheetedTransferComponent
     (p : C(E, X)) (n : ℕ)
     (T : (modTwoSingularChainComplex X).X n ⟶
       (modTwoSingularChainComplex E).X n) : Prop :=
-  ∀ σ : (singularSSet X).obj (.op ⦋n⦌),
-    ∃ σ₀ σ₁ : (singularSSet E).obj (.op ⦋n⦌),
+  ∀ σ : (singularSSet X).obj (Opposite.op (SimplexCategory.mk n)),
+    ∃ σ₀ σ₁ : (singularSSet E).obj (Opposite.op (SimplexCategory.mk n)),
       AreExactlyTwoSingularSimplexLifts p σ σ₀ σ₁ ∧
         (singularSSet X).ιChainComplex σ ≫ T =
           (singularSSet E).ιChainComplex σ₀ +
