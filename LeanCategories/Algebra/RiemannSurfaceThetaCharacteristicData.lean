@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
+public import LeanCategories.Algebra.RiemannSurfaceAbelJacobiData
 public import LeanCategories.Algebra.RiemannSurfaceCanonicalDivisorData
 
 /-!
@@ -15,14 +16,19 @@ to a certified canonical-divisor representative.
 
 This is a thin predicate over the existing divisor and linear-equivalence
 owners. Existence of a canonical divisor and of a half-canonical divisor,
-their degree statements, and translation properties are results. The
-Riemann-constant subclause remains blocked with U029 because the Abel--Jacobi
-map itself requires result-layer linearity.
+their degree statements, and translation properties are results.
+
+For the Riemann constant, the divisor-class extension of Abel--Jacobi is
+recorded by an exact graph on a finite divisor representative. Pointwise
+path-integral functionals are summed through the native free-abelian-group
+lift and then sent to the raw Jacobian quotient. Path independence,
+linear-equivalence descent, existence, uniqueness, and functionality are
+result-layer facts.
 
 The causal reference owners are LeanPool at
 3fc79f0a795f19fffcc59eee3efaf5faa52de3c3 and jacobian-challenge at
 8ce1ec28aed1c78b3b39d0bae26e2858c82f5143, both Apache-2.0.
-This file does not claim complete U030 realization.
+No such result is proved or inserted as a structure field here.
 -/
 
 @[expose] public noncomputable section
@@ -48,5 +54,37 @@ condition. No existence of a member is asserted. -/
 abbrev CurveThetaCharacteristicData {form : CurveHolomorphicOneFormData X}
     {hform : form ≠ 0} (K : CurveCanonicalDivisorData form hform) :=
   {θ : CurveDivisorData X // IsCurveThetaCharacteristicData K θ}
+
+/-- Additive extension of pointwise dual functionals from points of the curve
+to finite integral divisors. -/
+def curveDivisorAbelJacobiLiftData
+    (φ : X → CurveJacobianDualData X) :
+    CurveDivisorData X →+ CurveJacobianDualData X :=
+  FreeAbelianGroup.lift φ
+
+/-- Exact graph of Abel--Jacobi on a divisor representative.
+
+Only points in the finite support of `D` are required to carry the source
+path-integral functional. Values of `φ` away from the support are irrelevant
+to the resulting free-abelian-group sum. -/
+def IsCurveDivisorAbelJacobiClassData (x₀ : X)
+    (D : CurveDivisorData X)
+    (q : CurveJacobianQuotientData X x₀) : Prop :=
+  ∃ φ : X → CurveJacobianDualData X,
+    (∀ x ∈ curveDivisorSupportData D,
+      IsCurvePathIntegralFunctionalData x₀ x (φ x)) ∧
+    curveJacobianClassData X x₀ (curveDivisorAbelJacobiLiftData φ D) = q
+
+/-- Peters--Sterk's Riemann constant associated to a supplied theta
+characteristic representative: `κ = α([θ₀])`.
+
+This is a graph predicate, not a selected value. Its independence of the
+divisor representative and of all chosen paths belongs to Sweep IV. -/
+def IsCurveRiemannConstantData (x₀ : X)
+    {form : CurveHolomorphicOneFormData X} {hform : form ≠ 0}
+    {K : CurveCanonicalDivisorData form hform}
+    (θ₀ : CurveThetaCharacteristicData K)
+    (κ : CurveJacobianQuotientData X x₀) : Prop :=
+  IsCurveDivisorAbelJacobiClassData x₀ θ₀.1 κ
 
 end LeanCategories.Algebra
