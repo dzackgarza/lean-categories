@@ -33,14 +33,22 @@ abbrev CrossedProductCarrier (f : Gal(K/F) × Gal(K/F) → Kˣ) : Type u :=
   CrossProductAlgebra f
 
 /-- The distinguished `K`-basis `(u_σ)` of the crossed-product carrier. -/
-noncomputable def crossedProductBasis (f : Gal(K/F) × Gal(K/F) → Kˣ) :
-    Basis Gal(K/F) K (CrossedProductCarrier f) :=
-  CrossProductAlgebra.basis
+noncomputable abbrev crossedProductBasis (f : Gal(K/F) × Gal(K/F) → Kˣ) :=
+  CrossProductAlgebra.basis (f := f)
 
 /-- The raw twisted multiplication data on the crossed-product carrier.
 The pinned owner defines this before requiring the cocycle law. -/
 def crossedProductMul (f : Gal(K/F) × Gal(K/F) → Kˣ)
     (x y : CrossedProductCarrier f) : CrossedProductCarrier f :=
   x * y
+
+/-- The crossed-product algebra attached to a multiplicative two-cocycle.
+
+The algebra laws and central-simple structure are supplied by the pinned
+`BrauerGroup` owner once the cocycle law is available; this alias records
+only the source's definition/name (FC01-C17-U078). -/
+abbrev CrossedProductAlgebraData
+    (f : Gal(K/F) × Gal(K/F) → Kˣ) [Fact <| IsMulCocycle₂ f] : Type u :=
+  CrossProductAlgebra f
 
 end LeanCategories.Algebra
