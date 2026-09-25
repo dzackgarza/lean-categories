@@ -18,10 +18,9 @@ arbitrary scheme by applying this construction on affine opens and sheafifying.
 
 A direct Lean presheaf `U ↦ Localization (nonZeroDivisors Γ(U, O_X))` would
 force restriction-compatibility proofs into the constructor.  Sweep III must
-not prove those propositions.  This file therefore records the exact affine
-local specification as a predicate on a sheaf together with its canonical map
-from `O_X`, then names the selected sheaf datum.  The existence, compatibility,
-and uniqueness/sheafification statements remain result-layer work.
+not prove those propositions.  This file therefore records candidate sheaf
+data together with the exact affine-local specification and leaves existence,
+compatibility, and uniqueness/sheafification to the result layer.
 -/
 
 @[expose] public noncomputable section
@@ -46,11 +45,6 @@ structure TotalQuotientSheafCandidateData (X : Scheme.{u}) where
   sheaf : TopCat.Sheaf CommRingCat X
   toSheaf : X.sheaf ⟶ sheaf
 
-/-- There is always ambient candidate data, so the source-specified datum can
-be selected without asking a caller for an existence proof. -/
-instance (X : Scheme.{u}) : Nonempty (TotalQuotientSheafCandidateData X) :=
-  ⟨⟨X.sheaf, 𝟙 _⟩⟩
-
 /-- Affine-local specification of Hartshorne's total quotient sheaf.
 
 On each affine open `U`, sections are identified with the total quotient ring
@@ -65,27 +59,22 @@ def IsTotalQuotientSheafData (X : Scheme.{u})
         CommRingCat.ofHom
           (algebraMap Γ(X, U) (totalQuotientRingData Γ(X, U)))
 
-/-- Hartshorne's sheaf of total quotient rings, selected by its exact affine
-local specification.  The later existence/specification theorem establishes
-that this selected datum satisfies `IsTotalQuotientSheafData`. -/
-def totalQuotientSheafData (X : Scheme.{u}) :
-    TotalQuotientSheafCandidateData X :=
-  Classical.epsilon (IsTotalQuotientSheafData X)
-
-/-- The selected total quotient sheaf `K_X`. -/
-abbrev totalQuotientRingSheafData (X : Scheme.{u}) :
+/-- The sheaf component of supplied total-quotient-sheaf candidate data. -/
+abbrev totalQuotientRingSheafData {X : Scheme.{u}}
+    (K : TotalQuotientSheafCandidateData X) :
     TopCat.Sheaf CommRingCat X :=
-  (totalQuotientSheafData X).sheaf
+  K.sheaf
 
-/-- The selected canonical morphism `O_X → K_X`. -/
-def toTotalQuotientSheafData (X : Scheme.{u}) :
-    X.sheaf ⟶ totalQuotientRingSheafData X :=
-  (totalQuotientSheafData X).toSheaf
+/-- The structure morphism `O_X → K_X` of supplied candidate data. -/
+def toTotalQuotientSheafData {X : Scheme.{u}}
+    (K : TotalQuotientSheafCandidateData X) :
+    X.sheaf ⟶ totalQuotientRingSheafData K :=
+  K.toSheaf
 
-/-- Hartshorne's `K_X^*` notation on an open `U`: the unit group of the
-selected total quotient ring sections. -/
-abbrev TotalQuotientUnitSectionsData (X : Scheme.{u}) (U : X.Opens) : Type u :=
-  ((totalQuotientRingSheafData X).presheaf.obj (op U) : Type u)ˣ
+/-- `K_X^*` notation for supplied candidate data on an open `U`. -/
+abbrev TotalQuotientUnitSectionsData {X : Scheme.{u}}
+    (K : TotalQuotientSheafCandidateData X) (U : X.Opens) : Type u :=
+  ((totalQuotientRingSheafData K).presheaf.obj (op U) : Type u)ˣ
 
 /-- Hartshorne's `O_X^*` notation on an open `U`: the unit group of regular
 sections. -/
