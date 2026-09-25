@@ -357,7 +357,7 @@ Next 1 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC16-C11-U034` | Construction/result | `FC16-C06-U021`, `FC16-C10-U002`, `FC16-C11-U024` | ready by recorded prerequisites | unmatched; author |
+| `FC16-C11-U034` | Construction/result | `FC16-C06-U021`, `FC16-C10-U002`, `FC16-C11-U024` | `Sweep-IV result layer` | unmatched; author |
 
 ## FC16 — Theorems
 
