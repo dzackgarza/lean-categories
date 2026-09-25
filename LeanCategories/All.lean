@@ -55,6 +55,7 @@ public import LeanCategories.Algebra.GlobalArtinData
 public import LeanCategories.Algebra.AbsoluteInertiaLimitData
 public import LeanCategories.Algebra.ProcyclicExponentData
 public import LeanCategories.Algebra.ProfiniteLocalReciprocityData
+public import LeanCategories.Algebra.QuasiFiniteFrobeniusData
 public import LeanCategories.Algebra.AtiyahMacdonald.PrimaryDecomposition
 public import LeanCategories.Algebra.AtiyahMacdonald.SubsetRadical
 public import LeanCategories.Algebra.AtiyahMacdonald.LocalProperty
