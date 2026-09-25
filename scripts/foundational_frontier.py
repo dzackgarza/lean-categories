@@ -162,13 +162,12 @@ class Mapping:
 
     @property
     def sweep_iii_blocked(self) -> bool:
-        """Whether the currently recorded realization route requires result-layer input.
+        """Whether the audited realization route crosses the Sweep-III proof boundary.
 
-        The marker preserves that result-layer residue for Sweep IV, but it does
-        not excuse the source's definitional content from Sweep III.  Once the
-        genuine definition prerequisites are ready, the scheduler must surface
-        the unit so its representation can be changed instead of waiting for a
-        theorem.
+        The marker leaves the source unit pending: it is not a delivered
+        definition.  Under the current no-proof Sweep-III contract, however, it
+        is not executable until the mapping is replaced by a source-faithful
+        proof-free route and the marker is removed.
         """
         return "[sweep-iii-blocked]" in self.verdict.lower()
 
@@ -704,6 +703,8 @@ def unit_blockers(
     source_id = unit.unit_id.split("-", 1)[0]
     explicit_dependencies = construction_dependencies(unit, mapping)
     blockers: list[str] = []
+    if phase == "Definitions" and mapping is not None and mapping.sweep_iii_blocked:
+        blockers.append("Sweep-III construction boundary")
     for dep in effective_dependencies(phase, unit, mapping):
         if phase == "Definitions" and source_id in CONTENT_CLASSIFIED_DEFINITION_SOURCES:
             dep_unit = catalogue_index.get(dep)
