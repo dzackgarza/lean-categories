@@ -130,6 +130,7 @@ public import LeanCategories.Topology.ClosedExactFormData
 public import LeanCategories.Topology.CornerBoundaryIntegralData
 public import LeanCategories.Topology.DeRhamCohomologyData
 public import LeanCategories.Topology.DensityIntegralData
+public import LeanCategories.Topology.DirectedTopologicalGroupColimitData
 public import LeanCategories.Topology.FlowVolumeMonotonicityData
 public import LeanCategories.Topology.RiemannianIntegrationData
 public import LeanCategories.Topology.SurfaceIntegralData

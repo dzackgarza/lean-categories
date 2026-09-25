@@ -82,4 +82,76 @@ def directedTopologicalGroupStageInvData
     (x : (F.obj i).X) : (F.obj i).X :=
   ι[(F.obj i).X] x
 
+/-- Raw identity, multiplication, and inversion operations on the underlying
+topological colimit.
+
+No group laws or continuity proofs are fields of this structure. -/
+structure DirectedTopologicalGroupColimitOperationData
+    (F : I ⥤ Grp TopCat.{u}) where
+  one : directedTopologicalGroupColimitCarrierData F
+  mul :
+    directedTopologicalGroupColimitCarrierData F →
+      directedTopologicalGroupColimitCarrierData F →
+        directedTopologicalGroupColimitCarrierData F
+  inv :
+    directedTopologicalGroupColimitCarrierData F →
+      directedTopologicalGroupColimitCarrierData F
+
+/-- The exact representative graph for Neukirch's direct-limit group
+operations.
+
+The identity is the image of the identity at every stage, multiplication of
+two elements represented in one stage is represented by their stagewise
+product, and inversion is represented by stagewise inversion.  Consistency of
+these equations across different stages and representatives is deliberately
+not proved here. -/
+def IsDirectedTopologicalGroupColimitOperationData
+    (F : I ⥤ Grp TopCat.{u})
+    (D : DirectedTopologicalGroupColimitOperationData F) : Prop :=
+  (∀ i : I,
+      D.one =
+        directedTopologicalGroupColimitInclusionData F i
+          (directedTopologicalGroupStageOneData F i)) ∧
+  (∀ (i : I) (x y : (F.obj i).X),
+      D.mul
+          (directedTopologicalGroupColimitInclusionData F i x)
+          (directedTopologicalGroupColimitInclusionData F i y) =
+        directedTopologicalGroupColimitInclusionData F i
+          (directedTopologicalGroupStageMulData F i x y)) ∧
+  (∀ (i : I) (x : (F.obj i).X),
+      D.inv (directedTopologicalGroupColimitInclusionData F i x) =
+        directedTopologicalGroupColimitInclusionData F i
+          (directedTopologicalGroupStageInvData F i x))
+
+/-- A default raw operation triple used only to make the candidate type
+inhabited for `Classical.epsilon`.
+
+This declaration asserts no source equation. -/
+def directedTopologicalGroupColimitDefaultOperationData
+    (F : I ⥤ Grp TopCat.{u}) :
+    DirectedTopologicalGroupColimitOperationData F := by
+  let i : I := Classical.choice (inferInstance : Nonempty I)
+  let z : directedTopologicalGroupColimitCarrierData F :=
+    directedTopologicalGroupColimitInclusionData F i
+      (directedTopologicalGroupStageOneData F i)
+  exact
+    { one := z
+      mul := fun _ _ => z
+      inv := fun _ => z }
+
+/-- Neukirch's direct-limit group-operation data, selected from the exact
+stage-representative graph.
+
+The theorem layer proves that this selected triple satisfies
+`IsDirectedTopologicalGroupColimitOperationData`, then derives the group laws,
+continuity, and the homomorphism properties of the canonical inclusions.
+Sweep III performs none of those proofs. -/
+def directedTopologicalGroupColimitOperationData
+    (F : I ⥤ Grp TopCat.{u}) :
+    DirectedTopologicalGroupColimitOperationData F :=
+  @Classical.epsilon
+    (DirectedTopologicalGroupColimitOperationData F)
+    ⟨directedTopologicalGroupColimitDefaultOperationData F⟩
+    (IsDirectedTopologicalGroupColimitOperationData F)
+
 end LeanCategories.Topology
