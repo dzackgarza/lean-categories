@@ -109,6 +109,7 @@ public import LeanCategories.Algebra.HarishChandraData
 public import LeanCategories.Algebra.FormalWeightConvolutionData
 public import LeanCategories.Algebra.WeylFunctionData
 public import LeanCategories.Algebra.IntegralInnerReductionData
+public import LeanCategories.Algebra.InducedRepresentationData
 public import LeanCategories.Algebra.AdjointChevalleyGroupData
 public import LeanCategories.Algebra.ChevalleyReductionData
 public import LeanCategories.Algebra.ModuleRootElementData
