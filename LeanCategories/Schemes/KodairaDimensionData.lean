@@ -78,15 +78,4 @@ def IsKodairaDimensionData
         (∃ n : ℕ, 0 < n ∧ D.systemNonempty n) ∧
           pluricanonicalTranscendenceDegreeData D = (d + 1 : ℕ)
 
-/-- Hartshorne's Kodaira dimension, selected from the exact pluricanonical
-transcendence-degree graph.
-
-The theorem layer proves that the selected integer satisfies the defining
-graph and compares this definition with pluricanonical maps and birational
-models. -/
-def kodairaDimensionData
-    {k : Type u} [Field k]
-    (D : PluricanonicalSectionRingData k) : ℤ :=
-  Classical.epsilon (IsKodairaDimensionData D)
-
 end LeanCategories.Schemes
