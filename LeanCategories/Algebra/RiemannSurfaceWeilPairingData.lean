@@ -30,9 +30,11 @@ torsion are separate results. This is not a bundled pairing on that torsion
 group. The principal-divisor equations are recorded directly as coefficient
 predicates, without assuming the specification of a selected divisor.
 
-The original June-2024 extraction is unavailable on this host. The indexed
-source clause and the existing U024/U025 owners are the transcription
-inputs; complete original-prose acceptance remains open.
+The admitted Peters--Sterk Version JUNE 2024 PDF was re-read directly for
+acceptance. Its §16.4.C clause gives exactly the displayed representative
+quotient above; the immediately following prose treats nonvanishing,
+root-of-unity image, and Weil-reciprocity consequences as results rather than
+as part of this representative formula.
 -/
 
 @[expose] public noncomputable section

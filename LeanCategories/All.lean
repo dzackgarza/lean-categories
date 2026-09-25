@@ -57,6 +57,7 @@ public import LeanCategories.Algebra.AtiyahMacdonald.LocalProperty
 public import LeanCategories.Algebra.AtiyahMacdonald.IdealIntegralClosure
 public import LeanCategories.Algebra.AdditiveInvariant
 public import LeanCategories.Algebra.AssociatedGraded
+public import LeanCategories.Algebra.InjectiveHull
 public import LeanCategories.Algebra.DimensionTheory
 public import LeanCategories.Algebra.Euclidean
 public import LeanCategories.Algebra.Ideals
@@ -119,7 +120,7 @@ public import LeanCategories.Modules.Bilinear.Valued
 public import LeanCategories.Modules.Quadratic.Valued
 public import LeanCategories.Lattices.Valued
 public import LeanCategories.Orders
-public import LeanCategories.Topology.Box
+public import LeanCategories.Topology.BundleLocalCohomologyData
 public import LeanCategories.Topology.CoveringDimension
 public import LeanCategories.Topology.CoveringTerminology
 public import LeanCategories.Topology.DunceCap
@@ -127,15 +128,13 @@ public import LeanCategories.Topology.LocallyMetrizable
 public import LeanCategories.Topology.LinearGraph
 public import LeanCategories.Topology.GraphReduction
 public import LeanCategories.Topology.GraphRealization
-public import LeanCategories.Topology.ManifoldTerminology
-public import LeanCategories.Topology.OrderExamples
 public import LeanCategories.Topology.RealProjectivePlane
 public import LeanCategories.Topology.SurfaceSchemes
 public import LeanCategories.Topology.SurfaceTriangulation
-public import LeanCategories.Topology.UniformMetric
 public import LeanCategories.Topology.WindingNumber
 public import LeanCategories.Schemes
 public import LeanCategories.Schemes.BirationalSurfaceModels
+public import LeanCategories.Schemes.FormalCompletionData
 public import LeanCategories.Topology.DeltaComplex
 public import LeanCategories.Topology.RealGrassmannian
 public import LeanCategories.Homological
@@ -159,6 +158,7 @@ public import LeanCategories.Homological.KoszulExteriorDescription
 public import LeanCategories.Homological.KoszulTransition
 public import LeanCategories.Homological.FiniteFreeResolution
 public import LeanCategories.Homological.SheafPresheafComparison
+public import LeanCategories.Homological.SheafExtData
 public import LeanCategories.Homological.WeaklyEffaceable
 public import LeanCategories.Homological.IsHereditary
 public import LeanCategories.Homological.FrobeniusAlgebra

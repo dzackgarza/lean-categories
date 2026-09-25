@@ -95,5 +95,8 @@ public import LeanCategories.Lattices.Valued.AdelicClass
 public import LeanCategories.Lattices.Valued.LocalDensity
 public import LeanCategories.Lattices.Valued.DensityProduct
 public import LeanCategories.Lattices.Valued.AdelicSpinorNorm
+public import LeanCategories.Lattices.Valued.K3WeylChamberData
+public import LeanCategories.Lattices.Valued.K3GenericPeriodData
+public import LeanCategories.Lattices.Valued.K3EnriquesPeriodData
 
 @[expose] public section

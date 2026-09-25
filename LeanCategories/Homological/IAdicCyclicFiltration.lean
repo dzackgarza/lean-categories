@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Homological.RelativeCyclicHomology
+public import LeanCategories.Homological.HochschildComplex
 
 /-!
 # The I-adic filtration of the cyclic module of an algebra
@@ -35,7 +35,6 @@ universe u v
 variable (k : Type u) [CommRing k]
 variable (R : Type v) [Ring R] [Algebra k R]
 variable (I : Ideal R) [I.IsTwoSided]
-variable [Algebra k (R ⧸ I)]
 
 /-- A pure tensor generator of `F_p^i`: each factor is supplied together with
 an exponent `i_j` and a proof that it lies in `I^{i_j}`, while the exponents
@@ -62,46 +61,5 @@ def iAdicHochschildFiltration (p i : ℕ) :
     Submodule k (HochschildChainDegree (k := k) (R := R) (M := R) p) :=
   Submodule.span k
     (Set.range (iAdicHochschildPure (k := k) (R := R) (I := I) (p := p) (i := i)))
-
-/-- Definition-layer realization that the `F_p^i` form Weibel's decreasing
-filtration by cyclic submodules of `Z(R)` and that `F_*^1` is the relative
-cyclic module `Z(R,I)`. -/
-structure IAdicCyclicFiltrationRealization
-    (D : RelativeCyclicIdealRealization k R I) where
-  /-- Face maps preserve every filtration level. -/
-  face_preserves : ∀ (p i : ℕ) (j : Fin (p + 2))
-      (x : HochschildChainDegree (k := k) (R := R) (M := R) (p + 1)),
-    x ∈ iAdicHochschildFiltration k R I (p + 1) i →
-      (D.sourceDegreeIso p).hom
-          (D.ZR.obj.δ j ((D.sourceDegreeIso (p + 1)).inv x)) ∈
-        iAdicHochschildFiltration k R I p i
-  /-- Degeneracy maps preserve every filtration level. -/
-  degeneracy_preserves : ∀ (p i : ℕ) (j : Fin (p + 1))
-      (x : HochschildChainDegree (k := k) (R := R) (M := R) p),
-    x ∈ iAdicHochschildFiltration k R I p i →
-      (D.sourceDegreeIso (p + 1)).hom
-          (D.ZR.obj.σ j ((D.sourceDegreeIso p).inv x)) ∈
-        iAdicHochschildFiltration k R I (p + 1) i
-  /-- The cyclic operator preserves every filtration level. -/
-  cyclic_preserves : ∀ (p i : ℕ)
-      (x : HochschildChainDegree (k := k) (R := R) (M := R) p),
-    x ∈ iAdicHochschildFiltration k R I p i →
-      (D.sourceDegreeIso p).hom
-          ((D.ZR.t p).hom ((D.sourceDegreeIso p).inv x)) ∈
-        iAdicHochschildFiltration k R I p i
-  /-- The filtration is decreasing in `i`. -/
-  decreasing : ∀ (p i : ℕ),
-    iAdicHochschildFiltration k R I p (i + 1) ≤
-      iAdicHochschildFiltration k R I p i
-  /-- Degreewise identification `F_p^1 ≅ Z_p(R,I)`. -/
-  relativeDegreeIso : ∀ p : ℕ,
-    D.kernel.obj.obj.obj (op ⦋p⦌) ≅
-      ModuleCat.of k (iAdicHochschildFiltration k R I p 1)
-  /-- Under that identification, the relative cyclic-module inclusion is the
-  ordinary submodule inclusion `F_p^1 ↪ Z_p(R)`. -/
-  relative_inclusion : ∀ (p : ℕ) (x : D.kernel.obj.obj.obj (op ⦋p⦌)),
-    (((relativeDegreeIso p).hom x : iAdicHochschildFiltration k R I p 1) :
-        HochschildChainDegree (k := k) (R := R) (M := R) p) =
-      (D.sourceDegreeIso p).hom (D.kernel.ι.hom.app (op ⦋p⦌) x)
 
 end LeanCategories.Homological

@@ -8,6 +8,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.Algebra.Homology.HomologicalComplex
 public import Mathlib.Data.Finsupp.Defs
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+public import Mathlib.LinearAlgebra.TensorProduct.Map
 
 /-!
 # Koszul complexes for central sequences
@@ -336,5 +337,30 @@ noncomputable def canonicalKoszulComplexRealization {n : ℕ} (x : Fin n → R)
 /-- The one-element sequence used for `K(x) : 0 → R → R → 0`. -/
 def oneElementKoszulSequence (x : R) : Fin 1 → R :=
   fun _ => x
+
+section Coefficients
+
+universe v
+
+variable (A : Type u) [CommRing A]
+variable (M : Type v) [AddCommGroup M] [Module A M]
+
+/-- Degree `p` of Matsumura's coefficient Koszul construction
+`K(x,M)=K(x)⊗_A M` (`FC13-C06-U010`). -/
+abbrev KoszulCoefficientDegree (n p : ℕ) :=
+  TensorProduct A (KoszulDegree A n p) M
+
+/-- The coefficient Koszul differential is the signed Koszul differential
+tensored with the identity of `M`.
+
+This is the Sweep-III construction data.  Assembling these maps into a
+`ChainComplex` uses the result `d²=0` and is therefore left to Sweep IV. -/
+noncomputable def koszulCoefficientBoundaryLinearMap {n p : ℕ} (x : Fin n → A) :
+    KoszulCoefficientDegree A M n (p + 1) →ₗ[A]
+      KoszulCoefficientDegree A M n p :=
+  TensorProduct.map (koszulBoundaryLinearMap A x)
+    (LinearMap.id : M →ₗ[A] M)
+
+end Coefficients
 
 end LeanCategories.Homological

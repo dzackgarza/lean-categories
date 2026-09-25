@@ -7,6 +7,7 @@ module
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.GroupTheory.Coxeter.Length
 public import Mathlib.LinearAlgebra.Finsupp.LSum
+public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 
 @[expose] public section
 
@@ -77,5 +78,22 @@ noncomputable def genericRightOperator
     (cs : CoxeterSystem M W) (a b : B → A) (t : B) (x : GenericModule A W) :
     GenericModule A W :=
   x.sum fun w c => c • genericRightOnBasis cs a b t w
+
+/-- Humphreys' left generic multiplication endomorphism `lambda_s`.
+
+This is the native basis-linear extension of `genericLeftOnBasis`, so
+its A-linearity is construction data rather than a separate theorem. -/
+noncomputable def genericLeftEndomorphism
+    {B W A : Type*} [Group W] [CommRing A] {M : CoxeterMatrix B}
+    (cs : CoxeterSystem M W) (a b : B → A) (s : B) :
+    Module.End A (GenericModule A W) :=
+  (Finsupp.basisSingleOne (R := A)).constr A (genericLeftOnBasis cs a b s)
+
+/-- Humphreys' right generic multiplication endomorphism `rho_t`. -/
+noncomputable def genericRightEndomorphism
+    {B W A : Type*} [Group W] [CommRing A] {M : CoxeterMatrix B}
+    (cs : CoxeterSystem M W) (a b : B → A) (t : B) :
+    Module.End A (GenericModule A W) :=
+  (Finsupp.basisSingleOne (R := A)).constr A (genericRightOnBasis cs a b t)
 
 end LeanCategories.Hecke

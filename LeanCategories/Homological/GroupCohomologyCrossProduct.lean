@@ -4,21 +4,19 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
-public import Mathlib.RingTheory.TensorProduct.Basic
+public import LeanCategories.Homological.GroupCohomologyCrossProductComparison
 
 /-!
 # Cohomological cross products for groups
 
-Weibel, *An Introduction to Homological Algebra* (1994), Construction 6.1.14,
-pp. 160--166 (FC05-C06-U016).
+Public resolution-independent API for Weibel, *An Introduction to Homological
+Algebra* (1994), Construction 6.1.14, pp. 160--166 (FC05-C06-U016).
 
-Projective resolutions for `G`, `H`, and `G × H` produce graded bilinear maps
-`H^p(G;ℤ) ⊗ H^q(H;ℤ) → H^{p+q}(G×H;ℤ)`.  This file records the
-definition-layer realization data at the resulting cohomology objects.
-
-Construction of these maps from tensor-product total complexes, naturality,
-and the comparison theorem are result-level content.
+The resolution-level tensor-total construction and homology descent are in
+`GroupCohomologyCrossProductCore`; chosen resolution data and the individual
+comparison morphisms are cached in `GroupCohomologyCrossProductTransport`, and
+the source-side comparison composite in `GroupCohomologyCrossProductComparison`.
+This module contains only the final comparison back to group cohomology.
 -/
 
 @[expose] public section
@@ -28,24 +26,36 @@ noncomputable section
 namespace LeanCategories.Homological
 
 open CategoryTheory
-open scoped TensorProduct
-
 variable (G : Type) [Group G]
 variable (H : Type) [Group H]
 
-/-- Definition-layer realization of Weibel's cohomological cross product. -/
-structure GroupCohomologyCrossProduct where
-  /-- Chosen projective resolution of the trivial integral `G`-module. -/
-  resolutionG : ProjectiveResolution (Rep.trivial ℤ G ℤ)
-  /-- Chosen projective resolution of the trivial integral `H`-module. -/
-  resolutionH : ProjectiveResolution (Rep.trivial ℤ H ℤ)
-  /-- Chosen projective resolution of the trivial integral `(G×H)`-module. -/
-  resolutionProd : ProjectiveResolution (Rep.trivial ℤ (G × H) ℤ)
-  /-- The graded cross-product maps. -/
-  map : ∀ p q : ℕ,
-    TensorProduct ℤ
-        (groupCohomology (Rep.trivial ℤ G ℤ) p)
-        (groupCohomology (Rep.trivial ℤ H ℤ) q) →ₗ[ℤ]
-      groupCohomology (Rep.trivial ℤ (G × H) ℤ) (p + q)
+attribute [-instance] Int.instRing Int.instSemiring Int.instCommSemiring Int.instAddCommGroup
+
+namespace GroupCohomologyCrossProduct
+
+variable (X : GroupCohomologyCrossProduct G H)
+
+/-- The constructed cross product transported through the canonical
+resolution comparisons, as a morphism in `ModuleCat ℤ`. -/
+noncomputable def map (p q : ℕ) :=
+  ModuleCat.ofHom <|
+    (targetComparisonInv G H X (p + q)).hom.comp
+      (sourceToResolutionMap G H X p q).hom
+
+@[reassoc (attr := simp)]
+lemma map_groupCohomologyIso_hom (p q : ℕ) :
+    map G H X p q ≫
+        (groupCohomologyIso (Rep.trivial ℤ (G × H) ℤ) (p + q)
+          X.tensorResolution.toProjectiveResolution).hom =
+      sourceComparison G H X p q ≫ resolutionMap G H X p q := by
+  change
+    (sourceComparison G H X p q ≫ resolutionMap G H X p q ≫
+      targetComparisonInv G H X (p + q)) ≫
+        (groupCohomologyIso (Rep.trivial ℤ (G × H) ℤ) (p + q)
+          X.tensorResolution.toProjectiveResolution).hom = _
+  simp only [Category.assoc, targetComparisonInv,
+    groupCohomologyResolutionComparisonInv_comp_hom, Category.comp_id]
+
+end GroupCohomologyCrossProduct
 
 end LeanCategories.Homological

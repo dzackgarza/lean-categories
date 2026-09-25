@@ -96,6 +96,15 @@ noncomputable def koszulCoefficientComplex (M : ModuleCat A) :
   ((MonoidalCategory.tensorRight M).mapHomologicalComplex (ComplexShape.down ℕ)).obj
     (koszulComplex A f (fun _ _ ↦ mul_comm _ _))
 
+/-- Matsumura's Koszul homology `H_q(f, M)` (`FC13-C06-U011`): the degree-`q`
+homology object of the coefficient Koszul complex `K_•(f; M)`.
+
+The identifications of `H_0` with the quotient by `(f)` and of top homology with
+the common annihilator are results about this object and are not part of this
+Sweep-III definition. -/
+noncomputable def koszulCoefficientHomology (M : ModuleCat A) (q : ℕ) : ModuleCat A :=
+  (koszulCoefficientComplex A f M).homology q
+
 end HartshorneCoefficientComplex
 
 end LeanCategories.Homological
