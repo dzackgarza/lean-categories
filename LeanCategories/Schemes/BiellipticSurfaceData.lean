@@ -48,7 +48,8 @@ An abelian variety of relative dimension one is an elliptic curve. The
 abelian-variety carrier already supplies the proper geometrically integral
 group scheme and its distinguished identity point; this predicate records only
 the dimension-one condition. -/
-def IsEllipticCurveData (E : AbelianVariety ℂ) : Prop :=
+def IsEllipticCurveData {K : Type*} [Field K]
+    (E : AbelianVariety K) : Prop :=
   SmoothOfRelativeDimension 1 E.toOver.hom
 
 /-- Raw action of a group on an object of a category. The action laws are
