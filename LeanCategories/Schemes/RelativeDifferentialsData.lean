@@ -70,14 +70,10 @@ def IsConormalModulePresentationData
         Ideal.toCotangent (i.ker.ideal U)
           ⟨W.presheaf.map j.op x.1, hx⟩
 
-/-- Candidate carrier for a conormal sheaf.  Keeping the carrier separate from
-its specification makes the ambient type nonempty without proving the conormal
-sheaf gluing theorem. -/
+/-- Candidate carrier for a conormal sheaf.  Source-faithfulness is recorded
+separately by `IsConormalModuleData`; no default candidate is selected. -/
 structure ConormalModuleCandidateData (W : Scheme.{u}) where
   module : W.Modules
-
-instance (W : Scheme.{u}) : Nonempty (ConormalModuleCandidateData W) :=
-  ⟨⟨SheafOfModules.unit W.ringCatSheaf⟩⟩
 
 /-- A candidate module is the conormal module of a closed immersion when it has
 affine `I/I²` presentations compatible with restriction. -/
@@ -86,12 +82,6 @@ def IsConormalModuleData
     (C : ConormalModuleCandidateData W) : Prop :=
   ∃ D : ConormalModulePresentationData i C.module,
     IsConormalModulePresentationData i C.module D
-
-/-- The conormal-module datum `I/I²` selected by its affine specification.
-Existence of a candidate satisfying the specification is a Sweep-IV theorem. -/
-def conormalModuleData
-    (i : Z ⟶ W) [IsClosedImmersion i] : W.Modules :=
-  (Classical.epsilon (IsConormalModuleData i)).module
 
 /-- The canonical open subscheme of `X ×[Y] X` in which the diagonal is a
 closed immersion. -/
@@ -103,15 +93,22 @@ def relativeDifferentialsDiagonalLift (f : X ⟶ Y) :
     X ⟶ (relativeDifferentialsCoborder f).toScheme :=
   (pullback.diagonal f).liftCoborder
 
-/-- The conormal module `I/I²` of the diagonal inside its coborder. -/
-def relativeDifferentialsConormalData (f : X ⟶ Y) :
-    (relativeDifferentialsCoborder f).toScheme.Modules :=
-  conormalModuleData (pullback.diagonal f).liftCoborder
+/-- Exact specification saying that supplied module data are the conormal
+module of the diagonal inside its canonical coborder. -/
+def IsRelativeDifferentialsConormalData (f : X ⟶ Y)
+    (C : ConormalModuleCandidateData (relativeDifferentialsCoborder f).toScheme) : Prop :=
+  IsConormalModuleData (pullback.diagonal f).liftCoborder C
 
-/-- Hartshorne's relative differential sheaf datum
-`Ω_{X/Y} = Δ^*(I/I²)`. -/
-def relativeDifferentialsData (f : X ⟶ Y) : X.Modules :=
+/-- Hartshorne's relative differential sheaf construction from supplied
+conormal-module data: `Ω_{X/Y} = Δ^*(I/I²)`.
+
+The separate predicate `IsRelativeDifferentialsConormalData` records whether
+the supplied module is the source conormal module; no gluing/existence result
+is hidden in this constructor. -/
+def relativeDifferentialsData (f : X ⟶ Y)
+    (C : ConormalModuleCandidateData (relativeDifferentialsCoborder f).toScheme) :
+    X.Modules :=
   (Scheme.Modules.pullback (pullback.diagonal f).liftCoborder).obj
-    (relativeDifferentialsConormalData f)
+    C.module
 
 end LeanCategories.Schemes
