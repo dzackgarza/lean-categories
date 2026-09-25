@@ -7,6 +7,7 @@ module
 public import LeanCategories.Topology.HypersurfaceUnfoldingData
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
 
 /-!
 # The unfolding family over its discriminant complement
