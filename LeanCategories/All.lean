@@ -178,6 +178,7 @@ public import LeanCategories.Schemes
 public import LeanCategories.Schemes.BirationalSurfaceModels
 public import LeanCategories.Schemes.FormalCompletionData
 public import LeanCategories.Schemes.LocalIntersectionMultiplicityData
+public import LeanCategories.Schemes.CurveIntersectionNumberData
 public import LeanCategories.Topology.DeltaComplex
 public import LeanCategories.Topology.ComplexOfSpacesData
 public import LeanCategories.Topology.RealGrassmannian

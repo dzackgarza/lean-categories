@@ -233,23 +233,23 @@ Next 5 open units in source traversal order:
 
 ## FC12 — Definitions
 
-Delivered/directly reusable by mapping: **22/44**; pending realization: **22** (unmatched=22).
-Delivered/direct-reuse spans: `FC12-C01-U002`, `FC12-C01-U013`, `FC12-C02-U004`, `FC12-C02-U017`–`FC12-C02-U018`, `FC12-C03-U001`, `FC12-C03-U004`, `FC12-C03-U020`, `FC12-C04-U001`, `FC12-C04-U017`, `FC12-C05-U003`, `FC12-C05-U014`, `FC12-C07-U001`, `FC12-C08-U003`–`FC12-C08-U004`, `FC12-C08-U021`, `FC12-C09-U003`, `FC12-A-U003`–`FC12-A-U004`, `FC12-A-U006`, `FC12-B-U001`, `FC12-B-U005`.
+Delivered/directly reusable by mapping: **23/44**; pending realization: **21** (unmatched=21).
+Delivered/direct-reuse spans: `FC12-C01-U002`–`FC12-C01-U003`, `FC12-C01-U013`, `FC12-C02-U004`, `FC12-C02-U017`–`FC12-C02-U018`, `FC12-C03-U001`, `FC12-C03-U004`, `FC12-C03-U020`, `FC12-C04-U001`, `FC12-C04-U017`, `FC12-C05-U003`, `FC12-C05-U014`, `FC12-C07-U001`, `FC12-C08-U003`–`FC12-C08-U004`, `FC12-C08-U021`, `FC12-C09-U003`, `FC12-A-U003`–`FC12-A-U004`, `FC12-A-U006`, `FC12-B-U001`, `FC12-B-U005`.
 Phase blocker: none
 
 Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC12-C01-U003` | Definition I.3 | `FC12-C01-U002` | ready by recorded prerequisites | unmatched; author |
 | `FC12-C01-U008` | Notation | `FC12-C01-U004` | ready by recorded prerequisites | unmatched; author |
 | `FC12-C01-U012` | Construction / interpretation I.10 | `FC12-C01-U001`, `FC12-C01-U004` | ready by recorded prerequisites | unmatched; author |
 | `FC12-C02-U001` | Definition / construction II.1 | — | ready by recorded prerequisites | unmatched; author |
 | `FC12-C02-U005` | Definition / construction II.5 | — | ready by recorded prerequisites | unmatched; author |
+| `FC12-C03-U015` | Definition / construction III.14 | — | ready by recorded prerequisites | unmatched; author |
 
 ## FC12 — Theorems
 
-Delivered/directly reusable by mapping: **0/193**; pending realization: **193** (mathlib=7, project-existing=4, unmatched=182).
+Delivered/directly reusable by mapping: **0/194**; pending realization: **194** (mathlib=7, project-existing=4, unmatched=183).
 Delivered/direct-reuse spans: none.
 Phase blocker: Sweep III is not complete corpus-wide: FC06, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 
@@ -259,9 +259,9 @@ Next 5 open units in source traversal order:
 | --- | --- | --- | --- | --- |
 | `FC12-C01-U001` | Fact I.1 | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC12-C01-U002` | Definition I.2 | — | ready by recorded prerequisites | unmatched; theorem clause pending |
+| `FC12-C01-U003` | Definition I.3 | `FC12-C01-U002` | ready by recorded prerequisites | unmatched; theorem clause pending |
 | `FC12-C01-U005` | Lemma I.5 | — | ready by recorded prerequisites | unmatched; residue audit |
 | `FC12-C01-U007` | Fact I.7 | — | ready by recorded prerequisites | unmatched; residue audit |
-| `FC12-C01-U014` | Theorem I.11 | — | ready by recorded prerequisites | unmatched; residue audit |
 
 ## FC13 — Definitions
 
