@@ -209,11 +209,11 @@ Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC11-C20-U037` | Definition / construction / notation | — | ready by recorded prerequisites | reference-port; port |
-| `FC11-C20-U051` | Definition / construction / notation | — | ready by recorded prerequisites | unmatched; author |
 | `FC11-C20-U064` | Definition / construction / notation | — | ready by recorded prerequisites | unmatched; author |
 | `FC11-A-U052` | Construction / comparison | — | ready by recorded prerequisites | unmatched; author |
 | `FC11-B-U003` | Definition / construction / notation | — | ready by recorded prerequisites | unmatched; author |
+| `FC11-B-U016` | Definition / construction / notation | — | ready by recorded prerequisites | unmatched; author |
+| `FC11-B-U024` | Definition / construction / notation | — | ready by recorded prerequisites | unmatched; author |
 
 ## FC11 — Theorems
 
