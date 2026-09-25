@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Topology.CohomologyCrossProductData
+public import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # Steenrod-operation data
@@ -79,6 +80,56 @@ of Hatcher's law clauses.  The law predicates above, together with Cartan,
 suspension compatibility, and the Bockstein comparison, are verified only in
 the theorem sweep. -/
 def steenrodSquareData : SteenrodSquareData :=
+  Classical.choice inferInstance
+
+/-- Mod-`p` singular cohomology in degree `n`. -/
+abbrev ModPSingularCohomologyData (p : ℕ) (X : TopCat.{0}) (n : ℕ) :
+    ModuleCat.{0} (ZMod p) :=
+  singularCohomologyModuleData (ZMod p) X (ModuleCat.of (ZMod p) (ZMod p)) n
+
+/-- Raw family of odd-prime Steenrod reduced-power operations.
+
+For the source application `p` is an odd prime.  The carrier makes sense
+for every natural `p`, while the source-facing selector below takes the
+prime and oddness hypotheses explicitly. -/
+structure SteenrodReducedPowerData (p : ℕ) where
+  power :
+    ∀ (X : TopCat.{0}) (n i : ℕ),
+      ModPSingularCohomologyData p X n ⟶
+        ModPSingularCohomologyData p X (n + (2 * (p - 1)) * i)
+
+instance (p : ℕ) : Nonempty (SteenrodReducedPowerData p) :=
+  ⟨⟨fun _ _ _ => 0⟩⟩
+
+/-- Naturality predicate for a raw reduced-power family. -/
+def IsSteenrodReducedPowerNaturalData {p : ℕ}
+    (P : SteenrodReducedPowerData p) : Prop :=
+  ∀ {X Y : TopCat.{0}} (f : X ⟶ Y) (n i : ℕ),
+    P.power Y n i ≫
+        singularCohomologyMapData (ZMod p) f
+          (n + (2 * (p - 1)) * i) =
+      singularCohomologyMapData (ZMod p) f n ≫ P.power X n i
+
+/-- The source normalization `P^0 = id`. -/
+def IsSteenrodReducedPowerZeroData {p : ℕ}
+    (P : SteenrodReducedPowerData p) : Prop :=
+  ∀ (X : TopCat.{0}) (n : ℕ), P.power X n 0 = 𝟙 _
+
+/-- Hatcher's odd-prime instability clause `P^i(a)=0` when `2i>n`. -/
+def IsSteenrodReducedPowerUnstableData {p : ℕ}
+    (P : SteenrodReducedPowerData p) : Prop :=
+  ∀ (X : TopCat.{0}) (n i : ℕ) (_ : n < 2 * i)
+      (a : ModPSingularCohomologyData p X n),
+    (P.power X n i).hom a = 0
+
+/-- Source-facing reduced-power operation data for an odd prime.
+
+The primality and oddness assumptions are exactly Hatcher's source
+hypotheses.  No Cartan, suspension, `p`th-power, normalization, or
+instability proof is required by this constructor. -/
+def steenrodReducedPowerData
+    (p : ℕ) (_hp : Nat.Prime p) (_hodd : p ≠ 2) :
+    SteenrodReducedPowerData p :=
   Classical.choice inferInstance
 
 end LeanCategories.Topology
