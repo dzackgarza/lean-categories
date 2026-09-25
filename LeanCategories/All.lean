@@ -92,6 +92,7 @@ public import LeanCategories.Algebra.PolynomialPowerSeries
 public import LeanCategories.Algebra.PBWFiltrationData
 public import LeanCategories.Algebra.LocallyNilpotentExponentialData
 public import LeanCategories.Algebra.CayleyDerivationData
+public import LeanCategories.Algebra.OneDimensionalBorelActionData
 public import LeanCategories.Algebra.MatrixFamilies
 public import LeanCategories.Algebra.MonoidAlgebra
 public import LeanCategories.Algebra.PureSubmodule

@@ -52,4 +52,20 @@ def IsOneDimensionalBorelActionData
     (h : L) + (n : L) = x ∧
       y = oneDimensionalBorelPresentedActionData b lam h n c
 
+/-- Proof-free presentation of Humphreys' one-dimensional Borel module.
+
+The carrier is the one-dimensional vector space `K`, and `actionGraph`
+records exactly the source action relation on ambient Borel elements. The
+result layer proves that the graph is functional on the standard Borel and
+satisfies the Lie-module laws. -/
+structure OneDimensionalBorelModulePresentationData
+    (b : LieAlgebra.Basis I H) (lam : Module.Dual K H) where
+  actionGraph : L → K → K → Prop
+
+/-- The source-prescribed presentation of `D_λ`. -/
+def oneDimensionalBorelModulePresentationData
+    (b : LieAlgebra.Basis I H) (lam : Module.Dual K H) :
+    OneDimensionalBorelModulePresentationData b lam where
+  actionGraph := IsOneDimensionalBorelActionData b lam
+
 end LeanCategories.Algebra
