@@ -542,3 +542,17 @@ coherent family interpretation, and focused target-pin validation is green;
 the printed ambient-map display remains recorded here as a source defect.
 C18-U035/U036 still need their actual geometric transport and vanishing-cycle
 constructions.
+
+### FC07-C04-U171/U173 require a singular-cohomology suspension owner
+
+Hatcher's Steenrod-square and odd-prime reduced-power definitions require
+compatibility with the canonical suspension isomorphism in singular
+cohomology. The 2026-09-25 State-2 support audit found no such owner in the
+project, pinned Mathlib, or the locally indexed/reference formalization
+material. U114 already supplies the Bockstein route and U019 supplies cup
+products, so suspension is the specific missing support. Supplying an
+arbitrary suspension map would weaken the definitions; constructing the
+canonical comparison requires result-level cohomology machinery. The
+canonical U171/U173 mapping rows therefore retain explicit
+`[sweep-iii-blocked]` status rather than manufacturing law proofs or a
+surrogate operation.
