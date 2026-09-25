@@ -92,4 +92,12 @@ def IsDiagonalizableGroupData
     IsRationalRepresentationCoordinateData G V D →
       HasCharacterWeightDecompositionData G V D
 
+/-- Humphreys' definition of a torus: a connected diagonalizable algebraic
+group.  The equivalent classification by powers of `G_m` is result content. -/
+def IsTorusData
+    {K : Type u} [Field K] [IsAlgClosed K]
+    (G : AffineAlgebraicGroup K) : Prop :=
+  IsDiagonalizableGroupData G ∧
+    IsConnected (Set.univ : Set G.1.X.left)
+
 end LeanCategories.AlgebraicGeometry
