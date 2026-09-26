@@ -1,5 +1,23 @@
 # Active mathematical work
 
+## Current position
+
+The definition mapping convergence gate is closed. Sweep III is active, with
+`realization-stub-audit` first in the ready lane. Run
+`python3 scripts/output_check.py` before selecting another unit, then
+`python3 scripts/stub_population.py` to obtain the current audit population.
+Confirm a row only against the declaration that constructs its source object;
+rebuild supplied-data and candidate stand-ins at their mathematical owners.
+The source workstreams below remain open wherever the whole-source ledger has an
+unticked Definitions cell. After the audit and remaining source realizations,
+complete the source-conformance gate before beginning Sweep IV.
+
+The [whole-source ledger](corpus/foundational-corpus-status.md) owns sweep closure;
+the generated [frontier](FOUNDATIONAL_FRONTIER.md) and
+[definition index](FOUNDATIONAL_DEFINITIONS.tsv) select live units. The tables
+below retain dependency contracts and prior acceptance evidence. Recompute their
+populations instead of treating recorded counts as current.
+
 ## Execution DAG
 
 The nodes below reference the full sweep obligations in this file. `Needs`
