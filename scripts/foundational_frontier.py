@@ -461,22 +461,6 @@ def is_definition(unit: Unit, mapping: Mapping | None = None) -> bool:
     if mapping is not None and mapping.definition_only:
         return True
     label = kind_label(unit.kind)
-    # Source rows whose primary grammatical role is an example belong to
-    # Sweep IV under the repository phase contract. An audited mixed example
-    # can opt back into Sweep III only through the explicit [definition-only]
-    # marker handled above.
-    if label.startswith("example"):
-        return False
-    # A mixed label containing an example is likewise theorem-only when the
-    # canonical mapping explicitly marks the row as a Sweep-III blocker but
-    # does not identify any definition-only layer. This is the audited shape
-    # of FC12's Steiner-surface example.
-    if mapping is not None and mapping.sweep_iii_blocked and "example" in label:
-        return False
-    # An audited blocked correspondence with no explicit definition-only
-    # layer is comparison/result content rather than a Sweep-III constructor.
-    if mapping is not None and mapping.sweep_iii_blocked and "correspondence" in label:
-        return False
     # An explicit definitional source label wins, including mixed labels such
     # as `Construction/result`; the theorem clause is classified separately.
     if any(marker in label for marker in DEFINITION_MARKERS):

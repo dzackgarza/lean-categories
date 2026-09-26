@@ -106,9 +106,9 @@ Within a sweep, source dependencies and traversal order come from the existing
 [source manifest](corpus/foundational-source-corpus.md); unit IDs and
 their mathematical prerequisites come from the complete source catalogues.
 Use `(sweep, source-unit ID)` to distinguish a unit's successive obligations.
-No proof or theorem/result unit may be a Sweep-III prerequisite. If a chosen Lean API
-appears to require one, use a source-faithful data-level representation or a located reference
-definition that separates the data from the proposition. All result clauses remain Sweep IV.
+A result *about* a constructed object is never a Sweep-III prerequisite; those clauses remain
+Sweep IV. The proofs a construction's own data needs (gluing, descent, well-definedness,
+structure laws) are part of that construction, not a separate prerequisite, and never block it.
 Legacy catalogues are references, not another execution branch.
 
 Preserve task identities and full obligations when recording dependencies.
@@ -129,7 +129,7 @@ ready units. After a unit completes, immediately select the next ready unit here
 
 ### Scope and acceptance
 
-Realize every admitted definitional clause, preserving its source inputs and generality. Reuse the mapped declaration, import the mapped package, port the located implementation, or transcribe the located source construction. **No theorem enters Sweep III.** If an API asks for a proof-valued constructor argument, quotient descent proof, law, identity, well-definedness result, or similar proposition, that API route is wrong for this sweep; represent the source-defined data without proving the result. Classification, comparison, independence and every other result about an already declared object remain Sweep IV.
+Realize every admitted definitional clause, preserving its source inputs and generality. Reuse the mapped declaration, import the mapped package, port the located implementation, or transcribe the located source construction. **A definition is realized only when the object itself exists.** Proofs the construction's own data require — gluing cocycle and overlap compatibility, quotient descent, well-definedness of the defining map, the laws a structure's fields demand — are part of realizing it, exactly as `AGENTS.md` admits "proof support absolutely required to formalize that definition". Reuse or port such support first; otherwise write it. Building only a specification predicate or candidate data and marking the row `[sweep-iii-blocked]` does not realize the definition and is not a valid stopping point. Classification, comparison, independence and every other result *about* an already constructed object remain Sweep IV; a definition is never blocked on those.
 
 Top-level unmatched status does not authorize a locally invented support stack. During
 realization, every substantial supporting mathematical owner newly required by the selected
@@ -204,7 +204,7 @@ Each completed declaration is banked with explicit paths and source evidence. In
 
 
 - Ready lane: small source-faithful declarations and pinned reference ports. Give lower-tier workers a coherent source/API batch and the exact mapped paths. Consume existing searches; do not commission discovery reports.
-- Kernel lane: one missing mathematical constructor per assignment, with dependent source IDs and an exact output type. First resolve that constructor's own reuse/import/reference search; only an independently audited irreducible residue may be transcribed or authored. A newly exposed substantial support layer becomes another prerequisite edge rather than expanding the current assignment. This lane still writes definitions only; it does not prove laws or supporting results. If the proposed representation requires theorem work, change the representation and keep the ready lane moving.
+- Kernel lane: one missing mathematical constructor per assignment, with dependent source IDs and an exact output type. First resolve that constructor's own reuse/import/reference search; only an independently audited irreducible residue may be transcribed or authored. A newly exposed substantial support layer becomes another prerequisite edge rather than expanding the current assignment. This lane delivers the constructed object, including the gluing/descent/well-definedness/structure-law proofs its data requires; it does not prove results about the finished object, which stay in Sweep IV.
 - Integration lane: one Lean process for the entire shared host/repository. Transfer that slot directly between workers. Source drafting and planner work continue while compilation runs. Workers own focused validation and explicit-path commits; the coordinator consumes their evidence and checks the changed mathematical boundary once.
 
 ### Subagent buckets for the definition tail

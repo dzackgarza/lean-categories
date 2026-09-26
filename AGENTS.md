@@ -340,13 +340,16 @@ consumer-specific compensations. Unrelated work remains usable and can continue.
 
 ### Sweep III construction boundary
 
-Sweep III is transcription of definitions and constructions, not a proof programme. It
+Sweep III realizes definitions and constructions, not a theorem programme. It
 records the source's data, parameters, constructors, predicates, notation, maps, and other
-definitional content at the correct owner. **No proof is in scope.** Definitions specify
-data; they do not establish results about that data. If the first attempted Lean API would
-force proof work, change the representation rather than turning that proof into a prerequisite.
-Use the source's data-level definition, or a located reference implementation whose interface
-separates the data from the later propositions.
+definitional content at the correct owner. Results *about* a constructed object —
+classification, comparison, independence, universal properties beyond what the construction
+itself needs — are Sweep IV. The proofs a construction's own data requires are not: gluing
+cocycles and overlap compatibility, quotient descent, well-definedness of the defining map, and
+the laws a structure's fields demand are part of constructing the object, and the construction
+is not realized without them. Reuse or port that support first, write it otherwise. A
+specification predicate or candidate data standing in for the object is not a realization, and a
+definition is never `[sweep-iii-blocked]` merely because building it takes proof work.
 
 **An unmatched top-level definition is not permission to invent its support stack.**
 During realization, decompose the proposed Lean encoding into the mathematical owners it needs.

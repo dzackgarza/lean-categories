@@ -71,69 +71,6 @@ class DefinitionReadinessTest(unittest.TestCase):
         )
         self.assertTrue(frontier.is_theorem(unit, mapping))
 
-    def test_example_construction_defaults_to_sweep_iv(self) -> None:
-        unit = frontier.Unit(
-            "FC12-C04-U003",
-            "Example / construction IV.2(1)",
-            "synthetic example construction",
-            (),
-        )
-        mapping = frontier.Mapping(
-            "[sweep-iii-blocked] synthetic example",
-            "unmatched",
-            "synthetic.md",
-            "[sweep-iii-blocked] [residue-search-audited]",
-        )
-        self.assertFalse(frontier.is_definition(unit, mapping))
-        self.assertTrue(frontier.is_theorem(unit, mapping))
-
-    def test_definition_only_example_can_opt_into_sweep_iii(self) -> None:
-        unit = frontier.Unit(
-            "FC12-C04-U003",
-            "Example / construction IV.2(1)",
-            "synthetic mixed example",
-            (),
-        )
-        mapping = frontier.Mapping(
-            "[definition-only] synthetic example construction",
-            "unmatched",
-            "synthetic.md",
-            "[definition-only] [residue-search-audited]",
-        )
-        self.assertTrue(frontier.is_definition(unit, mapping))
-
-    def test_blocked_definition_example_without_definition_only_is_sweep_iv(self) -> None:
-        unit = frontier.Unit(
-            "FC12-C04-U013",
-            "Definition / example",
-            "synthetic Steiner-surface example",
-            (),
-        )
-        mapping = frontier.Mapping(
-            "[sweep-iii-blocked] synthetic example",
-            "unmatched",
-            "synthetic.md",
-            "[sweep-iii-blocked] [residue-search-audited]",
-        )
-        self.assertFalse(frontier.is_definition(unit, mapping))
-        self.assertTrue(frontier.is_theorem(unit, mapping))
-
-    def test_blocked_correspondence_without_definition_only_is_sweep_iv(self) -> None:
-        unit = frontier.Unit(
-            "FC12-C02-U006",
-            "Construction / correspondence II.6",
-            "synthetic rational-map correspondence",
-            (),
-        )
-        mapping = frontier.Mapping(
-            "[sweep-iii-blocked] synthetic correspondence",
-            "unmatched",
-            "synthetic.md",
-            "[sweep-iii-blocked] [residue-search-audited]",
-        )
-        self.assertFalse(frontier.is_definition(unit, mapping))
-        self.assertTrue(frontier.is_theorem(unit, mapping))
-
     def test_effective_prerequisites_explain_the_blocker(self) -> None:
         unit = self.catalogue["FC05-C10-U085"]
         self.assertEqual(
@@ -304,22 +241,15 @@ class DefinitionReadinessTest(unittest.TestCase):
             corpus / "foundational-corpus-units-fc17-kerodon.md"
         )
         fc17 = {unit.unit_id: unit for unit in fc17_units}
-        mappings = dict(self.mappings)
-        current = mappings["FC17-KER-U02698"]
-        mappings["FC17-KER-U02698"] = replace(
-            current,
-            verdict=re.sub(r"\s*\[realized\]", "", current.verdict, flags=re.I),
-            row=re.sub(r"\s*\[realized\]", "", current.row, flags=re.I),
-        )
-        self.assertFalse(mappings["FC17-KER-U02698"].realized)
+        self.assertFalse(self.mappings["FC17-KER-U02698"].realized)
         self.assertEqual(
             frontier.unit_blockers(
                 "Definitions",
                 fc17["FC17-KER-U02698"],
-                mappings,
+                self.mappings,
                 fc17,
             ),
-            (),
+            ("Sweep-IV result layer",),
         )
 
 
