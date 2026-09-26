@@ -21,11 +21,11 @@ the affine \(n\)-simplices coming from maximal flags of nonempty faces of the
 standard simplex.  Maximal flags are indexed here by permutations of the
 vertices.  The sign of the permutation gives the orientation coefficient.
 
-Sweep III records only the degreewise homomorphism on singular chains.  The
-facts that the displayed affine-coordinate prescription is represented by the
-selected continuous map, that these homomorphisms commute with the singular
-boundary, and that subdivision is chain-homotopic to the identity are result
-content.
+Sweep III records only the degreewise homomorphism on singular chains.
+Affine flag-simplex maps are supplied as exact data satisfying the displayed
+coordinate prescription; no arbitrary continuous map is selected before its
+existence theorem.  Boundary compatibility and the prism homotopy remain
+result content.
 -/
 
 @[expose] public noncomputable section
@@ -53,20 +53,23 @@ def IsAffineBarycentricFaceFlagMap {n r : ℕ}
       ∑ j : Fin (r + 1),
         w j * faceBarycenterCoordinates (F j) i
 
-/-- The affine simplex named by the source coordinate prescription for a face
-flag.  Existence and agreement of the selected map with the prescription are
-separate result-layer statements. -/
-noncomputable def affineBarycentricFaceFlagMapData {n r : ℕ}
-    (F : BarycentricFaceFlag n r) :
-    C(stdSimplex ℝ (Fin (r + 1)), stdSimplex ℝ (Fin (n + 1))) :=
-  @Classical.epsilon _
-    ⟨ContinuousMap.const (stdSimplex ℝ (Fin (r + 1)))
-      (stdSimplex.barycenter : stdSimplex ℝ (Fin (n + 1)))⟩
-    (IsAffineBarycentricFaceFlagMap F)
+/-- Source-faithful affine flag-simplex data: a continuous simplex map
+together with the exact barycentric coordinate prescription. -/
+abbrev AffineBarycentricFaceFlagMapData {n r : ℕ}
+    (F : BarycentricFaceFlag n r) :=
+  {f : C(stdSimplex ℝ (Fin (r + 1)), stdSimplex ℝ (Fin (n + 1))) //
+    IsAffineBarycentricFaceFlagMap F f}
+
+/-- A source-facing family of valid affine maps for all barycentric face
+flags. Existence of such a family is theorem content. -/
+structure BarycentricAffineMapSystemData where
+  map : ∀ {n r : ℕ} (F : BarycentricFaceFlag n r),
+    AffineBarycentricFaceFlagMapData F
 
 /-- One maximal barycentric subsimplex of a singular simplex, indexed by a
 permutation of the original vertices. -/
 noncomputable def barycentricSubsimplexData
+    (D : BarycentricAffineMapSystemData)
     (X : TopCat.{0}) (n : ℕ)
     (σ : (TopCat.toSSet.obj X).obj
       (Opposite.op (SimplexCategory.mk n)))
@@ -75,12 +78,12 @@ noncomputable def barycentricSubsimplexData
       (Opposite.op (SimplexCategory.mk n)) :=
   (X.toSSetObjEquiv _).symm
     ((X.toSSetObjEquiv _ σ).comp
-      (affineBarycentricFaceFlagMapData
-        (maximalBarycentricFaceFlag π)))
+      (D.map (maximalBarycentricFaceFlag π)).1)
 
 /-- The signed barycentric subdivision chain associated to one singular
 `n`-simplex. -/
 noncomputable def singularSimplexBarycentricSubdivisionData
+    (D : BarycentricAffineMapSystemData)
     (X : TopCat.{0}) (n : ℕ)
     (σ : (TopCat.toSSet.obj X).obj
       (Opposite.op (SimplexCategory.mk n))) :
@@ -90,28 +93,30 @@ noncomputable def singularSimplexBarycentricSubdivisionData
   ∑ π : Equiv.Perm (Fin (n + 1)),
     (Equiv.Perm.sign π : ℤ) •
       (TopCat.toSSet.obj X).ιChainComplex
-        (barycentricSubsimplexData X n σ π)
+        (barycentricSubsimplexData D X n σ π)
 
 /-- Hatcher's barycentric subdivision homomorphism in degree `n`, obtained by
 extending the signed subdivision of each singular simplex linearly.  No
 boundary-commutation law is bundled into this definition. -/
 noncomputable def singularBarycentricSubdivisionComponentData
+    (D : BarycentricAffineMapSystemData)
     (X : TopCat.{0}) (n : ℕ) :
     ((TopCat.toSSet.obj X).chainComplex
         (ModuleCat.of ℤ ℤ)).X n ⟶
       ((TopCat.toSSet.obj X).chainComplex
         (ModuleCat.of ℤ ℤ)).X n :=
-  Sigma.desc (singularSimplexBarycentricSubdivisionData X n)
+  Sigma.desc (singularSimplexBarycentricSubdivisionData D X n)
 
 /-- The all-degree family underlying singular barycentric subdivision.  The
 assertion that this family is a chain map belongs to the theorem layer. -/
 noncomputable def singularBarycentricSubdivisionData
+    (D : BarycentricAffineMapSystemData)
     (X : TopCat.{0}) :
     ∀ n : ℕ,
       ((TopCat.toSSet.obj X).chainComplex
           (ModuleCat.of ℤ ℤ)).X n ⟶
         ((TopCat.toSSet.obj X).chainComplex
           (ModuleCat.of ℤ ℤ)).X n :=
-  singularBarycentricSubdivisionComponentData X
+  singularBarycentricSubdivisionComponentData D X
 
 end LeanCategories.Topology
