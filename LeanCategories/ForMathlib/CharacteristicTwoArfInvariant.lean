@@ -19,9 +19,10 @@ quadratic form over a field of characteristic two. They choose a symplectic basi
 `(e_i, f_i)` and take the class of `∑ i, q (e_i) * q (f_i)` modulo the
 Artin--Schreier subgroup `wp(k) = {x^2 + x | x in k}`.
 
-The following construction records that genuine choice rather than taking a basis as an
-additional input. The later source clauses asserting existence and basis independence are
-not asserted here.
+The following construction records the source symplectic-presentation data
+explicitly. The later source clauses asserting existence and basis independence
+are not asserted here, and no arbitrary dummy presentation is selected before
+those results.
 -/
 
 @[expose] public section
@@ -60,22 +61,19 @@ def IsSymplecticPresentation [CharP k 2]
       (∀ i j, q.polarBilin (p.2 (Sum.inr i)) (p.2 (Sum.inl j)) =
         if i = j then -1 else 0)
 
-/-- A chosen candidate symplectic presentation. Once the source's existence result is supplied,
-`Classical.epsilon_spec` shows that this candidate satisfies `IsSymplecticPresentation`.
-No such result, nor basis independence, is part of this definition module. -/
-noncomputable def chosenSymplecticPresentation [CharP k 2] [FiniteDimensional k V]
-    (q : QuadraticForm k V)
-    (_hq : q.polarBilin.Nondegenerate) : SymplecticPresentation V := by
-  letI : Nonempty (SymplecticPresentation V) :=
-    ⟨⟨0, Sum.elim Fin.elim0 Fin.elim0⟩⟩
-  exact Classical.epsilon (IsSymplecticPresentation q)
+/-- Source-faithful symplectic-presentation data for `q`: a candidate
+presentation together with the exact source predicate. -/
+abbrev SymplecticPresentationData [CharP k 2]
+    (q : QuadraticForm k V) :=
+  {p : SymplecticPresentation V // IsSymplecticPresentation q p}
 
 /-- The source's characteristic-two Arf class: choose a symplectic presentation, form
 `∑ i, q(e_i)q(f_i)`, and pass to the Artin--Schreier quotient. -/
 noncomputable def arfClass [CharP k 2] [FiniteDimensional k V]
-    (q : QuadraticForm k V) (hq : q.polarBilin.Nondegenerate) :
+    (q : QuadraticForm k V) (_hq : q.polarBilin.Nondegenerate)
+    (P : SymplecticPresentationData q) :
     ArtinSchreierQuotient k :=
-  let p := chosenSymplecticPresentation q hq
+  let p := P.1
   QuotientAddGroup.mk' (artinSchreierHom k).range
     (∑ i : Fin p.1, q (p.2 (Sum.inl i)) * q (p.2 (Sum.inr i)))
 
