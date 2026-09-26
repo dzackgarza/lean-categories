@@ -5,22 +5,18 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Order.Basic
 
 /-!
 # Profinite local reciprocity data
 
 Definition-level realization of Serre FC10-C13-U031.
 
-For an infinite Galois extension, Serre defines the Artin symbol by requiring
-all of its finite Galois projections to be the already-defined finite Artin
-symbols. Proposition 12 supplies the compatibility of those finite symbols.
-
-Sweep III constructs the map by applying the canonical inverse-function
-operation to the diagonal projection into the family of finite quotients.
-It does not prove finite-stage compatibility, the inverse-law specification,
-or the subsequent
-identification of the maximal abelian Galois group with the Hausdorff
-completion in the norm topology.
+For an infinite abelian Galois extension, Serre defines the Artin symbol by
+its compatible finite Galois projections.  FC10-C13-U030 supplies exactly
+that compatibility.  This file therefore represents the infinite group by
+the genuine compatible-tuple inverse-limit carrier and constructs the Artin
+symbol componentwise.  No fallback element or selected candidate occurs.
 -/
 
 @[expose] public noncomputable section
@@ -29,45 +25,65 @@ namespace LeanCategories.Algebra
 
 universe u v w
 
-/-- Projection graph characterizing Serre's Artin map for an infinite abelian
-Galois extension.
+/-- Finite-stage data for Serre's inverse system of abelian Galois groups.
+The compatibility field is the preceding finite-Artin compatibility result
+needed to place the finite symbols in the inverse-limit carrier. -/
+structure ProfiniteLocalGaloisSystemData
+    (Index : Type u) [Preorder Index]
+    (KStar : Type v) (FiniteGalois : Index → Type w)
+    [∀ i, CommGroup (FiniteGalois i)] where
+  transition : ∀ {i j : Index}, i ≤ j → FiniteGalois j → FiniteGalois i
+  finiteArtin : ∀ i, KStar → FiniteGalois i
+  finiteArtin_compatible :
+    ∀ {i j : Index} (hij : i ≤ j) (x : KStar),
+      transition hij (finiteArtin j x) = finiteArtin i x
 
-`finiteArtin i x` is the finite Artin symbol at stage `i`, while
-`projection i` is restriction from the infinite abelian Galois group to that
-finite quotient. -/
+/-- The inverse-limit carrier: compatible tuples of finite-stage Galois
+elements. -/
+abbrev ProfiniteLocalGaloisLimitData
+    {Index : Type u} [Preorder Index]
+    {KStar : Type v} {FiniteGalois : Index → Type w}
+    [∀ i, CommGroup (FiniteGalois i)]
+    (S : ProfiniteLocalGaloisSystemData Index KStar FiniteGalois) : Type _ :=
+  {g : ∀ i, FiniteGalois i //
+    ∀ {i j : Index} (hij : i ≤ j), S.transition hij (g j) = g i}
+
+/-- Native projection from the compatible-tuple inverse limit to a finite
+stage. -/
+def profiniteLocalProjectionData
+    {Index : Type u} [Preorder Index]
+    {KStar : Type v} {FiniteGalois : Index → Type w}
+    [∀ i, CommGroup (FiniteGalois i)]
+    (S : ProfiniteLocalGaloisSystemData Index KStar FiniteGalois)
+    (i : Index) : ProfiniteLocalGaloisLimitData S → FiniteGalois i :=
+  fun g => g.1 i
+
+/-- Projection graph characterizing Serre's infinite Artin map. -/
 def IsProfiniteLocalArtinMapData
-    {Index : Type u} {KStar : Type v}
-    {FiniteGalois : Index → Type w} {G : Type w}
-    [∀ i, CommGroup (FiniteGalois i)] [CommGroup G]
-    (projection : ∀ i, G → FiniteGalois i)
-    (finiteArtin : ∀ i, KStar → FiniteGalois i)
-    (artin : KStar → G) : Prop :=
-  ∀ x i, projection i (artin x) = finiteArtin i x
+    {Index : Type u} [Preorder Index]
+    {KStar : Type v} {FiniteGalois : Index → Type w}
+    [∀ i, CommGroup (FiniteGalois i)]
+    (S : ProfiniteLocalGaloisSystemData Index KStar FiniteGalois)
+    (artin : KStar → ProfiniteLocalGaloisLimitData S) : Prop :=
+  ∀ x i, profiniteLocalProjectionData S i (artin x) = S.finiteArtin i x
 
-/-- Serre's infinite Artin map, constructed from the finite-stage symbols by
-lifting their coherent tuple through the diagonal projection.
-
-The operation is total because `Function.invFun` is total on the nonempty
-group `G`. FC10-C13-U030 later proves finite-stage compatibility and the
-inverse-law statement which identifies this lift with the unique element
-having the required finite projections. -/
+/-- Serre's infinite Artin map, constructed componentwise as the compatible
+tuple of its finite Artin symbols. -/
 def profiniteLocalArtinMapData
-    {Index : Type u} {KStar : Type v}
-    {FiniteGalois : Index → Type w} {G : Type w}
-    [∀ i, CommGroup (FiniteGalois i)] [CommGroup G]
-    (projection : ∀ i, G → FiniteGalois i)
-    (finiteArtin : ∀ i, KStar → FiniteGalois i) : KStar → G :=
-  fun x => Function.invFun (fun g i => projection i g) (fun i => finiteArtin i x)
+    {Index : Type u} [Preorder Index]
+    {KStar : Type v} {FiniteGalois : Index → Type w}
+    [∀ i, CommGroup (FiniteGalois i)]
+    (S : ProfiniteLocalGaloisSystemData Index KStar FiniteGalois) :
+    KStar → ProfiniteLocalGaloisLimitData S :=
+  fun x => ⟨fun i => S.finiteArtin i x, fun hij => S.finiteArtin_compatible hij x⟩
 
-/-- Serre's symbol `(x,F/E)` for the supplied infinite abelian Galois
-extension presentation. -/
+/-- Serre's symbol `(x,F/E)` in the compatible-tuple inverse-limit model. -/
 def profiniteLocalArtinSymbolData
-    {Index : Type u} {KStar : Type v}
-    {FiniteGalois : Index → Type w} {G : Type w}
-    [∀ i, CommGroup (FiniteGalois i)] [CommGroup G]
-    (projection : ∀ i, G → FiniteGalois i)
-    (finiteArtin : ∀ i, KStar → FiniteGalois i)
-    (x : KStar) : G :=
-  profiniteLocalArtinMapData projection finiteArtin x
+    {Index : Type u} [Preorder Index]
+    {KStar : Type v} {FiniteGalois : Index → Type w}
+    [∀ i, CommGroup (FiniteGalois i)]
+    (S : ProfiniteLocalGaloisSystemData Index KStar FiniteGalois)
+    (x : KStar) : ProfiniteLocalGaloisLimitData S :=
+  profiniteLocalArtinMapData S x
 
 end LeanCategories.Algebra
