@@ -246,11 +246,11 @@ Next 5 open units in source traversal order:
 
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
-| `FC12-C01-U008` | Notation | `FC12-C01-U004` | ready by recorded prerequisites | unmatched; author |
 | `FC12-C01-U012` | Construction / interpretation I.10 | `FC12-C01-U001`, `FC12-C01-U004` | ready by recorded prerequisites | unmatched; author |
 | `FC12-C03-U015` | Definition / construction III.14 | — | ready by recorded prerequisites | unmatched; author |
 | `FC12-C03-U018` | Definition / construction III.17 | — | ready by recorded prerequisites | unmatched; author |
 | `FC12-C08-U024` | Construction | — | ready by recorded prerequisites | unmatched; author |
+| `FC12-B-U006` | Definition / construction | — | ready by recorded prerequisites | unmatched; author |
 
 ## FC12 — Theorems
 
