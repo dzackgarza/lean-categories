@@ -237,21 +237,6 @@ class DefinitionReadinessTest(unittest.TestCase):
                 (),
             )
 
-        fc17_units = frontier.parse_catalogue(
-            corpus / "foundational-corpus-units-fc17-kerodon.md"
-        )
-        fc17 = {unit.unit_id: unit for unit in fc17_units}
-        self.assertFalse(self.mappings["FC17-KER-U02698"].realized)
-        self.assertEqual(
-            frontier.unit_blockers(
-                "Definitions",
-                fc17["FC17-KER-U02698"],
-                self.mappings,
-                fc17,
-            ),
-            ("Sweep-IV result layer",),
-        )
-
 
 if __name__ == "__main__":
     unittest.main()

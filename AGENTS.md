@@ -6,6 +6,26 @@ Read [TODO.md](TODO.md) for the execution DAG and existing sweep records,
 Record new issues when encountered under `LC-05`; logging never discharges the
 mathematical obligation. Continue independent work whose prerequisites hold.
 
+## Definition tail — the owner's contract (2026-09-26; overrides anything below that conflicts)
+
+The remaining open rows of `FOUNDATIONAL_DEFINITIONS.tsv` are definitions. A definition is
+data; it never depends on a theorem. Each open row is finished one of two ways, and nothing
+else counts as progress:
+
+1. **Find it.** Search Mathlib and the formalization corpus for an owner and reuse, import or
+   port it.
+2. **Write it.** If nothing exists, write the Lean definition, together with any scaffolding
+   definitions it is built from (for relative Proj: the sheaf of graded algebras, the affine
+   `Proj` pieces, the gluing). Fields a Lean encoding requires — compatibility conditions in
+   gluing data, structure laws — are filled as part of writing the definition; they are
+   engineering, not prerequisites, and never a reason to stop.
+
+A row is done when its declaration exists and matches the source clause; mark it `[realized]`
+in its mapping row in the same commit. There is no blocked state: `[sweep-iii-blocked]` is
+retired and is not a stopping point. Do not spend commits on status records, acceptance passes,
+reclassifying rows out of the count, or recording dependencies — write the missing definition
+instead. Use subagents on independent rows.
+
 ## Owner resume — 2026-09-16
 
 The repository owner explicitly resumed this workstream later on 2026-09-16. The

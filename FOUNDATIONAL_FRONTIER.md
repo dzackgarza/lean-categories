@@ -253,7 +253,7 @@ Next 5 open units in source traversal order:
 
 ## FC12 — Theorems
 
-Delivered/directly reusable by mapping: **0/197**; pending realization: **197** (mathlib=7, project-existing=4, unmatched=186).
+Delivered/directly reusable by mapping: **0/194**; pending realization: **194** (mathlib=7, project-existing=4, unmatched=183).
 Delivered/direct-reuse spans: none.
 Phase blocker: Sweep III is not complete corpus-wide: FC06, FC08, FC09, FC10, FC11, FC12, FC13, FC14, FC15, FC16, FC17.
 

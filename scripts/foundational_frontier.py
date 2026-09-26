@@ -481,7 +481,12 @@ def is_theorem(unit: Unit, mapping: Mapping | None = None) -> bool:
     # `[definition-only]` is itself a source-audited assertion that the positive
     # mapping discharges only the definitional part, so it must force the row into
     # Sweep IV even when Sweep I gave it a plain `Definition / construction` label.
-    return (mapping is not None and (mapping.definition_only or mapping.sweep_iii_blocked)) or any(
+    # A mapping that records its own result layer is mixed by its own account; its theorem part
+    # belongs to Sweep IV whatever other markers the row carries.
+    return (
+        mapping is not None
+        and (mapping.definition_only or mapping.sweep_iii_blocked or mapping_declares_result_layer(mapping))
+    ) or any(
         marker in kind for marker in THEOREM_MARKERS
     ) or not any(
         marker in kind for marker in DEFINITION_MARKERS

@@ -120,6 +120,8 @@ its worklist or completion state.
 
 ## Active definition units
 
+**Governing contract:** [Definition tail — the owner's contract](AGENTS.md#definition-tail--the-owners-contract-2026-09-26-overrides-anything-below-that-conflicts) in `AGENTS.md`. Where anything in this section conflicts with it, the contract wins.
+
 This section refines the source-level nodes above and is the sole executable unit DAG.
 The planner maintains dependencies here; workers select ready nodes here. Vault notes
 supply source evidence and rationale, never another queue or scheduling graph.
