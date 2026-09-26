@@ -47,4 +47,22 @@ def IsAdjointType
     (rootLattice characterLattice : AddSubgroup Λ) : Prop :=
   characterLattice = rootLattice
 
+/-- Humphreys' complete type datum attached to the abstract weight, root, and
+character lattices: the fundamental group together with the simply-connected
+and adjoint-type conditions. -/
+structure SemisimpleFundamentalGroupData
+    (rootLattice characterLattice : AddSubgroup Λ) where
+  fundamentalGroup : Type u
+  simplyConnected : Prop
+  adjoint : Prop
+
+/-- Construct the fundamental group and the two type conditions from the
+source lattice data. -/
+def semisimpleFundamentalGroupData
+    (rootLattice characterLattice : AddSubgroup Λ) :
+    SemisimpleFundamentalGroupData rootLattice characterLattice where
+  fundamentalGroup := semisimpleFundamentalGroup characterLattice
+  simplyConnected := IsSimplyConnectedType characterLattice
+  adjoint := IsAdjointType rootLattice characterLattice
+
 end LeanCategories.AlgebraicGeometry
