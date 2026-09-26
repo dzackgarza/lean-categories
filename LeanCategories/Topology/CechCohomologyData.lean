@@ -21,9 +21,11 @@ The obstruction to a proof-free direct-system constructor is coherence:
 different containment choices must induce the same cohomology map, and these
 maps must compose. Those are result statements. This file therefore records
 the concrete nerve-face predicate, refinement choices, the ordinary
-nerve-cohomology stages/maps supplied by the preceding cohomology layer, and
-then characterizes the direct limit by its exact categorical universal
-property. The Cech group is selected by Classical.epsilon.
+nerve-cohomology stages/maps supplied by the preceding cohomology layer, a
+source-faithful family of supplied refinement maps each certified to come from
+a containment choice, and then the exact categorical direct-limit universal
+property. No arbitrary transition map or colimit candidate is selected before
+the corresponding existence/coherence results.
 
 No choice-independence, directedness, transition coherence, or colimit
 existence theorem is proved in Sweep III.
@@ -95,16 +97,27 @@ def IsCechRefinementCohomologyMapData
     (f : D.stage U ⟶ D.stage V) : Prop :=
   ∃ c : CechRefinementChoiceData V U, f = D.inducedByChoice c
 
-/-- The cohomology map attached to a refinement, selected without proving
-independence of the containment choice. -/
-def cechRefinementCohomologyMapData
+/-- Source-faithful cohomology-map data attached to a refinement: a candidate
+map together with the exact assertion that it is induced by some containment
+choice. -/
+abbrev CechRefinementCohomologyMapData
     {X : Type u} [TopologicalSpace X]
     {G : Type v} [AddCommGroup G] {i : ℕ}
     (D : CechNerveCohomologyPresentationData X G i)
     (V U : CechOpenCoverData X) :
-    D.stage U ⟶ D.stage V :=
-  Classical.epsilon
-    (IsCechRefinementCohomologyMapData D V U)
+    Type _ :=
+  {f : D.stage U ⟶ D.stage V //
+    IsCechRefinementCohomologyMapData D V U f}
+
+/-- A source-facing transition family for refinements.  The family supplies
+one refinement-induced map whenever a refinement relation is available.
+Choice-independence and composition coherence remain result content. -/
+structure CechRefinementSystemData
+    {X : Type u} [TopologicalSpace X]
+    {G : Type v} [AddCommGroup G] {i : ℕ}
+    (D : CechNerveCohomologyPresentationData X G i) where
+  map (V U : CechOpenCoverData X) :
+    CechRefinesData V U → CechRefinementCohomologyMapData D V U
 
 /-- Candidate direct-limit data: an abelian group and one structure map from
 every nerve-cohomology stage. -/
@@ -134,34 +147,39 @@ def IsCechCohomologyData
     {X : Type u} [TopologicalSpace X]
     {G : Type v} [AddCommGroup G] {i : ℕ}
     (D : CechNerveCohomologyPresentationData X G i)
+    (T : CechRefinementSystemData D)
     (C : CechCohomologyCandidateData D) : Prop :=
   (∀ (U V : CechOpenCoverData X),
-      CechRefinesData V U →
-        cechRefinementCohomologyMapData D V U ≫ C.ofCover V =
+      (h : CechRefinesData V U) →
+        (T.map V U h).1 ≫ C.ofCover V =
           C.ofCover U) ∧
     ∀ (A : AddCommGrpCat.{max u v})
       (f : (U : CechOpenCoverData X) → D.stage U ⟶ A),
       (∀ (U V : CechOpenCoverData X),
-        CechRefinesData V U →
-          cechRefinementCohomologyMapData D V U ≫ f V = f U) →
+        (h : CechRefinesData V U) →
+          (T.map V U h).1 ≫ f V = f U) →
       ∃! g : C.carrier ⟶ A,
         ∀ U : CechOpenCoverData X, C.ofCover U ≫ g = f U
 
-/-- Hatcher's Cech cohomology direct-limit presentation, selected from the
-exact universal property. -/
-def cechCohomologyCandidateData
-    {X : Type u} [TopologicalSpace X]
-    {G : Type v} [AddCommGroup G] {i : ℕ}
-    (D : CechNerveCohomologyPresentationData X G i) :
-    CechCohomologyCandidateData D :=
-  Classical.epsilon (IsCechCohomologyData D)
-
-/-- The source-facing Cech cohomology group. -/
+/-- Source-faithful Čech direct-limit presentation data: a candidate colimit
+together with its exact universal property for supplied refinement maps.
+Existence and refinement coherence remain result content. -/
 abbrev CechCohomologyData
     {X : Type u} [TopologicalSpace X]
     {G : Type v} [AddCommGroup G] {i : ℕ}
-    (D : CechNerveCohomologyPresentationData X G i) :
+    (D : CechNerveCohomologyPresentationData X G i)
+    (T : CechRefinementSystemData D) :=
+  {C : CechCohomologyCandidateData D //
+    IsCechCohomologyData D T C}
+
+/-- The source-facing Cech cohomology group. -/
+abbrev CechCohomologyGroupData
+    {X : Type u} [TopologicalSpace X]
+    {G : Type v} [AddCommGroup G] {i : ℕ}
+    (D : CechNerveCohomologyPresentationData X G i)
+    (T : CechRefinementSystemData D)
+    (C : CechCohomologyData D T) :
     AddCommGrpCat.{max u v} :=
-  (cechCohomologyCandidateData D).carrier
+  C.1.carrier
 
 end LeanCategories.Topology
