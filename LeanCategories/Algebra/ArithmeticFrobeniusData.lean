@@ -61,4 +61,55 @@ noncomputable abbrev neukirchArtinRepresentative
     (Q : Ideal S) [Q.IsPrime] [Finite (S ⧸ Q)] : G :=
   serreFrobeniusSubstitution (R := R) (S := S) (G := G) Q
 
+section Abelian
+
+variable {G₀ : Type w} [CommGroup G₀] [MulSemiringAction G₀ S]
+  [SMulCommClass G₀ R S] [Finite G₀] [Algebra.IsInvariant R S G₀]
+
+/-- The coherent family of arithmetic Frobenius elements over one base prime.
+
+Mathlib constructs this family so that every value is an arithmetic Frobenius
+at the corresponding prime above `P`, and any two values are conjugate. -/
+noncomputable def serreArtinFamilyAtPrime
+    (P : Ideal R)
+    (hP : ∃ Q : Ideal.primesOver P S, Finite (S ⧸ Q.1)) :
+    Ideal.primesOver P S → G₀ :=
+  (IsArithFrobAt.exists_primesOver_isConj S G₀ P hP).choose
+
+/-- In the abelian case, the coherent Frobenius family is independent of the
+prime above `P`. -/
+lemma serreArtinFamilyAtPrime_eq
+    (P : Ideal R)
+    (hP : ∃ Q : Ideal.primesOver P S, Finite (S ⧸ Q.1))
+    (Q₁ Q₂ : Ideal.primesOver P S) :
+    serreArtinFamilyAtPrime (R := R) (S := S) (G₀ := G₀) P hP Q₁ =
+      serreArtinFamilyAtPrime (R := R) (S := S) (G₀ := G₀) P hP Q₂ := by
+  have hconj :=
+    (IsArithFrobAt.exists_primesOver_isConj S G₀ P hP).choose_spec.2 Q₁ Q₂
+  rcases isConj_iff.mp hconj with ⟨c, hc⟩
+  change
+    (IsArithFrobAt.exists_primesOver_isConj S G₀ P hP).choose Q₁ =
+      (IsArithFrobAt.exists_primesOver_isConj S G₀ P hP).choose Q₂
+  simpa [mul_comm] using hc
+
+/-- Serre's Artin symbol of a base prime in a finite abelian invariant
+extension. The witness prime above `P` is chosen internally, and the preceding
+lemma proves that the result is independent of that choice. -/
+noncomputable def serreArtinSymbolAtPrime
+    (P : Ideal R)
+    (hP : ∃ Q : Ideal.primesOver P S, Finite (S ⧸ Q.1)) : G₀ :=
+  serreArtinFamilyAtPrime (R := R) (S := S) (G₀ := G₀) P hP hP.choose
+
+/-- The base-prime Artin symbol agrees with the arithmetic Frobenius at every
+prime in the coherent family above it. -/
+lemma serreArtinSymbolAtPrime_eq
+    (P : Ideal R)
+    (hP : ∃ Q : Ideal.primesOver P S, Finite (S ⧸ Q.1))
+    (Q : Ideal.primesOver P S) :
+    serreArtinSymbolAtPrime (R := R) (S := S) (G₀ := G₀) P hP =
+      serreArtinFamilyAtPrime (R := R) (S := S) (G₀ := G₀) P hP Q :=
+  serreArtinFamilyAtPrime_eq (R := R) (S := S) (G₀ := G₀) P hP hP.choose Q
+
+end Abelian
+
 end LeanCategories.Algebra
