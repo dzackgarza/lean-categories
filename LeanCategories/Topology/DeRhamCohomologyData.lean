@@ -76,29 +76,34 @@ def IsDeRhamCohomologyData
       H.classOf x = H.classOf y ↔
         x.1 - y.1 ∈ deRhamExactForms Form d p
 
-/-- Lee's source-facing de Rham cohomology presentation, selected from the
-exact quotient specification.  The square-zero theorem is the later result
-that supplies the intended realization of this specification. -/
-def deRhamCohomologyCandidateData (p : ℕ) :
-    DeRhamCohomologyCandidateData Form d p :=
-  Classical.epsilon (IsDeRhamCohomologyData Form d p)
+/-- Source-faithful de Rham cohomology presentation data: a candidate quotient
+carrier/class map together with Lee's exact quotient specification.
+
+The square-zero theorem is the later result that supplies existence of such
+data; no arbitrary candidate is selected before that theorem. -/
+abbrev DeRhamCohomologyPresentationData (p : ℕ) :=
+  {H : DeRhamCohomologyCandidateData Form d p //
+    IsDeRhamCohomologyData Form d p H}
 
 /-- The carrier of Lee's p-th de Rham cohomology vector space. -/
-abbrev DeRhamCohomologyData (p : ℕ) : Type u :=
-  (deRhamCohomologyCandidateData Form d p).carrier
+abbrev DeRhamCohomologyData (p : ℕ)
+    (H : DeRhamCohomologyPresentationData Form d p) : Type u :=
+  H.1.carrier
 
 /-- Lee's cohomology class `[ω]` of a closed p-form. -/
 def deRhamCohomologyClass
-    (p : ℕ) (ω : deRhamClosedForms Form d p) :
-    DeRhamCohomologyData Form d p :=
-  (deRhamCohomologyCandidateData Form d p).classOf ω
+    (p : ℕ) (H : DeRhamCohomologyPresentationData Form d p)
+    (ω : deRhamClosedForms Form d p) :
+    DeRhamCohomologyData Form d p H :=
+  H.1.classOf ω
 
 /-- Two closed p-forms are cohomologous when they determine the same de Rham
 cohomology class.  The exact-difference characterization is part of
 `IsDeRhamCohomologyData`, not a proof bundled into this definition. -/
 def AreDeRhamCohomologous
-    (p : ℕ) (ω η : deRhamClosedForms Form d p) : Prop :=
-  deRhamCohomologyClass Form d p ω =
-    deRhamCohomologyClass Form d p η
+    (p : ℕ) (H : DeRhamCohomologyPresentationData Form d p)
+    (ω η : deRhamClosedForms Form d p) : Prop :=
+  deRhamCohomologyClass Form d p H ω =
+    deRhamCohomologyClass Form d p H η
 
 end LeanCategories.Topology
