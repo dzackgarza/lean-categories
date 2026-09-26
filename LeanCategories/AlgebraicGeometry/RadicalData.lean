@@ -14,10 +14,10 @@ public import Mathlib.Topology.Connected.Basic
 Definition-level realizations of Humphreys FC16-C07-U029 and FC16-C07-U030.
 
 The source characterizes the two radicals as the largest connected normal
-solvable or unipotent subgroups.  Their existence is a theorem.  Following
-the Sweep-III construction boundary, this file records the characterizing
-predicates and selects the source-named subgroups by `Classical.epsilon`;
-no existence or uniqueness result is proved here.
+solvable or unipotent subgroups. Their existence is a theorem. Following the
+Sweep-III construction boundary, valid radical data are subgroups carrying
+those greatestness predicates; no arbitrary subgroup is selected before
+existence/uniqueness is proved.
 -/
 
 @[expose] public noncomputable section
@@ -37,10 +37,9 @@ connected normal solvable subgroups. -/
 def IsSolvableRadical (R : Subgroup G) : Prop :=
   IsGreatest {H : Subgroup G | IsConnectedNormalSolvableSubgroup H} R
 
-/-- The source-named solvable radical, selected from its defining
-characterization.  Existence and uniqueness are result-layer facts. -/
-noncomputable def solvableRadical : Subgroup G :=
-  Classical.epsilon (IsSolvableRadical (G := G))
+/-- Source-faithful solvable-radical data. -/
+abbrev SolvableRadicalData :=
+  {R : Subgroup G // IsSolvableRadical R}
 
 /-- A connected normal unipotent subgroup relative to the ambient intrinsic
 unipotent-element predicate. -/
@@ -57,24 +56,25 @@ def IsUnipotentRadical
   IsGreatest
     {H : Subgroup G | IsConnectedNormalUnipotentSubgroup isUnipotentElement H} R
 
-/-- The source-named unipotent radical, selected from its defining
-characterization.  Existence and uniqueness are result-layer facts. -/
-noncomputable def unipotentRadical
-    (isUnipotentElement : G → Prop) : Subgroup G :=
-  Classical.epsilon (IsUnipotentRadical isUnipotentElement)
+/-- Source-faithful unipotent-radical data relative to the ambient
+unipotent-element predicate. -/
+abbrev UnipotentRadicalData
+    (isUnipotentElement : G → Prop) :=
+  {R : Subgroup G // IsUnipotentRadical isUnipotentElement R}
 
 /-- A connected nontrivial algebraic group is semisimple when its solvable
 radical is trivial. -/
-def IsSemisimpleGroup : Prop :=
+def IsSemisimpleGroup (R : SolvableRadicalData (G := G)) : Prop :=
   Nontrivial G ∧
     IsConnected (Set.univ : Set G) ∧
-    solvableRadical (G := G) = ⊥
+    R.1 = ⊥
 
 /-- A connected nontrivial algebraic group is reductive when its unipotent
 radical is trivial. -/
-def IsReductiveGroup (isUnipotentElement : G → Prop) : Prop :=
+def IsReductiveGroup (isUnipotentElement : G → Prop)
+    (R : UnipotentRadicalData isUnipotentElement) : Prop :=
   Nontrivial G ∧
     IsConnected (Set.univ : Set G) ∧
-    unipotentRadical isUnipotentElement = ⊥
+    R.1 = ⊥
 
 end LeanCategories.AlgebraicGeometry

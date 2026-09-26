@@ -14,11 +14,11 @@ Definition-level realization of the construction clause in Humphreys
 FC16-C10-U044.
 
 Starting with a closed unipotent subgroup `U`, the source repeatedly replaces
-the current subgroup by the unipotent radical of its normalizer.  Once this
-sequence stabilizes, the normalizer at that stage is denoted `P(U)`.  Sweep
-III records the recursive sequence and the terminal-stage relation.  Finite
-stabilization, and hence existence of the source-named terminal normalizer,
-is a result-layer theorem.
+the current subgroup by the unipotent radical of its normalizer. Once this
+sequence stabilizes, the normalizer at that stage is denoted `P(U)`. Sweep
+III records the sequence by its exact successor graph using certified radical
+data; no recursive arbitrary radical choice is made. Finite stabilization is
+a result-layer theorem.
 -/
 
 @[expose] public noncomputable section
@@ -29,37 +29,42 @@ universe u
 
 variable {G : Type u} [Group G] [TopologicalSpace G]
 
-/-- The recursive sequence `U_0 = U`,
-`U_(n+1) = R_u(N_G(U_n))`, viewed as subgroups of the ambient group. -/
-noncomputable def unipotentNormalizerSequence
-    (isUnipotentElement : G → Prop) (U : Subgroup G) : ℕ → Subgroup G
-  | 0 => U
-  | n + 1 =>
-      let N := Subgroup.normalizer
-        (unipotentNormalizerSequence isUnipotentElement U n : Set G)
-      (unipotentRadical (G := N) (fun x : N => isUnipotentElement x.1)).map N.subtype
+/-- Source-faithful data for the recursive sequence
+`U_0=U`, `U_(n+1)=R_u(N_G(U_n))`. -/
+structure UnipotentNormalizerSequenceData
+    (isUnipotentElement : G → Prop) (U : Subgroup G) where
+  term : ℕ → Subgroup G
+  zero : term 0 = U
+  successor : ∀ n : ℕ,
+    let N := Subgroup.normalizer (term n : Set G)
+    ∃ R : UnipotentRadicalData (G := N) (fun x : N => isUnipotentElement x.1),
+      term (n + 1) = R.1.map N.subtype
 
 /-- The normalizer attached to the `n`-th unipotent term. -/
 noncomputable def unipotentNormalizerAt
-    (isUnipotentElement : G → Prop) (U : Subgroup G) (n : ℕ) : Subgroup G :=
+    (isUnipotentElement : G → Prop) (U : Subgroup G)
+    (D : UnipotentNormalizerSequenceData isUnipotentElement U)
+    (n : ℕ) : Subgroup G :=
   Subgroup.normalizer
-    (unipotentNormalizerSequence isUnipotentElement U n : Set G)
+    (D.term n : Set G)
 
 /-- Stage `n` is a stabilization stage when the next unipotent term is the
 same subgroup. -/
 def IsUnipotentNormalizerStabilizationStage
-    (isUnipotentElement : G → Prop) (U : Subgroup G) (n : ℕ) : Prop :=
-  unipotentNormalizerSequence isUnipotentElement U (n + 1) =
-    unipotentNormalizerSequence isUnipotentElement U n
+    (isUnipotentElement : G → Prop) (U : Subgroup G)
+    (D : UnipotentNormalizerSequenceData isUnipotentElement U)
+    (n : ℕ) : Prop :=
+  D.term (n + 1) = D.term n
 
 /-- A supplied subgroup `P` is a terminal normalizer for the construction
 when it is the normalizer at some stabilization stage.
 
 This relation does not assert that such a finite stage exists. -/
 def IsTerminalUnipotentNormalizer
-    (isUnipotentElement : G → Prop) (U P : Subgroup G) : Prop :=
+    (isUnipotentElement : G → Prop) (U P : Subgroup G)
+    (D : UnipotentNormalizerSequenceData isUnipotentElement U) : Prop :=
   ∃ n : ℕ,
-    IsUnipotentNormalizerStabilizationStage isUnipotentElement U n ∧
-      P = unipotentNormalizerAt isUnipotentElement U n
+    IsUnipotentNormalizerStabilizationStage isUnipotentElement U D n ∧
+      P = unipotentNormalizerAt isUnipotentElement U D n
 
 end LeanCategories.AlgebraicGeometry
