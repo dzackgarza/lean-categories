@@ -147,13 +147,11 @@ def IsIAdicGradedComparisonMapData
               change a.1 • m ∈ I ^ n • (⊤ : Submodule A M)
               exact Submodule.smul_mem_smul a.2 Submodule.mem_top⟩)
 
-/-- Matsumura's graded comparison-map data selected from its exact homogeneous
-representative graph.
-
-This declaration performs no quotient/scalar descent and proves no map law. -/
-def iAdicGradedComparisonMapData
-    (I : Ideal A) (M : Type v) [AddCommGroup M] [Module A M] :
-    IAdicGradedComparisonMapData I M :=
-  Classical.epsilon (IsIAdicGradedComparisonMapData I M)
+/-- The carrier of all comparison-map data satisfying Matsumura's exact
+homogeneous representative graph.  No map is selected before quotient/scalar
+descent and well-definedness are proved. -/
+def IAdicGradedComparisonData
+    (I : Ideal A) (M : Type v) [AddCommGroup M] [Module A M] :=
+  {D : IAdicGradedComparisonMapData I M // IsIAdicGradedComparisonMapData I M D}
 
 end LeanCategories.Algebra

@@ -19,11 +19,11 @@ the restriction `σ ↦ σ|_L`.
 Sweep III records only those data-level conventions.  The inertia and
 ramification objects are kept as raw congruence loci in the full local
 automorphism group, so no subgroup-closure or unique-valuation theorem is
-required.  Likewise the restriction is selected as an ordinary function
-characterized by its action on the embedded dense/global field.  That it is a
-group homomorphism, that the characterizing function exists and is unique,
-and that it identifies the local group with the global decomposition group
-are result-layer statements.
+required.  Likewise the restriction data are the subtype of ordinary
+functions characterized by their action on the embedded global field.  That
+this subtype is inhabited by a unique function, that the function is a group
+homomorphism, and that its image is the global decomposition group are
+result-layer statements.
 -/
 
 @[expose] public noncomputable section
@@ -80,20 +80,12 @@ def IsLocalToGlobalRestrictionData
       localGaloisGroupData Kv Lw → (L ≃ₐ[K] L)) : Prop :=
   ∀ σ x, ι (restrict σ x) = σ (ι x)
 
-/-- Neukirch's raw restriction function
-`G(L_w/K_v) → G(L/K)`, selected by its action on the embedded copy of
-`L`.
-
-The local/global completion comparison later proves existence, uniqueness,
-the homomorphism law, and that the image is the global decomposition group.
-None of those propositions is bundled into this Sweep-III construction. -/
-def localToGlobalRestrictionData
-    (ι : L →ₐ[K] Lw) :
-    localGaloisGroupData Kv Lw → (L ≃ₐ[K] L) := by
-  classical
-  letI : Nonempty
-      (localGaloisGroupData Kv Lw → (L ≃ₐ[K] L)) :=
-    ⟨fun _ => AlgEquiv.refl⟩
-  exact Classical.epsilon (IsLocalToGlobalRestrictionData ι)
+/-- The carrier of all raw restriction functions
+`G(L_w/K_v) → G(L/K)` satisfying the source action equation on the embedded
+copy of `L`.  No unwitnessed restriction function is selected. -/
+def LocalToGlobalRestrictionData
+    (ι : L →ₐ[K] Lw) :=
+  {restrict : localGaloisGroupData Kv Lw → (L ≃ₐ[K] L) //
+    IsLocalToGlobalRestrictionData ι restrict}
 
 end LeanCategories.Algebra
