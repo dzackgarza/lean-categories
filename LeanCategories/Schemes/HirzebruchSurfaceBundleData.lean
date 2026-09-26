@@ -105,17 +105,20 @@ def IsHirzebruchSurfaceBundleData
     IsProjectiveBundleData (hirzebruchBundleModuleData P n) F
 
 /-- Proof-free candidate presentation of a Hirzebruch surface: a candidate
-projective line together with a candidate projective bundle over it. -/
+projective line, a candidate projective bundle over it, and the distinguished
+negative-section morphism as source data. -/
 structure HirzebruchSurfacePresentationData (n : ℕ) where
   projectiveLine : RelativeProjCandidateData hirzebruchComplexPointData
   surface : RelativeProjCandidateData projectiveLine.scheme
+  negativeSection : projectiveLine.scheme ⟶ surface.scheme
 
 /-- Exact source-faithfulness predicate for supplied Hirzebruch-surface
 presentation data. -/
 def IsHirzebruchSurfacePresentationData (n : ℕ)
     (D : HirzebruchSurfacePresentationData n) : Prop :=
   IsHirzebruchProjectiveLineData D.projectiveLine ∧
-    IsHirzebruchSurfaceBundleData D.projectiveLine n D.surface
+    IsHirzebruchSurfaceBundleData D.projectiveLine n D.surface ∧
+      D.negativeSection ≫ D.surface.projection = 𝟙 D.projectiveLine.scheme
 
 /-- The scheme underlying supplied Hirzebruch-surface presentation data. -/
 abbrev hirzebruchSurfaceSchemeData {n : ℕ}
@@ -127,5 +130,11 @@ def hirzebruchSurfaceProjectionData {n : ℕ}
     (D : HirzebruchSurfacePresentationData n) :
     hirzebruchSurfaceSchemeData D ⟶ D.projectiveLine.scheme :=
   D.surface.projection
+
+/-- The distinguished negative section supplied by presentation data. -/
+def hirzebruchNegativeSectionData {n : ℕ}
+    (D : HirzebruchSurfacePresentationData n) :
+    D.projectiveLine.scheme ⟶ hirzebruchSurfaceSchemeData D :=
+  D.negativeSection
 
 end LeanCategories.Schemes
