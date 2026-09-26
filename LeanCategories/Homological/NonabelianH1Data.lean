@@ -6,6 +6,7 @@ module
 
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.Tactic.Group
 
 /-!
 # Nonabelian first-cohomology data
@@ -53,6 +54,145 @@ The fact that it satisfies the cocycle predicate is deliberately not proved or
 stored in this Sweep-III datum. -/
 def serreNonabelianUnitCocycleData : G → A :=
   fun _ => 1
+
+def SerreNonabelianOneCocycle : Type _ :=
+  {f : G → A // serreIsNonabelianOneCocycleData G A f}
+
+namespace SerreNonabelianOneCocycle
+
+instance : CoeFun (SerreNonabelianOneCocycle G A) (fun _ => G → A) :=
+  ⟨fun f => f.1⟩
+
+instance : One (SerreNonabelianOneCocycle G A) :=
+  ⟨⟨serreNonabelianUnitCocycleData G A, by
+    intro s t
+    simp [serreNonabelianUnitCocycleData, MulDistribMulAction.smul_one]⟩⟩
+
+def cohomologySetoid : Setoid (SerreNonabelianOneCocycle G A) where
+  r f g := serreNonabelianCohomologousData G A f.1 g.1
+  iseqv := by
+    refine ⟨?_, ?_, ?_⟩
+    · intro f
+      refine ⟨1, ?_⟩
+      intro s
+      simp [MulDistribMulAction.smul_one]
+    · intro f g h
+      rcases h with ⟨a, ha⟩
+      refine ⟨a⁻¹, ?_⟩
+      intro s
+      have hinv : s • a⁻¹ = (s • a)⁻¹ := by
+        simpa only [MulDistribMulAction.toMonoidHom_apply] using
+          map_inv (MulDistribMulAction.toMonoidHom A s) a
+      rw [hinv, ha s]
+      group
+    · intro f g h hfg hgh
+      rcases hfg with ⟨a, ha⟩
+      rcases hgh with ⟨b, hb⟩
+      refine ⟨a * b, ?_⟩
+      intro s
+      rw [hb s, ha s]
+      rw [smul_mul']
+      group
+
+end SerreNonabelianOneCocycle
+
+def SerreNonabelianH1 : Type _ :=
+  Quotient (SerreNonabelianOneCocycle.cohomologySetoid G A)
+
+namespace SerreNonabelianH1
+
+def mk (z : SerreNonabelianOneCocycle G A) : SerreNonabelianH1 G A := ⟦z⟧
+
+instance : One (SerreNonabelianH1 G A) := ⟨mk G A 1⟩
+
+lemma mk_eq_iff (x y : SerreNonabelianOneCocycle G A) :
+    mk G A x = mk G A y ↔
+      serreNonabelianCohomologousData G A x.1 y.1 :=
+  Quotient.eq_iff_equiv
+
+end SerreNonabelianH1
+
+def SerreNonabelianH0 : Type _ :=
+  {a : A // ∀ g : G, g • a = a}
+
+structure SerreNonabelianExactSequenceData
+    (B C : Type*) [Group B] [Group C]
+    [MulDistribMulAction G B] [MulDistribMulAction G C] where
+  i : A →* B
+  p : B →* C
+  i_equivariant : ∀ g : G, ∀ a : A, i (g • a) = g • i a
+  p_equivariant : ∀ g : G, ∀ b : B, p (g • b) = g • p b
+  i_injective : Function.Injective i
+  p_surjective : Function.Surjective p
+  exact : ∀ b : B, p b = 1 ↔ ∃ a : A, i a = b
+
+namespace SerreNonabelianExactSequenceData
+
+variable {B C : Type*} [Group B] [Group C]
+variable [MulDistribMulAction G B] [MulDistribMulAction G C]
+
+lemma boundary_mem_kernel
+    (E : SerreNonabelianExactSequenceData G A B C)
+    (c : SerreNonabelianH0 G C) (b : B) (hb : E.p b = c.1) (s : G) :
+    E.p (b⁻¹ * (s • b)) = 1 := by
+  rw [map_mul, map_inv, E.p_equivariant s b, hb, c.2 s]
+  group
+
+noncomputable def connectingBoundaryLift
+    (E : SerreNonabelianExactSequenceData G A B C)
+    (c : SerreNonabelianH0 G C) (b : B) (hb : E.p b = c.1)
+    (s : G) : A :=
+  Classical.choose ((E.exact _).mp
+    (boundary_mem_kernel (G := G) (A := A) E c b hb s))
+
+@[simp]
+lemma i_connectingBoundaryLift
+    (E : SerreNonabelianExactSequenceData G A B C)
+    (c : SerreNonabelianH0 G C) (b : B) (hb : E.p b = c.1)
+    (s : G) :
+    E.i (connectingBoundaryLift (G := G) (A := A) E c b hb s) = b⁻¹ * (s • b) :=
+  Classical.choose_spec ((E.exact _).mp
+    (boundary_mem_kernel (G := G) (A := A) E c b hb s))
+
+noncomputable def connectingCocycle
+    (E : SerreNonabelianExactSequenceData G A B C)
+    (c : SerreNonabelianH0 G C) (b : B) (hb : E.p b = c.1) :
+    SerreNonabelianOneCocycle G A :=
+  ⟨fun s => connectingBoundaryLift (G := G) (A := A) E c b hb s, by
+    intro s t
+    apply E.i_injective
+    rw [map_mul, E.i_equivariant,
+      i_connectingBoundaryLift (G := G) (A := A) E,
+      i_connectingBoundaryLift (G := G) (A := A) E,
+      i_connectingBoundaryLift (G := G) (A := A) E]
+    have hinv : s • b⁻¹ = (s • b)⁻¹ := by
+      simpa only [MulDistribMulAction.toMonoidHom_apply] using
+        map_inv (MulDistribMulAction.toMonoidHom B s) b
+    rw [smul_mul', hinv, mul_smul]
+    group⟩
+
+noncomputable def fixedPointLift
+    (E : SerreNonabelianExactSequenceData G A B C)
+    (c : SerreNonabelianH0 G C) : B :=
+  Classical.choose (E.p_surjective c.1)
+
+@[simp]
+lemma p_fixedPointLift
+    (E : SerreNonabelianExactSequenceData G A B C)
+    (c : SerreNonabelianH0 G C) :
+    E.p (fixedPointLift (G := G) (A := A) E c) = c.1 :=
+  Classical.choose_spec (E.p_surjective c.1)
+
+noncomputable def connecting
+    (E : SerreNonabelianExactSequenceData G A B C) :
+    SerreNonabelianH0 G C → SerreNonabelianH1 G A :=
+  fun c =>
+    SerreNonabelianH1.mk G A
+      (connectingCocycle (G := G) (A := A) E c
+        (fixedPointLift (G := G) (A := A) E c)
+        (p_fixedPointLift (G := G) (A := A) E c))
+
+end SerreNonabelianExactSequenceData
 
 /-- Raw degree-zero functoriality data for a homomorphism of coefficient
 groups (FC10-C07-U040).
