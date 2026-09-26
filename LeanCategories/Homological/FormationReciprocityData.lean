@@ -56,24 +56,25 @@ def IsFormationReciprocityInverseData
   Function.LeftInverse reciprocity theta ∧
     Function.RightInverse reciprocity theta
 
-/-- Serre's finite reciprocity function, selected by the source
-characterization that it is inverse to the supplied class-formation map
-`theta`.
+/-- Source-faithful finite reciprocity data: a candidate inverse function
+together with Serre's exact two-sided-inverse characterization.
 
-No inverse law, homomorphism property, or isomorphism structure is bundled
-into this Sweep-III value. -/
-def formationReciprocityInverseData
-    {GAb NormQuotient : Type*} [Inhabited GAb]
-    (theta : GAb → NormQuotient) : NormQuotient → GAb := by
-  letI : Nonempty (NormQuotient → GAb) := ⟨fun _ => default⟩
-  exact Classical.epsilon (IsFormationReciprocityInverseData theta)
+Existence, uniqueness, homomorphism and isomorphism packaging are supplied by
+the finite reciprocity theorem, not hidden in a choice. -/
+abbrev FormationReciprocityInverseData
+    {GAb NormQuotient : Type*}
+    (theta : GAb → NormQuotient) :=
+  {reciprocity : NormQuotient → GAb //
+    IsFormationReciprocityInverseData theta reciprocity}
 
 /-- Serre's norm-residue/reciprocity symbol `{a,F/E}` relative to the supplied
 finite class-formation map `theta`: apply its selected inverse to the norm
 class of `a`. -/
 def formationReciprocitySymbolData
-    {GAb NormQuotient : Type*} [Inhabited GAb]
-    (theta : GAb → NormQuotient) (a : NormQuotient) : GAb :=
-  formationReciprocityInverseData theta a
+    {GAb NormQuotient : Type*}
+    (theta : GAb → NormQuotient)
+    (D : FormationReciprocityInverseData theta)
+    (a : NormQuotient) : GAb :=
+  D.1 a
 
 end LeanCategories.Homological
