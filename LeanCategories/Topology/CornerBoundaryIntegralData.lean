@@ -29,9 +29,9 @@ Instead, this file records:
 * the exact graph characterizing the global integral by every such
   presentation.
 
-The source integral is then named by `Classical.epsilon` from that graph.  No
-chart compatibility, induced-orientation coherence, partition existence, or
-independence theorem is proved here.
+The source integral is then represented by data carrying that exact graph. No
+arbitrary functional is selected before chart compatibility, induced
+orientation coherence, partition existence, or independence are proved.
 -/
 
 @[expose] public noncomputable section
@@ -102,19 +102,14 @@ def IsCornerBoundaryIntegralData
   ∀ (ω : BoundaryForm) (P : D.Presentation ω),
     integral ω = cornerBoundaryPresentationIntegral D localIntegral ω P
 
-/-- Lee's global integral over the boundary of a manifold with corners,
-selected from the exact all-presentations graph.
-
-The theorem layer proves that the selected functional satisfies
-`IsCornerBoundaryIntegralData`; Sweep III merely names the source-defined
-functional without choosing a preferred partition or proving independence.
--/
-def cornerBoundaryIntegralData
+/-- Source-faithful global corner-boundary integral data: a functional
+together with Lee's exact graph over every valid partition presentation. -/
+abbrev CornerBoundaryIntegralData
     {BoundaryForm : Type u} {ChartBoundaryForm : Type v}
     (D : CornerBoundaryIntegralPresentationData.{u, v, w}
       BoundaryForm ChartBoundaryForm)
-    (localIntegral : ChartBoundaryForm → ℝ) :
-    BoundaryForm → ℝ :=
-  Classical.epsilon (IsCornerBoundaryIntegralData D localIntegral)
+    (localIntegral : ChartBoundaryForm → ℝ) :=
+  {integral : BoundaryForm → ℝ //
+    IsCornerBoundaryIntegralData D localIntegral integral}
 
 end LeanCategories.Topology
