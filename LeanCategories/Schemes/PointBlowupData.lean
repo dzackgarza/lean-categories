@@ -23,11 +23,12 @@ definition:
 * the strict transform of a curve is the closure of the inverse image away
   from `p`.
 
-The current library does not construct the global blow-up scheme.  Sweep III
-therefore stores candidate data and the exact defining graph, and selects the
-blow-up datum from that graph.  Existence of a candidate satisfying the graph,
-the projective-line and tangent-space identifications, and their geometric
-compatibilities are result-layer statements and are not proved here.
+Mathlib exposes the Rees algebra and projective-spectrum ingredients but no
+scheme-level blow-up constructor.  The source object is therefore represented
+directly as bundled blow-up data: the surface, projection, exceptional
+subscheme, strict transforms, and the defining compatibility proofs are fields
+of `PointBlowupData`.  There is no candidate carrier or separately supplied
+graph predicate.
 -/
 
 @[expose] public noncomputable section
@@ -57,84 +58,62 @@ abbrev surfacePointTangentDirectionsData
     (IsLocalRing.ResidueField (S.scheme.presheaf.stalk p))
     (surfacePointTangentSpaceData S p)
 
-/-- Raw candidate data for the blow-up of `S` at `p`.
+/-- Beauville II.1's blow-up of a smooth complex surface at a point, bundled
+with the defining geometric data and compatibilities.
 
-All geometric conditions are kept in `IsPointBlowupData`; constructing a
-candidate therefore requires no new proof-valued fields. -/
-structure PointBlowupCandidateData
+The exceptional subscheme is the set-theoretic fibre over `p`, is a
+projective line, and its points parametrize the projectivized Zariski tangent
+space.  The strict-transform assignment is literally topological closure of
+the inverse image of the punctured curve. -/
+structure PointBlowupData
     (S : SmoothProjectiveComplexSurface) (p : S.scheme) where
   surface : SmoothProjectiveComplexSurface
   projection : surface.scheme ⟶ S.scheme
   exceptionalScheme : Scheme
   exceptionalι : exceptionalScheme ⟶ surface.scheme
   strictTransform : Set S.scheme → Set surface.scheme
-
-/-- The candidate type is inhabited independently of the blow-up existence
-theorem. -/
-instance (S : SmoothProjectiveComplexSurface) (p : S.scheme) :
-    Nonempty (PointBlowupCandidateData S p) :=
-  ⟨{
-    surface := S
-    projection := 𝟙 S.scheme
-    exceptionalScheme := S.scheme
-    exceptionalι := 𝟙 S.scheme
-    strictTransform := fun C => C
-  }⟩
-
-/-- Beauville II.1's exact definition-level graph for blowing up a smooth
-complex surface at a point.
-
-The exceptional subscheme is the set-theoretic fibre over `p`, is a
-projective line, and its points parametrize the projectivized Zariski tangent
-space.  The strict-transform assignment is literally topological closure of
-the inverse image of the punctured curve. -/
-def IsPointBlowupData
-    (S : SmoothProjectiveComplexSurface) (p : S.scheme)
-    (B : PointBlowupCandidateData S p) : Prop :=
-  B.projection ≫ S.structureMap = B.surface.structureMap ∧
-    IsClosed ({p} : Set S.scheme) ∧
-    (∃ U : S.scheme.Opens,
+  projection_over_base :
+    projection ≫ S.structureMap = surface.structureMap
+  center_closed : IsClosed ({p} : Set S.scheme)
+  iso_away_from_center :
+    ∃ U : S.scheme.Opens,
       (U : Set S.scheme) = ({p} : Set S.scheme)ᶜ ∧
-        IsIso (B.projection ∣_ U)) ∧
-    IsClosedImmersion B.exceptionalι ∧
-    Set.range B.exceptionalι.base =
-      B.projection.base ⁻¹' ({p} : Set S.scheme) ∧
+        IsIso (projection ∣_ U)
+  exceptional_closed : IsClosedImmersion exceptionalι
+  exceptional_fiber :
+    Set.range exceptionalι.base =
+      projection.base ⁻¹' ({p} : Set S.scheme)
+  exceptional_projective_line :
     Nonempty
-      (B.exceptionalScheme ≅
+      (exceptionalScheme ≅
         ProjectiveSpace
-          (IsLocalRing.ResidueField (S.scheme.presheaf.stalk p)) 1) ∧
+          (IsLocalRing.ResidueField (S.scheme.presheaf.stalk p)) 1)
+  tangent_dimension :
     Module.finrank
         (IsLocalRing.ResidueField (S.scheme.presheaf.stalk p))
-        (surfacePointTangentSpaceData S p) = 2 ∧
+        (surfacePointTangentSpaceData S p) = 2
+  exceptional_tangent_directions :
     Nonempty
-      (B.exceptionalScheme ≃ surfacePointTangentDirectionsData S p) ∧
+      (exceptionalScheme ≃ surfacePointTangentDirectionsData S p)
+  strictTransform_eq :
     ∀ C : Set S.scheme,
-      B.strictTransform C =
-        closure (B.projection.base ⁻¹' (C \ ({p} : Set S.scheme)))
+      strictTransform C =
+        closure (projection.base ⁻¹' (C \ ({p} : Set S.scheme)))
 
 /-- Beauville II.16's definition of an exceptional curve on a smooth
 projective complex surface: it is the exceptional curve of a blow-up of
 another smooth surface at a point.
 
-The target surface, center, blow-down morphism, exceptional subscheme, and
-strict-transform assignment are existential data.  The condition that they
-really satisfy the blow-up graph is exactly `IsPointBlowupData`; no
-contraction or Castelnuovo theorem is used here. -/
+The target surface and center are existential data, while the blow-down
+morphism, exceptional subscheme and strict transforms are the fields of the
+constructed `PointBlowupData`; no contraction or Castelnuovo theorem is used
+here. -/
 def IsExceptionalCurveData
     (S : SmoothProjectiveComplexSurface) (E : Set S.scheme) : Prop :=
   ∃ (T : SmoothProjectiveComplexSurface) (p : T.scheme)
-    (projection : S.scheme ⟶ T.scheme)
-    (exceptionalScheme : Scheme)
-    (exceptionalι : exceptionalScheme ⟶ S.scheme)
-    (strictTransform : Set T.scheme → Set S.scheme),
-    let B : PointBlowupCandidateData T p := {
-      surface := S
-      projection := projection
-      exceptionalScheme := exceptionalScheme
-      exceptionalι := exceptionalι
-      strictTransform := strictTransform
-    }
-    IsPointBlowupData T p B ∧ Set.range exceptionalι.base = E
+    (B : PointBlowupData T p),
+    ∃ h : B.surface = S,
+      h ▸ Set.range B.exceptionalι.base = E
 
 /-- The definition-level predicate that a surface contains no exceptional
 curve.  Beauville's assertion that this is equivalent to minimality is
