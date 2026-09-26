@@ -10,6 +10,8 @@ public import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.CategoryTheory.Abelian.Exact
 public import Mathlib.Topology.CWComplex.Classical.Finite
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
+public import Mathlib.Topology.Category.TopCat.EpiMono
+public import Mathlib.CategoryTheory.Limits.MonoCoprod
 
 /-!
 # Cellular homology data
@@ -95,80 +97,133 @@ def integralCWSkeletonInclusionData
 abbrev integralCWRelativeCellObjectData
     (X : Type) [TopologicalSpace X] [T2Space X]
     [Topology.CWComplex (Set.univ : Set X)] (n : ℕ) : AddCommGrpCat.{0} :=
-  (cellularRelativeIntegralChainComplexData
-    (integralCWSkeletonInclusionData X n)).homology n
+  (cellularRelativeIntegralShortComplexData
+    (integralCWSkeletonInclusionData X n)).X₃.homology n
 
-/-- Exact graph of the cellular boundary map through the skeletal
-long-exact sequence.
-
-The short-exact witness is quantified over inside the proposition rather than
-constructed in Sweep III. -/
-def IsIntegralCWRelativeBoundaryData
-    (X : Type) [TopologicalSpace X] [T2Space X]
-    [Topology.CWComplex (Set.univ : Set X)] (n : ℕ)
-    (d : integralCWRelativeCellObjectData X (n + 1) ⟶
-      integralCWRelativeCellObjectData X n) : Prop :=
-  ∃ h :
-      (cellularRelativeIntegralShortComplexData
-        (integralCWSkeletonInclusionData X (n + 1))).ShortExact,
-    d =
-      h.δ (n + 1) n
-          (ComplexShape.down_mk (n + 1) n (by omega)) ≫
-        HomologicalComplex.homologyMap
-          (cellularRelativeIntegralProjectionData
-            (integralCWSkeletonInclusionData X n)) n
-
-/-- Source-faithful degree-`n` cellular-boundary data: a candidate map
-together with Hatcher's exact long-exact-sequence graph. -/
-abbrev IntegralCWRelativeBoundaryData
+/-- The inclusion of successive CW skeleta induces a monomorphism on
+integral singular chain complexes. -/
+theorem integralCWSkeletonChainMap_mono
     (X : Type) [TopologicalSpace X] [T2Space X]
     [Topology.CWComplex (Set.univ : Set X)] (n : ℕ) :
-    Type _ :=
-  {d :
-      integralCWRelativeCellObjectData X (n + 1) ⟶
-        integralCWRelativeCellObjectData X n //
-    IsIntegralCWRelativeBoundaryData X n d}
+    Mono (cellularIntegralSingularChainMapData
+      (integralCWSkeletonInclusionData X n)) := by
+  apply HomologicalComplex.mono_of_mono_f _
+  intro k
+  let i := integralCWSkeletonInclusionData X n
+  have hi : Function.Injective i := by
+    intro a b h
+    apply Subtype.ext
+    exact congrArg (fun z : IntegralCWSkeletonLTData X (n + 1) => z.1) h
+  change Mono ((CategoryTheory.Limits.sigmaConst.obj (AddCommGrpCat.of ℤ)).map
+    ((TopCat.toSSet.map i).app (Opposite.op (SimplexCategory.mk k))))
+  haveI : Mono ((TopCat.toSSet.map i).app
+      (Opposite.op (SimplexCategory.mk k))) := by
+    rw [CategoryTheory.mono_iff_injective]
+    intro a b hab
+    apply (TopCat.toSSetObjEquiv
+      (X := TopCat.of (IntegralCWSkeletonLTData X n)) _).injective
+    apply ContinuousMap.ext
+    intro z
+    apply hi
+    exact congrArg
+      (fun s => TopCat.toSSetObjEquiv
+        (X := TopCat.of (IntegralCWSkeletonLTData X (n + 1))) _ s z) hab
+  infer_instance
 
-/-- A source-facing family of valid cellular boundary maps. Existence and
-square-zero are theorem content. -/
-abbrev IntegralCWBoundarySystemData
+/-- The canonical absolute/absolute/relative singular-chain sequence for
+successive CW skeleta is short exact. -/
+noncomputable def integralCWRelativeShortExactData
     (X : Type) [TopologicalSpace X] [T2Space X]
-    [Topology.CWComplex (Set.univ : Set X)] :=
-  ∀ n : ℕ, IntegralCWRelativeBoundaryData X n
+    [Topology.CWComplex (Set.univ : Set X)] (n : ℕ) :
+    (cellularRelativeIntegralShortComplexData
+      (integralCWSkeletonInclusionData X n)).ShortExact := by
+  let S := cellularRelativeIntegralShortComplexData
+    (integralCWSkeletonInclusionData X n)
+  letI : Mono S.f := integralCWSkeletonChainMap_mono X n
+  have hC : Nonempty (IsColimit (CokernelCofork.ofπ S.g S.zero)) := by
+    refine ⟨?_⟩
+    dsimp [S, cellularRelativeIntegralShortComplexData,
+      cellularRelativeIntegralProjectionData]
+    exact cokernelIsCokernel (cellularIntegralSingularChainMapData
+      (integralCWSkeletonInclusionData X n))
+  have h := (S.exact_and_epi_g_iff_g_is_cokernel).2 hC
+  letI : Epi S.g := h.2
+  exact { exact := h.1 }
 
-/-- Exact graph of Hatcher's cellular chain complex.
-
-The square-zero witness is existential data in the graph; this declaration
-does not supply or prove it. -/
-def IsIntegralCWCellularChainComplexData
+/-- Integral singular homology of the `m`th skeleton in degree `n`. -/
+abbrev integralCWSkeletonHomologyData
     (X : Type) [TopologicalSpace X] [T2Space X]
-    [Topology.CWComplex (Set.univ : Set X)]
-    (D : IntegralCWBoundarySystemData X)
-    (K : ChainComplex AddCommGrpCat.{0} ℕ) : Prop :=
-  ∃ hsq :
-      ∀ n, (D (n + 1)).1 ≫ (D n).1 = 0,
-    K =
-      ChainComplex.of
-        (fun n ↦ integralCWRelativeCellObjectData X n)
-        (fun n ↦ (D n).1)
-        hsq
+    [Topology.CWComplex (Set.univ : Set X)] (m n : ℕ) : AddCommGrpCat.{0} :=
+  (cellularIntegralSingularChainComplexData
+    (TopCat.of (IntegralCWSkeletonLTData X m))).homology n
 
-/-- Source-faithful cellular chain-complex data relative to supplied valid
-cellular boundaries.  The later square-zero theorem supplies existence. -/
-abbrev IntegralCWCellularChainComplexData
+/-- The connecting morphism from the relative group in degree `n+1` to
+absolute homology of the intermediate skeleton in degree `n`. -/
+noncomputable def integralCWConnectingData
     (X : Type) [TopologicalSpace X] [T2Space X]
-    [Topology.CWComplex (Set.univ : Set X)]
-    (D : IntegralCWBoundarySystemData X) :=
-  {K : ChainComplex AddCommGrpCat.{0} ℕ //
-    IsIntegralCWCellularChainComplexData X D K}
+    [Topology.CWComplex (Set.univ : Set X)] (n : ℕ) :
+    integralCWRelativeCellObjectData X (n + 1) ⟶
+      integralCWSkeletonHomologyData X (n + 1) n :=
+  (integralCWRelativeShortExactData X (n + 1)).δ (n + 1) n
+    (ComplexShape.down_mk (n + 1) n (by omega))
 
-/-- Integral cellular homology of supplied valid cellular-chain-complex data. -/
+/-- Projection from absolute homology of the target skeleton to its relative
+cellular group. -/
+noncomputable def integralCWProjectionHomologyData
+    (X : Type) [TopologicalSpace X] [T2Space X]
+    [Topology.CWComplex (Set.univ : Set X)] (n : ℕ) :
+    integralCWSkeletonHomologyData X (n + 1) n ⟶
+      integralCWRelativeCellObjectData X n :=
+  HomologicalComplex.homologyMap
+    (cellularRelativeIntegralProjectionData
+      (integralCWSkeletonInclusionData X n)) n
+
+/-- The projection in one skeletal long exact sequence followed by its
+connecting morphism is zero. -/
+theorem integralCWProjection_comp_connecting
+    (X : Type) [TopologicalSpace X] [T2Space X]
+    [Topology.CWComplex (Set.univ : Set X)] (n : ℕ) :
+    integralCWProjectionHomologyData X (n + 1) ≫
+      integralCWConnectingData X n = 0 := by
+  exact (integralCWRelativeShortExactData X (n + 1)).comp_δ
+    (n + 1) n (ComplexShape.down_mk (n + 1) n (by omega))
+
+/-- Hatcher's cellular boundary map, constructed from the connecting
+homomorphism for the canonical short exact sequence of successive skeleta,
+followed by projection to the next relative group. -/
+noncomputable def integralCWRelativeBoundaryData
+    (X : Type) [TopologicalSpace X] [T2Space X]
+    [Topology.CWComplex (Set.univ : Set X)] (n : ℕ) :
+    integralCWRelativeCellObjectData X (n + 1) ⟶
+      integralCWRelativeCellObjectData X n :=
+  integralCWConnectingData X n ≫ integralCWProjectionHomologyData X n
+
+/-- Consecutive cellular boundaries compose to zero. -/
+theorem integralCWRelativeBoundaryData_comp
+    (X : Type) [TopologicalSpace X] [T2Space X]
+    [Topology.CWComplex (Set.univ : Set X)] (n : ℕ) :
+    integralCWRelativeBoundaryData X (n + 1) ≫
+      integralCWRelativeBoundaryData X n = 0 := by
+  rw [integralCWRelativeBoundaryData, integralCWRelativeBoundaryData]
+  simp only [Category.assoc]
+  rw [← Category.assoc (integralCWProjectionHomologyData X (n + 1)),
+    integralCWProjection_comp_connecting X n, zero_comp, comp_zero]
+
+/-- Hatcher's cellular chain complex, assembled from the actual relative
+homology groups and connecting-map differentials. -/
+noncomputable def integralCWCellularChainComplexData
+    (X : Type) [TopologicalSpace X] [T2Space X]
+    [Topology.CWComplex (Set.univ : Set X)] :
+    ChainComplex AddCommGrpCat.{0} ℕ :=
+  ChainComplex.of
+    (fun n ↦ integralCWRelativeCellObjectData X n)
+    (fun n ↦ integralCWRelativeBoundaryData X n)
+    (integralCWRelativeBoundaryData_comp X)
+
+/-- Integral cellular homology of the constructed cellular chain complex. -/
 def integralCWCellularHomologyData
     (X : Type) [TopologicalSpace X] [T2Space X]
-    [Topology.CWComplex (Set.univ : Set X)]
-    {D : IntegralCWBoundarySystemData X}
-    (K : IntegralCWCellularChainComplexData X D)
-    (n : ℕ) : AddCommGrpCat.{0} :=
-  K.1.homology n
+    [Topology.CWComplex (Set.univ : Set X)] (n : ℕ) : AddCommGrpCat.{0} :=
+  (integralCWCellularChainComplexData X).homology n
 
 end LeanCategories.Topology
