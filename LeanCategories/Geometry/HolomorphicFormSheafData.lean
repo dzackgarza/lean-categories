@@ -11,6 +11,7 @@ public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 public import Mathlib.Topology.VectorBundle.ContinuousAlternatingMap
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.CategoryTheory.Sites.Adjunction
+public import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Limits
 
 /-!
@@ -466,6 +467,26 @@ noncomputable def holomorphicPFormSheafModuleData (p : ℕ) :
     TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X) := by
   letI : IsManifold I ∞ X := IsManifold.of_le le_top
   exact holomorphicPFormSheafModuleSmoothData (X := X) I p
+
+/-- The additive sheaf underlying the complex-vector-space-valued
+holomorphic `p`-form sheaf.  This is the coefficient object consumed by
+Mathlib's native sheaf-cohomology functor. -/
+noncomputable def holomorphicPFormAdditiveSheafData (p : ℕ) :
+    TopCat.Sheaf AddCommGrpCat.{u} (TopCat.of X) := by
+  letI : IsManifold I ∞ X := IsManifold.of_le le_top
+  exact (CategoryTheory.sheafCompose
+    (Opens.grothendieckTopology (TopCat.of X))
+    (CategoryTheory.forget₂ (ModuleCat.{u} ℂ) AddCommGrpCat.{u})).obj
+      (holomorphicPFormSheafModuleSmoothData (X := X) I p)
+
+/-- Peters--Sterk's Hodge-cohomology group carrier
+`H^{p,q}(X) = H^q(X, Ω_X^p)`.
+
+The complex vector-space structure induced from the coefficient sheaf is a
+separate categorical layer; this declaration records the actual native
+sheaf-cohomology group rather than a proxy. -/
+noncomputable abbrev hodgeCohomologyGroupData (p q : ℕ) :=
+  (holomorphicPFormAdditiveSheafData (X := X) I p).H q
 
 /-- Exact pointwise graph for zero in the holomorphic-form sheaf. -/
 def IsHolomorphicPFormZeroSectionData
