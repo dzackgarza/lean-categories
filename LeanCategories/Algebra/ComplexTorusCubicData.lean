@@ -27,7 +27,8 @@ Descending the displayed representative formula to C/Λ uses periodicity,
 and showing that its affine values lie on the cubic uses the Weierstrass
 differential equation. Those are result statements. Sweep III therefore
 records the actual quotient carrier, the cubic-point predicate, and the exact
-representative graph, then names the source map by Classical.epsilon.
+representative graph as source-faithful map data; no arbitrary quotient map is
+selected before those results.
 
 Biholomorphicity and the rational-function-field comparison are also result
 content and are not asserted here.
@@ -81,14 +82,11 @@ def IsComplexTorusCubicMapData
         complexTorusCubicRepresentativeData L z) ∧
     ∀ q : ComplexTorusData L, IsComplexCubicPointData L (φ q)
 
-/-- Hartshorne's map from the complex torus to its Weierstrass cubic, selected
-from the exact representative/cubic graph.
-
-The theorem layer proves that the selected function satisfies the graph and
-then establishes the analytic and algebraic comparison statements. -/
-def complexTorusCubicMapData
-    (L : PeriodPair) :
-    ComplexTorusData L → ComplexCubicPointCarrierData :=
-  Classical.epsilon (IsComplexTorusCubicMapData L)
+/-- Source-faithful map data from the complex torus to its Weierstrass cubic:
+a quotient-level function together with Hartshorne's exact representative and
+cubic-value graph.  Periodicity/cubic identities supply existence later. -/
+abbrev ComplexTorusCubicMapData (L : PeriodPair) :=
+  {φ : ComplexTorusData L → ComplexCubicPointCarrierData //
+    IsComplexTorusCubicMapData L φ}
 
 end LeanCategories.Algebra
