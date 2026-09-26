@@ -20,9 +20,9 @@ cohomology.
 Sweep III records the source data without proving the lifting, boundary, or
 descent theorems.  The finite list of lifts is specified by a Fin n family
 which is injective, consists entirely of lifts, and exhausts every lift.
-Degreewise transfer maps are selected from this exact generator graph.
-The induced homology and cohomology maps are likewise selected from their
-cycle/cocycle representative graphs.
+Degreewise transfer maps, and the induced homology/cohomology maps, are
+represented as candidates satisfying their exact generator/representative
+graphs. No arbitrary map is selected before the corresponding theorems.
 -/
 
 @[expose] public noncomputable section
@@ -72,15 +72,18 @@ def IsFiniteSheetedTransferComponent
         (singularSSet X).ιChainComplex σ ≫ T =
           ∑ i : Fin sheets, (singularSSet E).ιChainComplex (lifts i)
 
-/-- Hatcher's degree-k transfer selected from the all-lifts formula. -/
-def finiteSheetedTransferComponent
+/-- Source-faithful degree-`k` finite-sheeted transfer data: a candidate
+linear map together with Hatcher's exact all-lifts generator graph. -/
+abbrev FiniteSheetedTransferComponentData
     {E X : Type} [TopologicalSpace E] [TopologicalSpace X]
     (R : Type) [CommRing R]
-    (p : C(E, X)) (sheets : ℕ) (_hp : IsFiniteSheetedCovering p sheets)
-    (k : ℕ) :
-    (singularChainComplexWithCoefficients R X).X k ⟶
-      (singularChainComplexWithCoefficients R E).X k :=
-  Classical.epsilon (IsFiniteSheetedTransferComponent R p sheets k)
+    (p : C(E, X)) (sheets k : ℕ)
+    :
+    Type _ :=
+  {T :
+      (singularChainComplexWithCoefficients R X).X k ⟶
+        (singularChainComplexWithCoefficients R E).X k //
+    IsFiniteSheetedTransferComponent R p sheets k T}
 
 /-- Degreewise data underlying the finite-sheeted transfer chain map.
 
@@ -88,18 +91,8 @@ The chain-map equation is a Sweep-IV result and is not a field. -/
 abbrev FiniteSheetedTransferData
     {E X : Type} [TopologicalSpace E] [TopologicalSpace X]
     (R : Type) [CommRing R]
-    (_p : C(E, X)) (_sheets : ℕ) :=
-  ∀ k : ℕ,
-    (singularChainComplexWithCoefficients R X).X k ⟶
-      (singularChainComplexWithCoefficients R E).X k
-
-/-- The selected degreewise transfer family. -/
-def finiteSheetedTransferData
-    {E X : Type} [TopologicalSpace E] [TopologicalSpace X]
-    (R : Type) [CommRing R]
-    (p : C(E, X)) (sheets : ℕ) (hp : IsFiniteSheetedCovering p sheets) :
-    FiniteSheetedTransferData R p sheets :=
-  fun k => finiteSheetedTransferComponent R p sheets hp k
+    (p : C(E, X)) (sheets : ℕ) (_hp : IsFiniteSheetedCovering p sheets) :=
+  ∀ k : ℕ, FiniteSheetedTransferComponentData R p sheets k
 
 /-- Type of a homology transfer candidate in degree k. -/
 abbrev FiniteSheetedHomologyTransferHomData
@@ -112,25 +105,26 @@ abbrev FiniteSheetedHomologyTransferHomData
 def IsFiniteSheetedHomologyTransferData
     {E X : Type} [TopologicalSpace E] [TopologicalSpace X]
     (R : Type) [CommRing R]
-    (p : C(E, X)) (sheets : ℕ) (hp : IsFiniteSheetedCovering p sheets)
+    (p : C(E, X)) (sheets : ℕ)
     (k : ℕ)
+    (τ : FiniteSheetedTransferComponentData R p sheets k)
     (T : FiniteSheetedHomologyTransferHomData (E := E) (X := X) R k) : Prop :=
   let KX := singularChainComplexWithCoefficients R X
   let KE := singularChainComplexWithCoefficients R E
-  let τ := finiteSheetedTransferComponent R p sheets hp k
   ∀ x : KX.cycles k,
     ∃ z : KE.cycles k,
-      (KE.iCycles k).hom z = τ.hom ((KX.iCycles k).hom x) ∧
+      (KE.iCycles k).hom z = τ.1.hom ((KX.iCycles k).hom x) ∧
         T.hom ((KX.homologyπ k).hom x) = (KE.homologyπ k).hom z
 
-/-- Hatcher's induced transfer on homology, selected from its cycle graph. -/
-def finiteSheetedHomologyTransferData
+/-- Source-faithful homology-transfer data relative to a supplied degreewise
+chain transfer component. -/
+abbrev FiniteSheetedHomologyTransferData
     {E X : Type} [TopologicalSpace E] [TopologicalSpace X]
     (R : Type) [CommRing R]
-    (p : C(E, X)) (sheets : ℕ) (hp : IsFiniteSheetedCovering p sheets)
-    (k : ℕ) :
-    FiniteSheetedHomologyTransferHomData (E := E) (X := X) R k :=
-  Classical.epsilon (IsFiniteSheetedHomologyTransferData R p sheets hp k)
+    (p : C(E, X)) (sheets k : ℕ)
+    (τ : FiniteSheetedTransferComponentData R p sheets k) :=
+  {T : FiniteSheetedHomologyTransferHomData (E := E) (X := X) R k //
+    IsFiniteSheetedHomologyTransferData R p sheets k τ T}
 
 /-- Type of a cohomology transfer candidate in degree k. -/
 abbrev FiniteSheetedCohomologyTransferHomData
@@ -144,24 +138,25 @@ an upstairs cocycle is pulled back along the chain transfer. -/
 def IsFiniteSheetedCohomologyTransferData
     {E X : Type} [TopologicalSpace E] [TopologicalSpace X]
     (R : Type) [CommRing R]
-    (p : C(E, X)) (sheets : ℕ) (hp : IsFiniteSheetedCovering p sheets)
+    (p : C(E, X)) (sheets : ℕ)
     (k : ℕ)
+    (τ : FiniteSheetedTransferComponentData R p sheets k)
     (T : FiniteSheetedCohomologyTransferHomData (E := E) (X := X) R k) : Prop :=
   let KX := singularCochainComplexData R (TopCat.of X) (ModuleCat.of R R)
   let KE := singularCochainComplexData R (TopCat.of E) (ModuleCat.of R R)
-  let τ := finiteSheetedTransferComponent R p sheets hp k
   ∀ x : KE.cycles k,
     ∃ y : KX.cycles k,
-      (KX.iCycles k).hom y = τ ≫ (KE.iCycles k).hom x ∧
+      (KX.iCycles k).hom y = τ.1 ≫ (KE.iCycles k).hom x ∧
         T.hom ((KE.homologyπ k).hom x) = (KX.homologyπ k).hom y
 
-/-- Hatcher's induced transfer on cohomology, selected from its cocycle graph. -/
-def finiteSheetedCohomologyTransferData
+/-- Source-faithful cohomology-transfer data relative to a supplied degreewise
+chain transfer component. -/
+abbrev FiniteSheetedCohomologyTransferData
     {E X : Type} [TopologicalSpace E] [TopologicalSpace X]
     (R : Type) [CommRing R]
-    (p : C(E, X)) (sheets : ℕ) (hp : IsFiniteSheetedCovering p sheets)
-    (k : ℕ) :
-    FiniteSheetedCohomologyTransferHomData (E := E) (X := X) R k :=
-  Classical.epsilon (IsFiniteSheetedCohomologyTransferData R p sheets hp k)
+    (p : C(E, X)) (sheets k : ℕ)
+    (τ : FiniteSheetedTransferComponentData R p sheets k) :=
+  {T : FiniteSheetedCohomologyTransferHomData (E := E) (X := X) R k //
+    IsFiniteSheetedCohomologyTransferData R p sheets k τ T}
 
 end LeanCategories.Topology

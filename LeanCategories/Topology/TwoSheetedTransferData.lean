@@ -92,17 +92,16 @@ def IsTwoSheetedTransferComponent
           (singularSSet E).ιChainComplex σ₀ +
             (singularSSet E).ιChainComplex σ₁
 
-/-- Hatcher's degree-`n` transfer map, selected from its intrinsic
-sum-of-the-two-lifts characterization.
-
-For a two-sheeted covering the later lifting theorem proves that this selected
-map satisfies `IsTwoSheetedTransferComponent`. -/
-def twoSheetedTransferComponent
+/-- Source-faithful degree-`n` two-sheeted transfer data: a linear map
+together with Hatcher's exact sum-of-the-two-lifts generator graph. -/
+abbrev TwoSheetedTransferComponentData
     {E X : Type} [TopologicalSpace E] [TopologicalSpace X]
     (p : C(E, X)) (n : ℕ) :
-    (modTwoSingularChainComplex X).X n ⟶
-      (modTwoSingularChainComplex E).X n :=
-  Classical.epsilon (IsTwoSheetedTransferComponent p n)
+    Type _ :=
+  {T :
+      (modTwoSingularChainComplex X).X n ⟶
+        (modTwoSingularChainComplex E).X n //
+    IsTwoSheetedTransferComponent p n T}
 
 /-- The degreewise linear data underlying Hatcher's transfer. The equation
 `d τ = τ d` is deliberately not a field: it is the result that upgrades this
@@ -110,13 +109,6 @@ family to a chain map. -/
 abbrev TwoSheetedTransferData
     {E X : Type} [TopologicalSpace E] [TopologicalSpace X]
     (p : C(E, X)) :=
-  ∀ n : ℕ, (modTwoSingularChainComplex X).X n ⟶
-    (modTwoSingularChainComplex E).X n
-
-/-- The selected degreewise transfer family. -/
-def twoSheetedTransferData
-    {E X : Type} [TopologicalSpace E] [TopologicalSpace X]
-    (p : C(E, X)) : TwoSheetedTransferData p :=
-  fun n => twoSheetedTransferComponent p n
+  ∀ n : ℕ, TwoSheetedTransferComponentData p n
 
 end LeanCategories.Topology
