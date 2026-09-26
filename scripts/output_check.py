@@ -2,7 +2,9 @@
 """How much of the recent history realized definitions, and whether it touched the scheduler.
 
 A commit counts as a realization when it adds `[realized]` to a mapping row that did not carry
-it before. Everything else — repairs, records, acceptance passes, reclassification — is not.
+it before, or when it rewrites a `[realized]` row together with Lean source (a false realization
+rebuilt as an actual construction). Everything else — selector refreshes, records, acceptance
+passes, reclassification, row edits without Lean — is not.
 Run before choosing the next unit (AGENTS.md, "Definitions are constructed, not deferred").
 """
 
@@ -25,7 +27,8 @@ def git(*args: str) -> str:
     return subprocess.run(["git", *args], check=True, capture_output=True, text=True).stdout
 
 
-def newly_realized(commit: str) -> set[str]:
+def realized_rows(commit: str) -> tuple[set[str], set[str]]:
+    """Rows newly marked `[realized]`, and `[realized]` rows rewritten in place."""
     before: set[str] = set()
     after: set[str] = set()
     for line in git("show", "--format=", "--unified=0", commit, "--", "corpus").splitlines():
@@ -33,7 +36,7 @@ def newly_realized(commit: str) -> set[str]:
         if not match or "[realized]" not in line:
             continue
         (after if line.startswith("+") else before).add(match.group(1))
-    return after - before
+    return after - before, after & before
 
 
 def main() -> int:
@@ -55,12 +58,15 @@ def main() -> int:
     realizing = 0
     for entry in commits:
         commit, subject = entry.split("\t", 1)
-        units = newly_realized(commit)
+        new, rewritten = realized_rows(commit)
         touched = git("show", "--format=", "--name-only", commit).splitlines()
         scheduler = [path for path in touched if path in SCHEDULER]
-        mark = f"realized {len(units)}" if units else "no realization"
-        if units:
+        rebuilt = rewritten if any(path.endswith(".lean") for path in touched) else set()
+        if new or rebuilt:
             realizing += 1
+            mark = f"realized {len(new)}" if new else f"rebuilt {len(rebuilt)}"
+        else:
+            mark = "no realization"
         flag = f"  SCHEDULER CHANGED: {', '.join(scheduler)}" if scheduler else ""
         print(f"{commit}  {mark:<16} {subject[:70]}{flag}")
 
