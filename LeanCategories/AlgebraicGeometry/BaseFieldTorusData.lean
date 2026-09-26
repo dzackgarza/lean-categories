@@ -76,4 +76,32 @@ def IsBaseFieldAnisotropicTorusData
   IsBaseFieldTorusData isDefinedOverBase T ∧
     ∀ chi, isDefinedOverBaseCharacter chi → chi = 1
 
+/-- The complete base-field torus datum used in Humphreys: the values of
+base-defined characters together with the k-torus, k-split, and k-anisotropic
+conditions computed from the same descent inputs. -/
+structure BaseFieldTorusData
+    {K : Type u} [Field K] [IsAlgClosed K]
+    (T : AffineAlgebraicGroup K) where
+  characterValues : Set (AffineAlgebraicGroup.coordinateHopfAlgebra T)
+  isTorus : Prop
+  isSplit : Prop
+  isAnisotropic : Prop
+
+/-- Construct the base-field torus notions from the supplied field-of-definition
+predicates. -/
+noncomputable def baseFieldTorusData
+    {K : Type u} [Field K] [IsAlgClosed K]
+    (isDefinedOverBase : AffineAlgebraicGroup K → Prop)
+    (T : AffineAlgebraicGroup K)
+    (isDefinedOverBaseCharacter :
+      GroupLike K (AffineAlgebraicGroup.coordinateHopfAlgebra T) → Prop) :
+    BaseFieldTorusData T where
+  characterValues :=
+    baseDefinedCharacterValuesData T isDefinedOverBaseCharacter
+  isTorus := IsBaseFieldTorusData isDefinedOverBase T
+  isSplit :=
+    IsBaseFieldSplitTorusData isDefinedOverBase T isDefinedOverBaseCharacter
+  isAnisotropic :=
+    IsBaseFieldAnisotropicTorusData isDefinedOverBase T isDefinedOverBaseCharacter
+
 end LeanCategories.AlgebraicGeometry
