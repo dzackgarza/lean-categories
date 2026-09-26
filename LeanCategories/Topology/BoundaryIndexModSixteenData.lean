@@ -55,20 +55,6 @@ structure BoundaryIndexRepresentativeData
     B.IsSuitableBoundingIntersectionForm intersectionLattice
   isEven : IsEven intersectionLattice.obj
 
-/-- A classically chosen integral lattice intended to be the intersection
-form of a suitable bounding fourfold for `X`.
-
-The ambient lattice type is nonempty by the rank-zero lattice.  Lemma 4.4.3 is
-the separate result that a suitable bounding intersection form exists, and
-therefore that this epsilon choice has the intended geometric meaning. -/
-def chosenBoundingIntersectionLattice
-    {X : Type} [TopologicalSpace X]
-    (B : BoundingFourfoldIntersectionFormInterface X) :
-    FiniteProjectiveLatticeCat ℤ ℤ := by
-  letI : Nonempty (FiniteProjectiveLatticeCat ℤ ℤ) :=
-    ⟨rankZeroFiniteLattice⟩
-  exact Classical.epsilon B.IsSuitableBoundingIntersectionForm
-
 /-- Peters--Sterk's representative formula
 `τ(S_Y) mod 16 = (r₊ - r₋) mod 16` for a chosen suitable bounder `Y`.
 
@@ -81,17 +67,15 @@ def boundaryIndexModSixteenRepresentative
   (((integralSignature d.intersectionLattice).1 : ℤ) : ZMod 16) -
     (((integralSignature d.intersectionLattice).2.1 : ℤ) : ZMod 16)
 
-/-- Peters--Sterk's index modulo sixteen `τ₁₆(X)`, computed from the
-classically chosen bounding intersection form.
+/-- Peters--Sterk's index modulo sixteen `τ₁₆(X)`, computed from supplied
+valid bounding-intersection-form data.
 
-Lemma 4.4.3 and the Rohlin comparison are the later statements that identify
-this selected lattice with a suitable bounder and prove that every suitable
-choice gives the same value. -/
+Lemma 4.4.3 supplies such data, and Rohlin's theorem proves independence of
+the supplied choice; neither result is hidden in this definition. -/
 def boundaryIndexModSixteen
     {X : Type} [TopologicalSpace X]
-    (B : BoundingFourfoldIntersectionFormInterface X) : ZMod 16 :=
-  let L := chosenBoundingIntersectionLattice B
-  (((integralSignature L).1 : ℤ) : ZMod 16) -
-    (((integralSignature L).2.1 : ℤ) : ZMod 16)
+    (B : BoundingFourfoldIntersectionFormInterface X)
+    (D : BoundaryIndexRepresentativeData X B) : ZMod 16 :=
+  boundaryIndexModSixteenRepresentative B D
 
 end LeanCategories.Topology
