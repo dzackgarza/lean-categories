@@ -26,10 +26,9 @@ the norm absolute value of the completed normed field, exactly as in the
 mapped reference implementation.
 
 Sweep III does not prove the algebraic-extension theorem.  Instead it records
-the source's defining restriction predicate and selects the named closure
-absolute value by `Classical.epsilon`.  Existence, uniqueness, and the fact
-that the selected value satisfies the predicate remain result-layer
-obligations.
+the source's defining restriction predicate and treats the closure absolute
+value as data carrying that predicate.  Existence and uniqueness remain
+result-layer obligations; no arbitrary absolute value is selected beforehand.
 -/
 
 @[expose] public noncomputable section
@@ -71,17 +70,12 @@ def IsCompletionClosureAbsoluteValueData
       (absoluteValueCompletionClosureData v) x) =
       completionAbsoluteValueData v x
 
-/-- Neukirch's `bar v`, selected by the exact restriction condition.
-
-The algebraic-extension theorem later proves that such an extension exists
-and is unique, and hence that this selected value satisfies the displayed
-predicate.  No existence or uniqueness proof is bundled into Sweep III. -/
-def completionClosureAbsoluteValueData
-    (v : AbsoluteValue K ℝ) :
-    AbsoluteValue (absoluteValueCompletionClosureData v) ℝ := by
-  classical
-  letI : Nonempty (AbsoluteValue (absoluteValueCompletionClosureData v) ℝ) :=
-    ⟨AbsoluteValue.trivial⟩
-  exact Classical.epsilon (IsCompletionClosureAbsoluteValueData v)
+/-- Source-faithful data for Neukirch's `bar v`: an absolute value on the
+algebraic closure together with the exact restriction condition to the
+completion.  Existence and uniqueness are supplied later by the algebraic
+extension theorem. -/
+abbrev CompletionClosureAbsoluteValueData (v : AbsoluteValue K ℝ) :=
+  {w : AbsoluteValue (absoluteValueCompletionClosureData v) ℝ //
+    IsCompletionClosureAbsoluteValueData v w}
 
 end LeanCategories.Algebra
