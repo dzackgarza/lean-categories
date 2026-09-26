@@ -372,7 +372,8 @@ noncomputable instance holomorphicPFormSectionZSMul (p : ℕ)
     holomorphicPFormSectionValueData (X := X) I p U (z • s) x =
       z • holomorphicPFormSectionValueData (X := X) I p U s x := by
   rcases z with n | n
-  · exact holomorphicPFormSectionValue_nsmul (X := X) I p U s n x
+  · refine (holomorphicPFormSectionValue_nsmul (X := X) I p U s n x).trans ?_
+    simp only [Int.ofNat_eq_natCast, natCast_zsmul]
   · change holomorphicPFormSectionValueData (X := X) I p U (-((n + 1) • s)) x = _
     rw [holomorphicPFormSectionValue_neg, holomorphicPFormSectionValue_nsmul]
     simp only [negSucc_zsmul]
