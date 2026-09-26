@@ -19,12 +19,11 @@ system `x` of the maximal ideal and defines
   ε_p(A) = dim_k H_p(x; A),  k = A / m.
 
 The residue-field action on Koszul homology follows from the result that the
-maximal ideal annihilates that homology. Sweep III does not prove that
-result. Instead, the candidate package below records a residue-field module
-together with the exact comparison graph to the already-realized
-`A`-module Koszul homology, and `Classical.epsilon` selects the
-source-prescribed package. Existence, basis-independence, and the regularity
-criterion remain result-layer statements.
+maximal ideal annihilates that homology. Sweep III does not prove that result.
+Instead, valid deviation presentations are candidates carrying the exact
+comparison graph to the already-realized `A`-module Koszul homology.
+Existence, basis-independence, and the regularity criterion remain
+result-layer statements; no dummy presentation is selected beforehand.
 -/
 
 @[expose] public noncomputable section
@@ -48,13 +47,6 @@ structure KoszulDeviationCandidateData where
   x : Fin n → A
   homology : ℕ → ModuleCat.{u} (ResidueField A)
 
-instance : Nonempty (KoszulDeviationCandidateData A) :=
-  ⟨{
-    n := 0
-    x := Fin.elim0
-    homology := fun _ => ModuleCat.of (ResidueField A) (ResidueField A)
-  }⟩
-
 /-- Exact source graph for a Koszul-deviation candidate.
 
 The first two clauses say that `x` is a generating system of minimal
@@ -73,25 +65,22 @@ def IsKoszulDeviationCandidateData (D : KoszulDeviationCandidateData A) : Prop :
         ∀ (a : A) (h : D.homology p),
           e ((IsLocalRing.residue A a) • h) = a • e h
 
-/-- Matsumura's selected minimal-basis/residue-homology presentation.
-
-The theorem layer proves that this selected candidate satisfies
-`IsKoszulDeviationCandidateData`. -/
-def koszulDeviationCandidateData : KoszulDeviationCandidateData A :=
-  Classical.epsilon (IsKoszulDeviationCandidateData A)
+/-- Source-faithful minimal-basis/residue-homology presentation data. -/
+abbrev KoszulDeviationData :=
+  {D : KoszulDeviationCandidateData A // IsKoszulDeviationCandidateData A D}
 
 /-- Matsumura's Koszul deviation
 `ε_p(A) = dim_{A/m} H_p(x;A)`. -/
-def koszulDeviation (p : ℕ) : ℕ :=
-  Module.finrank (ResidueField A) ((koszulDeviationCandidateData A).homology p)
+def koszulDeviation (D : KoszulDeviationData A) (p : ℕ) : ℕ :=
+  Module.finrank (ResidueField A) (D.1.homology p)
 
 /-- Matsumura's definition of a complete-intersection local ring:
 `ε₁(A) + dim A = embdim A`.
 
 The embedding dimension is the minimal number of generators of the maximal
 ideal, represented by `spanFinrank`. -/
-def IsCompleteIntersectionLocalRingData : Prop :=
-  (koszulDeviation A 1 : WithBot ℕ∞) + ringKrullDim A =
+def IsCompleteIntersectionLocalRingData (D : KoszulDeviationData A) : Prop :=
+  (koszulDeviation A D 1 : WithBot ℕ∞) + ringKrullDim A =
     ((maximalIdeal A).spanFinrank : WithBot ℕ∞)
 
 end LeanCategories.Algebra
