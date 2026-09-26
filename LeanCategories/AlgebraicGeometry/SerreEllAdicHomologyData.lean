@@ -155,41 +155,16 @@ def IsSerreEllAdicHomologyData
   Nonempty ((P.homology 1 : Type u) ≃ₗ[ℤ_[ell]] P.tate.carrier) ∧
   Nonempty ((P.homology 2 : Type u) ≃ₗ[ℤ_[ell]] ℤ_[ell])
 
-/-- There is always ambient candidate data, allowing the source presentation
-to be named without importing an existence theorem into Sweep III. -/
-instance
+/-- The carrier of Serre ell-adic homology packages satisfying the exact
+source presentation.  Inhabitation is a theorem-layer obligation; Sweep III
+does not manufacture a dummy package or select an unwitnessed candidate. -/
+def SerreEllAdicHomologyData
     (residueChar ell : Nat) [Fact ell.Prime] (hEll : ell ≠ residueChar)
     (G : Type v) [Group G]
     {Y T product : Scheme.{u}}
-    (D : RelativePicardFibreDegreeData Y T product) :
-    Nonempty (SerreEllAdicHomologyCandidateData residueChar ell hEll G D) := by
-  let J : AddCommGrpCat.{u} := AddCommGrpCat.of (ULift.{u} Int)
-  let M : ModuleCat.{u} ℤ_[ell] := ModuleCat.of ℤ_[ell] (ULift.{u} ℤ_[ell])
-  refine ⟨{
-    picardZeroCandidate := {
-      carrier := PUnit
-      classOf := fun _ => PUnit.unit
-    }
-    jacobianPoints := J
-    picardClass := fun _ => 0
-    tate := {
-      carrier := M
-      projection := fun _ => 0
-    }
-    homology := fun _ => M
-    action := fun _ => Representation.trivial ℤ_[ell] G M
-  }⟩
-
-/-- Serre's ell-adic homology package, selected from its exact source
-presentation. The theorem layer proves that the selected candidate satisfies
-IsSerreEllAdicHomologyData before it is used as a geometric comparison. -/
-def serreEllAdicHomologyCandidateData
-    (residueChar ell : Nat) [Fact ell.Prime] (hEll : ell ≠ residueChar)
-    (G : Type v) [Group G]
-    {Y T product : Scheme.{u}}
-    (D : RelativePicardFibreDegreeData Y T product) :
-    SerreEllAdicHomologyCandidateData residueChar ell hEll G D :=
-  Classical.epsilon (IsSerreEllAdicHomologyData residueChar ell hEll G D)
+    (D : RelativePicardFibreDegreeData Y T product) :=
+  {P : SerreEllAdicHomologyCandidateData residueChar ell hEll G D //
+    IsSerreEllAdicHomologyData residueChar ell hEll G D P}
 
 /-- The degree-i ell-adic homology module in the selected source
 presentation. -/
@@ -197,9 +172,11 @@ abbrev serreEllAdicHomologyModuleData
     (residueChar ell : Nat) [Fact ell.Prime] (hEll : ell ≠ residueChar)
     (G : Type v) [Group G]
     {Y T product : Scheme.{u}}
-    (D : RelativePicardFibreDegreeData Y T product) (i : Fin 3) :
+    (D : RelativePicardFibreDegreeData Y T product)
+    (P : SerreEllAdicHomologyData residueChar ell hEll G D)
+    (i : Fin 3) :
     ModuleCat.{u} ℤ_[ell] :=
-  (serreEllAdicHomologyCandidateData residueChar ell hEll G D).homology i
+  P.1.homology i
 
 /-- The G-action on degree-i ell-adic homology in the selected source
 presentation. -/
@@ -207,10 +184,12 @@ abbrev serreEllAdicHomologyRepresentationData
     (residueChar ell : Nat) [Fact ell.Prime] (hEll : ell ≠ residueChar)
     (G : Type v) [Group G]
     {Y T product : Scheme.{u}}
-    (D : RelativePicardFibreDegreeData Y T product) (i : Fin 3) :
+    (D : RelativePicardFibreDegreeData Y T product)
+    (P : SerreEllAdicHomologyData residueChar ell hEll G D)
+    (i : Fin 3) :
     Representation ℤ_[ell] G
-      (serreEllAdicHomologyModuleData residueChar ell hEll G D i) :=
-  (serreEllAdicHomologyCandidateData residueChar ell hEll G D).action i
+      (serreEllAdicHomologyModuleData residueChar ell hEll G D P i) :=
+  P.1.action i
 
 /-- Serre's raw trace h_i of the degree-i ell-adic representation.
 
@@ -220,24 +199,27 @@ def serreEllAdicHomologyTraceData
     (residueChar ell : Nat) [Fact ell.Prime] (hEll : ell ≠ residueChar)
     (G : Type v) [Group G]
     {Y T product : Scheme.{u}}
-    (D : RelativePicardFibreDegreeData Y T product) (i : Fin 3) :
+    (D : RelativePicardFibreDegreeData Y T product)
+    (P : SerreEllAdicHomologyData residueChar ell hEll G D)
+    (i : Fin 3) :
     G → ℤ_[ell] :=
   fun g =>
     LinearMap.trace ℤ_[ell]
-      (serreEllAdicHomologyModuleData residueChar ell hEll G D i)
-      (serreEllAdicHomologyRepresentationData residueChar ell hEll G D i g)
+      (serreEllAdicHomologyModuleData residueChar ell hEll G D P i)
+      (serreEllAdicHomologyRepresentationData residueChar ell hEll G D P i g)
 
 /-- Serre's virtual trace h = h_0 - h_1 + h_2. -/
 def serreEllAdicVirtualTraceData
     (residueChar ell : Nat) [Fact ell.Prime] (hEll : ell ≠ residueChar)
     (G : Type v) [Group G]
     {Y T product : Scheme.{u}}
-    (D : RelativePicardFibreDegreeData Y T product) :
+    (D : RelativePicardFibreDegreeData Y T product)
+    (P : SerreEllAdicHomologyData residueChar ell hEll G D) :
     G → ℤ_[ell] :=
   fun g =>
-    serreEllAdicHomologyTraceData residueChar ell hEll G D 0 g -
-      serreEllAdicHomologyTraceData residueChar ell hEll G D 1 g +
-        serreEllAdicHomologyTraceData residueChar ell hEll G D 2 g
+    serreEllAdicHomologyTraceData residueChar ell hEll G D P 0 g -
+      serreEllAdicHomologyTraceData residueChar ell hEll G D P 1 g +
+        serreEllAdicHomologyTraceData residueChar ell hEll G D P 2 g
 
 /-- The source Euler-characteristic datum h(1).
 
@@ -247,7 +229,8 @@ def serreEllAdicEulerCharacteristicData
     (residueChar ell : Nat) [Fact ell.Prime] (hEll : ell ≠ residueChar)
     (G : Type v) [Group G]
     {Y T product : Scheme.{u}}
-    (D : RelativePicardFibreDegreeData Y T product) : ℤ_[ell] :=
-  serreEllAdicVirtualTraceData residueChar ell hEll G D 1
+    (D : RelativePicardFibreDegreeData Y T product)
+    (P : SerreEllAdicHomologyData residueChar ell hEll G D) : ℤ_[ell] :=
+  serreEllAdicVirtualTraceData residueChar ell hEll G D P 1
 
 end LeanCategories.AlgebraicGeometry
