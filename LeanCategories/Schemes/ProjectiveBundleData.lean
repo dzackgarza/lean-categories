@@ -98,7 +98,7 @@ def IsProjectiveBundleData
     (P : RelativeProjCandidateData X) : Prop :=
   ∃ S : RelativeProjHypothesis X,
     IsSymmetricAlgebraRelativeProjData E S ∧
-      ∃ D : RelativeProjPresentationData X,
+      ∃ D : RelativeProjPresentationData (X := X) S,
         IsRelativeProjPresentationData S D ∧ P = relativeProjData D
 
 end LeanCategories.Schemes

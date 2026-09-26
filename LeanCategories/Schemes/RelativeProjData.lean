@@ -8,7 +8,6 @@ public import LeanCategories.AlgebraicGeometry.RelativeProjHypothesis
 public import LeanCategories.AlgebraicGeometry.AmpleSheaf
 public import LeanCategories.Schemes.ProjGradedModuleData
 public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Basic
-public import Mathlib.AlgebraicGeometry.RelativeGluing
 
 /-!
 # Relative Proj data
@@ -20,9 +19,10 @@ For a graded algebra sheaf `S` satisfying condition (+), Hartshorne constructs
 opens `U ⊆ X`; the local twisting sheaves `O(1)` glue at the same time.
 
 The existence of those gluings and all overlap compatibilities are theorem
-content.  Sweep III therefore records the exact affine local presentation as a
-predicate on a candidate scheme, projection, and module.  The selected datum is
-named by that specification without constructing gluing proofs.
+content. Sweep III therefore records the exact affine local presentation as
+proof-free presentation data: a supplied global candidate together with the
+graded section rings and affine chart isomorphisms. All compatibility and
+source-faithfulness statements remain separate predicates.
 
 To keep the local statement source-faithful, an affine graded-ring presentation
 records a genuine internally graded commutative ring whose degree-`d` piece is
@@ -165,46 +165,28 @@ def IsRelativeProjData (S : RelativeProjHypothesis X)
                 ((Scheme.Modules.pullback e.inv).obj
                   (P.twistOne.restrict (P.projection ⁻¹ᵁ U).ι))
 
-/-- Raw relative-gluing data over the canonical directed affine cover of the
-base.  Unlike `RelativeProjCandidateData`, this carrier has an actual gluing
-construction: `RelativeGluingData.glued`. -/
-public abbrev RelativeProjGluingCandidateData (X : Scheme.{u}) :=
-  Scheme.Cover.RelativeGluingData X.directedAffineCover
+/-- Proof-free affine-chart presentation data for relative `Proj`.
 
-/-- Exact local specification of the relative-Proj gluing datum.
+The global scheme/projection/`O(1)` candidate is stored directly, together
+with an explicit graded section-ring presentation and chart isomorphism over
+every affine base open.  No descent, pullback, or gluing proposition occurs as
+a structure field. -/
+public structure RelativeProjPresentationData
+    (S : RelativeProjHypothesis X) where
+  candidate : RelativeProjCandidateData X
+  affineRing (U : X.affineOpens) :
+    RelativeProjAffineRingPresentationData
+      S.toRelativeProjAlgebraData U.1
+  chartIso (U : X.affineOpens) :
+    let A := affineRing U
+    letI : GradedRing A.grading := A.gradedRing
+    (candidate.projection ⁻¹ᵁ U.1).toScheme ≅ Proj A.grading
 
-For every affine open `U`, the corresponding chart is ordinary
-`Proj Γ(U,S)` for an exact graded-section-ring presentation, and under that
-identification its map to `U` is the standard degree-zero Proj map.
-The `RelativeGluingData.equifibered` field records the required base-change
-compatibility between these charts. -/
-public def IsRelativeProjGluingData
-    (S : RelativeProjHypothesis X)
-    (d : RelativeProjGluingCandidateData X) : Prop :=
-  ∀ U : X.affineOpens,
-    ∃ A : RelativeProjAffineRingPresentationData
-        S.toRelativeProjAlgebraData U.1,
-      IsRelativeProjAffineRingPresentationData
-          S.toRelativeProjAlgebraData U.1 A ∧
-        letI : GradedRing A.grading := A.gradedRing
-        ∃ e : d.functor.obj U ≅ Proj A.grading,
-          e.hom ≫ affineRelativeProjToBaseData U.1 U.2 A =
-            d.natTrans.app U
-
-/-- Proof-free presentation data for relative `Proj`: an actual compatible
-relative gluing datum together with a supplied global `O(1)` candidate on
-its glued scheme.  Whether these data realize the source construction is kept
-in the separate predicate `IsRelativeProjPresentationData`. -/
-public structure RelativeProjPresentationData (X : Scheme.{u}) where
-  gluing : RelativeProjGluingCandidateData X
-  twistOne : gluing.glued.Modules
-
-/-- The relative-Proj candidate determined by supplied presentation data. -/
-public noncomputable def relativeProjData
-    (D : RelativeProjPresentationData X) : RelativeProjCandidateData X :=
-  { scheme := D.gluing.glued
-    projection := D.gluing.toBase
-    twistOne := D.twistOne }
+/-- The relative-Proj candidate carried by presentation data. -/
+public def relativeProjData
+    {S : RelativeProjHypothesis X}
+    (D : RelativeProjPresentationData S) : RelativeProjCandidateData X :=
+  D.candidate
 
 /-- Exact source-faithfulness predicate for supplied relative-Proj
 presentation data.  It requires both the affine `Proj` gluing graph and the
@@ -212,8 +194,15 @@ global relative-Proj/`O(1)` local specification; no existence theorem is
 hidden in the constructor. -/
 public def IsRelativeProjPresentationData
     (S : RelativeProjHypothesis X)
-    (D : RelativeProjPresentationData X) : Prop :=
-  IsRelativeProjGluingData S D.gluing ∧
-    IsRelativeProjData S (relativeProjData D)
+    (D : RelativeProjPresentationData S) : Prop :=
+  (∀ U : X.affineOpens,
+      IsRelativeProjAffineRingPresentationData
+        S.toRelativeProjAlgebraData U.1 (D.affineRing U)) ∧
+    (∀ U : X.affineOpens,
+      let A := D.affineRing U
+      letI : GradedRing A.grading := A.gradedRing
+      (D.chartIso U).hom ≫ affineRelativeProjToBaseData U.1 U.2 A =
+        D.candidate.projection ∣_ U.1) ∧
+    IsRelativeProjData S D.candidate
 
 end LeanCategories.Schemes
