@@ -487,6 +487,7 @@ For a sheaf of complex vector spaces, global sections are represented by
 morphisms from the constant sheaf `ℂ_X`; hence their right-derived functors
 are the Ext groups below.  Mathlib's linear Ext construction supplies the
 canonical complex-vector-space structure directly. -/
+set_option synthInstance.maxHeartbeats 200000 in
 noncomputable abbrev hodgeCohomologyGroupData
     [HasSheafify
       (Opens.grothendieckTopology (TopCat.of X)) (ModuleCat.{u} ℂ)]
@@ -510,7 +511,7 @@ noncomputable def hodgeNumberData
     [Abelian (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
     [HasExt.{u + 1} (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
     (p q : ℕ) : ℕ :=
-  Module.finrank ℂ (hodgeCohomologyGroupData (X := X) I p q)
+  Module.finrank ℂ (hodgeCohomologyGroupData (X := X) (I := I) p q)
 
 /-- Exact pointwise graph for zero in the holomorphic-form sheaf. -/
 def IsHolomorphicPFormZeroSectionData
