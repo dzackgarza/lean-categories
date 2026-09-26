@@ -21,8 +21,9 @@ assignment preserves identities and composition.
 Sweep III therefore uses Mathlib's proof-free categorical interfaces:
 `CategoryStruct` records the hom, identity, and composition data without the
 category axioms, and `Prefunctor` records object and morphism assignments
-without functor laws.  No identity/composition law for `inducedLieHomData` is
-proved here.
+without functor laws.  A source-facing Lie-functor datum explicitly supplies,
+for every smooth group homomorphism, induced-Lie-hom data certified by U061;
+no map is selected by an unwitnessed choice.
 
 The ambient bundles below are the irreducible source-specific residue after the
 2026-09-25 reuse audit: pinned/current Mathlib and this project have no bundled
@@ -129,12 +130,30 @@ def groupLieAlgebraObjectData (G : SmoothLieGroupData.{u, v, w}) :
         change FiniteDimensional ℝ G.model
         infer_instance }
 
-/-- Lee's proof-free covariant Lie-functor data.
+/-- Source-faithful morphism assignment for Lee's Lie functor.  Each arrow is
+supplied together with U061's exact differential-at-identity specification.
+Functoriality remains Proposition 8.45. -/
+structure LiePrefunctorMapData where
+  map :
+    ∀ {X Y : SmoothLieGroupData.{u, v, w}} (f : X ⟶ Y),
+      letI : CompleteSpace X.model := FiniteDimensional.complete ℝ X.model
+      letI : CompleteSpace Y.model := FiniteDimensional.complete ℝ Y.model
+      letI : LieGroup X.modelWithCorners (minSmoothness ℝ 3) X.carrier :=
+        LieGroup.of_le (m := minSmoothness ℝ 3) (n := ∞)
+          (by
+            rw [minSmoothness_of_isRCLikeNormedField]
+            exact (inferInstance : ENat.LEInfty (3 : ℕ∞ω)).out)
+      letI : LieGroup Y.modelWithCorners (minSmoothness ℝ 3) Y.carrier :=
+        LieGroup.of_le (m := minSmoothness ℝ 3) (n := ∞)
+          (by
+            rw [minSmoothness_of_isRCLikeNormedField]
+            exact (inferInstance : ENat.LEInfty (3 : ℕ∞ω)).out)
+      InducedLieHomData f
 
-Its map is the induced homomorphism already realized in FC08-C08-U061.  The
-assertions that `map (𝟙 G) = 𝟙 (obj G)` and that `map (f ≫ g) = map f ≫ map g`
-are exactly FC08-C08-U062 and are deliberately absent from `Prefunctor`. -/
-def liePrefunctorData :
+/-- Lee's proof-free covariant Lie-prefunctor obtained from a supplied
+source-faithful morphism assignment.  Identity/composition laws are exactly
+FC08-C08-U062 and are deliberately absent from `Prefunctor`. -/
+def liePrefunctorData (D : LiePrefunctorMapData.{u, v, w}) :
     SmoothLieGroupData.{u, v, w} ⥤q FiniteDimensionalRealLieAlgebraData.{u} where
   obj := groupLieAlgebraObjectData
   map {X Y} f := by
@@ -152,6 +171,6 @@ def liePrefunctorData :
           exact (inferInstance : ENat.LEInfty (3 : ℕ∞ω)).out)
     change GroupLieAlgebra X.modelWithCorners X.carrier →ₗ⁅ℝ⁆
       GroupLieAlgebra Y.modelWithCorners Y.carrier
-    exact inducedLieHomData f
+    exact (D.map f).1
 
 end LeanCategories.Topology

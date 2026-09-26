@@ -18,10 +18,10 @@ identity. The preceding Theorem 8.44 is the result that this linear map
 preserves Lie brackets and is characterized by `F`-related invariant vector
 fields.
 
-Sweep III therefore records `dF₁` directly and names the corresponding
-`LieHom` by classical selection from the intrinsic predicate saying that its
-underlying linear map is `dF₁`. No bracket-preservation proof is supplied as
-constructor data.
+Sweep III therefore records `dF₁` directly and represents an induced
+`LieHom` as a candidate carrying the intrinsic predicate saying that its
+underlying linear map is `dF₁`. No arbitrary Lie homomorphism is selected
+before the bracket-preservation/existence theorem.
 -/
 
 @[expose] public section
@@ -63,13 +63,14 @@ def IsInducedLieHomData
     (φ : GroupLieAlgebra I G →ₗ⁅ℝ⁆ GroupLieAlgebra I' G') : Prop :=
   φ.toLinearMap = inducedLieLinearMapData F
 
-/-- Lee's induced Lie-algebra homomorphism, selected from the
-`dF₁` characterization. Theorem 8.44 supplies the later proof that such a
-Lie homomorphism exists and that the selected map has the intended
-`F`-related-vector-field characterization. -/
-def inducedLieHomData
+/-- Source-faithful induced Lie-algebra homomorphism data: a Lie homomorphism
+together with the exact assertion that its underlying linear map is `dF₁`.
+Theorem 8.44 supplies existence and the invariant-vector-field
+characterization. -/
+abbrev InducedLieHomData
     (F : ContMDiffMonoidMorphism I I' ∞ G G') :
-    GroupLieAlgebra I G →ₗ⁅ℝ⁆ GroupLieAlgebra I' G' :=
-  Classical.epsilon (IsInducedLieHomData F)
+    Type _ :=
+  {φ : GroupLieAlgebra I G →ₗ⁅ℝ⁆ GroupLieAlgebra I' G' //
+    IsInducedLieHomData F φ}
 
 end LeanCategories.Topology
