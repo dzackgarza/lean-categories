@@ -16,16 +16,13 @@ An R-orientation of an n-manifold is a locally consistent choice, at every
 point x, of a generator of H_n(M, M minus {x}; R). The integral definition is
 the specialization R = Z.
 
-The representation issue is the canonical map from H_n(M,M minus U;R) to
-H_n(M,M minus {x};R) for x in U. Constructing it directly by cokernel.map asks
-for a commuting-square proof. Since both relative complexes are cokernels of
-maps into the same ambient singular chain complex, the desired map is instead
-characterized by its quotient graph.  A source-facing restriction system
-supplies such a certified map for every inclusion of subspaces; no arbitrary
-map is selected before the descent theorem.
+The canonical map from H_n(M,M minus U;R) to H_n(M,M minus {x};R) for x in U
+is induced directly from the inclusion of subspaces.  Since both relative
+complexes are cokernels of maps into the same ambient singular chain complex,
+the chain map is constructed by the cokernel universal property.
 
 Local consistency and generation are then literal predicates over those
-supplied maps. No excision, well-definedness, existence of orientations, or
+canonical maps. No excision, existence of orientations, or
 orientation-covering comparison is proved here.
 -/
 
@@ -43,12 +40,50 @@ def relativeSubspaceChainInclusionData
       (singularChainFunctor R).obj (TopCat.of X) :=
   (singularChainFunctor R).map (subspaceInclusion X A)
 
-/-- Type of a candidate map between two relative singular-chain complexes. -/
-abbrev RelativeSingularRestrictionChainMapData
+/-- Inclusion of one subspace in another. -/
+def subspaceInclusionOfSubsetData
+    (X : Type) [TopologicalSpace X] {A B : Set X} (hAB : A ⊆ B) :
+    TopCat.of A ⟶ TopCat.of B :=
+  TopCat.ofHom ⟨fun x => ⟨x.1, hAB x.2⟩, by fun_prop⟩
+
+lemma subspaceInclusionOfSubset_comp
+    (X : Type) [TopologicalSpace X] {A B : Set X} (hAB : A ⊆ B) :
+    subspaceInclusionOfSubsetData X hAB ≫ subspaceInclusion X B =
+      subspaceInclusion X A := by
+  ext x
+  rfl
+
+/-- The canonical relative singular-chain map for an inclusion `A ⊆ B`,
+constructed by the cokernel universal property. -/
+def relativeSingularRestrictionChainMapData
     (R : Type) [CommRing R]
-    (X : Type) [TopologicalSpace X] (A B : Set X) :=
-  relativeSingularChainComplex R X A ⟶
-    relativeSingularChainComplex R X B
+    (X : Type) [TopologicalSpace X] {A B : Set X} (hAB : A ⊆ B) :
+    relativeSingularChainComplex R X A ⟶
+      relativeSingularChainComplex R X B := by
+  change cokernel (relativeSubspaceChainInclusionData R X A) ⟶
+    cokernel (relativeSubspaceChainInclusionData R X B)
+  exact
+    cokernel.desc (relativeSubspaceChainInclusionData R X A)
+      (cokernel.π (relativeSubspaceChainInclusionData R X B))
+      (by
+        have hcomp :
+            relativeSubspaceChainInclusionData R X A =
+              (singularChainFunctor R).map
+                  (subspaceInclusionOfSubsetData X hAB) ≫
+                relativeSubspaceChainInclusionData R X B := by
+          calc
+            relativeSubspaceChainInclusionData R X A =
+                (singularChainFunctor R).map (subspaceInclusion X A) := rfl
+            _ = (singularChainFunctor R).map
+                (subspaceInclusionOfSubsetData X hAB ≫ subspaceInclusion X B) := by
+                  rw [subspaceInclusionOfSubset_comp]
+            _ = (singularChainFunctor R).map
+                  (subspaceInclusionOfSubsetData X hAB) ≫
+                relativeSubspaceChainInclusionData R X B := by
+                  rw [Functor.map_comp]
+                  rfl
+        rw [hcomp, Category.assoc, cokernel.condition]
+        simp)
 
 /-- Exact cokernel graph for the canonical relative-chain map.
 
@@ -57,37 +92,29 @@ this graph exists. No commuting-square proof is used in this definition. -/
 def IsRelativeSingularRestrictionChainMapData
     (R : Type) [CommRing R]
     (X : Type) [TopologicalSpace X] (A B : Set X)
-    (φ : RelativeSingularRestrictionChainMapData R X A B) : Prop :=
+    (φ : relativeSingularChainComplex R X A ⟶
+      relativeSingularChainComplex R X B) : Prop :=
   cokernel.π (relativeSubspaceChainInclusionData R X A) ≫ φ =
     cokernel.π (relativeSubspaceChainInclusionData R X B)
 
-/-- Source-faithful relative-chain restriction data: a candidate chain map
-together with its exact cokernel graph. -/
-abbrev RelativeSingularRestrictionData
+/-- The directly constructed restriction map satisfies the exact cokernel
+graph. -/
+lemma relativeSingularRestrictionChainMapData_graph
     (R : Type) [CommRing R]
-    (X : Type) [TopologicalSpace X] (A B : Set X) :
-    Type _ :=
-  {φ : RelativeSingularRestrictionChainMapData R X A B //
-    IsRelativeSingularRestrictionChainMapData R X A B φ}
-
-/-- A certified family of canonical restriction maps for inclusions
-`A ⊆ B`. Existence and functoriality of this system are result content. -/
-structure RelativeSingularRestrictionSystemData
-    (R : Type) [CommRing R]
-    (X : Type) [TopologicalSpace X] where
-  map (A B : Set X) :
-    A ⊆ B → RelativeSingularRestrictionData R X A B
+    (X : Type) [TopologicalSpace X] {A B : Set X} (hAB : A ⊆ B) :
+    IsRelativeSingularRestrictionChainMapData R X A B
+      (relativeSingularRestrictionChainMapData R X hAB) := by
+  exact cokernel.π_desc _ _ _
 
 /-- The induced map on relative singular homology. -/
 def relativeSingularRestrictionHomologyMapData
     (R : Type) [CommRing R]
     (n : ℕ) (X : Type) [TopologicalSpace X]
-    (T : RelativeSingularRestrictionSystemData R X)
     (A B : Set X) (hAB : A ⊆ B) :
     relativeSingularHomologyModule R n X A ⟶
       relativeSingularHomologyModule R n X B :=
   HomologicalComplex.homologyMap
-    (T.map A B hAB).1 n
+    (relativeSingularRestrictionChainMapData R X hAB) n
 
 /-- A local homology class is a generator when its singleton span is top. -/
 def IsLocalOrientationGeneratorData
@@ -110,7 +137,6 @@ at y. -/
 def IsROrientationData
     (R : Type) [CommRing R]
     (n : ℕ) (M : Type) [TopologicalSpace M]
-    (T : RelativeSingularRestrictionSystemData R M)
     (mu : ROrientationCandidateData R n M) : Prop :=
   (∀ x : M, IsLocalOrientationGeneratorData R n M x (mu x)) ∧
     ∀ x : M,
@@ -120,7 +146,7 @@ def IsROrientationData
             ∃ muU : relativeSingularHomologyModule R n M Uᶜ,
               ∀ y : M, (hy : y ∈ U) →
                 (relativeSingularRestrictionHomologyMapData
-                  R n M T Uᶜ ({y} : Set M)ᶜ
+                  R n M Uᶜ ({y} : Set M)ᶜ
                     (by
                       intro z hz
                       simp only [Set.mem_compl_iff, Set.mem_singleton_iff]
@@ -132,21 +158,18 @@ def IsROrientationData
 structure itself is an ambient hypothesis of the source unit. -/
 def IsROrientableData
     (R : Type) [CommRing R]
-    (n : ℕ) (M : Type) [TopologicalSpace M]
-    (T : RelativeSingularRestrictionSystemData R M) : Prop :=
-  ∃ mu : ROrientationCandidateData R n M, IsROrientationData R n M T mu
+    (n : ℕ) (M : Type) [TopologicalSpace M] : Prop :=
+  ∃ mu : ROrientationCandidateData R n M, IsROrientationData R n M mu
 
 /-- Hatcher's ordinary integral orientation predicate. -/
 abbrev IsIntegralOrientationData
     (n : ℕ) (M : Type) [TopologicalSpace M]
-    (T : RelativeSingularRestrictionSystemData ℤ M)
     (mu : ROrientationCandidateData ℤ n M) : Prop :=
-  IsROrientationData ℤ n M T mu
+  IsROrientationData ℤ n M mu
 
 /-- Hatcher's ordinary orientability predicate. -/
 abbrev IsOrientableData
-    (n : ℕ) (M : Type) [TopologicalSpace M]
-    (T : RelativeSingularRestrictionSystemData ℤ M) : Prop :=
-  IsROrientableData ℤ n M T
+    (n : ℕ) (M : Type) [TopologicalSpace M] : Prop :=
+  IsROrientableData ℤ n M
 
 end LeanCategories.Topology
