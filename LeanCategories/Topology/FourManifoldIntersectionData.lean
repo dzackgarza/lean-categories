@@ -24,11 +24,10 @@ formula and a fundamental-evaluation datum.
 
 The quotient-level carrier used by Peters--Sterk FC11-B-U005 is also recorded
 here. The already-realized singular-cohomology cup product supplies the
-degree-two-by-degree-two to degree-four product; a candidate evaluation on
-degree-four cohomology is selected by its exact representative graph against
-the raw fundamental evaluation, and a candidate bilinear form on degree-two
-cohomology modulo torsion is selected by its exact quotient-representative
-graph.
+degree-two-by-degree-two to degree-four product.  Degree-four evaluation data
+and the induced bilinear form are represented as subtypes of candidates
+satisfying their exact source graphs.  Thus no arbitrary candidate is named
+before the descent/torsion-annihilation theorems establishing existence.
 
 Existence/independence of these descents, the fact that torsion is killed,
 symmetry and unimodularity remain result-layer statements. No such theorem is
@@ -106,13 +105,14 @@ def IsFourManifoldCohomologyEvaluationData
             (Opposite.op (SimplexCategory.mk 4))).symm σ)
           ((K.iCycles 4).hom z))
 
-/-- Degree-four cohomology evaluation selected from the exact fundamental
-representative graph. Its existence and independence of cocycle
-representatives remain result content. -/
-noncomputable def fourManifoldCohomologyEvaluationData
-    (ω : FourManifoldFundamentalEvaluationData Y) :
-    FourManifoldCohomologyEvaluationCandidateData Y :=
-  Classical.epsilon (IsFourManifoldCohomologyEvaluationData Y ω)
+/-- Source-faithful degree-four cohomology evaluation data: a candidate
+linear evaluation together with the exact representative graph against the
+supplied fundamental evaluation.  Existence and representative independence
+remain result content. -/
+abbrev FourManifoldCohomologyEvaluationData
+    (ω : FourManifoldFundamentalEvaluationData Y) :=
+  {ev : FourManifoldCohomologyEvaluationCandidateData Y //
+    IsFourManifoldCohomologyEvaluationData Y ω ev}
 
 /-- Candidate integral bilinear form on H²(X,Z) modulo torsion. -/
 abbrev FourManifoldIntersectionFormCandidateData :=
@@ -122,45 +122,50 @@ abbrev FourManifoldIntersectionFormCandidateData :=
 cohomology representatives. -/
 noncomputable def fourManifoldIntersectionRepresentativeValueData
     (ω : FourManifoldFundamentalEvaluationData Y)
+    (ev : FourManifoldCohomologyEvaluationData Y ω)
     (x y : FourManifoldSecondCohomologyData Y) : ℤ :=
-  let ev : FourManifoldCohomologyEvaluationCandidateData Y :=
-    fourManifoldCohomologyEvaluationData Y ω
   let cup : FourManifoldFourthCohomologyData Y :=
     singularCohomologyCupMulData ℤ (TopCat.of Y) (p := 2) (q := 2) x y
-  ev cup
+  ev.1 cup
 
 /-- Exact quotient-representative graph for the compact-surface intersection
 form: it is cup product in degree two followed by fundamental-class
 evaluation. -/
 def IsFourManifoldIntersectionFormData
     (ω : FourManifoldFundamentalEvaluationData Y)
+    (ev : FourManifoldCohomologyEvaluationData Y ω)
     (Q : FourManifoldIntersectionFormCandidateData Y) : Prop :=
   ∀ x y : FourManifoldSecondCohomologyData Y,
     Q (Submodule.Quotient.mk x) (Submodule.Quotient.mk y) =
-      fourManifoldIntersectionRepresentativeValueData Y ω x y
+      fourManifoldIntersectionRepresentativeValueData Y ω ev x y
 
-/-- Peters--Sterk's integral intersection form on H²(X,Z) modulo torsion,
-selected from the exact cup/evaluation quotient graph. -/
-noncomputable def fourManifoldIntersectionFormData
-    (ω : FourManifoldFundamentalEvaluationData Y) :
-    FourManifoldIntersectionFormCandidateData Y :=
-  Classical.epsilon (IsFourManifoldIntersectionFormData Y ω)
+/-- Peters--Sterk intersection-form data on H²(X,Z) modulo torsion: a
+candidate bilinear form together with the exact cup/evaluation
+quotient-representative graph. -/
+abbrev FourManifoldIntersectionFormData
+    (ω : FourManifoldFundamentalEvaluationData Y)
+    (ev : FourManifoldCohomologyEvaluationData Y ω) :=
+  {Q : FourManifoldIntersectionFormCandidateData Y //
+    IsFourManifoldIntersectionFormData Y ω ev Q}
 
 /-- The source signature (b+,b-) of the real scalar extension of the
 intersection form. -/
 noncomputable def fourManifoldIntersectionSignatureData
-    (ω : FourManifoldFundamentalEvaluationData Y) : ℕ × ℕ :=
-  let Q := fourManifoldIntersectionFormData Y ω
+    (ω : FourManifoldFundamentalEvaluationData Y)
+    (ev : FourManifoldCohomologyEvaluationData Y ω)
+    (Q : FourManifoldIntersectionFormData Y ω ev) : ℕ × ℕ :=
   let QReal : LinearMap.BilinForm ℝ
       (ℝ ⊗[ℤ] (FourManifoldTorsionFreeSecondCohomologyData Y)) :=
-    LinearMap.BilinForm.baseChange ℝ Q
+    LinearMap.BilinForm.baseChange ℝ Q.1
   (sigPos (LinearMap.BilinMap.toQuadraticMap QReal),
     sigNeg (LinearMap.BilinMap.toQuadraticMap QReal))
 
 /-- The source index b+ - b-. -/
 noncomputable def fourManifoldIntersectionIndexData
-    (ω : FourManifoldFundamentalEvaluationData Y) : ℤ :=
-  let sig := fourManifoldIntersectionSignatureData Y ω
+    (ω : FourManifoldFundamentalEvaluationData Y)
+    (ev : FourManifoldCohomologyEvaluationData Y ω)
+    (Q : FourManifoldIntersectionFormData Y ω ev) : ℤ :=
+  let sig := fourManifoldIntersectionSignatureData Y ω ev Q
   (sig.1 : ℤ) - (sig.2 : ℤ)
 
 end QuotientLevel

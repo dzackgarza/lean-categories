@@ -18,20 +18,21 @@ to the induced map on degree-two homology.
 
 The current topology stack has native singular homology and singular
 cohomology but no packaged Poincare-duality isomorphism.  Sweep III therefore
-records the source definition by exact representative graphs:
+records the source definition by exact representative graphs and packages
+valid candidates as subtypes:
 
-* the Kronecker pairing is selected from evaluation of cocycle
-  representatives on cycle representatives;
-* a degree-two Poincare-duality candidate is selected by the equation saying
+* Kronecker pairing data satisfy evaluation of cocycle representatives on
+  cycle representatives;
+* degree-two Poincare-duality data satisfy the equation saying
   that Kronecker evaluation against its image equals the already-realized
   cup/fundamental-class intersection pairing;
 * the map on degree-two homology is the native singular-homology map induced
   by the supplied continuous surface map;
-* the Gysin map is selected by the exact equation
+* Gysin data satisfy the exact equation
   PD_Y(gysin(a)) = f_*(PD_X(a)).
 
-No arbitrary wrong-way map is supplied.  Existence and uniqueness of the
-selected duality maps, invertibility of Poincare duality, functoriality of the
+No arbitrary wrong-way map is selected.  Existence and uniqueness of the
+duality maps, invertibility of Poincare duality, functoriality of the
 Gysin construction, and preservation of the Hodge decomposition are
 result-layer statements and are not proved in Sweep III.
 -/
@@ -76,12 +77,13 @@ def IsSingularKroneckerPairingData
     pairing ((C.homologyπ n).hom phi) ((K.homologyπ n).hom z) =
       ((C.iCycles n).hom phi).hom ((K.iCycles n).hom z)
 
-/-- The integral Kronecker pairing selected from the exact representative
-evaluation graph.  Representative independence is result content. -/
-noncomputable def singularKroneckerPairingData
+/-- Source-faithful integral Kronecker pairing data.  Representative
+independence/existence is result content. -/
+abbrev SingularKroneckerPairingData
     (X : TopCat) (n : ℕ) :
-    SingularKroneckerPairingCandidateData X n :=
-  Classical.epsilon (IsSingularKroneckerPairingData X n)
+    Type _ :=
+  {pairing : SingularKroneckerPairingCandidateData X n //
+    IsSingularKroneckerPairingData X n pairing}
 
 /-- Candidate degree-two Poincare-duality map from integral cohomology to
 integral homology. -/
@@ -99,20 +101,22 @@ evaluation. -/
 def IsSurfacePoincareDualData
     (X : TopCat)
     (omega : FourManifoldFundamentalEvaluationData X)
+    (ev : FourManifoldCohomologyEvaluationData X omega)
+    (pairing : SingularKroneckerPairingData X 2)
     (pd : SurfacePoincareDualCandidateData X) : Prop :=
-  let ev : FourManifoldCohomologyEvaluationCandidateData X :=
-    fourManifoldCohomologyEvaluationData X omega
   ∀ a b : SingularIntegralCohomologyData X 2,
-    singularKroneckerPairingData X 2 b (pd a) =
-      ev (singularCohomologyCupMulData ℤ X (p := 2) (q := 2) a b)
+    pairing.1 b (pd a) =
+      ev.1 (singularCohomologyCupMulData ℤ X (p := 2) (q := 2) a b)
 
-/-- Degree-two Poincare duality selected by its exact cup/intersection graph.
-Existence, uniqueness and invertibility are result-layer obligations. -/
-noncomputable def surfacePoincareDualData
+/-- Degree-two Poincare-duality data satisfying the exact cup/intersection
+graph.  Existence, uniqueness and invertibility are result-layer obligations. -/
+abbrev SurfacePoincareDualData
     (X : TopCat)
-    (omega : FourManifoldFundamentalEvaluationData X) :
-    SurfacePoincareDualCandidateData X :=
-  Classical.epsilon (IsSurfacePoincareDualData X omega)
+    (omega : FourManifoldFundamentalEvaluationData X)
+    (ev : FourManifoldCohomologyEvaluationData X omega)
+    (pairing : SingularKroneckerPairingData X 2) :=
+  {pd : SurfacePoincareDualCandidateData X //
+    IsSurfacePoincareDualData X omega ev pairing pd}
 
 /-- The native pushforward on degree-two integral singular homology induced by
 a supplied continuous map of spaces. -/
@@ -136,26 +140,38 @@ This is the source definition stripped of the later Hodge-compatibility
 assertion. -/
 def IsSurfaceDegreeTwoGysinData
     {X Y : TopCat}
-    (omegaX : FourManifoldFundamentalEvaluationData X)
-    (omegaY : FourManifoldFundamentalEvaluationData Y)
+    {omegaX : FourManifoldFundamentalEvaluationData X}
+    {omegaY : FourManifoldFundamentalEvaluationData Y}
+    {evX : FourManifoldCohomologyEvaluationData X omegaX}
+    {evY : FourManifoldCohomologyEvaluationData Y omegaY}
+    {pairingX : SingularKroneckerPairingData X 2}
+    {pairingY : SingularKroneckerPairingData Y 2}
+    (pdX : SurfacePoincareDualData X omegaX evX pairingX)
+    (pdY : SurfacePoincareDualData Y omegaY evY pairingY)
     (f : C(X, Y))
     (gysin : SurfaceDegreeTwoGysinCandidateData X Y) : Prop :=
   ∀ a : SingularIntegralCohomologyData X 2,
-    surfacePoincareDualData Y omegaY (gysin a) =
+    pdY.1 (gysin a) =
       surfaceSecondHomologyPushforwardData f
-        (surfacePoincareDualData X omegaX a)
+        (pdX.1 a)
 
-/-- The degree-two Gysin map selected by its exact Poincare-dual graph.
+/-- Degree-two Gysin data satisfying the exact Poincare-dual graph.
 
 For FC11-C20-U053, specialize f to the resolved quotient map.  Preservation
 of the Hodge decomposition is theorem content and is deliberately absent from
 this construction. -/
-noncomputable def surfaceDegreeTwoGysinData
+abbrev SurfaceDegreeTwoGysinData
     {X Y : TopCat}
-    (omegaX : FourManifoldFundamentalEvaluationData X)
-    (omegaY : FourManifoldFundamentalEvaluationData Y)
-    (f : C(X, Y)) :
-    SurfaceDegreeTwoGysinCandidateData X Y :=
-  Classical.epsilon (IsSurfaceDegreeTwoGysinData omegaX omegaY f)
+    {omegaX : FourManifoldFundamentalEvaluationData X}
+    {omegaY : FourManifoldFundamentalEvaluationData Y}
+    {evX : FourManifoldCohomologyEvaluationData X omegaX}
+    {evY : FourManifoldCohomologyEvaluationData Y omegaY}
+    {pairingX : SingularKroneckerPairingData X 2}
+    {pairingY : SingularKroneckerPairingData Y 2}
+    (pdX : SurfacePoincareDualData X omegaX evX pairingX)
+    (pdY : SurfacePoincareDualData Y omegaY evY pairingY)
+    (f : C(X, Y)) :=
+  {gysin : SurfaceDegreeTwoGysinCandidateData X Y //
+    IsSurfaceDegreeTwoGysinData pdX pdY f gysin}
 
 end LeanCategories.Topology
