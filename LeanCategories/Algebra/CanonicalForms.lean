@@ -6,7 +6,9 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Reindex
+public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.RingTheory.Polynomial.Basic
 public import LeanCategories.Algebra.Polynomial
 
@@ -89,5 +91,45 @@ def AreInvariantFactorsOfMatrix {n r : ℕ} (A : Matrix (Fin n) (Fin n) R)
     ∃ P Q : Matrix (Fin n) (Fin n) R,
       P * Q = 1 ∧ Q * P = 1 ∧
         Q * A * P = Matrix.reindex e e (rationalCanonicalMatrix R d)
+
+section Field
+
+variable (F : Type u) [Field F]
+
+/-- The `k`th determinantal divisor of the characteristic matrix `X I - A`:
+the normalized gcd of all its `k × k` minors.
+
+This is an intrinsic construction from `A`; no Smith form, rational canonical
+form, or list of invariant factors is supplied by the caller. -/
+noncomputable def matrixDeterminantalDivisor {n : ℕ}
+    (A : Matrix (Fin n) (Fin n) F) (k : ℕ) : Polynomial F := by
+  letI := Classical.decEq F
+  let minors : List (Polynomial F) :=
+    (Finset.univ : Finset ((Fin k ↪ Fin n) × (Fin k ↪ Fin n))).toList.map fun rc =>
+      ((Matrix.charmatrix A).submatrix rc.1 rc.2).det
+  exact normalize (minors.foldl EuclideanDomain.gcd 0)
+
+/-- The invariant-factor polynomial in position `i`, constructed as the
+successive quotient `Δ_(i+1) / Δ_i` of determinantal divisors of `X I - A`. -/
+noncomputable def matrixInvariantFactor {n : ℕ}
+    (A : Matrix (Fin n) (Fin n) F) (i : Fin n) : Polynomial F := by
+  letI := Classical.decEq F
+  exact matrixDeterminantalDivisor F A (i.1 + 1) /
+    matrixDeterminantalDivisor F A i.1
+
+/-- The nonconstant invariant factors of a square matrix, intrinsically
+constructed from the determinantal divisors of its characteristic matrix.
+
+Degree-zero Smith factors are omitted because they contribute no companion
+block to the rational canonical form.  The theorem identifying these
+polynomials with the companion blocks of a rational canonical form, and its
+existence/uniqueness consequences, belong to the result layer. -/
+noncomputable def matrixInvariantFactors {n : ℕ}
+    (A : Matrix (Fin n) (Fin n) F) : List (Polynomial F) := by
+  letI := Classical.decEq F
+  exact (List.ofFn fun i : Fin n => matrixInvariantFactor F A i).filter fun f =>
+    f.natDegree ≠ 0
+
+end Field
 
 end LeanCategories.Algebra
