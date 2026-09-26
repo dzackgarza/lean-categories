@@ -5,6 +5,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import BrauerGroup.RelativeBrauer
+public import Mathlib.RingTheory.Artinian.Module
+public import Mathlib.RingTheory.SimpleModule.WedderburnArtin
 
 /-!
 # Brauer-group source data
@@ -53,10 +55,9 @@ abbrev AreBrauerEquivalent
     (K : Type u) [Field K] (A B : CSA K) : Prop :=
   IsBrauerEquivalent A B
 
-/-- Candidate data for the Wedderburn division-ring part of a central simple
-algebra (Dummit--Foote FC01-C17-U082).  Existence and uniqueness are the
-Wedderburn--Artin results and are intentionally not selected here. -/
-structure DivisionPartCandidateData
+/-- Matrix/division-algebra data for the Wedderburn division-ring part of a
+central simple algebra. -/
+structure DivisionPartData
     (F : Type u) [Field F] (A : Type u) [Ring A] [Algebra F A] where
   n : ℕ
   hn : n ≠ 0
@@ -65,7 +66,29 @@ structure DivisionPartCandidateData
   instAlgebra : Algebra F divisionRing
   matrixEquiv : A ≃ₐ[F] Matrix (Fin n) (Fin n) divisionRing
 
-attribute [instance] DivisionPartCandidateData.instDivisionRing
-  DivisionPartCandidateData.instAlgebra
+attribute [instance] DivisionPartData.instDivisionRing
+  DivisionPartData.instAlgebra
+
+/-- The proved Artin--Wedderburn theorem supplies complete division-part data
+for every central simple algebra. -/
+theorem nonemptyDivisionPartData (F : Type u) [Field F] (A : CSA F) :
+    Nonempty (DivisionPartData F A) := by
+  let _ : IsArtinianRing A := IsArtinianRing.of_finite F A
+  obtain ⟨n, hn, D, hD, hAlg, ⟨e⟩⟩ :=
+    IsSimpleRing.exists_algEquiv_matrix_divisionRing F A
+  exact ⟨
+    { n := n
+      hn := hn.out
+      divisionRing := D
+      instDivisionRing := hD
+      instAlgebra := hAlg
+      matrixEquiv := e }⟩
+
+/-- Construct the Wedderburn division-ring part of a central simple algebra
+using Mathlib's proved Artin--Wedderburn decomposition
+(Dummit--Foote FC01-C17-U082). -/
+noncomputable def divisionPartData (F : Type u) [Field F] (A : CSA F) :
+    DivisionPartData F A :=
+  Classical.choice (nonemptyDivisionPartData F A)
 
 end LeanCategories.Algebra

@@ -181,6 +181,34 @@ noncomputable def normalizeLeadingCoeff {σ : Type*} (m : MonomialOrder σ)
     {k : Type*} [Field k] (f : MvPolynomial σ k) : MvPolynomial σ k :=
   C (m.leadingCoeff f)⁻¹ * f
 
+/-- The remainder produced by Mathlib's terminating multivariate-division
+algorithm for a divisor set whose leading coefficients are units. -/
+noncomputable def divisionRemainder {σ : Type*} (m : MonomialOrder σ)
+    {k : Type*} [Field k] (B : Set (MvPolynomial σ k))
+    (hB : ∀ b ∈ B, IsUnit (m.leadingCoeff b))
+    (f : MvPolynomial σ k) : MvPolynomial σ k :=
+  (m.div_set hB f).choose_spec.choose
+
+/-- Dummit--Foote's reduction of a minimal Gröbner basis (FC01-C09-U062).
+
+Each basis member is divided by the other basis members using the terminating
+native division algorithm, and the resulting remainder is normalized to
+leading coefficient one. No remainder family or iteration fuel is supplied by
+the caller. Reducedness and uniqueness are subsequent results. -/
+noncomputable def reducedGroebnerBasisData {σ : Type*} (m : MonomialOrder σ)
+    {k : Type*} [Field k] {G : Set (MvPolynomial σ k)}
+    {I : Ideal (MvPolynomial σ k)} (hG : m.IsGroebnerBasis G I)
+    (hmin : hG.IsMinimal) : Set (MvPolynomial σ k) :=
+  Set.range fun g : G =>
+    normalizeLeadingCoeff m <|
+      divisionRemainder m (G \ {g.1}) (by
+        intro b hb
+        have hbG : b ∈ G := hb.1
+        have hmonic := hmin.1 b hbG
+        rw [Monic] at hmonic
+        rw [hmonic]
+        exact isUnit_one) g.1
+
 /-- Data-level form of Dummit--Foote's reduction of a minimal Gröbner basis
 (FC01-C09-U062).
 
