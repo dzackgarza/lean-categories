@@ -53,8 +53,8 @@ def nonfaithfulCasimirTraceForm :
 /-- Source data for the trace-dual bases used in the Casimir construction. -/
 structure NonfaithfulCasimirDualBasisData
     (ι : Type x) [Fintype ι] [DecidableEq ι] where
-  left : Basis ι R (nonfaithfulCasimirSupportIdeal R L M)
-  right : Basis ι R (nonfaithfulCasimirSupportIdeal R L M)
+  left : Module.Basis ι R (nonfaithfulCasimirSupportIdeal R L M)
+  right : Module.Basis ι R (nonfaithfulCasimirSupportIdeal R L M)
   dual (i j : ι) :
     nonfaithfulCasimirTraceForm R L M (left i) (right j) =
       if i = j then 1 else 0
