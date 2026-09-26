@@ -99,24 +99,27 @@ def IsGeneralizedKummerSurfaceResolutionData
       IsMinimalComplexSurfaceResolutionData I
         (generalizedKummerExceptionalTargetData G A) R
 
-/-- Raw generalized Kummer resolution selected from the exact source
-predicate.  Existence of a datum satisfying that predicate is result content. -/
-noncomputable def generalizedKummerSurfaceResolutionData
-    (I : ComplexSurfaceResolutionInterface.{u}) :
-    GeneralizedKummerSurfaceResolutionData G A :=
-  Classical.epsilon (IsGeneralizedKummerSurfaceResolutionData G A I)
+/-- Source-faithful generalized Kummer resolution data.  Existence of such a
+minimal resolution for a supplied finite holomorphic torus action is theorem
+content; no arbitrary raw resolution candidate is selected. -/
+abbrev GeneralizedKummerSurfaceData
+    (I : ComplexSurfaceResolutionInterface.{u}) :=
+  {R : GeneralizedKummerSurfaceResolutionData G A //
+    IsGeneralizedKummerSurfaceResolutionData G A I R}
 
-/-- Peters--Sterk's generalized Kummer-surface carrier at the definition-data
-level: the source of the selected minimal-resolution candidate. -/
+/-- Peters--Sterk's generalized Kummer-surface carrier: the source of supplied
+minimal-resolution data. -/
 noncomputable abbrev GeneralizedKummerSurface
-    (I : ComplexSurfaceResolutionInterface.{u}) : TopCat.{u} :=
-  (generalizedKummerSurfaceResolutionData G A I).source
+    (I : ComplexSurfaceResolutionInterface.{u})
+    (D : GeneralizedKummerSurfaceData G A I) : TopCat.{u} :=
+  D.1.source
 
-/-- Resolution map from the selected generalized Kummer surface to A/G. -/
+/-- Resolution map from supplied generalized Kummer surface data to A/G. -/
 noncomputable def generalizedKummerSurfaceResolutionMap
-    (I : ComplexSurfaceResolutionInterface.{u}) :
-    GeneralizedKummerSurface G A I → generalizedKummerQuotientTopCat G A :=
-  (generalizedKummerSurfaceResolutionData G A I).map
+    (I : ComplexSurfaceResolutionInterface.{u})
+    (D : GeneralizedKummerSurfaceData G A I) :
+    GeneralizedKummerSurface G A I D → generalizedKummerQuotientTopCat G A :=
+  D.1.map
 
 end
 
