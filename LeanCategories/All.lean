@@ -194,6 +194,7 @@ public import LeanCategories.Schemes.FormalCompletionData
 public import LeanCategories.Schemes.LocalIntersectionMultiplicityData
 public import LeanCategories.Schemes.CurveIntersectionNumberData
 public import LeanCategories.Schemes.PointBlowupData
+public import LeanCategories.Schemes.P1ProductPencilBlowupData
 public import LeanCategories.Schemes.BiellipticSurfaceData
 public import LeanCategories.Schemes.QuasiBiellipticSurfaceData
 public import LeanCategories.Schemes.HirzebruchSurfaceBundleData
