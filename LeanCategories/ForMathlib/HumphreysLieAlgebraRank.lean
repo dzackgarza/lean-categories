@@ -15,9 +15,10 @@ Representation Theory*, Section 16.4, p. 86 (FC14-C04-U033). Over the standing
 algebraically closed field of characteristic zero, the rank of a finite-dimensional Lie algebra
 is the dimension of a Cartan subalgebra.
 
-The Cartan subalgebra is selected by `Classical.epsilon` from Mathlib's intrinsic predicate
-`LieSubalgebra.IsCartanSubalgebra`. Existence and the independence of its dimension from the
-choice are separate results; they are not asserted here.
+Cartan-subalgebra data are represented by Mathlib's intrinsic predicate
+`LieSubalgebra.IsCartanSubalgebra`. Existence and independence of the
+dimension from the choice are separate results; no arbitrary Lie subalgebra is
+selected before those results.
 -/
 
 @[expose] public section
@@ -28,13 +29,13 @@ namespace LeanCategories.LieAlgebra
 
 variable (K L : Type*) [Field K] [LieRing L] [LieAlgebra K L]
 
-/-- A classically selected Cartan subalgebra of `L` in the source's setting. -/
-def chosenCartanSubalgebra [CharZero K] [IsAlgClosed K] [FiniteDimensional K L] :
-    LieSubalgebra K L :=
-  Classical.epsilon fun H : LieSubalgebra K L => H.IsCartanSubalgebra
+/-- Source-faithful Cartan-subalgebra data in Humphreys' setting. -/
+abbrev CartanSubalgebraData [CharZero K] [IsAlgClosed K] [FiniteDimensional K L] :=
+  {H : LieSubalgebra K L // H.IsCartanSubalgebra}
 
 /-- Humphreys' rank of `L`: the dimension of a Cartan subalgebra. -/
-def humphreysRank [CharZero K] [IsAlgClosed K] [FiniteDimensional K L] : ℕ :=
-  Module.finrank K (chosenCartanSubalgebra K L)
+def humphreysRank [CharZero K] [IsAlgClosed K] [FiniteDimensional K L]
+    (H : CartanSubalgebraData K L) : ℕ :=
+  Module.finrank K H.1
 
 end LeanCategories.LieAlgebra
