@@ -132,23 +132,28 @@ def IsRelativeGenLoopConcatData
           (Function.update t i
             (Set.projIcc 0 1 zero_le_one (2 * t i - 1)))
 
-/-- A source-formula candidate for concatenation. Its existence with the
-displayed graph is a result obligation, so Sweep III selects a relative cube
-without proving that graph. -/
-def relativeGenLoopConcatData
+/-- Source-faithful relative-cube concatenation data: a candidate relative
+cube together with the exact pointwise concatenation graph. -/
+abbrev RelativeGenLoopConcatData
     {X : Type u} [TopologicalSpace X] {A : Set X} {x0 : X}
     (hx0 : x0 ∈ A) {n : ℕ} {hn : 0 < n}
     (i : Fin n)
-    (f g : RelativeGenLoopData X A x0 n hn) :
-    RelativeGenLoopData X A x0 n hn :=
-  letI : Nonempty (RelativeGenLoopData X A x0 n hn) :=
-    ⟨relativeGenLoopConstData X A x0 hx0 n hn⟩
-  Classical.epsilon (IsRelativeGenLoopConcatData i f g)
+    (f g : RelativeGenLoopData X A x0 n hn) :=
+  {h : RelativeGenLoopData X A x0 n hn //
+    IsRelativeGenLoopConcatData i f g h}
 
 /-- Hatcher's canonical concatenation coordinate for `n ≥ 2`: the first
 coordinate, which is distinct from the distinguished last coordinate. -/
 def relativeHomotopyConcatCoordinate (n : ℕ) (h2 : 2 ≤ n) : Fin n :=
   ⟨0, by omega⟩
+
+/-- Certified concatenation data for every pair of relative representatives. -/
+abbrev RelativeGenLoopConcatSystemData
+    (X : Type u) [TopologicalSpace X] (A : Set X) (x0 : X)
+    (hx0 : x0 ∈ A) (n : ℕ) (hn : 0 < n) (h2 : 2 ≤ n) :=
+  ∀ f g : RelativeGenLoopData X A x0 n hn,
+    RelativeGenLoopConcatData hx0
+      (relativeHomotopyConcatCoordinate n h2) f g
 
 /-- A candidate realization of the relative homotopy group. The carrier is
 equipped with group structure, while `classOf` records how the raw relative
@@ -178,34 +183,33 @@ well-definedness, or group-law proof is supplied here. -/
 def IsRelativeHomotopyGroupData
     (X : Type u) [TopologicalSpace X] (A : Set X) (x0 : X)
     (hx0 : x0 ∈ A) (n : ℕ) (hn : 0 < n) (h2 : 2 ≤ n)
+    (C : RelativeGenLoopConcatSystemData X A x0 hx0 n hn h2)
     (P : RelativeHomotopyGroupCandidateData X A x0 n hn) : Prop :=
   Function.Bijective P.classOf ∧
     P.classOf (relativeHomotopyBaseClassData X A x0 hx0 n hn) = 1 ∧
       ∀ f g : RelativeGenLoopData X A x0 n hn,
         P.classOf
             (relativeHomotopyClassMkData
-              (relativeGenLoopConcatData hx0
-                (relativeHomotopyConcatCoordinate n h2) f g)) =
+              (C f g).1) =
           P.classOf (relativeHomotopyClassMkData f) *
             P.classOf (relativeHomotopyClassMkData g)
 
-/-- Hatcher's relative homotopy group candidate in degree `n ≥ 2`, selected
-from its exact quotient-and-concatenation specification. -/
-def relativeHomotopyGroupCandidateData
-    (X : Type u) [TopologicalSpace X] (A : Set X) (x0 : X)
-    (hx0 : x0 ∈ A) (n : ℕ) (hn : 0 < n) (h2 : 2 ≤ n) :
-    RelativeHomotopyGroupCandidateData X A x0 n hn :=
-  Classical.epsilon (IsRelativeHomotopyGroupData X A x0 hx0 n hn h2)
-
-/-- Source-facing carrier `π_n(X,A,x₀)` for `n ≥ 2`.
-
-Its selected group structure is characterized by
-`IsRelativeHomotopyGroupData`; proving that characterization is Sweep-IV
-work. -/
+/-- Source-faithful relative homotopy group presentation data in degree at
+least two. -/
 abbrev RelativeHomotopyGroupData
     (X : Type u) [TopologicalSpace X] (A : Set X) (x0 : X)
-    (hx0 : x0 ∈ A) (n : ℕ) (hn : 0 < n) (h2 : 2 ≤ n) : Type u :=
-  (relativeHomotopyGroupCandidateData X A x0 hx0 n hn h2).carrier
+    (hx0 : x0 ∈ A) (n : ℕ) (hn : 0 < n) (h2 : 2 ≤ n)
+    (C : RelativeGenLoopConcatSystemData X A x0 hx0 n hn h2) :=
+  {P : RelativeHomotopyGroupCandidateData X A x0 n hn //
+    IsRelativeHomotopyGroupData X A x0 hx0 n hn h2 C P}
+
+/-- Source-facing carrier of supplied valid relative homotopy group data. -/
+abbrev RelativeHomotopyGroupCarrierData
+    (X : Type u) [TopologicalSpace X] (A : Set X) (x0 : X)
+    (hx0 : x0 ∈ A) (n : ℕ) (hn : 0 < n) (h2 : 2 ≤ n)
+    {C : RelativeGenLoopConcatSystemData X A x0 hx0 n hn h2}
+    (P : RelativeHomotopyGroupData X A x0 hx0 n hn h2 C) : Type u :=
+  P.1.carrier
 
 /-- Hatcher's degree-one relative homotopy object, which is only a pointed
 set. -/
@@ -239,25 +243,30 @@ def IsRelativeHomotopyBoundaryRepresentativeData
       f.toContinuousMap
         (Cube.insertAt (relativeHomotopyLastCoordinate n hn) (0, t))
 
-/-- A candidate restriction of a relative cube to the distinguished zero
-face, selected from the exact source graph.  Sweep III records the map data
-without proving continuity/fixed-boundary consequences of the formula; those
-are part of the later verification of the construction. -/
-def relativeHomotopyBoundaryRepresentativeData
+/-- Source-faithful distinguished-face representative data. -/
+abbrev RelativeHomotopyBoundaryRepresentativeData
     {X : Type u} [TopologicalSpace X] {A : Set X} {x0 : X}
     (hx0 : x0 ∈ A) {n : ℕ} {hn : 0 < n}
-    (f : RelativeGenLoopData X A x0 n hn) :
-    GenLoop (RelativeHomotopyBoundaryIndex n hn) A ⟨x0, hx0⟩ :=
-  Classical.epsilon (IsRelativeHomotopyBoundaryRepresentativeData hx0 f)
+    (f : RelativeGenLoopData X A x0 n hn) :=
+  {g : GenLoop (RelativeHomotopyBoundaryIndex n hn) A ⟨x0, hx0⟩ //
+    IsRelativeHomotopyBoundaryRepresentativeData hx0 f g}
+
+/-- Certified distinguished-face representatives for every relative cube. -/
+abbrev RelativeHomotopyBoundaryRepresentativeSystemData
+    {X : Type u} [TopologicalSpace X] {A : Set X} {x0 : X}
+    (hx0 : x0 ∈ A) (n : ℕ) (hn : 0 < n) :=
+  ∀ f : RelativeGenLoopData X A x0 n hn,
+    RelativeHomotopyBoundaryRepresentativeData hx0 f
 
 /-- The ordinary homotopy class of the distinguished-face restriction of a
 relative cube. -/
 def relativeHomotopyBoundaryClassData
     {X : Type u} [TopologicalSpace X] {A : Set X} {x0 : X}
     (hx0 : x0 ∈ A) {n : ℕ} {hn : 0 < n}
+    (R : RelativeHomotopyBoundaryRepresentativeSystemData hx0 n hn)
     (f : RelativeGenLoopData X A x0 n hn) :
     HomotopyGroup (RelativeHomotopyBoundaryIndex n hn) A ⟨x0, hx0⟩ :=
-  Quotient.mk _ (relativeHomotopyBoundaryRepresentativeData hx0 f)
+  Quotient.mk _ (R f).1
 
 /-- Exact source specification for the boundary map on raw relative homotopy
 classes: a class represented by `f` is sent to the class of the distinguished
@@ -265,22 +274,22 @@ face of `f`.  Well-definedness on representatives is a Sweep-IV result. -/
 def IsRelativeHomotopyBoundaryClassData
     (X : Type u) [TopologicalSpace X] (A : Set X) (x0 : X)
     (hx0 : x0 ∈ A) (n : ℕ) (hn : 0 < n)
+    (R : RelativeHomotopyBoundaryRepresentativeSystemData hx0 n hn)
     (δ : RelativeHomotopyClassData X A x0 n hn →
       HomotopyGroup (RelativeHomotopyBoundaryIndex n hn) A ⟨x0, hx0⟩) : Prop :=
   ∀ f : RelativeGenLoopData X A x0 n hn,
     δ (relativeHomotopyClassMkData f) =
-      relativeHomotopyBoundaryClassData hx0 f
+      relativeHomotopyBoundaryClassData hx0 R f
 
-/-- Hatcher's relative boundary map at the raw homotopy-class level, selected
-from the representative restriction specification.  In degree one this is
-the pointed-set boundary to `π₀(A)`; no descent proof is performed in Sweep
-III. -/
-def relativeHomotopyBoundaryClassMapData
+/-- Source-faithful raw relative-boundary class-map data. -/
+abbrev RelativeHomotopyBoundaryClassMapData
     (X : Type u) [TopologicalSpace X] (A : Set X) (x0 : X)
-    (hx0 : x0 ∈ A) (n : ℕ) (hn : 0 < n) :
-    RelativeHomotopyClassData X A x0 n hn →
-      HomotopyGroup (RelativeHomotopyBoundaryIndex n hn) A ⟨x0, hx0⟩ :=
-  Classical.epsilon (IsRelativeHomotopyBoundaryClassData X A x0 hx0 n hn)
+    (hx0 : x0 ∈ A) (n : ℕ) (hn : 0 < n)
+    (R : RelativeHomotopyBoundaryRepresentativeSystemData hx0 n hn) :=
+  {δ :
+      RelativeHomotopyClassData X A x0 n hn →
+        HomotopyGroup (RelativeHomotopyBoundaryIndex n hn) A ⟨x0, hx0⟩ //
+    IsRelativeHomotopyBoundaryClassData X A x0 hx0 n hn R δ}
 
 /-- Exact source specification for the boundary map on Hatcher's selected
 group carrier in degree `n ≥ 2`.  It agrees with distinguished-face
@@ -289,24 +298,27 @@ is a group homomorphism is result content and is deliberately absent. -/
 def IsRelativeHomotopyBoundaryData
     (X : Type u) [TopologicalSpace X] (A : Set X) (x0 : X)
     (hx0 : x0 ∈ A) (n : ℕ) (hn : 0 < n) (h2 : 2 ≤ n)
-    (δ : RelativeHomotopyGroupData X A x0 hx0 n hn h2 →
+    (C : RelativeGenLoopConcatSystemData X A x0 hx0 n hn h2)
+    (P : RelativeHomotopyGroupData X A x0 hx0 n hn h2 C)
+    (R : RelativeHomotopyBoundaryRepresentativeSystemData hx0 n hn)
+    (δ : RelativeHomotopyGroupCarrierData X A x0 hx0 n hn h2 P →
       HomotopyGroup (RelativeHomotopyBoundaryIndex n hn) A ⟨x0, hx0⟩) : Prop :=
   ∀ f : RelativeGenLoopData X A x0 n hn,
-    δ ((relativeHomotopyGroupCandidateData X A x0 hx0 n hn h2).classOf
+    δ (P.1.classOf
       (relativeHomotopyClassMkData f)) =
-        relativeHomotopyBoundaryClassData hx0 f
+        relativeHomotopyBoundaryClassData hx0 R f
 
-/-- The relative homotopy boundary construction
-`π_n(X,A,x₀) → π_{n-1}(A,x₀)` for `n ≥ 2`, represented on the canonical
-complement-of-the-last-coordinate cube.  It is selected from Hatcher's exact
-representative formula; homomorphism and well-definedness theorems belong to
-Sweep IV. -/
-def relativeHomotopyBoundaryData
+/-- Source-faithful relative homotopy boundary data on supplied group data. -/
+abbrev RelativeHomotopyBoundaryData
     (X : Type u) [TopologicalSpace X] (A : Set X) (x0 : X)
-    (hx0 : x0 ∈ A) (n : ℕ) (hn : 0 < n) (h2 : 2 ≤ n) :
-    RelativeHomotopyGroupData X A x0 hx0 n hn h2 →
-      HomotopyGroup (RelativeHomotopyBoundaryIndex n hn) A ⟨x0, hx0⟩ :=
-  Classical.epsilon (IsRelativeHomotopyBoundaryData X A x0 hx0 n hn h2)
+    (hx0 : x0 ∈ A) (n : ℕ) (hn : 0 < n) (h2 : 2 ≤ n)
+    (C : RelativeGenLoopConcatSystemData X A x0 hx0 n hn h2)
+    (P : RelativeHomotopyGroupData X A x0 hx0 n hn h2 C)
+    (R : RelativeHomotopyBoundaryRepresentativeSystemData hx0 n hn) :=
+  {δ :
+      RelativeHomotopyGroupCarrierData X A x0 hx0 n hn h2 P →
+        HomotopyGroup (RelativeHomotopyBoundaryIndex n hn) A ⟨x0, hx0⟩ //
+    IsRelativeHomotopyBoundaryData X A x0 hx0 n hn h2 C P R δ}
 
 /-- Source specification for the smaller cube used in Hatcher's relative
 change-of-basepoint construction.  The distinguished zero face remains in the
@@ -321,12 +333,11 @@ def IsRelativeHomotopyBasepointInnerCubeData
       else
         1 / 4 + (t i : ℝ) / 2
 
-/-- The coordinate placement of the smaller cube in Hatcher's picture,
-selected from its pointwise affine specification. -/
-def relativeHomotopyBasepointInnerCubeData
-    (n : ℕ) (hn : 0 < n) :
-    (Fin n → unitInterval) → (Fin n → unitInterval) :=
-  Classical.epsilon (IsRelativeHomotopyBasepointInnerCubeData n hn)
+/-- Source-faithful coordinate placement data for Hatcher's smaller cube. -/
+abbrev RelativeHomotopyBasepointInnerCubeData
+    (n : ℕ) (hn : 0 < n) :=
+  {e : (Fin n → unitInterval) → (Fin n → unitInterval) //
+    IsRelativeHomotopyBasepointInnerCubeData n hn e}
 
 /-- Exact construction-level specification for Hatcher's relative
 change-of-basepoint representative `γf`.
@@ -340,28 +351,36 @@ choice without importing any homotopy or well-definedness result. -/
 def IsRelativeHomotopyBasepointRepresentativeData
     {X : Type u} [TopologicalSpace X] {A : Set X}
     {x0 x1 : X} {hx0 : x0 ∈ A} {hx1 : x1 ∈ A}
-    (γ : Path (⟨x0, hx0⟩ : A) ⟨x1, hx1⟩)
     {n : ℕ} {hn : 0 < n}
+    (e : RelativeHomotopyBasepointInnerCubeData n hn)
+    (γ : Path (⟨x0, hx0⟩ : A) ⟨x1, hx1⟩)
     (f : RelativeGenLoopData X A x1 n hn)
     (g : RelativeGenLoopData X A x0 n hn) : Prop :=
-  let e := relativeHomotopyBasepointInnerCubeData n hn
-  (∀ t, g.toContinuousMap (e t) = f.toContinuousMap t) ∧
+  (∀ t, g.toContinuousMap (e.1 t) = f.toContinuousMap t) ∧
     ∃ ρ : (Fin n → unitInterval) → unitInterval,
-      ∀ y, y ∉ Set.range e → g.toContinuousMap y = (γ (ρ y) : A)
+      ∀ y, y ∉ Set.range e.1 → g.toContinuousMap y = (γ (ρ y) : A)
 
-/-- Hatcher's representative `γf`, selected from the centered-cube/radial-shell
-specification.  Existence of a representative satisfying the specification is
-not proved in Sweep III. -/
-def relativeHomotopyBasepointRepresentativeData
+/-- Source-faithful relative change-of-basepoint representative data. -/
+abbrev RelativeHomotopyBasepointRepresentativeData
+    {X : Type u} [TopologicalSpace X] {A : Set X}
+    {x0 x1 : X} (hx0 : x0 ∈ A) {hx1 : x1 ∈ A}
+    {n : ℕ} {hn : 0 < n}
+    (e : RelativeHomotopyBasepointInnerCubeData n hn)
+    (γ : Path (⟨x0, hx0⟩ : A) ⟨x1, hx1⟩)
+    (f : RelativeGenLoopData X A x1 n hn) :=
+  {g : RelativeGenLoopData X A x0 n hn //
+    IsRelativeHomotopyBasepointRepresentativeData e γ f g}
+
+/-- Certified relative change-of-basepoint representatives for every source
+relative cube. -/
+structure RelativeHomotopyBasepointRepresentativeSystemData
     {X : Type u} [TopologicalSpace X] {A : Set X}
     {x0 x1 : X} (hx0 : x0 ∈ A) {hx1 : x1 ∈ A}
     (γ : Path (⟨x0, hx0⟩ : A) ⟨x1, hx1⟩)
-    {n : ℕ} {hn : 0 < n}
-    (f : RelativeGenLoopData X A x1 n hn) :
-    RelativeGenLoopData X A x0 n hn :=
-  letI : Nonempty (RelativeGenLoopData X A x0 n hn) :=
-    ⟨relativeGenLoopConstData X A x0 hx0 n hn⟩
-  Classical.epsilon (IsRelativeHomotopyBasepointRepresentativeData γ f)
+    (n : ℕ) (hn : 0 < n) where
+  innerCube : RelativeHomotopyBasepointInnerCubeData n hn
+  representative : ∀ f : RelativeGenLoopData X A x1 n hn,
+    RelativeHomotopyBasepointRepresentativeData hx0 innerCube γ f
 
 /-- Exact source specification for relative change of basepoint on raw
 homotopy classes. -/
@@ -370,27 +389,26 @@ def IsRelativeHomotopyBasepointClassMapData
     (x0 x1 : X) (hx0 : x0 ∈ A) (hx1 : x1 ∈ A)
     (γ : Path (⟨x0, hx0⟩ : A) ⟨x1, hx1⟩)
     (n : ℕ) (hn : 0 < n)
+    (D : RelativeHomotopyBasepointRepresentativeSystemData hx0 γ n hn)
     (β : RelativeHomotopyClassData X A x1 n hn →
       RelativeHomotopyClassData X A x0 n hn) : Prop :=
   ∀ f : RelativeGenLoopData X A x1 n hn,
     β (relativeHomotopyClassMkData f) =
       relativeHomotopyClassMkData
-        (relativeHomotopyBasepointRepresentativeData hx0 γ f)
+        (D.representative f).1
 
-/-- Relative change of basepoint at the raw homotopy-class level.  For `n=1`
-this is the pointed-set construction in Hatcher's statement.  Its inverse,
-path-composition law, and homotopy invariance are result-layer assertions. -/
-def relativeHomotopyBasepointClassMapData
+/-- Source-faithful relative change-of-basepoint data at the raw
+homotopy-class level. -/
+abbrev RelativeHomotopyBasepointClassMapData
     (X : Type u) [TopologicalSpace X] (A : Set X)
     (x0 x1 : X) (hx0 : x0 ∈ A) (hx1 : x1 ∈ A)
     (γ : Path (⟨x0, hx0⟩ : A) ⟨x1, hx1⟩)
-    (n : ℕ) (hn : 0 < n) :
-    RelativeHomotopyClassData X A x1 n hn →
-      RelativeHomotopyClassData X A x0 n hn :=
-  letI : Nonempty (RelativeHomotopyClassData X A x0 n hn) :=
-    ⟨relativeHomotopyBaseClassData X A x0 hx0 n hn⟩
-  Classical.epsilon
-    (IsRelativeHomotopyBasepointClassMapData X A x0 x1 hx0 hx1 γ n hn)
+    (n : ℕ) (hn : 0 < n)
+    (D : RelativeHomotopyBasepointRepresentativeSystemData hx0 γ n hn) :=
+  {β :
+      RelativeHomotopyClassData X A x1 n hn →
+        RelativeHomotopyClassData X A x0 n hn //
+    IsRelativeHomotopyBasepointClassMapData X A x0 x1 hx0 hx1 γ n hn D β}
 
 /-- Exact source specification for relative change of basepoint on the selected
 group carriers in degree `n ≥ 2`.  The specification only records its action on
@@ -400,28 +418,36 @@ def IsRelativeHomotopyBasepointData
     (x0 x1 : X) (hx0 : x0 ∈ A) (hx1 : x1 ∈ A)
     (γ : Path (⟨x0, hx0⟩ : A) ⟨x1, hx1⟩)
     (n : ℕ) (hn : 0 < n) (h2 : 2 ≤ n)
-    (β : RelativeHomotopyGroupData X A x1 hx1 n hn h2 →
-      RelativeHomotopyGroupData X A x0 hx0 n hn h2) : Prop :=
+    (C0 : RelativeGenLoopConcatSystemData X A x0 hx0 n hn h2)
+    (P0 : RelativeHomotopyGroupData X A x0 hx0 n hn h2 C0)
+    (C1 : RelativeGenLoopConcatSystemData X A x1 hx1 n hn h2)
+    (P1 : RelativeHomotopyGroupData X A x1 hx1 n hn h2 C1)
+    (D : RelativeHomotopyBasepointRepresentativeSystemData hx0 γ n hn)
+    (β : RelativeHomotopyGroupCarrierData X A x1 hx1 n hn h2 P1 →
+      RelativeHomotopyGroupCarrierData X A x0 hx0 n hn h2 P0) : Prop :=
   ∀ f : RelativeGenLoopData X A x1 n hn,
-    β ((relativeHomotopyGroupCandidateData X A x1 hx1 n hn h2).classOf
+    β (P1.1.classOf
       (relativeHomotopyClassMkData f)) =
-        (relativeHomotopyGroupCandidateData X A x0 hx0 n hn h2).classOf
+        P0.1.classOf
           (relativeHomotopyClassMkData
-            (relativeHomotopyBasepointRepresentativeData hx0 γ f))
+            (D.representative f).1)
 
-/-- Hatcher's relative change-of-basepoint construction
-`β_γ : π_n(X,A,x₁) → π_n(X,A,x₀)` for `n ≥ 2`, selected from the exact
-representative specification.  Isomorphism, path-composition, and homotopy
-invariance belong to Sweep IV. -/
-def relativeHomotopyBasepointData
+/-- Source-faithful relative change-of-basepoint data on supplied group
+presentations. -/
+abbrev RelativeHomotopyBasepointData
     (X : Type u) [TopologicalSpace X] (A : Set X)
     (x0 x1 : X) (hx0 : x0 ∈ A) (hx1 : x1 ∈ A)
     (γ : Path (⟨x0, hx0⟩ : A) ⟨x1, hx1⟩)
-    (n : ℕ) (hn : 0 < n) (h2 : 2 ≤ n) :
-    RelativeHomotopyGroupData X A x1 hx1 n hn h2 →
-      RelativeHomotopyGroupData X A x0 hx0 n hn h2 :=
-  letI : Nonempty (RelativeHomotopyGroupData X A x0 hx0 n hn h2) := ⟨1⟩
-  Classical.epsilon
-    (IsRelativeHomotopyBasepointData X A x0 x1 hx0 hx1 γ n hn h2)
+    (n : ℕ) (hn : 0 < n) (h2 : 2 ≤ n)
+    (C0 : RelativeGenLoopConcatSystemData X A x0 hx0 n hn h2)
+    (P0 : RelativeHomotopyGroupData X A x0 hx0 n hn h2 C0)
+    (C1 : RelativeGenLoopConcatSystemData X A x1 hx1 n hn h2)
+    (P1 : RelativeHomotopyGroupData X A x1 hx1 n hn h2 C1)
+    (D : RelativeHomotopyBasepointRepresentativeSystemData hx0 γ n hn) :=
+  {β :
+      RelativeHomotopyGroupCarrierData X A x1 hx1 n hn h2 P1 →
+        RelativeHomotopyGroupCarrierData X A x0 hx0 n hn h2 P0 //
+    IsRelativeHomotopyBasepointData
+      X A x0 x1 hx0 hx1 γ n hn h2 C0 P0 C1 P1 D β}
 
 end LeanCategories.Topology
