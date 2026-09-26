@@ -6,6 +6,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.Modules.Sheaf
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
 public import Mathlib.CategoryTheory.Abelian.RightDerived
 
 /-!
@@ -84,6 +85,17 @@ ambient abelian category has the corresponding derived-category smallness
 data. -/
 abbrev moduleSheafGlobalExt [HasExt X.Modules]
     (F G : X.Modules) (i : ℕ) := CategoryTheory.Abelian.Ext F G i
+
+/-- Yoneda extension class of a supplied short exact sequence of module
+sheaves.
+
+For a short exact sequence `0 → L → E → M → 0`, this is the native element
+of `Ext¹(M,L)`.  Identifying this Ext class with a sheaf-cohomology class is
+a separate comparison layer. -/
+noncomputable def moduleSheafExtensionClass [HasExt X.Modules]
+    (S : ShortComplex X.Modules) (hS : S.ShortExact) :
+    moduleSheafGlobalExt S.X₃ S.X₁ 1 :=
+  hS.extClass
 
 /-- Hartshorne's sheaf Ext object computed from a specified internal-Hom
 functor and a chosen injective resolution of the second argument.
