@@ -6,6 +6,7 @@ module
 
 public import Mathlib.Algebra.Lie.Semisimple.Basic
 public import Mathlib.Algebra.Lie.TraceForm
+public import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 # Casimir data for a nonfaithful semisimple representation
@@ -49,16 +50,24 @@ def nonfaithfulCasimirTraceForm :
     LinearMap.BilinForm R (nonfaithfulCasimirSupportIdeal R L M) :=
   LieModule.traceForm R (nonfaithfulCasimirSupportIdeal R L M) M
 
+/-- Source data for the trace-dual bases used in the Casimir construction. -/
+structure NonfaithfulCasimirDualBasisData
+    (ι : Type x) [Fintype ι] [DecidableEq ι] where
+  left : Basis ι R (nonfaithfulCasimirSupportIdeal R L M)
+  right : Basis ι R (nonfaithfulCasimirSupportIdeal R L M)
+  dual (i j : ι) :
+    nonfaithfulCasimirTraceForm R L M (left i) (right j) =
+      if i = j then 1 else 0
+
 /-- Humphreys' Casimir finite sum after restricting a possibly nonfaithful
 representation to the sum of simple ideals on which it is nontrivial.
 
-The supplied families are the source's chosen trace-dual bases.  Duality and
-basis-independence are hypotheses/results surrounding this formula, not new
-construction clauses here. -/
+The input is the source's chosen pair of trace-dual bases, rather than two
+arbitrary families. Basis-independence is result content. -/
 def nonfaithfulCasimirOperatorFromDualFamilies
-    {ι : Type x} [Fintype ι]
-    (a b : ι → nonfaithfulCasimirSupportIdeal R L M) : Module.End R M :=
-  ∑ i, LieModule.toEnd R (nonfaithfulCasimirSupportIdeal R L M) M (a i) *
-    LieModule.toEnd R (nonfaithfulCasimirSupportIdeal R L M) M (b i)
+    {ι : Type x} [Fintype ι] [DecidableEq ι]
+    (D : NonfaithfulCasimirDualBasisData R L M ι) : Module.End R M :=
+  ∑ i, LieModule.toEnd R (nonfaithfulCasimirSupportIdeal R L M) M (D.left i) *
+    LieModule.toEnd R (nonfaithfulCasimirSupportIdeal R L M) M (D.right i)
 
 end LeanCategories.Algebra
