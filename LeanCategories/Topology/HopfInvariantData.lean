@@ -72,19 +72,22 @@ structure HopfTopCellGeneratorData {n : ℕ}
 /-- Hatcher's defining cup-square relation for the Hopf invariant. -/
 def IsHopfInvariantCoefficientData {n : ℕ}
     (f : TopCat.sphere.{0} (2 * n - 1) ⟶ TopCat.sphere.{0} n)
+    (cup : SingularCohomologyCupData ℤ (hopfMappingConeData f))
     (alpha : HopfCohomologyGeneratorData f n)
     (beta : HopfTopCellGeneratorData f) (H : ℤ) : Prop :=
-  singularCohomologyCupMulData ℤ (hopfMappingConeData f)
+  singularCohomologyCupMulData ℤ (hopfMappingConeData f) cup
       alpha.value alpha.value = H • beta.value
 
-/-- The Hopf invariant coefficient determined by normalized generators.
+/-- Source-faithful Hopf invariant coefficient data determined by normalized
+generators and supplied valid cup-product data.
 
-The n >= 2 hypothesis is Hatcher's source range. Existence and uniqueness of
-an integer satisfying the relation are deferred to Sweep IV. -/
-def hopfInvariantData {n : ℕ} (_hn : 2 ≤ n)
+Existence and uniqueness of an integer satisfying the relation are deferred
+to Sweep IV; no arbitrary coefficient is selected. -/
+abbrev HopfInvariantData {n : ℕ} (_hn : 2 ≤ n)
     (f : TopCat.sphere.{0} (2 * n - 1) ⟶ TopCat.sphere.{0} n)
+    (cup : SingularCohomologyCupData ℤ (hopfMappingConeData f))
     (alpha : HopfCohomologyGeneratorData f n)
-    (beta : HopfTopCellGeneratorData f) : ℤ :=
-  Classical.epsilon (IsHopfInvariantCoefficientData f alpha beta)
+    (beta : HopfTopCellGeneratorData f) :=
+  {H : ℤ // IsHopfInvariantCoefficientData f cup alpha beta H}
 
 end LeanCategories.Topology

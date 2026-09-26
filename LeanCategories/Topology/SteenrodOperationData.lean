@@ -60,12 +60,15 @@ def IsSteenrodSquareNaturalData (S : SteenrodSquareData) : Prop :=
 def IsSteenrodSquareZeroData (S : SteenrodSquareData) : Prop :=
   ∀ (X : TopCat.{0}) (n : ℕ), S.sq X n 0 = 𝟙 _
 
-/-- Hatcher's top-square clause `Sq^n(a) = a ∪ a`. -/
-def IsSteenrodSquareTopData (S : SteenrodSquareData) : Prop :=
+/-- Hatcher's top-square clause `Sq^n(a) = a ∪ a`, relative to supplied
+source-faithful singular cup-product data. -/
+def IsSteenrodSquareTopData
+    (cup : ∀ X : TopCat.{0}, SingularCohomologyCupData (ZMod 2) X)
+    (S : SteenrodSquareData) : Prop :=
   ∀ (X : TopCat.{0}) (n : ℕ)
       (a : ModTwoSingularCohomologyData X n),
     (S.sq X n n).hom a =
-      singularCohomologyCupMulData (ZMod 2) X a a
+      singularCohomologyCupMulData (ZMod 2) X (cup X) a a
 
 /-- Hatcher's instability clause `Sq^i(a)=0` for `i>n`. -/
 def IsSteenrodSquareUnstableData (S : SteenrodSquareData) : Prop :=

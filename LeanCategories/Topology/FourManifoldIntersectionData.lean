@@ -123,9 +123,10 @@ cohomology representatives. -/
 noncomputable def fourManifoldIntersectionRepresentativeValueData
     (ω : FourManifoldFundamentalEvaluationData Y)
     (ev : FourManifoldCohomologyEvaluationData Y ω)
+    (cup : SingularCohomologyCupData ℤ (TopCat.of Y))
     (x y : FourManifoldSecondCohomologyData Y) : ℤ :=
   let cup : FourManifoldFourthCohomologyData Y :=
-    singularCohomologyCupMulData ℤ (TopCat.of Y) (p := 2) (q := 2) x y
+    singularCohomologyCupMulData ℤ (TopCat.of Y) cup (p := 2) (q := 2) x y
   ev.1 cup
 
 /-- Exact quotient-representative graph for the compact-surface intersection
@@ -134,26 +135,29 @@ evaluation. -/
 def IsFourManifoldIntersectionFormData
     (ω : FourManifoldFundamentalEvaluationData Y)
     (ev : FourManifoldCohomologyEvaluationData Y ω)
+    (cup : SingularCohomologyCupData ℤ (TopCat.of Y))
     (Q : FourManifoldIntersectionFormCandidateData Y) : Prop :=
   ∀ x y : FourManifoldSecondCohomologyData Y,
     Q (Submodule.Quotient.mk x) (Submodule.Quotient.mk y) =
-      fourManifoldIntersectionRepresentativeValueData Y ω ev x y
+      fourManifoldIntersectionRepresentativeValueData Y ω ev cup x y
 
 /-- Peters--Sterk intersection-form data on H²(X,Z) modulo torsion: a
 candidate bilinear form together with the exact cup/evaluation
 quotient-representative graph. -/
 abbrev FourManifoldIntersectionFormData
     (ω : FourManifoldFundamentalEvaluationData Y)
-    (ev : FourManifoldCohomologyEvaluationData Y ω) :=
+    (ev : FourManifoldCohomologyEvaluationData Y ω)
+    (cup : SingularCohomologyCupData ℤ (TopCat.of Y)) :=
   {Q : FourManifoldIntersectionFormCandidateData Y //
-    IsFourManifoldIntersectionFormData Y ω ev Q}
+    IsFourManifoldIntersectionFormData Y ω ev cup Q}
 
 /-- The source signature (b+,b-) of the real scalar extension of the
 intersection form. -/
 noncomputable def fourManifoldIntersectionSignatureData
     (ω : FourManifoldFundamentalEvaluationData Y)
     (ev : FourManifoldCohomologyEvaluationData Y ω)
-    (Q : FourManifoldIntersectionFormData Y ω ev) : ℕ × ℕ :=
+    (cup : SingularCohomologyCupData ℤ (TopCat.of Y))
+    (Q : FourManifoldIntersectionFormData Y ω ev cup) : ℕ × ℕ :=
   let QReal : LinearMap.BilinForm ℝ
       (ℝ ⊗[ℤ] (FourManifoldTorsionFreeSecondCohomologyData Y)) :=
     LinearMap.BilinForm.baseChange ℝ Q.1
@@ -164,8 +168,9 @@ noncomputable def fourManifoldIntersectionSignatureData
 noncomputable def fourManifoldIntersectionIndexData
     (ω : FourManifoldFundamentalEvaluationData Y)
     (ev : FourManifoldCohomologyEvaluationData Y ω)
-    (Q : FourManifoldIntersectionFormData Y ω ev) : ℤ :=
-  let sig := fourManifoldIntersectionSignatureData Y ω ev Q
+    (cup : SingularCohomologyCupData ℤ (TopCat.of Y))
+    (Q : FourManifoldIntersectionFormData Y ω ev cup) : ℤ :=
+  let sig := fourManifoldIntersectionSignatureData Y ω ev cup Q
   (sig.1 : ℤ) - (sig.2 : ℤ)
 
 end QuotientLevel

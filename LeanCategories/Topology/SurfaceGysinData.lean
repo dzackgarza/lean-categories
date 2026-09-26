@@ -102,11 +102,12 @@ def IsSurfacePoincareDualData
     (X : TopCat)
     (omega : FourManifoldFundamentalEvaluationData X)
     (ev : FourManifoldCohomologyEvaluationData X omega)
+    (cup : SingularCohomologyCupData ℤ X)
     (pairing : SingularKroneckerPairingData X 2)
     (pd : SurfacePoincareDualCandidateData X) : Prop :=
   ∀ a b : SingularIntegralCohomologyData X 2,
     pairing.1 b (pd a) =
-      ev.1 (singularCohomologyCupMulData ℤ X (p := 2) (q := 2) a b)
+      ev.1 (singularCohomologyCupMulData ℤ X cup (p := 2) (q := 2) a b)
 
 /-- Degree-two Poincare-duality data satisfying the exact cup/intersection
 graph.  Existence, uniqueness and invertibility are result-layer obligations. -/
@@ -114,9 +115,10 @@ abbrev SurfacePoincareDualData
     (X : TopCat)
     (omega : FourManifoldFundamentalEvaluationData X)
     (ev : FourManifoldCohomologyEvaluationData X omega)
+    (cup : SingularCohomologyCupData ℤ X)
     (pairing : SingularKroneckerPairingData X 2) :=
   {pd : SurfacePoincareDualCandidateData X //
-    IsSurfacePoincareDualData X omega ev pairing pd}
+    IsSurfacePoincareDualData X omega ev cup pairing pd}
 
 /-- The native pushforward on degree-two integral singular homology induced by
 a supplied continuous map of spaces. -/
@@ -144,10 +146,12 @@ def IsSurfaceDegreeTwoGysinData
     {omegaY : FourManifoldFundamentalEvaluationData Y}
     {evX : FourManifoldCohomologyEvaluationData X omegaX}
     {evY : FourManifoldCohomologyEvaluationData Y omegaY}
+    {cupX : SingularCohomologyCupData ℤ X}
+    {cupY : SingularCohomologyCupData ℤ Y}
     {pairingX : SingularKroneckerPairingData X 2}
     {pairingY : SingularKroneckerPairingData Y 2}
-    (pdX : SurfacePoincareDualData X omegaX evX pairingX)
-    (pdY : SurfacePoincareDualData Y omegaY evY pairingY)
+    (pdX : SurfacePoincareDualData X omegaX evX cupX pairingX)
+    (pdY : SurfacePoincareDualData Y omegaY evY cupY pairingY)
     (f : C(X, Y))
     (gysin : SurfaceDegreeTwoGysinCandidateData X Y) : Prop :=
   ∀ a : SingularIntegralCohomologyData X 2,
@@ -166,10 +170,12 @@ abbrev SurfaceDegreeTwoGysinData
     {omegaY : FourManifoldFundamentalEvaluationData Y}
     {evX : FourManifoldCohomologyEvaluationData X omegaX}
     {evY : FourManifoldCohomologyEvaluationData Y omegaY}
+    {cupX : SingularCohomologyCupData ℤ X}
+    {cupY : SingularCohomologyCupData ℤ Y}
     {pairingX : SingularKroneckerPairingData X 2}
     {pairingY : SingularKroneckerPairingData Y 2}
-    (pdX : SurfacePoincareDualData X omegaX evX pairingX)
-    (pdY : SurfacePoincareDualData Y omegaY evY pairingY)
+    (pdX : SurfacePoincareDualData X omegaX evX cupX pairingX)
+    (pdY : SurfacePoincareDualData Y omegaY evY cupY pairingY)
     (f : C(X, Y)) :=
   {gysin : SurfaceDegreeTwoGysinCandidateData X Y //
     IsSurfaceDegreeTwoGysinData pdX pdY f gysin}

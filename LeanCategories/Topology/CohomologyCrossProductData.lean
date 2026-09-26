@@ -49,13 +49,14 @@ def singularCohomologyMapData
 /-- Hatcher's external cohomology product, obtained by pulling both classes
 to X × Y and applying the cup product there. -/
 def singularCohomologyCrossProductData
-    (R : Type) [CommRing R] (X Y : TopCat.{0}) (p q : ℕ) :
+    (R : Type) [CommRing R] (X Y : TopCat.{0})
+    (D : SingularCohomologyCupData R (X ⨯ Y)) (p q : ℕ) :
     singularCohomologyModuleData R X (ModuleCat.of R R) p ⊗
       singularCohomologyModuleData R Y (ModuleCat.of R R) q ⟶
     singularCohomologyModuleData R (X ⨯ Y) (ModuleCat.of R R) (p + q) :=
   tensorHom
       (singularCohomologyMapData R (prod.fst (X := X) (Y := Y)) p)
       (singularCohomologyMapData R (prod.snd (X := X) (Y := Y)) q) ≫
-    singularCohomologyCupProductData R (X ⨯ Y) p q
+    (D.cohomology p q).1
 
 end LeanCategories.Topology

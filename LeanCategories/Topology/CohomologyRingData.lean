@@ -22,9 +22,10 @@ The additive carrier is the direct sum
 `H^*(X;R) = ⨁ n, H^n(X;R)`,
 
 where singular cohomology is the homology of the linear-Yoneda cochain complex
-of singular chains.  The cup pairing on cochains is selected from Hatcher's
-front-face/back-face evaluation formula.  Its descent to cohomology is then
-selected from the representative-level descent graph.
+of singular chains.  The cup pairing on cochains and its descent to
+cohomology are represented as supplied candidates satisfying Hatcher's exact
+front-face/back-face and representative-level graphs.  No arbitrary candidate
+is selected before the corresponding existence/descent results.
 
 No cocycle-closure, representative-independence, associativity, unit,
 distributivity, or graded-commutativity theorem is proved here.  Those are
@@ -112,14 +113,13 @@ def IsSingularCochainCupPairingData
       singularCochainEvalData R X (singularCupFrontSimplexData X p q σ) φ *
         singularCochainEvalData R X (singularCupBackSimplexData X p q σ) ψ
 
-/-- The cochain cup pairing selected from Hatcher's raw evaluation graph.
-
-Linearity is carried by the morphism type.  Existence of a morphism satisfying
-the graph is not proved in this declaration. -/
-def singularCochainCupPairingData
+/-- Source-faithful cochain cup-pairing data: a bundled linear candidate
+together with Hatcher's exact raw evaluation graph. -/
+abbrev SingularCochainCupPairingData
     (R : Type) [CommRing R] (X : TopCat.{0}) (p q : ℕ) :
-    SingularCochainCupPairingHomData R X p q :=
-  Classical.epsilon (IsSingularCochainCupPairingData R X p q)
+    Type :=
+  {μ : SingularCochainCupPairingHomData R X p q //
+    IsSingularCochainCupPairingData R X p q μ}
 
 /-- Type of a cup-product candidate on singular cohomology. -/
 abbrev SingularCohomologyCupProductHomData
@@ -137,32 +137,44 @@ cohomology classes.  The existence of such `z` and independence of all
 representatives are deliberately not proved here. -/
 def IsSingularCohomologyCupProductData
     (R : Type) [CommRing R] (X : TopCat.{0}) (p q : ℕ)
+    (μC : SingularCochainCupPairingData R X p q)
     (μ : SingularCohomologyCupProductHomData R X p q) : Prop :=
   let K := singularCochainComplexData R X (ModuleCat.of R R)
-  let μC := singularCochainCupPairingData R X p q
   ∀ (x : K.cycles p) (y : K.cycles q),
     ∃ z : K.cycles (p + q),
       (K.iCycles (p + q)).hom z =
-          μC.hom (((K.iCycles p).hom x) ⊗ₜ[R] ((K.iCycles q).hom y)) ∧
+          μC.1.hom (((K.iCycles p).hom x) ⊗ₜ[R] ((K.iCycles q).hom y)) ∧
         μ.hom
             (((K.homologyπ p).hom x) ⊗ₜ[R] ((K.homologyπ q).hom y)) =
           (K.homologyπ (p + q)).hom z
 
-/-- Cup product on singular cohomology selected from the representative-level
-descent graph. -/
-def singularCohomologyCupProductData
+/-- Source-faithful singular-cohomology cup-product data: a candidate
+homogeneous product together with its exact representative-level descent
+graph from supplied cochain cup data. -/
+abbrev SingularCohomologyCupProductData
     (R : Type) [CommRing R] (X : TopCat.{0}) (p q : ℕ) :
-    SingularCohomologyCupProductHomData R X p q :=
-  Classical.epsilon (IsSingularCohomologyCupProductData R X p q)
+    SingularCochainCupPairingData R X p q → Type :=
+  fun μC =>
+    {μ : SingularCohomologyCupProductHomData R X p q //
+      IsSingularCohomologyCupProductData R X p q μC μ}
+
+/-- A coherent family of exact cup-product construction data in all
+bidegrees.  The fields are data, not proofs manufactured in Sweep III. -/
+structure SingularCohomologyCupData
+    (R : Type) [CommRing R] (X : TopCat.{0}) where
+  cochain (p q : ℕ) : SingularCochainCupPairingData R X p q
+  cohomology (p q : ℕ) :
+    SingularCohomologyCupProductData R X p q (cochain p q)
 
 /-- Homogeneous cup multiplication
 `H^p(X;R) × H^q(X;R) → H^{p+q}(X;R)`. -/
 def singularCohomologyCupMulData
-    (R : Type) [CommRing R] (X : TopCat.{0}) {p q : ℕ}
+    (R : Type) [CommRing R] (X : TopCat.{0})
+    (D : SingularCohomologyCupData R X) {p q : ℕ}
     (x : singularCohomologyFamilyData R X p)
     (y : singularCohomologyFamilyData R X q) :
     singularCohomologyFamilyData R X (p + q) :=
-  (singularCohomologyCupProductData R X p q).hom (x ⊗ₜ[R] y)
+  (D.cohomology p q).1.hom (x ⊗ₜ[R] y)
 
 /-- The total cup multiplication on
 `H^*(X;R) = ⨁ n, H^n(X;R)`, obtained by finite distributive extension of
@@ -172,13 +184,14 @@ This is only the multiplication data.  No unit, associativity,
 distributivity, or graded-commutativity theorem is used to define it. -/
 def cohomologyRingCarrierMulData
     (R : Type) [CommRing R] (X : TopCat.{0})
+    (D : SingularCohomologyCupData R X)
     (x y : cohomologyRingCarrierData R X) :
     cohomologyRingCarrierData R X := by
   classical
   exact
     ∑ p ∈ x.support, ∑ q ∈ y.support,
       DirectSum.of (singularCohomologyFamilyData R X) (p + q)
-        (singularCohomologyCupMulData R X (x p) (y q))
+        (singularCohomologyCupMulData R X D (x p) (y q))
 
 /-- Hatcher's total cohomology-ring carrier, as a wrapper around the direct
 sum of singular cohomology groups.  The source multiplication is supplied by
@@ -195,9 +208,10 @@ namespace SingularCohomologyRingData
 /-- Total cup multiplication on Hatcher's cohomology-ring carrier. -/
 def mul
     (R : Type) [CommRing R] (X : TopCat.{0})
+    (D : SingularCohomologyCupData R X)
     (x y : SingularCohomologyRingData R X) :
     SingularCohomologyRingData R X :=
-  ⟨cohomologyRingCarrierMulData R X x.toDirectSum y.toDirectSum⟩
+  ⟨cohomologyRingCarrierMulData R X D x.toDirectSum y.toDirectSum⟩
 
 /-- A homogeneous cohomology class included into the total cohomology-ring
 carrier in its degree. -/
