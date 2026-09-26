@@ -37,39 +37,46 @@ variable {X : Scheme.{u}} [DivisorStandingHypothesis X]
 def completeLinearSystemData (D₀ : WeilDivisor X) : Set (WeilDivisor X) :=
   {D | D.IsEffective ∧ D.LinearlyEquivalentData D₀}
 
-/-- Presentation data for a divisor linear system inside the complete linear
-system of D₀.
+/-- A divisor linear system inside the complete system of `D₀`.
 
-The projective parameter space and its projective subspace are genuine
-projective-linear data. The map to divisors is kept as raw data; the separate
-predicate IsDivisorLinearSystemPresentationData records that its restriction
-to the chosen projective subspace is injective and lands in |D₀|. This avoids
-importing the result-layer identification of |D₀| with a projectivized space
-of global sections. -/
-structure DivisorLinearSystemPresentationData (k : Type v) [Field k]
+The source object is the projective-linear family itself.  Its projective
+parameter space, projective subspace, map to divisors, and the two conditions
+that make that map an embedding into `|D₀|` are bundled together; there is no
+raw caller-supplied presentation whose correctness is deferred to a separate
+predicate. -/
+structure DivisorLinearSystemData (k : Type v) [Field k]
     (D₀ : WeilDivisor X) where
   parameterSpace : ModuleCat.{w} k
   subspace : Projectivization.Subspace k parameterSpace
   pointToDivisor : ℙ k parameterSpace → WeilDivisor X
+  mem_complete :
+    ∀ p ∈ (subspace : Set (ℙ k parameterSpace)),
+      pointToDivisor p ∈ completeLinearSystemData D₀
+  injOn :
+    Set.InjOn pointToDivisor (subspace : Set (ℙ k parameterSpace))
 
-/-- The divisor members represented by a supplied projective linear system. -/
-def divisorLinearSystemMembersData {k : Type v} [Field k] {D₀ : WeilDivisor X}
-    (L : DivisorLinearSystemPresentationData k D₀) : Set (WeilDivisor X) :=
-  L.pointToDivisor '' (L.subspace : Set (ℙ k L.parameterSpace))
+/-- Compatibility alias for downstream files written against the former raw
+presentation name.  The aliased object is now already a certified linear
+system. -/
+abbrev DivisorLinearSystemPresentationData (k : Type v) [Field k]
+    (D₀ : WeilDivisor X) :=
+  DivisorLinearSystemData k D₀
 
-/-- Source-faithfulness predicate for a supplied projective linear system:
-projective points of the chosen subspace parameterize distinct effective
-divisors linearly equivalent to D₀. -/
+/-- Compatibility predicate for the former presentation/certification split.
+Correctness is now carried by the fields of `DivisorLinearSystemData`. -/
 def IsDivisorLinearSystemPresentationData {k : Type v} [Field k]
-    {D₀ : WeilDivisor X} (L : DivisorLinearSystemPresentationData k D₀) : Prop :=
-  (∀ p ∈ (L.subspace : Set (ℙ k L.parameterSpace)),
-      L.pointToDivisor p ∈ completeLinearSystemData D₀) ∧
-    Set.InjOn L.pointToDivisor (L.subspace : Set (ℙ k L.parameterSpace))
+    {D₀ : WeilDivisor X} (_ : DivisorLinearSystemData k D₀) : Prop :=
+  True
+
+/-- The divisor members of a projective linear system. -/
+def divisorLinearSystemMembersData {k : Type v} [Field k] {D₀ : WeilDivisor X}
+    (L : DivisorLinearSystemData k D₀) : Set (WeilDivisor X) :=
+  L.pointToDivisor '' (L.subspace : Set (ℙ k L.parameterSpace))
 
 /-- A one-dimensional divisor linear system (a pencil): its projective
 subspace is the span of two distinct projective points. -/
 def IsDivisorPencilData {k : Type v} [Field k] {D₀ : WeilDivisor X}
-    (L : DivisorLinearSystemPresentationData k D₀) : Prop :=
+    (L : DivisorLinearSystemData k D₀) : Prop :=
   ∃ P Q : ℙ k L.parameterSpace,
     P ≠ Q ∧ L.subspace = Projectivization.Subspace.span {P, Q}
 
