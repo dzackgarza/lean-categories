@@ -27,8 +27,10 @@ this file records the exact geometric graph of the missing transport:
   it is the endpoint of a continuous family of points lying in the
   corresponding moving level sets.
 
-The source-named endpoint map is selected from that graph and native singular
-homology functoriality supplies the middle-homology operator.
+Sweep III therefore constructs the carrier of positive-loop data and, over
+each such loop, the carrier of endpoint maps satisfying the geometric
+transport graph. Native singular homology functoriality then supplies the
+middle-homology operator for every certified transport datum.
 
 Existence of the lifted family homotopy, independence of transport choices,
 invertibility, preservation of the Milnor pairing, and the usual fibration
@@ -55,15 +57,12 @@ def IsMilnorPositiveLoopData {r : ℝ}
     (gamma s : ℂ) =
       t.1 * Complex.exp ((2 * Real.pi * (s : ℝ) : ℂ) * Complex.I)
 
-/-- The source positive loop, selected by its exact complex-exponential
-parameterization. Continuity and punctured-disk membership are properties of
-the path candidate; their existence for this formula is result-layer
-well-definedness rather than a Sweep-III proof obligation. -/
-noncomputable def milnorPositiveLoopData {r : ℝ}
-    (t : milnorPuncturedDiskData r) :
-    MilnorPositiveLoopCandidateData t :=
-  letI : Nonempty (MilnorPositiveLoopCandidateData t) := ⟨Path.refl t⟩
-  Classical.epsilon (IsMilnorPositiveLoopData t)
+/-- The carrier of paths having the source's exact positive-loop formula.
+No path is selected before continuity and punctured-disk membership of the
+formula are established. -/
+def MilnorPositiveLoopData {r : ℝ}
+    (t : milnorPuncturedDiskData r) :=
+  {gamma : MilnorPositiveLoopCandidateData t // IsMilnorPositiveLoopData t gamma}
 
 /-- Candidate endpoint self-map of the actual Milnor fibre. -/
 abbrev MilnorGeometricMonodromyMapCandidateData {n : ℕ}
@@ -81,34 +80,48 @@ endpoint map. No transport-existence theorem is asserted here. -/
 def IsMilnorGeometricMonodromyMapData {n : ℕ}
     (f : MilnorCoordinateSpaceData n → ℂ) (eta : ℝ) {r : ℝ}
     (t : milnorPuncturedDiskData r)
+    (gamma : MilnorPositiveLoopData t)
     (g : MilnorGeometricMonodromyMapCandidateData f eta t) : Prop :=
-  let gamma := milnorPositiveLoopData t
   ∃ H : C(I × MilnorFiberData f eta t, MilnorCoordinateSpaceData n),
     (∀ s z,
       ‖H (s, z)‖ ^ 2 < eta ∧
-        f (H (s, z)) = (gamma s : ℂ)) ∧
+        f (H (s, z)) = (gamma.1 s : ℂ)) ∧
     (∀ z, H (0, z) = z.1) ∧
     (∀ z, H (1, z) = (g z).1)
 
-/-- The geometric endpoint self-map obtained by transporting the Milnor fibre
-once counterclockwise around the origin. -/
-noncomputable def milnorGeometricMonodromyMapData {n : ℕ}
+/-- The carrier of geometric endpoint maps obtained by transport along a
+certified positive loop.  No endpoint map is selected before transport
+existence is proved. -/
+def MilnorGeometricMonodromyMapData {n : ℕ}
     (f : MilnorCoordinateSpaceData n → ℂ) (eta : ℝ) {r : ℝ}
-    (t : milnorPuncturedDiskData r) :
-    MilnorGeometricMonodromyMapCandidateData f eta t :=
-  letI : Nonempty (MilnorGeometricMonodromyMapCandidateData f eta t) :=
-    ⟨ContinuousMap.id _⟩
-  Classical.epsilon (IsMilnorGeometricMonodromyMapData f eta t)
+    (t : milnorPuncturedDiskData r)
+    (gamma : MilnorPositiveLoopData t) :=
+  {g : MilnorGeometricMonodromyMapCandidateData f eta t //
+    IsMilnorGeometricMonodromyMapData f eta t gamma g}
 
 /-- Peters--Sterk's Milnor monodromy operator on integral middle homology,
 induced functorially by the geometric endpoint map above. -/
 noncomputable def milnorMonodromyOperatorData {n : ℕ}
     (f : MilnorCoordinateSpaceData n → ℂ) (eta : ℝ) {r : ℝ}
-    (t : milnorPuncturedDiskData r) :
+    (t : milnorPuncturedDiskData r)
+    (gamma : MilnorPositiveLoopData t)
+    (g : MilnorGeometricMonodromyMapData f eta t gamma) :
     milnorIntegralMiddleHomologyData f eta t ⟶
       milnorIntegralMiddleHomologyData f eta t :=
   ((singularHomologyFunctor (ModuleCat.{0} ℤ) n).obj
     (ModuleCat.of ℤ ℤ)).map
-      (TopCat.ofHom (milnorGeometricMonodromyMapData f eta t))
+      (TopCat.ofHom g.1)
+
+/-- The carrier of all middle-homology operators produced by source-valid
+positive-loop transports.  Transport existence and independence later show
+that this carrier contains the canonical monodromy operator. -/
+def milnorMonodromyOperatorCarrierData {n : ℕ}
+    (f : MilnorCoordinateSpaceData n → ℂ) (eta : ℝ) {r : ℝ}
+    (t : milnorPuncturedDiskData r) :
+    Set (milnorIntegralMiddleHomologyData f eta t ⟶
+      milnorIntegralMiddleHomologyData f eta t) :=
+  {T | ∃ (gamma : MilnorPositiveLoopData t)
+      (g : MilnorGeometricMonodromyMapData f eta t gamma),
+    T = milnorMonodromyOperatorData f eta t gamma g}
 
 end LeanCategories.Topology

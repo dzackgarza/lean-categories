@@ -88,21 +88,19 @@ def IsHypersurfaceUnfoldingTransportMapData {n m : ℕ}
       (∀ z, H (0, z) = z.1) ∧
       (∀ z, H (1, z) = (g z).1)
 
-/-- The endpoint self-map attached to a fundamental-group element, selected
-from the exact geometric transport graph. -/
-noncomputable def hypersurfaceUnfoldingTransportMapData {n m : ℕ}
+/-- The carrier of endpoint self-maps attached to a fundamental-group element
+by the exact geometric transport graph.  No endpoint is selected before
+transport existence is proved. -/
+def HypersurfaceUnfoldingTransportMapData {n m : ℕ}
     (f : MilnorCoordinateSpaceData n → ℂ)
     (B : Fin m → Fin (n + 1) → ℕ)
     (V : Set (MilnorCoordinateSpaceData n × HypersurfaceUnfoldingParameterData m))
     (U : Set (HypersurfaceUnfoldingParameterData m))
     (t : HypersurfaceUnfoldingMonodromyBaseData f B V U)
     (loop : FundamentalGroup
-      (HypersurfaceUnfoldingMonodromyBaseData f B V U) t) :
-    HypersurfaceUnfoldingTransportMapCandidateData f B V U t :=
-  letI : Nonempty (HypersurfaceUnfoldingTransportMapCandidateData f B V U t) :=
-    ⟨ContinuousMap.id _⟩
-  Classical.epsilon
-    (IsHypersurfaceUnfoldingTransportMapData f B V U t loop)
+      (HypersurfaceUnfoldingMonodromyBaseData f B V U) t) :=
+  {g : HypersurfaceUnfoldingTransportMapCandidateData f B V U t //
+    IsHypersurfaceUnfoldingTransportMapData f B V U t loop g}
 
 /-- The middle-homology endomorphism induced by geometric transport along a
 fundamental-group element. -/
@@ -113,13 +111,14 @@ noncomputable def hypersurfaceUnfoldingMonodromyOperatorData {n m : ℕ}
     (U : Set (HypersurfaceUnfoldingParameterData m))
     (t : HypersurfaceUnfoldingMonodromyBaseData f B V U)
     (loop : FundamentalGroup
-      (HypersurfaceUnfoldingMonodromyBaseData f B V U) t) :
+      (HypersurfaceUnfoldingMonodromyBaseData f B V U) t)
+    (g : HypersurfaceUnfoldingTransportMapData f B V U t loop) :
     hypersurfaceUnfoldingReferenceHomologyData f B V U t ⟶
       hypersurfaceUnfoldingReferenceHomologyData f B V U t :=
   ((singularHomologyFunctor (ModuleCat.{0} ℤ) n).obj
     (ModuleCat.of ℤ ℤ)).map
       (TopCat.ofHom
-        (hypersurfaceUnfoldingTransportMapData f B V U t loop))
+        g.1)
 
 /-- Peters--Sterk's local monodromy-group carrier: the image of the
 fundamental group on the actual reference-fibre middle homology.
@@ -134,6 +133,9 @@ noncomputable def localMonodromyGroupCarrierData {n m : ℕ}
     (t : HypersurfaceUnfoldingMonodromyBaseData f B V U) :
     Set (hypersurfaceUnfoldingReferenceHomologyData f B V U t ⟶
       hypersurfaceUnfoldingReferenceHomologyData f B V U t) :=
-  Set.range (hypersurfaceUnfoldingMonodromyOperatorData f B V U t)
+  {T | ∃ (loop : FundamentalGroup
+        (HypersurfaceUnfoldingMonodromyBaseData f B V U) t)
+      (g : HypersurfaceUnfoldingTransportMapData f B V U t loop),
+    T = hypersurfaceUnfoldingMonodromyOperatorData f B V U t loop g}
 
 end LeanCategories.Topology
