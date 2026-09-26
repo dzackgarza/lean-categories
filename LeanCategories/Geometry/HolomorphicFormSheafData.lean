@@ -46,8 +46,6 @@ variable [TopologicalSpace H]
 variable (I : ModelWithCorners ℂ E H) [I.Boundaryless]
 variable [TopologicalSpace X] [ChartedSpace H X] [IsManifold I ω X]
 
-local instance : IsManifold I ∞ X := IsManifold.of_le le_top
-
 /-- Model fibre for holomorphic `p`-forms on a complex manifold modelled on
 `E`: continuous alternating `p`-linear forms on `E`. -/
 abbrev HolomorphicPFormModelFiberData (p : ℕ) :=
@@ -133,6 +131,10 @@ def holomorphicPFormSectionValueData
       (HolomorphicPFormFiberData (X := X) I p)
       (congrFun s.2.2 x))
     (s.1 x).2
+
+section SmoothModuleSheaf
+
+variable [IsManifold I ∞ X]
 
 /-- Reconstruct a holomorphic-form section from its fibre values.  The equality
 is literal on the total-space presentation and is used to transfer the native
@@ -454,6 +456,8 @@ noncomputable def holomorphicPFormSheafModuleSmoothData (p : ℕ) :
     rw [CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget _ _
       (CategoryTheory.forget (ModuleCat.{u} ℂ))]
     exact (holomorphicPFormSheafData (X := X) I p).property
+
+end SmoothModuleSheaf
 
 /-- Source-facing complex-vector-space-valued sheaf `Ω_X^p` on an analytic
 complex manifold.  Analytic regularity canonically supplies the smooth
