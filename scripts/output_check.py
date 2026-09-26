@@ -3,8 +3,8 @@
 
 A commit counts as a realization when it adds `[realized]` to a mapping row that did not carry
 it before, or when it rewrites a `[realized]` row together with Lean source (a false realization
-rebuilt as an actual construction), or when it marks rows `[construction-confirmed]` after reading
-their declarations in the stub audit. Everything else — selector refreshes, records, acceptance
+rebuilt as an actual construction). Confirmations in the stub audit are reading, not construction,
+and are not counted. Everything else — selector refreshes, records, acceptance
 passes, reclassification, row edits without Lean — is not.
 Run before choosing the next unit (AGENTS.md, "Definitions are constructed, not deferred").
 """
@@ -40,16 +40,6 @@ def realized_rows(commit: str) -> tuple[set[str], set[str]]:
     return after - before, after & before
 
 
-def newly_confirmed(commit: str) -> set[str]:
-    """Rows that gained `[construction-confirmed]` in this commit."""
-    marked = {"+": set(), "-": set()}
-    for line in git("show", "--format=", "--unified=0", commit, "--", "corpus").splitlines():
-        match = UNIT.match(line)
-        if match and "[construction-confirmed]" in line:
-            marked[line[0]].add(match.group(1))
-    return marked["+"] - marked["-"]
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("-n", type=int, default=20, help="how many recent commits to read")
@@ -73,14 +63,9 @@ def main() -> int:
         touched = git("show", "--format=", "--name-only", commit).splitlines()
         scheduler = [path for path in touched if path in SCHEDULER]
         rebuilt = rewritten if any(path.endswith(".lean") for path in touched) else set()
-        confirmed = newly_confirmed(commit) - rebuilt
-        if new or rebuilt or confirmed:
+        if new or rebuilt:
             realizing += 1
-            mark = (
-                f"realized {len(new)}" if new
-                else f"rebuilt {len(rebuilt)}" if rebuilt
-                else f"confirmed {len(confirmed)}"
-            )
+            mark = f"realized {len(new)}" if new else f"rebuilt {len(rebuilt)}"
         else:
             mark = "no realization"
         flag = f"  SCHEDULER CHANGED: {', '.join(scheduler)}" if scheduler else ""
