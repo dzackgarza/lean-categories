@@ -20,10 +20,12 @@ The representation issue is the canonical map from H_n(M,M minus U;R) to
 H_n(M,M minus {x};R) for x in U. Constructing it directly by cokernel.map asks
 for a commuting-square proof. Since both relative complexes are cokernels of
 maps into the same ambient singular chain complex, the desired map is instead
-characterized by its quotient graph and selected by Classical.epsilon.
+characterized by its quotient graph.  A source-facing restriction system
+supplies such a certified map for every inclusion of subspaces; no arbitrary
+map is selected before the descent theorem.
 
 Local consistency and generation are then literal predicates over those
-selected maps. No excision, well-definedness, existence of orientations, or
+supplied maps. No excision, well-definedness, existence of orientations, or
 orientation-covering comparison is proved here.
 -/
 
@@ -59,22 +61,33 @@ def IsRelativeSingularRestrictionChainMapData
   cokernel.π (relativeSubspaceChainInclusionData R X A) ≫ φ =
     cokernel.π (relativeSubspaceChainInclusionData R X B)
 
-/-- The canonical relative-chain map, selected from its quotient graph. -/
-def relativeSingularRestrictionChainMapData
+/-- Source-faithful relative-chain restriction data: a candidate chain map
+together with its exact cokernel graph. -/
+abbrev RelativeSingularRestrictionData
     (R : Type) [CommRing R]
     (X : Type) [TopologicalSpace X] (A B : Set X) :
-    RelativeSingularRestrictionChainMapData R X A B :=
-  Classical.epsilon
-    (IsRelativeSingularRestrictionChainMapData R X A B)
+    Type _ :=
+  {φ : RelativeSingularRestrictionChainMapData R X A B //
+    IsRelativeSingularRestrictionChainMapData R X A B φ}
+
+/-- A certified family of canonical restriction maps for inclusions
+`A ⊆ B`. Existence and functoriality of this system are result content. -/
+structure RelativeSingularRestrictionSystemData
+    (R : Type) [CommRing R]
+    (X : Type) [TopologicalSpace X] where
+  map (A B : Set X) :
+    A ⊆ B → RelativeSingularRestrictionData R X A B
 
 /-- The induced map on relative singular homology. -/
 def relativeSingularRestrictionHomologyMapData
     (R : Type) [CommRing R]
-    (n : ℕ) (X : Type) [TopologicalSpace X] (A B : Set X) :
+    (n : ℕ) (X : Type) [TopologicalSpace X]
+    (T : RelativeSingularRestrictionSystemData R X)
+    (A B : Set X) (hAB : A ⊆ B) :
     relativeSingularHomologyModule R n X A ⟶
       relativeSingularHomologyModule R n X B :=
   HomologicalComplex.homologyMap
-    (relativeSingularRestrictionChainMapData R X A B) n
+    (T.map A B hAB).1 n
 
 /-- A local homology class is a generator when its singleton span is top. -/
 def IsLocalOrientationGeneratorData
@@ -97,6 +110,7 @@ at y. -/
 def IsROrientationData
     (R : Type) [CommRing R]
     (n : ℕ) (M : Type) [TopologicalSpace M]
+    (T : RelativeSingularRestrictionSystemData R M)
     (mu : ROrientationCandidateData R n M) : Prop :=
   (∀ x : M, IsLocalOrientationGeneratorData R n M x (mu x)) ∧
     ∀ x : M,
@@ -104,26 +118,35 @@ def IsROrientationData
         IsOpen U ∧
           x ∈ U ∧
             ∃ muU : relativeSingularHomologyModule R n M Uᶜ,
-              ∀ y : M, y ∈ U →
+              ∀ y : M, (hy : y ∈ U) →
                 (relativeSingularRestrictionHomologyMapData
-                  R n M Uᶜ ({y} : Set M)ᶜ).hom muU = mu y
+                  R n M T Uᶜ ({y} : Set M)ᶜ
+                    (by
+                      intro z hz
+                      simp only [Set.mem_compl_iff, Set.mem_singleton_iff]
+                      intro hzy
+                      subst z
+                      exact hz hy)).hom muU = mu y
 
 /-- An n-manifold is R-orientable when it admits an R-orientation. Manifold
 structure itself is an ambient hypothesis of the source unit. -/
 def IsROrientableData
     (R : Type) [CommRing R]
-    (n : ℕ) (M : Type) [TopologicalSpace M] : Prop :=
-  ∃ mu : ROrientationCandidateData R n M, IsROrientationData R n M mu
+    (n : ℕ) (M : Type) [TopologicalSpace M]
+    (T : RelativeSingularRestrictionSystemData R M) : Prop :=
+  ∃ mu : ROrientationCandidateData R n M, IsROrientationData R n M T mu
 
 /-- Hatcher's ordinary integral orientation predicate. -/
 abbrev IsIntegralOrientationData
     (n : ℕ) (M : Type) [TopologicalSpace M]
+    (T : RelativeSingularRestrictionSystemData ℤ M)
     (mu : ROrientationCandidateData ℤ n M) : Prop :=
-  IsROrientationData ℤ n M mu
+  IsROrientationData ℤ n M T mu
 
 /-- Hatcher's ordinary orientability predicate. -/
 abbrev IsOrientableData
-    (n : ℕ) (M : Type) [TopologicalSpace M] : Prop :=
-  IsROrientableData ℤ n M
+    (n : ℕ) (M : Type) [TopologicalSpace M]
+    (T : RelativeSingularRestrictionSystemData ℤ M) : Prop :=
+  IsROrientableData ℤ n M T
 
 end LeanCategories.Topology
