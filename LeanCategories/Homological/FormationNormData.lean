@@ -43,19 +43,31 @@ def formationRelativeNormRaw
   letI := S.fintypeQuotientOfFiniteIndex
   exact ∏ q : H ⧸ S, (((Quotient.out q : H) : G) • a)
 
-/-- The raw image set of the relative norm.  When restricted to the
-appropriate fixed coefficient group and after proving the norm laws, this is
-Serre's norm subgroup. -/
+/-- The relative norm as an actual multiplicative homomorphism.  This is the
+same finite-coset product as `formationRelativeNormRaw`; multiplicativity is
+part of constructing the map rather than deferred to a later graph. -/
+def formationRelativeNormHom
+    (H : Subgroup G) (S : Subgroup H) [S.FiniteIndex] : A →* A where
+  toFun := formationRelativeNormRaw (A := A) H S
+  map_one' := by
+    classical
+    simp [formationRelativeNormRaw]
+  map_mul' a b := by
+    classical
+    simp [formationRelativeNormRaw, Finset.prod_mul_distrib]
+
+/-- Serre's norm group: the subgroup which is the image of the relative norm
+homomorphism. -/
+def formationNormGroupData
+    (H : Subgroup G) (S : Subgroup H) [S.FiniteIndex] : Subgroup A :=
+  (formationRelativeNormHom (A := A) H S).range
+
+/-- The underlying set of the norm group. -/
 def formationNormImageData
     (H : Subgroup G) (S : Subgroup H) [S.FiniteIndex] : Set A :=
-  Set.range (formationRelativeNormRaw (A := A) H S)
+  formationNormGroupData (A := A) H S
 
-/-- Raw predicate expressing that a subset is the norm image attached to a
-given finite-index subgroup pair (FC10-C11-U022).
-
-After proving that the relative norm is a homomorphism on the appropriate
-fixed coefficient group, this image is a subgroup.  That closure statement is
-not part of the Sweep-III carrier. -/
+/-- Compatibility predicate for legacy set-level consumers. -/
 def IsFormationNormGroupData
     (H : Subgroup G) (S : Subgroup H) [S.FiniteIndex] (I : Set A) : Prop :=
   I = formationNormImageData (A := A) H S
