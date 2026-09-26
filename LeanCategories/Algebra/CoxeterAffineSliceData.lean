@@ -24,8 +24,8 @@ simple-root coordinates positive.  Humphreys chooses that positive generator
 
 The preceding source results prove existence and one-dimensionality of the
 radical and that the geometric Coxeter action fixes it.  Sweep III records
-those conditions as an exact graph, selects the source generator by that
-graph, constructs the dual affine-slice carrier, and records the ambient
+the full subtype of positive radical generators, constructs the dual
+affine-slice carrier from each such source choice, and records the ambient
 contragredient action.  Positivity of the induced Euclidean form, preservation
 of the slice, identification of the simple generators with affine
 reflections, and comparison with the Chapter-IV fundamental alcove are
@@ -48,34 +48,36 @@ def IsCoxeterAffineRadicalGeneratorData {S : Type u}
     (∀ s : S, 0 < lambda s) ∧
       Submodule.span ℝ ({lambda} : Set (S → ℝ)) = B.orthogonal ⊤
 
-/-- The chosen positive radical generator used in the affine realization.
-
-The source's positive-semidefinite irreducible hypotheses later prove that the
-exact graph is inhabited and single-valued up to positive scaling. -/
-def coxeterAffineRadicalGeneratorData {S : Type u}
-    (B : LinearMap.BilinForm ℝ (S → ℝ)) : S → ℝ :=
-  Classical.epsilon (IsCoxeterAffineRadicalGeneratorData B)
+/-- The carrier of all positive radical generators occurring in Humphreys'
+affine realization.  This constructs the source choice space itself; it does
+not select an unwitnessed generator. -/
+def CoxeterAffineRadicalGeneratorData {S : Type u}
+    (B : LinearMap.BilinForm ℝ (S → ℝ)) :=
+  {lambda : S → ℝ // IsCoxeterAffineRadicalGeneratorData B lambda}
 
 /-- The underlying carrier of Humphreys' affine hyperplane in the dual:
 `(f, lambda) = 1`. -/
 def coxeterAffineSliceSetData {S : Type u}
-    (B : LinearMap.BilinForm ℝ (S → ℝ)) :
+    {B : LinearMap.BilinForm ℝ (S → ℝ)}
+    (lambda : CoxeterAffineRadicalGeneratorData B) :
     Set (Module.Dual ℝ (S → ℝ)) :=
-  {f | f (coxeterAffineRadicalGeneratorData B) = 1}
+  {f | f lambda.1 = 1}
 
 /-- Exact graph packaging the affine-slice carrier as a native affine
 subspace.  Existence of such a package follows from the nonzero radical
 generator and is result-layer input rather than a constructor proof. -/
 def IsCoxeterAffineSliceData {S : Type u}
-    (B : LinearMap.BilinForm ℝ (S → ℝ))
+    {B : LinearMap.BilinForm ℝ (S → ℝ)}
+    (lambda : CoxeterAffineRadicalGeneratorData B)
     (A : AffineSubspace ℝ (Module.Dual ℝ (S → ℝ))) : Prop :=
-  (A : Set (Module.Dual ℝ (S → ℝ))) = coxeterAffineSliceSetData B
+  (A : Set (Module.Dual ℝ (S → ℝ))) = coxeterAffineSliceSetData lambda
 
-/-- A source-facing affine-subspace candidate for the slice `f(lambda)=1`. -/
-def coxeterAffineSliceData {S : Type u}
-    (B : LinearMap.BilinForm ℝ (S → ℝ)) :
-    AffineSubspace ℝ (Module.Dual ℝ (S → ℝ)) :=
-  Classical.epsilon (IsCoxeterAffineSliceData B)
+/-- Humphreys' affine slice, represented directly as the subtype of dual
+vectors satisfying `(f,lambda)=1` for a valid positive radical generator. -/
+def CoxeterAffineSliceData {S : Type u}
+    {B : LinearMap.BilinForm ℝ (S → ℝ)}
+    (lambda : CoxeterAffineRadicalGeneratorData B) :=
+  {f : Module.Dual ℝ (S → ℝ) // f ∈ coxeterAffineSliceSetData lambda}
 
 /-- The ambient contragredient action used by the affine Coxeter
 representation.  The theorem that it preserves the selected affine slice
@@ -88,11 +90,12 @@ def coxeterContragredientActionData {S : Type u}
 /-- Exact graph of the action on the selected affine slice, without requiring
 the preservation theorem in order to state it. -/
 def IsCoxeterAffineSliceActionValueData {S : Type u}
-    (B : LinearMap.BilinForm ℝ (S → ℝ))
+    {B : LinearMap.BilinForm ℝ (S → ℝ)}
+    (lambda : CoxeterAffineRadicalGeneratorData B)
     (g : (S → ℝ) ≃ₗ[ℝ] (S → ℝ))
     (f q : Module.Dual ℝ (S → ℝ)) : Prop :=
-  f ∈ coxeterAffineSliceSetData B ∧
-    q ∈ coxeterAffineSliceSetData B ∧
+  f ∈ coxeterAffineSliceSetData lambda ∧
+    q ∈ coxeterAffineSliceSetData lambda ∧
       q = coxeterContragredientActionData g f
 
 end LeanCategories.Algebra

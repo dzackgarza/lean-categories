@@ -26,10 +26,11 @@ Mathlib uses the value `0` for the Coxeter label `∞`.  The preceding source
 result FC15-C06-U011 supplies exactly the circuit-parity condition ensuring
 that these local ratios admit a globally coherent positive assignment.
 
-Sweep III records the exact ratio graph, selects a scalar assignment by that
-graph, and takes the `ℤ`-span of the rescaled simple roots.  Existence and
-coherence of the selected assignment, and `W`-stability / full-lattice
-properties of the resulting span, are result-layer obligations.
+Sweep III records the exact ratio graph, constructs the subtype of all scalar
+assignments satisfying it, and takes the `ℤ`-span of the rescaled simple roots
+for each such assignment.  Existence of an admissible assignment and
+`W`-stability / full-lattice properties of the resulting span are
+result-layer obligations.
 -/
 
 @[expose] public noncomputable section
@@ -54,19 +55,17 @@ def IsCoxeterRootRescalingData {S : Type u}
       | 0 => c s = c t
       | _ => True
 
-/-- A source-faithful chosen coherent rescaling assignment.
-
-FC15-C06-U011 later proves that the exact ratio graph is inhabited under the
-source crystallographic hypotheses. -/
-def coxeterRootRescalingData {S : Type u} (M : CoxeterMatrix S) : S → ℝ :=
-  Classical.epsilon (IsCoxeterRootRescalingData M)
+/-- The carrier of all source-faithful coherent rescaling assignments.  No
+unwitnessed assignment is selected. -/
+def CoxeterRootRescalingData {S : Type u} (M : CoxeterMatrix S) :=
+  {c : S → ℝ // IsCoxeterRootRescalingData M c}
 
 /-- The rescaled simple root `λ_s = c_s α_s` in the free geometric coordinate
 space with simple-root basis indexed by `S`. -/
 def coxeterRescaledSimpleRootData {S : Type u}
-    (M : CoxeterMatrix S) (s : S) : S → ℝ := by
+    {M : CoxeterMatrix S} (c : CoxeterRootRescalingData M) (s : S) : S → ℝ := by
   classical
-  exact coxeterRootRescalingData M s • Pi.single s (1 : ℝ)
+  exact c.1 s • Pi.single s (1 : ℝ)
 
 /-- Humphreys' integral root-rescaling lattice: the `ℤ`-span of the rescaled
 simple roots `λ_s`.
@@ -74,7 +73,14 @@ simple roots `λ_s`.
 That this span is a full lattice and is stable under the geometric Coxeter
 representation is result content. -/
 def coxeterRootRescalingLatticeData {S : Type u}
-    (M : CoxeterMatrix S) : Submodule ℤ (S → ℝ) :=
-  Submodule.span ℤ (Set.range (coxeterRescaledSimpleRootData M))
+    {M : CoxeterMatrix S} (c : CoxeterRootRescalingData M) : Submodule ℤ (S → ℝ) :=
+  Submodule.span ℤ (Set.range (coxeterRescaledSimpleRootData c))
+
+/-- The family of all integral spans obtained from admissible source
+rescalings.  Under Humphreys' crystallographic hypotheses U011 proves this
+family is inhabited. -/
+def coxeterRootRescalingLatticeFamilyData {S : Type u}
+    (M : CoxeterMatrix S) : Set (Submodule ℤ (S → ℝ)) :=
+  {L | ∃ c : CoxeterRootRescalingData M, L = coxeterRootRescalingLatticeData c}
 
 end LeanCategories.Algebra
