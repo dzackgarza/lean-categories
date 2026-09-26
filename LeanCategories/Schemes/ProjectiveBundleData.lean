@@ -87,6 +87,28 @@ def IsSymmetricAlgebraRelativeProjData
           S.toRelativeProjAlgebraData U A ∧
         IsSymmetricAlgebraAffinePresentationData E U A
 
+/-- Proof-free presentation data for the projective bundle of a module sheaf.
+
+It stores a graded-algebra hypothesis and an actual relative-Proj
+presentation.  The assertion that the graded algebra is the symmetric algebra
+of `E`, and that the relative-Proj presentation is source-faithful, are kept
+in the separate predicate below. -/
+structure ProjectiveBundlePresentationData (E : X.Modules) where
+  algebra : RelativeProjHypothesis X
+  relativeProj : RelativeProjPresentationData (X := X) algebra
+
+/-- Source-faithfulness of supplied projective-bundle presentation data. -/
+def IsProjectiveBundlePresentationData
+    (E : X.Modules) (D : ProjectiveBundlePresentationData E) : Prop :=
+  IsSymmetricAlgebraRelativeProjData E D.algebra ∧
+    IsRelativeProjPresentationData D.algebra D.relativeProj
+
+/-- The projective-bundle candidate carried by supplied presentation data. -/
+def projectiveBundleData
+    {E : X.Modules} (D : ProjectiveBundlePresentationData E) :
+    RelativeProjCandidateData X :=
+  relativeProjData D.relativeProj
+
 /-- Hartshorne's projective-space-bundle specification:
 `P(E)` is relative `Proj` of the symmetric algebra sheaf of `E`.
 
@@ -96,9 +118,7 @@ def IsProjectiveBundleData
     [IsNoetherian X] (E : X.Modules)
     [E.IsLocallyFree] [E.IsFinitePresentation]
     (P : RelativeProjCandidateData X) : Prop :=
-  ∃ S : RelativeProjHypothesis X,
-    IsSymmetricAlgebraRelativeProjData E S ∧
-      ∃ D : RelativeProjPresentationData (X := X) S,
-        IsRelativeProjPresentationData S D ∧ P = relativeProjData D
+  ∃ D : ProjectiveBundlePresentationData E,
+    IsProjectiveBundlePresentationData E D ∧ P = projectiveBundleData D
 
 end LeanCategories.Schemes
