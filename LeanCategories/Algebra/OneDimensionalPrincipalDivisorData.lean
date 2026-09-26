@@ -20,14 +20,13 @@ each maximal ideal `p` the local length order `ord_p`, then defines
 
 Mathlib's `Scheme.ord` on `Spec A` is the native local-length order: its
 codimension-one branch is built from `Ring.ordFrac`.  This file records the
-coefficient function and selects the finitely supported divisor characterized
-by those coefficients.  Finiteness of the support, the specification theorem
-for that selection, multiplicativity/additivity, and independence under
-transport to another fraction-field model are result-layer statements.
+coefficient function and constructs the subtype of finitely supported divisors
+having exactly those coefficients.  Finiteness of the support, uniqueness,
+multiplicativity/additivity, and independence under transport to another
+fraction-field model are result-layer statements.
 
-The principal-divisor subgroup is likewise selected by its intrinsic carrier,
-so Sweep III does not require the subgroup-closure proof supplied by the later
-homomorphism theorem.
+Before subgroup closure is proved, principal divisors are represented by their
+literal set-theoretic carrier, so no unwitnessed `AddSubgroup` is selected.
 -/
 
 @[expose] public noncomputable section
@@ -60,43 +59,27 @@ def IsPrincipalDivisorData
     (D : MaximalSpectrum A →₀ ℤ) : Prop :=
   ∀ p : MaximalSpectrum A, D p = localOrderCoefficientData p f
 
-/-- Neukirch's principal divisor `div(f)`, selected by its coefficient
-characterization.
-
-The later finite-support theorem proves that this selection satisfies
-`IsPrincipalDivisorData f`; Sweep III records only the construction. -/
-def principalDivisorData
-    (f : (Spec (.of A)).functionFieldˣ) : MaximalSpectrum A →₀ ℤ :=
-  Classical.epsilon (IsPrincipalDivisorData f)
-
-/-- The raw principal-divisor function `f ↦ div(f)`.
-
-The assertion that this is a group homomorphism is result content. -/
-def principalDivisorMapData :
-    (Spec (.of A)).functionFieldˣ → (MaximalSpectrum A →₀ ℤ) :=
-  principalDivisorData
+/-- The carrier of all finitely supported divisors with Neukirch's exact
+coefficient formula for `f`.  No divisor is selected before finite support is
+proved. -/
+def PrincipalDivisorData
+    (f : (Spec (.of A)).functionFieldˣ) :=
+  {D : MaximalSpectrum A →₀ ℤ // IsPrincipalDivisorData f D}
 
 /-- A divisor is principal when it is selected from a nonzero element of the
 function field. -/
 def IsPrincipalData (D : MaximalSpectrum A →₀ ℤ) : Prop :=
-  ∃ f : (Spec (.of A)).functionFieldˣ, D = principalDivisorData f
+  ∃ f : (Spec (.of A)).functionFieldˣ, IsPrincipalDivisorData f D
 
-/-- Predicate characterizing the subgroup of principal divisors. -/
-def IsPrincipalDivisorSubgroupData
-    (P : AddSubgroup (MaximalSpectrum A →₀ ℤ)) : Prop :=
-  ∀ D : MaximalSpectrum A →₀ ℤ, D ∈ P ↔ IsPrincipalData D
-
-/-- Neukirch's subgroup `P(A) ⊆ Div(A)` of principal divisors, selected by
-its intrinsic carrier.
-
-Closure follows later from the principal-divisor homomorphism theorem. -/
-def principalDivisorSubgroupData : AddSubgroup (MaximalSpectrum A →₀ ℤ) :=
-  Classical.epsilon (IsPrincipalDivisorSubgroupData (A := A))
+/-- The set-theoretic carrier of principal divisors.  The later homomorphism
+theorem supplies the additive-subgroup structure. -/
+def principalDivisorCarrierData : Set (MaximalSpectrum A →₀ ℤ) :=
+  {D | IsPrincipalData D}
 
 /-- Neukirch's rational equivalence relation: two divisors differ by a
 principal divisor. -/
 def RationallyEquivalentData
     (D E : MaximalSpectrum A →₀ ℤ) : Prop :=
-  D - E ∈ principalDivisorSubgroupData (A := A)
+  D - E ∈ principalDivisorCarrierData (A := A)
 
 end LeanCategories.Algebra

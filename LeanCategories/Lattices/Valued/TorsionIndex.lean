@@ -16,10 +16,10 @@ torsion form to be the signed index modulo eight of any nondegenerate even integ
 realizing `q` as its discriminant quadratic form (`FC11-C01-U131`, `FC11-C12-U001`, and
 `FC11-C12-U006`).
 
-The realizing lattice is selected by `Classical.epsilon`. The later realization theorem is
-needed to prove that this selected lattice satisfies `RealizesQuadraticTorsionForm`; the later
-independence theorem is needed to identify `torsionIndexModEight q` with the index of any supplied
-realization. Neither theorem is asserted here.
+Sweep III constructs the subtype of all realizing lattices and the resulting family of signed
+indices modulo eight. The later realization theorem proves that this carrier is inhabited, and
+the later independence theorem proves that its index family is a singleton. Neither theorem is
+asserted here.
 -/
 
 @[expose] public section
@@ -49,22 +49,23 @@ def RealizesQuadraticTorsionForm
   exact ∃ (hL : IsFractionFieldPerfect ℤ L.obj) (hEven : IsEven L.obj),
     Nonempty (evenDiscriminantQuadraticFormModuleInt L.obj hL hEven ≅ qFinite)
 
-/-- A classically chosen finite projective integral lattice intended to realize `q`.
+/-- The carrier of all finite projective even integral lattices realizing `q`.
+This is the source choice space itself; no unwitnessed realization is selected. -/
+def QuadraticTorsionRealizationData
+    (q : NonsingularFiniteTorsionQuadModuleCat ℤ (DoubleFractionValueQuotient ℤ)) :=
+  {L : FiniteProjectiveLatticeCat ℤ ℤ // RealizesQuadraticTorsionForm q L}
 
-The ambient lattice type is nonempty by the rank-zero lattice. Theorem 12.1.1 is the separate
-statement that the realization predicate is inhabited, and will imply that this epsilon choice
-actually realizes `q`. -/
-def chosenQuadraticTorsionRealization
-    (q : NonsingularFiniteTorsionQuadModuleCat ℤ (DoubleFractionValueQuotient ℤ)) :
-    FiniteProjectiveLatticeCat ℤ ℤ := by
-  letI : Nonempty (FiniteProjectiveLatticeCat ℤ ℤ) := ⟨rankZeroFiniteLattice⟩
-  exact Classical.epsilon (RealizesQuadraticTorsionForm q)
+/-- The signed index modulo eight attached to one valid realizing lattice. -/
+def torsionIndexModEightOfRealization
+    {q : NonsingularFiniteTorsionQuadModuleCat ℤ (DoubleFractionValueQuotient ℤ)}
+    (L : QuadraticTorsionRealizationData q) : ZMod 8 :=
+  (((integralSignature L.1).1 : ℤ) : ZMod 8) -
+    (((integralSignature L.1).2.1 : ℤ) : ZMod 8)
 
-/-- The Peters--Sterk index modulo eight `τ₈(q)`: the positive index minus the negative
-index of the chosen realizing lattice, reduced in `ZMod 8`. -/
-def torsionIndexModEight
-    (q : NonsingularFiniteTorsionQuadModuleCat ℤ (DoubleFractionValueQuotient ℤ)) : ZMod 8 :=
-  (((integralSignature (chosenQuadraticTorsionRealization q)).1 : ℤ) : ZMod 8) -
-    (((integralSignature (chosenQuadraticTorsionRealization q)).2.1 : ℤ) : ZMod 8)
+/-- The Peters--Sterk index family before the later realization-independence theorem identifies
+it with a single element of `ZMod 8`. -/
+def torsionIndexModEightData
+    (q : NonsingularFiniteTorsionQuadModuleCat ℤ (DoubleFractionValueQuotient ℤ)) : Set (ZMod 8) :=
+  Set.range (torsionIndexModEightOfRealization (q := q))
 
 end LeanCategories.Lattices.Valued
