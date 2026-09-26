@@ -24,10 +24,10 @@ and the sum of the two inclusion maps
 `H_n(U) ⊕ H_n(V) → H_n(X)`.
 
 Sweep III constructs those maps and records the exact source graph for a
-connecting family `H_{n+1}(X) → H_n(U ∩ V)`.  It selects such a family by
-that graph without proving that the graph is inhabited.  Excision, construction
-of the connecting homomorphism from cover chains, and exactness are all
-Sweep-IV result work.
+connecting family `H_{n+1}(X) → H_n(U ∩ V)`.  Valid Mayer--Vietoris data are
+boundary families carrying that exact graph; no arbitrary family is selected
+before the cover-chain/excision theorem.  Construction of the connecting
+homomorphism and exactness remain Sweep-IV result work.
 -/
 
 @[expose] public noncomputable section
@@ -98,13 +98,12 @@ def IsIntegralMayerVietorisBoundaryData {X : TopCat.{0}}
         (fun x ↦ integralMVFromBiprodData U V (n + 1) x)
         (fun x ↦ boundary n x)
 
-/-- The connecting family selected from the exact Mayer--Vietoris graph.
-
-The later cover-chain/excision theorem proves that this graph is inhabited.
-No exactness theorem is used in this definition. -/
-def integralMayerVietorisBoundaryData {X : TopCat.{0}}
-    (U V : Opens X) (hcover : U ⊔ V = ⊤) :
-    IntegralMayerVietorisBoundaryData U V :=
-  Classical.epsilon (IsIntegralMayerVietorisBoundaryData U V hcover)
+/-- Source-faithful integral Mayer--Vietoris data: a connecting family
+together with Hatcher's exact long-sequence graph.  The cover-chain/excision
+theorem supplies existence later. -/
+abbrev IntegralMayerVietorisData {X : TopCat.{0}}
+    (U V : Opens X) (hcover : U ⊔ V = ⊤) :=
+  {boundary : IntegralMayerVietorisBoundaryData U V //
+    IsIntegralMayerVietorisBoundaryData U V hcover boundary}
 
 end LeanCategories.Topology
