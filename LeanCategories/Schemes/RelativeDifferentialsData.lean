@@ -70,18 +70,20 @@ def IsConormalModulePresentationData
         Ideal.toCotangent (i.ker.ideal U)
           ⟨W.presheaf.map j.op x.1, hx⟩
 
-/-- Candidate carrier for a conormal sheaf.  Source-faithfulness is recorded
-separately by `IsConormalModuleData`; no default candidate is selected. -/
-structure ConormalModuleCandidateData (W : Scheme.{u}) where
-  module : W.Modules
+/-- Proof-free conormal-module presentation data.
 
-/-- A candidate module is the conormal module of a closed immersion when it has
-affine `I/I²` presentations compatible with restriction. -/
+The module itself and all affine identifications with `I/I²` are stored as
+data.  Only compatibility with restriction remains proposition-valued. -/
+structure ConormalModuleData (i : Z ⟶ W) where
+  module : W.Modules
+  presentation : ConormalModulePresentationData i module
+
+/-- A supplied conormal-module presentation is source-faithful when its affine
+`I/I²` identifications are compatible with restriction. -/
 def IsConormalModuleData
     (i : Z ⟶ W) [IsClosedImmersion i]
-    (C : ConormalModuleCandidateData W) : Prop :=
-  ∃ D : ConormalModulePresentationData i C.module,
-    IsConormalModulePresentationData i C.module D
+    (C : ConormalModuleData i) : Prop :=
+  IsConormalModulePresentationData i C.module C.presentation
 
 /-- The canonical open subscheme of `X ×[Y] X` in which the diagonal is a
 closed immersion. -/
@@ -96,7 +98,7 @@ def relativeDifferentialsDiagonalLift (f : X ⟶ Y) :
 /-- Exact specification saying that supplied module data are the conormal
 module of the diagonal inside its canonical coborder. -/
 def IsRelativeDifferentialsConormalData (f : X ⟶ Y)
-    (C : ConormalModuleCandidateData (relativeDifferentialsCoborder f).toScheme) : Prop :=
+    (C : ConormalModuleData (pullback.diagonal f).liftCoborder) : Prop :=
   IsConormalModuleData (pullback.diagonal f).liftCoborder C
 
 /-- Hartshorne's relative differential sheaf construction from supplied
@@ -106,7 +108,7 @@ The separate predicate `IsRelativeDifferentialsConormalData` records whether
 the supplied module is the source conormal module; no gluing/existence result
 is hidden in this constructor. -/
 def relativeDifferentialsData (f : X ⟶ Y)
-    (C : ConormalModuleCandidateData (relativeDifferentialsCoborder f).toScheme) :
+    (C : ConormalModuleData (pullback.diagonal f).liftCoborder) :
     X.Modules :=
   (Scheme.Modules.pullback (pullback.diagonal f).liftCoborder).obj
     C.module
