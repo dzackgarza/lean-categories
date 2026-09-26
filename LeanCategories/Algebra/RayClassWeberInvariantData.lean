@@ -40,8 +40,9 @@ def rayClassWeberFiberData
 /-- Raw complex evaluation data selected from a representative of one ray
 class in the fibre. -/
 structure RayClassWeberEvaluationData where
-  /-- Analytic Weber data attached to the chosen ideal lattice. -/
-  weberLattice : WeberLatticeData
+  /-- The chosen ideal lattice, from which the Weber function is now
+  constructed intrinsically. -/
+  weberLattice : Submodule ℤ ℂ
   /-- Complex image of the chosen principal generator. -/
   argument : ℂ
 

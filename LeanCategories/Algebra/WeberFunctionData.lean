@@ -6,60 +6,62 @@ module
 
 public import Mathlib.Algebra.Module.ZLattice.Basic
 public import Mathlib.Data.Complex.Basic
+public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 
 /-!
-# Weber-function source data
+# Weber-function data
 
 Definition-level realization of Neukirch FC09-C06-U071.
 
-For a lattice `Γ ⊂ ℂ`, Neukirch forms the Weber function from the lattice
-invariants `g₂`, `g₃`, `Δ` and the Weierstrass elliptic function `℘_Γ` by the
-displayed three-case formula.
-
-The checked libraries do not construct the analytic function `℘_Γ` for an
-arbitrary complex lattice.  Sweep III therefore records the analytic objects
-already present in the source as raw input data and transcribes the Weber
-formula itself.  The statements that these inputs are the analytic lattice
-invariants, that `Δ ≠ 0`, and all modular/complex-multiplication properties of
-the resulting function are result-layer mathematics.
+For a complex lattice `Γ`, the Weierstrass function and lattice invariants
+used by Neukirch have their standard lattice-series formulas.  Lean's `tsum`
+is a total operation, so those formulas define the source objects directly;
+summability, holomorphy, periodicity, the Weierstrass equation, and
+nonvanishing of the discriminant are theorem content rather than inputs.
 -/
 
 @[expose] public noncomputable section
 
 namespace LeanCategories.Algebra
 
-/-- Raw analytic data attached in the source to a complex lattice `Γ`.
+/-- Nonzero elements of a complex lattice. -/
+abbrev NonzeroComplexLatticePointData (Gamma : Submodule ℤ ℂ) :=
+  {w : Gamma // (w.1 : ℂ) ≠ 0}
 
-The `lattice` field records the source parameter.  The remaining fields are
-the source-supplied analytic invariants and Weierstrass `℘`-function.  No
-analytic existence or identity is made a constructor obligation in Sweep III.
--/
-structure WeberLatticeData where
-  /-- The period lattice `Γ ⊂ ℂ`. -/
-  lattice : Submodule ℤ ℂ
-  /-- The lattice invariant `g₂(Γ)`. -/
-  g2 : ℂ
-  /-- The lattice invariant `g₃(Γ)`. -/
-  g3 : ℂ
-  /-- The discriminant `Δ(Γ)`. -/
-  discriminant : ℂ
-  /-- The Weierstrass elliptic function `℘_Γ`. -/
-  weierstrassP : ℂ → ℂ
+/-- The Weierstrass elliptic function attached to `Gamma`, by its defining
+lattice series.  At lattice poles this total formula has the ambient field's
+division-by-zero convention; the meromorphic interpretation is result data. -/
+def weierstrassPData (Gamma : Submodule ℤ ℂ) (z : ℂ) : ℂ :=
+  1 / z ^ 2 +
+    ∑' w : NonzeroComplexLatticePointData Gamma,
+      (1 / (z - (w.1.1 : ℂ)) ^ 2 - 1 / (w.1.1 : ℂ) ^ 2)
 
-/-- Neukirch's Weber function `τ_Γ` from FC09-C06-U071.
+/-- The lattice invariant `g₂(Gamma)=60 Σ'_{w≠0} w⁻⁴`. -/
+def weberG2Data (Gamma : Submodule ℤ ℂ) : ℂ :=
+  60 * ∑' w : NonzeroComplexLatticePointData Gamma,
+    1 / (w.1.1 : ℂ) ^ 4
 
-This is exactly the displayed piecewise formula.  For genuine lattice data,
-nonvanishing of the discriminant excludes the degenerate simultaneous case
-`g₂ = g₃ = 0`; that fact is not required to define the raw function here. -/
-def weberFunctionData (D : WeberLatticeData) (z : ℂ) : ℂ :=
-  if D.g2 * D.g3 ≠ 0 then
-    -((2 : ℂ) ^ 7 * (3 : ℂ) ^ 5) *
-      (D.g2 * D.g3 / D.discriminant) * D.weierstrassP z
-  else if D.g2 = 0 then
-    -((2 : ℂ) ^ 9 * (3 : ℂ) ^ 6) *
-      (D.g3 / D.discriminant) * (D.weierstrassP z) ^ 3
+/-- The lattice invariant `g₃(Gamma)=140 Σ'_{w≠0} w⁻⁶`. -/
+def weberG3Data (Gamma : Submodule ℤ ℂ) : ℂ :=
+  140 * ∑' w : NonzeroComplexLatticePointData Gamma,
+    1 / (w.1.1 : ℂ) ^ 6
+
+/-- The Weierstrass discriminant `Delta(Gamma)=g₂³-27g₃²`. -/
+def weberDiscriminantData (Gamma : Submodule ℤ ℂ) : ℂ :=
+  weberG2Data Gamma ^ 3 - 27 * weberG3Data Gamma ^ 2
+
+/-- Neukirch's Weber function `tau_Gamma`, constructed directly from the
+lattice invariants and Weierstrass function. -/
+def weberFunctionData (Gamma : Submodule ℤ ℂ) (z : ℂ) : ℂ :=
+  let g2 := weberG2Data Gamma
+  let g3 := weberG3Data Gamma
+  let Delta := weberDiscriminantData Gamma
+  let wp := weierstrassPData Gamma z
+  if g2 * g3 ≠ 0 then
+    -((2 : ℂ) ^ 7 * (3 : ℂ) ^ 5) * (g2 * g3 / Delta) * wp
+  else if g2 = 0 then
+    -((2 : ℂ) ^ 9 * (3 : ℂ) ^ 6) * (g3 / Delta) * wp ^ 3
   else
-    ((2 : ℂ) ^ 8 * (3 : ℂ) ^ 4) *
-      (D.g2 ^ 2 / D.discriminant) * (D.weierstrassP z) ^ 2
+    ((2 : ℂ) ^ 8 * (3 : ℂ) ^ 4) * (g2 ^ 2 / Delta) * wp ^ 2
 
 end LeanCategories.Algebra
