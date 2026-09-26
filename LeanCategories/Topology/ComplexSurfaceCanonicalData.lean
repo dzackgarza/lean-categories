@@ -51,10 +51,16 @@ abbrev complexSurfaceCanonicalFiberData (x : X) :=
 abbrev complexSurfaceCanonicalSheafData :=
   LeanCategories.Geometry.canonicalPFormSheafData (X := X) I 2
 
+/-- Peters--Sterk's canonical line bundle `K_X = Omega_X^2`, constructed
+intrinsically from the complex-manifold tangent bundle. -/
+def complexSurfaceCanonicalBundleData :
+    TopCat.Sheaf (Type u) (TopCat.of X) :=
+  complexSurfaceCanonicalSheafData (X := X) I
+
 /-- Global holomorphic sections of the canonical bundle.  Holomorphicity is
 part of the section type and is not supplied as a predicate. -/
 abbrev ComplexSurfaceCanonicalSectionData :=
-  (complexSurfaceCanonicalSheafData (X := X) I).presheaf.obj
+  (complexSurfaceCanonicalBundleData (X := X) I).presheaf.obj
     (Opposite.op (⊤ : TopologicalSpace.Opens (TopCat.of X)))
 
 /-- A canonical section is nowhere vanishing when its actual fibre value is
