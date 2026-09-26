@@ -49,7 +49,7 @@ class DefinitionReadinessTest(unittest.TestCase):
     def test_mapping_prerequisite_survives_theorem_labelled_catalogue_edge(self) -> None:
         self.assertEqual(self.blockers("FC05-C10-U085"), ("FC05-C10-U081",))
 
-    def test_blocked_marker_schedules_representation_repair(self) -> None:
+    def test_blocked_marker_records_result_layer_stop(self) -> None:
         unit = frontier.Unit(
             "FC99-C01-U001",
             "Definition/result — synthetic representation repair fixture",
@@ -67,7 +67,7 @@ class DefinitionReadinessTest(unittest.TestCase):
         self.assertTrue(mapping.sweep_iii_blocked)
         self.assertEqual(
             frontier.unit_blockers("Definitions", unit, mappings, catalogue),
-            (),
+            ("Sweep-IV result layer",),
         )
         self.assertTrue(frontier.is_theorem(unit, mapping))
 
