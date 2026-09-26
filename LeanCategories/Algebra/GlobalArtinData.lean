@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.BigOperators.Finprod
 
 /-!
 # Global Artin product data
@@ -15,9 +15,10 @@ For a finite abelian extension, Serre defines the global reciprocity map as the
 product of the local Artin symbols.  The preceding local theory proves that for
 each idele the local symbols are trivial at all but finitely many places.
 
-Sweep III records the product prescription without proving that finite-support
-result: a candidate global map is characterized by agreeing with the product
-over every finite set outside which the supplied local symbols are trivial.
+Sweep III records the product prescription directly as Mathlib's finite
+product over the place-indexed family.  The preceding local theory is still
+needed later to show that this total construction agrees with the ordinary
+finite product on the actual support and has the expected homomorphism laws.
 -/
 
 @[expose] public noncomputable section
@@ -42,17 +43,18 @@ def IsGlobalArtinMapData
     (∀ v, v ∉ S → localArtin v (component v a) = 1) →
       globalArtin a = ∏ v ∈ S, localArtin v (component v a)
 
-/-- Source-faithful global Artin-map data: a function together with Serre's
-exact finite-product graph for the supplied local symbols.
+/-- Serre's global Artin map, constructed directly as the finite product of
+the local Artin symbols over all places.
 
-Almost-all-triviality and independence of the controlling finite set supply
-existence later; no arbitrary global function is selected beforehand. -/
-abbrev GlobalArtinMapData
+Mathlib's `finprod` is a total operation.  The theorem that an idele has only
+finitely many nontrivial local Artin symbols identifies this value with
+Serre's ordinary finite product and is not an input to the definition. -/
+def globalArtinMapData
     {Place : Type u} {Idele : Type v}
     {Local : Place → Type w} {G : Type*} [CommGroup G]
     (component : ∀ v, Idele → Local v)
-    (localArtin : ∀ v, Local v → G) :=
-  {globalArtin : Idele → G //
-    IsGlobalArtinMapData component localArtin globalArtin}
+    (localArtin : ∀ v, Local v → G)
+    (a : Idele) : G :=
+  ∏ᶠ v, localArtin v (component v a)
 
 end LeanCategories.Algebra
