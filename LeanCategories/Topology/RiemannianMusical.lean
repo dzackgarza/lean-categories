@@ -85,15 +85,21 @@ def massMetricDualCoordinates {ι : Type*} [Fintype ι]
     (M : Matrix ι ι ℝ) (v : ι → ℝ) : ι → ℝ :=
   fun i => ∑ j, M i j * v j
 
-/-- Lee's sharp/raising-index value at a fiber (FC08-C13-U043).
+/-- Source-faithful sharp/raising-index data at a fiber (FC08-C13-U043):
+a vector together with Lee's exact defining equation `v♭ = ω`.
 
-This is selected from the exact source equation `v♭ = ω`. For a Riemannian
-metric the source/reference proves existence and uniqueness; Sweep III records
-only the value selected by that defining relation, not those propositions. -/
-noncomputable def metricSharpAtData
+Existence and uniqueness are supplied later by the Riesz/isomorphism theorem;
+no arbitrary vector is selected before those results. -/
+abbrev MetricSharpAtData
     (g : ContMDiffRiemannianMetric IB n F E) (b : B)
-    (alpha : E b →L[ℝ] ℝ) : E b :=
-  @Classical.epsilon (E b) ⟨0⟩ (fun v => metricDualAt g b v = alpha)
+    (alpha : E b →L[ℝ] ℝ) :=
+  {v : E b // metricDualAt g b v = alpha}
+
+/-- A source-facing family of valid sharp values on every fiber/covector.
+Existence and smooth dependence remain theorem content. -/
+abbrev MetricSharpSystemData
+    (g : ContMDiffRiemannianMetric IB n F E) :=
+  ∀ (b : B) (alpha : E b →L[ℝ] ℝ), MetricSharpAtData g b alpha
 
 /-- Lee's inverse metric-coordinate matrix `(g^ij)` (FC08-C13-U042).
 
@@ -106,8 +112,8 @@ noncomputable def inverseMetricCoordinates {ι : Type*} [Fintype ι]
   exact g⁻¹
 
 /-- Coordinate raising for a metric matrix: `ω^i = Σ_j g^ij ω_j`, using
-Lee's inverse metric-coordinate matrix. Identifying this with
-`metricSharpAtData` for chart components is result/comparison content. -/
+Lee's inverse metric-coordinate matrix. Identifying this with supplied sharp
+data for chart components is result/comparison content. -/
 noncomputable def raiseIndexCoordinates {ι : Type*} [Fintype ι]
     (g : Matrix ι ι ℝ) (alpha : ι → ℝ) : ι → ℝ :=
   fun i => ∑ j, inverseMetricCoordinates g i j * alpha j
@@ -120,15 +126,17 @@ section and the identity `g(grad f, v) = df(v)` are result content. -/
 noncomputable def riemannianGradientAtData [IsManifold IB ∞ B]
     (g : ContMDiffRiemannianMetric IB ∞ EB
       (fun b : B => TangentSpace IB b))
+    (D : MetricSharpSystemData g)
     (f : C^∞⟮IB, B; ℝ⟯) (b : B) : TangentSpace IB b :=
-  metricSharpAtData g b (mvfderiv IB f b)
+  (D b (mvfderiv IB f b)).1
 
 /-- The pointwise vector field underlying Lee's gradient construction.
 Smoothness is not bundled into this Sweep-III datum. -/
 noncomputable def riemannianGradientData [IsManifold IB ∞ B]
     (g : ContMDiffRiemannianMetric IB ∞ EB
       (fun b : B => TangentSpace IB b))
+    (D : MetricSharpSystemData g)
     (f : C^∞⟮IB, B; ℝ⟯) : ∀ b : B, TangentSpace IB b :=
-  riemannianGradientAtData g f
+  riemannianGradientAtData g D f
 
 end LeanCategories.Topology
