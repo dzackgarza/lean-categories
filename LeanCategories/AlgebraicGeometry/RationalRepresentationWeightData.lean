@@ -58,4 +58,30 @@ noncomputable def rationalRepresentationWeightMultiplicityData
     (chi : GroupLike K (AffineAlgebraicGroup.coordinateHopfAlgebra T)) : ℕ :=
   Module.finrank K (rationalRepresentationWeightSpaceData T V D chi)
 
+/-- Humphreys' weight data of a rational representation: the weight-space
+assignment, its support, and the multiplicity function, all constructed from
+the restricted rational representation. -/
+structure RationalRepresentationWeightData
+    {K : Type u} [Field K] [IsAlgClosed K]
+    (T : AffineAlgebraicGroup K) (V : Type u)
+    [AddCommGroup V] [Module K V] where
+  weightSpace :
+    GroupLike K (AffineAlgebraicGroup.coordinateHopfAlgebra T) → Submodule K V
+  weights :
+    Set (GroupLike K (AffineAlgebraicGroup.coordinateHopfAlgebra T))
+  multiplicity :
+    GroupLike K (AffineAlgebraicGroup.coordinateHopfAlgebra T) → ℕ
+
+/-- Construct the complete weight-space/support/multiplicity datum of a
+rational representation restricted to a maximal torus. -/
+noncomputable def rationalRepresentationWeightData
+    {K : Type u} [Field K] [IsAlgClosed K]
+    (T : AffineAlgebraicGroup K) (V : Type u)
+    [AddCommGroup V] [Module K V]
+    (D : RationalRepresentationCoordinateData T V) :
+    RationalRepresentationWeightData T V where
+  weightSpace := rationalRepresentationWeightSpaceData T V D
+  weights := rationalRepresentationWeightsData T V D
+  multiplicity := rationalRepresentationWeightMultiplicityData T V D
+
 end LeanCategories.AlgebraicGeometry
