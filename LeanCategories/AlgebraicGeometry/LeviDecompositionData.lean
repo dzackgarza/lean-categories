@@ -27,6 +27,23 @@ universe u
 
 variable {G : Type u} [Group G] [TopologicalSpace G]
 
+structure LeviDecompositionData
+    (isUnipotentElement : G → Prop) (P : Subgroup G) where
+  L : Subgroup G
+  V : Subgroup P
+  L_le : L ≤ P
+  L_reductive :
+    IsReductiveGroup (G := L) (fun l : L => isUnipotentElement l.1)
+  V_isRadical :
+    IsUnipotentRadical (G := P) (fun p : P => isUnipotentElement p.1) V
+  V_normal : V.Normal
+  complement : (L.comap P.subtype).IsComplement' V
+
+def LeviDecompositionData.leviFactor
+    {isUnipotentElement : G → Prop} {P : Subgroup G}
+    (D : LeviDecompositionData isUnipotentElement P) : Subgroup G :=
+  D.L
+
 /-- A Levi decomposition of `P` with Levi factor `L`.
 
 The predicate says that `L` lies in `P`, is reductive, and complements the
@@ -34,12 +51,7 @@ normal unipotent radical inside `P`.  `Subgroup.IsComplement'` is precisely
 the unique multiplication factorization predicate. -/
 def IsLeviDecomposition
     (isUnipotentElement : G → Prop) (P L : Subgroup G) : Prop :=
-  L ≤ P ∧
-    IsReductiveGroup (G := L) (fun l : L => isUnipotentElement l.1) ∧
-    ∃ V : Subgroup P,
-      IsUnipotentRadical (G := P) (fun p : P => isUnipotentElement p.1) V ∧
-      V.Normal ∧
-      (L.comap P.subtype).IsComplement' V
+  ∃ D : LeviDecompositionData isUnipotentElement P, D.L = L
 
 /-- A Levi factor is a subgroup furnishing a Levi decomposition. -/
 def IsLeviFactor
