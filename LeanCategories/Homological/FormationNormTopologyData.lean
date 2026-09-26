@@ -5,6 +5,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Basic
+public import LeanCategories.Homological.FormationNormData
+public import LeanCategories.Homological.FormationFieldData
 
 /-!
 # Raw norm-topology data for class formations
@@ -64,5 +66,28 @@ def universalNormSubgroup (T : FormationNormTopologyData A) : Subgroup A :=
   sInf T.normSubgroups
 
 end FormationNormTopologyData
+
+section ActualFormationNorms
+
+universe v w
+
+variable {G : Type u} [Group G] {X : Type v}
+
+/-- The actual norm subgroup `N_{L/E} A_L` for one formation extension
+`L/E`, regarded inside the fixed coefficient group `A_E`. -/
+noncomputable def formationNormGroupOfExtensionData
+    (F : SerreFormationData G X) (E L : X)
+    (h : IsFormationFieldExtension F.G_E E L) : Subgroup (F.fixedSubgroup E) := by
+  letI : (F.G_E L).FiniteIndex := F.indexedFiniteIndex L
+  exact formationFixedNormGroupData (A := F.A) (F.G_E E) (F.G_E L) h
+
+/-- Serre's universal norm subgroup of `A_E`: the intersection of the
+actual norm groups `N_{L/E} A_L` over all formation extensions `L/E`. -/
+noncomputable def formationUniversalNormSubgroupData
+    (F : SerreFormationData G X) (E : X) : Subgroup (F.fixedSubgroup E) :=
+  ⨅ L : {L : X // IsFormationFieldExtension F.G_E E L},
+    formationNormGroupOfExtensionData F E L.1 L.2
+
+end ActualFormationNorms
 
 end LeanCategories.Homological
