@@ -4,106 +4,67 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Abelian
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Data.Real.Basic
 
 /-!
-# de Rham cohomology quotient data
+# de Rham cohomology data
 
-Definition-level realization of Lee FC08-C17-U002.
+Definition-level realization of Lee FC08-C17-U002 and FC08-C17-U004.
 
-For a graded family of real vector spaces of smooth forms and supplied linear
-exterior derivatives, Lee defines closed forms as kernels, exact forms as
-images, and de Rham cohomology as closed forms modulo exact differences.
-
-The result `d ∘ d = 0` is what proves every exact form is closed.  Sweep III
-does not prove or package that result as a constructor prerequisite.  Instead,
-following the repository's local-coefficient (co)homology pattern, this file
-records the quotient presentation by a candidate carrier and class map whose
-equality relation is exactly difference by an exact form.  Existence of a
-candidate satisfying that specification is result-layer content.
+Once the exterior derivative has been assembled as a cochain complex of real
+vector spaces, its square-zero law is part of that Lean object. Lee's closed
+forms, exact forms, de Rham cohomology, and cohomology classes are therefore
+the native cycles, boundaries, homology, and homology projection. No quotient
+carrier or class map is supplied by a caller.
 -/
 
 @[expose] public noncomputable section
 
 namespace LeanCategories.Topology
 
+open CategoryTheory
+
 universe u
 
-variable
-  (Form : ℕ → Type u)
-  [∀ p, AddCommGroup (Form p)]
-  [∀ p, Module ℝ (Form p)]
-  (d : ∀ p, Form p →ₗ[ℝ] Form (p + 1))
+/-- Lee's closed `p`-forms `Z^p`: the cycles of the de Rham cochain
+complex. -/
+abbrev deRhamClosedForms
+    (K : CochainComplex (ModuleCat.{u} ℝ) ℕ) (p : ℕ) : ModuleCat.{u} ℝ :=
+  K.cycles p
 
-/-- Lee's closed p-forms `Z^p`: the kernel of the degree-p exterior
-derivative. -/
-def deRhamClosedForms (p : ℕ) : Submodule ℝ (Form p) :=
-  LinearMap.ker (d p)
+/-- Lee's exact `p`-forms `B^p`: the boundaries of the de Rham cochain
+complex. -/
+abbrev deRhamExactForms
+    (K : CochainComplex (ModuleCat.{u} ℝ) ℕ) (p : ℕ) : ModuleCat.{u} ℝ :=
+  Abelian.image (K.sc p).f
 
-/-- Lee's exact p-forms `B^p`: zero in degree zero and the image of the
-preceding exterior derivative in positive degree. -/
-def deRhamExactForms : (p : ℕ) → Submodule ℝ (Form p)
-  | 0 => ⊥
-  | p + 1 => LinearMap.range (d p)
+/-- Lee's de Rham cohomology `H_dR^p = Z^p/B^p`, constructed by the native
+homology object of the de Rham cochain complex. -/
+abbrev DeRhamCohomologyData
+    (K : CochainComplex (ModuleCat.{u} ℝ) ℕ) (p : ℕ) : ModuleCat.{u} ℝ :=
+  K.homology p
 
-/-- Candidate vector-space carrier for the quotient `Z^p / B^p`, together
-with the quotient-class map from closed p-forms. -/
-structure DeRhamCohomologyCandidateData (p : ℕ) where
-  carrier : Type u
-  [instAddCommGroup : AddCommGroup carrier]
-  [instModule : Module ℝ carrier]
-  classOf : deRhamClosedForms Form d p →ₗ[ℝ] carrier
+/-- The canonical cohomology-class map from closed forms to de Rham
+cohomology. -/
+def deRhamCohomologyClassMap
+    (K : CochainComplex (ModuleCat.{u} ℝ) ℕ) (p : ℕ) :
+    deRhamClosedForms K p ⟶ DeRhamCohomologyData K p :=
+  K.homologyπ p
 
-attribute [instance]
-  DeRhamCohomologyCandidateData.instAddCommGroup
-  DeRhamCohomologyCandidateData.instModule
-
-instance (p : ℕ) : Nonempty (DeRhamCohomologyCandidateData Form d p) :=
-  ⟨{ carrier := ULift.{u} ℝ
-     classOf := 0 }⟩
-
-/-- Exact quotient specification for Lee's `H_dR^p = Z^p/B^p`.
-
-Two closed forms represent the same class exactly when their difference is an
-exact p-form, and every quotient class has a closed representative.  No proof
-that exact forms are closed, or that this specification is inhabited, is
-provided in Sweep III. -/
-def IsDeRhamCohomologyData
-    (p : ℕ) (H : DeRhamCohomologyCandidateData Form d p) : Prop :=
-  Function.Surjective H.classOf ∧
-    ∀ x y : deRhamClosedForms Form d p,
-      H.classOf x = H.classOf y ↔
-        x.1 - y.1 ∈ deRhamExactForms Form d p
-
-/-- Source-faithful de Rham cohomology presentation data: a candidate quotient
-carrier/class map together with Lee's exact quotient specification.
-
-The square-zero theorem is the later result that supplies existence of such
-data; no arbitrary candidate is selected before that theorem. -/
-abbrev DeRhamCohomologyPresentationData (p : ℕ) :=
-  {H : DeRhamCohomologyCandidateData Form d p //
-    IsDeRhamCohomologyData Form d p H}
-
-/-- The carrier of Lee's p-th de Rham cohomology vector space. -/
-abbrev DeRhamCohomologyData (p : ℕ)
-    (H : DeRhamCohomologyPresentationData Form d p) : Type u :=
-  H.1.carrier
-
-/-- Lee's cohomology class `[ω]` of a closed p-form. -/
+/-- Lee's cohomology class `[ω]` of a closed `p`-form. -/
 def deRhamCohomologyClass
-    (p : ℕ) (H : DeRhamCohomologyPresentationData Form d p)
-    (ω : deRhamClosedForms Form d p) :
-    DeRhamCohomologyData Form d p H :=
-  H.1.classOf ω
+    (K : CochainComplex (ModuleCat.{u} ℝ) ℕ) (p : ℕ)
+    (ω : deRhamClosedForms K p) :
+    DeRhamCohomologyData K p :=
+  (deRhamCohomologyClassMap K p).hom ω
 
-/-- Two closed p-forms are cohomologous when they determine the same de Rham
-cohomology class.  The exact-difference characterization is part of
-`IsDeRhamCohomologyData`, not a proof bundled into this definition. -/
+/-- Two closed forms are cohomologous exactly when their canonical homology
+classes agree. -/
 def AreDeRhamCohomologous
-    (p : ℕ) (H : DeRhamCohomologyPresentationData Form d p)
-    (ω η : deRhamClosedForms Form d p) : Prop :=
-  deRhamCohomologyClass Form d p H ω =
-    deRhamCohomologyClass Form d p H η
+    (K : CochainComplex (ModuleCat.{u} ℝ) ℕ) (p : ℕ)
+    (ω η : deRhamClosedForms K p) : Prop :=
+  deRhamCohomologyClass K p ω = deRhamCohomologyClass K p η
 
 end LeanCategories.Topology
