@@ -19,9 +19,9 @@ the quotient of degree-`d` homogeneous polynomials by the degree-`d` part of
 the homogeneous vanishing ideal.  This degreewise description avoids any
 need to construct a global quotient grading.
 
-The Hilbert polynomial is selected from eventual equality with the dimensions
-of these pieces, exactly as in FC06-C01-U140.  For an `r`-dimensional `Y`,
-the degree is `r!` times its leading coefficient.
+The Hilbert polynomial is supplied as exact eventual-polynomial data for the
+dimensions of these pieces, exactly as in FC06-C01-U140.  For an
+`r`-dimensional `Y`, the degree is `r!` times its leading coefficient.
 
 Hilbert--Serre eventual equality, polynomial uniqueness, the fact that the
 degree formula is integral, and identification with a globally graded
@@ -59,18 +59,18 @@ def projectiveHilbertFunctionData {n : ℕ}
     (Y : ProjectiveAlgebraicSet k n) : ℕ → ℤ :=
   fun d => (Module.finrank k (projectiveCoordinateRingDegreePiece k Y d) : ℤ)
 
-/-- Hartshorne's projective Hilbert polynomial `P_Y=P_{S(Y)}`, named by
-the eventual-equality characterization from FC06-C01-U140. -/
-def projectiveHilbertPolynomialData {n : ℕ}
-    (Y : ProjectiveAlgebraicSet k n) : Polynomial ℚ :=
-  LeanCategories.Algebra.eventualPolynomialData
+/-- Source-faithful projective Hilbert polynomial data `P_Y=P_{S(Y)}`. -/
+abbrev ProjectiveHilbertPolynomialData {n : ℕ}
+    (Y : ProjectiveAlgebraicSet k n) :=
+  LeanCategories.Algebra.EventuallyPolynomialData
     (projectiveHilbertFunctionData k Y)
 
 /-- The rational value `r!` times the leading coefficient of `P_Y`, which is
 Hartshorne's defining degree formula for an `r`-dimensional projective
 algebraic set.  Its integrality/positivity are theorem-layer facts. -/
 def projectiveDegreeValueData {n : ℕ}
-    (Y : ProjectiveAlgebraicSet k n) (r : ℕ) : ℚ :=
-  (r.factorial : ℚ) * (projectiveHilbertPolynomialData k Y).leadingCoeff
+    (Y : ProjectiveAlgebraicSet k n)
+    (P : ProjectiveHilbertPolynomialData k Y) (r : ℕ) : ℚ :=
+  (r.factorial : ℚ) * P.1.leadingCoeff
 
 end LeanCategories.AlgebraicGeometry
