@@ -56,23 +56,18 @@ def IsFormationReciprocityInverseData
   Function.LeftInverse reciprocity theta ∧
     Function.RightInverse reciprocity theta
 
-/-- Serre's finite reciprocity function, constructed from the class-formation
-map `theta` by the canonical total inverse-function operation.
-
-When finite reciprocity proves that `theta` is bijective, the standard
-`Function.invFun` inverse laws identify this construction with the genuine
-inverse. Bijectivity and the homomorphism/isomorphism packaging are theorem
-content rather than additional inputs to the definition. -/
+/-- Serre's finite reciprocity function: the inverse of the finite
+class-formation equivalence supplied by the reciprocity theorem. -/
 def formationReciprocityData
-    {GAb NormQuotient : Type*} [Nonempty GAb]
-    (theta : GAb → NormQuotient) : NormQuotient → GAb :=
-  Function.invFun theta
+    {GAb NormQuotient : Type*}
+    (theta : GAb ≃ NormQuotient) : NormQuotient → GAb :=
+  theta.symm
 
 /-- Serre's norm-residue/reciprocity symbol `{a,F/E}` relative to the
 class-formation map `theta`. -/
 def formationReciprocitySymbolData
-    {GAb NormQuotient : Type*} [Nonempty GAb]
-    (theta : GAb → NormQuotient)
+    {GAb NormQuotient : Type*}
+    (theta : GAb ≃ NormQuotient)
     (a : NormQuotient) : GAb :=
   formationReciprocityData theta a
 
