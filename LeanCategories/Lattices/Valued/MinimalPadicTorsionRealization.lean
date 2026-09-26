@@ -17,9 +17,9 @@ Peters--Sterk use `L_{b#}` for the uniquely determined p-adic lattice of rank eq
 length of a nondegenerate symmetric p-primary torsion form `b#` and having discriminant form
 `b#` (`FC11-C11-U005`).
 
-Here the length is the minimum number of generators of the underlying p-adic module. The
-lattice is selected classically from the source realization predicate. Proposition 11.1.3 is
-the separate existence and uniqueness result; neither assertion is made here.
+Here the length is the minimum number of generators of the underlying p-adic module. Valid
+realization data are lattices carrying the source realization predicate. Proposition 11.1.3 is
+the separate existence and uniqueness result; no arbitrary lattice is selected beforehand.
 -/
 
 @[expose] public section
@@ -62,18 +62,13 @@ def RealizesMinimalPadicTorsionForm
     L.genericRank = padicModuleLength p q.obj.carrier ∧
       Nonempty (discriminantFormModule ℤ_[p] L.obj hL ≅ qFinite)
 
-/-- The Peters--Sterk lattice `L_{b#}`, selected from the p-adic lattices satisfying the source
-rank and discriminant-form specification.
-
-The rank-zero lattice supplies only nonemptiness of the ambient type used by
-`Classical.epsilon`; Proposition 11.1.3 is needed later to show that this selected lattice
-actually satisfies `RealizesMinimalPadicTorsionForm`. -/
-def chosenMinimalPadicTorsionRealization
+/-- Source-faithful Peters--Sterk realization data for `L_{b#}`: a p-adic
+lattice together with the exact minimal-rank/discriminant-form specification.
+Proposition 11.1.3 supplies existence and uniqueness later. -/
+abbrev MinimalPadicTorsionRealizationData
     (p : ℕ) [Fact p.Prime] (hpOdd : p ≠ 2)
-    (q : NonsingularFiniteTorsionBilinModuleCat ℤ_[p] (FractionValueQuotient ℤ_[p])) :
-    FiniteProjectiveLatticeCat ℤ_[p] ℤ_[p] := by
-  letI : Nonempty (FiniteProjectiveLatticeCat ℤ_[p] ℤ_[p]) :=
-    ⟨padicRankZeroFiniteLattice p⟩
-  exact Classical.epsilon (RealizesMinimalPadicTorsionForm p hpOdd q)
+    (q : NonsingularFiniteTorsionBilinModuleCat ℤ_[p] (FractionValueQuotient ℤ_[p])) :=
+  {L : FiniteProjectiveLatticeCat ℤ_[p] ℤ_[p] //
+    RealizesMinimalPadicTorsionForm p hpOdd q L}
 
 end LeanCategories.Lattices.Valued
