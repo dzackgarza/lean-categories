@@ -7,9 +7,11 @@ module
 public import Mathlib.Geometry.Manifold.Sheaf.Basic
 public import Mathlib.Geometry.Manifold.Sheaf.Smooth
 public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 public import Mathlib.Topology.VectorBundle.ContinuousAlternatingMap
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.CategoryTheory.Sites.Adjunction
+public import Mathlib.Algebra.Category.ModuleCat.Limits
 
 /-!
 # Holomorphic differential-form sheaf data on complex manifolds
@@ -129,6 +131,326 @@ def holomorphicPFormSectionValueData
       (HolomorphicPFormFiberData (X := X) I p)
       (congrFun s.2.2 x))
     (s.1 x).2
+
+/-- Reconstruct a holomorphic-form section from its fibre values.  The equality
+is literal on the total-space presentation and is used to transfer the native
+pointwise vector-space operations back to the local-predicate section type. -/
+theorem holomorphicPFormSectionTotal_eq
+    (p : ℕ) (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ)
+    (s : (holomorphicPFormSheafData (X := X) I p).presheaf.obj U) :
+    s.1 = fun x : U.unop =>
+      TotalSpace.mk' (HolomorphicPFormModelFiberData (E := E) p) x.1
+        (holomorphicPFormSectionValueData (X := X) I p U s x) := by
+  funext x
+  apply TotalSpace.ext
+  · exact congrFun s.2.2 x
+  · simp [holomorphicPFormSectionValueData]
+
+/-- Analytic regularity of the dependent fibre-valued section underlying a
+section of `Ω_X^p`. -/
+theorem holomorphicPFormSection_contMDiff
+    (p : ℕ) (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ)
+    (s : (holomorphicPFormSheafData (X := X) I p).presheaf.obj U) :
+    ContMDiff I
+      (I.prod 𝓘(ℂ, HolomorphicPFormModelFiberData (E := E) p)) ω
+      (fun x : U.unop =>
+        TotalSpace.mk' (HolomorphicPFormModelFiberData (E := E) p) x.1
+          (holomorphicPFormSectionValueData (X := X) I p U s x)) := by
+  rw [← holomorphicPFormSectionTotal_eq (X := X) I p U s]
+  exact s.2.1
+
+/-- Zero holomorphic `p`-form section on an open set. -/
+noncomputable def holomorphicPFormZeroSectionData
+    (p : ℕ) (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ) :
+    (holomorphicPFormSheafData (X := X) I p).presheaf.obj U :=
+  ⟨fun x => TotalSpace.mk'
+      (HolomorphicPFormModelFiberData (E := E) p) x.1 0,
+    by
+      constructor
+      · exact (contMDiff_zeroSection ℂ
+          (HolomorphicPFormFiberData (X := X) I p)).comp contMDiff_subtype_val
+      · rfl⟩
+
+/-- Pointwise sum of two holomorphic `p`-form sections. -/
+noncomputable def holomorphicPFormAddSectionData
+    (p : ℕ) (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ)
+    (s t : (holomorphicPFormSheafData (X := X) I p).presheaf.obj U) :
+    (holomorphicPFormSheafData (X := X) I p).presheaf.obj U :=
+  ⟨fun x => TotalSpace.mk'
+      (HolomorphicPFormModelFiberData (E := E) p) x.1
+      (holomorphicPFormSectionValueData (X := X) I p U s x +
+        holomorphicPFormSectionValueData (X := X) I p U t x),
+    by
+      constructor
+      · intro x0
+        change ContMDiffAt I
+          (I.prod 𝓘(ℂ, HolomorphicPFormModelFiberData (E := E) p)) ω
+          (fun x : U.unop => TotalSpace.mk'
+            (HolomorphicPFormModelFiberData (E := E) p) x.1
+            (holomorphicPFormSectionValueData (X := X) I p U s x +
+              holomorphicPFormSectionValueData (X := X) I p U t x)) x0
+        rw [contMDiffAt_totalSpace]
+        constructor
+        · exact contMDiff_subtype_val.contMDiffAt
+        · have hs := (holomorphicPFormSection_contMDiff (X := X) I p U s) x0
+          have ht := (holomorphicPFormSection_contMDiff (X := X) I p U t) x0
+          rw [contMDiffAt_totalSpace] at hs ht
+          let e := trivializationAt
+            (HolomorphicPFormModelFiberData (E := E) p)
+            (HolomorphicPFormFiberData (X := X) I p) x0.1
+          have hs' : ContMDiffAt I 𝓘(ℂ, HolomorphicPFormModelFiberData (E := E) p) ω
+              (fun x => (e ⟨x.1, holomorphicPFormSectionValueData (X := X) I p U s x⟩).2) x0 :=
+            hs.2
+          have ht' : ContMDiffAt I 𝓘(ℂ, HolomorphicPFormModelFiberData (E := E) p) ω
+              (fun x => (e ⟨x.1, holomorphicPFormSectionValueData (X := X) I p U t x⟩).2) x0 :=
+            ht.2
+          refine (hs'.add ht').congr_of_eventuallyEq ?_
+          filter_upwards [continuousAt_subtype_val.preimage_mem_nhds
+            (e.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x0.1))]
+            with x hx
+          exact (e.linear ℂ hx).map_add _ _
+      · rfl⟩
+
+/-- Pointwise additive inverse of a holomorphic `p`-form section. -/
+noncomputable def holomorphicPFormNegSectionData
+    (p : ℕ) (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ)
+    (s : (holomorphicPFormSheafData (X := X) I p).presheaf.obj U) :
+    (holomorphicPFormSheafData (X := X) I p).presheaf.obj U :=
+  ⟨fun x => TotalSpace.mk'
+      (HolomorphicPFormModelFiberData (E := E) p) x.1
+      (-holomorphicPFormSectionValueData (X := X) I p U s x),
+    by
+      constructor
+      · intro x0
+        change ContMDiffAt I
+          (I.prod 𝓘(ℂ, HolomorphicPFormModelFiberData (E := E) p)) ω
+          (fun x : U.unop => TotalSpace.mk'
+            (HolomorphicPFormModelFiberData (E := E) p) x.1
+            (-holomorphicPFormSectionValueData (X := X) I p U s x)) x0
+        rw [contMDiffAt_totalSpace]
+        constructor
+        · exact contMDiff_subtype_val.contMDiffAt
+        · have hs := (holomorphicPFormSection_contMDiff (X := X) I p U s) x0
+          rw [contMDiffAt_totalSpace] at hs
+          let e := trivializationAt
+            (HolomorphicPFormModelFiberData (E := E) p)
+            (HolomorphicPFormFiberData (X := X) I p) x0.1
+          have hs' : ContMDiffAt I 𝓘(ℂ, HolomorphicPFormModelFiberData (E := E) p) ω
+              (fun x => (e ⟨x.1, holomorphicPFormSectionValueData (X := X) I p U s x⟩).2) x0 :=
+            hs.2
+          refine hs'.neg.congr_of_eventuallyEq ?_
+          filter_upwards [continuousAt_subtype_val.preimage_mem_nhds
+            (e.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x0.1))]
+            with x hx
+          exact (e.linear ℂ hx).map_neg _
+      · rfl⟩
+
+/-- Pointwise constant complex scalar multiplication of a holomorphic
+`p`-form section. -/
+noncomputable def holomorphicPFormSMulSectionData
+    (p : ℕ) (c : ℂ) (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ)
+    (s : (holomorphicPFormSheafData (X := X) I p).presheaf.obj U) :
+    (holomorphicPFormSheafData (X := X) I p).presheaf.obj U :=
+  ⟨fun x => TotalSpace.mk'
+      (HolomorphicPFormModelFiberData (E := E) p) x.1
+      (c • holomorphicPFormSectionValueData (X := X) I p U s x),
+    by
+      constructor
+      · intro x0
+        change ContMDiffAt I
+          (I.prod 𝓘(ℂ, HolomorphicPFormModelFiberData (E := E) p)) ω
+          (fun x : U.unop => TotalSpace.mk'
+            (HolomorphicPFormModelFiberData (E := E) p) x.1
+            (c • holomorphicPFormSectionValueData (X := X) I p U s x)) x0
+        rw [contMDiffAt_totalSpace]
+        constructor
+        · exact contMDiff_subtype_val.contMDiffAt
+        · have hs := (holomorphicPFormSection_contMDiff (X := X) I p U s) x0
+          rw [contMDiffAt_totalSpace] at hs
+          let e := trivializationAt
+            (HolomorphicPFormModelFiberData (E := E) p)
+            (HolomorphicPFormFiberData (X := X) I p) x0.1
+          have hs' : ContMDiffAt I 𝓘(ℂ, HolomorphicPFormModelFiberData (E := E) p) ω
+              (fun x => (e ⟨x.1, holomorphicPFormSectionValueData (X := X) I p U s x⟩).2) x0 :=
+            hs.2
+          have hc : ContMDiffAt I 𝓘(ℂ, ℂ) ω (fun _ : U.unop => c) x0 := contMDiffAt_const
+          refine (hc.smul hs').congr_of_eventuallyEq ?_
+          filter_upwards [continuousAt_subtype_val.preimage_mem_nhds
+            (e.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x0.1))]
+            with x hx
+          exact (e.linear ℂ hx).map_smul c _
+      · rfl⟩
+
+/-- Fibre-value evaluation is injective on holomorphic-form sections. -/
+theorem holomorphicPFormSectionValue_injective
+    (p : ℕ) (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ) :
+    Function.Injective (fun s : (holomorphicPFormSheafData (X := X) I p).presheaf.obj U =>
+      fun x : U.unop => holomorphicPFormSectionValueData (X := X) I p U s x) := by
+  intro s t h
+  apply Subtype.ext
+  rw [holomorphicPFormSectionTotal_eq (X := X) I p U s,
+    holomorphicPFormSectionTotal_eq (X := X) I p U t]
+  funext x
+  have hx := congrFun h x
+  change holomorphicPFormSectionValueData (X := X) I p U s x =
+    holomorphicPFormSectionValueData (X := X) I p U t x at hx
+  rw [hx]
+
+noncomputable instance holomorphicPFormSectionZero (p : ℕ)
+    (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ) :
+    Zero ((holomorphicPFormSheafData (X := X) I p).presheaf.obj U) :=
+  ⟨holomorphicPFormZeroSectionData (X := X) I p U⟩
+
+noncomputable instance holomorphicPFormSectionAdd (p : ℕ)
+    (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ) :
+    Add ((holomorphicPFormSheafData (X := X) I p).presheaf.obj U) :=
+  ⟨holomorphicPFormAddSectionData (X := X) I p U⟩
+
+noncomputable instance holomorphicPFormSectionNeg (p : ℕ)
+    (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ) :
+    Neg ((holomorphicPFormSheafData (X := X) I p).presheaf.obj U) :=
+  ⟨holomorphicPFormNegSectionData (X := X) I p U⟩
+
+noncomputable instance holomorphicPFormSectionSub (p : ℕ)
+    (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ) :
+    Sub ((holomorphicPFormSheafData (X := X) I p).presheaf.obj U) :=
+  ⟨fun s t => s + -t⟩
+
+noncomputable instance holomorphicPFormSectionNSMul (p : ℕ)
+    (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ) :
+    SMul ℕ ((holomorphicPFormSheafData (X := X) I p).presheaf.obj U) :=
+  ⟨nsmulRec⟩
+
+noncomputable instance holomorphicPFormSectionZSMul (p : ℕ)
+    (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ) :
+    SMul ℤ ((holomorphicPFormSheafData (X := X) I p).presheaf.obj U) :=
+  ⟨zsmulRec⟩
+
+@[simp] theorem holomorphicPFormSectionValue_zero
+    (p : ℕ) (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ) (x : U.unop) :
+    holomorphicPFormSectionValueData (X := X) I p U
+      (0 : (holomorphicPFormSheafData (X := X) I p).presheaf.obj U) x = 0 := rfl
+
+@[simp] theorem holomorphicPFormSectionValue_add
+    (p : ℕ) (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ)
+    (s t : (holomorphicPFormSheafData (X := X) I p).presheaf.obj U) (x : U.unop) :
+    holomorphicPFormSectionValueData (X := X) I p U (s + t) x =
+      holomorphicPFormSectionValueData (X := X) I p U s x +
+        holomorphicPFormSectionValueData (X := X) I p U t x := rfl
+
+@[simp] theorem holomorphicPFormSectionValue_neg
+    (p : ℕ) (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ)
+    (s : (holomorphicPFormSheafData (X := X) I p).presheaf.obj U) (x : U.unop) :
+    holomorphicPFormSectionValueData (X := X) I p U (-s) x =
+      -holomorphicPFormSectionValueData (X := X) I p U s x := rfl
+
+@[simp] theorem holomorphicPFormSectionValue_sub
+    (p : ℕ) (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ)
+    (s t : (holomorphicPFormSheafData (X := X) I p).presheaf.obj U) (x : U.unop) :
+    holomorphicPFormSectionValueData (X := X) I p U (s - t) x =
+      holomorphicPFormSectionValueData (X := X) I p U s x -
+        holomorphicPFormSectionValueData (X := X) I p U t x := rfl
+
+@[simp] theorem holomorphicPFormSectionValue_nsmul
+    (p : ℕ) (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ)
+    (s : (holomorphicPFormSheafData (X := X) I p).presheaf.obj U)
+    (n : ℕ) (x : U.unop) :
+    holomorphicPFormSectionValueData (X := X) I p U (n • s) x =
+      n • holomorphicPFormSectionValueData (X := X) I p U s x := by
+  induction n with
+  | zero =>
+      simp only [zero_nsmul]
+      exact holomorphicPFormSectionValue_zero (X := X) I p U x
+  | succ n ih =>
+      change holomorphicPFormSectionValueData (X := X) I p U (n • s + s) x = _
+      rw [holomorphicPFormSectionValue_add, ih, succ_nsmul]
+
+@[simp] theorem holomorphicPFormSectionValue_zsmul
+    (p : ℕ) (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ)
+    (s : (holomorphicPFormSheafData (X := X) I p).presheaf.obj U)
+    (z : ℤ) (x : U.unop) :
+    holomorphicPFormSectionValueData (X := X) I p U (z • s) x =
+      z • holomorphicPFormSectionValueData (X := X) I p U s x := by
+  rcases z with n | n
+  · exact holomorphicPFormSectionValue_nsmul (X := X) I p U s n x
+  · change holomorphicPFormSectionValueData (X := X) I p U (-((n + 1) • s)) x = _
+    rw [holomorphicPFormSectionValue_neg, holomorphicPFormSectionValue_nsmul]
+    simp only [negSucc_zsmul]
+
+noncomputable instance holomorphicPFormSectionAddCommGroup (p : ℕ)
+    (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ) :
+    AddCommGroup ((holomorphicPFormSheafData (X := X) I p).presheaf.obj U) :=
+  (holomorphicPFormSectionValue_injective (X := X) I p U).addCommGroup
+    (fun s x => holomorphicPFormSectionValueData (X := X) I p U s x)
+    (by funext x; exact holomorphicPFormSectionValue_zero (X := X) I p U x)
+    (fun s t => by funext x; exact holomorphicPFormSectionValue_add (X := X) I p U s t x)
+    (fun s => by funext x; exact holomorphicPFormSectionValue_neg (X := X) I p U s x)
+    (fun s t => by funext x; exact holomorphicPFormSectionValue_sub (X := X) I p U s t x)
+    (fun s n => by funext x; exact holomorphicPFormSectionValue_nsmul (X := X) I p U s n x)
+    (fun s z => by funext x; exact holomorphicPFormSectionValue_zsmul (X := X) I p U s z x)
+
+noncomputable instance holomorphicPFormSectionSMul (p : ℕ)
+    (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ) :
+    SMul ℂ ((holomorphicPFormSheafData (X := X) I p).presheaf.obj U) :=
+  ⟨fun c s => holomorphicPFormSMulSectionData (X := X) I p c U s⟩
+
+@[simp] theorem holomorphicPFormSectionValue_smul
+    (p : ℕ) (c : ℂ) (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ)
+    (s : (holomorphicPFormSheafData (X := X) I p).presheaf.obj U) (x : U.unop) :
+    holomorphicPFormSectionValueData (X := X) I p U (c • s) x =
+      c • holomorphicPFormSectionValueData (X := X) I p U s x := rfl
+
+noncomputable def holomorphicPFormSectionValueAddHom
+    (p : ℕ) (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ) :
+    (holomorphicPFormSheafData (X := X) I p).presheaf.obj U →+
+      ((x : U.unop) → HolomorphicPFormFiberData (X := X) I p x.1) where
+  toFun s x := holomorphicPFormSectionValueData (X := X) I p U s x
+  map_zero' := by funext x; exact holomorphicPFormSectionValue_zero (X := X) I p U x
+  map_add' s t := by funext x; exact holomorphicPFormSectionValue_add (X := X) I p U s t x
+
+noncomputable instance holomorphicPFormSectionModule (p : ℕ)
+    (U : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ) :
+    Module ℂ ((holomorphicPFormSheafData (X := X) I p).presheaf.obj U) :=
+  (holomorphicPFormSectionValue_injective (X := X) I p U).module ℂ
+    (holomorphicPFormSectionValueAddHom (X := X) I p U)
+    (fun c s => by funext x; exact holomorphicPFormSectionValue_smul (X := X) I p c U s x)
+
+/-- Restriction of holomorphic forms is complex-linear. -/
+noncomputable def holomorphicPFormRestrictionLinearMap
+    (p : ℕ) {U V : (TopologicalSpace.Opens (TopCat.of X))ᵒᵖ} (h : U ⟶ V) :
+    (holomorphicPFormSheafData (X := X) I p).presheaf.obj U →ₗ[ℂ]
+      (holomorphicPFormSheafData (X := X) I p).presheaf.obj V where
+  toFun := (holomorphicPFormSheafData (X := X) I p).presheaf.map h
+  map_add' s t := by
+    apply holomorphicPFormSectionValue_injective (X := X) I p V
+    funext x
+    rfl
+  map_smul' c s := by
+    apply holomorphicPFormSectionValue_injective (X := X) I p V
+    funext x
+    rfl
+
+/-- Presheaf of complex vector spaces underlying the holomorphic `p`-form
+sheaf.  The object types are definitionally the same section types as
+`holomorphicPFormSheafData`. -/
+noncomputable def holomorphicPFormPresheafModuleData (p : ℕ) :
+    TopCat.Presheaf (ModuleCat.{u} ℂ) (TopCat.of X) where
+  obj U := ModuleCat.of ℂ ((holomorphicPFormSheafData (X := X) I p).presheaf.obj U)
+  map h := ModuleCat.ofHom (holomorphicPFormRestrictionLinearMap (X := X) I p h)
+  map_id U := by ext s; rfl
+  map_comp f g := by ext s; rfl
+
+/-- Canonical complex-vector-space-valued sheaf `Ω_X^p`.
+
+Sheafhood is reflected by the forgetful functor to types, where the presheaf
+is definitionally the already-realized `holomorphicPFormSheafData`. -/
+noncomputable def holomorphicPFormSheafModuleData (p : ℕ) :
+    TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X) where
+  obj := holomorphicPFormPresheafModuleData (X := X) I p
+  property := by
+    rw [CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget _ _
+      (CategoryTheory.forget (ModuleCat.{u} ℂ))]
+    exact (holomorphicPFormSheafData (X := X) I p).property
 
 /-- Exact pointwise graph for zero in the holomorphic-form sheaf. -/
 def IsHolomorphicPFormZeroSectionData
