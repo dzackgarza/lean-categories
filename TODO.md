@@ -120,7 +120,9 @@ its worklist or completion state.
 
 ## Active definition units
 
-**Governing contract:** [Definition tail — the owner's contract](AGENTS.md#definition-tail--the-owners-contract-2026-09-26-overrides-anything-below-that-conflicts) in `AGENTS.md`. Where anything in this section conflicts with it, the contract wins.
+**Governing rules:** [Definitions are constructed, not deferred](AGENTS.md#definitions-are-constructed-not-deferred-2026-09-26) in `AGENTS.md`; where anything in this section conflicts with it, that section wins.
+
+**First ready node — `realization-stub-audit`.** Needs: none. Population: every mapping row marked `[realized]` whose text matches `rg -n -i -e 'supplied' -e 'candidate' -e 'caller' -e 'result obligation' -e 'without proving' -e 'as (a )?hypothes' corpus/*.md | rg '\[realized\]'` (194 rows on 2026-09-26; recompute, do not copy). For each, open the Lean declaration: if it constructs the object from the source's inputs it stays realized; if it takes the object (or data it is read off from) as a parameter or hypothesis, or stands in a candidate for it, remove `[realized]` and rebuild it under the rules above. Batch by shared scaffolding and use subagents. **Acceptance:** every row in the population is either confirmed with the constructing declaration named, or rebuilt; the count of realized stubs is zero.
 
 This section refines the source-level nodes above and is the sole executable unit DAG.
 The planner maintains dependencies here; workers select ready nodes here. Vault notes

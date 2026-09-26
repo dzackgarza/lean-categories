@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+"""How much of the recent history realized definitions, and whether it touched the scheduler.
+
+A commit counts as a realization when it adds `[realized]` to a mapping row that did not carry
+it before. Everything else — repairs, records, acceptance passes, reclassification — is not.
+Run before choosing the next unit (AGENTS.md, "Definitions are constructed, not deferred").
+"""
+
+from __future__ import annotations
+
+import argparse
+import re
+import subprocess
+import sys
+
+UNIT = re.compile(r"^[+-]\|\s*`([A-Z0-9]+-[A-Z0-9-]+)`")
+SCHEDULER = (
+    "scripts/foundational_frontier.py",
+    "scripts/foundational_definition_index.py",
+    "tests/test_foundational_frontier.py",
+)
+
+
+def git(*args: str) -> str:
+    return subprocess.run(["git", *args], check=True, capture_output=True, text=True).stdout
+
+
+def newly_realized(commit: str) -> set[str]:
+    before: set[str] = set()
+    after: set[str] = set()
+    for line in git("show", "--format=", "--unified=0", commit, "--", "corpus").splitlines():
+        match = UNIT.match(line)
+        if not match or "[realized]" not in line:
+            continue
+        (after if line.startswith("+") else before).add(match.group(1))
+    return after - before
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("-n", type=int, default=20, help="how many recent commits to read")
+    args = parser.parse_args()
+
+    commits = git("log", f"-{args.n}", "--format=%h%x09%s").splitlines()
+    realizing = 0
+    for entry in commits:
+        commit, subject = entry.split("\t", 1)
+        units = newly_realized(commit)
+        touched = git("show", "--format=", "--name-only", commit).splitlines()
+        scheduler = [path for path in touched if path in SCHEDULER]
+        mark = f"realized {len(units)}" if units else "no realization"
+        if units:
+            realizing += 1
+        flag = f"  SCHEDULER CHANGED: {', '.join(scheduler)}" if scheduler else ""
+        print(f"{commit}  {mark:<16} {subject[:70]}{flag}")
+
+    share = realizing / len(commits) if commits else 0.0
+    print(f"\n{realizing} of {len(commits)} recent commits realized a definition ({share:.0%}).")
+    if share < 0.5:
+        print(
+            "Below half: stop selecting units. Read these commits, name the rule or constraint being "
+            "cycled on, and fix that governing text (or file it for the owner) before more repairs."
+        )
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

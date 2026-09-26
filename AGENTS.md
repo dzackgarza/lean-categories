@@ -6,25 +6,55 @@ Read [TODO.md](TODO.md) for the execution DAG and existing sweep records,
 Record new issues when encountered under `LC-05`; logging never discharges the
 mathematical obligation. Continue independent work whose prerequisites hold.
 
-## Definition tail — the owner's contract (2026-09-26; overrides anything below that conflicts)
+## Definitions are constructed, not deferred (2026-09-26)
 
-The remaining open rows of `FOUNDATIONAL_DEFINITIONS.tsv` are definitions. A definition is
-data; it never depends on a theorem. Each open row is finished one of two ways, and nothing
-else counts as progress:
+This section records why the definition tail collapsed on 2026-09-25/26 and the rules that
+prevent it. It governs every Sweep-III row; where older text below conflicts, this wins.
 
-1. **Find it.** Search Mathlib and the formalization corpus for an owner and reuse, import or
-   port it.
-2. **Write it.** If nothing exists, write the Lean definition, together with any scaffolding
-   definitions it is built from (for relative Proj: the sheaf of graded algebras, the affine
-   `Proj` pieces, the gluing). Fields a Lean encoding requires — compatibility conditions in
-   gluing data, structure laws — are filled as part of writing the definition; they are
-   engineering, not prerequisites, and never a reason to stop.
+**What happened.** In 133 commits over 15 hours, 26 realized a definition. The rest cycled
+rows between two shapes that each dodged constructing the object: taking the object as a
+supplied parameter or hypothesis (`lieExponentialData I D` with `D` supplied; a cup product
+taking its `SingularCohomologyCupData` as input; Hodge cohomology taking `hExt` as an
+argument), or "selecting a candidate" whose existence was called a result obligation. Each
+shape was then flagged as unfaithful and "repaired" into the other. Workers also edited the
+scheduler that decides what remains: `[sweep-iii-blocked]` (added 2026-09-20 in
+`scripts/foundational_frontier.py`) and later "reclassification" let rows leave the
+Definitions population without being realized. Nothing compared realizations with churn.
 
-A row is done when its declaration exists and matches the source clause; mark it `[realized]`
-in its mapping row in the same commit. There is no blocked state: `[sweep-iii-blocked]` is
-retired and is not a stopping point. Do not spend commits on status records, acceptance passes,
-reclassifying rows out of the count, or recording dependencies — write the missing definition
-instead. Use subagents on independent rows.
+**A definition is data and never depends on a theorem.** A theorem is stated in terms of
+definitions; it can show two agree, and it can never be a prerequisite of one. When a
+construction seems out of reach, what is missing is *more definitions* — the scaffolding it is
+built from — or a source text that states it. Break it into those prerequisite definitions
+and find or write each; transcribe a located source (acquiring a missing but useful text if
+needed). Fields a Lean encoding demands — gluing compatibility, quotient descent,
+well-definedness, structure laws — are part of writing the definition down: reuse or port
+them, else prove them. They are engineering, not a separate phase, and never a stopping point.
+
+**Not realizations,** and never marked `[realized]`:
+
+- a definition taking as a parameter, instance argument or hypothesis the object it is meant
+  to construct, or data from which that object is trivially read off;
+- a "candidate", "selected" or specification-only value standing in for the object, with its
+  existence deferred as a "result obligation";
+- a row removed from the Definitions population, or marked blocked, instead of built.
+
+**Done** means the declaration constructs the source's object from the source's inputs and a
+reader comparing it with the source clause agrees; mark `[realized]` in that commit. Reuse
+first — Mathlib, then the formalization corpus and importable packages — and write only what
+genuinely does not exist.
+
+**The scheduler is not the worker's to change.** `scripts/foundational_frontier.py`,
+`scripts/foundational_definition_index.py`, their tests, and any marker that moves a row into or
+out of the Definitions population are owner surfaces. A worker who believes a row is
+misclassified files an issue for the owner and keeps working the row; it does not commit the
+change.
+
+**Check output before choosing more work.** Before each new unit run
+`python3 scripts/output_check.py`. It counts, over the last 20 commits, how many realized a
+definition. Below half, stop selecting units: read those commits, name the rule or constraint
+being cycled on, and fix that governing text (or file it for the owner) before any further
+repair. A repair of a delivered realization must cite the concrete source mismatch it fixes;
+reshaping a representation without new mathematical content is churn.
 
 ## Owner resume — 2026-09-16
 
