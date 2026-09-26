@@ -461,6 +461,12 @@ def is_definition(unit: Unit, mapping: Mapping | None = None) -> bool:
     if mapping is not None and mapping.definition_only:
         return True
     label = kind_label(unit.kind)
+    # Source rows whose primary grammatical role is an example belong to
+    # Sweep IV under the repository phase contract. An audited mixed example
+    # can opt back into Sweep III only through the explicit [definition-only]
+    # marker handled above.
+    if label.startswith("example"):
+        return False
     # An explicit definitional source label wins, including mixed labels such
     # as `Construction/result`; the theorem clause is classified separately.
     if any(marker in label for marker in DEFINITION_MARKERS):
