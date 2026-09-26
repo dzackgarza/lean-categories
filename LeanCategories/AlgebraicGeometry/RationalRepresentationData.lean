@@ -43,7 +43,6 @@ structure RationalRepresentationCoordinateData
   [AddCommGroup V] [Module K V] where
   n : ℕ
   basis : Module.Basis (Fin n) K V
-  glOperations : GeneralLinearOperationData K n
   coordinate : GeneralLinearCoordinateRingData K n →ₐ[K]
     AffineAlgebraicGroup.coordinateHopfAlgebra G
 
@@ -56,14 +55,13 @@ def IsRationalRepresentationCoordinateData
     (G : AffineAlgebraicGroup K) (V : Type v)
     [AddCommGroup V] [Module K V]
     (D : RationalRepresentationCoordinateData G V) : Prop :=
-  IsGeneralLinearOperationData K D.n D.glOperations ∧
-    (Algebra.TensorProduct.map D.coordinate D.coordinate).comp
-        D.glOperations.comul =
+  (Algebra.TensorProduct.map D.coordinate D.coordinate).comp
+        (generalLinearOperationData K D.n).comul =
       (AffineAlgebraicGroup.coordinateComultiplication G).comp D.coordinate ∧
     (AffineAlgebraicGroup.coordinateCounit G).comp D.coordinate =
-      D.glOperations.counit ∧
+      (generalLinearOperationData K D.n).counit ∧
     (AffineAlgebraicGroup.coordinateAntipode G).comp D.coordinate =
-      D.coordinate.comp D.glOperations.antipode
+      D.coordinate.comp (generalLinearOperationData K D.n).antipode
 
 /-- Humphreys' basis-free terminology: a rational representation on `V` is
 one admitting a finite basis presentation whose coordinate map satisfies the
