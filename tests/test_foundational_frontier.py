@@ -102,6 +102,22 @@ class DefinitionReadinessTest(unittest.TestCase):
         )
         self.assertTrue(frontier.is_definition(unit, mapping))
 
+    def test_blocked_definition_example_without_definition_only_is_sweep_iv(self) -> None:
+        unit = frontier.Unit(
+            "FC12-C04-U013",
+            "Definition / example",
+            "synthetic Steiner-surface example",
+            (),
+        )
+        mapping = frontier.Mapping(
+            "[sweep-iii-blocked] synthetic example",
+            "unmatched",
+            "synthetic.md",
+            "[sweep-iii-blocked] [residue-search-audited]",
+        )
+        self.assertFalse(frontier.is_definition(unit, mapping))
+        self.assertTrue(frontier.is_theorem(unit, mapping))
+
     def test_effective_prerequisites_explain_the_blocker(self) -> None:
         unit = self.catalogue["FC05-C10-U085"]
         self.assertEqual(

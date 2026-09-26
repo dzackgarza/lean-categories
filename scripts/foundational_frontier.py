@@ -467,6 +467,12 @@ def is_definition(unit: Unit, mapping: Mapping | None = None) -> bool:
     # marker handled above.
     if label.startswith("example"):
         return False
+    # A mixed label containing an example is likewise theorem-only when the
+    # canonical mapping explicitly marks the row as a Sweep-III blocker but
+    # does not identify any definition-only layer. This is the audited shape
+    # of FC12's Steiner-surface example.
+    if mapping is not None and mapping.sweep_iii_blocked and "example" in label:
+        return False
     # An explicit definitional source label wins, including mixed labels such
     # as `Construction/result`; the theorem clause is classified separately.
     if any(marker in label for marker in DEFINITION_MARKERS):
