@@ -26,7 +26,11 @@ system |nK| is empty.
 The canonical sheaf/divisor, tensor powers, global sections, graded direct sum,
 and multiplication are earlier inputs. Sweep III does not reprove that
 assembly. This file records precisely the data from that assembly used by the
-definition and characterizes the integer kappa by Hartshorne's formula.
+definition.  Before the geometric finiteness theorem is available, the
+definition is stored canonically as an optional cardinal: `none` is
+Hartshorne's value `-1`, while `some c` records `κ + 1 = c`.  For the
+projective varieties in Hartshorne, later result work proves that `c` is a
+positive finite cardinal and therefore recovers the usual integer value.
 
 The equivalent maximal-image-dimension description and birational invariance
 are comparison/result statements and are deliberately not included here.
@@ -60,6 +64,26 @@ def pluricanonicalTranscendenceDegreeData
   letI : CommRing D.sectionRing := D.commRing
   letI : Algebra k D.sectionRing := D.algebra
   exact Algebra.trdeg k D.sectionRing
+
+/-- A proof-free, total encoding of Kodaira dimension before geometric
+finiteness is established.
+
+* `none` means that every positive pluricanonical system is empty, i.e.
+  Hartshorne's convention `κ = -1`;
+* `some c` means that a positive pluricanonical system is nonempty and
+  `κ + 1` is represented by the transcendence-degree cardinal `c`.
+
+This representation does not choose an integer from a cardinal.  The theorem
+that the second case is a finite positive cardinal belongs to the result
+layer. -/
+def kodairaDimensionData
+    {k : Type u} [Field k]
+    (D : PluricanonicalSectionRingData k) : Option Cardinal := by
+  classical
+  exact if ∃ n : ℕ, 0 < n ∧ D.systemNonempty n then
+    some (pluricanonicalTranscendenceDegreeData D)
+  else
+    none
 
 /-- Hartshorne's exact defining graph for Kodaira dimension.
 
