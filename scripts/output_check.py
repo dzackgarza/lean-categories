@@ -41,7 +41,17 @@ def main() -> int:
     parser.add_argument("-n", type=int, default=20, help="how many recent commits to read")
     args = parser.parse_args()
 
-    commits = git("log", f"-{args.n}", "--format=%h%x09%s").splitlines()
+    # Judge only work done under the current rules: a window reaching back past the last change
+    # to the governing section would tell a freshly corrected worker to stop and re-diagnose
+    # history that has already been diagnosed.
+    baseline = git(
+        "log", "-1", "--format=%H", "-S", "## Definitions are constructed, not deferred", "--", "AGENTS.md"
+    ).strip()
+    span = [f"{baseline}..HEAD"] if baseline else []
+    commits = git("log", f"-{args.n}", "--format=%h%x09%s", *span).splitlines()
+    if len(commits) < 5:
+        print(f"{len(commits)} commits since the governing rules last changed; too few to judge. Carry on.")
+        return 0
     realizing = 0
     for entry in commits:
         commit, subject = entry.split("\t", 1)
