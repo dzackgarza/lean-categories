@@ -94,7 +94,7 @@ def singularCupBackSimplexData (X : TopCat.{0}) (p q : ℕ)
     singularCohomologySimplexData X q :=
   (TopCat.toSSet.obj X).map (singularCapBackFace p q).op σ
 
-/-- Type of a degree-`(p,q)` cochain cup-pairing candidate. -/
+/-- Type of a degree-`(p,q)` cochain cup pairing. -/
 abbrev SingularCochainCupPairingHomData
     (R : Type) [CommRing R] (X : TopCat.{0}) (p q : ℕ) :=
   (singularCochainComplexData R X (ModuleCat.of R R)).X p ⊗
@@ -111,15 +111,164 @@ def IsSingularCochainCupPairingData
       (σ : singularCohomologySimplexData X (p + q)),
     singularCochainEvalData R X σ (μ.hom (φ ⊗ₜ[R] ψ)) =
       singularCochainEvalData R X (singularCupFrontSimplexData X p q σ) φ *
-        singularCochainEvalData R X (singularCupBackSimplexData X p q σ) ψ
+      singularCochainEvalData R X (singularCupBackSimplexData X p q σ) ψ
 
-/-- Source-faithful cochain cup-pairing data: a bundled linear candidate
-together with Hatcher's exact raw evaluation graph. -/
+/-- ModuleCat.ofHom preserves addition on underlying linear maps. -/
+lemma moduleCatOfHom_add_hom_eq
+    (R : Type) [CommRing R] (f g : R →ₗ[R] R) :
+    (ModuleCat.ofHom f + ModuleCat.ofHom g).hom = f + g := rfl
+
+@[simp]
+lemma singularCochainSigmaDesc_eval
+    (R : Type) [CommRing R] (X : TopCat.{0}) (n : ℕ)
+    (F : ((TopCat.toSSet.obj X).obj
+        (Opposite.op (SimplexCategory.mk n))) →
+      (ModuleCat.of R R ⟶ ModuleCat.of R R))
+    (σ : (TopCat.toSSet.obj X).obj
+      (Opposite.op (SimplexCategory.mk n))) :
+    (Sigma.ι
+        (fun (_ : singularCohomologySimplexData X n) => ModuleCat.of R R) σ ≫
+      Sigma.desc F).hom 1 = (F σ).hom 1 := by
+  erw [Sigma.ι_desc]
+
+/-- Hatcher's Alexander--Whitney cup formula as a bilinear map on the native
+singular-cochain modules. -/
+def singularCochainCupBilinearData
+    (R : Type) [CommRing R] (X : TopCat.{0}) (p q : ℕ) :
+    (singularCochainComplexData R X (ModuleCat.of R R)).X p →ₗ[R]
+      (singularCochainComplexData R X (ModuleCat.of R R)).X q →ₗ[R]
+        (singularCochainComplexData R X (ModuleCat.of R R)).X (p + q) :=
+  LinearMap.mk₂ R
+    (fun φ ψ =>
+      Sigma.desc fun σ =>
+        ModuleCat.ofHom
+          ((singularCochainEvalData R X
+                (singularCupFrontSimplexData X p q σ) φ *
+              singularCochainEvalData R X
+                (singularCupBackSimplexData X p q σ) ψ) •
+            (LinearMap.id : R →ₗ[R] R)))
+    (fun φ₁ φ₂ ψ => by
+      apply Sigma.hom_ext
+      intro σ
+      erw [Preadditive.comp_add, Sigma.ι_desc, Sigma.ι_desc, Sigma.ι_desc]
+      apply ModuleCat.hom_ext
+      show
+        ((singularCochainEvalData R X (singularCupFrontSimplexData X p q σ)
+              (φ₁ + φ₂) * _) • (LinearMap.id : R →ₗ[R] R)) = _
+      rw [map_add, add_mul, add_smul, moduleCatOfHom_add_hom_eq R])
+    (fun c φ ψ => by
+      apply Sigma.hom_ext
+      intro σ
+      erw [Linear.comp_smul, Sigma.ι_desc, Sigma.ι_desc]
+      apply ModuleCat.hom_ext
+      ext
+      show
+        ((singularCochainEvalData R X (singularCupFrontSimplexData X p q σ)
+              (c • φ) * _) • (LinearMap.id : R →ₗ[R] R)) _ = _
+      change
+        (c * singularCochainEvalData R X
+              (singularCupFrontSimplexData X p q σ) φ *
+            singularCochainEvalData R X
+              (singularCupBackSimplexData X p q σ) ψ) * _ = _
+      show _ =
+        (c •
+          ((singularCochainEvalData R X
+                (singularCupFrontSimplexData X p q σ) φ *
+              singularCochainEvalData R X
+                (singularCupBackSimplexData X p q σ) ψ) •
+            (LinearMap.id : R →ₗ[R] R))) 1
+      simp [smul_eq_mul]
+      ring)
+    (fun φ ψ₁ ψ₂ => by
+      apply Sigma.hom_ext
+      intro σ
+      erw [Preadditive.comp_add, Sigma.ι_desc, Sigma.ι_desc, Sigma.ι_desc]
+      apply ModuleCat.hom_ext
+      show
+        ((_ * singularCochainEvalData R X (singularCupBackSimplexData X p q σ)
+              (ψ₁ + ψ₂)) • (LinearMap.id : R →ₗ[R] R)) = _
+      rw [map_add, mul_add, add_smul, moduleCatOfHom_add_hom_eq R])
+    (fun c φ ψ => by
+      apply Sigma.hom_ext
+      intro σ
+      erw [Linear.comp_smul, Sigma.ι_desc, Sigma.ι_desc]
+      apply ModuleCat.hom_ext
+      ext
+      show
+        ((_ * singularCochainEvalData R X (singularCupBackSimplexData X p q σ)
+              (c • ψ)) • (LinearMap.id : R →ₗ[R] R)) _ = _
+      change
+        (singularCochainEvalData R X
+              (singularCupFrontSimplexData X p q σ) φ *
+            (c * singularCochainEvalData R X
+              (singularCupBackSimplexData X p q σ) ψ)) * _ = _
+      show _ =
+        (c •
+          ((singularCochainEvalData R X
+                (singularCupFrontSimplexData X p q σ) φ *
+              singularCochainEvalData R X
+                (singularCupBackSimplexData X p q σ) ψ) •
+            (LinearMap.id : R →ₗ[R] R))) 1
+      simp [smul_eq_mul]
+      ring)
+
+@[simp]
+lemma singularCochainCupBilinearData_apply
+    (R : Type) [CommRing R] (X : TopCat.{0}) (p q : ℕ)
+    (φ : (singularCochainComplexData R X (ModuleCat.of R R)).X p)
+    (ψ : (singularCochainComplexData R X (ModuleCat.of R R)).X q) :
+    singularCochainCupBilinearData R X p q φ ψ =
+      Sigma.desc (fun σ =>
+        ModuleCat.ofHom
+          ((singularCochainEvalData R X
+                (singularCupFrontSimplexData X p q σ) φ *
+              singularCochainEvalData R X
+                (singularCupBackSimplexData X p q σ) ψ) •
+            (LinearMap.id : R →ₗ[R] R))) := rfl
+
+/-- Bundled cochain cup-pairing data. -/
 abbrev SingularCochainCupPairingData
     (R : Type) [CommRing R] (X : TopCat.{0}) (p q : ℕ) :
     Type :=
   {μ : SingularCochainCupPairingHomData R X p q //
     IsSingularCochainCupPairingData R X p q μ}
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Hatcher's cochain cup pairing, constructed directly from the
+front-face/back-face formula. -/
+def singularCochainCupPairingData
+    (R : Type) [CommRing R] (X : TopCat.{0}) (p q : ℕ) :
+    SingularCochainCupPairingData R X p q :=
+  ⟨ModuleCat.MonoidalCategory.tensorLift
+      (fun φ ψ => singularCochainCupBilinearData R X p q φ ψ)
+      (fun φ₁ φ₂ ψ =>
+        congrArg (fun f => f ψ)
+          ((singularCochainCupBilinearData R X p q).map_add φ₁ φ₂))
+      (fun c φ ψ =>
+        congrArg (fun f => f ψ)
+          ((singularCochainCupBilinearData R X p q).map_smul c φ))
+      (fun φ ψ₁ ψ₂ => ((singularCochainCupBilinearData R X p q) φ).map_add ψ₁ ψ₂)
+      (fun c φ ψ => ((singularCochainCupBilinearData R X p q) φ).map_smul c ψ),
+    by
+      intro φ ψ σ
+      rw [ModuleCat.MonoidalCategory.tensorLift_tmul]
+      rw [singularCochainCupBilinearData_apply]
+      let F : singularCohomologySimplexData X (p + q) →
+          (ModuleCat.of R R ⟶ ModuleCat.of R R) :=
+        fun τ =>
+          ModuleCat.ofHom
+            ((singularCochainEvalData R X
+                  (singularCupFrontSimplexData X p q τ) φ *
+                singularCochainEvalData R X
+                  (singularCupBackSimplexData X p q τ) ψ) •
+              (LinearMap.id : R →ₗ[R] R))
+      change
+        (Sigma.ι
+            (fun (_ : singularCohomologySimplexData X (p + q)) =>
+              ModuleCat.of R R) σ ≫
+          Sigma.desc F).hom 1 = _
+      rw [singularCochainSigmaDesc_eval]
+      simp [F]⟩
 
 /-- Type of a cup-product candidate on singular cohomology. -/
 abbrev SingularCohomologyCupProductHomData
