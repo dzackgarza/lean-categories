@@ -15,9 +15,10 @@ For an infinite Galois extension, Serre defines the Artin symbol by requiring
 all of its finite Galois projections to be the already-defined finite Artin
 symbols. Proposition 12 supplies the compatibility of those finite symbols.
 
-Sweep III records exactly this projection graph as data. It does not prove
-finite-stage compatibility, existence/uniqueness of a function satisfying the
-graph, or the subsequent
+Sweep III constructs the map by applying the canonical inverse-function
+operation to the diagonal projection into the family of finite quotients.
+It does not prove finite-stage compatibility, the inverse-law specification,
+or the subsequent
 identification of the maximal abelian Galois group with the Hausdorff
 completion in the norm topology.
 -/
@@ -43,17 +44,20 @@ def IsProfiniteLocalArtinMapData
     (artin : KStar → G) : Prop :=
   ∀ x i, projection i (artin x) = finiteArtin i x
 
-/-- Source-faithful infinite Artin-map data: a function together with the
-exact graph of all finite Galois projections. FC10-C13-U030 supplies
-existence/uniqueness from finite-stage compatibility. -/
-abbrev ProfiniteLocalArtinMapData
+/-- Serre's infinite Artin map, constructed from the finite-stage symbols by
+lifting their coherent tuple through the diagonal projection.
+
+The operation is total because `Function.invFun` is total on the nonempty
+group `G`. FC10-C13-U030 later proves finite-stage compatibility and the
+inverse-law statement which identifies this lift with the unique element
+having the required finite projections. -/
+def profiniteLocalArtinMapData
     {Index : Type u} {KStar : Type v}
     {FiniteGalois : Index → Type w} {G : Type w}
     [∀ i, CommGroup (FiniteGalois i)] [CommGroup G]
     (projection : ∀ i, G → FiniteGalois i)
-    (finiteArtin : ∀ i, KStar → FiniteGalois i) :=
-  {artin : KStar → G //
-    IsProfiniteLocalArtinMapData projection finiteArtin artin}
+    (finiteArtin : ∀ i, KStar → FiniteGalois i) : KStar → G :=
+  fun x => Function.invFun (fun g i => projection i g) (fun i => finiteArtin i x)
 
 /-- Serre's symbol `(x,F/E)` for the supplied infinite abelian Galois
 extension presentation. -/
@@ -63,8 +67,7 @@ def profiniteLocalArtinSymbolData
     [∀ i, CommGroup (FiniteGalois i)] [CommGroup G]
     (projection : ∀ i, G → FiniteGalois i)
     (finiteArtin : ∀ i, KStar → FiniteGalois i)
-    (D : ProfiniteLocalArtinMapData projection finiteArtin)
     (x : KStar) : G :=
-  D.1 x
+  profiniteLocalArtinMapData projection finiteArtin x
 
 end LeanCategories.Algebra
