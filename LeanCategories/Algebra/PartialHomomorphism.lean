@@ -35,6 +35,13 @@ def IsGraph (Γ : Subring (L × Ω)) : Prop :=
 def graph (R : Subring L) (φ : R →+* Ω) : Subring (L × Ω) :=
   ((R.subtype).prod φ).range
 
+/-- The poset carrier of all partial ring homomorphisms from `L` to `Ω`,
+represented by their graph-like subrings of `L × Ω`
+(Atiyah--Macdonald FC04-C05-U031).  The subtype inherits graph inclusion as
+its order, so this object is constructed solely from the two ambient fields. -/
+abbrev PartialHom (L : Type u) (Ω : Type v) [Field L] [Field Ω] :=
+  { Γ : Subring (L × Ω) // IsGraph Γ }
+
 /-- Graph-like subrings extending a supplied initial graph. -/
 def Above (Γ₀ : Subring (L × Ω)) : Set (Subring (L × Ω)) :=
   {Γ | Γ₀ ≤ Γ ∧ IsGraph Γ}
