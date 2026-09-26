@@ -5,8 +5,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Schemes.ProjectiveBundleData
+public import LeanCategories.Schemes.Varieties
 public import LeanCategories.AlgebraicGeometry.AmpleSheaf
 public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.AlgebraicGeometry.Birational.Birational
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 
 /-!
@@ -37,6 +39,11 @@ open AlgebraicGeometry CategoryTheory Limits
 open LeanCategories.AlgebraicGeometry
 
 namespace LeanCategories.Schemes
+
+/-- Peters--Sterk's rational-surface predicate over ℂ: birationality to
+the projective plane. -/
+def IsComplexRationalSurfaceData (S : Scheme) : Prop :=
+  Scheme.Birational S (ProjectiveSpace ℂ 2)
 
 /-- The complex point used as the base of the projective-line construction. -/
 abbrev hirzebruchComplexPointData : Scheme :=
