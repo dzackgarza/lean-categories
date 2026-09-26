@@ -56,6 +56,15 @@ being cycled on, and fix that governing text (or file it for the owner) before a
 repair. A repair of a delivered realization must cite the concrete source mismatch it fixes;
 reshaping a representation without new mathematical content is churn.
 
+The repository-selected `realization-stub-audit` is one unit, not one unit per repaired
+mapping row. Its repair commits normally leave an existing `[realized]` marker in place after
+replacing a false realization by an actual construction, so `output_check.py` cannot count
+those commits as newly realized definitions. Run the check as required, but while this audit is
+the active unit, a low ratio does not authorize abandoning the audit or selecting another row:
+continue the same audit to its acceptance condition, and judge progress by concrete source
+mismatches removed and constructions landed. The ratio gate applies again before selecting the
+first post-audit definition unit.
+
 ## Owner resume — 2026-09-16
 
 The repository owner explicitly resumed this workstream later on 2026-09-16. The
