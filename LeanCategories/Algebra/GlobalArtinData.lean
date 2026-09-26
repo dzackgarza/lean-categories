@@ -42,17 +42,17 @@ def IsGlobalArtinMapData
     (∀ v, v ∉ S → localArtin v (component v a) = 1) →
       globalArtin a = ∏ v ∈ S, localArtin v (component v a)
 
-/-- Serre's global Artin function selected from the finite-product graph.
+/-- Source-faithful global Artin-map data: a function together with Serre's
+exact finite-product graph for the supplied local symbols.
 
-The theorem that local symbols are trivial at almost all places is what later
-proves that the selected function satisfies `IsGlobalArtinMapData`.  No
-homomorphism law or finite-support proof is bundled here. -/
-def globalArtinMapData
+Almost-all-triviality and independence of the controlling finite set supply
+existence later; no arbitrary global function is selected beforehand. -/
+abbrev GlobalArtinMapData
     {Place : Type u} {Idele : Type v}
     {Local : Place → Type w} {G : Type*} [CommGroup G]
     (component : ∀ v, Idele → Local v)
-    (localArtin : ∀ v, Local v → G) : Idele → G := by
-  letI : Nonempty (Idele → G) := ⟨fun _ => 1⟩
-  exact Classical.epsilon (IsGlobalArtinMapData component localArtin)
+    (localArtin : ∀ v, Local v → G) :=
+  {globalArtin : Idele → G //
+    IsGlobalArtinMapData component localArtin globalArtin}
 
 end LeanCategories.Algebra
