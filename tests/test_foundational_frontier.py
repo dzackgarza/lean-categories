@@ -118,6 +118,22 @@ class DefinitionReadinessTest(unittest.TestCase):
         self.assertFalse(frontier.is_definition(unit, mapping))
         self.assertTrue(frontier.is_theorem(unit, mapping))
 
+    def test_blocked_correspondence_without_definition_only_is_sweep_iv(self) -> None:
+        unit = frontier.Unit(
+            "FC12-C02-U006",
+            "Construction / correspondence II.6",
+            "synthetic rational-map correspondence",
+            (),
+        )
+        mapping = frontier.Mapping(
+            "[sweep-iii-blocked] synthetic correspondence",
+            "unmatched",
+            "synthetic.md",
+            "[sweep-iii-blocked] [residue-search-audited]",
+        )
+        self.assertFalse(frontier.is_definition(unit, mapping))
+        self.assertTrue(frontier.is_theorem(unit, mapping))
+
     def test_effective_prerequisites_explain_the_blocker(self) -> None:
         unit = self.catalogue["FC05-C10-U085"]
         self.assertEqual(

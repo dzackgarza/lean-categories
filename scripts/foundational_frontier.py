@@ -473,6 +473,10 @@ def is_definition(unit: Unit, mapping: Mapping | None = None) -> bool:
     # of FC12's Steiner-surface example.
     if mapping is not None and mapping.sweep_iii_blocked and "example" in label:
         return False
+    # An audited blocked correspondence with no explicit definition-only
+    # layer is comparison/result content rather than a Sweep-III constructor.
+    if mapping is not None and mapping.sweep_iii_blocked and "correspondence" in label:
+        return False
     # An explicit definitional source label wins, including mixed labels such
     # as `Construction/result`; the theorem clause is classified separately.
     if any(marker in label for marker in DEFINITION_MARKERS):
