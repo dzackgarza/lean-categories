@@ -171,6 +171,25 @@ abbrev markedWeightTwoPeriodPlaneData
     Submodule ℂ (WeightTwoComplexificationData L) :=
   markedWeightTwoH20Data L φ hs
 
+/-- The Hodge decomposition and period plane transported to the marked
+lattice.  This packages exactly the data constructed by a marking in
+Peters--Sterk FC11-B-U034. -/
+structure MarkedWeightTwoHodgeData where
+  h20 : Submodule ℂ (WeightTwoComplexificationData L)
+  h11 : Submodule ℂ (WeightTwoComplexificationData L)
+  h02 : Submodule ℂ (WeightTwoComplexificationData L)
+  periodPlane : Submodule ℂ (WeightTwoComplexificationData L)
+
+/-- Transport a weight-two Hodge decomposition across an integral marking and
+record its period plane. -/
+def markedWeightTwoHodgeData
+    (φ : H ≃ₗ[ℤ] L) (hs : WeightTwoHodgeStructureData H) :
+    MarkedWeightTwoHodgeData L where
+  h20 := markedWeightTwoH20Data L φ hs
+  h11 := markedWeightTwoH11Data L φ hs
+  h02 := markedWeightTwoH02Data L φ hs
+  periodPlane := markedWeightTwoPeriodPlaneData L φ hs
+
 end Marking
 
 end LeanCategories.Lattices.Valued
