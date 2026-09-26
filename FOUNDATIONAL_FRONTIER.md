@@ -238,7 +238,7 @@ Next 5 open units in source traversal order:
 
 ## FC12 — Definitions
 
-Delivered/directly reusable by mapping: **28/35**; pending realization: **7** (unmatched=7).
+Delivered/directly reusable by mapping: **28/44**; pending realization: **16** (unmatched=16).
 Delivered/direct-reuse spans: `FC12-C01-U002`–`FC12-C01-U003`, `FC12-C01-U013`, `FC12-C02-U001`, `FC12-C02-U004`–`FC12-C02-U005`, `FC12-C02-U017`–`FC12-C02-U018`, `FC12-C02-U020`, `FC12-C03-U001`, `FC12-C03-U004`, `FC12-C03-U020`, `FC12-C04-U001`, `FC12-C04-U017`, `FC12-C05-U003`, `FC12-C05-U014`, `FC12-C06-U023`, `FC12-C07-U001`, `FC12-C08-U003`–`FC12-C08-U004`, `FC12-C08-U021`, `FC12-C09-U003`, `FC12-A-U003`–`FC12-A-U004`, `FC12-A-U006`–`FC12-A-U007`, `FC12-B-U001`, `FC12-B-U005`.
 Phase blocker: none
 
@@ -247,10 +247,10 @@ Next 5 open units in source traversal order:
 | Unit | Kind | Prerequisites | Unit blockers | Mapping action |
 | --- | --- | --- | --- | --- |
 | `FC12-C01-U012` | Construction / interpretation I.10 | `FC12-C01-U001`, `FC12-C01-U004` | ready by recorded prerequisites | unmatched; author |
+| `FC12-C02-U006` | Construction / correspondence II.6 | `FC12-C02-U004`, `FC12-C02-U005` | ready by recorded prerequisites | unmatched; author |
 | `FC12-C03-U015` | Definition / construction III.14 | — | ready by recorded prerequisites | unmatched; author |
 | `FC12-C03-U018` | Definition / construction III.17 | — | ready by recorded prerequisites | unmatched; author |
-| `FC12-C08-U024` | Construction | — | ready by recorded prerequisites | unmatched; author |
-| `FC12-B-U006` | Definition / construction | — | ready by recorded prerequisites | unmatched; author |
+| `FC12-C04-U003` | Example / construction IV.2(1) | `FC12-C02-U005` | ready by recorded prerequisites | unmatched; author |
 
 ## FC12 — Theorems
 
