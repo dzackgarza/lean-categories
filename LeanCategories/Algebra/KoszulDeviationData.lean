@@ -21,9 +21,11 @@ system `x` of the maximal ideal and defines
 The residue-field action on Koszul homology follows from the result that the
 maximal ideal annihilates that homology. Sweep III does not prove that result.
 Instead, valid deviation presentations are candidates carrying the exact
-comparison graph to the already-realized `A`-module Koszul homology.
-Existence, basis-independence, and the regularity criterion remain
-result-layer statements; no dummy presentation is selected beforehand.
+comparison graph to the already-realized `A`-module Koszul homology. The
+numeric deviation itself is defined choice-freely from the set of dimensions
+arising from all such presentations, rather than by asking the caller to
+supply one. Existence, basis-independence, and the regularity criterion remain
+result-layer statements.
 -/
 
 @[expose] public noncomputable section
@@ -69,18 +71,24 @@ def IsKoszulDeviationCandidateData (D : KoszulDeviationCandidateData A) : Prop :
 abbrev KoszulDeviationData :=
   {D : KoszulDeviationCandidateData A // IsKoszulDeviationCandidateData A D}
 
+/-- The set of dimensions obtained from source-valid minimal-generator/
+residue-homology presentations in degree `p`. -/
+def koszulDeviationValues (p : ℕ) : Set ℕ :=
+  {n | ∃ D : KoszulDeviationData A,
+    Module.finrank (ResidueField A) (D.1.homology p) = n}
+
 /-- Matsumura's Koszul deviation
 `ε_p(A) = dim_{A/m} H_p(x;A)`. -/
-def koszulDeviation (D : KoszulDeviationData A) (p : ℕ) : ℕ :=
-  Module.finrank (ResidueField A) (D.1.homology p)
+def koszulDeviation (p : ℕ) : ℕ :=
+  sInf (koszulDeviationValues A p)
 
 /-- Matsumura's definition of a complete-intersection local ring:
 `ε₁(A) + dim A = embdim A`.
 
 The embedding dimension is the minimal number of generators of the maximal
 ideal, represented by `spanFinrank`. -/
-def IsCompleteIntersectionLocalRingData (D : KoszulDeviationData A) : Prop :=
-  (koszulDeviation A D 1 : WithBot ℕ∞) + ringKrullDim A =
+def IsCompleteIntersectionLocalRingData : Prop :=
+  (koszulDeviation A 1 : WithBot ℕ∞) + ringKrullDim A =
     ((maximalIdeal A).spanFinrank : WithBot ℕ∞)
 
 end LeanCategories.Algebra
