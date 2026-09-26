@@ -7,6 +7,7 @@ module
 public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
+public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 /-!
@@ -101,6 +102,17 @@ abbrev MetricSharpSystemData
     (g : ContMDiffRiemannianMetric IB n F E) :=
   ∀ (b : B) (alpha : E b →L[ℝ] ℝ), MetricSharpAtData g b alpha
 
+/-- The sharp operation constructed from the Riemannian metric by
+Fréchet--Riesz.  Lee works in finite dimension, so the fibre is complete and
+the metric dual map is an equivalence. -/
+noncomputable def metricSharpAt
+    [∀ b, FiniteDimensional ℝ (E b)]
+    (g : ContMDiffRiemannianMetric IB n F E) (b : B)
+    (alpha : E b →L[ℝ] ℝ) : E b := by
+  letI : RiemannianBundle E := ⟨g.toRiemannianMetric⟩
+  letI : CompleteSpace (E b) := FiniteDimensional.complete ℝ (E b)
+  exact (InnerProductSpace.toDual ℝ (E b)).symm alpha
+
 /-- Lee's inverse metric-coordinate matrix `(g^ij)` (FC08-C13-U042).
 
 `Matrix.inv` is a total construction, so this declaration does not require a
@@ -123,20 +135,22 @@ noncomputable def raiseIndexCoordinates {ι : Type*} [Fintype ι]
 `mvfderiv` is Mathlib's manifold differential with normed-space target, so for
 a smooth `f : B → ℝ` it is already a covector on `T_b B`. Smoothness of the resulting
 section and the identity `g(grad f, v) = df(v)` are result content. -/
-noncomputable def riemannianGradientAtData [IsManifold IB ∞ B]
+noncomputable def riemannianGradientAtData
+    [∀ b : B, FiniteDimensional ℝ (TangentSpace IB b)]
+    [IsManifold IB ∞ B]
     (g : ContMDiffRiemannianMetric IB ∞ EB
       (fun b : B => TangentSpace IB b))
-    (D : MetricSharpSystemData g)
     (f : C^∞⟮IB, B; ℝ⟯) (b : B) : TangentSpace IB b :=
-  (D b (mvfderiv IB f b)).1
+  metricSharpAt g b (mvfderiv IB f b)
 
 /-- The pointwise vector field underlying Lee's gradient construction.
 Smoothness is not bundled into this Sweep-III datum. -/
-noncomputable def riemannianGradientData [IsManifold IB ∞ B]
+noncomputable def riemannianGradientData
+    [∀ b : B, FiniteDimensional ℝ (TangentSpace IB b)]
+    [IsManifold IB ∞ B]
     (g : ContMDiffRiemannianMetric IB ∞ EB
       (fun b : B => TangentSpace IB b))
-    (D : MetricSharpSystemData g)
     (f : C^∞⟮IB, B; ℝ⟯) : ∀ b : B, TangentSpace IB b :=
-  riemannianGradientAtData g D f
+  riemannianGradientAtData g f
 
 end LeanCategories.Topology
