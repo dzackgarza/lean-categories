@@ -69,17 +69,16 @@ def IsManifoldDensityIntegralData
   ∀ (μ : Density) (P : D.Presentation μ),
     integral μ = densityPresentationIntegral D localIntegral μ P
 
-/-- Lee's integral of a compactly supported density on a manifold, selected
-from the exact graph over all valid partition presentations.
+/-- Source-faithful manifold density-integral data: a functional together with
+Lee's exact graph over every valid partition presentation.
 
-The theorem layer proves that this selected functional satisfies
-`IsManifoldDensityIntegralData`; no chart-independence, partition-independence,
-linearity, positivity, or diffeomorphism-invariance result is asserted here. -/
-def manifoldDensityIntegralData
+Presentation existence and choice-independence supply existence later; no
+arbitrary functional is selected before those results. -/
+abbrev ManifoldDensityIntegralData
     {Density : Type u} {ChartDensity : Type v}
     (D : DensityIntegralPresentationData.{u, v, w} Density ChartDensity)
-    (localIntegral : ChartDensity → ℝ) :
-    Density → ℝ :=
-  Classical.epsilon (IsManifoldDensityIntegralData D localIntegral)
+    (localIntegral : ChartDensity → ℝ) :=
+  {integral : Density → ℝ //
+    IsManifoldDensityIntegralData D localIntegral integral}
 
 end LeanCategories.Topology
