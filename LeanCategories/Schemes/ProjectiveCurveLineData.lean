@@ -18,9 +18,9 @@ the tangent subspace of the curve.
 
 The current projective-space API supplies spans and projective subspaces, but
 does not supply the scheme-theoretic embedded-tangent comparison. Sweep III
-therefore keeps that already source-defined tangent-space assignment as
-presentation data and records Hartshorne's exact tangent-line graph without
-selecting a line whose existence has not been established.
+therefore stores the tangent-line assignment itself as proof-free presentation
+data, and records Hartshorne's incidence/rank/tangent-space conditions
+separately as a source-faithfulness predicate.
 -/
 
 @[expose] public noncomputable section
@@ -57,6 +57,8 @@ structure ProjectiveCurveTangentPresentationData
   lineTangent :
     Projectivization.Subspace k V → (P : ℙ k V) →
       P ∈ curve → Submodule k (T P)
+  tangentLine :
+    (P : ℙ k V) → P ∈ curve → Projectivization.Subspace k V
 
 /-- Hartshorne's graph for the tangent line at P: it is a projective line
 through P and has the same embedded tangent subspace there as the curve. -/
@@ -70,5 +72,24 @@ def IsProjectiveCurveTangentLineData
   P ∈ L ∧
     Module.finrank k L.submodule = 2 ∧
       D.lineTangent L P hP = D.curveTangent P hP
+
+/-- Source-faithfulness of a supplied tangent-line assignment. -/
+def IsProjectiveCurveTangentPresentationData
+    {curve : Set (ℙ k V)}
+    {T : ℙ k V → Type w}
+    [∀ P, AddCommGroup (T P)] [∀ P, Module k (T P)]
+    (D : ProjectiveCurveTangentPresentationData k V curve T) : Prop :=
+  ∀ (P : ℙ k V) (hP : P ∈ curve),
+    IsProjectiveCurveTangentLineData k V D P hP (D.tangentLine P hP)
+
+/-- The tangent line supplied by source-level presentation data. -/
+def projectiveTangentLineData
+    {curve : Set (ℙ k V)}
+    {T : ℙ k V → Type w}
+    [∀ P, AddCommGroup (T P)] [∀ P, Module k (T P)]
+    (D : ProjectiveCurveTangentPresentationData k V curve T)
+    (P : ℙ k V) (hP : P ∈ curve) :
+    Projectivization.Subspace k V :=
+  D.tangentLine P hP
 
 end LeanCategories.Schemes
