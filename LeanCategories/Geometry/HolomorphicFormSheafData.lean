@@ -485,8 +485,16 @@ noncomputable def holomorphicPFormAdditiveSheafData (p : ℕ) :
 The complex vector-space structure induced from the coefficient sheaf is a
 separate categorical layer; this declaration records the actual native
 sheaf-cohomology group rather than a proxy. -/
-noncomputable abbrev hodgeCohomologyGroupData (p q : ℕ) :=
-  (holomorphicPFormAdditiveSheafData (X := X) I p).H q
+noncomputable def hodgeCohomologyGroupData
+    [Abelian (TopCat.Sheaf AddCommGrpCat.{u} (TopCat.of X))]
+    [HasSheafify (Opens.grothendieckTopology (TopCat.of X)) AddCommGrpCat.{u}]
+    (hExt : HasExt.{u + 1} (TopCat.Sheaf AddCommGrpCat.{u} (TopCat.of X)))
+    (p q : ℕ) : Type (u + 1) := by
+  exact @CategoryTheory.Abelian.Ext _ _ _ hExt
+    ((CategoryTheory.constantSheaf
+      (Opens.grothendieckTopology (TopCat.of X)) AddCommGrpCat.{u}).obj
+        (AddCommGrpCat.of (ULift ℤ)))
+    (holomorphicPFormAdditiveSheafData (X := X) I p) q
 
 /-- Exact pointwise graph for zero in the holomorphic-form sheaf. -/
 def IsHolomorphicPFormZeroSectionData
