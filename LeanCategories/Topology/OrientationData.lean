@@ -154,6 +154,13 @@ def IsROrientationData
                       subst z
                       exact hz hy)).hom muU = mu y
 
+/-- Hatcher's R-orientations, as locally consistent pointwise generator
+choices. -/
+def ROrientationData
+    (R : Type) [CommRing R]
+    (n : ℕ) (M : Type) [TopologicalSpace M] :=
+  { mu : ROrientationCandidateData R n M // IsROrientationData R n M mu }
+
 /-- An n-manifold is R-orientable when it admits an R-orientation. Manifold
 structure itself is an ambient hypothesis of the source unit. -/
 def IsROrientableData
@@ -166,6 +173,11 @@ abbrev IsIntegralOrientationData
     (n : ℕ) (M : Type) [TopologicalSpace M]
     (mu : ROrientationCandidateData ℤ n M) : Prop :=
   IsROrientationData ℤ n M mu
+
+/-- Hatcher's integral orientations. -/
+abbrev IntegralOrientationData
+    (n : ℕ) (M : Type) [TopologicalSpace M] :=
+  ROrientationData ℤ n M
 
 /-- Hatcher's ordinary orientability predicate. -/
 abbrev IsOrientableData

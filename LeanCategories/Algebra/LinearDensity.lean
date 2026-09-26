@@ -29,4 +29,9 @@ def IsLinearDensity {V : Type u} [AddCommGroup V] [Module ℝ V] {n : ℕ}
   ∀ (f : V →ₗ[ℝ] V) (v : Fin n → V),
     μ (f ∘ v) = |LinearMap.det f| * μ v
 
+/-- The type of linear densities: functions satisfying Lee's determinant
+transformation law. -/
+def LinearDensityData (V : Type u) [AddCommGroup V] [Module ℝ V] (n : ℕ) :=
+  { μ : (Fin n → V) → ℝ // IsLinearDensity μ }
+
 end LeanCategories.Algebra
