@@ -17,9 +17,9 @@ multiplicative `G`-module `A`, Serre requires every coefficient element to
 have one of the `G_E` as its stabilizer. He writes `A_E = A^{G_E}` for the
 elements fixed by `G_E`.
 
-The source conditions are recorded as predicates on supplied data rather
-than proof-valued fields of a structure. No cohomological axiom is part of
-this unit.
+The source object is packaged below as the subgroup family together with its
+coefficient group/action and the two defining conditions.  No cohomological
+axiom is part of this unit.
 -/
 
 @[expose] public section
@@ -49,5 +49,33 @@ no proof-valued constructor obligations in Sweep III. -/
 def IsSerreFormation (G_E : X → Subgroup G)
     (A : Type w) [CommGroup A] [MulDistribMulAction G A] : Prop :=
   IsFormationIndexingFamily G_E ∧ IsFormationCoefficientAction G_E A
+
+/-- Serre's formation object: an indexed subgroup family together with the
+multiplicative coefficient group/action satisfying the indexing and
+stabilizer clauses of the definition. -/
+structure SerreFormationData
+    (G : Type u) [Group G] (X : Type v) where
+  /-- The subgroup attached to each source index. -/
+  G_E : X → Subgroup G
+  /-- The coefficient group. -/
+  A : Type w
+  /-- Multiplicative group structure on the coefficients. -/
+  commGroup : CommGroup A
+  /-- Ambient group action on the coefficients. -/
+  action : MulDistribMulAction G A
+  /-- Serre's closure/finite-index conditions on the subgroup family. -/
+  indexing : IsFormationIndexingFamily G_E
+  /-- Every coefficient has one of the indexed subgroups as stabilizer. -/
+  coefficientAction :
+    letI : CommGroup A := commGroup
+    letI : MulDistribMulAction G A := action
+    IsFormationCoefficientAction G_E A
+
+attribute [instance] SerreFormationData.commGroup SerreFormationData.action
+
+/-- The fixed coefficient carrier `A_E=A^{G_E}` belonging to a formation. -/
+def SerreFormationData.fixedElements
+    (F : SerreFormationData G X) (E : X) : Set F.A :=
+  formationFixedElements F.G_E E F.A
 
 end LeanCategories.Homological
