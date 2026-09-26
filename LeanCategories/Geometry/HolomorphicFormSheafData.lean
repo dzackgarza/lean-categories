@@ -447,13 +447,21 @@ noncomputable def holomorphicPFormPresheafModuleData (p : ℕ) :
 
 Sheafhood is reflected by the forgetful functor to types, where the presheaf
 is definitionally the already-realized `holomorphicPFormSheafData`. -/
-noncomputable def holomorphicPFormSheafModuleData (p : ℕ) :
+noncomputable def holomorphicPFormSheafModuleSmoothData (p : ℕ) :
     TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X) where
   obj := holomorphicPFormPresheafModuleData (X := X) I p
   property := by
     rw [CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget _ _
       (CategoryTheory.forget (ModuleCat.{u} ℂ))]
     exact (holomorphicPFormSheafData (X := X) I p).property
+
+/-- Source-facing complex-vector-space-valued sheaf `Ω_X^p` on an analytic
+complex manifold.  Analytic regularity canonically supplies the smooth
+regularity needed by the vector-bundle operation implementation. -/
+noncomputable def holomorphicPFormSheafModuleData (p : ℕ) :
+    TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X) := by
+  letI : IsManifold I ∞ X := IsManifold.of_le le_top
+  exact holomorphicPFormSheafModuleSmoothData (X := X) I p
 
 /-- Exact pointwise graph for zero in the holomorphic-form sheaf. -/
 def IsHolomorphicPFormZeroSectionData
