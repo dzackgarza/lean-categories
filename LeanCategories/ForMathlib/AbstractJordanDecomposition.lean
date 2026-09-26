@@ -18,8 +18,9 @@ Representation Theory*, Section 5.4, p. 24 (FC14-C02-U025). For an element `x` o
 finite-dimensional semisimple Lie algebra, its abstract semisimple and nilpotent parts are the
 elements whose adjoint actions form the ordinary Jordan decomposition of `ad x`.
 
-The pair is selected by `Classical.epsilon`. The existence and uniqueness of a pair satisfying
-the predicate are separate results about semisimple Lie algebras; they are not asserted here.
+Valid abstract-Jordan data are pairs satisfying the intrinsic predicate.
+Existence and uniqueness are separate results about semisimple Lie algebras;
+no arbitrary pair is selected before those results.
 -/
 
 noncomputable section
@@ -40,19 +41,20 @@ def IsAbstractJordanPair [CharZero K] [IsAlgClosed K] [FiniteDimensional K L]
     (LieAlgebra.ad K L parts.1).IsSemisimple ∧
     IsNilpotent (LieAlgebra.ad K L parts.2)
 
-/-- Humphreys' abstract Jordan pair, selected from its intrinsic characterization. -/
-def abstractJordanPair [CharZero K] [IsAlgClosed K] [FiniteDimensional K L]
-    [LieAlgebra.IsSemisimple K L] (x : L) : L × L :=
-  Classical.epsilon (IsAbstractJordanPair K L x)
+/-- Source-faithful abstract Jordan pair data: a pair together with Humphreys'
+intrinsic characterization. -/
+abbrev AbstractJordanPairData [CharZero K] [IsAlgClosed K] [FiniteDimensional K L]
+    [LieAlgebra.IsSemisimple K L] (x : L) :=
+  {parts : L × L // IsAbstractJordanPair K L x parts}
 
 /-- The abstract ad-semisimple part of `x`. -/
 def abstractSemisimplePart [CharZero K] [IsAlgClosed K] [FiniteDimensional K L]
-    [LieAlgebra.IsSemisimple K L] (x : L) : L :=
-  (abstractJordanPair K L x).1
+    [LieAlgebra.IsSemisimple K L] {x : L} (D : AbstractJordanPairData K L x) : L :=
+  D.1.1
 
 /-- The abstract ad-nilpotent part of `x`. -/
 def abstractNilpotentPart [CharZero K] [IsAlgClosed K] [FiniteDimensional K L]
-    [LieAlgebra.IsSemisimple K L] (x : L) : L :=
-  (abstractJordanPair K L x).2
+    [LieAlgebra.IsSemisimple K L] {x : L} (D : AbstractJordanPairData K L x) : L :=
+  D.1.2
 
 end LeanCategories.LieAlgebra
