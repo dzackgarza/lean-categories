@@ -42,6 +42,35 @@ def characterTableOfClassFunctions {ι : Type*} {G : Type v} [Group G] {F : Type
     (χ : ι → ClassFunctionData G F) : CharacterTableData ι G F :=
   χ
 
+/-- The actual irreducible characters of `G`, represented extensionally as
+character functions.  Isomorphic simple representations have the same
+character, so the subtype removes the need to choose a list of irreducible
+representatives. -/
+def IrreducibleCharacterData (G : Type v) [Group G] :=
+  {χ : G → ℂ //
+    ∃ V : FDRep ℂ G, CategoryTheory.Simple V ∧ χ = V.character}
+
+/-- An irreducible character, regarded canonically as a function on conjugacy
+classes. -/
+noncomputable def irreducibleCharacterClassFunction
+    {G : Type v} [Group G] (χ : IrreducibleCharacterData G) :
+    ClassFunctionData G ℂ :=
+  Quotient.lift χ.1 (by
+    intro a b hab
+    obtain ⟨V, _, hχ⟩ := χ.2
+    rw [hχ]
+    obtain ⟨c, hc⟩ := isConj_iff.mp hab
+    rw [← hc]
+    exact (V.char_conj a c).symm)
+
+/-- The character table of a group, with rows indexed by the actual
+irreducible characters and columns by conjugacy classes
+(Dummit--Foote FC01-C19-U001). -/
+noncomputable def irreducibleCharacterTableData
+    (G : Type v) [Group G] :
+    CharacterTableData (IrreducibleCharacterData G) G ℂ :=
+  irreducibleCharacterClassFunction
+
 abbrev VirtualCharacterData (ι : Type*) := ι →₀ ℤ
 
 def virtualCharacterClassFunction
@@ -49,6 +78,18 @@ def virtualCharacterClassFunction
     (χ : ι → ClassFunctionData G F) (z : VirtualCharacterData ι) :
     ClassFunctionData G F :=
   fun c => z.sum fun i n => n • χ i c
+
+/-- Integral finite combinations of the actual irreducible characters of
+`G`, i.e. generalized/virtual characters (FC01-C19-U029). -/
+abbrev GroupVirtualCharacterData (G : Type v) [Group G] :=
+  VirtualCharacterData (IrreducibleCharacterData G)
+
+/-- Evaluate a virtual character as the corresponding integral combination of
+irreducible class functions. -/
+noncomputable def groupVirtualCharacterClassFunction
+    {G : Type v} [Group G] (z : GroupVirtualCharacterData G) :
+    ClassFunctionData G ℂ :=
+  virtualCharacterClassFunction irreducibleCharacterClassFunction z
 
 /-- The averaging formula for induction of a complex class function from a
 subgroup, recorded before proving that the result is conjugation-invariant.
