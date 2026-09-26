@@ -63,6 +63,16 @@ def IsRationalRepresentationCoordinateData
     (AffineAlgebraicGroup.coordinateAntipode G).comp D.coordinate =
       D.coordinate.comp (generalLinearOperationData K D.n).antipode
 
+/-- A rational representation presented in a finite basis, with the three
+group-morphism compatibilities included as structure fields.  The GL
+operations are the canonical maps constructed in FC16-C02-U004. -/
+structure RationalRepresentationData
+    {K : Type u} [Field K] [IsAlgClosed K]
+    (G : AffineAlgebraicGroup K) (V : Type v)
+    [AddCommGroup V] [Module K V] where
+  presentation : RationalRepresentationCoordinateData G V
+  isRational : IsRationalRepresentationCoordinateData G V presentation
+
 /-- Humphreys' basis-free terminology: a rational representation on `V` is
 one admitting a finite basis presentation whose coordinate map satisfies the
 exact algebraic-group morphism graph above. -/
@@ -70,7 +80,6 @@ def IsRationalRepresentationData
     {K : Type u} [Field K] [IsAlgClosed K]
     (G : AffineAlgebraicGroup K) (V : Type v)
     [AddCommGroup V] [Module K V] : Prop :=
-  ∃ D : RationalRepresentationCoordinateData G V,
-    IsRationalRepresentationCoordinateData G V D
+  Nonempty (RationalRepresentationData G V)
 
 end LeanCategories.AlgebraicGeometry
