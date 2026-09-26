@@ -21,11 +21,10 @@ the affine \(n\)-simplices coming from maximal flags of nonempty faces of the
 standard simplex.  Maximal flags are indexed here by permutations of the
 vertices.  The sign of the permutation gives the orientation coefficient.
 
-Sweep III records only the degreewise homomorphism on singular chains.
-Affine flag-simplex maps are supplied as exact data satisfying the displayed
-coordinate prescription; no arbitrary continuous map is selected before its
-existence theorem.  Boundary compatibility and the prism homotopy remain
-result content.
+Sweep III records only the degreewise homomorphism on singular chains.  The
+affine simplex for a maximal face flag is constructed directly by barycentric
+interpolation of the face barycenters.  Boundary compatibility and the prism
+homotopy remain result content.
 -/
 
 @[expose] public noncomputable section
@@ -53,23 +52,71 @@ def IsAffineBarycentricFaceFlagMap {n r : ℕ}
       ∑ j : Fin (r + 1),
         w j * faceBarycenterCoordinates (F j) i
 
-/-- Source-faithful affine flag-simplex data: a continuous simplex map
-together with the exact barycentric coordinate prescription. -/
-abbrev AffineBarycentricFaceFlagMapData {n r : ℕ}
-    (F : BarycentricFaceFlag n r) :=
-  {f : C(stdSimplex ℝ (Fin (r + 1)), stdSimplex ℝ (Fin (n + 1))) //
-    IsAffineBarycentricFaceFlagMap F f}
+/-- Every coordinate of a face barycenter is nonnegative. -/
+lemma faceBarycenterCoordinates_nonneg {n : ℕ}
+    (F : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
+    0 ≤ faceBarycenterCoordinates F i := by
+  classical
+  simp only [faceBarycenterCoordinates]
+  split_ifs
+  · positivity
+  · exact le_rfl
 
-/-- A source-facing family of valid affine maps for all barycentric face
-flags. Existence of such a family is theorem content. -/
-structure BarycentricAffineMapSystemData where
-  map : ∀ {n r : ℕ} (F : BarycentricFaceFlag n r),
-    AffineBarycentricFaceFlagMapData F
+/-- The barycentric coordinates of a nonempty face sum to one. -/
+lemma sum_faceBarycenterCoordinates_eq_one {n : ℕ}
+    (F : Finset (Fin (n + 1))) (hF : F.Nonempty) :
+    ∑ i, faceBarycenterCoordinates F i = 1 := by
+  classical
+  simp only [faceBarycenterCoordinates]
+  rw [← Finset.sum_filter]
+  simp [hF.card_ne_zero]
+
+/-- Each face in a maximal permutation flag is nonempty. -/
+lemma maximalBarycentricFaceFlag_nonempty {n : ℕ}
+    (π : Equiv.Perm (Fin (n + 1))) (j : Fin (n + 1)) :
+    (maximalBarycentricFaceFlag π j).Nonempty := by
+  classical
+  refine ⟨π 0, ?_⟩
+  simp [maximalBarycentricFaceFlag]
+
+/-- The affine simplex associated to a maximal barycentric face flag,
+constructed directly from its barycentric-coordinate formula. -/
+noncomputable def maximalBarycentricAffineMap {n : ℕ}
+    (π : Equiv.Perm (Fin (n + 1))) :
+    C(stdSimplex ℝ (Fin (n + 1)), stdSimplex ℝ (Fin (n + 1))) where
+  toFun w :=
+    ⟨fun i => ∑ j : Fin (n + 1),
+      w j * faceBarycenterCoordinates (maximalBarycentricFaceFlag π j) i, by
+      constructor
+      · intro i
+        exact Finset.sum_nonneg fun j _ =>
+          mul_nonneg (stdSimplex.zero_le w j)
+            (faceBarycenterCoordinates_nonneg _ _)
+      · calc
+          ∑ i, ∑ j : Fin (n + 1),
+              w j * faceBarycenterCoordinates (maximalBarycentricFaceFlag π j) i =
+              ∑ j, w j * ∑ i,
+                faceBarycenterCoordinates (maximalBarycentricFaceFlag π j) i := by
+                  rw [Finset.sum_comm]
+                  apply Finset.sum_congr rfl
+                  intro j _
+                  rw [Finset.mul_sum]
+          _ = ∑ j, w j := by
+                apply Finset.sum_congr rfl
+                intro j _
+                rw [sum_faceBarycenterCoordinates_eq_one _
+                  (maximalBarycentricFaceFlag_nonempty π j), mul_one]
+          _ = 1 := stdSimplex.sum_eq_one w⟩
+  continuous_toFun := by
+    apply Continuous.subtype_mk
+    apply continuous_pi
+    intro i
+    exact continuous_finsetSum _ fun j _ =>
+      ((continuous_apply j).comp continuous_subtype_val).mul continuous_const
 
 /-- One maximal barycentric subsimplex of a singular simplex, indexed by a
 permutation of the original vertices. -/
 noncomputable def barycentricSubsimplexData
-    (D : BarycentricAffineMapSystemData)
     (X : TopCat.{0}) (n : ℕ)
     (σ : (TopCat.toSSet.obj X).obj
       (Opposite.op (SimplexCategory.mk n)))
@@ -78,12 +125,11 @@ noncomputable def barycentricSubsimplexData
       (Opposite.op (SimplexCategory.mk n)) :=
   (X.toSSetObjEquiv _).symm
     ((X.toSSetObjEquiv _ σ).comp
-      (D.map (maximalBarycentricFaceFlag π)).1)
+      (maximalBarycentricAffineMap π))
 
 /-- The signed barycentric subdivision chain associated to one singular
 `n`-simplex. -/
 noncomputable def singularSimplexBarycentricSubdivisionData
-    (D : BarycentricAffineMapSystemData)
     (X : TopCat.{0}) (n : ℕ)
     (σ : (TopCat.toSSet.obj X).obj
       (Opposite.op (SimplexCategory.mk n))) :
@@ -93,30 +139,28 @@ noncomputable def singularSimplexBarycentricSubdivisionData
   ∑ π : Equiv.Perm (Fin (n + 1)),
     (Equiv.Perm.sign π : ℤ) •
       (TopCat.toSSet.obj X).ιChainComplex
-        (barycentricSubsimplexData D X n σ π)
+        (barycentricSubsimplexData X n σ π)
 
 /-- Hatcher's barycentric subdivision homomorphism in degree `n`, obtained by
 extending the signed subdivision of each singular simplex linearly.  No
 boundary-commutation law is bundled into this definition. -/
 noncomputable def singularBarycentricSubdivisionComponentData
-    (D : BarycentricAffineMapSystemData)
     (X : TopCat.{0}) (n : ℕ) :
     ((TopCat.toSSet.obj X).chainComplex
         (ModuleCat.of ℤ ℤ)).X n ⟶
       ((TopCat.toSSet.obj X).chainComplex
         (ModuleCat.of ℤ ℤ)).X n :=
-  Sigma.desc (singularSimplexBarycentricSubdivisionData D X n)
+  Sigma.desc (singularSimplexBarycentricSubdivisionData X n)
 
 /-- The all-degree family underlying singular barycentric subdivision.  The
 assertion that this family is a chain map belongs to the theorem layer. -/
 noncomputable def singularBarycentricSubdivisionData
-    (D : BarycentricAffineMapSystemData)
     (X : TopCat.{0}) :
     ∀ n : ℕ,
       ((TopCat.toSSet.obj X).chainComplex
           (ModuleCat.of ℤ ℤ)).X n ⟶
         ((TopCat.toSSet.obj X).chainComplex
           (ModuleCat.of ℤ ℤ)).X n :=
-  singularBarycentricSubdivisionComponentData D X
+  singularBarycentricSubdivisionComponentData X
 
 end LeanCategories.Topology
