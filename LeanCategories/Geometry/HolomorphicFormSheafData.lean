@@ -576,4 +576,17 @@ abbrev CanonicalTopFormBundleData :=
 abbrev canonicalTopFormSheafData :=
   holomorphicPFormSheafData (X := X) I (Module.finrank ℂ E)
 
+/-- Global sections of a complex-vector-space-valued sheaf on a complex
+manifold.  This is evaluation on the top open set. -/
+abbrev holomorphicModuleSheafGlobalSectionsData
+    (F : TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X)) :=
+  F.presheaf.obj (.op ⊤)
+
+/-- Numerical dimension of global sections of a supplied complex-linear
+sheaf.  For the actual pluricanonical sheaf this is Peters--Sterk's
+plurigenus; finite-dimensionality is a separate result. -/
+noncomputable def plurigenusOfSheafData
+    (F : TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X)) : ℕ :=
+  Module.finrank ℂ (holomorphicModuleSheafGlobalSectionsData (X := X) F)
+
 end LeanCategories.Geometry
