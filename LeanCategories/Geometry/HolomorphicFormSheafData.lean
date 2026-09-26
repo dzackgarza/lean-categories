@@ -584,6 +584,21 @@ abbrev CanonicalTopFormBundleData :=
 abbrev canonicalTopFormSheafData :=
   holomorphicPFormSheafData (X := X) I (Module.finrank ℂ E)
 
+/-- Complex-linear sheaf of holomorphic top forms, i.e. the canonical
+line-bundle sheaf. -/
+noncomputable abbrev canonicalTopFormSheafModuleData :=
+  holomorphicPFormSheafModuleData (X := X) I (Module.finrank ℂ E)
+
+/-- Zeroth pluricanonical sheaf. Since the zeroth exterior power of the
+holomorphic cotangent bundle is the holomorphic structure sheaf, this is
+represented by the complex-linear sheaf of holomorphic 0-forms. -/
+noncomputable abbrev pluricanonicalZeroSheafData :=
+  holomorphicPFormSheafModuleData (X := X) I 0
+
+/-- First pluricanonical sheaf, definitionally the canonical sheaf. -/
+noncomputable abbrev pluricanonicalOneSheafData :=
+  canonicalTopFormSheafModuleData (X := X) I
+
 /-- Global sections of a complex-vector-space-valued sheaf on a complex
 manifold.  This is evaluation on the top open set. -/
 abbrev holomorphicModuleSheafGlobalSectionsData
@@ -596,5 +611,13 @@ plurigenus; finite-dimensionality is a separate result. -/
 noncomputable def plurigenusOfSheafData
     (F : TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X)) : ℕ :=
   Module.finrank ℂ (holomorphicModuleSheafGlobalSectionsData (X := X) F)
+
+/-- Zeroth plurigenus. -/
+noncomputable def plurigenusZeroData : ℕ :=
+  plurigenusOfSheafData (X := X) (pluricanonicalZeroSheafData (X := X) I)
+
+/-- First plurigenus. -/
+noncomputable def plurigenusOneData : ℕ :=
+  plurigenusOfSheafData (X := X) (pluricanonicalOneSheafData (X := X) I)
 
 end LeanCategories.Geometry
