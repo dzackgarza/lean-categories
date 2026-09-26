@@ -22,11 +22,11 @@ For a CW complex `X`, the degree-`n` cellular group is
 connecting map for the pair `(X^{n+1}, X^n)`, followed by the canonical map
 to `H_n(X^n, X^{n-1}; ℤ)`.
 
-Sweep III records that exact graph and selects the resulting differential.
-It also records the graph of the cellular chain complex and its homology,
-without proving that consecutive differentials compose to zero.  The
-square-zero theorem, and every comparison with singular homology, remain
-Sweep-IV result content.
+Sweep III records that exact graph as supplied boundary data.  It then records
+exact cellular-chain-complex data relative to a supplied boundary family,
+without proving that consecutive differentials compose to zero.  No arbitrary
+differential or chain complex is selected before those results. The square-zero
+theorem, and every comparison with singular homology, remain Sweep-IV content.
 -/
 
 @[expose] public noncomputable section
@@ -118,16 +118,23 @@ def IsIntegralCWRelativeBoundaryData
           (cellularRelativeIntegralProjectionData
             (integralCWSkeletonInclusionData X n)) n
 
-/-- The cellular boundary selected from its source characterization.
-
-Existence of the short-exact witness and the square-zero relation are both
-result-layer statements. -/
-def integralCWRelativeBoundaryData
+/-- Source-faithful degree-`n` cellular-boundary data: a candidate map
+together with Hatcher's exact long-exact-sequence graph. -/
+abbrev IntegralCWRelativeBoundaryData
     (X : Type) [TopologicalSpace X] [T2Space X]
     [Topology.CWComplex (Set.univ : Set X)] (n : ℕ) :
-    integralCWRelativeCellObjectData X (n + 1) ⟶
-      integralCWRelativeCellObjectData X n :=
-  Classical.epsilon (IsIntegralCWRelativeBoundaryData X n)
+    Type _ :=
+  {d :
+      integralCWRelativeCellObjectData X (n + 1) ⟶
+        integralCWRelativeCellObjectData X n //
+    IsIntegralCWRelativeBoundaryData X n d}
+
+/-- A source-facing family of valid cellular boundary maps. Existence and
+square-zero are theorem content. -/
+abbrev IntegralCWBoundarySystemData
+    (X : Type) [TopologicalSpace X] [T2Space X]
+    [Topology.CWComplex (Set.univ : Set X)] :=
+  ∀ n : ℕ, IntegralCWRelativeBoundaryData X n
 
 /-- Exact graph of Hatcher's cellular chain complex.
 
@@ -136,31 +143,32 @@ does not supply or prove it. -/
 def IsIntegralCWCellularChainComplexData
     (X : Type) [TopologicalSpace X] [T2Space X]
     [Topology.CWComplex (Set.univ : Set X)]
+    (D : IntegralCWBoundarySystemData X)
     (K : ChainComplex AddCommGrpCat.{0} ℕ) : Prop :=
   ∃ hsq :
-      ∀ n, integralCWRelativeBoundaryData X (n + 1) ≫
-        integralCWRelativeBoundaryData X n = 0,
+      ∀ n, (D (n + 1)).1 ≫ (D n).1 = 0,
     K =
       ChainComplex.of
         (fun n ↦ integralCWRelativeCellObjectData X n)
-        (fun n ↦ integralCWRelativeBoundaryData X n)
+        (fun n ↦ (D n).1)
         hsq
 
-/-- Hatcher's cellular chain complex, selected from its exact source graph.
-
-The later square-zero theorem proves that the graph is inhabited; no such
-proof is part of this Sweep-III declaration. -/
-def integralCWCellularChainComplexData
+/-- Source-faithful cellular chain-complex data relative to supplied valid
+cellular boundaries.  The later square-zero theorem supplies existence. -/
+abbrev IntegralCWCellularChainComplexData
     (X : Type) [TopologicalSpace X] [T2Space X]
-    [Topology.CWComplex (Set.univ : Set X)] :
-    ChainComplex AddCommGrpCat.{0} ℕ :=
-  Classical.epsilon (IsIntegralCWCellularChainComplexData X)
+    [Topology.CWComplex (Set.univ : Set X)]
+    (D : IntegralCWBoundarySystemData X) :=
+  {K : ChainComplex AddCommGrpCat.{0} ℕ //
+    IsIntegralCWCellularChainComplexData X D K}
 
-/-- Integral cellular homology, defined as homology of the selected cellular
-chain complex. -/
+/-- Integral cellular homology of supplied valid cellular-chain-complex data. -/
 def integralCWCellularHomologyData
     (X : Type) [TopologicalSpace X] [T2Space X]
-    [Topology.CWComplex (Set.univ : Set X)] (n : ℕ) : AddCommGrpCat.{0} :=
-  (integralCWCellularChainComplexData X).homology n
+    [Topology.CWComplex (Set.univ : Set X)]
+    {D : IntegralCWBoundarySystemData X}
+    (K : IntegralCWCellularChainComplexData X D)
+    (n : ℕ) : AddCommGrpCat.{0} :=
+  K.1.homology n
 
 end LeanCategories.Topology
