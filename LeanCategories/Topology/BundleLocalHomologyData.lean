@@ -147,50 +147,52 @@ def IsLocalCoefficientLiftGroupData
       P.classOf c = P.classOf a + P.classOf b ↔
         IsSumLocalCoefficientLiftData D a b c
 
-instance
+/-- Source-faithful lift-group presentation data for one singular simplex. -/
+abbrev LocalCoefficientLiftGroupPresentationData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
-    (D : AbelianGroupBundleData E X) {n : ℕ}
-    (σ : (localCoefficientSSet X).obj
-      (Opposite.op (SimplexCategory.mk n))) :
-    Nonempty (LocalCoefficientLiftGroupCandidateData D σ) :=
-  ⟨⟨ULift.{u} ℤ, fun _ => 0⟩⟩
-
-/-- The source lift group, selected from its exact pointwise specification. -/
-def localCoefficientLiftGroupCandidateData
-    {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
-    (D : AbelianGroupBundleData E X) (_hD : IsAbelianGroupBundleData D)
+    (D : AbelianGroupBundleData E X)
     {n : ℕ}
-    (σ : (localCoefficientSSet X).obj
-      (Opposite.op (SimplexCategory.mk n))) :
-    LocalCoefficientLiftGroupCandidateData D σ :=
-  Classical.epsilon (IsLocalCoefficientLiftGroupData D σ)
+    (σ : (localCoefficientSSet X).obj (Opposite.op (SimplexCategory.mk n))) :=
+  {P : LocalCoefficientLiftGroupCandidateData D σ //
+    IsLocalCoefficientLiftGroupData D σ P}
+
+/-- A certified lift-group presentation for every singular simplex. -/
+structure LocalCoefficientLiftGroupSystemData
+    {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
+    (D : AbelianGroupBundleData E X) (_hD : IsAbelianGroupBundleData D) where
+  group : ∀ {n : ℕ}
+    (σ : (localCoefficientSSet X).obj (Opposite.op (SimplexCategory.mk n))),
+    LocalCoefficientLiftGroupPresentationData D σ
 
 /-- The coefficient group of lifts of a fixed simplex. -/
 abbrev LocalCoefficientLiftGroupData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
+    (L : LocalCoefficientLiftGroupSystemData D hD)
     {n : ℕ}
     (σ : (localCoefficientSSet X).obj
       (Opposite.op (SimplexCategory.mk n))) : Type u :=
-  (localCoefficientLiftGroupCandidateData D hD σ).carrier
+  (L.group σ).1.carrier
 
 /-- Hatcher's local-coefficient chain group C_n(X;E): the direct sum, over
 base singular simplices, of their groups of lifts. -/
 abbrev LocalCoefficientChainData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
+    (L : LocalCoefficientLiftGroupSystemData D hD)
     (n : ℕ) :=
   DirectSum
     ((localCoefficientSSet X).obj (Opposite.op (SimplexCategory.mk n)))
-    (fun σ => LocalCoefficientLiftGroupData D hD σ)
+    (fun σ => LocalCoefficientLiftGroupData D hD L σ)
 
 /-- Type of a candidate boundary C_{n+1}(X;E) -> C_n(X;E). -/
 abbrev LocalCoefficientBoundaryHomData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
+    (L : LocalCoefficientLiftGroupSystemData D hD)
     (n : ℕ) :=
-  LocalCoefficientChainData D hD (n + 1) →+
-    LocalCoefficientChainData D hD n
+  LocalCoefficientChainData D hD L (n + 1) →+
+    LocalCoefficientChainData D hD L n
 
 /-- Exact alternating-face specification of Hatcher's local-coefficient
 boundary. Face lifts are existentially specified rather than constructed,
@@ -198,7 +200,8 @@ so no lifting/naturality theorem enters Sweep III. -/
 def IsLocalCoefficientBoundaryData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (n : ℕ) (d : LocalCoefficientBoundaryHomData D hD n) : Prop :=
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (n : ℕ) (d : LocalCoefficientBoundaryHomData D hD L n) : Prop :=
   letI : DecidableEq ((localCoefficientSSet X).obj
       (Opposite.op (SimplexCategory.mk (n + 1)))) := Classical.decEq _
   letI : DecidableEq ((localCoefficientSSet X).obj
@@ -210,58 +213,64 @@ def IsLocalCoefficientBoundaryData
         LocalCoefficientLiftData D ((localCoefficientSSet X).δ i σ),
       (∀ i, (faces i).simplex = (localCoefficientSSet E).δ i l.simplex) ∧
         d (DirectSum.of
-          (fun τ => LocalCoefficientLiftGroupData D hD τ) σ
-          ((localCoefficientLiftGroupCandidateData D hD σ).classOf l)) =
+          (fun τ => LocalCoefficientLiftGroupData D hD L τ) σ
+          ((L.group σ).1.classOf l)) =
         ∑ i : Fin (n + 2),
           (-1 : ℤ) ^ i.val •
             DirectSum.of
-              (fun τ => LocalCoefficientLiftGroupData D hD τ)
+              (fun τ => LocalCoefficientLiftGroupData D hD L τ)
               ((localCoefficientSSet X).δ i σ)
-              ((localCoefficientLiftGroupCandidateData D hD
-                ((localCoefficientSSet X).δ i σ)).classOf (faces i))
+              ((L.group ((localCoefficientSSet X).δ i σ)).1.classOf (faces i))
 
-/-- Hatcher's degree-(n+1 to n) local-coefficient boundary, selected from the
-alternating restriction formula. -/
-def localCoefficientBoundaryData
+/-- Source-faithful degree-`n+1 → n` boundary data. -/
+abbrev LocalCoefficientBoundaryData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (n : ℕ) : LocalCoefficientBoundaryHomData D hD n :=
-  Classical.epsilon (IsLocalCoefficientBoundaryData D hD n)
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (n : ℕ) :=
+  {d : LocalCoefficientBoundaryHomData D hD L n //
+    IsLocalCoefficientBoundaryData D hD L n d}
+
+/-- A certified boundary in every degree. Square-zero remains result content. -/
+abbrev LocalCoefficientBoundarySystemData
+    {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
+    (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
+    (L : LocalCoefficientLiftGroupSystemData D hD) :=
+  ∀ n : ℕ, LocalCoefficientBoundaryData D hD L n
 
 /-- Cycle predicate in degree n, with every degree-zero chain a cycle. -/
 def IsLocalCoefficientCycleData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (n : ℕ) (x : LocalCoefficientChainData D hD n) : Prop :=
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (B : LocalCoefficientBoundarySystemData D hD L)
+    (n : ℕ) (x : LocalCoefficientChainData D hD L n) : Prop :=
   match n with
   | 0 => True
-  | m + 1 => localCoefficientBoundaryData D hD m x = 0
+  | m + 1 => (B m).1 x = 0
 
 /-- A local-coefficient cycle, without installing a subgroup structure. -/
 structure LocalCoefficientCycleData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (B : LocalCoefficientBoundarySystemData D hD L)
     (n : ℕ) where
-  chain : LocalCoefficientChainData D hD n
-  isCycle : IsLocalCoefficientCycleData D hD n chain
+  chain : LocalCoefficientChainData D hD L n
+  isCycle : IsLocalCoefficientCycleData D hD L B n chain
 
 /-- Candidate quotient carrier for H_n(X;E). -/
 structure LocalCoefficientHomologyCandidateData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (B : LocalCoefficientBoundarySystemData D hD L)
     (n : ℕ) where
   carrier : Type u
   [instAddCommGroup : AddCommGroup carrier]
-  classOf : LocalCoefficientCycleData D hD n → carrier
+  classOf : LocalCoefficientCycleData D hD L B n → carrier
 
 attribute [instance] LocalCoefficientHomologyCandidateData.instAddCommGroup
-
-instance
-    {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
-    (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (n : ℕ) :
-    Nonempty (LocalCoefficientHomologyCandidateData D hD n) :=
-  ⟨⟨ULift.{u} ℤ, fun _ => 0⟩⟩
 
 /-- Exact cycles-mod-boundaries quotient specification for H_n(X;E).
 
@@ -271,31 +280,38 @@ equivalence relation. -/
 def IsLocalCoefficientHomologyData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (n : ℕ) (H : LocalCoefficientHomologyCandidateData D hD n) : Prop :=
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (B : LocalCoefficientBoundarySystemData D hD L)
+    (n : ℕ) (H : LocalCoefficientHomologyCandidateData D hD L B n) : Prop :=
   Function.Surjective H.classOf ∧
     (∀ x y,
       H.classOf x = H.classOf y ↔
-        ∃ z : LocalCoefficientChainData D hD (n + 1),
-          x.chain - y.chain = localCoefficientBoundaryData D hD n z) ∧
-    (∃ z : LocalCoefficientCycleData D hD n,
+        ∃ z : LocalCoefficientChainData D hD L (n + 1),
+          x.chain - y.chain = (B n).1 z) ∧
+    (∃ z : LocalCoefficientCycleData D hD L B n,
       z.chain = 0 ∧ H.classOf z = 0) ∧
-    ∀ x y : LocalCoefficientCycleData D hD n,
-      ∃ z : LocalCoefficientCycleData D hD n,
+    ∀ x y : LocalCoefficientCycleData D hD L B n,
+      ∃ z : LocalCoefficientCycleData D hD L B n,
         z.chain = x.chain + y.chain ∧
           H.classOf z = H.classOf x + H.classOf y
 
-/-- Hatcher's H_n(X;E) quotient presentation. -/
-def localCoefficientHomologyCandidateData
-    {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
-    (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (n : ℕ) : LocalCoefficientHomologyCandidateData D hD n :=
-  Classical.epsilon (IsLocalCoefficientHomologyData D hD n)
-
-/-- Source-facing carrier of homology with coefficients in the bundle E. -/
+/-- Source-faithful Hatcher homology quotient presentation data. -/
 abbrev LocalCoefficientHomologyData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (n : ℕ) : Type u :=
-  (localCoefficientHomologyCandidateData D hD n).carrier
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (B : LocalCoefficientBoundarySystemData D hD L)
+    (n : ℕ) :=
+  {H : LocalCoefficientHomologyCandidateData D hD L B n //
+    IsLocalCoefficientHomologyData D hD L B n H}
+
+/-- Source-facing carrier of homology with coefficients in the bundle E. -/
+abbrev LocalCoefficientHomologyGroupData
+    {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
+    (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
+    {L : LocalCoefficientLiftGroupSystemData D hD}
+    {B : LocalCoefficientBoundarySystemData D hD L}
+    {n : ℕ} (H : LocalCoefficientHomologyData D hD L B n) : Type u :=
+  H.1.carrier
 
 end LeanCategories.Topology

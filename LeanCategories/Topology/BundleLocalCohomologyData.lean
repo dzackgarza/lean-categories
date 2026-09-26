@@ -48,19 +48,21 @@ of the already routed groups of lifts of individual simplices. -/
 abbrev LocalCoefficientCochainData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
+    (L : LocalCoefficientLiftGroupSystemData D hD)
     (n : ℕ) :=
   (σ : (localCoefficientSSet X).obj
     (Opposite.op (SimplexCategory.mk n))) →
-      LocalCoefficientLiftGroupData D hD σ
+      LocalCoefficientLiftGroupData D hD L σ
 
 /-- Send a literal assignment of lifts to its pointwise classes in
 `C^n(X;E)`. -/
 def localCoefficientRawCochainClassData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
+    (L : LocalCoefficientLiftGroupSystemData D hD)
     {n : ℕ} (φ : LocalCoefficientRawCochainData D n) :
-    LocalCoefficientCochainData D hD n :=
-  fun σ => (localCoefficientLiftGroupCandidateData D hD σ).classOf (φ σ)
+    LocalCoefficientCochainData D hD L n :=
+  fun σ => (L.group σ).1.classOf (φ σ)
 
 /-- A lift of a face cochain extends over the ambient simplex when its
 restriction to that face is the given lift.  Existence and uniqueness are
@@ -80,9 +82,10 @@ def IsLocalCoefficientCofaceExtensionData
 abbrev LocalCoefficientCoboundaryHomData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
+    (L : LocalCoefficientLiftGroupSystemData D hD)
     (n : ℕ) :=
-  LocalCoefficientCochainData D hD n →+
-    LocalCoefficientCochainData D hD (n + 1)
+  LocalCoefficientCochainData D hD L n →+
+    LocalCoefficientCochainData D hD L (n + 1)
 
 /-- Exact alternating-face/transport specification of Hatcher's coboundary.
 
@@ -92,7 +95,8 @@ sum of these extensions. -/
 def IsLocalCoefficientCoboundaryData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (n : ℕ) (d : LocalCoefficientCoboundaryHomData D hD n) : Prop :=
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (n : ℕ) (d : LocalCoefficientCoboundaryHomData D hD L n) : Prop :=
   ∀ φ : LocalCoefficientRawCochainData D n,
     ∃ ψ : LocalCoefficientRawCochainData D (n + 1),
       (∀ σ : (localCoefficientSSet X).obj
@@ -106,61 +110,70 @@ def IsLocalCoefficientCoboundaryData
               ∑ i : Fin (n + 2),
                 (-1 : ℤ) ^ i.val •
                   localCoefficientLiftCoordinateData D (extensions i) t) ∧
-      d (localCoefficientRawCochainClassData D hD φ) =
-        localCoefficientRawCochainClassData D hD ψ
+      d (localCoefficientRawCochainClassData D hD L φ) =
+        localCoefficientRawCochainClassData D hD L ψ
 
-/-- Hatcher's local-coefficient coboundary, selected from the exact
-alternating face-extension formula. -/
-def localCoefficientCoboundaryData
+/-- Source-faithful local-coefficient coboundary data. -/
+abbrev LocalCoefficientCoboundaryData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (n : ℕ) : LocalCoefficientCoboundaryHomData D hD n :=
-  Classical.epsilon (IsLocalCoefficientCoboundaryData D hD n)
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (n : ℕ) :=
+  {d : LocalCoefficientCoboundaryHomData D hD L n //
+    IsLocalCoefficientCoboundaryData D hD L n d}
+
+/-- A certified coboundary in every degree. Square-zero is theorem content. -/
+abbrev LocalCoefficientCoboundarySystemData
+    {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
+    (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
+    (L : LocalCoefficientLiftGroupSystemData D hD) :=
+  ∀ n : ℕ, LocalCoefficientCoboundaryData D hD L n
 
 /-- Local-coefficient cocycles in degree `n`. -/
 def IsLocalCoefficientCocycleData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (n : ℕ) (x : LocalCoefficientCochainData D hD n) : Prop :=
-  localCoefficientCoboundaryData D hD n x = 0
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (C : LocalCoefficientCoboundarySystemData D hD L)
+    (n : ℕ) (x : LocalCoefficientCochainData D hD L n) : Prop :=
+  (C n).1 x = 0
 
 /-- A local-coefficient cocycle, without installing a subgroup structure. -/
 structure LocalCoefficientCocycleData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (C : LocalCoefficientCoboundarySystemData D hD L)
     (n : ℕ) where
-  cochain : LocalCoefficientCochainData D hD n
-  isCocycle : IsLocalCoefficientCocycleData D hD n cochain
+  cochain : LocalCoefficientCochainData D hD L n
+  isCocycle : IsLocalCoefficientCocycleData D hD L C n cochain
 
 /-- Difference of two degree-`n` cocycles is a coboundary.  In degree zero
 there are no negative-degree cochains. -/
 def IsLocalCoefficientCoboundaryDifferenceData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (n : ℕ) (x y : LocalCoefficientCochainData D hD n) : Prop :=
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (C : LocalCoefficientCoboundarySystemData D hD L)
+    (n : ℕ) (x y : LocalCoefficientCochainData D hD L n) : Prop :=
   match n with
   | 0 => x = y
   | m + 1 =>
-      ∃ z : LocalCoefficientCochainData D hD m,
-        x - y = localCoefficientCoboundaryData D hD m z
+      ∃ z : LocalCoefficientCochainData D hD L m,
+        x - y = (C m).1 z
 
 /-- Candidate quotient carrier for `H^n(X;E)`. -/
 structure LocalCoefficientCohomologyCandidateData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (C : LocalCoefficientCoboundarySystemData D hD L)
     (n : ℕ) where
   carrier : Type u
   [instAddCommGroup : AddCommGroup carrier]
-  classOf : LocalCoefficientCocycleData D hD n → carrier
+  classOf : LocalCoefficientCocycleData D hD L C n → carrier
 
 attribute [instance] LocalCoefficientCohomologyCandidateData.instAddCommGroup
-
-instance
-    {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
-    (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (n : ℕ) :
-    Nonempty (LocalCoefficientCohomologyCandidateData D hD n) :=
-  ⟨⟨ULift.{u} ℤ, fun _ => 0⟩⟩
 
 /-- Exact cocycles-mod-coboundaries specification of `H^n(X;E)`.
 
@@ -169,32 +182,39 @@ equivalence relation is proved in Sweep III. -/
 def IsLocalCoefficientCohomologyData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (n : ℕ) (H : LocalCoefficientCohomologyCandidateData D hD n) : Prop :=
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (C : LocalCoefficientCoboundarySystemData D hD L)
+    (n : ℕ) (H : LocalCoefficientCohomologyCandidateData D hD L C n) : Prop :=
   Function.Surjective H.classOf ∧
     (∀ x y,
       H.classOf x = H.classOf y ↔
-        IsLocalCoefficientCoboundaryDifferenceData D hD n x.cochain y.cochain) ∧
-    (∃ z : LocalCoefficientCocycleData D hD n,
+        IsLocalCoefficientCoboundaryDifferenceData D hD L C n x.cochain y.cochain) ∧
+    (∃ z : LocalCoefficientCocycleData D hD L C n,
       z.cochain = 0 ∧ H.classOf z = 0) ∧
-    ∀ x y : LocalCoefficientCocycleData D hD n,
-      ∃ z : LocalCoefficientCocycleData D hD n,
+    ∀ x y : LocalCoefficientCocycleData D hD L C n,
+      ∃ z : LocalCoefficientCocycleData D hD L C n,
         z.cochain = x.cochain + y.cochain ∧
           H.classOf z = H.classOf x + H.classOf y
 
-/-- Hatcher's `H^n(X;E)` quotient presentation. -/
-def localCoefficientCohomologyCandidateData
-    {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
-    (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (n : ℕ) : LocalCoefficientCohomologyCandidateData D hD n :=
-  Classical.epsilon (IsLocalCoefficientCohomologyData D hD n)
-
-/-- Source-facing carrier of cohomology with coefficients in the bundle
-`E`. -/
+/-- Source-faithful `H^n(X;E)` quotient presentation data. -/
 abbrev LocalCoefficientCohomologyData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (n : ℕ) : Type u :=
-  (localCoefficientCohomologyCandidateData D hD n).carrier
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (C : LocalCoefficientCoboundarySystemData D hD L)
+    (n : ℕ) :=
+  {H : LocalCoefficientCohomologyCandidateData D hD L C n //
+    IsLocalCoefficientCohomologyData D hD L C n H}
+
+/-- Source-facing carrier of cohomology with coefficients in the bundle
+`E`. -/
+abbrev LocalCoefficientCohomologyGroupData
+    {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
+    (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
+    {L : LocalCoefficientLiftGroupSystemData D hD}
+    {C : LocalCoefficientCoboundarySystemData D hD L}
+    {n : ℕ} (H : LocalCoefficientCohomologyData D hD L C n) : Type u :=
+  H.1.carrier
 
 /-- Regard a singular simplex in a subspace `A ⊆ X` as a singular simplex
 of `X`. -/
@@ -234,57 +254,64 @@ absolute cochain group. -/
 structure LocalCoefficientRelativeCochainCandidateData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
+    (L : LocalCoefficientLiftGroupSystemData D hD)
     (A : Set X) (n : ℕ) where
   carrier : Type u
   [instAddCommGroup : AddCommGroup carrier]
   classOf : LocalCoefficientRelativeRawCochainData D A n → carrier
-  toAbsolute : carrier →+ LocalCoefficientCochainData D hD n
+  toAbsolute : carrier →+ LocalCoefficientCochainData D hD L n
 
 attribute [instance]
   LocalCoefficientRelativeCochainCandidateData.instAddCommGroup
-
-instance
-    {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
-    (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (A : Set X) (n : ℕ) :
-    Nonempty (LocalCoefficientRelativeCochainCandidateData D hD A n) :=
-  ⟨⟨ULift.{u} ℤ, fun _ => 0, 0⟩⟩
 
 /-- Exact kernel-of-restriction specification for relative cochains. -/
 def IsLocalCoefficientRelativeCochainData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
+    (L : LocalCoefficientLiftGroupSystemData D hD)
     (A : Set X) (n : ℕ)
-    (P : LocalCoefficientRelativeCochainCandidateData D hD A n) : Prop :=
+    (P : LocalCoefficientRelativeCochainCandidateData D hD L A n) : Prop :=
   Function.Bijective P.classOf ∧
     Function.Injective P.toAbsolute ∧
     ∀ φ : LocalCoefficientRelativeRawCochainData D A n,
       P.toAbsolute (P.classOf φ) =
-        localCoefficientRawCochainClassData D hD φ.cochain
+        localCoefficientRawCochainClassData D hD L φ.cochain
 
-/-- Hatcher's relative cochain group, selected from the exact
-kernel-of-restriction specification. -/
-def localCoefficientRelativeCochainCandidateData
-    {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
-    (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (A : Set X) (n : ℕ) :
-    LocalCoefficientRelativeCochainCandidateData D hD A n :=
-  Classical.epsilon (IsLocalCoefficientRelativeCochainData D hD A n)
-
-/-- Source-facing relative cochain group `C^n(X,A;E)`. -/
+/-- Source-faithful relative cochain presentation data. -/
 abbrev LocalCoefficientRelativeCochainData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (A : Set X) (n : ℕ) : Type u :=
-  (localCoefficientRelativeCochainCandidateData D hD A n).carrier
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (A : Set X) (n : ℕ) :=
+  {P : LocalCoefficientRelativeCochainCandidateData D hD L A n //
+    IsLocalCoefficientRelativeCochainData D hD L A n P}
+
+/-- A certified relative cochain presentation in every degree. -/
+abbrev LocalCoefficientRelativeCochainSystemData
+    {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
+    (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (A : Set X) :=
+  ∀ n : ℕ, LocalCoefficientRelativeCochainData D hD L A n
+
+/-- Source-facing relative cochain group `C^n(X,A;E)`. -/
+abbrev LocalCoefficientRelativeCochainGroupData
+    {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
+    (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
+    {L : LocalCoefficientLiftGroupSystemData D hD}
+    {A : Set X} (R : LocalCoefficientRelativeCochainSystemData D hD L A)
+    (n : ℕ) : Type u :=
+  (R n).1.carrier
 
 /-- Type of a candidate relative local-coefficient coboundary. -/
 abbrev LocalCoefficientRelativeCoboundaryHomData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (A : Set X) (n : ℕ) :=
-  LocalCoefficientRelativeCochainData D hD A n →+
-    LocalCoefficientRelativeCochainData D hD A (n + 1)
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    {A : Set X} (R : LocalCoefficientRelativeCochainSystemData D hD L A)
+    (n : ℕ) :=
+  LocalCoefficientRelativeCochainGroupData D hD R n →+
+    LocalCoefficientRelativeCochainGroupData D hD R (n + 1)
 
 /-- The relative coboundary is exactly the restriction of the absolute
 coboundary to the relative kernel.  Preservation of the kernel is not proved
@@ -292,101 +319,134 @@ here. -/
 def IsLocalCoefficientRelativeCoboundaryData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (A : Set X) (n : ℕ)
-    (d : LocalCoefficientRelativeCoboundaryHomData D hD A n) : Prop :=
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (C : LocalCoefficientCoboundarySystemData D hD L)
+    (A : Set X) (R : LocalCoefficientRelativeCochainSystemData D hD L A)
+    (n : ℕ)
+    (d : LocalCoefficientRelativeCoboundaryHomData D hD L R n) : Prop :=
   ∀ x,
-    (localCoefficientRelativeCochainCandidateData D hD A (n + 1)).toAbsolute
-        (d x) =
-      localCoefficientCoboundaryData D hD n
-        ((localCoefficientRelativeCochainCandidateData D hD A n).toAbsolute x)
+    (R (n + 1)).1.toAbsolute (d x) =
+      (C n).1 ((R n).1.toAbsolute x)
 
-/-- Hatcher's relative local-coefficient coboundary, selected from the exact
-restriction-of-`δ` specification. -/
-def localCoefficientRelativeCoboundaryData
+/-- Source-faithful relative coboundary data. -/
+abbrev LocalCoefficientRelativeCoboundaryData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (A : Set X) (n : ℕ) :
-    LocalCoefficientRelativeCoboundaryHomData D hD A n :=
-  Classical.epsilon (IsLocalCoefficientRelativeCoboundaryData D hD A n)
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (C : LocalCoefficientCoboundarySystemData D hD L)
+    (A : Set X) (R : LocalCoefficientRelativeCochainSystemData D hD L A)
+    (n : ℕ) :=
+  {d : LocalCoefficientRelativeCoboundaryHomData D hD L R n //
+    IsLocalCoefficientRelativeCoboundaryData D hD L C A R n d}
+
+/-- A certified relative coboundary in every degree. -/
+abbrev LocalCoefficientRelativeCoboundarySystemData
+    {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
+    (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (C : LocalCoefficientCoboundarySystemData D hD L)
+    (A : Set X) (R : LocalCoefficientRelativeCochainSystemData D hD L A) :=
+  ∀ n : ℕ, LocalCoefficientRelativeCoboundaryData D hD L C A R n
 
 /-- Relative local-coefficient cocycles. -/
 def IsLocalCoefficientRelativeCocycleData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (A : Set X) (n : ℕ)
-    (x : LocalCoefficientRelativeCochainData D hD A n) : Prop :=
-  localCoefficientRelativeCoboundaryData D hD A n x = 0
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (C : LocalCoefficientCoboundarySystemData D hD L)
+    (A : Set X) (R : LocalCoefficientRelativeCochainSystemData D hD L A)
+    (RC : LocalCoefficientRelativeCoboundarySystemData D hD L C A R)
+    (n : ℕ)
+    (x : LocalCoefficientRelativeCochainGroupData D hD R n) : Prop :=
+  (RC n).1 x = 0
 
 /-- A relative local-coefficient cocycle. -/
 structure LocalCoefficientRelativeCocycleData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (A : Set X) (n : ℕ) where
-  cochain : LocalCoefficientRelativeCochainData D hD A n
-  isCocycle : IsLocalCoefficientRelativeCocycleData D hD A n cochain
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (C : LocalCoefficientCoboundarySystemData D hD L)
+    (A : Set X) (R : LocalCoefficientRelativeCochainSystemData D hD L A)
+    (RC : LocalCoefficientRelativeCoboundarySystemData D hD L C A R)
+    (n : ℕ) where
+  cochain : LocalCoefficientRelativeCochainGroupData D hD R n
+  isCocycle : IsLocalCoefficientRelativeCocycleData D hD L C A R RC n cochain
 
 /-- Relative cocycles differ by a relative coboundary. -/
 def IsLocalCoefficientRelativeCoboundaryDifferenceData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (A : Set X) (n : ℕ)
-    (x y : LocalCoefficientRelativeCochainData D hD A n) : Prop :=
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (C : LocalCoefficientCoboundarySystemData D hD L)
+    (A : Set X) (R : LocalCoefficientRelativeCochainSystemData D hD L A)
+    (RC : LocalCoefficientRelativeCoboundarySystemData D hD L C A R)
+    (n : ℕ)
+    (x y : LocalCoefficientRelativeCochainGroupData D hD R n) : Prop :=
   match n with
   | 0 => x = y
   | m + 1 =>
-      ∃ z : LocalCoefficientRelativeCochainData D hD A m,
-        x - y = localCoefficientRelativeCoboundaryData D hD A m z
+      ∃ z : LocalCoefficientRelativeCochainGroupData D hD R m,
+        x - y = (RC m).1 z
 
 /-- Candidate quotient carrier for `H^n(X,A;E)`. -/
 structure LocalCoefficientRelativeCohomologyCandidateData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (A : Set X) (n : ℕ) where
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (C : LocalCoefficientCoboundarySystemData D hD L)
+    (A : Set X) (R : LocalCoefficientRelativeCochainSystemData D hD L A)
+    (RC : LocalCoefficientRelativeCoboundarySystemData D hD L C A R)
+    (n : ℕ) where
   carrier : Type u
   [instAddCommGroup : AddCommGroup carrier]
-  classOf : LocalCoefficientRelativeCocycleData D hD A n → carrier
+  classOf : LocalCoefficientRelativeCocycleData D hD L C A R RC n → carrier
 
 attribute [instance]
   LocalCoefficientRelativeCohomologyCandidateData.instAddCommGroup
-
-instance
-    {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
-    (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (A : Set X) (n : ℕ) :
-    Nonempty (LocalCoefficientRelativeCohomologyCandidateData D hD A n) :=
-  ⟨⟨ULift.{u} ℤ, fun _ => 0⟩⟩
 
 /-- Exact quotient specification for relative local-coefficient cohomology. -/
 def IsLocalCoefficientRelativeCohomologyData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (A : Set X) (n : ℕ)
-    (H : LocalCoefficientRelativeCohomologyCandidateData D hD A n) : Prop :=
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (C : LocalCoefficientCoboundarySystemData D hD L)
+    (A : Set X) (R : LocalCoefficientRelativeCochainSystemData D hD L A)
+    (RC : LocalCoefficientRelativeCoboundarySystemData D hD L C A R)
+    (n : ℕ)
+    (H : LocalCoefficientRelativeCohomologyCandidateData D hD L C A R RC n) : Prop :=
   Function.Surjective H.classOf ∧
     (∀ x y,
       H.classOf x = H.classOf y ↔
         IsLocalCoefficientRelativeCoboundaryDifferenceData
-          D hD A n x.cochain y.cochain) ∧
-    (∃ z : LocalCoefficientRelativeCocycleData D hD A n,
+          D hD L C A R RC n x.cochain y.cochain) ∧
+    (∃ z : LocalCoefficientRelativeCocycleData D hD L C A R RC n,
       z.cochain = 0 ∧ H.classOf z = 0) ∧
-    ∀ x y : LocalCoefficientRelativeCocycleData D hD A n,
-      ∃ z : LocalCoefficientRelativeCocycleData D hD A n,
+    ∀ x y : LocalCoefficientRelativeCocycleData D hD L C A R RC n,
+      ∃ z : LocalCoefficientRelativeCocycleData D hD L C A R RC n,
         z.cochain = x.cochain + y.cochain ∧
           H.classOf z = H.classOf x + H.classOf y
 
-/-- Hatcher's relative local-coefficient cohomology quotient. -/
-def localCoefficientRelativeCohomologyCandidateData
-    {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
-    (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (A : Set X) (n : ℕ) :
-    LocalCoefficientRelativeCohomologyCandidateData D hD A n :=
-  Classical.epsilon (IsLocalCoefficientRelativeCohomologyData D hD A n)
-
-/-- Source-facing carrier of `H^n(X,A;E)`. -/
+/-- Source-faithful relative local-coefficient cohomology quotient data. -/
 abbrev LocalCoefficientRelativeCohomologyData
     {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
     (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
-    (A : Set X) (n : ℕ) : Type u :=
-  (localCoefficientRelativeCohomologyCandidateData D hD A n).carrier
+    (L : LocalCoefficientLiftGroupSystemData D hD)
+    (C : LocalCoefficientCoboundarySystemData D hD L)
+    (A : Set X) (R : LocalCoefficientRelativeCochainSystemData D hD L A)
+    (RC : LocalCoefficientRelativeCoboundarySystemData D hD L C A R)
+    (n : ℕ) :=
+  {H : LocalCoefficientRelativeCohomologyCandidateData D hD L C A R RC n //
+    IsLocalCoefficientRelativeCohomologyData D hD L C A R RC n H}
+
+/-- Source-facing carrier of `H^n(X,A;E)`. -/
+abbrev LocalCoefficientRelativeCohomologyGroupData
+    {E X : Type u} [TopologicalSpace E] [TopologicalSpace X]
+    (D : AbelianGroupBundleData E X) (hD : IsAbelianGroupBundleData D)
+    {L : LocalCoefficientLiftGroupSystemData D hD}
+    {C : LocalCoefficientCoboundarySystemData D hD L}
+    {A : Set X} {R : LocalCoefficientRelativeCochainSystemData D hD L A}
+    {RC : LocalCoefficientRelativeCoboundarySystemData D hD L C A R}
+    {n : ℕ} (H : LocalCoefficientRelativeCohomologyData D hD L C A R RC n) : Type u :=
+  H.1.carrier
 
 end LeanCategories.Topology
