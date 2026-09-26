@@ -25,6 +25,14 @@ universe u
 
 variable {G : Type u} [Group G] [TopologicalSpace G]
 
+/-- Witness data for a quasisplit group: a Borel subgroup defined over the
+chosen base. -/
+structure QuasisplitData
+    (isDefinedOverBase : Subgroup G → Prop) where
+  B : Subgroup G
+  isBorel : IsBorelSubgroup B
+  isDefinedOverBase_B : isDefinedOverBase B
+
 /-- A group is quasisplit over the base when some Borel subgroup is defined
 over that base.
 
@@ -33,7 +41,6 @@ general-field layer; keeping it explicit avoids replacing a base-defined
 Borel by a Borel only after algebraic closure. -/
 def IsQuasisplit
     (isDefinedOverBase : Subgroup G → Prop) : Prop :=
-  ∃ B : Subgroup G,
-    IsBorelSubgroup B ∧ isDefinedOverBase B
+  Nonempty (QuasisplitData isDefinedOverBase)
 
 end LeanCategories.AlgebraicGeometry
