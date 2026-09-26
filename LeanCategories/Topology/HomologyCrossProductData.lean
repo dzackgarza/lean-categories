@@ -5,11 +5,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Topology.SingularCrossProduct
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Products
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
+public import Mathlib.CategoryTheory.Abelian.Ext
 public import Mathlib.Data.Finsupp.ToDFinsupp
 public import Mathlib.LinearAlgebra.Finsupp.LSum
+public import Mathlib.Topology.Category.TopCat.Limits.Products
 
 /-!
 # Singular-homology cross-product data
@@ -25,8 +28,10 @@ singular-set simplex index with the same Euclidean standard-simplex maps used
 by U089.
 
 This file records those canonical carrier identifications and specifies the
-homology cross product by its representative-level graph. It does not prove
-the signed boundary identity, that the raw product of cycles is a cycle,
+homology cross product by its representative-level graph.  Valid cross-product
+data are candidates satisfying that exact graph; no arbitrary candidate is
+selected before the signed boundary/cycle-closure/descent results. It does not
+prove the signed boundary identity, that the raw product of cycles is a cycle,
 naturality, or representative independence. Those are result-layer content.
 -/
 
@@ -34,7 +39,7 @@ naturality, or representative independence. Those are result-layer content.
 
 namespace LeanCategories.Topology
 
-open AlgebraicTopology CategoryTheory CategoryTheory.Limits MonoidalCategory
+open AlgebraicTopology CategoryTheory CategoryTheory.Limits MonoidalCategory DirectSum
 
 /-- Singular n-simplices in Mathlib's singular-set model. -/
 abbrev NativeSingularSimplexData (X : TopCat.{0}) (n : ℕ) : Type :=
@@ -62,12 +67,20 @@ chains to the Finsupp carrier used by FC07-C03-U089. -/
 noncomputable def nativeSingularChainEquivRawData
     (R : Type) [CommRing R] (X : TopCat.{0}) (n : ℕ) :
     (nativeSingularChainComplexData R X).X n ≃ₗ[R]
-      RawSingularChain R X n :=
-  letI := Classical.decEq (NativeSingularSimplexData X n)
-  (nativeSingularChainIsoDirectSumData R X n).toLinearEquiv |>.trans
-    (finsuppLequivDFinsupp R).symm |>.trans
-    (Finsupp.domLCongr
-      (TopCat.toSSetObjEquiv X (Opposite.op (SimplexCategory.mk n))))
+      RawSingularChain R X n := by
+  classical
+  exact
+    (nativeSingularChainIsoDirectSumData R X n).toLinearEquiv |>.trans
+      (finsuppLequivDFinsupp R).symm |>.trans
+      (Finsupp.domLCongr
+        (TopCat.toSSetObjEquiv X (Opposite.op (SimplexCategory.mk n))))
+
+/-- Push a raw singular chain forward by postcomposition with a continuous
+map.  This is only finite-support reindexing of simplex generators. -/
+noncomputable def rawSingularChainMapData
+    (R : Type) [CommRing R] {X Y : TopCat.{0}} (f : X ⟶ Y) (n : ℕ) :
+    RawSingularChain R X n →ₗ[R] RawSingularChain R Y n :=
+  Finsupp.lmapDomain R R (fun σ => f.hom.comp σ)
 
 /-- Singular homology as the homology object of the native singular-chain
 complex. -/
@@ -98,18 +111,21 @@ def IsSingularHomologyCrossProductData
     ∃ z : KXY.cycles (i + j),
       (KXY.iCycles (i + j)).hom z =
           (nativeSingularChainEquivRawData R (X ⨯ Y) (i + j)).symm
-            (singularCrossProduct R
-              (nativeSingularChainEquivRawData R X i ((KX.iCycles i).hom x))
-              (nativeSingularChainEquivRawData R Y j ((KY.iCycles j).hom y))) ∧
+            (rawSingularChainMapData R (TopCat.prodIsoProd X Y).inv (i + j)
+              (singularCrossProduct R
+                (nativeSingularChainEquivRawData R X i ((KX.iCycles i).hom x))
+                (nativeSingularChainEquivRawData R Y j ((KY.iCycles j).hom y)))) ∧
         mu.hom
             (((KX.homologyπ i).hom x) ⊗ₜ[R] ((KY.homologyπ j).hom y)) =
           (KXY.homologyπ (i + j)).hom z
 
-/-- Hatcher's homology cross product selected from its exact
-representative-level shuffle-product specification. -/
-def singularHomologyCrossProductData
+/-- Source-faithful homology cross-product data: a candidate homogeneous map
+together with Hatcher's exact representative-level signed-shuffle graph.
+Existence and representative independence remain result content. -/
+abbrev SingularHomologyCrossProductData
     (R : Type) [CommRing R] (X Y : TopCat.{0}) (i j : ℕ) :
-    SingularHomologyCrossProductHomData R X Y i j :=
-  Classical.epsilon (IsSingularHomologyCrossProductData R X Y i j)
+    Type :=
+  {mu : SingularHomologyCrossProductHomData R X Y i j //
+    IsSingularHomologyCrossProductData R X Y i j mu}
 
 end LeanCategories.Topology
