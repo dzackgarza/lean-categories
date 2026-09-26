@@ -75,31 +75,24 @@ def IsVolumeContractionEquivData
     (∀ v, D.inverse (D.forward v) = v) ∧
       ∀ ω, D.forward (D.inverse ω) = ω
 
-/-- Lee's fibrewise isomorphism data, selected from the contraction
-characterization without requiring inverse proofs from a caller. -/
-noncomputable def volumeContractionEquivData
+/-- Source-faithful fibrewise volume-contraction isomorphism data: raw
+forward/inverse maps together with Lee's contraction/inverse specification.
+
+Existence of such data is the later isomorphism result; no arbitrary pair of
+maps is selected before that result. -/
+abbrev VolumeContractionIsoData
     {V : Type u} [NormedAddCommGroup V] [NormedSpace ℝ V] {n : ℕ}
-    (vol : V [⋀^Fin (n + 1)]→L[ℝ] ℝ) :
-    VolumeContractionEquivData V n :=
-  Classical.epsilon (IsVolumeContractionEquivData vol)
+    (vol : V [⋀^Fin (n + 1)]→L[ℝ] ℝ) :=
+  {D : VolumeContractionEquivData V n //
+    IsVolumeContractionEquivData vol D}
 
-/-- A pointwise family of raw volume-contraction isomorphism data. For a
-Riemannian volume form on tangent fibres this is the definition-level carrier
-underlying Lee's smooth bundle isomorphism `β`.
-
-Smoothness of the forward/inverse total-space maps is a separate result and
-is deliberately not stored here. -/
+/-- Pointwise source-faithful volume-contraction isomorphism data for a family
+of top forms.  Smoothness of the resulting total-space maps remains separate
+result content. -/
 abbrev VolumeContractionBundleIsoData
-    {B : Type v} (E : B → Type u)
-    [∀ b, NormedAddCommGroup (E b)] [∀ b, NormedSpace ℝ (E b)] (n : ℕ) :=
-  ∀ b, VolumeContractionEquivData (E b) n
-
-/-- The selected pointwise bundle-isomorphism data for a family of top forms. -/
-noncomputable def volumeContractionBundleIsoData
     {B : Type v} {E : B → Type u}
     [∀ b, NormedAddCommGroup (E b)] [∀ b, NormedSpace ℝ (E b)] {n : ℕ}
-    (vol : ∀ b, E b [⋀^Fin (n + 1)]→L[ℝ] ℝ) :
-    VolumeContractionBundleIsoData E n :=
-  fun b => volumeContractionEquivData (vol b)
+    (vol : ∀ b, E b [⋀^Fin (n + 1)]→L[ℝ] ℝ) :=
+  ∀ b, VolumeContractionIsoData (vol b)
 
 end LeanCategories.Topology
