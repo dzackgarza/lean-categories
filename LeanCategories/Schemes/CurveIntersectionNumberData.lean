@@ -5,7 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Schemes.LocalIntersectionMultiplicityData
-public import Mathlib.Data.Finset.Basic
+public import Mathlib.Algebra.BigOperators.Finprod
 
 /-!
 # Global intersection number of two curve germs
@@ -18,10 +18,12 @@ defines
   `C · C' = ∑_{x ∈ C ∩ C'} m_x(C,C')`.
 
 The source hypotheses imply that the set of intersection points is finite.
-Sweep III does not prove that finiteness statement.  Instead it records the
-exact graph of the finite sum: a finite witness must contain exactly the
-points lying on both closed curve immersions, and the value is the sum of the
-already-realized local multiplicities over that witness.
+Sweep III does not prove that finiteness statement.  Mathlib's `finsum`
+provides the canonical sum of a finitely supported family without requiring a
+finite-support witness at construction time.  Thus the intersection number is
+defined directly as the `finsum` of the already-realized local
+multiplicities over the common point set.  The source finiteness theorem later
+identifies this total construction with the displayed ordinary finite sum.
 
 The source's equivalent description as the length of the scheme-theoretic
 intersection is a comparison result and is deliberately not built into the
@@ -59,13 +61,18 @@ def IsCurveIntersectionNumberData {C C' S : Scheme.{u}}
         letI : Algebra ℂ (S.presheaf.stalk x) := stalkAlgebra x
         exact localIntersectionMultiplicityData i j x
 
-/-- Beauville's global intersection number, selected from its exact finite-sum
-graph.  Finiteness of the intersection and hence satisfaction of this graph
-is a result-layer obligation under the source hypotheses. -/
+/-- Beauville's global intersection number as the native finite-support sum of
+the local multiplicities over the common point set.
+
+Under the source hypotheses the support is finite; proving that fact and
+rewriting this `finsum` as an ordinary sum over `C ∩ C'` are result-layer
+obligations rather than prerequisites for constructing the value. -/
 def curveIntersectionNumberData {C C' S : Scheme.{u}}
     (i : C ⟶ S) (j : C' ⟶ S)
     [IsClosedImmersion i] [IsClosedImmersion j]
     (stalkAlgebra : ∀ x : S, Algebra ℂ (S.presheaf.stalk x)) : ℕ :=
-  Classical.epsilon (IsCurveIntersectionNumberData i j stalkAlgebra)
+  ∑ᶠ x ∈ curveIntersectionPointSetData i j, by
+    letI : Algebra ℂ (S.presheaf.stalk x) := stalkAlgebra x
+    exact localIntersectionMultiplicityData i j x
 
 end LeanCategories.Schemes
