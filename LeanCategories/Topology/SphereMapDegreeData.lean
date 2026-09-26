@@ -58,13 +58,14 @@ def IsSphereMapDegreeData {n : ℕ}
     e.inv ≫ sphereTopIntegralHomologyMapData f ≫ e.hom =
       d • 𝟙 (ModuleCat.of ℤ ℤ)
 
-/-- Hatcher's degree datum for `f : S^n → S^n`, with the source's
+/-- Source-faithful degree data for `f : S^n → S^n`, with the source's
 positive-dimension hypothesis explicit.
 
-This is a definition-level selection from the intrinsic degree relation.
-Existence and uniqueness of a satisfying integer are deferred to Sweep IV. -/
-def sphereMapDegreeData {n : ℕ} (_hn : 0 < n)
-    (f : TopCat.sphere.{0} n ⟶ TopCat.sphere.{0} n) : ℤ :=
-  Classical.epsilon (IsSphereMapDegreeData f)
+The datum is an integer together with Hatcher's intrinsic degree relation.
+Existence and uniqueness are deferred to Sweep IV; no arbitrary integer is
+selected before those results. -/
+abbrev SphereMapDegreeData {n : ℕ} (_hn : 0 < n)
+    (f : TopCat.sphere.{0} n ⟶ TopCat.sphere.{0} n) :=
+  {d : ℤ // IsSphereMapDegreeData f d}
 
 end LeanCategories.Topology
