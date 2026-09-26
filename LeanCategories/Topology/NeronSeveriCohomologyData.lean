@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Schemes.Divisors
 public import LeanCategories.Topology.SurfaceGysinData
+public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Divisor cohomology and Néron--Severi data
@@ -45,6 +46,30 @@ structure DivisorCycleClassPresentationData where
   classMap :
     LeanCategories.Schemes.WeilDivisor X →ₗ[ℤ]
       SchemeIntegralH2Data X
+
+/-- Geometric input reduced to prime divisors only.
+
+Since the Weil-divisor group is free abelian on prime divisors, a class for
+each prime divisor extends canonically to all divisors. -/
+structure PrimeDivisorCycleClassPresentationData where
+  primeClass :
+    LeanCategories.Schemes.PrimeDivisor X →
+      SchemeIntegralH2Data X
+
+/-- Linear extension of prime-divisor cohomology classes to the full
+Weil-divisor group. -/
+noncomputable def divisorCycleClassMapData
+    (D : PrimeDivisorCycleClassPresentationData X) :
+    LeanCategories.Schemes.WeilDivisor X →ₗ[ℤ]
+      SchemeIntegralH2Data X :=
+  Finsupp.linearCombination ℤ D.primeClass
+
+/-- Package a prime-divisor class assignment as divisor cycle-class
+presentation data. -/
+noncomputable def divisorCycleClassPresentationData
+    (D : PrimeDivisorCycleClassPresentationData X) :
+    DivisorCycleClassPresentationData X where
+  classMap := divisorCycleClassMapData X D
 
 /-- Homological equivalence of divisors: equality of integral cohomology
 classes. -/
