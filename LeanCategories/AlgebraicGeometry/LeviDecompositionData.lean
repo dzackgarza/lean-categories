@@ -33,20 +33,17 @@ The predicate says that `L` lies in `P`, is reductive, and complements the
 normal unipotent radical inside `P`.  `Subgroup.IsComplement'` is precisely
 the unique multiplication factorization predicate. -/
 def IsLeviDecomposition
-    (isUnipotentElement : G → Prop) (P L : Subgroup G)
-    (V : UnipotentRadicalData (G := P) (fun p : P => isUnipotentElement p.1))
-    (RL : UnipotentRadicalData (G := L) (fun l : L => isUnipotentElement l.1)) : Prop :=
+    (isUnipotentElement : G → Prop) (P L : Subgroup G) : Prop :=
   L ≤ P ∧
-    IsReductiveGroup (G := L) (fun l : L => isUnipotentElement l.1) RL ∧
-    V.1.Normal ∧
-    (L.comap P.subtype).IsComplement'
-      V.1
+    IsReductiveGroup (G := L) (fun l : L => isUnipotentElement l.1) ∧
+    ∃ V : Subgroup P,
+      IsUnipotentRadical (G := P) (fun p : P => isUnipotentElement p.1) V ∧
+      V.Normal ∧
+      (L.comap P.subtype).IsComplement' V
 
 /-- A Levi factor is a subgroup furnishing a Levi decomposition. -/
 def IsLeviFactor
-    (isUnipotentElement : G → Prop) (P L : Subgroup G)
-    (V : UnipotentRadicalData (G := P) (fun p : P => isUnipotentElement p.1))
-    (RL : UnipotentRadicalData (G := L) (fun l : L => isUnipotentElement l.1)) : Prop :=
-  IsLeviDecomposition isUnipotentElement P L V RL
+    (isUnipotentElement : G → Prop) (P L : Subgroup G) : Prop :=
+  IsLeviDecomposition isUnipotentElement P L
 
 end LeanCategories.AlgebraicGeometry

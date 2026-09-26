@@ -14,10 +14,10 @@ public import Mathlib.Topology.Connected.Basic
 Definition-level realizations of Humphreys FC16-C07-U029 and FC16-C07-U030.
 
 The source characterizes the two radicals as the largest connected normal
-solvable or unipotent subgroups. Their existence is a theorem. Following the
-Sweep-III construction boundary, valid radical data are subgroups carrying
-those greatestness predicates; no arbitrary subgroup is selected before
-existence/uniqueness is proved.
+solvable or unipotent subgroups. Their existence is a theorem.  The
+semisimple/reductive predicates below are stated intrinsically, by requiring
+every connected normal solvable/unipotent subgroup to be trivial; they
+therefore do not take a separately supplied radical object.
 -/
 
 @[expose] public noncomputable section
@@ -62,19 +62,21 @@ abbrev UnipotentRadicalData
     (isUnipotentElement : G → Prop) :=
   {R : Subgroup G // IsUnipotentRadical isUnipotentElement R}
 
-/-- A connected nontrivial algebraic group is semisimple when its solvable
-radical is trivial. -/
-def IsSemisimpleGroup (R : SolvableRadicalData (G := G)) : Prop :=
+/-- A connected nontrivial algebraic group is semisimple when every connected
+normal solvable subgroup is trivial.  This is the radical-triviality
+definition stated without supplying the radical as extra input. -/
+def IsSemisimpleGroup : Prop :=
   Nontrivial G ∧
     IsConnected (Set.univ : Set G) ∧
-    R.1 = ⊥
+    ∀ H : Subgroup G, IsConnectedNormalSolvableSubgroup H → H = ⊥
 
-/-- A connected nontrivial algebraic group is reductive when its unipotent
-radical is trivial. -/
-def IsReductiveGroup (isUnipotentElement : G → Prop)
-    (R : UnipotentRadicalData isUnipotentElement) : Prop :=
+/-- A connected nontrivial algebraic group is reductive when every connected
+normal unipotent subgroup is trivial.  This is the unipotent-radical
+triviality definition without a supplied radical witness. -/
+def IsReductiveGroup (isUnipotentElement : G → Prop) : Prop :=
   Nontrivial G ∧
     IsConnected (Set.univ : Set G) ∧
-    R.1 = ⊥
+    ∀ H : Subgroup G,
+      IsConnectedNormalUnipotentSubgroup isUnipotentElement H → H = ⊥
 
 end LeanCategories.AlgebraicGeometry
