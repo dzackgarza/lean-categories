@@ -5,6 +5,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Homological.FormationFieldData
+public import LeanCategories.Homological.FormationData
+public import LeanCategories.Homological.FormationNormData
 public import Mathlib.GroupTheory.Abelianization.Defs
 
 /-!
@@ -36,13 +38,14 @@ abbrev formationAbelianizedGaloisGroup
     (h : IsFormationGaloisExtension G_E E F) :=
   Abelianization (formationGaloisGroup G_E h)
 
-/-- Raw carrier for a norm quotient `A_E / N A_F`.
-
-The caller supplies the base coefficient group and its norm subgroup; the
-theorem identifying this quotient with `G(F/E)^a` is not constructor data. -/
-abbrev formationNormQuotientData
-    (A_E : Type w) [CommGroup A_E] (N : Subgroup A_E) :=
-  A_E ⧸ N
+/-- Serre's finite norm quotient `A_E / N_{F/E} A_F`, constructed from the
+formation's fixed coefficient groups and relative norm homomorphism. -/
+noncomputable def formationNormQuotientData
+    (F : SerreFormationData G X) {E L : X}
+    (h : IsFormationGaloisExtension F.G_E E L) : Type w := by
+  letI : (F.G_E L).FiniteIndex := F.indexedFiniteIndex L
+  exact F.fixedSubgroup E ⧸
+    formationFixedNormGroupData (A := F.A) (F.G_E E) (F.G_E L) h.1
 
 /-- Characterization of Serre's finite reciprocity map as the inverse of the
 class-formation map `theta`.

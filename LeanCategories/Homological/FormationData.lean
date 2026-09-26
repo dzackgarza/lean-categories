@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Homological.FormationIndexingData
 public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
 
 /-!
 # Serre formation data
@@ -35,6 +36,13 @@ variable {G : Type u} [Group G] {X : Type v}
 def formationFixedElements (G_E : X → Subgroup G) (E : X)
     (A : Type w) [CommGroup A] [MulDistribMulAction G A] : Set A :=
   {a | ∀ g : G_E E, (g : G) • a = a}
+
+def formationFixedSubgroup (H : Subgroup G)
+    (A : Type w) [CommGroup A] [MulDistribMulAction G A] : Subgroup A where
+  carrier := {a | ∀ g : H, (g : G) • a = a}
+  one_mem' := by intro g; simp
+  mul_mem' := by intro a b ha hb g; simp [ha g, hb g]
+  inv_mem' := by intro a ha g; simp [ha g]
 
 /-- Serre's stabilizer condition for the coefficient module: every
 coefficient element has stabilizer equal to one of the indexed subgroups. -/
@@ -77,5 +85,13 @@ attribute [instance] SerreFormationData.commGroup SerreFormationData.action
 def SerreFormationData.fixedElements
     (F : SerreFormationData G X) (E : X) : Set F.A :=
   formationFixedElements F.G_E E F.A
+
+def SerreFormationData.fixedSubgroup
+    (F : SerreFormationData G X) (E : X) : Subgroup F.A :=
+  formationFixedSubgroup (F.G_E E) F.A
+
+theorem SerreFormationData.indexedFiniteIndex
+    (F : SerreFormationData G X) (E : X) : (F.G_E E).FiniteIndex :=
+  F.indexing.1 (F.G_E E) ⟨E, rfl⟩
 
 end LeanCategories.Homological
