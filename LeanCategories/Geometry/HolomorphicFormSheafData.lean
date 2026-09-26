@@ -12,6 +12,7 @@ public import Mathlib.Topology.VectorBundle.ContinuousAlternatingMap
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.CategoryTheory.Sites.Adjunction
 public import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.Algebra.Category.ModuleCat.Limits
 
 /-!
@@ -479,22 +480,37 @@ noncomputable def holomorphicPFormAdditiveSheafData (p : ℕ) :
     (CategoryTheory.forget₂ (ModuleCat.{u} ℂ) AddCommGrpCat.{u})).obj
       (holomorphicPFormSheafModuleSmoothData (X := X) I p)
 
-/-- Peters--Sterk's Hodge-cohomology group carrier
+/-- Peters--Sterk's Hodge-cohomology complex vector space
 `H^{p,q}(X) = H^q(X, Ω_X^p)`.
 
-The complex vector-space structure induced from the coefficient sheaf is a
-separate categorical layer; this declaration records the actual native
-sheaf-cohomology group rather than a proxy. -/
-noncomputable def hodgeCohomologyGroupData
-    [Abelian (TopCat.Sheaf AddCommGrpCat.{u} (TopCat.of X))]
-    [HasSheafify (Opens.grothendieckTopology (TopCat.of X)) AddCommGrpCat.{u}]
-    (hExt : HasExt.{u + 1} (TopCat.Sheaf AddCommGrpCat.{u} (TopCat.of X)))
-    (p q : ℕ) : Type (u + 1) := by
-  exact @CategoryTheory.Abelian.Ext _ _ _ hExt
+For a sheaf of complex vector spaces, global sections are represented by
+morphisms from the constant sheaf `ℂ_X`; hence their right-derived functors
+are the Ext groups below.  Mathlib's linear Ext construction supplies the
+canonical complex-vector-space structure directly. -/
+noncomputable abbrev hodgeCohomologyGroupData
+    [HasSheafify
+      (Opens.grothendieckTopology (TopCat.of X)) (ModuleCat.{u} ℂ)]
+    [Abelian (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
+    [HasExt.{u + 1} (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
+    (p q : ℕ) : Type (u + 1) :=
+  CategoryTheory.Abelian.Ext
     ((CategoryTheory.constantSheaf
-      (Opens.grothendieckTopology (TopCat.of X)) AddCommGrpCat.{u}).obj
-        (AddCommGrpCat.of (ULift ℤ)))
-    (holomorphicPFormAdditiveSheafData (X := X) I p) q
+      (Opens.grothendieckTopology (TopCat.of X)) (ModuleCat.{u} ℂ)).obj
+        (ModuleCat.of ℂ (ULift.{u} ℂ)))
+    (holomorphicPFormSheafModuleData (X := X) I p) q
+
+/-- Peters--Sterk's Hodge number
+`h^{p,q}(X) = dim_ℂ H^{p,q}(X)`.
+
+Finite-dimensionality for compact complex manifolds is a result about this
+definition, not construction data. -/
+noncomputable def hodgeNumberData
+    [HasSheafify
+      (Opens.grothendieckTopology (TopCat.of X)) (ModuleCat.{u} ℂ)]
+    [Abelian (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
+    [HasExt.{u + 1} (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
+    (p q : ℕ) : ℕ :=
+  Module.finrank ℂ (hodgeCohomologyGroupData (X := X) I p q)
 
 /-- Exact pointwise graph for zero in the holomorphic-form sheaf. -/
 def IsHolomorphicPFormZeroSectionData
