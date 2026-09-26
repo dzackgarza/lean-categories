@@ -82,6 +82,26 @@ def RelativePicardBaseTwistData
         schemeModuleTensor L.sheaf
           ((Scheme.Modules.pullback D.snd).obj N))
 
+/-- The canonical quotient carrier defining `Pic^0(X/T)`: fibrewise
+degree-zero invertible sheaves modulo twisting by pullbacks from the base.
+
+`Quot` constructs the quotient directly from Hartshorne's generating
+relation, so no externally chosen carrier or class map is needed. -/
+def RelativePicardZeroQuotientData
+    {X T product : Scheme.{u}}
+    (D : RelativePicardFibreDegreeData X T product) : Type u :=
+  Quot (fun L M : RelativePicardZeroSheafData D =>
+    RelativePicardBaseTwistData D L M)
+
+/-- The canonical class of a fibrewise degree-zero invertible sheaf in
+`Pic^0(X/T)`. -/
+def relativePicardZeroClassData
+    {X T product : Scheme.{u}}
+    {D : RelativePicardFibreDegreeData X T product}
+    (L : RelativePicardZeroSheafData D) :
+    RelativePicardZeroQuotientData D :=
+  Quot.mk _ L
+
 /-- Candidate data for the quotient defining Pic^0(X/T): a carrier together
 with the class of every fibrewise-degree-zero invertible sheaf. -/
 structure RelativePicardZeroCandidateData
