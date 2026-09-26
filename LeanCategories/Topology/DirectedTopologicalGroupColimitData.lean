@@ -5,6 +5,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits
+public import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp
+public import Mathlib.Algebra.Category.Grp.FilteredColimits
 public import Mathlib.Order.Category.Preord
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Category.TopCat.Monoidal
@@ -15,22 +17,22 @@ public import Mathlib.Topology.Category.TopCat.Monoidal
 Definition-level realization of Neukirch FC09-C04-U012.
 
 For projective systems of topological groups, Mathlib's category
-`Grp TopCat` already has the required limits.  The surviving source-level
-gap is the inductive-limit construction.  For a directed diagram
+`Grp TopCat` already has the required limits.  For a directed diagram
 
 `F : I ⥤ Grp TopCat`,
 
-the underlying topological colimit already exists in `TopCat`.  Neukirch
-defines its group operations by choosing representatives in a common stage:
+Neukirch's inductive limit has the algebraic filtered colimit of the stage
+groups as carrier and the final topology for the canonical stage maps.
+Mathlib already constructs the algebraic filtered colimit in `GrpCat`;
+this file transports the internal topological groups to ordinary groups and
+puts the literal final topology on that native group colimit.  Thus the group
+operations are the actual quotient operations constructed by Mathlib, not
+selected candidate operations.
 
-* the product of the classes of `x,y ∈ G_i` is the class of `xy`;
-* the inverse of the class of `x ∈ G_i` is the class of `x⁻¹`;
-* the identity is the class of the identity of any stage.
-
-Sweep III records precisely this carrier/topology and these stagewise formulas.
-Independence of representatives/stages, the group axioms, continuity,
-homomorphism properties of the canonical maps, and the colimit universal
-property in topological groups are result-layer statements.
+Mathlib's filtered-colimit implementation proves representative independence
+and the group laws as part of constructing that group.  Continuity of the
+resulting group operations and the universal property in topological groups
+remain later propositions.
 -/
 
 @[expose] public noncomputable section
@@ -51,19 +53,54 @@ abbrev topologicalGroupProjectiveLimitData
     (F : Iᵒᵖ ⥤ Grp TopCat.{u}) : Grp TopCat.{u} :=
   limit F
 
-/-- The underlying topological inductive limit of a directed system of
-topological groups. -/
-abbrev directedTopologicalGroupColimitCarrierData
-    (F : I ⥤ Grp TopCat.{u}) : TopCat.{u} :=
-  colimit (F ⋙ Grp.forget TopCat)
+/-- Forget the topology of each internal topological group while retaining its
+actual group structure. -/
+noncomputable def directedTopologicalGroupUnderlyingDiagram
+    (F : I ⥤ Grp TopCat.{u}) : I ⥤ GrpCat.{u} :=
+  F ⋙ (CategoryTheory.forget TopCat.{u}).mapGrp ⋙
+    GrpTypeEquivalenceGrp.functor
+
+/-- The algebraic filtered colimit of the stage groups.  This is Mathlib's
+quotient construction, so multiplication, inverse, identity, and all group
+laws are constructed here rather than supplied. -/
+noncomputable def directedTopologicalGroupColimitGroupData
+    (F : I ⥤ Grp TopCat.{u}) : GrpCat.{u} :=
+  GrpCat.FilteredColimits.colimit (directedTopologicalGroupUnderlyingDiagram F)
+
+/-- Neukirch's final topology on the algebraic direct limit. -/
+noncomputable def directedTopologicalGroupColimitTopologyData
+    (F : I ⥤ Grp TopCat.{u}) :
+    TopologicalSpace (directedTopologicalGroupColimitGroupData F) :=
+  ⨆ i, (F.obj i).X.str.coinduced
+    ((GrpCat.FilteredColimits.colimitCocone
+      (directedTopologicalGroupUnderlyingDiagram F)).ι.app i)
+
+/-- The direct-limit group carrier equipped with Neukirch's final topology. -/
+noncomputable def directedTopologicalGroupColimitCarrierData
+    (F : I ⥤ Grp TopCat.{u}) : TopCat.{u} := by
+  letI : TopologicalSpace (directedTopologicalGroupColimitGroupData F) :=
+    directedTopologicalGroupColimitTopologyData F
+  exact TopCat.of (directedTopologicalGroupColimitGroupData F)
 
 /-- The canonical continuous map from a stage into the underlying topological
 colimit.  Its group-homomorphism property belongs to the result layer because
 the target group operations are only being specified in this file. -/
-def directedTopologicalGroupColimitInclusionData
+noncomputable def directedTopologicalGroupColimitInclusionData
     (F : I ⥤ Grp TopCat.{u}) (i : I) :
-    (F.obj i).X ⟶ directedTopologicalGroupColimitCarrierData F :=
-  colimit.ι (F ⋙ Grp.forget TopCat) i
+    (F.obj i).X ⟶ directedTopologicalGroupColimitCarrierData F := by
+  refine TopCat.ofHom
+    ⟨(GrpCat.FilteredColimits.colimitCocone
+        (directedTopologicalGroupUnderlyingDiagram F)).ι.app i, ?_⟩
+  rw [continuous_iff_coinduced_le]
+  change
+    (F.obj i).X.str.coinduced
+        ((GrpCat.FilteredColimits.colimitCocone
+          (directedTopologicalGroupUnderlyingDiagram F)).ι.app i) ≤
+      directedTopologicalGroupColimitTopologyData F
+  exact le_iSup (fun j =>
+    (F.obj j).X.str.coinduced
+      ((GrpCat.FilteredColimits.colimitCocone
+        (directedTopologicalGroupUnderlyingDiagram F)).ι.app j)) i
 
 /-- The multiplication in one stage of an internal topological group. -/
 def directedTopologicalGroupStageMulData
@@ -82,10 +119,7 @@ def directedTopologicalGroupStageInvData
     (x : (F.obj i).X) : (F.obj i).X :=
   ι[(F.obj i).X] x
 
-/-- Raw identity, multiplication, and inversion operations on the underlying
-topological colimit.
-
-No group laws or continuity proofs are fields of this structure. -/
+/-- Identity, multiplication, and inversion on the direct-limit carrier. -/
 structure DirectedTopologicalGroupColimitOperationData
     (F : I ⥤ Grp TopCat.{u}) where
   one : directedTopologicalGroupColimitCarrierData F
@@ -97,61 +131,16 @@ structure DirectedTopologicalGroupColimitOperationData
     directedTopologicalGroupColimitCarrierData F →
       directedTopologicalGroupColimitCarrierData F
 
-/-- The exact representative graph for Neukirch's direct-limit group
-operations.
-
-The identity is the image of the identity at every stage, multiplication of
-two elements represented in one stage is represented by their stagewise
-product, and inversion is represented by stagewise inversion.  Consistency of
-these equations across different stages and representatives is deliberately
-not proved here. -/
-def IsDirectedTopologicalGroupColimitOperationData
-    (F : I ⥤ Grp TopCat.{u})
-    (D : DirectedTopologicalGroupColimitOperationData F) : Prop :=
-  (∀ i : I,
-      D.one =
-        directedTopologicalGroupColimitInclusionData F i
-          (directedTopologicalGroupStageOneData F i)) ∧
-  (∀ (i : I) (x y : (F.obj i).X),
-      D.mul
-          (directedTopologicalGroupColimitInclusionData F i x)
-          (directedTopologicalGroupColimitInclusionData F i y) =
-        directedTopologicalGroupColimitInclusionData F i
-          (directedTopologicalGroupStageMulData F i x y)) ∧
-  (∀ (i : I) (x : (F.obj i).X),
-      D.inv (directedTopologicalGroupColimitInclusionData F i x) =
-        directedTopologicalGroupColimitInclusionData F i
-          (directedTopologicalGroupStageInvData F i x))
-
-/-- A default raw operation triple used only to make the candidate type
-inhabited for `Classical.epsilon`.
-
-This declaration asserts no source equation. -/
-def directedTopologicalGroupColimitDefaultOperationData
+/-- Neukirch's direct-limit group operations, taken directly from Mathlib's
+filtered-colimit group construction.  No candidate or choice is involved. -/
+noncomputable def directedTopologicalGroupColimitOperationData
     (F : I ⥤ Grp TopCat.{u}) :
     DirectedTopologicalGroupColimitOperationData F := by
-  let i : I := Classical.choice (inferInstance : Nonempty I)
-  let z : directedTopologicalGroupColimitCarrierData F :=
-    directedTopologicalGroupColimitInclusionData F i
-      (directedTopologicalGroupStageOneData F i)
+  letI : TopologicalSpace (directedTopologicalGroupColimitGroupData F) :=
+    directedTopologicalGroupColimitTopologyData F
   exact
-    { one := z
-      mul := fun _ _ => z
-      inv := fun _ => z }
-
-/-- Neukirch's direct-limit group-operation data, selected from the exact
-stage-representative graph.
-
-The theorem layer proves that this selected triple satisfies
-`IsDirectedTopologicalGroupColimitOperationData`, then derives the group laws,
-continuity, and the homomorphism properties of the canonical inclusions.
-Sweep III performs none of those proofs. -/
-def directedTopologicalGroupColimitOperationData
-    (F : I ⥤ Grp TopCat.{u}) :
-    DirectedTopologicalGroupColimitOperationData F :=
-  @Classical.epsilon
-    (DirectedTopologicalGroupColimitOperationData F)
-    ⟨directedTopologicalGroupColimitDefaultOperationData F⟩
-    (IsDirectedTopologicalGroupColimitOperationData F)
+    { one := 1
+      mul := (· * ·)
+      inv := Inv.inv }
 
 end LeanCategories.Topology
