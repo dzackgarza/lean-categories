@@ -46,6 +46,8 @@ variable [TopologicalSpace H]
 variable (I : ModelWithCorners ℂ E H) [I.Boundaryless]
 variable [TopologicalSpace X] [ChartedSpace H X] [IsManifold I ω X]
 
+local instance : IsManifold I ∞ X := IsManifold.of_le le_top
+
 /-- Model fibre for holomorphic `p`-forms on a complex manifold modelled on
 `E`: continuous alternating `p`-linear forms on `E`. -/
 abbrev HolomorphicPFormModelFiberData (p : ℕ) :=
