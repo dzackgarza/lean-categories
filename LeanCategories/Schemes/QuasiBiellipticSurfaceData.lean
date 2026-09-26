@@ -23,9 +23,11 @@ closed set `V(Y²Z - X³)`.  For a reduced closed subscheme this fixes the
 usual reduced scheme structure while requiring no quotient-ring grading
 construction in Sweep III.
 
-As for FC12-C06-U023, quotient existence is not constructed.  A supplied
-surface satisfies the predicate when there are group-action and quotient-map
-data satisfying the categorical quotient universal property.
+The source object is bundled below as its quotient presentation: the surface,
+elliptic factor, cuspidal cubic, acting group, action, quotient map, and the
+categorical quotient universal property are fields of
+`QuasiBiellipticSurfaceData`.  The `Is...` predicate is retained only as an
+unbundled characterization of a supplied surface.
 -/
 
 @[expose] public noncomputable section
@@ -95,7 +97,40 @@ def IsCuspidalCubicData
         (projectiveSpaceGrading k 2)
         {cuspidalCubicPolynomialData k}
 
-/-- Beauville Appendix A's quasi-bielliptic-surface definition.
+/-- The cuspidal cubic as constructed scheme data, rather than a candidate
+carrier together with a separate caller-side predicate. -/
+structure CuspidalCubicData (k : Type u) [Field k] where
+  candidate : CuspidalCubicCandidateData k
+  isCuspidal : IsCuspidalCubicData candidate
+
+/-- A constructed cuspidal cubic as an object over `Spec k`. -/
+abbrev CuspidalCubicData.toOver
+    {k : Type u} [Field k] (C : CuspidalCubicData k) :
+    Over (Spec (.of k)) :=
+  C.candidate.toOver
+
+/-- Beauville Appendix A's quasi-bielliptic surface, bundled with the quotient
+presentation that is the definitional content of FC12-A-U007.
+
+The canonical-class order dividing `4` or `6` is theorem content and is not
+a field. -/
+structure QuasiBiellipticSurfaceData
+    (k : Type u) [Field k] [IsAlgClosed k] where
+  surface : SmoothProjectiveSurfaceData k
+  characteristic : CharP k 2 ∨ CharP k 3
+  ellipticCurve : AbelianVariety k
+  elliptic : IsEllipticCurveData ellipticCurve
+  cusp : CuspidalCubicData k
+  actingGroup : Type u
+  [group : Group actingGroup]
+  action :
+    GroupActionHomData actingGroup (ellipticCurve.toOver ⊗ cusp.toOver)
+  quotientMap :
+    ellipticCurve.toOver ⊗ cusp.toOver ⟶ surface.toOver
+  isQuotient : IsGroupQuotientData actingGroup action quotientMap
+
+/-- Unbundled predicate characterizing when a supplied smooth projective
+surface underlies a `QuasiBiellipticSurfaceData` presentation.
 
 The canonical-class order dividing `4` or `6` is not a constructor clause:
 it is the numerical assertion following the quotient description and remains
