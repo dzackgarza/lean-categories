@@ -9,6 +9,7 @@ public import LeanCategories.Catalogue.Registry.Typed
 public import LeanCategories.CategoryTheory.OneCat.Classifier
 public import LeanCategories.Catalogue.Realization
 public import LeanCategories.Catalogue.FamilyFibration
+public import LeanCategories.ForMathlib.Cofibered
 public import Lean.Data.Json
 public import Lean
 public meta import LeanCategories.Catalogue.Syntax
@@ -35,6 +36,7 @@ inductive RegistryEntry
   | classifier (e : ClassifierEntry)
   | functor (e : FunctorEntry)
   | opaque (e : OpaqueCategoryEntry)
+  | fibration (e : FibrationEntry)
   deriving Repr
 
 /-- Stable identifier represented by a heterogeneous registry entry. -/
@@ -44,6 +46,7 @@ def RegistryEntry.stableId : RegistryEntry → String
   | .classifier e => e.id.raw
   | .functor e => e.id.raw
   | .opaque e => e.id.raw
+  | .fibration e => e.id.raw
 
 /-- Lean declarations that must resolve before this row can be persisted. -/
 def RegistryEntry.declarations : RegistryEntry → Array Name
@@ -55,6 +58,7 @@ def RegistryEntry.declarations : RegistryEntry → Array Name
   | .functor e => #[e.declaration, e.realization]
   | .opaque e => #[e.declaration, e.realization] ++
       e.ports.flatMap fun p => #[p.declaration, p.realization]
+  | .fibration e => #[e.evidence]
 
 structure RegistryState where
   categories : Array NamedCategoryEntry := #[]
@@ -62,6 +66,7 @@ structure RegistryState where
   classifiers : Array ClassifierEntry := #[]
   functors : Array FunctorEntry := #[]
   opaqueCategories : Array OpaqueCategoryEntry := #[]
+  fibrations : Array FibrationEntry := #[]
   deriving Inhabited
 
 def RegistryState.opaquePortIds (state : RegistryState) : List OpaquePortId :=
@@ -271,13 +276,15 @@ private def RegistryState.apply : RegistryState → RegistryEntry → RegistrySt
   | s, .classifier e => { s with classifiers := s.classifiers.push e }
   | s, .functor e => { s with functors := s.functors.push e }
   | s, .opaque e => { s with opaqueCategories := s.opaqueCategories.push e }
+  | s, .fibration e => { s with fibrations := s.fibrations.push e }
 
 def RegistryState.registryEntries (state : RegistryState) : List RegistryEntry :=
   state.categories.toList.map RegistryEntry.category ++
     state.categoryFamilies.toList.map RegistryEntry.categoryFamily ++
     state.classifiers.toList.map RegistryEntry.classifier ++
     state.functors.toList.map RegistryEntry.functor ++
-    state.opaqueCategories.toList.map RegistryEntry.opaque
+    state.opaqueCategories.toList.map RegistryEntry.opaque ++
+    state.fibrations.toList.map RegistryEntry.fibration
 
 def registryEntryPairAllowed : RegistryEntry → RegistryEntry → Bool
   | .category category, right =>
@@ -447,6 +454,9 @@ private def validatePersistedRegistryState (state : RegistryState) : Except Stri
         port.source.syntacticEq (.opaque opaqueEntry.id) &&
           port.source.isRegistered state && port.target.isRegistered state do
       throw s!"opaque category entry {opaqueEntry.id.raw} has an invalid port source or endpoint"
+  for fibration in state.fibrations do
+    unless (state.functor? fibration.projection).isSome do
+      throw s!"fibration entry {fibration.id.raw} has an unregistered projection"
   pure ()
 
 private def registryValidationFailed (result : Except String Unit) : Bool :=
@@ -1214,6 +1224,33 @@ def ensureFunctorDeclaration (declaration : Name) : MetaM Unit := do
     throwError
       "registry declaration {declaration} must return a categorical functor, but returns {result}"
 
+/-- A fibration's evidence must prove `IsFibered` (cartesian) or `IsCofibered` (cocartesian)
+of exactly the realized functor of its registered projection. -/
+def validateFibrationEvidence (state : RegistryState) (e : FibrationEntry) : MetaM Unit := do
+  let projection ← match state.functor? e.projection with
+    | some entry => pure entry
+    | none => throwError "fibration {e.id.raw} has no registered projection {e.projection.raw}"
+  let declarationConstant ← mkConstWithFreshMVarLevels projection.declaration
+  let (declarationArgs, _, _) ← forallMetaTelescopeReducing (← inferType declarationConstant)
+  let declarationValue := mkAppN declarationConstant declarationArgs
+  let declarationType ← whnf (← inferType declarationValue)
+  let projectionFunctor ← if declarationType.isAppOf ``CategoryTheory.Cat.Hom then
+      mkAppM ``CategoryTheory.Cat.Hom.toFunctor #[declarationValue]
+    else
+      pure declarationValue
+  let evidenceConstant ← mkConstWithFreshMVarLevels e.evidence
+  let (_, _, evidenceType) ← forallMetaTelescopeReducing (← inferType evidenceConstant)
+  let evidenceType ← whnfR evidenceType
+  let expected := match e.variance with
+    | .cartesian => ``CategoryTheory.Functor.IsFibered
+    | .cocartesian => ``CategoryTheory.Functor.IsCofibered
+  unless evidenceType.isAppOf expected do
+    throwError "fibration {e.id.raw} evidence {e.evidence} does not prove {expected}"
+  let provedFunctor := evidenceType.getAppArgs.back!
+  unless ← withTransparency .all <| isDefEq provedFunctor projectionFunctor do
+    throwError
+      "fibration {e.id.raw} evidence {e.evidence} is not about its projection {e.projection.raw}"
+
 /-- Inspect declaration types before atomically persisting a registry entry. -/
 def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
   let state := registryExt.getState (← getEnv)
@@ -1263,6 +1300,7 @@ def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
         ensureFunctorDeclaration port.declaration
         ensureFunctorRealization port.realization
         validateOpaquePortRealization state port
+  | .fibration e => validateFibrationEvidence state e
 
 /- Validate the elaborated declaration and persist exactly one registry entry. -/
 def addRegistryEntryChecked (entry : RegistryEntry) : MetaM Unit := do
@@ -1525,6 +1563,13 @@ structure RegistryManifestOpaque where
   ports : Array RegistryManifestPort
   deriving DecidableEq, Repr, ToJson, FromJson
 
+structure RegistryManifestFibration where
+  id : String
+  projection : String
+  variance : String
+  evidence : String
+  deriving DecidableEq, Repr, ToJson, FromJson
+
 structure RegistryManifest where
   schemaVersion : String
   categories : Array RegistryManifestCategory
@@ -1532,6 +1577,7 @@ structure RegistryManifest where
   functors : Array RegistryManifestFunctor
   opaqueCategories : Array RegistryManifestOpaque
   categoryFamilies : Array RegistryManifestFamily
+  fibrations : Array RegistryManifestFibration
   source : String
   deriving DecidableEq, Repr, ToJson, FromJson
 
@@ -1610,6 +1656,12 @@ private def registryManifest (state : RegistryState) : RegistryManifest :=
         ids := parameter.ids.toArray.map (·.raw), name := parameter.name,
         kind := parameter.kind.raw, dependency := parameter.dependency },
       variance := e.transportSemantics.variance.raw }
+    fibrations := (state.fibrations.qsort (fun a b => a.id.raw < b.id.raw)).map fun e => {
+      id := e.id.raw, projection := e.projection.raw,
+      variance := match e.variance with
+        | .cartesian => "cartesian"
+        | .cocartesian => "cocartesian",
+      evidence := e.evidence.toString }
     source := "lean-registry" }
 
 private def registryManifestJson (state : RegistryState) : Json := toJson (registryManifest state)

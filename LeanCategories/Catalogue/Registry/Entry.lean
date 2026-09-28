@@ -18,6 +18,25 @@ identity.
 
 namespace LeanCategories
 
+/-- Which lifts a registered fibration supplies. -/
+inductive FibrationVariance
+  /-- Cartesian lifts (`Functor.IsFibered`): reindexing is contravariant. -/
+  | cartesian
+  /-- Cocartesian lifts (`Functor.IsCofibered`): transport is covariant. -/
+  | cocartesian
+  deriving DecidableEq, Repr, Inhabited
+
+/-- A fibration registry row (CC-FIB): a registered functor `projection : total ⥤ base`
+together with `evidence`, a Lean proof that it is a cartesian (`Functor.IsFibered`) or
+cocartesian (`Functor.IsCofibered`) fibration. Its fibres are the categories that vary with an
+object of `base`. -/
+structure FibrationEntry where
+  id : FibrationId
+  projection : FunctorId
+  variance : FibrationVariance
+  evidence : Lean.Name
+  deriving Repr
+
 /-- Named category registry row. -/
 structure NamedCategoryEntry where
   id : CategoryId

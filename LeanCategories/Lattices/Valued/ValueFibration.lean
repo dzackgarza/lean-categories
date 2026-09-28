@@ -103,20 +103,20 @@ def valueProjectionTrans : Pseudofunctor.StrongTrans bilinBaseChangePseudofuncto
 open Pseudofunctor.Grothendieck in
 /-- Modules over varying commutative rings, with extension of scalars as transport: the
 cocartesian fibration of modules over `CommRingCat` (FOUNDATIONS §13.2). -/
-abbrev ModulesOverRings : Type (u + 1) :=
+abbrev ModulesOverRingsExt : Type (u + 1) :=
   ∫ CommRingCat.moduleCatExtendScalarsPseudofunctor.{u}
 
 /-- The projection of modules to their commutative ring. -/
-abbrev ModulesOverRings.ring : ModulesOverRings.{u} ⥤ CommRingCat.{u} :=
+abbrev ModulesOverRingsExt.ring : ModulesOverRingsExt.{u} ⥤ CommRingCat.{u} :=
   Pseudofunctor.Grothendieck.forget _
 
 /-- The projection `p` of forms to their value modules over their rings. -/
-abbrev BilinFormsOverRings.values : BilinFormsOverRings.{u} ⥤ ModulesOverRings.{u} :=
+abbrev BilinFormsOverRings.values : BilinFormsOverRings.{u} ⥤ ModulesOverRingsExt.{u} :=
   Pseudofunctor.Grothendieck.map valueProjectionTrans
 
 /-- The tower commutes on the nose: `p ⋙ q` is the projection of forms to rings. -/
 theorem BilinFormsOverRings.values_comp_ring :
-    BilinFormsOverRings.values.{u} ⋙ ModulesOverRings.ring = BilinFormsOverRings.ring :=
+    BilinFormsOverRings.values.{u} ⋙ ModulesOverRingsExt.ring = BilinFormsOverRings.ring :=
   rfl
 
 instance (R : LocallyDiscrete CommRingCat.{u}) :

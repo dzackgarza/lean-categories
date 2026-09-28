@@ -2559,7 +2559,7 @@ cocartesian lift of each morphism to a strongly cocartesian morphism sends all o
 change-of-value lift, whose carrier map is the identity, to a morphism with carrier map
 \(S\otimes_R\mathrm{id}=\mathrm{id}\). The resulting tower
 \(\mathbf{Bil}\xrightarrow{p}\int_R R\text{-}\mathbf{Mod}\xrightarrow{q}\mathbf{CommRing}\) is
-`BilinFormsOverRings.values`, `ModulesOverRings.ring`, with \(q\circ p\) the projection of
+`BilinFormsOverRings.values`, `ModulesOverRingsExt.ring`, with \(q\circ p\) the projection of
 forms to rings (`LeanCategories/Lattices/Valued/ValueFibration.lean`).
 
 ### Definition 31.3 (Descent datum) {#def-descent-datum}

@@ -7,6 +7,7 @@ public import LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration
 public import LeanCategories.Modules.Quadratic.Valued.CatalogueRegistration
 public import LeanCategories.Lattices.Valued.CatalogueRegistration
 public import LeanCategories.Exceptional.CatalogueRegistration
+public import LeanCategories.Catalogue.FibrationRegistration
 
 @[expose] public section
 
@@ -21,6 +22,7 @@ def expectedCategoryIds : Array CategoryId := #[
   CategoryId.additiveMonoids,
   CategoryId.additiveSemigroups,
   CategoryId.bilWForm,
+  CategoryId.bilinFormsOverRings,
   CategoryId.bilinModule,
   CategoryId.commutativeRings,
   CategoryId.crystals,
@@ -41,6 +43,7 @@ def expectedCategoryIds : Array CategoryId := #[
   CategoryId.magmasWithTwoOperations,
   CategoryId.modulesR,
   CategoryId.modulesTotal,
+  CategoryId.modulesOverRingsExt,
   CategoryId.genFrame,
   CategoryId.basisFrame,
   CategoryId.coord,
@@ -108,6 +111,9 @@ def expectedFunctorIds : Array FunctorId := #[
   FunctorId.modulesFibreInclusion,
   FunctorId.modulesReindex,
   FunctorId.modulesUnderlying,
+  FunctorId.modulesProjection,
+  FunctorId.modulesExtRing,
+  FunctorId.bilinFormsValues,
   FunctorId.genFrameForget,
   FunctorId.basisFrameForget,
   FunctorId.integralLatticeForget,
@@ -121,6 +127,12 @@ def expectedFunctorIds : Array FunctorId := #[
   FunctorId.quadWFormCarrier,
   FunctorId.quadWFormValue,
   FunctorId.setsIdentity]
+
+/-- Stable fibration rows owned by the standard catalogue. -/
+def expectedFibrationIds : Array FibrationId := #[
+  FibrationId.modules,
+  FibrationId.modulesExt,
+  FibrationId.bilinForms]
 
 /-- Stable opaque-category rows owned by the standard catalogue. -/
 def expectedOpaqueCategoryIds : Array CategoryId := #[
@@ -158,6 +170,8 @@ def validateStandardManifest (manifest : RegistryManifest) : Except String Unit 
     (rawIds expectedClassifierIds (·.raw))
   validateStableIdSet "functors" (manifest.functors.map (·.id))
     (rawIds expectedFunctorIds (·.raw))
+  validateStableIdSet "fibrations" (manifest.fibrations.map (·.id))
+    (rawIds expectedFibrationIds (·.raw))
   validateStableIdSet "opaque categories" (manifest.opaqueCategories.map (·.id))
     (rawIds expectedOpaqueCategoryIds (·.raw))
   validateStableIdSet "opaque ports"

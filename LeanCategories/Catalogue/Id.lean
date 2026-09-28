@@ -57,6 +57,11 @@ structure VarianceId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 
+/-- Stable fibration id, e.g. `fib.modules`. -/
+structure FibrationId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
 /-- Stable functor id. -/
 structure FunctorId where
   raw : String
@@ -81,6 +86,7 @@ structure OpaquePortId where
 
 
 instance : Inhabited CategoryId := ⟨⟨""⟩⟩
+instance : Inhabited FibrationId := ⟨⟨""⟩⟩
 instance : Inhabited ClassifierId := ⟨⟨""⟩⟩
 instance : Inhabited CategoryFamilyId := ⟨⟨""⟩⟩
 instance : Inhabited ParameterId := ⟨⟨""⟩⟩
