@@ -77,6 +77,7 @@ public import LeanCategories.ForMathlib.GaussianPrimeIdeals
 public import LeanCategories.ForMathlib.MvPolynomialIdealOfVars
 public import LeanCategories.ForMathlib.QuadraticReflection
 public import LeanCategories.ForMathlib.QuadraticBaseChange
+public import LeanCategories.Modules.Quadratic.Valued.BaseChangePseudofunctor
 public import LeanCategories.Lattices.Valued.EvenDiagonal
 public import LeanCategories.ForMathlib.QuotientAnnihilator
 public import LeanCategories.ForMathlib.QuotientManifold
