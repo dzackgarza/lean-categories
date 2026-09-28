@@ -118,12 +118,18 @@ of them, and the specification's job is to state it correctly. Recorded as deter
   Both are properties of objects of \(\mathbf{Bil}\) (over the lattice base), so they are
   classifiers on \(\mathbf{Bil}\), not category families.
 
-  *Evenness is not the case \(I=2R\).* A map \(L\to L^{\#2R}\) means \(b(L,L)\subseteq 2R\).
-  The hyperbolic plane \(U\) (\(b(e,f)=1\), \(b(e,e)=b(f,f)=0\)) is even, but
-  \(b(e,f)=1\notin2\mathbb Z\). Evenness is the corresponding containment for the diagonal
-  \(x\mapsto b(x,x)\), a condition on the quadratic map rather than on \(b\). Whether it is
-  the \(I=2R\) case of the analogous duality for the quadratic refinement is to be stated in
-  FOUNDATIONS with a source before `evenLattice` is re-expressed.
+  *Transport to quadratic forms, and evenness.* The theory transports from bilinear to
+  quadratic forms along the diagonal functor
+  \[
+  \Delta:\mathbf{Bil}_{R,W}\longrightarrow\mathbf{Quad}_{R,W},\qquad
+  (M,b)\longmapsto\bigl(M,\;q_b(v):=b(v,v)\bigr).
+  \]
+  Evenness of \((L,b)\) is the \(I=2R\) case of the transported \(I\)-integrality, evaluated at
+  \(\Delta(L,b)\): \(q_b(L)\subseteq 2R\). So `evenLattice` is not a separate notion. It is the
+  reindexing along \(\Delta\) of the quadratic-side classifier at \(I=2R\), and it is
+  re-expressed that way. The quadratic-side definitions (the transported \(I\)-dual and
+  \(I\)-modularity on \(\mathbf{Quad}\)) are written in FOUNDATIONS §17 as this transport
+  before the code changes.
 - **Frames are abandoned.** "Frame" conflicts with its standard meaning (a framed manifold
   is a framed bundle), so `genFrame`, `basisFrame`, `coord`, and their `Indexed` versions
   do not denote the intended notion, and neither do FOUNDATIONS §13.5–13.6 and
