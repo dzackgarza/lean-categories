@@ -109,7 +109,10 @@ Stop and do this when any of the following is observed:
   mathematics; find the general one.
 
 Write the general statement in the owning spec or FOUNDATIONS section, with its source,
-before the code. An instance-only construction is admitted only when the general theorem is
-unavailable (recorded under LC-09) and there is no second consumer to justify the
-abstraction; both facts are recorded in the file's module docstring, and the general
-statement stays scheduled.
+before the code. If no source supplies it (searched under LC-09), proving the general
+statement at its generic owner (for category theory, `ForMathlib`) **is** the work; the
+instance is then obtained from it. "Not available yet", "no second consumer yet" and
+"the instance is quicker" are not reasons to build the instance first: they are the
+situation this rule exists for. A construction is special-case only when it is not an
+instance of any general statement, and that claim is itself stated and argued in the
+owning spec.
