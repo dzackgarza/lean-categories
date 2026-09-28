@@ -892,6 +892,12 @@ free modules and their equivalence with finite projectivity are [@The25, tags 00
 
 ### Definition 13.5 (Framed generators and framed bases) {#def-module-generators-bases}
 
+> **Superseded (2026-09-28)** by Definition 13.10 (resolutions). "Frame" conflicts with its
+> standard meaning (a framing of a bundle, Remark 13.12); a chosen surjection \(R^n\to M\) is the
+> augmentation of a free resolution, and a chosen basis is a free resolution of length zero.
+> This definition and Definition 13.6 are retained only until the code that realizes them
+> (`LeanCategories.Modules.Framed` and its six registered families) is retired.
+
 Fix \(n\ge0\). The comma category
 \[
 (R^n\downarrow R\text{-}\mathbf{Mod})
@@ -925,6 +931,8 @@ in which the upper map is the identity; see Remark 73.5. The general descent the
 matrices through generating presentations is Section 74.
 
 ### Definition 13.6 (Coordinatized modules) {#def-coordinatized-module}
+
+> **Superseded (2026-09-28)** by Definitions 13.10–13.11; see the note at Definition 13.5.
 
 There is a second standard category with the same objects as
 \(\operatorname{BasisFrame}_n(R)\): a morphism from \((M,e)\) to \((N,f)\) is an
@@ -977,6 +985,55 @@ Sections 73--77 develop this uniform theory and the accompanying descent of matr
 
 The conversations used “based,” “with generators,” and “with basis” in several provisional
 senses. This report therefore names the morphism convention whenever it matters.
+
+### Definition 13.10 (Resolutions) {#def-resolution}
+
+Let \(\mathcal A\) be an abelian category and \(M\in\mathcal A\). A **(left) resolution** of \(M\) is a
+chain complex \(P_\bullet=(\cdots\to P_2\to P_1\to P_0)\) with \(P_i=0\) for \(i<0\), together with an
+augmentation \(\varepsilon:P_0\to M\), such that the augmented complex
+\[
+\cdots\to P_2\to P_1\to P_0\xrightarrow{\varepsilon}M\to0
+\]
+is exact; equivalently \(\varepsilon\) induces a quasi-isomorphism \(P_\bullet\to M[0]\). It is
+**projective** (resp. **free**) when every \(P_i\) is projective (resp. free) [Weibel, *An
+Introduction to Homological Algebra* (1994), §2.2]. Morphisms of resolutions over a morphism
+\(M\to N\) are chain maps compatible with the augmentations; by the comparison theorem any two
+projective resolutions of \(M\) are chain homotopy equivalent over \(\mathrm{id}_M\) [Weibel 1994, §2.2].
+
+The \(k\)-**truncation** of a resolution keeps \(P_{k-1}\to\cdots\to P_0\to M\to0\), exact at every
+displayed spot except the leftmost term; a resolution is the limit of its truncations.
+
+### Definition 13.11 (Presentations and bases as truncated resolutions) {#def-presentation}
+
+A **presentation** of an \(R\)-module \(M\) is a 2-truncated free resolution
+\[
+F_1\xrightarrow{d}F_0\xrightarrow{\varepsilon}M\to0,
+\]
+i.e. generators (a basis of \(F_0\) mapped by \(\varepsilon\)) and relations (the image of \(d\)); it
+is *finite* when \(F_0,F_1\) are finite free. A 1-truncated free resolution is a chosen
+surjection \(F_0\to M\) (the former "generating frame" of Definition 13.5), and a free
+resolution of length zero, \(F_0\xrightarrow{\ \sim\ }M\), is a chosen basis (the former "basis
+frame" and the objects of Definition 13.6). Matrix calculus is the calculus of chain maps
+between such truncated resolutions (Section 74).
+
+The same notion has other standard presentations, used where they are the better statement:
+simplicial resolutions (augmented simplicial objects whose normalized chain complex is a
+resolution, via the Dold–Kan correspondence), cofibrant replacements in a model structure,
+and comonadic (bar / cotriple) resolutions from an adjunction [Weibel 1994, Ch. 8]. A
+presentation of an algebraic object other than a module (a group, a ring, an operad algebra)
+is a truncation of such a simplicial or comonadic resolution.
+
+### Remark 13.12 (Framings of bundles) {#rem-framing}
+
+A **framing** of a rank-\(n\) vector bundle \(E\to X\) is a trivialization \(X\times\mathbb R^n\cong E\),
+equivalently a global frame of sections; a **stable framing** is a trivialization of
+\(E\oplus\underline{\mathbb R}^k\) for some \(k\), and a framed manifold is a manifold with a (stable)
+framing of its tangent bundle. In the language of Definition 13.10, a framing is a free
+resolution of length zero of the module of sections, \(\mathcal O_X^n\xrightarrow{\sim}\Gamma(E)\);
+a framed bundle is a bundle with such a resolution. The further conditions the owner ruling
+refers to ("a bundle with a resolution satisfying other properties as well as the
+trivialization condition") are **not yet stated**: their exact list and sources remain open
+work of `cc-resolutions`, and no definition here fixes them.
 
 ### Definition 13.8 (Bimodules) {#def-bimodule-category}
 
