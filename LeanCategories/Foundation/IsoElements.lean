@@ -47,7 +47,7 @@ universe w w' v v' u u'
 variable {C : Type u} [Category.{v} C]
 
 /-- A `Type`-valued functor from a family of functions satisfying the functor laws pointwise. -/
-def typeFunctor (obj : C → Type w) (map : ∀ {X Y : C}, (X ⟶ Y) → obj X → obj Y)
+abbrev typeFunctor (obj : C → Type w) (map : ∀ {X Y : C}, (X ⟶ Y) → obj X → obj Y)
     (map_id : ∀ (X : C) (x : obj X), map (𝟙 X) x = x)
     (map_comp : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (x : obj X),
       map (f ≫ g) x = map g (map f x)) : C ⥤ Type w where
@@ -61,12 +61,12 @@ def typeFunctor (obj : C → Type w) (map : ∀ {X Y : C}, (X ⟶ Y) → obj X �
     (x : obj X) : (typeFunctor obj map map_id map_comp).map f x = map f x := rfl
 
 /-- The covariant powerset functor: `X ↦ Set X`, `f ↦ f ''`. -/
-def powersetFunctor : Type u ⥤ Type u :=
+abbrev powersetFunctor : Type u ⥤ Type u :=
   typeFunctor Set (fun f S => f '' S) (fun _ S => Set.image_id S)
     (fun f g S => (Set.image_image g f S).symm)
 
 /-- The multiset functor: `X ↦ Multiset X`, `f ↦ Multiset.map f`. -/
-def multisetFunctor : Type u ⥤ Type u :=
+abbrev multisetFunctor : Type u ⥤ Type u :=
   typeFunctor Multiset (fun f s => s.map f) (fun _ s => Multiset.map_id' s)
     (fun f g s => (Multiset.map_map g f s).symm)
 
