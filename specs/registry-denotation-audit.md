@@ -71,8 +71,8 @@ functoriality in the base, these entries denote the **wrong object**.
    enumeration of parameter types, five of them wrapped in `Discrete`. A family cannot
    declare its correct base (e.g. the total module category with its morphisms) without
    adding a schema case.
-3. **Two families are refinements registered as families.** FOUNDATIONS §19.5 defines even
-   and unimodular lattices as reindexings of classifiers. As families over all commutative
+3. **Lattice families are refinements registered as families.** FOUNDATIONS §19.5 defines even
+   and unimodular lattices as reindexings of classifiers; per §4 every lattice family is. As families over all commutative
    rings (`evenLattice`) or domains (`unimodularLattice`), they denote a different object.
 4. **The lattice base is weaker than FOUNDATIONS.** `domain` requires `IsDomain`; §19.1
    requires a Dedekind domain.
@@ -82,26 +82,60 @@ functoriality in the base, these entries denote the **wrong object**.
    functors they stand for, or be removed from the semantic catalogue.
 7. **Property classifiers do not require repleteness.**
 
-## 4. Decisions needed before `cc-fib` changes code
+## 4. Mathematical determinations (owner rulings, 2026-09-28)
 
-These are mathematical choices, not engineering ones; the sources state the transports but
-not which one the registry should present.
+These were first posed here as "decisions". They are not: the mathematics determines each
+of them, and the specification's job is to state it correctly. Recorded as determined:
 
-- **Q1. Forms.** The base for \(\mathbf{Bil}_{R,W}\) and \(\mathbf{Quad}_{R,W}\): the
-  proposal is the total module category over \(\mathbf{CommRing}\) with morphisms
-  \((\varphi:R\to S,\ u:S\otimes_R W\to W')\), with transport \(u_*\circ(S\otimes_R-)\). By
-  §15.5–15.6 that is a covariant pseudofunctor, hence a *cocartesian* fibration of forms.
-  Confirm, or choose restriction of scalars (and which value module) instead.
-- **Q2. Lattices.** Which morphisms of the base preserve the lattice conditions: all ring
-  maps (then lattices are not closed under base change), injective maps of Dedekind
-  domains, or only the core (isomorphisms of the base)?
-- **Q3. Even and unimodular lattices.** Replace the two family entries by classifier
-  refinements as §19.5 states, or retain families with a stated reason.
-- **Q4. Index sets.** For the arbitrary-index frames, take the base to be the groupoid of
-  types and equivalences (so bijections transport frames), or keep a discrete base with a
-  stated reason.
+- **Forms.** \(\mathbf{Bil}\) and \(\mathbf{Quad}\) are fibred over the total module category
+  over \(\mathbf{CommRing}\), whose morphisms are \((\varphi:R\to S,\ u:S\otimes_R W\to W')\),
+  with transport \(u_*\circ(S\otimes_R-)\) (FOUNDATIONS §15.5–15.6). This is a covariant
+  pseudofunctor, so forms form a **cocartesian** fibration. The ambient flexible category
+  is the bilinear-module category \(\mathbf{Bil}\), its total category.
+- **Lattices are not a fibration and are not closed under base change.** A lattice is an
+  object of \(\mathbf{Bil}\) satisfying conditions (finite projectivity, nondegeneracy over
+  the fraction field, integrality, …). Each condition is a **classifier on \(\mathbf{Bil}\)**
+  (a property, reindexed where needed), and "lattices" is the resulting refinement of
+  \(\mathbf{Bil}\), not a family over rings. Base change, cokernels (hence discriminant
+  forms), and morphisms such as \(L\to L^{\#}\) and \(L\to L^{*}\) are formed in
+  \(\mathbf{Bil}\), where they exist. Whether a condition survives a given base change is a
+  **theorem** about that classifier along that map, never registry structure. So the seven
+  lattice families (`lattice`, `finiteProjectiveLattice`, `finiteFreeLattice`,
+  `integralLattice`, `evenLattice`, `unimodularLattice`,
+  `fractionFieldPerfectFiniteProjectiveLattice`) are **wrong kind**: each must become a
+  refinement of \(\mathbf{Bil}\) (or of its fibre over a fixed base) by the relevant
+  classifiers.
+- **Integrality and evenness are value-containment conditions.** For a submodule
+  \(I\le W\) let \(\mathrm{In}_I\) be the property classifier on maps into \(W\): a map
+  \(f:X\to W\) lies in it iff \(f(X)\subseteq I\).
+  - *\(I\)-integral:* \(b(L,L)\subseteq I\), the reindexing of \(\mathrm{In}_I\) along
+    \((L,b)\mapsto b\). Integrality is \(I=R\).
+  - *Even:* \(b(x,x)\in 2R\) for all \(x\), the reindexing of \(\mathrm{In}_{2R}\) along the
+    **diagonal** \((L,b)\mapsto(x\mapsto b(x,x))\), a quadratic map. It is a condition on a
+    different map than integrality, so it is not \(I\)-integrality at \(I=2R\).
 
-Findings 5–7 need no decision; they become children of `cc-fib` and `cc-constructors`.
+  "\(I\)-integral" is used rather than "\(I\)-modular", because "modular lattice" usually
+  means \(L^{\#}\cong\) a rescaled \(L\) (Quebbemann). Unimodularity, \(L^{\#}=L\) (§19.5),
+  is a perfectness condition, not a containment. Its relation to the TODO node's "metric
+  \(I\)-duality/modularity" is to be stated by that node's owner.
+- **Frames are abandoned.** "Frame" conflicts with its standard meaning (a framed manifold
+  is a framed bundle), so `genFrame`, `basisFrame`, `coord`, and their `Indexed` versions
+  do not denote the intended notion, and neither do FOUNDATIONS §13.5–13.6 and
+  `LeanCategories.Modules.Framed`. The intended theory is **resolutions**: a presentation of
+  a module is an augmented resolution (possibly infinite), the classical presentation
+  \(F_1\to F_0\to M\to 0\) is its 2-truncation, and these should be instances of a general
+  theory of resolutions (projective/free, simplicial, cofibrant replacement, or
+  comonadic/bar resolutions [Weibel, *An Introduction to Homological Algebra*, Ch. 2 (projective
+  resolutions) and Ch. 8 (simplicial methods, cotriple resolutions)]). A framed bundle is then a bundle with a resolution satisfying further conditions,
+  of which the trivialization condition is one; stating the full set with sources is
+  `cc-resolutions`' work. A chosen basis (\(\operatorname{Coord}_n\)'s
+  objects) is the degenerate case of a free resolution of length zero.
+
+Consequences for `cc-fib`: register \(\mathbf{Bil}\) and \(\mathbf{Quad}\) as cocartesian
+fibrations over the total module category; re-express the seven lattice families as
+classifier refinements of \(\mathbf{Bil}\); retire the six frame families, and FOUNDATIONS
+§13.5–13.6, in favour of a resolutions section (a new node, `cc-resolutions`, whose
+mathematics must be stated before any code).
 
 ## 5. Coverage
 

@@ -187,10 +187,12 @@ Consequences for the calculus:
 - a forgetful functor is defined on the **total** category where it is uniform in the
   base: \(U:\int_R R\text{-}\mathbf{Mod}\to\mathbf{Set}\), \((R,M)\mapsto M\); "the
   underlying set of an \(R\)-module" is \(U\circ\iota_R\);
-- a leaf category that "depends on \(R\)" (formed modules, lattices over a Dedekind domain)
-  is likewise a fibration, or a category over the total module category, with its
-  structure functors stated between total categories and restricted to fibres by
-  composition.
+- a structured category over modules is a fibration only when the mathematics transports
+  its structure: bilinear forms are a cocartesian fibration over the total module
+  category (FOUNDATIONS §15.5–15.6); lattices are **not** closed under base change, so
+  they are a classifier refinement of the bilinear-module category, and closure of a
+  condition under a particular base change is a theorem, not registry structure
+  ([audit §4](registry-denotation-audit.md#4-mathematical-determinations-owner-rulings-2026-09-28)).
 
 The registry's existing `CategoryFamilyEntry` / `CategoryExpr.familyApp` machinery
 (`Catalogue/Registry/Entry.lean`, `Catalogue/Syntax.lean`) and #54 §2's "typed
