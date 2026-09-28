@@ -7,6 +7,7 @@ module
 public import LeanCategories
 public import LeanCategories.CategoryTheory.WalkingArrow
 public import LeanCategories.CategoryTheory.OneCat.KernelFunctor
+public import LeanCategories.Modules.RankFunctor
 public import LeanCategories.CategoryTheory.EssentiallyDiscrete
 public import LeanCategories.CategoryTheory.FiniteDimensionalCoordinates
 public import LeanCategories.CategoryTheory.InitialRepresentable
