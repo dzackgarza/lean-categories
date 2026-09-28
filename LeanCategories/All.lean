@@ -67,6 +67,10 @@ public import LeanCategories.Algebra.Polynomial
 public import LeanCategories.Algebra.ZariskiRing
 public import LeanCategories.Algebra.PolynomialPowerSeries
 public import LeanCategories.Algebra.MatrixFamilies
+public import LeanCategories.Algebra.MatrixIndecomposable
+public import LeanCategories.Algebra.QuadraticGaussSum
+public import LeanCategories.AlgebraicGeometry.HessianSingular
+public import LeanCategories.Analytic.LocalModel
 public import LeanCategories.Algebra.MonoidAlgebra
 public import LeanCategories.ForMathlib.AdicCompletionIntegers
 public import LeanCategories.ForMathlib.AddSubgroupCompletion
@@ -113,6 +117,7 @@ public import LeanCategories.Topology.CoveringDimension
 public import LeanCategories.Topology.CoveringTerminology
 public import LeanCategories.Topology.DunceCap
 public import LeanCategories.Topology.LocallyMetrizable
+public import LeanCategories.Topology.LorentzCone
 public import LeanCategories.Topology.LinearGraph
 public import LeanCategories.Topology.GraphReduction
 public import LeanCategories.Topology.GraphRealization

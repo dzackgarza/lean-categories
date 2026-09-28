@@ -133,6 +133,74 @@ does not justify weakening a dependent theorem or starting unrelated work.
   nose, from `naturality_id`), `fibreEquivalence α c y`, and the strict
   `Grothendieck.fibreEquivalence`; upstream candidates.
 
+### Missing theorem: Milgram's formula (argument half)
+
+- **Need:** for an even lattice `L` of signature `σ` with discriminant form `q`,
+  `G(q) = √|A_L| · exp(2πiσ/8)` (Sterk graph F1.16; migrated research `Atoms.lean`).
+- **Searches:** `Gauss sum quadratic form finite abelian group absolute value Milgram`,
+  `discriminant form Gauss sum signature`, `Milgram formula`, `Weil index quadratic form`.
+- **Found:** nothing in the corpus. Mathlib's `gaussSum` is `∑ χ(a) ψ(a)` over a finite ring.
+- **Proved here:** the modulus half for any finite abelian group, value group and circle
+  character, `LeanCategories.quadraticGaussSum_mul_conj`
+  (`Algebra/QuadraticGaussSum.lean`), with the statement `MilgramStatement` for `ℚ/2ℤ`-valued forms.
+- **Gap:** the argument half (reduction to `p`-adic Jordan components and their Gauss sums), and
+  the character on the value group of `discriminantSymBilWQuadraticMap` needed to state it for
+  `Lattices/Valued/Discriminant.lean`'s discriminant forms. TODO(LC-12) in the file.
+
+### Missing construction: the orthogonal-sum symmetric monoidal structure on quadratic modules
+
+- **Need:** Nikulin's semigroup `qu(R)` of isometry classes (migrated research `Atoms.lean`, Pa1).
+- **Searches:** `quadratic module orthogonal sum monoidal category`, `QuadraticMap.prod
+  associator isometry`, `Skeleton monoid quadratic forms`.
+- **Found:** Mathlib has `QuadraticMap.IsometryEquiv.prod`, `prodComm`, `prodProdProdComm`, and
+  the skeleton monoid of a monoidal category; no associator or unitor isometries and no monoidal
+  structure on quadratic modules.
+- **Did instead:** `IsometryClass R W` with its `AddCommMonoid` built from explicit isometric
+  equivalences (`Modules/Quadratic/Valued/IsometryClasses.lean`).
+- **Optimal:** `⊥` as a symmetric monoidal structure on `QuadModuleCat R W`; `IsometryClass R W`
+  is then its skeleton monoid. TODO(LC-12) in the file.
+
+### Missing theorem: the Lorentzian negative cone, coordinate-free
+
+- **Need:** the negative cone of a real quadratic form of negative index one has two convex
+  components (Sterk graph Lo10; Vinberg §3).
+- **Searches:** `Lorentz cone two components convex`, `reverse Cauchy Schwarz Lorentzian`,
+  `light cone time cone quadratic form signature`.
+- **Found:** nothing; Mathlib has Sylvester's normal form
+  (`QuadraticForm.equivalent_signType_weighted_sum_squared`).
+- **Proved here:** the standard coordinate form, `LeanCategories.LorentzCone.negativeCone_two_components`
+  (`Topology/LorentzCone.lean`).
+- **Gap:** transport along Sylvester's normal form to an arbitrary form of index one.
+  TODO(LC-12) in the file.
+
+### Missing definitions: complex analytic spaces
+
+- **Need:** reduced complex analytic spaces, normality and the Baily–Borel dimension
+  stratification (Sterk graph AF10, AF14–AF19).
+- **Searches:** `analytic subset zero locus germ ring normal complex analytic space`,
+  `sheaf of holomorphic functions`, `analytic space locally ringed space`.
+- **Found:** Mathlib has `AnalyticOnNhd` and `LocallyRingedSpace`; no sheaf of holomorphic
+  functions on `ℂⁿ` as a sheaf of rings and no analytic space.
+- **Did instead:** local models with pointwise germ rings (`Analytic/LocalModel.lean`); charts
+  carry no transition condition, so `IsLocallyAnalyticSpace` is weaker than being analytic.
+- **Optimal:** the structure sheaf of an analytic subset as a sheaf of local rings, analytic
+  spaces as locally ringed spaces locally isomorphic to it, `germRing` as its stalk.
+  TODO(LC-12) in the file.
+
+### Missing dependency: comodules, weights and roots of affine group schemes (toolchain gap)
+
+- **Need:** roots relative to a diagonalizable subgroup as the nonzero weights of the restricted
+  adjoint representation (Humphreys FC16-C06-U027; migrated research `AdjointRootData.lean`,
+  whose own prerequisites never existed).
+- **Searches:** `comodule coaction coalgebra`, `weight space character group-like comodule`,
+  `roots diagonalizable subgroup adjoint representation`.
+- **Found:** TauCeti formalizes it: `Algebra/Coalgebra/Comodule/{Basic,Weight/Space}.lean`,
+  `Algebra/AlgebraicGroup/DiagonalizableGroup/Weight.lean`, `Algebra/AlgebraicGroup/Tangent/RootSpace.lean`.
+  Mathlib v4.33 has `Coalgebra`, `HopfAlgebra` and `GroupLike` and no comodules.
+- **Gap:** TauCeti is on Lean `v4.35.0-rc3`; this repository is on `v4.33.0`, so it can be
+  neither required nor imported. Require TauCeti once the toolchains meet, rather than port
+  its comodule stack. The archived file is `archive/research/algebraic-geometry/AdjointRootData.lean`.
+
 ### Missing theorems: Γ₂ represents quadratic maps; Roby's base change of Γ at Mathlib v4.33
 
 - **Need:** FOUNDATIONS Definition 15.6, quadratic part (steps 1–2): the universal quadratic

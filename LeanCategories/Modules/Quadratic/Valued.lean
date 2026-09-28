@@ -13,5 +13,6 @@ public import LeanCategories.Modules.Quadratic.Valued.Total
 public import LeanCategories.Modules.Quadratic.Valued.Defect
 public import LeanCategories.Modules.Quadratic.Valued.Framed
 public import LeanCategories.Modules.Quadratic.Valued.Presented
+public import LeanCategories.Modules.Quadratic.Valued.IsometryClasses
 
 @[expose] public section
