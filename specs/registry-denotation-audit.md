@@ -243,3 +243,20 @@ reference implementation); HoTTLean `attic/ForMathlib/GrothendieckEquiv.lean` an
 UniMath `DisplayedCats/Fibrations.v` (composition of cocartesian fibrations). Residue: the
 pseudofunctor analogue of `functorFrom` (a pseudofunctor out of `Pseudofunctor.Grothendieck`
 from a lax cocone), as generic `ForMathlib` glue following UniMath.
+
+**Delivered (`p`, 2026-09-28).** The route above was replaced by FOUNDATIONS Proposition
+31.2b, which needs no pseudofunctor on `∫Mod` (the lax-cocone theorem stays filed in
+COMPLAINTS). `Lattices/Valued/ValueFibration.lean` builds the strong transformation
+`valueProjectionTrans : bilinBaseChangePseudofunctor ⟶ moduleCatExtendScalarsPseudofunctor`
+(components `valueProjection R`, identity naturality, coherence from
+`extendScalarsComp_hom_app_eq`/`extendScalarsId_hom_app_eq`), sets
+`p = BilinFormsOverRings.values := Grothendieck.map valueProjectionTrans` with
+`p ⋙ q = BilinFormsOverRings.ring` by `rfl`, and proves `p.IsCofibered` from the generic
+`Pseudofunctor.Grothendieck.isCofibered_map`. Generic residue, each filed in COMPLAINTS
+(LC-11) and proved in `ForMathlib`: `Functor.IsCofibered` (`Cofibered.lean`), the transfer
+lemma `Functor.IsStronglyCocartesian.map_of_exists`, `Grothendieck.isStronglyCocartesian_of_isIso_fiber`,
+`LocallyDiscrete.mkStrongTrans`, and Proposition 31.2b itself
+(`GrothendieckMapCocartesian.lean`). Not yet constructed: the equivalence of the fibre
+`p⁻¹(R, W)` with `BilinModuleCat R W` (objects strictly over `(R, W)` are exactly
+`W`-valued forms over `R`, but no `Functor.Fiber` equivalence is stated), the `Quad`
+analogue (`cc-quad-basechange`), the lattice refinements, and the registry entries.

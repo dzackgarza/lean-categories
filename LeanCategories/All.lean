@@ -86,6 +86,11 @@ public import LeanCategories.ForMathlib.LocalGradeCohenMacaulay
 public import LeanCategories.ForMathlib.WittCancellation
 public import LeanCategories.ForMathlib.SymmetricPairProduct
 public import LeanCategories.ForMathlib.TensorProductSubmodule
+public import LeanCategories.ForMathlib.CocartesianCancellation
+public import LeanCategories.ForMathlib.Cofibered
+public import LeanCategories.ForMathlib.GrothendieckMapCocartesian
+public import LeanCategories.ForMathlib.LocallyDiscreteStrongTrans
+public import LeanCategories.Lattices.Valued.ValueFibration
 public import LeanCategories.Modules.Framed
 public import LeanCategories.Modules.Localization
 public import LeanCategories.Modules.Presented

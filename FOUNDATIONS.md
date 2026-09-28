@@ -2526,24 +2526,41 @@ Then \(\int\alpha\) is a cocartesian fibration, its fibre over \((c,y)\) is
 \(\int G\). Conversely a composite of cocartesian fibrations \(\mathcal E\to\mathcal F\to\mathcal C\)
 straightens to such an \(\alpha\) (fibrations of fibrations: C. Hermida, "Some properties of Fib as a fibred 2-category", J. Pure Appl. Algebra 134 (1999) 83–109).
 
-*Proof sketch.* Given \((c,x)\) and \((f,\beta):(c,\alpha_c x)\to(c',y)\) in \(\int F\), take the
-Grothendieck cocartesian lift \((c,x)\to(c',G(f)x)\) and follow it by the
-\(\alpha_{c'}\)-cocartesian lift in \(G(c')\) of \(\beta\circ\eta^{-1}\), where \(\eta\) is the
-naturality isomorphism \(F(f)\alpha_c\cong\alpha_{c'}G(f)\) at \(x\). The first is strongly
-cocartesian for the projection of \(\int G\) and its image under \(\int\alpha\) is strongly
-cocartesian for the projection of \(\int F\), so it is \(\int\alpha\)-cocartesian by Lemma
-31.2a; the second is \(\int\alpha\)-cocartesian by hypothesis (2); composites of strongly
-cocartesian morphisms are strongly cocartesian. \(\square\)
+*Proof.* Say a morphism \((f,\psi):(c,x)\to(c',x')\) of \(\int G\) is *transport-stable* if
+\(G(h)\psi\) is strongly \(\alpha_{c''}\)-cocartesian for every \(h:c'\to c''\). A
+transport-stable morphism is strongly \(\int\alpha\)-cocartesian: given
+\((h,\gamma):(c',\alpha_{c'}x')\to(c'',\alpha_{c''}x'')\) and \((f h,\theta):(c,x)\to(c'',x'')\)
+lying over \((f,\beta)\circ(h,\gamma)\), the naturality of \(\eta\) at \(h\) and its composition
+law at \((f,h)\) show that \(\mu_{f,h}^{-1}\circ\theta\) lies over
+\(\eta_h\circ\gamma\) after \(\alpha_{c''}(G(h)\psi)\), where \(\mu\) is the composition
+isomorphism of \(G\); the unique \(\kappa\) supplied by the cocartesian morphism \(G(h)\psi\) gives
+the unique factorization \((h,\kappa)\). Now given \((c,x)\) and \((f,\beta):(c,\alpha_c x)\to(c',y)\)
+in \(\int F\), let \(\psi:G(f)x\to x'\) be a strongly \(\alpha_{c'}\)-cocartesian lift of
+\(\beta\circ\eta_f\) (hypothesis 1). By hypothesis (2), \((f,\psi)\) is transport-stable, and
+\(\int\alpha(f,\psi)=(f,\beta)\). \(\square\) Formalized as
+`Pseudofunctor.Grothendieck.isStronglyCocartesian_map` and `isCofibered_map`
+(`LeanCategories/ForMathlib/GrothendieckMapCocartesian.lean`); the cocartesian-fibration
+predicate is `Functor.IsCofibered` (`ForMathlib/Cofibered.lean`, the dual of Mathlib's
+`Functor.IsFibered`).
 
 ### Example 31.2c (Forms over modules over rings)
 
 The forms fibration of FOUNDATIONS §15 is the case \(G(R)=\mathbf{Bil}^{W}_R\) (forms over \(R\)
-with varying value module, itself the Grothendieck construction of change of values over
+with varying value module, itself the strict Grothendieck construction of change of values over
 \(R\text{-}\mathbf{Mod}\)), \(F(R)=R\text{-}\mathbf{Mod}\) with extension of scalars, and
-\(\alpha_R\) the value-module projection. Hypothesis (1) is the cocartesianness of change of
-values; hypothesis (2) holds because base change of forms carries isomorphisms of value
-modules to isomorphisms. The resulting tower is
-\(\mathbf{Bil}\to\int_R R\text{-}\mathbf{Mod}\to\mathbf{CommRing}\).
+\(\alpha_R\) the value-module projection; the naturality isomorphisms of \(\alpha\) are
+identities, because the value module of \(S\otimes_R(L,b)\) is \(S\otimes_R W\) on the nose.
+Hypothesis (1) is the cocartesianness of change of values. A morphism of
+\(\mathbf{Bil}^W_R\) is value-cocartesian exactly when its fibre part, a morphism of forms with
+fixed values, is invertible, i.e. when its carrier map is an isomorphism. Hypothesis (2) follows
+from a transfer principle: a functor over a functor of bases that sends one strongly
+cocartesian lift of each morphism to a strongly cocartesian morphism sends all of them
+(`Functor.IsStronglyCocartesian.map_of_exists`), and base change sends the canonical
+change-of-value lift, whose carrier map is the identity, to a morphism with carrier map
+\(S\otimes_R\mathrm{id}=\mathrm{id}\). The resulting tower
+\(\mathbf{Bil}\xrightarrow{p}\int_R R\text{-}\mathbf{Mod}\xrightarrow{q}\mathbf{CommRing}\) is
+`BilinFormsOverRings.values`, `ModulesOverRings.ring`, with \(q\circ p\) the projection of
+forms to rings (`LeanCategories/Lattices/Valued/ValueFibration.lean`).
 
 ### Definition 31.3 (Descent datum) {#def-descent-datum}
 

@@ -62,8 +62,60 @@ does not justify weakening a dependent theorem or starting unrelated work.
   `composite fibration total category fibre`. `sinhp/LeanFibredCategories` and HoTTLean
   (`FibredCats/Fibration.lean`, `instComp`) have only the converse (a composite of two
   fibrations is a fibration), on Lean `v4.4`.
-- **Repair link:** proved in this repository under `computational-core` node `cc-fib`
-  (`ForMathlib`); upstream candidate.
+- **Repair link:** proved as `Pseudofunctor.Grothendieck.isStronglyCocartesian_map` and
+  `isCofibered_map` (`ForMathlib/GrothendieckMapCocartesian.lean`); upstream candidate. The
+  formal proof does not route through Lemma 31.2a: a morphism `(f, ψ)` whose transports
+  `G(h)ψ` are all `α`-cocartesian is shown `∫α`-cocartesian directly, from
+  `StrongTrans.naturality_comp_inv` and the naturality of `α` at `h`.
+
+### Missing definition: cocartesian fibrations (`Functor.IsCofibered`)
+
+- **Need:** the predicate "cocartesian fibration" against Mathlib's `IsCocartesian`/
+  `IsStronglyCocartesian` API, as the conclusion of Proposition 31.2b and the hypothesis on
+  its components.
+- **Searches:** `IsCofibered`, `IsPreCofibered`, `cocartesian fibration class Functor`.
+  Mathlib has only `Functor.IsPreFibered`/`Functor.IsFibered`; the hits (UniMath
+  `DisplayedCats/Fibrations.v`, 1lab, `sinhp/HoTTLean` attic) use their own encodings.
+- **Repair link:** `ForMathlib/Cofibered.lean` dualizes Mathlib's `FiberedCategory/Fibered.lean`
+  (`IsPreCofibered`, `IsCofibered`, `pushforwardObj`/`Map`,
+  `isStronglyCocartesian_of_isCocartesian`, `of_exists_isStronglyCocartesian`), with
+  `IsCofibered` instances for both Grothendieck projections (`GrothendieckCocartesian.lean`);
+  upstream candidate.
+
+### Missing theorem: transfer of cocartesian morphisms along a functor over a base functor
+
+- **Need:** if `Φ : 𝒳 ⥤ 𝒳'` lies over `Ψ : 𝒮 ⥤ 𝒮'` (`Φ ⋙ p' = p ⋙ Ψ`) and sends one strongly
+  cocartesian lift of each morphism to a strongly cocartesian morphism, it sends all of them.
+  Consumed as hypothesis (2) of Proposition 31.2b for base change of forms.
+- **Searches:** `cartesian functor preserves cartesian morphisms`, `IsHomLift map functor
+  commute`, `preserves cocartesian lifts`, `cartesian functor between fibrations`. Nearest:
+  Mathlib `BasedFunctor.preserves_isHomLift` (`FiberedCategory/BasedCategory.lean`), for
+  functors over the *same* base only (`Ψ = 𝟭`); `sinhp/LeanFibredCategories` defines cartesian
+  functors as those preserving all cartesian morphisms. Neither covers a change of base
+  (here `Ψ` is extension of scalars) or the reduction to one lift per morphism.
+- **Repair link:** `Functor.IsStronglyCocartesian.map_of_exists` and
+  `Functor.IsHomLift.map_of_comm` (`ForMathlib/Cofibered.lean`); upstream candidate.
+
+### Missing theorem: invertible fibre part implies cocartesian in a Grothendieck construction
+
+- **Need:** in the strict covariant Grothendieck construction, a morphism `(f, ψ)` with `ψ`
+  invertible is strongly cocartesian over `f`.
+- **Searches:** `Grothendieck isIso fiber iff`, `cocartesian iff fiber isomorphism Grothendieck`,
+  `isStronglyCartesian iff isIso fiber`; none.
+- **Repair link:** `Grothendieck.isStronglyCocartesian_of_isIso_fiber`
+  (`ForMathlib/GrothendieckCocartesian.lean`). The converse (strongly cocartesian implies
+  invertible fibre part) is not proved; `ValueFibration.lean` avoids it through the transfer
+  lemma above. TODO(LC-12): prove the converse and the resulting characterization
+  `IsStronglyCocartesian (forget F) f φ ↔ IsIso φ.fiber` for both Grothendieck constructions.
+
+### Missing construction: strong transformations out of a locally discrete bicategory
+
+- **Need:** the transformation analogue of `LocallyDiscrete.mkPseudofunctor`, to build the
+  value-projection transformation `valueProjectionTrans` without the vacuous 2-naturality field.
+- **Searches:** `mkStrongTrans`, `StrongTrans LocallyDiscrete Cat mk`,
+  `strong transformation between pseudofunctors locally discrete`; none.
+- **Repair link:** `strongTransOfIsLocallyDiscrete` and `LocallyDiscrete.mkStrongTrans`
+  (`ForMathlib/LocallyDiscreteStrongTrans.lean`); upstream candidate.
 
 ### Missing theorem: cancellation for strongly cocartesian morphisms
 

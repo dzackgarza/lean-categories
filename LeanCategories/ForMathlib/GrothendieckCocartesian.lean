@@ -7,6 +7,7 @@ module
 public import Mathlib.CategoryTheory.FiberedCategory.Grothendieck
 public import Mathlib.CategoryTheory.FiberedCategory.Cocartesian
 public import Mathlib.CategoryTheory.Grothendieck
+public import LeanCategories.ForMathlib.Cofibered
 
 /-!
 # Cocartesian lifts in covariant Grothendieck constructions
@@ -67,6 +68,12 @@ lemma isStronglyCocartesian_cocartesianLift :
     obtain ⟨rfl⟩ : g = χ'.1 := by simpa using IsHomLift.fac (forget F) g χ'
     ext <;> simp
 
+variable (F) in
+/-- The projection of a covariant Grothendieck construction is a cocartesian fibration. -/
+instance isCofibered_forget : (forget F).IsCofibered :=
+  IsCofibered.of_exists_isStronglyCocartesian fun x _ f ↦
+    ⟨_, cocartesianLift x.fiber f, isStronglyCocartesian_cocartesianLift x.fiber f⟩
+
 end CategoryTheory.Pseudofunctor.Grothendieck
 
 namespace CategoryTheory.Grothendieck
@@ -121,5 +128,35 @@ lemma isStronglyCocartesian_cocartesianLift :
     obtain rfl : g = χ'.base := by
       simpa [forget] using IsHomLift.fac (forget F) g χ'
     apply Grothendieck.ext <;> simp
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+/-- A morphism of the strict Grothendieck construction whose fibre component is an
+isomorphism is strongly cocartesian: it is the canonical lift followed by a vertical
+isomorphism. -/
+lemma isStronglyCocartesian_of_isIso_fiber {X Y : Grothendieck F} (φ : X ⟶ Y)
+    [IsIso φ.fiber] : IsStronglyCocartesian (forget F) φ.base φ := by
+  rcases X with ⟨R, a⟩
+  rcases Y with ⟨S, b⟩
+  rcases φ with ⟨f, ψ⟩
+  dsimp only at ψ ⊢
+  let ι : codomainCocartesianLift a f ≅ ⟨S, b⟩ :=
+    isoMk (Iso.refl _) (eqToIso (by simp) ≪≫ asIso ψ)
+  have hφ : cocartesianLift a f ≫ ι.hom = ⟨f, ψ⟩ := by
+    refine Grothendieck.ext _ _ (by simp [ι]) ?_
+    simp [ι]
+  have : IsHomLift (forget F) (𝟙 S) ι.hom := IsHomLift.map (forget F) ι.hom
+  have := IsStronglyCocartesian.of_iso (forget F) (𝟙 S) ι
+  have := isStronglyCocartesian_cocartesianLift a f
+  have : IsStronglyCocartesian (forget F) (f ≫ 𝟙 S) (cocartesianLift a f ≫ ι.hom) :=
+    inferInstance
+  rwa [hφ, comp_id] at this
+
+variable (F) in
+/-- The projection of a strict covariant Grothendieck construction is a cocartesian
+fibration. -/
+instance isCofibered_forget : (forget F).IsCofibered :=
+  IsCofibered.of_exists_isStronglyCocartesian fun x _ f ↦
+    ⟨_, cocartesianLift x.fiber f, isStronglyCocartesian_cocartesianLift x.fiber f⟩
 
 end CategoryTheory.Grothendieck

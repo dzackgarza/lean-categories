@@ -2,7 +2,7 @@ module
 
 public import LeanCategories.Catalogue.Registry.Extension
 public import LeanCategories.Lattices.Valued.BaseChange
-public import LeanCategories.Lattices.Valued.BaseChangePseudofunctor
+public import LeanCategories.Lattices.Valued.ValueFibration
 public import LeanCategories.Modules.Bilinear.Valued.Catalogue
 public import LeanCategories.Modules.Bilinear.Valued.ChangeValue
 public import LeanCategories.Modules.Bilinear.Valued.Expressions

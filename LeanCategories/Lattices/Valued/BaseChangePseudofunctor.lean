@@ -20,7 +20,9 @@ and in the ring (base change, `BaseChange.lean`). This file assembles base chang
 the pseudofunctor `CommRingCat ⥤ Cat`, `R ↦ BilWFormCat R`, from the existing functors
 `baseChangeBilWForm` and their identity and composition isomorphisms; the total
 category of forms over all rings is its Grothendieck construction, a cocartesian
-fibration over `CommRingCat` (specs/registry-denotation-audit.md §4).
+fibration over `CommRingCat` (specs/registry-denotation-audit.md §4). This is the composite
+`q ∘ p` of the tower `Bil →p ∫Mod →q CommRing`; `p`, the projection to value modules over
+rings, is `BilinFormsOverRings.values` in `ValueFibration.lean`.
 -/
 
 open CategoryTheory
@@ -54,6 +56,7 @@ def baseChangeAlongComp {R S T : CommRingCat.{u}} (f : R ⟶ S) (g : S ⟶ T) :
   baseChangeBilWFormCompositionIso R S T
 
 /-- Base change of bilinear forms as a pseudofunctor on commutative rings. -/
+@[simps! obj map mapId mapComp]
 def bilinBaseChangePseudofunctor :
     Pseudofunctor (LocallyDiscrete CommRingCat.{u}) Cat.{u, u + 1} := by
   refine LocallyDiscrete.mkPseudofunctor

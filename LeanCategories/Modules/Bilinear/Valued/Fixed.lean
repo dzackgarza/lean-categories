@@ -192,6 +192,19 @@ def isoMk {L M : BilinModuleCat R W} (f : L.carrier ≃ₗ[R] M.carrier)
     ext x
     exact f.apply_symm_apply x
 
+/-- A formed-module morphism with bijective underlying map is an isomorphism: its inverse
+linear map preserves the form. -/
+theorem isIso_of_bijective {L M : BilinModuleCat R W} (f : L ⟶ M)
+    (hf : Function.Bijective (underlyingMap f)) : IsIso f := by
+  have h : (isoMk (LinearEquiv.ofBijective (underlyingMap f) hf) (map_pairing f)).hom = f := by
+    apply Quiver.Hom.unop_inj
+    apply CategoryOfElements.ext
+    apply Quiver.Hom.unop_inj
+    apply ModuleCat.hom_ext
+    rfl
+  rw [← h]
+  infer_instance
+
 /-- The carrier equivalence underlying a fixed-value formed-module isomorphism. -/
 def linearEquivOfIso {L M : BilinModuleCat R W} (e : L ≅ M) :
     L.carrier ≃ₗ[R] M.carrier where
