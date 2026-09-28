@@ -163,6 +163,7 @@ public import LeanCategories.Algebra.Concrete.MatrixElements
 public import LeanCategories.Foundation.SetOperations
 public import LeanCategories.Analytic.Points
 public import LeanCategories.CategoryTheory.OneCat.ImageFunctor
+public import LeanCategories.CategoryTheory.OneCat.SubobjectMap
 public import LeanCategories.Modules.Annihilator
 public import LeanCategories.Schemes.OverRationals
 public import LeanCategories.Modules.Mathlib

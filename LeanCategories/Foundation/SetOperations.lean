@@ -32,7 +32,7 @@ of `X ↦ {l : List X // l.Nodup}`; it is an enumeration (`listSequence`). Over 
 forgets to `FiniteLists`.
 
 **Multisets.** `MultisetPoints := IsoElements multisetFunctor` over sets: `multisetContains`,
-`multisetCard` (with multiplicity) and `multisetEquals` (as a subset of the ambient set, the answer
+`multisetCard` (with multiplicity), `multisetSubsetOf` (support inclusion) and `multisetEquals` (as a subset of the ambient set, the answer
 of `=` against a set).
 -/
 
@@ -78,7 +78,7 @@ def subsetInter : Core Subsets.{u} ⥤ ambientSubsetOperations.{u}.Elements :=
 
 /-- `diff`. -/
 def subsetDiff : Core Subsets.{u} ⥤ ambientSubsetOperations.{u}.Elements :=
-  subsetOperation (· \ ·) fun e A B => Set.image_diff e.injective A B
+  subsetOperation (· \ ·) fun e A B => Set.image_sdiff e.injective A B
 
 /-- `symdiff`. -/
 def subsetSymmDiff : Core Subsets.{u} ⥤ ambientSubsetOperations.{u}.Elements :=
@@ -254,5 +254,20 @@ def multisetEquals : MultisetPoints.{u} ⥤ subsetPredicates.{u}.Elements :=
         refine ⟨f.iso.inv y, (h _).2 ?_, hinv y⟩
         rw [Set.mem_preimage, hinv]
         exact hy
+
+/-- `subset` for a multiset against a subset of the ambient set: its support is contained in the
+subset (multiplicities are not compared — the argument is a set). -/
+def multisetSubsetOf : MultisetPoints.{u} ⥤ subsetPredicates.{u}.Elements :=
+  IsoElements.isoNatural multisetFunctor subsetPredicates
+    (fun _ m T => ∀ x ∈ m, x ∈ T) fun {X Y} f m => by
+    funext T
+    change (∀ y ∈ m.map f.iso.hom, y ∈ T) = (∀ x ∈ m, x ∈ f.iso.hom ⁻¹' T)
+    apply propext
+    constructor
+    · intro h x hx
+      exact h _ (Multiset.mem_map_of_mem _ hx)
+    · intro h y hy
+      obtain ⟨x, hx, rfl⟩ := Multiset.mem_map.mp hy
+      exact h x hx
 
 end LeanCategories.Foundation
