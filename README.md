@@ -40,15 +40,16 @@ second category system. `Core` and `Model` define the common language. `Realizat
 connects it to Mathlib. `Registry`, `Specimen`, and `Tools` inspect and export that
 language.
 
-The core module foundation includes generating frames, basis frames, and coordinatized
-modules with arbitrary index types: `GenFrame R I`, `BasisFrame R I`, and `Coord R I`.
+The core module foundation includes truncated free resolutions — free covers and bases — and
+coordinatized modules with arbitrary index types: `FreeCover R I`, `BasedModule R I`, and
+`Coord R I`.
 These declarations use `Finsupp`, not a finite-only representation. The lattice foundation
 includes even integral lattices as a full subcategory. It also includes coordinatized
 integral lattices as a categorical pullback. The comparison functor forgets the selected
 coordinates and returns the intrinsic lattice.
 
 The current finite catalogue rows remain the `I := Fin n` specializations. The catalogue
-also registers the arbitrary-index `GenFrame(R, I)`, `BasisFrame(R, I)`, and `Coord(R, I)`
+also registers the arbitrary-index `FreeCover(R, I)`, `BasedModule(R, I)`, and `Coord(R, I)`
 families, categories, and forgetful functors. The arbitrary-index lattice-coordinate
 category remains open. No matrix, Gram, or determinant comparison is claimed complete.
 

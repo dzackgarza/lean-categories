@@ -11,7 +11,7 @@ public import LeanCategories.Modules.Quadratic.Valued.BaseChange
 public import LeanCategories.Modules.Quadratic.Valued.ChangeValue
 public import LeanCategories.Modules.Quadratic.Valued.Total
 public import LeanCategories.Modules.Quadratic.Valued.Defect
-public import LeanCategories.Modules.Quadratic.Valued.Framed
+public import LeanCategories.Modules.Quadratic.Valued.Based
 public import LeanCategories.Modules.Quadratic.Valued.Presented
 public import LeanCategories.Modules.Quadratic.Valued.IsometryClasses
 

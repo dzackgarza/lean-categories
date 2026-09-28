@@ -895,8 +895,11 @@ free modules and their equivalence with finite projectivity are [@The25, tags 00
 > **Superseded (2026-09-28)** by Definition 13.10 (resolutions). "Frame" conflicts with its
 > standard meaning (a framing of a bundle, Remark 13.12); a chosen surjection \(R^n\to M\) is the
 > augmentation of a free resolution, and a chosen basis is a free resolution of length zero.
-> This definition and Definition 13.6 are retained only until the code that realizes them
-> (`LeanCategories.Modules.Framed` and its six registered families) is retired.
+> The code realizing them was renamed accordingly (2026-09-28): `LeanCategories.Modules.TruncatedResolutions`
+> defines `FreeCover R I` (1-truncated free resolutions \(R^{(I)}\twoheadrightarrow M\)) and
+> `BasedModule R I` (free resolutions of length zero \(R^{(I)}\cong M\)), registered as
+> `cat.free_cover`, `cat.based_module` and their indexed families; the formed-module, quadratic and
+> lattice variants live in the `Based` modules.
 
 Fix \(n\ge0\). The comma category
 \[
@@ -955,8 +958,8 @@ The change-of-basis and Gram-matrix comparison is the classical free-module calc
 There is a faithful identity-on-objects functor from framed bases to coordinatized modules,
 but the two categories are not identified.
 
-**Lean realization status (2026-08-14).** `LeanCategories.Modules.Framed` defines the
-arbitrary-index core declarations `GenFrame R I`, `BasisFrame R I`, and `Coord R I`,
+**Lean realization status (2026-08-14; names of 2026-09-28).** `LeanCategories.Modules.TruncatedResolutions`
+defines the arbitrary-index core declarations `FreeCover R I`, `BasedModule R I`, and `Coord R I`,
 using the standard free module `Finsupp I R`. The catalogue registers their arbitrary-index
 families, categories, and forgetful functors with independent ring, index, object, and hom
 universes. The finite rows remain the `I := Fin n` specializations. The arbitrary-index

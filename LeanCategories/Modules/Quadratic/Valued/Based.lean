@@ -5,7 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Modules.Quadratic.Valued.Fixed
-public import LeanCategories.Modules.Framed
+public import LeanCategories.Modules.TruncatedResolutions
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.Basic
 
 @[expose] public section
@@ -41,12 +41,12 @@ def coordQuadModuleToQuad :
 
 namespace CoordQuadModuleCat
 
-/-! A coordinate frame transports the quadratic map to the standard free module. -/
+/-! A chosen basis transports the quadratic map to the standard free module. -/
 
 noncomputable def standardIso (X : CoordQuadModuleCat R W n) :
     ModuleCat.of R (Fin n → R) ≅ X.snd.carrierObj := by
   let e : LeanCategories.Modules.StandardFreeModule R (Fin n) ≅ X.snd.carrierObj :=
-    (LeanCategories.Modules.Coord.frameIso R (Fin n) X.fst).trans X.iso
+    (LeanCategories.Modules.Coord.basisIso R (Fin n) X.fst).trans X.iso
   let b : Module.Basis (Fin n) R X.snd.carrier :=
     Module.Basis.ofRepr e.toLinearEquiv.symm
   exact LinearEquiv.toModuleIso b.equivFun.symm
@@ -77,7 +77,7 @@ theorem standardMap_preserves_form {X Y : CoordQuadModuleCat R W n}
 
 /-- Transport the quadratic module to its selected standard coordinates.
 
-This is the exact quadratic codomain of the framed category.  It retains the full quadratic
+This is the exact quadratic codomain of the based category.  It retains the full quadratic
 map; no matrix presentation is silently substituted for the quadratic object. -/
 noncomputable def standardQuadraticFunctor :
     CoordQuadModuleCat R W n ⥤ QuadModuleCat R W where
@@ -114,9 +114,9 @@ noncomputable def standardQuadraticFunctor :
           (eY (eY.symm (QuadModuleCat.underlyingMap f.snd (eX x)))))
     rw [eY.apply_symm_apply]
 
-/-! Change the selected standard frame by a fixed linear automorphism. -/
+/-! Change the chosen basis by a fixed linear automorphism. -/
 
-noncomputable def changeFrameMap
+noncomputable def changeBasisMap
     (e : (Fin n → R) ≃ₗ[R] (Fin n → R))
     {X Y : CoordQuadModuleCat R W n} (f : X ⟶ Y) :
     (Fin n → R) →ₗ[R] Fin n → R :=
@@ -124,14 +124,14 @@ noncomputable def changeFrameMap
     ((standardMap R W n f).comp e.toLinearMap)
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- Reparameterize the standard quadratic realization by a fixed change of frame. -/
-noncomputable def changeFrameQuadraticFunctor
+/-- Reparameterize the standard quadratic realization by a fixed change of basis. -/
+noncomputable def changeBasisQuadraticFunctor
     (e : (Fin n → R) ≃ₗ[R] (Fin n → R)) :
     CoordQuadModuleCat R W n ⥤ QuadModuleCat R W where
   obj X :=
     QuadModuleCat.ofQuadraticMap
       ((standardForm R W n X).comp e.toLinearMap)
-  map {X Y} f := QuadModuleCat.homMk (changeFrameMap R W n e f) (by
+  map {X Y} f := QuadModuleCat.homMk (changeBasisMap R W n e f) (by
     intro x
     change standardForm R W n Y
         (e (e.symm (standardMap R W n f (e x)))) =
@@ -144,7 +144,7 @@ noncomputable def changeFrameQuadraticFunctor
     apply Quiver.Hom.unop_inj
     apply ModuleCat.hom_ext
     ext x
-    change changeFrameMap R W n e (𝟙 X) x = x
+    change changeBasisMap R W n e (𝟙 X) x = x
     let eX := (standardIso R W n X).toLinearEquiv
     change e.symm (eX.symm (eX (e x))) = x
     simp
@@ -154,9 +154,9 @@ noncomputable def changeFrameQuadraticFunctor
     apply Quiver.Hom.unop_inj
     apply ModuleCat.hom_ext
     ext x
-    change changeFrameMap R W n e (f ≫ g) x =
-      changeFrameMap R W n e g (changeFrameMap R W n e f x)
-    simp only [changeFrameMap, LinearMap.comp_apply]
+    change changeBasisMap R W n e (f ≫ g) x =
+      changeBasisMap R W n e g (changeBasisMap R W n e f x)
+    simp only [changeBasisMap, LinearMap.comp_apply]
     simp [standardMap, QuadModuleCat.underlyingMap]
     let eY := (standardIso R W n Y).toLinearEquiv
     have hY (z : Y.snd.carrier) :

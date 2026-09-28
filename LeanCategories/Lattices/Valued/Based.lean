@@ -5,7 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Lattices.Valued.Basic
-public import LeanCategories.Modules.Framed
+public import LeanCategories.Modules.TruncatedResolutions
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.Basic
 
 @[expose] public section

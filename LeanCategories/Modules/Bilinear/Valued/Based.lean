@@ -5,7 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Modules.Bilinear.Valued.Fixed
-public import LeanCategories.Modules.Framed
+public import LeanCategories.Modules.TruncatedResolutions
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.Basic
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 
@@ -26,7 +26,7 @@ variable (n : ℕ)
 
 /-- Rank-`n` coordinatized `W`-valued formed modules.
 
-An object consists of a selected basis frame, a formed-module structure, and an
+An object consists of a chosen basis, a formed-module structure, and an
 isomorphism identifying their carrier modules.  The pullback therefore retains
 the mathematical formed module while making its coordinates explicit.
 -/
@@ -47,33 +47,33 @@ def coordBilinModuleToBilin :
 
 namespace CoordBilinModuleCat
 
-/-! Change of presentation by precomposition of the selected basis frame. -/
+/-! Change of basis by precomposition of the chosen basis. -/
 
-noncomputable def changeFrameCoord
+noncomputable def changeBasisCoord
     (e : LeanCategories.Modules.StandardFreeModule R (Fin n) ≅
       LeanCategories.Modules.StandardFreeModule R (Fin n)) :
     LeanCategories.Modules.Coord R (Fin n) ⥤ LeanCategories.Modules.Coord R (Fin n) where
   obj X :=
-    { frame :=
-        { obj := StructuredArrow.mk (e.inv ≫ X.frame.obj.hom)
+    { basis :=
+        { obj := StructuredArrow.mk (e.inv ≫ X.basis.obj.hom)
           property := by
-            change IsIso (e.inv ≫ X.frame.obj.hom)
-            exact IsIso.comp_isIso' inferInstance X.frame.property } }
+            change IsIso (e.inv ≫ X.basis.obj.hom)
+            exact IsIso.comp_isIso' inferInstance X.basis.property } }
   map f := f
   map_id _ := rfl
   map_comp _ _ := rfl
 
 /-- Change the selected coordinates while retaining the intrinsic bilinear module.
 
-The new frame is `e.inv` followed by the old frame.  Since the carrier is unchanged,
+The new basis is `e.inv` followed by the old one.  Since the carrier is unchanged,
 the pullback comparison is unchanged and every form-preserving morphism maps to itself.
 -/
-noncomputable def changeFrameFunctor
+noncomputable def changeBasisFunctor
     (e : LeanCategories.Modules.StandardFreeModule R (Fin n) ≅
       LeanCategories.Modules.StandardFreeModule R (Fin n)) :
     CoordBilinModuleCat R R n ⥤ CoordBilinModuleCat R R n where
   obj X :=
-    { fst := (changeFrameCoord R n e).obj X.fst
+    { fst := (changeBasisCoord R n e).obj X.fst
       snd := X.snd
       iso := X.iso }
   map f :=
@@ -88,7 +88,7 @@ noncomputable def changeFrameFunctor
 noncomputable def standardIso (X : CoordBilinModuleCat R R n) :
     ModuleCat.of R (Fin n → R) ≅ X.snd.carrierObj := by
   let e : LeanCategories.Modules.StandardFreeModule R (Fin n) ≅ X.snd.carrierObj :=
-    (LeanCategories.Modules.Coord.frameIso R (Fin n) X.fst).trans X.iso
+    (LeanCategories.Modules.Coord.basisIso R (Fin n) X.fst).trans X.iso
   let b : Module.Basis (Fin n) R X.snd.carrier :=
     Module.Basis.ofRepr e.toLinearEquiv.symm
   exact LinearEquiv.toModuleIso b.equivFun.symm

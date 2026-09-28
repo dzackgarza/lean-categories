@@ -5,7 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Lattices.Valued.Arithmetic
-public import LeanCategories.Lattices.Valued.Framed
+public import LeanCategories.Lattices.Valued.Based
 public import LeanCategories.Lattices.Valued.BaseChangeIsometry
 public import LeanCategories.Lattices.Valued.Radical
 public import LeanCategories.Lattices.Valued.Sublattice
