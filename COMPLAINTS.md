@@ -32,6 +32,62 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Mathematical issues
 
+### Missing theorem: pseudofunctors out of a Grothendieck construction from lax cocones
+
+- **Need:** the universal property of the Grothendieck construction of a pseudofunctor
+  `F : LocallyDiscrete C ⥤ᵖ Cat` as a lax colimit: a lax cocone on `F` (fibrewise
+  pseudofunctors `F c → Cat`, strong transition transformations, coherent modifications)
+  determines a pseudofunctor `∫ F → Cat`. It is the straightening statement behind every
+  fibration over a total category (forms over modules over rings, specs/registry-denotation-audit.md §6).
+- **Searches:** `GrothendieckEquiv`, `Grothendieck of Grothendieck`, `Grothendieck sigma
+  equivalence`, `Grothendieck Fubini`, `pseudofunctor on Grothendieck construction`,
+  `straightening unstraightening`, `Grothendieck.pre`. Found only the strict case:
+  Mathlib `Grothendieck.functorFrom` (strict `C ⥤ Cat`, result a 1-functor `∫ F ⥤ E`) and
+  HoTTLean `ForMathlib/CategoryTheory/Bicategory/Grothendieck.lean` (same). UniMath
+  `Bicategories/Grothendieck/{Unit,Counit,FibrationToPseudoFunctor}.v` is a Rocq reference.
+- **Gap and route:** the forms fibration over modules was instead routed through
+  FOUNDATIONS Proposition 31.2b (fibred fibrations from a strong transformation), which
+  avoids this theorem. When it exists, the forms pseudofunctor on `∫ Mod` can be stated
+  directly.
+- **Repair link:** upstream candidate; not scheduled in this repository.
+
+### Missing theorem: fibred fibrations over Grothendieck constructions
+
+- **Need:** FOUNDATIONS Proposition 31.2b: a strong transformation `α : G ⟶ F` of
+  pseudofunctors whose components are cocartesian fibrations and whose transports preserve
+  cocartesian morphisms induces a cocartesian fibration `Grothendieck.map α`.
+- **Searches:** `fibred fibration`, `fibration in Fib`, `fibrewise fibration cartesian
+  functor`, `Grothendieck.map fibration`, `Grothendieck map StrongTrans cocartesian`,
+  `fibered functor between fibrations`, `displayed functor fibration total`,
+  `composite fibration total category fibre`. `sinhp/LeanFibredCategories` and HoTTLean
+  (`FibredCats/Fibration.lean`, `instComp`) have only the converse (a composite of two
+  fibrations is a fibration), on Lean `v4.4`.
+- **Repair link:** proved in this repository under `computational-core` node `cc-fib`
+  (`ForMathlib`); upstream candidate.
+
+### Missing theorem: cancellation for strongly cocartesian morphisms
+
+- **Need:** FOUNDATIONS Lemma 31.2a (dual of HTT Prop. 2.4.1.3).
+- **Searches:** `IsStronglyCartesian comp functor cancellation`, `isStronglyCartesian_of_comp`,
+  `cartesian morphism composite functor`, `cartesian of composite fibration`,
+  `IsHomLift comp functor`. Mathlib has composition (`IsStronglyCocartesian.comp`) and
+  `of_comp` along one functor, not cancellation along a composite functor.
+- **Repair link:** proved as `CategoryTheory.Functor.isStronglyCocartesian_of_comp`
+  (`ForMathlib/CocartesianCancellation.lean`); upstream candidate.
+
+### Missing theorem: coherence of base change of bilinear forms
+
+- **Need:** the associativity and unit laws making `R ↦ BilWFormCat R` (base change of forms)
+  a pseudofunctor.
+- **Searches:** `cancelBaseChange assoc`, `base change pseudofunctor coherence`,
+  `baseChange baseChange tensor assoc`, `BilinMap.baseChange`,
+  `pseudofunctor extension of scalars associativity`. TauCeti's affine group scheme base
+  change records the analogous laws as unproved; `kckennylau/EllipticCurve` has only the
+  triangle `cancelBaseChange_comp_mk_one`.
+- **Repair link:** proved in `Lattices/Valued/BaseChangeCoherence.lean`
+  (`cancelBaseChange_assoc`, `_id_left`, `_id_right` and the `baseChangeBilWForm_*` laws);
+  the module-level `cancelBaseChange` identities are upstream candidates for Mathlib.
+
 ### Quadratic base change requires `2` invertible, so the quadratic fibration excludes ℤ
 
 - **Need:** base change of `W`-valued quadratic maps along any map of commutative rings `R → S`

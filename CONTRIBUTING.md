@@ -116,3 +116,14 @@ instance is then obtained from it. "Not available yet", "no second consumer yet"
 situation this rule exists for. A construction is special-case only when it is not an
 instance of any general statement, and that claim is itself stated and argued in the
 owning spec.
+
+## LC-11 — File every missing theorem in COMPLAINTS.md
+
+A theorem or construction that an obligation needs and that the LC-09 search does not find is
+never silently worked around, discarded, or recorded only in a commit message, audit or
+module docstring. It is filed in [COMPLAINTS.md](COMPLAINTS.md) under `LC-05` with the
+statement that is missing, the searches run, the nearest partial sources, and what depends
+on it — whether it is then proved here (the entry names the proving declaration and stays
+as an upstream candidate), scheduled, or left open. A route chosen *because* a theorem is
+missing is itself recorded in that entry, so the detour can be undone when the theorem
+exists.
