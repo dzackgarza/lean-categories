@@ -32,6 +32,30 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Mathematical issues
 
+### Quadratic base change requires `2` invertible, so the quadratic fibration excludes ℤ
+
+- **Need:** base change of `W`-valued quadratic maps along any map of commutative rings `R → S`
+  (FOUNDATIONS §15.6 "and similarly for quadratic maps"), so that `Quad` is a cocartesian
+  fibration over all commutative rings like `Bil` (`BilinFormsOverRings`), and evenness
+  (FOUNDATIONS §19.5, `I = 2R` integrality transported along the diagonal) is available over `ℤ`.
+- **Evidence:** `LeanCategories/Modules/Quadratic/Valued/BaseChange.lean` fixes
+  `[Invertible (2 : R)]` and builds the form as `QuadraticMap.sq.tmul Q.form`; Mathlib's
+  `QuadraticMap.tmul`/`QuadraticForm.baseChange` (`LinearAlgebra/QuadraticForm/TensorProduct.lean`)
+  require `Invertible 2`. Corpus searches (`QuadraticMap.baseChange`, `quadratic form base change
+  without invertible 2`, `QuadraticMap tmul characteristic 2`, `baseChange quadratic polar`,
+  `quadratic map scalar extension`) found only `Invertible 2` versions (TauCeti
+  `LinearAlgebra/QuadraticForm/BaseChange.lean`, HassePrinciple).
+- **Gap and impact:** over rings where `2` is not a unit — `ℤ`, `ℤ_2`, `𝔽_2` — there is no
+  quadratic base change, so the quadratic fibration and every quadratic/even-lattice consumer
+  over those rings is blocked. The general construction exists: quadratic maps `M → W` are the
+  linear maps `Γ₂(M) → W` out of the second divided power, and `Γ₂` commutes with base change
+  (Roby). Candidate owner in the corpus: `AntoineChambert-Loir/DividedPowers4`
+  (`DividedPowers/DPAlgebra/Free.lean`, `DPAlgebra/Dpow.lean`, base change of divided power
+  algebras).
+- **Coverage:** the searches above and the two local files. The DividedPowers4 files were
+  located by search, not yet read.
+- **Repair link:** `computational-core` plan node `cc-quad-basechange`.
+
 ### `IsJordanCanonicalInBasis` weakens the chosen-basis Jordan condition
 
 - **Need:** FC01-C12-U039 defines a Jordan canonical form for a linear transformation as a basis in which the representing matrix itself is block diagonal with Jordan blocks.
