@@ -181,6 +181,42 @@ noncomputable def integralFormsRefinement :
   classifierProjection := _
   classifierProjection_eq := rfl
 
+noncomputable def integralFormsToBilDeclaration :
+    integralFormsCategory.{u} ⟶ bilinFormsOverRingsCategory.{u} :=
+  (Classifier.reindex regularSectionDeclaration.{u}.toCatHom
+    valuesClassifierDeclaration).axiomProjection
+
+noncomputable def integralFormsToBilRealization :
+    FunctorRealization Fibrations.IntegralFormsToBilExpr integralFormsCategory.{u}
+      bilinFormsOverRingsCategory.{u} integralFormsToBilDeclaration.toFunctor :=
+  { sourceRealization := integralFormsRealization
+    targetRealization := bilinFormsOverRingsRealization }
+
+noncomputable def integralLatticesCategory : ObjCat.{u + 1, u} :=
+  (Classifier.reindex integralFormsToBilDeclaration.{u} latticeClassifierDeclaration).total
+
+noncomputable def integralLatticesRealization :
+    CategoryRealization Fibrations.IntegralLattices integralLatticesCategory.{u} := {}
+
+noncomputable def integralLatticesRefinement :
+    RefinementRealization Fibrations.IntegralLattices integralLatticesCategory.{u} where
+  base := Fibrations.IntegralForms
+  classifierId := ClassifierId.bilLattice
+  expression_eq := rfl
+  baseCategory := integralFormsCategory
+  host := Fibrations.BilinFormsOverRings
+  hostCategory := bilinFormsOverRingsCategory
+  baseRealization := integralFormsRealization
+  classifier := latticeClassifierDeclaration
+  classifierRealization := latticeClassifierRealization
+  baseToHost := integralFormsToBilDeclaration
+  reindexed := Classifier.reindex integralFormsToBilDeclaration latticeClassifierDeclaration
+  equivalence := CategoryTheory.Equivalence.refl
+  baseProjection := _
+  baseProjection_eq := rfl
+  classifierProjection := _
+  classifierProjection_eq := rfl
+
 normalized_registry .functor
   { id := FunctorId.modulesProjection,
     source := Modules.ModulesTotal
@@ -270,6 +306,24 @@ normalized_registry .category
     realization := `LeanCategories.Catalogue.FibrationRegistration.latticesOverRingsRealization
     refinementRealization :=
       some `LeanCategories.Catalogue.FibrationRegistration.latticesOverRingsRefinement }
+
+normalized_registry .functor
+  { id := FunctorId.integralFormsToBil,
+    source := Fibrations.IntegralForms
+    target := Fibrations.BilinFormsOverRings
+    declaration :=
+      `LeanCategories.Catalogue.FibrationRegistration.integralFormsToBilDeclaration
+    realization :=
+      `LeanCategories.Catalogue.FibrationRegistration.integralFormsToBilRealization
+    expression := Fibrations.IntegralFormsToBilExpr }
+normalized_registry .category
+  { id := CategoryId.integralLattices,
+    declaration := `LeanCategories.Catalogue.FibrationRegistration.integralLatticesCategory
+    expression := Fibrations.IntegralLattices
+    realization :=
+      `LeanCategories.Catalogue.FibrationRegistration.integralLatticesRealization
+    refinementRealization :=
+      some `LeanCategories.Catalogue.FibrationRegistration.integralLatticesRefinement }
 
 /-! ### Negative probe: a refinement must be the pullback along the identity of its host -/
 

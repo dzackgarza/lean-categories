@@ -31,6 +31,8 @@ def bilinFormsOverRings : CategoryId := ⟨"cat.bilin_forms_over_rings"⟩
 def latticesOverRings : CategoryId := ⟨"cat.lattices_over_rings"⟩
 /-- Integral forms: the pullback of `Bil` along the regular section `R ↦ (R, R)`. -/
 def integralForms : CategoryId := ⟨"cat.integral_forms"⟩
+/-- Integral lattices: integral forms that are lattices. -/
+def integralLattices : CategoryId := ⟨"cat.integral_lattices"⟩
 end CategoryId
 
 namespace ClassifierId
@@ -49,6 +51,8 @@ def modulesExtRing : FunctorId := ⟨"fun.modules_ext.ring"⟩
 def bilinFormsValues : FunctorId := ⟨"fun.bilin_forms.values"⟩
 /-- The regular section `CommRing ⥤ ∫ Mod`, `R ↦ (R, R)`. -/
 def modulesExtRegularSection : FunctorId := ⟨"fun.modules_ext.regular_section"⟩
+/-- The projection of the pullback `CommRing ×_{∫ Mod} Bil` to `Bil`. -/
+def integralFormsToBil : FunctorId := ⟨"fun.integral_forms.to_bil"⟩
 end FunctorId
 
 namespace FibrationId
@@ -68,6 +72,13 @@ def LatticesOverRings : CategoryExpr := .refine BilinFormsOverRings ClassifierId
 /-- Integral forms: `CommRing ×_{∫ Mod} Bil` along the regular section. -/
 def IntegralForms : CategoryExpr :=
   .refine Algebra.Catalogue.Rings.CommutativeRings ClassifierId.bilValues
+
+/-- Integral lattices: the lattice refinement of integral forms, along their projection to
+`Bil`. -/
+def IntegralLattices : CategoryExpr := .refine IntegralForms ClassifierId.bilLattice
+
+def IntegralFormsToBilExpr : FunctorExpr IntegralForms BilinFormsOverRings :=
+  .atomic FunctorId.integralFormsToBil
 
 def RegularSectionExpr :
     FunctorExpr Algebra.Catalogue.Rings.CommutativeRings ModulesOverRingsExt :=
