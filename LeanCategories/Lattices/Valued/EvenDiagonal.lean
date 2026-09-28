@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Lattices.Valued.ScaleAndEvenness
 public import LeanCategories.Modules.Quadratic.Valued.IsometryClasses
+public import LeanCategories.Lattices.Valued.BilRefinements
 
 @[expose] public section
 
@@ -73,6 +74,13 @@ theorem isEven_iff_diagonal (L : IntegralLatticeCat R) :
     IsEven L ↔ QuadIIntegral ((diagonal R R).obj L.obj) (Ideal.span {(2 : R)}) := by
   unfold IsEven IsIEven QuadIIntegral
   rfl
+
+/-- Evenness of an integral lattice is the evenness classifier of `Bil` at `W = R`:
+`b(v, v) ∈ 2R` for every `v` (`bilIsEven`). -/
+theorem isEven_iff_exists_two_smul (L : IntegralLatticeCat R) :
+    IsEven L ↔ ∀ v, ∃ w : R, quadraticMap L v = (2 : R) • w := by
+  rw [IsEven, isIEven_iff_value_mem]
+  exact forall_congr' fun v => (exists_two_smul_iff_mem_span _).symm
 
 /-- Over `ℤ`: `L` is even exactly when every `b(v, v)` is divisible by `2`. -/
 theorem isEven_iff_two_dvd (L : IntegralLatticeCat ℤ) :

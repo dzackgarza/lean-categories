@@ -21,6 +21,12 @@ property, i.e. the refinement of `Bil` by a property classifier. Whether a base 
 preserves the property is a theorem about that base change, not registry structure.
 
 The fibre of this refinement over `(R, W)` is `LatticeCat R W`.
+
+The further lattice conditions are property classifiers on `Bil` too, stated for every ring `R`
+and value module `W` (audit §4): a finite carrier (with the lattice property: finite projective
+lattices), a free one, *evenness* `b(v, v) ∈ 2W` — for integral forms (`W = R`) the `I = 2R`
+integrality of the diagonal quadratic form (`EvenDiagonal.lean`) — and *unimodularity*, the
+adjoint `L → Hom(L, W)` being bijective (`L^{#} = L`, metric unimodularity).
 -/
 
 open CategoryTheory
@@ -46,5 +52,44 @@ noncomputable def latticeClassifier :
   forget := bilIsLattice.{u}.ι.toCatHom
   full := inferInstanceAs bilIsLattice.{u}.ι.Full
   faithful := inferInstanceAs bilIsLattice.{u}.ι.Faithful
+
+/-- A property of `Bil`, as the full-subcategory classifier. -/
+noncomputable def bilPropertyClassifier (P : ObjectProperty BilinFormsOverRings.{u}) :
+    PropertyClassifier.{u + 1, u} (Cat.of BilinFormsOverRings.{u}) where
+  total := Cat.of P.FullSubcategory
+  forget := P.ι.toCatHom
+  full := inferInstanceAs P.ι.Full
+  faithful := inferInstanceAs P.ι.Faithful
+
+/-- A finite carrier. -/
+def bilIsFinite : ObjectProperty BilinFormsOverRings.{u} :=
+  fun X ↦ Module.Finite X.base X.fiber.formed.carrier
+
+/-- A free carrier. -/
+def bilIsFree : ObjectProperty BilinFormsOverRings.{u} :=
+  fun X ↦ Module.Free X.base X.fiber.formed.carrier
+
+/-- Evenness of a `W`-valued form: `b(v, v) ∈ 2W` for every `v`. -/
+def bilIsEven : ObjectProperty BilinFormsOverRings.{u} :=
+  fun X ↦ ∀ v, ∃ w : X.fiber.value, X.fiber.formed.pairing v v = (2 : X.base) • w
+
+/-- Unimodularity: the adjoint `L → Hom(L, W)` is bijective. -/
+def bilIsUnimodular : ObjectProperty BilinFormsOverRings.{u} :=
+  fun X ↦ Function.Bijective X.fiber.formed.adjoint
+
+noncomputable def finiteClassifier := bilPropertyClassifier.{u} bilIsFinite
+noncomputable def freeClassifier := bilPropertyClassifier.{u} bilIsFree
+noncomputable def evenClassifier := bilPropertyClassifier.{u} bilIsEven
+noncomputable def unimodularClassifier := bilPropertyClassifier.{u} bilIsUnimodular
+
+/-- For `R`-valued forms, `2R` is the ideal `(2)`: `(∃ w, x = 2 • w) ↔ x ∈ (2)`. -/
+theorem exists_two_smul_iff_mem_span {R : Type u} [CommRing R] (x : R) :
+    (∃ w : R, x = (2 : R) • w) ↔ x ∈ Ideal.span {(2 : R)} := by
+  rw [Ideal.mem_span_singleton']
+  constructor
+  · rintro ⟨y, rfl⟩
+    exact ⟨y, by rw [smul_eq_mul, mul_comm]⟩
+  · rintro ⟨y, rfl⟩
+    exact ⟨y, by rw [smul_eq_mul, mul_comm]⟩
 
 end LeanCategories.Lattices.Valued
