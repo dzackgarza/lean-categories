@@ -131,6 +131,29 @@ existing registry's `CategoryFamilyEntry` is its first audit target.
 constructor, has a docstring naming its mathematical denotation and a FOUNDATIONS anchor or
 Mathlib declaration; the plan's first node (CC-P0) audits the existing kinds against this.
 
+### CC-REUSE — Every obligation is first discharged by search; only glue and residue are written
+
+Every definition *and every proof obligation* — a category, a functor, a fibration, a
+coherence law, a lemma needed inside a proof — is first attempted through **broad searches
+of the formalization-corpus API** (`scripts/formalization_corpus.py`, whose OpenAPI
+document is served by `formalization-corpus.dzackgarza.com`), under several formulations:
+the mathematical name, synonyms and dual notions, the Mathlib-style identifier, and the
+statement's key lemma names, across the whole corpus (Mathlib, Lean 4 category-theory
+libraries such as the ∞-cosmos project and `sinhp`'s fibred categories, UniMath, 1Lab,
+agda-categories, the Isabelle AFP, and the rest of the index). A Lean hit is imported or
+ported with provenance; a non-Lean hit is a reference implementation to follow.
+
+Only the **glue** between found results, and the **residue** that no indexed source
+supplies, is written by hand. The searches, their hits, and the reason each hit does or
+does not discharge the obligation are recorded with the work (in the commit and in the
+owning spec or audit), so the residue claim can be checked.
+
+This extends AGENTS.md's reuse gate from Definitions-sweep units to every obligation this
+programme creates, including those that arise in the middle of a proof.
+
+**Acceptance.** Every commit that adds a definition or a nontrivial proof under this
+programme cites its search record; a reviewer can rerun the queries.
+
 ### CC-CALC — A typed semantic calculus, not a name graph
 
 The registry holds terms the resolver can compose:

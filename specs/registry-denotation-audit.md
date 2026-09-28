@@ -194,3 +194,22 @@ for `baseChangeBilWFormCompositionIso` and `baseChangeBilWFormIdentityIso` at th
 the total forms category is its `Pseudofunctor.Grothendieck`, and cocartesianness is the
 existing `ForMathlib` theorem. No new fibration theory and no second total-category
 definition is authored.
+
+**Delivered (forms over rings).** `Lattices/Valued/BaseChangeCoherence.lean` proves the
+associativity and both unit laws for the existing base-change isomorphisms
+(`baseChangeBilWForm_assoc`, `_id_comp`, `_comp_id`, via the module-level identities
+`cancelBaseChange_assoc`, `cancelBaseChange_id_left`, `cancelBaseChange_id_right`);
+`Lattices/Valued/BaseChangePseudofunctor.lean` assembles `bilinBaseChangePseudofunctor`
+on `LocallyDiscrete CommRingCat`, defines `BilinFormsOverRings` as its Grothendieck
+construction (fibre over `R` = `BilWFormCat R`), and obtains strong cocartesianness of base
+change from the existing `ForMathlib` theorem. Additional searches before the coherence
+proofs: `cancelBaseChange`, `cancelBaseChange assoc`, `baseChange baseChange tensor assoc`,
+`extendScalarsComp`, `BilinMap.baseChange`, `base change pseudofunctor coherence`,
+`IsScalarTower tensor cancel`, `pseudofunctor extension of scalars associativity`, and the
+broader fibration queries (`Grothendieck construction`, `cartesian fibration`,
+`cocartesian lift`, `bifibration`, `category of elements`, `fibred category`,
+`Beck-Chevalley`, `indexed category`, and `repo:infinity-cosmos` fibration/cartesian/
+isofibration/Grothendieck). No source states these coherence laws; TauCeti's affine group
+scheme base change records them as unproved. Remaining for `cc-fib`: `Quad` (same pattern),
+the seven lattice families re-expressed as classifier refinements of `Bil`, and the registry
+entries for the new fibration.

@@ -13,7 +13,7 @@ local checkout, and this work must be readable wherever the repository is.
 - **Step 0 is mathematics.** Every node begins by stating, in FOUNDATIONS with a citation or
   by naming the Mathlib declaration, the exact mathematical object it implements (CC-TRUE).
   A node whose object cannot be stated precisely stops there and records why.
-- **Reuse before authoring** (README, AGENTS reuse gate): Mathlib's `Functor`,
+- **Search before authoring, for every obligation** (CC-REUSE): definitions and proof obligations alike are first attempted by broad formalization-corpus API searches under several formulations; only glue and residue are hand-written, and the search record ships with the work. Known first candidates: Mathlib's `Functor`,
   `Functor.Elements`, `Arrow`, `Core`, `Over`/`Under`, `MonoOver`/`Subobject`,
   `Grothendieck`, `ModuleCat.restrictScalars`/`extendScalars`, `ConcreteCategory`, limits and
   kernels come first. Project code adds only the registry, the resolver and the realization
