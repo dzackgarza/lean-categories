@@ -27,7 +27,14 @@ namespace CategoryId
 def modulesOverRingsExt : CategoryId := ⟨"cat.modules_over_rings_ext"⟩
 /-- Bilinear forms over all commutative rings and value modules. -/
 def bilinFormsOverRings : CategoryId := ⟨"cat.bilin_forms_over_rings"⟩
+/-- Lattices: the refinement of `Bil` by the lattice property. -/
+def latticesOverRings : CategoryId := ⟨"cat.lattices_over_rings"⟩
 end CategoryId
+
+namespace ClassifierId
+/-- The lattice property on `Bil` (projective carrier, symmetric form). -/
+def bilLattice : ClassifierId := ⟨"clf.bilin_forms.lattice"⟩
+end ClassifierId
 
 namespace FunctorId
 /-- The projection `∫ᶜ Mod ⥤ Ring`. -/
@@ -48,6 +55,9 @@ namespace Fibrations
 
 def ModulesOverRingsExt : CategoryExpr := .atom CategoryId.modulesOverRingsExt
 def BilinFormsOverRings : CategoryExpr := .atom CategoryId.bilinFormsOverRings
+
+/-- Lattices, as the refinement of `Bil` by the lattice property (audit §4). -/
+def LatticesOverRings : CategoryExpr := .refine BilinFormsOverRings ClassifierId.bilLattice
 
 def ModulesProjectionExpr : FunctorExpr Modules.ModulesTotal Algebra.Catalogue.Rings.Rings :=
   .atomic FunctorId.modulesProjection

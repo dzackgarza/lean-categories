@@ -9,6 +9,7 @@ public import LeanCategories.Catalogue.Registry.Extension
 public import LeanCategories.Modules.CatalogueRegistration
 public import LeanCategories.Modules.Bilinear.Valued.CatalogueRegistration
 public import LeanCategories.Exceptional.CatalogueRegistration
+public import LeanCategories.Lattices.Valued.BilRefinements
 public meta import LeanCategories.Catalogue.FibrationCatalogue
 public meta import LeanCategories.Catalogue.Registry.Extension
 public meta import LeanCategories.Modules.Expressions
@@ -98,6 +99,42 @@ noncomputable def bilinFormsValuesRealization :
 theorem bilinFormsValues_isCofibered : bilinFormsValuesDeclaration.{u}.IsCofibered :=
   BilinFormsOverRings.isCofibered_values
 
+/-! ### Lattices as a refinement of `Bil` -/
+
+noncomputable def latticeClassifierDeclaration : Classifier bilinFormsOverRingsCategory.{u} :=
+  latticeClassifier.{u}.toClassifier
+
+noncomputable def latticeClassifierRealization :
+    ClassifierRealization Fibrations.BilinFormsOverRings ClassifierId.bilLattice
+      bilinFormsOverRingsCategory.{u} latticeClassifierDeclaration :=
+  { hostRealization := bilinFormsOverRingsRealization, totalRealization := {} }
+
+noncomputable def latticesOverRingsCategory : ObjCat.{u + 1, u} :=
+  (Classifier.reindex (𝟙 bilinFormsOverRingsCategory.{u})
+    latticeClassifierDeclaration).total
+
+noncomputable def latticesOverRingsRealization :
+    CategoryRealization Fibrations.LatticesOverRings latticesOverRingsCategory.{u} := {}
+
+noncomputable def latticesOverRingsRefinement :
+    RefinementRealization Fibrations.LatticesOverRings latticesOverRingsCategory.{u} where
+  base := Fibrations.BilinFormsOverRings
+  classifierId := ClassifierId.bilLattice
+  expression_eq := rfl
+  baseCategory := bilinFormsOverRingsCategory
+  host := Fibrations.BilinFormsOverRings
+  hostCategory := bilinFormsOverRingsCategory
+  baseRealization := bilinFormsOverRingsRealization
+  classifier := latticeClassifierDeclaration
+  classifierRealization := latticeClassifierRealization
+  baseToHost := 𝟙 _
+  reindexed := Classifier.reindex (𝟙 _) latticeClassifierDeclaration
+  equivalence := CategoryTheory.Equivalence.refl
+  baseProjection := _
+  baseProjection_eq := rfl
+  classifierProjection := _
+  classifierProjection_eq := rfl
+
 normalized_registry .functor
   { id := FunctorId.modulesProjection,
     source := Modules.ModulesTotal
@@ -151,6 +188,74 @@ normalized_registry .fibration
     evidence := `LeanCategories.Catalogue.FibrationRegistration.bilinFormsValues_isCofibered }
 
 end
+
+normalized_registry .classifier
+  { id := ClassifierId.bilLattice,
+    declaration :=
+      `LeanCategories.Catalogue.FibrationRegistration.latticeClassifierDeclaration
+    host := Fibrations.BilinFormsOverRings
+    realization :=
+      `LeanCategories.Catalogue.FibrationRegistration.latticeClassifierRealization }
+normalized_registry .category
+  { id := CategoryId.latticesOverRings,
+    declaration := `LeanCategories.Catalogue.FibrationRegistration.latticesOverRingsCategory
+    expression := Fibrations.LatticesOverRings
+    realization := `LeanCategories.Catalogue.FibrationRegistration.latticesOverRingsRealization
+    refinementRealization :=
+      some `LeanCategories.Catalogue.FibrationRegistration.latticesOverRingsRefinement }
+
+/-! ### Negative probe: a refinement must be the pullback along the identity of its host -/
+
+/-- A constant endofunctor of `Bil`, at the zero `ℤ`-valued form on `ℤ`. -/
+noncomputable def constantBilEndo : bilinFormsOverRingsCategory.{0} ⟶ bilinFormsOverRingsCategory :=
+  ((Functor.const _).obj
+    (⟨CommRingCat.of ℤ,
+      LeanCategories.Modules.Bilinear.Valued.BilWFormCat.of (ModuleCat.of ℤ ℤ)
+        (ModuleCat.of ℤ ℤ) 0⟩ : BilinFormsOverRings.{0})).toCatHom
+
+noncomputable def badLatticesCategory : ObjCat.{1, 0} :=
+  (Classifier.reindex constantBilEndo latticeClassifierDeclaration).total
+
+noncomputable def badLatticesRealization :
+    CategoryRealization Fibrations.LatticesOverRings badLatticesCategory := {}
+
+noncomputable def badLatticesRefinement :
+    RefinementRealization Fibrations.LatticesOverRings badLatticesCategory where
+  base := Fibrations.BilinFormsOverRings
+  classifierId := ClassifierId.bilLattice
+  expression_eq := rfl
+  baseCategory := bilinFormsOverRingsCategory
+  host := Fibrations.BilinFormsOverRings
+  hostCategory := bilinFormsOverRingsCategory
+  baseRealization := bilinFormsOverRingsRealization
+  classifier := latticeClassifierDeclaration
+  classifierRealization := latticeClassifierRealization
+  baseToHost := constantBilEndo
+  reindexed := Classifier.reindex constantBilEndo latticeClassifierDeclaration
+  equivalence := CategoryTheory.Equivalence.refl
+  baseProjection := _
+  baseProjection_eq := rfl
+  classifierProjection := _
+  classifierProjection_eq := rfl
+
+open Lean Meta Elab Command in
+run_cmd
+  liftTermElabM do
+    let state ← pure ()
+    let _ := state
+    let accepted ← try
+        validateRegistryEntryDeclaration (.category
+          { id := ⟨"cat.probe.bad_lattices"⟩
+            declaration := `LeanCategories.Catalogue.FibrationRegistration.badLatticesCategory
+            expression := Fibrations.LatticesOverRings
+            realization :=
+              `LeanCategories.Catalogue.FibrationRegistration.badLatticesRealization
+            refinementRealization :=
+              some `LeanCategories.Catalogue.FibrationRegistration.badLatticesRefinement })
+        pure true
+      catch _ => pure false
+    if accepted then
+      throwError "a refinement along a constant functor was accepted"
 
 /-! ### Negative probes: evidence must prove the stated variance of the registered projection -/
 

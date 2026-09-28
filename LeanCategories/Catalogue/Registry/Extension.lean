@@ -734,7 +734,10 @@ def validateRefinementDeclarationRealization (state : RegistryState)
       hostRealization
     let totalRealization ← withTransparency .all do
       mkAppM ``LeanCategories.ClassifierRealization.totalRealization #[classifierRealization]
-    validateClassifierTotalEndpointRealization state expectedClassifier classifierArgs[3]!
+    -- The total endpoint is the classifier's total category, not the classifier datum.
+    let classifierTotal ← withTransparency .all do
+      mkAppM ``LeanCategories.Classifier.total #[classifierArgs[3]!]
+    validateClassifierTotalEndpointRealization state expectedClassifier classifierTotal
       totalRealization
     let baseToHost ← withTransparency .all do
       mkAppM ``LeanCategories.RefinementRealization.baseToHost #[refinementValue]
@@ -744,6 +747,17 @@ def validateRefinementDeclarationRealization (state : RegistryState)
       mkAppM ``LeanCategories.Classifier.reindex #[baseToHost, classifier]
     unless ← withTransparency .all <| isDefEq reindexed expectedReindexed do
       throwError "refinement realization {refinement} does not use Classifier.reindex"
+    -- Audit finding 5: the pullback must be taken along the structural route from the base to
+    -- the classifier's host. When the base is the host, that route is the identity.
+    if expectedBase.syntacticEq classifierEntry.host then
+      let identity ← withTransparency .all do
+        mkAppM ``CategoryTheory.CategoryStruct.id #[baseCategory]
+      unless ← withTransparency .all <| isDefEq baseToHost identity do
+        throwError
+          "refinement realization {refinement} reindexes along a non-identity functor from its host"
+    else
+      throwError
+        "refinement realization {refinement} has a base other than its classifier host; the structural route is not yet validated"
 
 def validateOpaquePortRealization (state : RegistryState) (entry : StructuralPortEntry) : MetaM Unit := do
   let realizationConstant ← mkConstWithFreshMVarLevels entry.realization
