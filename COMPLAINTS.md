@@ -43,6 +43,14 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Workflow papercuts
 
+### README tree and issue #53 cite registry paths that no longer exist
+
+- **Need:** a worker following the README or #53 to the registry, resolver and realization owners finds them.
+- **Evidence:** at `eb00e55` the README's source tree lists `LeanCategories/Core/`, `Model/`, `Names/`, `Presentation/`, `Realization/`, `Registry/`, `Specimen/`, `Util/`, and #53 §17 links `LeanCategories/Core/Expr.lean`, `Core/Normalize.lean`, `Core/StructuralMap.lean`, `Registry/Entry.lean`, `Registry/Extension.lean`, `Model/Interpretation.lean`. None exists. The typed syntax is now `LeanCategories/Catalogue/Syntax.lean` (`CategoryExpr`, `FunctorExpr`, `NatTransExpr`), the entries `Catalogue/Registry/Entry.lean`, the extension `Catalogue/Registry/Extension.lean`, and interpretation/realization `Catalogue/Interpretation.lean`, `Catalogue/Realization.lean`. No `StructuralMap.project` or structural normalizer was found under `LeanCategories/` by name search.
+- **Gap and impact:** #53's resolution design (§8) is written against a `project`/normalization mechanism whose current owner, if any, is unlocated; `specs/computational-core.md` cites the `Catalogue/` paths instead.
+- **Coverage:** `ls` of `LeanCategories/` and name searches for `StructuralMap`, `project`, `normaliz`; module contents beyond `Catalogue/` were not read.
+- **Repair link:** `computational-core` node `cc-p0-denotation-audit` (locate or record the structural projection owner); update the README tree and #53 §17 when that audit closes.
+
 ### Foundational frontier kind markers confuse definitional and result content
 
 - **Need:** Sweep-III scheduling must classify the mathematical content of each

@@ -29,6 +29,10 @@ LeanCategories/
   Util/
 ```
 
+The computational core — Lean-owned semantics for the DSL over untrusted Sage/GAP/Julia
+realizations — is specified in [specs/computational-core.md](specs/computational-core.md)
+and scheduled by [specs/computational-core-plan.md](specs/computational-core-plan.md).
+
 The support directories describe the same mathematical library. They do not define a
 second category system. `Core` and `Model` define the common language. `Realization`
 connects it to Mathlib. `Registry`, `Specimen`, and `Tools` inspect and export that
