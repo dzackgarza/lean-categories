@@ -81,8 +81,10 @@ functoriality in the base, these entries denote the **wrong object**.
 5. **Refinement `baseToHost` is unchecked** (§1). A refinement's pullback can be taken along
    a functor other than the structural route.
    *Partly repaired 2026-09-28:* when the base is the classifier's host, `baseToHost` must be
-   the identity (negative probe `badLatticesRefinement`); a base other than the host is now
-   rejected until its structural route is validated. Registering the first refinement
+   the identity (negative probe `badLatticesRefinement`); a base other than the host must be
+   reindexed along a registered functor from the base to the host (negative probe
+   `badIntegralFormsRefinement`, a constant section); `cat.integral_forms` is the first such
+   refinement, the pullback of `Bil` along the regular section `R ↦ (R, R)`. Registering the first refinement
    (`cat.lattices_over_rings`) also exposed that the refinement validator checked the
    classifier datum where its total category belongs; fixed in the same change.
 6. **Opaque categories and ports have no denotation.** They must cite the category and

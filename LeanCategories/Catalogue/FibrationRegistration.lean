@@ -135,6 +135,52 @@ noncomputable def latticesOverRingsRefinement :
   classifierProjection := _
   classifierProjection_eq := rfl
 
+/-! ### Integral forms: the pullback of `Bil` along the regular section -/
+
+noncomputable def regularSectionDeclaration :
+    Algebra.CommutativeRings.{u} ⥤ modulesOverRingsExtCategory.{u} :=
+  regularSection.{u}
+
+noncomputable def regularSectionRealization :
+    FunctorRealization Fibrations.RegularSectionExpr Algebra.CommutativeRings.{u}
+      modulesOverRingsExtCategory.{u} regularSectionDeclaration :=
+  { sourceRealization := Algebra.CatalogueRegistration.commutativeRingsRealization
+    targetRealization := modulesOverRingsExtRealization }
+
+noncomputable def valuesClassifierDeclaration : Classifier modulesOverRingsExtCategory.{u} :=
+  { total := bilinFormsOverRingsCategory.{u}
+    forget := bilinFormsValuesDeclaration.toCatHom }
+
+noncomputable def valuesClassifierRealization :
+    ClassifierRealization Fibrations.ModulesOverRingsExt ClassifierId.bilValues
+      modulesOverRingsExtCategory.{u} valuesClassifierDeclaration :=
+  { hostRealization := modulesOverRingsExtRealization, totalRealization := {} }
+
+noncomputable def integralFormsCategory : ObjCat.{u + 1, u} :=
+  (Classifier.reindex regularSectionDeclaration.{u}.toCatHom valuesClassifierDeclaration).total
+
+noncomputable def integralFormsRealization :
+    CategoryRealization Fibrations.IntegralForms integralFormsCategory.{u} := {}
+
+noncomputable def integralFormsRefinement :
+    RefinementRealization Fibrations.IntegralForms integralFormsCategory.{u} where
+  base := Algebra.Catalogue.Rings.CommutativeRings
+  classifierId := ClassifierId.bilValues
+  expression_eq := rfl
+  baseCategory := Algebra.CommutativeRings
+  host := Fibrations.ModulesOverRingsExt
+  hostCategory := modulesOverRingsExtCategory
+  baseRealization := Algebra.CatalogueRegistration.commutativeRingsRealization
+  classifier := valuesClassifierDeclaration
+  classifierRealization := valuesClassifierRealization
+  baseToHost := regularSectionDeclaration.toCatHom
+  reindexed := Classifier.reindex regularSectionDeclaration.toCatHom valuesClassifierDeclaration
+  equivalence := CategoryTheory.Equivalence.refl
+  baseProjection := _
+  baseProjection_eq := rfl
+  classifierProjection := _
+  classifierProjection_eq := rfl
+
 normalized_registry .functor
   { id := FunctorId.modulesProjection,
     source := Modules.ModulesTotal
@@ -189,6 +235,27 @@ normalized_registry .fibration
 
 end
 
+normalized_registry .functor
+  { id := FunctorId.modulesExtRegularSection,
+    source := Algebra.Catalogue.Rings.CommutativeRings
+    target := Fibrations.ModulesOverRingsExt
+    declaration := `LeanCategories.Catalogue.FibrationRegistration.regularSectionDeclaration
+    realization := `LeanCategories.Catalogue.FibrationRegistration.regularSectionRealization
+    expression := Fibrations.RegularSectionExpr }
+normalized_registry .classifier
+  { id := ClassifierId.bilValues,
+    declaration :=
+      `LeanCategories.Catalogue.FibrationRegistration.valuesClassifierDeclaration
+    host := Fibrations.ModulesOverRingsExt
+    realization :=
+      `LeanCategories.Catalogue.FibrationRegistration.valuesClassifierRealization }
+normalized_registry .category
+  { id := CategoryId.integralForms,
+    declaration := `LeanCategories.Catalogue.FibrationRegistration.integralFormsCategory
+    expression := Fibrations.IntegralForms
+    realization := `LeanCategories.Catalogue.FibrationRegistration.integralFormsRealization
+    refinementRealization :=
+      some `LeanCategories.Catalogue.FibrationRegistration.integralFormsRefinement }
 normalized_registry .classifier
   { id := ClassifierId.bilLattice,
     declaration :=
@@ -256,6 +323,56 @@ run_cmd
       catch _ => pure false
     if accepted then
       throwError "a refinement along a constant functor was accepted"
+
+/-! ### Negative probe: a pullback must be along a registered route -/
+
+/-- A constant functor `CommRing ⥤ ∫ Mod` at `(ℤ, ℤ)`: not a registered route. -/
+noncomputable def constantSection :
+    Algebra.CommutativeRings.{0} ⥤ modulesOverRingsExtCategory.{0} :=
+  (Functor.const _).obj (regularSection.obj (CommRingCat.of ℤ))
+
+noncomputable def badIntegralFormsCategory : ObjCat.{1, 0} :=
+  (Classifier.reindex constantSection.toCatHom valuesClassifierDeclaration).total
+
+noncomputable def badIntegralFormsRealization :
+    CategoryRealization Fibrations.IntegralForms badIntegralFormsCategory := {}
+
+noncomputable def badIntegralFormsRefinement :
+    RefinementRealization Fibrations.IntegralForms badIntegralFormsCategory where
+  base := Algebra.Catalogue.Rings.CommutativeRings
+  classifierId := ClassifierId.bilValues
+  expression_eq := rfl
+  baseCategory := Algebra.CommutativeRings
+  host := Fibrations.ModulesOverRingsExt
+  hostCategory := modulesOverRingsExtCategory
+  baseRealization := Algebra.CatalogueRegistration.commutativeRingsRealization
+  classifier := valuesClassifierDeclaration
+  classifierRealization := valuesClassifierRealization
+  baseToHost := constantSection.toCatHom
+  reindexed := Classifier.reindex constantSection.toCatHom valuesClassifierDeclaration
+  equivalence := CategoryTheory.Equivalence.refl
+  baseProjection := _
+  baseProjection_eq := rfl
+  classifierProjection := _
+  classifierProjection_eq := rfl
+
+open Lean Meta Elab Command in
+run_cmd
+  liftTermElabM do
+    let accepted ← try
+        validateRegistryEntryDeclaration (.category
+          { id := ⟨"cat.probe.bad_integral_forms"⟩
+            declaration :=
+              `LeanCategories.Catalogue.FibrationRegistration.badIntegralFormsCategory
+            expression := Fibrations.IntegralForms
+            realization :=
+              `LeanCategories.Catalogue.FibrationRegistration.badIntegralFormsRealization
+            refinementRealization :=
+              some `LeanCategories.Catalogue.FibrationRegistration.badIntegralFormsRefinement })
+        pure true
+      catch _ => pure false
+    if accepted then
+      throwError "a pullback along an unregistered constant functor was accepted"
 
 /-! ### Negative probes: evidence must prove the stated variance of the registered projection -/
 

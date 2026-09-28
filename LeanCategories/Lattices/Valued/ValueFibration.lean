@@ -111,6 +111,56 @@ abbrev ModulesOverRingsExt : Type (u + 1) :=
 abbrev ModulesOverRingsExt.ring : ModulesOverRingsExt.{u} ⥤ CommRingCat.{u} :=
   Pseudofunctor.Grothendieck.forget _
 
+/-- Module level: `T ⊗_R R → T ⊗_S (S ⊗_R R) → T ⊗_S S → T` is `T ⊗_R R ≅ T`. -/
+theorem rid_comp_baseChange_rid (R S T : Type u) [CommRing R] [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T] :
+    (TensorProduct.AlgebraTensorModule.rid S T T).toLinearMap ∘ₗ
+      LinearMap.baseChange T (TensorProduct.AlgebraTensorModule.rid R S S).toLinearMap ∘ₗ
+      (TensorProduct.AlgebraTensorModule.cancelBaseChange R S T T R).symm.toLinearMap =
+      (TensorProduct.AlgebraTensorModule.rid R T T).toLinearMap := by
+  apply LinearMap.ext
+  intro z
+  induction z using TensorProduct.induction_on with
+  | zero => simp only [map_zero]
+  | tmul t r =>
+    simp [TensorProduct.AlgebraTensorModule.cancelBaseChange_symm_tmul,
+      LinearMap.baseChange_tmul, Algebra.smul_def, IsScalarTower.algebraMap_apply R S T]
+  | add x y hx hy => simp only [map_add, hx, hy]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The comparison `S ⊗_R R ≅ S` underlying the regular section on a ring map. -/
+noncomputable def regularComparison {R S : CommRingCat.{u}} (f : R ⟶ S) :
+    (ModuleCat.extendScalars f.hom).obj (ModuleCat.of R R) ⟶ ModuleCat.of S S :=
+  letI := f.hom.toAlgebra
+  (show ModuleCat.of S (TensorProduct R S R) ⟶ ModuleCat.of S S from
+    ModuleCat.ofHom (TensorProduct.AlgebraTensorModule.rid R S S).toLinearMap)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The regular section `R ↦ (R, R)` of the module fibration `∫ Mod → CommRing`: every ring as a
+module over itself, transported by `S ⊗_R R ≅ S`. Integral forms are the pullback of `Bil` along
+it. -/
+noncomputable def regularSection : CommRingCat.{u} ⥤ ModulesOverRingsExt.{u} where
+  obj R := ⟨R, ModuleCat.of R R⟩
+  map f := ⟨f, regularComparison f⟩
+  map_id R := by
+    refine Pseudofunctor.Grothendieck.Hom.ext _ _ rfl ?_
+    simp
+    erw [extendScalarsId_hom_app_eq]
+    apply ModuleCat.hom_ext
+    apply TensorProduct.ext'
+    intro a b
+    exact mul_comm _ _
+  map_comp {R S T} f g := by
+    refine Pseudofunctor.Grothendieck.Hom.ext _ _ rfl ?_
+    simp only [eqToHom_refl, Category.id_comp, Pseudofunctor.Grothendieck.categoryStruct_comp_fiber,
+      CommRingCat.moduleCatExtendScalarsPseudofunctor_mapComp]
+    erw [extendScalarsComp_hom_app_eq f g]
+    let _ := f.hom.toAlgebra
+    let _ := g.hom.toAlgebra
+    let _ := (f ≫ g).hom.toAlgebra
+    have : IsScalarTower R S T := IsScalarTower.of_algebraMap_eq fun _ => rfl
+    exact ModuleCat.hom_ext (rid_comp_baseChange_rid R S T).symm
+
 /-- The projection `p` of forms to their value modules over their rings. -/
 abbrev BilinFormsOverRings.values : BilinFormsOverRings.{u} ⥤ ModulesOverRingsExt.{u} :=
   Pseudofunctor.Grothendieck.map valueProjectionTrans

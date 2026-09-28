@@ -162,6 +162,10 @@ def refinementHostInChainFuel (_state : RegistryState) (target : CategoryExpr) :
   | 0, _ => false
   | fuel + 1, expression =>
       if sameEndpoint target expression then true
+      else if _state.functors.any (fun functor =>
+          functor.source.syntacticEq expression && functor.target.syntacticEq target) then
+        -- A registered functor from the base to the host is a structural route.
+        true
       else match expression with
         | .refine parent classifier =>
             (_state.classifier? classifier).any fun entry =>
@@ -756,8 +760,28 @@ def validateRefinementDeclarationRealization (state : RegistryState)
         throwError
           "refinement realization {refinement} reindexes along a non-identity functor from its host"
     else
-      throwError
-        "refinement realization {refinement} has a base other than its classifier host; the structural route is not yet validated"
+      -- Otherwise the route must be a registered functor from the base to the host: the
+      -- pullback is along declared structure, never an arbitrary functor.
+      let mut matched := false
+      for functorEntry in state.functors do
+        if !matched && functorEntry.source.syntacticEq expectedBase &&
+            functorEntry.target.syntacticEq classifierEntry.host then
+          let declarationConstant ← mkConstWithFreshMVarLevels functorEntry.declaration
+          let (declarationArgs, _, _) ←
+            forallMetaTelescopeReducing (← inferType declarationConstant)
+          let declarationValue := mkAppN declarationConstant declarationArgs
+          let declarationType ← whnf (← inferType declarationValue)
+          let routeFunctor ← if declarationType.isAppOf ``CategoryTheory.Cat.Hom then
+              mkAppM ``CategoryTheory.Cat.Hom.toFunctor #[declarationValue]
+            else
+              pure declarationValue
+          let baseFunctor ← withTransparency .all do
+            mkAppM ``CategoryTheory.Cat.Hom.toFunctor #[baseToHost]
+          if ← withTransparency .all <| isDefEq baseFunctor routeFunctor then
+            matched := true
+      unless matched do
+        throwError
+          "refinement realization {refinement} reindexes along a functor that is not a registered route from its base to its host"
 
 def validateOpaquePortRealization (state : RegistryState) (entry : StructuralPortEntry) : MetaM Unit := do
   let realizationConstant ← mkConstWithFreshMVarLevels entry.realization

@@ -29,11 +29,15 @@ def modulesOverRingsExt : CategoryId := ⟨"cat.modules_over_rings_ext"⟩
 def bilinFormsOverRings : CategoryId := ⟨"cat.bilin_forms_over_rings"⟩
 /-- Lattices: the refinement of `Bil` by the lattice property. -/
 def latticesOverRings : CategoryId := ⟨"cat.lattices_over_rings"⟩
+/-- Integral forms: the pullback of `Bil` along the regular section `R ↦ (R, R)`. -/
+def integralForms : CategoryId := ⟨"cat.integral_forms"⟩
 end CategoryId
 
 namespace ClassifierId
 /-- The lattice property on `Bil` (projective carrier, symmetric form). -/
 def bilLattice : ClassifierId := ⟨"clf.bilin_forms.lattice"⟩
+/-- The forms fibration `p : Bil → ∫ Mod`, as a classifier on `∫ Mod` (FOUNDATIONS Def. 5.1). -/
+def bilValues : ClassifierId := ⟨"clf.bilin_forms.values"⟩
 end ClassifierId
 
 namespace FunctorId
@@ -43,6 +47,8 @@ def modulesProjection : FunctorId := ⟨"fun.modules.projection"⟩
 def modulesExtRing : FunctorId := ⟨"fun.modules_ext.ring"⟩
 /-- The projection `p : Bil ⥤ ∫ Mod` of forms to their value modules over their rings. -/
 def bilinFormsValues : FunctorId := ⟨"fun.bilin_forms.values"⟩
+/-- The regular section `CommRing ⥤ ∫ Mod`, `R ↦ (R, R)`. -/
+def modulesExtRegularSection : FunctorId := ⟨"fun.modules_ext.regular_section"⟩
 end FunctorId
 
 namespace FibrationId
@@ -58,6 +64,14 @@ def BilinFormsOverRings : CategoryExpr := .atom CategoryId.bilinFormsOverRings
 
 /-- Lattices, as the refinement of `Bil` by the lattice property (audit §4). -/
 def LatticesOverRings : CategoryExpr := .refine BilinFormsOverRings ClassifierId.bilLattice
+
+/-- Integral forms: `CommRing ×_{∫ Mod} Bil` along the regular section. -/
+def IntegralForms : CategoryExpr :=
+  .refine Algebra.Catalogue.Rings.CommutativeRings ClassifierId.bilValues
+
+def RegularSectionExpr :
+    FunctorExpr Algebra.Catalogue.Rings.CommutativeRings ModulesOverRingsExt :=
+  .atomic FunctorId.modulesExtRegularSection
 
 def ModulesProjectionExpr : FunctorExpr Modules.ModulesTotal Algebra.Catalogue.Rings.Rings :=
   .atomic FunctorId.modulesProjection
