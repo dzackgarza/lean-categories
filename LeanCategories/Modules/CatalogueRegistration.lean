@@ -4,6 +4,8 @@ public import LeanCategories.Catalogue.Registry.Extension
 public import LeanCategories.Modules.Expressions
 public import LeanCategories.Modules.Mathlib
 public import LeanCategories.Modules.Framed
+public import LeanCategories.Modules.Total
+public import LeanCategories.Catalogue.FamilyFibration
 public meta import LeanCategories.Catalogue.Registry.Extension
 public meta import LeanCategories.Modules.Expressions
 public meta import LeanCategories.Modules.Catalogue
@@ -26,6 +28,16 @@ noncomputable def modulesFamilyRealization :
       CategoryFamilyId.modules .ring (P := RingCat.{u}) where
   transport := Modules.Mathlib.moduleCatRestrictScalarsPseudofunctor.{u, w}
   transportSemantics := .restrictionOfScalars
+/-- The registered `modules` family denotes the restriction-of-scalars fibration: its total
+category is `ModulesOverRings` and its reindexing is restriction of scalars (CC-FIB). -/
+theorem modulesFamilyRealization_total :
+    modulesFamilyRealization.{u, w}.total = ModulesOverRings.{u, w} :=
+  rfl
+
+theorem modulesFamilyRealization_reindex {R S : RingCat.{u}} (φ : R ⟶ S) :
+    modulesFamilyRealization.{u, w}.reindex φ = ModuleCat.restrictScalars.{w} φ.hom :=
+  rfl
+
 noncomputable def modulesRealization (R : RingCat.{u}) :
     CategoryRealization Modules.Modules (Modules.Mathlib.ModulesOf.{u, w} R) where
   familyFibre := some (.mk (modulesFamilyRealization.{u, w}) {
