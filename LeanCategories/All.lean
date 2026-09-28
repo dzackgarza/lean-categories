@@ -156,6 +156,10 @@ public import LeanCategories.Foundation.Mathlib
 public import LeanCategories.Foundation.Cardinality
 public import LeanCategories.Foundation.Sets
 public import LeanCategories.Foundation.Subsets
+public import LeanCategories.Foundation.IsoElements
+public import LeanCategories.Algebra.Concrete.RingElements
+public import LeanCategories.Algebra.Concrete.PolynomialElements
+public import LeanCategories.Algebra.Concrete.MatrixElements
 public import LeanCategories.Modules.Mathlib
 public import LeanCategories.Modules.Graded
 public import LeanCategories.Exceptional.Mathlib
