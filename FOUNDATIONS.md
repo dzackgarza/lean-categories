@@ -2496,6 +2496,55 @@ pseudofunctor
 \]
 This is the standard Stacks Project convention [@The25, tag 003T].
 
+### Lemma 31.2a (Cancellation for cocartesian morphisms) {#lem-cocartesian-cancellation}
+
+Let \(P:\mathcal E\to\mathcal F\) and \(q:\mathcal F\to\mathcal C\) be functors and
+\(\varphi:a\to b\) a morphism of \(\mathcal E\). If \(\varphi\) is strongly
+\((q\circ P)\)-cocartesian and \(P(\varphi)\) is strongly \(q\)-cocartesian, then
+\(\varphi\) is strongly \(P\)-cocartesian.
+
+*Proof.* Let \(\psi:a\to b'\) and \(h:P(b)\to P(b')\) with \(P(\psi)=h\circ P(\varphi)\). Then
+\(q(\psi)=q(h)\circ q(P\varphi)\), so \(\varphi\) being \((q\circ P)\)-cocartesian gives a
+unique \(\chi:b\to b'\) over \(q(h)\) with \(\chi\varphi=\psi\). Both \(P(\chi)\) and \(h\) lie
+over \(q(h)\) and satisfy \(P(\chi)P(\varphi)=h\,P(\varphi)\); since \(P(\varphi)\) is
+\(q\)-cocartesian, \(P(\chi)=h\). Uniqueness of \(\chi\) over \(h\) follows from uniqueness
+over \(q(h)\). \(\square\) This is the dual of the cancellation property of cartesian
+morphisms [@Lur09a, Prop. 2.4.1.3].
+
+### Proposition 31.2b (Fibred fibrations over a Grothendieck construction) {#prop-fibred-fibration}
+
+Let \(F,G:\mathcal C\to\mathfrak{Cat}\) be pseudofunctors and \(\alpha:G\Rightarrow F\) a strong
+transformation, and let \(\int\alpha:\int G\to\int F\) be the induced functor of covariant
+Grothendieck constructions over \(\mathcal C\). Suppose that
+
+1. each component \(\alpha_c:G(c)\to F(c)\) is a cocartesian fibration, and
+2. for each \(f:c\to c'\), the functor \(G(f)\) carries \(\alpha_c\)-cocartesian morphisms to
+   \(\alpha_{c'}\)-cocartesian morphisms.
+
+Then \(\int\alpha\) is a cocartesian fibration, its fibre over \((c,y)\) is
+\(\alpha_c^{-1}(y)\), and the composite \(\int G\to\int F\to\mathcal C\) is the projection of
+\(\int G\). Conversely a composite of cocartesian fibrations \(\mathcal E\to\mathcal F\to\mathcal C\)
+straightens to such an \(\alpha\) (fibrations of fibrations: C. Hermida, "Some properties of Fib as a fibred 2-category", J. Pure Appl. Algebra 134 (1999) 83–109).
+
+*Proof sketch.* Given \((c,x)\) and \((f,\beta):(c,\alpha_c x)\to(c',y)\) in \(\int F\), take the
+Grothendieck cocartesian lift \((c,x)\to(c',G(f)x)\) and follow it by the
+\(\alpha_{c'}\)-cocartesian lift in \(G(c')\) of \(\beta\circ\eta^{-1}\), where \(\eta\) is the
+naturality isomorphism \(F(f)\alpha_c\cong\alpha_{c'}G(f)\) at \(x\). The first is strongly
+cocartesian for the projection of \(\int G\) and its image under \(\int\alpha\) is strongly
+cocartesian for the projection of \(\int F\), so it is \(\int\alpha\)-cocartesian by Lemma
+31.2a; the second is \(\int\alpha\)-cocartesian by hypothesis (2); composites of strongly
+cocartesian morphisms are strongly cocartesian. \(\square\)
+
+### Example 31.2c (Forms over modules over rings)
+
+The forms fibration of FOUNDATIONS §15 is the case \(G(R)=\mathbf{Bil}^{W}_R\) (forms over \(R\)
+with varying value module, itself the Grothendieck construction of change of values over
+\(R\text{-}\mathbf{Mod}\)), \(F(R)=R\text{-}\mathbf{Mod}\) with extension of scalars, and
+\(\alpha_R\) the value-module projection. Hypothesis (1) is the cocartesianness of change of
+values; hypothesis (2) holds because base change of forms carries isomorphisms of value
+modules to isomorphisms. The resulting tower is
+\(\mathbf{Bil}\to\int_R R\text{-}\mathbf{Mod}\to\mathbf{CommRing}\).
+
 ### Definition 31.3 (Descent datum) {#def-descent-datum}
 
 Let \(\{U_i\to U\}\) be a covering family.  A **descent datum** for a fibred category
