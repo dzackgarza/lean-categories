@@ -199,7 +199,7 @@ does not justify weakening a dependent theorem or starting unrelated work.
   Mathlib v4.33 has `Coalgebra`, `HopfAlgebra` and `GroupLike` and no comodules.
 - **Gap:** TauCeti is on Lean `v4.35.0-rc3`; this repository is on `v4.33.0`, so it can be
   neither required nor imported. Require TauCeti once the toolchains meet, rather than port
-  its comodule stack. The archived file is `archive/research/algebraic-geometry/AdjointRootData.lean`.
+  its comodule stack. (The research repository's unbuildable `AdjointRootData.lean` was discarded.)
 
 ### Missing theorems: Γ₂ represents quadratic maps; Roby's base change of Γ at Mathlib v4.33
 
