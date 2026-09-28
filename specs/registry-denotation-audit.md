@@ -213,3 +213,33 @@ isofibration/Grothendieck). No source states these coherence laws; TauCeti's aff
 scheme base change records them as unproved. Remaining for `cc-fib`: `Quad` (same pattern),
 the seven lattice families re-expressed as classifier refinements of `Bil`, and the registry
 entries for the new fibration.
+
+**Correction: the forms fibration is a fibration over the module fibration.** `BilWFormCat R`
+is not a category parameterized by `W`; it is the fibre over `R` of the composite
+`Bil →p ∫Mod →q CommRing`, with `p⁻¹(R, W) = Bil_{R,W}` and `q⁻¹(R) = R-Mod`, where `∫Mod`
+carries extension of scalars (the cocartesian module fibration,
+`CommRingCat.moduleCatExtendScalarsPseudofunctor`). `BilinFormsOverRings` (`26d5a17`)
+has the right total category and the composite `q ∘ p`, but it does not construct `p`,
+and its docstring's framing ("fibre over `R` is `BilWFormCat R`") repeats the
+parameterized-family reading.
+
+The route to `p` is not a hand-built comparison but the universal property of the
+Grothendieck construction as an (op)lax colimit (the 2-adjunction `∫ ⊣` straightening):
+a pseudofunctor `Φ : ∫Mod → Cat`, `(R, W) ↦ Bil_{R,W}`, is the same as a lax cocone on
+`R ↦ R-Mod` — fibrewise functors `Φ_R : R-Mod → Cat` (`valueFibers R`), transition
+2-cells `Φ_R ⇒ Φ_S ∘ (S ⊗_R -)` (base change of forms), and their coherence (proved in
+`BaseChangeCoherence.lean`). Then `Bil := ∫ Φ`, `p` is its projection, `BilWFormCat R` is
+its pullback along the fibre inclusion, and `q ∘ p` is cocartesian by composition.
+
+Search (formalization-corpus API): `GrothendieckEquiv`, `Grothendieck of Grothendieck`,
+`Grothendieck sigma equivalence`, `Grothendieck construction associativity`,
+`Grothendieck Fubini`, `pseudofunctor on Grothendieck construction`,
+`composition of cocartesian fibrations`, `IsStronglyCocartesian comp functor`,
+`pullback of fibration is fibration`, `Grothendieck.pre`, `straightening unstraightening`.
+Found: Mathlib `Grothendieck.functorFrom` (strict `F : C ⥤ Cat` only); UniMath
+`Bicategories/Grothendieck/{Unit,Counit,FibrationToPseudoFunctor}.v` (the biadjunction, as a
+reference implementation); HoTTLean `attic/ForMathlib/GrothendieckEquiv.lean` and
+`sinhp/displayed_categories` (straightening, pullback of fibrations), to be read before use;
+UniMath `DisplayedCats/Fibrations.v` (composition of cocartesian fibrations). Residue: the
+pseudofunctor analogue of `functorFrom` (a pseudofunctor out of `Pseudofunctor.Grothendieck`
+from a lax cocone), as generic `ForMathlib` glue following UniMath.
