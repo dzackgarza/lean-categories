@@ -158,3 +158,39 @@ and `CoordLatticeCat`; FOUNDATIONS §§17, 21, 83–86. Conclusions about those 
 the tables. Confidence in §2's structural finding (discrete versus nondiscrete bases) is
 high: it is read directly from each registration's `P := Discrete …` and
 `discreteFamilyTransport`.
+
+## 6. `cc-fib` route for forms, from reuse search (2026-09-28)
+
+Searched the live `formalization-corpus` API (`scripts/formalization_corpus.py search`) for:
+`BilinForm baseChange`, `QuadraticForm baseChange`, `bilinear form fibration`,
+`category of quadratic modules`, `QuadraticModuleCat`, `Pseudofunctor Grothendieck ModuleCat`,
+`moduleCatExtendScalarsPseudofunctor`, `IsCocartesian`, `IsStronglyCocartesian`,
+`cocartesian fibration`, `displayed category`, `Pseudofunctor.Grothendieck`,
+`Grothendieck isStronglyCocartesian`, `opfibration`.
+
+Found and reused:
+
+- Mathlib `CategoryTheory/Bicategory/Grothendieck.lean` (`Pseudofunctor.Grothendieck`,
+  `CoGrothendieck`) and `CategoryTheory/FiberedCategory/Cocartesian.lean`
+  (`IsCocartesian`, `IsStronglyCocartesian`);
+- this repository's `ForMathlib/GrothendieckCocartesian.lean`: strongly cocartesian lifts
+  for every covariant `Pseudofunctor.Grothendieck` (the dual of Mathlib's cartesian case);
+- this repository's `Lattices/Valued/BaseChange.lean`: `baseChangeBilWForm` with its
+  identity and composition isomorphisms, and `Modules/Bilinear/Valued/Total.lean`:
+  `BilWFormCat R`, the change-of-values Grothendieck construction over `ModuleCat R`;
+- Mathlib `LinearMap.BilinMap.baseChange`, `QuadraticModuleCat` (fixed `R`, values in `R`),
+  and the coherence pattern of `CommRingCat.moduleCatExtendScalarsPseudofunctor`.
+
+Reference implementations, not imported: `sinhp/LeanFibredCategories` and `sinhp/HoTTLean`
+(Lean 4 Grothendieck fibrations and displayed categories), UniMath (Rocq) displayed
+categories and `GrothendieckConstruction/IsOpfibration.v`, and 1Lab bifibrations.
+
+Not found under any formulation: forms over varying rings as a fibration or pseudofunctor.
+
+Route: add the three pseudofunctor coherence laws (associativity and the two unit laws)
+for `baseChangeBilWFormCompositionIso` and `baseChangeBilWFormIdentityIso` at their owner
+`BaseChange.lean`, following Mathlib's `extendScalars_assoc'`, `extendScalars_id_comp` and
+`extendScalars_comp_id`; assemble `R ↦ BilWFormCat R` with `LocallyDiscrete.mkPseudofunctor`;
+the total forms category is its `Pseudofunctor.Grothendieck`, and cocartesianness is the
+existing `ForMathlib` theorem. No new fibration theory and no second total-category
+definition is authored.
