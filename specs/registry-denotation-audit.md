@@ -105,19 +105,25 @@ of them, and the specification's job is to state it correctly. Recorded as deter
   `fractionFieldPerfectFiniteProjectiveLattice`) are **wrong kind**: each must become a
   refinement of \(\mathbf{Bil}\) (or of its fibre over a fixed base) by the relevant
   classifiers.
-- **Integrality and evenness are value-containment conditions.** For a submodule
-  \(I\le W\) let \(\mathrm{In}_I\) be the property classifier on maps into \(W\): a map
-  \(f:X\to W\) lies in it iff \(f(X)\subseteq I\).
-  - *\(I\)-integral:* \(b(L,L)\subseteq I\), the reindexing of \(\mathrm{In}_I\) along
-    \((L,b)\mapsto b\). Integrality is \(I=R\).
-  - *Even:* \(b(x,x)\in 2R\) for all \(x\), the reindexing of \(\mathrm{In}_{2R}\) along the
-    **diagonal** \((L,b)\mapsto(x\mapsto b(x,x))\), a quadratic map. It is a condition on a
-    different map than integrality, so it is not \(I\)-integrality at \(I=2R\).
+- **Integrality and modularity are conditions on the maps \(L\to L^{\#I}\).** The metric
+  \(I\)-dual is \(L^{\#I}:=\ker\bigl(L_K\to\operatorname{Hom}_R(L,K/I)\bigr)\), already defined
+  in `LeanCategories/Lattices/Valued/IdealDual.lean` (`fractionalIdealDual`, `idealDual`).
+  - *\(I\)-integrality:* the canonical map \(L\to L_K\) factors through \(L^{\#I}\), i.e. a
+    map \(L\to L^{\#I}\) exists over \(L_K\) (`IsIIntegral`, equivalent to
+    `CanonicalMapLiftsToIdealDual` by `isIIntegral_iff_canonicalMapLiftsToIdealDual`).
+    Integrality is the case \(I=R\): the map \(L\to L^{\#R}\).
+  - *\(I\)-modularity:* that factorization is an isomorphism, \(L=L^{\#I}\) (`IsIModular`).
+    Metric unimodularity (FOUNDATIONS §18, \(L^{\#R}=L\)) is the case \(I=R\).
 
-  "\(I\)-integral" is used rather than "\(I\)-modular", because "modular lattice" usually
-  means \(L^{\#}\cong\) a rescaled \(L\) (Quebbemann). Unimodularity, \(L^{\#}=L\) (§19.5),
-  is a perfectness condition, not a containment. Its relation to the TODO node's "metric
-  \(I\)-duality/modularity" is to be stated by that node's owner.
+  Both are properties of objects of \(\mathbf{Bil}\) (over the lattice base), so they are
+  classifiers on \(\mathbf{Bil}\), not category families.
+
+  *Evenness is not the case \(I=2R\).* A map \(L\to L^{\#2R}\) means \(b(L,L)\subseteq 2R\).
+  The hyperbolic plane \(U\) (\(b(e,f)=1\), \(b(e,e)=b(f,f)=0\)) is even, but
+  \(b(e,f)=1\notin2\mathbb Z\). Evenness is the corresponding containment for the diagonal
+  \(x\mapsto b(x,x)\), a condition on the quadratic map rather than on \(b\). Whether it is
+  the \(I=2R\) case of the analogous duality for the quadratic refinement is to be stated in
+  FOUNDATIONS with a source before `evenLattice` is re-expressed.
 - **Frames are abandoned.** "Frame" conflicts with its standard meaning (a framed manifold
   is a framed bundle), so `genFrame`, `basisFrame`, `coord`, and their `Indexed` versions
   do not denote the intended notion, and neither do FOUNDATIONS §13.5–13.6 and
