@@ -37,6 +37,22 @@ structure FibrationEntry where
   evidence : Lean.Name
   deriving Repr
 
+/-- The kind of one argument of a typed category constructor. -/
+inductive ConstructorArgKind
+  | category
+  | object
+  | functor
+  deriving DecidableEq, Repr, Inhabited
+
+/-- A typed category constructor (#54 §1): its argument signature and the Lean definition that is
+its semantics. A category whose expression is `.construct id args` must be definitionally
+`semantics` applied to the registered denotations of `args`. -/
+structure ConstructorEntry where
+  id : ConstructorId
+  signature : Array ConstructorArgKind
+  semantics : Lean.Name
+  deriving Repr
+
 /-- Named category registry row. -/
 structure NamedCategoryEntry where
   id : CategoryId

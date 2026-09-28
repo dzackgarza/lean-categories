@@ -96,6 +96,7 @@ public import LeanCategories.Catalogue.FamilyFibration
 public import LeanCategories.Modules.Total
 public import LeanCategories.Modules.FibrationRegistryProbes
 public import LeanCategories.Catalogue.FibrationRegistration
+public import LeanCategories.Catalogue.ConstructorRegistration
 public import LeanCategories.Lattices.Valued.BilRefinements
 public import LeanCategories.Modules.Framed
 public import LeanCategories.Modules.Localization

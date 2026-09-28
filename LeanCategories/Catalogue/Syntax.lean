@@ -108,6 +108,7 @@ deriving instance Lean.ToExpr for ParameterOperationId
 deriving instance Lean.ToExpr for ParameterKindId
 deriving instance Lean.ToExpr for VarianceId
 deriving instance Lean.ToExpr for FunctorId
+deriving instance Lean.ToExpr for ConstructorId
 deriving instance Lean.ToExpr for NaturalTransformationId
 deriving instance Lean.ToExpr for PortId
 deriving instance Lean.ToExpr for OpaquePortId
@@ -242,9 +243,22 @@ def parameterArgsValid (args : Array ParameterExpr) (schema : CategoryFamilySche
 
 end CategoryFamilySchema
 
+mutual
+
+/-- An argument of a typed category constructor (#54 §1): a category, a symbolic object of an
+argument category, or a registered functor. Functor arguments are registered functors because a
+`FunctorExpr` is indexed by `CategoryExpr`. -/
+inductive ConstructorArg
+  | category (category : CategoryExpr)
+  | object (id : ParameterId)
+  | functor (id : FunctorId)
+
 /-- Registered symbolic category language. -/
 inductive CategoryExpr
   | atom (id : CategoryId)
+  /-- The value of a registered typed category constructor (`Arr`, `Core`, `Over`, `Under`,
+  `Elements`, `Subobjects`, functor categories) at its arguments (#54 §1, CC-CALC). -/
+  | construct (constructor : ConstructorId) (args : Array ConstructorArg)
   /-- The fibre over the parameter object `args` of the fibration a registered family
   denotes (CC-FIB). -/
   | familyApp (family : CategoryFamilyId) (args : Array ParameterExpr)
@@ -254,7 +268,11 @@ inductive CategoryExpr
   | classifierTotal (classifier : ClassifierId)
   | refine (base : CategoryExpr) (classifier : ClassifierId)
   | opaque (id : CategoryId)
-  deriving Repr, Lean.ToExpr
+
+end
+
+deriving instance Repr for ConstructorArg, CategoryExpr
+deriving instance Lean.ToExpr for ConstructorArg, CategoryExpr
 
 /--
 Typed symbolic functor language.  Composition is legal only when the middle
@@ -315,6 +333,15 @@ partial def CategoryExpr.syntacticEq : CategoryExpr → CategoryExpr → Bool
   | .refine leftBase leftClassifier, .refine rightBase rightClassifier =>
       leftBase.syntacticEq rightBase && leftClassifier == rightClassifier
   | .opaque left, .opaque right => left == right
+  | .construct leftCtor leftArgs, .construct rightCtor rightArgs =>
+      leftCtor == rightCtor && leftArgs.size == rightArgs.size &&
+        (leftArgs.zip rightArgs).all fun (left, right) =>
+          match left, right with
+          | .category leftCategory, .category rightCategory =>
+              leftCategory.syntacticEq rightCategory
+          | .object leftId, .object rightId => leftId == rightId
+          | .functor leftId, .functor rightId => leftId == rightId
+          | _, _ => false
   | _, _ => false
 
 namespace CategoryExpr

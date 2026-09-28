@@ -8,6 +8,7 @@ public import LeanCategories.Modules.Quadratic.Valued.CatalogueRegistration
 public import LeanCategories.Lattices.Valued.CatalogueRegistration
 public import LeanCategories.Exceptional.CatalogueRegistration
 public import LeanCategories.Catalogue.FibrationRegistration
+public import LeanCategories.Catalogue.ConstructorRegistration
 
 @[expose] public section
 
@@ -60,6 +61,13 @@ def expectedCategoryIds : Array CategoryId := #[
   CategoryId.rings,
   CategoryId.semigroups,
   CategoryId.sets,
+  CategoryId.arrowsSets,
+  CategoryId.coreSets,
+  CategoryId.sliceSets,
+  CategoryId.cosliceSets,
+  CategoryId.subobjectsSets,
+  CategoryId.modulePoints,
+  CategoryId.endofunctorsSets,
   CategoryId.unimodularLattice]
 
 /-- Stable category-family rows owned by the standard catalogue. -/
@@ -133,13 +141,20 @@ def expectedFunctorIds : Array FunctorId := #[
   FunctorId.quadModuleChangeValue,
   FunctorId.quadWFormCarrier,
   FunctorId.quadWFormValue,
-  FunctorId.setsIdentity]
+  FunctorId.setsIdentity,
+  FunctorId.sliceSetsForget,
+  FunctorId.modulePointsProjection]
 
 /-- Stable fibration rows owned by the standard catalogue. -/
 def expectedFibrationIds : Array FibrationId := #[
   FibrationId.modules,
   FibrationId.modulesExt,
   FibrationId.bilinForms]
+
+/-- Stable category-constructor rows owned by the standard catalogue. -/
+def expectedConstructorIds : Array ConstructorId := #[
+  ConstructorId.arrow, ConstructorId.core, ConstructorId.slice, ConstructorId.coslice,
+  ConstructorId.elements, ConstructorId.subobjects, ConstructorId.functorCategory]
 
 /-- Stable opaque-category rows owned by the standard catalogue. -/
 def expectedOpaqueCategoryIds : Array CategoryId := #[
@@ -177,6 +192,8 @@ def validateStandardManifest (manifest : RegistryManifest) : Except String Unit 
     (rawIds expectedClassifierIds (·.raw))
   validateStableIdSet "functors" (manifest.functors.map (·.id))
     (rawIds expectedFunctorIds (·.raw))
+  validateStableIdSet "constructors" (manifest.constructors.map (·.id))
+    (rawIds expectedConstructorIds (·.raw))
   validateStableIdSet "fibrations" (manifest.fibrations.map (·.id))
     (rawIds expectedFibrationIds (·.raw))
   validateStableIdSet "opaque categories" (manifest.opaqueCategories.map (·.id))

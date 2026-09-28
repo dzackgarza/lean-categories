@@ -37,6 +37,7 @@ inductive RegistryEntry
   | functor (e : FunctorEntry)
   | opaque (e : OpaqueCategoryEntry)
   | fibration (e : FibrationEntry)
+  | constructor (e : ConstructorEntry)
   deriving Repr
 
 /-- Stable identifier represented by a heterogeneous registry entry. -/
@@ -47,6 +48,7 @@ def RegistryEntry.stableId : RegistryEntry → String
   | .functor e => e.id.raw
   | .opaque e => e.id.raw
   | .fibration e => e.id.raw
+  | .constructor e => e.id.raw
 
 /-- Lean declarations that must resolve before this row can be persisted. -/
 def RegistryEntry.declarations : RegistryEntry → Array Name
@@ -59,6 +61,7 @@ def RegistryEntry.declarations : RegistryEntry → Array Name
   | .opaque e => #[e.declaration, e.realization] ++
       e.ports.flatMap fun p => #[p.declaration, p.realization]
   | .fibration e => #[e.evidence]
+  | .constructor e => #[e.semantics]
 
 structure RegistryState where
   categories : Array NamedCategoryEntry := #[]
@@ -67,7 +70,13 @@ structure RegistryState where
   functors : Array FunctorEntry := #[]
   opaqueCategories : Array OpaqueCategoryEntry := #[]
   fibrations : Array FibrationEntry := #[]
+  constructors : Array ConstructorEntry := #[]
   deriving Inhabited
+
+/-- Registered category-constructor lookup by stable ID. -/
+def RegistryState.constructor? (state : RegistryState) (id : ConstructorId) :
+    Option ConstructorEntry :=
+  state.constructors.find? fun entry => entry.id == id
 
 def RegistryState.opaquePortIds (state : RegistryState) : List OpaquePortId :=
   state.opaqueCategories.toList.flatMap fun category => category.ports.toList.map (·.id)
@@ -230,6 +239,15 @@ partial def CategoryExpr.isRegistered (state : RegistryState) : CategoryExpr →
       base.isRegistered state &&
         (state.classifier? classifier).isSome
   | .opaque id => state.categories.any (·.id == id) || state.opaqueCategories.any (·.id == id)
+  | .construct constructor args =>
+      (state.constructor? constructor).any fun entry =>
+        entry.signature.size == args.size &&
+          (entry.signature.zip args).all fun (kind, arg) =>
+            match kind, arg with
+            | .category, .category category => category.isRegistered state
+            | .object, .object _ => true
+            | .functor, .functor id => (state.functor? id).isSome
+            | _, _ => false
 
 /- The schema rejects a module whose base is not the selected ring. -/
 example : !CategoryFamilySchema.parameterArgsValid #[.variable ParameterId.r]
@@ -269,6 +287,12 @@ partial def CategoryExpr.referencesValid (state : RegistryState) : CategoryExpr 
       | some entry => CategoryFamilySchema.parameterArgsValid args entry.schema
       | none => false
   | .familyTotal family => (state.categoryFamily? family).isSome
+  | .construct constructor args =>
+      (state.constructor? constructor).isSome &&
+        args.all fun arg =>
+          match arg with
+          | .category category => category.referencesValid state
+          | _ => true
   | .refine base classifier =>
       base.referencesValid state &&
         (state.classifier? classifier).any fun entry =>
@@ -281,6 +305,7 @@ private def RegistryState.apply : RegistryState → RegistryEntry → RegistrySt
   | s, .functor e => { s with functors := s.functors.push e }
   | s, .opaque e => { s with opaqueCategories := s.opaqueCategories.push e }
   | s, .fibration e => { s with fibrations := s.fibrations.push e }
+  | s, .constructor e => { s with constructors := s.constructors.push e }
 
 def RegistryState.registryEntries (state : RegistryState) : List RegistryEntry :=
   state.categories.toList.map RegistryEntry.category ++
@@ -288,7 +313,8 @@ def RegistryState.registryEntries (state : RegistryState) : List RegistryEntry :
     state.classifiers.toList.map RegistryEntry.classifier ++
     state.functors.toList.map RegistryEntry.functor ++
     state.opaqueCategories.toList.map RegistryEntry.opaque ++
-    state.fibrations.toList.map RegistryEntry.fibration
+    state.fibrations.toList.map RegistryEntry.fibration ++
+    state.constructors.toList.map RegistryEntry.constructor
 
 def registryEntryPairAllowed : RegistryEntry → RegistryEntry → Bool
   | .category category, right =>
@@ -642,6 +668,59 @@ def validateRefinementEndpointRealization (state : RegistryState)
   unless refinementHostInChain state classifierEntry.host base do
     throwError "refinement classifier {classifier.raw} has no registered host ancestry"
 
+/-- A constructed category `.construct c args` must be definitionally the constructor's
+semantics applied to the registered denotations of its arguments: a category argument is the
+registered declaration of that category expression, a functor argument the registered
+declaration of that functor, and an object argument ranges over the declaration's own
+parameters. -/
+def validateConstructedCategory (state : RegistryState) (constructor : ConstructorId)
+    (args : Array ConstructorArg) (category : Expr) : MetaM Unit := do
+  let entry ← match state.constructor? constructor with
+    | some entry => pure entry
+    | none => throwError "constructed category uses unregistered constructor {constructor.raw}"
+  unless entry.signature.size == args.size do
+    throwError "constructor {constructor.raw} applied to the wrong number of arguments"
+  let semanticsConstant ← mkConstWithFreshMVarLevels entry.semantics
+  let (semanticsArgs, binderInfos, _) ←
+    forallMetaTelescopeReducing (← inferType semanticsConstant)
+  let explicitArgs := (semanticsArgs.zip binderInfos).filter (·.2.isExplicit) |>.map (·.1)
+  unless explicitArgs.size == args.size do
+    throwError "constructor {constructor.raw} semantics has the wrong arity"
+  for (arg, target) in args.zip explicitArgs do
+    match arg with
+    | .category categoryExpr =>
+        let categoryEntry ← match state.category? categoryExpr with
+          | some e => pure e
+          | none => throwError
+              "constructor {constructor.raw} argument is not a registered category"
+        let declarationConstant ← mkConstWithFreshMVarLevels categoryEntry.declaration
+        let (declarationArgs, _, _) ←
+          forallMetaTelescopeReducing (← inferType declarationConstant)
+        unless ← withTransparency .all <|
+            isDefEq target (mkAppN declarationConstant declarationArgs) do
+          throwError "constructor {constructor.raw} category argument does not match"
+    | .functor functorId =>
+        let functorEntry ← match state.functor? functorId with
+          | some e => pure e
+          | none => throwError
+              "constructor {constructor.raw} argument is not a registered functor"
+        let declarationConstant ← mkConstWithFreshMVarLevels functorEntry.declaration
+        let (declarationArgs, _, _) ←
+          forallMetaTelescopeReducing (← inferType declarationConstant)
+        let declarationValue := mkAppN declarationConstant declarationArgs
+        let declarationType ← whnf (← inferType declarationValue)
+        let functorValue ← if declarationType.isAppOf ``CategoryTheory.Cat.Hom then
+            mkAppM ``CategoryTheory.Cat.Hom.toFunctor #[declarationValue]
+          else
+            pure declarationValue
+        unless ← withTransparency .all <| isDefEq target functorValue do
+          throwError "constructor {constructor.raw} functor argument does not match"
+    | .object _ => pure ()
+  unless ← withTransparency .all <|
+      isDefEq category (mkAppN semanticsConstant semanticsArgs) do
+    throwError
+      "constructed category is not {entry.semantics} applied to its registered arguments"
+
 /-- A family-total endpoint must be the total category of the exact registered family
 realization (`CategoryFamilyRealization.totalCat`). -/
 def validateFamilyTotalEndpointRealization (state : RegistryState)
@@ -847,6 +926,8 @@ def validateCategoryDeclarationRealization (state : RegistryState) (expression :
     | .familyTotal family =>
         validateFamilyTotalEndpointRealization state family realizationArgs[1]!
           realizationValue
+    | .construct constructor args =>
+        validateConstructedCategory state constructor args realizationArgs[1]!
     | .atom _ | .familyApp .. | .opaque _ => pure ()
     let familyFibre ← withTransparency .all do
       mkAppM ``LeanCategories.CategoryRealization.familyFibre #[mkAppN realizationConstant arguments]
@@ -1339,6 +1420,14 @@ def validateRegistryEntryDeclaration (entry : RegistryEntry) : MetaM Unit := do
         ensureFunctorRealization port.realization
         validateOpaquePortRealization state port
   | .fibration e => validateFibrationEvidence state e
+  | .constructor e => do
+      let semanticsConstant ← mkConstWithFreshMVarLevels e.semantics
+      let (_, binderInfos, result) ←
+        forallMetaTelescopeReducing (← inferType semanticsConstant)
+      unless (binderInfos.filter (·.isExplicit)).size == e.signature.size do
+        throwError "constructor {e.id.raw} semantics does not have its signature's arity"
+      unless (← whnfR result).isAppOf ``CategoryTheory.Cat do
+        throwError "constructor {e.id.raw} semantics does not return a category"
 
 /- Validate the elaborated declaration and persist exactly one registry entry. -/
 def addRegistryEntryChecked (entry : RegistryEntry) : MetaM Unit := do
@@ -1462,6 +1551,13 @@ private partial def registryManifestParameterExprOfJson : Json → Except String
 instance : FromJson RegistryManifestParameterExpr where
   fromJson? := registryManifestParameterExprOfJson
 
+mutual
+
+inductive RegistryManifestConstructorArg
+  | category (category : RegistryManifestCategoryExpr)
+  | object (id : String)
+  | functor (id : String)
+
 inductive RegistryManifestCategoryExpr
   | atom (id : String)
   | familyApp (family : String) (args : Array RegistryManifestParameterExpr)
@@ -1469,9 +1565,13 @@ inductive RegistryManifestCategoryExpr
   | refine (base : RegistryManifestCategoryExpr) (classifier : String)
   | opaque (id : String)
   | familyTotal (family : String)
-  deriving DecidableEq, Repr
+  | construct (constructor : String) (args : Array RegistryManifestConstructorArg)
 
-private def registryManifestCategoryExprJson : RegistryManifestCategoryExpr → Json
+end
+
+deriving instance BEq, Repr for RegistryManifestConstructorArg, RegistryManifestCategoryExpr
+
+private partial def registryManifestCategoryExprJson : RegistryManifestCategoryExpr → Json
   | .atom id => registryObject [("tag", "atom"), ("id", id)]
   | .familyApp family args => registryObject [
       ("tag", "familyApp"), ("family", family), ("args", toJson args)]
@@ -1482,9 +1582,28 @@ private def registryManifestCategoryExprJson : RegistryManifestCategoryExpr → 
       ("classifier", classifier)]
   | .opaque id => registryObject [("tag", "opaque"), ("id", id)]
   | .familyTotal family => registryObject [("tag", "familyTotal"), ("family", family)]
+  | .construct constructor args => registryObject [
+      ("tag", "construct"), ("constructor", constructor),
+      ("args", Json.arr (args.map fun
+        | .category category => registryObject [
+            ("tag", "category"), ("category", registryManifestCategoryExprJson category)]
+        | .object id => registryObject [("tag", "object"), ("id", id)]
+        | .functor id => registryObject [("tag", "functor"), ("id", id)]))]
 
 instance : ToJson RegistryManifestCategoryExpr where
   toJson := registryManifestCategoryExprJson
+
+instance : Inhabited RegistryManifestCategoryExpr := ⟨.atom ""⟩
+
+/-- Decode a constructor argument, given the category-expression decoder. -/
+private def constructorArgOfJson
+    (category : Json → Except String RegistryManifestCategoryExpr) (arg : Json) :
+    Except String RegistryManifestConstructorArg := do
+  match ← arg.getObjValAs? String "tag" with
+  | "category" => .category <$> category (← arg.getObjValAs? Json "category")
+  | "object" => .object <$> arg.getObjValAs? String "id"
+  | "functor" => .functor <$> arg.getObjValAs? String "id"
+  | tag => throw s!"unknown constructor argument tag: {tag}"
 
 private partial def registryManifestCategoryExprOfJson : Json → Except String RegistryManifestCategoryExpr :=
   fun j => do
@@ -1496,6 +1615,11 @@ private partial def registryManifestCategoryExprOfJson : Json → Except String 
     | "refine" => .refine <$> registryManifestCategoryExprOfJson (← j.getObjValAs? Json "base") <*> j.getObjValAs? String "classifier"
     | "opaque" => .opaque <$> j.getObjValAs? String "id"
     | "familyTotal" => .familyTotal <$> j.getObjValAs? String "family"
+    | "construct" => do
+        let constructor ← j.getObjValAs? String "constructor"
+        let args ← j.getObjValAs? (Array Json) "args"
+        let args ← args.mapM (constructorArgOfJson registryManifestCategoryExprOfJson)
+        pure (.construct constructor args)
     | _ => throw s!"unknown category expression tag: {tag}"
 
 instance : FromJson RegistryManifestCategoryExpr where
@@ -1510,7 +1634,7 @@ inductive RegistryManifestFunctorExpr
   | familyReindex (family morphism : String)
       (source target : Array RegistryManifestParameterExpr)
   | comp (left right : RegistryManifestFunctorExpr)
-  deriving DecidableEq, Repr
+  deriving BEq, Repr
 
 private partial def registryManifestFunctorExprJson : RegistryManifestFunctorExpr → Json
   | .identity category => registryObject [("tag", "identity"), ("category", toJson category)]
@@ -1557,7 +1681,7 @@ structure RegistryManifestCategory where
   realization : String
   refinementRealization : String
   expression : RegistryManifestCategoryExpr
-  deriving DecidableEq, Repr, ToJson, FromJson
+  deriving BEq, Repr, ToJson, FromJson
 
 structure RegistryManifestFamily where
   id : String
@@ -1566,14 +1690,14 @@ structure RegistryManifestFamily where
   transport : String
   parameters : Array RegistryManifestParameter
   variance : String
-  deriving DecidableEq, Repr, ToJson, FromJson
+  deriving BEq, Repr, ToJson, FromJson
 
 structure RegistryManifestClassifier where
   id : String
   host : RegistryManifestCategoryExpr
   declaration : String
   realization : String
-  deriving DecidableEq, Repr, ToJson, FromJson
+  deriving BEq, Repr, ToJson, FromJson
 
 structure RegistryManifestFunctor where
   id : String
@@ -1582,7 +1706,7 @@ structure RegistryManifestFunctor where
   declaration : String
   realization : String
   expression : RegistryManifestFunctorExpr
-  deriving DecidableEq, Repr, ToJson, FromJson
+  deriving BEq, Repr, ToJson, FromJson
 
 structure RegistryManifestPort where
   id : String
@@ -1591,7 +1715,7 @@ structure RegistryManifestPort where
   declaration : String
   realization : String
   provenance : String
-  deriving DecidableEq, Repr, ToJson, FromJson
+  deriving BEq, Repr, ToJson, FromJson
 
 structure RegistryManifestOpaque where
   id : String
@@ -1599,14 +1723,20 @@ structure RegistryManifestOpaque where
   realization : String
   reason : String
   ports : Array RegistryManifestPort
-  deriving DecidableEq, Repr, ToJson, FromJson
+  deriving BEq, Repr, ToJson, FromJson
 
 structure RegistryManifestFibration where
   id : String
   projection : String
   variance : String
   evidence : String
-  deriving DecidableEq, Repr, ToJson, FromJson
+  deriving BEq, Repr, ToJson, FromJson
+
+structure RegistryManifestConstructor where
+  id : String
+  signature : Array String
+  semantics : String
+  deriving BEq, Repr, ToJson, FromJson
 
 structure RegistryManifest where
   schemaVersion : String
@@ -1616,8 +1746,9 @@ structure RegistryManifest where
   opaqueCategories : Array RegistryManifestOpaque
   categoryFamilies : Array RegistryManifestFamily
   fibrations : Array RegistryManifestFibration
+  constructors : Array RegistryManifestConstructor
   source : String
-  deriving DecidableEq, Repr, ToJson, FromJson
+  deriving BEq, Repr, ToJson, FromJson
 
 private def registryManifestParameterExpr : ParameterExpr → RegistryManifestParameterExpr
   | .variable id => .variable id.raw
@@ -1628,13 +1759,17 @@ private def registryManifestParameterExpr : ParameterExpr → RegistryManifestPa
       .apply3 operation.raw (registryManifestParameterExpr first)
         (registryManifestParameterExpr second) (registryManifestParameterExpr third)
 
-private def registryManifestCategoryExpr : CategoryExpr → RegistryManifestCategoryExpr
+private partial def registryManifestCategoryExpr : CategoryExpr → RegistryManifestCategoryExpr
   | .atom id => .atom id.raw
   | .familyApp family args => .familyApp family.raw (args.map registryManifestParameterExpr)
   | .classifierTotal classifier => .classifierTotal classifier.raw
   | .refine base classifier => .refine (registryManifestCategoryExpr base) classifier.raw
   | .opaque id => .opaque id.raw
   | .familyTotal family => .familyTotal family.raw
+  | .construct constructor args => .construct constructor.raw (args.map fun
+      | .category category => .category (registryManifestCategoryExpr category)
+      | .object id => .object id.raw
+      | .functor id => .functor id.raw)
 
 private def registryManifestFunctorExpr {source target : CategoryExpr} :
     FunctorExpr source target → RegistryManifestFunctorExpr
@@ -1700,6 +1835,12 @@ private def registryManifest (state : RegistryState) : RegistryManifest :=
         | .cartesian => "cartesian"
         | .cocartesian => "cocartesian",
       evidence := e.evidence.toString }
+    constructors := (state.constructors.qsort (fun a b => a.id.raw < b.id.raw)).map fun e => {
+      id := e.id.raw, semantics := e.semantics.toString,
+      signature := e.signature.map fun
+        | .category => "category"
+        | .object => "object"
+        | .functor => "functor" }
     source := "lean-registry" }
 
 private def registryManifestJson (state : RegistryState) : Json := toJson (registryManifest state)

@@ -62,6 +62,11 @@ structure FibrationId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 
+/-- Stable category-constructor id, e.g. `ctor.arrow`, `ctor.slice`. -/
+structure ConstructorId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
 /-- Stable functor id. -/
 structure FunctorId where
   raw : String

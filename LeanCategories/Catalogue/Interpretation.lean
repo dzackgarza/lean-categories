@@ -33,6 +33,8 @@ universe uObj uHom
 /-- The non-composite constructors of the current category expression syntax. -/
 inductive CategoryPrimitive : CategoryExpr → Type
   | atom (id : CategoryId) : CategoryPrimitive (.atom id)
+  | construct (constructor : ConstructorId) (arguments : Array ConstructorArg) :
+      CategoryPrimitive (.construct constructor arguments)
   | familyApp (family : CategoryFamilyId) (arguments : Array ParameterExpr) :
       CategoryPrimitive (.familyApp family arguments)
   | familyTotal (family : CategoryFamilyId) : CategoryPrimitive (.familyTotal family)
@@ -129,6 +131,7 @@ def SelectedRealization.empty : SelectedRealization where
 noncomputable def evalCategory (selected : SelectedRealization) :
     (expression : CategoryExpr) → Option (EvaluatedCategory.{uObj, uHom} expression)
   | .atom id => selected.category (.atom id)
+  | .construct constructor arguments => selected.category (.construct constructor arguments)
   | .familyApp family arguments => selected.category (.familyApp family arguments)
   | .familyTotal family => selected.category (.familyTotal family)
   | .classifierTotal classifier => selected.category (.classifierTotal classifier)
