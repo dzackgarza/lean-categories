@@ -42,8 +42,10 @@ def CommutativeRings : ObjCat.{u + 1, u} := Cat.of CommRingCat.{u}
 abbrev DomainCat : Type (u + 1) :=
   ObjectProperty.FullSubcategory (C := CommRingCat.{u}) (fun R => IsDomain R)
 
+/-- Fields: commutative rings whose own structure is a field (Mathlib's `IsField`). Not
+`Nonempty (Field R)`, which asks for *some* field structure on the carrier, unrelated to `R`'s. -/
 abbrev FieldCat : Type (u + 1) :=
-  ObjectProperty.FullSubcategory (C := CommRingCat.{u}) (fun R => Nonempty (Field R))
+  ObjectProperty.FullSubcategory (C := CommRingCat.{u}) (fun R => IsField R)
 
 abbrev LocalRingCat : Type (u + 1) :=
   ObjectProperty.FullSubcategory (C := CommRingCat.{u}) (fun R => IsLocalRing R)
@@ -101,9 +103,12 @@ abbrev UniqueFactorizationDomainCat : Type (u + 1) :=
   ObjectProperty.FullSubcategory (C := CommRingCat.{u})
     (fun R => IsDomain R ∧ UniqueFactorizationMonoid R)
 
+/-- Euclidean domains: commutative rings admitting a Euclidean-domain structure *whose ring
+structure is `R`'s own*. (`Nonempty (EuclideanDomain R)` alone would ask for an unrelated ring
+structure on the carrier.) -/
 abbrev EuclideanDomainCat : Type (u + 1) :=
   ObjectProperty.FullSubcategory (C := CommRingCat.{u})
-    (fun R => Nonempty (EuclideanDomain R))
+    (fun R => ∃ E : EuclideanDomain R, E.toCommRing = inferInstanceAs (CommRing R))
 
 abbrev ValuationRingCat : Type (u + 1) :=
   ObjectProperty.FullSubcategory (C := DomainCat.{u})
@@ -113,7 +118,10 @@ abbrev DiscreteValuationRingCat : Type (u + 1) :=
   ObjectProperty.FullSubcategory (C := DomainCat.{u})
     (fun R => @IsDiscreteValuationRing R.1 inferInstance R.property)
 
-def IsDivisionRing (R : RingCat.{u}) : Prop := Nonempty (DivisionRing R)
+/-- `R`'s own ring structure is a division ring: nontrivial, and every nonzero element is a unit.
+(Not `Nonempty (DivisionRing R)`, which asks for *some* division-ring structure on the carrier,
+unrelated to `R`'s.) -/
+def IsDivisionRing (R : RingCat.{u}) : Prop := Nontrivial R ∧ ∀ a : R, a ≠ 0 → IsUnit a
 
 abbrev DivisionRingCat : Type (u + 1) :=
   ObjectProperty.FullSubcategory (C := RingCat.{u}) IsDivisionRing

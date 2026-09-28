@@ -37,10 +37,14 @@ universe u
 
 set_option linter.checkUnivs false
 
+/-- Commutativity of a magma's own multiplication. (Not `Nonempty (CommMagma M)`: that asks
+whether the carrier admits *some* commutative multiplication, unrelated to `M`'s, and holds for
+every magma, e.g. by a constant operation.) -/
+def IsCommutativeMagma (M : MagmaCat.{u}) : Prop := ∀ a b : M, a * b = b * a
+
 /-- Commutative magmas as a full subcategory of `MagmaCat`. -/
 abbrev CommMagmaCat : Type (u + 1) :=
-  ObjectProperty.FullSubcategory
-    (C := MagmaCat.{u}) (fun M : MagmaCat.{u} => Nonempty (CommMagma M))
+  ObjectProperty.FullSubcategory (C := MagmaCat.{u}) IsCommutativeMagma
 
 /-- Magma with a designated two-sided unit. -/
 structure UnitalMagma where
@@ -165,8 +169,7 @@ noncomputable def associative : Classifier Magmas where
 /-- Commutative classifier (property: full subcategory). -/
 noncomputable def commutative : Classifier Magmas where
   total := Cat.of CommMagmaCat.{u}
-  forget := (ObjectProperty.ι
-      (C := MagmaCat.{u}) (fun M : MagmaCat.{u} => Nonempty (CommMagma M))).toCatHom
+  forget := (ObjectProperty.ι (C := MagmaCat.{u}) IsCommutativeMagma).toCatHom
 
 /-- Unital classifier: unit-preserving morphisms (structure, not full). -/
 noncomputable def unital : Classifier Magmas where
