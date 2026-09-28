@@ -76,6 +76,8 @@ public import LeanCategories.ForMathlib.FiltrationGraded
 public import LeanCategories.ForMathlib.GaussianPrimeIdeals
 public import LeanCategories.ForMathlib.MvPolynomialIdealOfVars
 public import LeanCategories.ForMathlib.QuadraticReflection
+public import LeanCategories.ForMathlib.QuadraticBaseChange
+public import LeanCategories.Lattices.Valued.EvenDiagonal
 public import LeanCategories.ForMathlib.QuotientAnnihilator
 public import LeanCategories.ForMathlib.QuotientManifold
 public import LeanCategories.ForMathlib.RestrictedProductMeasure

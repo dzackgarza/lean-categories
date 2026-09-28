@@ -1255,6 +1255,30 @@ algebra \(\Gamma_R(M)\):
    \(\varphi\mapsto S\otimes-\) are inherited from (1) and (2), so \(\mathbf{Quad}\) is a cocartesian
    fibration over the total module category exactly as \(\mathbf{Bil}\) is (Example 31.2c).
 
+*Construction used in the Lean code (2026-09-28), by descent along a free cover.* The same
+quadratic map is obtained without \(\Gamma_2\), and this is how `QuadraticMap.baseChange'`
+(`LeanCategories/ForMathlib/QuadraticBaseChange.lean`) builds it:
+
+1. On a free module with a basis \(e\), \(q=\beta_e^{\mathrm{diag}}\) for the (non-symmetric)
+   bilinear map \(\beta_e\) with \(\beta_e(e_i,e_i)=q(e_i)\), \(\beta_e(e_i,e_j)=b_q(e_i,e_j)\) for
+   \(i<j\) and \(0\) for \(i>j\) (Mathlib `QuadraticMap.toBilin`, E. Wieser); then
+   \(v\mapsto(S\otimes\beta_e)(v,v)\) is a quadratic map with \(s\otimes m\mapsto s^2\otimes q(m)\).
+2. In general take the free cover \(\pi:R^{(M)}\twoheadrightarrow M\) (a 1-truncated free resolution,
+   Definition 13.11) and \(P\) the base change of \(q\circ\pi\) from step 1. By right exactness of
+   \(S\otimes_R-\) [Bourbaki, *Algèbre* II §3.6, Prop. 5], \(\ker(S\otimes\pi)\) is the image of
+   \(S\otimes\ker\pi\). The polar form of \(P\) is \(S\otimes b_{q\circ\pi}\), which vanishes
+   against \(\ker\pi\) because \(b_q(\pi x,0)=0\), and \(P\) vanishes on the image of
+   \(S\otimes\ker\pi\); hence \(P\) is constant on the fibres of \(S\otimes\pi\) and descends to
+   \(S\otimes q\) on \(S\otimes_R M\).
+3. A quadratic map on \(S\otimes_R M\) is determined by its values on \(1\otimes m\) (Mathlib
+   `baseChange_ext`, no hypothesis on \(2\)), so \(S\otimes q\) does not depend on the cover and
+   agrees with the \(\Gamma_2\) construction above. The same uniqueness gives the identity and
+   composition comparisons of \(\varphi\mapsto S\otimes-\) on \(\mathbf{Quad}\)
+   (`baseChangeQuadWFormIdentityIso`, `baseChangeQuadWFormCompositionIso`).
+
+Steps 1–2 of the \(\Gamma_2\) route (representability and Roby's base change of \(\Gamma\)) remain
+unformalized (COMPLAINTS); nothing above depends on them.
+
 ### Definition 15.7 (Hermitian and sesquilinear forms) {#def-hermitian-form}
 
 Let \(R\) be a commutative ring equipped with an involution \(r\mapsto\bar r\). A

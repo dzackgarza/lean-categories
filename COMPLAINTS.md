@@ -222,9 +222,11 @@ does not justify weakening a dependent theorem or starting unrelated work.
   `Invertible 2`.
 - **Route and gap:** port the needed DividedPowers4 files (grading, Thm. III.3) to Mathlib
   v4.33 with provenance, and prove the degree-2 representability (step 1), which no indexed
-  source states. Until then `Modules/Quadratic/Valued/BaseChange.lean` keeps its
-  `[Invertible (2 : R)]` hypothesis (entry "Quadratic base change requires `2` invertible").
-- **Repair link:** `lean-cas-dsl` computational-core node `cc-quad-basechange`.
+  source states.
+- **Status (2026-09-28):** no longer blocking. Base change of quadratic maps is built without
+  `Γ₂`, by descent along a free cover (`ForMathlib/QuadraticBaseChange.lean`, FOUNDATIONS §15.6
+  "Construction used in the Lean code"). The `Γ₂` theorems remain unformalized; they are wanted for
+  the representability statement itself, not for base change.
 
 ### Missing theorem: cancellation for strongly cocartesian morphisms
 
@@ -272,6 +274,11 @@ does not justify weakening a dependent theorem or starting unrelated work.
 - **Coverage:** the searches above and the two local files. The DividedPowers4 files were
   located by search, not yet read.
 - **Repair link:** `lean-cas-dsl` computational-core plan node `cc-quad-basechange`.
+- **Resolved (2026-09-28):** `QuadraticMap.baseChange'` (`ForMathlib/QuadraticBaseChange.lean`)
+  is base change for every quadratic map over any commutative rings, with
+  `(s ⊗ m) ↦ s² ⊗ q(m)`, built on a free cover and Mathlib's `QuadraticMap.toBilin`;
+  `Modules/Quadratic/Valued/BaseChange.lean` uses it with no hypothesis on `2`, with the identity
+  and composition comparisons. A characteristic-2 specimen (`ℤ → ℤ/2`) is in that file.
 
 ### `IsJordanCanonicalInBasis` weakens the chosen-basis Jordan condition
 
