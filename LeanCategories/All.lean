@@ -89,6 +89,7 @@ public import LeanCategories.ForMathlib.TensorProductSubmodule
 public import LeanCategories.ForMathlib.CocartesianCancellation
 public import LeanCategories.ForMathlib.Cofibered
 public import LeanCategories.ForMathlib.GrothendieckMapCocartesian
+public import LeanCategories.ForMathlib.GrothendieckFibers
 public import LeanCategories.ForMathlib.LocallyDiscreteStrongTrans
 public import LeanCategories.Lattices.Valued.ValueFibration
 public import LeanCategories.Catalogue.FamilyFibration

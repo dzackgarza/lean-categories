@@ -117,6 +117,22 @@ does not justify weakening a dependent theorem or starting unrelated work.
 - **Repair link:** `strongTransOfIsLocallyDiscrete` and `LocallyDiscrete.mkStrongTrans`
   (`ForMathlib/LocallyDiscreteStrongTrans.lean`); upstream candidate.
 
+### Missing theorem: fibres of the covariant Grothendieck construction and of `Grothendieck.map`
+
+- **Need:** the fibre of `forget F : ∫ F ⥤ 𝒮` over `S` is `F S` (for covariant pseudofunctors and
+  for strict `C ⥤ Cat`), and the fibre of `Grothendieck.map α` over `(c, y)` is the fibre of
+  `α_c` over `y` (FOUNDATIONS Proposition 31.2b); consumed by
+  `BilinFormsOverRings.fibreEquivalence` (`Fiber p (R, W) ≌ BilinModuleCat R W`).
+- **Searches:** `Grothendieck fiber equivalence HasFibers`,
+  `Fiber inducedFunctor IsEquivalence Grothendieck`,
+  `fiber of Grothendieck construction equivalence`, `fiber of composite fibration`. Mathlib has
+  only `HasFibers (CoGrothendieck.forget F)` (contravariant); UniMath has the displayed-category
+  analogue (Rocq).
+- **Repair link:** `ForMathlib/GrothendieckFibers.lean`: `Pseudofunctor.Grothendieck.ι`,
+  `HasFibers (forget F)` (dual of Mathlib's), `ι_comp_map` (`ι_c ⋙ map α = α_c ⋙ ι_c` on the
+  nose, from `naturality_id`), `fibreEquivalence α c y`, and the strict
+  `Grothendieck.fibreEquivalence`; upstream candidates.
+
 ### Missing theorem: cancellation for strongly cocartesian morphisms
 
 - **Need:** FOUNDATIONS Lemma 31.2a (dual of HTT Prop. 2.4.1.3).

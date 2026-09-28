@@ -258,7 +258,6 @@ COMPLAINTS). `Lattices/Valued/ValueFibration.lean` builds the strong transformat
 (LC-11) and proved in `ForMathlib`: `Functor.IsCofibered` (`Cofibered.lean`), the transfer
 lemma `Functor.IsStronglyCocartesian.map_of_exists`, `Grothendieck.isStronglyCocartesian_of_isIso_fiber`,
 `LocallyDiscrete.mkStrongTrans`, and Proposition 31.2b itself
-(`GrothendieckMapCocartesian.lean`). Not yet constructed: the equivalence of the fibre
-`p⁻¹(R, W)` with `BilinModuleCat R W` (objects strictly over `(R, W)` are exactly
-`W`-valued forms over `R`, but no `Functor.Fiber` equivalence is stated), the `Quad`
+(`GrothendieckMapCocartesian.lean`). The fibre equivalence `Fiber p (R, W) ≌ BilinModuleCat R W` is
+`BilinFormsOverRings.fibreEquivalence` (`ForMathlib/GrothendieckFibers.lean`). Not yet constructed: the `Quad`
 analogue (`cc-quad-basechange`), the lattice refinements, and the registry entries.

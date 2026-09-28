@@ -7,6 +7,7 @@ module
 public import LeanCategories.Lattices.Valued.BaseChangePseudofunctor
 public import LeanCategories.ForMathlib.GrothendieckMapCocartesian
 public import LeanCategories.ForMathlib.LocallyDiscreteStrongTrans
+public import LeanCategories.ForMathlib.GrothendieckFibers
 public import Mathlib.Algebra.Category.ModuleCat.Pseudofunctor
 
 @[expose] public section
@@ -160,6 +161,16 @@ theorem baseChangeAlong_isStronglyCocartesian {R S : CommRingCat.{u}} (h : R ⟶
 instance BilinFormsOverRings.isCofibered_values : BilinFormsOverRings.values.{u}.IsCofibered :=
   Pseudofunctor.Grothendieck.isCofibered_map valueProjectionTrans
     fun h _ _ ψ hψ ↦ baseChangeAlong_isStronglyCocartesian h ψ hψ
+
+/-- The fibre of `p : Bil ⥤ ∫ Mod` over `(R, W)` is the category of `W`-valued bilinear forms
+over `R` (FOUNDATIONS Proposition 31.2b, fibres; `BilinModuleCat R W` is the fibre of the
+change-of-values construction over `W`). -/
+noncomputable def BilinFormsOverRings.fibreEquivalence (R : CommRingCat.{u})
+    (W : ModuleCat.{u} R) :
+    BilinModuleCat R W ≌
+      Functor.Fiber BilinFormsOverRings.values (⟨R, W⟩ : ModulesOverRingsExt.{u}) :=
+  (CategoryTheory.Grothendieck.fibreEquivalence (valueFibers R) W).trans
+    (Pseudofunctor.Grothendieck.fibreEquivalence valueProjectionTrans R W)
 
 end LeanCategories.Lattices.Valued
 
