@@ -1,7 +1,7 @@
 name = "lean_categories"
 version = "0.1.0"
 keywords = ["math"]
-defaultTargets = ["LeanCategories", "lean-categories-export"]
+defaultTargets = ["LeanCategories"]
 
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
@@ -25,10 +25,6 @@ rev = "v4.33.0"
 [[lean_lib]]
 name = "LeanCategories"
 
-[[lean_exe]]
-name = "lean-categories-export"
-root = "LeanCategories.Tools.ExportMain"
-supportInterpreter = true
 
 [[lean_exe]]
 name = "lean-categories-axiom-audit"

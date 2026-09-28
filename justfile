@@ -18,7 +18,7 @@ ai_review_ci := env_var("HOME") / "ai-review-ci"
 default:
     @just --list
 
-# Build the library and registry exporter
+# Build the library
 build:
     @lake build
 
@@ -29,7 +29,6 @@ cache:
 
 # Run the complete repository quality gate
 test: build
-    @lake exe lean-categories-export >/dev/null
     @just -f {{ai_review_ci}}/justfiles/lean.just -d . lean-no-sorry
     @just _lint-conventions
     @just _lean-vacuity-audit

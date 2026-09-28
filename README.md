@@ -29,9 +29,11 @@ LeanCategories/
   Util/
 ```
 
-The computational core — Lean-owned semantics for the DSL over untrusted Sage/GAP/Julia
-realizations — is specified in [specs/computational-core.md](specs/computational-core.md)
-and scheduled by [specs/computational-core-plan.md](specs/computational-core-plan.md).
+This repository owns mathematics only. The computer algebra system built over it — the
+symbolic registry of categories and functors with their checked denotations here, method
+resolution, realizations over Sage/GAP/Julia, and the notebook DSL — is
+[`lean-cas-dsl`](https://github.com/dzackgarza/lean-cas-dsl), which requires this package.
+Its computational-core requirements and plan live in that repository's `specs/`.
 
 The support directories describe the same mathematical library. They do not define a
 second category system. `Core` and `Model` define the common language. `Realization`
@@ -84,16 +86,9 @@ Sage observation, method exposure, backend routing, and runnable parity belong t
 [`dzackgarza/lean-cas-dsl`](https://github.com/dzackgarza/lean-cas-dsl). Sage labels and
 implementation details do not define this library.
 
-The current catalogue is a deliberately incomplete specimen. It establishes a
-Lean-authoritative registry/export path but does not claim the complete normalized
-catalogue. Historical 179/151-row Sage-category ledgers are provenance only: Sage
-functionality is versioned applicability and realization evidence, never the catalogue
-or release denominator.
-
 ```bash
 just cache
 just build
-lake exe lean-categories-export
 ```
 
 ## The foundational corpus

@@ -85,7 +85,7 @@ whole index (Mathlib, other Lean 4 libraries, UniMath, 1Lab, agda-categories, th
 Lean hit is imported or ported with provenance; a non-Lean hit is the reference
 implementation. Only the glue between hits and the residue no source supplies is written
 by hand, and the search record ships with the commit
-([specs/computational-core.md](specs/computational-core.md#cc-reuse--every-obligation-is-first-discharged-by-search-only-glue-and-residue-are-written), CC-REUSE).
+([lean-cas-dsl specs/computational-core.md](https://github.com/dzackgarza/lean-cas-dsl/blob/main/specs/computational-core.md#cc-reuse--every-obligation-is-first-discharged-by-search-only-glue-and-residue-are-written), CC-REUSE).
 
 ## LC-10 — Work out the general mathematics before any special-case construction
 

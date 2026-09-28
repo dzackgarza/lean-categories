@@ -38,7 +38,7 @@ does not justify weakening a dependent theorem or starting unrelated work.
   `F : LocallyDiscrete C ⥤ᵖ Cat` as a lax colimit: a lax cocone on `F` (fibrewise
   pseudofunctors `F c → Cat`, strong transition transformations, coherent modifications)
   determines a pseudofunctor `∫ F → Cat`. It is the straightening statement behind every
-  fibration over a total category (forms over modules over rings, specs/registry-denotation-audit.md §6).
+  fibration over a total category (forms over modules over rings, lean-cas-dsl `specs/registry-denotation-audit.md` §6).
 - **Searches:** `GrothendieckEquiv`, `Grothendieck of Grothendieck`, `Grothendieck sigma
   equivalence`, `Grothendieck Fubini`, `pseudofunctor on Grothendieck construction`,
   `straightening unstraightening`, `Grothendieck.pre`. Found only the strict case:
@@ -224,7 +224,7 @@ does not justify weakening a dependent theorem or starting unrelated work.
   v4.33 with provenance, and prove the degree-2 representability (step 1), which no indexed
   source states. Until then `Modules/Quadratic/Valued/BaseChange.lean` keeps its
   `[Invertible (2 : R)]` hypothesis (entry "Quadratic base change requires `2` invertible").
-- **Repair link:** `computational-core` node `cc-quad-basechange`.
+- **Repair link:** `lean-cas-dsl` computational-core node `cc-quad-basechange`.
 
 ### Missing theorem: cancellation for strongly cocartesian morphisms
 
@@ -271,7 +271,7 @@ does not justify weakening a dependent theorem or starting unrelated work.
   algebras).
 - **Coverage:** the searches above and the two local files. The DividedPowers4 files were
   located by search, not yet read.
-- **Repair link:** `computational-core` plan node `cc-quad-basechange`.
+- **Repair link:** `lean-cas-dsl` computational-core plan node `cc-quad-basechange`.
 
 ### `IsJordanCanonicalInBasis` weakens the chosen-basis Jordan condition
 
@@ -288,9 +288,9 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 - **Need:** a worker following the README or #53 to the registry, resolver and realization owners finds them.
 - **Evidence:** at `eb00e55` the README's source tree lists `LeanCategories/Core/`, `Model/`, `Names/`, `Presentation/`, `Realization/`, `Registry/`, `Specimen/`, `Util/`, and #53 §17 links `LeanCategories/Core/Expr.lean`, `Core/Normalize.lean`, `Core/StructuralMap.lean`, `Registry/Entry.lean`, `Registry/Extension.lean`, `Model/Interpretation.lean`. None exists. The typed syntax is now `LeanCategories/Catalogue/Syntax.lean` (`CategoryExpr`, `FunctorExpr`, `NatTransExpr`), the entries `Catalogue/Registry/Entry.lean`, the extension `Catalogue/Registry/Extension.lean`, and interpretation/realization `Catalogue/Interpretation.lean`, `Catalogue/Realization.lean`. No `StructuralMap.project` or structural normalizer was found under `LeanCategories/` by name search.
-- **Gap and impact:** #53's resolution design (§8) is written against a `project`/normalization mechanism whose current owner, if any, is unlocated; `specs/computational-core.md` cites the `Catalogue/` paths instead.
+- **Gap and impact:** #53's resolution design (§8) is written against a `project`/normalization mechanism whose current owner, if any, is unlocated; `lean-cas-dsl` `specs/computational-core.md` cites the `Catalogue/` paths instead.
 - **Coverage:** `ls` of `LeanCategories/` and name searches for `StructuralMap`, `project`, `normaliz`; module contents beyond `Catalogue/` were not read.
-- **Repair link:** `computational-core` node `cc-p0-denotation-audit` (locate or record the structural projection owner); update the README tree and #53 §17 when that audit closes.
+- **Repair link:** `lean-cas-dsl` computational-core node `cc-p0-denotation-audit` (locate or record the structural projection owner); update the README tree and #53 §17 when that audit closes.
 
 ### Foundational frontier kind markers confuse definitional and result content
 
