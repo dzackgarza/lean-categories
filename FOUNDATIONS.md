@@ -1170,6 +1170,31 @@ and similarly for quadratic maps. The scalar-extended form is characterized by
 =st\otimes b(x,y).
 \]
 
+**Quadratic maps, characteristic-free.** Base change of quadratic maps must not assume
+\(2\in R^\times\) (the evenness of §19.5 lives over \(\mathbb Z\)). The general construction goes
+through the degree-2 divided powers \(\Gamma_2^R(M)\), the degree-2 part of the divided-power
+algebra \(\Gamma_R(M)\):
+
+1. *Representability.* The map \(\gamma_2:M\to\Gamma_2^R(M)\), \(m\mapsto m^{[2]}\), is quadratic, and
+   every quadratic map \(q:M\to W\) factors uniquely as \(q=\tilde q\circ\gamma_2\) with
+   \(\tilde q\in\operatorname{Hom}_R(\Gamma_2^R(M),W)\), naturally in \(M\) and \(W\). This is the
+   degree-2 case of Roby's representation of homogeneous polynomial laws of degree \(d\) by
+   \(\Gamma_d\) [N. Roby, *Lois polynômes et lois formelles en théorie des modules*, Ann. Sci.
+   ÉNS (3) 80 (1963), 213–348; chapter locator to be confirmed, not yet read for this entry].
+2. *Base change of \(\Gamma\).* For \(R\to S\) there is a natural isomorphism of graded
+   \(S\)-algebras \(S\otimes_R\Gamma_R(M)\cong\Gamma_S(S\otimes_R M)\), sending \(1\otimes m^{[n]}\) to
+   \((1\otimes m)^{[n]}\) [Roby 1963, Thm. III.3; formalized as `dpScalarExtensionEquiv` in
+   Chambert-Loir–de Frutos-Fernández, *DividedPowers4*, `DPAlgebra/BaseChange.lean`]. Its
+   degree-2 part is \(S\otimes_R\Gamma_2^R(M)\cong\Gamma_2^S(S\otimes_R M)\).
+3. *Definition.* The base change of \(q\leftrightarrow\tilde q\) is the quadratic map
+   \(S\otimes q:S\otimes_R M\to S\otimes_R W\) corresponding under (1) to
+   \(\Gamma_2^S(S\otimes_R M)\cong S\otimes_R\Gamma_2^R(M)\xrightarrow{S\otimes\tilde q}S\otimes_R W\).
+   It is characterized by \((S\otimes q)(s\otimes m)=s^2\otimes q(m)\) together with its polar
+   form, which is \(S\otimes b_q\). When \(2\in R^\times\) it agrees with Mathlib's
+   `QuadraticForm.baseChange`. Functoriality and the pseudofunctor coherence of
+   \(\varphi\mapsto S\otimes-\) are inherited from (1) and (2), so \(\mathbf{Quad}\) is a cocartesian
+   fibration over the total module category exactly as \(\mathbf{Bil}\) is (Example 31.2c).
+
 ### Definition 15.7 (Hermitian and sesquilinear forms) {#def-hermitian-form}
 
 Let \(R\) be a commutative ring equipped with an involution \(r\mapsto\bar r\). A

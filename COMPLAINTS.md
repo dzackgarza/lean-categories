@@ -133,6 +133,31 @@ does not justify weakening a dependent theorem or starting unrelated work.
   nose, from `naturality_id`), `fibreEquivalence α c y`, and the strict
   `Grothendieck.fibreEquivalence`; upstream candidates.
 
+### Missing theorems: Γ₂ represents quadratic maps; Roby's base change of Γ at Mathlib v4.33
+
+- **Need:** FOUNDATIONS Definition 15.6, quadratic part (steps 1–2): the universal quadratic
+  map `γ₂ : M → Γ₂(M)` and the base-change isomorphism `S ⊗_R Γ_R(M) ≅ Γ_S(S ⊗_R M)` in degree 2,
+  for characteristic-free base change of quadratic maps (`cc-quad-basechange`).
+- **Searches:** `DividedPowerAlgebra universal property quadratic map`, `dpow two quadratic`,
+  `DividedPowerAlgebra grade 2`, `quadraticMap toPolynomialLaw`,
+  `PolynomialLaw IsHomogeneous two QuadraticMap`,
+  `homogeneous polynomial law degree 2 equivalence quadratic`,
+  `QuadraticMap baseChange without Invertible 2`, `DividedPowerAlgebra baseChange isomorphism`,
+  `Roby base change divided power algebra`.
+- **Found:** Mathlib has `DividedPowerAlgebra` (`RingTheory/DividedPowerAlgebra/Init.lean`:
+  `dp`, `lift`, `map`) and `PolynomialLaw` (`RingTheory/PolynomialLaw/Basic.lean`), with no
+  grading, no base-change isomorphism and no link to quadratic maps. *DividedPowers4*
+  (Chambert-Loir–de Frutos-Fernández) formalizes Roby's Thm. III.3 (`dpScalarExtensionEquiv`,
+  `DPAlgebra/BaseChange.lean`) on `leanprover/lean4:v4.31.0-rc1`; its
+  `PolynomialLaw/Homogeneous.lean` lists "characterize homogeneous polynomial maps of degree 2 as
+  quadratic maps" as open. TauCeti's `LinearAlgebra/QuadraticForm/BaseChange.lean` assumes
+  `Invertible 2`.
+- **Route and gap:** port the needed DividedPowers4 files (grading, Thm. III.3) to Mathlib
+  v4.33 with provenance, and prove the degree-2 representability (step 1), which no indexed
+  source states. Until then `Modules/Quadratic/Valued/BaseChange.lean` keeps its
+  `[Invertible (2 : R)]` hypothesis (entry "Quadratic base change requires `2` invertible").
+- **Repair link:** `computational-core` node `cc-quad-basechange`.
+
 ### Missing theorem: cancellation for strongly cocartesian morphisms
 
 - **Need:** FOUNDATIONS Lemma 31.2a (dual of HTT Prop. 2.4.1.3).
