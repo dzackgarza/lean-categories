@@ -74,3 +74,42 @@ killed session. Staged changes you did not create belong to the worker who
 created them under `LC-06`; record a stranded staged tree under `LC-05` and leave
 it in place. A gate that answers red is `LC-07`; a gate that never answers is
 this rule.
+
+## LC-09 — Search every obligation before writing it
+
+Every definition and every proof obligation — including a lemma that appears in the middle
+of a proof — is first attempted with broad searches of the formalization-corpus API
+(`scripts/formalization_corpus.py`), under several formulations: the mathematical name,
+synonyms and the dual notion, the Mathlib-style identifier, the key lemma names, across the
+whole index (Mathlib, other Lean 4 libraries, UniMath, 1Lab, agda-categories, the AFP). A
+Lean hit is imported or ported with provenance; a non-Lean hit is the reference
+implementation. Only the glue between hits and the residue no source supplies is written
+by hand, and the search record ships with the commit
+([specs/computational-core.md](specs/computational-core.md#cc-reuse--every-obligation-is-first-discharged-by-search-only-glue-and-residue-are-written), CC-REUSE).
+
+## LC-10 — Work out the general mathematics before any special-case construction
+
+Before writing a construction, comparison or proof for one instance, state the general
+mathematics it instantiates and check whether that general statement already discharges it.
+Stop and do this when any of the following is observed:
+
+- **a second total category, fibration or functor is about to be defined for an object the
+  repository already has in another presentation** — derive the new one from the existing
+  owner instead;
+- **the proof compares components of two constructions by hand** (for example, isomorphisms
+  from two different sources agreeing on generators) — look first for the universal property
+  or adjunction that makes the comparison unnecessary;
+- **a fibration, family or construction is being assembled out of fibre-by-fibre data** —
+  state it as the Grothendieck construction, straightening, pullback, composite or
+  (co)limit it is, and use that theory's universal property;
+- **the same kind of goal has failed twice with local tactics** — the difficulty is usually
+  in the formulation, not the tactic; re-derive the statement from its general form;
+- **a hypothesis appears only because the chosen presentation needs it** (for example,
+  `Invertible 2` for quadratic base change) — the construction is narrower than the
+  mathematics; find the general one.
+
+Write the general statement in the owning spec or FOUNDATIONS section, with its source,
+before the code. An instance-only construction is admitted only when the general theorem is
+unavailable (recorded under LC-09) and there is no second consumer to justify the
+abstraction; both facts are recorded in the file's module docstring, and the general
+statement stays scheduled.
