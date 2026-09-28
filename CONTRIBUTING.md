@@ -127,3 +127,28 @@ on it — whether it is then proved here (the entry names the proving declaratio
 as an upstream candidate), scheduled, or left open. A route chosen *because* a theorem is
 missing is itself recorded in that entry, so the detour can be undone when the theorem
 exists.
+
+## LC-12 — Every workaround carries a differential analysis
+
+Trigger: any time an obligation reaches for something and does not find it, or finds it
+insufficient, and the work then pivots — a workaround, a reframing, a detour through
+another route, a drop to a special case, a weaker hypothesis, a local copy of a missing
+general lemma, or a `set_option`/defeq trick standing in for missing API.
+
+Action: the commit that lands the workaround, and the docstring of each declaration it
+introduces or reshapes, state all five of:
+
+1. **Needed** — the exact statement or construction the obligation required.
+2. **Searched** — the LC-09 queries run (corpus, Mathlib, other sources) and what the
+   nearest hits were, with why each is insufficient.
+3. **Did instead** — what was written, and how it differs from what was needed
+   (the differential: lost generality, extra hypotheses, fixed parameters, a presentation
+   in place of the object).
+4. **Optimal** — the reusable general solution and its generic owner.
+5. **Tracked** — a `-- TODO(LC-12): …` at the workaround site naming the optimal
+   solution, and the LC-11 COMPLAINTS entry that records it.
+
+A workaround missing any of the five is incomplete work, not a documented shortcut; a
+commit message alone does not satisfy (3)–(5), and a COMPLAINTS entry alone does not
+explain the code at its site. When the optimal solution lands, remove the TODO and the
+detour together and close the COMPLAINTS entry with the replacing declaration.
