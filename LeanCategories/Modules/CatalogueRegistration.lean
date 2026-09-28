@@ -6,9 +6,11 @@ public import LeanCategories.Modules.Mathlib
 public import LeanCategories.Modules.Framed
 public import LeanCategories.Modules.Total
 public import LeanCategories.Catalogue.FamilyFibration
+public import LeanCategories.Foundation.CatalogueRegistration
 public meta import LeanCategories.Catalogue.Registry.Extension
 public meta import LeanCategories.Modules.Expressions
 public meta import LeanCategories.Modules.Catalogue
+public meta import LeanCategories.Foundation.Expressions
 
 @[expose] public section
 
@@ -44,6 +46,46 @@ noncomputable def modulesRealization (R : RingCat.{u}) :
     parameter := R
     parameterQuotation := .ringR R
     category_eq := by rfl })
+
+/-! ### The module fibration (CC-FIB)
+
+The total category, fibre inclusion and reindexing are the canonical realizations of the
+registered `modules` family (`Catalogue/FamilyFibration.lean`); restriction of scalars is
+reindexing, not a registered edge between two fibres. The underlying-set functor is registered
+once, on the total category. -/
+
+/-- The total category `∫ᶜ Mod` of the registered module family. -/
+noncomputable def modulesTotalCategory :=
+  modulesFamilyRealization.{u, w}.totalCat
+
+noncomputable def modulesTotalRealization :
+    CategoryRealization Modules.ModulesTotal modulesTotalCategory.{u, w} := {}
+
+noncomputable def modulesFibreInclusionDeclaration (R : RingCat.{u}) :=
+  modulesFamilyRealization.{u, w}.fibreInclusionFunctor R
+
+noncomputable def modulesFibreInclusionRealization (R : RingCat.{u}) :=
+  modulesFamilyRealization.{u, w}.fibreInclusionRealization R
+    (arguments := #[.variable ParameterId.r]) (.ringR R)
+
+noncomputable def modulesReindexDeclaration {R S : RingCat.{u}} (φ : R ⟶ S) :=
+  modulesFamilyRealization.{u, w}.reindexFunctor φ
+
+noncomputable def modulesReindexRealization {R S : RingCat.{u}} (φ : R ⟶ S) :=
+  modulesFamilyRealization.{u, w}.reindexRealization ParameterMorphismId.phi φ
+    (source := #[.variable ParameterId.r]) (target := #[.variable ParameterId.s])
+    (.ringR R) (.ringS S)
+
+/-- The underlying-set functor of the total module category, into `Sets`. -/
+noncomputable def modulesUnderlyingDeclaration :
+    modulesTotalCategory.{u, w} ⥤ Foundation.Mathlib.Sets.{w} :=
+  ModulesOverRings.underlying.{u, w}
+
+noncomputable def modulesUnderlyingRealization :
+    FunctorRealization Modules.ModulesUnderlyingExpr modulesTotalCategory.{u, w}
+      Foundation.Mathlib.Sets.{w} modulesUnderlyingDeclaration :=
+  { sourceRealization := modulesTotalRealization
+    targetRealization := Foundation.CatalogueRegistration.setsRealization }
 
 noncomputable def genFrameFamilyTransport :
     Pseudofunctor
@@ -463,6 +505,35 @@ normalized_registry .functor
     realization :=
       `LeanCategories.Modules.CatalogueRegistration.basisFrameForgetIndexedRealization
     expression := Modules.BasisFrameForgetExpr }
+
+normalized_registry .category
+  { id := CategoryId.modulesTotal,
+    declaration := `LeanCategories.Modules.CatalogueRegistration.modulesTotalCategory
+    expression := Modules.ModulesTotal
+    realization := `LeanCategories.Modules.CatalogueRegistration.modulesTotalRealization }
+normalized_registry .functor
+  { id := FunctorId.modulesFibreInclusion,
+    source := Modules.Modules
+    target := Modules.ModulesTotal
+    declaration :=
+      `LeanCategories.Modules.CatalogueRegistration.modulesFibreInclusionDeclaration
+    realization :=
+      `LeanCategories.Modules.CatalogueRegistration.modulesFibreInclusionRealization
+    expression := Modules.ModulesFibreInclusionExpr }
+normalized_registry .functor
+  { id := FunctorId.modulesReindex,
+    source := Modules.ModulesAtS
+    target := Modules.Modules
+    declaration := `LeanCategories.Modules.CatalogueRegistration.modulesReindexDeclaration
+    realization := `LeanCategories.Modules.CatalogueRegistration.modulesReindexRealization
+    expression := Modules.ModulesReindexExpr }
+normalized_registry .functor
+  { id := FunctorId.modulesUnderlying,
+    source := Modules.ModulesTotal
+    target := Foundation.Sets
+    declaration := `LeanCategories.Modules.CatalogueRegistration.modulesUnderlyingDeclaration
+    realization := `LeanCategories.Modules.CatalogueRegistration.modulesUnderlyingRealization
+    expression := Modules.ModulesUnderlyingExpr }
 
 end
 end LeanCategories.Modules.CatalogueRegistration

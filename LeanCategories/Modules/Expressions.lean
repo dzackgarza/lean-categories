@@ -2,6 +2,7 @@ module
 
 public import LeanCategories.Catalogue.Syntax
 public import LeanCategories.Modules.Catalogue
+public import LeanCategories.Foundation.Expressions
 
 @[expose] public section
 
@@ -9,6 +10,26 @@ namespace LeanCategories.Modules
 
 def Modules : CategoryExpr :=
   .familyApp CategoryFamilyId.modules #[.variable ParameterId.r]
+
+/-- Modules over the ring `S`: the fibre over `S`. -/
+def ModulesAtS : CategoryExpr :=
+  .familyApp CategoryFamilyId.modules #[.variable ParameterId.s]
+
+/-- The total category `∫ᶜ Mod` of the module fibration (CC-FIB). -/
+def ModulesTotal : CategoryExpr := .familyTotal CategoryFamilyId.modules
+
+/-- The fibre inclusion `ι_R`. -/
+def ModulesFibreInclusionExpr : FunctorExpr Modules ModulesTotal :=
+  .familyFibreInclusion CategoryFamilyId.modules #[.variable ParameterId.r]
+
+/-- Restriction of scalars along `φ : R ⟶ S`, as reindexing of the module fibration. -/
+def ModulesReindexExpr : FunctorExpr ModulesAtS Modules :=
+  .familyReindex CategoryFamilyId.modules ParameterMorphismId.phi
+    #[.variable ParameterId.r] #[.variable ParameterId.s]
+
+/-- The underlying-set functor on the total category of modules. -/
+def ModulesUnderlyingExpr : FunctorExpr ModulesTotal Foundation.Sets :=
+  .atomic FunctorId.modulesUnderlying
 
 def FreeModules : CategoryExpr := .atom CategoryId.freeModules
 

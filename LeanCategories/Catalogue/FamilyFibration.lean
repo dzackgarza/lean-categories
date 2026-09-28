@@ -91,6 +91,70 @@ theorem reindex_obj_eq_domainCartesianLift {p q : P}
       CoGrothendieck.domainCartesianLift (F := realization.transport) y φ :=
   rfl
 
+
+end CategoryFamilyRealization
+
+
+namespace CategoryFamilyRealization
+
+/-! ## Registry realizations of the fibration
+
+The registry places every category in `ObjCat`, whose object universe dominates its hom
+universe. The total category has objects in `max uP uObj uHom` and morphisms in
+`max uParamHom uHom`, so it is an `ObjCat` when the base is a large category
+(`P : Type (uParamHom + 1)`, `Category.{uParamHom} P`), as for every registered schema. -/
+
+variable {identifier : CategoryFamilyId} {schema : CategoryFamilySchema}
+  {P : Type (uParamHom + 1)}
+  (realization : CategoryFamilyRealization.{uObj, uHom, uParamHom, uParamHom + 1}
+    identifier schema (P := P))
+
+/-- The total category as an object of `Cat`. -/
+def totalCat : ObjCat.{max (uParamHom + 1) uObj uHom, max uHom uParamHom} :=
+  letI := realization.parameterCategory
+  Cat.of (CoGrothendieck realization.transport)
+
+/-- The fibre inclusion as a functor into `totalCat`. -/
+def fibreInclusionFunctor (p : P) : realization.fibre p ⥤ realization.totalCat :=
+  realization.fibreInclusion p
+
+/-- The canonical realization of the symbolic family fibre over quoted arguments. -/
+def fibreRealization (p : P) {arguments : Array ParameterExpr}
+    (quotation : CategoryFamilyParameterQuotation schema arguments p) :
+    CategoryRealization.{uObj, uHom, uParamHom, uParamHom + 1}
+      (.familyApp identifier arguments) (realization.fibre p) where
+  familyFibre := some (.mk realization
+    (show CategoryFamilyFibreWitness (realization.fibre p) realization (arguments := arguments)
+      from { parameter := p, parameterQuotation := quotation, category_eq := rfl }))
+
+/-- The canonical realization of `FunctorExpr.familyFibreInclusion`. Registry validation
+requires a registered fibre inclusion to be exactly this term for the registered family
+realization. -/
+def fibreInclusionRealization (p : P) {arguments : Array ParameterExpr}
+    (quotation : CategoryFamilyParameterQuotation schema arguments p) :
+    FunctorRealization
+      (.familyFibreInclusion identifier arguments) (realization.fibre p) realization.totalCat
+      (realization.fibreInclusionFunctor p) where
+  sourceRealization := realization.fibreRealization p quotation
+  targetRealization := {}
+
+/-- The reindexing functor between fibres, as a functor of `Cat` objects. -/
+def reindexFunctor {p q : P} (φ : letI := realization.parameterCategory; p ⟶ q) :
+    realization.fibre q ⥤ realization.fibre p :=
+  realization.reindex φ
+
+/-- The canonical realization of `FunctorExpr.familyReindex` along a symbolic morphism
+`φ : p ⟶ q` between quoted parameters. -/
+def reindexRealization (morphism : ParameterMorphismId) {p q : P}
+    (φ : letI := realization.parameterCategory; p ⟶ q)
+    {source target : Array ParameterExpr}
+    (sourceQuotation : CategoryFamilyParameterQuotation schema source p)
+    (targetQuotation : CategoryFamilyParameterQuotation schema target q) :
+    FunctorRealization
+      (.familyReindex identifier morphism source target) (realization.fibre q)
+      (realization.fibre p) (realization.reindexFunctor φ) where
+  sourceRealization := realization.fibreRealization q targetQuotation
+  targetRealization := realization.fibreRealization p sourceQuotation
 end CategoryFamilyRealization
 
 end LeanCategories

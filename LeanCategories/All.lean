@@ -93,6 +93,7 @@ public import LeanCategories.ForMathlib.LocallyDiscreteStrongTrans
 public import LeanCategories.Lattices.Valued.ValueFibration
 public import LeanCategories.Catalogue.FamilyFibration
 public import LeanCategories.Modules.Total
+public import LeanCategories.Modules.FibrationRegistryProbes
 public import LeanCategories.Modules.Framed
 public import LeanCategories.Modules.Localization
 public import LeanCategories.Modules.Presented

@@ -8,6 +8,8 @@ namespace LeanCategories
 
 namespace CategoryId
 def modulesR : CategoryId := ⟨"cat.modules_r"⟩
+/-- The total category of the restriction-of-scalars module fibration. -/
+def modulesTotal : CategoryId := ⟨"cat.modules_total"⟩
 def finitelyGeneratedModules : CategoryId := ⟨"cat.finitelygeneratedmodules"⟩
 def finiteRankModules : CategoryId := ⟨"cat.finiterankmodules"⟩
 def freeModules : CategoryId := ⟨"cat.freemodules"⟩
@@ -42,6 +44,12 @@ def fromBasisFrame : FunctorId := ⟨"fun.coord.from_basis_frame"⟩
 def coordForget : FunctorId := ⟨"fun.coord.forget"⟩
 def genFrameForget : FunctorId := ⟨"fun.gen_frame.forget"⟩
 def basisFrameForget : FunctorId := ⟨"fun.basis_frame.forget"⟩
+/-- The fibre inclusion `ι_R : R-Mod ⥤ ∫ᶜ Mod`. -/
+def modulesFibreInclusion : FunctorId := ⟨"fun.modules.fibre_inclusion"⟩
+/-- Restriction of scalars `φ^* : S-Mod ⥤ R-Mod`, the reindexing of the module fibration. -/
+def modulesReindex : FunctorId := ⟨"fun.modules.reindex"⟩
+/-- The underlying-set functor `U : ∫ᶜ Mod ⥤ Sets` on the total category. -/
+def modulesUnderlying : FunctorId := ⟨"fun.modules.underlying"⟩
 end FunctorId
 
 end LeanCategories

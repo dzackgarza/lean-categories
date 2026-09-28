@@ -36,6 +36,12 @@ structure ParameterId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 
+/-- Stable identity of a morphism variable between symbolic parameters, e.g. the ring map
+`φ : R ⟶ S` along which a fibration is reindexed. -/
+structure ParameterMorphismId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
 /-- Stable identity of an operation on symbolic parameters. -/
 structure ParameterOperationId where
   raw : String
@@ -78,6 +84,7 @@ instance : Inhabited CategoryId := ⟨⟨""⟩⟩
 instance : Inhabited ClassifierId := ⟨⟨""⟩⟩
 instance : Inhabited CategoryFamilyId := ⟨⟨""⟩⟩
 instance : Inhabited ParameterId := ⟨⟨""⟩⟩
+instance : Inhabited ParameterMorphismId := ⟨⟨""⟩⟩
 instance : Inhabited ParameterOperationId := ⟨⟨""⟩⟩
 instance : Inhabited ParameterKindId := ⟨⟨""⟩⟩
 instance : Inhabited VarianceId := ⟨⟨""⟩⟩
@@ -94,6 +101,10 @@ def n : ParameterId := ⟨"n"⟩
 def i : ParameterId := ⟨"I"⟩
 def domain : ParameterId := ⟨"domain"⟩
 end ParameterId
+
+namespace ParameterMorphismId
+def phi : ParameterMorphismId := ⟨"phi"⟩
+end ParameterMorphismId
 
 namespace ParameterOperationId
 def opposite : ParameterOperationId := ⟨"parameter.opposite"⟩

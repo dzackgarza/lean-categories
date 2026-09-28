@@ -8,6 +8,7 @@ public import LeanCategories.Catalogue.Registry.Entry
 public import LeanCategories.Catalogue.Registry.Typed
 public import LeanCategories.CategoryTheory.OneCat.Classifier
 public import LeanCategories.Catalogue.Realization
+public import LeanCategories.Catalogue.FamilyFibration
 public import Lean.Data.Json
 public import Lean
 public meta import LeanCategories.Catalogue.Syntax
@@ -214,6 +215,7 @@ partial def CategoryExpr.isRegistered (state : RegistryState) : CategoryExpr →
   | .familyApp family args =>
       (state.categoryFamily? family).any fun entry =>
         CategoryFamilySchema.parameterArgsValid args entry.schema
+  | .familyTotal family => (state.categoryFamily? family).isSome
   | .classifierTotal classifier => (state.classifier? classifier).isSome
   | .refine base classifier =>
       base.isRegistered state &&
@@ -239,6 +241,13 @@ partial def FunctorExpr.referencesValid (state : RegistryState)
       match state.opaquePort? id with
       | some entry => denotesCategory source entry.source && denotesCategory target entry.target
       | none => false
+  | .familyFibreInclusion family args =>
+      (state.categoryFamily? family).any fun entry =>
+        CategoryFamilySchema.parameterArgsValid args entry.schema
+  | .familyReindex family _ sourceArgs targetArgs =>
+      (state.categoryFamily? family).any fun entry =>
+        CategoryFamilySchema.parameterArgsValid sourceArgs entry.schema &&
+          CategoryFamilySchema.parameterArgsValid targetArgs entry.schema
   | .comp left right => left.referencesValid state && right.referencesValid state
 
 /-- Validate the cospan references of a pullback category before it is persisted. -/
@@ -250,6 +259,7 @@ partial def CategoryExpr.referencesValid (state : RegistryState) : CategoryExpr 
       match state.categoryFamily? family with
       | some entry => CategoryFamilySchema.parameterArgsValid args entry.schema
       | none => false
+  | .familyTotal family => (state.categoryFamily? family).isSome
   | .refine base classifier =>
       base.referencesValid state &&
         (state.classifier? classifier).any fun entry =>
@@ -618,11 +628,42 @@ def validateRefinementEndpointRealization (state : RegistryState)
   unless refinementHostInChain state classifierEntry.host base do
     throwError "refinement classifier {classifier.raw} has no registered host ancestry"
 
+/-- A family-total endpoint must be the total category of the exact registered family
+realization (`CategoryFamilyRealization.totalCat`). -/
+def validateFamilyTotalEndpointRealization (state : RegistryState)
+    (family : CategoryFamilyId) (category realization : Expr) : MetaM Unit := do
+  let familyEntry ← match state.categoryFamily? family with
+    | some entry => pure entry
+    | none => throwError "family total {family.raw} has no registered family"
+  let realizationType ← withTransparency .all <| whnf (← inferType realization)
+  unless realizationType.isAppOf ``LeanCategories.CategoryRealization do
+    throwError "family total realization is not a CategoryRealization"
+  let realizationArgs := realizationType.getAppArgs
+  unless realizationArgs.size == 2 do
+    throwError "family total realization has malformed parameters"
+  let expression : CategoryExpr := .familyTotal family
+  unless ← withTransparency .all <| isDefEq (Lean.toExpr expression) realizationArgs[0]! do
+    throwError "family total realization has the wrong expression"
+  unless ← withTransparency .all <| isDefEq category realizationArgs[1]! do
+    throwError "family total realization has the wrong category"
+  let registeredRealization ← mkConstWithFreshMVarLevels familyEntry.realization
+  let registeredTotal ← withTransparency .all do
+    mkAppM ``LeanCategories.CategoryFamilyRealization.totalCat #[registeredRealization]
+  unless ← withTransparency .all <| isDefEq category registeredTotal do
+    throwError "family total {family.raw} is not the total category of its registered realization"
+  let familyFibre ← withTransparency .all do
+    mkAppM ``LeanCategories.CategoryRealization.familyFibre #[realization]
+  let familyFibre ← withTransparency .all <| whnf familyFibre
+  unless familyFibre.isAppOfArity ``Option.none 1 do
+    throwError "family total realization has a family fibre witness"
+
 def validateCategoryEndpointRealization (state : RegistryState) (expression : CategoryExpr)
     (category realization : Expr) : MetaM Unit :=
   match expression with
   | .classifierTotal classifier =>
       validateClassifierTotalEndpointRealization state classifier category realization
+  | .familyTotal family =>
+      validateFamilyTotalEndpointRealization state family category realization
   | _ => validateRegisteredCategoryEndpointRealization state expression category realization
 
 def validateRefinementDeclarationRealization (state : RegistryState)
@@ -755,6 +796,9 @@ def validateCategoryDeclarationRealization (state : RegistryState) (expression :
           realizationValue
     | .refine base classifier =>
         validateRefinementEndpointRealization state base classifier
+    | .familyTotal family =>
+        validateFamilyTotalEndpointRealization state family realizationArgs[1]!
+          realizationValue
     | .atom _ | .familyApp .. | .opaque _ => pure ()
     let familyFibre ← withTransparency .all do
       mkAppM ``LeanCategories.CategoryRealization.familyFibre #[mkAppN realizationConstant arguments]
@@ -836,6 +880,8 @@ inductive FunctorExpr.RegistrationKind
   | atomic
   | classifierForget (classifier : ClassifierId) (host : CategoryExpr)
   | opaquePort (port : OpaquePortId)
+  | familyFibreInclusion (family : CategoryFamilyId)
+  | familyReindex (family : CategoryFamilyId)
   | comp
 
 def FunctorExpr.registrationKind {source target : CategoryExpr} :
@@ -844,7 +890,28 @@ def FunctorExpr.registrationKind {source target : CategoryExpr} :
   | .atomic _ => .atomic
   | .classifierForget classifier host => .classifierForget classifier host
   | .opaquePort port => .opaquePort port
+  | .familyFibreInclusion family _ => .familyFibreInclusion family
+  | .familyReindex family _ _ _ => .familyReindex family
   | .comp _ _ => .comp
+
+/-- Require a registered fibre inclusion or reindexing to be exactly the canonical realization
+(`canonical`) built from the registered family realization. -/
+def validateFamilyFunctorRealization (state : RegistryState) (family : CategoryFamilyId)
+    (canonical : Name) (realizationValue : Expr) : MetaM Unit := do
+  let familyEntry ← match state.categoryFamily? family with
+    | some entry => pure entry
+    | none => throwError "family functor {family.raw} has no registered family"
+  let canonicalConstant ← mkConstWithFreshMVarLevels canonical
+  let (canonicalArgs, _, _) ← forallMetaTelescopeReducing (← inferType canonicalConstant)
+  unless canonicalArgs.size > 3 do
+    throwError "canonical family functor realization {canonical} has malformed parameters"
+  let canonicalValue := mkAppN canonicalConstant canonicalArgs
+  unless ← withTransparency .all <| isDefEq realizationValue canonicalValue do
+    throwError
+      "family functor {family.raw} is not the canonical realization {canonical} of its family"
+  let registeredRealization ← mkConstWithFreshMVarLevels familyEntry.realization
+  unless ← withTransparency .all <| isDefEq canonicalArgs[3]! registeredRealization do
+    throwError "family functor {family.raw} is not built from its registered family realization"
 
 def validateFunctorDeclarationRealization (state : RegistryState) {source target : CategoryExpr}
     (expression : FunctorExpr source target)
@@ -898,6 +965,12 @@ def validateFunctorDeclarationRealization (state : RegistryState) {source target
           throwError "identity functor declaration is not the endpoint identity"
     | .atomic => pure ()
     | .comp => pure ()
+    | .familyFibreInclusion family =>
+        validateFamilyFunctorRealization state family
+          ``LeanCategories.CategoryFamilyRealization.fibreInclusionRealization realizationValue
+    | .familyReindex family =>
+        validateFamilyFunctorRealization state family
+          ``LeanCategories.CategoryFamilyRealization.reindexRealization realizationValue
     | .classifierForget classifier host => do
         let classifierEntry ← match state.classifier? classifier with
           | some entry => pure entry
@@ -1319,6 +1392,7 @@ inductive RegistryManifestCategoryExpr
   | classifierTotal (classifier : String)
   | refine (base : RegistryManifestCategoryExpr) (classifier : String)
   | opaque (id : String)
+  | familyTotal (family : String)
   deriving DecidableEq, Repr
 
 private def registryManifestCategoryExprJson : RegistryManifestCategoryExpr → Json
@@ -1331,6 +1405,7 @@ private def registryManifestCategoryExprJson : RegistryManifestCategoryExpr → 
       ("tag", "refine"), ("base", registryManifestCategoryExprJson base),
       ("classifier", classifier)]
   | .opaque id => registryObject [("tag", "opaque"), ("id", id)]
+  | .familyTotal family => registryObject [("tag", "familyTotal"), ("family", family)]
 
 instance : ToJson RegistryManifestCategoryExpr where
   toJson := registryManifestCategoryExprJson
@@ -1344,6 +1419,7 @@ private partial def registryManifestCategoryExprOfJson : Json → Except String 
     | "classifierTotal" => .classifierTotal <$> j.getObjValAs? String "classifier"
     | "refine" => .refine <$> registryManifestCategoryExprOfJson (← j.getObjValAs? Json "base") <*> j.getObjValAs? String "classifier"
     | "opaque" => .opaque <$> j.getObjValAs? String "id"
+    | "familyTotal" => .familyTotal <$> j.getObjValAs? String "family"
     | _ => throw s!"unknown category expression tag: {tag}"
 
 instance : FromJson RegistryManifestCategoryExpr where
@@ -1354,6 +1430,9 @@ inductive RegistryManifestFunctorExpr
   | atomic (id : String)
   | classifierForget (classifier : String) (host : RegistryManifestCategoryExpr)
   | opaquePort (id : String)
+  | familyFibreInclusion (family : String) (args : Array RegistryManifestParameterExpr)
+  | familyReindex (family morphism : String)
+      (source target : Array RegistryManifestParameterExpr)
   | comp (left right : RegistryManifestFunctorExpr)
   deriving DecidableEq, Repr
 
@@ -1363,6 +1442,11 @@ private partial def registryManifestFunctorExprJson : RegistryManifestFunctorExp
   | .classifierForget classifier host => registryObject [
       ("tag", "classifierForget"), ("classifier", classifier), ("host", toJson host)]
   | .opaquePort id => registryObject [("tag", "opaquePort"), ("id", id)]
+  | .familyFibreInclusion family args => registryObject [
+      ("tag", "familyFibreInclusion"), ("family", family), ("args", toJson args)]
+  | .familyReindex family morphism source target => registryObject [
+      ("tag", "familyReindex"), ("family", family), ("morphism", morphism),
+      ("source", toJson source), ("target", toJson target)]
   | .comp left right => registryObject [
       ("tag", "comp"), ("left", registryManifestFunctorExprJson left),
       ("right", registryManifestFunctorExprJson right)]
@@ -1379,6 +1463,11 @@ private partial def registryManifestFunctorExprOfJson : Json → Except String R
     | "classifierForget" =>
         .classifierForget <$> j.getObjValAs? String "classifier" <*> j.getObjValAs? _ "host"
     | "opaquePort" => .opaquePort <$> j.getObjValAs? String "id"
+    | "familyFibreInclusion" =>
+        .familyFibreInclusion <$> j.getObjValAs? String "family" <*> j.getObjValAs? _ "args"
+    | "familyReindex" =>
+        .familyReindex <$> j.getObjValAs? String "family" <*> j.getObjValAs? String "morphism"
+          <*> j.getObjValAs? _ "source" <*> j.getObjValAs? _ "target"
     | "comp" => .comp <$> (registryManifestFunctorExprOfJson (← j.getObjValAs? _ "left")) <*>
         (registryManifestFunctorExprOfJson (← j.getObjValAs? _ "right"))
     | _ => throw s!"unknown functor expression tag: {tag}"
@@ -1461,6 +1550,7 @@ private def registryManifestCategoryExpr : CategoryExpr → RegistryManifestCate
   | .classifierTotal classifier => .classifierTotal classifier.raw
   | .refine base classifier => .refine (registryManifestCategoryExpr base) classifier.raw
   | .opaque id => .opaque id.raw
+  | .familyTotal family => .familyTotal family.raw
 
 private def registryManifestFunctorExpr {source target : CategoryExpr} :
     FunctorExpr source target → RegistryManifestFunctorExpr
@@ -1469,6 +1559,11 @@ private def registryManifestFunctorExpr {source target : CategoryExpr} :
   | .classifierForget classifier host =>
       .classifierForget classifier.raw (registryManifestCategoryExpr host)
   | .opaquePort id => .opaquePort id.raw
+  | .familyFibreInclusion family args =>
+      .familyFibreInclusion family.raw (args.map registryManifestParameterExpr)
+  | .familyReindex family morphism source target =>
+      .familyReindex family.raw morphism.raw (source.map registryManifestParameterExpr)
+        (target.map registryManifestParameterExpr)
   | .comp left right => .comp (registryManifestFunctorExpr left) (registryManifestFunctorExpr right)
 
 private def registryManifestSchema : CategoryFamilySchema → String

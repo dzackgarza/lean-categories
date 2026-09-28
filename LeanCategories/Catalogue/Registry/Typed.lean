@@ -83,6 +83,7 @@ namespace CategoryPrimitive
 def ofExpr : (expression : CategoryExpr) → CategoryPrimitive expression
   | .atom id => .atom id
   | .familyApp family arguments => .familyApp family arguments
+  | .familyTotal family => .familyTotal family
   | .classifierTotal classifier => .classifierTotal classifier
   | .refine base classifier => .refine base classifier
   | .opaque id => .opaque id

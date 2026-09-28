@@ -103,6 +103,7 @@ deriving instance Lean.ToExpr for CategoryId
 deriving instance Lean.ToExpr for ClassifierId
 deriving instance Lean.ToExpr for CategoryFamilyId
 deriving instance Lean.ToExpr for ParameterId
+deriving instance Lean.ToExpr for ParameterMorphismId
 deriving instance Lean.ToExpr for ParameterOperationId
 deriving instance Lean.ToExpr for ParameterKindId
 deriving instance Lean.ToExpr for VarianceId
@@ -244,7 +245,12 @@ end CategoryFamilySchema
 /-- Registered symbolic category language. -/
 inductive CategoryExpr
   | atom (id : CategoryId)
+  /-- The fibre over the parameter object `args` of the fibration a registered family
+  denotes (CC-FIB). -/
   | familyApp (family : CategoryFamilyId) (args : Array ParameterExpr)
+  /-- The total category of the fibration a registered family denotes: the Grothendieck
+  construction of its transport (`CategoryFamilyRealization.total`). -/
+  | familyTotal (family : CategoryFamilyId)
   | classifierTotal (classifier : ClassifierId)
   | refine (base : CategoryExpr) (classifier : ClassifierId)
   | opaque (id : CategoryId)
@@ -260,6 +266,15 @@ inductive FunctorExpr : CategoryExpr → CategoryExpr → Type
   | classifierForget (classifier : ClassifierId) (host : CategoryExpr) :
       FunctorExpr (.classifierTotal classifier) host
   | opaquePort {source target : CategoryExpr} (port : OpaquePortId) : FunctorExpr source target
+  /-- The fibre inclusion `ι_p : fibre p ⥤ total` of a registered family's fibration
+  (`CategoryFamilyRealization.fibreInclusion`). -/
+  | familyFibreInclusion (family : CategoryFamilyId) (args : Array ParameterExpr) :
+      FunctorExpr (.familyApp family args) (.familyTotal family)
+  /-- Reindexing `φ^* : fibre q ⥤ fibre p` of a registered family's fibration along a base
+  morphism `φ : p ⟶ q` (`CategoryFamilyRealization.reindex`). -/
+  | familyReindex (family : CategoryFamilyId) (morphism : ParameterMorphismId)
+      (source target : Array ParameterExpr) :
+      FunctorExpr (.familyApp family target) (.familyApp family source)
   | comp {source middle target : CategoryExpr}
       (left : FunctorExpr source middle) (right : FunctorExpr middle target) :
       FunctorExpr source target
@@ -295,6 +310,7 @@ partial def CategoryExpr.syntacticEq : CategoryExpr → CategoryExpr → Bool
   | .atom left, .atom right => left == right
   | .familyApp leftFamily leftArgs, .familyApp rightFamily rightArgs =>
       leftFamily == rightFamily && leftArgs == rightArgs
+  | .familyTotal left, .familyTotal right => left == right
   | .classifierTotal left, .classifierTotal right => left == right
   | .refine leftBase leftClassifier, .refine rightBase rightClassifier =>
       leftBase.syntacticEq rightBase && leftClassifier == rightClassifier

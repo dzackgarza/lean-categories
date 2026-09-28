@@ -35,6 +35,7 @@ inductive CategoryPrimitive : CategoryExpr → Type
   | atom (id : CategoryId) : CategoryPrimitive (.atom id)
   | familyApp (family : CategoryFamilyId) (arguments : Array ParameterExpr) :
       CategoryPrimitive (.familyApp family arguments)
+  | familyTotal (family : CategoryFamilyId) : CategoryPrimitive (.familyTotal family)
   | classifierTotal (classifier : ClassifierId) :
       CategoryPrimitive (.classifierTotal classifier)
   | refine (base : CategoryExpr) (classifier : ClassifierId) :
@@ -51,6 +52,11 @@ inductive FunctorPrimitive :
   | opaquePort {source target : CategoryExpr} (port : OpaquePortId) :
       FunctorPrimitive
         (FunctorExpr.opaquePort (source := source) (target := target) port)
+  | familyFibreInclusion (family : CategoryFamilyId) (arguments : Array ParameterExpr) :
+      FunctorPrimitive (.familyFibreInclusion family arguments)
+  | familyReindex (family : CategoryFamilyId) (morphism : ParameterMorphismId)
+      (source target : Array ParameterExpr) :
+      FunctorPrimitive (.familyReindex family morphism source target)
 
 /-- The non-composite constructors of the typed natural-transformation syntax. -/
 inductive NatTransPrimitive {source target : CategoryExpr}
@@ -124,6 +130,7 @@ noncomputable def evalCategory (selected : SelectedRealization) :
     (expression : CategoryExpr) → Option (EvaluatedCategory.{uObj, uHom} expression)
   | .atom id => selected.category (.atom id)
   | .familyApp family arguments => selected.category (.familyApp family arguments)
+  | .familyTotal family => selected.category (.familyTotal family)
   | .classifierTotal classifier => selected.category (.classifierTotal classifier)
   | .refine base classifier => selected.category (.refine base classifier)
   | .opaque id => selected.category (.opaque id)
@@ -176,6 +183,15 @@ noncomputable def evalFunctor (selected : SelectedRealization)
       match selected.functor (source := source) (target := target)
           (expression := .opaquePort port)
           (FunctorPrimitive.opaquePort (source := source) (target := target) port) with
+      | some candidate => alignFunctor selected candidate
+      | none => none
+  | .familyFibreInclusion family arguments =>
+      match selected.functor (FunctorPrimitive.familyFibreInclusion family arguments) with
+      | some candidate => alignFunctor selected candidate
+      | none => none
+  | .familyReindex family morphism source target =>
+      match selected.functor
+          (FunctorPrimitive.familyReindex family morphism source target) with
       | some candidate => alignFunctor selected candidate
       | none => none
   | .comp left right =>
