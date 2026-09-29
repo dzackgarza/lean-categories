@@ -19,6 +19,7 @@ public meta import LeanCategories.Catalogue.Semantics.Foundation.Catalogue
 # Power sets, truth values and orders (SPEC.md, "Finite sets", "Set comprehensions")
 
 * `Ω = Prop`, the truth values of `Sets` (its subobject classifier), with `⊤ : 1 → Ω`.
+* Equality `= : X × X → Ω`, the characteristic map of the diagonal `X ↪ X × X`.
 * `𝒫(X) = Set X`, the power object of `X` (Mac Lane–Moerdijk, *Sheaves in Geometry and Logic*,
   IV.1): membership `X × 𝒫 X → Ω`, the transpose of a predicate `X → Ω` (the subset it
   classifies), the extent of a subset (the set of its members), `∅`, singletons, the terminal maps
@@ -102,6 +103,10 @@ abbrev powerSet (X : Type) : SetsCat.{0} := Set X
 /-- Membership `X × 𝒫 X → Ω`. -/
 def member (X : Type) : (X × powerSet X : SetsCat.{0}) ⟶ omega :=
   TypeCat.ofHom fun p => p.1 ∈ p.2
+
+/-- Equality `X × X → Ω`, the characteristic map of the diagonal. -/
+def equality (X : Type) : (X × X : SetsCat.{0}) ⟶ omega :=
+  TypeCat.ofHom fun p => p.1 = p.2
 
 /-- The subset a predicate `X → Ω` classifies, as an element of `𝒫 X`. -/
 def transpose (X : Type) (P : (X : SetsCat.{0}) ⟶ omega) : fin 1 ⟶ powerSet X :=
@@ -280,5 +285,9 @@ normalized_registry .operation
   { id := ⟨"op.linear_orders.lt"⟩, category := CategoryId.linearOrders, name := "<"
     arity := 2, declaration := `CasCatalogue.Foundation.PowerSets.lt
     result := some ⟨"obj.sets.truth_values"⟩ }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.equality"⟩, category := CategoryId.sets, name := "="
+    declaration := `CasCatalogue.Foundation.PowerSets.equality }
 
 end CasCatalogue
