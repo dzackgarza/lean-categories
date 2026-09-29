@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Catalogue.Semantics.Foundation.PowerSets
 public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.Data.Nat.Prime.Defs
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.Foundation.Catalogue
 
@@ -15,7 +16,8 @@ public meta import LeanCategories.Catalogue.Semantics.Foundation.Catalogue
 # Semirings, and `ℕ` (SPEC.md, "Set comprehensions": `{2n | n ∈ ℕ}`)
 
 `Semirings` (Mathlib `SemiRingCat`) with its underlying sets; `ℕ` is refined by the semiring `ℕ`,
-whose operations are `+`, `·` and `^k`. The rings `ℤ, ℚ, ℝ, ℂ` are refined in `Rings` only, so each
+whose operations are `+`, `·` and `^k`; primality `ℕ → Ω` is a predicate on its elements (Mathlib
+`Nat.Prime`). The rings `ℤ, ℚ, ℝ, ℂ` are refined in `Rings` only, so each
 operation on their elements has one owner.
 -/
 
@@ -74,6 +76,9 @@ def pow (R : Semirings.{0}) (k : ℕ) :
 
 /-- `ℕ` as a semiring; its underlying set is `ℕ`. -/
 abbrev semiringNaturals : Semirings.{0} := SemiRingCat.of ℕ
+/-- `n ↦ n is prime`, `ℕ → Ω`. -/
+def isPrime : naturals ⟶ omega := TypeCat.ofHom fun n => Nat.Prime n
+
 def semiringNaturalsIdentification : (naturals : SetsCat.{0}) ≅ naturals := Iso.refl _
 
 end Algebra.Semirings
@@ -108,5 +113,9 @@ normalized_registry .operation
 normalized_registry .operation
   { id := ⟨"op.semirings.pow"⟩, category := CategoryId.semirings, name := "^", arity := 1
     numerals := 1, declaration := `CasCatalogue.Algebra.Semirings.pow }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.nat_is_prime"⟩, category := CategoryId.sets, name := "is_prime"
+    declaration := `CasCatalogue.Algebra.Semirings.isPrime }
 
 end CasCatalogue
