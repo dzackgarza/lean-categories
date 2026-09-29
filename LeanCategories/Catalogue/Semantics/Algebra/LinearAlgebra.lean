@@ -5,6 +5,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Catalogue.Semantics.Algebra.Polynomials
+public import LeanCategories.Catalogue.Semantics.Foundation.PartialMaps
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import Mathlib.LinearAlgebra.Matrix.Rank
 public import Mathlib.LinearAlgebra.Dimension.Finrank
@@ -22,6 +24,8 @@ public meta import LeanCategories.Catalogue.Registry.Semantic
   `rows : (Kⁿ)ⁿ → Matₙ(K)` (Mathlib `Matrix.of`); a matrix is applied to vectors,
   `Matₙ(K) × Kⁿ → Kⁿ` (Mathlib `Matrix.mulVec`).
 * `companion_matrix : K[x] → Matₙ(K)`, the companion matrix of `xⁿ + Σ_{i<n} pᵢ xⁱ`.
+* `⁻¹ : Matₙ(K) → Matₙ(K)⊥`, the inverse, defined when `det M` is a unit (Mathlib
+  `Matrix.nonsing_inv`, whose value off that domain is not an inverse and is not used).
 * `det`, `trace : Matₙ(K) → K`, `rank : Matₙ(K) → ℕ`, `charpoly : Matₙ(K) → K[x]`, and
   `ker : Matₙ(K) → 𝒫(Kⁿ)`, `{v | M v = 0}`.
 * Over a field `K`: `span : 𝒫(Kⁿ) → 𝒫(Kⁿ)` (the subspace a set spans, Mathlib `Submodule.span`)
@@ -85,6 +89,12 @@ def companion (n : ℕ) (K : Type) [CommRing K] : polynomials K ⟶ matrices n K
   TypeCat.ofHom fun p => Matrix.of fun i j =>
     if j.val + 1 = n then -p.coeff i.val else if i.val = j.val + 1 then 1 else 0
 
+open Classical in
+/-- `M⁻¹`, defined when `M` is invertible (`det M` a unit). -/
+noncomputable def inverse (n : ℕ) (K : Type) [CommRing K] :
+    matrices n K ⟶ CasCatalogue.Foundation.PartialMaps.partialValues (Matrix (Fin n) (Fin n) K) :=
+  TypeCat.ofHom fun M => if IsUnit M.det then some M⁻¹ else none
+
 /-- The kernel `{v | M v = 0}`. -/
 def ker (n : ℕ) (K : Type) [CommRing K] : matrices n K ⟶ powerSet (Fin n → K) :=
   TypeCat.ofHom fun M => {v | M.mulVec v = 0}
@@ -146,6 +156,10 @@ normalized_registry .morphism
 normalized_registry .morphism
   { id := ⟨"mor.sets.companion_matrix"⟩, category := CategoryId.sets, name := "companion_matrix"
     declaration := `CasCatalogue.Algebra.LinearAlgebra.companion }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.matrix_inverse"⟩, category := CategoryId.sets, name := "⁻¹"
+    declaration := `CasCatalogue.Algebra.LinearAlgebra.inverse }
 
 normalized_registry .morphism
   { id := ⟨"mor.sets.matrix_ker"⟩, category := CategoryId.sets, name := "ker"
