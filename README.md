@@ -37,8 +37,8 @@ families. It also owns their registration as the language's semantics.
 
 `lean-cas-dsl` requires this package and derives the language from a pinned release. It owns
 resolution, realizations over Sage, GAP, Julia and other engines, the leaf API and the notebook,
-and it owns no mathematics. Its semantic registry (`CasCatalogue/Semantics`) is transitional and
-moves here (its plan nodes `cc-sem-upstream` and `cc-sem-derive`). The contract is
+and it owns no mathematics. The semantic registry it reads, the catalogue, is here
+(`LeanCategories/Catalogue/`, namespace `CasCatalogue`). The contract is
 [`lean-cas-dsl/specs/architecture.md`](https://github.com/dzackgarza/lean-cas-dsl/blob/main/specs/architecture.md).
 
 The support directories describe the same mathematical library. They do not define a

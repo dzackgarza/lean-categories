@@ -172,5 +172,6 @@ public import LeanCategories.Schemes.OverRationals
 public import LeanCategories.Modules.Mathlib
 public import LeanCategories.Modules.Graded
 public import LeanCategories.Exceptional.Mathlib
+public import LeanCategories.Catalogue
 
 @[expose] public section

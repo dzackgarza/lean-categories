@@ -33,10 +33,16 @@ owns the separation of concerns. This repository's part in it:
   identifies them. Two routes are identified only by a coherence cell, never by precedence.
 * **Monotone growth.** A new generic operation or structural fact is stated at its true generality,
   so that every object it applies to downstream acquires it on re-pin, with no leaf edit.
-* **The semantic registry comes here.** Which categories, structural functors, operations and
-  coherences constitute the language's semantics is mathematics. `lean-cas-dsl`'s local registry
-  moves here as a proof-carrying registry (`cc-sem-upstream`), and `lean-cas-dsl` then only reads
-  its projection (`cc-sem-derive`).
+* **The semantic registry lives here.** Which categories, structural functors, operations and
+  coherences constitute the language's semantics is mathematics. The catalogue is
+  `LeanCategories/Catalogue/` (namespace `CasCatalogue`):
+  - the symbolic calculus (`Syntax`) and the realization witnesses;
+  - the schema, validators and the `normalized_registry` command (`Registry/Semantic.lean`), which
+    refuses every module outside `LeanCategories`;
+  - the rows (`Semantics/`).
+
+  `lean-cas-dsl` reads it at a pinned revision and adds only realizations. A new semantic row is
+  written here, released, and re-pinned downstream.
 * **Corrections flow down, never up.** A downstream failure (a leaf that cannot compute, a failing
   acceptance assertion) is never a reason to change a definition here. Only a mathematical error
   in this repository is. Such a correction is released, and downstream re-pins and updates the
