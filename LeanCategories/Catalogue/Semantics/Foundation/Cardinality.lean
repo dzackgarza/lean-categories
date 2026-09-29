@@ -60,10 +60,27 @@ noncomputable def setsCardinalityRealization :
       setsCardinality :=
   { sourceRealization := coreSetsRealization, targetRealization := cardinalsRealization }
 
+/-- A cardinal as the language writes it: a numeral or `ℵ₀`. -/
+inductive CardinalLiteral
+  | finite (n : ℕ)
+  | aleph0
+  deriving DecidableEq, Repr
+
+/-- Numerals are finite cardinals. -/
+instance (n : ℕ) : OfNat CardinalLiteral n := ⟨.finite n⟩
+
+/-- `ℵ₀`, as the language spells it. -/
+abbrev CardinalLiteral.«ℵ₀» : CardinalLiteral := .aleph0
+
+/-- The cardinal a literal denotes, an object of `Card`. -/
+noncomputable def CardinalLiteral.denote : CardinalLiteral → cardinalsCategory.{0}
+  | .finite n => ⟨n⟩
+  | .aleph0 => ⟨Cardinal.aleph0⟩
+
 end Foundation.Cardinality
 
 normalized_registry .category
-  { id := CategoryId.cardinals,
+  { id := CategoryId.cardinals, name := "Card",
     declaration := `CasCatalogue.Foundation.Cardinality.cardinalsCategory
     expression := Foundation.Cardinality.Cardinals
     realization := `CasCatalogue.Foundation.Cardinality.cardinalsRealization }
@@ -73,6 +90,11 @@ normalized_registry .functor
     declaration := `CasCatalogue.Foundation.Cardinality.setsCardinality
     realization := `CasCatalogue.Foundation.Cardinality.setsCardinalityRealization
     expression := Foundation.Cardinality.SetsCardinalityExpr }
+normalized_registry .literal
+  { id := ⟨"lit.cardinals"⟩, category := CategoryId.cardinals
+    type := `CasCatalogue.Foundation.Cardinality.CardinalLiteral
+    denotation := `CasCatalogue.Foundation.Cardinality.CardinalLiteral.denote }
+
 normalized_registry .method
   { id := ⟨"meth.cardinality"⟩, name := "cardinality", owner := Foundation.Sets
     functor := FunctorId.setsCardinality, shape := .isoInvariant }

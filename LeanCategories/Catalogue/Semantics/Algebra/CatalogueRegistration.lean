@@ -126,7 +126,7 @@ normalized_registry .category
     expression := Algebra.Catalogue.Magmas.Monoids
     realization := `CasCatalogue.Algebra.CatalogueRegistration.monoidsRealization}
 normalized_registry .category
-  { id := CategoryId.groups,
+  { id := CategoryId.groups, name := "Groups",
     declaration := `LeanCategories.Algebra.Groups
     expression := Algebra.Catalogue.Magmas.Groups
     realization := `CasCatalogue.Algebra.CatalogueRegistration.groupsRealization}

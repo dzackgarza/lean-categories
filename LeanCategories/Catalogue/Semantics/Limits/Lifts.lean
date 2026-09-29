@@ -51,7 +51,7 @@ noncomputable def finiteSetsCreatePullbacks :
 end Limits.Lifts
 
 normalized_registry .category
-  { id := CategoryId.finiteSets
+  { id := CategoryId.finiteSets, name := "FiniteSets"
     declaration := `LeanCategories.Foundation.Mathlib.FiniteSets
     expression := .classifierTotal ClassifierId.setsFinite
     realization := `CasCatalogue.Limits.Lifts.finiteSetsRealization }

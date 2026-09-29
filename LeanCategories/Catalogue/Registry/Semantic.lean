@@ -57,6 +57,7 @@ inductive SemanticEntry
   | limit (e : LimitEntry)
   | adjunction (e : AdjunctionEntry)
   | object (e : ObjectEntry)
+  | literal (e : LiteralEntry)
   deriving Repr
 
 /-- Stable identifier represented by a heterogeneous registry entry. -/
@@ -75,6 +76,7 @@ def SemanticEntry.stableId : SemanticEntry → String
   | .limit e => e.id.raw
   | .adjunction e => e.id.raw
   | .object e => e.id.raw
+  | .literal e => e.id.raw
 
 /-- Lean declarations that must resolve before this row can be persisted. -/
 def SemanticEntry.declarations : SemanticEntry → Array Name
@@ -95,6 +97,7 @@ def SemanticEntry.declarations : SemanticEntry → Array Name
   | .limit e => #[e.declaration]
   | .adjunction e => #[e.declaration]
   | .object e => #[e.declaration]
+  | .literal e => #[e.type, e.denotation]
 
 structure SemanticState where
   categories : Array NamedCategoryEntry := #[]
@@ -111,6 +114,7 @@ structure SemanticState where
   limits : Array LimitEntry := #[]
   adjunctions : Array AdjunctionEntry := #[]
   objects : Array ObjectEntry := #[]
+  literals : Array LiteralEntry := #[]
   deriving Inhabited
 
 /-- Registered category-constructor lookup by stable ID. -/
@@ -363,6 +367,7 @@ private def SemanticState.apply : SemanticState → SemanticEntry → SemanticSt
   | s, .limit e => { s with limits := s.limits.push e }
   | s, .adjunction e => { s with adjunctions := s.adjunctions.push e }
   | s, .object e => { s with objects := s.objects.push e }
+  | s, .literal e => { s with literals := s.literals.push e }
 
 def SemanticState.entries (state : SemanticState) : List SemanticEntry :=
   state.categories.toList.map SemanticEntry.category ++
@@ -378,7 +383,8 @@ def SemanticState.entries (state : SemanticState) : List SemanticEntry :=
     state.cells.toList.map SemanticEntry.cell ++
     state.limits.toList.map SemanticEntry.limit ++
     state.adjunctions.toList.map SemanticEntry.adjunction ++
-    state.objects.toList.map SemanticEntry.object
+    state.objects.toList.map SemanticEntry.object ++
+    state.literals.toList.map SemanticEntry.literal
 
 def semanticEntryPairAllowed : SemanticEntry → SemanticEntry → Bool
   | .category category, right =>
@@ -1815,10 +1821,27 @@ category. -/
 def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
   let some category := state.categories.find? (·.id == e.category)
     | throwError "object {e.id.raw} names an unregistered category {e.category.raw}"
+  if e.name.isEmpty then throwError "object {e.id.raw} has no surface name"
+  if state.objects.any fun o => o.category == e.category && o.name == e.name then
+    throwError "object {e.id.raw}: {e.category.raw} already has an object named {e.name}"
   let declaration ← mkConstWithFreshMVarLevels e.declaration
   let (_, _, type) ← forallMetaTelescopeReducing (← inferType declaration)
   unless ← withTransparency .all <| isDefEq type (← categoryCarrierInstance category) do
     throwError "object {e.id.raw}: {e.declaration} does not return an object of {e.category.raw}"
+
+/-- A literal row's `denotation` sends its literal `type`, which has decidable equality, to the
+objects of its registered category; one literal form per category. -/
+def validateLiteral (state : SemanticState) (e : LiteralEntry) : MetaM Unit := do
+  let some category := state.categories.find? (·.id == e.category)
+    | throwError "literal {e.id.raw} names an unregistered category {e.category.raw}"
+  if state.literals.any (·.category == e.category) then
+    throwError "literal {e.id.raw}: {e.category.raw} already has a literal form"
+  let type := mkConst e.type
+  discard <| synthInstance (← mkAppM ``DecidableEq #[type])
+  let denotation ← mkConstWithFreshMVarLevels e.denotation
+  let expected ← mkArrow type (← categoryCarrierInstance category)
+  unless ← withTransparency .all <| isDefEq (← inferType denotation) expected do
+    throwError "literal {e.id.raw}: {e.denotation} is not a map {e.type} → {e.category.raw}"
 
 /-- An adjunction row names a Mathlib `Adjunction L R` between exactly its two registered
 functors. -/
@@ -1928,6 +1951,9 @@ def validateSemanticEntryDeclaration (entry : SemanticEntry) : MetaM Unit := do
           throwError "non-refinement category {e.id.raw} carries a refinement realization"
       | _, none => pure ()
       validateNotPropertyAtom state e
+      unless e.name.isEmpty do
+        if state.categories.any (·.name == e.name) then
+          throwError "category {e.id.raw}: a category is already named {e.name}"
   | .categoryFamily e => do
       ensureCategoryFamilyRealization e.id e.schema e.realization
       validateCategoryFamilyTransportDecl e.id e.schema e.realization e.transport
@@ -1963,6 +1989,7 @@ def validateSemanticEntryDeclaration (entry : SemanticEntry) : MetaM Unit := do
   | .limit e => validateLimit state e
   | .adjunction e => validateAdjunction state e
   | .object e => validateObject state e
+  | .literal e => validateLiteral state e
   | .constructor e => do
       let semanticsConstant ← mkConstWithFreshMVarLevels e.semantics
       let (_, binderInfos, result) ←

@@ -118,6 +118,20 @@ structure ObjectEntry where
   id : ObjectId
   category : CategoryId
   declaration : Lean.Name
+  /-- Its surface name in the language (`ℤ`, `Fin`, `ZMod`), applied to its parameters. Names are
+  unique within a category. -/
+  name : String
+  deriving Repr
+
+/-- A literal form of a registered category (CC-CALC): `type` is a Lean type of literal values with
+decidable equality, and `denotation : type → C` sends each to the object of the category
+`category` it denotes, e.g. `n ↦ n` and `ℵ₀ ↦ ℵ₀` in `Card`. A statement comparing a computed
+value with a literal compares it with this denotation. -/
+structure LiteralEntry where
+  id : LiteralId
+  category : CategoryId
+  type : Lean.Name
+  denotation : Lean.Name
   deriving Repr
 
 /-- A cell row (CC-CALC, CC-COHERE): a natural transformation `declaration : L ⟶ R` (or, when `invertible`,
@@ -175,6 +189,9 @@ structure NamedCategoryEntry where
   realization : Lean.Name
   /-- Typed pullback witness required when the expression is a refinement. -/
   refinementRealization : Option Lean.Name := none
+  /-- Its surface name in the language (`Sets`, `Groups`), or empty if the language does not name
+  it. Names are unique among categories. -/
+  name : String := ""
   deriving Repr, Inhabited
 
 /--

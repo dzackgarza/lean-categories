@@ -48,7 +48,7 @@ noncomputable def setsIdentityRealization :
   { sourceRealization := setsRealization, targetRealization := setsRealization }
 
 normalized_registry .category
-  { id := CategoryId.sets
+  { id := CategoryId.sets, name := "Sets"
     declaration := `LeanCategories.Foundation.Mathlib.Sets
     expression := Foundation.Sets
     realization := `CasCatalogue.Foundation.CatalogueRegistration.setsRealization}

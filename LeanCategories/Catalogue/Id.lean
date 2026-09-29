@@ -98,6 +98,11 @@ structure ObjectId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 
+/-- Stable id of a literal form of a category, e.g. `lit.cardinals`. -/
+structure LiteralId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
 /-- Stable functor id. -/
 structure FunctorId where
   raw : String
@@ -129,6 +134,7 @@ instance : Inhabited LiftId := ⟨⟨""⟩⟩
 instance : Inhabited LimitId := ⟨⟨""⟩⟩
 instance : Inhabited AdjunctionId := ⟨⟨""⟩⟩
 instance : Inhabited ObjectId := ⟨⟨""⟩⟩
+instance : Inhabited LiteralId := ⟨⟨""⟩⟩
 instance : Inhabited ClassifierId := ⟨⟨""⟩⟩
 instance : Inhabited CategoryFamilyId := ⟨⟨""⟩⟩
 instance : Inhabited ParameterId := ⟨⟨""⟩⟩

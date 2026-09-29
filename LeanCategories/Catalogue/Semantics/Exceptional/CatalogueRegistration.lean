@@ -115,7 +115,7 @@ normalized_registry .opaque
     reason := "exceptional combinatorial host"}
 
 normalized_registry .category
-  { id := CategoryId.rings,
+  { id := CategoryId.rings, name := "Rings",
     declaration := `LeanCategories.Algebra.Rings
     expression := Algebra.Catalogue.Rings.Rings
     realization := `CasCatalogue.Algebra.CatalogueRegistration.ringsRealization}
