@@ -114,13 +114,26 @@ structure AdjunctionEntry where
 function from typed parameters to the objects of the registered category `category`, e.g.
 `n ↦ ℤ/n` in `Sets`. Its parameters are typed terms, never strings. A leaf presents its values by
 handles, each with its identification; it never names the object. -/
+structure ObjectRefinement where
+  /-- The object this one refines, in the target category of `edge`. -/
+  base : ObjectId
+  /-- The structural functor forgetting the refinement. -/
+  edge : EdgeRef
+  /-- `∀ params, edge.obj (declaration params) ≅ base.declaration params`. -/
+  identification : Lean.Name
+  deriving Repr
+
 structure ObjectEntry where
   id : ObjectId
   category : CategoryId
   declaration : Lean.Name
-  /-- Its surface name in the language (`ℤ`, `Fin`, `ZMod`), applied to its parameters. Names are
-  unique within a category. -/
+  /-- Its surface name in the language (`ℤ`, `Fin`, `ZMod`), applied to its parameters. An
+  unrefined object's name is unique among unrefined objects; a refinement bears its base's name,
+  and is named in the language by `X in C`. -/
   name : String
+  /-- When this object is another one with more structure: `Fin(n)` in `FiniteSets` refines
+  `Fin(n)` in `Sets` along the forgetful functor. -/
+  refines : Option ObjectRefinement := none
   deriving Repr
 
 /-- A literal form of a registered category (CC-CALC): `type` is a Lean type of literal values with

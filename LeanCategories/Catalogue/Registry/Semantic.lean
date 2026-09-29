@@ -1842,12 +1842,52 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
   if e.name.isEmpty then throwError "object {e.id.raw} has no surface name"
   if state.objects.any fun o => o.category == e.category && o.name == e.name then
     throwError "object {e.id.raw}: {e.category.raw} already has an object named {e.name}"
+  if e.refines.isNone && state.objects.any fun o => o.refines.isNone && o.name == e.name then
+    throwError "object {e.id.raw}: an unrefined object is already named {e.name}; an object of \
+      that name in another category refines it (`refines`)"
   if state.morphisms.any fun m => m.category == e.category && m.name == e.name then
     throwError "object {e.id.raw}: {e.category.raw} already has a morphism named {e.name}"
   let declaration ← mkConstWithFreshMVarLevels e.declaration
-  let (_, _, type) ← forallMetaTelescopeReducing (← inferType declaration)
+  let (args, _, type) ← forallMetaTelescopeReducing (← inferType declaration)
   unless ← withTransparency .all <| isDefEq type (← categoryCarrierInstance category) do
     throwError "object {e.id.raw}: {e.declaration} does not return an object of {e.category.raw}"
+  let some refinement := e.refines | return
+  let some base := state.objects.find? (·.id == refinement.base)
+    | throwError "object {e.id.raw} refines an unregistered object {refinement.base.raw}"
+  unless base.name == e.name && base.refines.isNone do
+    throwError "object {e.id.raw} refines {base.id.raw}, which is not the unrefined object named \
+      {e.name}"
+  let some edge := state.structuralEdge? refinement.edge
+    | throwError "object {e.id.raw}: {refinement.edge.label} is not a structural step"
+  let some baseCategory := state.categories.find? (·.id == base.category)
+    | throwError "object {e.id.raw}: {base.id.raw} has an unregistered category"
+  unless edge.source.syntacticEq category.expression &&
+      edge.target.syntacticEq baseCategory.expression do
+    throwError "object {e.id.raw}: {refinement.edge.label} does not go from {e.category.raw} to \
+      {base.category.raw}"
+  let functor ← state.edgeFunctor refinement.edge
+  let identification ← mkConstWithFreshMVarLevels refinement.identification
+  let (idArgs, _, idType) ← forallMetaTelescopeReducing (← inferType identification)
+  unless idArgs.size == args.size do
+    throwError "object {e.id.raw}: {refinement.identification} does not take its parameters"
+  for (a, b) in idArgs.zip args do discard <| isDefEq a b
+  let baseDeclaration ← mkConstWithFreshMVarLevels base.declaration
+  let (baseArgs, _, _) ← forallMetaTelescopeReducing (← inferType baseDeclaration)
+  let idType ← whnfR (← instantiateMVars idType)
+  -- Assign the functor's universe levels at this depth, then apply it to the object.
+  let object := mkAppN declaration args
+  let functorType ← whnf (← inferType functor)
+  discard <| withTransparency .all <| isDefEq (← inferType object) functorType.getAppArgs[0]!
+  let functor ← instantiateMVars functor
+  let image ← mkAppM ``Prefunctor.obj
+    #[← mkAppM ``CategoryTheory.Functor.toPrefunctor #[functor], object]
+  let ok ← match idType.getAppFn.constName?, idType.getAppArgs with
+    | some ``CategoryTheory.Iso, #[_, _, x, y] => withTransparency .all do
+        pure ((← isDefEq x image) && (← isDefEq y (mkAppN baseDeclaration baseArgs)))
+    | _, _ => pure false
+  unless ok do
+    throwError "object {e.id.raw}: {refinement.identification} is not an isomorphism from the \
+      image of {e.declaration} along {refinement.edge.label} to {base.declaration}"
 
 /-- A literal row's `denotation` sends its literal `type`, which has decidable equality, to the
 objects of its registered category; one literal form per category. -/
@@ -1871,13 +1911,20 @@ def categoryHomType (category : NamedCategoryEntry) : MetaM Expr := do
   mkAppM ``Quiver.Hom #[X, Y]
 
 /-- An element-literal row's `denotation : ∀ params, ℕ → Option X` names elements of its registered
-object `X` at `params`; one element-literal form per object. -/
+object at `params`, where `X` is its underlying set: the object itself in `Sets`, or the object a
+refinement refines; one element-literal form per object. -/
 def validateElementLiteral (state : SemanticState) (e : ElementLiteralEntry) : MetaM Unit := do
   let some object := state.objects.find? (·.id == e.object)
     | throwError "element literal {e.id.raw} names an unregistered object {e.object.raw}"
   if state.elementLiterals.any (·.object == e.object) then
     throwError "element literal {e.id.raw}: {e.object.raw} already has element literals"
-  let declaration ← mkConstWithFreshMVarLevels object.declaration
+  -- The elements of a refinement are those of the object it refines: its underlying set.
+  let mut root := object
+  for _ in [0:state.objects.size] do
+    let some refinement := root.refines | break
+    let some base := state.objects.find? (·.id == refinement.base) | break
+    root := base
+  let declaration ← mkConstWithFreshMVarLevels root.declaration
   let (args, _, _) ← forallMetaTelescopeReducing (← inferType declaration)
   let denotation ← mkConstWithFreshMVarLevels e.denotation
   let (_, _, type) ← forallMetaTelescopeReducing (← inferType denotation) (some args.size)
