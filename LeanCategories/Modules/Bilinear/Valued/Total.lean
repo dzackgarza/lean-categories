@@ -231,6 +231,14 @@ abbrev fixedValueInclusion (W : ModuleCat.{u} R) :
 def valueProjection : BilWFormCat R ⥤ ModuleCat R :=
   Grothendieck.forget (valueFibers R)
 
+/-- The carrier functor: a formed module's underlying `R`-module, and a morphism's map of carriers
+(the total-category form of `forget`). -/
+def carrierFunctor : BilWFormCat R ⥤ ModuleCat R where
+  obj X := BilWFormCat.carrier X
+  map f := BilWFormCat.carrierMap f
+  map_id _ := rfl
+  map_comp f g := BilWFormCat.carrierMap_comp f g
+
 /-- Change the value module of a bilinear formed module along a linear map. -/
 def valueBaseChangeObject (X : BilWFormCat R) {W : ModuleCat R}
     (f : X.value ⟶ W) : BilWFormCat R :=
