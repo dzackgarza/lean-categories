@@ -63,6 +63,7 @@ inductive SemanticEntry
   | morphism (e : MorphismEntry)
   | operation (e : OperationEntry)
   | inclusion (e : InclusionEntry)
+  | powerObject (e : PowerObjectEntry)
   deriving Repr
 
 /-- Stable identifier represented by a heterogeneous registry entry. -/
@@ -87,6 +88,7 @@ def SemanticEntry.stableId : SemanticEntry → String
   | .morphism e => e.id.raw
   | .operation e => e.id.raw
   | .inclusion e => e.id.raw
+  | .powerObject e => e.id.raw
 
 /-- Lean declarations that must resolve before this row can be persisted. -/
 def SemanticEntry.declarations : SemanticEntry → Array Name
@@ -113,6 +115,8 @@ def SemanticEntry.declarations : SemanticEntry → Array Name
   | .morphism e => #[e.declaration]
   | .operation e => #[e.declaration]
   | .inclusion e => #[e.declaration, e.mono]
+  | .powerObject e =>
+      #[e.truth, e.member, e.transpose, e.extent, e.empty, e.singleton, e.terminal, e.image]
 
 structure SemanticState where
   categories : Array NamedCategoryEntry := #[]
@@ -135,6 +139,7 @@ structure SemanticState where
   morphisms : Array MorphismEntry := #[]
   operations : Array OperationEntry := #[]
   inclusions : Array InclusionEntry := #[]
+  powerObjects : Array PowerObjectEntry := #[]
   deriving Inhabited
 
 /-- Registered category-constructor lookup by stable ID. -/
@@ -393,6 +398,7 @@ private def SemanticState.apply : SemanticState → SemanticEntry → SemanticSt
   | s, .morphism e => { s with morphisms := s.morphisms.push e }
   | s, .operation e => { s with operations := s.operations.push e }
   | s, .inclusion e => { s with inclusions := s.inclusions.push e }
+  | s, .powerObject e => { s with powerObjects := s.powerObjects.push e }
 
 def SemanticState.entries (state : SemanticState) : List SemanticEntry :=
   state.categories.toList.map SemanticEntry.category ++
@@ -414,7 +420,8 @@ def SemanticState.entries (state : SemanticState) : List SemanticEntry :=
     state.graphLiterals.toList.map SemanticEntry.graphLiteral ++
     state.morphisms.toList.map SemanticEntry.morphism ++
     state.operations.toList.map SemanticEntry.operation ++
-    state.inclusions.toList.map SemanticEntry.inclusion
+    state.inclusions.toList.map SemanticEntry.inclusion ++
+    state.powerObjects.toList.map SemanticEntry.powerObject
 
 def semanticEntryPairAllowed : SemanticEntry → SemanticEntry → Bool
   | .category category, right =>
@@ -2026,9 +2033,12 @@ def validateOperation (state : SemanticState) (e : OperationEntry) : MetaM Unit 
   if state.operations.any fun o => o.category == e.category && o.name == e.name then
     throwError "operation {e.id.raw}: {e.category.raw} already has an operation {e.name}"
   unless e.arity ≤ 2 do throwError "operation {e.id.raw}: arity {e.arity} is not 0, 1 or 2"
+  if let some result := e.result then
+    unless state.objects.any (·.id == result) do
+      throwError "operation {e.id.raw} lands in an unregistered object {result.raw}"
   let declaration ← mkConstWithFreshMVarLevels e.declaration
   let (args, _, type) ← forallMetaTelescopeReducing (← inferType declaration)
-  let some X := args.back?
+  let some X := args[args.size - 1 - e.numerals]?
     | throwError "operation {e.id.raw}: {e.declaration} takes no object"
   unless ← withTransparency .all <| isDefEq (← inferType X) (← categoryCarrierInstance category) do
     throwError "operation {e.id.raw}: {e.declaration} is not indexed by the objects of \
@@ -2036,6 +2046,41 @@ def validateOperation (state : SemanticState) (e : OperationEntry) : MetaM Unit 
   let type ← whnfR type
   unless type.isAppOf ``Quiver.Hom do
     throwError "operation {e.id.raw}: {e.declaration} is not a family of morphisms"
+
+/-- A power-object row names a registered object family `𝒫` and truth values `Ω` of `Sets`, and
+declarations whose types are those its fields state: `truth` and `member` land in `Ω`; `empty`,
+`singleton`, `transpose` and `image` land in `𝒫` at some parameters; `extent` returns an object of
+`Sets`; `terminal` is a family of morphisms. -/
+def validatePowerObject (state : SemanticState) (e : PowerObjectEntry) : MetaM Unit := do
+  let some power := state.objects.find? (·.id == e.object)
+    | throwError "power object {e.id.raw} names an unregistered object {e.object.raw}"
+  let some omega := state.objects.find? (·.id == e.omega)
+    | throwError "power object {e.id.raw} names an unregistered object {e.omega.raw}"
+  let some sets := state.categories.find? (·.id == power.category)
+    | throwError "power object {e.id.raw}: {power.id.raw} has an unregistered category"
+  -- The result type of a declaration after all its arguments.
+  let result (declaration : Name) : MetaM Expr := do
+    let constant ← mkConstWithFreshMVarLevels declaration
+    let (_, _, type) ← forallMetaTelescopeReducing (← inferType constant)
+    whnfR type
+  let target (declaration : Name) : MetaM Expr := do
+    let type ← result declaration
+    unless type.isAppOf ``Quiver.Hom do
+      throwError "power object {e.id.raw}: {declaration} is not a family of morphisms"
+    return type.appArg!
+  let family (entry : ObjectEntry) : MetaM Expr := do
+    let constant ← mkConstWithFreshMVarLevels entry.declaration
+    let (args, _, _) ← forallMetaTelescopeReducing (← inferType constant)
+    return mkAppN constant args
+  let lands (declaration : Name) (entry : ObjectEntry) : MetaM Unit := do
+    unless ← withTransparency .all <| isDefEq (← target declaration) (← family entry) do
+      throwError "power object {e.id.raw}: {declaration} does not land in {entry.id.raw}"
+  lands e.truth omega
+  lands e.member omega
+  for declaration in #[e.empty, e.singleton, e.transpose, e.image] do lands declaration power
+  discard <| target e.terminal
+  unless ← withTransparency .all <| isDefEq (← result e.extent) (← categoryCarrierInstance sets) do
+    throwError "power object {e.id.raw}: {e.extent} does not return an object of {sets.id.raw}"
 
 /-- An adjunction row names a Mathlib `Adjunction L R` between exactly its two registered
 functors. -/
@@ -2189,6 +2234,7 @@ def validateSemanticEntryDeclaration (entry : SemanticEntry) : MetaM Unit := do
   | .morphism e => validateMorphism state e
   | .operation e => validateOperation state e
   | .inclusion e => validateInclusion state e
+  | .powerObject e => validatePowerObject state e
   | .constructor e => do
       let semanticsConstant ← mkConstWithFreshMVarLevels e.semantics
       let (_, binderInfos, result) ←

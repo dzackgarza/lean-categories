@@ -103,6 +103,11 @@ structure LiteralId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 
+/-- Stable id of a registered power object, e.g. `pow.sets`. -/
+structure PowerObjectId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
 /-- Stable id of a registered inclusion of named objects, e.g. `incl.sets.integers_rationals`. -/
 structure InclusionId where
   raw : String
@@ -153,6 +158,7 @@ instance : Inhabited LiteralId := ⟨⟨""⟩⟩
 instance : Inhabited MorphismId := ⟨⟨""⟩⟩
 instance : Inhabited OperationId := ⟨⟨""⟩⟩
 instance : Inhabited InclusionId := ⟨⟨""⟩⟩
+instance : Inhabited PowerObjectId := ⟨⟨""⟩⟩
 instance : Inhabited ClassifierId := ⟨⟨""⟩⟩
 instance : Inhabited CategoryFamilyId := ⟨⟨""⟩⟩
 instance : Inhabited ParameterId := ⟨⟨""⟩⟩

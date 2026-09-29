@@ -21,8 +21,8 @@ public meta import LeanCategories.Catalogue.Semantics.Algebra.Ports
 * `ℤ`, `ℤ/n` (`ZMod`) and `ℚ` in `Rings` refine the named sets `ℤ`, `ℤ/n` and `ℚ` along the
   multiplicative route to `Sets` (the ring diamond is identified at sets by `cmp.rings.carrier`):
   their underlying sets are those sets (`Iso.refl`).
-* The element operations of `Rings`: `+` and `·` (`R × R → R`) and `-` (`R → R`), natural in the
-  ring, as morphisms of `Sets`. Their laws are Mathlib's (`RingCat`).
+* The element operations of `Rings`: `+` and `·` (`R × R → R`), `-` and `^k` (`R → R`), natural
+  in the ring, as morphisms of `Sets`. Their laws are Mathlib's (`RingCat`).
 -/
 
 open CategoryTheory
@@ -83,6 +83,12 @@ def neg (R : LeanCategories.Algebra.Rings.{0}) :
       (underlying R : LeanCategories.Foundation.Mathlib.Sets.{0}) :=
   TypeCat.ofHom fun x => -x
 
+/-- The power `x ↦ x^k`, `R → R`. -/
+def pow (R : LeanCategories.Algebra.Rings.{0}) (k : ℕ) :
+    (underlying R : LeanCategories.Foundation.Mathlib.Sets.{0}) ⟶
+      (underlying R : LeanCategories.Foundation.Mathlib.Sets.{0}) :=
+  TypeCat.ofHom fun x => x ^ k
+
 end CasCatalogue.Algebra.NamedRings
 
 namespace CasCatalogue
@@ -131,6 +137,10 @@ normalized_registry .operation
 normalized_registry .operation
   { id := ⟨"op.rings.mul"⟩, category := CategoryId.rings, name := "·", arity := 2
     declaration := `CasCatalogue.Algebra.NamedRings.mul }
+
+normalized_registry .operation
+  { id := ⟨"op.rings.pow"⟩, category := CategoryId.rings, name := "^", arity := 1, numerals := 1
+    declaration := `CasCatalogue.Algebra.NamedRings.pow }
 
 normalized_registry .operation
   { id := ⟨"op.rings.neg"⟩, category := CategoryId.rings, name := "-", arity := 1

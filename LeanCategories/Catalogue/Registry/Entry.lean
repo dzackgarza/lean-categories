@@ -190,6 +190,36 @@ structure OperationEntry where
   name : String
   arity : Nat
   declaration : Lean.Name
+  /-- The set the operation lands in, when it is not the underlying set: `Ω` for a relation
+  (`≤ : X × X → Ω`). -/
+  result : Option ObjectId := none
+  /-- The number of numeral parameters the declaration takes after the object (`x^k`: one). -/
+  numerals : Nat := 0
+  deriving Repr
+
+/-- A power object of `Sets` in the sense of elementary topos theory (Mac Lane–Moerdijk, *Sheaves
+in Geometry and Logic*, IV.1): the family `object : X ↦ 𝒫 X`, the truth values `omega` with their
+element `truth : 1 → Ω`, and at each `X`
+* `member : X × 𝒫 X ⟶ Ω`, membership;
+* `transpose : (X ⟶ Ω) → (1 ⟶ 𝒫 X)`, the subset a predicate classifies;
+* `extent : (1 ⟶ 𝒫 X) → Sets`, the set of members of a subset;
+* `empty : 1 ⟶ 𝒫 X` and `singleton : X ⟶ 𝒫 X`, and `union`, the name of the operation `∪` on
+  the refinement of `𝒫 X`, from which finite subsets `{x₁, …, xₙ}` are formed;
+* `terminal : X ⟶ 1`, through which a global element is a generalized one at a stage `X`;
+* `image : (X ⟶ Y) → (1 ⟶ 𝒫 Y)`, the image of a map. -/
+structure PowerObjectEntry where
+  id : PowerObjectId
+  object : ObjectId
+  omega : ObjectId
+  truth : Lean.Name
+  member : Lean.Name
+  transpose : Lean.Name
+  extent : Lean.Name
+  empty : Lean.Name
+  singleton : Lean.Name
+  terminal : Lean.Name
+  image : Lean.Name
+  union : String
   deriving Repr
 
 /-- A named morphism family of a registered category: `declaration : ∀ params, X ⟶ Y`, with its
