@@ -42,6 +42,7 @@ public import LeanCategories.Catalogue.Semantics.Algebra.NamedRings
 public import LeanCategories.Catalogue.Semantics.Algebra.NumberSystems
 public import LeanCategories.Catalogue.Semantics.Foundation.PowerSets
 public import LeanCategories.Catalogue.Semantics.Algebra.Semirings
+public import LeanCategories.Catalogue.Semantics.Algebra.Polynomials
 public import LeanCategories.Catalogue.Semantics.Foundation.PairDiagrams
 public import LeanCategories.Catalogue.Semantics.Foundation.Subsets
 public import LeanCategories.Catalogue.Semantics.LatticeRefinements

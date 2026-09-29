@@ -136,6 +136,12 @@ structure ObjectEntry where
   /-- When this object is another one with more structure: `Fin(n)` in `FiniteSets` refines
   `Fin(n)` in `Sets` along the forgetful functor. -/
   refines : Option ObjectRefinement := none
+  /-- A distinguished element `∀ params, 1 ⟶ obj params` that the language names by a bound
+  variable: the variable `x` of `R[x]`. -/
+  generator : Option Lean.Name := none
+  /-- How the elements of `obj params` act on arguments: `∀ params args, obj params × A ⟶ B`
+  (a polynomial's evaluation `R[x] × A → A` at an `R`-algebra `A`). -/
+  application : Option Lean.Name := none
   deriving Repr
 
 /-- A literal form of a registered category (CC-CALC): `type` is a Lean type of literal values with

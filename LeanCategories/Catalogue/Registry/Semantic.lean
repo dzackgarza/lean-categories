@@ -1870,6 +1870,18 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
   let (args, _, type) ← forallMetaTelescopeReducing (← inferType declaration)
   unless ← withTransparency .all <| isDefEq type (← categoryCarrierInstance category) do
     throwError "object {e.id.raw}: {e.declaration} does not return an object of {e.category.raw}"
+  -- A generator lands in the object; an application is a family of morphisms out of a product.
+  for name in e.generator.toArray ++ e.application.toArray do
+    let constant ← mkConstWithFreshMVarLevels name
+    let (_, _, result) ← forallMetaTelescopeReducing (← inferType constant)
+    unless (← whnfR result).isAppOf ``Quiver.Hom do
+      throwError "object {e.id.raw}: {name} is not a family of morphisms"
+  if let some generator := e.generator then
+    let constant ← mkConstWithFreshMVarLevels generator
+    let (_, _, result) ← forallMetaTelescopeReducing (← inferType constant)
+    let (objArgs, _, _) ← forallMetaTelescopeReducing (← inferType declaration)
+    unless ← withTransparency .all <| isDefEq (← whnfR result).appArg! (mkAppN declaration objArgs) do
+      throwError "object {e.id.raw}: the generator {generator} does not land in it"
   let some refinement := e.refines | return
   let some base := state.objects.find? (·.id == refinement.base)
     | throwError "object {e.id.raw} refines an unregistered object {refinement.base.raw}"
