@@ -58,6 +58,15 @@ noncomputable def finite : Classifier Sets where
   total := FiniteSets
   forget := (forget FintypeCat.{u}).toCatHom
 
+/-- The finite classifier's forgetful functor is full: finite types are a full subcategory of
+types (Mathlib `FintypeCat`, `ObjectProperty.full_ι`). -/
+instance : (finite.{u}.forget.toFunctor).Full :=
+  inferInstanceAs (forget FintypeCat.{u}).Full
+
+/-- The finite classifier's forgetful functor is faithful. -/
+instance : (finite.{u}.forget.toFunctor).Faithful :=
+  inferInstanceAs (forget FintypeCat.{u}).Faithful
+
 /-- Graded classifier: GradedObject ℤ (Type) → Type via coproduct of grades. -/
 noncomputable def graded : Classifier Sets where
   total := GradedSets
