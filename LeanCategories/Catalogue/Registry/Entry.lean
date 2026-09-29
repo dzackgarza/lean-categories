@@ -167,6 +167,18 @@ structure GraphLiteralEntry where
   denotation : Lean.Name
   deriving Repr
 
+/-- A registered inclusion of named objects of one category, `sub ⊆ super`: a monomorphism
+`declaration : ∀ params, sub params ⟶ super params` with `mono : ∀ params, Mono (declaration
+params)`, at the same parameters (`ℤ ⊆ ℚ ⊆ ℝ ⊆ ℂ` in `Sets`, by the casts). -/
+structure InclusionEntry where
+  id : InclusionId
+  category : CategoryId
+  sub : ObjectId
+  super : ObjectId
+  declaration : Lean.Name
+  mono : Lean.Name
+  deriving Repr
+
 /-- An element operation of a registered category `C` whose objects refine sets: `declaration :
 ∀ X, (U X)^arity ⟶ U X` in `Sets`, natural in `X`, where `U X` is the set `X` refines and the power
 is Lean's product (`U X × U X` for arity 2, `U X` for arity 1, the terminal set for arity 0). Its

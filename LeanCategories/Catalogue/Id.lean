@@ -103,6 +103,11 @@ structure LiteralId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 
+/-- Stable id of a registered inclusion of named objects, e.g. `incl.sets.integers_rationals`. -/
+structure InclusionId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
 /-- Stable id of an element operation of a category, e.g. `op.rings.add`. -/
 structure OperationId where
   raw : String
@@ -147,6 +152,7 @@ instance : Inhabited ObjectId := ⟨⟨""⟩⟩
 instance : Inhabited LiteralId := ⟨⟨""⟩⟩
 instance : Inhabited MorphismId := ⟨⟨""⟩⟩
 instance : Inhabited OperationId := ⟨⟨""⟩⟩
+instance : Inhabited InclusionId := ⟨⟨""⟩⟩
 instance : Inhabited ClassifierId := ⟨⟨""⟩⟩
 instance : Inhabited CategoryFamilyId := ⟨⟨""⟩⟩
 instance : Inhabited ParameterId := ⟨⟨""⟩⟩

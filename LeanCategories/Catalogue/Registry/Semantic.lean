@@ -62,6 +62,7 @@ inductive SemanticEntry
   | graphLiteral (e : GraphLiteralEntry)
   | morphism (e : MorphismEntry)
   | operation (e : OperationEntry)
+  | inclusion (e : InclusionEntry)
   deriving Repr
 
 /-- Stable identifier represented by a heterogeneous registry entry. -/
@@ -85,6 +86,7 @@ def SemanticEntry.stableId : SemanticEntry → String
   | .graphLiteral e => e.id.raw
   | .morphism e => e.id.raw
   | .operation e => e.id.raw
+  | .inclusion e => e.id.raw
 
 /-- Lean declarations that must resolve before this row can be persisted. -/
 def SemanticEntry.declarations : SemanticEntry → Array Name
@@ -110,6 +112,7 @@ def SemanticEntry.declarations : SemanticEntry → Array Name
   | .graphLiteral e => #[e.denotation]
   | .morphism e => #[e.declaration]
   | .operation e => #[e.declaration]
+  | .inclusion e => #[e.declaration, e.mono]
 
 structure SemanticState where
   categories : Array NamedCategoryEntry := #[]
@@ -131,6 +134,7 @@ structure SemanticState where
   graphLiterals : Array GraphLiteralEntry := #[]
   morphisms : Array MorphismEntry := #[]
   operations : Array OperationEntry := #[]
+  inclusions : Array InclusionEntry := #[]
   deriving Inhabited
 
 /-- Registered category-constructor lookup by stable ID. -/
@@ -388,6 +392,7 @@ private def SemanticState.apply : SemanticState → SemanticEntry → SemanticSt
   | s, .graphLiteral e => { s with graphLiterals := s.graphLiterals.push e }
   | s, .morphism e => { s with morphisms := s.morphisms.push e }
   | s, .operation e => { s with operations := s.operations.push e }
+  | s, .inclusion e => { s with inclusions := s.inclusions.push e }
 
 def SemanticState.entries (state : SemanticState) : List SemanticEntry :=
   state.categories.toList.map SemanticEntry.category ++
@@ -408,7 +413,8 @@ def SemanticState.entries (state : SemanticState) : List SemanticEntry :=
     state.elementLiterals.toList.map SemanticEntry.elementLiteral ++
     state.graphLiterals.toList.map SemanticEntry.graphLiteral ++
     state.morphisms.toList.map SemanticEntry.morphism ++
-    state.operations.toList.map SemanticEntry.operation
+    state.operations.toList.map SemanticEntry.operation ++
+    state.inclusions.toList.map SemanticEntry.inclusion
 
 def semanticEntryPairAllowed : SemanticEntry → SemanticEntry → Bool
   | .category category, right =>
@@ -1974,6 +1980,42 @@ def validateMorphism (state : SemanticState) (e : MorphismEntry) : MetaM Unit :=
   unless ← withTransparency .all <| isDefEq type (← categoryHomType category) do
     throwError "morphism {e.id.raw}: {e.declaration} is not a morphism of {e.category.raw}"
 
+/-- An inclusion row's `declaration : ∀ params, sub params ⟶ super params` is a morphism of its
+category between its two registered objects there, at the same parameters, and `mono` proves it a
+monomorphism at every parameter. -/
+def validateInclusion (state : SemanticState) (e : InclusionEntry) : MetaM Unit := do
+  let some category := state.categories.find? (·.id == e.category)
+    | throwError "inclusion {e.id.raw} names an unregistered category {e.category.raw}"
+  let some sub := state.objects.find? (·.id == e.sub)
+    | throwError "inclusion {e.id.raw} names an unregistered object {e.sub.raw}"
+  let some super := state.objects.find? (·.id == e.super)
+    | throwError "inclusion {e.id.raw} names an unregistered object {e.super.raw}"
+  unless sub.category == e.category && super.category == e.category do
+    throwError "inclusion {e.id.raw}: {e.sub.raw} and {e.super.raw} are not objects of \
+      {e.category.raw}"
+  let declaration ← mkConstWithFreshMVarLevels e.declaration
+  let (args, _, type) ← forallMetaTelescopeReducing (← inferType declaration)
+  let subDecl ← mkConstWithFreshMVarLevels sub.declaration
+  let superDecl ← mkConstWithFreshMVarLevels super.declaration
+  let ok ← withTransparency .all do
+    let expected ← categoryHomType category
+    unless ← isDefEq type expected do return false
+    let type ← instantiateMVars type
+    let #[_, _, x, y] := type.getAppArgs | return false
+    pure ((← isDefEq x (mkAppN subDecl args)) && (← isDefEq y (mkAppN superDecl args)))
+  unless ok do
+    throwError "inclusion {e.id.raw}: {e.declaration} is not a family of morphisms \
+      {sub.declaration} ⟶ {super.declaration} at its parameters"
+  let mono ← mkConstWithFreshMVarLevels e.mono
+  let (monoArgs, _, monoType) ← forallMetaTelescopeReducing (← inferType mono)
+  unless monoArgs.size == args.size do
+    throwError "inclusion {e.id.raw}: {e.mono} does not take the parameters of {e.declaration}"
+  for (a, b) in monoArgs.zip args do discard <| isDefEq a b
+  let monoType ← whnfR (← instantiateMVars monoType)
+  unless monoType.isAppOf ``CategoryTheory.Mono &&
+      (← withTransparency .all <| isDefEq monoType.appArg! (mkAppN declaration args)) do
+    throwError "inclusion {e.id.raw}: {e.mono} does not prove {e.declaration} a monomorphism"
+
 /-- An operation row's `declaration : ∀ X, P ⟶ A` is, at each object `X` of its category, a
 morphism of `Sets` into the set `A` underlying `X`, from `A × A` (arity 2), `A` (arity 1) or a
 terminal set (arity 0); its name is unique among the category's operations. -/
@@ -2146,6 +2188,7 @@ def validateSemanticEntryDeclaration (entry : SemanticEntry) : MetaM Unit := do
   | .graphLiteral e => validateGraphLiteral state e
   | .morphism e => validateMorphism state e
   | .operation e => validateOperation state e
+  | .inclusion e => validateInclusion state e
   | .constructor e => do
       let semanticsConstant ← mkConstWithFreshMVarLevels e.semantics
       let (_, binderInfos, result) ←
