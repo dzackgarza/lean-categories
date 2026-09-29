@@ -6,6 +6,8 @@ module
 
 public import LeanCategories.Catalogue.Semantics.Algebra.NamedRings
 public import Mathlib.Data.Complex.Basic
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Algebra.GCDMonoid.Nat
 public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.CategoryTheory.EpiMono
 public meta import LeanCategories.Catalogue.Registry.Semantic
@@ -20,6 +22,10 @@ public meta import LeanCategories.Catalogue.Semantics.Algebra.NamedRings
 inclusions `ℕ ⊆ ℤ ⊆ ℚ ⊆ ℝ ⊆ ℂ` are the casts, monomorphisms of `Sets` because they are injective
 (Mathlib `Nat.cast_injective`, `Int.cast_injective`, `Rat.cast_injective`,
 `Complex.ofReal_injective`; `mono_iff_injective`).
+
+Functions of elements, as named morphisms of `Sets`: `gcd : ℤ × ℤ → ℤ` (Mathlib `GCDMonoid.gcd`,
+nonnegative), `re, im : ℂ → ℝ`, `bar : ℂ → ℂ` (conjugation), `abs : ℂ → ℝ` (`‖z‖`),
+`sqrt : ℝ → ℝ` (`Real.sqrt`), and the element `i : 1 → ℂ`.
 -/
 
 open CategoryTheory
@@ -76,6 +82,28 @@ theorem rationalsReals_mono : Mono rationalsReals :=
   mono_of_injective _ Rat.cast_injective
 theorem realsComplexes_mono : Mono realsComplexes :=
   mono_of_injective _ Complex.ofReal_injective
+
+/-- `gcd : ℤ × ℤ → ℤ`. -/
+def gcd : (integers × integers : LeanCategories.Foundation.Mathlib.Sets.{0}) ⟶ integers :=
+  TypeCat.ofHom fun p => GCDMonoid.gcd p.1 p.2
+
+/-- The real part `ℂ → ℝ`. -/
+noncomputable def re : complexes ⟶ reals := TypeCat.ofHom Complex.re
+
+/-- The imaginary part `ℂ → ℝ`. -/
+noncomputable def im : complexes ⟶ reals := TypeCat.ofHom Complex.im
+
+/-- Conjugation `ℂ → ℂ`. -/
+noncomputable def bar : complexes ⟶ complexes := TypeCat.ofHom (starRingEnd ℂ)
+
+/-- The absolute value `ℂ → ℝ`. -/
+noncomputable def abs : complexes ⟶ reals := TypeCat.ofHom fun z => ‖z‖
+
+/-- The square root `ℝ → ℝ` (`0` below `0`, Mathlib `Real.sqrt`). -/
+noncomputable def sqrt : reals ⟶ reals := TypeCat.ofHom Real.sqrt
+
+/-- The element `i ∈ ℂ`, `1 → ℂ`. -/
+noncomputable def imaginaryUnit : fin 1 ⟶ complexes := TypeCat.ofHom fun _ => Complex.I
 
 end CasCatalogue.Algebra.NumberSystems
 
@@ -134,5 +162,33 @@ normalized_registry .inclusion
     sub := ⟨"obj.sets.reals"⟩, super := ⟨"obj.sets.complexes"⟩
     declaration := `CasCatalogue.Algebra.NumberSystems.realsComplexes
     mono := `CasCatalogue.Algebra.NumberSystems.realsComplexes_mono }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.gcd"⟩, category := CategoryId.sets, name := "gcd"
+    declaration := `CasCatalogue.Algebra.NumberSystems.gcd }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.complex_re"⟩, category := CategoryId.sets, name := "re"
+    declaration := `CasCatalogue.Algebra.NumberSystems.re }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.complex_im"⟩, category := CategoryId.sets, name := "im"
+    declaration := `CasCatalogue.Algebra.NumberSystems.im }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.complex_bar"⟩, category := CategoryId.sets, name := "bar"
+    declaration := `CasCatalogue.Algebra.NumberSystems.bar }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.complex_abs"⟩, category := CategoryId.sets, name := "abs"
+    declaration := `CasCatalogue.Algebra.NumberSystems.abs }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.real_sqrt"⟩, category := CategoryId.sets, name := "sqrt"
+    declaration := `CasCatalogue.Algebra.NumberSystems.sqrt }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.complex_i"⟩, category := CategoryId.sets, name := "i"
+    declaration := `CasCatalogue.Algebra.NumberSystems.imaginaryUnit }
 
 end CasCatalogue
