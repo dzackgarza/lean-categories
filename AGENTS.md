@@ -25,6 +25,10 @@ owns the separation of concerns. This repository's part in it:
 * **Blind to computation.** Decide what a definition means from its sources, never from what
   Sage, GAP or any backend computes, and never from what a leaf would find convenient. Backend
   capability is irrelevant to every audit here.
+  The leaf contract (realization rows, the port protocol, `register_leaf`) is therefore not here,
+  although it is Lean and every leaf depends on it: it is the `lean-cas-dsl` kernel's, published as
+  `lean-cas-dsl-leaf-contracts` over this repository (`lean-cas-dsl/specs/architecture.md`,
+  "Packages").
 * **Auditable as mathematics alone.** Every definition checks against its citations, Mathlib and
   the formalization corpus. There is no `sorry` and no unchecked semantic axiom. This repository
   builds and audits without any downstream package.
