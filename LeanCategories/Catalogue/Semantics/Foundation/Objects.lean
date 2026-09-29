@@ -27,19 +27,19 @@ Products of sets are the registered limit `lim.sets.product`
 namespace CasCatalogue.Foundation.Objects
 
 /-- `ℕ`. -/
-def naturals : LeanCategories.Foundation.Mathlib.Sets.{0} := ℕ
+abbrev naturals : LeanCategories.Foundation.Mathlib.Sets.{0} := ℕ
 
 /-- `ℤ`. -/
-def integers : LeanCategories.Foundation.Mathlib.Sets.{0} := ℤ
+abbrev integers : LeanCategories.Foundation.Mathlib.Sets.{0} := ℤ
 
 /-- `Fin n`. -/
-def fin (n : ℕ) : LeanCategories.Foundation.Mathlib.Sets.{0} := Fin n
+abbrev fin (n : ℕ) : LeanCategories.Foundation.Mathlib.Sets.{0} := Fin n
 
 /-- `ℤ/n`. -/
-def integersMod (n : ℕ) : LeanCategories.Foundation.Mathlib.Sets.{0} := ZMod n
+abbrev integersMod (n : ℕ) : LeanCategories.Foundation.Mathlib.Sets.{0} := ZMod n
 
 /-- `(ℤ/n)^k`. -/
-def integersModPower (n k : ℕ) : LeanCategories.Foundation.Mathlib.Sets.{0} := Fin k → ZMod n
+abbrev integersModPower (n k : ℕ) : LeanCategories.Foundation.Mathlib.Sets.{0} := Fin k → ZMod n
 
 end CasCatalogue.Foundation.Objects
 

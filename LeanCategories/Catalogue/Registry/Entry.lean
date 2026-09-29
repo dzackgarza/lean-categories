@@ -134,6 +134,33 @@ structure LiteralEntry where
   denotation : Lean.Name
   deriving Repr
 
+/-- The element literals of a registered object family: `denotation : ∀ params, ℕ → Option X`,
+where `X` is the object at `params`, sends a numeral to the element it names, or to `none` if it
+names none (`k ↦ k` in `Fin n` for `k < n`, `k ↦ k mod n` in `ℤ/n`). -/
+structure ElementLiteralEntry where
+  id : LiteralId
+  object : ObjectId
+  denotation : Lean.Name
+  deriving Repr
+
+/-- The graph literals of a registered category's morphisms: `denotation` sends a finite list of
+pairs of elements `l : List (X × Y)` whose first components list every element of `X` exactly once
+to the morphism `X ⟶ Y` with that graph. In `Sets`, `{0 ↦ 1, 1 ↦ 0} : Fin 2 → Fin 2`. -/
+structure GraphLiteralEntry where
+  id : LiteralId
+  category : CategoryId
+  denotation : Lean.Name
+  deriving Repr
+
+/-- A named morphism family of a registered category: `declaration : ∀ params, X ⟶ Y`, with its
+surface name in the language (`rev`), unique among the category's objects and morphisms. -/
+structure MorphismEntry where
+  id : MorphismId
+  category : CategoryId
+  name : String
+  declaration : Lean.Name
+  deriving Repr
+
 /-- A cell row (CC-CALC, CC-COHERE): a natural transformation `declaration : L ⟶ R` (or, when `invertible`,
 a natural isomorphism `L ≅ R`) between the composites `L`, `R` of the registered functors along
 `left` and `right` (the identity of `source` when empty). The cell is Mathlib's; the row names it

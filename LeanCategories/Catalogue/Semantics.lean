@@ -25,6 +25,7 @@ public import LeanCategories.Catalogue.Semantics.Foundation.Expressions
 public import LeanCategories.Catalogue.Semantics.Foundation.Finiteness
 public import LeanCategories.Catalogue.Semantics.Foundation.Lists
 public import LeanCategories.Catalogue.Semantics.Foundation.Objects
+public import LeanCategories.Catalogue.Semantics.Foundation.Morphisms
 public import LeanCategories.Catalogue.Semantics.Foundation.PairDiagrams
 public import LeanCategories.Catalogue.Semantics.Foundation.Subsets
 public import LeanCategories.Catalogue.Semantics.LatticeRefinements

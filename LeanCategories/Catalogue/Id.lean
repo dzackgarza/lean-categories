@@ -103,6 +103,11 @@ structure LiteralId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 
+/-- Stable id of a named morphism family, e.g. `mor.sets.fin_rev`. -/
+structure MorphismId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
 /-- Stable functor id. -/
 structure FunctorId where
   raw : String
@@ -135,6 +140,7 @@ instance : Inhabited LimitId := ⟨⟨""⟩⟩
 instance : Inhabited AdjunctionId := ⟨⟨""⟩⟩
 instance : Inhabited ObjectId := ⟨⟨""⟩⟩
 instance : Inhabited LiteralId := ⟨⟨""⟩⟩
+instance : Inhabited MorphismId := ⟨⟨""⟩⟩
 instance : Inhabited ClassifierId := ⟨⟨""⟩⟩
 instance : Inhabited CategoryFamilyId := ⟨⟨""⟩⟩
 instance : Inhabited ParameterId := ⟨⟨""⟩⟩

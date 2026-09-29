@@ -58,6 +58,9 @@ inductive SemanticEntry
   | adjunction (e : AdjunctionEntry)
   | object (e : ObjectEntry)
   | literal (e : LiteralEntry)
+  | elementLiteral (e : ElementLiteralEntry)
+  | graphLiteral (e : GraphLiteralEntry)
+  | morphism (e : MorphismEntry)
   deriving Repr
 
 /-- Stable identifier represented by a heterogeneous registry entry. -/
@@ -77,6 +80,9 @@ def SemanticEntry.stableId : SemanticEntry → String
   | .adjunction e => e.id.raw
   | .object e => e.id.raw
   | .literal e => e.id.raw
+  | .elementLiteral e => e.id.raw
+  | .graphLiteral e => e.id.raw
+  | .morphism e => e.id.raw
 
 /-- Lean declarations that must resolve before this row can be persisted. -/
 def SemanticEntry.declarations : SemanticEntry → Array Name
@@ -98,6 +104,9 @@ def SemanticEntry.declarations : SemanticEntry → Array Name
   | .adjunction e => #[e.declaration]
   | .object e => #[e.declaration]
   | .literal e => #[e.type, e.denotation]
+  | .elementLiteral e => #[e.denotation]
+  | .graphLiteral e => #[e.denotation]
+  | .morphism e => #[e.declaration]
 
 structure SemanticState where
   categories : Array NamedCategoryEntry := #[]
@@ -115,6 +124,9 @@ structure SemanticState where
   adjunctions : Array AdjunctionEntry := #[]
   objects : Array ObjectEntry := #[]
   literals : Array LiteralEntry := #[]
+  elementLiterals : Array ElementLiteralEntry := #[]
+  graphLiterals : Array GraphLiteralEntry := #[]
+  morphisms : Array MorphismEntry := #[]
   deriving Inhabited
 
 /-- Registered category-constructor lookup by stable ID. -/
@@ -368,6 +380,9 @@ private def SemanticState.apply : SemanticState → SemanticEntry → SemanticSt
   | s, .adjunction e => { s with adjunctions := s.adjunctions.push e }
   | s, .object e => { s with objects := s.objects.push e }
   | s, .literal e => { s with literals := s.literals.push e }
+  | s, .elementLiteral e => { s with elementLiterals := s.elementLiterals.push e }
+  | s, .graphLiteral e => { s with graphLiterals := s.graphLiterals.push e }
+  | s, .morphism e => { s with morphisms := s.morphisms.push e }
 
 def SemanticState.entries (state : SemanticState) : List SemanticEntry :=
   state.categories.toList.map SemanticEntry.category ++
@@ -384,7 +399,10 @@ def SemanticState.entries (state : SemanticState) : List SemanticEntry :=
     state.limits.toList.map SemanticEntry.limit ++
     state.adjunctions.toList.map SemanticEntry.adjunction ++
     state.objects.toList.map SemanticEntry.object ++
-    state.literals.toList.map SemanticEntry.literal
+    state.literals.toList.map SemanticEntry.literal ++
+    state.elementLiterals.toList.map SemanticEntry.elementLiteral ++
+    state.graphLiterals.toList.map SemanticEntry.graphLiteral ++
+    state.morphisms.toList.map SemanticEntry.morphism
 
 def semanticEntryPairAllowed : SemanticEntry → SemanticEntry → Bool
   | .category category, right =>
@@ -1824,6 +1842,8 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
   if e.name.isEmpty then throwError "object {e.id.raw} has no surface name"
   if state.objects.any fun o => o.category == e.category && o.name == e.name then
     throwError "object {e.id.raw}: {e.category.raw} already has an object named {e.name}"
+  if state.morphisms.any fun m => m.category == e.category && m.name == e.name then
+    throwError "object {e.id.raw}: {e.category.raw} already has a morphism named {e.name}"
   let declaration ← mkConstWithFreshMVarLevels e.declaration
   let (_, _, type) ← forallMetaTelescopeReducing (← inferType declaration)
   unless ← withTransparency .all <| isDefEq type (← categoryCarrierInstance category) do
@@ -1842,6 +1862,60 @@ def validateLiteral (state : SemanticState) (e : LiteralEntry) : MetaM Unit := d
   let expected ← mkArrow type (← categoryCarrierInstance category)
   unless ← withTransparency .all <| isDefEq (← inferType denotation) expected do
     throwError "literal {e.id.raw}: {e.denotation} is not a map {e.type} → {e.category.raw}"
+
+/-- The type `X ⟶ Y` of morphisms of the registered category `category`, for fresh `X`, `Y`. -/
+def categoryHomType (category : NamedCategoryEntry) : MetaM Expr := do
+  let carrier ← categoryCarrierInstance category
+  let X ← mkFreshExprMVar carrier
+  let Y ← mkFreshExprMVar carrier
+  mkAppM ``Quiver.Hom #[X, Y]
+
+/-- An element-literal row's `denotation : ∀ params, ℕ → Option X` names elements of its registered
+object `X` at `params`; one element-literal form per object. -/
+def validateElementLiteral (state : SemanticState) (e : ElementLiteralEntry) : MetaM Unit := do
+  let some object := state.objects.find? (·.id == e.object)
+    | throwError "element literal {e.id.raw} names an unregistered object {e.object.raw}"
+  if state.elementLiterals.any (·.object == e.object) then
+    throwError "element literal {e.id.raw}: {e.object.raw} already has element literals"
+  let declaration ← mkConstWithFreshMVarLevels object.declaration
+  let (args, _, _) ← forallMetaTelescopeReducing (← inferType declaration)
+  let denotation ← mkConstWithFreshMVarLevels e.denotation
+  let (_, _, type) ← forallMetaTelescopeReducing (← inferType denotation) (some args.size)
+  let u ← mkFreshLevelMVar
+  let element ← mkFreshExprMVar (mkSort (mkLevelSucc u))
+  let ok ← withTransparency .all <| do
+    pure ((← isDefEq type (← mkArrow (mkConst ``Nat) (mkApp (mkConst ``Option [u]) element))) &&
+      (← isDefEq element (mkAppN declaration args)))
+  unless ok do
+    throwError "element literal {e.id.raw}: {e.denotation} is not a map ℕ → Option {e.object.raw}"
+
+/-- A graph-literal row's `denotation` returns morphisms of its registered category; one graph
+literal form per category. -/
+def validateGraphLiteral (state : SemanticState) (e : GraphLiteralEntry) : MetaM Unit := do
+  let some category := state.categories.find? (·.id == e.category)
+    | throwError "graph literal {e.id.raw} names an unregistered category {e.category.raw}"
+  if state.graphLiterals.any (·.category == e.category) then
+    throwError "graph literal {e.id.raw}: {e.category.raw} already has a graph literal form"
+  let denotation ← mkConstWithFreshMVarLevels e.denotation
+  let (_, _, type) ← forallMetaTelescopeReducing (← inferType denotation)
+  unless ← withTransparency .all <| isDefEq type (← categoryHomType category) do
+    throwError "graph literal {e.id.raw}: {e.denotation} does not return a morphism of \
+      {e.category.raw}"
+
+/-- A morphism row's `declaration : ∀ params, X ⟶ Y` is a morphism family of its registered
+category, and its surface name is unique among the category's objects and morphisms. -/
+def validateMorphism (state : SemanticState) (e : MorphismEntry) : MetaM Unit := do
+  let some category := state.categories.find? (·.id == e.category)
+    | throwError "morphism {e.id.raw} names an unregistered category {e.category.raw}"
+  if e.name.isEmpty then throwError "morphism {e.id.raw} has no surface name"
+  if state.objects.any fun o => o.category == e.category && o.name == e.name then
+    throwError "morphism {e.id.raw}: {e.category.raw} already has an object named {e.name}"
+  if state.morphisms.any fun m => m.category == e.category && m.name == e.name then
+    throwError "morphism {e.id.raw}: {e.category.raw} already has a morphism named {e.name}"
+  let declaration ← mkConstWithFreshMVarLevels e.declaration
+  let (_, _, type) ← forallMetaTelescopeReducing (← inferType declaration)
+  unless ← withTransparency .all <| isDefEq type (← categoryHomType category) do
+    throwError "morphism {e.id.raw}: {e.declaration} is not a morphism of {e.category.raw}"
 
 /-- An adjunction row names a Mathlib `Adjunction L R` between exactly its two registered
 functors. -/
@@ -1990,6 +2064,9 @@ def validateSemanticEntryDeclaration (entry : SemanticEntry) : MetaM Unit := do
   | .adjunction e => validateAdjunction state e
   | .object e => validateObject state e
   | .literal e => validateLiteral state e
+  | .elementLiteral e => validateElementLiteral state e
+  | .graphLiteral e => validateGraphLiteral state e
+  | .morphism e => validateMorphism state e
   | .constructor e => do
       let semanticsConstant ← mkConstWithFreshMVarLevels e.semantics
       let (_, binderInfos, result) ←
