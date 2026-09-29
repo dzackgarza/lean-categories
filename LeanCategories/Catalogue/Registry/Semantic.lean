@@ -56,6 +56,7 @@ inductive SemanticEntry
   | cell (e : CellEntry)
   | limit (e : LimitEntry)
   | adjunction (e : AdjunctionEntry)
+  | object (e : ObjectEntry)
   deriving Repr
 
 /-- Stable identifier represented by a heterogeneous registry entry. -/
@@ -73,6 +74,7 @@ def SemanticEntry.stableId : SemanticEntry → String
   | .cell e => e.id.raw
   | .limit e => e.id.raw
   | .adjunction e => e.id.raw
+  | .object e => e.id.raw
 
 /-- Lean declarations that must resolve before this row can be persisted. -/
 def SemanticEntry.declarations : SemanticEntry → Array Name
@@ -92,6 +94,7 @@ def SemanticEntry.declarations : SemanticEntry → Array Name
   | .cell e => #[e.declaration]
   | .limit e => #[e.declaration]
   | .adjunction e => #[e.declaration]
+  | .object e => #[e.declaration]
 
 structure SemanticState where
   categories : Array NamedCategoryEntry := #[]
@@ -107,6 +110,7 @@ structure SemanticState where
   cells : Array CellEntry := #[]
   limits : Array LimitEntry := #[]
   adjunctions : Array AdjunctionEntry := #[]
+  objects : Array ObjectEntry := #[]
   deriving Inhabited
 
 /-- Registered category-constructor lookup by stable ID. -/
@@ -358,6 +362,7 @@ private def SemanticState.apply : SemanticState → SemanticEntry → SemanticSt
   | s, .cell e => { s with cells := s.cells.push e }
   | s, .limit e => { s with limits := s.limits.push e }
   | s, .adjunction e => { s with adjunctions := s.adjunctions.push e }
+  | s, .object e => { s with objects := s.objects.push e }
 
 def SemanticState.entries (state : SemanticState) : List SemanticEntry :=
   state.categories.toList.map SemanticEntry.category ++
@@ -372,7 +377,8 @@ def SemanticState.entries (state : SemanticState) : List SemanticEntry :=
     state.lifts.toList.map SemanticEntry.lift ++
     state.cells.toList.map SemanticEntry.cell ++
     state.limits.toList.map SemanticEntry.limit ++
-    state.adjunctions.toList.map SemanticEntry.adjunction
+    state.adjunctions.toList.map SemanticEntry.adjunction ++
+    state.objects.toList.map SemanticEntry.object
 
 def semanticEntryPairAllowed : SemanticEntry → SemanticEntry → Bool
   | .category category, right =>
@@ -548,6 +554,9 @@ def validatePersistedSemanticState (state : SemanticState) : Except String Unit 
   for method in state.methods do
     unless (state.functor? method.functor).isSome do
       throw s!"method entry {method.id.raw} names an unregistered functor"
+  for object in state.objects do
+    unless state.categories.any (·.id == object.category) do
+      throw s!"object entry {object.id.raw} names an unregistered category"
   for adjunction in state.adjunctions do
     unless (state.functor? adjunction.left).isSome && (state.functor? adjunction.right).isSome do
       throw s!"adjunction entry {adjunction.id.raw} names an unregistered functor"
@@ -1801,6 +1810,16 @@ def validateLimit (state : SemanticState) (e : LimitEntry) : MetaM Unit := do
       (← categoryCarrierInstance category) do
     throwError "limit {e.id.raw}: its diagrams are not in {e.category.raw}"
 
+/-- An object row's declaration returns, after its parameters, an object of its registered
+category. -/
+def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
+  let some category := state.categories.find? (·.id == e.category)
+    | throwError "object {e.id.raw} names an unregistered category {e.category.raw}"
+  let declaration ← mkConstWithFreshMVarLevels e.declaration
+  let (_, _, type) ← forallMetaTelescopeReducing (← inferType declaration)
+  unless ← withTransparency .all <| isDefEq type (← categoryCarrierInstance category) do
+    throwError "object {e.id.raw}: {e.declaration} does not return an object of {e.category.raw}"
+
 /-- An adjunction row names a Mathlib `Adjunction L R` between exactly its two registered
 functors. -/
 def validateAdjunction (state : SemanticState) (e : AdjunctionEntry) : MetaM Unit := do
@@ -1943,6 +1962,7 @@ def validateSemanticEntryDeclaration (entry : SemanticEntry) : MetaM Unit := do
   | .cell e => validateCell state e
   | .limit e => validateLimit state e
   | .adjunction e => validateAdjunction state e
+  | .object e => validateObject state e
   | .constructor e => do
       let semanticsConstant ← mkConstWithFreshMVarLevels e.semantics
       let (_, binderInfos, result) ←

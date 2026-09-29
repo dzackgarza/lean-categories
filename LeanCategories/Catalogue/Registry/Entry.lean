@@ -110,6 +110,16 @@ structure AdjunctionEntry where
   declaration : Lean.Name
   deriving Repr
 
+/-- A named object or object constructor (CC-CALC): `declaration : (parameters) → C`, a Lean
+function from typed parameters to the objects of the registered category `category`, e.g.
+`n ↦ ℤ/n` in `Sets`. Its parameters are typed terms, never strings. A leaf presents its values by
+handles, each with its identification; it never names the object. -/
+structure ObjectEntry where
+  id : ObjectId
+  category : CategoryId
+  declaration : Lean.Name
+  deriving Repr
+
 /-- A cell row (CC-CALC, CC-COHERE): a natural transformation `declaration : L ⟶ R` (or, when `invertible`,
 a natural isomorphism `L ≅ R`) between the composites `L`, `R` of the registered functors along
 `left` and `right` (the identity of `source` when empty). The cell is Mathlib's; the row names it

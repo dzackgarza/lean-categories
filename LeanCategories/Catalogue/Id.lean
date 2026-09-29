@@ -93,6 +93,11 @@ structure AdjunctionId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 
+/-- Stable id of a named object or object constructor, e.g. `obj.sets.integers_mod`. -/
+structure ObjectId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
 /-- Stable functor id. -/
 structure FunctorId where
   raw : String
@@ -123,6 +128,7 @@ instance : Inhabited PropertyId := ⟨⟨""⟩⟩
 instance : Inhabited LiftId := ⟨⟨""⟩⟩
 instance : Inhabited LimitId := ⟨⟨""⟩⟩
 instance : Inhabited AdjunctionId := ⟨⟨""⟩⟩
+instance : Inhabited ObjectId := ⟨⟨""⟩⟩
 instance : Inhabited ClassifierId := ⟨⟨""⟩⟩
 instance : Inhabited CategoryFamilyId := ⟨⟨""⟩⟩
 instance : Inhabited ParameterId := ⟨⟨""⟩⟩

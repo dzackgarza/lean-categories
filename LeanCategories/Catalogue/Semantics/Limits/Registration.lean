@@ -9,6 +9,7 @@ public import LeanCategories.Catalogue.Semantics.Algebra.CatalogueRegistration
 public import LeanCategories.Algebra.GroupKernel
 public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Types.Coproducts
+public import Mathlib.CategoryTheory.Limits.Types.Products
 public import LeanCategories.Modules.Bilinear.Valued.Cokernel
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.CatalogueRegistration
 public meta import LeanCategories.Catalogue.Registry.Semantic
@@ -20,6 +21,8 @@ public meta import LeanCategories.Catalogue.Registry.Semantic
 
 * `lim.sets.pullback`: the explicit pullback of sets, `{(x, y) | f x = g y}` with its projections
   (Mathlib `Types.pullbackLimitCone`);
+* `lim.sets.product`: the cartesian product `X × Y` with its projections (Mathlib
+  `Types.binaryProductLimitCone`);
 * `colim.sets.coproduct`: the disjoint union `X ⊕ Y` with its injections (Mathlib
   `Types.binaryCoproductColimitCocone`);
 * `colim.bil_w_form.cokernel`: the cokernel of a map of formed modules with varying values, the
@@ -48,6 +51,10 @@ def groupsKernel {G H : GrpCat.{u}} (f : G ⟶ H) :
     LimitCone (parallelPair f 1) :=
   LeanCategories.Algebra.kernelLimitCone f
 
+/-- Binary products in `Sets`. -/
+def setsProduct (X Y : LeanCategories.Foundation.Mathlib.Sets.{u}) : LimitCone (pair X Y) :=
+  Types.binaryProductLimitCone X Y
+
 /-- Binary coproducts in `Sets`. -/
 def setsCoproduct (X Y : LeanCategories.Foundation.Mathlib.Sets.{u}) :
     ColimitCocone (pair X Y) :=
@@ -66,6 +73,10 @@ namespace CasCatalogue
 normalized_registry .limit
   { id := ⟨"lim.sets.pullback"⟩, category := CategoryId.sets, shape := "pullback"
     declaration := `CasCatalogue.Limits.Registration.setsPullback }
+
+normalized_registry .limit
+  { id := ⟨"lim.sets.product"⟩, category := CategoryId.sets, shape := "product"
+    declaration := `CasCatalogue.Limits.Registration.setsProduct }
 
 normalized_registry .limit
   { id := ⟨"colim.sets.coproduct"⟩, category := CategoryId.sets, shape := "coproduct"
