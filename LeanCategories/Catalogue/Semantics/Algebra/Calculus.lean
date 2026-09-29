@@ -27,7 +27,7 @@ mathematics is (maps into `ℝ⊥`, the partial map classifier):
   accumulation point of `D` and `f|_D` tends to a limit on `D ∖ {a}` (Mathlib `Filter.Tendsto`,
   `nhdsWithin`), and `lim_{t → ∞} f(t)` along `atTop`, defined when `D` is unbounded above;
 * `∫_a^b f`, defined when `f` is interval integrable on `[a, b]` (Mathlib `intervalIntegral`);
-* `R[[t]]` (Mathlib `PowerSeries`), its coefficients `R[[t]] × ℕ → R`, and formal sums
+* `R[[t]]` (Mathlib `PowerSeries`), refined by the ring `R[[t]]`, its coefficients `R[[t]] × ℕ → R`, and formal sums
   `∑_{x ∈ A} f(x)` of families `f : X → R[[t]]`, defined when each coefficient is nonzero for finitely
   many `x ∈ A` (the `t`-adic summability of the family), coefficientwise;
 * `x^n : X × ℕ → X` in a monoid (Mathlib `Monoid.npow`);
@@ -103,6 +103,15 @@ noncomputable def powerSeriesConstants (R : Type) [CommRing R] :
     (R : SetsCat.{0}) ⟶ powerSeries R :=
   TypeCat.ofHom fun r => PowerSeries.C r
 
+/-- `R[[t]]` as a ring. -/
+noncomputable abbrev ringPowerSeries (R : Type) [CommRing R] : LeanCategories.Algebra.Rings.{0} :=
+  RingCat.of (PowerSeries R)
+
+/-- The underlying set of the ring `R[[t]]` is `R[[t]]`. -/
+def ringPowerSeriesIdentification (R : Type) [CommRing R] :
+    (powerSeries R : SetsCat.{0}) ≅ powerSeries R :=
+  Iso.refl _
+
 /-- The coefficient of `tⁿ`. -/
 noncomputable def coefficient (R : Type) [CommRing R] :
     (powerSeries R × CasCatalogue.Foundation.Objects.naturals : SetsCat.{0}) ⟶ (R : SetsCat.{0}) :=
@@ -173,6 +182,13 @@ normalized_registry .object
     declaration := `CasCatalogue.Algebra.Calculus.powerSeries
     generator := some `CasCatalogue.Algebra.Calculus.powerSeriesGenerator
     constants := some `CasCatalogue.Algebra.Calculus.powerSeriesConstants }
+
+normalized_registry .object
+  { id := ⟨"obj.rings.power_series"⟩, category := CategoryId.rings, name := "PowerSeries"
+    declaration := `CasCatalogue.Algebra.Calculus.ringPowerSeries
+    refines := some
+      { base := ⟨"obj.sets.power_series"⟩, route := ringsToSets
+        identification := `CasCatalogue.Algebra.Calculus.ringPowerSeriesIdentification } }
 
 normalized_registry .morphism
   { id := ⟨"mor.sets.power_series_coefficient"⟩, category := CategoryId.sets, name := "coefficient"
