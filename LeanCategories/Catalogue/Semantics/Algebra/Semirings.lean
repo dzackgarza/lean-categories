@@ -7,6 +7,7 @@ module
 public import LeanCategories.Catalogue.Semantics.Foundation.PowerSets
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Data.Nat.Factorization.Basic
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.Foundation.Catalogue
 
@@ -17,7 +18,8 @@ public meta import LeanCategories.Catalogue.Semantics.Foundation.Catalogue
 
 `Semirings` (Mathlib `SemiRingCat`) with its underlying sets; `ℕ` is refined by the semiring `ℕ`,
 whose operations are `+`, `·` and `^k`; primality `ℕ → Ω` is a predicate on its elements (Mathlib
-`Nat.Prime`). The rings `ℤ, ℚ, ℝ, ℂ` are refined in `Rings` only, so each
+`Nat.Prime`), and the factorization of `n = ∏ pᵉᵖ` is given by its prime factors `ℕ → 𝒫(ℕ)` and the
+multiplicities `(n, p) ↦ eₚ` (Mathlib `Nat.primeFactors`, `Nat.factorization`). The rings `ℤ, ℚ, ℝ, ℂ` are refined in `Rings` only, so each
 operation on their elements has one owner.
 -/
 
@@ -79,6 +81,13 @@ abbrev semiringNaturals : Semirings.{0} := SemiRingCat.of ℕ
 /-- `n ↦ n is prime`, `ℕ → Ω`. -/
 def isPrime : naturals ⟶ omega := TypeCat.ofHom fun n => Nat.Prime n
 
+/-- The prime factors of `n` (none for `n = 0, 1`). -/
+def primeFactors : naturals ⟶ powerSet ℕ := TypeCat.ofHom fun n => (n.primeFactors : Set ℕ)
+
+/-- `(n, p) ↦` the exponent of `p` in `n` (`0` unless `p` is a prime factor). -/
+noncomputable def multiplicity : (naturals × naturals : SetsCat.{0}) ⟶ naturals :=
+  TypeCat.ofHom fun p => p.1.factorization p.2
+
 def semiringNaturalsIdentification : (naturals : SetsCat.{0}) ≅ naturals := Iso.refl _
 
 end Algebra.Semirings
@@ -117,5 +126,13 @@ normalized_registry .operation
 normalized_registry .morphism
   { id := ⟨"mor.sets.nat_is_prime"⟩, category := CategoryId.sets, name := "is_prime"
     declaration := `CasCatalogue.Algebra.Semirings.isPrime }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.nat_prime_factors"⟩, category := CategoryId.sets, name := "prime_factors"
+    declaration := `CasCatalogue.Algebra.Semirings.primeFactors }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.nat_multiplicity"⟩, category := CategoryId.sets, name := "multiplicity"
+    declaration := `CasCatalogue.Algebra.Semirings.multiplicity }
 
 end CasCatalogue
