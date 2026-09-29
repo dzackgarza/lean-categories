@@ -6,6 +6,42 @@ Read [TODO.md](TODO.md) for the execution DAG and existing sweep records,
 Record new issues when encountered under `LC-05`; logging never discharges the
 mathematical obligation. Continue independent work whose prerequisites hold.
 
+# Role in the programme: the single mathematical authority (always-on)
+
+[`lean-cas-dsl/specs/architecture.md`](https://github.com/dzackgarza/lean-cas-dsl/blob/main/specs/architecture.md)
+owns the separation of concerns. This repository's part in it:
+
+* **Everything mathematical is here and nowhere else.** This covers:
+  - categories and higher categories, n-morphisms, and structural and forgetful functors;
+  - classifiers and their pullbacks;
+  - typed constructors and parameter families;
+  - operations (every user-facing method is a formal operation, section, functor, classifier
+    query or composite);
+  - predicates, coherences and comparison cells.
+
+  Downstream (`lean-cas-dsl`, its leaves, `research`) consumes a pinned release and may add none
+  of these. A downstream need for missing mathematics arrives here as a formalization request.
+  Until it is formalized and released, the CAS has no such notion.
+* **Blind to computation.** Decide what a definition means from its sources, never from what
+  Sage, GAP or any backend computes, and never from what a leaf would find convenient. Backend
+  capability is irrelevant to every audit here.
+* **Auditable as mathematics alone.** Every definition checks against its citations, Mathlib and
+  the formalization corpus. There is no `sorry` and no unchecked semantic axiom. This repository
+  builds and audits without any downstream package.
+* **Typed identity.** Constructor applications and family parameters are typed terms, never
+  strings. `LeftModules(R)`, `LeftModules(S)` and `Bimodules(R,S)` differ unless a theorem
+  identifies them. Two routes are identified only by a coherence cell, never by precedence.
+* **Monotone growth.** A new generic operation or structural fact is stated at its true generality,
+  so that every object it applies to downstream acquires it on re-pin, with no leaf edit.
+* **The semantic registry comes here.** Which categories, structural functors, operations and
+  coherences constitute the language's semantics is mathematics. `lean-cas-dsl`'s local registry
+  moves here as a proof-carrying registry (`cc-sem-upstream`), and `lean-cas-dsl` then only reads
+  its projection (`cc-sem-derive`).
+* **Corrections flow down, never up.** A downstream failure (a leaf that cannot compute, a failing
+  acceptance assertion) is never a reason to change a definition here. Only a mathematical error
+  in this repository is. Such a correction is released, and downstream re-pins and updates the
+  affected assertions in that same step.
+
 # Start here: corpus execution
 
 For every request to continue the TODOs, apply this workflow before selecting or

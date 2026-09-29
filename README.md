@@ -29,11 +29,17 @@ LeanCategories/
   Util/
 ```
 
-This repository owns mathematics only. The computer algebra system built over it — the
-symbolic registry of categories and functors with their checked denotations here, method
-resolution, realizations over Sage/GAP/Julia, and the notebook DSL — is
-[`lean-cas-dsl`](https://github.com/dzackgarza/lean-cas-dsl), which requires this package.
-Its computational-core requirements and plan live in that repository's `specs/`.
+This repository is the single mathematical authority of the programme. It owns all mathematics
+that the computer algebra language
+[`lean-cas-dsl`](https://github.com/dzackgarza/lean-cas-dsl) means: categories, functors,
+classifiers, operations (every user-facing method), coherences, and typed constructors and
+families. It also owns their registration as the language's semantics.
+
+`lean-cas-dsl` requires this package and derives the language from a pinned release. It owns
+resolution, realizations over Sage, GAP, Julia and other engines, the leaf API and the notebook,
+and it owns no mathematics. Its semantic registry (`CasCatalogue/Semantics`) is transitional and
+moves here (its plan nodes `cc-sem-upstream` and `cc-sem-derive`). The contract is
+[`lean-cas-dsl/specs/architecture.md`](https://github.com/dzackgarza/lean-cas-dsl/blob/main/specs/architecture.md).
 
 The support directories describe the same mathematical library. They do not define a
 second category system. `Core` and `Model` define the common language. `Realization`
