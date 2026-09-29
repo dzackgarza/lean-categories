@@ -27,7 +27,11 @@ mathematics is (maps into `ℝ⊥`, the partial map classifier):
   accumulation point of `D` and `f|_D` tends to a limit on `D ∖ {a}` (Mathlib `Filter.Tendsto`,
   `nhdsWithin`), and `lim_{t → ∞} f(t)` along `atTop`, defined when `D` is unbounded above;
 * `∫_a^b f`, defined when `f` is interval integrable on `[a, b]` (Mathlib `intervalIntegral`);
-* `ℝ[[t]]` (Mathlib `PowerSeries`) and the Taylor expansion `a ↦ Σ f⁽ᵏ⁾(a)/k! tᵏ` of `f : ℝ → ℝ`,
+* `R[[t]]` (Mathlib `PowerSeries`), its coefficients `R[[t]] × ℕ → R`, and formal sums
+  `∑_{x ∈ A} f(x)` of families `f : X → R[[t]]`, defined when each coefficient is nonzero for finitely
+  many `x ∈ A` (the `t`-adic summability of the family), coefficientwise;
+* `x^n : X × ℕ → X` in a monoid (Mathlib `Monoid.npow`);
+* the Taylor expansion `a ↦ Σ f⁽ᵏ⁾(a)/k! tᵏ` of `f : ℝ → ℝ`,
   defined where `f` is smooth (Mathlib `ContDiffAt`, `iteratedDeriv`).
 -/
 
@@ -99,6 +103,26 @@ noncomputable def powerSeriesConstants (R : Type) [CommRing R] :
     (R : SetsCat.{0}) ⟶ powerSeries R :=
   TypeCat.ofHom fun r => PowerSeries.C r
 
+/-- The coefficient of `tⁿ`. -/
+noncomputable def coefficient (R : Type) [CommRing R] :
+    (powerSeries R × CasCatalogue.Foundation.Objects.naturals : SetsCat.{0}) ⟶ (R : SetsCat.{0}) :=
+  TypeCat.ofHom fun p => PowerSeries.coeff p.2 p.1
+
+open Classical in
+/-- `A ↦ ∑_{x ∈ A} f(x)`, coefficientwise, defined when every coefficient is nonzero for finitely
+many `x ∈ A`. -/
+noncomputable def formalSum (X R : Type) [CommRing R]
+    (f : (X : SetsCat.{0}) ⟶ powerSeries R) : powerSet X ⟶ partialValues (PowerSeries R) :=
+  TypeCat.ofHom fun A =>
+    let c := fun k x => PowerSeries.coeff k (ConcreteCategory.hom (C := Type) f x)
+    if ∀ k, {x | x ∈ A ∧ c k x ≠ 0}.Finite then some (PowerSeries.mk fun k => ∑ᶠ x ∈ A, c k x)
+    else none
+
+/-- `(x, n) ↦ xⁿ` in a monoid. -/
+def power (X : Type) [Monoid X] : (X × CasCatalogue.Foundation.Objects.naturals : SetsCat.{0}) ⟶
+    (X : SetsCat.{0}) :=
+  TypeCat.ofHom fun p => p.1 ^ p.2
+
 open Classical in
 /-- `a ↦ Σ f⁽ᵏ⁾(a)/k! tᵏ`, defined where `f` is smooth. -/
 noncomputable def taylor (f : reals ⟶ reals) : reals ⟶ partialValues (PowerSeries ℝ) :=
@@ -149,6 +173,18 @@ normalized_registry .object
     declaration := `CasCatalogue.Algebra.Calculus.powerSeries
     generator := some `CasCatalogue.Algebra.Calculus.powerSeriesGenerator
     constants := some `CasCatalogue.Algebra.Calculus.powerSeriesConstants }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.power_series_coefficient"⟩, category := CategoryId.sets, name := "coefficient"
+    declaration := `CasCatalogue.Algebra.Calculus.coefficient }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.power_series_sum"⟩, category := CategoryId.sets, name := "∑ₜ"
+    declaration := `CasCatalogue.Algebra.Calculus.formalSum }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.monoid_power"⟩, category := CategoryId.sets, name := "^"
+    declaration := `CasCatalogue.Algebra.Calculus.power }
 
 normalized_registry .morphism
   { id := ⟨"mor.sets.taylor_expansion"⟩, category := CategoryId.sets, name := "taylor_expansion"
