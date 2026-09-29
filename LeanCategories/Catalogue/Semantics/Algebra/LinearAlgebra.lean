@@ -21,6 +21,7 @@ public meta import LeanCategories.Catalogue.Registry.Semantic
 * `Matₙ(K)` is the set of `n × n` matrices over a commutative ring `K`, made from its rows by
   `rows : (Kⁿ)ⁿ → Matₙ(K)` (Mathlib `Matrix.of`); a matrix is applied to vectors,
   `Matₙ(K) × Kⁿ → Kⁿ` (Mathlib `Matrix.mulVec`).
+* `companion_matrix : K[x] → Matₙ(K)`, the companion matrix of `xⁿ + Σ_{i<n} pᵢ xⁱ`.
 * `det`, `trace : Matₙ(K) → K`, `rank : Matₙ(K) → ℕ`, `charpoly : Matₙ(K) → K[x]`, and
   `ker : Matₙ(K) → 𝒫(Kⁿ)`, `{v | M v = 0}`.
 * Over a field `K`: `span : 𝒫(Kⁿ) → 𝒫(Kⁿ)` (the subspace a set spans, Mathlib `Submodule.span`)
@@ -76,6 +77,13 @@ noncomputable def rank (n : ℕ) (K : Type) [CommRing K] :
 /-- The characteristic polynomial `det(x - M)`. -/
 noncomputable def charpoly (n : ℕ) (K : Type) [CommRing K] : matrices n K ⟶ polynomials K :=
   TypeCat.ofHom fun M => M.charpoly
+
+/-- The companion matrix of the monic polynomial `xⁿ + Σ_{i<n} pᵢ xⁱ` made from the coefficients
+`p₀, …, pₙ₋₁` of `p` (for a monic `p` of degree `n`, of `p` itself): ones below the diagonal and
+`-p₀, …, -pₙ₋₁` in the last column. Mathlib has no companion matrix. -/
+def companion (n : ℕ) (K : Type) [CommRing K] : polynomials K ⟶ matrices n K :=
+  TypeCat.ofHom fun p => Matrix.of fun i j =>
+    if j.val + 1 = n then -p.coeff i.val else if i.val = j.val + 1 then 1 else 0
 
 /-- The kernel `{v | M v = 0}`. -/
 def ker (n : ℕ) (K : Type) [CommRing K] : matrices n K ⟶ powerSet (Fin n → K) :=
@@ -134,6 +142,10 @@ normalized_registry .morphism
 normalized_registry .morphism
   { id := ⟨"mor.sets.matrix_charpoly"⟩, category := CategoryId.sets, name := "charpoly"
     declaration := `CasCatalogue.Algebra.LinearAlgebra.charpoly }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.companion_matrix"⟩, category := CategoryId.sets, name := "companion_matrix"
+    declaration := `CasCatalogue.Algebra.LinearAlgebra.companion }
 
 normalized_registry .morphism
   { id := ⟨"mor.sets.matrix_ker"⟩, category := CategoryId.sets, name := "ker"
