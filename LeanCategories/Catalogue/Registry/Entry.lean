@@ -142,6 +142,9 @@ structure ObjectEntry where
   /-- How the elements of `obj params` act on arguments: `∀ params args, obj params × A ⟶ B`
   (a polynomial's evaluation `R[x] × A → A` at an `R`-algebra `A`). -/
   application : Option Lean.Name := none
+  /-- The constants: a monomorphism `∀ params, p ⟶ obj params` from the object's first parameter
+  `p`, a set (the constant polynomials `R ↪ R[x]`). -/
+  constants : Option Lean.Name := none
   deriving Repr
 
 /-- A literal form of a registered category (CC-CALC): `type` is a Lean type of literal values with

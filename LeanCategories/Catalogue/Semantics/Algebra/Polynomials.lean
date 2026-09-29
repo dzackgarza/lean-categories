@@ -17,7 +17,8 @@ public meta import LeanCategories.Catalogue.Registry.Semantic
 
 For a commutative ring `R`, `R[x]` is the set of polynomials over `R` (Mathlib `Polynomial R`),
 refined by the ring `R[x]`, with
-* its generator `x : 1 → R[x]` (Mathlib `Polynomial.X`), its constants `k ∈ R[x]`, and
+* its generator `x : 1 → R[x]` (Mathlib `Polynomial.X`), its numerals `k ∈ R[x]`, its constants
+  `R ↪ R[x]` (Mathlib `Polynomial.C`), and
 * its application `R[x] × A → A` at an `R`-algebra `A`, `(p, a) ↦ p(a)` (Mathlib
   `Polynomial.aeval`).
 
@@ -45,6 +46,10 @@ noncomputable def generator (R : Type) [CommRing R] : fin 1 ⟶ polynomials R :=
 /-- The constant polynomial `k ∈ R[x]`. -/
 noncomputable def constant (R : Type) [CommRing R] (k : ℕ) : Option (polynomials R) :=
   some (k : Polynomial R)
+
+/-- The constants `R ↪ R[x]` (Mathlib `Polynomial.C`), injective. -/
+noncomputable def coefficients (R : Type) [CommRing R] : (R : SetsCat.{0}) ⟶ polynomials R :=
+  TypeCat.ofHom (C : R →+* Polynomial R)
 
 /-- `(p, a) ↦ p(a)`, `R[x] × A → A`. -/
 noncomputable def evaluation (R A : Type) [CommRing R] [CommRing A] [Algebra R A] :
@@ -94,7 +99,8 @@ normalized_registry .object
   { id := ⟨"obj.sets.polynomials"⟩, category := CategoryId.sets, name := "Poly"
     declaration := `CasCatalogue.Algebra.Polynomials.polynomials
     generator := some `CasCatalogue.Algebra.Polynomials.generator
-    application := some `CasCatalogue.Algebra.Polynomials.evaluation }
+    application := some `CasCatalogue.Algebra.Polynomials.evaluation
+    constants := some `CasCatalogue.Algebra.Polynomials.coefficients }
 
 normalized_registry .elementLiteral
   { id := ⟨"elt.sets.polynomials"⟩, object := ⟨"obj.sets.polynomials"⟩

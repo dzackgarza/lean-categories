@@ -1871,7 +1871,7 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
   unless ← withTransparency .all <| isDefEq type (← categoryCarrierInstance category) do
     throwError "object {e.id.raw}: {e.declaration} does not return an object of {e.category.raw}"
   -- A generator lands in the object; an application is a family of morphisms out of a product.
-  for name in e.generator.toArray ++ e.application.toArray do
+  for name in e.generator.toArray ++ e.application.toArray ++ e.constants.toArray do
     let constant ← mkConstWithFreshMVarLevels name
     let (_, _, result) ← forallMetaTelescopeReducing (← inferType constant)
     unless (← whnfR result).isAppOf ``Quiver.Hom do
@@ -1882,6 +1882,16 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
     let (objArgs, _, _) ← forallMetaTelescopeReducing (← inferType declaration)
     unless ← withTransparency .all <| isDefEq (← whnfR result).appArg! (mkAppN declaration objArgs) do
       throwError "object {e.id.raw}: the generator {generator} does not land in it"
+  if let some constants := e.constants then
+    let constant ← mkConstWithFreshMVarLevels constants
+    let (_, _, result) ← forallMetaTelescopeReducing (← inferType constant)
+    let (objArgs, _, _) ← forallMetaTelescopeReducing (← inferType declaration)
+    let some first := objArgs[0]? | throwError "object {e.id.raw} has constants but no parameter"
+    let result ← whnfR result
+    unless ← withTransparency .all <| (isDefEq result.appFn!.appArg! first <&&>
+        isDefEq result.appArg! (mkAppN declaration objArgs)) do
+      throwError "object {e.id.raw}: the constants {constants} are not a map from its first \
+        parameter to it"
   let some refinement := e.refines | return
   let some base := state.objects.find? (·.id == refinement.base)
     | throwError "object {e.id.raw} refines an unregistered object {refinement.base.raw}"
