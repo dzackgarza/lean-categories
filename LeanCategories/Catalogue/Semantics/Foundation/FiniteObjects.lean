@@ -51,7 +51,7 @@ normalized_registry .object
   { id := ⟨"obj.finite_sets.fin"⟩, category := CategoryId.finiteSets, name := "Fin"
     declaration := `CasCatalogue.Foundation.FiniteObjects.finiteFin
     refines := some
-      { base := ⟨"obj.sets.fin"⟩, edge := .classifierForget ClassifierId.setsFinite
+      { base := ⟨"obj.sets.fin"⟩, route := #[.classifierForget ClassifierId.setsFinite]
         identification := `CasCatalogue.Foundation.FiniteObjects.finiteFinIdentification } }
 
 normalized_registry .elementLiteral

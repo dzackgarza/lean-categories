@@ -61,6 +61,7 @@ inductive SemanticEntry
   | elementLiteral (e : ElementLiteralEntry)
   | graphLiteral (e : GraphLiteralEntry)
   | morphism (e : MorphismEntry)
+  | operation (e : OperationEntry)
   deriving Repr
 
 /-- Stable identifier represented by a heterogeneous registry entry. -/
@@ -83,6 +84,7 @@ def SemanticEntry.stableId : SemanticEntry → String
   | .elementLiteral e => e.id.raw
   | .graphLiteral e => e.id.raw
   | .morphism e => e.id.raw
+  | .operation e => e.id.raw
 
 /-- Lean declarations that must resolve before this row can be persisted. -/
 def SemanticEntry.declarations : SemanticEntry → Array Name
@@ -107,6 +109,7 @@ def SemanticEntry.declarations : SemanticEntry → Array Name
   | .elementLiteral e => #[e.denotation]
   | .graphLiteral e => #[e.denotation]
   | .morphism e => #[e.declaration]
+  | .operation e => #[e.declaration]
 
 structure SemanticState where
   categories : Array NamedCategoryEntry := #[]
@@ -127,6 +130,7 @@ structure SemanticState where
   elementLiterals : Array ElementLiteralEntry := #[]
   graphLiterals : Array GraphLiteralEntry := #[]
   morphisms : Array MorphismEntry := #[]
+  operations : Array OperationEntry := #[]
   deriving Inhabited
 
 /-- Registered category-constructor lookup by stable ID. -/
@@ -383,6 +387,7 @@ private def SemanticState.apply : SemanticState → SemanticEntry → SemanticSt
   | s, .elementLiteral e => { s with elementLiterals := s.elementLiterals.push e }
   | s, .graphLiteral e => { s with graphLiterals := s.graphLiterals.push e }
   | s, .morphism e => { s with morphisms := s.morphisms.push e }
+  | s, .operation e => { s with operations := s.operations.push e }
 
 def SemanticState.entries (state : SemanticState) : List SemanticEntry :=
   state.categories.toList.map SemanticEntry.category ++
@@ -402,7 +407,8 @@ def SemanticState.entries (state : SemanticState) : List SemanticEntry :=
     state.literals.toList.map SemanticEntry.literal ++
     state.elementLiterals.toList.map SemanticEntry.elementLiteral ++
     state.graphLiterals.toList.map SemanticEntry.graphLiteral ++
-    state.morphisms.toList.map SemanticEntry.morphism
+    state.morphisms.toList.map SemanticEntry.morphism ++
+    state.operations.toList.map SemanticEntry.operation
 
 def semanticEntryPairAllowed : SemanticEntry → SemanticEntry → Bool
   | .category category, right =>
@@ -1857,15 +1863,19 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
   unless base.name == e.name && base.refines.isNone do
     throwError "object {e.id.raw} refines {base.id.raw}, which is not the unrefined object named \
       {e.name}"
-  let some edge := state.structuralEdge? refinement.edge
-    | throwError "object {e.id.raw}: {refinement.edge.label} is not a structural step"
   let some baseCategory := state.categories.find? (·.id == base.category)
     | throwError "object {e.id.raw}: {base.id.raw} has an unregistered category"
-  unless edge.source.syntacticEq category.expression &&
-      edge.target.syntacticEq baseCategory.expression do
-    throwError "object {e.id.raw}: {refinement.edge.label} does not go from {e.category.raw} to \
+  let mut at_ := category.expression
+  for step in refinement.route do
+    let some edge := state.structuralEdge? step
+      | throwError "object {e.id.raw}: {step.label} is not a structural step"
+    unless edge.source.syntacticEq at_ do
+      throwError "object {e.id.raw}: the route does not continue at {step.label}"
+    at_ := edge.target
+  unless !refinement.route.isEmpty && at_.syntacticEq baseCategory.expression do
+    throwError "object {e.id.raw}: the route does not go from {e.category.raw} to \
       {base.category.raw}"
-  let functor ← state.edgeFunctor refinement.edge
+  let functor ← state.routeFunctor refinement.route
   let identification ← mkConstWithFreshMVarLevels refinement.identification
   let (idArgs, _, idType) ← forallMetaTelescopeReducing (← inferType identification)
   unless idArgs.size == args.size do
@@ -1887,7 +1897,7 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
     | _, _ => pure false
   unless ok do
     throwError "object {e.id.raw}: {refinement.identification} is not an isomorphism from the \
-      image of {e.declaration} along {refinement.edge.label} to {base.declaration}"
+      image of {e.declaration} along {renderSteps refinement.route} to {base.declaration}"
 
 /-- A literal row's `denotation` sends its literal `type`, which has decidable equality, to the
 objects of its registered category; one literal form per category. -/
@@ -1963,6 +1973,27 @@ def validateMorphism (state : SemanticState) (e : MorphismEntry) : MetaM Unit :=
   let (_, _, type) ← forallMetaTelescopeReducing (← inferType declaration)
   unless ← withTransparency .all <| isDefEq type (← categoryHomType category) do
     throwError "morphism {e.id.raw}: {e.declaration} is not a morphism of {e.category.raw}"
+
+/-- An operation row's `declaration : ∀ X, P ⟶ A` is, at each object `X` of its category, a
+morphism of `Sets` into the set `A` underlying `X`, from `A × A` (arity 2), `A` (arity 1) or a
+terminal set (arity 0); its name is unique among the category's operations. -/
+def validateOperation (state : SemanticState) (e : OperationEntry) : MetaM Unit := do
+  let some category := state.categories.find? (·.id == e.category)
+    | throwError "operation {e.id.raw} names an unregistered category {e.category.raw}"
+  if e.name.isEmpty then throwError "operation {e.id.raw} has no surface name"
+  if state.operations.any fun o => o.category == e.category && o.name == e.name then
+    throwError "operation {e.id.raw}: {e.category.raw} already has an operation {e.name}"
+  unless e.arity ≤ 2 do throwError "operation {e.id.raw}: arity {e.arity} is not 0, 1 or 2"
+  let declaration ← mkConstWithFreshMVarLevels e.declaration
+  let (args, _, type) ← forallMetaTelescopeReducing (← inferType declaration)
+  let some X := args.back?
+    | throwError "operation {e.id.raw}: {e.declaration} takes no object"
+  unless ← withTransparency .all <| isDefEq (← inferType X) (← categoryCarrierInstance category) do
+    throwError "operation {e.id.raw}: {e.declaration} is not indexed by the objects of \
+      {e.category.raw}"
+  let type ← whnfR type
+  unless type.isAppOf ``Quiver.Hom do
+    throwError "operation {e.id.raw}: {e.declaration} is not a family of morphisms"
 
 /-- An adjunction row names a Mathlib `Adjunction L R` between exactly its two registered
 functors. -/
@@ -2114,6 +2145,7 @@ def validateSemanticEntryDeclaration (entry : SemanticEntry) : MetaM Unit := do
   | .elementLiteral e => validateElementLiteral state e
   | .graphLiteral e => validateGraphLiteral state e
   | .morphism e => validateMorphism state e
+  | .operation e => validateOperation state e
   | .constructor e => do
       let semanticsConstant ← mkConstWithFreshMVarLevels e.semantics
       let (_, binderInfos, result) ←

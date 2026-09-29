@@ -117,9 +117,11 @@ handles, each with its identification; it never names the object. -/
 structure ObjectRefinement where
   /-- The object this one refines, in the target category of `edge`. -/
   base : ObjectId
-  /-- The structural functor forgetting the refinement. -/
-  edge : EdgeRef
-  /-- `∀ params, edge.obj (declaration params) ≅ base.declaration params`. -/
+  /-- The structural route forgetting the refinement: a nonempty chain of structural steps from
+  this object's category to the base's. -/
+  route : Array EdgeRef
+  /-- `∀ params, route.obj (declaration params) ≅ base.declaration params`; its domain is checked
+  to be the image along the route. -/
   identification : Lean.Name
   deriving Repr
 
@@ -163,6 +165,19 @@ structure GraphLiteralEntry where
   id : LiteralId
   category : CategoryId
   denotation : Lean.Name
+  deriving Repr
+
+/-- An element operation of a registered category `C` whose objects refine sets: `declaration :
+∀ X, (U X)^arity ⟶ U X` in `Sets`, natural in `X`, where `U X` is the set `X` refines and the power
+is Lean's product (`U X × U X` for arity 2, `U X` for arity 1, the terminal set for arity 0). Its
+surface name is the language's operator (`+`, `·`, `-`). For rings: addition, multiplication and
+negation of elements. -/
+structure OperationEntry where
+  id : OperationId
+  category : CategoryId
+  name : String
+  arity : Nat
+  declaration : Lean.Name
   deriving Repr
 
 /-- A named morphism family of a registered category: `declaration : ∀ params, X ⟶ Y`, with its
