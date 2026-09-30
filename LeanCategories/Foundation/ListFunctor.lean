@@ -56,10 +56,11 @@ def listReverse : listFunctor.{u} ≅ listFunctor.{u} where
   hom_inv_id := listReverseHom_comp_self
   inv_hom_id := listReverseHom_comp_self
 
-@[simp] theorem listUnit_app_apply (X : Type u) (x : X) : listUnit.app X x = [x] := rfl
+@[simp] theorem listUnit_app_apply (X : Type u) (x : X) :
+    (listUnit.app X : X ⟶ listFunctor.obj X) x = [x] := rfl
 
 @[simp] theorem listJoin_app_apply (X : Type u) (l : List (List X)) :
-    listJoin.app X l = l.flatten := by
+    (listJoin.app X : listFunctor.obj (listFunctor.obj X) ⟶ listFunctor.obj X) l = l.flatten := by
   change joinM l = l.flatten
   simp only [joinM]
   change List.flatMap id l = l.flatten
