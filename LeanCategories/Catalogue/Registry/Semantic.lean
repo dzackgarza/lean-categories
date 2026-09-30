@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Catalogue.Registry.Entry
 public import LeanCategories.Catalogue.Registry.Typed
+public import LeanCategories.Catalogue.Registry.Totality
 public import LeanCategories.Catalogue.Lift
 public import LeanCategories.Catalogue.Holds
 public import Mathlib.CategoryTheory.Core
@@ -2293,9 +2294,25 @@ def semanticRowsByModule (env : Environment) : Array (Name × Array SemanticEntr
   env.header.moduleNames.mapIdx fun index module =>
     (module, semanticExt.getModuleEntries env index)
 
+/-- The declarations of a row that denote operations, elements and domains, which the totality
+gate reads (LC-14, LC-16). -/
+def SemanticEntry.totalityDeclarations : SemanticEntry → Array Name
+  | .object e => #[e.declaration] ++ e.generator.toArray ++ e.application.toArray ++
+      e.constants.toArray ++ e.inclusion.toArray ++ e.admission.toArray
+  | .numeral e => #[e.declaration]
+  | .morphism e => #[e.declaration]
+  | .operation e => #[e.declaration]
+  | .inclusion e => #[e.declaration]
+  | .graphLiteral e => #[e.denotation]
+  | .literal e => #[e.denotation]
+  | .powerObject e =>
+      #[e.truth, e.member, e.transpose, e.extent, e.empty, e.singleton, e.terminal, e.image]
+  | _ => #[]
+
 /- Validate the elaborated declaration and persist exactly one registry entry. -/
 private def persistSemanticEntry (entry : SemanticEntry) : MetaM Unit := do
   validateSemanticEntryDeclaration entry
+  ensureTotal entry.stableId entry.totalityDeclarations
   let env ← getEnv
   let state := semanticExt.getState env
   if state.hasEntryId entry then

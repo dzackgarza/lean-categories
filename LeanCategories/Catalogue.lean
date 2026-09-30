@@ -15,6 +15,7 @@ public import LeanCategories.Catalogue.Registry.Entry
 public import LeanCategories.Catalogue.Registry.Semantic
 public import LeanCategories.Catalogue.Registry.Typed
 public import LeanCategories.Catalogue.Semantics
+public import LeanCategories.Catalogue.Semantics.TotalityProbes
 public import LeanCategories.Catalogue.Semantics.Algebra.Catalogue
 public import LeanCategories.Catalogue.Semantics.Algebra.Catalogue.Magmas
 public import LeanCategories.Catalogue.Semantics.Algebra.Catalogue.Rings
