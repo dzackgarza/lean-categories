@@ -152,3 +152,47 @@ A workaround missing any of the five is incomplete work, not a documented shortc
 commit message alone does not satisfy (3)–(5), and a COMPLAINTS entry alone does not
 explain the code at its site. When the optimal solution lands, remove the TODO and the
 detour together and close the COMPLAINTS entry with the replacing declaration.
+
+## LC-13 — Structure belongs to the category, never to a typeclass on a carrier
+
+A distinguished element is a morphism of a named structure, and the structure is the category's:
+a zero object of a category (initial and terminal); a point `1 → S` of a set, with `{0} ↪ S` a
+literal subobject; the unit `1 → U(A)` of a monoid or group object `A`, reached along the
+structural route from `A`'s category. These are different mathematics and are never merged.
+A catalogue declaration takes its object in the category that carries the structure it uses
+(`K` an object of fields, `Kⁿ` a `K`-module) and obtains each operation, unit and element along
+that category's routes.
+
+Banned: a Lean instance argument on a catalogue declaration (`[Zero X]`, `[DivisionRing K]`,
+`[CharZero K]`, …) whose role is to make a literal, operation or element typecheck on a bare
+carrier. Such an instance is the presentation dictating the mathematics (LC-10: a hypothesis
+present because the presentation needs it); the object is taken in its category instead.
+
+## LC-14 — An undefined value is not a value
+
+Where the mathematics is undefined, nothing is returned. Banned, in constructions, operations,
+element and literal forms, and registry rows:
+
+- `Option`-valued denotations that answer `none` (or a default, `∅`, `0`) where the thing named
+  does not exist (a numeral `0` "in" `K∖{0}`, a numeral `k ≠ 0` "in" `Kⁿ`);
+- relying on a total convention of Lean or Mathlib off its domain (`x / 0 = 0`, `Nat.card` of an
+  infinite type, `Matrix.nonsing_inv` off `GLₙ`, `iteratedDeriv` of a non-differentiable map);
+- totalising a partial construction by silently changing what it means (a companion matrix of
+  "the monic truncation" of a non-monic polynomial);
+- defining the domain of a partial operation by a classical `if … then some … else none`.
+
+Required: a partial operation `X ⇀ Y` is its domain as a subobject `D ↪ X` of the owning category
+(`GLₙ(K) ↪ Matₙ(K)`, `K^× ↪ K`, finite subsets of `X`, the smooth points), stated by its own
+definition or universal property, with a total map `D → Y`; the partial map classifier `Y⊥`
+enters only as the classifier of that span. Whether a term is defined is a proposition (membership
+of its argument in `D`), decided, proved or left `Unknown` like any other; it is never encoded by
+an empty or default result.
+
+## LC-15 — Numerals and literals are images of universal maps
+
+A numeral `n` of an object `R` means the image of `n` under the unique map out of the initial
+object of `R`'s category (`ℤ → R` in rings, `ℕ → M` in monoids); where the category has no such
+map, `R` has no numerals. A literal form is therefore a family of elements `1 → R` derived from
+initiality in the owning category, not a function from `ℕ` into a carrier. That a numeral lies
+in a subobject (`n ∈ K^×`, `n ∈ D`) is a proposition about that element, decided like any other;
+a literal form that returns `none` to say "no such element" is banned by LC-14.

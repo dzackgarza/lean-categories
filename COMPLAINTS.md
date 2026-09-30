@@ -32,6 +32,37 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Mathematical issues
 
+### Catalogue rows in violation of LC-13, LC-14 and LC-15
+
+- **Need:** every catalogue construction takes its object in the category that carries its
+  structure, defines each partial operation on its domain subobject, and names numerals as
+  images of maps out of the initial object (LC-13, LC-14, LC-15).
+- **Evidence (declarations, inspected 2026-09-30):**
+  - `CasCatalogue.Algebra.Fractions.nonzero (K) [DivisionRing K] [CharZero K]` and
+    `nonzeroElement` (`none` for `0`): `K∖{0}` is the complement of the additive unit of the
+    field `K`, i.e. the units `K^×` (a functor to groups); division is `K × K^× → K`.
+    `CharZero` exists only so numerals land there (LC-13, LC-14, LC-15).
+  - `LinearAlgebra.vectors (X) [Zero X] (n)` and `vectorsElement` (`none` for `k ≠ 0`): a set
+    `Xⁿ` has no zero; `Kⁿ` has one as a `K`-module (LC-13, LC-15).
+  - `LinearAlgebra.companion`: totalised as the companion of the monic truncation; defined
+    mathematically on monic polynomials of degree `n` (LC-14).
+  - `LinearAlgebra.inverse`, `FiniteSums.sum`/`prod`, `Calculus.divide`, `limitAt`,
+    `limitAtTop`, `integral`, `taylor`, `formalSum`: domains defined by classical
+    `if … then some … else none` instead of as subobjects `GLₙ ↪ Matₙ`, finite subsets,
+    `ℝ × ℝ^× `, convergent/integrable/smooth loci (LC-14).
+  - Every `…Element (k : ℕ) : Option X` element-literal form (the `ElementLiteralEntry` shape
+    `ℕ → Option X`, validated in `Registry/Semantic.lean`), where numerals are not images of
+    the map out of the initial object (LC-15).
+- **Gap and impact:** these rows are consumed by the `lean-cas-dsl` language (`/`, tuples,
+  `M⁻¹`, `∑`, `lim`, `∫`, Taylor expansions, numerals) and its permanent tests `fractions.cas`,
+  `linear_algebra.cas`, `inverses.cas`, `composed.cas`, `calculus.cas`, `series.cas`.
+- **Coverage:** the rows added under `lc-api-spec` (2026-09-29/30) were inspected; older
+  element-literal rows share the `ℕ → Option X` shape and were not audited individually.
+- **Repair link:** `lean-cas-dsl` plan node `lc-api-spec`. Resolved when each row is replaced by
+  its categorical form under LC-13–LC-15 and the element-literal row kind is replaced by
+  numerals as images of initial maps.
+
+
 ### Missing theorem: pseudofunctors out of a Grothendieck construction from lax cocones
 
 - **Need:** the universal property of the Grothendieck construction of a pseudofunctor
