@@ -610,3 +610,41 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
 - **Evidence:** the frozen FC08-Catalogue statement says that if open `U ⊆ ℝ^n` and `V ⊆ ℝ^m` are diffeomorphic, then `m = n`. For any `m ≠ n`, taking `U = ∅` and `V = ∅` gives a smooth bijection with smooth inverse, while the claimed dimension equality is false. The derivative-inverse clause is vacuous on this example.
 - **Coverage and disposition:** the Appendix C mapping keeps U009 `unmatched` as written and records the counterexample. Under `Nonempty U`, the standard chain-rule argument makes `D F(a)` and `D(F⁻¹)(F(a))` inverse linear maps, giving the inverse-derivative formula and equality of finite dimensions; that repaired theorem is not substituted silently for the frozen source statement.
 - **Repair link:** FC08-CC-U009, `corpus/appendix-c-review-of-calculus-fc08.md`. Preserve the catalogue quotation and source defect; Definitions remain blocked by `remap-strict-bundle`.
+
+### Catalogue review of bd31fe3: findings outside the formalization author's remit
+
+- **Need:** every catalogue row takes its object in the category that carries the structure it
+  uses (LC-13), classifies numerals only as images of initial maps (LC-15), and is total on its
+  domain without a Mathlib convention off that domain (LC-14).
+- **Evidence (inspected source, 2026-09-30, formalization review of `bd31fe3`):**
+  1. LC-13: `Algebra.Units.units (M : Type) [Monoid M]` (and `inclusion`, `admit`, `inverse`,
+     `divide`), `Algebra.LinearAlgebra.zero (K : Type) [Semiring K]`, `Algebra.FiniteSums.sum
+     [AddCommMonoid Y]` / `prod [CommMonoid Y]`, `Algebra.Calculus.power [Monoid X]` take a bare
+     carrier with an instance argument instead of an object of `Mon`, `K`-modules or commutative
+     monoids. The mathematics of each row is correct; the presentation is the one LC-13 bans. The
+     repair is a catalogue-wide move of these rows onto registered objects of those categories,
+     with their units and operations reached along the structural routes.
+  2. LC-15: `num.sets.fin` registers `Foundation.Morphisms.finPoint n k (h : k < n)` under the
+     registry kind `.numeral`. The point is correct mathematics (the `k`-th point of the ordinal
+     `n`, formed with its evidence), but `Fin n` is an object of `Sets`, which has no initial map
+     giving it numerals; LC-15 says such an object has no numerals. Either the registry kind
+     `.numeral` also covers named points with evidence (then LC-15 should say so), or this row
+     belongs under a point/element kind. The registry schema is the orchestrator's.
+  3. Totality gate (`Registry/Totality.lean`): it reads only this repository's definitions, so a
+     Mathlib convention off the domain inside a Mathlib definition passes. The rows
+     `mor.sets.polynomial_roots`, `mor.sets.polynomial_factors`, `mor.sets.nat_prime_factors` and
+     `mor.sets.nat_multiplicity` were registered and accepted while totalised at `0` by
+     `Polynomial.roots_zero`, `normalizedFactors_zero`, `Nat.primeFactors_zero` and
+     `Nat.factorization_zero` (the roots of `0` are all of `R`; `0` has no factorization). They
+     are repaired in this review (domains `R[x] ∖ {0}` and `ℕ⁺`, exponents at primes `ℙ`). Wrapping
+     `taylorCoeffWithin` (whose `(k! : ℝ)⁻¹` is a field inverse) would likewise have passed the
+     gate. The gate states it certifies nothing; reviewers must keep checking Mathlib conventions.
+  4. `mor.sets.matrix_rank` (unchanged by `bd31fe3`): `Matrix.rank` over a commutative ring is
+     `Module.finrank` of the column space, which is `0` by convention when that module is not
+     finite free; over a general commutative ring "rank" has several inequivalent meanings
+     (McCoy rank, determinantal rank). The row is well defined over a field (or a PID). Needs a
+     domain decision: restrict to fields, or name the rank meant.
+- **Coverage:** the `bd31fe3` diff under `LeanCategories/Catalogue/Semantics`, read against LC-13
+  to LC-16 and Mathlib only. Nothing downstream was read.
+- **Repair link:** items 1 and 4 are catalogue formalization work; items 2 and 3 are the
+  registry's owner (orchestrator, plan node `gov-registry-gates`).

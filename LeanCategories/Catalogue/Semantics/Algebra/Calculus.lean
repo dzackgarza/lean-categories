@@ -6,10 +6,12 @@ module
 
 public import LeanCategories.Catalogue.Semantics.Algebra.NumberSystems
 public import LeanCategories.Catalogue.Semantics.Foundation.PowerSets
+public import LeanCategories.Catalogue.Semantics.Algebra.Units
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Analysis.SpecialFunctions.Exp
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.Analysis.Calculus.Taylor
 public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.Topology.ContinuousMap.Basic
 public meta import LeanCategories.Catalogue.Registry.Semantic
@@ -27,7 +29,10 @@ Each operation of calculus is a total map out of the object it is defined on (LC
   integrable on every interval). A map is in `C(ℝ)` only with the evidence that it is continuous;
 * `C^∞(ℝ)`, the smooth maps `ℝ → ℝ` (Mathlib `ContDiff ℝ ⊤`), and the Taylor expansion
   `C^∞(ℝ) × ℝ → ℝ[[t]]`, `(f, a) ↦ Σ f⁽ᵏ⁾(a)/k! tᵏ` (Mathlib `iteratedDeriv`). A map is in
-  `C^∞(ℝ)` only with the evidence that it is smooth;
+  `C^∞(ℝ)` only with the evidence that it is smooth. The division by `k!` is the division
+  `ℝ × ℝˣ → ℝ` by a unit (`Algebra.Units`, LC-16): `k!` is the image of `k! ∈ ℕ` under the initial
+  map `ℕ → ℝ`, a unit because it is nonzero in the field `ℝ` of characteristic `0`. Its coefficients
+  are Mathlib's Taylor coefficients `taylorCoeffWithin f k ℝ a` (`taylor_coeff`);
 * `R[[t]]` (Mathlib `PowerSeries`), refined by the ring `R[[t]]`, with its variable, constants, its
   coefficients `R[[t]] × ℕ → R`, and the series with a given coefficient sequence
   `(ℕ → R) → R[[t]]`, `c ↦ Σ c(n) tⁿ` (Mathlib `PowerSeries.mk`), which is what `Σ c(n) tⁿ` means;
@@ -115,11 +120,28 @@ def power (X : Type) [Monoid X] : (X × CasCatalogue.Foundation.Objects.naturals
     (X : SetsCat.{0}) :=
   TypeCat.ofHom fun p => p.1 ^ p.2
 
-/-- `(f, a) ↦ Σ f⁽ᵏ⁾(a)/k! tᵏ`. -/
+/-- `k ↦ k!`, `ℕ → ℝˣ`: the image of `k!` under the initial map `ℕ → ℝ`, a unit of `ℝ` because it
+is nonzero (`ℝ` is a field of characteristic `0`). -/
+noncomputable def factorialUnit :
+    CasCatalogue.Foundation.Objects.naturals ⟶ CasCatalogue.Algebra.Units.units ℝ :=
+  TypeCat.ofHom fun k =>
+    (Ne.isUnit (Nat.cast_ne_zero.mpr k.factorial_ne_zero : ((k.factorial : ℕ) : ℝ) ≠ 0)).unit
+
+/-- `(f, a) ↦ Σ f⁽ᵏ⁾(a)/k! tᵏ`, the division by `k! ∈ ℝˣ` being division by a unit. -/
 noncomputable def taylor :
     (smoothMaps × reals : SetsCat.{0}) ⟶ powerSeries ℝ :=
   TypeCat.ofHom fun p =>
-    PowerSeries.mk fun k => iteratedDeriv k p.1.1 p.2 / k.factorial
+    PowerSeries.mk fun k =>
+      ConcreteCategory.hom (C := Type) (CasCatalogue.Algebra.Units.divide ℝ)
+        (iteratedDeriv k p.1.1 p.2, ConcreteCategory.hom (C := Type) factorialUnit k)
+
+/-- The `k`-th coefficient of the Taylor expansion of `f` at `a` is Mathlib's Taylor coefficient
+`f⁽ᵏ⁾(a)/k!` (`taylorCoeffWithin` on `ℝ`). -/
+theorem taylor_coeff (f : smoothMaps) (a : ℝ) (k : ℕ) :
+    PowerSeries.coeff k (ConcreteCategory.hom (C := Type) taylor (f, a)) =
+      taylorCoeffWithin f.1 k Set.univ a := by
+  simp [taylor, factorialUnit, CasCatalogue.Algebra.Units.divide, taylorCoeffWithin,
+    iteratedDerivWithin_univ, mul_comm]
 
 end CasCatalogue.Algebra.Calculus
 

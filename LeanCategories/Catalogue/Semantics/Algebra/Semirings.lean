@@ -18,9 +18,13 @@ public meta import LeanCategories.Catalogue.Semantics.Foundation.Catalogue
 
 `Semirings` (Mathlib `SemiRingCat`) with its underlying sets; `ℕ` is refined by the semiring `ℕ`,
 whose operations are `+`, `·` and `^k`; primality `ℕ → Ω` is a predicate on its elements (Mathlib
-`Nat.Prime`), and the factorization of `n = ∏ pᵉᵖ` is given by its prime factors `ℕ → 𝒫_fin(ℕ)` and the
-multiplicities `(n, p) ↦ eₚ` (Mathlib `Nat.primeFactors`, `Nat.factorization`). The rings `ℤ, ℚ, ℝ, ℂ` are refined in `Rings` only, so each
-operation on their elements has one owner.
+`Nat.Prime`). The factorization `n = ∏ pᵉᵖ` of a positive `n ∈ ℕ⁺ ↪ ℕ` (Mathlib `ℕ+`) is given by
+its prime factors `ℕ⁺ → 𝒫_fin(ℙ)` and the multiplicities `ℕ⁺ × ℙ → ℕ`, `(n, p) ↦ eₚ`, where
+`ℙ ↪ ℕ` are the primes (Mathlib `Nat.Primes`, `Nat.primeFactors`, `Nat.factorization`). `0` has no
+factorization (every prime divides it, to every power), so it is not in the domain; Mathlib's
+`primeFactors 0 = ∅` and `factorization 0 = 0` are conventions (LC-14). An exponent `eₚ` is defined
+for a prime `p` only. The rings `ℤ, ℚ, ℝ, ℂ` are refined in `Rings` only, so each operation on
+their elements has one owner.
 -/
 
 open CategoryTheory
@@ -86,13 +90,40 @@ abbrev semiringNaturals : Semirings.{0} := SemiRingCat.of ℕ
 /-- `n ↦ n is prime`, `ℕ → Ω`. -/
 def isPrime : naturals ⟶ omega := TypeCat.ofHom fun n => Nat.Prime n
 
-/-- The prime factors of `n` (none for `n = 0, 1`). -/
-def primeFactors : naturals ⟶ Foundation.FiniteSubsets.finiteSubsets ℕ :=
-  TypeCat.ofHom fun n => n.primeFactors
+/-- `ℕ⁺`, the positive naturals. -/
+abbrev positiveNaturals : SetsCat.{0} := ℕ+
 
-/-- `(n, p) ↦` the exponent of `p` in `n` (`0` unless `p` is a prime factor). -/
-noncomputable def multiplicity : (naturals × naturals : SetsCat.{0}) ⟶ naturals :=
-  TypeCat.ofHom fun p => p.1.factorization p.2
+/-- `ℕ⁺ ↪ ℕ`. -/
+def positiveNaturalsInclusion : positiveNaturals ⟶ naturals := TypeCat.ofHom PNat.val
+
+/-- The positive natural `n`, with the evidence that `0 < n`. -/
+def admitPositive (n : ℕ) (h : 0 < n) : fin 1 ⟶ positiveNaturals :=
+  TypeCat.ofHom fun _ => ⟨n, h⟩
+
+/-- `ℙ`, the primes. -/
+abbrev primes : SetsCat.{0} := Nat.Primes
+
+/-- `ℙ ↪ ℕ`. -/
+def primesInclusion : primes ⟶ naturals := TypeCat.ofHom Subtype.val
+
+/-- The prime `p`, with the evidence that `p` is prime. -/
+def admitPrime (p : ℕ) (h : p.Prime) : fin 1 ⟶ primes := TypeCat.ofHom fun _ => ⟨p, h⟩
+
+/-- The prime factors of `n ∈ ℕ⁺` (none for `n = 1`), `ℕ⁺ → 𝒫_fin(ℙ)`. -/
+def primeFactors : positiveNaturals ⟶ Foundation.FiniteSubsets.finiteSubsets Nat.Primes :=
+  TypeCat.ofHom fun n => ((n : ℕ).primeFactors.subtype Nat.Prime : Finset Nat.Primes)
+
+/-- `(n, p) ↦ eₚ`, the exponent of the prime `p` in `n ∈ ℕ⁺` (`0` when `p ∤ n`). -/
+noncomputable def multiplicity : (positiveNaturals × primes : SetsCat.{0}) ⟶ naturals :=
+  TypeCat.ofHom fun p => (p.1 : ℕ).factorization p.2.1
+
+/-- The prime factors of `n ∈ ℕ⁺` are the primes dividing it. -/
+theorem mem_primeFactors (n : ℕ+) (p : Nat.Primes) :
+    p ∈ ConcreteCategory.hom (C := Type) primeFactors n ↔ p.1 ∣ n := by
+  obtain ⟨p, hp⟩ := p
+  change (⟨p, hp⟩ : {q : ℕ // q.Prime}) ∈ (n : ℕ).primeFactors.subtype Nat.Prime ↔ _
+  rw [Finset.mem_subtype, Nat.mem_primeFactors]
+  exact ⟨fun h => h.2.1, fun h => ⟨hp, h, n.ne_zero⟩⟩
 
 def semiringNaturalsIdentification : (naturals : SetsCat.{0}) ≅ naturals := Iso.refl _
 
@@ -136,6 +167,18 @@ normalized_registry .operation
 normalized_registry .morphism
   { id := ⟨"mor.sets.nat_is_prime"⟩, category := CategoryId.sets, name := "is_prime"
     declaration := `CasCatalogue.Algebra.Semirings.isPrime }
+
+normalized_registry .object
+  { id := ⟨"obj.sets.positive_naturals"⟩, category := CategoryId.sets, name := "ℕ⁺"
+    declaration := `CasCatalogue.Algebra.Semirings.positiveNaturals
+    inclusion := some `CasCatalogue.Algebra.Semirings.positiveNaturalsInclusion
+    admission := some `CasCatalogue.Algebra.Semirings.admitPositive }
+
+normalized_registry .object
+  { id := ⟨"obj.sets.primes"⟩, category := CategoryId.sets, name := "ℙ"
+    declaration := `CasCatalogue.Algebra.Semirings.primes
+    inclusion := some `CasCatalogue.Algebra.Semirings.primesInclusion
+    admission := some `CasCatalogue.Algebra.Semirings.admitPrime }
 
 normalized_registry .morphism
   { id := ⟨"mor.sets.nat_prime_factors"⟩, category := CategoryId.sets, name := "prime_factors"

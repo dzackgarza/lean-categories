@@ -25,9 +25,15 @@ refined by the ring `R[x]`, with
 
 Functions of polynomials, as named morphism families of `Sets` over their rings:
 * `deg : R[x] → ℕ ∪ {-∞}` (Mathlib `Polynomial.degree`; `deg 0 = -∞`);
-* `factors : R[x] → 𝒫_fin(R[x])`, the normalized irreducible factors over a unique factorization
-  domain (Mathlib `UniqueFactorizationMonoid.normalizedFactors`);
-* `roots : R[x] → 𝒫_fin(R)`, the roots in a domain `R` (Mathlib `Polynomial.roots`);
+* `R[x] ∖ {0} ↪ R[x]`, the nonzero polynomials; a polynomial is in `R[x] ∖ {0}` only with the
+  evidence that it is nonzero;
+* `factors : R[x] ∖ {0} → 𝒫_fin(R[x])`, the normalized irreducible factors over a unique
+  factorization domain (Mathlib `UniqueFactorizationMonoid.normalizedFactors`). The zero
+  polynomial has no factorization into irreducibles, so `0` is not in the domain (Mathlib's
+  `normalizedFactors 0 = 0` is a convention, LC-14);
+* `roots : R[x] ∖ {0} → 𝒫_fin(R)`, the roots in a domain `R` (Mathlib `Polynomial.roots`),
+  finitely many for a nonzero polynomial. Every element of `R` is a root of `0`, so `0` is not in
+  the domain (Mathlib's `roots 0 = ∅` is a convention, LC-14);
 * `map : R[x] → S[x]` along an `R`-algebra `S` (Mathlib `Polynomial.map (algebraMap R S)`).
 -/
 
@@ -75,18 +81,37 @@ theorem naturalsDegrees_mono : Mono naturalsDegrees :=
 noncomputable def degree (R : Type) [CommRing R] : (polynomials R : SetsCat.{0}) ⟶ degrees :=
   TypeCat.ofHom Polynomial.degree
 
-open Classical in
-/-- The normalized irreducible factors `R[x] → 𝒫_fin(R[x])`. -/
-noncomputable def factors (R : Type) [CommRing R] [IsDomain R] [NormalizationMonoid R]
-    [UniqueFactorizationMonoid R] :
-    (polynomials R : SetsCat.{0}) ⟶ Foundation.FiniteSubsets.finiteSubsets (Polynomial R) :=
-  TypeCat.ofHom fun p => (UniqueFactorizationMonoid.normalizedFactors p).toFinset
+/-- `R[x] ∖ {0}`, the nonzero polynomials. -/
+abbrev nonzeroPolynomials (R : Type) [CommRing R] : SetsCat.{0} := {p : Polynomial R // p ≠ 0}
+
+/-- `R[x] ∖ {0} ↪ R[x]`. -/
+def nonzeroPolynomialsInclusion (R : Type) [CommRing R] :
+    nonzeroPolynomials R ⟶ polynomials R :=
+  TypeCat.ofHom Subtype.val
+
+/-- The nonzero polynomial `p`, with the evidence that `p ≠ 0`. -/
+def admitNonzeroPolynomial (R : Type) [CommRing R] (p : Polynomial R) (h : p ≠ 0) :
+    fin 1 ⟶ nonzeroPolynomials R :=
+  TypeCat.ofHom fun _ => ⟨p, h⟩
 
 open Classical in
-/-- The roots `R[x] → 𝒫_fin(R)`, finitely many for a domain `R` (Mathlib `Polynomial.roots`). -/
+/-- The normalized irreducible factors `R[x] ∖ {0} → 𝒫_fin(R[x])`. -/
+noncomputable def factors (R : Type) [CommRing R] [IsDomain R] [NormalizationMonoid R]
+    [UniqueFactorizationMonoid R] :
+    nonzeroPolynomials R ⟶ Foundation.FiniteSubsets.finiteSubsets (Polynomial R) :=
+  TypeCat.ofHom fun p => (UniqueFactorizationMonoid.normalizedFactors p.1).toFinset
+
+open Classical in
+/-- The roots `R[x] ∖ {0} → 𝒫_fin(R)`, finitely many for a nonzero polynomial over a domain `R`
+(Mathlib `Polynomial.roots`, `Polynomial.mem_roots`). -/
 noncomputable def roots (R : Type) [CommRing R] [IsDomain R] :
-    (polynomials R : SetsCat.{0}) ⟶ Foundation.FiniteSubsets.finiteSubsets R :=
-  TypeCat.ofHom fun p => p.roots.toFinset
+    nonzeroPolynomials R ⟶ Foundation.FiniteSubsets.finiteSubsets R :=
+  TypeCat.ofHom fun p => p.1.roots.toFinset
+
+/-- The roots of a nonzero `p` are exactly the `a` with `p(a) = 0`. -/
+theorem mem_roots (R : Type) [CommRing R] [IsDomain R] (p : nonzeroPolynomials R) (a : R) :
+    a ∈ ConcreteCategory.hom (C := Type) (roots R) p ↔ IsRoot p.1 a := by
+  simp [roots, Polynomial.mem_roots p.2]
 
 /-- `map : R[x] → S[x]` along `R → S`. -/
 noncomputable def map (R S : Type) [CommRing R] [CommRing S] [Algebra R S] :
@@ -124,6 +149,12 @@ normalized_registry .inclusion
 normalized_registry .morphism
   { id := ⟨"mor.sets.polynomial_degree"⟩, category := CategoryId.sets, name := "deg"
     declaration := `CasCatalogue.Algebra.Polynomials.degree }
+
+normalized_registry .object
+  { id := ⟨"obj.sets.nonzero_polynomials"⟩, category := CategoryId.sets, name := "Poly∖0"
+    declaration := `CasCatalogue.Algebra.Polynomials.nonzeroPolynomials
+    inclusion := some `CasCatalogue.Algebra.Polynomials.nonzeroPolynomialsInclusion
+    admission := some `CasCatalogue.Algebra.Polynomials.admitNonzeroPolynomial }
 
 normalized_registry .morphism
   { id := ⟨"mor.sets.polynomial_factors"⟩, category := CategoryId.sets, name := "factors"
