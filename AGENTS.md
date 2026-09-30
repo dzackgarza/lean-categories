@@ -649,7 +649,7 @@ The correct measure of progress is therefore not the quantity of code, metadata,
 The programme has three coupled outputs:
 
 1. **A Lean-owned mathematical foundation** in which categories, higher categories, classifiers, functors, higher cells, limits, categories of structured objects, and their coherences have principled definitions.
-2. **A Sage correspondence** that maps Sage’s empirical category system and algorithms into that normalized mathematical universe without making Sage’s labels, parent graph, or implementation accidents authoritative.
+2. **Leaves** that register computations, Sage’s algorithms among them, as opaque implementations of operations already formalized in that foundation. A leaf maps nothing into the mathematical universe and states nothing that is believed: Sage’s labels, parent graph and implementation accidents carry no authority, and a leaf’s answers are judged only by the `lean-cas-dsl` acceptance suite, which never sees the leaf.
 3. **A computational mathematics DSL** in which a mathematician introduces and interrogates objects by ordinary mathematical membership and notation, while the formalization and backend routing remain invisible.
 
 The long-term universe is not chosen only for the first algebraic examples. It must be capable of housing ordinary algebra, monoidal categories, categories of functors, sheaves, schemes, stacks, derived and spectral constructions, and computations such as loop objects and general limits. A narrow 1-categorical spike can be a model or experiment, but it is not the semantic horizon.
@@ -1615,11 +1615,11 @@ Sage is simultaneously valuable and non-authoritative:
 - it records an empirical parent graph;
 - it exposes historical approximations and naming defects.
 
-The bridge is not meant to reproduce that graph faithfully as mathematics. It is meant to state what Sage’s categories and constructions correspond to in a normalized universe, and to retain Sage as an implementation where useful. The mathematical definitions determine the bridge, not the other way around.
+This repository does not reproduce that graph as mathematics and states nothing about what Sage’s parents or values are. Sage’s inventory indicates mathematics to formalize here, from its literature sources. Sage itself is at most a backend that a leaf calls to compute an operation already formalized here; nothing it computes or declares determines a definition.
 
 ### 1.3 Not a Lean-flavoured programming language
 
-Lean is the formalization substrate. It provides definitions, theorem statements, proofs, and a trust boundary for the foundational library and verified certificates. The DSL is a computational language for mathematicians. Its user does not reason in Lean implementation vocabulary, choose typeclass instances, select a backend representation, or manually traverse an implementation graph.
+Lean is the formalization substrate. It provides definitions, theorem statements, and proofs for the foundational library; it checks no certificate, proof or claim supplied by a computation. The DSL is a computational language for mathematicians. Its user does not reason in Lean implementation vocabulary, choose typeclass instances, select a backend representation, or manually traverse an implementation graph.
 
 The intended user experience is categorical membership:
 
@@ -1640,7 +1640,7 @@ Q.cardinality()
 Q.generators()
 ```
 
-The system may internally elaborate, infer routes, invoke Sage, use Mathlib, choose a matrix algorithm, or check a certificate. None of those mechanisms changes what `R`, `I`, or `Q` mathematically are. The DSL discussion repeatedly insists that the user states membership, that the categorical context determines the available operations, and that the user does not select the algorithm manually. [S4]
+The system may internally elaborate, infer routes, invoke Sage, use Mathlib, or choose a matrix algorithm. None of those mechanisms changes what `R`, `I`, or `Q` mathematically are. The DSL discussion repeatedly insists that the user states membership, that the categorical context determines the available operations, and that the user does not select the algorithm manually. [S4]
 
 ### 1.4 Not a proof-completion programme for every difficult theorem
 
@@ -2061,11 +2061,11 @@ The resolver’s job is not to expose an engineering category to the user. It is
 
 When a user constructs an `R`-module, the result is an object of `Modules(R)`. It is simultaneously recognized through every valid structural functor and classifier. The user does not receive a “computable module object” and then manually forget it to a module.
 
-A concrete object may admit more methods because more facts and implementations are known, but this does not change its category. An arbitrary `R ∈ CRings` supports only uniform constructions. A concrete `ZZ` supports additional decided properties and algorithms.
+A concrete object may admit more methods because more is proved of it here, but this does not change its category. An arbitrary `R ∈ CRings` supports only uniform constructions. A concrete `ZZ` supports the additional operations of the further categories it is proved to belong to. Installing, removing or changing an implementation never changes which methods an object has; it changes only whether an operation executes or yields `NoImplementation`.
 
 ### 6.4 Engineering indices have no mathematical authority
 
-The backend may need tables recording implementations, cost models, preferred algorithms, serialization formats, or certificate checkers. Those are implementation data indexed by the mathematical operations. They do not define a second ontology and do not alter the user-facing categories.
+The backend may need tables recording implementations, cost models, preferred algorithms, or serialization formats. Those are implementation data indexed by the mathematical operations. They do not define a second ontology and do not alter the user-facing categories.
 
 ---
 
@@ -2077,7 +2077,7 @@ Contains definitions, universal properties, functors, higher cells, theorem stat
 
 ### 7.2 Backend correspondence
 
-Contains statements that a Sage, Mathlib, GAP, or other object realizes a mathematical category or operation, together with versioning and comparison evidence. Backend inventory is evidence, not mathematical definition.
+Contains registrations only: an opaque Sage, GAP or other computation attached to an operation already formalized here, at its declared input and result types. A registration states nothing that is believed about what a backend object is or what it computes. Whether its answers are correct is judged only by the `lean-cas-dsl` acceptance suite, which never sees it. Backend inventory is neither mathematical definition nor evidence.
 
 ### 7.3 User computation
 
@@ -2302,7 +2302,7 @@ The conversations contain wrong turns, reversals, and source documents that pres
 
 An agent entering this programme can use the following orientation verbatim:
 
-> This project builds one higher-categorical mathematical language, a Lean formalization of that language, a Sage correspondence into it, and a computational DSL whose users see only ordinary mathematics. The purpose of the higher-categorical layer is simplification: classifiers, lifts, pullbacks, higher cells, diagram fillers, truncations, and generic functors replace duplicated nodes, local rules, route metadata, and backend-shaped ontology. Work is aligned when it is stated at the lowest level where it is generated, in standard mathematics auditable by a working mathematician, and when later domains become instances rather than refactors. Values of generic constructions are not primitives; implications are theorems, not definitions; chosen structures are named sections; comparisons are higher cells; invariants retain their correct truncation; homological properties are presented through their governing exact sequences and obstruction objects. Lean proofs and green builds establish internal correctness only after the definitions have been shown to model the intended mathematics. Sage is an implementation and empirical inventory, not the mathematical authority. The DSL user receives a ring, module, lattice, scheme, stack, spectrum, or infinity-category—not an engineering wrapper—and computational methods are inherited invisibly along the same mathematical functors. Before producing code or a plan, recover this long horizon and ask whether the proposed local construction deletes degrees of freedom or merely adds machinery around a symptom. Before authoring any construct, search Mathlib first (the pinned source in `.lake/packages/mathlib` is ground truth), then prior Lean formalizations on the web and specifically `google-deepmind/formal-conjectures`; import, reuse, or extend what already exists, and relate every new definition to the standard construction it sits beside—reinvention is the default failure mode, never the default action.
+> This project builds one higher-categorical mathematical language, a Lean formalization of that language, leaves that register backend computations (Sage’s among them) for its operations, and a computational DSL whose users see only ordinary mathematics. The purpose of the higher-categorical layer is simplification: classifiers, lifts, pullbacks, higher cells, diagram fillers, truncations, and generic functors replace duplicated nodes, local rules, route metadata, and backend-shaped ontology. Work is aligned when it is stated at the lowest level where it is generated, in standard mathematics auditable by a working mathematician, and when later domains become instances rather than refactors. Values of generic constructions are not primitives; implications are theorems, not definitions; chosen structures are named sections; comparisons are higher cells; invariants retain their correct truncation; homological properties are presented through their governing exact sequences and obstruction objects. Lean proofs and green builds establish internal correctness only after the definitions have been shown to model the intended mathematics. Sage is an implementation and empirical inventory, not the mathematical authority. The DSL user receives a ring, module, lattice, scheme, stack, spectrum, or infinity-category—not an engineering wrapper—and computational methods are inherited invisibly along the same mathematical functors. Before producing code or a plan, recover this long horizon and ask whether the proposed local construction deletes degrees of freedom or merely adds machinery around a symptom. Before authoring any construct, search Mathlib first (the pinned source in `.lake/packages/mathlib` is ground truth), then prior Lean formalizations on the web and specifically `google-deepmind/formal-conjectures`; import, reuse, or extend what already exists, and relate every new definition to the standard construction it sits beside—reinvention is the default failure mode, never the default action.
 
 ---
 

@@ -117,10 +117,11 @@ formalization. The broader programme has three coupled outputs with explicit own
 1. **A mathematical foundation in this repository, assembled in Lean from existing formalizations,** in which categories,
    higher categories, classifiers, functors, higher cells, limits, operations, and
    categories of structured objects have principled definitions.
-2. **A versioned Sage functionality and realization ledger in `lean-cas-dsl`** relating
-   Sage methods, constructors, applicability constraints, and execution routes to the
-   actual semantic operations declared here—without making Sage's labels, parent graph,
-   Python ownership, or implementation accidents authoritative.
+2. **Leaves, registered against `lean-cas-dsl`'s leaf contract,** each supplying an opaque
+   computation (Sage's among them) for an operation declared here, at its declared types.
+   Nothing a leaf states is believed: Sage's labels, parent graph, Python ownership and
+   implementation accidents carry no authority, and a leaf's answers are judged only by the
+   `lean-cas-dsl` acceptance suite, which never sees the leaf.
 3. **A computational mathematics DSL in `lean-cas-dsl`** in which a mathematician
    introduces and interrogates objects by ordinary membership and notation, while
    formalization and backend routing remain invisible.

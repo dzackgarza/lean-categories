@@ -212,7 +212,8 @@ adjoint to the inclusion), of `Aut(X)`, of `GLₙ(K) = Matₙ(K)ˣ`, of `K^×`. 
 of monoids, of `End(X)`, of `Matₙ(K)` or of a field `K`, because endomorphisms are not invertible
 in general. The same holds for every operation. No endofunctor or operation may be declared on a
 category some of whose objects lack the structure it uses. An element is inverted only once it is
-an element of the units, formed there or admitted there with its evidence; one not established
+an element of the units, formed there or admitted there by the evidence this library registers
+with the units (LC-18), never by a claim from a caller or a leaf; one not established
 to be invertible cannot even be written as an argument of `⁻¹`.
 
 A row that violates this is ill-defined mathematics, and the registry must refuse it at
@@ -227,7 +228,8 @@ to decide what to write, and no agent who writes those writes here
 ([`lean-cas-dsl/specs/architecture.md`](https://github.com/dzackgarza/lean-cas-dsl/blob/main/specs/architecture.md),
 "Authors: one role per agent"). A downstream difficulty arrives as a written request for
 mathematics, and it never shapes the answer. Formalizing an API to fit what a kernel can
-elaborate or a leaf can compute inverts the trust model. Such work is not accepted however it
+elaborate or a leaf can compute lets an implementation shape the mathematics, which the evidence
+model forbids ([AGENTS.md](AGENTS.md), "The evidence model"). Such work is not accepted however it
 reads: `bd31fe3` (2026-09-30) was authored this way and awaits independent review.
 
 ## LC-18 — Membership in a domain is established by the domain's own evidence
