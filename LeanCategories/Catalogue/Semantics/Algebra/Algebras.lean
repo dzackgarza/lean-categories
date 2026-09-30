@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Catalogue.Semantics.Algebra.MvPolynomials
+public import LeanCategories.Catalogue.Semantics.Algebra.Polynomials
 public import LeanCategories.Catalogue.Semantics.Algebra.Ports
 public import LeanCategories.Catalogue.Semantics.ConstructorRegistration
 public import Mathlib.Algebra.Category.Ring.Under.Basic
@@ -21,8 +22,8 @@ public meta import LeanCategories.Catalogue.Registry.Semantic
   Mathlib `CommRingCat.toAlgHom`, `Under` over `CommRingCat` is the category of commutative
   `K`-algebras), a category family over the object `K`, with its structural forgetful functor to
   commutative rings.
-* `K[x₀, …, xₙ₋₁]` is a `K`-algebra by its constants `K → K[x₀, …, xₙ₋₁]`: the refinement of the
-  named set `MvPoly(n, K)` into `Algebras/K`.
+* `K[x]` and `K[x₀, …, xₙ₋₁]` are `K`-algebras by their constants: the refinements of the named
+  sets `Poly(K)` and `MvPoly(n, K)` into `Algebras/K`.
 -/
 
 open CategoryTheory
@@ -93,6 +94,15 @@ def mvAlgebraIdentification (n : ℕ) (K : Type) [CommRing K] :
       MvPolynomials.mvPolynomials n K :=
   Iso.refl _
 
+/-- `K[x]` as a `K`-algebra. -/
+noncomputable def polyAlgebra (K : Type) [CommRing K] : algebrasCategory (CommRingCat.of K) :=
+  Under.mk (CommRingCat.ofHom (Polynomial.C : K →+* Polynomial K))
+
+/-- The underlying set of the `K`-algebra `K[x]` is `K[x]`. -/
+def polyAlgebraIdentification (K : Type) [CommRing K] :
+    (Polynomials.polynomials K : Foundation.PowerSets.SetsCat.{0}) ≅ Polynomials.polynomials K :=
+  Iso.refl _
+
 end Algebra.Algebras
 
 normalized_registry .functor
@@ -125,5 +135,14 @@ normalized_registry .object
         route := #[.functor FunctorId.algebrasForget, .functor FunctorId.commutativeRingsRings] ++
           ringsToSets
         identification := `CasCatalogue.Algebra.Algebras.mvAlgebraIdentification } }
+
+normalized_registry .object
+  { id := ⟨"obj.algebras.polynomials"⟩, category := CategoryId.algebras, name := "Poly"
+    declaration := `CasCatalogue.Algebra.Algebras.polyAlgebra
+    refines := some
+      { base := ⟨"obj.sets.polynomials"⟩
+        route := #[.functor FunctorId.algebrasForget, .functor FunctorId.commutativeRingsRings] ++
+          ringsToSets
+        identification := `CasCatalogue.Algebra.Algebras.polyAlgebraIdentification } }
 
 end CasCatalogue
