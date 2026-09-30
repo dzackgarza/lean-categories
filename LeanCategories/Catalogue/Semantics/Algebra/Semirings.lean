@@ -8,7 +8,10 @@ public import LeanCategories.Catalogue.Semantics.Foundation.FiniteSubsets
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Nat.Factorization.Basic
+public import Mathlib.Tactic.NormNum.Prime
+public import Mathlib.Tactic.Positivity
 public meta import LeanCategories.Catalogue.Registry.Semantic
+public meta import LeanCategories.Catalogue.Semantics.Foundation.Evidence
 public meta import LeanCategories.Catalogue.Semantics.Foundation.Catalogue
 
 @[expose] public section
@@ -109,6 +112,26 @@ def primesInclusion : primes ⟶ naturals := TypeCat.ofHom Subtype.val
 /-- The prime `p`, with the evidence that `p` is prime. -/
 def admitPrime (p : ℕ) (h : p.Prime) : fin 1 ⟶ primes := TypeCat.ofHom fun _ => ⟨p, h⟩
 
+open Lean Elab Tactic in
+/-- The evidence that a closed natural number `n` is positive, `0 < n`: `n` is evaluated in `ℕ`
+(an arithmetic expression in numerals, `+`, `·`, `^`, truncated `-`, `/`, `%`, `!`), and the order
+of the resulting numerals decides it. -/
+meta def positiveEvidence : TacticM Unit :=
+  CasCatalogue.Evidence.establish "ℕ⁺" <| CasCatalogue.Evidence.closeByFirst
+    m!"the value is not established to be a positive natural number"
+    [do evalTactic (← `(tactic| norm_num [Nat.factorial])),
+     do evalTactic (← `(tactic| positivity)),
+     do evalTactic (← `(tactic| decide))]
+
+open Lean Elab Tactic in
+/-- The evidence that a closed natural number `p` is prime: `p` is evaluated in `ℕ`, and its
+primality is decided by trial division up to `√p` with a certificate for each factor candidate
+(Mathlib's `Nat.Prime` extension of `norm_num`, `Mathlib.Tactic.NormNum.Prime`). -/
+meta def primeEvidence : TacticM Unit :=
+  CasCatalogue.Evidence.establish "ℙ" <| CasCatalogue.Evidence.closeByFirst
+    m!"the value is not established to be prime"
+    [do evalTactic (← `(tactic| norm_num [Nat.factorial]))]
+
 /-- The prime factors of `n ∈ ℕ⁺` (none for `n = 1`), `ℕ⁺ → 𝒫_fin(ℙ)`. -/
 def primeFactors : positiveNaturals ⟶ Foundation.FiniteSubsets.finiteSubsets Nat.Primes :=
   TypeCat.ofHom fun n => ((n : ℕ).primeFactors.subtype Nat.Prime : Finset Nat.Primes)
@@ -172,13 +195,15 @@ normalized_registry .object
   { id := ⟨"obj.sets.positive_naturals"⟩, category := CategoryId.sets, name := "ℕ⁺"
     declaration := `CasCatalogue.Algebra.Semirings.positiveNaturals
     inclusion := some `CasCatalogue.Algebra.Semirings.positiveNaturalsInclusion
-    admission := some `CasCatalogue.Algebra.Semirings.admitPositive }
+    admission := some `CasCatalogue.Algebra.Semirings.admitPositive
+    evidence := some `CasCatalogue.Algebra.Semirings.positiveEvidence }
 
 normalized_registry .object
   { id := ⟨"obj.sets.primes"⟩, category := CategoryId.sets, name := "ℙ"
     declaration := `CasCatalogue.Algebra.Semirings.primes
     inclusion := some `CasCatalogue.Algebra.Semirings.primesInclusion
-    admission := some `CasCatalogue.Algebra.Semirings.admitPrime }
+    admission := some `CasCatalogue.Algebra.Semirings.admitPrime
+    evidence := some `CasCatalogue.Algebra.Semirings.primeEvidence }
 
 normalized_registry .morphism
   { id := ⟨"mor.sets.nat_prime_factors"⟩, category := CategoryId.sets, name := "prime_factors"
