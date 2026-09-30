@@ -168,25 +168,31 @@ Banned: a Lean instance argument on a catalogue declaration (`[Zero X]`, `[Divis
 carrier. Such an instance is the presentation dictating the mathematics (LC-10: a hypothesis
 present because the presentation needs it); the object is taken in its category instead.
 
-## LC-14 — An undefined value is not a value
+## LC-14 — Every operation is total on its domain; there are no partial maps
 
-Where the mathematics is undefined, nothing is returned. Banned, in constructions, operations,
-element and literal forms, and registry rows:
+An operation is a morphism `D → Y` out of the object it is defined on, and nothing else. Its
+domain `D` is a named object of the owning category — a subobject `D ↪ X` given by its own
+definition or universal property (`GLₙ(K) ↪ Matₙ(K)`, `K^× ↪ K`, the finite subsets of `X`, the
+convergent, integrable or smooth maps) — and an argument is admitted only as an element of `D`.
+An argument not known to lie in `D` is a type error of the statement, found when it is read,
+never a value, a failure, or an `Unknown` discovered when it is computed.
 
-- `Option`-valued denotations that answer `none` (or a default, `∅`, `0`) where the thing named
-  does not exist (a numeral `0` "in" `K∖{0}`, a numeral `k ≠ 0` "in" `Kⁿ`);
-- relying on a total convention of Lean or Mathlib off its domain (`x / 0 = 0`, `Nat.card` of an
-  infinite type, `Matrix.nonsing_inv` off `GLₙ`, `iteratedDeriv` of a non-differentiable map);
-- totalising a partial construction by silently changing what it means (a companion matrix of
-  "the monic truncation" of a non-monic polynomial);
-- defining the domain of a partial operation by a classical `if … then some … else none`.
+Banned, in constructions, operations, element and literal forms, registry rows, the kernel and
+the language:
 
-Required: a partial operation `X ⇀ Y` is its domain as a subobject `D ↪ X` of the owning category
-(`GLₙ(K) ↪ Matₙ(K)`, `K^× ↪ K`, finite subsets of `X`, the smooth points), stated by its own
-definition or universal property, with a total map `D → Y`; the partial map classifier `Y⊥`
-enters only as the classifier of that span. Whether a term is defined is a proposition (membership
-of its argument in `D`), decided, proved or left `Unknown` like any other; it is never encoded by
-an empty or default result.
+- partial maps in any encoding: `Option`/`Y⊥`-valued operations, `if … then some … else none`,
+  a partial map classifier used to defer definedness;
+- `none`, a default, `∅` or `0` returned where the thing named does not exist (a numeral `0`
+  "in" `K∖{0}`, a numeral `k ≠ 0` "in" `Kⁿ`);
+- relying on a total convention of Lean or Mathlib off its domain (`x / 0 = 0`, `Nat.card` of
+  an infinite type, `Matrix.nonsing_inv` off `GLₙ`, `iteratedDeriv` of a non-differentiable map);
+- totalising an operation by silently changing what it means (a companion matrix of "the monic
+  truncation" of a non-monic polynomial);
+- a fallback that re-reads or reinterprets a term so that it lands in a domain.
+
+That an element lies in `D` is part of how the element is constructed (it is formed in `D`, or
+carried there along a registered map into `D`), claimed by that construction as any law is, and
+checked by tests; it is never decided at the point of use.
 
 ## LC-15 — Numerals and literals are images of universal maps
 
@@ -195,4 +201,5 @@ object of `R`'s category (`ℤ → R` in rings, `ℕ → M` in monoids); where t
 map, `R` has no numerals. A literal form is therefore a family of elements `1 → R` derived from
 initiality in the owning category, not a function from `ℕ` into a carrier. That a numeral lies
 in a subobject (`n ∈ K^×`, `n ∈ D`) is a proposition about that element, decided like any other;
-a literal form that returns `none` to say "no such element" is banned by LC-14.
+a literal form that returns `none` to say "no such element" is banned by LC-14, and a numeral
+needed in `D` is formed there, not tested for membership at the point of use.

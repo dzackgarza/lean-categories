@@ -47,9 +47,11 @@ does not justify weakening a dependent theorem or starting unrelated work.
   - `LinearAlgebra.companion`: totalised as the companion of the monic truncation; defined
     mathematically on monic polynomials of degree `n` (LC-14).
   - `LinearAlgebra.inverse`, `FiniteSums.sum`/`prod`, `Calculus.divide`, `limitAt`,
-    `limitAtTop`, `integral`, `taylor`, `formalSum`: domains defined by classical
-    `if … then some … else none` instead of as subobjects `GLₙ ↪ Matₙ`, finite subsets,
-    `ℝ × ℝ^× `, convergent/integrable/smooth loci (LC-14).
+    `limitAtTop`, `integral`, `taylor`, `formalSum`, and the partial-value object
+    `PartialMaps.partialValues` with `lift`, `liftLeft`, `liftRight`, `join`: partial maps into
+    `Y⊥` with domains by classical `if … then some … else none`, instead of total maps out of
+    their domain objects `GLₙ ↪ Matₙ`, finite subsets, `ℝ × ℝ^×`, convergent, integrable and
+    smooth maps (LC-14).
   - Every `…Element (k : ℕ) : Option X` element-literal form (the `ElementLiteralEntry` shape
     `ℕ → Option X`, validated in `Registry/Semantic.lean`), where numerals are not images of
     the map out of the initial object (LC-15).
