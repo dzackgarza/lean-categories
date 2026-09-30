@@ -56,11 +56,13 @@ def listReverse : listFunctor.{u} ≅ listFunctor.{u} where
   hom_inv_id := listReverseHom_comp_self
   inv_hom_id := listReverseHom_comp_self
 
-@[simp] theorem listUnit_app_apply (X : Type u) (x : X) :
-    (listUnit.app X : X ⟶ listFunctor.obj X) x = [x] := rfl
+/-- The unit component `η_X = (x ↦ [x])`. Stated on the component, not applied to an element: an
+applied form carries `(𝟭 _).obj X` in its coercion, which `simp` rewrites first. -/
+@[simp] theorem listUnit_app (X : Type u) : listUnit.app X = ↾(fun x : X => [x]) := rfl
 
-@[simp] theorem listJoin_app_apply (X : Type u) (l : List (List X)) :
-    (listJoin.app X : listFunctor.obj (listFunctor.obj X) ⟶ listFunctor.obj X) l = l.flatten := by
+/-- The multiplication component `μ_X = List.flatten`. -/
+@[simp] theorem listJoin_app (X : Type u) : listJoin.app X = ↾(List.flatten (α := X)) := by
+  ext l
   change joinM l = l.flatten
   simp only [joinM]
   change List.flatMap id l = l.flatten
