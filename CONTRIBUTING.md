@@ -203,3 +203,29 @@ initiality in the owning category, not a function from `ℕ` into a carrier. Tha
 in a subobject (`n ∈ K^×`, `n ∈ D`) is a proposition about that element, decided like any other;
 a literal form that returns `none` to say "no such element" is banned by LC-14, and a numeral
 needed in `D` is formed there, not tested for membership at the point of use.
+
+## LC-16 — An operation exists only where its structure exists
+
+An operation belongs to the category whose every object carries it. Inverses are group
+structure: `⁻¹` is an operation of groups, so of `Mˣ` (the units functor `Mon → Grp`, right
+adjoint to the inclusion), of `Aut(X)`, of `GLₙ(K) = Matₙ(K)ˣ`, of `K^×`. It is not an operation
+of monoids, of `End(X)`, of `Matₙ(K)` or of a field `K`, because endomorphisms are not invertible
+in general. The same holds for every operation. No endofunctor or operation may be declared on a
+category some of whose objects lack the structure it uses. An element is inverted only once it is
+an element of the units, formed there or admitted there with its evidence; one not established
+to be invertible cannot even be written as an argument of `⁻¹`.
+
+A row that violates this is ill-defined mathematics, and the registry must refuse it at
+registration (gate owed: `lean-cas-dsl` plan node `gov-registry-gates`). Until that gate exists,
+a reviewer refuses it.
+
+## LC-17 — Formalization is authored blind to computation, tests and leaves
+
+Mathematics here is written by the formalization author only, from the mathematical requirement
+and its sources. That author never reads the kernel, the language, an acceptance test or a leaf
+to decide what to write, and no agent who writes those writes here
+([`lean-cas-dsl/specs/architecture.md`](https://github.com/dzackgarza/lean-cas-dsl/blob/main/specs/architecture.md),
+"Authors: one role per agent"). A downstream difficulty arrives as a written request for
+mathematics, and it never shapes the answer. Formalizing an API to fit what a kernel can
+elaborate or a leaf can compute inverts the trust model. Such work is not accepted however it
+reads: `bd31fe3` (2026-09-30) was authored this way and awaits independent review.

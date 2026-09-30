@@ -9,7 +9,16 @@ mathematical obligation. Continue independent work whose prerequisites hold.
 # Role in the programme: the single mathematical authority (always-on)
 
 [`lean-cas-dsl/specs/architecture.md`](https://github.com/dzackgarza/lean-cas-dsl/blob/main/specs/architecture.md)
-owns the separation of concerns. This repository's part in it:
+owns the separation of concerns.
+
+**Who writes here.** Only the formalization agent writes here: a subagent given the mathematical
+requirement and its sources. It never reads the kernel, the language, a test or a leaf to decide
+what to write. The orchestrator, which owns the kernel, and the test and leaf authors never author
+mathematics here (architecture.md "Authors: one role per agent"; LC-17). The orchestrator's single
+exception is compliance gates in the registry validator, which add no mathematics. Operations
+exist only where their structure does (LC-16), and no map is partial (LC-14).
+
+This repository's part in the separation of concerns:
 
 * **Everything mathematical is here and nowhere else.** This covers:
   - categories and higher categories, n-morphisms, and structural and forgetful functors;
