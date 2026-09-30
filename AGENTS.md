@@ -1,10 +1,72 @@
 # Repository work documents
 
+> **You have no memory.** Nothing that exists only in chat survives compaction or the session.
+> Every correction, finding and decision request is committed to its owning document first
+> ([`lean-cas-dsl/AGENTS.md`](https://github.com/dzackgarza/lean-cas-dsl/blob/main/AGENTS.md),
+> "You have no memory"). The orchestrator is inside the threat model
+> (`lean-cas-dsl/specs/architecture.md`).
+
+
 Read [TODO.md](TODO.md) for the execution DAG and existing sweep records,
 [CONTRIBUTING.md](CONTRIBUTING.md) for named policies, and
 [COMPLAINTS.md](COMPLAINTS.md) for observed mathematical issues and papercuts.
 Record new issues when encountered under `LC-05`; logging never discharges the
 mathematical obligation. Continue independent work whose prerequisites hold.
+
+# Role in the programme: the single mathematical authority (always-on)
+
+[`lean-cas-dsl/specs/architecture.md`](https://github.com/dzackgarza/lean-cas-dsl/blob/main/specs/architecture.md)
+owns the separation of concerns.
+
+**Who writes here.** Only the formalization agent writes here: a subagent given the mathematical
+requirement and its sources. It never reads the kernel, the language, a test or a leaf to decide
+what to write. The orchestrator, which owns the kernel, and the test and leaf authors never author
+mathematics here (architecture.md "Authors: one role per agent"; LC-17). The orchestrator's single
+exception is compliance gates in the registry validator, which add no mathematics. Operations
+exist only where their structure does (LC-16), and no map is partial (LC-14).
+
+This repository's part in the separation of concerns:
+
+* **Everything mathematical is here and nowhere else.** This covers:
+  - categories and higher categories, n-morphisms, and structural and forgetful functors;
+  - classifiers and their pullbacks;
+  - typed constructors and parameter families;
+  - operations (every user-facing method is a formal operation, section, functor, classifier
+    query or composite);
+  - predicates, coherences and comparison cells.
+
+  Downstream (`lean-cas-dsl`, its leaves, `research`) consumes a pinned release and may add none
+  of these. A downstream need for missing mathematics arrives here as a formalization request.
+  Until it is formalized and released, the CAS has no such notion.
+* **Blind to computation.** Decide what a definition means from its sources, never from what
+  Sage, GAP or any backend computes, and never from what a leaf would find convenient. Backend
+  capability is irrelevant to every audit here.
+  The leaf contract (realization rows, the port protocol, `register_leaf`) is therefore not here,
+  although it is Lean and every leaf depends on it: it is the `lean-cas-dsl` kernel's, published as
+  `lean-cas-dsl-leaf-contracts` over this repository (`lean-cas-dsl/specs/architecture.md`,
+  "Packages").
+* **Auditable as mathematics alone.** Every definition checks against its citations, Mathlib and
+  the formalization corpus. There is no `sorry` and no unchecked semantic axiom. This repository
+  builds and audits without any downstream package.
+* **Typed identity.** Constructor applications and family parameters are typed terms, never
+  strings. `LeftModules(R)`, `LeftModules(S)` and `Bimodules(R,S)` differ unless a theorem
+  identifies them. Two routes are identified only by a coherence cell, never by precedence.
+* **Monotone growth.** A new generic operation or structural fact is stated at its true generality,
+  so that every object it applies to downstream acquires it on re-pin, with no leaf edit.
+* **The semantic registry lives here.** Which categories, structural functors, operations and
+  coherences constitute the language's semantics is mathematics. The catalogue is
+  `LeanCategories/Catalogue/` (namespace `CasCatalogue`):
+  - the symbolic calculus (`Syntax`) and the realization witnesses;
+  - the schema, validators and the `normalized_registry` command (`Registry/Semantic.lean`), which
+    refuses every module outside `LeanCategories`;
+  - the rows (`Semantics/`).
+
+  `lean-cas-dsl` reads it at a pinned revision and adds only realizations. A new semantic row is
+  written here, released, and re-pinned downstream.
+* **Corrections flow down, never up.** A downstream failure (a leaf that cannot compute, a failing
+  acceptance assertion) is never a reason to change a definition here. Only a mathematical error
+  in this repository is. Such a correction is released, and downstream re-pins and updates the
+  affected assertions in that same step.
 
 # Start here: corpus execution
 

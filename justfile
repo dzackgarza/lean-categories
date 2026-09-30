@@ -18,8 +18,9 @@ ai_review_ci := env_var("HOME") / "ai-review-ci"
 default:
     @just --list
 
-# Build the library and registry exporter
+# Build the library on Mathlib's prebuilt cache (machine-wide in ~/.cache/mathlib)
 build:
+    @lake exe cache get
     @lake build
 
 # Fetch Mathlib's prebuilt compilation cache
@@ -29,7 +30,6 @@ cache:
 
 # Run the complete repository quality gate
 test: build
-    @lake exe lean-categories-export >/dev/null
     @just -f {{ai_review_ci}}/justfiles/lean.just -d . lean-no-sorry
     @just _lint-conventions
     @just _lean-vacuity-audit
@@ -37,11 +37,10 @@ test: build
     @just _lean-unused-variables
     @just _lean-axiom-audit
 
-# Commit-tier QC is deliberately non-elaborating: it catches the repository's
+# Commit- and push-tier QC is non-elaborating: it catches the repository's
 # local convention error while a worker can still bank a partially elaborated
-# transcription. Full elaboration, sorry-freedom, exporter/linter/axiom audits
-# stay in `test-ci`/`test-push`, where `test` remains the complete repository
-# gate.
+# transcription. Full elaboration, exporter/linter/axiom audits run in CI
+# (`test-ci`), where `test` remains the complete repository gate.
 test-commit:
     @just _lint-conventions
 
@@ -119,8 +118,9 @@ _lint-conventions:
     fi
 
 [private]
-test-push: test-ci
-    @just -f {{ai_review_ci}}/justfiles/lean.just -d . lean-axiom-audit
+test-push:
+    @just -f {{ai_review_ci}}/justfiles/lean.just -d . lean-no-sorry
+    @just _lint-conventions
 
 # Regenerate the corpus site pages from the agent-memory vault
 site-build:

@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.CategoryTheory.OneCat.Universes
 public import Mathlib.CategoryTheory.Functor.FullyFaithful
+public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 @[expose] public section
 
@@ -33,6 +34,12 @@ universe uObj uHom
 structure Classifier (C : ObjCat.{uObj, uHom}) where
   total : ObjCat.{uObj, uHom}
   forget : total ⟶ C
+
+/-- The classifier of a property `P` of objects: its total is Mathlib's full subcategory on `P`,
+its forgetful functor the inclusion `P.ι`. -/
+def Classifier.ofProperty {C : ObjCat.{uObj, uHom}} (P : ObjectProperty C) : Classifier C where
+  total := Cat.of P.FullSubcategory
+  forget := P.ι.toCatHom
 
 /-- Property classifier: full, faithful, and replete (when repleteness is available).
 Manifest `kind := property` requires these proofs — never an unchecked tag. -/

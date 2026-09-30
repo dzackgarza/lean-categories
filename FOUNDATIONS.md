@@ -892,6 +892,15 @@ free modules and their equivalence with finite projectivity are [@The25, tags 00
 
 ### Definition 13.5 (Framed generators and framed bases) {#def-module-generators-bases}
 
+> **Superseded (2026-09-28)** by Definition 13.10 (resolutions). "Frame" conflicts with its
+> standard meaning (a framing of a bundle, Remark 13.12); a chosen surjection \(R^n\to M\) is the
+> augmentation of a free resolution, and a chosen basis is a free resolution of length zero.
+> The code realizing them was renamed accordingly (2026-09-28): `LeanCategories.Modules.TruncatedResolutions`
+> defines `FreeCover R I` (1-truncated free resolutions \(R^{(I)}\twoheadrightarrow M\)) and
+> `BasedModule R I` (free resolutions of length zero \(R^{(I)}\cong M\)), registered as
+> `cat.free_cover`, `cat.based_module` and their indexed families; the formed-module, quadratic and
+> lattice variants live in the `Based` modules.
+
 Fix \(n\ge0\). The comma category
 \[
 (R^n\downarrow R\text{-}\mathbf{Mod})
@@ -926,6 +935,8 @@ matrices through generating presentations is Section 74.
 
 ### Definition 13.6 (Coordinatized modules) {#def-coordinatized-module}
 
+> **Superseded (2026-09-28)** by Definitions 13.10–13.11; see the note at Definition 13.5.
+
 There is a second standard category with the same objects as
 \(\operatorname{BasisFrame}_n(R)\): a morphism from \((M,e)\) to \((N,f)\) is an
 arbitrary \(R\)-linear map \(M\to N\). Call this category \(\operatorname{Coord}_n(R)\).
@@ -947,8 +958,8 @@ The change-of-basis and Gram-matrix comparison is the classical free-module calc
 There is a faithful identity-on-objects functor from framed bases to coordinatized modules,
 but the two categories are not identified.
 
-**Lean realization status (2026-08-14).** `LeanCategories.Modules.Framed` defines the
-arbitrary-index core declarations `GenFrame R I`, `BasisFrame R I`, and `Coord R I`,
+**Lean realization status (2026-08-14; names of 2026-09-28).** `LeanCategories.Modules.TruncatedResolutions`
+defines the arbitrary-index core declarations `FreeCover R I`, `BasedModule R I`, and `Coord R I`,
 using the standard free module `Finsupp I R`. The catalogue registers their arbitrary-index
 families, categories, and forgetful functors with independent ring, index, object, and hom
 universes. The finite rows remain the `I := Fin n` specializations. The arbitrary-index
@@ -977,6 +988,55 @@ Sections 73--77 develop this uniform theory and the accompanying descent of matr
 
 The conversations used “based,” “with generators,” and “with basis” in several provisional
 senses. This report therefore names the morphism convention whenever it matters.
+
+### Definition 13.10 (Resolutions) {#def-resolution}
+
+Let \(\mathcal A\) be an abelian category and \(M\in\mathcal A\). A **(left) resolution** of \(M\) is a
+chain complex \(P_\bullet=(\cdots\to P_2\to P_1\to P_0)\) with \(P_i=0\) for \(i<0\), together with an
+augmentation \(\varepsilon:P_0\to M\), such that the augmented complex
+\[
+\cdots\to P_2\to P_1\to P_0\xrightarrow{\varepsilon}M\to0
+\]
+is exact; equivalently \(\varepsilon\) induces a quasi-isomorphism \(P_\bullet\to M[0]\). It is
+**projective** (resp. **free**) when every \(P_i\) is projective (resp. free) [Weibel, *An
+Introduction to Homological Algebra* (1994), §2.2]. Morphisms of resolutions over a morphism
+\(M\to N\) are chain maps compatible with the augmentations; by the comparison theorem any two
+projective resolutions of \(M\) are chain homotopy equivalent over \(\mathrm{id}_M\) [Weibel 1994, §2.2].
+
+The \(k\)-**truncation** of a resolution keeps \(P_{k-1}\to\cdots\to P_0\to M\to0\), exact at every
+displayed spot except the leftmost term; a resolution is the limit of its truncations.
+
+### Definition 13.11 (Presentations and bases as truncated resolutions) {#def-presentation}
+
+A **presentation** of an \(R\)-module \(M\) is a 2-truncated free resolution
+\[
+F_1\xrightarrow{d}F_0\xrightarrow{\varepsilon}M\to0,
+\]
+i.e. generators (a basis of \(F_0\) mapped by \(\varepsilon\)) and relations (the image of \(d\)); it
+is *finite* when \(F_0,F_1\) are finite free. A 1-truncated free resolution is a chosen
+surjection \(F_0\to M\) (the former "generating frame" of Definition 13.5), and a free
+resolution of length zero, \(F_0\xrightarrow{\ \sim\ }M\), is a chosen basis (the former "basis
+frame" and the objects of Definition 13.6). Matrix calculus is the calculus of chain maps
+between such truncated resolutions (Section 74).
+
+The same notion has other standard presentations, used where they are the better statement:
+simplicial resolutions (augmented simplicial objects whose normalized chain complex is a
+resolution, via the Dold–Kan correspondence), cofibrant replacements in a model structure,
+and comonadic (bar / cotriple) resolutions from an adjunction [Weibel 1994, Ch. 8]. A
+presentation of an algebraic object other than a module (a group, a ring, an operad algebra)
+is a truncation of such a simplicial or comonadic resolution.
+
+### Remark 13.12 (Framings of bundles) {#rem-framing}
+
+A **framing** of a rank-\(n\) vector bundle \(E\to X\) is a trivialization \(X\times\mathbb R^n\cong E\),
+equivalently a global frame of sections; a **stable framing** is a trivialization of
+\(E\oplus\underline{\mathbb R}^k\) for some \(k\), and a framed manifold is a manifold with a (stable)
+framing of its tangent bundle. In the language of Definition 13.10, a framing is a free
+resolution of length zero of the module of sections, \(\mathcal O_X^n\xrightarrow{\sim}\Gamma(E)\);
+a framed bundle is a bundle with such a resolution. The further conditions the owner ruling
+refers to ("a bundle with a resolution satisfying other properties as well as the
+trivialization condition") are **not yet stated**: their exact list and sources remain open
+work of `cc-resolutions`, and no definition here fixes them.
 
 ### Definition 13.8 (Bimodules) {#def-bimodule-category}
 
@@ -1169,6 +1229,55 @@ and similarly for quadratic maps. The scalar-extended form is characterized by
 (S\otimes b)((s\otimes x),(t\otimes y))
 =st\otimes b(x,y).
 \]
+
+**Quadratic maps, characteristic-free.** Base change of quadratic maps must not assume
+\(2\in R^\times\) (the evenness of §19.5 lives over \(\mathbb Z\)). The general construction goes
+through the degree-2 divided powers \(\Gamma_2^R(M)\), the degree-2 part of the divided-power
+algebra \(\Gamma_R(M)\):
+
+1. *Representability.* The map \(\gamma_2:M\to\Gamma_2^R(M)\), \(m\mapsto m^{[2]}\), is quadratic, and
+   every quadratic map \(q:M\to W\) factors uniquely as \(q=\tilde q\circ\gamma_2\) with
+   \(\tilde q\in\operatorname{Hom}_R(\Gamma_2^R(M),W)\), naturally in \(M\) and \(W\). This is the
+   degree-2 case of Roby's representation of homogeneous polynomial laws of degree \(d\) by
+   \(\Gamma_d\) [N. Roby, *Lois polynômes et lois formelles en théorie des modules*, Ann. Sci.
+   ÉNS (3) 80 (1963), 213–348; chapter locator to be confirmed, not yet read for this entry].
+2. *Base change of \(\Gamma\).* For \(R\to S\) there is a natural isomorphism of graded
+   \(S\)-algebras \(S\otimes_R\Gamma_R(M)\cong\Gamma_S(S\otimes_R M)\), sending \(1\otimes m^{[n]}\) to
+   \((1\otimes m)^{[n]}\) [Roby 1963, Thm. III.3; formalized as `dpScalarExtensionEquiv` in
+   Chambert-Loir–de Frutos-Fernández, *DividedPowers4*, `DPAlgebra/BaseChange.lean`]. Its
+   degree-2 part is \(S\otimes_R\Gamma_2^R(M)\cong\Gamma_2^S(S\otimes_R M)\).
+3. *Definition.* The base change of \(q\leftrightarrow\tilde q\) is the quadratic map
+   \(S\otimes q:S\otimes_R M\to S\otimes_R W\) corresponding under (1) to
+   \(\Gamma_2^S(S\otimes_R M)\cong S\otimes_R\Gamma_2^R(M)\xrightarrow{S\otimes\tilde q}S\otimes_R W\).
+   It is characterized by \((S\otimes q)(s\otimes m)=s^2\otimes q(m)\) together with its polar
+   form, which is \(S\otimes b_q\). When \(2\in R^\times\) it agrees with Mathlib's
+   `QuadraticForm.baseChange`. Functoriality and the pseudofunctor coherence of
+   \(\varphi\mapsto S\otimes-\) are inherited from (1) and (2), so \(\mathbf{Quad}\) is a cocartesian
+   fibration over the total module category exactly as \(\mathbf{Bil}\) is (Example 31.2c).
+
+*Construction used in the Lean code (2026-09-28), by descent along a free cover.* The same
+quadratic map is obtained without \(\Gamma_2\), and this is how `QuadraticMap.baseChange'`
+(`LeanCategories/ForMathlib/QuadraticBaseChange.lean`) builds it:
+
+1. On a free module with a basis \(e\), \(q=\beta_e^{\mathrm{diag}}\) for the (non-symmetric)
+   bilinear map \(\beta_e\) with \(\beta_e(e_i,e_i)=q(e_i)\), \(\beta_e(e_i,e_j)=b_q(e_i,e_j)\) for
+   \(i<j\) and \(0\) for \(i>j\) (Mathlib `QuadraticMap.toBilin`, E. Wieser); then
+   \(v\mapsto(S\otimes\beta_e)(v,v)\) is a quadratic map with \(s\otimes m\mapsto s^2\otimes q(m)\).
+2. In general take the free cover \(\pi:R^{(M)}\twoheadrightarrow M\) (a 1-truncated free resolution,
+   Definition 13.11) and \(P\) the base change of \(q\circ\pi\) from step 1. By right exactness of
+   \(S\otimes_R-\) [Bourbaki, *Algèbre* II §3.6, Prop. 5], \(\ker(S\otimes\pi)\) is the image of
+   \(S\otimes\ker\pi\). The polar form of \(P\) is \(S\otimes b_{q\circ\pi}\), which vanishes
+   against \(\ker\pi\) because \(b_q(\pi x,0)=0\), and \(P\) vanishes on the image of
+   \(S\otimes\ker\pi\); hence \(P\) is constant on the fibres of \(S\otimes\pi\) and descends to
+   \(S\otimes q\) on \(S\otimes_R M\).
+3. A quadratic map on \(S\otimes_R M\) is determined by its values on \(1\otimes m\) (Mathlib
+   `baseChange_ext`, no hypothesis on \(2\)), so \(S\otimes q\) does not depend on the cover and
+   agrees with the \(\Gamma_2\) construction above. The same uniqueness gives the identity and
+   composition comparisons of \(\varphi\mapsto S\otimes-\) on \(\mathbf{Quad}\)
+   (`baseChangeQuadWFormIdentityIso`, `baseChangeQuadWFormCompositionIso`).
+
+Steps 1–2 of the \(\Gamma_2\) route (representability and Roby's base change of \(\Gamma\)) remain
+unformalized (COMPLAINTS); nothing above depends on them.
 
 ### Definition 15.7 (Hermitian and sesquilinear forms) {#def-hermitian-form}
 
@@ -2495,6 +2604,72 @@ pseudofunctor
 \mathbf{Grpd}.
 \]
 This is the standard Stacks Project convention [@The25, tag 003T].
+
+### Lemma 31.2a (Cancellation for cocartesian morphisms) {#lem-cocartesian-cancellation}
+
+Let \(P:\mathcal E\to\mathcal F\) and \(q:\mathcal F\to\mathcal C\) be functors and
+\(\varphi:a\to b\) a morphism of \(\mathcal E\). If \(\varphi\) is strongly
+\((q\circ P)\)-cocartesian and \(P(\varphi)\) is strongly \(q\)-cocartesian, then
+\(\varphi\) is strongly \(P\)-cocartesian.
+
+*Proof.* Let \(\psi:a\to b'\) and \(h:P(b)\to P(b')\) with \(P(\psi)=h\circ P(\varphi)\). Then
+\(q(\psi)=q(h)\circ q(P\varphi)\), so \(\varphi\) being \((q\circ P)\)-cocartesian gives a
+unique \(\chi:b\to b'\) over \(q(h)\) with \(\chi\varphi=\psi\). Both \(P(\chi)\) and \(h\) lie
+over \(q(h)\) and satisfy \(P(\chi)P(\varphi)=h\,P(\varphi)\); since \(P(\varphi)\) is
+\(q\)-cocartesian, \(P(\chi)=h\). Uniqueness of \(\chi\) over \(h\) follows from uniqueness
+over \(q(h)\). \(\square\) This is the dual of the cancellation property of cartesian
+morphisms [@Lur09a, Prop. 2.4.1.3].
+
+### Proposition 31.2b (Fibred fibrations over a Grothendieck construction) {#prop-fibred-fibration}
+
+Let \(F,G:\mathcal C\to\mathfrak{Cat}\) be pseudofunctors and \(\alpha:G\Rightarrow F\) a strong
+transformation, and let \(\int\alpha:\int G\to\int F\) be the induced functor of covariant
+Grothendieck constructions over \(\mathcal C\). Suppose that
+
+1. each component \(\alpha_c:G(c)\to F(c)\) is a cocartesian fibration, and
+2. for each \(f:c\to c'\), the functor \(G(f)\) carries \(\alpha_c\)-cocartesian morphisms to
+   \(\alpha_{c'}\)-cocartesian morphisms.
+
+Then \(\int\alpha\) is a cocartesian fibration, its fibre over \((c,y)\) is
+\(\alpha_c^{-1}(y)\), and the composite \(\int G\to\int F\to\mathcal C\) is the projection of
+\(\int G\). Conversely a composite of cocartesian fibrations \(\mathcal E\to\mathcal F\to\mathcal C\)
+straightens to such an \(\alpha\) (fibrations of fibrations: C. Hermida, "Some properties of Fib as a fibred 2-category", J. Pure Appl. Algebra 134 (1999) 83–109).
+
+*Proof.* Say a morphism \((f,\psi):(c,x)\to(c',x')\) of \(\int G\) is *transport-stable* if
+\(G(h)\psi\) is strongly \(\alpha_{c''}\)-cocartesian for every \(h:c'\to c''\). A
+transport-stable morphism is strongly \(\int\alpha\)-cocartesian: given
+\((h,\gamma):(c',\alpha_{c'}x')\to(c'',\alpha_{c''}x'')\) and \((f h,\theta):(c,x)\to(c'',x'')\)
+lying over \((f,\beta)\circ(h,\gamma)\), the naturality of \(\eta\) at \(h\) and its composition
+law at \((f,h)\) show that \(\mu_{f,h}^{-1}\circ\theta\) lies over
+\(\eta_h\circ\gamma\) after \(\alpha_{c''}(G(h)\psi)\), where \(\mu\) is the composition
+isomorphism of \(G\); the unique \(\kappa\) supplied by the cocartesian morphism \(G(h)\psi\) gives
+the unique factorization \((h,\kappa)\). Now given \((c,x)\) and \((f,\beta):(c,\alpha_c x)\to(c',y)\)
+in \(\int F\), let \(\psi:G(f)x\to x'\) be a strongly \(\alpha_{c'}\)-cocartesian lift of
+\(\beta\circ\eta_f\) (hypothesis 1). By hypothesis (2), \((f,\psi)\) is transport-stable, and
+\(\int\alpha(f,\psi)=(f,\beta)\). \(\square\) Formalized as
+`Pseudofunctor.Grothendieck.isStronglyCocartesian_map` and `isCofibered_map`
+(`LeanCategories/ForMathlib/GrothendieckMapCocartesian.lean`); the cocartesian-fibration
+predicate is `Functor.IsCofibered` (`ForMathlib/Cofibered.lean`, the dual of Mathlib's
+`Functor.IsFibered`).
+
+### Example 31.2c (Forms over modules over rings)
+
+The forms fibration of FOUNDATIONS §15 is the case \(G(R)=\mathbf{Bil}^{W}_R\) (forms over \(R\)
+with varying value module, itself the strict Grothendieck construction of change of values over
+\(R\text{-}\mathbf{Mod}\)), \(F(R)=R\text{-}\mathbf{Mod}\) with extension of scalars, and
+\(\alpha_R\) the value-module projection; the naturality isomorphisms of \(\alpha\) are
+identities, because the value module of \(S\otimes_R(L,b)\) is \(S\otimes_R W\) on the nose.
+Hypothesis (1) is the cocartesianness of change of values. A morphism of
+\(\mathbf{Bil}^W_R\) is value-cocartesian exactly when its fibre part, a morphism of forms with
+fixed values, is invertible, i.e. when its carrier map is an isomorphism. Hypothesis (2) follows
+from a transfer principle: a functor over a functor of bases that sends one strongly
+cocartesian lift of each morphism to a strongly cocartesian morphism sends all of them
+(`Functor.IsStronglyCocartesian.map_of_exists`), and base change sends the canonical
+change-of-value lift, whose carrier map is the identity, to a morphism with carrier map
+\(S\otimes_R\mathrm{id}=\mathrm{id}\). The resulting tower
+\(\mathbf{Bil}\xrightarrow{p}\int_R R\text{-}\mathbf{Mod}\xrightarrow{q}\mathbf{CommRing}\) is
+`BilinFormsOverRings.values`, `ModulesOverRingsExt.ring`, with \(q\circ p\) the projection of
+forms to rings (`LeanCategories/Lattices/Valued/ValueFibration.lean`).
 
 ### Definition 31.3 (Descent datum) {#def-descent-datum}
 

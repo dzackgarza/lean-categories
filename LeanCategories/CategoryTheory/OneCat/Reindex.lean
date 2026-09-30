@@ -5,7 +5,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.CategoryTheory.OneCat.CategoricalPullback
-public import LeanCategories.Catalogue.Id
 public import LeanCategories.Tools.Linters
 
 @[expose] public section

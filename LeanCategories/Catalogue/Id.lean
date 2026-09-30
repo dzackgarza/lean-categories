@@ -14,7 +14,8 @@ Stable IDs are normalized mathematical identity (matching the Python semantic se
 authored ledger). They never embed Lean universe metavariables.
 -/
 
-namespace LeanCategories
+namespace CasCatalogue
+
 
 /-- Stable category id, e.g. `cat.sets`, `cat.commutative_rings`. -/
 structure CategoryId where
@@ -36,6 +37,12 @@ structure ParameterId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 
+/-- Stable identity of a morphism variable between symbolic parameters, e.g. the ring map
+`φ : R ⟶ S` along which a fibration is reindexed. -/
+structure ParameterMorphismId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
 /-- Stable identity of an operation on symbolic parameters. -/
 structure ParameterOperationId where
   raw : String
@@ -48,6 +55,71 @@ structure ParameterKindId where
 
 /-- Stable identity of a category-family variance declaration. -/
 structure VarianceId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
+/-- Stable fibration id, e.g. `fib.modules`. -/
+structure FibrationId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
+/-- Stable category-constructor id, e.g. `ctor.arrow`, `ctor.slice`. -/
+structure ConstructorId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
+/-- Stable id of a registered method presentation, e.g. `meth.cardinality`. -/
+structure MethodId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
+/-- Stable id of a registered property presentation, e.g. `prop.is_commutative`. -/
+structure PropertyId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
+/-- Stable id of a registered lift of subobjects along a route step (CC-LIFT). -/
+structure LiftId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
+/-- Stable id of a registered limit presentation, e.g. `lim.sets.pullback`. -/
+structure LimitId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
+/-- Stable id of a registered adjunction, e.g. `adj.sets.pair.diagonal_limit`. -/
+structure AdjunctionId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
+/-- Stable id of a named object or object constructor, e.g. `obj.sets.integers_mod`. -/
+structure ObjectId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
+/-- Stable id of a literal form of a category, e.g. `lit.cardinals`. -/
+structure LiteralId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
+/-- Stable id of a registered power object, e.g. `pow.sets`. -/
+structure PowerObjectId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
+/-- Stable id of a registered inclusion of named objects, e.g. `incl.sets.integers_rationals`. -/
+structure InclusionId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
+/-- Stable id of an element operation of a category, e.g. `op.rings.add`. -/
+structure OperationId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
+/-- Stable id of a named morphism family, e.g. `mor.sets.fin_rev`. -/
+structure MorphismId where
   raw : String
   deriving DecidableEq, Repr, Hashable
 
@@ -75,9 +147,22 @@ structure OpaquePortId where
 
 
 instance : Inhabited CategoryId := ⟨⟨""⟩⟩
+instance : Inhabited FibrationId := ⟨⟨""⟩⟩
+instance : Inhabited MethodId := ⟨⟨""⟩⟩
+instance : Inhabited PropertyId := ⟨⟨""⟩⟩
+instance : Inhabited LiftId := ⟨⟨""⟩⟩
+instance : Inhabited LimitId := ⟨⟨""⟩⟩
+instance : Inhabited AdjunctionId := ⟨⟨""⟩⟩
+instance : Inhabited ObjectId := ⟨⟨""⟩⟩
+instance : Inhabited LiteralId := ⟨⟨""⟩⟩
+instance : Inhabited MorphismId := ⟨⟨""⟩⟩
+instance : Inhabited OperationId := ⟨⟨""⟩⟩
+instance : Inhabited InclusionId := ⟨⟨""⟩⟩
+instance : Inhabited PowerObjectId := ⟨⟨""⟩⟩
 instance : Inhabited ClassifierId := ⟨⟨""⟩⟩
 instance : Inhabited CategoryFamilyId := ⟨⟨""⟩⟩
 instance : Inhabited ParameterId := ⟨⟨""⟩⟩
+instance : Inhabited ParameterMorphismId := ⟨⟨""⟩⟩
 instance : Inhabited ParameterOperationId := ⟨⟨""⟩⟩
 instance : Inhabited ParameterKindId := ⟨⟨""⟩⟩
 instance : Inhabited VarianceId := ⟨⟨""⟩⟩
@@ -94,6 +179,10 @@ def n : ParameterId := ⟨"n"⟩
 def i : ParameterId := ⟨"I"⟩
 def domain : ParameterId := ⟨"domain"⟩
 end ParameterId
+
+namespace ParameterMorphismId
+def phi : ParameterMorphismId := ⟨"phi"⟩
+end ParameterMorphismId
 
 namespace ParameterOperationId
 def opposite : ParameterOperationId := ⟨"parameter.opposite"⟩
@@ -115,4 +204,4 @@ def restrictionOfScalarsContravariant : VarianceId :=
 def discrete : VarianceId := ⟨"variance.discrete"⟩
 end VarianceId
 
-end LeanCategories
+end CasCatalogue

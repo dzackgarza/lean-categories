@@ -6,5 +6,7 @@ public import LeanCategories.CategoryTheory.OneCat.Classifier
 public import LeanCategories.CategoryTheory.OneCat.CategoricalPullback
 public import LeanCategories.CategoryTheory.OneCat.Reindex
 public import LeanCategories.ForMathlib.CategoricalPullback
+public import LeanCategories.ForMathlib.CocartesianCancellation
+public import LeanCategories.Catalogue
 
 @[expose] public section

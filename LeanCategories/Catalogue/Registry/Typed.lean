@@ -23,7 +23,8 @@ selected semantic model to this evidence.  They do not reconstruct proofs
 from names read from JSON.
 -/
 
-namespace LeanCategories
+namespace CasCatalogue
+open LeanCategories
 
 universe uObj uHom
 
@@ -83,6 +84,8 @@ namespace CategoryPrimitive
 def ofExpr : (expression : CategoryExpr) → CategoryPrimitive expression
   | .atom id => .atom id
   | .familyApp family arguments => .familyApp family arguments
+  | .familyTotal family => .familyTotal family
+  | .construct constructor arguments => .construct constructor arguments
   | .classifierTotal classifier => .classifierTotal classifier
   | .refine base classifier => .refine base classifier
   | .opaque id => .opaque id
@@ -111,4 +114,4 @@ particular, these projections do not claim that a `Name` or a JSON string is
 itself a category, functor, or proof.
 -/
 
-end LeanCategories
+end CasCatalogue

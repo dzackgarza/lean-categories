@@ -29,20 +29,33 @@ LeanCategories/
   Util/
 ```
 
+This repository is the single mathematical authority of the programme. It owns all mathematics
+that the computer algebra language
+[`lean-cas-dsl`](https://github.com/dzackgarza/lean-cas-dsl) means: categories, functors,
+classifiers, operations (every user-facing method), coherences, and typed constructors and
+families. It also owns their registration as the language's semantics.
+
+`lean-cas-dsl` requires this package and derives the language from a pinned release. It owns
+resolution, realizations over Sage, GAP, Julia and other engines, the leaf API and the notebook,
+and it owns no mathematics. The semantic registry it reads, the catalogue, is here
+(`LeanCategories/Catalogue/`, namespace `CasCatalogue`). The contract is
+[`lean-cas-dsl/specs/architecture.md`](https://github.com/dzackgarza/lean-cas-dsl/blob/main/specs/architecture.md).
+
 The support directories describe the same mathematical library. They do not define a
 second category system. `Core` and `Model` define the common language. `Realization`
 connects it to Mathlib. `Registry`, `Specimen`, and `Tools` inspect and export that
 language.
 
-The core module foundation includes generating frames, basis frames, and coordinatized
-modules with arbitrary index types: `GenFrame R I`, `BasisFrame R I`, and `Coord R I`.
+The core module foundation includes truncated free resolutions — free covers and bases — and
+coordinatized modules with arbitrary index types: `FreeCover R I`, `BasedModule R I`, and
+`Coord R I`.
 These declarations use `Finsupp`, not a finite-only representation. The lattice foundation
 includes even integral lattices as a full subcategory. It also includes coordinatized
 integral lattices as a categorical pullback. The comparison functor forgets the selected
 coordinates and returns the intrinsic lattice.
 
 The current finite catalogue rows remain the `I := Fin n` specializations. The catalogue
-also registers the arbitrary-index `GenFrame(R, I)`, `BasisFrame(R, I)`, and `Coord(R, I)`
+also registers the arbitrary-index `FreeCover(R, I)`, `BasedModule(R, I)`, and `Coord(R, I)`
 families, categories, and forgetful functors. The arbitrary-index lattice-coordinate
 category remains open. No matrix, Gram, or determinant comparison is claimed complete.
 
@@ -80,16 +93,9 @@ Sage observation, method exposure, backend routing, and runnable parity belong t
 [`dzackgarza/lean-cas-dsl`](https://github.com/dzackgarza/lean-cas-dsl). Sage labels and
 implementation details do not define this library.
 
-The current catalogue is a deliberately incomplete specimen. It establishes a
-Lean-authoritative registry/export path but does not claim the complete normalized
-catalogue. Historical 179/151-row Sage-category ledgers are provenance only: Sage
-functionality is versioned applicability and realization evidence, never the catalogue
-or release denominator.
-
 ```bash
 just cache
 just build
-lake exe lean-categories-export
 ```
 
 ## The foundational corpus

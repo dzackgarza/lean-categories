@@ -32,6 +32,287 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Mathematical issues
 
+### Catalogue rows in violation of LC-13, LC-14 and LC-15
+
+- **Need:** every catalogue construction takes its object in the category that carries its
+  structure, defines each partial operation on its domain subobject, and names numerals as
+  images of maps out of the initial object (LC-13, LC-14, LC-15).
+- **Evidence (declarations, inspected 2026-09-30):**
+  - `CasCatalogue.Algebra.Fractions.nonzero (K) [DivisionRing K] [CharZero K]` and
+    `nonzeroElement` (`none` for `0`): `K∖{0}` is the complement of the additive unit of the
+    field `K`, i.e. the units `K^×` (a functor to groups); division is `K × K^× → K`.
+    `CharZero` exists only so numerals land there (LC-13, LC-14, LC-15).
+  - `LinearAlgebra.vectors (X) [Zero X] (n)` and `vectorsElement` (`none` for `k ≠ 0`): a set
+    `Xⁿ` has no zero; `Kⁿ` has one as a `K`-module (LC-13, LC-15).
+  - `LinearAlgebra.companion`: totalised as the companion of the monic truncation; defined
+    mathematically on monic polynomials of degree `n` (LC-14).
+  - `LinearAlgebra.inverse`, `FiniteSums.sum`/`prod`, `Calculus.divide`, `limitAt`,
+    `limitAtTop`, `integral`, `taylor`, `formalSum`, and the partial-value object
+    `PartialMaps.partialValues` with `lift`, `liftLeft`, `liftRight`, `join`: partial maps into
+    `Y⊥` with domains by classical `if … then some … else none`, instead of total maps out of
+    their domain objects `GLₙ ↪ Matₙ`, finite subsets, `ℝ × ℝ^×`, convergent, integrable and
+    smooth maps (LC-14).
+  - Every `…Element (k : ℕ) : Option X` element-literal form (the `ElementLiteralEntry` shape
+    `ℕ → Option X`, validated in `Registry/Semantic.lean`), where numerals are not images of
+    the map out of the initial object (LC-15).
+- **Gap and impact:** these rows are consumed by the `lean-cas-dsl` language (`/`, tuples,
+  `M⁻¹`, `∑`, `lim`, `∫`, Taylor expansions, numerals) and its permanent tests `fractions.cas`,
+  `linear_algebra.cas`, `inverses.cas`, `composed.cas`, `calculus.cas`, `series.cas`.
+- **Coverage:** the rows added under `lc-api-spec` (2026-09-29/30) were inspected; older
+  element-literal rows share the `ℕ → Option X` shape and were not audited individually.
+- **Repair link:** `lean-cas-dsl` plan node `lc-api-spec`. Resolved when each row is replaced by
+  its categorical form under LC-13–LC-15 and the element-literal row kind is replaced by
+  numerals as images of initial maps.
+
+
+### Missing theorem: pseudofunctors out of a Grothendieck construction from lax cocones
+
+- **Need:** the universal property of the Grothendieck construction of a pseudofunctor
+  `F : LocallyDiscrete C ⥤ᵖ Cat` as a lax colimit: a lax cocone on `F` (fibrewise
+  pseudofunctors `F c → Cat`, strong transition transformations, coherent modifications)
+  determines a pseudofunctor `∫ F → Cat`. It is the straightening statement behind every
+  fibration over a total category (forms over modules over rings, lean-cas-dsl `specs/registry-denotation-audit.md` §6).
+- **Searches:** `GrothendieckEquiv`, `Grothendieck of Grothendieck`, `Grothendieck sigma
+  equivalence`, `Grothendieck Fubini`, `pseudofunctor on Grothendieck construction`,
+  `straightening unstraightening`, `Grothendieck.pre`. Found only the strict case:
+  Mathlib `Grothendieck.functorFrom` (strict `C ⥤ Cat`, result a 1-functor `∫ F ⥤ E`) and
+  HoTTLean `ForMathlib/CategoryTheory/Bicategory/Grothendieck.lean` (same). UniMath
+  `Bicategories/Grothendieck/{Unit,Counit,FibrationToPseudoFunctor}.v` is a Rocq reference.
+- **Gap and route:** the forms fibration over modules was instead routed through
+  FOUNDATIONS Proposition 31.2b (fibred fibrations from a strong transformation), which
+  avoids this theorem. When it exists, the forms pseudofunctor on `∫ Mod` can be stated
+  directly.
+- **Repair link:** upstream candidate; not scheduled in this repository.
+
+### Missing theorem: fibred fibrations over Grothendieck constructions
+
+- **Need:** FOUNDATIONS Proposition 31.2b: a strong transformation `α : G ⟶ F` of
+  pseudofunctors whose components are cocartesian fibrations and whose transports preserve
+  cocartesian morphisms induces a cocartesian fibration `Grothendieck.map α`.
+- **Searches:** `fibred fibration`, `fibration in Fib`, `fibrewise fibration cartesian
+  functor`, `Grothendieck.map fibration`, `Grothendieck map StrongTrans cocartesian`,
+  `fibered functor between fibrations`, `displayed functor fibration total`,
+  `composite fibration total category fibre`. `sinhp/LeanFibredCategories` and HoTTLean
+  (`FibredCats/Fibration.lean`, `instComp`) have only the converse (a composite of two
+  fibrations is a fibration), on Lean `v4.4`.
+- **Repair link:** proved as `Pseudofunctor.Grothendieck.isStronglyCocartesian_map` and
+  `isCofibered_map` (`ForMathlib/GrothendieckMapCocartesian.lean`); upstream candidate. The
+  formal proof does not route through Lemma 31.2a: a morphism `(f, ψ)` whose transports
+  `G(h)ψ` are all `α`-cocartesian is shown `∫α`-cocartesian directly, from
+  `StrongTrans.naturality_comp_inv` and the naturality of `α` at `h`.
+
+### Missing definition: cocartesian fibrations (`Functor.IsCofibered`)
+
+- **Need:** the predicate "cocartesian fibration" against Mathlib's `IsCocartesian`/
+  `IsStronglyCocartesian` API, as the conclusion of Proposition 31.2b and the hypothesis on
+  its components.
+- **Searches:** `IsCofibered`, `IsPreCofibered`, `cocartesian fibration class Functor`.
+  Mathlib has only `Functor.IsPreFibered`/`Functor.IsFibered`; the hits (UniMath
+  `DisplayedCats/Fibrations.v`, 1lab, `sinhp/HoTTLean` attic) use their own encodings.
+- **Repair link:** `ForMathlib/Cofibered.lean` dualizes Mathlib's `FiberedCategory/Fibered.lean`
+  (`IsPreCofibered`, `IsCofibered`, `pushforwardObj`/`Map`,
+  `isStronglyCocartesian_of_isCocartesian`, `of_exists_isStronglyCocartesian`), with
+  `IsCofibered` instances for both Grothendieck projections (`GrothendieckCocartesian.lean`);
+  upstream candidate.
+
+### Missing theorem: transfer of cocartesian morphisms along a functor over a base functor
+
+- **Need:** if `Φ : 𝒳 ⥤ 𝒳'` lies over `Ψ : 𝒮 ⥤ 𝒮'` (`Φ ⋙ p' = p ⋙ Ψ`) and sends one strongly
+  cocartesian lift of each morphism to a strongly cocartesian morphism, it sends all of them.
+  Consumed as hypothesis (2) of Proposition 31.2b for base change of forms.
+- **Searches:** `cartesian functor preserves cartesian morphisms`, `IsHomLift map functor
+  commute`, `preserves cocartesian lifts`, `cartesian functor between fibrations`. Nearest:
+  Mathlib `BasedFunctor.preserves_isHomLift` (`FiberedCategory/BasedCategory.lean`), for
+  functors over the *same* base only (`Ψ = 𝟭`); `sinhp/LeanFibredCategories` defines cartesian
+  functors as those preserving all cartesian morphisms. Neither covers a change of base
+  (here `Ψ` is extension of scalars) or the reduction to one lift per morphism.
+- **Repair link:** `Functor.IsStronglyCocartesian.map_of_exists` and
+  `Functor.IsHomLift.map_of_comm` (`ForMathlib/Cofibered.lean`); upstream candidate.
+
+### Missing theorem: invertible fibre part implies cocartesian in a Grothendieck construction
+
+- **Need:** in the strict covariant Grothendieck construction, a morphism `(f, ψ)` with `ψ`
+  invertible is strongly cocartesian over `f`.
+- **Searches:** `Grothendieck isIso fiber iff`, `cocartesian iff fiber isomorphism Grothendieck`,
+  `isStronglyCartesian iff isIso fiber`; none.
+- **Repair link:** `Grothendieck.isStronglyCocartesian_of_isIso_fiber`
+  (`ForMathlib/GrothendieckCocartesian.lean`). The converse (strongly cocartesian implies
+  invertible fibre part) is not proved; `ValueFibration.lean` avoids it through the transfer
+  lemma above. TODO(LC-12): prove the converse and the resulting characterization
+  `IsStronglyCocartesian (forget F) f φ ↔ IsIso φ.fiber` for both Grothendieck constructions.
+
+### Missing construction: strong transformations out of a locally discrete bicategory
+
+- **Need:** the transformation analogue of `LocallyDiscrete.mkPseudofunctor`, to build the
+  value-projection transformation `valueProjectionTrans` without the vacuous 2-naturality field.
+- **Searches:** `mkStrongTrans`, `StrongTrans LocallyDiscrete Cat mk`,
+  `strong transformation between pseudofunctors locally discrete`; none.
+- **Repair link:** `strongTransOfIsLocallyDiscrete` and `LocallyDiscrete.mkStrongTrans`
+  (`ForMathlib/LocallyDiscreteStrongTrans.lean`); upstream candidate.
+
+### Missing theorem: fibres of the covariant Grothendieck construction and of `Grothendieck.map`
+
+- **Need:** the fibre of `forget F : ∫ F ⥤ 𝒮` over `S` is `F S` (for covariant pseudofunctors and
+  for strict `C ⥤ Cat`), and the fibre of `Grothendieck.map α` over `(c, y)` is the fibre of
+  `α_c` over `y` (FOUNDATIONS Proposition 31.2b); consumed by
+  `BilinFormsOverRings.fibreEquivalence` (`Fiber p (R, W) ≌ BilinModuleCat R W`).
+- **Searches:** `Grothendieck fiber equivalence HasFibers`,
+  `Fiber inducedFunctor IsEquivalence Grothendieck`,
+  `fiber of Grothendieck construction equivalence`, `fiber of composite fibration`. Mathlib has
+  only `HasFibers (CoGrothendieck.forget F)` (contravariant); UniMath has the displayed-category
+  analogue (Rocq).
+- **Repair link:** `ForMathlib/GrothendieckFibers.lean`: `Pseudofunctor.Grothendieck.ι`,
+  `HasFibers (forget F)` (dual of Mathlib's), `ι_comp_map` (`ι_c ⋙ map α = α_c ⋙ ι_c` on the
+  nose, from `naturality_id`), `fibreEquivalence α c y`, and the strict
+  `Grothendieck.fibreEquivalence`; upstream candidates.
+
+### Missing theorem: Milgram's formula (argument half)
+
+- **Need:** for an even lattice `L` of signature `σ` with discriminant form `q`,
+  `G(q) = √|A_L| · exp(2πiσ/8)` (Sterk graph F1.16; migrated research `Atoms.lean`).
+- **Searches:** `Gauss sum quadratic form finite abelian group absolute value Milgram`,
+  `discriminant form Gauss sum signature`, `Milgram formula`, `Weil index quadratic form`.
+- **Found:** nothing in the corpus. Mathlib's `gaussSum` is `∑ χ(a) ψ(a)` over a finite ring.
+- **Proved here:** the modulus half for any finite abelian group, value group and circle
+  character, `LeanCategories.quadraticGaussSum_mul_conj`
+  (`Algebra/QuadraticGaussSum.lean`), with the statement `MilgramStatement` for `ℚ/2ℤ`-valued forms.
+- **Gap:** the argument half (reduction to `p`-adic Jordan components and their Gauss sums), and
+  the character on the value group of `discriminantSymBilWQuadraticMap` needed to state it for
+  `Lattices/Valued/Discriminant.lean`'s discriminant forms. TODO(LC-12) in the file.
+
+### Missing construction: the orthogonal-sum symmetric monoidal structure on quadratic modules
+
+- **Need:** Nikulin's semigroup `qu(R)` of isometry classes (migrated research `Atoms.lean`, Pa1).
+- **Searches:** `quadratic module orthogonal sum monoidal category`, `QuadraticMap.prod
+  associator isometry`, `Skeleton monoid quadratic forms`.
+- **Found:** Mathlib has `QuadraticMap.IsometryEquiv.prod`, `prodComm`, `prodProdProdComm`, and
+  the skeleton monoid of a monoidal category; no associator or unitor isometries and no monoidal
+  structure on quadratic modules.
+- **Did instead:** `IsometryClass R W` with its `AddCommMonoid` built from explicit isometric
+  equivalences (`Modules/Quadratic/Valued/IsometryClasses.lean`).
+- **Optimal:** `⊥` as a symmetric monoidal structure on `QuadModuleCat R W`; `IsometryClass R W`
+  is then its skeleton monoid. TODO(LC-12) in the file.
+
+### Missing theorem: the Lorentzian negative cone, coordinate-free
+
+- **Need:** the negative cone of a real quadratic form of negative index one has two convex
+  components (Sterk graph Lo10; Vinberg §3).
+- **Searches:** `Lorentz cone two components convex`, `reverse Cauchy Schwarz Lorentzian`,
+  `light cone time cone quadratic form signature`.
+- **Found:** nothing; Mathlib has Sylvester's normal form
+  (`QuadraticForm.equivalent_signType_weighted_sum_squared`).
+- **Proved here:** the standard coordinate form, `LeanCategories.LorentzCone.negativeCone_two_components`
+  (`Topology/LorentzCone.lean`).
+- **Gap:** transport along Sylvester's normal form to an arbitrary form of index one.
+  TODO(LC-12) in the file.
+
+### Missing definitions: complex analytic spaces
+
+- **Need:** reduced complex analytic spaces, normality and the Baily–Borel dimension
+  stratification (Sterk graph AF10, AF14–AF19).
+- **Searches:** `analytic subset zero locus germ ring normal complex analytic space`,
+  `sheaf of holomorphic functions`, `analytic space locally ringed space`.
+- **Found:** Mathlib has `AnalyticOnNhd` and `LocallyRingedSpace`; no sheaf of holomorphic
+  functions on `ℂⁿ` as a sheaf of rings and no analytic space.
+- **Did instead:** local models with pointwise germ rings (`Analytic/LocalModel.lean`); charts
+  carry no transition condition, so `IsLocallyAnalyticSpace` is weaker than being analytic.
+- **Optimal:** the structure sheaf of an analytic subset as a sheaf of local rings, analytic
+  spaces as locally ringed spaces locally isomorphic to it, `germRing` as its stalk.
+  TODO(LC-12) in the file.
+
+### Missing dependency: comodules, weights and roots of affine group schemes (toolchain gap)
+
+- **Need:** roots relative to a diagonalizable subgroup as the nonzero weights of the restricted
+  adjoint representation (Humphreys FC16-C06-U027; migrated research `AdjointRootData.lean`,
+  whose own prerequisites never existed).
+- **Searches:** `comodule coaction coalgebra`, `weight space character group-like comodule`,
+  `roots diagonalizable subgroup adjoint representation`.
+- **Found:** TauCeti formalizes it: `Algebra/Coalgebra/Comodule/{Basic,Weight/Space}.lean`,
+  `Algebra/AlgebraicGroup/DiagonalizableGroup/Weight.lean`, `Algebra/AlgebraicGroup/Tangent/RootSpace.lean`.
+  Mathlib v4.33 has `Coalgebra`, `HopfAlgebra` and `GroupLike` and no comodules.
+- **Gap:** TauCeti is on Lean `v4.35.0-rc3`; this repository is on `v4.33.0`, so it can be
+  neither required nor imported. Require TauCeti once the toolchains meet, rather than port
+  its comodule stack. (The research repository's unbuildable `AdjointRootData.lean` was discarded.)
+
+### Missing theorems: Γ₂ represents quadratic maps; Roby's base change of Γ at Mathlib v4.33
+
+- **Need:** FOUNDATIONS Definition 15.6, quadratic part (steps 1–2): the universal quadratic
+  map `γ₂ : M → Γ₂(M)` and the base-change isomorphism `S ⊗_R Γ_R(M) ≅ Γ_S(S ⊗_R M)` in degree 2,
+  for characteristic-free base change of quadratic maps (`cc-quad-basechange`).
+- **Searches:** `DividedPowerAlgebra universal property quadratic map`, `dpow two quadratic`,
+  `DividedPowerAlgebra grade 2`, `quadraticMap toPolynomialLaw`,
+  `PolynomialLaw IsHomogeneous two QuadraticMap`,
+  `homogeneous polynomial law degree 2 equivalence quadratic`,
+  `QuadraticMap baseChange without Invertible 2`, `DividedPowerAlgebra baseChange isomorphism`,
+  `Roby base change divided power algebra`.
+- **Found:** Mathlib has `DividedPowerAlgebra` (`RingTheory/DividedPowerAlgebra/Init.lean`:
+  `dp`, `lift`, `map`) and `PolynomialLaw` (`RingTheory/PolynomialLaw/Basic.lean`), with no
+  grading, no base-change isomorphism and no link to quadratic maps. *DividedPowers4*
+  (Chambert-Loir–de Frutos-Fernández) formalizes Roby's Thm. III.3 (`dpScalarExtensionEquiv`,
+  `DPAlgebra/BaseChange.lean`) on `leanprover/lean4:v4.31.0-rc1`; its
+  `PolynomialLaw/Homogeneous.lean` lists "characterize homogeneous polynomial maps of degree 2 as
+  quadratic maps" as open. TauCeti's `LinearAlgebra/QuadraticForm/BaseChange.lean` assumes
+  `Invertible 2`.
+- **Route and gap:** port the needed DividedPowers4 files (grading, Thm. III.3) to Mathlib
+  v4.33 with provenance, and prove the degree-2 representability (step 1), which no indexed
+  source states.
+- **Status (2026-09-28):** no longer blocking. Base change of quadratic maps is built without
+  `Γ₂`, by descent along a free cover (`ForMathlib/QuadraticBaseChange.lean`, FOUNDATIONS §15.6
+  "Construction used in the Lean code"). The `Γ₂` theorems remain unformalized; they are wanted for
+  the representability statement itself, not for base change.
+
+### Missing theorem: cancellation for strongly cocartesian morphisms
+
+- **Need:** FOUNDATIONS Lemma 31.2a (dual of HTT Prop. 2.4.1.3).
+- **Searches:** `IsStronglyCartesian comp functor cancellation`, `isStronglyCartesian_of_comp`,
+  `cartesian morphism composite functor`, `cartesian of composite fibration`,
+  `IsHomLift comp functor`. Mathlib has composition (`IsStronglyCocartesian.comp`) and
+  `of_comp` along one functor, not cancellation along a composite functor.
+- **Repair link:** proved as `CategoryTheory.Functor.isStronglyCocartesian_of_comp`
+  (`ForMathlib/CocartesianCancellation.lean`); upstream candidate.
+
+### Missing theorem: coherence of base change of bilinear forms
+
+- **Need:** the associativity and unit laws making `R ↦ BilWFormCat R` (base change of forms)
+  a pseudofunctor.
+- **Searches:** `cancelBaseChange assoc`, `base change pseudofunctor coherence`,
+  `baseChange baseChange tensor assoc`, `BilinMap.baseChange`,
+  `pseudofunctor extension of scalars associativity`. TauCeti's affine group scheme base
+  change records the analogous laws as unproved; `kckennylau/EllipticCurve` has only the
+  triangle `cancelBaseChange_comp_mk_one`.
+- **Repair link:** proved in `Lattices/Valued/BaseChangeCoherence.lean`
+  (`cancelBaseChange_assoc`, `_id_left`, `_id_right` and the `baseChangeBilWForm_*` laws);
+  the module-level `cancelBaseChange` identities are upstream candidates for Mathlib.
+
+### Quadratic base change requires `2` invertible, so the quadratic fibration excludes ℤ
+
+- **Need:** base change of `W`-valued quadratic maps along any map of commutative rings `R → S`
+  (FOUNDATIONS §15.6 "and similarly for quadratic maps"), so that `Quad` is a cocartesian
+  fibration over all commutative rings like `Bil` (`BilinFormsOverRings`), and evenness
+  (FOUNDATIONS §19.5, `I = 2R` integrality transported along the diagonal) is available over `ℤ`.
+- **Evidence:** `LeanCategories/Modules/Quadratic/Valued/BaseChange.lean` fixes
+  `[Invertible (2 : R)]` and builds the form as `QuadraticMap.sq.tmul Q.form`; Mathlib's
+  `QuadraticMap.tmul`/`QuadraticForm.baseChange` (`LinearAlgebra/QuadraticForm/TensorProduct.lean`)
+  require `Invertible 2`. Corpus searches (`QuadraticMap.baseChange`, `quadratic form base change
+  without invertible 2`, `QuadraticMap tmul characteristic 2`, `baseChange quadratic polar`,
+  `quadratic map scalar extension`) found only `Invertible 2` versions (TauCeti
+  `LinearAlgebra/QuadraticForm/BaseChange.lean`, HassePrinciple).
+- **Gap and impact:** over rings where `2` is not a unit — `ℤ`, `ℤ_2`, `𝔽_2` — there is no
+  quadratic base change, so the quadratic fibration and every quadratic/even-lattice consumer
+  over those rings is blocked. The general construction exists: quadratic maps `M → W` are the
+  linear maps `Γ₂(M) → W` out of the second divided power, and `Γ₂` commutes with base change
+  (Roby). Candidate owner in the corpus: `AntoineChambert-Loir/DividedPowers4`
+  (`DividedPowers/DPAlgebra/Free.lean`, `DPAlgebra/Dpow.lean`, base change of divided power
+  algebras).
+- **Coverage:** the searches above and the two local files. The DividedPowers4 files were
+  located by search, not yet read.
+- **Repair link:** `lean-cas-dsl` computational-core plan node `cc-quad-basechange`.
+- **Resolved (2026-09-28):** `QuadraticMap.baseChange'` (`ForMathlib/QuadraticBaseChange.lean`)
+  is base change for every quadratic map over any commutative rings, with
+  `(s ⊗ m) ↦ s² ⊗ q(m)`, built on a free cover and Mathlib's `QuadraticMap.toBilin`;
+  `Modules/Quadratic/Valued/BaseChange.lean` uses it with no hypothesis on `2`, with the identity
+  and composition comparisons. A characteristic-2 specimen (`ℤ → ℤ/2`) is in that file.
+
 ### `IsJordanCanonicalInBasis` weakens the chosen-basis Jordan condition
 
 - **Need:** FC01-C12-U039 defines a Jordan canonical form for a linear transformation as a basis in which the representing matrix itself is block diagonal with Jordan blocks.
@@ -42,6 +323,14 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 
 ## Workflow papercuts
+
+### README tree and issue #53 cite registry paths that no longer exist
+
+- **Need:** a worker following the README or #53 to the registry, resolver and realization owners finds them.
+- **Evidence:** at `eb00e55` the README's source tree lists `LeanCategories/Core/`, `Model/`, `Names/`, `Presentation/`, `Realization/`, `Registry/`, `Specimen/`, `Util/`, and #53 §17 links `LeanCategories/Core/Expr.lean`, `Core/Normalize.lean`, `Core/StructuralMap.lean`, `Registry/Entry.lean`, `Registry/Extension.lean`, `Model/Interpretation.lean`. None exists. The typed syntax is now `LeanCategories/Catalogue/Syntax.lean` (`CategoryExpr`, `FunctorExpr`, `NatTransExpr`), the entries `Catalogue/Registry/Entry.lean`, the extension `Catalogue/Registry/Extension.lean`, and interpretation/realization `Catalogue/Interpretation.lean`, `Catalogue/Realization.lean`. No `StructuralMap.project` or structural normalizer was found under `LeanCategories/` by name search.
+- **Gap and impact:** #53's resolution design (§8) is written against a `project`/normalization mechanism whose current owner, if any, is unlocated; `lean-cas-dsl` `specs/computational-core.md` cites the `Catalogue/` paths instead.
+- **Coverage:** `ls` of `LeanCategories/` and name searches for `StructuralMap`, `project`, `normaliz`; module contents beyond `Catalogue/` were not read.
+- **Repair link:** `lean-cas-dsl` computational-core node `cc-p0-denotation-audit` (locate or record the structural projection owner); update the README tree and #53 §17 when that audit closes.
 
 ### Foundational frontier kind markers confuse definitional and result content
 
@@ -321,3 +610,93 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
 - **Evidence:** the frozen FC08-Catalogue statement says that if open `U ⊆ ℝ^n` and `V ⊆ ℝ^m` are diffeomorphic, then `m = n`. For any `m ≠ n`, taking `U = ∅` and `V = ∅` gives a smooth bijection with smooth inverse, while the claimed dimension equality is false. The derivative-inverse clause is vacuous on this example.
 - **Coverage and disposition:** the Appendix C mapping keeps U009 `unmatched` as written and records the counterexample. Under `Nonempty U`, the standard chain-rule argument makes `D F(a)` and `D(F⁻¹)(F(a))` inverse linear maps, giving the inverse-derivative formula and equality of finite dimensions; that repaired theorem is not substituted silently for the frozen source statement.
 - **Repair link:** FC08-CC-U009, `corpus/appendix-c-review-of-calculus-fc08.md`. Preserve the catalogue quotation and source defect; Definitions remain blocked by `remap-strict-bundle`.
+
+### Catalogue review of bd31fe3: findings outside the formalization author's remit
+
+- **Need:** every catalogue row takes its object in the category that carries the structure it
+  uses (LC-13), classifies numerals only as images of initial maps (LC-15), and is total on its
+  domain without a Mathlib convention off that domain (LC-14).
+- **Evidence (inspected source, 2026-09-30, formalization review of `bd31fe3`):**
+  1. LC-13: `Algebra.Units.units (M : Type) [Monoid M]` (and `inclusion`, `admit`, `inverse`,
+     `divide`), `Algebra.LinearAlgebra.zero (K : Type) [Semiring K]`, `Algebra.FiniteSums.sum
+     [AddCommMonoid Y]` / `prod [CommMonoid Y]`, `Algebra.Calculus.power [Monoid X]` take a bare
+     carrier with an instance argument instead of an object of `Mon`, `K`-modules or commutative
+     monoids. The mathematics of each row is correct; the presentation is the one LC-13 bans. The
+     repair is a catalogue-wide move of these rows onto registered objects of those categories,
+     with their units and operations reached along the structural routes.
+  2. LC-15: `num.sets.fin` registers `Foundation.Morphisms.finPoint n k (h : k < n)` under the
+     registry kind `.numeral`. The point is correct mathematics (the `k`-th point of the ordinal
+     `n`, formed with its evidence), but `Fin n` is an object of `Sets`, which has no initial map
+     giving it numerals; LC-15 says such an object has no numerals. Either the registry kind
+     `.numeral` also covers named points with evidence (then LC-15 should say so), or this row
+     belongs under a point/element kind. The registry schema is the orchestrator's.
+  3. Totality gate (`Registry/Totality.lean`): it reads only this repository's definitions, so a
+     Mathlib convention off the domain inside a Mathlib definition passes. The rows
+     `mor.sets.polynomial_roots`, `mor.sets.polynomial_factors`, `mor.sets.nat_prime_factors` and
+     `mor.sets.nat_multiplicity` were registered and accepted while totalised at `0` by
+     `Polynomial.roots_zero`, `normalizedFactors_zero`, `Nat.primeFactors_zero` and
+     `Nat.factorization_zero` (the roots of `0` are all of `R`; `0` has no factorization). They
+     are repaired in this review (domains `R[x] ∖ {0}` and `ℕ⁺`, exponents at primes `ℙ`). Wrapping
+     `taylorCoeffWithin` (whose `(k! : ℝ)⁻¹` is a field inverse) would likewise have passed the
+     gate. The gate states it certifies nothing; reviewers must keep checking Mathlib conventions.
+  4. `mor.sets.matrix_rank` (unchanged by `bd31fe3`): `Matrix.rank` over a commutative ring is
+     `Module.finrank` of the column space, which is `0` by convention when that module is not
+     finite free; over a general commutative ring "rank" has several inequivalent meanings
+     (McCoy rank, determinantal rank). The row is well defined over a field (or a PID). Needs a
+     domain decision: restrict to fields, or name the rank meant.
+- **Coverage:** the `bd31fe3` diff under `LeanCategories/Catalogue/Semantics`, read against LC-13
+  to LC-16 and Mathlib only. Nothing downstream was read.
+- **Repair link:** items 1 and 4 are catalogue formalization work; items 2 and 3 are the
+  registry's owner (orchestrator, plan node `gov-registry-gates`).
+
+### Membership evidence (LC-18): what the registered procedures do not establish
+
+- **Need:** each domain `D ↪ B` with an admission registers evidence that establishes the
+  admission's hypothesis `P x` for every closed `x ∈ D` and fails for `x ∉ D` (LC-18). The seven
+  procedures are `Algebra.Units.isUnitEvidence`, `Semirings.positiveEvidence`,
+  `Semirings.primeEvidence`, `Polynomials.nonzeroPolynomialEvidence`,
+  `LinearAlgebra.monicEvidence`, `Calculus.continuousEvidence`, `Calculus.smoothEvidence`,
+  exercised in `Catalogue/Semantics/EvidenceTests.lean`.
+- **Evidence and gaps (execution, 2026-09-30):**
+  1. **Primes beyond trial-division size.** `primeEvidence` is Mathlib's `Nat.Prime` extension of
+     `norm_num`, whose certificate is a chain of trial divisions of length about `√p / 2`. For
+     `p = 2^31 - 1` the proof is built but the kernel check fails with `(kernel) deep recursion
+     detected` at the default `maxRecDepth` (reproducer: `example : Nat.Prime (2 ^ 31 - 1) := by
+     norm_num` under `import Mathlib`; it passes under `set_option maxRecDepth 100000`).
+     `10^6 + 3` and `2^19 - 1` pass. The optimal procedure is a Pratt certificate: factor `p - 1`,
+     find a witness `a`, and conclude by `lucas_primality` (Mathlib
+     `NumberTheory/LucasPrimality.lean`), with `a^k mod p` by Mathlib's `Nat.pow_mod` `norm_num`
+     extension. **Searched:** Mathlib (`pratt`, `pocklington`, `lucas_primality`), the
+     formalization corpus ("tactic prove polynomial monic", "decision procedure IsUnit matrix
+     determinant" and neighbours); **Found:** `lucas_primality` and `lucas_primality_iff` only,
+     no certificate tactic; **Conclusion:** missing (LC-11); **Confidence:** medium (the corpus
+     was searched by phrase, not exhaustively). Owner: `Semirings.primeEvidence`.
+  2. **Units of monoids outside the covered families.** `isUnitEvidence` covers groups, square
+     matrices over a commutative ring through the determinant (first-row expansion, so `n!`
+     terms: practical to about `6 × 6`), division rings, `ℤ`, `ℕ`, `ℤ/n` (`n ≠ 0`) and products,
+     powers and negatives of units. It refuses, although they may be units: elements of
+     polynomial rings (`Polynomial.isUnit_iff` over a domain), products `M × N`
+     (`Prod.isUnit_iff`), `Π`-types, rings of integers such as `ℤ[i]`, and matrices given other
+     than by entries (`Matrix.of`/`!![…]`), `1`, products, transposes or diagonals. Whether an
+     element of an arbitrary closed monoid is a unit is not decidable in general; each further
+     family is a characterization of its units, added as a case.
+  3. **Closed facts about real numbers.** Nonzero-ness of a real element (units of `ℝ`, leading
+     coefficients of real polynomials) is established by evaluation (`norm_num`) or by positivity.
+     A nonzero value that is neither evaluable nor of known sign (`π - 3`, `exp 1 - e`-style
+     differences, `sin 1`) is refused. Deciding it needs interval arithmetic with certified
+     bounds; no such procedure was found in Mathlib.
+  4. **Polynomial expressions beyond ring operations.** `nonzeroPolynomialEvidence` and
+     `monicEvidence` read degrees and leading coefficients from `X`, `C r`, numerals, `+ - · ^`
+     (Mathlib `compute_degree`, `monicity`), after `reduce_mod_char` and `ring_nf` when leading
+     terms cancel. Compositions `p.comp q`, derivatives, `map`, `Polynomial.eval`-built
+     coefficients and `Finset` sums are not unfolded and are refused.
+  5. **Continuity and smoothness of piecewise maps.** `continuousEvidence` and `smoothEvidence`
+     compose rules along the structure of the map (`fun_prop`). A piecewise map that is continuous
+     because its pieces agree on the boundary (`fun x => if x < 0 then -x else x`) and a quotient
+     with a removable zero (`fun x => sin x / x` as extended) are refused; so are maps outside the
+     elementary class (`Real.log`, `√` away from `0`, `arctan` are not in the registered class).
+- **Coverage:** the seven admissions under `Catalogue/Semantics`; the procedures' refusals were
+  exercised only on the listed specimens.
+- **Repair link:** each item's owner is the named evidence declaration; item 1 is resolved by a
+  Pratt-certificate procedure for `ℙ`, the others by adding the named characterization as a case of
+  the domain's evidence.

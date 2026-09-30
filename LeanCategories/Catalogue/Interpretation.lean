@@ -22,7 +22,8 @@ The evaluator does not inspect names, cast between unrelated categories, or
 provide an untyped dynamic value language.
 -/
 
-namespace LeanCategories
+namespace CasCatalogue
+open LeanCategories
 
 open CategoryTheory
 
@@ -33,8 +34,11 @@ universe uObj uHom
 /-- The non-composite constructors of the current category expression syntax. -/
 inductive CategoryPrimitive : CategoryExpr → Type
   | atom (id : CategoryId) : CategoryPrimitive (.atom id)
+  | construct (constructor : ConstructorId) (arguments : Array ConstructorArg) :
+      CategoryPrimitive (.construct constructor arguments)
   | familyApp (family : CategoryFamilyId) (arguments : Array ParameterExpr) :
       CategoryPrimitive (.familyApp family arguments)
+  | familyTotal (family : CategoryFamilyId) : CategoryPrimitive (.familyTotal family)
   | classifierTotal (classifier : ClassifierId) :
       CategoryPrimitive (.classifierTotal classifier)
   | refine (base : CategoryExpr) (classifier : ClassifierId) :
@@ -51,6 +55,11 @@ inductive FunctorPrimitive :
   | opaquePort {source target : CategoryExpr} (port : OpaquePortId) :
       FunctorPrimitive
         (FunctorExpr.opaquePort (source := source) (target := target) port)
+  | familyFibreInclusion (family : CategoryFamilyId) (arguments : Array ParameterExpr) :
+      FunctorPrimitive (.familyFibreInclusion family arguments)
+  | familyReindex (family : CategoryFamilyId) (morphism : ParameterMorphismId)
+      (source target : Array ParameterExpr) :
+      FunctorPrimitive (.familyReindex family morphism source target)
 
 /-- The non-composite constructors of the typed natural-transformation syntax. -/
 inductive NatTransPrimitive {source target : CategoryExpr}
@@ -123,7 +132,9 @@ def SelectedRealization.empty : SelectedRealization where
 noncomputable def evalCategory (selected : SelectedRealization) :
     (expression : CategoryExpr) → Option (EvaluatedCategory.{uObj, uHom} expression)
   | .atom id => selected.category (.atom id)
+  | .construct constructor arguments => selected.category (.construct constructor arguments)
   | .familyApp family arguments => selected.category (.familyApp family arguments)
+  | .familyTotal family => selected.category (.familyTotal family)
   | .classifierTotal classifier => selected.category (.classifierTotal classifier)
   | .refine base classifier => selected.category (.refine base classifier)
   | .opaque id => selected.category (.opaque id)
@@ -178,6 +189,19 @@ noncomputable def evalFunctor (selected : SelectedRealization)
           (FunctorPrimitive.opaquePort (source := source) (target := target) port) with
       | some candidate => alignFunctor selected candidate
       | none => none
+  | .familyFibreInclusion family arguments =>
+      match selected.functor (FunctorPrimitive.familyFibreInclusion family arguments) with
+      | some candidate => alignFunctor selected candidate
+      | none => none
+  | .familyReindex family morphism source target =>
+      match selected.functor
+          (FunctorPrimitive.familyReindex family morphism source target) with
+      | some candidate => alignFunctor selected candidate
+      | none => none
+  | .constructMap _ _ =>
+      -- A constructor's action on a functor is evaluated from the registry's functorial action
+      -- (`SemanticState.edgeFunctor`), not by a selected model of primitives.
+      none
   | .comp left right =>
       match evalFunctor selected left, evalFunctor selected right with
       | some leftValue, some rightValue => by
@@ -304,4 +328,4 @@ noncomputable def evalNatTrans (selected : SelectedRealization)
                 exact none
       | _, _ => none
 
-end LeanCategories
+end CasCatalogue

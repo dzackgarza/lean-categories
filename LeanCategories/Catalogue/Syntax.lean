@@ -20,7 +20,8 @@ symbolic expression. Names are not semantic constructors: they point at
 expressions via the registry.
 -/
 
-namespace LeanCategories
+namespace CasCatalogue
+
 
 open CategoryTheory
 
@@ -103,10 +104,12 @@ deriving instance Lean.ToExpr for CategoryId
 deriving instance Lean.ToExpr for ClassifierId
 deriving instance Lean.ToExpr for CategoryFamilyId
 deriving instance Lean.ToExpr for ParameterId
+deriving instance Lean.ToExpr for ParameterMorphismId
 deriving instance Lean.ToExpr for ParameterOperationId
 deriving instance Lean.ToExpr for ParameterKindId
 deriving instance Lean.ToExpr for VarianceId
 deriving instance Lean.ToExpr for FunctorId
+deriving instance Lean.ToExpr for ConstructorId
 deriving instance Lean.ToExpr for NaturalTransformationId
 deriving instance Lean.ToExpr for PortId
 deriving instance Lean.ToExpr for OpaquePortId
@@ -241,14 +244,36 @@ def parameterArgsValid (args : Array ParameterExpr) (schema : CategoryFamilySche
 
 end CategoryFamilySchema
 
+mutual
+
+/-- An argument of a typed category constructor (#54 §1): a category, a symbolic object of an
+argument category, or a registered functor. Functor arguments are registered functors because a
+`FunctorExpr` is indexed by `CategoryExpr`. -/
+inductive ConstructorArg
+  | category (category : CategoryExpr)
+  | object (id : ParameterId)
+  | functor (id : FunctorId)
+
 /-- Registered symbolic category language. -/
 inductive CategoryExpr
   | atom (id : CategoryId)
+  /-- The value of a registered typed category constructor (`Arr`, `Core`, `Over`, `Under`,
+  `Elements`, `Subobjects`, functor categories) at its arguments (#54 §1, CC-CALC). -/
+  | construct (constructor : ConstructorId) (args : Array ConstructorArg)
+  /-- The fibre over the parameter object `args` of the fibration a registered family
+  denotes (CC-FIB). -/
   | familyApp (family : CategoryFamilyId) (args : Array ParameterExpr)
+  /-- The total category of the fibration a registered family denotes: the Grothendieck
+  construction of its transport (`CategoryFamilyRealization.total`). -/
+  | familyTotal (family : CategoryFamilyId)
   | classifierTotal (classifier : ClassifierId)
   | refine (base : CategoryExpr) (classifier : ClassifierId)
   | opaque (id : CategoryId)
-  deriving Repr, Lean.ToExpr
+
+end
+
+deriving instance Repr for ConstructorArg, CategoryExpr
+deriving instance Lean.ToExpr for ConstructorArg, CategoryExpr
 
 /--
 Typed symbolic functor language.  Composition is legal only when the middle
@@ -260,9 +285,24 @@ inductive FunctorExpr : CategoryExpr → CategoryExpr → Type
   | classifierForget (classifier : ClassifierId) (host : CategoryExpr) :
       FunctorExpr (.classifierTotal classifier) host
   | opaquePort {source target : CategoryExpr} (port : OpaquePortId) : FunctorExpr source target
+  /-- The fibre inclusion `ι_p : fibre p ⥤ total` of a registered family's fibration
+  (`CategoryFamilyRealization.fibreInclusion`). -/
+  | familyFibreInclusion (family : CategoryFamilyId) (args : Array ParameterExpr) :
+      FunctorExpr (.familyApp family args) (.familyTotal family)
+  /-- Reindexing `φ^* : fibre q ⥤ fibre p` of a registered family's fibration along a base
+  morphism `φ : p ⟶ q` (`CategoryFamilyRealization.reindex`). -/
+  | familyReindex (family : CategoryFamilyId) (morphism : ParameterMorphismId)
+      (source target : Array ParameterExpr) :
+      FunctorExpr (.familyApp family target) (.familyApp family source)
   | comp {source middle target : CategoryExpr}
       (left : FunctorExpr source middle) (right : FunctorExpr middle target) :
       FunctorExpr source target
+  /-- A unary functorial category constructor applied to a functor, e.g. `Arr(F)` or `Core(F)`:
+  the constructor's registered action on functors (`ConstructorEntry.functorialAction`). -/
+  | constructMap (constructor : ConstructorId) {source target : CategoryExpr}
+      (functor : FunctorExpr source target) :
+      FunctorExpr (.construct constructor #[.category source])
+        (.construct constructor #[.category target])
   deriving Repr, Lean.ToExpr
 
 /-!
@@ -295,10 +335,20 @@ partial def CategoryExpr.syntacticEq : CategoryExpr → CategoryExpr → Bool
   | .atom left, .atom right => left == right
   | .familyApp leftFamily leftArgs, .familyApp rightFamily rightArgs =>
       leftFamily == rightFamily && leftArgs == rightArgs
+  | .familyTotal left, .familyTotal right => left == right
   | .classifierTotal left, .classifierTotal right => left == right
   | .refine leftBase leftClassifier, .refine rightBase rightClassifier =>
       leftBase.syntacticEq rightBase && leftClassifier == rightClassifier
   | .opaque left, .opaque right => left == right
+  | .construct leftCtor leftArgs, .construct rightCtor rightArgs =>
+      leftCtor == rightCtor && leftArgs.size == rightArgs.size &&
+        (leftArgs.zip rightArgs).all fun (left, right) =>
+          match left, right with
+          | .category leftCategory, .category rightCategory =>
+              leftCategory.syntacticEq rightCategory
+          | .object leftId, .object rightId => leftId == rightId
+          | .functor leftId, .functor rightId => leftId == rightId
+          | _, _ => false
   | _, _ => false
 
 namespace CategoryExpr
@@ -315,4 +365,4 @@ def ofId (id : CategoryId) : CategoryExpr :=
 
 end CategoryExpr
 
-end LeanCategories
+end CasCatalogue
