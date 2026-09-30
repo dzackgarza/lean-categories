@@ -33,9 +33,9 @@ public import LeanCategories.Catalogue.Semantics.Foundation.PowerSets
 public import LeanCategories.Catalogue.Semantics.Algebra.Semirings
 public import LeanCategories.Catalogue.Semantics.Algebra.Polynomials
 public import LeanCategories.Catalogue.Semantics.Algebra.Differentials
-public import LeanCategories.Catalogue.Semantics.Algebra.Fractions
+public import LeanCategories.Catalogue.Semantics.Algebra.Units
 public import LeanCategories.Catalogue.Semantics.Algebra.LinearAlgebra
-public import LeanCategories.Catalogue.Semantics.Foundation.PartialMaps
+public import LeanCategories.Catalogue.Semantics.Foundation.FiniteSubsets
 public import LeanCategories.Catalogue.Semantics.Algebra.FiniteSums
 public import LeanCategories.Catalogue.Semantics.Algebra.Calculus
 public import LeanCategories.Catalogue.Semantics.Algebra.MvPolynomials

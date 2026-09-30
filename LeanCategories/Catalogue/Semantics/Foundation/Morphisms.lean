@@ -12,8 +12,9 @@ public meta import LeanCategories.Catalogue.Registry.Semantic
 /-!
 # Elements and morphisms of named sets
 
-* Element literals: the numeral `k` names `k ∈ ℕ`, `k ∈ ℤ`, `k ∈ Fin n` when `k < n`, and
-  `k mod n ∈ ℤ/n`.
+* The points of `Fin n`: the numeral `k` names the position `k`, for `k < n` (an obligation
+  established when a statement is read, LC-14/LC-15). The numerals of `ℕ`, `ℤ`, `ℤ/n`, … are the
+  images of the maps out of the initial semiring and ring (`Semirings`, `NamedRings`).
 * Graph literals of `Sets`: a finite list of pairs `(x, y)` listing each element of `X` exactly
   once is the function `X → Y` with that graph (`{0 ↦ 1, 1 ↦ 0} : Fin 2 → Fin 2`).
 * The named morphism family `rev : Fin n → Fin n`, `k ↦ n - 1 - k` (Mathlib `Fin.rev`).
@@ -25,17 +26,8 @@ open CasCatalogue.Foundation.Objects
 
 universe u
 
-/-- `k ∈ ℕ`. -/
-def naturalsElement (k : ℕ) : Option naturals := some k
-
-/-- `k ∈ ℤ`. -/
-def integersElement (k : ℕ) : Option integers := some (k : ℤ)
-
-/-- `k ∈ Fin n`, when `k < n`. -/
-def finElement (n k : ℕ) : Option (fin n) := if h : k < n then some (⟨k, h⟩ : Fin n) else none
-
-/-- `k mod n ∈ ℤ/n`. -/
-def integersModElement (n k : ℕ) : Option (integersMod n) := some (k : ZMod n)
+/-- The point `k` of `Fin n`, for `k < n`. -/
+def finPoint (n k : ℕ) (h : k < n) : fin 1 ⟶ fin n := TypeCat.ofHom fun _ => ⟨k, h⟩
 
 /-- The value at `x` of the function whose graph `l` lists `x`. -/
 def graphValue {X Y : Type u} [DecidableEq X] :
@@ -69,21 +61,8 @@ end CasCatalogue.Foundation.Morphisms
 
 namespace CasCatalogue
 
-normalized_registry .elementLiteral
-  { id := ⟨"elt.sets.naturals"⟩, object := ⟨"obj.sets.naturals"⟩
-    denotation := `CasCatalogue.Foundation.Morphisms.naturalsElement }
-
-normalized_registry .elementLiteral
-  { id := ⟨"elt.sets.integers"⟩, object := ⟨"obj.sets.integers"⟩
-    denotation := `CasCatalogue.Foundation.Morphisms.integersElement }
-
-normalized_registry .elementLiteral
-  { id := ⟨"elt.sets.fin"⟩, object := ⟨"obj.sets.fin"⟩
-    denotation := `CasCatalogue.Foundation.Morphisms.finElement }
-
-normalized_registry .elementLiteral
-  { id := ⟨"elt.sets.integers_mod"⟩, object := ⟨"obj.sets.integers_mod"⟩
-    denotation := `CasCatalogue.Foundation.Morphisms.integersModElement }
+normalized_registry .numeral
+  { id := ⟨"num.sets.fin"⟩, declaration := `CasCatalogue.Foundation.Morphisms.finPoint }
 
 normalized_registry .graphLiteral
   { id := ⟨"graph.sets"⟩, category := CategoryId.sets

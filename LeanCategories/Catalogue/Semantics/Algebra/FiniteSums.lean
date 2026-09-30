@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Catalogue.Semantics.Foundation.PartialMaps
-public import Mathlib.Algebra.BigOperators.Finprod
+public import LeanCategories.Catalogue.Semantics.Foundation.FiniteSubsets
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public meta import LeanCategories.Catalogue.Registry.Semantic
 
 @[expose] public section
@@ -13,30 +13,25 @@ public meta import LeanCategories.Catalogue.Registry.Semantic
 /-!
 # Sums and products over finite subsets (SPEC.md, "A composed computation")
 
-For `f : X → Y` into a commutative monoid, `∑_{a ∈ A} f(a)` and `∏_{a ∈ A} f(a)` are defined for
-finite `A ⊆ X` (Mathlib `finsum_mem`, `finprod_mem`) and undefined otherwise: partial maps
-`𝒫(X) ⇀ Y`, maps `𝒫(X) → Y⊥`.
+For `f : X → Y` into a commutative monoid, `∑_{a ∈ A} f(a)` and `∏_{a ∈ A} f(a)` are defined on
+the finite subsets `A` of `X` (Mathlib `Finset.sum`, `Finset.prod`): maps `𝒫_fin(X) → Y`.
 -/
 
 open CategoryTheory
 
 namespace CasCatalogue.Algebra.FiniteSums
 
-open CasCatalogue.Foundation.PowerSets CasCatalogue.Foundation.PartialMaps
+open CasCatalogue.Foundation.PowerSets CasCatalogue.Foundation.FiniteSubsets
 
-open Classical in
-/-- `A ↦ ∑_{a ∈ A} f(a)`, defined for finite `A`. -/
-noncomputable def sum (X Y : Type) [AddCommMonoid Y] (f : (X : SetsCat.{0}) ⟶ (Y : SetsCat.{0})) :
-    powerSet X ⟶ partialValues Y :=
-  TypeCat.ofHom fun A =>
-    if A.Finite then some (∑ᶠ a ∈ A, ConcreteCategory.hom (C := Type) f a) else none
+/-- `A ↦ ∑_{a ∈ A} f(a)`. -/
+def sum (X Y : Type) [AddCommMonoid Y] (f : (X : SetsCat.{0}) ⟶ (Y : SetsCat.{0})) :
+    finiteSubsets X ⟶ (Y : SetsCat.{0}) :=
+  TypeCat.ofHom fun A => ∑ a ∈ A, ConcreteCategory.hom (C := Type) f a
 
-open Classical in
-/-- `A ↦ ∏_{a ∈ A} f(a)`, defined for finite `A`. -/
-noncomputable def prod (X Y : Type) [CommMonoid Y] (f : (X : SetsCat.{0}) ⟶ (Y : SetsCat.{0})) :
-    powerSet X ⟶ partialValues Y :=
-  TypeCat.ofHom fun A =>
-    if A.Finite then some (∏ᶠ a ∈ A, ConcreteCategory.hom (C := Type) f a) else none
+/-- `A ↦ ∏_{a ∈ A} f(a)`. -/
+def prod (X Y : Type) [CommMonoid Y] (f : (X : SetsCat.{0}) ⟶ (Y : SetsCat.{0})) :
+    finiteSubsets X ⟶ (Y : SetsCat.{0}) :=
+  TypeCat.ofHom fun A => ∏ a ∈ A, ConcreteCategory.hom (C := Type) f a
 
 end CasCatalogue.Algebra.FiniteSums
 

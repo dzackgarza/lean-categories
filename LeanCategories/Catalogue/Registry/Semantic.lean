@@ -58,7 +58,7 @@ inductive SemanticEntry
   | adjunction (e : AdjunctionEntry)
   | object (e : ObjectEntry)
   | literal (e : LiteralEntry)
-  | elementLiteral (e : ElementLiteralEntry)
+  | numeral (e : NumeralEntry)
   | graphLiteral (e : GraphLiteralEntry)
   | morphism (e : MorphismEntry)
   | operation (e : OperationEntry)
@@ -83,7 +83,7 @@ def SemanticEntry.stableId : SemanticEntry → String
   | .adjunction e => e.id.raw
   | .object e => e.id.raw
   | .literal e => e.id.raw
-  | .elementLiteral e => e.id.raw
+  | .numeral e => e.id.raw
   | .graphLiteral e => e.id.raw
   | .morphism e => e.id.raw
   | .operation e => e.id.raw
@@ -110,7 +110,7 @@ def SemanticEntry.declarations : SemanticEntry → Array Name
   | .adjunction e => #[e.declaration]
   | .object e => #[e.declaration]
   | .literal e => #[e.type, e.denotation]
-  | .elementLiteral e => #[e.denotation]
+  | .numeral e => #[e.declaration]
   | .graphLiteral e => #[e.denotation]
   | .morphism e => #[e.declaration]
   | .operation e => #[e.declaration]
@@ -134,7 +134,7 @@ structure SemanticState where
   adjunctions : Array AdjunctionEntry := #[]
   objects : Array ObjectEntry := #[]
   literals : Array LiteralEntry := #[]
-  elementLiterals : Array ElementLiteralEntry := #[]
+  numerals : Array NumeralEntry := #[]
   graphLiterals : Array GraphLiteralEntry := #[]
   morphisms : Array MorphismEntry := #[]
   operations : Array OperationEntry := #[]
@@ -393,7 +393,7 @@ private def SemanticState.apply : SemanticState → SemanticEntry → SemanticSt
   | s, .adjunction e => { s with adjunctions := s.adjunctions.push e }
   | s, .object e => { s with objects := s.objects.push e }
   | s, .literal e => { s with literals := s.literals.push e }
-  | s, .elementLiteral e => { s with elementLiterals := s.elementLiterals.push e }
+  | s, .numeral e => { s with numerals := s.numerals.push e }
   | s, .graphLiteral e => { s with graphLiterals := s.graphLiterals.push e }
   | s, .morphism e => { s with morphisms := s.morphisms.push e }
   | s, .operation e => { s with operations := s.operations.push e }
@@ -416,7 +416,7 @@ def SemanticState.entries (state : SemanticState) : List SemanticEntry :=
     state.adjunctions.toList.map SemanticEntry.adjunction ++
     state.objects.toList.map SemanticEntry.object ++
     state.literals.toList.map SemanticEntry.literal ++
-    state.elementLiterals.toList.map SemanticEntry.elementLiteral ++
+    state.numerals.toList.map SemanticEntry.numeral ++
     state.graphLiterals.toList.map SemanticEntry.graphLiteral ++
     state.morphisms.toList.map SemanticEntry.morphism ++
     state.operations.toList.map SemanticEntry.operation ++
@@ -1871,7 +1871,8 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
   unless ← withTransparency .all <| isDefEq type (← categoryCarrierInstance category) do
     throwError "object {e.id.raw}: {e.declaration} does not return an object of {e.category.raw}"
   -- A generator lands in the object; an application is a family of morphisms out of a product.
-  for name in e.generator.toArray ++ e.application.toArray ++ e.constants.toArray do
+  for name in e.generator.toArray ++ e.application.toArray ++ e.constants.toArray ++
+      e.inclusion.toArray ++ e.admission.toArray do
     let constant ← mkConstWithFreshMVarLevels name
     let (_, _, result) ← forallMetaTelescopeReducing (← inferType constant)
     unless (← whnfR result).isAppOf ``Quiver.Hom do
@@ -1893,6 +1894,21 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
         isDefEq result.appArg! (mkAppN declaration objArgs)) do
       throwError "object {e.id.raw}: the constants {constants} are not a map from its first set \
         parameter to it"
+  -- An inclusion leaves the object; an admission lands in it.
+  if let some inclusion := e.inclusion then
+    let constant ← mkConstWithFreshMVarLevels inclusion
+    let (_, _, result) ← forallMetaTelescopeReducing (← inferType constant)
+    let (objArgs, _, _) ← forallMetaTelescopeReducing (← inferType declaration)
+    unless ← withTransparency .all <|
+        isDefEq (← whnfR result).appFn!.appArg! (mkAppN declaration objArgs) do
+      throwError "object {e.id.raw}: the inclusion {inclusion} does not leave it"
+  if let some admission := e.admission then
+    let constant ← mkConstWithFreshMVarLevels admission
+    let (_, _, result) ← forallMetaTelescopeReducing (← inferType constant)
+    let (objArgs, _, _) ← forallMetaTelescopeReducing (← inferType declaration)
+    unless ← withTransparency .all <|
+        isDefEq (← whnfR result).appArg! (mkAppN declaration objArgs) do
+      throwError "object {e.id.raw}: the admission {admission} does not land in it"
   let some refinement := e.refines | return
   let some base := state.objects.find? (·.id == refinement.base)
     | throwError "object {e.id.raw} refines an unregistered object {refinement.base.raw}"
@@ -1956,31 +1972,23 @@ def categoryHomType (category : NamedCategoryEntry) : MetaM Expr := do
   let Y ← mkFreshExprMVar carrier
   mkAppM ``Quiver.Hom #[X, Y]
 
-/-- An element-literal row's `denotation : ∀ params, ℕ → Option X` names elements of its registered
-object at `params`, where `X` is its underlying set: the object itself in `Sets`, or the object a
-refinement refines; one element-literal form per object. -/
-def validateElementLiteral (state : SemanticState) (e : ElementLiteralEntry) : MetaM Unit := do
-  let some object := state.objects.find? (·.id == e.object)
-    | throwError "element literal {e.id.raw} names an unregistered object {e.object.raw}"
-  if state.elementLiterals.any (·.object == e.object) then
-    throwError "element literal {e.id.raw}: {e.object.raw} already has element literals"
-  -- The elements of a refinement are those of the object it refines: its underlying set.
-  let mut root := object
-  for _ in [0:state.objects.size] do
-    let some refinement := root.refines | break
-    let some base := state.objects.find? (·.id == refinement.base) | break
-    root := base
-  let declaration ← mkConstWithFreshMVarLevels root.declaration
-  let (args, _, _) ← forallMetaTelescopeReducing (← inferType declaration)
-  let denotation ← mkConstWithFreshMVarLevels e.denotation
-  let (_, _, type) ← forallMetaTelescopeReducing (← inferType denotation) (some args.size)
-  let u ← mkFreshLevelMVar
-  let element ← mkFreshExprMVar (mkSort (mkLevelSucc u))
-  let ok ← withTransparency .all <| do
-    pure ((← isDefEq type (← mkArrow (mkConst ``Nat) (mkApp (mkConst ``Option [u]) element))) &&
-      (← isDefEq element (mkAppN declaration args)))
-  unless ok do
-    throwError "element literal {e.id.raw}: {e.denotation} is not a map ℕ → Option {e.object.raw}"
+/-- A numeral row's `declaration : ∀ params (k : ℕ) (obligations), 1 ⟶ X` lands in elements of a
+set; with `over := some C` its first explicit parameter is an object of `C` (LC-15). -/
+def validateNumeral (state : SemanticState) (e : NumeralEntry) : MetaM Unit := do
+  let declaration ← mkConstWithFreshMVarLevels e.declaration
+  let (args, infos, type) ← forallMetaTelescopeReducing (← inferType declaration)
+  unless (← whnfR type).isAppOf ``Quiver.Hom do
+    throwError "numeral {e.id.raw}: {e.declaration} is not a family of elements"
+  let explicit := (args.zip infos).filter (·.2.isExplicit) |>.map (·.1)
+  unless ← explicit.anyM fun a => return (← inferType a).isConstOf ``Nat do
+    throwError "numeral {e.id.raw}: {e.declaration} takes no numeral"
+  let some over := e.over | return
+  let some category := state.categories.find? (·.id == over)
+    | throwError "numeral {e.id.raw} is over an unregistered category {over.raw}"
+  let some first := explicit[0]? | throwError "numeral {e.id.raw} takes no object of {over.raw}"
+  unless ← withTransparency .all <| isDefEq (← inferType first)
+      (← categoryCarrierInstance category) do
+    throwError "numeral {e.id.raw}: its first parameter is not an object of {over.raw}"
 
 /-- A graph-literal row's `denotation` returns morphisms of its registered category; one graph
 literal form per category. -/
@@ -2252,7 +2260,7 @@ def validateSemanticEntryDeclaration (entry : SemanticEntry) : MetaM Unit := do
   | .adjunction e => validateAdjunction state e
   | .object e => validateObject state e
   | .literal e => validateLiteral state e
-  | .elementLiteral e => validateElementLiteral state e
+  | .numeral e => validateNumeral state e
   | .graphLiteral e => validateGraphLiteral state e
   | .morphism e => validateMorphism state e
   | .operation e => validateOperation state e

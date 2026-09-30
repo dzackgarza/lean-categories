@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Catalogue.Semantics.Foundation.PowerSets
+public import LeanCategories.Catalogue.Semantics.Foundation.FiniteSubsets
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Nat.Factorization.Basic
@@ -18,7 +18,7 @@ public meta import LeanCategories.Catalogue.Semantics.Foundation.Catalogue
 
 `Semirings` (Mathlib `SemiRingCat`) with its underlying sets; `ℕ` is refined by the semiring `ℕ`,
 whose operations are `+`, `·` and `^k`; primality `ℕ → Ω` is a predicate on its elements (Mathlib
-`Nat.Prime`), and the factorization of `n = ∏ pᵉᵖ` is given by its prime factors `ℕ → 𝒫(ℕ)` and the
+`Nat.Prime`), and the factorization of `n = ∏ pᵉᵖ` is given by its prime factors `ℕ → 𝒫_fin(ℕ)` and the
 multiplicities `(n, p) ↦ eₚ` (Mathlib `Nat.primeFactors`, `Nat.factorization`). The rings `ℤ, ℚ, ℝ, ℂ` are refined in `Rings` only, so each
 operation on their elements has one owner.
 -/
@@ -76,13 +76,19 @@ def pow (R : Semirings.{0}) (k : ℕ) :
     (semiringCarrier R : SetsCat.{0}) ⟶ (semiringCarrier R : SetsCat.{0}) :=
   TypeCat.ofHom fun x => x ^ k
 
+/-- The numeral `k` of a semiring `S`: the image of `k` under the unique semiring map `ℕ → S` out of
+the initial semiring (Mathlib `Nat.castRingHom`), LC-15; for `S = ℕ`, `k` itself. -/
+def semiringNumeral (S : Semirings.{0}) (k : ℕ) : fin 1 ⟶ (semiringCarrier S : SetsCat.{0}) :=
+  TypeCat.ofHom fun _ => Nat.castRingHom (asSemiring S) k
+
 /-- `ℕ` as a semiring; its underlying set is `ℕ`. -/
 abbrev semiringNaturals : Semirings.{0} := SemiRingCat.of ℕ
 /-- `n ↦ n is prime`, `ℕ → Ω`. -/
 def isPrime : naturals ⟶ omega := TypeCat.ofHom fun n => Nat.Prime n
 
 /-- The prime factors of `n` (none for `n = 0, 1`). -/
-def primeFactors : naturals ⟶ powerSet ℕ := TypeCat.ofHom fun n => (n.primeFactors : Set ℕ)
+def primeFactors : naturals ⟶ Foundation.FiniteSubsets.finiteSubsets ℕ :=
+  TypeCat.ofHom fun n => n.primeFactors
 
 /-- `(n, p) ↦` the exponent of `p` in `n` (`0` unless `p` is a prime factor). -/
 noncomputable def multiplicity : (naturals × naturals : SetsCat.{0}) ⟶ naturals :=
@@ -105,6 +111,10 @@ normalized_registry .functor
     declaration := `CasCatalogue.Algebra.Semirings.semiringsForget
     realization := `CasCatalogue.Algebra.Semirings.semiringsForgetRealization
     expression := SemiringsForgetExpr, structural := true }
+
+normalized_registry .numeral
+  { id := ⟨"num.semirings"⟩, over := some CategoryId.semirings
+    declaration := `CasCatalogue.Algebra.Semirings.semiringNumeral }
 
 normalized_registry .object
   { id := ⟨"obj.semirings.naturals"⟩, category := CategoryId.semirings, name := "ℕ"

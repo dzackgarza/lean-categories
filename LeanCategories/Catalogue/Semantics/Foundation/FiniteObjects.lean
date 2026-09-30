@@ -54,10 +54,6 @@ normalized_registry .object
       { base := ⟨"obj.sets.fin"⟩, route := #[.classifierForget ClassifierId.setsFinite]
         identification := `CasCatalogue.Foundation.FiniteObjects.finiteFinIdentification } }
 
-normalized_registry .elementLiteral
-  { id := ⟨"elt.finite_sets.fin"⟩, object := ⟨"obj.finite_sets.fin"⟩
-    denotation := `CasCatalogue.Foundation.Morphisms.finElement }
-
 normalized_registry .graphLiteral
   { id := ⟨"graph.finite_sets"⟩, category := CategoryId.finiteSets
     denotation := `CasCatalogue.Foundation.FiniteObjects.finiteOfGraph }

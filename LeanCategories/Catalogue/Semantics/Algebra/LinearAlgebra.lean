@@ -5,8 +5,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Catalogue.Semantics.Algebra.Polynomials
-public import LeanCategories.Catalogue.Semantics.Foundation.PartialMaps
-public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import Mathlib.LinearAlgebra.Matrix.Rank
 public import Mathlib.LinearAlgebra.Dimension.Finrank
@@ -17,15 +15,16 @@ public meta import LeanCategories.Catalogue.Registry.Semantic
 /-!
 # Vectors, matrices and spans (SPEC.md, "Vectors and matrices", "Subspaces and spans")
 
-* `Xⁿ` is the set of `n`-tuples of `X` (`Fin n → X`); `0 ∈ Xⁿ` is its numeral when `X` has a zero.
-  Tuples are built from `() : 1 → X⁰` and `cons : X × Xⁿ → Xⁿ⁺¹` (Mathlib `Matrix.vecCons`), the
-  isomorphism `X × Xⁿ ≅ Xⁿ⁺¹`.
+* `Xⁿ` is the set of `n`-tuples of `X` (`Fin n → X`), built from `() : 1 → X⁰` and
+  `cons : X × Xⁿ → Xⁿ⁺¹` (Mathlib `Matrix.vecCons`), the isomorphism `X × Xⁿ ≅ Xⁿ⁺¹`. A set `Xⁿ`
+  has no zero; over a ring `K`, `Kⁿ` is a `K`-module, whose additive unit is `0 : 1 → Kⁿ`.
 * `Matₙ(K)` is the set of `n × n` matrices over a commutative ring `K`, made from its rows by
   `rows : (Kⁿ)ⁿ → Matₙ(K)` (Mathlib `Matrix.of`); a matrix is applied to vectors,
   `Matₙ(K) × Kⁿ → Kⁿ` (Mathlib `Matrix.mulVec`).
-* `companion_matrix : K[x] → Matₙ(K)`, the companion matrix of `xⁿ + Σ_{i<n} pᵢ xⁱ`.
-* `⁻¹ : Matₙ(K) → Matₙ(K)⊥`, the inverse, defined when `det M` is a unit (Mathlib
-  `Matrix.nonsing_inv`, whose value off that domain is not an inverse and is not used).
+* `Monicₙ(K) ↪ K[x]`, the monic polynomials of degree `n`, and `companion_matrix : Monicₙ(K) →
+  Matₙ(K)`. A polynomial is in `Monicₙ(K)` only with the evidence that it is monic of degree `n`.
+* Inverses are those of the units `GLₙ(K) = Matₙ(K)ˣ` (`Algebra.Units`): `Matₙ(K) = End(Kⁿ)` is a
+  monoid, and a matrix has no inverse unless it is established to be a unit.
 * `det`, `trace : Matₙ(K) → K`, `rank : Matₙ(K) → ℕ`, `charpoly : Matₙ(K) → K[x]`, and
   `ker : Matₙ(K) → 𝒫(Kⁿ)`, `{v | M v = 0}`.
 * Over a field `K`: `span : 𝒫(Kⁿ) → 𝒫(Kⁿ)` (the subspace a set spans, Mathlib `Submodule.span`)
@@ -39,19 +38,19 @@ namespace CasCatalogue.Algebra.LinearAlgebra
 open CasCatalogue.Foundation.PowerSets CasCatalogue.Algebra.Polynomials
 
 /-- `Xⁿ`. -/
-abbrev vectors (X : Type) [Zero X] (n : ℕ) : SetsCat.{0} := Fin n → X
-
-/-- The numeral `0 ∈ Xⁿ`. -/
-def vectorsElement (X : Type) [Zero X] (n : ℕ) (k : ℕ) : Option (vectors X n) :=
-  if k = 0 then some 0 else none
+abbrev vectors (X : Type) (n : ℕ) : SetsCat.{0} := Fin n → X
 
 /-- The empty tuple `() ∈ X⁰`. -/
-def empty (X : Type) [Zero X] : CasCatalogue.Foundation.Objects.fin 1 ⟶ vectors X 0 :=
+def empty (X : Type) : CasCatalogue.Foundation.Objects.fin 1 ⟶ vectors X 0 :=
   TypeCat.ofHom fun _ => ![]
 
 /-- `(x, v) ↦ (x, v₀, …)`, `X × Xⁿ → Xⁿ⁺¹`. -/
-def cons (X : Type) [Zero X] (n : ℕ) : (X × vectors X n : SetsCat.{0}) ⟶ vectors X (n + 1) :=
+def cons (X : Type) (n : ℕ) : (X × vectors X n : SetsCat.{0}) ⟶ vectors X (n + 1) :=
   TypeCat.ofHom fun p => Matrix.vecCons p.1 p.2
+
+/-- `0 ∈ Kⁿ`, the additive unit of the `K`-module `Kⁿ`. -/
+def zero (K : Type) [Semiring K] (n : ℕ) : CasCatalogue.Foundation.Objects.fin 1 ⟶ vectors K n :=
+  TypeCat.ofHom fun _ => 0
 
 /-- `Matₙ(K)`. -/
 abbrev matrices (n : ℕ) (K : Type) [CommRing K] : SetsCat.{0} := Matrix (Fin n) (Fin n) K
@@ -82,18 +81,24 @@ noncomputable def rank (n : ℕ) (K : Type) [CommRing K] :
 noncomputable def charpoly (n : ℕ) (K : Type) [CommRing K] : matrices n K ⟶ polynomials K :=
   TypeCat.ofHom fun M => M.charpoly
 
-/-- The companion matrix of the monic polynomial `xⁿ + Σ_{i<n} pᵢ xⁱ` made from the coefficients
-`p₀, …, pₙ₋₁` of `p` (for a monic `p` of degree `n`, of `p` itself): ones below the diagonal and
-`-p₀, …, -pₙ₋₁` in the last column. Mathlib has no companion matrix. -/
-def companion (n : ℕ) (K : Type) [CommRing K] : polynomials K ⟶ matrices n K :=
-  TypeCat.ofHom fun p => Matrix.of fun i j =>
-    if j.val + 1 = n then -p.coeff i.val else if i.val = j.val + 1 then 1 else 0
+/-- `Monicₙ(K)`, the monic polynomials of degree `n`. -/
+abbrev monics (n : ℕ) (K : Type) [CommRing K] : SetsCat.{0} :=
+  {p : Polynomial K // p.Monic ∧ p.natDegree = n}
 
-open Classical in
-/-- `M⁻¹`, defined when `M` is invertible (`det M` a unit). -/
-noncomputable def inverse (n : ℕ) (K : Type) [CommRing K] :
-    matrices n K ⟶ CasCatalogue.Foundation.PartialMaps.partialValues (Matrix (Fin n) (Fin n) K) :=
-  TypeCat.ofHom fun M => if IsUnit M.det then some M⁻¹ else none
+/-- `Monicₙ(K) ↪ K[x]`. -/
+def monicsInclusion (n : ℕ) (K : Type) [CommRing K] : monics n K ⟶ polynomials K :=
+  TypeCat.ofHom Subtype.val
+
+/-- The monic polynomial `p` of degree `n`, with that evidence. -/
+def admitMonic (n : ℕ) (K : Type) [CommRing K] (p : Polynomial K)
+    (h : p.Monic ∧ p.natDegree = n) : CasCatalogue.Foundation.Objects.fin 1 ⟶ monics n K :=
+  TypeCat.ofHom fun _ => ⟨p, h⟩
+
+/-- The companion matrix of a monic `p = xⁿ + Σ_{i<n} pᵢ xⁱ`: ones below the diagonal and
+`-p₀, …, -pₙ₋₁` in the last column. Mathlib has no companion matrix. -/
+def companion (n : ℕ) (K : Type) [CommRing K] : monics n K ⟶ matrices n K :=
+  TypeCat.ofHom fun p => Matrix.of fun i j =>
+    if j.val + 1 = n then -p.1.coeff i.val else if i.val = j.val + 1 then 1 else 0
 
 /-- The kernel `{v | M v = 0}`. -/
 def ker (n : ℕ) (K : Type) [CommRing K] : matrices n K ⟶ powerSet (Fin n → K) :=
@@ -116,9 +121,15 @@ normalized_registry .object
   { id := ⟨"obj.sets.vectors"⟩, category := CategoryId.sets, name := "Vec"
     declaration := `CasCatalogue.Algebra.LinearAlgebra.vectors }
 
-normalized_registry .elementLiteral
-  { id := ⟨"elt.sets.vectors"⟩, object := ⟨"obj.sets.vectors"⟩
-    denotation := `CasCatalogue.Algebra.LinearAlgebra.vectorsElement }
+normalized_registry .morphism
+  { id := ⟨"mor.sets.vectors_zero"⟩, category := CategoryId.sets, name := "0"
+    declaration := `CasCatalogue.Algebra.LinearAlgebra.zero }
+
+normalized_registry .object
+  { id := ⟨"obj.sets.monics"⟩, category := CategoryId.sets, name := "Monic"
+    declaration := `CasCatalogue.Algebra.LinearAlgebra.monics
+    inclusion := some `CasCatalogue.Algebra.LinearAlgebra.monicsInclusion
+    admission := some `CasCatalogue.Algebra.LinearAlgebra.admitMonic }
 
 normalized_registry .object
   { id := ⟨"obj.sets.matrices"⟩, category := CategoryId.sets, name := "Mat"
@@ -156,10 +167,6 @@ normalized_registry .morphism
 normalized_registry .morphism
   { id := ⟨"mor.sets.companion_matrix"⟩, category := CategoryId.sets, name := "companion_matrix"
     declaration := `CasCatalogue.Algebra.LinearAlgebra.companion }
-
-normalized_registry .morphism
-  { id := ⟨"mor.sets.matrix_inverse"⟩, category := CategoryId.sets, name := "⁻¹"
-    declaration := `CasCatalogue.Algebra.LinearAlgebra.inverse }
 
 normalized_registry .morphism
   { id := ⟨"mor.sets.matrix_ker"⟩, category := CategoryId.sets, name := "ker"

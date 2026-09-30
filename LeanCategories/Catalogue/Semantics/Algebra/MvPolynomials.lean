@@ -17,7 +17,7 @@ public meta import LeanCategories.Catalogue.Registry.Semantic
 For a commutative ring `R`, `R[x₀, …, xₙ₋₁]` is the set of polynomials in `n` variables (Mathlib
 `MvPolynomial (Fin n) R`), refined by the ring of that name, with
 * its variables `xᵢ : 1 → R[x₀, …, xₙ₋₁]`, a generator indexed by `i < n` (Mathlib
-  `MvPolynomial.X`), its numerals and its constants `R ↪ R[x₀, …, xₙ₋₁]` (Mathlib `MvPolynomial.C`);
+  `MvPolynomial.X`), and its constants `R ↪ R[x₀, …, xₙ₋₁]` (Mathlib `MvPolynomial.C`);
 * the total degree `R[x₀, …, xₙ₋₁] → ℕ` (Mathlib `MvPolynomial.totalDegree`).
 
 The Krull dimension of a commutative ring `A` is an invariant of the object, not of its elements:
@@ -37,10 +37,6 @@ abbrev mvPolynomials (n : ℕ) (R : Type) [CommRing R] : SetsCat.{0} := MvPolyno
 noncomputable def var (n : ℕ) (R : Type) [CommRing R] (i : Fin n) :
     fin 1 ⟶ mvPolynomials n R :=
   TypeCat.ofHom fun _ => MvPolynomial.X i
-
-/-- The numeral `k`. -/
-noncomputable def numeral (n : ℕ) (R : Type) [CommRing R] (k : ℕ) : Option (mvPolynomials n R) :=
-  some (k : MvPolynomial (Fin n) R)
 
 /-- The constants `R ↪ R[x₀, …, xₙ₋₁]`. -/
 noncomputable def constants (n : ℕ) (R : Type) [CommRing R] :
@@ -64,8 +60,12 @@ def totalDegree (n : ℕ) (R : Type) [CommRing R] : mvPolynomials n R ⟶ natura
 /-- `ℕ∞ ∪ {-∞}`, the Krull dimensions. -/
 abbrev dimensions : SetsCat.{0} := WithBot ℕ∞
 
-/-- The numeral `k ∈ ℕ∞ ∪ {-∞}`. -/
-def dimensionsElement (k : ℕ) : Option dimensions := some (k : WithBot ℕ∞)
+/-- `ℕ ⊆ ℕ∞ ∪ {-∞}`. -/
+def naturalsDimensions : naturals ⟶ dimensions :=
+  TypeCat.ofHom (fun k : ℕ => ((k : ℕ∞) : WithBot ℕ∞))
+
+theorem naturalsDimensions_mono : Mono naturalsDimensions :=
+  NumberSystems.mono_of_injective _ (WithBot.coe_injective.comp fun _ _ h => ENat.natCast_inj.mp h)
 
 /-- The Krull dimension of a commutative ring `A`. -/
 noncomputable def dimension (A : Type) [CommRing A] : fin 1 ⟶ dimensions :=
@@ -80,10 +80,6 @@ normalized_registry .object
     declaration := `CasCatalogue.Algebra.MvPolynomials.mvPolynomials
     generator := some `CasCatalogue.Algebra.MvPolynomials.var
     constants := some `CasCatalogue.Algebra.MvPolynomials.constants }
-
-normalized_registry .elementLiteral
-  { id := ⟨"elt.sets.mv_polynomials"⟩, object := ⟨"obj.sets.mv_polynomials"⟩
-    denotation := `CasCatalogue.Algebra.MvPolynomials.numeral }
 
 normalized_registry .object
   { id := ⟨"obj.rings.mv_polynomials"⟩, category := CategoryId.rings, name := "MvPoly"
@@ -100,9 +96,11 @@ normalized_registry .object
   { id := ⟨"obj.sets.krull_dimensions"⟩, category := CategoryId.sets, name := "ℕ∞∪{-∞}"
     declaration := `CasCatalogue.Algebra.MvPolynomials.dimensions }
 
-normalized_registry .elementLiteral
-  { id := ⟨"elt.sets.krull_dimensions"⟩, object := ⟨"obj.sets.krull_dimensions"⟩
-    denotation := `CasCatalogue.Algebra.MvPolynomials.dimensionsElement }
+normalized_registry .inclusion
+  { id := ⟨"incl.sets.naturals_krull_dimensions"⟩, category := CategoryId.sets
+    sub := ⟨"obj.sets.naturals"⟩, super := ⟨"obj.sets.krull_dimensions"⟩
+    declaration := `CasCatalogue.Algebra.MvPolynomials.naturalsDimensions
+    mono := `CasCatalogue.Algebra.MvPolynomials.naturalsDimensions_mono }
 
 normalized_registry .morphism
   { id := ⟨"mor.sets.krull_dimension"⟩, category := CategoryId.sets, name := "dimension"

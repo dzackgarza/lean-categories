@@ -34,9 +34,6 @@ open CasCatalogue.Foundation.Objects
 /-- `ℚ`. -/
 abbrev rationals : LeanCategories.Foundation.Mathlib.Sets.{0} := ℚ
 
-/-- `k ∈ ℚ`. -/
-def rationalsElement (k : ℕ) : Option rationals := some (k : ℚ)
-
 /-- `ℤ` as a ring. -/
 abbrev ringIntegers : LeanCategories.Algebra.Rings.{0} := RingCat.of ℤ
 
@@ -83,6 +80,12 @@ def neg (R : LeanCategories.Algebra.Rings.{0}) :
       (underlying R : LeanCategories.Foundation.Mathlib.Sets.{0}) :=
   TypeCat.ofHom fun x => -x
 
+/-- The numeral `k` of a ring `R`: the image of `k ∈ ℕ ⊆ ℤ` under the unique ring map `ℤ → R` out
+of the initial ring (Mathlib `Int.castRingHom`), LC-15. -/
+def ringNumeral (R : LeanCategories.Algebra.Rings.{0}) (k : ℕ) :
+    fin 1 ⟶ (underlying R : LeanCategories.Foundation.Mathlib.Sets.{0}) :=
+  TypeCat.ofHom fun _ => Int.castRingHom (asRing R) (k : ℤ)
+
 /-- The power `x ↦ x^k`, `R → R`. -/
 def pow (R : LeanCategories.Algebra.Rings.{0}) (k : ℕ) :
     (underlying R : LeanCategories.Foundation.Mathlib.Sets.{0}) ⟶
@@ -99,9 +102,9 @@ normalized_registry .object
   { id := ⟨"obj.sets.rationals"⟩, category := CategoryId.sets, name := "ℚ"
     declaration := `CasCatalogue.Algebra.NamedRings.rationals }
 
-normalized_registry .elementLiteral
-  { id := ⟨"elt.sets.rationals"⟩, object := ⟨"obj.sets.rationals"⟩
-    denotation := `CasCatalogue.Algebra.NamedRings.rationalsElement }
+normalized_registry .numeral
+  { id := ⟨"num.rings"⟩, over := some CategoryId.rings
+    declaration := `CasCatalogue.Algebra.NamedRings.ringNumeral }
 
 /-- The multiplicative route from rings to sets, which `cmp.rings.carrier` designates. -/
 meta def ringsToSets : Array EdgeRef :=

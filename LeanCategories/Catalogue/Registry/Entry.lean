@@ -146,6 +146,14 @@ structure ObjectEntry where
   /-- The constants: a monomorphism `∀ params, p ⟶ obj params` from the object's first parameter
   `p` that is a set (the constant polynomials `R ↪ R[x]`, `R ↪ R[x₀, …, xₙ₋₁]`). -/
   constants : Option Lean.Name := none
+  /-- The object as a subobject: a monomorphism `∀ params, obj params ⟶ B` into a registered object
+  (the units `Mˣ ↪ M`, the finite subsets of `X` in `𝒫(X)`). -/
+  inclusion : Option Lean.Name := none
+  /-- How an element of a registered object `B` is established to lie in this subobject of it:
+  `∀ params (x : B) (h : P x), 1 ⟶ obj params`, the element `x` with the evidence `h` that it lies
+  there (a matrix with an invertible determinant is a unit of `Matₙ(K)`). The evidence is
+  established when a statement is read (LC-14); without it, `x` is not an element here. -/
+  admission : Option Lean.Name := none
   deriving Repr
 
 /-- A literal form of a registered category (CC-CALC): `type` is a Lean type of literal values with
@@ -159,13 +167,18 @@ structure LiteralEntry where
   denotation : Lean.Name
   deriving Repr
 
-/-- The element literals of a registered object family: `denotation : ∀ params, ℕ → Option X`,
-where `X` is the object at `params`, sends a numeral to the element it names, or to `none` if it
-names none (`k ↦ k` in `Fin n` for `k < n`, `k ↦ k mod n` in `ℤ/n`). -/
-structure ElementLiteralEntry where
+/-- The numerals of registered objects (LC-15): `declaration : ∀ params (k : ℕ) (obligations),
+1 ⟶ X` names the element `k` of `X` as the image of `k` under a universal map. With `over := some C`,
+its first explicit parameter is an object `R` of the category `C` and `X` is `R`'s underlying set:
+the image of `k` under the map out of `C`'s initial object (`ℕ → S` in semirings, `ℤ → R` in
+rings), for every object of `C` and so for every named set refined in `C`. Without it, it names the
+points of the sets it lands in, those points being numerals themselves (`k ∈ ℕ`, the position `k`
+of `Fin n`). Its explicit `Prop` parameters are obligations on `k` (`k < n`): they are established
+when a statement is read, or the statement is invalid; a numeral never denotes nothing. -/
+structure NumeralEntry where
   id : LiteralId
-  object : ObjectId
-  denotation : Lean.Name
+  over : Option CategoryId := none
+  declaration : Lean.Name
   deriving Repr
 
 /-- The graph literals of a registered category's morphisms: `denotation` sends a finite list of

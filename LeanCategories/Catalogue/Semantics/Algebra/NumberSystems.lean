@@ -40,12 +40,6 @@ abbrev reals : LeanCategories.Foundation.Mathlib.Sets.{0} := ℝ
 /-- `ℂ`. -/
 abbrev complexes : LeanCategories.Foundation.Mathlib.Sets.{0} := ℂ
 
-/-- `k ∈ ℝ`. -/
-noncomputable def realsElement (k : ℕ) : Option reals := some (k : ℝ)
-
-/-- `k ∈ ℂ`. -/
-noncomputable def complexesElement (k : ℕ) : Option complexes := some (k : ℂ)
-
 /-- `ℝ` as a ring. -/
 noncomputable abbrev ringReals : LeanCategories.Algebra.Rings.{0} := RingCat.of ℝ
 
@@ -116,14 +110,6 @@ normalized_registry .object
 normalized_registry .object
   { id := ⟨"obj.sets.complexes"⟩, category := CategoryId.sets, name := "ℂ"
     declaration := `CasCatalogue.Algebra.NumberSystems.complexes }
-
-normalized_registry .elementLiteral
-  { id := ⟨"elt.sets.reals"⟩, object := ⟨"obj.sets.reals"⟩
-    denotation := `CasCatalogue.Algebra.NumberSystems.realsElement }
-
-normalized_registry .elementLiteral
-  { id := ⟨"elt.sets.complexes"⟩, object := ⟨"obj.sets.complexes"⟩
-    denotation := `CasCatalogue.Algebra.NumberSystems.complexesElement }
 
 normalized_registry .object
   { id := ⟨"obj.rings.reals"⟩, category := CategoryId.rings, name := "ℝ"

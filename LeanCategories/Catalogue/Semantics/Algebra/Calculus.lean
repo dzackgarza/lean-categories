@@ -5,12 +5,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Catalogue.Semantics.Algebra.NumberSystems
-public import LeanCategories.Catalogue.Semantics.Foundation.PartialMaps
+public import LeanCategories.Catalogue.Semantics.Foundation.PowerSets
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Analysis.SpecialFunctions.Exp
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.Topology.ContinuousMap.Basic
 public meta import LeanCategories.Catalogue.Registry.Semantic
 
 @[expose] public section
@@ -18,29 +19,29 @@ public meta import LeanCategories.Catalogue.Registry.Semantic
 /-!
 # Elementary calculus (SPEC.md, "Elementary calculus")
 
-Real functions and the partial operations of calculus, each defined exactly where its
-mathematics is (maps into `ℝ⊥`, the partial map classifier):
+Each operation of calculus is a total map out of the object it is defined on (LC-14):
 * `sin`, `cos`, `exp : ℝ → ℝ` and `π : 1 → ℝ` (Mathlib `Real.sin`, `Real.cos`, `Real.exp`,
   `Real.pi`);
-* division `ℝ × ℝ → ℝ⊥`, undefined at a zero divisor;
-* for `f : ℝ → ℝ⊥` with domain `D = {t | f t defined}`, `lim_{t → a} f(t)`, defined when `a` is an
-  accumulation point of `D` and `f|_D` tends to a limit on `D ∖ {a}` (Mathlib `Filter.Tendsto`,
-  `nhdsWithin`), and `lim_{t → ∞} f(t)` along `atTop`, defined when `D` is unbounded above;
-* `∫_a^b f`, defined when `f` is interval integrable on `[a, b]` (Mathlib `intervalIntegral`);
-* `R[[t]]` (Mathlib `PowerSeries`), refined by the ring `R[[t]]`, its coefficients `R[[t]] × ℕ → R`, and formal sums
-  `∑_{x ∈ A} f(x)` of families `f : X → R[[t]]`, defined when each coefficient is nonzero for finitely
-  many `x ∈ A` (the `t`-adic summability of the family), coefficientwise;
-* `x^n : X × ℕ → X` in a monoid (Mathlib `Monoid.npow`);
-* the Taylor expansion `a ↦ Σ f⁽ᵏ⁾(a)/k! tᵏ` of `f : ℝ → ℝ`,
-  defined where `f` is smooth (Mathlib `ContDiffAt`, `iteratedDeriv`).
+* `C(ℝ)`, the continuous maps `ℝ → ℝ` (Mathlib `ContinuousMap`), and the definite integral
+  `∫_a^b f` of `f ∈ C(ℝ)`, `ℝ × ℝ → ℝ` (Mathlib `intervalIntegral`; continuous maps are
+  integrable on every interval). A map is in `C(ℝ)` only with the evidence that it is continuous;
+* `C^∞(ℝ)`, the smooth maps `ℝ → ℝ` (Mathlib `ContDiff ℝ ⊤`), and the Taylor expansion
+  `C^∞(ℝ) × ℝ → ℝ[[t]]`, `(f, a) ↦ Σ f⁽ᵏ⁾(a)/k! tᵏ` (Mathlib `iteratedDeriv`). A map is in
+  `C^∞(ℝ)` only with the evidence that it is smooth;
+* `R[[t]]` (Mathlib `PowerSeries`), refined by the ring `R[[t]]`, with its variable, constants, its
+  coefficients `R[[t]] × ℕ → R`, and the series with a given coefficient sequence
+  `(ℕ → R) → R[[t]]`, `c ↦ Σ c(n) tⁿ` (Mathlib `PowerSeries.mk`), which is what `Σ c(n) tⁿ` means;
+* `x^n : X × ℕ → X` in a monoid (Mathlib `Monoid.npow`).
+
+Limits are not registered: `lim_{t → a}` is defined on the maps that have a limit at `a`, and no
+registered construction places a map there.
 -/
 
-open CategoryTheory Filter Topology
+open CategoryTheory
 
 namespace CasCatalogue.Algebra.Calculus
 
-open CasCatalogue.Foundation.PowerSets CasCatalogue.Foundation.PartialMaps
-  CasCatalogue.Algebra.NumberSystems
+open CasCatalogue.Foundation.PowerSets CasCatalogue.Algebra.NumberSystems
 
 /-- `sin : ℝ → ℝ`. -/
 noncomputable def sin : reals ⟶ reals := TypeCat.ofHom Real.sin
@@ -55,40 +56,26 @@ noncomputable def exp : reals ⟶ reals := TypeCat.ofHom Real.exp
 noncomputable def pi : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals :=
   TypeCat.ofHom fun _ => Real.pi
 
-open Classical in
-/-- `a / b`, undefined at `b = 0`. -/
-noncomputable def divide : (reals × reals : SetsCat.{0}) ⟶ partialValues ℝ :=
-  TypeCat.ofHom fun p => if p.2 = 0 then none else some (p.1 / p.2)
+/-- `C(ℝ)`, the continuous maps `ℝ → ℝ`. -/
+abbrev continuousMaps : SetsCat.{0} := C(ℝ, ℝ)
 
-/-- The domain `{t | f t defined}` of a partial map. -/
-def domain (f : reals ⟶ partialValues ℝ) : Set ℝ :=
-  {t | (ConcreteCategory.hom (C := Type) f t).isSome}
+/-- The continuous map `f`, with the evidence that `f` is continuous. -/
+def admitContinuous (f : ℝ → ℝ) (h : Continuous f) :
+    CasCatalogue.Foundation.Objects.fin 1 ⟶ continuousMaps :=
+  TypeCat.ofHom fun _ => ⟨f, h⟩
 
-/-- `f` on its domain. -/
-def onDomain (f : reals ⟶ partialValues ℝ) (t : domain f) : ℝ :=
-  (ConcreteCategory.hom (C := Type) f t.1).get t.2
+/-- `(f, (a, b)) ↦ ∫_a^b f`. -/
+noncomputable def integral :
+    (continuousMaps × (reals × reals) : SetsCat.{0}) ⟶ reals :=
+  TypeCat.ofHom fun p => ∫ t in p.2.1..p.2.2, p.1 t
 
-open Classical in
-/-- The limit of `f|_D` along the filter `F` on `D`, where `F` is proper. -/
-noncomputable def limitAlong (f : reals ⟶ partialValues ℝ) (F : Filter (domain f)) : Option ℝ :=
-  if h : F.NeBot ∧ ∃ L, Tendsto (onDomain f) F (𝓝 L) then some (Classical.choose h.2) else none
+/-- `C^∞(ℝ)`, the smooth maps `ℝ → ℝ`. -/
+abbrev smoothMaps : SetsCat.{0} := {f : ℝ → ℝ // ContDiff ℝ (⊤ : ℕ∞) f}
 
-/-- `a ↦ lim_{t → a} f(t)`, on the punctured neighbourhoods of `a` in the domain of `f`. -/
-noncomputable def limitAt (f : reals ⟶ partialValues ℝ) : reals ⟶ partialValues ℝ :=
-  TypeCat.ofHom fun a => limitAlong f (comap Subtype.val (𝓝[≠] a))
-
-/-- `lim_{t → ∞} f(t)`. -/
-noncomputable def limitAtTop (f : reals ⟶ partialValues ℝ) :
-    CasCatalogue.Foundation.Objects.fin 1 ⟶ partialValues ℝ :=
-  TypeCat.ofHom fun _ => limitAlong f (comap Subtype.val atTop)
-
-open Classical in
-/-- `(a, b) ↦ ∫_a^b f`, defined when `f` is interval integrable on `[a, b]`. -/
-noncomputable def integral (f : reals ⟶ reals) : (reals × reals : SetsCat.{0}) ⟶ partialValues ℝ :=
-  TypeCat.ofHom fun p =>
-    if IntervalIntegrable (ConcreteCategory.hom (C := Type) f) MeasureTheory.volume p.1 p.2 then
-      some (∫ t in p.1..p.2, ConcreteCategory.hom (C := Type) f t)
-    else none
+/-- The smooth map `f`, with the evidence that `f` is smooth. -/
+def admitSmooth (f : ℝ → ℝ) (h : ContDiff ℝ (⊤ : ℕ∞) f) :
+    CasCatalogue.Foundation.Objects.fin 1 ⟶ smoothMaps :=
+  TypeCat.ofHom fun _ => ⟨f, h⟩
 
 /-- `R[[t]]`. -/
 abbrev powerSeries (R : Type) [CommRing R] : SetsCat.{0} := PowerSeries R
@@ -117,29 +104,22 @@ noncomputable def coefficient (R : Type) [CommRing R] :
     (powerSeries R × CasCatalogue.Foundation.Objects.naturals : SetsCat.{0}) ⟶ (R : SetsCat.{0}) :=
   TypeCat.ofHom fun p => PowerSeries.coeff p.2 p.1
 
-open Classical in
-/-- `A ↦ ∑_{x ∈ A} f(x)`, coefficientwise, defined when every coefficient is nonzero for finitely
-many `x ∈ A`. -/
-noncomputable def formalSum (X R : Type) [CommRing R]
-    (f : (X : SetsCat.{0}) ⟶ powerSeries R) : powerSet X ⟶ partialValues (PowerSeries R) :=
-  TypeCat.ofHom fun A =>
-    let c := fun k x => PowerSeries.coeff k (ConcreteCategory.hom (C := Type) f x)
-    if ∀ k, {x | x ∈ A ∧ c k x ≠ 0}.Finite then some (PowerSeries.mk fun k => ∑ᶠ x ∈ A, c k x)
-    else none
+/-- `Σ c(n) tⁿ`, the series with the coefficient sequence `c : ℕ → R`. -/
+noncomputable def ofCoefficients (R : Type) [CommRing R]
+    (c : CasCatalogue.Foundation.Objects.naturals ⟶ (R : SetsCat.{0})) :
+    CasCatalogue.Foundation.Objects.fin 1 ⟶ powerSeries R :=
+  TypeCat.ofHom fun _ => PowerSeries.mk (ConcreteCategory.hom (C := Type) c)
 
 /-- `(x, n) ↦ xⁿ` in a monoid. -/
 def power (X : Type) [Monoid X] : (X × CasCatalogue.Foundation.Objects.naturals : SetsCat.{0}) ⟶
     (X : SetsCat.{0}) :=
   TypeCat.ofHom fun p => p.1 ^ p.2
 
-open Classical in
-/-- `a ↦ Σ f⁽ᵏ⁾(a)/k! tᵏ`, defined where `f` is smooth. -/
-noncomputable def taylor (f : reals ⟶ reals) : reals ⟶ partialValues (PowerSeries ℝ) :=
-  TypeCat.ofHom fun a =>
-    if ContDiffAt ℝ (⊤ : ℕ∞) (ConcreteCategory.hom (C := Type) f) a then
-      some (PowerSeries.mk fun k =>
-        iteratedDeriv k (ConcreteCategory.hom (C := Type) f) a / k.factorial)
-    else none
+/-- `(f, a) ↦ Σ f⁽ᵏ⁾(a)/k! tᵏ`. -/
+noncomputable def taylor :
+    (smoothMaps × reals : SetsCat.{0}) ⟶ powerSeries ℝ :=
+  TypeCat.ofHom fun p =>
+    PowerSeries.mk fun k => iteratedDeriv k p.1.1 p.2 / k.factorial
 
 end CasCatalogue.Algebra.Calculus
 
@@ -161,21 +141,19 @@ normalized_registry .morphism
   { id := ⟨"mor.sets.real_pi"⟩, category := CategoryId.sets, name := "π"
     declaration := `CasCatalogue.Algebra.Calculus.pi }
 
-normalized_registry .morphism
-  { id := ⟨"mor.sets.real_partial_divide"⟩, category := CategoryId.sets, name := "partial /"
-    declaration := `CasCatalogue.Algebra.Calculus.divide }
-
-normalized_registry .morphism
-  { id := ⟨"mor.sets.real_limit_at"⟩, category := CategoryId.sets, name := "lim"
-    declaration := `CasCatalogue.Algebra.Calculus.limitAt }
-
-normalized_registry .morphism
-  { id := ⟨"mor.sets.real_limit_at_top"⟩, category := CategoryId.sets, name := "lim ∞"
-    declaration := `CasCatalogue.Algebra.Calculus.limitAtTop }
+normalized_registry .object
+  { id := ⟨"obj.sets.continuous_maps"⟩, category := CategoryId.sets, name := "C"
+    declaration := `CasCatalogue.Algebra.Calculus.continuousMaps
+    admission := some `CasCatalogue.Algebra.Calculus.admitContinuous }
 
 normalized_registry .morphism
   { id := ⟨"mor.sets.real_integral"⟩, category := CategoryId.sets, name := "∫ₐᵇ"
     declaration := `CasCatalogue.Algebra.Calculus.integral }
+
+normalized_registry .object
+  { id := ⟨"obj.sets.smooth_maps"⟩, category := CategoryId.sets, name := "C^∞"
+    declaration := `CasCatalogue.Algebra.Calculus.smoothMaps
+    admission := some `CasCatalogue.Algebra.Calculus.admitSmooth }
 
 normalized_registry .object
   { id := ⟨"obj.sets.power_series"⟩, category := CategoryId.sets, name := "PowerSeries"
@@ -195,8 +173,9 @@ normalized_registry .morphism
     declaration := `CasCatalogue.Algebra.Calculus.coefficient }
 
 normalized_registry .morphism
-  { id := ⟨"mor.sets.power_series_sum"⟩, category := CategoryId.sets, name := "∑ₜ"
-    declaration := `CasCatalogue.Algebra.Calculus.formalSum }
+  { id := ⟨"mor.sets.power_series_of_coefficients"⟩, category := CategoryId.sets
+    name := "Σ tⁿ"
+    declaration := `CasCatalogue.Algebra.Calculus.ofCoefficients }
 
 normalized_registry .morphism
   { id := ⟨"mor.sets.monoid_power"⟩, category := CategoryId.sets, name := "^"
