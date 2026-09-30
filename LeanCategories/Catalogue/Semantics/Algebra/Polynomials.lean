@@ -9,7 +9,13 @@ public import LeanCategories.Catalogue.Semantics.Foundation.FiniteSubsets
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.RingTheory.Polynomial.UniqueFactorization
+public import LeanCategories.Catalogue.Semantics.Algebra.Units
+public import Mathlib.Tactic.ComputeDegree
+public import Mathlib.Tactic.ReduceModChar
+public import Mathlib.Tactic.Ring
 public meta import LeanCategories.Catalogue.Registry.Semantic
+public meta import LeanCategories.Catalogue.Semantics.Foundation.Evidence
+public meta import LeanCategories.Catalogue.Semantics.Algebra.Units
 
 @[expose] public section
 
@@ -94,6 +100,49 @@ def admitNonzeroPolynomial (R : Type) [CommRing R] (p : Polynomial R) (h : p ≠
     fin 1 ⟶ nonzeroPolynomials R :=
   TypeCat.ofHom fun _ => ⟨p, h⟩
 
+open Lean Elab Tactic in
+/-- Close each remaining goal, a closed arithmetic fact about coefficients or degrees
+(`Units.closedArithmeticEvidence`). -/
+meta def closeCoefficientGoals : TacticM Unit := do
+  for goal in ← getUnsolvedGoals do
+    setGoals [goal]
+    CasCatalogue.Algebra.Units.closedArithmeticEvidence
+
+open Lean Elab Tactic in
+/-- Put a closed polynomial expression in normal form: coefficients reduced modulo the
+characteristic of `ℤ/n`, and the expression expanded into a sum of monomials `c·xᵏ` with like
+terms collected (commutative-ring normalization), so that cancelling leading terms disappear. -/
+meta def normalizePolynomial : TacticM Unit := do
+  evalTactic (← `(tactic| try reduce_mod_char))
+  evalTactic (← `(tactic| try ring_nf))
+
+open Lean Elab Tactic in
+/-- `p ≠ 0` because `deg p = d` for a natural number `d` (`Polynomial.ne_zero_of_coe_le_degree`):
+the degree of the closed expression is computed from its terms (Mathlib `compute_degree`), which
+leaves the leading coefficient `≠ 0` as a closed arithmetic fact. -/
+meta def nonzeroByDegree : TacticM Unit := do
+  evalTactic (← `(tactic|
+    refine Polynomial.ne_zero_of_coe_le_degree (n := ?_) (le_of_eq (Eq.symm ?_))))
+  -- The degree `d` is the one `compute_degree` reads off `deg p = d`.
+  let goals ← getGoals
+  let some degreeGoal ← goals.findM? fun goal => return (← goal.getType).isAppOf ``Eq
+    | throwError "no degree equation `deg p = d`"
+  setGoals [degreeGoal]
+  evalTactic (← `(tactic| compute_degree!))
+  closeCoefficientGoals
+  setGoals (← goals.filterM fun goal => return !(← goal.isAssigned))
+
+open Lean Elab Tactic in
+/-- The evidence that a closed polynomial `p ∈ R[x]` (an expression in `x`, constants `C r`,
+numerals, `+`, `-`, `·`, `^` over a closed commutative ring `R`: `ℤ`, `ℚ`, `ℝ`, `ℂ`, `ℤ/n`) is
+nonzero: a polynomial is nonzero exactly when it has a degree `d ∈ ℕ`, i.e. a nonzero leading
+coefficient. The degree is read off the expression, and, when its naive leading terms cancel,
+off its normal form. It fails on the zero polynomial. -/
+meta def nonzeroPolynomialEvidence : TacticM Unit :=
+  CasCatalogue.Evidence.establish "R[x] ∖ {0}" <| CasCatalogue.Evidence.closeByFirst
+    m!"the polynomial is not established to be nonzero"
+    [nonzeroByDegree, do normalizePolynomial; nonzeroByDegree]
+
 open Classical in
 /-- The normalized irreducible factors `R[x] ∖ {0} → 𝒫_fin(R[x])`. -/
 noncomputable def factors (R : Type) [CommRing R] [IsDomain R] [NormalizationMonoid R]
@@ -154,7 +203,8 @@ normalized_registry .object
   { id := ⟨"obj.sets.nonzero_polynomials"⟩, category := CategoryId.sets, name := "Poly∖0"
     declaration := `CasCatalogue.Algebra.Polynomials.nonzeroPolynomials
     inclusion := some `CasCatalogue.Algebra.Polynomials.nonzeroPolynomialsInclusion
-    admission := some `CasCatalogue.Algebra.Polynomials.admitNonzeroPolynomial }
+    admission := some `CasCatalogue.Algebra.Polynomials.admitNonzeroPolynomial
+    evidence := some `CasCatalogue.Algebra.Polynomials.nonzeroPolynomialEvidence }
 
 normalized_registry .morphism
   { id := ⟨"mor.sets.polynomial_factors"⟩, category := CategoryId.sets, name := "factors"

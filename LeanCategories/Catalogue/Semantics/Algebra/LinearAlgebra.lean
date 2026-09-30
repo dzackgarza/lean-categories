@@ -9,6 +9,8 @@ public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import Mathlib.LinearAlgebra.Matrix.Rank
 public import Mathlib.LinearAlgebra.Dimension.Finrank
 public meta import LeanCategories.Catalogue.Registry.Semantic
+public meta import LeanCategories.Catalogue.Semantics.Foundation.Evidence
+public meta import LeanCategories.Catalogue.Semantics.Algebra.Polynomials
 
 @[expose] public section
 
@@ -94,6 +96,34 @@ def admitMonic (n : ℕ) (K : Type) [CommRing K] (p : Polynomial K)
     (h : p.Monic ∧ p.natDegree = n) : CasCatalogue.Foundation.Objects.fin 1 ⟶ monics n K :=
   TypeCat.ofHom fun _ => ⟨p, h⟩
 
+open Lean Elab Tactic in
+/-- `p` is monic of degree `n`: the leading coefficient of the closed expression is computed with
+its degree bound (`Polynomial.monic_of_natDegree_le_of_coeff_eq_one`, Mathlib `monicity`), and its
+degree from its terms (Mathlib `compute_degree`); the closed coefficient facts left over are
+arithmetic. -/
+meta def monicByDegree : TacticM Unit := do
+  evalTactic (← `(tactic| refine ⟨?_, ?_⟩))
+  let [monic, degree] ← getGoals | throwError "not a conjunction `Monic p ∧ natDegree p = n`"
+  setGoals [monic]
+  evalTactic (← `(tactic| monicity!))
+  CasCatalogue.Algebra.Polynomials.closeCoefficientGoals
+  setGoals [degree]
+  evalTactic (← `(tactic| compute_degree!))
+  CasCatalogue.Algebra.Polynomials.closeCoefficientGoals
+
+open Lean Elab Tactic in
+/-- The evidence that a closed polynomial `p ∈ K[x]` (an expression in `x`, constants `C r`,
+numerals, `+`, `-`, `·`, `^` over a closed commutative ring `K`) is monic of degree `n`: its
+coefficient of degree `n` is `1` and none above it is nonzero. They are read off the expression,
+and, when its naive leading terms cancel, off its normal form
+(`Polynomials.normalizePolynomial`). It fails on a polynomial that is not monic or has another
+degree. -/
+meta def monicEvidence : TacticM Unit :=
+  CasCatalogue.Evidence.establish "Monicₙ(K)" <| CasCatalogue.Evidence.closeByFirst
+    m!"the polynomial is not established to be monic of the degree"
+    [monicByDegree,
+     do CasCatalogue.Algebra.Polynomials.normalizePolynomial; monicByDegree]
+
 /-- The companion matrix of a monic `p = xⁿ + Σ_{i<n} pᵢ xⁱ`: ones below the diagonal and
 `-p₀, …, -pₙ₋₁` in the last column. Mathlib has no companion matrix. -/
 def companion (n : ℕ) (K : Type) [CommRing K] : monics n K ⟶ matrices n K :=
@@ -129,7 +159,8 @@ normalized_registry .object
   { id := ⟨"obj.sets.monics"⟩, category := CategoryId.sets, name := "Monic"
     declaration := `CasCatalogue.Algebra.LinearAlgebra.monics
     inclusion := some `CasCatalogue.Algebra.LinearAlgebra.monicsInclusion
-    admission := some `CasCatalogue.Algebra.LinearAlgebra.admitMonic }
+    admission := some `CasCatalogue.Algebra.LinearAlgebra.admitMonic
+    evidence := some `CasCatalogue.Algebra.LinearAlgebra.monicEvidence }
 
 normalized_registry .object
   { id := ⟨"obj.sets.matrices"⟩, category := CategoryId.sets, name := "Mat"

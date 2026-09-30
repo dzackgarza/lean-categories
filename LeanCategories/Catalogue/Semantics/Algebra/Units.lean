@@ -54,11 +54,12 @@ theorem zmod_isUnit_iff_coprime_val {n : ℕ} [NeZero n] (x : ZMod n) :
   rw [← ZMod.isUnit_iff_coprime, ZMod.natCast_zmod_val]
 
 open Lean Elab Tactic in
-/-- The evidence that a closed element `x` of a division ring is nonzero: `x` is evaluated
-(numerals, field operations, `re`/`im` of complex numbers), and a positive real expression (`π`,
-`√a`, `exp a`) is nonzero because it is positive. -/
-meta def nonzeroEvidence : TacticM Unit :=
-  CasCatalogue.Evidence.closeByFirst m!"the value is not established to be nonzero"
+/-- The evidence of a closed arithmetic fact in a ring — that a closed element is nonzero, equal
+to or ordered against another: the elements are evaluated (numerals, ring and field operations,
+`re`/`im` of complex numbers, arithmetic of `ℤ/n` by computation), and a positive real expression
+(`π`, `√a`, `exp a`) is nonzero because it is positive. -/
+meta def closedArithmeticEvidence : TacticM Unit :=
+  CasCatalogue.Evidence.closeByFirst m!"the closed arithmetic fact is not established"
     [do evalTactic (← `(tactic| norm_num)),
      do evalTactic (← `(tactic| positivity)),
      do evalTactic (← `(tactic| norm_num [Complex.ext_iff])),
@@ -98,15 +99,13 @@ where
       isUnitCases,
      do
       evalTactic (← `(tactic| rw [isUnit_iff_ne_zero]))
-      nonzeroEvidence,
+      closedArithmeticEvidence,
      do
       evalTactic (← `(tactic| rw [Int.isUnit_iff]))
-      CasCatalogue.Evidence.closeByFirst m!"not ±1"
-        [do evalTactic (← `(tactic| norm_num)), do evalTactic (← `(tactic| decide))],
+      closedArithmeticEvidence,
      do
       evalTactic (← `(tactic| rw [Nat.isUnit_iff]))
-      CasCatalogue.Evidence.closeByFirst m!"not 1"
-        [do evalTactic (← `(tactic| norm_num)), do evalTactic (← `(tactic| decide))],
+      closedArithmeticEvidence,
      do
       evalTactic (← `(tactic|
         rw [CasCatalogue.Algebra.Units.zmod_isUnit_iff_coprime_val]))
