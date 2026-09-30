@@ -1,5 +1,12 @@
 # Repository work documents
 
+> **You have no memory.** Nothing that exists only in chat survives compaction or the session.
+> Every correction, finding and decision request is committed to its owning document first
+> ([`lean-cas-dsl/AGENTS.md`](https://github.com/dzackgarza/lean-cas-dsl/blob/main/AGENTS.md),
+> "You have no memory"). The orchestrator is inside the threat model
+> (`lean-cas-dsl/specs/architecture.md`).
+
+
 Read [TODO.md](TODO.md) for the execution DAG and existing sweep records,
 [CONTRIBUTING.md](CONTRIBUTING.md) for named policies, and
 [COMPLAINTS.md](COMPLAINTS.md) for observed mathematical issues and papercuts.
