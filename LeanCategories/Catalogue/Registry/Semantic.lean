@@ -109,7 +109,7 @@ def SemanticEntry.declarations : SemanticEntry → Array Name
   | .cell e => #[e.declaration]
   | .limit e => #[e.declaration]
   | .adjunction e => #[e.declaration]
-  | .object e => #[e.declaration]
+  | .object e => #[e.declaration] ++ e.evidence.toArray
   | .literal e => #[e.type, e.denotation]
   | .numeral e => #[e.declaration]
   | .graphLiteral e => #[e.denotation]
@@ -1854,6 +1854,9 @@ def validateLimit (state : SemanticState) (e : LimitEntry) : MetaM Unit := do
       (← categoryCarrierInstance category) do
     throwError "limit {e.id.raw}: its diagrams are not in {e.category.raw}"
 
+/-- The library root that authors semantics. -/
+def semanticAuthorRoots : List Name := [`LeanCategories]
+
 /-- An object row's declaration returns, after its parameters, an object of its registered
 category. -/
 def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
@@ -1910,6 +1913,26 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
     unless ← withTransparency .all <|
         isDefEq (← whnfR result).appArg! (mkAppN declaration objArgs) do
       throwError "object {e.id.raw}: the admission {admission} does not land in it"
+  -- The evidence of an admission is a proof procedure of `lean-categories`, run on the
+  -- admission's hypotheses: nothing else establishes membership in the domain.
+  if let some evidence := e.evidence then
+    if e.admission.isNone then
+      throwError "object {e.id.raw}: evidence {evidence} is registered without an admission"
+    let some info := (← getEnv).find? evidence
+      | throwError "object {e.id.raw}: the evidence {evidence} is not a declaration"
+    let tacticM := mkApp (mkConst ``Lean.Elab.Tactic.TacticM) (mkConst ``Unit)
+    unless ← isDefEq info.type tacticM do
+      throwError "object {e.id.raw}: the evidence {evidence} is not a proof procedure \
+        `Lean.Elab.Tactic.TacticM Unit`"
+    let env ← getEnv
+    unless isMarkedMeta env evidence do
+      throwError "object {e.id.raw}: the evidence {evidence} is not `meta`: it is run when a \
+        statement is read"
+    let module := (env.getModuleIdxFor? evidence).map (env.header.moduleNames[·.toNat]!)
+      |>.getD env.mainModule
+    unless semanticAuthorRoots.contains module.getRoot do
+      throwError "object {e.id.raw}: the evidence {evidence} is declared in {module}; the \
+        evidence of a domain is formalized with the domain, in `lean-categories`"
   let some refinement := e.refines | return
   let some base := state.objects.find? (·.id == refinement.base)
     | throwError "object {e.id.raw} refines an unregistered object {refinement.base.raw}"
@@ -2285,9 +2308,6 @@ def validateSemanticEntryDeclaration (entry : SemanticEntry) : MetaM Unit := do
 
 Semantics are mathematics: they are registered only in `lean-categories` modules. The module a row
 is written in is read from the environment, so the rule holds whatever path the row takes. -/
-
-/-- The library root that authors semantics. -/
-def semanticAuthorRoots : List Name := [`LeanCategories]
 
 /-- Every semantic row, grouped by the imported module that wrote it. -/
 def semanticRowsByModule (env : Environment) : Array (Name × Array SemanticEntry) :=

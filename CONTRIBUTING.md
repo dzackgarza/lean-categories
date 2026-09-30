@@ -229,3 +229,18 @@ to decide what to write, and no agent who writes those writes here
 mathematics, and it never shapes the answer. Formalizing an API to fit what a kernel can
 elaborate or a leaf can compute inverts the trust model. Such work is not accepted however it
 reads: `bd31fe3` (2026-09-30) was authored this way and awaits independent review.
+
+## LC-18 — Membership in a domain is established by the domain's own evidence
+
+That a value lies in a subobject `D ↪ B` (a unit, a nonzero or monic polynomial, a continuous or
+smooth map, a positive integer, a prime) is mathematics of `D`. It is formalized here, with `D`:
+the object row's `admission` states the hypotheses, and its `evidence` is the proof procedure
+that establishes them for a closed value, a `meta` declaration `TacticM Unit` of this library.
+The registry refuses evidence without an admission, of another type, not `meta`, or declared
+outside `lean-categories`. An admission without evidence admits nothing.
+
+No consumer supplies that proof: the language and the kernel of `lean-cas-dsl` run the registered
+evidence and nothing else, and their build refuses any reference to mathematics or any tactic
+they could run instead (`lean-cas-dsl/specs/architecture.md`, "What must be impossible"). A
+statement whose evidence does not establish its hypotheses is invalid. The fix is never a proof
+written downstream.

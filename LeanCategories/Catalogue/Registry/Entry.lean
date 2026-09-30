@@ -154,6 +154,14 @@ structure ObjectEntry where
   there (a matrix with an invertible determinant is a unit of `Matₙ(K)`). The evidence is
   established when a statement is read (LC-14); without it, `x` is not an element here. -/
   admission : Option Lean.Name := none
+  /-- How the hypotheses of the admission are established for a given value: a declaration
+  `evidence : Lean.Elab.Tactic.TacticM Unit` of `lean-categories`, written with the domain, run on
+  each hypothesis `P x` of the admission at a closed value `x` of `B` when a statement is read.
+  It is the only proof search a consumer of the catalogue performs for membership in this
+  domain: that `2 ∈ ℚˣ`, that a polynomial is monic, that a map is smooth, is the domain's
+  mathematics, never the language's (`lean-cas-dsl/specs/architecture.md`, "What must be
+  impossible"). An admission without evidence admits nothing. -/
+  evidence : Option Lean.Name := none
   deriving Repr
 
 /-- A literal form of a registered category (CC-CALC): `type` is a Lean type of literal values with
