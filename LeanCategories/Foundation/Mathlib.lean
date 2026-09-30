@@ -27,6 +27,24 @@ All four fields of `FoundationAtoms` are mathematical.
 * `BinaryOperation` — Mathlib `MagmaCat`
 -/
 
+namespace CategoryTheory.ConcreteCategory
+
+universe w v u
+
+variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type w}
+  [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
+
+/-- Equality of morphisms `f g : X ⟶ Y` of a concrete category is decidable whenever equality of
+functions `CC X → CC Y` is: a morphism is determined by its underlying function
+(`ConcreteCategory.coe_ext`), so `f = g` iff `⇑f = ⇑g`. For `Type u` and a finite domain this is
+Mathlib's decidable equality of functions out of a `Fintype` into a type with `DecidableEq`; in
+particular, equality of global elements `1 ⟶ X` of a set `X` with decidable equality is
+decidable. -/
+instance decidableEqHom {X Y : C} [DecidableEq (CC X → CC Y)] : DecidableEq (X ⟶ Y) :=
+  fun f g => decidable_of_iff (⇑(hom f) = ⇑(hom g)) ⟨coe_ext, fun h => h ▸ rfl⟩
+
+end CategoryTheory.ConcreteCategory
+
 namespace LeanCategories.Foundation.Mathlib
 
 open CategoryTheory CategoryTheory.Limits
@@ -36,8 +54,14 @@ universe u
 
 set_option linter.checkUnivs false
 
-/-- Sets as types. -/
-def Sets : ObjCat.{u + 1, u} := Cat.of (Type u)
+/-- Sets as types: the bundled category `Type u` (Mathlib `Cat.of (Type u)`), written as the
+bundle itself and reducible, so that its objects are reducibly types. A type `X : Type u` is then
+an object of `Sets` for instance resolution as well as for elaboration, and the instances Mathlib
+gives `Type u` (e.g. its `ConcreteCategory` structure) apply to morphisms of `Sets`. -/
+abbrev Sets : ObjCat.{u + 1, u} := ⟨Type u, inferInstance⟩
+
+/-- `Sets` is Mathlib's bundled category of types. -/
+theorem sets_eq_cat_of : Sets.{u} = Cat.of (Type u) := rfl
 
 /-- Magmas as Mathlib's bundled magma category. -/
 def Magmas : ObjCat.{u + 1, u} := Cat.of MagmaCat.{u}
