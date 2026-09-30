@@ -198,6 +198,19 @@ structure GraphLiteralEntry where
   denotation : Lean.Name
   deriving Repr
 
+/-- The finite-subset literals of a registered power object `𝒫` of `Sets`: `type` is a family
+`T : Type → Type` of Lean types of literal values, with decidable equality at every `X` with
+decidable equality, and `denotation : ∀ X [DecidableEq X], T X → (1 ⟶ 𝒫 X)` sends a literal to the
+element of `𝒫 X` it denotes, `{a₁, …, aₙ} ↦ {a₁, …, aₙ} ⊆ X`. Equality of literals is equality of
+the subsets they denote, so that a statement comparing a computed subset with a literal compares
+literals. One literal form per power object. -/
+structure SubsetLiteralEntry where
+  id : LiteralId
+  powerObject : PowerObjectId
+  type : Lean.Name
+  denotation : Lean.Name
+  deriving Repr
+
 /-- A registered inclusion of named objects of one category, `sub ⊆ super`: a monomorphism
 `declaration : ∀ params, sub params ⟶ super params` with `mono : ∀ params, Mono (declaration
 params)`, at the same parameters (`ℤ ⊆ ℚ ⊆ ℝ ⊆ ℂ` in `Sets`, by the casts). -/

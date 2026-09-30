@@ -50,6 +50,7 @@ public import LeanCategories.Catalogue.Semantics.Lattices.Valued.Expressions
 public import LeanCategories.Catalogue.Semantics.Lattices.Valued.Property
 public import LeanCategories.Catalogue.Semantics.Limits.Lifts
 public import LeanCategories.Catalogue.Semantics.Limits.Registration
+public import LeanCategories.Catalogue.Semantics.Foundation.FiniteSubsetLiterals
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Catalogue
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.CatalogueRegistration
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Lattices
