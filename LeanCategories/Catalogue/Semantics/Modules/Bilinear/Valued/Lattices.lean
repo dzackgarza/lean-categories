@@ -16,7 +16,7 @@ public meta import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Ca
 
 Objects and morphisms of `BilWForm(ℤ)` (`cat.bil_wform`), from `LeanCategories.Lattices.Integral`:
 
-* `A(n)`: the root lattice `A_n`, `ℤⁿ` with Gram matrix `CartanMatrix.A n`;
+* `A(n)`: the root lattice `A_n` on its simple roots `αᵢ = eᵢ − eᵢ₊₁ ∈ ℤ^{n+1}`;
 * `A_dual(n)`: its dual `A_n^♯ ⊆ ℚⁿ`, with values in `ℚ`;
 * `to_dual(n) : A(n) → A_dual(n)`: the inclusion `A_n ⊆ A_n^♯`, whose cokernel is the
   discriminant group.

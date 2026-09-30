@@ -16,7 +16,7 @@ public import Mathlib.Logic.Equiv.Sum
 A square matrix is *decomposable* when a re-indexing splits its index set into two nonempty parts
 with no nonzero entry between them (in either direction), i.e. it is block diagonal after a
 permutation; it is *indecomposable* otherwise. Vinberg's `C⁺`-matrices are the indecomposable
-nonnegative ones, and a Coxeter or Cartan matrix is indecomposable exactly when its diagram is
+nonnegative ones, and a Coxeter matrix is indecomposable exactly when its diagram is
 connected.
 
 **Theorem** (`Matrix.isDecomposable_iff_not_preconnected`). `A` is decomposable iff its

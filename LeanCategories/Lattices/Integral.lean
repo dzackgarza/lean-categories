@@ -6,7 +6,6 @@ module
 
 public import LeanCategories.Modules.Bilinear.Valued.Total
 public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
-public import Mathlib.LinearAlgebra.Matrix.Cartan
 public import Mathlib.Data.Rat.Cast.Lemmas
 
 @[expose] public section
@@ -23,8 +22,10 @@ For an integral Gram matrix `G : Matrix (Fin n) (Fin n) ℤ`:
   cokernel is the discriminant group `L^♯ / L`.
 
 No nondegeneracy is assumed: these are the definitions for every Gram matrix. The root lattice
-`A_n` has Gram matrix the Cartan matrix `CartanMatrix.A n`, and `A_n^♯ / A_n ≅ ℤ/(n+1)`
-(*SPLAG*, ch. 4 §6.1).
+`A_n = {x ∈ ℤ^{n+1} | ∑ xᵢ = 0}` is presented by its simple roots `αᵢ = eᵢ − eᵢ₊₁`, `i < n`
+(*SPLAG*, ch. 4 §6.1; Bourbaki, *Lie Groups and Lie Algebras*, ch. VI, Plate I). Its Gram matrix
+is `−(αᵢ · αⱼ)`, the standard inner products negated to this library's negative-definite
+convention, and `A_n^♯ / A_n ≅ ℤ/(n+1)` (*SPLAG*, ch. 4 §6.1).
 -/
 
 open CategoryTheory
@@ -82,13 +83,21 @@ noncomputable def toDual (G : Matrix (Fin n) (Fin n) ℤ) : lattice G ⟶ dual G
       intro x y
       exact cast_form G x y)
 
-/-- The root lattice `A_n`: Gram matrix `CartanMatrix.A n`. -/
-noncomputable abbrev rootA (n : ℕ) : BilWFormCat.{0} ℤ := lattice (CartanMatrix.A n)
+/-- The simple roots `αᵢ = eᵢ − eᵢ₊₁ ∈ ℤ^{n+1}` of `A_n`, for `i < n`. -/
+def rootASimpleRoot (n : ℕ) (i : Fin n) : Fin (n + 1) → ℤ :=
+  Pi.single i.castSucc 1 - Pi.single i.succ 1
+
+/-- The Gram matrix of `A_n` on its simple roots, negative definite: `G i j = −(αᵢ · αⱼ)`. -/
+def rootAGram (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
+  fun i j => -dotProduct (rootASimpleRoot n i) (rootASimpleRoot n j)
+
+/-- The root lattice `A_n`, on its simple roots. -/
+noncomputable abbrev rootA (n : ℕ) : BilWFormCat.{0} ℤ := lattice (rootAGram n)
 
 /-- The dual `A_n^♯`. -/
-noncomputable abbrev rootADual (n : ℕ) : BilWFormCat.{0} ℤ := dual (CartanMatrix.A n)
+noncomputable abbrev rootADual (n : ℕ) : BilWFormCat.{0} ℤ := dual (rootAGram n)
 
 /-- `A_n ⊆ A_n^♯`. -/
-noncomputable def rootAToDual (n : ℕ) : rootA n ⟶ rootADual n := toDual (CartanMatrix.A n)
+noncomputable def rootAToDual (n : ℕ) : rootA n ⟶ rootADual n := toDual (rootAGram n)
 
 end LeanCategories.Lattices.Integral
