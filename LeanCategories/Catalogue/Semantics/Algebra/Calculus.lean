@@ -14,7 +14,12 @@ public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Calculus.Taylor
 public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.Topology.ContinuousMap.Basic
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public import Mathlib.Tactic.FunProp
+public import Mathlib.Tactic.Positivity
 public meta import LeanCategories.Catalogue.Registry.Semantic
+public meta import LeanCategories.Catalogue.Semantics.Foundation.Evidence
 
 @[expose] public section
 
@@ -69,6 +74,18 @@ def admitContinuous (f : ℝ → ℝ) (h : Continuous f) :
     CasCatalogue.Foundation.Objects.fin 1 ⟶ continuousMaps :=
   TypeCat.ofHom fun _ => ⟨f, h⟩
 
+open Lean Elab Tactic in
+/-- The evidence that a closed map `f : ℝ → ℝ` is continuous: `f` is built from the identity and
+constants by `+`, `-`, `·`, `^ n`, division by a map without zeros, `sin`, `cos`, `exp` and
+composition; each of these is continuous (`Real.continuous_sin`, `Real.continuous_exp`,
+`Continuous.add`, `Continuous.comp`, …) and the rules compose along the structure of `f`
+(Mathlib `fun_prop`). That a denominator has no zeros is established by its positivity. It fails on
+a map that is not built so, a discontinuous one in particular. -/
+meta def continuousEvidence : TacticM Unit :=
+  CasCatalogue.Evidence.establish "C(ℝ)" <| CasCatalogue.Evidence.closeByFirst
+    m!"the map is not established to be continuous"
+    [do evalTactic (← `(tactic| fun_prop (disch := (intros; positivity))))]
+
 /-- `(f, (a, b)) ↦ ∫_a^b f`. -/
 noncomputable def integral :
     (continuousMaps × (reals × reals) : SetsCat.{0}) ⟶ reals :=
@@ -81,6 +98,16 @@ abbrev smoothMaps : SetsCat.{0} := {f : ℝ → ℝ // ContDiff ℝ (⊤ : ℕ�
 def admitSmooth (f : ℝ → ℝ) (h : ContDiff ℝ (⊤ : ℕ∞) f) :
     CasCatalogue.Foundation.Objects.fin 1 ⟶ smoothMaps :=
   TypeCat.ofHom fun _ => ⟨f, h⟩
+
+open Lean Elab Tactic in
+/-- The evidence that a closed map `f : ℝ → ℝ` is smooth, `ContDiff ℝ ∞ f`: `f` is built as for
+`continuousEvidence`, and each constituent is smooth (`Real.contDiff_sin`, `Real.contDiff_exp`,
+`ContDiff.mul`, `ContDiff.comp`, `ContDiff.div` away from zeros, …), composed along the structure
+of `f` (Mathlib `fun_prop`). It fails on a map that is not built so (`|x|`, `√x`). -/
+meta def smoothEvidence : TacticM Unit :=
+  CasCatalogue.Evidence.establish "C^∞(ℝ)" <| CasCatalogue.Evidence.closeByFirst
+    m!"the map is not established to be smooth"
+    [do evalTactic (← `(tactic| fun_prop (disch := (intros; positivity))))]
 
 /-- `R[[t]]`. -/
 abbrev powerSeries (R : Type) [CommRing R] : SetsCat.{0} := PowerSeries R
@@ -166,7 +193,8 @@ normalized_registry .morphism
 normalized_registry .object
   { id := ⟨"obj.sets.continuous_maps"⟩, category := CategoryId.sets, name := "C"
     declaration := `CasCatalogue.Algebra.Calculus.continuousMaps
-    admission := some `CasCatalogue.Algebra.Calculus.admitContinuous }
+    admission := some `CasCatalogue.Algebra.Calculus.admitContinuous
+    evidence := some `CasCatalogue.Algebra.Calculus.continuousEvidence }
 
 normalized_registry .morphism
   { id := ⟨"mor.sets.real_integral"⟩, category := CategoryId.sets, name := "∫ₐᵇ"
@@ -175,7 +203,8 @@ normalized_registry .morphism
 normalized_registry .object
   { id := ⟨"obj.sets.smooth_maps"⟩, category := CategoryId.sets, name := "C^∞"
     declaration := `CasCatalogue.Algebra.Calculus.smoothMaps
-    admission := some `CasCatalogue.Algebra.Calculus.admitSmooth }
+    admission := some `CasCatalogue.Algebra.Calculus.admitSmooth
+    evidence := some `CasCatalogue.Algebra.Calculus.smoothEvidence }
 
 normalized_registry .object
   { id := ⟨"obj.sets.power_series"⟩, category := CategoryId.sets, name := "PowerSeries"

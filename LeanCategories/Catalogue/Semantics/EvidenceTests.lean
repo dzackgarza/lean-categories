@@ -8,12 +8,14 @@ public import LeanCategories.Catalogue.Semantics.Algebra.Semirings
 public import LeanCategories.Catalogue.Semantics.Algebra.Units
 public import LeanCategories.Catalogue.Semantics.Algebra.Polynomials
 public import LeanCategories.Catalogue.Semantics.Algebra.LinearAlgebra
+public import LeanCategories.Catalogue.Semantics.Algebra.Calculus
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.Foundation.Evidence
 public meta import LeanCategories.Catalogue.Semantics.Algebra.Semirings
 public meta import LeanCategories.Catalogue.Semantics.Algebra.Units
 public meta import LeanCategories.Catalogue.Semantics.Algebra.Polynomials
 public meta import LeanCategories.Catalogue.Semantics.Algebra.LinearAlgebra
+public meta import LeanCategories.Catalogue.Semantics.Algebra.Calculus
 public meta import Lean.Meta.Closure
 
 @[expose] public section
@@ -182,6 +184,55 @@ run_elab do
         (← `(2)),
       ← monicOfDegree (← `((7 * Polynomial.X ^ 2 + Polynomial.X : Polynomial (ZMod 7))))
         (← `(2))]
+
+/-! ## `C(ℝ) ↪ (ℝ → ℝ)`: `Continuous f` -/
+
+#guard_msgs in
+run_meta expectRegistered "obj.sets.continuous_maps" ``Calculus.continuousEvidence
+
+#guard_msgs in
+run_elab do
+  expectEstablished Calculus.continuousEvidence
+    [← `(Continuous (fun x : ℝ => x)), ← `(Continuous (fun _ : ℝ => (3 : ℝ))),
+      ← `(Continuous (fun x : ℝ => x ^ 3 - 2 * x + 1)),
+      ← `(Continuous (fun x : ℝ => Real.sin x * Real.cos x)),
+      ← `(Continuous (fun x : ℝ => Real.exp (Real.sin (x ^ 2 + 3)) - Real.pi * x)),
+      ← `(Continuous (fun x : ℝ => Real.cos (Real.exp x) ^ 2 + Real.sin x ^ 2)),
+      ← `(Continuous (Real.sin ∘ Real.exp)), ← `(Continuous Real.cos),
+      ← `(Continuous (fun x : ℝ => Real.sin x / (x ^ 2 + 1))),
+      ← `(Continuous (fun x : ℝ => x / Real.exp x))]
+
+#guard_msgs in
+run_elab do
+  expectRefused Calculus.continuousEvidence
+    [← `(Continuous (fun x : ℝ => if x < 0 then (0 : ℝ) else 1)),
+      ← `(Continuous (fun x : ℝ => 1 / x)),
+      ← `(Continuous (fun x : ℝ => Real.sin x / Real.sin x)),
+      ← `(Continuous (fun x : ℝ => (Int.floor x : ℝ)))]
+
+/-! ## `C^∞(ℝ) ↪ (ℝ → ℝ)`: `ContDiff ℝ ∞ f` -/
+
+#guard_msgs in
+run_meta expectRegistered "obj.sets.smooth_maps" ``Calculus.smoothEvidence
+
+#guard_msgs in
+run_elab do
+  expectEstablished Calculus.smoothEvidence
+    [← `(ContDiff ℝ ((⊤ : ℕ∞) : WithTop ℕ∞) (fun x : ℝ => x)),
+      ← `(ContDiff ℝ ((⊤ : ℕ∞) : WithTop ℕ∞) (fun x : ℝ => x ^ 5 - 3 * x ^ 2 + 7)),
+      ← `(ContDiff ℝ ((⊤ : ℕ∞) : WithTop ℕ∞) (fun x : ℝ => Real.sin x * Real.exp x)),
+      ← `(ContDiff ℝ ((⊤ : ℕ∞) : WithTop ℕ∞)
+        (fun x : ℝ => Real.exp (Real.cos (x ^ 2)) + Real.pi)),
+      ← `(ContDiff ℝ ((⊤ : ℕ∞) : WithTop ℕ∞) (Real.cos ∘ Real.sin)),
+      ← `(ContDiff ℝ ((⊤ : ℕ∞) : WithTop ℕ∞) (fun x : ℝ => Real.exp x / (x ^ 2 + 1)))]
+
+#guard_msgs in
+run_elab do
+  expectRefused Calculus.smoothEvidence
+    [← `(ContDiff ℝ ((⊤ : ℕ∞) : WithTop ℕ∞) (fun x : ℝ => |x|)),
+      ← `(ContDiff ℝ ((⊤ : ℕ∞) : WithTop ℕ∞) (fun x : ℝ => Real.sqrt x)),
+      ← `(ContDiff ℝ ((⊤ : ℕ∞) : WithTop ℕ∞) (fun x : ℝ => if x < 0 then (0 : ℝ) else x ^ 2)),
+      ← `(ContDiff ℝ ((⊤ : ℕ∞) : WithTop ℕ∞) (fun x : ℝ => 1 / x))]
 
 /-! ## `ℕ⁺ ↪ ℕ`: `0 < n` -/
 
