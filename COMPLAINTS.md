@@ -648,3 +648,55 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
   to LC-16 and Mathlib only. Nothing downstream was read.
 - **Repair link:** items 1 and 4 are catalogue formalization work; items 2 and 3 are the
   registry's owner (orchestrator, plan node `gov-registry-gates`).
+
+### Membership evidence (LC-18): what the registered procedures do not establish
+
+- **Need:** each domain `D ↪ B` with an admission registers evidence that establishes the
+  admission's hypothesis `P x` for every closed `x ∈ D` and fails for `x ∉ D` (LC-18). The seven
+  procedures are `Algebra.Units.isUnitEvidence`, `Semirings.positiveEvidence`,
+  `Semirings.primeEvidence`, `Polynomials.nonzeroPolynomialEvidence`,
+  `LinearAlgebra.monicEvidence`, `Calculus.continuousEvidence`, `Calculus.smoothEvidence`,
+  exercised in `Catalogue/Semantics/EvidenceTests.lean`.
+- **Evidence and gaps (execution, 2026-09-30):**
+  1. **Primes beyond trial-division size.** `primeEvidence` is Mathlib's `Nat.Prime` extension of
+     `norm_num`, whose certificate is a chain of trial divisions of length about `√p / 2`. For
+     `p = 2^31 - 1` the proof is built but the kernel check fails with `(kernel) deep recursion
+     detected` at the default `maxRecDepth` (reproducer: `example : Nat.Prime (2 ^ 31 - 1) := by
+     norm_num` under `import Mathlib`; it passes under `set_option maxRecDepth 100000`).
+     `10^6 + 3` and `2^19 - 1` pass. The optimal procedure is a Pratt certificate: factor `p - 1`,
+     find a witness `a`, and conclude by `lucas_primality` (Mathlib
+     `NumberTheory/LucasPrimality.lean`), with `a^k mod p` by Mathlib's `Nat.pow_mod` `norm_num`
+     extension. **Searched:** Mathlib (`pratt`, `pocklington`, `lucas_primality`), the
+     formalization corpus ("tactic prove polynomial monic", "decision procedure IsUnit matrix
+     determinant" and neighbours); **Found:** `lucas_primality` and `lucas_primality_iff` only,
+     no certificate tactic; **Conclusion:** missing (LC-11); **Confidence:** medium (the corpus
+     was searched by phrase, not exhaustively). Owner: `Semirings.primeEvidence`.
+  2. **Units of monoids outside the covered families.** `isUnitEvidence` covers groups, square
+     matrices over a commutative ring through the determinant (first-row expansion, so `n!`
+     terms: practical to about `6 × 6`), division rings, `ℤ`, `ℕ`, `ℤ/n` (`n ≠ 0`) and products,
+     powers and negatives of units. It refuses, although they may be units: elements of
+     polynomial rings (`Polynomial.isUnit_iff` over a domain), products `M × N`
+     (`Prod.isUnit_iff`), `Π`-types, rings of integers such as `ℤ[i]`, and matrices given other
+     than by entries (`Matrix.of`/`!![…]`), `1`, products, transposes or diagonals. Whether an
+     element of an arbitrary closed monoid is a unit is not decidable in general; each further
+     family is a characterization of its units, added as a case.
+  3. **Closed facts about real numbers.** Nonzero-ness of a real element (units of `ℝ`, leading
+     coefficients of real polynomials) is established by evaluation (`norm_num`) or by positivity.
+     A nonzero value that is neither evaluable nor of known sign (`π - 3`, `exp 1 - e`-style
+     differences, `sin 1`) is refused. Deciding it needs interval arithmetic with certified
+     bounds; no such procedure was found in Mathlib.
+  4. **Polynomial expressions beyond ring operations.** `nonzeroPolynomialEvidence` and
+     `monicEvidence` read degrees and leading coefficients from `X`, `C r`, numerals, `+ - · ^`
+     (Mathlib `compute_degree`, `monicity`), after `reduce_mod_char` and `ring_nf` when leading
+     terms cancel. Compositions `p.comp q`, derivatives, `map`, `Polynomial.eval`-built
+     coefficients and `Finset` sums are not unfolded and are refused.
+  5. **Continuity and smoothness of piecewise maps.** `continuousEvidence` and `smoothEvidence`
+     compose rules along the structure of the map (`fun_prop`). A piecewise map that is continuous
+     because its pieces agree on the boundary (`fun x => if x < 0 then -x else x`) and a quotient
+     with a removable zero (`fun x => sin x / x` as extended) are refused; so are maps outside the
+     elementary class (`Real.log`, `√` away from `0`, `arctan` are not in the registered class).
+- **Coverage:** the seven admissions under `Catalogue/Semantics`; the procedures' refusals were
+  exercised only on the listed specimens.
+- **Repair link:** each item's owner is the named evidence declaration; item 1 is resolved by a
+  Pratt-certificate procedure for `ℙ`, the others by adding the named characterization as a case of
+  the domain's evidence.
