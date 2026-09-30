@@ -137,13 +137,14 @@ structure ObjectEntry where
   `Fin(n)` in `Sets` along the forgetful functor. -/
   refines : Option ObjectRefinement := none
   /-- A distinguished element `∀ params, 1 ⟶ obj params` that the language names by a bound
-  variable: the variable `x` of `R[x]`. -/
+  variable: the variable `x` of `R[x]`; or a family of them `∀ params (i : Fin n), 1 ⟶ obj params`
+  indexed below a numeral parameter (the variables `xᵢ` of `R[x₀, …, xₙ₋₁]`). -/
   generator : Option Lean.Name := none
   /-- How the elements of `obj params` act on arguments: `∀ params args, obj params × A ⟶ B`
   (a polynomial's evaluation `R[x] × A → A` at an `R`-algebra `A`). -/
   application : Option Lean.Name := none
   /-- The constants: a monomorphism `∀ params, p ⟶ obj params` from the object's first parameter
-  `p`, a set (the constant polynomials `R ↪ R[x]`). -/
+  `p` that is a set (the constant polynomials `R ↪ R[x]`, `R ↪ R[x₀, …, xₙ₋₁]`). -/
   constants : Option Lean.Name := none
   deriving Repr
 

@@ -1886,11 +1886,12 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
     let constant ← mkConstWithFreshMVarLevels constants
     let (_, _, result) ← forallMetaTelescopeReducing (← inferType constant)
     let (objArgs, _, _) ← forallMetaTelescopeReducing (← inferType declaration)
-    let some first := objArgs[0]? | throwError "object {e.id.raw} has constants but no parameter"
+    let first? ← objArgs.findM? fun a => return (← whnf (← inferType a)).isSort
+    let some first := first? | throwError "object {e.id.raw} has constants but no set parameter"
     let result ← whnfR result
     unless ← withTransparency .all <| (isDefEq result.appFn!.appArg! first <&&>
         isDefEq result.appArg! (mkAppN declaration objArgs)) do
-      throwError "object {e.id.raw}: the constants {constants} are not a map from its first \
+      throwError "object {e.id.raw}: the constants {constants} are not a map from its first set \
         parameter to it"
   let some refinement := e.refines | return
   let some base := state.objects.find? (·.id == refinement.base)
