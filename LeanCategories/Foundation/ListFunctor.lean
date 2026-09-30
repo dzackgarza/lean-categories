@@ -62,11 +62,11 @@ applied form carries `(𝟭 _).obj X` in its coercion, which `simp` rewrites fir
 
 /-- The multiplication component `μ_X = List.flatten`. -/
 @[simp] theorem listJoin_app (X : Type u) : listJoin.app X = ↾(List.flatten (α := X)) := by
-  ext l
-  change joinM l = l.flatten
-  simp only [joinM]
-  change List.flatMap id l = l.flatten
-  exact List.flatMap_id
+  change (↾(joinM (m := List) (α := X)) : List (List X) ⟶ List X) = ↾List.flatten
+  exact congrArg TypeCat.ofHom (funext fun l => by
+    simp only [joinM]
+    change List.flatMap id l = l.flatten
+    exact List.flatMap_id)
 
 @[simp] theorem listReverse_hom_app_apply (X : Type u) (l : List X) :
     listReverse.hom.app X l = l.reverse := rfl
