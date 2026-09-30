@@ -39,6 +39,7 @@ public import LeanCategories.Catalogue.Semantics.Foundation.PartialMaps
 public import LeanCategories.Catalogue.Semantics.Algebra.FiniteSums
 public import LeanCategories.Catalogue.Semantics.Algebra.Calculus
 public import LeanCategories.Catalogue.Semantics.Algebra.MvPolynomials
+public import LeanCategories.Catalogue.Semantics.Algebra.Algebras
 public import LeanCategories.Catalogue.Semantics.Foundation.PairDiagrams
 public import LeanCategories.Catalogue.Semantics.Foundation.Subsets
 public import LeanCategories.Catalogue.Semantics.LatticeRefinements
