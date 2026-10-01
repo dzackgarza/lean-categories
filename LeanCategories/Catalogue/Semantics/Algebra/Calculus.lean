@@ -97,8 +97,9 @@ integrable on every compact interval (`Continuous.intervalIntegrable`), so the o
 
 The object of maps is `C(ℝ)` and the bound variable ranges over `ℝ`, independently of the bounds:
 one object serves all bounds, and a map is admitted with the continuity evidence
-`continuousEvidence` of `C(ℝ)`. An integrand continuous on `[a, b]` but not on `ℝ` (`1/t` on `[1, 2]`) is not admitted
-by this row; it belongs to `C([a, b])`, a further row of the same notation. -/
+`continuousEvidence` of `C(ℝ)`. An integrand continuous on `[a, b]` but not on `ℝ` (`1/t` on
+`[1, 2]`) is not admitted by this row; it belongs to `C([a, b])`, a further row of the same
+notation. -/
 noncomputable def integral (a b : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) :
     continuousMaps ⟶ reals :=
   TypeCat.ofHom fun f =>
