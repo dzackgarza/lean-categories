@@ -18,6 +18,7 @@ public import LeanCategories.Catalogue.Semantics
 public import LeanCategories.Catalogue.Semantics.TotalityProbes
 public import LeanCategories.Catalogue.Registry.BinderProbes
 public import LeanCategories.Catalogue.Semantics.EvidenceTests
+public import LeanCategories.Catalogue.Semantics.BinderTests
 public import LeanCategories.Catalogue.Semantics.DecidableElementTests
 public import LeanCategories.Catalogue.Semantics.UnitInverseTests
 public import LeanCategories.Catalogue.Semantics.FiniteSubsetLiteralTests
