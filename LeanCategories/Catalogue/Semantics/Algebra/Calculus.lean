@@ -30,8 +30,10 @@ Each operation of calculus is a total map out of the object it is defined on (LC
 * `sin`, `cos`, `exp : ℝ → ℝ` and `π : 1 → ℝ` (Mathlib `Real.sin`, `Real.cos`, `Real.exp`,
   `Real.pi`);
 * `C(ℝ)`, the continuous maps `ℝ → ℝ` (Mathlib `ContinuousMap`), and the definite integral
-  `∫_a^b f` of `f ∈ C(ℝ)`, `ℝ × ℝ → ℝ` (Mathlib `intervalIntegral`; continuous maps are
-  integrable on every interval). A map is in `C(ℝ)` only with the evidence that it is continuous;
+  `∫_a^b : C(ℝ) → ℝ` at bounds `a b ∈ ℝ`, the binder `∫_{a}^{b} e dt` (Mathlib
+  `intervalIntegral`; continuous maps are integrable on every interval), also registered
+  uncurried as the morphism `∫ₐᵇ : C(ℝ) × (ℝ × ℝ) → ℝ` until the binder reading replaces it. A
+  map is in `C(ℝ)` only with the evidence that it is continuous;
 * `C^∞(ℝ)`, the smooth maps `ℝ → ℝ` (Mathlib `ContDiff ℝ ⊤`), and the Taylor expansion
   `C^∞(ℝ) × ℝ → ℝ[[t]]`, `(f, a) ↦ Σ f⁽ᵏ⁾(a)/k! tᵏ` (Mathlib `iteratedDeriv`). A map is in
   `C^∞(ℝ)` only with the evidence that it is smooth. The division by `k!` is the division
@@ -86,10 +88,50 @@ meta def continuousEvidence : TacticM Unit :=
     m!"the map is not established to be continuous"
     [do evalTactic (← `(tactic| fun_prop (disch := (intros; positivity))))]
 
-/-- `(f, (a, b)) ↦ ∫_a^b f`. -/
+/-- `f ↦ ∫_a^b f(t) dt`, `C(ℝ) → ℝ`, at the bounds `a b ∈ ℝ`: the binder `∫_{a}^{b} e dt`
+(`lean-cas-dsl/specs/binders.md`), its arguments the two bounds. It is Mathlib's interval integral
+`∫ t in a..b, f t` (`intervalIntegral`, the oriented Lebesgue integral over `Ι a b`, so that
+`∫_b^a f = -∫_a^b f`), which on a continuous map is the Riemann integral: a continuous map is
+integrable on every compact interval (`Continuous.intervalIntegrable`), so the operation is total on
+`C(ℝ)` at every pair of bounds, and the fundamental theorem of calculus evaluates it
+(`intervalIntegral.integral_eq_sub_of_hasDerivAt`, `integral_pow`, `integral_sin`).
+
+The object of maps is `C(ℝ)` and the bound variable ranges over `ℝ`, independently of the bounds:
+one object serves all bounds, and a map is admitted with the continuity evidence
+`continuousEvidence` of `C(ℝ)`. An integrand continuous on `[a, b]` but not on `ℝ` (`1/t` on
+`[1, 2]`) is not admitted by this row; it belongs to `C([a, b])`, a further row of the same
+notation. -/
+noncomputable def definiteIntegral (a b : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) :
+    continuousMaps ⟶ reals :=
+  TypeCat.ofHom fun f =>
+    ∫ t in ConcreteCategory.hom (C := Type) a 0..ConcreteCategory.hom (C := Type) b 0, f t
+
+/-- The bound variable of `∫_{a}^{b}` ranges over `ℝ`. -/
+abbrev integrationDomain (_ _ : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) : SetsCat.{0} :=
+  reals
+
+/-- The value of `∫_a^b` at an admitted map is Mathlib's interval integral of the map (the
+composite applied map by map, its simp-normal form). -/
+@[simp] theorem definiteIntegral_admit (a b : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals)
+    (f : ℝ → ℝ) (h : Continuous f) (p : CasCatalogue.Foundation.Objects.fin 1) :
+    ConcreteCategory.hom (C := Type) (definiteIntegral a b)
+        (ConcreteCategory.hom (C := Type) (admitContinuous f h) p) =
+      ∫ t in ConcreteCategory.hom (C := Type) a 0..ConcreteCategory.hom (C := Type) b 0, f t :=
+  rfl
+
+/-- `(f, (a, b)) ↦ ∫_a^b f`, the same integral uncurried: `∫_a^b f` is `definiteIntegral a b`
+at `f` (`integral_eq_definiteIntegral`). Registered as the morphism `∫ₐᵇ` until the binder
+reading of `∫_{a}^{b}` replaces it. -/
 noncomputable def integral :
     (continuousMaps × (reals × reals) : SetsCat.{0}) ⟶ reals :=
   TypeCat.ofHom fun p => ∫ t in p.2.1..p.2.2, p.1 t
+
+/-- The uncurried integral is the binder's integral at the bounds' points. -/
+theorem integral_eq_definiteIntegral (f : continuousMaps) (a b : ℝ) :
+    ConcreteCategory.hom (C := Type) integral (f, (a, b)) =
+      ConcreteCategory.hom (C := Type)
+        (definiteIntegral (TypeCat.ofHom fun _ => a) (TypeCat.ofHom fun _ => b)) f :=
+  rfl
 
 /-- `C^∞(ℝ)`, the smooth maps `ℝ → ℝ`. -/
 abbrev smoothMaps : SetsCat.{0} := {f : ℝ → ℝ // ContDiff ℝ (⊤ : ℕ∞) f}
@@ -199,6 +241,11 @@ normalized_registry .object
 normalized_registry .morphism
   { id := ⟨"mor.sets.real_integral"⟩, category := CategoryId.sets, name := "∫ₐᵇ"
     declaration := `CasCatalogue.Algebra.Calculus.integral }
+
+normalized_registry .binder
+  { id := ⟨"bind.sets.integral"⟩, category := CategoryId.sets, token := "∫"
+    operation := `CasCatalogue.Algebra.Calculus.definiteIntegral
+    domain := `CasCatalogue.Algebra.Calculus.integrationDomain }
 
 normalized_registry .object
   { id := ⟨"obj.sets.smooth_maps"⟩, category := CategoryId.sets, name := "C^∞"
