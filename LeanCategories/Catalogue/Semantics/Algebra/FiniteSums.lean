@@ -98,4 +98,14 @@ normalized_registry .morphism
   { id := ⟨"mor.sets.finite_product"⟩, category := CategoryId.sets, name := "∏"
     declaration := `CasCatalogue.Algebra.FiniteSums.prod }
 
+normalized_registry .binder
+  { id := ⟨"bind.sets.finite_sum"⟩, category := CategoryId.sets, token := "∑"
+    operation := `CasCatalogue.Algebra.FiniteSums.sumOver
+    domain := `CasCatalogue.Algebra.FiniteSums.sumDomain }
+
+normalized_registry .binder
+  { id := ⟨"bind.sets.finite_product"⟩, category := CategoryId.sets, token := "∏"
+    operation := `CasCatalogue.Algebra.FiniteSums.prodOver
+    domain := `CasCatalogue.Algebra.FiniteSums.prodDomain }
+
 end CasCatalogue

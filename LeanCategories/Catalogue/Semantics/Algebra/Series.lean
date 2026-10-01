@@ -296,4 +296,14 @@ normalized_registry .object
     admission := some `CasCatalogue.Algebra.Series.admit
     evidence := some `CasCatalogue.Algebra.Series.summableEvidence }
 
+normalized_registry .binder
+  { id := ⟨"bind.sets.series"⟩, category := CategoryId.sets, token := "∑"
+    operation := `CasCatalogue.Algebra.Series.seriesSum
+    domain := `CasCatalogue.Algebra.Series.seriesDomain }
+
+normalized_registry .binder
+  { id := ⟨"bind.sets.power_series_sum"⟩, category := CategoryId.sets, token := "∑"
+    operation := `CasCatalogue.Algebra.Series.powerSeriesSum
+    domain := `CasCatalogue.Algebra.Series.powerSeriesSumDomain }
+
 end CasCatalogue

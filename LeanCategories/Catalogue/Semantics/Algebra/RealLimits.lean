@@ -411,4 +411,14 @@ normalized_registry .object
     admission := some `CasCatalogue.Algebra.RealLimits.admitConvergentAtInfinity
     evidence := some `CasCatalogue.Algebra.RealLimits.convergenceEvidence }
 
+normalized_registry .binder
+  { id := ⟨"bind.sets.limit"⟩, category := CategoryId.sets, token := "lim"
+    operation := `CasCatalogue.Algebra.RealLimits.limit
+    domain := `CasCatalogue.Algebra.RealLimits.limitDomain }
+
+normalized_registry .binder
+  { id := ⟨"bind.sets.limit_at_infinity"⟩, category := CategoryId.sets, token := "lim"
+    operation := `CasCatalogue.Algebra.RealLimits.limitAtInfinity
+    domain := `CasCatalogue.Algebra.RealLimits.limitAtInfinityDomain }
+
 end CasCatalogue
