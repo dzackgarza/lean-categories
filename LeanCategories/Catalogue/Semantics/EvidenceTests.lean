@@ -9,6 +9,7 @@ public import LeanCategories.Catalogue.Semantics.Algebra.Units
 public import LeanCategories.Catalogue.Semantics.Algebra.Polynomials
 public import LeanCategories.Catalogue.Semantics.Algebra.LinearAlgebra
 public import LeanCategories.Catalogue.Semantics.Algebra.Calculus
+public import LeanCategories.Catalogue.Semantics.Foundation.Morphisms
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.Foundation.Evidence
 public meta import LeanCategories.Catalogue.Semantics.Algebra.Semirings
@@ -131,6 +132,62 @@ run_elab do
   let nonunits ← nonunitSpecimens
   expectRefused Units.invertibleEvidence (← nonunits.mapM fun x => `(Invertible $x))
   expectRefused Units.isUnitEvidence (← nonunits.mapM fun x => `(IsUnit $x))
+
+/-! ### The registered numerals of `ℤ/n`
+
+A consumer forms the numeral `k ∈ ℤ/n` (`obj.sets.integers_mod`, `n ≠ 0`) with the registered
+numeral `num.sets.fin`: `ℤ/n` is `Fin n` by definition (Mathlib `ZMod`), so `finPoint` at
+`1 ⟶ ℤ/n` unifies `n` as `m + 1` and the element is the point `⟨k, _⟩ : Fin (m + 1)`, a value of
+`ℤ/n` carrying the ring structure of `ZMod n`. The evidence runs on that term. -/
+
+section ZModNumerals
+
+open Lean Meta Elab Term
+
+/-- The value in `ℤ/n` of the registered numeral `k` at `1 ⟶ ℤ/n`, evaluated at the point of `1`
+as a consumer evaluates it: the term `⟨k, _⟩ : Fin (m + 1)`. -/
+meta def zmodNumeralValue (n k : Nat) : TermElabM Term := do
+  let numeral ← `((CasCatalogue.Foundation.Morphisms.finPoint _ $(quote k) (by decide) :
+      Foundation.Objects.fin 1 ⟶ Foundation.Objects.integersMod $(quote n)))
+  let element ← Term.elabTerm (← `(CategoryTheory.ConcreteCategory.hom (C := Type) $numeral
+      (⟨0, Nat.one_pos⟩ : Foundation.Objects.fin 1))) none
+  Term.synthesizeSyntheticMVarsNoPostponing
+  let value ← whnf (← instantiateMVars element)
+  unless value.isAppOfArity ``Fin.mk 3 do
+    throwError "the numeral {k} of ℤ/{n} evaluates to{indentExpr value}\nnot a point of Fin"
+  Term.exprToSyntax value
+
+/-- `Invertible x ∈ ℤ/n` at the registered numeral `x = k`, the statement formed at type `ℤ/n`
+with the ring structure of `ZMod n`. -/
+meta def zmodNumeralInvertible (n k : Nat) : TermElabM Term := do
+  `(@Invertible (Foundation.Objects.integersMod $(quote n)) _ _ $(← zmodNumeralValue n k))
+
+/-- `IsUnit x ∈ ℤ/n` at the registered numeral `x = k`. -/
+meta def zmodNumeralIsUnit (n k : Nat) : TermElabM Term := do
+  `(@IsUnit (Foundation.Objects.integersMod $(quote n)) _ $(← zmodNumeralValue n k))
+
+/-- The registered numerals that are units: `2 ∈ ℤ/5`, `7 ∈ ℤ/12`, `3 ∈ ℤ/10`, `8 ∈ ℤ/9`,
+`1 ∈ ℤ/2`. -/
+meta def zmodNumeralUnits : List (Nat × Nat) := [(5, 2), (12, 7), (10, 3), (9, 8), (2, 1)]
+
+/-- The registered numerals that are not: `5 ∈ ℤ/10`, `8 ∈ ℤ/12`, `0 ∈ ℤ/5`, `6 ∈ ℤ/9`. -/
+meta def zmodNumeralNonunits : List (Nat × Nat) := [(10, 5), (12, 8), (5, 0), (9, 6)]
+
+#guard_msgs in
+run_elab do
+  expectEstablished Units.invertibleEvidence
+    (← zmodNumeralUnits.mapM fun (n, k) => zmodNumeralInvertible n k)
+  expectEstablished Units.isUnitEvidence
+    (← zmodNumeralUnits.mapM fun (n, k) => zmodNumeralIsUnit n k)
+
+#guard_msgs in
+run_elab do
+  expectRefused Units.invertibleEvidence
+    (← zmodNumeralNonunits.mapM fun (n, k) => zmodNumeralInvertible n k)
+  expectRefused Units.isUnitEvidence
+    (← zmodNumeralNonunits.mapM fun (n, k) => zmodNumeralIsUnit n k)
+
+end ZModNumerals
 
 /-! ## `R[x] ∖ {0} ↪ R[x]`: `p ≠ 0` -/
 
