@@ -10,8 +10,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 /-!
 # Stable identity types
 
-Stable IDs are normalized mathematical identity (matching the Python semantic seed /
-authored ledger). They never embed Lean universe metavariables.
+Stable IDs are the normalized mathematical identity of registry rows, authored here. They never
+embed Lean universe metavariables.
 -/
 
 namespace CasCatalogue

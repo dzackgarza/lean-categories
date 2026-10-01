@@ -29,10 +29,9 @@ subgroup carries its inclusion. The generic structure is owned here, above every
 * intersection and inverse image are Mathlib's `Subobject` lattice and pullback on the same
   semantic value (`GrpCat` has pullbacks); no subgroup-specific wrapper exists.
 
-A realization is an embedding of finite group tables. A backend's subgroup — here a deliberately
-ill-structured handle: an unclosed generator list, a claimed "abelian" label, a method inventory —
-reaches the user only through `decode`, which must produce the inclusion; its label and methods
-are ignored (CC-SEP, CC-PROP).
+What a subgroup is, and what holds of it, is fixed here. An implementation of a subgroup
+operation returns an opaque value of the declared type; any label or method inventory it attaches
+is not consulted (CC-SEP, CC-PROP).
 -/
 
 open CategoryTheory

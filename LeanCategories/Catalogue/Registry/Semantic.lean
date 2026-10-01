@@ -30,7 +30,9 @@ The registered semantics of the CAS language: which categories, category familie
 functors (structural or not), opaque categories with ports, fibrations, category constructors,
 methods, properties, lifts, cells, limits and adjunctions constitute it, each row naming the Lean
 declaration that is its mathematics and validated against it. `lean-cas-dsl` reads this registry
-from its pinned release and adds only realizations (`lean-cas-dsl/specs/architecture.md`). Rows are
+from its pinned release and adds no semantics: an implementation is registered there as an opaque
+computation for a catalogue operation, and nothing it supplies is consulted for meaning
+(`lean-cas-dsl/specs/architecture.md`). Rows are
 written with `normalized_registry`, only in `LeanCategories` modules.
 
 `addImportedFn` receives `Array (Array SemanticEntry)` from imported modules.
@@ -2394,8 +2396,8 @@ def addSemanticEntryChecked (entry : SemanticEntry) : MetaM Unit := do
   let module := (← getEnv).mainModule
   unless semanticAuthorRoots.contains module.getRoot do
     throwError "semantic row {entry.stableId}: {module} is not a `lean-categories` module; the \
-      semantics of the CAS are registered only in `lean-categories` (normalized_registry), and a \
-      backend leaf contributes realizations through `register_leaf`"
+      semantics of the CAS are registered only in `lean-categories` (normalized_registry); a leaf \
+      registers an opaque implementation for a catalogue operation and contributes no semantics"
   persistSemanticEntry entry
 
 /--

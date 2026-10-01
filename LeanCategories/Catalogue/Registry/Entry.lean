@@ -112,8 +112,9 @@ structure AdjunctionEntry where
 
 /-- A named object or object constructor (CC-CALC): `declaration : (parameters) → C`, a Lean
 function from typed parameters to the objects of the registered category `category`, e.g.
-`n ↦ ℤ/n` in `Sets`. Its parameters are typed terms, never strings. A leaf presents its values by
-handles, each with its identification; it never names the object. -/
+`n ↦ ℤ/n` in `Sets`. Its parameters are typed terms, never strings. What the object is, is fixed
+here by `declaration`; an implementation registered for an operation on it returns an opaque value
+of the declared result type, and nothing it supplies about that value is consulted. -/
 structure ObjectRefinement where
   /-- The object this one refines, in the target category of `edge`. -/
   base : ObjectId

@@ -20,7 +20,7 @@ public meta import LeanCategories.Catalogue.Semantics.Foundation.Cardinality
 
 `rank : Core(Mod_R) ⥤ Disc(Card)` (`LeanCategories.Modules.rankFunctor`) is registered once, as
 `fun.modules.rank`, and presented as the iso-invariant method `rank` owned by `Mod_R`. Formed
-modules, lattices and any leaf with a structural route to modules inherit it. Its Lean-native
+modules, lattices and any category with a structural route to modules inherit it. Its Lean-native
 action on free `ℤ`-modules is `ℤⁿ ↦ n`.
 -/
 
