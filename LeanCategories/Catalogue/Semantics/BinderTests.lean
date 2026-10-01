@@ -172,6 +172,24 @@ theorem powerSeriesSum_squares_coeff (h : Summable squaresTimesPowers) (p : fin 
       (k : ℤ) ^ 2 := by
   rw [powerSeriesSum_squares h p, PowerSeries.coeff_mk]
 
+/-- **`∑_{n ∈ ℕ} (1/2)ⁿ = 2`** in `ℝ` (Mathlib `tsum_geometric_two`). -/
+theorem realSeriesSum_geometric (h : Summable fun n : ℕ => ((1 : ℝ) / 2) ^ n) (p : fin 1) :
+    ConcreteCategory.hom (C := Type)
+      (Series.admit ℝ naturals (fun n => ((1 : ℝ) / 2) ^ n) h ≫ realSeriesSum naturals) p = 2 :=
+  tsum_geometric_two
+
+/-- `∑_{n ∈ ℕ} (1/2)ⁿ = 2` in `ℂ`: the sum of the complex series is that of the real one, along
+`ℝ ↪ ℂ` (Mathlib `Complex.ofReal_tsum`). -/
+theorem complexSeriesSum_geometric (h : Summable fun n : ℕ => ((1 : ℂ) / 2) ^ n) (p : fin 1) :
+    ConcreteCategory.hom (C := Type)
+      (Series.admit ℂ naturals (fun n => ((1 : ℂ) / 2) ^ n) h ≫ complexSeriesSum naturals) p =
+      2 := by
+  change ∑' n : ℕ, ((1 : ℂ) / 2) ^ n = 2
+  have : (fun n : ℕ => ((1 : ℂ) / 2) ^ n) = fun n => ((((1 : ℝ) / 2) ^ n : ℝ) : ℂ) := by
+    funext n; push_cast; ring
+  rw [this, ← Complex.ofReal_tsum, tsum_geometric_two]
+  norm_num
+
 end Series
 
 /-! ## `∑_{t ∈ A}` and `∏_{t ∈ A}` -/

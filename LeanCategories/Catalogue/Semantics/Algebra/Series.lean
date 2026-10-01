@@ -26,6 +26,13 @@ total map out of the summable families, `Σ(N, Y) → Y`, and that is the binder
 (`lean-cas-dsl/specs/binders.md`): its argument is the index set `N`, and the bound variable
 ranges over `N`. A family is in `Σ(N, Y)` only with the evidence that it is summable.
 
+The binder has one row per codomain, its topology fixed in the row's definition: `ℝ` and `ℂ` with
+the topology of their absolute values (`realSeriesSum`, `complexSeriesSum`), `R[[t]]` with its
+`(t)`-adic topology (`powerSeriesSum`). The codomain of the body selects the row; no row's
+topology is found by instance search, since `R[[t]]` carries several (for `ℚ[[t]]`, the product
+topology of the absolute value of `ℚ` sums the constants `n ↦ 2⁻ⁿ` to `2`, the `(t)`-adic one
+does not).
+
 ## Formal power series
 
 `R[[t]]` carries the `(t)`-adic topology: the product topology of the discrete topology on each
@@ -65,17 +72,39 @@ def admit (Y : Type) [AddCommMonoid Y] [TopologicalSpace Y] (N : Type) (f : N �
   TypeCat.ofHom fun _ => ⟨f, h⟩
 
 /-- `f ↦ ∑_{n ∈ N} f(n)`, `Σ(N, Y) → Y`, in a Hausdorff commutative topological monoid `Y`
-(Mathlib `tsum`). The binder `∑_{n ∈ N} e`: its argument is the index set `N`; `Y` is read off the
-body. The sum is the limit of the partial sums of the admitted family, unique because `Y` is
-Hausdorff (`HasSum.unique`). -/
+(Mathlib `tsum`). The sum is the limit of the partial sums of the admitted family, unique because
+`Y` is Hausdorff (`HasSum.unique`). It is not itself a binder row: its topology is an instance
+argument, and a monoid such as `R[[t]]` carries several topologies, none canonical. Each binder
+row of `∑_{n ∈ N}` is this sum at one codomain whose topology is fixed in its definition
+(`realSeriesSum`, `complexSeriesSum`, `powerSeriesSum`), so that the codomain of the body selects
+the row. -/
 noncomputable def seriesSum (Y : Type) [AddCommMonoid Y] [TopologicalSpace Y] [T2Space Y]
     (N : Type) : summableFamilies Y N ⟶ (Y : SetsCat.{0}) :=
   TypeCat.ofHom fun f => ∑' n, f.toFun n
 
-/-- The bound variable of `∑_{n ∈ N}` ranges over `N`. -/
-abbrev seriesDomain (Y : Type) [AddCommMonoid Y] [TopologicalSpace Y] [T2Space Y] (N : Type) :
-    SetsCat.{0} :=
-  N
+/-- `f ↦ ∑_{n ∈ N} f(n)`, `Σ(N, ℝ) → ℝ`: the sum of real series, in the topology of the absolute
+value of `ℝ`. The binder `∑_{n ∈ N} e` with values in `ℝ`; its argument is the index set `N`. -/
+noncomputable def realSeriesSum (N : Type) :
+    summableFamilies ℝ N ⟶ CasCatalogue.Algebra.NumberSystems.reals :=
+  TypeCat.ofHom fun f => ∑' n, f.toFun n
+
+/-- The bound variable of `∑_{n ∈ N}` with values in `ℝ` ranges over `N`. -/
+abbrev realSeriesDomain (N : Type) : SetsCat.{0} := N
+
+/-- The sum of real series is the series sum of `ℝ`. -/
+theorem realSeriesSum_eq (N : Type) : realSeriesSum N = seriesSum ℝ N := rfl
+
+/-- `f ↦ ∑_{n ∈ N} f(n)`, `Σ(N, ℂ) → ℂ`: the sum of complex series, in the topology of the
+absolute value of `ℂ`. The binder `∑_{n ∈ N} e` with values in `ℂ`. -/
+noncomputable def complexSeriesSum (N : Type) :
+    summableFamilies ℂ N ⟶ CasCatalogue.Algebra.NumberSystems.complexes :=
+  TypeCat.ofHom fun f => ∑' n, f.toFun n
+
+/-- The bound variable of `∑_{n ∈ N}` with values in `ℂ` ranges over `N`. -/
+abbrev complexSeriesDomain (N : Type) : SetsCat.{0} := N
+
+/-- The sum of complex series is the series sum of `ℂ`. -/
+theorem complexSeriesSum_eq (N : Type) : complexSeriesSum N = seriesSum ℂ N := rfl
 
 /-- The series sum of an admitted family is a sum of it: the partial sums converge to it. -/
 theorem hasSum_seriesSum (Y : Type) [AddCommMonoid Y] [TopologicalSpace Y] [T2Space Y]
@@ -297,9 +326,14 @@ normalized_registry .object
     evidence := some `CasCatalogue.Algebra.Series.summableEvidence }
 
 normalized_registry .binder
-  { id := ⟨"bind.sets.series"⟩, category := CategoryId.sets, token := "∑"
-    operation := `CasCatalogue.Algebra.Series.seriesSum
-    domain := `CasCatalogue.Algebra.Series.seriesDomain }
+  { id := ⟨"bind.sets.real_series"⟩, category := CategoryId.sets, token := "∑"
+    operation := `CasCatalogue.Algebra.Series.realSeriesSum
+    domain := `CasCatalogue.Algebra.Series.realSeriesDomain }
+
+normalized_registry .binder
+  { id := ⟨"bind.sets.complex_series"⟩, category := CategoryId.sets, token := "∑"
+    operation := `CasCatalogue.Algebra.Series.complexSeriesSum
+    domain := `CasCatalogue.Algebra.Series.complexSeriesDomain }
 
 normalized_registry .binder
   { id := ⟨"bind.sets.power_series_sum"⟩, category := CategoryId.sets, token := "∑"
