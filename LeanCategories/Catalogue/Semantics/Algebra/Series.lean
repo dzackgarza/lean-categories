@@ -244,7 +244,8 @@ meta def unfoldCatalogue : TacticM Unit := do
   let target ← instantiateMVars (← goal.getType)
   let expanded ← deltaExpand target fun n => n.getRoot == `CasCatalogue
   replaceMainGoal [← goal.replaceTargetDefEq expanded]
-  evalTactic (← `(tactic| try simp only [TypeCat.ofHom_apply, Units.val_inv_eq_inv_val,
+  evalTactic (← `(tactic| try simp only [id_eq, TypeCat.ofHom_apply, ConcreteCategory.comp_apply,
+    Units.val_inv_eq_inv_val,
     Units.val_mk0, one_mul, mul_one]))
 
 /-- Close `tⁿ ∣ e`: `e` is a multiple of `tⁿ` or a power `tᵐ`, `m ≥ n`, or a sum, difference,

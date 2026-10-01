@@ -300,6 +300,28 @@ run_elab do
               rfl) x)⁻¹ : ℝˣ))
           (RealLimits.approach (id (NamedRings.ringNumeral NumberSystems.ringReals 0))) (𝓝 L))]
 
+-- `lim_{t → 0} sin t / t` as a consumer forms it through the registered inclusion
+-- `ℝ ∖ {0} ↪ ℝˣ`: `t` carried into `ℝˣ` by `puncturedUnits _ rfl` and back to `ℝ` by the units'
+-- inclusion, the quotient the division by the unit `t`; once as that composite of registered
+-- maps, once reduced to `sin ↑(Units.mk0 ↑t _) * ↑(Units.mk0 ↑t _)⁻¹`.
+#guard_msgs in
+run_elab do
+  expectEstablished RealLimits.convergenceEvidence
+    [← `(∃ L, Tendsto (fun x : RealLimits.puncturedLine
+              (id (NamedRings.ringNumeral NumberSystems.ringReals 0)) =>
+            ConcreteCategory.hom (C := Type) (Units.divide ℝ)
+              (Real.sin (ConcreteCategory.hom (C := Type)
+                  (RealLimits.puncturedUnits _ rfl ≫ Units.inclusion ℝ) x),
+               ConcreteCategory.hom (C := Type) (RealLimits.puncturedUnits _ rfl) x))
+          (RealLimits.approach (id (NamedRings.ringNumeral NumberSystems.ringReals 0))) (𝓝 L)),
+     ← `(∃ L, Tendsto (fun x : RealLimits.puncturedLine
+              (id (NamedRings.ringNumeral NumberSystems.ringReals 0)) =>
+            Real.sin ((Units.mk0 (x : ℝ) fun h0 =>
+                x.2 (h0.trans (RealLimits.value_eq_zero_of_eq rfl).symm) : ℝˣ) : ℝ) *
+              (((Units.mk0 (x : ℝ) fun h0 =>
+                x.2 (h0.trans (RealLimits.value_eq_zero_of_eq rfl).symm) : ℝˣ)⁻¹ : ℝˣ) : ℝ))
+          (RealLimits.approach (id (NamedRings.ringNumeral NumberSystems.ringReals 0))) (𝓝 L))]
+
 -- Maps that do not converge: `sin(1/t)` at `0`, `t` and `sin t` at `∞`.
 #guard_msgs in
 run_elab do

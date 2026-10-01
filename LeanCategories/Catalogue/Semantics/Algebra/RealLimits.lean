@@ -286,8 +286,11 @@ meta def unfoldLimit : TacticM Unit := do
   replaceMainGoal [← goal.replaceTargetDefEq expanded]
   -- A numeral `k` of a registered ring is the image of `k` under the initial ring map `ℤ → R`
   -- (`NamedRings.ringNumeral`), however that map is presented (`⇑f`, `f.toFun`, through its
-  -- monoid and unit homomorphisms): it is the cast `(k : R)` (`eq_intCast`).
-  evalTactic (← `(tactic| try simp only [id_eq, TypeCat.ofHom_apply, RingHom.toFun_eq_coe,
+  -- monoid and unit homomorphisms): it is the cast `(k : R)` (`eq_intCast`). A composite of
+  -- registered maps is applied map by map (`ConcreteCategory.comp_apply`), so that a value carried
+  -- into `ℝˣ` and back is the value (`Units.val_mk0`).
+  evalTactic (← `(tactic| try simp only [id_eq, TypeCat.ofHom_apply, ConcreteCategory.comp_apply,
+    RingHom.toFun_eq_coe,
     OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe, eq_intCast,
     Int.cast_natCast, Nat.cast_ofNat, Nat.cast_zero, Nat.cast_one, Int.cast_ofNat, Int.cast_zero,
     Int.cast_one, Units.val_inv_eq_inv_val, Units.val_mk0, one_mul, mul_one,
