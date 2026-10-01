@@ -18,6 +18,7 @@ public import LeanCategories.Catalogue.Semantics
 public import LeanCategories.Catalogue.Semantics.TotalityProbes
 public import LeanCategories.Catalogue.Semantics.EvidenceTests
 public import LeanCategories.Catalogue.Semantics.DecidableElementTests
+public import LeanCategories.Catalogue.Semantics.FiniteSubsetLiteralTests
 public import LeanCategories.Catalogue.Semantics.Algebra.Catalogue
 public import LeanCategories.Catalogue.Semantics.Algebra.Catalogue.Magmas
 public import LeanCategories.Catalogue.Semantics.Algebra.Catalogue.Rings
@@ -64,6 +65,7 @@ public import LeanCategories.Catalogue.Semantics.Lattices.Valued.Expressions
 public import LeanCategories.Catalogue.Semantics.Lattices.Valued.Property
 public import LeanCategories.Catalogue.Semantics.Limits.Lifts
 public import LeanCategories.Catalogue.Semantics.Limits.Registration
+public import LeanCategories.Catalogue.Semantics.Foundation.FiniteSubsetLiterals
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Catalogue
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.CatalogueRegistration
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Lattices

@@ -67,6 +67,7 @@ inductive SemanticEntry
   | operation (e : OperationEntry)
   | inclusion (e : InclusionEntry)
   | powerObject (e : PowerObjectEntry)
+  | subsetLiteral (e : SubsetLiteralEntry)
   deriving Repr
 
 /-- Stable identifier represented by a heterogeneous registry entry. -/
@@ -92,6 +93,7 @@ def SemanticEntry.stableId : SemanticEntry → String
   | .operation e => e.id.raw
   | .inclusion e => e.id.raw
   | .powerObject e => e.id.raw
+  | .subsetLiteral e => e.id.raw
 
 /-- Lean declarations that must resolve before this row can be persisted. -/
 def SemanticEntry.declarations : SemanticEntry → Array Name
@@ -120,6 +122,7 @@ def SemanticEntry.declarations : SemanticEntry → Array Name
   | .inclusion e => #[e.declaration, e.mono]
   | .powerObject e =>
       #[e.truth, e.member, e.transpose, e.extent, e.empty, e.singleton, e.terminal, e.image]
+  | .subsetLiteral e => #[e.type, e.denotation]
 
 structure SemanticState where
   categories : Array NamedCategoryEntry := #[]
@@ -143,6 +146,7 @@ structure SemanticState where
   operations : Array OperationEntry := #[]
   inclusions : Array InclusionEntry := #[]
   powerObjects : Array PowerObjectEntry := #[]
+  subsetLiterals : Array SubsetLiteralEntry := #[]
   deriving Inhabited
 
 /-- Registered category-constructor lookup by stable ID. -/
@@ -402,6 +406,7 @@ private def SemanticState.apply : SemanticState → SemanticEntry → SemanticSt
   | s, .operation e => { s with operations := s.operations.push e }
   | s, .inclusion e => { s with inclusions := s.inclusions.push e }
   | s, .powerObject e => { s with powerObjects := s.powerObjects.push e }
+  | s, .subsetLiteral e => { s with subsetLiterals := s.subsetLiterals.push e }
 
 def SemanticState.entries (state : SemanticState) : List SemanticEntry :=
   state.categories.toList.map SemanticEntry.category ++
@@ -424,7 +429,8 @@ def SemanticState.entries (state : SemanticState) : List SemanticEntry :=
     state.morphisms.toList.map SemanticEntry.morphism ++
     state.operations.toList.map SemanticEntry.operation ++
     state.inclusions.toList.map SemanticEntry.inclusion ++
-    state.powerObjects.toList.map SemanticEntry.powerObject
+    state.powerObjects.toList.map SemanticEntry.powerObject ++
+    state.subsetLiterals.toList.map SemanticEntry.subsetLiteral
 
 def semanticEntryPairAllowed : SemanticEntry → SemanticEntry → Bool
   | .category category, right =>
@@ -2139,6 +2145,29 @@ def validatePowerObject (state : SemanticState) (e : PowerObjectEntry) : MetaM U
   unless ← withTransparency .all <| isDefEq (← result e.extent) (← categoryCarrierInstance sets) do
     throwError "power object {e.id.raw}: {e.extent} does not return an object of {sets.id.raw}"
 
+/-- A subset-literal row names a registered power object, at most one literal form for it, and a
+`denotation : ∀ X [DecidableEq X], T X → (1 ⟶ 𝒫 X)` whose literal argument is of its `type`
+family `T`, which has decidable equality there, and which lands in that power object. -/
+def validateSubsetLiteral (state : SemanticState) (e : SubsetLiteralEntry) : MetaM Unit := do
+  let some power := state.powerObjects.find? (·.id == e.powerObject)
+    | throwError "subset literal {e.id.raw} names an unregistered power object {e.powerObject.raw}"
+  if state.subsetLiterals.any (·.powerObject == e.powerObject) then
+    throwError "subset literal {e.id.raw}: {e.powerObject.raw} already has a literal form"
+  let some object := state.objects.find? (·.id == power.object)
+    | throwError "subset literal {e.id.raw}: {power.object.raw} is not a registered object"
+  let denotation ← mkConstWithFreshMVarLevels e.denotation
+  forallTelescopeReducing (← inferType denotation) fun args type => do
+    let some literal ← args.findM? fun a => return (← inferType a).isAppOf e.type
+      | throwError "subset literal {e.id.raw}: {e.denotation} takes no literal of {e.type}"
+    discard <| synthInstance (← mkAppM ``DecidableEq #[← inferType literal])
+    let type ← whnfR type
+    unless type.isAppOf ``Quiver.Hom do
+      throwError "subset literal {e.id.raw}: {e.denotation} is not a family of elements"
+    let family ← mkConstWithFreshMVarLevels object.declaration
+    let (familyArgs, _, _) ← forallMetaTelescopeReducing (← inferType family)
+    unless ← withTransparency .all <| isDefEq type.appArg! (mkAppN family familyArgs) do
+      throwError "subset literal {e.id.raw}: {e.denotation} does not land in {power.object.raw}"
+
 /-- An adjunction row names a Mathlib `Adjunction L R` between exactly its two registered
 functors. -/
 def validateAdjunction (state : SemanticState) (e : AdjunctionEntry) : MetaM Unit := do
@@ -2292,6 +2321,7 @@ def validateSemanticEntryDeclaration (entry : SemanticEntry) : MetaM Unit := do
   | .operation e => validateOperation state e
   | .inclusion e => validateInclusion state e
   | .powerObject e => validatePowerObject state e
+  | .subsetLiteral e => validateSubsetLiteral state e
   | .constructor e => do
       let semanticsConstant ← mkConstWithFreshMVarLevels e.semantics
       let (_, binderInfos, result) ←
@@ -2329,6 +2359,7 @@ def SemanticEntry.totalityDeclarations : SemanticEntry → Array Name
   | .literal e => #[e.denotation]
   | .powerObject e =>
       #[e.truth, e.member, e.transpose, e.extent, e.empty, e.singleton, e.terminal, e.image]
+  | .subsetLiteral e => #[e.denotation]
   | _ => #[]
 
 /- Validate the elaborated declaration and persist exactly one registry entry. -/
