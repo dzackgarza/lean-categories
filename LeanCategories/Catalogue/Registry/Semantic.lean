@@ -1939,6 +1939,27 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
     unless ← withTransparency .all <|
         isDefEq (← whnfR result).appArg! (mkAppN declaration objArgs) do
       throwError "object {e.id.raw}: the admission {admission} does not land in it"
+    -- The hypotheses follow the element, the first explicit binder that is not a parameter of
+    -- the object. Each is a proposition, or data with at most one value (the inverse of a unit,
+    -- `Invertible x`): the admitted element is determined by the element alone.
+    forallTelescopeReducing (← inferType constant) fun binders result => do
+      let target ← instantiateMVars result
+      let mut element? : Option Nat := none
+      for i in [0:binders.size] do
+        let binder := binders[i]!
+        if element?.isNone && (← binder.fvarId!.getBinderInfo).isExplicit &&
+            !target.containsFVar binder.fvarId! then
+          element? := some i
+      let some element := element?
+        | throwError "object {e.id.raw}: the admission {admission} takes no element"
+      for hypothesis in binders[element + 1:] do
+        let type ← inferType hypothesis
+        unless ← isProp type do
+          let subsingleton ← mkAppM ``Subsingleton #[type]
+          unless (← trySynthInstance subsingleton) matches .some _ do
+            throwError "object {e.id.raw}: the hypothesis{indentExpr type}\nof the admission \
+              {admission} is neither a proposition nor a subsingleton, so the admitted element \
+              would depend on more than the element"
   -- The evidence of an admission is a proof procedure of `lean-categories`, run on the
   -- admission's hypotheses: nothing else establishes membership in the domain.
   if let some evidence := e.evidence then

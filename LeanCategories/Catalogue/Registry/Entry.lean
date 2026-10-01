@@ -152,7 +152,10 @@ structure ObjectEntry where
   /-- How an element of a registered object `B` is established to lie in this subobject of it:
   `∀ params (x : B) (h : P x), 1 ⟶ obj params`, the element `x` with the evidence `h` that it lies
   there (a matrix with an invertible determinant is a unit of `Matₙ(K)`). The evidence is
-  established when a statement is read (LC-14); without it, `x` is not an element here. -/
+  established when a statement is read (LC-14); without it, `x` is not an element here. Each
+  hypothesis is a proposition, or data with at most one value (`Subsingleton`), such as the
+  inverse of a unit (`Invertible x`), which the element keeps so that it computes: the admitted
+  element is determined by `x` alone. -/
   admission : Option Lean.Name := none
   /-- How the hypotheses of the admission are established for a given value: a declaration
   `evidence : Lean.Elab.Tactic.TacticM Unit` of `lean-categories`, written with the domain, run on

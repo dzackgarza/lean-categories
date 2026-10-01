@@ -56,8 +56,11 @@ meta def run (procedure : TacticM Unit) (statement : Term) : TermElabM (Option E
   let proof ← instantiateMVars goal
   if proof.hasSorry || proof.hasMVar then
     throwError "the evidence proved{indentExpr type}\nwith `sorry` or a metavariable"
-  -- The kernel checks the proof.
-  discard <| mkAuxTheorem type proof
+  -- The kernel checks the proof, or the data (the inverse of a unit, `Invertible x`).
+  if ← isProp type then
+    discard <| mkAuxTheorem type proof
+  else
+    discard <| mkAuxDefinition (← mkFreshUserName `evidence) type proof (compile := false)
   return some proof
 
 /-- The hypothesis of `Monicₙ(K)` at `p` and `n`: `p.Monic ∧ p.natDegree = n`. -/
@@ -84,37 +87,50 @@ namespace CasCatalogue.EvidenceTests
 
 open CasCatalogue.Algebra
 
-/-! ## `Mˣ ↪ M`: `IsUnit x` -/
+/-! ## `Mˣ ↪ M`: `Invertible x`, the inverse of `x`
+
+The registered evidence establishes `Invertible x`; `isUnitEvidence`, which it runs on the
+equations of the inverse, establishes `IsUnit x` on the same elements. -/
+
+/-- The elements of closed monoids that are units. -/
+meta def unitSpecimens : Lean.Elab.Term.TermElabM (List Lean.Term) := do
+  return [← `((2 : ℚ)), ← `((-3 / 4 : ℝ)),
+      ← `((!![1, 2; 3, 4] : Matrix (Fin 2) (Fin 2) ℚ)),
+      ← `((5 : ZMod 7)), ← `((-1 : ℤ)),
+      ← `((!![1, 2, 0; 3, 4, 1; 0, 5, 7] : Matrix (Fin 3) (Fin 3) ℚ)),
+      ← `((!![2, 1, 0, 0; 0, 1, 3, 0; 1, 0, 1, 1; 0, 2, 0, 5] : Matrix (Fin 4) (Fin 4) ℚ)),
+      ← `((!![2, 1; 1, 1] : Matrix (Fin 2) (Fin 2) ℤ)),
+      ← `((!![1, 1; 0, 1] : Matrix (Fin 2) (Fin 2) (ZMod 2))),
+      ← `((!![0, 1; 1, 0] : Matrix (Fin 2) (Fin 2) ℝ)),
+      ← `((1 : ℕ)), ← `((3 : ZMod 10)), ← `((-(7 : ZMod 12))),
+      ← `(((-1 : ℤ) ^ 5)), ← `((Real.pi)), ← `((Real.sqrt 2)),
+      ← `((2 + 3 * Complex.I)), ← `((Complex.I)),
+      ← `((1 / 3 - 1 / 4 : ℚ)), ← `(((2 : ZMod 9) * 4 ^ 3)),
+      ← `((Equiv.swap (0 : Fin 3) 1 : Equiv.Perm (Fin 3)))]
+
+/-- The elements of closed monoids that are not units. -/
+meta def nonunitSpecimens : Lean.Elab.Term.TermElabM (List Lean.Term) := do
+  return [← `((2 : ℤ)), ← `((0 : ℚ)),
+      ← `((!![1, 2; 2, 4] : Matrix (Fin 2) (Fin 2) ℚ)),
+      ← `((!![2, 0; 0, 1] : Matrix (Fin 2) (Fin 2) ℤ)),
+      ← `((!![1, 2, 3; 4, 5, 6; 7, 8, 9] : Matrix (Fin 3) (Fin 3) ℚ)),
+      ← `((2 : ℕ)), ← `((0 : ℕ)), ← `((2 : ZMod 4)),
+      ← `((6 : ZMod 9)), ← `(((2 : ℤ) * 3)), ← `((1 / 2 - 2 / 4 : ℚ))]
 
 #guard_msgs in
-run_meta expectRegistered "obj.sets.units" ``Units.isUnitEvidence
+run_meta expectRegistered "obj.sets.units" ``Units.invertibleEvidence
 
 #guard_msgs in
 run_elab do
-  expectEstablished Units.isUnitEvidence
-    [← `(IsUnit (2 : ℚ)), ← `(IsUnit (-3 / 4 : ℝ)),
-      ← `(IsUnit (!![1, 2; 3, 4] : Matrix (Fin 2) (Fin 2) ℚ)),
-      ← `(IsUnit (5 : ZMod 7)), ← `(IsUnit (-1 : ℤ)),
-      ← `(IsUnit (!![1, 2, 0; 3, 4, 1; 0, 5, 7] : Matrix (Fin 3) (Fin 3) ℚ)),
-      ← `(IsUnit (!![2, 1, 0, 0; 0, 1, 3, 0; 1, 0, 1, 1; 0, 2, 0, 5] :
-        Matrix (Fin 4) (Fin 4) ℚ)),
-      ← `(IsUnit (!![2, 1; 1, 1] : Matrix (Fin 2) (Fin 2) ℤ)),
-      ← `(IsUnit (!![1, 1; 0, 1] : Matrix (Fin 2) (Fin 2) (ZMod 2))),
-      ← `(IsUnit (!![0, 1; 1, 0] : Matrix (Fin 2) (Fin 2) ℝ)),
-      ← `(IsUnit (1 : ℕ)), ← `(IsUnit (3 : ZMod 10)), ← `(IsUnit (-(7 : ZMod 12))),
-      ← `(IsUnit ((-1 : ℤ) ^ 5)), ← `(IsUnit (Real.pi)), ← `(IsUnit (Real.sqrt 2)),
-      ← `(IsUnit (2 + 3 * Complex.I)), ← `(IsUnit (Complex.I)),
-      ← `(IsUnit (1 / 3 - 1 / 4 : ℚ))]
+  let units ← unitSpecimens
+  expectEstablished Units.invertibleEvidence (← units.mapM fun x => `(Invertible $x))
+  expectEstablished Units.isUnitEvidence (← units.mapM fun x => `(IsUnit $x))
 
 #guard_msgs in
 run_elab do
-  expectRefused Units.isUnitEvidence
-    [← `(IsUnit (2 : ℤ)), ← `(IsUnit (0 : ℚ)),
-      ← `(IsUnit (!![1, 2; 2, 4] : Matrix (Fin 2) (Fin 2) ℚ)),
-      ← `(IsUnit (!![2, 0; 0, 1] : Matrix (Fin 2) (Fin 2) ℤ)),
-      ← `(IsUnit (!![1, 2, 3; 4, 5, 6; 7, 8, 9] : Matrix (Fin 3) (Fin 3) ℚ)),
-      ← `(IsUnit (2 : ℕ)), ← `(IsUnit (0 : ℕ)), ← `(IsUnit (2 : ZMod 4)),
-      ← `(IsUnit (6 : ZMod 9)), ← `(IsUnit ((2 : ℤ) * 3)), ← `(IsUnit (1 / 2 - 2 / 4 : ℚ))]
+  let nonunits ← nonunitSpecimens
+  expectRefused Units.invertibleEvidence (← nonunits.mapM fun x => `(Invertible $x))
+  expectRefused Units.isUnitEvidence (← nonunits.mapM fun x => `(IsUnit $x))
 
 /-! ## `R[x] ∖ {0} ↪ R[x]`: `p ≠ 0` -/
 

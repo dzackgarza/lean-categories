@@ -21,7 +21,7 @@ registered, because the command fails.
 
 The evidence of a domain is a `meta` proof procedure `TacticM Unit` of `lean-categories`,
 registered with an admission: evidence without an admission, of another type, or not `meta`, is
-refused.
+refused, and so is an admission with a hypothesis that is neither a proposition nor a subsingleton.
 -/
 
 open CategoryTheory
@@ -51,6 +51,12 @@ def unitInverse : (ℚˣ : SetsCat.{0}) ⟶ (ℚˣ : SetsCat.{0}) := TypeCat.ofH
 /-- `(a, u) ↦ a u⁻¹` on `ℚ × ℚˣ`: accepted. -/
 def unitDivide : (ℚ × ℚˣ : SetsCat.{0}) ⟶ (ℚ : SetsCat.{0}) :=
   TypeCat.ofHom fun p => p.1 * ↑(p.2⁻¹)
+
+/-- An admission into `Mˣ` whose hypothesis carries an element of `M` besides the inverse: data
+with more than one value, so the admitted unit would not be determined by `x`. -/
+def probeAdmitData (M : Type) [Monoid M] (x : M) (h : M × Invertible x) :
+    CasCatalogue.Foundation.Objects.fin 1 ⟶ CasCatalogue.Algebra.Units.units M :=
+  TypeCat.ofHom fun _ => @unitOfInvertible M _ x h.2
 
 /-- A proof procedure: well-formed evidence, but here registered without an admission. -/
 meta def probeEvidence : Lean.Elab.Tactic.TacticM Unit := pure ()
@@ -89,7 +95,9 @@ run_meta do
      ({ probe with evidence := some `CasCatalogue.TotalityProbes.probeNotEvidence },
         "is not a proof procedure"),
      ({ probe with evidence := some `CasCatalogue.TotalityProbes.probeEvidenceNotMeta },
-        "is not `meta`")]
+        "is not `meta`"),
+     ({ probe with admission := some `CasCatalogue.TotalityProbes.probeAdmitData },
+        "is neither a proposition nor a subsingleton")]
   for (row, fragment) in cases do
     let refused ← try validateObject state row; pure none
       catch e => pure (some (← e.toMessageData.toString))
