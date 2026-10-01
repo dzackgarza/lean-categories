@@ -174,6 +174,13 @@ structure LiteralEntry where
   category : CategoryId
   type : Lean.Name
   denotation : Lean.Name
+  /-- How the images of literals under the catalogue's operations are evaluated to literals: a
+  declaration `evaluation : Lean.Elab.Tactic.TacticM Unit` of `lean-categories`, `meta`, typed and
+  validated as `ObjectEntry.evidence` is. Run on a statement about images of literals, it rewrites
+  each such image to the literal it equals, by theorems of the domain, so that the statement
+  becomes one between literals, decided on the literal type. It is the only rewriting a consumer
+  of the catalogue performs to evaluate literals of this form. -/
+  evaluation : Option Lean.Name := none
   deriving Repr
 
 /-- The numerals of registered objects (LC-15): `declaration : ∀ params (k : ℕ) (obligations),
@@ -210,6 +217,14 @@ structure SubsetLiteralEntry where
   powerObject : PowerObjectId
   type : Lean.Name
   denotation : Lean.Name
+  /-- How the images of literals under the catalogue's operations are evaluated to literals: a
+  declaration `evaluation : Lean.Elab.Tactic.TacticM Unit` of `lean-categories`, `meta`, typed and
+  validated as `ObjectEntry.evidence` is. Run on a statement about images of literals (the
+  Boolean-algebra operations of `𝒫 X`, the cardinality functor), it rewrites each such image to
+  the literal it equals, by theorems of the domain, so that the statement becomes one between
+  literals, decided on the literal type (`decide`). It is the only rewriting a consumer of the
+  catalogue performs to evaluate literals of this form. -/
+  evaluation : Option Lean.Name := none
   deriving Repr
 
 /-- A registered inclusion of named objects of one category, `sub ⊆ super`: a monomorphism
