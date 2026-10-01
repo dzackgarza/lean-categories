@@ -39,8 +39,9 @@ where `a` lies in `ℝ̄ = ℝ ⊔ {±∞}`:
   contains a half-line at each of `±∞`, so one domain serves both, and it is where `t ↦ 1/t` is a
   map (`1/t` is the division by the unit `t`, LC-16), the standard domain of `lim_{t → ∞} 1/t`.
 
-Division by the bound variable of the first row needs `t ∈ ℝˣ`. The inclusion `ℝ ∖ {a} ↪ ℝˣ` exists
-exactly when `a = 0` (`puncturedUnits`): for `a ≠ 0`, `0 ∈ ℝ ∖ {a}` is not a unit, and a body
+Division by the bound variable of the first row needs `t ∈ ℝˣ`. The inclusion
+`ℝ ∖ {a} ↪ ℝˣ` exists exactly when `a = 0`, and is registered with that obligation
+(`puncturedUnits`): for `a ≠ 0`, `0 ∈ ℝ ∖ {a}` is not a unit, and a body
 dividing by `t` is not a map on `ℝ ∖ {a}`; a body dividing by `t - a` divides by a unit only once
 `t - a` is (the map `ℝ ∖ {a} → ℝˣ`, `t ↦ t - a`, which is again an inclusion over the fibre `a`).
 -/
@@ -141,21 +142,36 @@ theorem tendsto_approach_of {a : fin 1 ⟶ reals} (g : ℝ → ℝ) {L : ℝ}
     Tendsto (fun t : puncturedLine a => g t.1) (approach a) (𝓝 L) :=
   h.comp tendsto_comap
 
-/-- `ℝ ∖ {a} ↪ ℝˣ` when `a = 0`: the reals other than `0` are the units of the field `ℝ`
-(Mathlib `Units.mk0`). For `a ≠ 0` there is no such map, since `0 ∈ ℝ ∖ {a}` is not a unit. -/
-noncomputable def puncturedUnits (a : fin 1 ⟶ reals)
-    (h : ConcreteCategory.hom (C := Type) a 0 = 0) :
+/-- The point `0 ∈ ℝ`: the numeral `0` of the ring `ℝ`, the image of `0` under the initial ring
+map `ℤ → ℝ` (`NamedRings.ringNumeral`, LC-15). -/
+noncomputable abbrev zeroPoint : fin 1 ⟶ reals :=
+  CasCatalogue.Algebra.NamedRings.ringNumeral CasCatalogue.Algebra.NumberSystems.ringReals 0
+
+/-- The value of the point `0 ∈ ℝ` is `0`. -/
+theorem zeroPoint_value (p : fin 1) : ConcreteCategory.hom (C := Type) zeroPoint p = 0 := by
+  simp [CasCatalogue.Algebra.NamedRings.ringNumeral]
+
+/-- At a point `a = 0`, the value of `a` is `0`. -/
+theorem value_eq_zero_of_eq {a : fin 1 ⟶ reals} (h : a = zeroPoint) :
+    ConcreteCategory.hom (C := Type) a 0 = 0 := by
+  subst h
+  exact zeroPoint_value 0
+
+/-- `ℝ ∖ {a} ↪ ℝˣ` over the point `a = 0`: the reals other than `0` are the units of the field `ℝ`
+(Mathlib `Units.mk0`). The obligation `h : a = 0` is an equation of points of `ℝ`, `0` the
+registered numeral (`zeroPoint`). For `a ≠ 0` there is no such map, since `0 ∈ ℝ ∖ {a}` is not a
+unit. -/
+noncomputable def puncturedUnits (a : fin 1 ⟶ reals) (h : a = zeroPoint) :
     puncturedLine a ⟶ CasCatalogue.Algebra.Units.units ℝ :=
-  TypeCat.ofHom fun t => Units.mk0 t.1 (h ▸ t.2)
+  TypeCat.ofHom fun t => Units.mk0 t.1 fun h0 => t.2 (h0.trans (value_eq_zero_of_eq h).symm)
 
 /-- `ℝ ∖ {0} ↪ ℝˣ` is a monomorphism, through which `ℝ ∖ {0} ↪ ℝ` factors: a unit is its value. -/
-theorem puncturedUnits_mono (a : fin 1 ⟶ reals) (h : ConcreteCategory.hom (C := Type) a 0 = 0) :
+theorem puncturedUnits_mono (a : fin 1 ⟶ reals) (h : a = zeroPoint) :
     Mono (puncturedUnits a h) :=
   mono_of_injective _ fun _ _ hst => Subtype.ext (congrArg Units.val hst :)
 
 /-- `ℝ ∖ {0} → ℝˣ → ℝ` is `ℝ ∖ {0} ↪ ℝ`. -/
-theorem puncturedUnits_inclusion (a : fin 1 ⟶ reals)
-    (h : ConcreteCategory.hom (C := Type) a 0 = 0) :
+theorem puncturedUnits_inclusion (a : fin 1 ⟶ reals) (h : a = zeroPoint) :
     puncturedUnits a h ≫ CasCatalogue.Algebra.Units.inclusion ℝ = puncturedInclusion a :=
   rfl
 
@@ -415,6 +431,12 @@ normalized_registry .object
     declaration := `CasCatalogue.Algebra.RealLimits.convergentMapsAtInfinity
     admission := some `CasCatalogue.Algebra.RealLimits.admitConvergentAtInfinity
     evidence := some `CasCatalogue.Algebra.RealLimits.convergenceEvidence }
+
+normalized_registry .inclusion
+  { id := ⟨"incl.sets.punctured_line_units"⟩, category := CategoryId.sets
+    sub := ⟨"obj.sets.punctured_line"⟩, super := ⟨"obj.sets.units"⟩
+    declaration := `CasCatalogue.Algebra.RealLimits.puncturedUnits
+    mono := `CasCatalogue.Algebra.RealLimits.puncturedUnits_mono }
 
 normalized_registry .binder
   { id := ⟨"bind.sets.limit"⟩, category := CategoryId.sets, token := "lim"

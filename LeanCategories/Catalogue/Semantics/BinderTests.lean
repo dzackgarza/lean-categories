@@ -66,7 +66,7 @@ noncomputable def sinOverT : puncturedLine (realNumeral 0) → ℝ := fun t =>
   ConcreteCategory.hom (C := Type) (Units.divide ℝ)
     (ConcreteCategory.hom (C := Type) Calculus.sin
       (ConcreteCategory.hom (C := Type) (puncturedInclusion (realNumeral 0)) t),
-     ConcreteCategory.hom (C := Type) (puncturedUnits (realNumeral 0) realNumeral_zero) t)
+     ConcreteCategory.hom (C := Type) (puncturedUnits (realNumeral 0) rfl) t)
 
 /-- **`lim_{t → 0} sin t / t = 1`.** -/
 theorem limit_sin_div_self (h : ∃ L, Tendsto sinOverT (approach (realNumeral 0)) (𝓝 L))
@@ -116,6 +116,28 @@ theorem limitAtInfinity_reciprocal_neg
 /-- `ℝ ∖ {0} ↪ ℝˣ` exists over `a = 0` only: at `a = 1`, `0 ∈ ℝ ∖ {1}` is not a unit. -/
 theorem zero_mem_punctured_one : ∃ t : puncturedLine (realNumeral 1), t.1 = 0 :=
   ⟨⟨0, by simp⟩, rfl⟩
+
+/-- The obligation of `ℝ ∖ {a} ↪ ℝˣ` at the point as a consumer forms it for `lim_{t → 0}`,
+`id (ringNumeral ringReals 0)`, holds by `rfl`. -/
+example : id (NamedRings.ringNumeral NumberSystems.ringReals 0) = zeroPoint := rfl
+
+-- The obligation holds by definitional equality at default transparency, as the consumer
+-- decides it, and the inclusion is registered with `puncturedUnits` and its monomorphism proof.
+#guard_msgs in
+open Lean Meta in
+run_meta do
+  let point ← mkAppM ``id #[← mkAppM ``NamedRings.ringNumeral
+    #[mkConst ``NumberSystems.ringReals, mkNatLit 0]]
+  let obligation ← mkEq point (mkConst ``RealLimits.zeroPoint)
+  let some (_, lhs, rhs) := obligation.eq? | throwError "not an equation"
+  unless ← withTransparency .default (isDefEq lhs rhs) do
+    throwError "the obligation {obligation} does not hold definitionally"
+  let state ← semanticState
+  let some row := state.inclusions.find? (·.id.raw == "incl.sets.punctured_line_units")
+    | throwError "ℝ ∖ \{0} ↪ ℝˣ is not registered"
+  unless row.declaration == ``RealLimits.puncturedUnits &&
+      row.mono == ``RealLimits.puncturedUnits_mono do
+    throwError "ℝ ∖ \{0} ↪ ℝˣ is registered with other declarations"
 
 end Limits
 
@@ -275,7 +297,7 @@ run_elab do
               (id (NamedRings.ringNumeral NumberSystems.ringReals 0)) =>
             Real.sin (x : ℝ) * ((ConcreteCategory.hom (C := Type) (RealLimits.puncturedUnits
               (id (NamedRings.ringNumeral NumberSystems.ringReals 0))
-              CasCatalogue.BinderTests.realNumeral_zero) x)⁻¹ : ℝˣ))
+              rfl) x)⁻¹ : ℝˣ))
           (RealLimits.approach (id (NamedRings.ringNumeral NumberSystems.ringReals 0))) (𝓝 L))]
 
 -- Maps that do not converge: `sin(1/t)` at `0`, `t` and `sin t` at `∞`.
@@ -284,8 +306,7 @@ run_elab do
   expectRefused RealLimits.convergenceEvidence
     [← `(∃ L, Tendsto (fun t : RealLimits.puncturedLine (CasCatalogue.BinderTests.realNumeral 0) =>
             Real.sin (ConcreteCategory.hom (C := Type) (RealLimits.puncturedUnits
-              (CasCatalogue.BinderTests.realNumeral 0)
-              CasCatalogue.BinderTests.realNumeral_zero) t)⁻¹.1)
+              (CasCatalogue.BinderTests.realNumeral 0) rfl) t)⁻¹.1)
           (RealLimits.approach (CasCatalogue.BinderTests.realNumeral 0)) (𝓝 L)),
      ← `(∃ L, Tendsto (fun u : Units.units ℝ => (u : ℝ))
           (RealLimits.approachInfinity RealLimits.infinity) (𝓝 L)),
