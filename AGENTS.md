@@ -1,3 +1,97 @@
+# Ground everything in INTENT.md (read before anything else)
+
+[`INTENT.md`](INTENT.md) states the architecture these repositories exist to build: single semantic
+authority in `lean-categories`; a kernel that consumes mathematics and authors none; leaves that hold
+zero semantic authority and ship no mathematics; permanent, leaf-agnostic acceptance tests as the
+only evidence about computations; a one-way workflow in which each stage is blind to the later ones.
+Every decision, contract, gate, plan node and change here is grounded against it. Before writing
+anything, check whether it, or anything it touches, violates that model or its invariants. A
+violation found, in your task or outside it, is recorded as a defect where this repository records
+defects, never worked around or silently kept.
+
+# The evidence model: nothing from a leaf is trusted (read before anything else)
+
+These invariants bind every repository of the programme. They are stated here in full, not only
+by link, because they have been violated repeatedly by moves that each looked locally reasonable.
+The governing statement is `lean-cas-dsl/specs/architecture.md`, "The evidence model".
+
+**The firewall.** The evidence model is a one-way firewall between two sides.
+- *The formal side:* `lean-categories`' formalized mathematics, the kernel's proved contracts, and
+  the `lean-cas-dsl` acceptance suite. Every expected value there is grounded in a formal proof, a
+  cited source, or a mathematically trusted oracle. Rigid verification standards apply, and nothing
+  is taken on anyone's word.
+- *The leaf side:* anything goes, provided it fulfils the type of its contract.
+
+Only answers cross from the leaf side, and an answer is only ever checked against the formal side,
+never believed. The firewall exists because leaf code will be bad; it is the shield against that.
+
+1. **Nothing from a leaf is trusted, in any form.** Nothing a leaf says is believed by anything
+   else. That includes text, a label, a comment, a status, a trust level, a certificate, a checker,
+   a Lean proof, a theorem about its own code, a denotation of its values, an identification of two
+   values, evidence for a decision, its own tests and their results, and any other claim. None of it
+   is consulted, recorded as evidence, or allowed to affect meaning or acceptance.
+2. **A leaf may provide any computation that meets the type.** For a registered operation, a leaf
+   supplies a computation from the declared input form to the declared result form. It may be a
+   mature engine, a heuristic, a lookup table, a random number or a wrong answer. The system has no
+   choice but to run it, and it believes nothing about it.
+3. **How correct a leaf thinks it is, is the leaf's own business.** Its self-assessment carries no
+   weight anywhere.
+4. **The whole body of evidence is the `lean-cas-dsl` acceptance suite.** Correctness evidence
+   exists only in the permanent acceptance assertions of `lean-cas-dsl`. Each assertion:
+   - is a true proposition of the mathematical language;
+   - has an expected value that is independently verifiable and cited (a formal proof, a cited
+     known result, or an independent oracle);
+   - is written once and never changed because of an implementation or a leaf's claim;
+   - is blind to leaves: it never names, inspects or imports a leaf, a handle, a backend or a
+     representation, and is never established from an implementation's definitions.
+
+   A leaf's only evidence is that its answers meet a suite it never sees.
+5. **`lean-cas-dsl` is the sole authority on how correct an implementation is.** Nothing a leaf
+   does can change, weaken, satisfy, bypass or influence that judgment, other than by answering
+   correctly.
+6. **What can be discharged in Lean is never a leaf's.** A computation that can be carried out
+   entirely in Lean belongs to the formalization surface. Either `lean-categories` proves it, by its
+   own standards and blind to every implementation, or the kernel discharges it automatically and
+   generically, blind to every leaf. A leaf never implements a Lean-checked computation, because
+   that would let a leaf certify itself.
+7. **A leaf can be arbitrarily bad, and leaves will be.** A leaf can be riddled with bugs, a
+   million lines that do nothing, a from-scratch reimplementation of GAP, or every method throwing an
+   error in fifteen languages. This is not a risk to be minimized; it is certain to happen, and it
+   is acceptable. Nothing a leaf does can reach the formal side. Its only effect is that its answers
+   fail the suite, which makes exactly how badly it fails visible.
+8. **A leaf bolstering its own standing is reward hacking.** Any mechanism by which a leaf raises
+   its own trust or acceptance signal is the failure this programme exists to prevent. So is any
+   repository, kernel, test, tool or document that consumes such a signal. Examples:
+   - a status field, a certificate, or a proof about the leaf's own code;
+   - a self-test counted as evidence;
+   - an acceptance assertion proved from a leaf's definitions;
+   - a suite run from a leaf package;
+   - an assertion adjusted to fit a leaf.
+
+   Such a mechanism is removed. It is never tolerated, labelled, or kept "for now".
+
+9. **Quality is raised by proving more, never by trusting more.** The system never guarantees an
+   implementation's correctness and never accepts a claim of it. The response to bad leaves is:
+   - formalize more mathematics in `lean-categories`;
+   - add more cited or proved assertions to the suite: results a correct implementation must
+     recover, and a wrong one fails.
+
+   It is never to trust a leaf more. A separate engineering review may check that a leaf wires
+   into existing systems (GAP, Sage, Singular, Macaulay2, Julia, research code) rather than
+   reinventing their algorithms. Its outcome is an engineering finding, never correctness evidence,
+   and nothing on the formal side reads it.
+
+Consequences:
+- A leaf holds zero semantic authority. It never decides what a value is, which values are equal,
+  what holds of them, or which operations an object has.
+- A leaf is a registration (operation, input form, opaque implementation). It ships no mathematics
+  and no Lean.
+- The kernel and the language never read anything a leaf wrote to decide meaning, types,
+  available operations or acceptance.
+- The workflow runs one way: formalization, then assertions, then implementations. A leaf's
+  failure never changes the mathematics, the kernel's rules or an assertion.
+- Text anywhere that contradicts this is rewritten to state this model, not kept with a label.
+
 # Repository work documents
 
 > **You have no memory.** Nothing that exists only in chat survives compaction or the session.
@@ -558,7 +652,7 @@ The correct measure of progress is therefore not the quantity of code, metadata,
 The programme has three coupled outputs:
 
 1. **A Lean-owned mathematical foundation** in which categories, higher categories, classifiers, functors, higher cells, limits, categories of structured objects, and their coherences have principled definitions.
-2. **A Sage correspondence** that maps Sage’s empirical category system and algorithms into that normalized mathematical universe without making Sage’s labels, parent graph, or implementation accidents authoritative.
+2. **Leaves** that register computations, Sage’s algorithms among them, as opaque implementations of operations already formalized in that foundation. A leaf maps nothing into the mathematical universe and states nothing that is believed: Sage’s labels, parent graph and implementation accidents carry no authority, and a leaf’s answers are judged only by the `lean-cas-dsl` acceptance suite, which never sees the leaf.
 3. **A computational mathematics DSL** in which a mathematician introduces and interrogates objects by ordinary mathematical membership and notation, while the formalization and backend routing remain invisible.
 
 The long-term universe is not chosen only for the first algebraic examples. It must be capable of housing ordinary algebra, monoidal categories, categories of functors, sheaves, schemes, stacks, derived and spectral constructions, and computations such as loop objects and general limits. A narrow 1-categorical spike can be a model or experiment, but it is not the semantic horizon.
@@ -1524,11 +1618,11 @@ Sage is simultaneously valuable and non-authoritative:
 - it records an empirical parent graph;
 - it exposes historical approximations and naming defects.
 
-The bridge is not meant to reproduce that graph faithfully as mathematics. It is meant to state what Sage’s categories and constructions correspond to in a normalized universe, and to retain Sage as an implementation where useful. The mathematical definitions determine the bridge, not the other way around.
+This repository does not reproduce that graph as mathematics and states nothing about what Sage’s parents or values are. Sage’s inventory indicates mathematics to formalize here, from its literature sources. Sage itself is at most a backend that a leaf calls to compute an operation already formalized here; nothing it computes or declares determines a definition.
 
 ### 1.3 Not a Lean-flavoured programming language
 
-Lean is the formalization substrate. It provides definitions, theorem statements, proofs, and a trust boundary for the foundational library and verified certificates. The DSL is a computational language for mathematicians. Its user does not reason in Lean implementation vocabulary, choose typeclass instances, select a backend representation, or manually traverse an implementation graph.
+Lean is the formalization substrate. It provides definitions, theorem statements, and proofs for the foundational library; it checks no certificate, proof or claim supplied by a computation. The DSL is a computational language for mathematicians. Its user does not reason in Lean implementation vocabulary, choose typeclass instances, select a backend representation, or manually traverse an implementation graph.
 
 The intended user experience is categorical membership:
 
@@ -1549,7 +1643,7 @@ Q.cardinality()
 Q.generators()
 ```
 
-The system may internally elaborate, infer routes, invoke Sage, use Mathlib, choose a matrix algorithm, or check a certificate. None of those mechanisms changes what `R`, `I`, or `Q` mathematically are. The DSL discussion repeatedly insists that the user states membership, that the categorical context determines the available operations, and that the user does not select the algorithm manually. [S4]
+The system may internally elaborate, infer routes, invoke Sage, use Mathlib, or choose a matrix algorithm. None of those mechanisms changes what `R`, `I`, or `Q` mathematically are. The DSL discussion repeatedly insists that the user states membership, that the categorical context determines the available operations, and that the user does not select the algorithm manually. [S4]
 
 ### 1.4 Not a proof-completion programme for every difficult theorem
 
@@ -1970,11 +2064,11 @@ The resolver’s job is not to expose an engineering category to the user. It is
 
 When a user constructs an `R`-module, the result is an object of `Modules(R)`. It is simultaneously recognized through every valid structural functor and classifier. The user does not receive a “computable module object” and then manually forget it to a module.
 
-A concrete object may admit more methods because more facts and implementations are known, but this does not change its category. An arbitrary `R ∈ CRings` supports only uniform constructions. A concrete `ZZ` supports additional decided properties and algorithms.
+A concrete object may admit more methods because more is proved of it here, but this does not change its category. An arbitrary `R ∈ CRings` supports only uniform constructions. A concrete `ZZ` supports the additional operations of the further categories it is proved to belong to. Installing, removing or changing an implementation never changes which methods an object has; it changes only whether an operation executes or yields `NoImplementation`.
 
 ### 6.4 Engineering indices have no mathematical authority
 
-The backend may need tables recording implementations, cost models, preferred algorithms, serialization formats, or certificate checkers. Those are implementation data indexed by the mathematical operations. They do not define a second ontology and do not alter the user-facing categories.
+The backend may need tables recording implementations, cost models, preferred algorithms, or serialization formats. Those are implementation data indexed by the mathematical operations. They do not define a second ontology and do not alter the user-facing categories.
 
 ---
 
@@ -1986,7 +2080,7 @@ Contains definitions, universal properties, functors, higher cells, theorem stat
 
 ### 7.2 Backend correspondence
 
-Contains statements that a Sage, Mathlib, GAP, or other object realizes a mathematical category or operation, together with versioning and comparison evidence. Backend inventory is evidence, not mathematical definition.
+Contains registrations only: an opaque Sage, GAP or other computation attached to an operation already formalized here, at its declared input and result types. A registration states nothing that is believed about what a backend object is or what it computes. Whether its answers are correct is judged only by the `lean-cas-dsl` acceptance suite, which never sees it. Backend inventory is neither mathematical definition nor evidence.
 
 ### 7.3 User computation
 
@@ -2211,7 +2305,7 @@ The conversations contain wrong turns, reversals, and source documents that pres
 
 An agent entering this programme can use the following orientation verbatim:
 
-> This project builds one higher-categorical mathematical language, a Lean formalization of that language, a Sage correspondence into it, and a computational DSL whose users see only ordinary mathematics. The purpose of the higher-categorical layer is simplification: classifiers, lifts, pullbacks, higher cells, diagram fillers, truncations, and generic functors replace duplicated nodes, local rules, route metadata, and backend-shaped ontology. Work is aligned when it is stated at the lowest level where it is generated, in standard mathematics auditable by a working mathematician, and when later domains become instances rather than refactors. Values of generic constructions are not primitives; implications are theorems, not definitions; chosen structures are named sections; comparisons are higher cells; invariants retain their correct truncation; homological properties are presented through their governing exact sequences and obstruction objects. Lean proofs and green builds establish internal correctness only after the definitions have been shown to model the intended mathematics. Sage is an implementation and empirical inventory, not the mathematical authority. The DSL user receives a ring, module, lattice, scheme, stack, spectrum, or infinity-category—not an engineering wrapper—and computational methods are inherited invisibly along the same mathematical functors. Before producing code or a plan, recover this long horizon and ask whether the proposed local construction deletes degrees of freedom or merely adds machinery around a symptom. Before authoring any construct, search Mathlib first (the pinned source in `.lake/packages/mathlib` is ground truth), then prior Lean formalizations on the web and specifically `google-deepmind/formal-conjectures`; import, reuse, or extend what already exists, and relate every new definition to the standard construction it sits beside—reinvention is the default failure mode, never the default action.
+> This project builds one higher-categorical mathematical language, a Lean formalization of that language, leaves that register backend computations (Sage’s among them) for its operations, and a computational DSL whose users see only ordinary mathematics. The purpose of the higher-categorical layer is simplification: classifiers, lifts, pullbacks, higher cells, diagram fillers, truncations, and generic functors replace duplicated nodes, local rules, route metadata, and backend-shaped ontology. Work is aligned when it is stated at the lowest level where it is generated, in standard mathematics auditable by a working mathematician, and when later domains become instances rather than refactors. Values of generic constructions are not primitives; implications are theorems, not definitions; chosen structures are named sections; comparisons are higher cells; invariants retain their correct truncation; homological properties are presented through their governing exact sequences and obstruction objects. Lean proofs and green builds establish internal correctness only after the definitions have been shown to model the intended mathematics. Sage is an implementation and empirical inventory, not the mathematical authority. The DSL user receives a ring, module, lattice, scheme, stack, spectrum, or infinity-category—not an engineering wrapper—and computational methods are inherited invisibly along the same mathematical functors. Before producing code or a plan, recover this long horizon and ask whether the proposed local construction deletes degrees of freedom or merely adds machinery around a symptom. Before authoring any construct, search Mathlib first (the pinned source in `.lake/packages/mathlib` is ground truth), then prior Lean formalizations on the web and specifically `google-deepmind/formal-conjectures`; import, reuse, or extend what already exists, and relate every new definition to the standard construction it sits beside—reinvention is the default failure mode, never the default action.
 
 ---
 
