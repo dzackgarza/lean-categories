@@ -230,9 +230,40 @@ structure SubsetLiteralEntry where
   evaluation : Option Lean.Name := none
   deriving Repr
 
+/-- Stable id of a binding operator, e.g. `bind.sets.limit`. -/
+structure BinderId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
+instance : Inhabited BinderId := ⟨⟨""⟩⟩
+
+/-- A binding operator of a registered category (`lean-cas-dsl/specs/binders.md`): a notation that
+binds a variable `t`, forms the map `t ↦ e`, and applies an operation to it (`∫_{a}^{b} e dt`,
+`lim_{t → a} e`, `∑_{t ∈ A} e`).
+* `operation : ∀ params, M params ⟶ Y params` is a morphism family of `category` whose source is a
+  registered object `M` of maps `D params → Y params` the operation is total on, with an admission
+  and its evidence (continuous maps, maps convergent at `a`, summable families). The notation's
+  `k` arguments are the family's last `k` explicit parameters that are objects or morphisms, in
+  order (type parameters come before them): a point
+  `1 ⟶ X` (a bound, the point of a limit, a finite subset) or an object (an index set).
+* `domain : ∀ params, D params`, with exactly the operation's parameters, is the object the bound
+  variable ranges over; it may depend on the arguments (`ℝ ∖ {a}` for `lim_{t → a}`).
+
+A notation may have several rows; the arguments of a statement decide which one reads it. -/
+structure BinderEntry where
+  id : BinderId
+  category : CategoryId
+  token : String
+  operation : Lean.Name
+  domain : Lean.Name
+  deriving Repr
+
 /-- A registered inclusion of named objects of one category, `sub ⊆ super`: a monomorphism
-`declaration : ∀ params, sub params ⟶ super params` with `mono : ∀ params, Mono (declaration
-params)`, at the same parameters (`ℤ ⊆ ℚ ⊆ ℝ ⊆ ℂ` in `Sets`, by the casts). -/
+`declaration : ∀ params, sub (…) ⟶ super (…)` with `mono : ∀ params, Mono (declaration params)`.
+`sub` and `super` are at arguments the parameters determine: the same ones (`ℤ ⊆ ℚ ⊆ ℝ ⊆ ℂ` in
+`Sets`, by the casts) or others (`ℝ ∖ {a} ↪ ℝˣ`). An explicit proposition among the parameters is
+an obligation on them (`a = 0`), decided where the inclusion is used; the inclusion is there only
+when it holds. -/
 structure InclusionEntry where
   id : InclusionId
   category : CategoryId

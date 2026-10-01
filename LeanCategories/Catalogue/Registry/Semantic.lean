@@ -68,6 +68,7 @@ inductive SemanticEntry
   | inclusion (e : InclusionEntry)
   | powerObject (e : PowerObjectEntry)
   | subsetLiteral (e : SubsetLiteralEntry)
+  | binder (e : BinderEntry)
   deriving Repr
 
 /-- Stable identifier represented by a heterogeneous registry entry. -/
@@ -94,6 +95,7 @@ def SemanticEntry.stableId : SemanticEntry → String
   | .inclusion e => e.id.raw
   | .powerObject e => e.id.raw
   | .subsetLiteral e => e.id.raw
+  | .binder e => e.id.raw
 
 /-- Lean declarations that must resolve before this row can be persisted. -/
 def SemanticEntry.declarations : SemanticEntry → Array Name
@@ -123,6 +125,7 @@ def SemanticEntry.declarations : SemanticEntry → Array Name
   | .powerObject e =>
       #[e.truth, e.member, e.transpose, e.extent, e.empty, e.singleton, e.terminal, e.image]
   | .subsetLiteral e => #[e.type, e.denotation] ++ e.evaluation.toArray
+  | .binder e => #[e.operation, e.domain]
 
 structure SemanticState where
   categories : Array NamedCategoryEntry := #[]
@@ -147,6 +150,7 @@ structure SemanticState where
   inclusions : Array InclusionEntry := #[]
   powerObjects : Array PowerObjectEntry := #[]
   subsetLiterals : Array SubsetLiteralEntry := #[]
+  binders : Array BinderEntry := #[]
   deriving Inhabited
 
 /-- Registered category-constructor lookup by stable ID. -/
@@ -407,6 +411,7 @@ private def SemanticState.apply : SemanticState → SemanticEntry → SemanticSt
   | s, .inclusion e => { s with inclusions := s.inclusions.push e }
   | s, .powerObject e => { s with powerObjects := s.powerObjects.push e }
   | s, .subsetLiteral e => { s with subsetLiterals := s.subsetLiterals.push e }
+  | s, .binder e => { s with binders := s.binders.push e }
 
 def SemanticState.entries (state : SemanticState) : List SemanticEntry :=
   state.categories.toList.map SemanticEntry.category ++
@@ -430,7 +435,8 @@ def SemanticState.entries (state : SemanticState) : List SemanticEntry :=
     state.operations.toList.map SemanticEntry.operation ++
     state.inclusions.toList.map SemanticEntry.inclusion ++
     state.powerObjects.toList.map SemanticEntry.powerObject ++
-    state.subsetLiterals.toList.map SemanticEntry.subsetLiteral
+    state.subsetLiterals.toList.map SemanticEntry.subsetLiteral ++
+    state.binders.toList.map SemanticEntry.binder
 
 def semanticEntryPairAllowed : SemanticEntry → SemanticEntry → Bool
   | .category category, right =>
@@ -2096,15 +2102,20 @@ def validateInclusion (state : SemanticState) (e : InclusionEntry) : MetaM Unit 
   let (args, _, type) ← forallMetaTelescopeReducing (← inferType declaration)
   let subDecl ← mkConstWithFreshMVarLevels sub.declaration
   let superDecl ← mkConstWithFreshMVarLevels super.declaration
+  -- `sub` and `super` at any arguments the parameters determine (`ℝ ∖ {a} ↪ ℝˣ` relates an
+  -- object at a point to the units of a ring); an explicit proposition among the parameters is
+  -- an obligation on them (`a = 0`), decided where the inclusion is used.
+  let (subArgs, _, _) ← forallMetaTelescopeReducing (← inferType subDecl)
+  let (superArgs, _, _) ← forallMetaTelescopeReducing (← inferType superDecl)
   let ok ← withTransparency .all do
     let expected ← categoryHomType category
     unless ← isDefEq type expected do return false
     let type ← instantiateMVars type
     let #[_, _, x, y] := type.getAppArgs | return false
-    pure ((← isDefEq x (mkAppN subDecl args)) && (← isDefEq y (mkAppN superDecl args)))
+    pure ((← isDefEq x (mkAppN subDecl subArgs)) && (← isDefEq y (mkAppN superDecl superArgs)))
   unless ok do
     throwError "inclusion {e.id.raw}: {e.declaration} is not a family of morphisms \
-      {sub.declaration} ⟶ {super.declaration} at its parameters"
+      {sub.declaration} ⟶ {super.declaration}"
   let mono ← mkConstWithFreshMVarLevels e.mono
   let (monoArgs, _, monoType) ← forallMetaTelescopeReducing (← inferType mono)
   unless monoArgs.size == args.size do
@@ -2198,6 +2209,66 @@ def validateSubsetLiteral (state : SemanticState) (e : SubsetLiteralEntry) : Met
       throwError "subset literal {e.id.raw}: {e.denotation} does not land in {power.object.raw}"
   if let some evaluation := e.evaluation then
     validateProofProcedure s!"subset literal {e.id.raw}" "evaluation" evaluation
+
+/-- A binder row (`lean-cas-dsl/specs/binders.md`) names a registered category, a nonempty token,
+an `operation : ∀ params, M params ⟶ Y params` that is a morphism family of the category, and a
+`domain : ∀ params, D params` with exactly the operation's parameters that lands in the category's
+objects. The source `M` is a registered object of the category with an admission and evidence,
+whose admitted element is a map `D params → Y params`: the bound map is admitted there and nowhere
+else. -/
+def validateBinder (state : SemanticState) (e : BinderEntry) : MetaM Unit := do
+  let some category := state.categories.find? (·.id == e.category)
+    | throwError "binder {e.id.raw} names an unregistered category {e.category.raw}"
+  if e.token.isEmpty then throwError "binder {e.id.raw} has no notation token"
+  let operation ← mkConstWithFreshMVarLevels e.operation
+  let domain ← mkConstWithFreshMVarLevels e.domain
+  forallTelescopeReducing (← inferType operation) fun params type => do
+    unless ← withTransparency .all <| isDefEq type (← categoryHomType category) do
+      throwError "binder {e.id.raw}: {e.operation} is not a morphism family of {e.category.raw}"
+    let type ← instantiateMVars (← whnfR type)
+    let source := type.appFn!.appArg!
+    let target := type.appArg!
+    -- The domain takes exactly the operation's parameters.
+    let D ← forallBoundedTelescope (← inferType domain) params.size fun ds result => do
+      unless ds.size == params.size && result.getForallBinderNames.isEmpty do
+        throwError "binder {e.id.raw}: {e.domain} does not take exactly the parameters of \
+          {e.operation}"
+      -- A parameter's type mentions the earlier parameters: compare in one telescope.
+      for i in [0:ds.size] do
+        let d := (← inferType ds[i]!).replaceFVars ds[:i] params[:i]
+        unless ← withTransparency .all <| isDefEq d (← inferType params[i]!) do
+          throwError "binder {e.id.raw}: the parameters of {e.domain} are not those of \
+            {e.operation}"
+      unless ← withTransparency .all <| isDefEq result (← categoryCarrierInstance category) do
+        throwError "binder {e.id.raw}: {e.domain} does not return an object of {e.category.raw}"
+      return mkAppN domain params
+    -- The source is a registered object with an admission and evidence, admitting maps `D → Y`.
+    let candidates := state.objects.filter fun o =>
+      o.category == e.category && o.admission.isSome && o.evidence.isSome
+    let mut found := false
+    for o in candidates do
+      let some admission := o.admission | continue
+      let constant ← mkConstWithFreshMVarLevels admission
+      let (args, infos, result) ← forallMetaTelescopeReducing (← inferType constant)
+      let result ← whnfR result
+      unless result.isAppOf ``Quiver.Hom do continue
+      -- The element is the first explicit binder the admission's target does not mention, read
+      -- before unification assigns the object's parameters.
+      let target' := result.appArg!
+      let element? := (List.range args.size).find? fun i =>
+        infos[i]!.isExplicit && (target'.findMVar? (· == args[i]!.mvarId!)).isNone
+      let some i := element? | continue
+      unless ← withTransparency .all <| isDefEq result.appArg! source do continue
+      let maps ← mkArrow D target
+      unless ← withTransparency .all <| isDefEq (← inferType args[i]!) maps do
+        throwError "binder {e.id.raw}: the object {o.id.raw} that {e.operation} is defined on \
+          admits elements of{indentExpr (← instantiateMVars (← inferType args[i]!))}\nnot maps \
+          {indentExpr maps}"
+      found := true
+      break
+    unless found do
+      throwError "binder {e.id.raw}: the source of {e.operation}{indentExpr source}\nis not a \
+        registered object of {e.category.raw} with an admission and evidence"
 
 /-- An adjunction row names a Mathlib `Adjunction L R` between exactly its two registered
 functors. -/
@@ -2353,6 +2424,7 @@ def validateSemanticEntryDeclaration (entry : SemanticEntry) : MetaM Unit := do
   | .inclusion e => validateInclusion state e
   | .powerObject e => validatePowerObject state e
   | .subsetLiteral e => validateSubsetLiteral state e
+  | .binder e => validateBinder state e
   | .constructor e => do
       let semanticsConstant ← mkConstWithFreshMVarLevels e.semantics
       let (_, binderInfos, result) ←
@@ -2391,6 +2463,7 @@ def SemanticEntry.totalityDeclarations : SemanticEntry → Array Name
   | .powerObject e =>
       #[e.truth, e.member, e.transpose, e.extent, e.empty, e.singleton, e.terminal, e.image]
   | .subsetLiteral e => #[e.denotation]
+  | .binder e => #[e.operation, e.domain]
   | _ => #[]
 
 /- Validate the elaborated declaration and persist exactly one registry entry. -/
