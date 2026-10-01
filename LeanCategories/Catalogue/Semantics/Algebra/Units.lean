@@ -120,6 +120,19 @@ meta def expandDeterminant : TacticM Unit := do
     Matrix.det_isEmpty, Matrix.det_one, Matrix.det_mul, Matrix.det_transpose,
     Matrix.det_diagonal, Fin.prod_univ_succ, Fin.prod_univ_zero]))
 
+open Lean Meta Elab Tactic in
+/-- The modulus `n` when the monoid of the main goal `IsUnit x` or `Invertible x` is `ℤ/n`.
+
+The monoid is read from the goal's carrier, never from the element: an element of `ℤ/n` may be
+presented as a point `⟨k, _⟩ : Fin n` (`ZMod n` is `Fin n` by definition for `n ≠ 0`, Mathlib
+`ZMod`; this is the catalogue's numeral of `ℤ/n`), whose type does not name `n` as a modulus. -/
+meta def zmodModulus : TacticM Term := do
+  let some carrier := (← getMainTarget).consumeMData.getAppArgs[0]?
+    | throwError "not a statement about an element of a monoid"
+  let carrier ← whnfR carrier
+  unless carrier.isAppOfArity ``ZMod 1 do throwError "the monoid is not ℤ/n"
+  Term.exprToSyntax carrier.appArg!
+
 open Lean Elab Tactic in
 /-- The units of the monoids of closed values, by the structure of the monoid `M`:
 
@@ -129,7 +142,9 @@ open Lean Elab Tactic in
   along its first row (`Matrix.det_succ_row_zero`) and its units are those of the ring;
 * in a division ring (`ℚ`, `ℝ`, `ℂ`) the units are the nonzero elements (`isUnit_iff_ne_zero`);
 * the units of `ℤ` are `±1` (`Int.isUnit_iff`), of `ℕ` only `1` (`Nat.isUnit_iff`);
-* the units of `ℤ/n`, `n ≠ 0`, are the classes coprime to `n` (`zmod_isUnit_iff_coprime_val`);
+* the units of `ℤ/n`, `n ≠ 0`, are the classes coprime to `n` (`zmod_isUnit_iff_coprime_val`),
+  however the class is presented: `(k : ZMod n)`, or the point `⟨k, _⟩` of `Fin n` that
+  `ZMod n` is for `n ≠ 0` (the catalogue's numeral of `ℤ/n`);
 * in any monoid, `1`, a product of units, a power of a unit and the negative of a unit are units.
 
 It fails on an element that is not a unit (`2 ∈ ℤ`, `0 ∈ ℚ`, a singular matrix). -/
@@ -156,8 +171,11 @@ where
       evalTactic (← `(tactic| rw [Nat.isUnit_iff]))
       closedArithmeticEvidence,
      do
+      -- Applied at the modulus of the goal's monoid, not rewritten: the element may be a point
+      -- of `Fin n`, which matches `x : ZMod n` only once `n` is known (`zmodModulus`).
+      let n ← zmodModulus
       evalTactic (← `(tactic|
-        rw [CasCatalogue.Algebra.Units.zmod_isUnit_iff_coprime_val]))
+        refine (@CasCatalogue.Algebra.Units.zmod_isUnit_iff_coprime_val $n _ _).mpr ?_))
       CasCatalogue.Evidence.closeByFirst m!"not coprime to the modulus"
         [do evalTactic (← `(tactic| decide)),
          do evalTactic (← `(tactic| norm_num [Nat.coprime_iff_gcd_eq_one, ZMod.val]))],
@@ -217,7 +235,9 @@ where
       evalTactic (← `(tactic| refine CasCatalogue.Algebra.Units.invertibleOfIsUnitNat ?_))
       isUnitOfElement,
      do
-      evalTactic (← `(tactic| refine CasCatalogue.Algebra.Units.invertibleOfIsUnitZMod ?_))
+      let n ← zmodModulus
+      evalTactic (← `(tactic|
+        refine @CasCatalogue.Algebra.Units.invertibleOfIsUnitZMod $n _ ?_))
       isUnitOfElement,
      do
       let x := (← getMainTarget).consumeMData.appArg!
