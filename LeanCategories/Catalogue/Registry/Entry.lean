@@ -259,11 +259,8 @@ structure BinderEntry where
   deriving Repr
 
 /-- A registered inclusion of named objects of one category, `sub ⊆ super`: a monomorphism
-`declaration : ∀ params, sub (…) ⟶ super (…)` with `mono : ∀ params, Mono (declaration params)`.
-`sub` and `super` are at arguments the parameters determine: the same ones (`ℤ ⊆ ℚ ⊆ ℝ ⊆ ℂ` in
-`Sets`, by the casts) or others (`ℝ ∖ {a} ↪ ℝˣ`). An explicit proposition among the parameters is
-an obligation on them (`a = 0`), decided where the inclusion is used; the inclusion is there only
-when it holds. -/
+`declaration : ∀ params, sub params ⟶ super params` with `mono : ∀ params, Mono (declaration
+params)`, at the same parameters (`ℤ ⊆ ℚ ⊆ ℝ ⊆ ℂ` in `Sets`, by the casts). -/
 structure InclusionEntry where
   id : InclusionId
   category : CategoryId
