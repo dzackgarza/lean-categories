@@ -18,6 +18,7 @@ public import LeanCategories.Catalogue.Semantics
 public import LeanCategories.Catalogue.Semantics.TotalityProbes
 public import LeanCategories.Catalogue.Registry.BinderProbes
 public import LeanCategories.Catalogue.Semantics.EvidenceTests
+public import LeanCategories.Catalogue.Semantics.BinderTests
 public import LeanCategories.Catalogue.Semantics.DecidableElementTests
 public import LeanCategories.Catalogue.Semantics.UnitInverseTests
 public import LeanCategories.Catalogue.Semantics.FiniteSubsetLiteralTests
@@ -53,8 +54,11 @@ public import LeanCategories.Catalogue.Semantics.Algebra.Differentials
 public import LeanCategories.Catalogue.Semantics.Algebra.Units
 public import LeanCategories.Catalogue.Semantics.Algebra.LinearAlgebra
 public import LeanCategories.Catalogue.Semantics.Foundation.FiniteSubsets
+public import LeanCategories.Catalogue.Semantics.Foundation.Maps
 public import LeanCategories.Catalogue.Semantics.Algebra.FiniteSums
 public import LeanCategories.Catalogue.Semantics.Algebra.Calculus
+public import LeanCategories.Catalogue.Semantics.Algebra.Series
+public import LeanCategories.Catalogue.Semantics.Algebra.RealLimits
 public import LeanCategories.Catalogue.Semantics.Algebra.MvPolynomials
 public import LeanCategories.Catalogue.Semantics.Algebra.Algebras
 public import LeanCategories.Catalogue.Semantics.Algebra.Schemes
