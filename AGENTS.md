@@ -92,6 +92,19 @@ Consequences:
   failure never changes the mathematics, the kernel's rules or an assertion.
 - Text anywhere that contradicts this is rewritten to state this model, not kept with a label.
 
+
+# Independent review and requirements (read before anything else)
+
+Every pull request to `main` is judged by `Independent review`
+(`.github/workflows/independent-review.yml`): a single model call, run from `main`'s copy of
+`scripts/review/`, that sees only `main`'s `AGENTS.md` and `CONTRIBUTING.md` and the pull request's
+diff, never its author's description. It approves only if the mathematics is well defined (LC-13 to
+LC-16, LC-18), no admission rule under `LeanCategories/Catalogue/Registry/` is loosened, the change
+is blind to everything downstream (LC-17), and it is small enough to check line by line. A pull
+request that adds or changes mathematics includes the requirement it answers under
+`requirements/` (`requirements/README.md`); the formalization author's prompt is that file,
+verbatim, so what reached the author is reviewed with what it wrote.
+
 # Repository work documents
 
 > **You have no memory.** Nothing that exists only in chat survives compaction or the session.

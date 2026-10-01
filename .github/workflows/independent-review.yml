@@ -1,0 +1,53 @@
+# Independent review of every pull request to main (scripts/review/prompt.md).
+# pull_request_target runs THIS file as it is on main, never the pull request's copy, and the pull
+# request's head is only read as data. The reviewer's credential lives in the `independent-review`
+# environment, which only main may deploy to.
+name: Independent review
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+permissions:
+  contents: read
+  pull-requests: write
+concurrency:
+  group: independent-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  review:
+    name: Independent review
+    runs-on: ubuntu-latest
+    environment: independent-review
+    steps:
+      - name: Check out main (the trusted code)
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          path: base
+          persist-credentials: false
+      - name: Check out the pull request's head (data only)
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: head
+          persist-credentials: false
+      - name: Keep the trusted reviewer outside the diffed trees
+        run: cp -r base/scripts/review "$RUNNER_TEMP/review"
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
+      - name: Install Claude Code (the reviewer)
+        run: bun add --global @anthropic-ai/claude-code@2.1.285
+      - name: Review
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: python3 "$RUNNER_TEMP/review/review.py" --base base --head head --out out
+      - name: Post the outcome
+        if: always()
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
+        with:
+          script: |
+            const fs = require('fs');
+            if (!fs.existsSync('out/comment.md')) return;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: fs.readFileSync('out/comment.md', 'utf8') + '\n---\n_Independent review (pull_request_target on main)_\n'});
