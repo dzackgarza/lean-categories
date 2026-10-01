@@ -18,6 +18,7 @@ public import LeanCategories.Catalogue.Semantics
 public import LeanCategories.Catalogue.Semantics.TotalityProbes
 public import LeanCategories.Catalogue.Semantics.EvidenceTests
 public import LeanCategories.Catalogue.Semantics.DecidableElementTests
+public import LeanCategories.Catalogue.Semantics.UnitInverseTests
 public import LeanCategories.Catalogue.Semantics.FiniteSubsetLiteralTests
 public import LeanCategories.Catalogue.Semantics.Algebra.Catalogue
 public import LeanCategories.Catalogue.Semantics.Algebra.Catalogue.Magmas

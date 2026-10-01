@@ -239,6 +239,13 @@ that establishes them for a closed value, a `meta` declaration `TacticM Unit` of
 The registry refuses evidence without an admission, of another type, not `meta`, or declared
 outside `lean-categories`. An admission without evidence admits nothing.
 
+Each hypothesis of an admission is a proposition, or data with at most one value: the registry
+refuses a hypothesis that is neither a proposition nor a `Subsingleton`. Data is the hypothesis
+when the element of `D` carries it and it must compute: a unit of `M` is a pair `(x, y)` with
+`xy = yx = 1`, so the admission into `Mˣ` takes `Invertible x`, the inverse with its equations,
+not `IsUnit x`, from which the inverse is recovered only by `Classical.choose`. The inverse of a
+unit is unique, so `Invertible x` is a subsingleton and the admitted unit depends on `x` alone.
+
 No consumer supplies that proof: the language and the kernel of `lean-cas-dsl` run the registered
 evidence and nothing else, and their build refuses any reference to mathematics or any tactic
 they could run instead (`lean-cas-dsl/specs/architecture.md`, "What must be impossible"). A

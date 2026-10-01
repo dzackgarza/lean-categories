@@ -653,7 +653,7 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
 
 - **Need:** each domain `D ↪ B` with an admission registers evidence that establishes the
   admission's hypothesis `P x` for every closed `x ∈ D` and fails for `x ∉ D` (LC-18). The seven
-  procedures are `Algebra.Units.isUnitEvidence`, `Semirings.positiveEvidence`,
+  procedures are `Algebra.Units.invertibleEvidence`, `Semirings.positiveEvidence`,
   `Semirings.primeEvidence`, `Polynomials.nonzeroPolynomialEvidence`,
   `LinearAlgebra.monicEvidence`, `Calculus.continuousEvidence`, `Calculus.smoothEvidence`,
   exercised in `Catalogue/Semantics/EvidenceTests.lean`.
@@ -671,7 +671,8 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
      determinant" and neighbours); **Found:** `lucas_primality` and `lucas_primality_iff` only,
      no certificate tactic; **Conclusion:** missing (LC-11); **Confidence:** medium (the corpus
      was searched by phrase, not exhaustively). Owner: `Semirings.primeEvidence`.
-  2. **Units of monoids outside the covered families.** `isUnitEvidence` covers groups, square
+  2. **Units of monoids outside the covered families.** `invertibleEvidence` (through
+     `isUnitEvidence`) covers groups, square
      matrices over a commutative ring through the determinant (first-row expansion, so `n!`
      terms: practical to about `6 × 6`), division rings, `ℤ`, `ℕ`, `ℤ/n` (`n ≠ 0`) and products,
      powers and negatives of units. It refuses, although they may be units: elements of
