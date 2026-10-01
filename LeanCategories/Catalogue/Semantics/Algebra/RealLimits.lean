@@ -258,18 +258,23 @@ theorem tendsto_sin_mul_inv_self : Tendsto (fun t : ℝ => Real.sin t * t⁻¹) 
 open Lean Meta Elab Tactic
 
 /-- Unfold the catalogue's operations and points in the main goal to the Mathlib terms they are
-defined by, and evaluate them: the map becomes a lambda of real expressions in the value of its
-variable, the point a real number, `±∞` or its filter `atTop`/`atBot`. -/
+defined by (through `id`), and evaluate them, the registered numerals to casts: the map becomes a
+lambda of real expressions in the value of its variable, the point a real number, `±∞` or its
+filter `atTop`/`atBot`. -/
 meta def unfoldLimit : TacticM Unit := do
-  evalTactic (← `(tactic| try simp only [CasCatalogue.Algebra.RealLimits.approachInfinity,
+  evalTactic (← `(tactic| try simp only [id_eq, CasCatalogue.Algebra.RealLimits.approachInfinity,
     CasCatalogue.Algebra.RealLimits.approach]))
   let goal ← getMainGoal
   let target ← instantiateMVars (← goal.getType)
   let expanded ← deltaExpand target fun n => n.getRoot == `CasCatalogue
   replaceMainGoal [← goal.replaceTargetDefEq expanded]
-  evalTactic (← `(tactic| try simp only [TypeCat.ofHom_apply, Units.val_inv_eq_inv_val,
-    Units.val_mk0, one_mul, mul_one, eq_intCast, Int.cast_natCast, Nat.cast_ofNat, Nat.cast_zero,
-    Nat.cast_one, Int.cast_ofNat, Int.cast_zero, Int.cast_one,
+  -- A numeral `k` of a registered ring is the image of `k` under the initial ring map `ℤ → R`
+  -- (`NamedRings.ringNumeral`), however that map is presented (`⇑f`, `f.toFun`, through its
+  -- monoid and unit homomorphisms): it is the cast `(k : R)` (`eq_intCast`).
+  evalTactic (← `(tactic| try simp only [id_eq, TypeCat.ofHom_apply, RingHom.toFun_eq_coe,
+    OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe, eq_intCast,
+    Int.cast_natCast, Nat.cast_ofNat, Nat.cast_zero, Nat.cast_one, Int.cast_ofNat, Int.cast_zero,
+    Int.cast_one, Units.val_inv_eq_inv_val, Units.val_mk0, one_mul, mul_one,
     CasCatalogue.Algebra.RealLimits.comap_nhdsNE_top,
     CasCatalogue.Algebra.RealLimits.comap_nhdsNE_bot]))
 

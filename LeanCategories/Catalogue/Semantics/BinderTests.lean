@@ -256,6 +256,28 @@ run_elab do
                 (RealLimits.puncturedInclusion (CasCatalogue.BinderTests.realNumeral 1)) t))
           (RealLimits.approach (CasCatalogue.BinderTests.realNumeral 1)) (𝓝 L))]
 
+-- The statements as a consumer forms them: the numeral `1 ∈ ℝ` as the image of `1` under the
+-- initial ring map `ℤ → ℝ` presented through its monoid homomorphism, the unit coerced, the point
+-- wrapped in `id`: `lim_{t → ∞} 1/t`, and `lim_{t → 0} sin t / t` with `t ∈ ℝ ∖ {0}`, its
+-- quotient written in `ℝ` and as the division by the unit `t ∈ ℝˣ`.
+#guard_msgs in
+run_elab do
+  expectEstablished RealLimits.convergenceEvidence
+    [← `(∃ L, Tendsto (fun x : Units.units ℝ =>
+            (Int.castRingHom (NamedRings.asRing NumberSystems.ringReals)).toMonoidHom.toOneHom.toFun
+              ((1 : ℕ) : ℤ) * ((x⁻¹ : ℝˣ) : ℝ))
+          (RealLimits.approachInfinity (id RealLimits.infinity)) (𝓝 L)),
+     ← `(∃ L, Tendsto (fun x : RealLimits.puncturedLine
+              (id (NamedRings.ringNumeral NumberSystems.ringReals 0)) =>
+            Real.sin (x : ℝ) / (x : ℝ))
+          (RealLimits.approach (id (NamedRings.ringNumeral NumberSystems.ringReals 0))) (𝓝 L)),
+     ← `(∃ L, Tendsto (fun x : RealLimits.puncturedLine
+              (id (NamedRings.ringNumeral NumberSystems.ringReals 0)) =>
+            Real.sin (x : ℝ) * ((ConcreteCategory.hom (C := Type) (RealLimits.puncturedUnits
+              (id (NamedRings.ringNumeral NumberSystems.ringReals 0))
+              CasCatalogue.BinderTests.realNumeral_zero) x)⁻¹ : ℝˣ))
+          (RealLimits.approach (id (NamedRings.ringNumeral NumberSystems.ringReals 0))) (𝓝 L))]
+
 -- Maps that do not converge: `sin(1/t)` at `0`, `t` and `sin t` at `∞`.
 #guard_msgs in
 run_elab do
