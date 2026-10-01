@@ -40,6 +40,7 @@ public import LeanCategories.Catalogue.Semantics.Foundation.Maps
 public import LeanCategories.Catalogue.Semantics.Algebra.FiniteSums
 public import LeanCategories.Catalogue.Semantics.Algebra.Calculus
 public import LeanCategories.Catalogue.Semantics.Algebra.Series
+public import LeanCategories.Catalogue.Semantics.Algebra.RealLimits
 public import LeanCategories.Catalogue.Semantics.Algebra.MvPolynomials
 public import LeanCategories.Catalogue.Semantics.Algebra.Algebras
 public import LeanCategories.Catalogue.Semantics.Algebra.Schemes

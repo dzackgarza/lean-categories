@@ -45,8 +45,8 @@ Each operation of calculus is a total map out of the object it is defined on (LC
   `(ℕ → R) → R[[t]]`, `c ↦ Σ c(n) tⁿ` (Mathlib `PowerSeries.mk`), which is what `Σ c(n) tⁿ` means;
 * `x^n : X × ℕ → X` in a monoid (Mathlib `Monoid.npow`).
 
-Limits are not registered: `lim_{t → a}` is defined on the maps that have a limit at `a`, and no
-registered construction places a map there.
+Limits `lim_{t → a}` are defined on the maps that converge at `a` (`Algebra.RealLimits`), series
+`∑_{n ∈ N}` on the summable families (`Algebra.Series`).
 -/
 
 open CategoryTheory
