@@ -27,8 +27,10 @@ namespace CasCatalogue.Foundation.Maps
 
 open CasCatalogue.Foundation.PowerSets CasCatalogue.Foundation.Objects
 
-/-- `Y^X`, the maps `X → Y`. -/
-abbrev maps (X Y : Type) : SetsCat.{0} := X → Y
+/-- `Y^X`, the maps `X → Y`. A `def`, not reducible: `Y^X` is its own named object, distinct
+from objects that are sets of maps by their own definition (`ℚⁿ = Fin n → ℚ`, `(ℤ/n)ᵏ`), whose
+elements are nonetheless maps `X → Y` by unfolding the definition. -/
+def maps (X Y : Type) : SetsCat.{0} := X → Y
 
 /-- The map `f : X → Y` as an element of `Y^X`. Every map is one: there is no hypothesis. -/
 def admit (X Y : Type) (f : X → Y) : fin 1 ⟶ maps X Y := TypeCat.ofHom fun _ => f

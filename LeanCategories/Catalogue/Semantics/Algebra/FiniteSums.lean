@@ -74,7 +74,8 @@ open CasCatalogue.Foundation.Objects in
 `A ↦ ∑_{a ∈ A} f(a)`. -/
 theorem sumOver_eq_sum (X Y : Type) [AddCommMonoid Y] (A : fin 1 ⟶ finiteSubsets X)
     (f : (X : SetsCat.{0}) ⟶ (Y : SetsCat.{0})) :
-    ConcreteCategory.hom (C := Type) (sumOver X Y A) (ConcreteCategory.hom (C := Type) f) =
+    ConcreteCategory.hom (C := Type) (sumOver X Y A)
+        (fun x => ConcreteCategory.hom (C := Type) f x) =
       ConcreteCategory.hom (C := Type) (sum X Y f) (ConcreteCategory.hom (C := Type) A 0) :=
   rfl
 
@@ -82,7 +83,8 @@ open CasCatalogue.Foundation.Objects in
 /-- The binder's product is the registered `∏` along `f`. -/
 theorem prodOver_eq_prod (X Y : Type) [CommMonoid Y] (A : fin 1 ⟶ finiteSubsets X)
     (f : (X : SetsCat.{0}) ⟶ (Y : SetsCat.{0})) :
-    ConcreteCategory.hom (C := Type) (prodOver X Y A) (ConcreteCategory.hom (C := Type) f) =
+    ConcreteCategory.hom (C := Type) (prodOver X Y A)
+        (fun x => ConcreteCategory.hom (C := Type) f x) =
       ConcreteCategory.hom (C := Type) (prod X Y f) (ConcreteCategory.hom (C := Type) A 0) :=
   rfl
 
