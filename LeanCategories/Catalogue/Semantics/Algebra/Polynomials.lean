@@ -9,6 +9,8 @@ public import LeanCategories.Catalogue.Semantics.Foundation.FiniteSubsets
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.RingTheory.Polynomial.UniqueFactorization
+public import Mathlib.RingTheory.SimpleRing.Basic
+public import Mathlib.Data.Int.CharZero
 public import LeanCategories.Catalogue.Semantics.Algebra.Units
 public import Mathlib.Tactic.ComputeDegree
 public import Mathlib.Tactic.ReduceModChar
@@ -132,16 +134,75 @@ meta def nonzeroByDegree : TacticM Unit := do
   closeCoefficientGoals
   setGoals (← goals.filterM fun goal => return !(← goal.isAssigned))
 
+/-- A ring map `f : R → S` out of a simple ring `R` (every division ring: `ℚ`, `ℝ`, `ℂ`) into a
+ring with `0 ≠ 1` is injective: its kernel is a two-sided ideal of `R` not containing `1`, hence
+`0` (Mathlib `RingHom.injective`). -/
+theorem injective_of_isSimpleRing {R S : Type*} [NonAssocRing R] [IsSimpleRing R]
+    [NonAssocSemiring S] (f : R →+* S) (h : (0 : S) ≠ 1) : Function.Injective f :=
+  haveI := nontrivial_of_ne _ _ h
+  f.injective
+
 open Lean Elab Tactic in
-/-- The evidence that a closed polynomial `p ∈ R[x]` (an expression in `x`, constants `C r`,
-numerals, `+`, `-`, `·`, `^` over a closed commutative ring `R`: `ℤ`, `ℚ`, `ℝ`, `ℂ`, `ℤ/n`) is
-nonzero: a polynomial is nonzero exactly when it has a degree `d ∈ ℕ`, i.e. a nonzero leading
-coefficient. The degree is read off the expression, and, when its naive leading terms cancel,
-off its normal form. It fails on the zero polynomial. -/
-meta def nonzeroPolynomialEvidence : TacticM Unit :=
-  CasCatalogue.Evidence.establish "R[x] ∖ {0}" <| CasCatalogue.Evidence.closeByFirst
-    m!"the polynomial is not established to be nonzero"
-    [nonzeroByDegree, do normalizePolynomial; nonzeroByDegree]
+/-- The evidence that a ring map `f : R → S` between closed rings is injective, by the structure
+of `f` and of its domain:
+
+* a map out of a simple ring (a division ring: `ℚ`, `ℝ`, `ℂ`) into a ring in which `0 ≠ 1`
+  (`injective_of_isSimpleRing`; `0 ≠ 1` in `S` is a closed arithmetic fact);
+* a map out of `ℤ` into a ring of characteristic zero: it is `n ↦ n · 1`, injective exactly in
+  characteristic zero (Mathlib `RingHom.injective_int`);
+* the structure map `R → A` of a faithful `R`-algebra (Mathlib `FaithfulSMul.algebraMap_injective`);
+* the identity, and a composite of injective maps (`RingHom.coe_comp`, `Function.Injective.comp`).
+
+It fails on a map not established to be injective (`ℤ → ℤ/n`). -/
+meta partial def injectiveRingHomEvidence : TacticM Unit :=
+  CasCatalogue.Evidence.closeByFirst m!"the ring map is not established to be injective"
+    [do
+      evalTactic (← `(tactic|
+        refine CasCatalogue.Algebra.Polynomials.injective_of_isSimpleRing _ ?_))
+      closeCoefficientGoals,
+     do evalTactic (← `(tactic| exact RingHom.injective_int _)),
+     do evalTactic (← `(tactic| exact FaithfulSMul.algebraMap_injective _ _)),
+     do
+      evalTactic (← `(tactic| rw [RingHom.coe_id]))
+      evalTactic (← `(tactic| exact Function.injective_id)),
+     do
+      evalTactic (← `(tactic| rw [RingHom.coe_comp]))
+      evalTactic (← `(tactic| refine Function.Injective.comp ?_ ?_))
+      for goal in ← getGoals do
+        setGoals [goal]
+        injectiveRingHomEvidence]
+
+open Lean Elab Tactic in
+/-- The evidence that a closed polynomial `p ∈ R[x]` is nonzero, by the structure of `p`:
+
+* `p` an expression in `x`, constants `C r`, numerals, `+`, `-`, `·`, `^` over a closed
+  commutative ring `R` (`ℤ`, `ℚ`, `ℝ`, `ℂ`, `ℤ/n`): a polynomial is nonzero exactly when it has a
+  degree `d ∈ ℕ`, i.e. a nonzero leading coefficient. The degree is read off the expression, and,
+  when its naive leading terms cancel, off its normal form;
+* `p = q.map f` the image of `q ∈ R[x]` along an injective ring map `f : R → S`: it is nonzero
+  exactly when `q` is (Mathlib `Polynomial.map_ne_zero_iff`), so `q ≠ 0` is established by this
+  procedure and the injectivity of `f` by `injectiveRingHomEvidence`.
+
+It fails on the zero polynomial. -/
+meta partial def nonzeroPolynomialEvidence : TacticM Unit :=
+  CasCatalogue.Evidence.establish "R[x] ∖ {0}" nonzeroCases
+where
+  /-- The cases above, tried in turn on the main goal `p ≠ 0`. -/
+  nonzeroCases : TacticM Unit :=
+    CasCatalogue.Evidence.closeByFirst m!"the polynomial is not established to be nonzero"
+      [nonzeroOfMap, nonzeroByDegree, do normalizePolynomial; nonzeroByDegree]
+  /-- `q.map f ≠ 0` from `q ≠ 0` and the injectivity of `f`. -/
+  nonzeroOfMap : TacticM Unit := do
+    let target := (← instantiateMVars (← getMainTarget)).consumeMData
+    unless target.isAppOfArity ``Ne 3 && (target.getArg! 1).isAppOfArity ``Polynomial.map 6 do
+      throwError "not the image of a polynomial along a ring map"
+    evalTactic (← `(tactic| refine (Polynomial.map_ne_zero_iff ?_).mpr ?_))
+    for goal in ← getGoals do
+      setGoals [goal]
+      if (← instantiateMVars (← goal.getType)).consumeMData.isAppOf ``Function.Injective then
+        injectiveRingHomEvidence
+      else
+        nonzeroCases
 
 open Classical in
 /-- The normalized irreducible factors `R[x] ∖ {0} → 𝒫_fin(R[x])`. -/

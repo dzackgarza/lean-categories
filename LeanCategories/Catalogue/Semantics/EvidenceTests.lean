@@ -146,6 +146,33 @@ run_elab do
       ← `((Polynomial.C 0 : Polynomial ℝ) ≠ 0),
       ← `((2 * Polynomial.X - Polynomial.X - Polynomial.X : Polynomial ℂ) ≠ 0)]
 
+/-! Images `q.map f` along injective ring maps: `q.map f ≠ 0` iff `q ≠ 0`. The injectivity of
+`f` (out of a field, out of `ℤ` into characteristic zero, composites) is established by the
+procedure. -/
+
+#guard_msgs in
+run_elab do
+  expectEstablished Polynomials.nonzeroPolynomialEvidence
+    [← `(((Polynomial.X ^ 3 - 2 * Polynomial.X + 1 : Polynomial ℚ).map (algebraMap ℚ ℂ)) ≠ 0),
+      ← `(((Polynomial.X ^ 2 - 2 : Polynomial ℤ).map (Int.castRingHom ℚ)) ≠ 0),
+      ← `(((Polynomial.X ^ 2 - 2 : Polynomial ℤ).map (algebraMap ℤ ℝ)) ≠ 0),
+      ← `(((Polynomial.C Real.pi * Polynomial.X + 1 : Polynomial ℝ).map (algebraMap ℝ ℂ)) ≠ 0),
+      ← `((((Polynomial.X + 1) ^ 2 - Polynomial.X ^ 2 - 2 * Polynomial.X : Polynomial ℚ).map
+        (algebraMap ℚ ℝ)) ≠ 0),
+      ← `((((Polynomial.X + 1 : Polynomial ℤ).map (Int.castRingHom ℚ)).map (algebraMap ℚ ℂ)) ≠ 0),
+      ← `(((Polynomial.X ^ 2 + 1 : Polynomial ℤ).map
+        ((algebraMap ℚ ℝ).comp (Int.castRingHom ℚ))) ≠ 0),
+      ← `(((Polynomial.X : Polynomial (ZMod 5)).map (RingHom.id (ZMod 5))) ≠ 0)]
+
+#guard_msgs in
+run_elab do
+  expectRefused Polynomials.nonzeroPolynomialEvidence
+    [← `(((0 : Polynomial ℚ).map (algebraMap ℚ ℂ)) ≠ 0),
+      ← `(((Polynomial.X - Polynomial.X : Polynomial ℤ).map (Int.castRingHom ℚ)) ≠ 0),
+      ← `(((Polynomial.C 0 : Polynomial ℝ).map (algebraMap ℝ ℂ)) ≠ 0),
+      -- `5 = 0` in `ℤ/5`: the image is `0`.
+      ← `(((5 * Polynomial.X : Polynomial ℤ).map (Int.castRingHom (ZMod 5))) ≠ 0)]
+
 /-! ## `Monicₙ(K) ↪ K[x]`: `p.Monic ∧ p.natDegree = n` -/
 
 #guard_msgs in
@@ -184,6 +211,45 @@ run_elab do
         (← `(2)),
       ← monicOfDegree (← `((7 * Polynomial.X ^ 2 + Polynomial.X : Polynomial (ZMod 7))))
         (← `(2))]
+
+/-! Images `q.map f` along ring maps into rings with `0 ≠ 1`: monic of degree `n` when `q` is,
+whether or not `f` is injective. -/
+
+#guard_msgs in
+run_elab do
+  expectEstablished LinearAlgebra.monicEvidence
+    [← monicOfDegree
+        (← `(((Polynomial.X ^ 2 + 2 * Polynomial.X + 1 : Polynomial ℚ).map (algebraMap ℚ ℝ))))
+        (← `(2)),
+      ← monicOfDegree (← `(((Polynomial.X ^ 3 - 2 : Polynomial ℤ).map (Int.castRingHom ℚ))))
+        (← `(3)),
+      ← monicOfDegree
+        (← `(((Polynomial.X ^ 2 - Polynomial.X ^ 2 + Polynomial.X + 1 : Polynomial ℤ).map
+          (algebraMap ℤ ℚ)))) (← `(1)),
+      ← monicOfDegree
+        (← `(((Polynomial.X ^ 2 + Polynomial.C Real.pi * Polynomial.X : Polynomial ℝ).map
+          (algebraMap ℝ ℂ)))) (← `(2)),
+      ← monicOfDegree
+        (← `((((Polynomial.X ^ 4 - Polynomial.C (1 / 2) : Polynomial ℚ).map
+          (algebraMap ℚ ℝ)).map (algebraMap ℝ ℂ)))) (← `(4)),
+      -- `ℤ → ℤ/5` is not injective; `x² + 5 ↦ x²` is monic of degree `2`.
+      ← monicOfDegree
+        (← `(((Polynomial.X ^ 2 + 5 : Polynomial ℤ).map (Int.castRingHom (ZMod 5))))) (← `(2))]
+
+#guard_msgs in
+run_elab do
+  expectRefused LinearAlgebra.monicEvidence
+    [← monicOfDegree (← `(((0 : Polynomial ℚ).map (algebraMap ℚ ℝ)))) (← `(0)),
+      ← monicOfDegree (← `(((2 * Polynomial.X ^ 2 + 1 : Polynomial ℤ).map (Int.castRingHom ℚ))))
+        (← `(2)),
+      ← monicOfDegree (← `(((Polynomial.X ^ 3 + 1 : Polynomial ℚ).map (algebraMap ℚ ℝ))))
+        (← `(2)),
+      ← monicOfDegree
+        (← `(((Polynomial.X ^ 2 - Polynomial.X ^ 2 : Polynomial ℚ).map (algebraMap ℚ ℂ))))
+        (← `(2)),
+      -- In the zero ring `ℤ/1` the image of `x` is `0`, of degree `0`.
+      ← monicOfDegree (← `(((Polynomial.X : Polynomial ℤ).map (Int.castRingHom (ZMod 1)))))
+        (← `(1))]
 
 /-! ## `C(ℝ) ↪ (ℝ → ℝ)`: `Continuous f` -/
 
