@@ -1,0 +1,84 @@
+/-
+Copyright (c) 2026 Dzack Garza. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+-/
+module
+
+public import LeanCategories.Catalogue.Semantics.Algebra.Calculus
+public import LeanCategories.Catalogue.Semantics.Algebra.Units
+public meta import Lean
+public meta import LeanCategories.Catalogue.Registry.Semantic
+
+@[expose] public section
+
+/-!
+# Probes of the binder row's registration checks (`lean-cas-dsl/specs/binders.md`)
+
+A binder row is accepted when its operation is a morphism family whose source is a registered object
+admitting maps `D → Y`, and its domain takes exactly the operation's parameters. Each malformed row
+below is refused, for the reason named. No probe row is registered.
+-/
+
+open CategoryTheory
+
+namespace CasCatalogue.BinderProbes
+
+open CasCatalogue.Algebra.Calculus CasCatalogue.Algebra.NumberSystems
+open CasCatalogue.Foundation.PowerSets
+
+/-- `f ↦ ∫_a^b f` on `C(ℝ)`, with the bounds `a b : 1 ⟶ ℝ` as parameters. -/
+noncomputable def integral (a b : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) :
+    continuousMaps ⟶ reals :=
+  TypeCat.ofHom fun f => ∫ t in (ConcreteCategory.hom (C := Type) a 0)..
+    (ConcreteCategory.hom (C := Type) b 0), f t
+
+/-- The variable of `∫_a^b` ranges over `ℝ`. -/
+def line (_ _ : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) : SetsCat.{0} := reals
+
+/-- A domain with one bound only: not the operation's parameters. -/
+def lineOneBound (_ : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) : SetsCat.{0} := reals
+
+/-- A domain that is not an object of `Sets`. -/
+def notAnObject (_ _ : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) : ℕ := 0
+
+/-- An operation out of `ℝ`, an object with no admission. -/
+def fromReals (_ _ : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) : reals ⟶ reals := 𝟙 _
+
+/-- An operation out of `ℝˣ`, whose admission admits elements of `ℝ`, not maps. -/
+noncomputable def fromUnits (_ _ : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) :
+    CasCatalogue.Algebra.Units.units ℝ ⟶ reals :=
+  TypeCat.ofHom fun u => (u : ℝ)
+
+/-- Not a morphism family. -/
+def notAMorphism (_ _ : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) : ℕ := 0
+
+end CasCatalogue.BinderProbes
+
+namespace CasCatalogue
+
+open Lean Meta in
+run_meta do
+  let state ← semanticState
+  let probe : BinderEntry :=
+    { id := ⟨"bind.probe"⟩, category := CategoryId.sets, token := "probe∫"
+      operation := `CasCatalogue.BinderProbes.integral, domain := `CasCatalogue.BinderProbes.line }
+  validateBinder state probe
+  let cases : List (BinderEntry × String) :=
+    [({ probe with token := "" }, "no notation token"),
+     ({ probe with domain := `CasCatalogue.BinderProbes.lineOneBound }, "exactly the parameters"),
+     ({ probe with domain := `CasCatalogue.BinderProbes.notAnObject }, "does not return an object"),
+     ({ probe with operation := `CasCatalogue.BinderProbes.notAMorphism },
+        "is not a morphism family"),
+     ({ probe with operation := `CasCatalogue.BinderProbes.fromReals },
+        "with an admission and evidence"),
+     ({ probe with operation := `CasCatalogue.BinderProbes.fromUnits }, "not maps")]
+  for (row, fragment) in cases do
+    let refused ← try validateBinder state row; pure none
+      catch e => pure (some (← e.toMessageData.toString))
+    match refused with
+    | some message =>
+        unless (message.splitOn fragment).length > 1 do
+          throwError "binder refused for another reason than '{fragment}': {message}"
+    | none => throwError "binder accepted: {row.operation}, {row.domain} ('{fragment}')"
+
+end CasCatalogue
