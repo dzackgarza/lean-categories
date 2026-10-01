@@ -63,12 +63,6 @@ meta def runRegisteredEvaluation : TacticM Unit := do
   let procedure ← unsafe evalConst (TacticM Unit) name
   procedure
 
-/-- `run_evaluation`: the registered evaluation of `lit.sets.finite_subsets` on the main goal. -/
-syntax (name := runEvaluation) "run_evaluation" : tactic
-
-open Lean Elab Tactic in
-@[tactic runEvaluation] meta def evalRunEvaluation : Tactic := fun _ => runRegisteredEvaluation
-
 open Lean Meta Elab Tactic in
 /-- Run the registered evaluation and then `decide` on the closed statement `statement`, through
 `Lean.Elab.Tactic.run`: `some` proof when they close it with a `sorry`-free proof, which the kernel
@@ -125,57 +119,57 @@ example : literal ℤ {1, 2, 3} ≠ literal ℤ {1, 2} := by decide
 /-- `{1, 2, 3} ∪ {3, 4, 5} = {1, 2, 3, 4, 5}` in `𝒫(ℤ)`. -/
 example : applyBinary (union (boolPowerSet ℤ)) (literal ℤ {1, 2, 3}) (literal ℤ {3, 4, 5}) =
     literal ℤ {1, 2, 3, 4, 5} := by
-  run_evaluation; decide
+  (run_tac runRegisteredEvaluation); decide
 
 /-- `{1, 2, 3} ∪ {3, 4, 5} ≠ {1, 2, 3, 4}` in `𝒫(ℤ)`. -/
 example : applyBinary (union (boolPowerSet ℤ)) (literal ℤ {1, 2, 3}) (literal ℤ {3, 4, 5}) ≠
     literal ℤ {1, 2, 3, 4} := by
-  run_evaluation; decide
+  (run_tac runRegisteredEvaluation); decide
 
 /-- `{1, 2, 3} ∩ {3, 4, 5} = {3}` in `𝒫(ℕ)`. -/
 example : applyBinary (inter (boolPowerSet ℕ)) (literal ℕ {1, 2, 3}) (literal ℕ {3, 4, 5}) =
     literal ℕ {3} := by
-  run_evaluation; decide
+  (run_tac runRegisteredEvaluation); decide
 
 /-- `{0, 1, 2} \ {2, 3} = {0, 1}` in `𝒫(ℤ/5)`. -/
 example : applyBinary (diff (boolPowerSet (ZMod 5))) (literal (ZMod 5) {0, 1, 2})
     (literal (ZMod 5) {2, 3}) = literal (ZMod 5) {0, 1} := by
-  run_evaluation; decide
+  (run_tac runRegisteredEvaluation); decide
 
 /-- `{0, 1, 2} △ {2, 3} = {0, 1, 3}` in `𝒫(Fin 4)`, and not `{0, 1}`. -/
 example : applyBinary (Foundation.PowerSets.symmDiff (boolPowerSet (Fin 4)))
     (literal (Fin 4) {0, 1, 2})
     (literal (Fin 4) {2, 3}) = literal (Fin 4) {0, 1, 3} := by
-  run_evaluation; decide
+  (run_tac runRegisteredEvaluation); decide
 
 example : applyBinary (Foundation.PowerSets.symmDiff (boolPowerSet (Fin 4)))
     (literal (Fin 4) {0, 1, 2})
     (literal (Fin 4) {2, 3}) ≠ literal (Fin 4) {0, 1} := by
-  run_evaluation; decide
+  (run_tac runRegisteredEvaluation); decide
 
 /-- `{-1, 2} ∪ {2, 3} = {-1, 2, 3}` in `𝒫(ℚ)`. -/
 example : applyBinary (union (boolPowerSet ℚ)) (literal ℚ {-1, 2}) (literal ℚ {2, 3}) =
     literal ℚ {-1, 2, 3} := by
-  run_evaluation; decide
+  (run_tac runRegisteredEvaluation); decide
 
 /-- `|{1, 2, 3}| = 3`, by the cardinality functor. -/
 example : setsCardinality.obj (⟨extent ℤ (literal ℤ {1, 2, 3})⟩ : Core Type) =
     CardinalLiteral.denote 3 := by
-  run_evaluation; decide
+  (run_tac runRegisteredEvaluation); decide
 
 /-- `|{1, 2, 2, 3}| ≠ 4` and `≠ ℵ₀`: a repeated element is counted once. -/
 example : setsCardinality.obj (⟨extent ℤ (literal ℤ [1, 2, 2, 3].toFinset)⟩ : Core Type) ≠
     CardinalLiteral.denote 4 := by
-  run_evaluation; decide
+  (run_tac runRegisteredEvaluation); decide
 
 example : setsCardinality.obj (⟨extent ℤ (literal ℤ {1, 2, 3})⟩ : Core Type) ≠
     CardinalLiteral.denote .aleph0 := by
-  run_evaluation; decide
+  (run_tac runRegisteredEvaluation); decide
 
 /-- `|{1, 2, 3} ∪ {3, 4, 5}| = 5`. -/
 example : setsCardinality.obj (⟨extent ℤ (applyBinary (union (boolPowerSet ℤ))
     (literal ℤ {1, 2, 3}) (literal ℤ {3, 4, 5}))⟩ : Core Type) = CardinalLiteral.denote 5 := by
-  run_evaluation; decide
+  (run_tac runRegisteredEvaluation); decide
 
 /-! ## A consumer's term shapes -/
 

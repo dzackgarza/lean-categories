@@ -109,10 +109,12 @@ noncomputable def integral (a b : CasCatalogue.Foundation.Objects.fin 1 ⟶ real
 abbrev integrationDomain (_ _ : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) : SetsCat.{0} :=
   reals
 
-/-- The value of `∫_a^b` at an admitted map is Mathlib's interval integral of the map. -/
+/-- The value of `∫_a^b` at an admitted map is Mathlib's interval integral of the map (the
+composite applied map by map, its simp-normal form). -/
 @[simp] theorem integral_admit (a b : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals)
     (f : ℝ → ℝ) (h : Continuous f) (p : CasCatalogue.Foundation.Objects.fin 1) :
-    ConcreteCategory.hom (C := Type) (admitContinuous f h ≫ integral a b) p =
+    ConcreteCategory.hom (C := Type) (integral a b)
+        (ConcreteCategory.hom (C := Type) (admitContinuous f h) p) =
       ∫ t in ConcreteCategory.hom (C := Type) a 0..ConcreteCategory.hom (C := Type) b 0, f t :=
   rfl
 

@@ -63,15 +63,19 @@ def divide (M : Type) [Monoid M] : (M × units M : SetsCat.{0}) ⟶ (M : SetsCat
 def admit (M : Type) [Monoid M] (x : M) (h : Invertible x) : fin 1 ⟶ units M :=
   TypeCat.ofHom fun _ => @unitOfInvertible M _ x h
 
-/-- The admitted unit is `x`: `1 → Mˣ ↪ M` is the element `x`. -/
+/-- The admitted unit is `x`: `1 → Mˣ ↪ M` is the element `x`. Stated with the composite
+applied map by map, the simp-normal form (`CategoryTheory.types_comp_apply`). -/
 @[simp] theorem admit_inclusion (M : Type) [Monoid M] (x : M) (h : Invertible x) (p : fin 1) :
-    ConcreteCategory.hom (C := Type) (admit M x h ≫ inclusion M) p = x :=
+    ConcreteCategory.hom (C := Type) (inclusion M)
+        (ConcreteCategory.hom (C := Type) (admit M x h) p) = x :=
   rfl
 
 /-- The inverse of the admitted unit is the evidence's inverse `⅟x`. -/
 @[simp] theorem admit_inverse_inclusion (M : Type) [Monoid M] (x : M) (h : Invertible x)
     (p : fin 1) :
-    ConcreteCategory.hom (C := Type) (admit M x h ≫ inverse M ≫ inclusion M) p = h.invOf :=
+    ConcreteCategory.hom (C := Type) (inclusion M)
+        (ConcreteCategory.hom (C := Type) (inverse M)
+          (ConcreteCategory.hom (C := Type) (admit M x h) p)) = h.invOf :=
   rfl
 
 /-- In `ℤ` a unit is its own inverse: `u · u = 1` for `u = ±1` (Mathlib `Int.isUnit_mul_self`). -/

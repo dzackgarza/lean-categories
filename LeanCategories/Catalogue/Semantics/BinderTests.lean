@@ -152,7 +152,7 @@ theorem integral_sq (h : Continuous fun t : ℝ => t ^ 2) (p : fin 1) :
     ConcreteCategory.hom (C := Type)
       (admitContinuous (fun t => t ^ 2) h ≫ integral (realNumeral 0) (realNumeral 1)) p =
       1 / 3 := by
-  rw [integral_admit]
+  rw [ConcreteCategory.comp_apply, integral_admit]
   simp [integral_pow]
   norm_num
 
@@ -162,7 +162,7 @@ theorem integral_sin_zero_pi (h : Continuous fun t : ℝ =>
     ConcreteCategory.hom (C := Type)
       (admitContinuous (fun t => ConcreteCategory.hom (C := Type) Calculus.sin t) h ≫
         integral (realNumeral 0) Calculus.pi) p = 2 := by
-  rw [integral_admit]
+  rw [ConcreteCategory.comp_apply, integral_admit]
   simp [Calculus.sin, Calculus.pi, integral_sin]
   norm_num
 
@@ -324,26 +324,40 @@ run_elab do
 
 -- The same statement in the exact form the consumer's kernel produces: the variable passed
 -- through the identity morphism of `ℝ ∖ {0}` wrapped in `id` (`.hom'.toFun`), `puncturedUnits`
--- unfolded to `Units.mk0` with its proof of `t ≠ 0` stated about that image of `t`. The proof's
--- type is `t ≠ 0` only up to unfolding, so `Units.val_mk0` does not rewrite it; the evidence
--- reads `↑(Units.mk0 a _)` as `a` by definition (`RealLimits.collapseUnits`).
-set_option linter.auxLemma false in
+-- unfolded to `Units.mk0 x.val h` with `h` its own proof of `t ≠ 0` applied to that image of `x`.
+-- The proof is read off the definition of `puncturedUnits`, not named. Its type is `x.val ≠ 0`
+-- only up to unfolding, so `Units.val_mk0` does not rewrite it; the evidence reads
+-- `↑(Units.mk0 a _)` as `a` by definition (`RealLimits.collapseUnits`).
+open Lean Meta Elab Term in
+/-- `∃ L, Tendsto (fun x => sin ↑(Units.mk0 ↑x h) * ↑(Units.mk0 ↑x h)⁻¹) (t → 0) (𝓝 L)`, with `h`
+the proof inside `puncturedUnits` at `t = (id (𝟙 (ℝ ∖ {0}))).hom'.toFun x`. -/
+meta def kernelSincStatement : TermElabM Term := do
+  let some value := (← getConstInfo ``RealLimits.puncturedUnits).value?
+    | throwError "puncturedUnits has no definition"
+  let some mk0 := value.find? (·.isAppOfArity ``Units.mk0 4)
+    | throwError "puncturedUnits is not built from Units.mk0"
+  let proof := mk0.appArg!.getAppFn
+  unless proof.isConst do throwError "the proof inside puncturedUnits is not a constant"
+  let point ← elabTerm (← `(id (NamedRings.ringNumeral NumberSystems.ringReals 0))) none
+  let domain ← elabTerm (← `(RealLimits.puncturedLine
+    (id (NamedRings.ringNumeral NumberSystems.ringReals 0)))) none
+  synthesizeSyntheticMVarsNoPostponing
+  let map ← withLocalDeclD `x domain fun x => do
+    let image ← elabTerm (← `((id (CategoryStruct.id (RealLimits.puncturedLine
+      (id (NamedRings.ringNumeral NumberSystems.ringReals 0))))).hom'.toFun $(← exprToSyntax x)))
+      none
+    synthesizeSyntheticMVarsNoPostponing
+    let h := mkApp3 proof point (← mkEqRefl point) image
+    let unit ← mkAppM ``Units.mk0 #[← mkAppM ``Subtype.val #[x], h]
+    let body ← mkAppM ``HMul.hMul #[← mkAppM ``Real.sin #[← mkAppM ``Units.val #[unit]],
+      ← mkAppM ``Units.val #[← mkAppM ``Inv.inv #[unit]]]
+    mkLambdaFVars #[x] (← instantiateMVars body)
+  `(∃ L : ℝ, Tendsto $(← exprToSyntax map)
+      (RealLimits.approach (id (NamedRings.ringNumeral NumberSystems.ringReals 0))) (𝓝 L))
+
 #guard_msgs in
 run_elab do
-  expectEstablished RealLimits.convergenceEvidence
-    [← `(∃ L : ℝ, Tendsto (fun x : RealLimits.puncturedLine
-              (id (NamedRings.ringNumeral NumberSystems.ringReals 0)) =>
-            Real.sin (Units.mk0 x.val (RealLimits.puncturedUnits._proof_1
-                (id (NamedRings.ringNumeral NumberSystems.ringReals 0))
-                (Eq.refl (id (NamedRings.ringNumeral NumberSystems.ringReals 0)))
-                ((id (CategoryStruct.id (RealLimits.puncturedLine
-                  (id (NamedRings.ringNumeral NumberSystems.ringReals 0))))).hom'.toFun x))).val *
-              (Units.mk0 x.val (RealLimits.puncturedUnits._proof_1
-                (id (NamedRings.ringNumeral NumberSystems.ringReals 0))
-                (Eq.refl (id (NamedRings.ringNumeral NumberSystems.ringReals 0)))
-                ((id (CategoryStruct.id (RealLimits.puncturedLine
-                  (id (NamedRings.ringNumeral NumberSystems.ringReals 0))))).hom'.toFun x)))⁻¹.val)
-          (RealLimits.approach (id (NamedRings.ringNumeral NumberSystems.ringReals 0))) (𝓝 L))]
+  expectEstablished RealLimits.convergenceEvidence [← kernelSincStatement]
 
 -- Maps that do not converge: `sin(1/t)` at `0`, `t` and `sin t` at `∞`.
 #guard_msgs in
