@@ -243,7 +243,8 @@ binds a variable `t`, forms the map `t ↦ e`, and applies an operation to it (`
 * `operation : ∀ params, M params ⟶ Y params` is a morphism family of `category` whose source is a
   registered object `M` of maps `D params → Y params` the operation is total on, with an admission
   and its evidence (continuous maps, maps convergent at `a`, summable families). The notation's
-  arguments are the family's explicit parameters that are objects or morphisms, in order: a point
+  `k` arguments are the family's last `k` explicit parameters that are objects or morphisms, in
+  order (type parameters come before them): a point
   `1 ⟶ X` (a bound, the point of a limit, a finite subset) or an object (an index set).
 * `domain : ∀ params, D params`, with exactly the operation's parameters, is the object the bound
   variable ranges over; it may depend on the arguments (`ℝ ∖ {a}` for `lim_{t → a}`).
