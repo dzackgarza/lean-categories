@@ -2228,8 +2228,10 @@ def validateBinder (state : SemanticState) (e : BinderEntry) : MetaM Unit := do
       unless ds.size == params.size && result.getForallBinderNames.isEmpty do
         throwError "binder {e.id.raw}: {e.domain} does not take exactly the parameters of \
           {e.operation}"
-      for (d, p) in ds.zip params do
-        unless ← withTransparency .all <| isDefEq (← inferType d) (← inferType p) do
+      -- A parameter's type mentions the earlier parameters: compare in one telescope.
+      for i in [0:ds.size] do
+        let d := (← inferType ds[i]!).replaceFVars ds[:i] params[:i]
+        unless ← withTransparency .all <| isDefEq d (← inferType params[i]!) do
           throwError "binder {e.id.raw}: the parameters of {e.domain} are not those of \
             {e.operation}"
       unless ← withTransparency .all <| isDefEq result (← categoryCarrierInstance category) do
@@ -2245,11 +2247,13 @@ def validateBinder (state : SemanticState) (e : BinderEntry) : MetaM Unit := do
       let (args, infos, result) ← forallMetaTelescopeReducing (← inferType constant)
       let result ← whnfR result
       unless result.isAppOf ``Quiver.Hom do continue
-      unless ← withTransparency .all <| isDefEq result.appArg! source do continue
-      let target' ← instantiateMVars result.appArg!
+      -- The element is the first explicit binder the admission's target does not mention, read
+      -- before unification assigns the object's parameters.
+      let target' := result.appArg!
       let element? := (List.range args.size).find? fun i =>
         infos[i]!.isExplicit && (target'.findMVar? (· == args[i]!.mvarId!)).isNone
       let some i := element? | continue
+      unless ← withTransparency .all <| isDefEq result.appArg! source do continue
       let maps ← mkArrow D target
       unless ← withTransparency .all <| isDefEq (← inferType args[i]!) maps do
         throwError "binder {e.id.raw}: the object {o.id.raw} that {e.operation} is defined on \

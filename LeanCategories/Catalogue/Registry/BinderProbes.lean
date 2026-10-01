@@ -35,6 +35,19 @@ noncomputable def integral (a b : CasCatalogue.Foundation.Objects.fin 1 ⟶ real
 /-- The variable of `∫_a^b` ranges over `ℝ`. -/
 def line (_ _ : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) : SetsCat.{0} := reals
 
+/-- The integral again, with a parameter whose type depends on an earlier one (`h : 0 < n`). -/
+noncomputable def integralDependent (n : ℕ) (_ : 0 < n)
+    (a b : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) : continuousMaps ⟶ reals :=
+  integral a b
+
+/-- Its domain, with the same dependent parameters. -/
+def lineDependent (n : ℕ) (_ : 0 < n) (_ _ : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) :
+    SetsCat.{0} := reals
+
+/-- A domain whose dependent parameter differs (`h : n < 7`). -/
+def lineOtherDependent (n : ℕ) (_ : n < 7) (_ _ : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) :
+    SetsCat.{0} := reals
+
 /-- A domain with one bound only: not the operation's parameters. -/
 def lineOneBound (_ : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) : SetsCat.{0} := reals
 
@@ -63,6 +76,10 @@ run_meta do
     { id := ⟨"bind.probe"⟩, category := CategoryId.sets, token := "probe∫"
       operation := `CasCatalogue.BinderProbes.integral, domain := `CasCatalogue.BinderProbes.line }
   validateBinder state probe
+  let dependent : BinderEntry := { probe with
+    operation := `CasCatalogue.BinderProbes.integralDependent
+    domain := `CasCatalogue.BinderProbes.lineDependent }
+  validateBinder state dependent
   let cases : List (BinderEntry × String) :=
     [({ probe with token := "" }, "no notation token"),
      ({ probe with domain := `CasCatalogue.BinderProbes.lineOneBound }, "exactly the parameters"),
@@ -71,7 +88,8 @@ run_meta do
         "is not a morphism family"),
      ({ probe with operation := `CasCatalogue.BinderProbes.fromReals },
         "with an admission and evidence"),
-     ({ probe with operation := `CasCatalogue.BinderProbes.fromUnits }, "not maps")]
+     ({ probe with operation := `CasCatalogue.BinderProbes.fromUnits }, "not maps"),
+     ({ dependent with domain := `CasCatalogue.BinderProbes.lineOtherDependent }, "parameters of")]
   for (row, fragment) in cases do
     let refused ← try validateBinder state row; pure none
       catch e => pure (some (← e.toMessageData.toString))
@@ -80,5 +98,12 @@ run_meta do
         unless (message.splitOn fragment).length > 1 do
           throwError "binder refused for another reason than '{fragment}': {message}"
     | none => throwError "binder accepted: {row.operation}, {row.domain} ('{fragment}')"
+  -- `ℝˣ` admits elements of `ℝ`, its element binder, not of its parameter `M : Type`.
+  let fromUnits : BinderEntry :=
+    { probe with operation := `CasCatalogue.BinderProbes.fromUnits }
+  let units ← try validateBinder state fromUnits; pure ""
+    catch e => e.toMessageData.toString
+  if (units.splitOn "Type").length > 1 then
+    throwError "the element of the admission of ℝˣ is read as a parameter: {units}"
 
 end CasCatalogue
