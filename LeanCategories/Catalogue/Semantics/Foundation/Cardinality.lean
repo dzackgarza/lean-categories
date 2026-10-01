@@ -77,6 +77,25 @@ noncomputable def CardinalLiteral.denote : CardinalLiteral → cardinalsCategory
   | .finite n => ⟨n⟩
   | .aleph0 => ⟨Cardinal.aleph0⟩
 
+/-- Distinct literals denote distinct cardinals: `n ↦ n` is injective on `ℕ` and no natural
+number is `ℵ₀` (`Nat.cast_injective`, `Cardinal.natCast_lt_aleph0`). So equality of the cardinals
+two literals denote is equality of the literals. -/
+theorem CardinalLiteral.denote_inj {a b : CardinalLiteral} : a.denote = b.denote ↔ a = b := by
+  refine ⟨fun h => ?_, congrArg _⟩
+  have h := congrArg Discrete.as h
+  cases a with
+  | finite n => cases b with
+    | finite m => exact congrArg _ (Nat.cast_injective h)
+    | aleph0 => exact absurd h (Cardinal.natCast_lt_aleph0 (n := n)).ne
+  | aleph0 => cases b with
+    | finite m => exact absurd h.symm (Cardinal.natCast_lt_aleph0 (n := m)).ne
+    | aleph0 => rfl
+
+/-- Equality of the cardinals two literals denote is decided on the literals. -/
+instance CardinalLiteral.decidableEqDenote (a b : CardinalLiteral) :
+    Decidable (a.denote = b.denote) :=
+  decidable_of_iff (a = b) denote_inj.symm
+
 end Foundation.Cardinality
 
 normalized_registry .category

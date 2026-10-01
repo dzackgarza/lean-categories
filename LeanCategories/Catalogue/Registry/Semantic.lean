@@ -30,7 +30,9 @@ The registered semantics of the CAS language: which categories, category familie
 functors (structural or not), opaque categories with ports, fibrations, category constructors,
 methods, properties, lifts, cells, limits and adjunctions constitute it, each row naming the Lean
 declaration that is its mathematics and validated against it. `lean-cas-dsl` reads this registry
-from its pinned release and adds only realizations (`lean-cas-dsl/specs/architecture.md`). Rows are
+from its pinned release and adds no semantics: an implementation is registered there as an opaque
+computation for a catalogue operation, and nothing it supplies is consulted for meaning
+(`lean-cas-dsl/specs/architecture.md`). Rows are
 written with `normalized_registry`, only in `LeanCategories` modules.
 
 `addImportedFn` receives `Array (Array SemanticEntry)` from imported modules.
@@ -65,6 +67,7 @@ inductive SemanticEntry
   | operation (e : OperationEntry)
   | inclusion (e : InclusionEntry)
   | powerObject (e : PowerObjectEntry)
+  | subsetLiteral (e : SubsetLiteralEntry)
   deriving Repr
 
 /-- Stable identifier represented by a heterogeneous registry entry. -/
@@ -90,6 +93,7 @@ def SemanticEntry.stableId : SemanticEntry → String
   | .operation e => e.id.raw
   | .inclusion e => e.id.raw
   | .powerObject e => e.id.raw
+  | .subsetLiteral e => e.id.raw
 
 /-- Lean declarations that must resolve before this row can be persisted. -/
 def SemanticEntry.declarations : SemanticEntry → Array Name
@@ -110,7 +114,7 @@ def SemanticEntry.declarations : SemanticEntry → Array Name
   | .limit e => #[e.declaration]
   | .adjunction e => #[e.declaration]
   | .object e => #[e.declaration] ++ e.evidence.toArray
-  | .literal e => #[e.type, e.denotation]
+  | .literal e => #[e.type, e.denotation] ++ e.evaluation.toArray
   | .numeral e => #[e.declaration]
   | .graphLiteral e => #[e.denotation]
   | .morphism e => #[e.declaration]
@@ -118,6 +122,7 @@ def SemanticEntry.declarations : SemanticEntry → Array Name
   | .inclusion e => #[e.declaration, e.mono]
   | .powerObject e =>
       #[e.truth, e.member, e.transpose, e.extent, e.empty, e.singleton, e.terminal, e.image]
+  | .subsetLiteral e => #[e.type, e.denotation] ++ e.evaluation.toArray
 
 structure SemanticState where
   categories : Array NamedCategoryEntry := #[]
@@ -141,6 +146,7 @@ structure SemanticState where
   operations : Array OperationEntry := #[]
   inclusions : Array InclusionEntry := #[]
   powerObjects : Array PowerObjectEntry := #[]
+  subsetLiterals : Array SubsetLiteralEntry := #[]
   deriving Inhabited
 
 /-- Registered category-constructor lookup by stable ID. -/
@@ -400,6 +406,7 @@ private def SemanticState.apply : SemanticState → SemanticEntry → SemanticSt
   | s, .operation e => { s with operations := s.operations.push e }
   | s, .inclusion e => { s with inclusions := s.inclusions.push e }
   | s, .powerObject e => { s with powerObjects := s.powerObjects.push e }
+  | s, .subsetLiteral e => { s with subsetLiterals := s.subsetLiterals.push e }
 
 def SemanticState.entries (state : SemanticState) : List SemanticEntry :=
   state.categories.toList.map SemanticEntry.category ++
@@ -422,7 +429,8 @@ def SemanticState.entries (state : SemanticState) : List SemanticEntry :=
     state.morphisms.toList.map SemanticEntry.morphism ++
     state.operations.toList.map SemanticEntry.operation ++
     state.inclusions.toList.map SemanticEntry.inclusion ++
-    state.powerObjects.toList.map SemanticEntry.powerObject
+    state.powerObjects.toList.map SemanticEntry.powerObject ++
+    state.subsetLiterals.toList.map SemanticEntry.subsetLiteral
 
 def semanticEntryPairAllowed : SemanticEntry → SemanticEntry → Bool
   | .category category, right =>
@@ -1857,6 +1865,26 @@ def validateLimit (state : SemanticState) (e : LimitEntry) : MetaM Unit := do
 /-- The library root that authors semantics. -/
 def semanticAuthorRoots : List Name := [`LeanCategories]
 
+/-- A registered proof procedure of a row (an object's membership `evidence`, a literal form's
+`evaluation`) is a `meta` declaration `Lean.Elab.Tactic.TacticM Unit` of `lean-categories`: it is
+run when a statement is read, and it is the domain's mathematics, formalized with the domain.
+`row` names the row and `role` the field in the refusals. -/
+def validateProofProcedure (row role : String) (procedure : Name) : MetaM Unit := do
+  let some info := (← getEnv).find? procedure
+    | throwError "{row}: the {role} {procedure} is not a declaration"
+  let tacticM := mkApp (mkConst ``Lean.Elab.Tactic.TacticM) (mkConst ``Unit)
+  unless ← isDefEq info.type tacticM do
+    throwError "{row}: the {role} {procedure} is not a proof procedure \
+      `Lean.Elab.Tactic.TacticM Unit`"
+  let env ← getEnv
+  unless isMarkedMeta env procedure do
+    throwError "{row}: the {role} {procedure} is not `meta`: it is run when a statement is read"
+  let module := (env.getModuleIdxFor? procedure).map (env.header.moduleNames[·.toNat]!)
+    |>.getD env.mainModule
+  unless semanticAuthorRoots.contains module.getRoot do
+    throwError "{row}: the {role} {procedure} is declared in {module}; the {role} of a domain is \
+      formalized with the domain, in `lean-categories`"
+
 /-- An object row's declaration returns, after its parameters, an object of its registered
 category. -/
 def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
@@ -1913,26 +1941,33 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
     unless ← withTransparency .all <|
         isDefEq (← whnfR result).appArg! (mkAppN declaration objArgs) do
       throwError "object {e.id.raw}: the admission {admission} does not land in it"
+    -- The hypotheses follow the element, the first explicit binder that is not a parameter of
+    -- the object. Each is a proposition, or data with at most one value (the inverse of a unit,
+    -- `Invertible x`): the admitted element is determined by the element alone.
+    forallTelescopeReducing (← inferType constant) fun binders result => do
+      let target ← instantiateMVars result
+      let mut element? : Option Nat := none
+      for i in [0:binders.size] do
+        let binder := binders[i]!
+        if element?.isNone && (← binder.fvarId!.getBinderInfo).isExplicit &&
+            !target.containsFVar binder.fvarId! then
+          element? := some i
+      let some element := element?
+        | throwError "object {e.id.raw}: the admission {admission} takes no element"
+      for hypothesis in binders[element + 1:] do
+        let type ← inferType hypothesis
+        unless ← isProp type do
+          let subsingleton ← mkAppM ``Subsingleton #[type]
+          unless (← trySynthInstance subsingleton) matches .some _ do
+            throwError "object {e.id.raw}: the hypothesis{indentExpr type}\nof the admission \
+              {admission} is neither a proposition nor a subsingleton, so the admitted element \
+              would depend on more than the element"
   -- The evidence of an admission is a proof procedure of `lean-categories`, run on the
   -- admission's hypotheses: nothing else establishes membership in the domain.
   if let some evidence := e.evidence then
     if e.admission.isNone then
       throwError "object {e.id.raw}: evidence {evidence} is registered without an admission"
-    let some info := (← getEnv).find? evidence
-      | throwError "object {e.id.raw}: the evidence {evidence} is not a declaration"
-    let tacticM := mkApp (mkConst ``Lean.Elab.Tactic.TacticM) (mkConst ``Unit)
-    unless ← isDefEq info.type tacticM do
-      throwError "object {e.id.raw}: the evidence {evidence} is not a proof procedure \
-        `Lean.Elab.Tactic.TacticM Unit`"
-    let env ← getEnv
-    unless isMarkedMeta env evidence do
-      throwError "object {e.id.raw}: the evidence {evidence} is not `meta`: it is run when a \
-        statement is read"
-    let module := (env.getModuleIdxFor? evidence).map (env.header.moduleNames[·.toNat]!)
-      |>.getD env.mainModule
-    unless semanticAuthorRoots.contains module.getRoot do
-      throwError "object {e.id.raw}: the evidence {evidence} is declared in {module}; the \
-        evidence of a domain is formalized with the domain, in `lean-categories`"
+    validateProofProcedure s!"object {e.id.raw}" "evidence" evidence
   let some refinement := e.refines | return
   let some base := state.objects.find? (·.id == refinement.base)
     | throwError "object {e.id.raw} refines an unregistered object {refinement.base.raw}"
@@ -1988,6 +2023,8 @@ def validateLiteral (state : SemanticState) (e : LiteralEntry) : MetaM Unit := d
   let expected ← mkArrow type (← categoryCarrierInstance category)
   unless ← withTransparency .all <| isDefEq (← inferType denotation) expected do
     throwError "literal {e.id.raw}: {e.denotation} is not a map {e.type} → {e.category.raw}"
+  if let some evaluation := e.evaluation then
+    validateProofProcedure s!"literal {e.id.raw}" "evaluation" evaluation
 
 /-- The type `X ⟶ Y` of morphisms of the registered category `category`, for fresh `X`, `Y`. -/
 def categoryHomType (category : NamedCategoryEntry) : MetaM Expr := do
@@ -2136,6 +2173,31 @@ def validatePowerObject (state : SemanticState) (e : PowerObjectEntry) : MetaM U
   discard <| target e.terminal
   unless ← withTransparency .all <| isDefEq (← result e.extent) (← categoryCarrierInstance sets) do
     throwError "power object {e.id.raw}: {e.extent} does not return an object of {sets.id.raw}"
+
+/-- A subset-literal row names a registered power object, at most one literal form for it, and a
+`denotation : ∀ X [DecidableEq X], T X → (1 ⟶ 𝒫 X)` whose literal argument is of its `type`
+family `T`, which has decidable equality there, and which lands in that power object. -/
+def validateSubsetLiteral (state : SemanticState) (e : SubsetLiteralEntry) : MetaM Unit := do
+  let some power := state.powerObjects.find? (·.id == e.powerObject)
+    | throwError "subset literal {e.id.raw} names an unregistered power object {e.powerObject.raw}"
+  if state.subsetLiterals.any (·.powerObject == e.powerObject) then
+    throwError "subset literal {e.id.raw}: {e.powerObject.raw} already has a literal form"
+  let some object := state.objects.find? (·.id == power.object)
+    | throwError "subset literal {e.id.raw}: {power.object.raw} is not a registered object"
+  let denotation ← mkConstWithFreshMVarLevels e.denotation
+  forallTelescopeReducing (← inferType denotation) fun args type => do
+    let some literal ← args.findM? fun a => return (← inferType a).isAppOf e.type
+      | throwError "subset literal {e.id.raw}: {e.denotation} takes no literal of {e.type}"
+    discard <| synthInstance (← mkAppM ``DecidableEq #[← inferType literal])
+    let type ← whnfR type
+    unless type.isAppOf ``Quiver.Hom do
+      throwError "subset literal {e.id.raw}: {e.denotation} is not a family of elements"
+    let family ← mkConstWithFreshMVarLevels object.declaration
+    let (familyArgs, _, _) ← forallMetaTelescopeReducing (← inferType family)
+    unless ← withTransparency .all <| isDefEq type.appArg! (mkAppN family familyArgs) do
+      throwError "subset literal {e.id.raw}: {e.denotation} does not land in {power.object.raw}"
+  if let some evaluation := e.evaluation then
+    validateProofProcedure s!"subset literal {e.id.raw}" "evaluation" evaluation
 
 /-- An adjunction row names a Mathlib `Adjunction L R` between exactly its two registered
 functors. -/
@@ -2290,6 +2352,7 @@ def validateSemanticEntryDeclaration (entry : SemanticEntry) : MetaM Unit := do
   | .operation e => validateOperation state e
   | .inclusion e => validateInclusion state e
   | .powerObject e => validatePowerObject state e
+  | .subsetLiteral e => validateSubsetLiteral state e
   | .constructor e => do
       let semanticsConstant ← mkConstWithFreshMVarLevels e.semantics
       let (_, binderInfos, result) ←
@@ -2327,6 +2390,7 @@ def SemanticEntry.totalityDeclarations : SemanticEntry → Array Name
   | .literal e => #[e.denotation]
   | .powerObject e =>
       #[e.truth, e.member, e.transpose, e.extent, e.empty, e.singleton, e.terminal, e.image]
+  | .subsetLiteral e => #[e.denotation]
   | _ => #[]
 
 /- Validate the elaborated declaration and persist exactly one registry entry. -/
@@ -2394,8 +2458,8 @@ def addSemanticEntryChecked (entry : SemanticEntry) : MetaM Unit := do
   let module := (← getEnv).mainModule
   unless semanticAuthorRoots.contains module.getRoot do
     throwError "semantic row {entry.stableId}: {module} is not a `lean-categories` module; the \
-      semantics of the CAS are registered only in `lean-categories` (normalized_registry), and a \
-      backend leaf contributes realizations through `register_leaf`"
+      semantics of the CAS are registered only in `lean-categories` (normalized_registry); a leaf \
+      registers an opaque implementation for a catalogue operation and contributes no semantics"
   persistSemanticEntry entry
 
 /--

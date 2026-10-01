@@ -112,8 +112,9 @@ structure AdjunctionEntry where
 
 /-- A named object or object constructor (CC-CALC): `declaration : (parameters) → C`, a Lean
 function from typed parameters to the objects of the registered category `category`, e.g.
-`n ↦ ℤ/n` in `Sets`. Its parameters are typed terms, never strings. A leaf presents its values by
-handles, each with its identification; it never names the object. -/
+`n ↦ ℤ/n` in `Sets`. Its parameters are typed terms, never strings. What the object is, is fixed
+here by `declaration`; an implementation registered for an operation on it returns an opaque value
+of the declared result type, and nothing it supplies about that value is consulted. -/
 structure ObjectRefinement where
   /-- The object this one refines, in the target category of `edge`. -/
   base : ObjectId
@@ -152,7 +153,10 @@ structure ObjectEntry where
   /-- How an element of a registered object `B` is established to lie in this subobject of it:
   `∀ params (x : B) (h : P x), 1 ⟶ obj params`, the element `x` with the evidence `h` that it lies
   there (a matrix with an invertible determinant is a unit of `Matₙ(K)`). The evidence is
-  established when a statement is read (LC-14); without it, `x` is not an element here. -/
+  established when a statement is read (LC-14); without it, `x` is not an element here. Each
+  hypothesis is a proposition, or data with at most one value (`Subsingleton`), such as the
+  inverse of a unit (`Invertible x`), which the element keeps so that it computes: the admitted
+  element is determined by `x` alone. -/
   admission : Option Lean.Name := none
   /-- How the hypotheses of the admission are established for a given value: a declaration
   `evidence : Lean.Elab.Tactic.TacticM Unit` of `lean-categories`, written with the domain, run on
@@ -173,6 +177,13 @@ structure LiteralEntry where
   category : CategoryId
   type : Lean.Name
   denotation : Lean.Name
+  /-- How the images of literals under the catalogue's operations are evaluated to literals: a
+  declaration `evaluation : Lean.Elab.Tactic.TacticM Unit` of `lean-categories`, `meta`, typed and
+  validated as `ObjectEntry.evidence` is. Run on a statement about images of literals, it rewrites
+  each such image to the literal it equals, by theorems of the domain, so that the statement
+  becomes one between literals, decided on the literal type. It is the only rewriting a consumer
+  of the catalogue performs to evaluate literals of this form. -/
+  evaluation : Option Lean.Name := none
   deriving Repr
 
 /-- The numerals of registered objects (LC-15): `declaration : ∀ params (k : ℕ) (obligations),
@@ -196,6 +207,27 @@ structure GraphLiteralEntry where
   id : LiteralId
   category : CategoryId
   denotation : Lean.Name
+  deriving Repr
+
+/-- The finite-subset literals of a registered power object `𝒫` of `Sets`: `type` is a family
+`T : Type → Type` of Lean types of literal values, with decidable equality at every `X` with
+decidable equality, and `denotation : ∀ X [DecidableEq X], T X → (1 ⟶ 𝒫 X)` sends a literal to the
+element of `𝒫 X` it denotes, `{a₁, …, aₙ} ↦ {a₁, …, aₙ} ⊆ X`. Equality of literals is equality of
+the subsets they denote, so that a statement comparing a computed subset with a literal compares
+literals. One literal form per power object. -/
+structure SubsetLiteralEntry where
+  id : LiteralId
+  powerObject : PowerObjectId
+  type : Lean.Name
+  denotation : Lean.Name
+  /-- How the images of literals under the catalogue's operations are evaluated to literals: a
+  declaration `evaluation : Lean.Elab.Tactic.TacticM Unit` of `lean-categories`, `meta`, typed and
+  validated as `ObjectEntry.evidence` is. Run on a statement about images of literals (the
+  Boolean-algebra operations of `𝒫 X`, the cardinality functor), it rewrites each such image to
+  the literal it equals, by theorems of the domain, so that the statement becomes one between
+  literals, decided on the literal type (`decide`). It is the only rewriting a consumer of the
+  catalogue performs to evaluate literals of this form. -/
+  evaluation : Option Lean.Name := none
   deriving Repr
 
 /-- A registered inclusion of named objects of one category, `sub ⊆ super`: a monomorphism

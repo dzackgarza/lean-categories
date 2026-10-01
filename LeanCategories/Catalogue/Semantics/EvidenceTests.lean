@@ -9,6 +9,7 @@ public import LeanCategories.Catalogue.Semantics.Algebra.Units
 public import LeanCategories.Catalogue.Semantics.Algebra.Polynomials
 public import LeanCategories.Catalogue.Semantics.Algebra.LinearAlgebra
 public import LeanCategories.Catalogue.Semantics.Algebra.Calculus
+public import LeanCategories.Catalogue.Semantics.Foundation.Morphisms
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.Foundation.Evidence
 public meta import LeanCategories.Catalogue.Semantics.Algebra.Semirings
@@ -56,8 +57,11 @@ meta def run (procedure : TacticM Unit) (statement : Term) : TermElabM (Option E
   let proof ← instantiateMVars goal
   if proof.hasSorry || proof.hasMVar then
     throwError "the evidence proved{indentExpr type}\nwith `sorry` or a metavariable"
-  -- The kernel checks the proof.
-  discard <| mkAuxTheorem type proof
+  -- The kernel checks the proof, or the data (the inverse of a unit, `Invertible x`).
+  if ← isProp type then
+    discard <| mkAuxTheorem type proof
+  else
+    discard <| mkAuxDefinition (← mkFreshUserName `evidence) type proof (compile := false)
   return some proof
 
 /-- The hypothesis of `Monicₙ(K)` at `p` and `n`: `p.Monic ∧ p.natDegree = n`. -/
@@ -84,37 +88,106 @@ namespace CasCatalogue.EvidenceTests
 
 open CasCatalogue.Algebra
 
-/-! ## `Mˣ ↪ M`: `IsUnit x` -/
+/-! ## `Mˣ ↪ M`: `Invertible x`, the inverse of `x`
+
+The registered evidence establishes `Invertible x`; `isUnitEvidence`, which it runs on the
+equations of the inverse, establishes `IsUnit x` on the same elements. -/
+
+/-- The elements of closed monoids that are units. -/
+meta def unitSpecimens : Lean.Elab.Term.TermElabM (List Lean.Term) := do
+  return [← `((2 : ℚ)), ← `((-3 / 4 : ℝ)),
+      ← `((!![1, 2; 3, 4] : Matrix (Fin 2) (Fin 2) ℚ)),
+      ← `((5 : ZMod 7)), ← `((-1 : ℤ)),
+      ← `((!![1, 2, 0; 3, 4, 1; 0, 5, 7] : Matrix (Fin 3) (Fin 3) ℚ)),
+      ← `((!![2, 1, 0, 0; 0, 1, 3, 0; 1, 0, 1, 1; 0, 2, 0, 5] : Matrix (Fin 4) (Fin 4) ℚ)),
+      ← `((!![2, 1; 1, 1] : Matrix (Fin 2) (Fin 2) ℤ)),
+      ← `((!![1, 1; 0, 1] : Matrix (Fin 2) (Fin 2) (ZMod 2))),
+      ← `((!![0, 1; 1, 0] : Matrix (Fin 2) (Fin 2) ℝ)),
+      ← `((1 : ℕ)), ← `((3 : ZMod 10)), ← `((-(7 : ZMod 12))),
+      ← `(((-1 : ℤ) ^ 5)), ← `((Real.pi)), ← `((Real.sqrt 2)),
+      ← `((2 + 3 * Complex.I)), ← `((Complex.I)),
+      ← `((1 / 3 - 1 / 4 : ℚ)), ← `(((2 : ZMod 9) * 4 ^ 3)),
+      ← `((Equiv.swap (0 : Fin 3) 1 : Equiv.Perm (Fin 3)))]
+
+/-- The elements of closed monoids that are not units. -/
+meta def nonunitSpecimens : Lean.Elab.Term.TermElabM (List Lean.Term) := do
+  return [← `((2 : ℤ)), ← `((0 : ℚ)),
+      ← `((!![1, 2; 2, 4] : Matrix (Fin 2) (Fin 2) ℚ)),
+      ← `((!![2, 0; 0, 1] : Matrix (Fin 2) (Fin 2) ℤ)),
+      ← `((!![1, 2, 3; 4, 5, 6; 7, 8, 9] : Matrix (Fin 3) (Fin 3) ℚ)),
+      ← `((2 : ℕ)), ← `((0 : ℕ)), ← `((2 : ZMod 4)),
+      ← `((6 : ZMod 9)), ← `(((2 : ℤ) * 3)), ← `((1 / 2 - 2 / 4 : ℚ))]
 
 #guard_msgs in
-run_meta expectRegistered "obj.sets.units" ``Units.isUnitEvidence
+run_meta expectRegistered "obj.sets.units" ``Units.invertibleEvidence
 
 #guard_msgs in
 run_elab do
+  let units ← unitSpecimens
+  expectEstablished Units.invertibleEvidence (← units.mapM fun x => `(Invertible $x))
+  expectEstablished Units.isUnitEvidence (← units.mapM fun x => `(IsUnit $x))
+
+#guard_msgs in
+run_elab do
+  let nonunits ← nonunitSpecimens
+  expectRefused Units.invertibleEvidence (← nonunits.mapM fun x => `(Invertible $x))
+  expectRefused Units.isUnitEvidence (← nonunits.mapM fun x => `(IsUnit $x))
+
+/-! ### The registered numerals of `ℤ/n`
+
+A consumer forms the numeral `k ∈ ℤ/n` (`obj.sets.integers_mod`, `n ≠ 0`) with the registered
+numeral `num.sets.fin`: `ℤ/n` is `Fin n` by definition (Mathlib `ZMod`), so `finPoint` at
+`1 ⟶ ℤ/n` unifies `n` as `m + 1` and the element is the point `⟨k, _⟩ : Fin (m + 1)`, a value of
+`ℤ/n` carrying the ring structure of `ZMod n`. The evidence runs on that term. -/
+
+section ZModNumerals
+
+open Lean Meta Elab Term
+
+/-- The value in `ℤ/n` of the registered numeral `k` at `1 ⟶ ℤ/n`, evaluated at the point of `1`
+as a consumer evaluates it: the term `⟨k, _⟩ : Fin (m + 1)`. -/
+meta def zmodNumeralValue (n k : Nat) : TermElabM Term := do
+  let numeral ← `((CasCatalogue.Foundation.Morphisms.finPoint _ $(quote k) (by decide) :
+      Foundation.Objects.fin 1 ⟶ Foundation.Objects.integersMod $(quote n)))
+  let element ← Term.elabTerm (← `(CategoryTheory.ConcreteCategory.hom (C := Type) $numeral
+      (⟨0, Nat.one_pos⟩ : Foundation.Objects.fin 1))) none
+  Term.synthesizeSyntheticMVarsNoPostponing
+  let value ← whnf (← instantiateMVars element)
+  unless value.isAppOfArity ``Fin.mk 3 do
+    throwError "the numeral {k} of ℤ/{n} evaluates to{indentExpr value}\nnot a point of Fin"
+  Term.exprToSyntax value
+
+/-- `Invertible x ∈ ℤ/n` at the registered numeral `x = k`, the statement formed at type `ℤ/n`
+with the ring structure of `ZMod n`. -/
+meta def zmodNumeralInvertible (n k : Nat) : TermElabM Term := do
+  `(@Invertible (Foundation.Objects.integersMod $(quote n)) _ _ $(← zmodNumeralValue n k))
+
+/-- `IsUnit x ∈ ℤ/n` at the registered numeral `x = k`. -/
+meta def zmodNumeralIsUnit (n k : Nat) : TermElabM Term := do
+  `(@IsUnit (Foundation.Objects.integersMod $(quote n)) _ $(← zmodNumeralValue n k))
+
+/-- The registered numerals that are units: `2 ∈ ℤ/5`, `7 ∈ ℤ/12`, `3 ∈ ℤ/10`, `8 ∈ ℤ/9`,
+`1 ∈ ℤ/2`. -/
+meta def zmodNumeralUnits : List (Nat × Nat) := [(5, 2), (12, 7), (10, 3), (9, 8), (2, 1)]
+
+/-- The registered numerals that are not: `5 ∈ ℤ/10`, `8 ∈ ℤ/12`, `0 ∈ ℤ/5`, `6 ∈ ℤ/9`. -/
+meta def zmodNumeralNonunits : List (Nat × Nat) := [(10, 5), (12, 8), (5, 0), (9, 6)]
+
+#guard_msgs in
+run_elab do
+  expectEstablished Units.invertibleEvidence
+    (← zmodNumeralUnits.mapM fun (n, k) => zmodNumeralInvertible n k)
   expectEstablished Units.isUnitEvidence
-    [← `(IsUnit (2 : ℚ)), ← `(IsUnit (-3 / 4 : ℝ)),
-      ← `(IsUnit (!![1, 2; 3, 4] : Matrix (Fin 2) (Fin 2) ℚ)),
-      ← `(IsUnit (5 : ZMod 7)), ← `(IsUnit (-1 : ℤ)),
-      ← `(IsUnit (!![1, 2, 0; 3, 4, 1; 0, 5, 7] : Matrix (Fin 3) (Fin 3) ℚ)),
-      ← `(IsUnit (!![2, 1, 0, 0; 0, 1, 3, 0; 1, 0, 1, 1; 0, 2, 0, 5] :
-        Matrix (Fin 4) (Fin 4) ℚ)),
-      ← `(IsUnit (!![2, 1; 1, 1] : Matrix (Fin 2) (Fin 2) ℤ)),
-      ← `(IsUnit (!![1, 1; 0, 1] : Matrix (Fin 2) (Fin 2) (ZMod 2))),
-      ← `(IsUnit (!![0, 1; 1, 0] : Matrix (Fin 2) (Fin 2) ℝ)),
-      ← `(IsUnit (1 : ℕ)), ← `(IsUnit (3 : ZMod 10)), ← `(IsUnit (-(7 : ZMod 12))),
-      ← `(IsUnit ((-1 : ℤ) ^ 5)), ← `(IsUnit (Real.pi)), ← `(IsUnit (Real.sqrt 2)),
-      ← `(IsUnit (2 + 3 * Complex.I)), ← `(IsUnit (Complex.I)),
-      ← `(IsUnit (1 / 3 - 1 / 4 : ℚ))]
+    (← zmodNumeralUnits.mapM fun (n, k) => zmodNumeralIsUnit n k)
 
 #guard_msgs in
 run_elab do
+  expectRefused Units.invertibleEvidence
+    (← zmodNumeralNonunits.mapM fun (n, k) => zmodNumeralInvertible n k)
   expectRefused Units.isUnitEvidence
-    [← `(IsUnit (2 : ℤ)), ← `(IsUnit (0 : ℚ)),
-      ← `(IsUnit (!![1, 2; 2, 4] : Matrix (Fin 2) (Fin 2) ℚ)),
-      ← `(IsUnit (!![2, 0; 0, 1] : Matrix (Fin 2) (Fin 2) ℤ)),
-      ← `(IsUnit (!![1, 2, 3; 4, 5, 6; 7, 8, 9] : Matrix (Fin 3) (Fin 3) ℚ)),
-      ← `(IsUnit (2 : ℕ)), ← `(IsUnit (0 : ℕ)), ← `(IsUnit (2 : ZMod 4)),
-      ← `(IsUnit (6 : ZMod 9)), ← `(IsUnit ((2 : ℤ) * 3)), ← `(IsUnit (1 / 2 - 2 / 4 : ℚ))]
+    (← zmodNumeralNonunits.mapM fun (n, k) => zmodNumeralIsUnit n k)
+
+end ZModNumerals
 
 /-! ## `R[x] ∖ {0} ↪ R[x]`: `p ≠ 0` -/
 
@@ -145,6 +218,33 @@ run_elab do
       ← `(((Polynomial.X + 1) ^ 2 - Polynomial.X ^ 2 - 2 * Polynomial.X - 1 : Polynomial ℤ) ≠ 0),
       ← `((Polynomial.C 0 : Polynomial ℝ) ≠ 0),
       ← `((2 * Polynomial.X - Polynomial.X - Polynomial.X : Polynomial ℂ) ≠ 0)]
+
+/-! Images `q.map f` along injective ring maps: `q.map f ≠ 0` iff `q ≠ 0`. The injectivity of
+`f` (out of a field, out of `ℤ` into characteristic zero, composites) is established by the
+procedure. -/
+
+#guard_msgs in
+run_elab do
+  expectEstablished Polynomials.nonzeroPolynomialEvidence
+    [← `(((Polynomial.X ^ 3 - 2 * Polynomial.X + 1 : Polynomial ℚ).map (algebraMap ℚ ℂ)) ≠ 0),
+      ← `(((Polynomial.X ^ 2 - 2 : Polynomial ℤ).map (Int.castRingHom ℚ)) ≠ 0),
+      ← `(((Polynomial.X ^ 2 - 2 : Polynomial ℤ).map (algebraMap ℤ ℝ)) ≠ 0),
+      ← `(((Polynomial.C Real.pi * Polynomial.X + 1 : Polynomial ℝ).map (algebraMap ℝ ℂ)) ≠ 0),
+      ← `((((Polynomial.X + 1) ^ 2 - Polynomial.X ^ 2 - 2 * Polynomial.X : Polynomial ℚ).map
+        (algebraMap ℚ ℝ)) ≠ 0),
+      ← `((((Polynomial.X + 1 : Polynomial ℤ).map (Int.castRingHom ℚ)).map (algebraMap ℚ ℂ)) ≠ 0),
+      ← `(((Polynomial.X ^ 2 + 1 : Polynomial ℤ).map
+        ((algebraMap ℚ ℝ).comp (Int.castRingHom ℚ))) ≠ 0),
+      ← `(((Polynomial.X : Polynomial (ZMod 5)).map (RingHom.id (ZMod 5))) ≠ 0)]
+
+#guard_msgs in
+run_elab do
+  expectRefused Polynomials.nonzeroPolynomialEvidence
+    [← `(((0 : Polynomial ℚ).map (algebraMap ℚ ℂ)) ≠ 0),
+      ← `(((Polynomial.X - Polynomial.X : Polynomial ℤ).map (Int.castRingHom ℚ)) ≠ 0),
+      ← `(((Polynomial.C 0 : Polynomial ℝ).map (algebraMap ℝ ℂ)) ≠ 0),
+      -- `5 = 0` in `ℤ/5`: the image is `0`.
+      ← `(((5 * Polynomial.X : Polynomial ℤ).map (Int.castRingHom (ZMod 5))) ≠ 0)]
 
 /-! ## `Monicₙ(K) ↪ K[x]`: `p.Monic ∧ p.natDegree = n` -/
 
@@ -184,6 +284,45 @@ run_elab do
         (← `(2)),
       ← monicOfDegree (← `((7 * Polynomial.X ^ 2 + Polynomial.X : Polynomial (ZMod 7))))
         (← `(2))]
+
+/-! Images `q.map f` along ring maps into rings with `0 ≠ 1`: monic of degree `n` when `q` is,
+whether or not `f` is injective. -/
+
+#guard_msgs in
+run_elab do
+  expectEstablished LinearAlgebra.monicEvidence
+    [← monicOfDegree
+        (← `(((Polynomial.X ^ 2 + 2 * Polynomial.X + 1 : Polynomial ℚ).map (algebraMap ℚ ℝ))))
+        (← `(2)),
+      ← monicOfDegree (← `(((Polynomial.X ^ 3 - 2 : Polynomial ℤ).map (Int.castRingHom ℚ))))
+        (← `(3)),
+      ← monicOfDegree
+        (← `(((Polynomial.X ^ 2 - Polynomial.X ^ 2 + Polynomial.X + 1 : Polynomial ℤ).map
+          (algebraMap ℤ ℚ)))) (← `(1)),
+      ← monicOfDegree
+        (← `(((Polynomial.X ^ 2 + Polynomial.C Real.pi * Polynomial.X : Polynomial ℝ).map
+          (algebraMap ℝ ℂ)))) (← `(2)),
+      ← monicOfDegree
+        (← `((((Polynomial.X ^ 4 - Polynomial.C (1 / 2) : Polynomial ℚ).map
+          (algebraMap ℚ ℝ)).map (algebraMap ℝ ℂ)))) (← `(4)),
+      -- `ℤ → ℤ/5` is not injective; `x² + 5 ↦ x²` is monic of degree `2`.
+      ← monicOfDegree
+        (← `(((Polynomial.X ^ 2 + 5 : Polynomial ℤ).map (Int.castRingHom (ZMod 5))))) (← `(2))]
+
+#guard_msgs in
+run_elab do
+  expectRefused LinearAlgebra.monicEvidence
+    [← monicOfDegree (← `(((0 : Polynomial ℚ).map (algebraMap ℚ ℝ)))) (← `(0)),
+      ← monicOfDegree (← `(((2 * Polynomial.X ^ 2 + 1 : Polynomial ℤ).map (Int.castRingHom ℚ))))
+        (← `(2)),
+      ← monicOfDegree (← `(((Polynomial.X ^ 3 + 1 : Polynomial ℚ).map (algebraMap ℚ ℝ))))
+        (← `(2)),
+      ← monicOfDegree
+        (← `(((Polynomial.X ^ 2 - Polynomial.X ^ 2 : Polynomial ℚ).map (algebraMap ℚ ℂ))))
+        (← `(2)),
+      -- In the zero ring `ℤ/1` the image of `x` is `0`, of degree `0`.
+      ← monicOfDegree (← `(((Polynomial.X : Polynomial ℤ).map (Int.castRingHom (ZMod 1)))))
+        (← `(1))]
 
 /-! ## `C(ℝ) ↪ (ℝ → ℝ)`: `Continuous f` -/
 

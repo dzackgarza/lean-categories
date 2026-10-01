@@ -25,8 +25,17 @@ on `M`. The endomorphisms `Matₙ(K) = End(Kⁿ)` form a monoid; their units are
 `GLₙ(K) = Aut(Kⁿ) = Matₙ(K)ˣ`; the units of a field `K` are `K^× = K ∖ {0}`.
 
 * `Mˣ ↪ M` (`Units.val`) is a monomorphism: a unit is an element of `M`.
-* An element `x ∈ M` is a unit only with the evidence `IsUnit x` (the admission); without it, it
+* An element of `Mˣ` is a pair `(x, y)` of elements of `M` with `x y = y x = 1` (Mathlib `Units`).
+  An element `x ∈ M` is admitted into `Mˣ` with the evidence `Invertible x`: its inverse `⅟x`
+  together with `⅟x · x = x · ⅟x = 1` (Mathlib `Invertible`, `unitOfInvertible`). Without it, `x`
   is not an element of `Mˣ`, and `x⁻¹` is not a term.
+* The admission keeps the inverse as data, so the inverse of an admitted unit is the evidence's
+  `⅟x` and computes wherever `⅟x` does (`(3 : ℚ)⁻¹`, `2⁻¹ ∈ ℤ/5`). The proposition `IsUnit x`
+  says only that some inverse exists: a unit recovered from it (`IsUnit.unit`) has an inverse
+  chosen by `Classical.choose`, which does not reduce.
+* `Invertible x` is a subsingleton (`Invertible.subsingleton`: in a monoid, `y x = 1 = x z` gives
+  `y = y x z = z`), so the admitted unit depends on `x` alone, as membership does, and
+  `Nonempty (Invertible x) ↔ IsUnit x` (`isUnit_iff_nonempty_invertible`).
 * `⁻¹ : Mˣ → Mˣ`, and division `M × Mˣ → M`, `(a, u) ↦ a u⁻¹`.
 -/
 
@@ -42,9 +51,43 @@ abbrev units (M : Type) [Monoid M] : SetsCat.{0} := Mˣ
 /-- `Mˣ ↪ M`. -/
 def inclusion (M : Type) [Monoid M] : units M ⟶ (M : SetsCat.{0}) := TypeCat.ofHom Units.val
 
-/-- The unit `x`, with the evidence that `x` is a unit. -/
-noncomputable def admit (M : Type) [Monoid M] (x : M) (h : IsUnit x) : fin 1 ⟶ units M :=
-  TypeCat.ofHom fun _ => h.unit
+/-- `u ↦ u⁻¹`, the inverse of the group `Mˣ`. -/
+def inverse (M : Type) [Monoid M] : units M ⟶ units M := TypeCat.ofHom fun u => u⁻¹
+
+/-- `(a, u) ↦ a u⁻¹`. -/
+def divide (M : Type) [Monoid M] : (M × units M : SetsCat.{0}) ⟶ (M : SetsCat.{0}) :=
+  TypeCat.ofHom fun p => p.1 * ↑(p.2⁻¹)
+
+/-- The unit `x`, with its inverse: the evidence `h : Invertible x` is the inverse `⅟x` with
+`⅟x · x = x · ⅟x = 1`, and the unit is the pair `(x, ⅟x)` (Mathlib `unitOfInvertible`). -/
+def admit (M : Type) [Monoid M] (x : M) (h : Invertible x) : fin 1 ⟶ units M :=
+  TypeCat.ofHom fun _ => @unitOfInvertible M _ x h
+
+/-- The admitted unit is `x`: `1 → Mˣ ↪ M` is the element `x`. -/
+@[simp] theorem admit_inclusion (M : Type) [Monoid M] (x : M) (h : Invertible x) (p : fin 1) :
+    ConcreteCategory.hom (C := Type) (admit M x h ≫ inclusion M) p = x :=
+  rfl
+
+/-- The inverse of the admitted unit is the evidence's inverse `⅟x`. -/
+@[simp] theorem admit_inverse_inclusion (M : Type) [Monoid M] (x : M) (h : Invertible x)
+    (p : fin 1) :
+    ConcreteCategory.hom (C := Type) (admit M x h ≫ inverse M ≫ inclusion M) p = h.invOf :=
+  rfl
+
+/-- In `ℤ` a unit is its own inverse: `u · u = 1` for `u = ±1` (Mathlib `Int.isUnit_mul_self`). -/
+@[instance_reducible] def invertibleOfIsUnitInt {u : ℤ} (h : IsUnit u) : Invertible u :=
+  ⟨u, Int.isUnit_mul_self h, Int.isUnit_mul_self h⟩
+
+/-- The only unit of `ℕ` is `1` (Mathlib `Nat.isUnit_iff`), its own inverse. -/
+@[instance_reducible] def invertibleOfIsUnitNat {n : ℕ} (h : IsUnit n) : Invertible n :=
+  ⟨1, by simp [Nat.isUnit_iff.mp h], by simp [Nat.isUnit_iff.mp h]⟩
+
+/-- In `ℤ/n` the inverse of a unit `a` is `a⁻¹`, the Bézout coefficient of `a` modulo `n` computed
+by the extended Euclidean algorithm (Mathlib `ZMod.inv`, `ZMod.inv_mul_of_unit`,
+`ZMod.mul_inv_of_unit`). -/
+@[instance_reducible] def invertibleOfIsUnitZMod {n : ℕ} {a : ZMod n} (h : IsUnit a) :
+    Invertible a :=
+  ⟨a⁻¹, ZMod.inv_mul_of_unit a h, ZMod.mul_inv_of_unit a h⟩
 
 /-- In `ℤ/n` with `n ≠ 0`, `x` is a unit exactly when its representative `x.val ∈ [0, n)` is
 coprime to `n` (Mathlib `ZMod.isUnit_iff_coprime`, stated there for the image of a natural
@@ -66,6 +109,31 @@ meta def closedArithmeticEvidence : TacticM Unit :=
      do evalTactic (← `(tactic| decide))]
 
 open Lean Elab Tactic in
+/-- Expand the determinants of matrices of closed entries in the main goal along their first row
+(`Matrix.det_succ_row_zero`), down to the ring's arithmetic. -/
+meta def expandDeterminant : TacticM Unit := do
+  evalTactic (← `(tactic| try simp only [Matrix.det_succ_row_zero, Fin.sum_univ_succ,
+    Matrix.submatrix_apply, Fin.succ_succAbove_zero, Fin.succ_succAbove_succ,
+    Fin.zero_succAbove, Fin.succAbove_zero, Matrix.cons_val_zero, Matrix.cons_val_succ,
+    Matrix.det_unique, Fin.default_eq_zero, Finset.univ_unique, Finset.sum_singleton,
+    Fin.val_zero, Fin.val_succ, Matrix.of_apply, Matrix.cons_val_fin_one, Matrix.head_cons,
+    Matrix.det_isEmpty, Matrix.det_one, Matrix.det_mul, Matrix.det_transpose,
+    Matrix.det_diagonal, Fin.prod_univ_succ, Fin.prod_univ_zero]))
+
+open Lean Meta Elab Tactic in
+/-- The modulus `n` when the monoid of the main goal `IsUnit x` or `Invertible x` is `ℤ/n`.
+
+The monoid is read from the goal's carrier, never from the element: an element of `ℤ/n` may be
+presented as a point `⟨k, _⟩ : Fin n` (`ZMod n` is `Fin n` by definition for `n ≠ 0`, Mathlib
+`ZMod`; this is the catalogue's numeral of `ℤ/n`), whose type does not name `n` as a modulus. -/
+meta def zmodModulus : TacticM Term := do
+  let some carrier := (← getMainTarget).consumeMData.getAppArgs[0]?
+    | throwError "not a statement about an element of a monoid"
+  let carrier ← whnfR carrier
+  unless carrier.isAppOfArity ``ZMod 1 do throwError "the monoid is not ℤ/n"
+  Term.exprToSyntax carrier.appArg!
+
+open Lean Elab Tactic in
 /-- The units of the monoids of closed values, by the structure of the monoid `M`:
 
 * every element of a group is a unit (`Mˣ`, `GLₙ(K)`, permutations);
@@ -74,7 +142,9 @@ open Lean Elab Tactic in
   along its first row (`Matrix.det_succ_row_zero`) and its units are those of the ring;
 * in a division ring (`ℚ`, `ℝ`, `ℂ`) the units are the nonzero elements (`isUnit_iff_ne_zero`);
 * the units of `ℤ` are `±1` (`Int.isUnit_iff`), of `ℕ` only `1` (`Nat.isUnit_iff`);
-* the units of `ℤ/n`, `n ≠ 0`, are the classes coprime to `n` (`zmod_isUnit_iff_coprime_val`);
+* the units of `ℤ/n`, `n ≠ 0`, are the classes coprime to `n` (`zmod_isUnit_iff_coprime_val`),
+  however the class is presented: `(k : ZMod n)`, or the point `⟨k, _⟩` of `Fin n` that
+  `ZMod n` is for `n ≠ 0` (the catalogue's numeral of `ℤ/n`);
 * in any monoid, `1`, a product of units, a power of a unit and the negative of a unit are units.
 
 It fails on an element that is not a unit (`2 ∈ ℤ`, `0 ∈ ℚ`, a singular matrix). -/
@@ -89,13 +159,7 @@ where
      do evalTactic (← `(tactic| exact Units.isUnit _)),
      do
       evalTactic (← `(tactic| rw [Matrix.isUnit_iff_isUnit_det]))
-      evalTactic (← `(tactic| try simp only [Matrix.det_succ_row_zero, Fin.sum_univ_succ,
-        Matrix.submatrix_apply, Fin.succ_succAbove_zero, Fin.succ_succAbove_succ,
-        Fin.zero_succAbove, Fin.succAbove_zero, Matrix.cons_val_zero, Matrix.cons_val_succ,
-        Matrix.det_unique, Fin.default_eq_zero, Finset.univ_unique, Finset.sum_singleton,
-        Fin.val_zero, Fin.val_succ, Matrix.of_apply, Matrix.cons_val_fin_one, Matrix.head_cons,
-        Matrix.det_isEmpty, Matrix.det_one, Matrix.det_mul, Matrix.det_transpose,
-        Matrix.det_diagonal, Fin.prod_univ_succ, Fin.prod_univ_zero]))
+      expandDeterminant
       isUnitCases,
      do
       evalTactic (← `(tactic| rw [isUnit_iff_ne_zero]))
@@ -107,8 +171,11 @@ where
       evalTactic (← `(tactic| rw [Nat.isUnit_iff]))
       closedArithmeticEvidence,
      do
+      -- Applied at the modulus of the goal's monoid, not rewritten: the element may be a point
+      -- of `Fin n`, which matches `x : ZMod n` only once `n` is known (`zmodModulus`).
+      let n ← zmodModulus
       evalTactic (← `(tactic|
-        rw [CasCatalogue.Algebra.Units.zmod_isUnit_iff_coprime_val]))
+        refine (@CasCatalogue.Algebra.Units.zmod_isUnit_iff_coprime_val $n _ _).mpr ?_))
       CasCatalogue.Evidence.closeByFirst m!"not coprime to the modulus"
         [do evalTactic (← `(tactic| decide)),
          do evalTactic (← `(tactic| norm_num [Nat.coprime_iff_gcd_eq_one, ZMod.val]))],
@@ -126,12 +193,65 @@ where
         setGoals [goal]
         isUnitCases]
 
-/-- `u ↦ u⁻¹`, the inverse of the group `Mˣ`. -/
-def inverse (M : Type) [Monoid M] : units M ⟶ units M := TypeCat.ofHom fun u => u⁻¹
+open Lean Elab Tactic in
+/-- The evidence of the admission into `Mˣ`: the inverse of a closed `x`, `Invertible x`, by the
+structure of the monoid `M`. The inverse is the one the structure computes, and only the
+equations `⅟x · x = x · ⅟x = 1` are proved (by `isUnitEvidence`, the inverse being unique):
 
-/-- `(a, u) ↦ a u⁻¹`. -/
-def divide (M : Type) [Monoid M] : (M × units M : SetsCat.{0}) ⟶ (M : SetsCat.{0}) :=
-  TypeCat.ofHom fun p => p.1 * ↑(p.2⁻¹)
+* in a group, `x⁻¹` (`invertibleOfGroup`); for `1`, `1` (`invertibleOne`); for a unit `u`, `u⁻¹`
+  (`Units.invertible`);
+* for a square matrix `A` over a commutative ring, `(det A)⁻¹ · adj A`, from the inverse of its
+  determinant (`Matrix.invertibleOfDetInvertible`, Cramer's rule);
+* in a division ring (`ℚ`, `ℝ`, `ℂ`), `x⁻¹` for `x ≠ 0` (`invertibleOfNonzero`);
+* in `ℤ`, `u⁻¹ = u` for `u = ±1`; in `ℕ`, `1⁻¹ = 1`;
+* in `ℤ/n`, `a⁻¹` by the extended Euclidean algorithm (`ZMod.inv`);
+* the inverse of a product, a power, a negative of units: `⅟b · ⅟a`, `(⅟a)ⁿ`, `-⅟a`
+  (`invertibleMul`, `invertiblePow`, `invertibleNeg`).
+
+It fails on an element that is not a unit (`2 ∈ ℤ`, `0 ∈ ℚ`, a singular matrix). -/
+meta partial def invertibleEvidence : TacticM Unit :=
+  CasCatalogue.Evidence.establish "Units" invertibleCases
+where
+  /-- `IsUnit x` for the element `x` of a ring, its determinants expanded first. -/
+  isUnitOfElement : TacticM Unit := do
+    expandDeterminant
+    isUnitEvidence.isUnitCases
+  /-- The cases above, tried in turn on the main goal `Invertible x`. -/
+  invertibleCases : TacticM Unit :=
+  CasCatalogue.Evidence.closeByFirst m!"the value is not established to be a unit"
+    [do evalTactic (← `(tactic| exact invertibleOfGroup _)),
+     do evalTactic (← `(tactic| exact invertibleOne)),
+     do evalTactic (← `(tactic| exact Units.invertible _)),
+     do
+      evalTactic (← `(tactic| refine @Matrix.invertibleOfDetInvertible _ _ _ _ _ _ ?_))
+      invertibleCases,
+     do
+      evalTactic (← `(tactic| refine invertibleOfNonzero (isUnit_iff_ne_zero.mp ?_)))
+      isUnitOfElement,
+     do
+      evalTactic (← `(tactic| refine CasCatalogue.Algebra.Units.invertibleOfIsUnitInt ?_))
+      isUnitOfElement,
+     do
+      evalTactic (← `(tactic| refine CasCatalogue.Algebra.Units.invertibleOfIsUnitNat ?_))
+      isUnitOfElement,
+     do
+      let n ← zmodModulus
+      evalTactic (← `(tactic|
+        refine @CasCatalogue.Algebra.Units.invertibleOfIsUnitZMod $n _ ?_))
+      isUnitOfElement,
+     do
+      let x := (← getMainTarget).consumeMData.appArg!
+      if x.isAppOfArity ``HMul.hMul 6 then
+        evalTactic (← `(tactic| refine @invertibleMul _ _ _ _ ?_ ?_))
+      else if x.isAppOfArity ``HPow.hPow 6 then
+        evalTactic (← `(tactic| refine @invertiblePow _ _ _ ?_ _))
+      else if x.isAppOfArity ``Neg.neg 3 then
+        evalTactic (← `(tactic| refine @invertibleNeg _ _ _ _ _ ?_))
+      else
+        throwError "not a product, power or negative of units"
+      for goal in ← getGoals do
+        setGoals [goal]
+        invertibleCases]
 
 end CasCatalogue.Algebra.Units
 
@@ -142,7 +262,7 @@ normalized_registry .object
     declaration := `CasCatalogue.Algebra.Units.units
     inclusion := some `CasCatalogue.Algebra.Units.inclusion
     admission := some `CasCatalogue.Algebra.Units.admit
-    evidence := some `CasCatalogue.Algebra.Units.isUnitEvidence }
+    evidence := some `CasCatalogue.Algebra.Units.invertibleEvidence }
 
 normalized_registry .morphism
   { id := ⟨"mor.sets.units_inverse"⟩, category := CategoryId.sets, name := "⁻¹"

@@ -653,7 +653,7 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
 
 - **Need:** each domain `D ↪ B` with an admission registers evidence that establishes the
   admission's hypothesis `P x` for every closed `x ∈ D` and fails for `x ∉ D` (LC-18). The seven
-  procedures are `Algebra.Units.isUnitEvidence`, `Semirings.positiveEvidence`,
+  procedures are `Algebra.Units.invertibleEvidence`, `Semirings.positiveEvidence`,
   `Semirings.primeEvidence`, `Polynomials.nonzeroPolynomialEvidence`,
   `LinearAlgebra.monicEvidence`, `Calculus.continuousEvidence`, `Calculus.smoothEvidence`,
   exercised in `Catalogue/Semantics/EvidenceTests.lean`.
@@ -671,7 +671,8 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
      determinant" and neighbours); **Found:** `lucas_primality` and `lucas_primality_iff` only,
      no certificate tactic; **Conclusion:** missing (LC-11); **Confidence:** medium (the corpus
      was searched by phrase, not exhaustively). Owner: `Semirings.primeEvidence`.
-  2. **Units of monoids outside the covered families.** `isUnitEvidence` covers groups, square
+  2. **Units of monoids outside the covered families.** `invertibleEvidence` (through
+     `isUnitEvidence`) covers groups, square
      matrices over a commutative ring through the determinant (first-row expansion, so `n!`
      terms: practical to about `6 × 6`), division rings, `ℤ`, `ℕ`, `ℤ/n` (`n ≠ 0`) and products,
      powers and negatives of units. It refuses, although they may be units: elements of
@@ -688,8 +689,24 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
   4. **Polynomial expressions beyond ring operations.** `nonzeroPolynomialEvidence` and
      `monicEvidence` read degrees and leading coefficients from `X`, `C r`, numerals, `+ - · ^`
      (Mathlib `compute_degree`, `monicity`), after `reduce_mod_char` and `ring_nf` when leading
-     terms cancel. Compositions `p.comp q`, derivatives, `map`, `Polynomial.eval`-built
-     coefficients and `Finset` sums are not unfolded and are refused.
+     terms cancel. Compositions `p.comp q`, derivatives, `Polynomial.eval`-built coefficients and
+     `Finset` sums are not unfolded and are refused.
+     `map` is a case of both procedures (2026-09-30, branch
+     `formalization/evidence-polynomial-map`): `q.map f ≠ 0` is reduced to `q ≠ 0` and the
+     injectivity of `f` (`Polynomial.map_ne_zero_iff`), established by
+     `Polynomials.injectiveRingHomEvidence` for maps out of simple rings into rings with `0 ≠ 1`
+     (`RingHom.injective`), out of `ℤ` into characteristic zero (`RingHom.injective_int`), faithful
+     algebra maps, identities and composites; `q.map f` monic of degree `n` is reduced to `q` monic
+     of degree `n` and `0 ≠ 1` in the target (`LinearAlgebra.monicOfDegree_map`). Still refused,
+     although true (execution, 2026-09-30):
+     - a nonzero image along a non-injective map, `(x² + 5).map (ℤ → ℤ/5) ≠ 0`. Its
+       characterization is a coefficient of `q` outside `ker f`, e.g. the leading one
+       (`Polynomial.degree_map_eq_of_leadingCoeff_ne_zero`), or pushing `map` through the ring
+       operations of a closed `q` (`Polynomial.mapRingHom`);
+     - a monic image of a non-monic `q`, `(6x² + x).map (ℤ → ℤ/5)` monic of degree `2`
+       (`6 = 1` in `ℤ/5`), by the same push-through;
+     - injectivity of maps outside the covered families (out of a non-simple ring other than `ℤ`
+       with no `FaithfulSMul` instance).
   5. **Continuity and smoothness of piecewise maps.** `continuousEvidence` and `smoothEvidence`
      compose rules along the structure of the map (`fun_prop`). A piecewise map that is continuous
      because its pieces agree on the boundary (`fun x => if x < 0 then -x else x`) and a quotient

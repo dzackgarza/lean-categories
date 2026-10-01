@@ -17,7 +17,9 @@ public meta import LeanCategories.Catalogue.Semantics.Algebra.Catalogue.Magmas
 * `is_commutative`, on any receiver with a structural route to magmas;
 * `is_abelian`, the same classifier, available on groups only (#53 §12).
 
-Deciding it is a leaf's contribution (a `Decider` for `clf.magmas.commutative`).
+What holds is the proposition `Classifier.Holds` of `clf.magmas.commutative`, fixed here; where it
+can be discharged in Lean it is proved here or discharged generically by the kernel, never by an
+implementation.
 -/
 
 namespace CasCatalogue

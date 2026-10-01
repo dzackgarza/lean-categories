@@ -14,8 +14,10 @@ public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 # The property query of a classifier (CC-PROP)
 
 A property is a classifier `p : 𝒞.A → 𝒞`. The query "does `X` have `A`" asks whether the fibre of
-`p` over `X` is inhabited (FOUNDATIONS Def. 46.4). Deciding it on a presentation is a realization's
-business (`lean-cas-dsl`'s `Decider`).
+`p` over `X` is inhabited (FOUNDATIONS Def. 46.4). What holds is fixed here: `Holds` is that
+proposition, and where it can be discharged in Lean it is proved here or discharged generically by
+the kernel. An implementation registered for the query returns an opaque answer of the declared
+result type; that answer is never a decision of `Holds`.
 -/
 
 open CategoryTheory
@@ -32,7 +34,7 @@ def Classifier.Holds {C : LeanCategories.ObjCat.{uObj, uHom}} (c : LeanCategorie
 
 
 /-- The fibre of the classifier of a property over `X` is inhabited iff `X` has the property: for a
-property classifier, the registered decision of `Holds` is a decision of `P`. -/
+property classifier, deciding `Holds` decides `P`. -/
 theorem Classifier.holds_ofProperty {C : LeanCategories.ObjCat.{uObj, uHom}} (P : ObjectProperty C)
     (X : C) : Classifier.Holds (LeanCategories.Classifier.ofProperty P) X ↔ P X :=
   ⟨fun ⟨⟨Y, e⟩⟩ => e ▸ Y.property, fun h => ⟨⟨⟨X, h⟩, rfl⟩⟩⟩

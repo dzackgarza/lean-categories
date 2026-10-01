@@ -111,18 +111,52 @@ meta def monicByDegree : TacticM Unit := do
   evalTactic (← `(tactic| compute_degree!))
   CasCatalogue.Algebra.Polynomials.closeCoefficientGoals
 
+/-- The image of a monic polynomial `p` of degree `n` along a ring map `f : R → S` into a ring in
+which `0 ≠ 1` is monic of degree `n`: `f` sends the leading coefficient `1` to `1 ≠ 0` and the
+coefficients above degree `n`, all `0`, to `0` (Mathlib `Polynomial.Monic.map`,
+`Polynomial.Monic.natDegree_map`). No injectivity of `f` is needed. -/
+theorem monicOfDegree_map {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S)
+    {p : Polynomial R} {n : ℕ} (hp : p.Monic ∧ p.natDegree = n) (h : (0 : S) ≠ 1) :
+    (p.map f).Monic ∧ (p.map f).natDegree = n :=
+  haveI := nontrivial_of_ne _ _ h
+  ⟨hp.1.map f, (hp.1.natDegree_map f).trans hp.2⟩
+
 open Lean Elab Tactic in
-/-- The evidence that a closed polynomial `p ∈ K[x]` (an expression in `x`, constants `C r`,
-numerals, `+`, `-`, `·`, `^` over a closed commutative ring `K`) is monic of degree `n`: its
-coefficient of degree `n` is `1` and none above it is nonzero. They are read off the expression,
-and, when its naive leading terms cancel, off its normal form
-(`Polynomials.normalizePolynomial`). It fails on a polynomial that is not monic or has another
-degree. -/
-meta def monicEvidence : TacticM Unit :=
-  CasCatalogue.Evidence.establish "Monicₙ(K)" <| CasCatalogue.Evidence.closeByFirst
-    m!"the polynomial is not established to be monic of the degree"
-    [monicByDegree,
-     do CasCatalogue.Algebra.Polynomials.normalizePolynomial; monicByDegree]
+/-- The evidence that a closed polynomial `p ∈ K[x]` is monic of degree `n`, by the structure of
+`p`:
+
+* `p` an expression in `x`, constants `C r`, numerals, `+`, `-`, `·`, `^` over a closed
+  commutative ring `K`: its coefficient of degree `n` is `1` and none above it is nonzero. They
+  are read off the expression, and, when its naive leading terms cancel, off its normal form
+  (`Polynomials.normalizePolynomial`);
+* `p = q.map f` the image of `q ∈ R[x]` along a ring map `f : R → K`: it is monic of degree `n`
+  when `q` is and `0 ≠ 1` in `K` (`monicOfDegree_map`), so the first is established by this
+  procedure and the second is a closed arithmetic fact.
+
+It fails on a polynomial that is not monic or has another degree. -/
+meta partial def monicEvidence : TacticM Unit :=
+  CasCatalogue.Evidence.establish "Monicₙ(K)" monicCases
+where
+  /-- The cases above, tried in turn on the main goal `p.Monic ∧ p.natDegree = n`. -/
+  monicCases : TacticM Unit :=
+    CasCatalogue.Evidence.closeByFirst
+      m!"the polynomial is not established to be monic of the degree"
+      [monicOfMap, monicByDegree,
+       do CasCatalogue.Algebra.Polynomials.normalizePolynomial; monicByDegree]
+  /-- `q.map f` is monic of degree `n` from `q` monic of degree `n` and `0 ≠ 1` in the target. -/
+  monicOfMap : TacticM Unit := do
+    let target := (← instantiateMVars (← getMainTarget)).consumeMData
+    unless target.isAppOfArity ``And 2 && (target.getArg! 0).isAppOfArity ``Polynomial.Monic 3 &&
+        ((target.getArg! 0).getArg! 2).isAppOfArity ``Polynomial.map 6 do
+      throwError "not the image of a polynomial along a ring map"
+    evalTactic (← `(tactic|
+      refine CasCatalogue.Algebra.LinearAlgebra.monicOfDegree_map _ ?_ ?_))
+    for goal in ← getGoals do
+      setGoals [goal]
+      if (← instantiateMVars (← goal.getType)).consumeMData.isAppOf ``And then
+        monicCases
+      else
+        CasCatalogue.Algebra.Polynomials.closeCoefficientGoals
 
 /-- The companion matrix of a monic `p = xⁿ + Σ_{i<n} pᵢ xⁱ`: ones below the diagonal and
 `-p₀, …, -pₙ₋₁` in the last column. Mathlib has no companion matrix. -/

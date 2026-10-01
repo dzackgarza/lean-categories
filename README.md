@@ -36,8 +36,10 @@ classifiers, operations (every user-facing method), coherences, and typed constr
 families. It also owns their registration as the language's semantics.
 
 `lean-cas-dsl` requires this package and derives the language from a pinned release. It owns
-resolution, realizations over Sage, GAP, Julia and other engines, the leaf API and the notebook,
-and it owns no mathematics. The semantic registry it reads, the catalogue, is here
+resolution, the registration of opaque implementations (over Sage, GAP, Julia and other engines)
+for catalogue operations, the leaf API and the notebook, and it owns no mathematics. Nothing an
+implementation supplies is consulted for meaning; its answers are judged only by the
+`lean-cas-dsl` acceptance suite. The semantic registry it reads, the catalogue, is here
 (`LeanCategories/Catalogue/`, namespace `CasCatalogue`). The contract is
 [`lean-cas-dsl/specs/architecture.md`](https://github.com/dzackgarza/lean-cas-dsl/blob/main/specs/architecture.md).
 
@@ -89,9 +91,9 @@ document and writes resumable candidate checkpoints under `.tmp/`. Candidate hit
 evidence only; canonical semantic routes remain in `corpus/` mapping records. A greenfield
 `unmatched` disposition requires the finite negative-search gate recorded in `AGENTS.md`.
 
-Sage observation, method exposure, backend routing, and runnable parity belong to
-[`dzackgarza/lean-cas-dsl`](https://github.com/dzackgarza/lean-cas-dsl). Sage labels and
-implementation details do not define this library.
+Method exposure, backend routing and the execution of registered implementations belong to
+[`dzackgarza/lean-cas-dsl`](https://github.com/dzackgarza/lean-cas-dsl). Sage labels, category
+graphs and implementation details do not define this library.
 
 ```bash
 just cache
@@ -146,8 +148,8 @@ the definitions, variance conventions, truncations, exact sequences, and settled
 conventions this repository formalizes — is [FOUNDATIONS.md](FOUNDATIONS.md)
 ("Mathematical Foundations of the Categorical Research Language", 66 sections: the
 (∞,2)-ambient, classifiers and lifts, operation and diagram-extension classifiers, forms
-and intrinsic lattices, discriminant theory, sites/stacks/deformation theory, the SageCat
-comparison category, the computational-language semantics, categorical presentations,
+and intrinsic lattices, discriminant theory, sites/stacks/deformation theory, full diagrams
+of categories and their limits and colimits, the computational-language semantics, categorical presentations,
 exact packages, and convex/reflection/period/degeneration geometry). AGENTS.md governs
 *how* agents work; FOUNDATIONS.md governs *what* the mathematics is. The governing
 execution state is the issue ledger
