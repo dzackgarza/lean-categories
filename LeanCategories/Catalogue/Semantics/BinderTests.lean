@@ -322,6 +322,29 @@ run_elab do
                 x.2 (h0.trans (RealLimits.value_eq_zero_of_eq rfl).symm) : ℝˣ)⁻¹ : ℝˣ) : ℝ))
           (RealLimits.approach (id (NamedRings.ringNumeral NumberSystems.ringReals 0))) (𝓝 L))]
 
+-- The same statement in the exact form the consumer's kernel produces: the variable passed
+-- through the identity morphism of `ℝ ∖ {0}` wrapped in `id` (`.hom'.toFun`), `puncturedUnits`
+-- unfolded to `Units.mk0` with its proof of `t ≠ 0` stated about that image of `t`. The proof's
+-- type is `t ≠ 0` only up to unfolding, so `Units.val_mk0` does not rewrite it; the evidence
+-- reads `↑(Units.mk0 a _)` as `a` by definition (`RealLimits.collapseUnits`).
+set_option linter.auxLemma false in
+#guard_msgs in
+run_elab do
+  expectEstablished RealLimits.convergenceEvidence
+    [← `(∃ L : ℝ, Tendsto (fun x : RealLimits.puncturedLine
+              (id (NamedRings.ringNumeral NumberSystems.ringReals 0)) =>
+            Real.sin (Units.mk0 x.val (RealLimits.puncturedUnits._proof_1
+                (id (NamedRings.ringNumeral NumberSystems.ringReals 0))
+                (Eq.refl (id (NamedRings.ringNumeral NumberSystems.ringReals 0)))
+                ((id (CategoryStruct.id (RealLimits.puncturedLine
+                  (id (NamedRings.ringNumeral NumberSystems.ringReals 0))))).hom'.toFun x))).val *
+              (Units.mk0 x.val (RealLimits.puncturedUnits._proof_1
+                (id (NamedRings.ringNumeral NumberSystems.ringReals 0))
+                (Eq.refl (id (NamedRings.ringNumeral NumberSystems.ringReals 0)))
+                ((id (CategoryStruct.id (RealLimits.puncturedLine
+                  (id (NamedRings.ringNumeral NumberSystems.ringReals 0))))).hom'.toFun x)))⁻¹.val)
+          (RealLimits.approach (id (NamedRings.ringNumeral NumberSystems.ringReals 0))) (𝓝 L))]
+
 -- Maps that do not converge: `sin(1/t)` at `0`, `t` and `sin t` at `∞`.
 #guard_msgs in
 run_elab do

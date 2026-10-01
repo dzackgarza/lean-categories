@@ -273,6 +273,21 @@ theorem tendsto_sin_mul_inv_self : Tendsto (fun t : ℝ => Real.sin t * t⁻¹) 
 
 open Lean Meta Elab Tactic
 
+/-- The value of a unit `Units.mk0 a h ∈ ℝˣ` is `a`, by definition (Mathlib `Units.mk0`,
+`Units.val_mk0`): replace each `↑(Units.mk0 a h)` in the main goal by `a`, whatever the proof `h`.
+`Units.val_mk0` as a rewrite rule does not apply when the type of `h` is `a ≠ 0` only up to
+unfolding (`h` about `((id (𝟙 _)).hom'.toFun x).val` for `a = x.val`); the equation holds
+definitionally all the same, and the goal is changed along it. -/
+meta def collapseUnits : TacticM Unit := do
+  let goal ← getMainGoal
+  let target ← instantiateMVars (← goal.getType)
+  let collapsed := target.replace fun e =>
+    if e.isAppOfArity ``Units.val 3 && e.appArg!.isAppOfArity ``Units.mk0 4 then
+      some e.appArg!.appFn!.appArg!
+    else none
+  unless collapsed == target do
+    replaceMainGoal [← goal.change collapsed]
+
 /-- Unfold the catalogue's operations and points in the main goal to the Mathlib terms they are
 defined by (through `id`), and evaluate them, the registered numerals to casts: the map becomes a
 lambda of real expressions in the value of its variable, the point a real number, `±∞` or its
@@ -296,6 +311,8 @@ meta def unfoldLimit : TacticM Unit := do
     Int.cast_one, Units.val_inv_eq_inv_val, Units.val_mk0, one_mul, mul_one,
     CasCatalogue.Algebra.RealLimits.comap_nhdsNE_top,
     CasCatalogue.Algebra.RealLimits.comap_nhdsNE_bot]))
+  collapseUnits
+  evalTactic (← `(tactic| try simp only [one_mul, mul_one]))
 
 /-- The goal `Tendsto f (comap ι G) (𝓝 L)` for a map `f = fun t => e[ι t]` on a subobject
 `ι : D ↪ ℝ` becomes `Tendsto (fun s => e[s]) G (𝓝 L)`: every occurrence of the variable in `e`
