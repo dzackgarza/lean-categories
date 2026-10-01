@@ -2102,20 +2102,15 @@ def validateInclusion (state : SemanticState) (e : InclusionEntry) : MetaM Unit 
   let (args, _, type) ← forallMetaTelescopeReducing (← inferType declaration)
   let subDecl ← mkConstWithFreshMVarLevels sub.declaration
   let superDecl ← mkConstWithFreshMVarLevels super.declaration
-  -- `sub` and `super` at any arguments the parameters determine (`ℝ ∖ {a} ↪ ℝˣ` relates an
-  -- object at a point to the units of a ring); an explicit proposition among the parameters is
-  -- an obligation on them (`a = 0`), decided where the inclusion is used.
-  let (subArgs, _, _) ← forallMetaTelescopeReducing (← inferType subDecl)
-  let (superArgs, _, _) ← forallMetaTelescopeReducing (← inferType superDecl)
   let ok ← withTransparency .all do
     let expected ← categoryHomType category
     unless ← isDefEq type expected do return false
     let type ← instantiateMVars type
     let #[_, _, x, y] := type.getAppArgs | return false
-    pure ((← isDefEq x (mkAppN subDecl subArgs)) && (← isDefEq y (mkAppN superDecl superArgs)))
+    pure ((← isDefEq x (mkAppN subDecl args)) && (← isDefEq y (mkAppN superDecl args)))
   unless ok do
     throwError "inclusion {e.id.raw}: {e.declaration} is not a family of morphisms \
-      {sub.declaration} ⟶ {super.declaration}"
+      {sub.declaration} ⟶ {super.declaration} at its parameters"
   let mono ← mkConstWithFreshMVarLevels e.mono
   let (monoArgs, _, monoType) ← forallMetaTelescopeReducing (← inferType mono)
   unless monoArgs.size == args.size do

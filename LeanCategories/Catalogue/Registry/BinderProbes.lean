@@ -65,15 +65,6 @@ noncomputable def fromUnits (_ _ : CasCatalogue.Foundation.Objects.fin 1 ⟶ rea
 /-- Not a morphism family. -/
 def notAMorphism (_ _ : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) : ℕ := 0
 
-/-- `Fin n ↪ Fin m` for `n ≤ m`: an inclusion between objects at different parameters, with an
-obligation on them. -/
-def finCastLE (n m : ℕ) (h : n ≤ m) :
-    CasCatalogue.Foundation.Objects.fin n ⟶ CasCatalogue.Foundation.Objects.fin m :=
-  TypeCat.ofHom (Fin.castLE h)
-
-theorem finCastLE_mono (n m : ℕ) (h : n ≤ m) : Mono (finCastLE n m h) :=
-  (CategoryTheory.mono_iff_injective _).2 (Fin.castLE_injective h)
-
 end CasCatalogue.BinderProbes
 
 namespace CasCatalogue
@@ -114,13 +105,5 @@ run_meta do
     catch e => e.toMessageData.toString
   if (units.splitOn "Type").length > 1 then
     throwError "the element of the admission of ℝˣ is read as a parameter: {units}"
-
--- An inclusion relates objects at whatever arguments its parameters determine.
-open Lean Meta in
-run_meta do
-  validateInclusion (← semanticState)
-    { id := ⟨"incl.probe.fin_cast_le"⟩, category := CategoryId.sets, sub := ⟨"obj.sets.fin"⟩
-      super := ⟨"obj.sets.fin"⟩, declaration := `CasCatalogue.BinderProbes.finCastLE
-      mono := `CasCatalogue.BinderProbes.finCastLE_mono }
 
 end CasCatalogue

@@ -23,7 +23,8 @@ Theorems evaluating the operations of the binders `∫_{a}^{b}`, `lim_{t → a}`
 `∑_{t ∈ A}`, `∏_{t ∈ A}` at maps admitted into their objects of maps, the points written as the
 registered numerals (`NamedRings.ringNumeral`) and named elements (`Calculus.pi`,
 `RealLimits.infinity`), and the bodies through the registered operations (`Calculus.sin`,
-`Units.divide`, `RealLimits.puncturedUnits`). They hold for every proof of the admission's
+`Units.divide`) and the map `ℝ ∖ {0} ↪ ℝˣ` (`RealLimits.puncturedUnits`). They hold for every
+proof of the admission's
 hypothesis. Their expected values are the classical ones, each from its own source:
 
 * `lim_{t → 0} sin t / t = 1` (the derivative of `sin` at `0`; Mathlib `Real.sinc`);
@@ -117,27 +118,10 @@ theorem limitAtInfinity_reciprocal_neg
 theorem zero_mem_punctured_one : ∃ t : puncturedLine (realNumeral 1), t.1 = 0 :=
   ⟨⟨0, by simp⟩, rfl⟩
 
-/-- The obligation of `ℝ ∖ {a} ↪ ℝˣ` at the point as a consumer forms it for `lim_{t → 0}`,
-`id (ringNumeral ringReals 0)`, holds by `rfl`. -/
+/-- The obligation `a = 0` of `ℝ ∖ {a} ↪ ℝˣ` (`puncturedUnits`) at the point as a consumer forms
+it for `lim_{t → 0}`, `id (ringNumeral ringReals 0)`, holds by `rfl`: the evidence tests below
+build their maps with `puncturedUnits _ rfl` there. -/
 example : id (NamedRings.ringNumeral NumberSystems.ringReals 0) = zeroPoint := rfl
-
--- The obligation holds by definitional equality at default transparency, as the consumer
--- decides it, and the inclusion is registered with `puncturedUnits` and its monomorphism proof.
-#guard_msgs in
-open Lean Meta in
-run_meta do
-  let point ← mkAppM ``id #[← mkAppM ``NamedRings.ringNumeral
-    #[mkConst ``NumberSystems.ringReals, mkNatLit 0]]
-  let obligation ← mkEq point (mkConst ``RealLimits.zeroPoint)
-  let some (_, lhs, rhs) := obligation.eq? | throwError "not an equation"
-  unless ← withTransparency .default (isDefEq lhs rhs) do
-    throwError "the obligation {obligation} does not hold definitionally"
-  let state ← semanticState
-  let some row := state.inclusions.find? (·.id.raw == "incl.sets.punctured_line_units")
-    | throwError "ℝ ∖ \{0} ↪ ℝˣ is not registered"
-  unless row.declaration == ``RealLimits.puncturedUnits &&
-      row.mono == ``RealLimits.puncturedUnits_mono do
-    throwError "ℝ ∖ \{0} ↪ ℝˣ is registered with other declarations"
 
 end Limits
 
@@ -300,10 +284,9 @@ run_elab do
               rfl) x)⁻¹ : ℝˣ))
           (RealLimits.approach (id (NamedRings.ringNumeral NumberSystems.ringReals 0))) (𝓝 L))]
 
--- `lim_{t → 0} sin t / t` as a consumer forms it through the registered inclusion
--- `ℝ ∖ {0} ↪ ℝˣ`: `t` carried into `ℝˣ` by `puncturedUnits _ rfl` and back to `ℝ` by the units'
--- inclusion, the quotient the division by the unit `t`; once as that composite of registered
--- maps, once reduced to `sin ↑(Units.mk0 ↑t _) * ↑(Units.mk0 ↑t _)⁻¹`.
+-- `lim_{t → 0} sin t / t` with `t` carried into `ℝˣ` by `ℝ ∖ {0} ↪ ℝˣ` (`puncturedUnits _ rfl`)
+-- and back to `ℝ` by the units' inclusion, the quotient the division by the unit `t`; once as
+-- that composite of maps, once reduced to `sin ↑(Units.mk0 ↑t _) * ↑(Units.mk0 ↑t _)⁻¹`.
 #guard_msgs in
 run_elab do
   expectEstablished RealLimits.convergenceEvidence
