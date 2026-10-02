@@ -83,6 +83,16 @@ noncomputable def algebrasForgetRealization (K : Algebra.CommutativeRings.{u}) :
   { sourceRealization := algebrasRealization K
     targetRealization := commutativeRingsRealization }
 
+/-- The chosen scalar extension determined by the actual coefficient ring map. -/
+def scalarAlgebra (R S : CommRingCat.{0}) (f : R ⟶ S) : algebrasCategory R :=
+  Under.mk f
+
+/-- Evaluation in the chosen scalar algebra uses precisely its defining coefficient map. -/
+theorem evaluation_scalarAlgebra (R S : CommRingCat.{0}) (f : R ⟶ S)
+    (p : Polynomial R) (x : S) :
+    ConcreteCategory.hom (C := Type) (Polynomials.evaluation R (scalarAlgebra R S f)) (p, x) =
+      Polynomial.eval₂ f.hom x p := rfl
+
 /-- `K[x₀, …, xₙ₋₁]` as a `K`-algebra. -/
 noncomputable def mvAlgebra (n : ℕ) (K : CommRingCat.{0}) :
     algebrasCategory K :=
@@ -126,6 +136,10 @@ normalized_registry .functor
     realization := `CasCatalogue.Algebra.Algebras.algebrasForgetRealization
     expression := Algebra.Algebras.AlgebrasForgetExpr
     structural := true }
+
+normalized_registry .object
+  { id := ⟨"obj.algebras.scalar_extension"⟩, category := CategoryId.algebras
+    name := "ScalarAlgebra", declaration := `CasCatalogue.Algebra.Algebras.scalarAlgebra }
 
 normalized_registry .object
   { id := ⟨"obj.algebras.mv_polynomials"⟩, category := CategoryId.algebras, name := "MvPoly"

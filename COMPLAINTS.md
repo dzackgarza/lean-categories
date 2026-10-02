@@ -939,3 +939,18 @@ the default for existing inclusions. `incl.sets.punctured_units` now cites the
 existing map and mono theorem using dependent mode. Source probes reject treating
 it as a shared-parameter family and reject a mono proof at different parameters.
 This repairs the public inclusion interface without a binder-specific rule.
+
+Independent completeness review identified missing public chosen scalar inputs
+for polynomial evaluation and coefficient extension: the previously registered
+scalar casts were only Sets arrows. `Algebras.scalarAlgebra R S f` now supplies the
+selected object `Under.mk f` through the generic `ScalarAlgebra` object row. Its
+source law `evaluation_scalarAlgebra` proves that evaluation uses exactly the
+defining coefficient map `f.hom`. The canonical integer coefficient map into any
+chosen commutative ring and the rational-to-real, rational-to-complex and
+real-to-complex coefficient maps are registered commutative-ring arrows. Named
+real algebras over the integers/rationals and complex algebras over the
+integers/rationals/reals expose their exact defining maps as chosen Under objects.
+Source laws identify the existing rational-to-real and real-to-complex Sets
+inclusions with the underlying maps of the registered ring arrows. The polynomial
+operation domains remain unchanged. Catalogue, presentation probes and evidence
+tests pass with these inputs.

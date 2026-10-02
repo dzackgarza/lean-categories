@@ -91,6 +91,50 @@ noncomputable def complexesCarrierIdentification :
     (forget CommRingCat).obj (complexes) ≅ NumberSystems.complexes :=
   Iso.refl _
 
+/-- The canonical integer coefficient map into any chosen commutative ring. -/
+def integerCoefficients (R : CommRingCat.{0}) : integers ⟶ R :=
+  CommRingCat.ofHom (Int.castRingHom R)
+
+/-- The canonical rational coefficient map into the reals. -/
+noncomputable def rationalRealCoefficients : rationals ⟶ reals :=
+  CommRingCat.ofHom (algebraMap ℚ ℝ)
+
+/-- The canonical rational coefficient map into the complex numbers. -/
+noncomputable def rationalComplexCoefficients : rationals ⟶ complexes :=
+  CommRingCat.ofHom (algebraMap ℚ ℂ)
+
+/-- The canonical real coefficient map into the complex numbers. -/
+noncomputable def realComplexCoefficients : reals ⟶ complexes :=
+  CommRingCat.ofHom Complex.ofRealHom
+
+/-- The selected real algebra over the integers, retaining its defining coefficient map. -/
+noncomputable def realIntegerAlgebra : Algebras.algebrasCategory integers :=
+  Algebras.scalarAlgebra integers reals (integerCoefficients reals)
+
+/-- The selected real algebra over the rationals, retaining its defining coefficient map. -/
+noncomputable def realRationalAlgebra : Algebras.algebrasCategory rationals :=
+  Algebras.scalarAlgebra rationals reals rationalRealCoefficients
+
+/-- The selected complex algebra over the integers. -/
+noncomputable def complexIntegerAlgebra : Algebras.algebrasCategory integers :=
+  Algebras.scalarAlgebra integers complexes (integerCoefficients complexes)
+
+/-- The selected complex algebra over the rationals. -/
+noncomputable def complexRationalAlgebra : Algebras.algebrasCategory rationals :=
+  Algebras.scalarAlgebra rationals complexes rationalComplexCoefficients
+
+/-- The selected complex algebra over the reals. -/
+noncomputable def complexRealAlgebra : Algebras.algebrasCategory reals :=
+  Algebras.scalarAlgebra reals complexes realComplexCoefficients
+
+/-- The registered ring map's underlying set map is the existing scalar inclusion. -/
+theorem rationalRealCoefficients_underlying :
+    (forget CommRingCat).map rationalRealCoefficients = NumberSystems.rationalsReals := rfl
+
+/-- The registered ring map's underlying set map is the existing scalar inclusion. -/
+theorem realComplexCoefficients_underlying :
+    (forget CommRingCat).map realComplexCoefficients = NumberSystems.realsComplexes := rfl
+
 end CasCatalogue.Algebra.NamedCommutativeRings
 
 namespace CasCatalogue
@@ -139,5 +183,40 @@ normalized_registry .object
       { base := ⟨"obj.sets.complexes"⟩
         route := #[.functor FunctorId.commutativeRingsRings] ++ ringsToSets
         identification := `CasCatalogue.Algebra.NamedCommutativeRings.complexesCarrierIdentification } }
+
+normalized_registry .morphism
+  { id := ⟨"mor.commutative_rings.integer_coefficients"⟩, category := CategoryId.commutativeRings
+    name := "integerCoefficients"
+    declaration := `CasCatalogue.Algebra.NamedCommutativeRings.integerCoefficients }
+normalized_registry .morphism
+  { id := ⟨"mor.commutative_rings.rational_real_coefficients"⟩
+    category := CategoryId.commutativeRings, name := "rationalRealCoefficients"
+    declaration := `CasCatalogue.Algebra.NamedCommutativeRings.rationalRealCoefficients }
+normalized_registry .morphism
+  { id := ⟨"mor.commutative_rings.rational_complex_coefficients"⟩
+    category := CategoryId.commutativeRings, name := "rationalComplexCoefficients"
+    declaration := `CasCatalogue.Algebra.NamedCommutativeRings.rationalComplexCoefficients }
+normalized_registry .morphism
+  { id := ⟨"mor.commutative_rings.real_complex_coefficients"⟩
+    category := CategoryId.commutativeRings, name := "realComplexCoefficients"
+    declaration := `CasCatalogue.Algebra.NamedCommutativeRings.realComplexCoefficients }
+
+normalized_registry .object
+  { id := ⟨"obj.algebras.real_integer"⟩, category := CategoryId.algebras, name := "RealOverIntegers"
+    declaration := `CasCatalogue.Algebra.NamedCommutativeRings.realIntegerAlgebra }
+normalized_registry .object
+  { id := ⟨"obj.algebras.real_rational"⟩, category := CategoryId.algebras, name := "RealOverRationals"
+    declaration := `CasCatalogue.Algebra.NamedCommutativeRings.realRationalAlgebra }
+normalized_registry .object
+  { id := ⟨"obj.algebras.complex_integer"⟩, category := CategoryId.algebras
+    name := "ComplexOverIntegers"
+    declaration := `CasCatalogue.Algebra.NamedCommutativeRings.complexIntegerAlgebra }
+normalized_registry .object
+  { id := ⟨"obj.algebras.complex_rational"⟩, category := CategoryId.algebras
+    name := "ComplexOverRationals"
+    declaration := `CasCatalogue.Algebra.NamedCommutativeRings.complexRationalAlgebra }
+normalized_registry .object
+  { id := ⟨"obj.algebras.complex_real"⟩, category := CategoryId.algebras, name := "ComplexOverReals"
+    declaration := `CasCatalogue.Algebra.NamedCommutativeRings.complexRealAlgebra }
 
 end CasCatalogue
