@@ -482,6 +482,12 @@ normalized_registry .object
     declaration := `CasCatalogue.Algebra.RealLimits.puncturedLine
     inclusion := some `CasCatalogue.Algebra.RealLimits.puncturedInclusion }
 
+-- The punctured domain maps into multiplicative units only under its displayed
+-- base-point equation. The declaration retains that obligation in its signature.
+normalized_registry .morphism
+  { id := ⟨"mor.sets.punctured_units"⟩, category := CategoryId.sets, name := "puncturedUnits"
+    declaration := `CasCatalogue.Algebra.RealLimits.puncturedUnits }
+
 normalized_registry .object
   { id := ⟨"obj.sets.convergent_maps"⟩, category := CategoryId.sets, name := "Convergent"
     declaration := `CasCatalogue.Algebra.RealLimits.convergentMaps

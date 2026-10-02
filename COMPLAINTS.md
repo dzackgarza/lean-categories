@@ -919,3 +919,12 @@ maps at the displayed defining polynomials. Closed objects have no coefficient
 parameter in their telescope; their coefficient maps therefore use the existing
 full typed morphism interface instead of weakening the parameter-based constants
 validator. Catalogue and presentation probes rebuild successfully with this repair.
+
+A further independent binder completeness review identified that the correct
+`RealLimits.puncturedUnits` map had no semantic row. It is now registered as the
+`puncturedUnits` Sets morphism, retaining the dependent point and obligation
+`a = zeroPoint` in its declaration. Its target is the units of the chosen real
+multiplicative monoid; its existing factorization theorem identifies the composite
+with the units inclusion as the punctured-domain inclusion into the reals. Thus
+binder body formation has the actual denominator route, independently of the
+subsequent convergence proof procedure. No binder-specific schema is added.
