@@ -6,17 +6,59 @@ module
 
 public import LeanCategories.Catalogue.Semantics.Algebra.Subgroups
 public import LeanCategories.Catalogue.Semantics.Algebra.Ports
+public import LeanCategories.Catalogue.Semantics.ConstructorRegistration
+public import LeanCategories.Catalogue.Semantics.Modules.Rank
 public import Mathlib.Algebra.Category.Grp.Adjunctions
 public import Mathlib.CategoryTheory.Conj
 public import Mathlib.GroupTheory.GroupAction.Basic
+public meta import LeanCategories.Catalogue.Registry.Semantic
+public meta import LeanCategories.Catalogue.Semantics.ConstructorCatalogue
+public meta import LeanCategories.Catalogue.Semantics.Algebra.Catalogue.Magmas
+public meta import LeanCategories.Catalogue.Semantics.Modules.Expressions
+public meta import LeanCategories.Catalogue.Semantics.Algebra.Ports
+public meta import LeanCategories.Catalogue.Semantics.Algebra.Subgroups
+public meta import LeanCategories.Catalogue.Semantics.Modules.Rank
 
 @[expose] public section
 
 /-!
-# Group-valued constructions: automorphisms, units, stabilizers (draft)
+# Group-valued constructions land in `Grp` and `Subobjects(Grp)` (CC-UNIV, LC-16)
+
+A group-valued construction is a functor into `Grp`, and a subgroup-valued one a functor into
+`Subobjects(Grp)`, so that its values are groups and subgroups by construction: they inherit what
+every group and every subgroup has (`Subobjects(Grp) → Grp → Mon → Sets`, `inclusion`), including
+what is registered there later, with no declaration of their own.
+
+* **Units.** `(−)ˣ : Mon ⥤ Grp` (Mathlib `MonCat.units`), right adjoint to the forgetful functor
+  `Grp ⥤ Mon` (Mathlib `GrpCat.forget₂MonAdj`); the counit is the inclusion `Mˣ ↪ M`. The set
+  `Mˣ` of the element calculus (`Algebra.Units.units`) is the underlying set of this group.
+* **Automorphisms.** For every category `C`, `Aut : Core(C) ⥤ Grp`, `X ↦ Aut(X)` with
+  `g h = h ≫ g` (Mathlib `Aut`), and an isomorphism `e : X ≅ Y` acting by conjugation
+  `a ↦ e⁻¹ ≫ a ≫ e` (Mathlib `Aut.autMulEquivOfIso`). It is defined on the core: a morphism that is
+  not invertible induces no map of automorphism groups. Likewise `End : Core(C) ⥤ Mon`
+  (`Iso.conj`), and `Aut ≅ End ⋙ (−)ˣ` (Mathlib `Aut.unitsEndEquivAut`): `Aut(X)` is the group of
+  units of the monoid `End(X)`, as `GLₙ(K) = Matₙ(K)ˣ`.
+* **Stabilizers.** For `U : C ⥤ Sets` and an element `x ∈ U(X)`, the stabilizer of `x` is the
+  automorphism group of `(X, x)` in the category of elements `Elements(U)`, included into `Aut(X)`
+  along the faithful projection `π : Elements(U) ⥤ C` (Mathlib `Functor.mapAut`). Its image is
+  `{g ∈ Aut(X) | U(g) x = x}` (`mem_range_stabilizerInclusion_iff`); for `U = 𝟭 Sets` it is Mathlib's
+  `MulAction.stabilizer` of `x` in `Perm(X) ≅ Aut(X)` (`stabilizer_sets`). So
+  `Stab : Core(Elements(U)) ⥤ Subobjects(Grp)`, with ambient group `Aut(X)`
+  (`stabilizersCodomainIso`). The stabilizer of `x` in a group `G` acting through
+  `ρ : G → Aut(X)`, or in a subgroup `H ≤ Aut(X)`, is the pullback `ρ*(Stab(X, x))` in
+  `Subobjects(Grp)` (Mathlib `Subobject.pullback`): a subgroup by construction, with no separate
+  stabilizer for each action.
+
+Registered here: `(−)ˣ` with its adjunction, and the `Aut`/`End` functors with their units
+comparison on `Core(Sets)` (symmetric groups), `Core(Grp)` (automorphism groups of groups) and
+`Core(Mod_R)` (`GL(M)`); the stabilizers of points of sets, `Core(Sets_*) ⥤ Subobjects(Grp)` with
+`Sets_* = Elements(𝟭 Sets)`, and their ambient-group comparison. `Aut` and `Stab` are not
+presented as methods: a method is inherited along structural functors (CC-UNIFORM), and the
+automorphisms of a group are not those of its underlying set (`COMPLAINTS.md`).
 -/
 
 open CategoryTheory
+open LeanCategories LeanCategories.Algebra
 
 namespace CasCatalogue.Algebra.Automorphisms
 
@@ -110,7 +152,7 @@ def stabilizersCodomainIso :
     stabilizers U ⋙ (LeanCategories.isMonoArrow GrpCat.{v}).ι ⋙ Arrow.rightFunc ≅
       (CategoryOfElements.π U).core ⋙ automorphisms C :=
   NatIso.ofComponents (fun p => Iso.refl ((automorphisms C).obj ⟨p.of.1⟩)) fun _ => by
-    simp only [Iso.refl_hom, Category.id_comp]
+    simp only [Iso.refl_hom]
     rfl
 
 end Stabilizers
@@ -129,4 +171,303 @@ theorem stabilizer_sets (p : (𝟭 (Type u)).Elements) :
     refine ⟨Aut.mulEquivPerm.symm σ, (mem_range_stabilizerInclusion_iff _ p _).mpr hσ, ?_⟩
     simp
 
+/-! Separating examples: a stabilizer is a proper subgroup in general, and contains `1`. -/
+
+/-- The transposition of `Fin 2` does not fix `0`: `Stab(0) ≠ Aut(Fin 2)`. -/
+example : (Equiv.swap (0 : Fin 2) 1).toIso ∉
+    (stabilizerInclusion (𝟭 Type) ((𝟭 Type).elementsMk (Fin 2) (0 : Fin 2))).range := by
+  refine (mem_range_stabilizerInclusion_iff _ _ _).not.mpr ?_
+  change Equiv.swap (0 : Fin 2) 1 0 ≠ 0
+  decide
+
+/-- The identity fixes every point. -/
+example : (Iso.refl (Fin 2) : Aut (Fin 2)) ∈
+    (stabilizerInclusion (𝟭 Type) ((𝟭 Type).elementsMk (Fin 2) (0 : Fin 2))).range := by
+  exact (mem_range_stabilizerInclusion_iff _ _ _).mpr rfl
+
 end CasCatalogue.Algebra.Automorphisms
+
+namespace CasCatalogue
+
+namespace CategoryId
+def coreGroups : CategoryId := ⟨"cat.core_groups"⟩
+def pointedSets : CategoryId := ⟨"cat.pointed_sets"⟩
+def corePointedSets : CategoryId := ⟨"cat.core_pointed_sets"⟩
+end CategoryId
+
+namespace FunctorId
+def monoidsUnits : FunctorId := ⟨"fun.monoids.units"⟩
+def coreSetsAutomorphisms : FunctorId := ⟨"fun.core_sets.automorphisms"⟩
+def coreSetsEndomorphisms : FunctorId := ⟨"fun.core_sets.endomorphisms"⟩
+def coreGroupsAutomorphisms : FunctorId := ⟨"fun.core_groups.automorphisms"⟩
+def coreGroupsEndomorphisms : FunctorId := ⟨"fun.core_groups.endomorphisms"⟩
+def coreModulesAutomorphisms : FunctorId := ⟨"fun.core_modules_r.automorphisms"⟩
+def coreModulesEndomorphisms : FunctorId := ⟨"fun.core_modules_r.endomorphisms"⟩
+def pointedSetsProjection : FunctorId := ⟨"fun.pointed_sets.projection"⟩
+def corePointedSetsStabilizer : FunctorId := ⟨"fun.core_pointed_sets.stabilizer"⟩
+def arrowsGroupsCodomain : FunctorId := ⟨"fun.arrows_groups.codomain"⟩
+end FunctorId
+
+namespace Algebra.Automorphisms.Registration
+
+open Algebra.Catalogue.Magmas Algebra.CatalogueRegistration Algebra.Subgroups
+open Catalogue.ConstructorRegistration
+
+universe u
+
+def CoreGroups : CategoryExpr := .construct ConstructorId.core #[.category Groups]
+def PointedSets : CategoryExpr :=
+  .construct ConstructorId.elements #[.category Foundation.Sets, .functor FunctorId.setsIdentity]
+def CorePointedSets : CategoryExpr := .construct ConstructorId.core #[.category PointedSets]
+
+def UnitsExpr : FunctorExpr Monoids Groups := .atomic FunctorId.monoidsUnits
+def CoreSetsAutExpr : FunctorExpr Constructed.CoreSets Groups :=
+  .atomic FunctorId.coreSetsAutomorphisms
+def CoreSetsEndExpr : FunctorExpr Constructed.CoreSets Monoids :=
+  .atomic FunctorId.coreSetsEndomorphisms
+def CoreGroupsAutExpr : FunctorExpr CoreGroups Groups := .atomic FunctorId.coreGroupsAutomorphisms
+def CoreGroupsEndExpr : FunctorExpr CoreGroups Monoids := .atomic FunctorId.coreGroupsEndomorphisms
+def CoreModulesAutExpr : FunctorExpr Modules.Rank.CoreModules Groups :=
+  .atomic FunctorId.coreModulesAutomorphisms
+def CoreModulesEndExpr : FunctorExpr Modules.Rank.CoreModules Monoids :=
+  .atomic FunctorId.coreModulesEndomorphisms
+def PointedSetsProjectionExpr : FunctorExpr PointedSets Foundation.Sets :=
+  .atomic FunctorId.pointedSetsProjection
+def StabilizerExpr : FunctorExpr CorePointedSets SubobjectsGroups :=
+  .atomic FunctorId.corePointedSetsStabilizer
+def ArrowsGroupsCodomainExpr : FunctorExpr ArrowsGroups Groups :=
+  .atomic FunctorId.arrowsGroupsCodomain
+
+noncomputable section
+
+/-- `(−)ˣ : Mon ⥤ Grp`. -/
+def unitsDeclaration : Algebra.Monoids.{u} ⥤ Algebra.Groups.{u} := MonCat.units
+def unitsRealization :
+    FunctorRealization UnitsExpr Algebra.Monoids.{u} Algebra.Groups.{u} unitsDeclaration :=
+  { sourceRealization := monoidsRealization, targetRealization := groupsRealization }
+
+def coreGroupsCategory := Constructors.core Algebra.Groups.{u}
+def coreGroupsRealization : CategoryRealization CoreGroups coreGroupsCategory.{u} := {}
+
+/-- `Sets_* = Elements(𝟭 Sets)`: a set with a point. -/
+def pointedSetsCategory :=
+  Constructors.elements Foundation.Mathlib.Sets.{u}
+    Foundation.CatalogueRegistration.setsIdentity.toFunctor
+def pointedSetsRealization : CategoryRealization PointedSets pointedSetsCategory.{u} := {}
+def corePointedSetsCategory := Constructors.core pointedSetsCategory.{u}
+def corePointedSetsRealization :
+    CategoryRealization CorePointedSets corePointedSetsCategory.{u} := {}
+
+/-- `Aut : Core(Sets) ⥤ Grp`, the symmetric groups. -/
+def coreSetsAutDeclaration : coreSetsCategory.{u} ⥤ Algebra.Groups.{u} :=
+  automorphisms (Type u)
+def coreSetsAutRealization :
+    FunctorRealization CoreSetsAutExpr coreSetsCategory.{u} Algebra.Groups.{u}
+      coreSetsAutDeclaration :=
+  { sourceRealization := coreSetsRealization, targetRealization := groupsRealization }
+/-- `End : Core(Sets) ⥤ Mon`. -/
+def coreSetsEndDeclaration : coreSetsCategory.{u} ⥤ Algebra.Monoids.{u} :=
+  endomorphisms (Type u)
+def coreSetsEndRealization :
+    FunctorRealization CoreSetsEndExpr coreSetsCategory.{u} Algebra.Monoids.{u}
+      coreSetsEndDeclaration :=
+  { sourceRealization := coreSetsRealization, targetRealization := monoidsRealization }
+/-- `Aut(X) = End(X)ˣ` for sets. -/
+def coreSetsAutUnits :
+    coreSetsAutDeclaration.{u} ≅ coreSetsEndDeclaration.{u} ⋙ unitsDeclaration.{u} :=
+  automorphismsIsoUnits (Type u)
+
+/-- `Aut : Core(Grp) ⥤ Grp`. -/
+def coreGroupsAutDeclaration : coreGroupsCategory.{u} ⥤ Algebra.Groups.{u} :=
+  automorphisms GrpCat.{u}
+def coreGroupsAutRealization :
+    FunctorRealization CoreGroupsAutExpr coreGroupsCategory.{u} Algebra.Groups.{u}
+      coreGroupsAutDeclaration :=
+  { sourceRealization := coreGroupsRealization, targetRealization := groupsRealization }
+/-- `End : Core(Grp) ⥤ Mon`. -/
+def coreGroupsEndDeclaration : coreGroupsCategory.{u} ⥤ Algebra.Monoids.{u} :=
+  endomorphisms GrpCat.{u}
+def coreGroupsEndRealization :
+    FunctorRealization CoreGroupsEndExpr coreGroupsCategory.{u} Algebra.Monoids.{u}
+      coreGroupsEndDeclaration :=
+  { sourceRealization := coreGroupsRealization, targetRealization := monoidsRealization }
+/-- `Aut(G) = End(G)ˣ` for groups. -/
+def coreGroupsAutUnits :
+    coreGroupsAutDeclaration.{u} ≅ coreGroupsEndDeclaration.{u} ⋙ unitsDeclaration.{u} :=
+  automorphismsIsoUnits GrpCat.{u}
+
+/-- `Aut : Core(Mod_R) ⥤ Grp`, `M ↦ GL(M)`. -/
+def coreModulesAutDeclaration (R : RingCat.{u}) :
+    Modules.Rank.coreModulesCategory R ⥤ Algebra.Groups.{u} :=
+  automorphisms (ModuleCat.{u} R)
+def coreModulesAutRealization (R : RingCat.{u}) :
+    FunctorRealization CoreModulesAutExpr (Modules.Rank.coreModulesCategory R) Algebra.Groups.{u}
+      (coreModulesAutDeclaration R) :=
+  { sourceRealization := Modules.Rank.coreModulesRealization R
+    targetRealization := groupsRealization }
+/-- `End : Core(Mod_R) ⥤ Mon`. -/
+def coreModulesEndDeclaration (R : RingCat.{u}) :
+    Modules.Rank.coreModulesCategory R ⥤ Algebra.Monoids.{u} :=
+  endomorphisms (ModuleCat.{u} R)
+def coreModulesEndRealization (R : RingCat.{u}) :
+    FunctorRealization CoreModulesEndExpr (Modules.Rank.coreModulesCategory R)
+      Algebra.Monoids.{u} (coreModulesEndDeclaration R) :=
+  { sourceRealization := Modules.Rank.coreModulesRealization R
+    targetRealization := monoidsRealization }
+/-- `GL(M) = End_R(M)ˣ`. -/
+def coreModulesAutUnits (R : RingCat.{u}) :
+    coreModulesAutDeclaration R ≅ coreModulesEndDeclaration R ⋙ unitsDeclaration.{u} :=
+  automorphismsIsoUnits (ModuleCat.{u} R)
+
+/-- `π : Sets_* ⥤ Sets`, forgetting the point. -/
+def pointedSetsProjectionDeclaration : pointedSetsCategory.{u} ⥤ Foundation.Mathlib.Sets.{u} :=
+  CategoryOfElements.π _
+def pointedSetsProjectionRealization :
+    FunctorRealization PointedSetsProjectionExpr pointedSetsCategory.{u}
+      Foundation.Mathlib.Sets.{u} pointedSetsProjectionDeclaration :=
+  { sourceRealization := pointedSetsRealization
+    targetRealization := Foundation.CatalogueRegistration.setsRealization }
+
+/-- `Stab : Core(Sets_*) ⥤ Subobjects(Grp)`, `(X, x) ↦ (Stab(x) ↪ Aut(X))`. -/
+def stabilizerDeclaration : corePointedSetsCategory.{u} ⥤ subobjectsGroupsCategory.{u} :=
+  stabilizers Foundation.CatalogueRegistration.setsIdentity.toFunctor
+def stabilizerRealization :
+    FunctorRealization StabilizerExpr corePointedSetsCategory.{u} subobjectsGroupsCategory.{u}
+      stabilizerDeclaration :=
+  { sourceRealization := corePointedSetsRealization
+    targetRealization := subobjectsGroupsRealization }
+
+/-- The codomain of an arrow of groups. -/
+def arrowsGroupsCodomainDeclaration : arrowsGroupsCategory.{u} ⥤ Algebra.Groups.{u} :=
+  Arrow.rightFunc
+def arrowsGroupsCodomainRealization :
+    FunctorRealization ArrowsGroupsCodomainExpr arrowsGroupsCategory.{u} Algebra.Groups.{u}
+      arrowsGroupsCodomainDeclaration :=
+  { sourceRealization := arrowsGroupsRealization, targetRealization := groupsRealization }
+
+/-- The ambient group of the stabilizer of `x ∈ X` is `Aut(X)`. -/
+def stabilizerAmbient :
+    stabilizerDeclaration.{u} ⋙ inclusionDeclaration.{u} ⋙ arrowsGroupsCodomainDeclaration.{u} ≅
+      Constructors.coreMap pointedSetsProjectionDeclaration.{u} ⋙ coreSetsAutDeclaration.{u} :=
+  stabilizersCodomainIso Foundation.CatalogueRegistration.setsIdentity.toFunctor
+
+end
+
+end Algebra.Automorphisms.Registration
+
+open Algebra.Automorphisms.Registration Algebra.Catalogue.Magmas
+
+normalized_registry .functor
+  { id := FunctorId.monoidsUnits, source := Monoids, target := Groups
+    declaration := `CasCatalogue.Algebra.Automorphisms.Registration.unitsDeclaration
+    realization := `CasCatalogue.Algebra.Automorphisms.Registration.unitsRealization
+    expression := UnitsExpr }
+normalized_registry .adjunction
+  { id := ⟨"adj.groups_monoids.units"⟩, left := FunctorId.groupsMonoid
+    right := FunctorId.monoidsUnits, declaration := `GrpCat.forget₂MonAdj }
+normalized_registry .method
+  { id := ⟨"meth.units"⟩, name := "units", owner := Monoids
+    functor := FunctorId.monoidsUnits, shape := .object }
+
+normalized_registry .category
+  { id := CategoryId.coreGroups
+    declaration := `CasCatalogue.Algebra.Automorphisms.Registration.coreGroupsCategory
+    expression := CoreGroups
+    realization := `CasCatalogue.Algebra.Automorphisms.Registration.coreGroupsRealization }
+normalized_registry .category
+  { id := CategoryId.pointedSets
+    declaration := `CasCatalogue.Algebra.Automorphisms.Registration.pointedSetsCategory
+    expression := PointedSets
+    realization := `CasCatalogue.Algebra.Automorphisms.Registration.pointedSetsRealization }
+normalized_registry .category
+  { id := CategoryId.corePointedSets
+    declaration := `CasCatalogue.Algebra.Automorphisms.Registration.corePointedSetsCategory
+    expression := CorePointedSets
+    realization := `CasCatalogue.Algebra.Automorphisms.Registration.corePointedSetsRealization }
+
+normalized_registry .functor
+  { id := FunctorId.coreSetsAutomorphisms, source := Constructed.CoreSets, target := Groups
+    declaration := `CasCatalogue.Algebra.Automorphisms.Registration.coreSetsAutDeclaration
+    realization := `CasCatalogue.Algebra.Automorphisms.Registration.coreSetsAutRealization
+    expression := CoreSetsAutExpr }
+normalized_registry .functor
+  { id := FunctorId.coreSetsEndomorphisms, source := Constructed.CoreSets, target := Monoids
+    declaration := `CasCatalogue.Algebra.Automorphisms.Registration.coreSetsEndDeclaration
+    realization := `CasCatalogue.Algebra.Automorphisms.Registration.coreSetsEndRealization
+    expression := CoreSetsEndExpr }
+normalized_registry .cell
+  { id := ⟨"cell.core_sets.automorphisms_units"⟩, source := Constructed.CoreSets, target := Groups
+    left := #[.functor FunctorId.coreSetsAutomorphisms]
+    right := #[.functor FunctorId.coreSetsEndomorphisms, .functor FunctorId.monoidsUnits]
+    declaration := `CasCatalogue.Algebra.Automorphisms.Registration.coreSetsAutUnits
+    invertible := true }
+
+normalized_registry .functor
+  { id := FunctorId.coreGroupsAutomorphisms, source := CoreGroups, target := Groups
+    declaration := `CasCatalogue.Algebra.Automorphisms.Registration.coreGroupsAutDeclaration
+    realization := `CasCatalogue.Algebra.Automorphisms.Registration.coreGroupsAutRealization
+    expression := CoreGroupsAutExpr }
+normalized_registry .functor
+  { id := FunctorId.coreGroupsEndomorphisms, source := CoreGroups, target := Monoids
+    declaration := `CasCatalogue.Algebra.Automorphisms.Registration.coreGroupsEndDeclaration
+    realization := `CasCatalogue.Algebra.Automorphisms.Registration.coreGroupsEndRealization
+    expression := CoreGroupsEndExpr }
+normalized_registry .cell
+  { id := ⟨"cell.core_groups.automorphisms_units"⟩, source := CoreGroups, target := Groups
+    left := #[.functor FunctorId.coreGroupsAutomorphisms]
+    right := #[.functor FunctorId.coreGroupsEndomorphisms, .functor FunctorId.monoidsUnits]
+    declaration := `CasCatalogue.Algebra.Automorphisms.Registration.coreGroupsAutUnits
+    invertible := true }
+
+normalized_registry .functor
+  { id := FunctorId.coreModulesAutomorphisms, source := Modules.Rank.CoreModules, target := Groups
+    declaration := `CasCatalogue.Algebra.Automorphisms.Registration.coreModulesAutDeclaration
+    realization := `CasCatalogue.Algebra.Automorphisms.Registration.coreModulesAutRealization
+    expression := CoreModulesAutExpr }
+normalized_registry .functor
+  { id := FunctorId.coreModulesEndomorphisms, source := Modules.Rank.CoreModules
+    target := Monoids
+    declaration := `CasCatalogue.Algebra.Automorphisms.Registration.coreModulesEndDeclaration
+    realization := `CasCatalogue.Algebra.Automorphisms.Registration.coreModulesEndRealization
+    expression := CoreModulesEndExpr }
+normalized_registry .cell
+  { id := ⟨"cell.core_modules_r.automorphisms_units"⟩, source := Modules.Rank.CoreModules
+    target := Groups
+    left := #[.functor FunctorId.coreModulesAutomorphisms]
+    right := #[.functor FunctorId.coreModulesEndomorphisms, .functor FunctorId.monoidsUnits]
+    declaration := `CasCatalogue.Algebra.Automorphisms.Registration.coreModulesAutUnits
+    invertible := true }
+
+normalized_registry .functor
+  { id := FunctorId.pointedSetsProjection, source := PointedSets, target := Foundation.Sets
+    declaration :=
+      `CasCatalogue.Algebra.Automorphisms.Registration.pointedSetsProjectionDeclaration
+    realization :=
+      `CasCatalogue.Algebra.Automorphisms.Registration.pointedSetsProjectionRealization
+    expression := PointedSetsProjectionExpr
+    structural := true }
+normalized_registry .functor
+  { id := FunctorId.corePointedSetsStabilizer, source := CorePointedSets
+    target := Algebra.Subgroups.SubobjectsGroups
+    declaration := `CasCatalogue.Algebra.Automorphisms.Registration.stabilizerDeclaration
+    realization := `CasCatalogue.Algebra.Automorphisms.Registration.stabilizerRealization
+    expression := StabilizerExpr }
+normalized_registry .functor
+  { id := FunctorId.arrowsGroupsCodomain, source := Algebra.Subgroups.ArrowsGroups
+    target := Groups
+    declaration :=
+      `CasCatalogue.Algebra.Automorphisms.Registration.arrowsGroupsCodomainDeclaration
+    realization :=
+      `CasCatalogue.Algebra.Automorphisms.Registration.arrowsGroupsCodomainRealization
+    expression := ArrowsGroupsCodomainExpr }
+normalized_registry .cell
+  { id := ⟨"cell.core_pointed_sets.stabilizer_ambient"⟩, source := CorePointedSets
+    target := Groups
+    left := #[.functor FunctorId.corePointedSetsStabilizer,
+      .functor FunctorId.subobjectsGroupsInclusion, .functor FunctorId.arrowsGroupsCodomain]
+    right := #[.constructMap ConstructorId.core (.functor FunctorId.pointedSetsProjection),
+      .functor FunctorId.coreSetsAutomorphisms]
+    declaration := `CasCatalogue.Algebra.Automorphisms.Registration.stabilizerAmbient
+    invertible := true }
+
+end CasCatalogue

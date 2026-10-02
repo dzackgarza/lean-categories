@@ -322,6 +322,29 @@ does not justify weakening a dependent theorem or starting unrelated work.
 - **Repair link:** `audit-authored-definitions` after FC01 remapping closes; repair or rename `IsJordanCanonicalInBasis` and update affected consumers while preserving `IsJordanMatrix` as the exact matrix predicate.
 
 
+### Non-inherited constructions (`Aut`, `Stab`) have no method presentation
+
+- **Need:** the owner's B0 directive, "Group-valued constructions (Aut, subgroups, stabilizers,
+  units) expose group and subgroup interfaces by construction". `Aut_C(X)` is a value of
+  `Aut : Core(C) ⥤ Grp` for each category `C`, and the stabilizer of `x ∈ U(X)` a value of
+  `Stab : Core(Elements U) ⥤ Subobjects(Grp)`; both are registered as functor rows in
+  `Catalogue/Semantics/Algebra/Automorphisms.lean` (on `Core(Sets)`, `Core(Grp)`, `Core(Mod_R)`,
+  and `Core(Sets_*)`). Their values are groups and subgroups by construction.
+- **Gap and impact:** a `MethodEntry` is inherited along every structural route to its owner
+  (CC-UNIFORM). `Aut` is not: for a group `G`, `Aut_Grp(G) ≠ Aut_Sets(U G) = Sym(G)`, and the
+  automorphisms of a lattice are not those of its underlying module (`O(L) ≠ GL(L)`). A method
+  `automorphisms` owned at `Sets` would be inherited by every category over `Sets` with the wrong
+  meaning; one owned at each category would sit beside the inherited one. The same holds for
+  `Stab`. So `Aut` and `Stab` are registered as functors only, with no surface name. The method
+  schema has no way to say that a functor `Core(C) ⥤ D` is defined for every `C` without being
+  inherited along forgetful functors, and the registry has no category variable, so `Aut` is
+  registered once per category rather than once.
+- **Coverage:** `Registry/Entry.lean` (`MethodEntry`, `MethodShape`), `Registry/Semantic.lean`
+  (`validateMethodEntry`, `validateMethodLevel`); the kernel's resolution was not read (LC-17).
+- **Repair link:** registry owner (orchestrator, plan node `gov-registry-gates`): a presentation
+  for constructions natural on `Core(C)` that are not pulled back along structural functors, or
+  a category-generic functor row. The rows here stay as they are.
+
 ## Workflow papercuts
 
 ### README tree and issue #53 cite registry paths that no longer exist
