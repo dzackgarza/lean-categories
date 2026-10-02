@@ -196,9 +196,9 @@ run_elab do
   let B ← subset [3, 4, 5]
   let union : Term ← `(@id (Foundation.Objects.fin 1 ⟶ Foundation.PowerSets.powerSet ℤ)
     (CategoryStruct.comp
-      (@id _ ((Limits.Registration.setsProduct
+      (@id _ ((Limits.Registration.setsProduct (Limits.pair
           (Foundation.PowerSets.powerSet Foundation.Objects.integers)
-          (Foundation.PowerSets.powerSet Foundation.Objects.integers)).isLimit.lift
+          (Foundation.PowerSets.powerSet Foundation.Objects.integers))).isLimit.lift
         (Limits.BinaryFan.mk $A $B)))
       (@id _ (Foundation.PowerSets.union
         (Foundation.PowerSets.boolPowerSet Foundation.Objects.integers)))))

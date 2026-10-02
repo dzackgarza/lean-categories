@@ -43,7 +43,7 @@ followed by `/ : M × Mˣ → M`. -/
 abbrev divideElement (M : Type) [Monoid M]
     (a : fin 1 ⟶ (M : LeanCategories.Foundation.Mathlib.Sets.{0})) (u : fin 1 ⟶ units M) :
     fin 1 ⟶ (M : LeanCategories.Foundation.Mathlib.Sets.{0}) :=
-  (setsProduct _ _).isLimit.lift (BinaryFan.mk a u) ≫ divide M
+  (setsProduct (pair _ _)).isLimit.lift (BinaryFan.mk a u) ≫ divide M
 
 /-- The element `c ∈ M` of a value `c`. -/
 abbrev element {M : Type} (c : M) : fin 1 ⟶ (M : LeanCategories.Foundation.Mathlib.Sets.{0}) :=

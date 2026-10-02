@@ -96,40 +96,40 @@ abbrev applyBinary
     (op : (boolCarrier (boolPowerSet X) × boolCarrier (boolPowerSet X) : SetsCat.{0}) ⟶
       (boolCarrier (boolPowerSet X) : SetsCat.{0}))
     (A B : fin 1 ⟶ powerSet X) : fin 1 ⟶ powerSet X :=
-  @CategoryStruct.comp SetsCat.{0} _ (fin 1) (setsProduct (powerSet X) (powerSet X)).cone.pt
-    (powerSet X) ((setsProduct (powerSet X) (powerSet X)).isLimit.lift (BinaryFan.mk A B)) op
+  @CategoryStruct.comp SetsCat.{0} _ (fin 1) (setsProduct (pair (powerSet X) (powerSet X))).cone.pt
+    (powerSet X) ((setsProduct (pair (powerSet X) (powerSet X))).isLimit.lift (BinaryFan.mk A B)) op
 
 theorem union_literal (s t : Finset X) :
-    @CategoryStruct.comp SetsCat.{0} _ (fin 1) (setsProduct (powerSet X) (powerSet X)).cone.pt
+    @CategoryStruct.comp SetsCat.{0} _ (fin 1) (setsProduct (pair (powerSet X) (powerSet X))).cone.pt
       (powerSet X)
-      ((setsProduct (powerSet X) (powerSet X)).isLimit.lift
+      ((setsProduct (pair (powerSet X) (powerSet X))).isLimit.lift
         (BinaryFan.mk (literal X s) (literal X t)))
       (union (boolPowerSet X)) = literal X (s ∪ t) := by
   apply ConcreteCategory.hom_ext; intro p
   simp [literal, union]; rfl
 
 theorem inter_literal (s t : Finset X) :
-    @CategoryStruct.comp SetsCat.{0} _ (fin 1) (setsProduct (powerSet X) (powerSet X)).cone.pt
+    @CategoryStruct.comp SetsCat.{0} _ (fin 1) (setsProduct (pair (powerSet X) (powerSet X))).cone.pt
       (powerSet X)
-      ((setsProduct (powerSet X) (powerSet X)).isLimit.lift
+      ((setsProduct (pair (powerSet X) (powerSet X))).isLimit.lift
         (BinaryFan.mk (literal X s) (literal X t)))
       (inter (boolPowerSet X)) = literal X (s ∩ t) := by
   apply ConcreteCategory.hom_ext; intro p
   simp [literal, inter]; rfl
 
 theorem diff_literal (s t : Finset X) :
-    @CategoryStruct.comp SetsCat.{0} _ (fin 1) (setsProduct (powerSet X) (powerSet X)).cone.pt
+    @CategoryStruct.comp SetsCat.{0} _ (fin 1) (setsProduct (pair (powerSet X) (powerSet X))).cone.pt
       (powerSet X)
-      ((setsProduct (powerSet X) (powerSet X)).isLimit.lift
+      ((setsProduct (pair (powerSet X) (powerSet X))).isLimit.lift
         (BinaryFan.mk (literal X s) (literal X t)))
       (diff (boolPowerSet X)) = literal X (s \ t) := by
   apply ConcreteCategory.hom_ext; intro p
   simp [literal, diff]; rfl
 
 theorem symmDiff_literal (s t : Finset X) :
-    @CategoryStruct.comp SetsCat.{0} _ (fin 1) (setsProduct (powerSet X) (powerSet X)).cone.pt
+    @CategoryStruct.comp SetsCat.{0} _ (fin 1) (setsProduct (pair (powerSet X) (powerSet X))).cone.pt
       (powerSet X)
-      ((setsProduct (powerSet X) (powerSet X)).isLimit.lift
+      ((setsProduct (pair (powerSet X) (powerSet X))).isLimit.lift
         (BinaryFan.mk (literal X s) (literal X t)))
       (PowerSets.symmDiff (boolPowerSet X)) = literal X (_root_.symmDiff s t) := by
   apply ConcreteCategory.hom_ext; intro p
