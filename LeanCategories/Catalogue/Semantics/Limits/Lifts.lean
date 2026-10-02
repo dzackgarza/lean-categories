@@ -59,6 +59,6 @@ normalized_registry .category
 normalized_registry .lift
   { id := LiftId.finiteSetsPullbacks, edge := .classifierForget ClassifierId.setsFinite
     evidence := `CasCatalogue.Limits.Lifts.finiteSetsCreatePullbacks
-    kind := .createsLimits "pullback" }
+    kind := .createsLimits CategoryId.walkingCospan }
 
 end CasCatalogue
