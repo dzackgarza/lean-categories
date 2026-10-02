@@ -1925,13 +1925,23 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
     let constant ← mkConstWithFreshMVarLevels constants
     let (_, _, result) ← forallMetaTelescopeReducing (← inferType constant)
     let (objArgs, _, _) ← forallMetaTelescopeReducing (← inferType declaration)
-    let first? ← objArgs.findM? fun a => return (← whnf (← inferType a)).isSort
-    let some first := first? | throwError "object {e.id.raw} has constants but no set parameter"
+    -- A coefficient object retains its chosen structure, e.g. `R : CommRingCat`.
+    -- Its constants start at its underlying set, rather than at a separate type parameter.
+    let mut first? : Option Expr := none
+    for a in objArgs do
+      if (← whnf (← inferType a)).isSort then
+        first? := some a
+        break
+      if let some carrier ← coerceToSort? a then
+        first? := some carrier
+        break
+    let some first := first?
+      | throwError "object {e.id.raw} has constants but no set or structured object parameter"
     let result ← whnfR result
     unless ← withTransparency .all <| (isDefEq result.appFn!.appArg! first <&&>
         isDefEq result.appArg! (mkAppN declaration objArgs)) do
-      throwError "object {e.id.raw}: the constants {constants} are not a map from its first set \
-        parameter to it"
+      throwError "object {e.id.raw}: the constants {constants} are not a map from its first \
+        parameter's underlying set to it"
   -- An inclusion leaves the object; an admission lands in it.
   if let some inclusion := e.inclusion then
     let constant ← mkConstWithFreshMVarLevels inclusion

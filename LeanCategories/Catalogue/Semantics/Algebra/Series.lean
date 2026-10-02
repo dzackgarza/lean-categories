@@ -58,6 +58,13 @@ indices. In particular a family `n ↦ fₙ` with `tⁿ ∣ fₙ` is summable (`
 Mathlib leaves the topology of `R[[t]]` scoped, since `R` may carry its own; the `(t)`-adic one is
 named here (`tAdic`), `R[[t]]` with it is the object `powerSeriesTAdic R`, and the sum of series in
 `R[[t]]` is the series sum at that object (`powerSeriesSum`, `powerSeriesSum_eq`).
+
+The coefficient parameter of `powerSeriesTAdic` and the power-series binder is
+the chosen commutative ring `R : CommRingCat`, rather than a carrier with a
+separately supplied ring instance. The generic Mathlib topology lemmas below
+remain at their original typeclass generality; the catalogue construction
+obtains that structure from its ring object, and fixes the discrete coefficient
+topology explicitly.
 -/
 
 open CategoryTheory Filter Topology
@@ -313,27 +320,27 @@ theorem tAdic_continuousAdd (R : Type) [CommRing R] : ContinuousAdd (PowerSeries
   inferInstance
 
 /-- `R[[t]]` with its `(t)`-adic topology, a Hausdorff commutative topological monoid. -/
-noncomputable abbrev powerSeriesTAdic (R : Type) [CommRing R] : HausdorffTopologicalMonoids.{0} :=
+noncomputable abbrev powerSeriesTAdic (R : CommRingCat.{0}) : HausdorffTopologicalMonoids.{0} :=
   @HausdorffTopAddCommMon.of (PowerSeries R) _ (tAdic R) (tAdic_continuousAdd R) (tAdic_t2Space R)
 
 /-- The sum of series in `R[[t]]`: `f ↦ ∑_{n ∈ N} f(n)`, the series sum `seriesSum` at the
 object `powerSeriesTAdic R` (`powerSeriesSum_eq`). The binder `∑_{n ∈ N} e` with values in
 `R[[t]]`: its argument is the index set `N`, and `R` is read off the body's codomain `R[[t]]`. -/
-noncomputable def powerSeriesSum (R : Type) [CommRing R] (N : Type) :
+noncomputable def powerSeriesSum (R : CommRingCat.{0}) (N : Type) :
     summableFamilies (powerSeriesTAdic R) N ⟶ CasCatalogue.Algebra.Calculus.powerSeries R :=
   TypeCat.ofHom fun f => ∑' n, f.toFun n
 
 /-- The bound variable of `∑_{n ∈ N}` with values in `R[[t]]` ranges over `N`. -/
-abbrev powerSeriesSumDomain (R : Type) [CommRing R] (N : Type) : SetsCat.{0} := N
+abbrev powerSeriesSumDomain (_ : CommRingCat.{0}) (N : Type) : SetsCat.{0} := N
 
 /-- The sum of series in `R[[t]]` is the series sum of the Hausdorff monoid `R[[t]]` with its
 `(t)`-adic topology. -/
-theorem powerSeriesSum_eq (R : Type) [CommRing R] (N : Type) :
+theorem powerSeriesSum_eq (R : CommRingCat.{0}) (N : Type) :
     powerSeriesSum R N = seriesSum (powerSeriesTAdic R) N :=
   rfl
 
 /-- `∑_{n ∈ ℕ} c(n) tⁿ` at the admitted family `n ↦ C(c(n)) tⁿ` is the series `mk c`. -/
-theorem powerSeriesSum_C_mul_X_pow (R : Type) [CommRing R] (c : ℕ → R)
+theorem powerSeriesSum_C_mul_X_pow (R : CommRingCat.{0}) (c : ℕ → R)
     (h : Summable fun n ↦ PowerSeries.C (c n) * PowerSeries.X ^ n) :
     ConcreteCategory.hom (C := Type) (powerSeriesSum R naturals)
       ⟨fun n ↦ PowerSeries.C (c n) * PowerSeries.X ^ n, h⟩ = PowerSeries.mk c :=

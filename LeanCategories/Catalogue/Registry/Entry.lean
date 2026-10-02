@@ -144,8 +144,9 @@ structure ObjectEntry where
   /-- How the elements of `obj params` act on arguments: `∀ params args, obj params × A ⟶ B`
   (a polynomial's evaluation `R[x] × A → A` at an `R`-algebra `A`). -/
   application : Option Lean.Name := none
-  /-- The constants: a monomorphism `∀ params, p ⟶ obj params` from the object's first parameter
-  `p` that is a set (the constant polynomials `R ↪ R[x]`, `R ↪ R[x₀, …, xₙ₋₁]`). -/
+  /-- The constants: a monomorphism `∀ params, p ⟶ obj params` from the underlying set of the
+  object's first set or structured object parameter `p` (the constant polynomials
+  `R ↪ R[x]`, `R ↪ R[x₀, …, xₙ₋₁]`, with `R` an object of commutative rings). -/
   constants : Option Lean.Name := none
   /-- The object as a subobject: a monomorphism `∀ params, obj params ⟶ B` into a registered object
   (the units `Mˣ ↪ M`, the finite subsets of `X` in `𝒫(X)`). -/

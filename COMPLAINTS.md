@@ -687,11 +687,27 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
      `evaluation`, `ringPolynomials`, `degree`, `nonzeroPolynomials`, `admitNonzeroPolynomial`,
      `factors`, `roots`, `map`, …), `MvPolynomials` (`mvPolynomials`, `var`, `constants`,
      `totalDegree`, `dimension`, …), `LinearAlgebra` (`matrices`, `rows`, `apply`, `det`, `trace`,
-     `rank`, `charpoly`, `monics`, `admitMonic`, `companion`, `ker`, `span`, `dim`), `Calculus`
-     (`powerSeries` and its operations; hence `Series.powerSeriesTAdic`/`powerSeriesSum` in `R`),
+     `rank`, `charpoly`, `monics`, `admitMonic`, `companion`, `ker`, `span`, `dim`),
      `Differentials`, `Algebras` (`mvAlgebra`, `polyAlgebra`), `Schemes` (`specPolynomials`,
      `specMvPolynomials`), `Automorphisms.actionHom`, `Foundation.FiniteSubsetLiterals.literal`,
      and `Algebra.Units`. Each takes a ring (or monoid) as a bare carrier with an instance.
+     **Power-series repair validated (2026-10-02, independent B0 binder assessment):**
+     `Calculus.powerSeries`, its generator/constants/coefficient/ofCoefficients maps,
+     the ring refinement, and `Series.powerSeriesTAdic`/`powerSeriesSum` now take the
+     chosen `CommRingCat` object. Their Mathlib owners and the discrete coefficient
+     topology are retained, and upstream binder specimens use `CommRingCat.of ℤ`.
+     The generic unregistered topology lemmas retain their typeclass generality.
+     The first focused build exposed a registry constraint: `validateObject` required
+     constants to start at an explicit type parameter, refusing `R : CommRingCat`.
+     It now checks the underlying set of the first set or structured object parameter
+     by Lean's generic `coerceToSort?`, retaining the check of both endpoints of the
+     declared constants map; no ring-specific validator branch is added.
+     **Checks:** Lean 4.33.0 `lake build` passed `Semantics.BinderTests`,
+     `Registry.BinderProbes`, and `Semantics.TotalityProbes` (also rebuilding the
+     changed owners and `Semantics.EvidenceTests`). `Registry.ConstantsProbes`
+     passed independently: chosen-ring and legacy set coefficient parameters are
+     accepted, while a generator or an unrelated map offered as constants is
+     refused. This repair does not close the other catalogue-wide LC-13 findings.
   2. LC-15: `num.sets.fin` registers `Foundation.Morphisms.finPoint n k (h : k < n)` under the
      registry kind `.numeral`. The point is correct mathematics (the `k`-th point of the ordinal
      `n`, formed with its evidence), but `Fin n` is an object of `Sets`, which has no initial map

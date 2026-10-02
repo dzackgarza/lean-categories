@@ -169,13 +169,15 @@ noncomputable def squaresTimesPowers : ℕ → PowerSeries ℤ :=
 `k²`. -/
 theorem powerSeriesSum_squares (h : Summable squaresTimesPowers) (p : fin 1) :
     ConcreteCategory.hom (C := Type)
-      (Series.admit (powerSeriesTAdic ℤ) naturals squaresTimesPowers h ≫ powerSeriesSum ℤ naturals) p =
+      (Series.admit (powerSeriesTAdic (CommRingCat.of ℤ)) naturals squaresTimesPowers h ≫
+        powerSeriesSum (CommRingCat.of ℤ) naturals) p =
       PowerSeries.mk fun n => (n : ℤ) ^ 2 :=
   tsum_C_mul_X_pow fun n => (n : ℤ) ^ 2
 
 theorem powerSeriesSum_squares_coeff (h : Summable squaresTimesPowers) (p : fin 1) (k : ℕ) :
     PowerSeries.coeff k (ConcreteCategory.hom (C := Type)
-      (Series.admit (powerSeriesTAdic ℤ) naturals squaresTimesPowers h ≫ powerSeriesSum ℤ naturals) p) =
+      (Series.admit (powerSeriesTAdic (CommRingCat.of ℤ)) naturals squaresTimesPowers h ≫
+        powerSeriesSum (CommRingCat.of ℤ) naturals) p) =
       (k : ℤ) ^ 2 := by
   rw [powerSeriesSum_squares h p, PowerSeries.coeff_mk]
 
@@ -386,7 +388,7 @@ run_elab do
     [← `(Summable (fun n : ℕ =>
             (((1 : ℝ) / 2) ^ n : Series.asTopMonoid Series.realsTop))),
      ← `(Summable (CasCatalogue.BinderTests.squaresTimesPowers :
-            ℕ → Series.asTopMonoid (Series.powerSeriesTAdic ℤ)))]
+            ℕ → Series.asTopMonoid (Series.powerSeriesTAdic (CommRingCat.of ℤ))))]
 
 #guard_msgs in
 run_elab do

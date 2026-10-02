@@ -46,6 +46,17 @@ Each operation of calculus is a total map out of the object it is defined on (LC
 
 Limits `lim_{t → a}` are defined on the maps that converge at `a` (`Algebra.RealLimits`), series
 `∑_{n ∈ N}` on the summable families (`Algebra.Series`).
+
+The coefficient ring of the power-series family is an object of `CommRingCat`,
+with its chosen ring structure retained (LC-13). The construction and its maps
+are Mathlib's `PowerSeries`, `X`, `C`, `coeff`, and `mk`; no new power-series
+mathematics is introduced. Reuse search (2026-10-02, LC-09) in the live corpus:
+`PowerSeries CommRingCat`, `PowerSeries.mk`, and
+`PowerSeries.WithPiTopology.instTopologicalSpace`. The exact owners are the
+already imported Mathlib `RingTheory/PowerSeries/Basic.lean` and
+`RingTheory/PowerSeries/PiTopology.lean`, at pin
+`db584cd6d46c92f209a44c0f1c829460d327499d`; `CommRingCat` bundles precisely the
+coefficient structure these declarations require.
 -/
 
 open CategoryTheory
@@ -136,35 +147,35 @@ meta def smoothEvidence : TacticM Unit :=
     m!"the map is not established to be smooth"
     [do evalTactic (← `(tactic| fun_prop (disch := (intros; positivity))))]
 
-/-- `R[[t]]`. -/
-abbrev powerSeries (R : Type) [CommRing R] : SetsCat.{0} := PowerSeries R
+/-- `R[[t]]`, for an object `R` of commutative rings (LC-13). -/
+abbrev powerSeries (R : CommRingCat.{0}) : SetsCat.{0} := PowerSeries R
 
 /-- The variable `t ∈ R[[t]]`. -/
-noncomputable def powerSeriesGenerator (R : Type) [CommRing R] :
+noncomputable def powerSeriesGenerator (R : CommRingCat.{0}) :
     CasCatalogue.Foundation.Objects.fin 1 ⟶ powerSeries R :=
   TypeCat.ofHom fun _ => PowerSeries.X
 
 /-- The constants `R ↪ R[[t]]`. -/
-noncomputable def powerSeriesConstants (R : Type) [CommRing R] :
+noncomputable def powerSeriesConstants (R : CommRingCat.{0}) :
     (R : SetsCat.{0}) ⟶ powerSeries R :=
   TypeCat.ofHom fun r => PowerSeries.C r
 
 /-- `R[[t]]` as a ring. -/
-noncomputable abbrev ringPowerSeries (R : Type) [CommRing R] : LeanCategories.Algebra.Rings.{0} :=
+noncomputable abbrev ringPowerSeries (R : CommRingCat.{0}) : LeanCategories.Algebra.Rings.{0} :=
   RingCat.of (PowerSeries R)
 
 /-- The underlying set of the ring `R[[t]]` is `R[[t]]`. -/
-def ringPowerSeriesIdentification (R : Type) [CommRing R] :
+def ringPowerSeriesIdentification (R : CommRingCat.{0}) :
     (powerSeries R : SetsCat.{0}) ≅ powerSeries R :=
   Iso.refl _
 
 /-- The coefficient of `tⁿ`. -/
-noncomputable def coefficient (R : Type) [CommRing R] :
+noncomputable def coefficient (R : CommRingCat.{0}) :
     (powerSeries R × CasCatalogue.Foundation.Objects.naturals : SetsCat.{0}) ⟶ (R : SetsCat.{0}) :=
   TypeCat.ofHom fun p => PowerSeries.coeff p.2 p.1
 
 /-- `Σ c(n) tⁿ`, the series with the coefficient sequence `c : ℕ → R`. -/
-noncomputable def ofCoefficients (R : Type) [CommRing R]
+noncomputable def ofCoefficients (R : CommRingCat.{0})
     (c : CasCatalogue.Foundation.Objects.naturals ⟶ (R : SetsCat.{0})) :
     CasCatalogue.Foundation.Objects.fin 1 ⟶ powerSeries R :=
   TypeCat.ofHom fun _ => PowerSeries.mk (ConcreteCategory.hom (C := Type) c)
@@ -189,7 +200,7 @@ noncomputable def factorialUnit :
 
 /-- `(f, a) ↦ Σ f⁽ᵏ⁾(a)/k! tᵏ`, the division by `k! ∈ ℝˣ` being division by a unit. -/
 noncomputable def taylor :
-    (smoothMaps × reals : SetsCat.{0}) ⟶ powerSeries ℝ :=
+    (smoothMaps × reals : SetsCat.{0}) ⟶ powerSeries (CommRingCat.of ℝ) :=
   TypeCat.ofHom fun p =>
     PowerSeries.mk fun k =>
       ConcreteCategory.hom (C := Type) (CasCatalogue.Algebra.Units.divide ℝ)

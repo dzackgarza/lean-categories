@@ -49,6 +49,23 @@ dividing by `t` is not a map on `ℝ ∖ {a}`; a body dividing by `t - a` divide
 
 open CategoryTheory Filter Topology
 
+/-!
+The intrinsic comparison with the generic filter limit is `limit_eq_limUnder` and
+`limitAtInfinity_eq_limUnder`. These use Mathlib's `tendsto_nhds_limUnder` on the
+admitted convergence proof; the converse characterizations use uniqueness on the
+nonbottom approach filters. Thus no value of Mathlib's totalized `limUnder` off
+its convergence domain is exposed by either binder.
+
+Reuse search (2026-10-02, LC-09): the live formalization corpus was searched for
+`limUnder_eq`, `tendsto_nhds_limUnder`, `"limit" "Hausdorff"`, and
+`"convergent" "limUnder"`. The generic owners are Mathlib
+`Topology/Basic.lean::tendsto_nhds_limUnder` and
+`Topology/Separation/Hausdorff.lean::Filter.Tendsto.limUnder_eq`, inspected at the
+project's pin `db584cd6d46c92f209a44c0f1c829460d327499d`. Their hypotheses are
+exactly convergence and, for uniqueness, a Hausdorff codomain and a nonbottom
+source filter; `approach_neBot` and `approachInfinity_neBot` supply the latter.
+-/
+
 namespace CasCatalogue.Algebra.RealLimits
 
 open CasCatalogue.Foundation.PowerSets CasCatalogue.Foundation.Objects
@@ -135,6 +152,17 @@ theorem limit_eq (a : fin 1 ⟶ reals) (f : convergentMaps a) (L : ℝ)
     (h : Tendsto f.toFun (approach a) (𝓝 L)) :
     ConcreteCategory.hom (C := Type) (limit a) f = L :=
   tendsto_nhds_unique (tendsto_limit a f) h
+
+/-- The admitted limit agrees with Mathlib's generic filter limit on its actual domain. -/
+theorem limit_eq_limUnder (a : fin 1 ⟶ reals) (f : convergentMaps a) :
+    ConcreteCategory.hom (C := Type) (limit a) f = limUnder (approach a) f.toFun :=
+  limit_eq a f _ (tendsto_nhds_limUnder f.converges)
+
+/-- A value is the admitted limit exactly when the admitted map tends to it. -/
+theorem limit_eq_iff_tendsto (a : fin 1 ⟶ reals) (f : convergentMaps a) (L : ℝ) :
+    ConcreteCategory.hom (C := Type) (limit a) f = L ↔
+      Tendsto f.toFun (approach a) (𝓝 L) :=
+  ⟨fun h => h ▸ tendsto_limit a f, limit_eq a f L⟩
 
 /-- A map `f` on `ℝ ∖ {a}` that is the restriction of a map `g` defined near `a` tends to `L` at
 `a` when `g` tends to `L` along `𝓝[≠] a`. -/
@@ -248,6 +276,20 @@ theorem limitAtInfinity_eq (a : fin 1 ⟶ infinities) (f : convergentMapsAtInfin
     (h : Tendsto f.toFun (approachInfinity a) (𝓝 L)) :
     ConcreteCategory.hom (C := Type) (limitAtInfinity a) f = L :=
   tendsto_nhds_unique (tendsto_limitAtInfinity a f) h
+
+/-- The admitted limit at infinity agrees with Mathlib's generic filter limit. -/
+theorem limitAtInfinity_eq_limUnder (a : fin 1 ⟶ infinities)
+    (f : convergentMapsAtInfinity a) :
+    ConcreteCategory.hom (C := Type) (limitAtInfinity a) f =
+      limUnder (approachInfinity a) f.toFun :=
+  limitAtInfinity_eq a f _ (tendsto_nhds_limUnder f.converges)
+
+/-- A value is the admitted limit at infinity exactly when the admitted map tends to it. -/
+theorem limitAtInfinity_eq_iff_tendsto (a : fin 1 ⟶ infinities)
+    (f : convergentMapsAtInfinity a) (L : ℝ) :
+    ConcreteCategory.hom (C := Type) (limitAtInfinity a) f = L ↔
+      Tendsto f.toFun (approachInfinity a) (𝓝 L) :=
+  ⟨fun h => h ▸ tendsto_limitAtInfinity a f, limitAtInfinity_eq a f L⟩
 
 /-- A map `f` on `ℝˣ` that is the restriction of a map `g` on `ℝ` tends to `L` as `t → G` in `ℝˣ`
 when `g` tends to `L` along `G`. -/
