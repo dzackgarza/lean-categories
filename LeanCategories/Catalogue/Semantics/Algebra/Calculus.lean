@@ -29,10 +29,12 @@ public meta import LeanCategories.Catalogue.Semantics.Foundation.Evidence
 Each operation of calculus is a total map out of the object it is defined on (LC-14):
 * `sin`, `cos`, `exp : ℝ → ℝ` and `π : 1 → ℝ` (Mathlib `Real.sin`, `Real.cos`, `Real.exp`,
   `Real.pi`);
-* `C(ℝ)`, the continuous maps `ℝ → ℝ` (Mathlib `ContinuousMap`), and the definite integral
-  `∫_a^b : C(ℝ) → ℝ` at bounds `a b ∈ ℝ`, the binder `∫_{a}^{b} e dt` (Mathlib
-  `intervalIntegral`; continuous maps are integrable on every interval). A map is in `C(ℝ)` only
-  with the evidence that it is continuous;
+* `C(ℝ)`, the continuous maps `ℝ → ℝ` (Mathlib `ContinuousMap`). A map is in `C(ℝ)` only with the
+  evidence that it is continuous;
+* `L¹(a, b)`, the maps `ℝ → ℝ` integrable between `a b ∈ ℝ` (Mathlib `IntervalIntegrable`), and the
+  definite integral `∫_a^b : L¹(a, b) → ℝ`, the binder `∫_{a}^{b} e dt` (Mathlib
+  `intervalIntegral`). A map is in `L¹(a, b)` only with the evidence that it is integrable there;
+  `C(ℝ) ↪ L¹(a, b)`, since a continuous map is integrable on every interval;
 * `C^∞(ℝ)`, the smooth maps `ℝ → ℝ` (Mathlib `ContDiff ℝ ⊤`), and the Taylor expansion
   `C^∞(ℝ) × ℝ → ℝ[[t]]`, `(f, a) ↦ Σ f⁽ᵏ⁾(a)/k! tᵏ` (Mathlib `iteratedDeriv`). A map is in
   `C^∞(ℝ)` only with the evidence that it is smooth. The division by `k!` is the division
@@ -87,23 +89,48 @@ meta def continuousEvidence : TacticM Unit :=
     m!"the map is not established to be continuous"
     [do evalTactic (← `(tactic| fun_prop (disch := (intros; positivity))))]
 
-/-- `f ↦ ∫_a^b f(t) dt`, `C(ℝ) → ℝ`, at the bounds `a b ∈ ℝ`: the binder `∫_{a}^{b} e dt`
-(`lean-cas-dsl/specs/binders.md`), its arguments the two bounds. It is Mathlib's interval integral
-`∫ t in a..b, f t` (`intervalIntegral`, the oriented Lebesgue integral over `Ι a b`, so that
-`∫_b^a f = -∫_a^b f`), which on a continuous map is the Riemann integral: a continuous map is
-integrable on every compact interval (`Continuous.intervalIntegrable`), so the operation is total on
-`C(ℝ)` at every pair of bounds, and the fundamental theorem of calculus evaluates it
-(`intervalIntegral.integral_eq_sub_of_hasDerivAt`, `integral_pow`, `integral_sin`).
+/-- The maps `ℝ → ℝ` integrable between `a` and `b`: Lebesgue integrable on the interval
+`Ι a b = (min a b, max a b]` for Lebesgue measure (Mathlib `IntervalIntegrable f volume a b`,
+which is `IntegrableOn f (Ioc a b) ∧ IntegrableOn f (Ioc b a)`). These are exactly the maps for
+which the definite integral `∫_a^b f(t) dt` exists. -/
+structure IntegrableBetween (a b : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) : Type where
+  /-- The map. -/
+  toFun : ℝ → ℝ
+  /-- It is integrable between `a` and `b`. -/
+  integrable : IntervalIntegrable toFun MeasureTheory.volume
+    (ConcreteCategory.hom (C := Type) a 0) (ConcreteCategory.hom (C := Type) b 0)
 
-The object of maps is `C(ℝ)` and the bound variable ranges over `ℝ`, independently of the bounds:
-one object serves all bounds, and a map is admitted with the continuity evidence
-`continuousEvidence` of `C(ℝ)`. An integrand continuous on `[a, b]` but not on `ℝ` (`1/t` on
-`[1, 2]`) is not admitted by this row; it belongs to `C([a, b])`, a further row of the same
-notation. -/
+/-- `L¹(a, b)`, the maps `ℝ → ℝ` integrable between `a` and `b`. -/
+abbrev integrableMaps (a b : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) : SetsCat.{0} :=
+  IntegrableBetween a b
+
+/-- The map `f`, with the evidence that it is integrable between `a` and `b`. -/
+def admitIntegrable (a b : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) (f : ℝ → ℝ)
+    (h : IntervalIntegrable f MeasureTheory.volume
+      (ConcreteCategory.hom (C := Type) a 0) (ConcreteCategory.hom (C := Type) b 0)) :
+    CasCatalogue.Foundation.Objects.fin 1 ⟶ integrableMaps a b :=
+  TypeCat.ofHom fun _ => ⟨f, h⟩
+
+/-- `f ↦ ∫_a^b f(t) dt`, at the bounds `a b ∈ ℝ`, out of the maps integrable between `a` and `b`:
+the binder `∫_{a}^{b} e dt` (`lean-cas-dsl/specs/binders.md`), its arguments the two bounds. It is
+the oriented Lebesgue integral over `Ι a b` (Folland, *Real Analysis*, 2.2; Mathlib
+`intervalIntegral`, `∫ t in a..b, f t = ∫_{Ioc a b} f - ∫_{Ioc b a} f`, so that
+`∫_b^a f = -∫_a^b f`). The integral exists exactly on the integrable maps, so the operation is
+total on `integrableMaps a b`; Mathlib's value `0` off them (`intervalIntegral.integral_undef`) is
+never reached (LC-14). A Riemann integrable map on `[a, b]` is Lebesgue integrable there with the
+same integral (Folland, 2.28), so this row contains the Riemann integral; on a continuous map the
+fundamental theorem of calculus evaluates it (`intervalIntegral.integral_eq_sub_of_hasDerivAt`,
+`integral_pow`, `integral_sin`).
+
+The bound variable ranges over `ℝ`, the largest set on which a map can be integrated between `a`
+and `b`; the integral depends only on the map's values on `Ι a b`, up to a null set. A map is
+admitted with the evidence `integrableEvidence` that it is integrable between the bounds; a
+continuous map is integrable between every pair (`continuousIntegrable`), and a map continuous on
+`[a, b]` only (`1/t` on `[1, 2]`) is integrable between `a` and `b` as well. -/
 noncomputable def integral (a b : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) :
-    continuousMaps ⟶ reals :=
+    integrableMaps a b ⟶ reals :=
   TypeCat.ofHom fun f =>
-    ∫ t in ConcreteCategory.hom (C := Type) a 0..ConcreteCategory.hom (C := Type) b 0, f t
+    ∫ t in ConcreteCategory.hom (C := Type) a 0..ConcreteCategory.hom (C := Type) b 0, f.toFun t
 
 /-- The bound variable of `∫_{a}^{b}` ranges over `ℝ`. -/
 abbrev integrationDomain (_ _ : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) : SetsCat.{0} :=
@@ -112,11 +139,54 @@ abbrev integrationDomain (_ _ : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals)
 /-- The value of `∫_a^b` at an admitted map is Mathlib's interval integral of the map (the
 composite applied map by map, its simp-normal form). -/
 @[simp] theorem integral_admit (a b : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals)
-    (f : ℝ → ℝ) (h : Continuous f) (p : CasCatalogue.Foundation.Objects.fin 1) :
+    (f : ℝ → ℝ)
+    (h : IntervalIntegrable f MeasureTheory.volume
+      (ConcreteCategory.hom (C := Type) a 0) (ConcreteCategory.hom (C := Type) b 0))
+    (p : CasCatalogue.Foundation.Objects.fin 1) :
     ConcreteCategory.hom (C := Type) (integral a b)
-        (ConcreteCategory.hom (C := Type) (admitContinuous f h) p) =
+        (ConcreteCategory.hom (C := Type) (admitIntegrable a b f h) p) =
       ∫ t in ConcreteCategory.hom (C := Type) a 0..ConcreteCategory.hom (C := Type) b 0, f t :=
   rfl
+
+/-- `C(ℝ) → L¹(a, b)`: a continuous map is integrable on every compact interval (Mathlib
+`Continuous.intervalIntegrable`). -/
+noncomputable def continuousIntegrable (a b : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) :
+    continuousMaps ⟶ integrableMaps a b :=
+  TypeCat.ofHom fun f => ⟨f, f.continuous.intervalIntegrable _ _⟩
+
+/-- `C(ℝ) → L¹(a, b)` is a monomorphism: it keeps the map. -/
+theorem continuousIntegrable_mono (a b : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) :
+    Mono (continuousIntegrable a b) :=
+  mono_of_injective _ fun _ _ h => ContinuousMap.ext fun t =>
+    congrFun (congrArg IntegrableBetween.toFun h :) t
+
+open Lean Elab Tactic in
+/-- The evidence that a closed map `f : ℝ → ℝ` is integrable between closed bounds `a`, `b`:
+`IntervalIntegrable f volume a b`. The bounds are evaluated (the registered numerals to casts,
+`π`), and `f` is shown continuous on `ℝ` (`Continuous.intervalIntegrable`), or continuous on
+`[a, b]` (`ContinuousOn.intervalIntegrable`), continuity composed along the structure of `f` as for
+`continuousEvidence` (Mathlib `fun_prop`), a denominator having no zero on `[a, b]` by its
+positivity or by its sign at the bounds (`linarith` from `min a b ≤ t ≤ max a b`). It fails on a
+map that is not established so: `1/t` between `-1` and `1`, which is not integrable. -/
+meta def integrableEvidence : TacticM Unit :=
+  CasCatalogue.Evidence.establish "L¹(a, b)" do
+    let goal ← getMainGoal
+    let target ← instantiateMVars (← goal.getType)
+    let expanded ← Meta.deltaExpand target fun n => n.getRoot == `CasCatalogue
+    replaceMainGoal [← goal.replaceTargetDefEq expanded]
+    evalTactic (← `(tactic| try simp only [id_eq, TypeCat.ofHom_apply, ConcreteCategory.comp_apply,
+      RingHom.toFun_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe,
+      eq_intCast, Int.cast_natCast, Nat.cast_ofNat, Nat.cast_zero, Nat.cast_one, Int.cast_ofNat,
+      Int.cast_zero, Int.cast_one]))
+    CasCatalogue.Evidence.closeByFirst m!"the map is not established to be integrable"
+      [do evalTactic (← `(tactic|
+            (with_reducible_and_instances refine Continuous.intervalIntegrable ?_ _ _);
+            fun_prop (disch := (intros; positivity)))),
+       do evalTactic (← `(tactic|
+            (with_reducible_and_instances refine ContinuousOn.intervalIntegrable ?_);
+            fun_prop (disch := (intro t ht; rcases Set.mem_uIcc.mp ht with ⟨_, _⟩ | ⟨_, _⟩ <;>
+              (first | positivity | exact ne_of_gt (by linarith) |
+                exact ne_of_lt (by linarith))))))]
 
 /-- `C^∞(ℝ)`, the smooth maps `ℝ → ℝ`. -/
 abbrev smoothMaps : SetsCat.{0} := {f : ℝ → ℝ // ContDiff ℝ (⊤ : ℕ∞) f}
@@ -222,6 +292,12 @@ normalized_registry .object
     declaration := `CasCatalogue.Algebra.Calculus.continuousMaps
     admission := some `CasCatalogue.Algebra.Calculus.admitContinuous
     evidence := some `CasCatalogue.Algebra.Calculus.continuousEvidence }
+
+normalized_registry .object
+  { id := ⟨"obj.sets.integrable_maps"⟩, category := CategoryId.sets, name := "L¹"
+    declaration := `CasCatalogue.Algebra.Calculus.integrableMaps
+    admission := some `CasCatalogue.Algebra.Calculus.admitIntegrable
+    evidence := some `CasCatalogue.Algebra.Calculus.integrableEvidence }
 
 normalized_registry .binder
   { id := ⟨"bind.sets.integral"⟩, category := CategoryId.sets, token := "∫"

@@ -29,7 +29,8 @@ hypothesis. Their expected values are the classical ones, each from its own sour
 
 * `lim_{t → 0} sin t / t = 1` (the derivative of `sin` at `0`; Mathlib `Real.sinc`);
 * `lim_{t → ∞} 1/t = 0` (Mathlib `tendsto_inv_atTop_zero`);
-* `∫_0^1 t² dt = 1/3` (Mathlib `integral_pow`), `∫_0^π sin t dt = 2` (Mathlib `integral_sin`);
+* `∫_0^1 t² dt = 1/3` (Mathlib `integral_pow`), `∫_0^π sin t dt = 2` (Mathlib `integral_sin`),
+  `∫_1^2 1/t dt = log 2` (Mathlib `integral_one_div_of_pos`);
 * `∑_{n ∈ ℕ} n² tⁿ ∈ ℤ[[t]]` is the series with coefficients `n²` (`Series.tsum_C_mul_X_pow`);
 * `∑_{t ∈ {1, 2, 3}} t² = 14`, `∏_{t ∈ {1, 2, 3}} t = 6` in `ℤ`.
 
@@ -132,23 +133,48 @@ section Integrals
 open CasCatalogue.Algebra.Calculus
 
 /-- **`∫_0^1 t² dt = 1/3`.** -/
-theorem integral_sq (h : Continuous fun t : ℝ => t ^ 2) (p : fin 1) :
+theorem integral_sq
+    (h : IntervalIntegrable (fun t : ℝ => t ^ 2) MeasureTheory.volume
+      (ConcreteCategory.hom (C := Type) (realNumeral 0) 0)
+      (ConcreteCategory.hom (C := Type) (realNumeral 1) 0)) (p : fin 1) :
     ConcreteCategory.hom (C := Type)
-      (admitContinuous (fun t => t ^ 2) h ≫ integral (realNumeral 0) (realNumeral 1)) p =
+      (admitIntegrable _ _ (fun t => t ^ 2) h ≫ integral (realNumeral 0) (realNumeral 1)) p =
       1 / 3 := by
   rw [ConcreteCategory.comp_apply, integral_admit]
   simp [integral_pow]
   norm_num
 
 /-- **`∫_0^π sin t dt = 2`.** -/
-theorem integral_sin_zero_pi (h : Continuous fun t : ℝ =>
-      ConcreteCategory.hom (C := Type) Calculus.sin t) (p : fin 1) :
+theorem integral_sin_zero_pi
+    (h : IntervalIntegrable (fun t : ℝ => ConcreteCategory.hom (C := Type) Calculus.sin t)
+      MeasureTheory.volume (ConcreteCategory.hom (C := Type) (realNumeral 0) 0)
+      (ConcreteCategory.hom (C := Type) Calculus.pi 0)) (p : fin 1) :
     ConcreteCategory.hom (C := Type)
-      (admitContinuous (fun t => ConcreteCategory.hom (C := Type) Calculus.sin t) h ≫
+      (admitIntegrable _ _ (fun t => ConcreteCategory.hom (C := Type) Calculus.sin t) h ≫
         integral (realNumeral 0) Calculus.pi) p = 2 := by
   rw [ConcreteCategory.comp_apply, integral_admit]
   simp [Calculus.sin, Calculus.pi, integral_sin]
   norm_num
+
+/-- **`∫_1^2 1/t dt = log 2`** (Mathlib `integral_one_div_of_pos`): `1/t` is integrable between `1`
+and `2`, though not continuous on `ℝ`. -/
+theorem integral_one_div
+    (h : IntervalIntegrable (fun t : ℝ => 1 / t) MeasureTheory.volume
+      (ConcreteCategory.hom (C := Type) (realNumeral 1) 0)
+      (ConcreteCategory.hom (C := Type) (realNumeral 2) 0)) (p : fin 1) :
+    ConcreteCategory.hom (C := Type)
+      (admitIntegrable _ _ (fun t => 1 / t) h ≫ integral (realNumeral 1) (realNumeral 2)) p =
+      Real.log 2 := by
+  rw [ConcreteCategory.comp_apply, integral_admit]
+  simp only [realNumeral_value]
+  rw [integral_one_div_of_pos (by norm_num) (by norm_num)]
+  norm_num
+
+/-- On a continuous map the integral is that of its image in `L¹(a, b)`. -/
+theorem integral_continuousIntegrable (a b : fin 1 ⟶ reals) (f : continuousMaps) :
+    ConcreteCategory.hom (C := Type) (continuousIntegrable a b ≫ integral a b) f =
+      ∫ t in ConcreteCategory.hom (C := Type) a 0..ConcreteCategory.hom (C := Type) b 0, f t :=
+  rfl
 
 end Integrals
 
@@ -238,6 +264,39 @@ run_meta expectRegistered "obj.sets.convergent_maps_at_infinity" ``RealLimits.co
 
 #guard_msgs in
 run_meta expectRegistered "obj.sets.summable_families" ``Series.summableEvidence
+
+#guard_msgs in
+run_meta expectRegistered "obj.sets.integrable_maps" ``Calculus.integrableEvidence
+
+-- Maps integrable between their bounds: `t²` between `0` and `1`, `sin t` between `0` and `π`,
+-- `1/t` between `1` and `2` and between `-2` and `-1` (continuous there, not on `ℝ`),
+-- `1/(t² + 1)` between `-1` and `1`.
+#guard_msgs in
+run_elab do
+  expectEstablished Calculus.integrableEvidence
+    [← `(IntervalIntegrable (fun t : ℝ => t ^ 2) MeasureTheory.volume
+          (ConcreteCategory.hom (C := Type) (CasCatalogue.BinderTests.realNumeral 0) 0)
+          (ConcreteCategory.hom (C := Type) (CasCatalogue.BinderTests.realNumeral 1) 0)),
+     ← `(IntervalIntegrable (fun t : ℝ => ConcreteCategory.hom (C := Type) Calculus.sin t)
+          MeasureTheory.volume
+          (ConcreteCategory.hom (C := Type) (CasCatalogue.BinderTests.realNumeral 0) 0)
+          (ConcreteCategory.hom (C := Type) Calculus.pi 0)),
+     ← `(IntervalIntegrable (fun t : ℝ => 1 / t) MeasureTheory.volume
+          (ConcreteCategory.hom (C := Type) (CasCatalogue.BinderTests.realNumeral 1) 0)
+          (ConcreteCategory.hom (C := Type) (CasCatalogue.BinderTests.realNumeral 2) 0)),
+     ← `(IntervalIntegrable (fun t : ℝ => 1 / t) MeasureTheory.volume (-2) (-1)),
+     ← `(IntervalIntegrable (fun t : ℝ => 1 / (t ^ 2 + 1)) MeasureTheory.volume
+          (ConcreteCategory.hom (C := Type) (CasCatalogue.BinderTests.realNumeral 1) 0) (-1))]
+
+-- `1/t` between `-1` and `1`, and between `0` and `1`: not integrable (Mathlib
+-- `intervalIntegrable_inv_iff`), refused.
+#guard_msgs in
+run_elab do
+  expectRefused Calculus.integrableEvidence
+    [← `(IntervalIntegrable (fun t : ℝ => 1 / t) MeasureTheory.volume (-1) 1),
+     ← `(IntervalIntegrable (fun t : ℝ => 1 / t) MeasureTheory.volume
+          (ConcreteCategory.hom (C := Type) (CasCatalogue.BinderTests.realNumeral 0) 0)
+          (ConcreteCategory.hom (C := Type) (CasCatalogue.BinderTests.realNumeral 1) 0))]
 
 -- The maps convergent at their points: `sin t / t` at `0`, `1/t` at `±∞`, `1/t + 3` at `−∞`,
 -- `t² + 1` at `2`, `exp t` at `1`.
