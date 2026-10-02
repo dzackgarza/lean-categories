@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Catalogue.Semantics.Algebra.Calculus
 public import LeanCategories.Catalogue.Semantics.Algebra.FiniteSums
+public import LeanCategories.Catalogue.Semantics.Algebra.CommutativeMonoids
 public import LeanCategories.Catalogue.Semantics.Algebra.Series
 public import LeanCategories.Catalogue.Semantics.Algebra.RealLimits
 public import LeanCategories.Catalogue.Semantics.Algebra.NamedRings
@@ -168,27 +169,27 @@ noncomputable def squaresTimesPowers : ℕ → PowerSeries ℤ :=
 `k²`. -/
 theorem powerSeriesSum_squares (h : Summable squaresTimesPowers) (p : fin 1) :
     ConcreteCategory.hom (C := Type)
-      (Series.admit (PowerSeries ℤ) naturals squaresTimesPowers h ≫ powerSeriesSum ℤ naturals) p =
+      (Series.admit (powerSeriesTAdic ℤ) naturals squaresTimesPowers h ≫ powerSeriesSum ℤ naturals) p =
       PowerSeries.mk fun n => (n : ℤ) ^ 2 :=
   tsum_C_mul_X_pow fun n => (n : ℤ) ^ 2
 
 theorem powerSeriesSum_squares_coeff (h : Summable squaresTimesPowers) (p : fin 1) (k : ℕ) :
     PowerSeries.coeff k (ConcreteCategory.hom (C := Type)
-      (Series.admit (PowerSeries ℤ) naturals squaresTimesPowers h ≫ powerSeriesSum ℤ naturals) p) =
+      (Series.admit (powerSeriesTAdic ℤ) naturals squaresTimesPowers h ≫ powerSeriesSum ℤ naturals) p) =
       (k : ℤ) ^ 2 := by
   rw [powerSeriesSum_squares h p, PowerSeries.coeff_mk]
 
 /-- **`∑_{n ∈ ℕ} (1/2)ⁿ = 2`** in `ℝ` (Mathlib `tsum_geometric_two`). -/
 theorem realSeriesSum_geometric (h : Summable fun n : ℕ => ((1 : ℝ) / 2) ^ n) (p : fin 1) :
     ConcreteCategory.hom (C := Type)
-      (Series.admit ℝ naturals (fun n => ((1 : ℝ) / 2) ^ n) h ≫ realSeriesSum naturals) p = 2 :=
+      (Series.admit realsTop naturals (fun n => ((1 : ℝ) / 2) ^ n) h ≫ realSeriesSum naturals) p = 2 :=
   tsum_geometric_two
 
 /-- `∑_{n ∈ ℕ} (1/2)ⁿ = 2` in `ℂ`: the sum of the complex series is that of the real one, along
 `ℝ ↪ ℂ` (Mathlib `Complex.ofReal_tsum`). -/
 theorem complexSeriesSum_geometric (h : Summable fun n : ℕ => ((1 : ℂ) / 2) ^ n) (p : fin 1) :
     ConcreteCategory.hom (C := Type)
-      (Series.admit ℂ naturals (fun n => ((1 : ℂ) / 2) ^ n) h ≫ complexSeriesSum naturals) p =
+      (Series.admit complexesTop naturals (fun n => ((1 : ℂ) / 2) ^ n) h ≫ complexSeriesSum naturals) p =
       2 := by
   change ∑' n : ℕ, ((1 : ℂ) / 2) ^ n = 2
   have : (fun n : ℕ => ((1 : ℂ) / 2) ^ n) = fun n => ((((1 : ℝ) / 2) ^ n : ℝ) : ℂ) := by
@@ -202,23 +203,33 @@ end Series
 
 section FiniteSums
 
-open CasCatalogue.Algebra.FiniteSums
+open CasCatalogue.Algebra.FiniteSums CasCatalogue.Algebra.CommMonoids
 
 /-- The finite subset `{1, 2, 3} ⊆ ℤ`. -/
 def oneTwoThree : fin 1 ⟶ CasCatalogue.Foundation.FiniteSubsets.finiteSubsets ℤ :=
   TypeCat.ofHom fun _ => {1, 2, 3}
 
+/-- The additive commutative monoid of the ring `ℤ`, along `Ring → AddCommMon`. -/
+abbrev integersAdditive : AdditiveCommutativeMonoids.{0} :=
+  ringsAdditiveCommutative.toFunctor.obj NamedRings.ringIntegers
+
+/-- The multiplicative commutative monoid of the commutative ring `ℤ`, along `CommRing → CommMon`. -/
+abbrev integersMultiplicative : CommutativeMonoids.{0} :=
+  commutativeRingsMultiplicative.toFunctor.obj (CommRingCat.of ℤ)
+
 /-- **`∑_{t ∈ {1, 2, 3}} t² = 14`.** -/
 theorem sumOver_squares (p : fin 1) :
     ConcreteCategory.hom (C := Type)
-      (Foundation.Maps.admit ℤ ℤ (fun t => t ^ 2) ≫ sumOver ℤ ℤ oneTwoThree) p = 14 := by
+      (Foundation.Maps.admit ℤ (addCommMonoidCarrier integersAdditive) (fun t => t ^ 2) ≫
+        sumOver ℤ integersAdditive oneTwoThree) p = (14 : ℤ) := by
   change ∑ t ∈ ({1, 2, 3} : Finset ℤ), t ^ 2 = 14
   decide
 
 /-- **`∏_{t ∈ {1, 2, 3}} t = 6`.** -/
 theorem prodOver_id (p : fin 1) :
     ConcreteCategory.hom (C := Type)
-      (Foundation.Maps.admit ℤ ℤ (fun t => t) ≫ prodOver ℤ ℤ oneTwoThree) p = 6 := by
+      (Foundation.Maps.admit ℤ (commMonoidCarrier integersMultiplicative) (fun t => t) ≫
+        prodOver ℤ integersMultiplicative oneTwoThree) p = (6 : ℤ) := by
   change ∏ t ∈ ({1, 2, 3} : Finset ℤ), t = 6
   decide
 
@@ -366,6 +377,21 @@ run_elab do
             (PowerSeries.X : PowerSeries ℤ) ^ (n + 1)),
      ← `(Summable fun n : ℕ => ((1 : ℝ) / 2) ^ n),
      ← `(Summable fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 2)]
+
+-- The admission's hypothesis is stated at the object `Y` of Hausdorff commutative topological
+-- monoids, with `Y`'s addition and topology: `(1/2)ⁿ` at `ℝ`, `n² tⁿ` at `ℤ[[t]]` `(t)`-adically.
+#guard_msgs in
+run_elab do
+  expectEstablished Series.summableEvidence
+    [← `(Summable (fun n : ℕ =>
+            (((1 : ℝ) / 2) ^ n : Series.asTopMonoid Series.realsTop))),
+     ← `(Summable (CasCatalogue.BinderTests.squaresTimesPowers :
+            ℕ → Series.asTopMonoid (Series.powerSeriesTAdic ℤ)))]
+
+#guard_msgs in
+run_elab do
+  expectRefused Series.summableEvidence
+    [← `(Summable (fun _ : ℕ => ((1 : ℝ) : Series.asTopMonoid Series.realsTop)))]
 
 -- Families that are not summable: `t⁰` repeated in `ℤ[[t]]`, `1` and `1/n` in `ℝ`.
 #guard_msgs in

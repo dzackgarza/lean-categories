@@ -19,7 +19,8 @@ public meta import LeanCategories.Catalogue.Semantics.Algebra.Polynomials
 
 * `Xⁿ` is the set of `n`-tuples of `X` (`Fin n → X`), built from `() : 1 → X⁰` and
   `cons : X × Xⁿ → Xⁿ⁺¹` (Mathlib `Matrix.vecCons`), the isomorphism `X × Xⁿ ≅ Xⁿ⁺¹`. A set `Xⁿ`
-  has no zero; over a ring `K`, `Kⁿ` is a `K`-module, whose additive unit is `0 : 1 → Kⁿ`.
+  has no zero; over an additive monoid `A`, `Aⁿ` is the product additive monoid, whose unit is
+  `0 : 1 → Aⁿ` (for a ring `K`, the zero of the `K`-module `Kⁿ`).
 * `Matₙ(K)` is the set of `n × n` matrices over a commutative ring `K`, made from its rows by
   `rows : (Kⁿ)ⁿ → Matₙ(K)` (Mathlib `Matrix.of`); a matrix is applied to vectors,
   `Matₙ(K) × Kⁿ → Kⁿ` (Mathlib `Matrix.mulVec`).
@@ -50,8 +51,17 @@ def empty (X : Type) : CasCatalogue.Foundation.Objects.fin 1 ⟶ vectors X 0 :=
 def cons (X : Type) (n : ℕ) : (X × vectors X n : SetsCat.{0}) ⟶ vectors X (n + 1) :=
   TypeCat.ofHom fun p => Matrix.vecCons p.1 p.2
 
-/-- `0 ∈ Kⁿ`, the additive unit of the `K`-module `Kⁿ`. -/
-def zero (K : Type) [Semiring K] (n : ℕ) : CasCatalogue.Foundation.Objects.fin 1 ⟶ vectors K n :=
+/-- An additive monoid as an `AddMonCat`. -/
+abbrev asAddMonoid (A : LeanCategories.Algebra.AdditiveMonoids.{0}) : AddMonCat.{0} := A
+
+/-- `0 ∈ Aⁿ`, the unit of the additive monoid `Aⁿ`, the `n`-fold product of the additive
+monoid `A` (Mathlib `Pi.addMonoid`, the product in `AddMonCat`): the point `(0, …, 0)`. It exists
+for every additive monoid `A`, so `A` is an object of additive monoids (LC-13), not a carrier with
+an instance.
+For a ring `K` it is the zero vector of the `K`-module `Kⁿ`, whose additive monoid is `Aⁿ` at the
+additive monoid `A` of `K` (along `Ring → AddCommMon → AddMon`). -/
+def zero (A : LeanCategories.Algebra.AdditiveMonoids.{0}) (n : ℕ) :
+    CasCatalogue.Foundation.Objects.fin 1 ⟶ vectors (asAddMonoid A) n :=
   TypeCat.ofHom fun _ => 0
 
 /-- `Matₙ(K)`. -/
