@@ -26,8 +26,8 @@ convergent at `a` (LC-14): the binder `lim_{t → a} e` (`lean-cas-dsl/specs/bin
 argument is the point `a`. A map is admitted there only with the evidence that it converges.
 
 `ℝ̄` is `ℝ` with the two points `±∞` (`ℝ ⊆ ℝ̄`, `realsExtendedReals`); its points at infinity form
-`ℝ̄ ∖ ℝ = {−∞, +∞}` (`infinities`), with `∞ = +∞` and `-∞` named. The limit has two rows, by
-where `a` lies in `ℝ̄ = ℝ ⊔ {±∞}`:
+`ℝ̄ ∖ ℝ = {−∞, +∞}` (`infinities`), with `∞ = +∞` and `-∞` named. The limit has three rows, by
+where `a` lies in `ℝ̄ = ℝ ⊔ {±∞}` and over which domain the map is read:
 
 * `a ∈ ℝ`. The bound variable ranges over `ℝ ∖ {a}` (`puncturedLine a`), the largest set of reals
   on which a map can have a limit at `a` without being evaluated at `a`; it tends to `a` along
@@ -38,6 +38,10 @@ where `a` lies in `ℝ̄ = ℝ ⊔ {±∞}`:
   containing one serves. The bound variable ranges over `ℝ ∖ {0} = ℝˣ` (`Algebra.Units`): it
   contains a half-line at each of `±∞`, so one domain serves both, and it is where `t ↦ 1/t` is a
   map (`1/t` is the division by the unit `t`, LC-16), the standard domain of `lim_{t → ∞} 1/t`.
+* `a ∈ ℝ`, the map read on `ℝˣ`: `ℝˣ` is a punctured neighbourhood of every real point, so the
+  limit at `a` is also defined on maps `ℝˣ → ℝ` (`limitOnUnits`), the domain on which a body
+  dividing by `t` is a map (`lim_{t → 0} sin t / t`). It agrees with the first row on maps that
+  coincide on `ℝ ∖ {a, 0}` (`tendsto_approach_iff_approachUnits`).
 
 Division by the bound variable of the first row needs `t ∈ ℝˣ`. The inclusion
 `ℝ ∖ {a} ↪ ℝˣ` exists exactly when `a = 0` (`puncturedUnits`, a monomorphism over the
@@ -176,6 +180,102 @@ theorem puncturedUnits_inclusion (a : fin 1 ⟶ reals) (h : a = zeroPoint) :
     puncturedUnits a h ≫ CasCatalogue.Algebra.Units.inclusion ℝ = puncturedInclusion a :=
   rfl
 
+/-! ### Limits at a real point, of maps on `ℝˣ`
+
+A map on `ℝ ∖ {a}` divides by its variable `t` only where `t ∈ ℝˣ`, and `ℝ ∖ {a} ↪ ℝˣ` exists only
+over `a = 0` (`puncturedUnits`), so `lim_{t → 0} sin t / t` is not a map on `ℝ ∖ {a}` at a point
+`a` of `ℝ`. The limit at `a ∈ ℝ` depends only on the map on a punctured neighbourhood of `a`, and
+`ℝˣ = ℝ ∖ {0}` is one for every `a` (`units_mem_nhdsNE`): for `a = 0` it is `ℝ ∖ {a}` itself, for
+`a ≠ 0` it contains the open set `ℝ ∖ {0} ∋ a`. So `lim_{t → a}` is also the limit of maps
+`ℝˣ → ℝ`, along `𝓝[≠] a` traced on `ℝˣ` (`approachUnits a`), as it is at `±∞`. The two readings
+of a map defined on both domains agree (`tendsto_approach_iff_approachUnits`): they are two
+presentations of one limit, compared on `ℝ ∖ {a, 0}`, and neither is chosen over the other. -/
+
+/-- `ℝˣ`, as a subset of `ℝ`, is a punctured neighbourhood of every `a ∈ ℝ`. -/
+theorem units_mem_nhdsNE (a : ℝ) :
+    Set.range (Units.val : CasCatalogue.Algebra.Units.units ℝ → ℝ) ∈ 𝓝[≠] a := by
+  have hrange : Set.range (Units.val : ℝˣ → ℝ) = {0}ᶜ := by
+    ext x
+    simp only [Set.mem_range, Set.mem_compl_iff, Set.mem_singleton_iff]
+    exact ⟨fun ⟨u, hu⟩ => hu ▸ u.ne_zero, fun hx => ⟨Units.mk0 x hx, rfl⟩⟩
+  change Set.range (Units.val : ℝˣ → ℝ) ∈ 𝓝[≠] a
+  rw [hrange]
+  by_cases h : a = 0
+  · subst h
+    exact self_mem_nhdsWithin
+  · exact mem_nhdsWithin_of_mem_nhds (isOpen_compl_singleton.mem_nhds h)
+
+/-- `t → a` in `ℝˣ`, `a ∈ ℝ`: the punctured neighbourhoods `𝓝[≠] a`, traced on `ℝˣ`. -/
+def approachUnits (a : fin 1 ⟶ reals) : Filter (CasCatalogue.Algebra.Units.units ℝ) :=
+  comap Units.val (𝓝[≠] ConcreteCategory.hom (C := Type) a 0)
+
+/-- Every punctured neighbourhood of `a` meets `ℝˣ`. -/
+instance approachUnits_neBot (a : fin 1 ⟶ reals) : (approachUnits a).NeBot :=
+  NeBot.comap_of_range_mem inferInstance (units_mem_nhdsNE _)
+
+/-- The maps `ℝˣ → ℝ` that converge at `a ∈ ℝ`. -/
+structure ConvergentAtOnUnits (a : fin 1 ⟶ reals) : Type where
+  /-- The map. -/
+  toFun : CasCatalogue.Algebra.Units.units ℝ → ℝ
+  /-- It converges at `a`. -/
+  converges : ∃ L, Tendsto toFun (approachUnits a) (𝓝 L)
+
+/-- The maps on `ℝˣ` convergent at `a ∈ ℝ`. -/
+abbrev convergentMapsOnUnits (a : fin 1 ⟶ reals) : SetsCat.{0} := ConvergentAtOnUnits a
+
+/-- The map `f` on `ℝˣ`, with the evidence that it converges at `a ∈ ℝ`. -/
+def admitConvergentOnUnits (a : fin 1 ⟶ reals) (f : CasCatalogue.Algebra.Units.units ℝ → ℝ)
+    (h : ∃ L, Tendsto f (approachUnits a) (𝓝 L)) : fin 1 ⟶ convergentMapsOnUnits a :=
+  TypeCat.ofHom fun _ => ⟨f, h⟩
+
+/-- `f ↦ lim_{t → a} f(t)` at `a ∈ ℝ`, for a map on `ℝˣ`: the unique limit
+(`limitOnUnits_eq`). The binder `lim_{t → a} e` with `t ∈ ℝˣ`. -/
+noncomputable def limitOnUnits (a : fin 1 ⟶ reals) : convergentMapsOnUnits a ⟶ reals :=
+  TypeCat.ofHom fun f => Classical.choose f.converges
+
+/-- The bound variable of `lim_{t → a}`, read on `ℝˣ`, ranges over `ℝˣ`. -/
+abbrev limitOnUnitsDomain (_ : fin 1 ⟶ reals) : SetsCat.{0} :=
+  CasCatalogue.Algebra.Units.units ℝ
+
+/-- The map tends to its limit. -/
+theorem tendsto_limitOnUnits (a : fin 1 ⟶ reals) (f : convergentMapsOnUnits a) :
+    Tendsto f.toFun (approachUnits a) (𝓝 (ConcreteCategory.hom (C := Type) (limitOnUnits a) f)) :=
+  Classical.choose_spec f.converges
+
+/-- The limit is unique. -/
+theorem limitOnUnits_eq (a : fin 1 ⟶ reals) (f : convergentMapsOnUnits a) (L : ℝ)
+    (h : Tendsto f.toFun (approachUnits a) (𝓝 L)) :
+    ConcreteCategory.hom (C := Type) (limitOnUnits a) f = L :=
+  tendsto_nhds_unique (tendsto_limitOnUnits a f) h
+
+/-- The two readings of `lim_{t → a}` agree: a map `f` on `ℝ ∖ {a}` and a map `g` on `ℝˣ` that
+coincide on `ℝ ∖ {a, 0}` tend to the same values at `a`. Both tend to `L` exactly when the map of
+`ℝ ∖ {a}` they determine does along `𝓝[≠] a` (`Filter.map_comap_of_mem`: each domain is a
+punctured neighbourhood of `a`). -/
+theorem tendsto_approach_iff_approachUnits (a : fin 1 ⟶ reals) (f : puncturedLine a → ℝ)
+    (g : CasCatalogue.Algebra.Units.units ℝ → ℝ)
+    (hfg : ∀ (t : CasCatalogue.Algebra.Units.units ℝ)
+      (h : (t : ℝ) ≠ ConcreteCategory.hom (C := Type) a 0), f ⟨t, h⟩ = g t) (L : ℝ) :
+    Tendsto f (approach a) (𝓝 L) ↔ Tendsto g (approachUnits a) (𝓝 L) := by
+  classical
+  let x := ConcreteCategory.hom (C := Type) a 0
+  let h : ℝ → ℝ := fun s => if hs : s ≠ x then f ⟨s, hs⟩ else 0
+  have hf : f = h ∘ Subtype.val := funext fun t => by
+    change f t = if hs : (t : ℝ) ≠ x then f ⟨t, hs⟩ else 0
+    rw [dif_pos t.2]
+  have hg : g =ᶠ[approachUnits a] h ∘ Units.val := by
+    filter_upwards [preimage_mem_comap (self_mem_nhdsWithin : ({x}ᶜ : Set ℝ) ∈ 𝓝[≠] x)]
+      with t ht
+    have ht' : (t : ℝ) ≠ x := ht
+    change g t = h t
+    rw [show h t = f ⟨t, ht'⟩ from dif_pos ht']
+    exact (hfg t ht').symm
+  have hpunct : Set.range (Subtype.val : puncturedLine a → ℝ) ∈ 𝓝[≠] x := by
+    rw [Subtype.range_coe_subtype]
+    exact self_mem_nhdsWithin
+  rw [tendsto_congr' hg, hf, approach, approachUnits, ← tendsto_map'_iff, ← tendsto_map'_iff,
+    map_comap_of_mem hpunct, map_comap_of_mem (units_mem_nhdsNE x)]
+
 /-! ### Limits at `±∞` -/
 
 /-- `t → a` for `a = ±∞`: the punctured neighbourhoods of `a` in `ℝ̄`, traced on `ℝˣ ⊆ ℝ ⊆ ℝ̄`. -/
@@ -295,7 +395,7 @@ lambda of real expressions in the value of its variable, the point a real number
 filter `atTop`/`atBot`. -/
 meta def unfoldLimit : TacticM Unit := do
   evalTactic (← `(tactic| try simp only [id_eq, CasCatalogue.Algebra.RealLimits.approachInfinity,
-    CasCatalogue.Algebra.RealLimits.approach]))
+    CasCatalogue.Algebra.RealLimits.approach, CasCatalogue.Algebra.RealLimits.approachUnits]))
   let goal ← getMainGoal
   let target ← instantiateMVars (← goal.getType)
   let expanded ← deltaExpand target fun n => n.getRoot == `CasCatalogue
@@ -457,6 +557,18 @@ normalized_registry .binder
   { id := ⟨"bind.sets.limit"⟩, category := CategoryId.sets, token := "lim"
     operation := `CasCatalogue.Algebra.RealLimits.limit
     domain := `CasCatalogue.Algebra.RealLimits.limitDomain }
+
+normalized_registry .object
+  { id := ⟨"obj.sets.convergent_maps_on_units"⟩, category := CategoryId.sets
+    name := "ConvergentOnUnits"
+    declaration := `CasCatalogue.Algebra.RealLimits.convergentMapsOnUnits
+    admission := some `CasCatalogue.Algebra.RealLimits.admitConvergentOnUnits
+    evidence := some `CasCatalogue.Algebra.RealLimits.convergenceEvidence }
+
+normalized_registry .binder
+  { id := ⟨"bind.sets.limit_on_units"⟩, category := CategoryId.sets, token := "lim"
+    operation := `CasCatalogue.Algebra.RealLimits.limitOnUnits
+    domain := `CasCatalogue.Algebra.RealLimits.limitOnUnitsDomain }
 
 normalized_registry .binder
   { id := ⟨"bind.sets.limit_at_infinity"⟩, category := CategoryId.sets, token := "lim"
