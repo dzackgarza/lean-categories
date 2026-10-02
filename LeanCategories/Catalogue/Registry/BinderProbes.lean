@@ -59,7 +59,7 @@ def fromReals (_ _ : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) : reals �
 
 /-- An operation out of `ℝˣ`, whose admission admits elements of `ℝ`, not maps. -/
 noncomputable def fromUnits (_ _ : CasCatalogue.Foundation.Objects.fin 1 ⟶ reals) :
-    CasCatalogue.Algebra.Units.units ℝ ⟶ reals :=
+    CasCatalogue.Algebra.Units.units (MonCat.of ℝ) ⟶ reals :=
   TypeCat.ofHom fun u => (u : ℝ)
 
 /-- Not a morphism family. -/
