@@ -21,7 +21,7 @@ Object constructors of `Sets` (`cat.sets`), with typed parameters:
 * `obj.sets.integers_mod_power`: `(n, k) ↦ (ℤ/n)^k`, the functions `Fin k → ℤ/n`.
 
 Products of sets are the registered limit `lim.sets.product`
-(`CasCatalogue.Limits.Registration.setsProduct`).
+(`CasCatalogue.Limits.Registration.setsProduct`, at the pair diagram `pair X Y`).
 -/
 
 namespace CasCatalogue.Foundation.Objects

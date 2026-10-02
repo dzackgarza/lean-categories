@@ -74,10 +74,10 @@ structure MethodEntry where
 inductive LiftKind
   /-- Subobjects: `evidence` is a `MonoLift U`, and the row's step is `U.mapArrow`. -/
   | subobjects
-  /-- Limits of the registered shape `shape`: `evidence` is Mathlib's `CreatesLimitsOfShape J U`
-  for the functor `U` of the row's step, where `J` is the shape of the registered limits named
-  `shape`. A limit computed in `D` is returned to `C` along it. -/
-  | createsLimits (shape : String)
+  /-- Limits of the shape `shape`, a registered index category `J`: `evidence` is Mathlib's
+  `CreatesLimitsOfShape J U` for the functor `U` of the row's step, and some registered limit row
+  has the shape `J`. A limit computed in `D` is returned to `C` along it. -/
+  | createsLimits (shape : CategoryId)
   deriving DecidableEq, Repr
 
 /-- A lift row (CC-LIFT): `evidence` returns results computed along the route step `edge` to its
@@ -89,13 +89,22 @@ structure LiftEntry where
   kind : LiftKind := .subobjects
   deriving Repr
 
-/-- A limit presentation row (CC-UNIV): `declaration` is a family of Mathlib `LimitCone`s (apex,
-legs, `IsLimit` with its mediator) of the diagrams of one shape in the registered category
-`category`, e.g. `Types.pullbackLimitCone` for pullbacks of sets. -/
+/-- A limit presentation row (CC-UNIV): the limits of the diagrams `F d : J ⥤ C` of shape `J` in
+`C`, one for each object `d` of a registered category `D` of diagrams. `declaration :
+∀ params (d : D), LimitCone (F d)` gives, for every input `d`, the limit object (an object of `C`),
+its legs, and `IsLimit` with its mediator. The input is an object of `D` and the result's apex an
+object of `C`, both registered categories: the pullback of sets takes a cospan, an object of
+`Fun(WalkingCospan, Sets)`; the kernel of groups takes a homomorphism, an object of `Arr(Groups)`,
+whose diagram is the parallel pair `(f, 1)`. -/
 structure LimitEntry where
   id : LimitId
+  /-- `C`: the category the diagrams land in and the limit object lies in. -/
   category : CategoryId
-  shape : String
+  /-- `J`: the registered index category of the diagrams. -/
+  shape : CategoryId
+  /-- `D`: the registered category whose objects are the inputs, each presenting a diagram
+  `J ⥤ C`. -/
+  diagrams : CategoryId
   declaration : Lean.Name
   /-- A colimit presentation: `declaration` is a family of Mathlib `ColimitCocone`s. -/
   colimit : Bool := false

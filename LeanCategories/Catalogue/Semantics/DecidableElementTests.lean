@@ -36,7 +36,7 @@ def applyBinary (R : LeanCategories.Algebra.Rings.{0})
       (underlying R : LeanCategories.Foundation.Mathlib.Sets.{0})) :
     CasCatalogue.Foundation.Objects.fin 1 ⟶
       (underlying R : LeanCategories.Foundation.Mathlib.Sets.{0}) :=
-  (setsProduct _ _).isLimit.lift (BinaryFan.mk x y) ≫ op
+  (setsProduct (pair _ _)).isLimit.lift (BinaryFan.mk x y) ≫ op
 
 /-- `2 + 3 = 5` in `ℤ`. -/
 example : applyBinary ringIntegers (add ringIntegers) (ringNumeral ringIntegers 2)

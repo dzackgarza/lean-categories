@@ -1842,10 +1842,11 @@ def validateLift (state : SemanticState) (e : LiftEntry) : MetaM Unit := do
           {e.edge.label}"
       let shapes := state.limits.filter fun l => !l.colimit && l.shape == shape
       if shapes.isEmpty then
-        throwError "lift {e.id.raw}: no registered limit has the shape {shape}"
+        throwError "lift {e.id.raw}: no registered limit has the shape {shape.raw}"
       for limit in shapes do
         unless ← withTransparency .all <| isDefEq args[4]! (← limitShapeIndex limit) do
-          throwError "lift {e.id.raw}: {e.evidence} creates limits of another shape than {shape}"
+          throwError "lift {e.id.raw}: {e.evidence} creates limits of another shape than \
+            {shape.raw}"
 
 /-- The carrier type of a registered category row, with metavariables for its parameters. -/
 def categoryCarrierInstance (entry : NamedCategoryEntry) : MetaM Expr := do
@@ -1853,20 +1854,36 @@ def categoryCarrierInstance (entry : NamedCategoryEntry) : MetaM Expr := do
   let (args, _, _) ← forallMetaTelescopeReducing (← inferType declared)
   mkAppM ``CategoryTheory.Bundled.α #[mkAppN declared args]
 
-/-- A limit row names a family of Mathlib `LimitCone`s (a colimit row, of `ColimitCocone`s) of
-diagrams in its registered category. -/
+/-- A limit row names a family `∀ params (d : D), LimitCone (F d)` of Mathlib `LimitCone`s (a
+colimit row, of `ColimitCocone`s) indexed by the objects `d` of its registered category of
+diagrams `D`, where `F d : J ⥤ C` has the registered shape `J` and lands in the registered
+category `C`. The input and the apex are thereby objects of registered categories. -/
 def validateLimit (state : SemanticState) (e : LimitEntry) : MetaM Unit := do
   let some category := state.categories.find? (·.id == e.category)
     | throwError "limit {e.id.raw} names an unregistered category {e.category.raw}"
+  let some shape := state.categories.find? (·.id == e.shape)
+    | throwError "limit {e.id.raw} names an unregistered shape {e.shape.raw}"
+  let some diagrams := state.categories.find? (·.id == e.diagrams)
+    | throwError "limit {e.id.raw} names an unregistered category of diagrams {e.diagrams.raw}"
   discard <| limitShapeIndex e
   let declaration ← mkConstWithFreshMVarLevels e.declaration
-  let (_, _, type) ← forallMetaTelescopeReducing (← inferType declaration)
+  let (args, binders, type) ← forallMetaTelescopeReducing (← inferType declaration)
   let type ← whnfR type
-  -- `LimitCone (F : J ⥤ C)`, `ColimitCocone (F : J ⥤ C)`: the diagram lands in the category.
+  -- `LimitCone (F : J ⥤ C)`, `ColimitCocone (F : J ⥤ C)`: the diagram has the registered shape
+  -- and lands in the registered category.
   let diagramType ← whnf (← inferType type.appArg!)
+  unless ← withTransparency .all <| isDefEq diagramType.getAppArgs[0]!
+      (← categoryCarrierInstance shape) do
+    throwError "limit {e.id.raw}: its diagrams are not of the shape {e.shape.raw}"
   unless ← withTransparency .all <| isDefEq diagramType.getAppArgs[2]!
       (← categoryCarrierInstance category) do
     throwError "limit {e.id.raw}: its diagrams are not in {e.category.raw}"
+  -- The input: the last explicit parameter is an object of the registered category of diagrams.
+  let some input := (args.zip binders).reverse.find? (·.2.isExplicit) |>.map (·.1)
+    | throwError "limit {e.id.raw}: {e.declaration} takes no input diagram"
+  unless ← withTransparency .all <| isDefEq (← inferType input)
+      (← categoryCarrierInstance diagrams) do
+    throwError "limit {e.id.raw}: its input is not an object of {e.diagrams.raw}"
 
 /-- The library root that authors semantics. -/
 def semanticAuthorRoots : List Name := [`LeanCategories]
