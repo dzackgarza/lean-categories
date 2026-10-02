@@ -619,7 +619,10 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
 - **Evidence (inspected source, 2026-09-30, formalization review of `bd31fe3`):**
   1. LC-13: `Algebra.Units.units (M : Type) [Monoid M]` (and `inclusion`, `admit`, `inverse`,
      `divide`), `Algebra.LinearAlgebra.zero (K : Type) [Semiring K]`, `Algebra.FiniteSums.sum
-     [AddCommMonoid Y]` / `prod [CommMonoid Y]`, `Algebra.Calculus.power [Monoid X]` take a bare
+     [AddCommMonoid Y]` / `prod [CommMonoid Y]` (and the binders `sumOver` / `prodOver` of #72,
+     #73), `Algebra.Series.SummableFamily` / `summableFamilies` / `seriesSum` (`[AddCommMonoid Y]
+     [TopologicalSpace Y] [T2Space Y]`, #73; an object of commutative Hausdorff topological
+     monoids, a category not yet registered), `Algebra.Calculus.power [Monoid X]` take a bare
      carrier with an instance argument instead of an object of `Mon`, `K`-modules or commutative
      monoids. The mathematics of each row is correct; the presentation is the one LC-13 bans. The
      repair is a catalogue-wide move of these rows onto registered objects of those categories,
