@@ -9,6 +9,7 @@ public import LeanCategories.Catalogue.Semantics.Algebra.Units
 public import LeanCategories.Catalogue.Semantics.Algebra.Polynomials
 public import LeanCategories.Catalogue.Semantics.Algebra.LinearAlgebra
 public import LeanCategories.Catalogue.Semantics.Algebra.Calculus
+public import LeanCategories.Catalogue.Semantics.Algebra.NumberSystems
 public import LeanCategories.Catalogue.Semantics.Foundation.Morphisms
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.Foundation.Evidence
@@ -133,59 +134,56 @@ run_elab do
   expectRefused Units.invertibleEvidence (← nonunits.mapM fun x => `(Invertible $x))
   expectRefused Units.isUnitEvidence (← nonunits.mapM fun x => `(IsUnit $x))
 
-/-! ### The registered numerals of `ℤ/n`
+/-! ### The numerals of `ℤ/n`
 
-A consumer forms the numeral `k ∈ ℤ/n` (`obj.sets.integers_mod`, `n ≠ 0`) with the registered
-numeral `num.sets.fin`: `ℤ/n` is `Fin n` by definition (Mathlib `ZMod`), so `finPoint` at
-`1 ⟶ ℤ/n` unifies `n` as `m + 1` and the element is the point `⟨k, _⟩ : Fin (m + 1)`, a value of
-`ℤ/n` carrying the ring structure of `ZMod n`. The evidence runs on that term. -/
+The numeral `k` of `ℤ/n` is the image of `k` under the initial ring map `ℤ → ℤ/n`
+(`num.rings` at `obj.rings.integers_mod`, LC-15), an element of the set underlying the ring
+`ℤ/n`. A position `k` of `Fin n` is an element of `ℤ/n` only through the registered map
+`Fin n ↪ ℤ/n` (`incl.sets.fin_integers_mod`), which carries it to that numeral
+(`NumberSystems.finPoint_finIntegersMod`). The evidence runs on both terms, as a consumer forms
+them. -/
 
 section ZModNumerals
 
 open Lean Meta Elab Term
 
-/-- The value in `ℤ/n` of the registered numeral `k` at `1 ⟶ ℤ/n`, evaluated at the point of `1`
-as a consumer evaluates it: the term `⟨k, _⟩ : Fin (m + 1)`. -/
-meta def zmodNumeralValue (n k : Nat) : TermElabM Term := do
-  let numeral ← `((CasCatalogue.Foundation.Morphisms.finPoint _ $(quote k) (by decide) :
-      Foundation.Objects.fin 1 ⟶ Foundation.Objects.integersMod $(quote n)))
-  let element ← Term.elabTerm (← `(CategoryTheory.ConcreteCategory.hom (C := Type) $numeral
-      (⟨0, Nat.one_pos⟩ : Foundation.Objects.fin 1))) none
-  Term.synthesizeSyntheticMVarsNoPostponing
-  let value ← whnf (← instantiateMVars element)
-  unless value.isAppOfArity ``Fin.mk 3 do
-    throwError "the numeral {k} of ℤ/{n} evaluates to{indentExpr value}\nnot a point of Fin"
-  Term.exprToSyntax value
+/-- The numeral `k` of the ring `ℤ/n`, evaluated at the point of `1`. -/
+meta def zmodNumeralValue (n k : Nat) : TermElabM Term :=
+  `(CategoryTheory.ConcreteCategory.hom (C := Type)
+      (NamedRings.ringNumeral (NamedRings.ringIntegersMod $(quote n)) $(quote k))
+      (⟨0, Nat.one_pos⟩ : Foundation.Objects.fin 1))
 
-/-- `Invertible x ∈ ℤ/n` at the registered numeral `x = k`, the statement formed at type `ℤ/n`
-with the ring structure of `ZMod n`. -/
-meta def zmodNumeralInvertible (n k : Nat) : TermElabM Term := do
-  `(@Invertible (Foundation.Objects.integersMod $(quote n)) _ _ $(← zmodNumeralValue n k))
+/-- The position `k` of `Fin n` carried into `ℤ/n` by `Fin n ↪ ℤ/n`, at the point of `1`. -/
+meta def zmodPositionValue (n k : Nat) : TermElabM Term :=
+  `(CategoryTheory.ConcreteCategory.hom (C := Type)
+      (CategoryTheory.CategoryStruct.comp
+        (Foundation.Morphisms.finPoint $(quote n) $(quote k) (by decide))
+        (NumberSystems.finIntegersMod $(quote n)))
+      (⟨0, Nat.one_pos⟩ : Foundation.Objects.fin 1))
 
-/-- `IsUnit x ∈ ℤ/n` at the registered numeral `x = k`. -/
-meta def zmodNumeralIsUnit (n k : Nat) : TermElabM Term := do
-  `(@IsUnit (Foundation.Objects.integersMod $(quote n)) _ $(← zmodNumeralValue n k))
+/-- The numerals `k ∈ ℤ/n` that are units: `2 ∈ ℤ/5`, `7 ∈ ℤ/12`, `3 ∈ ℤ/10`, `8 ∈ ℤ/9`,
+`1 ∈ ℤ/2`, `12 = 5 ∈ ℤ/7`. -/
+meta def zmodNumeralUnits : List (Nat × Nat) :=
+  [(5, 2), (12, 7), (10, 3), (9, 8), (2, 1), (7, 12)]
 
-/-- The registered numerals that are units: `2 ∈ ℤ/5`, `7 ∈ ℤ/12`, `3 ∈ ℤ/10`, `8 ∈ ℤ/9`,
-`1 ∈ ℤ/2`. -/
-meta def zmodNumeralUnits : List (Nat × Nat) := [(5, 2), (12, 7), (10, 3), (9, 8), (2, 1)]
-
-/-- The registered numerals that are not: `5 ∈ ℤ/10`, `8 ∈ ℤ/12`, `0 ∈ ℤ/5`, `6 ∈ ℤ/9`. -/
-meta def zmodNumeralNonunits : List (Nat × Nat) := [(10, 5), (12, 8), (5, 0), (9, 6)]
+/-- The numerals that are not: `5 ∈ ℤ/10`, `8 ∈ ℤ/12`, `0 ∈ ℤ/5`, `6 ∈ ℤ/9`, `10 = 0 ∈ ℤ/5`. -/
+meta def zmodNumeralNonunits : List (Nat × Nat) := [(10, 5), (12, 8), (5, 0), (9, 6), (5, 10)]
 
 #guard_msgs in
 run_elab do
-  expectEstablished Units.invertibleEvidence
-    (← zmodNumeralUnits.mapM fun (n, k) => zmodNumeralInvertible n k)
-  expectEstablished Units.isUnitEvidence
-    (← zmodNumeralUnits.mapM fun (n, k) => zmodNumeralIsUnit n k)
+  for (n, k) in zmodNumeralUnits do
+    expectEstablished Units.invertibleEvidence [← `(Invertible $(← zmodNumeralValue n k))]
+    expectEstablished Units.isUnitEvidence [← `(IsUnit $(← zmodNumeralValue n k))]
+    if k < n then
+      expectEstablished Units.invertibleEvidence [← `(Invertible $(← zmodPositionValue n k))]
 
 #guard_msgs in
 run_elab do
-  expectRefused Units.invertibleEvidence
-    (← zmodNumeralNonunits.mapM fun (n, k) => zmodNumeralInvertible n k)
-  expectRefused Units.isUnitEvidence
-    (← zmodNumeralNonunits.mapM fun (n, k) => zmodNumeralIsUnit n k)
+  for (n, k) in zmodNumeralNonunits do
+    expectRefused Units.invertibleEvidence [← `(Invertible $(← zmodNumeralValue n k))]
+    expectRefused Units.isUnitEvidence [← `(IsUnit $(← zmodNumeralValue n k))]
+    if k < n then
+      expectRefused Units.invertibleEvidence [← `(Invertible $(← zmodPositionValue n k))]
 
 end ZModNumerals
 
@@ -323,6 +321,72 @@ run_elab do
       -- In the zero ring `ℤ/1` the image of `x` is `0`, of degree `0`.
       ← monicOfDegree (← `(((Polynomial.X : Polynomial ℤ).map (Int.castRingHom (ZMod 1)))))
         (← `(1))]
+
+/-! ## Polynomials whose coefficients are the catalogue's numerals
+
+The coefficient `k` of `R` is the numeral of the ring `R`, the image of `k` under `ℤ → R`
+(`NamedRings.ringNumeral`, LC-15), as a consumer forms it; in `ℤ/n` it may vanish or reduce
+(`4 = 0`, `6 = 2`, `5 = 1` in `ℤ/4`). -/
+
+section NumeralCoefficients
+
+open Lean Meta Elab Term
+
+/-- The constant polynomial whose value is the numeral `k` of the ring `R`. -/
+meta def numeralConstant (R : Term) (k : Nat) : TermElabM Term :=
+  `(Polynomial.C (CategoryTheory.ConcreteCategory.hom (C := Type)
+      (NamedRings.ringNumeral $R $(quote k)) (⟨0, Nat.one_pos⟩ : Foundation.Objects.fin 1)))
+
+#guard_msgs in
+run_elab do
+  let Z ← `(NamedRings.ringIntegers)
+  let Q ← `(NamedRings.ringRationals)
+  let Z4 ← `(NamedRings.ringIntegersMod 4)
+  expectEstablished Polynomials.nonzeroPolynomialEvidence
+    [← `((Polynomial.X + $(← numeralConstant Z 3) : Polynomial ℤ) ≠ 0),
+      ← `(($(← numeralConstant Z 3) * Polynomial.X ^ 2 + Polynomial.X : Polynomial ℤ) ≠ 0),
+      ← `((Polynomial.X ^ 2 - $(← numeralConstant Q 2) : Polynomial ℚ) ≠ 0),
+      ← `(($(← numeralConstant Z4 2) * Polynomial.X ^ 2 + Polynomial.X : Polynomial (ZMod 4)) ≠ 0),
+      -- `4 = 0` in `ℤ/4`: the polynomial is `x`.
+      ← `(($(← numeralConstant Z4 4) * Polynomial.X ^ 2 + Polynomial.X : Polynomial (ZMod 4)) ≠ 0),
+      -- `6 = 2`, `5 = 1` in `ℤ/4`: `2x² + x`.
+      ← `(($(← numeralConstant Z4 6) * Polynomial.X ^ 2 + $(← numeralConstant Z4 5) * Polynomial.X :
+        Polynomial (ZMod 4)) ≠ 0)]
+  expectRefused Polynomials.nonzeroPolynomialEvidence
+    [← `(($(← numeralConstant Z4 4) : Polynomial (ZMod 4)) ≠ 0),
+      ← `(($(← numeralConstant Z4 8) * Polynomial.X ^ 2 : Polynomial (ZMod 4)) ≠ 0),
+      ← `(($(← numeralConstant Z 0) : Polynomial ℤ) ≠ 0),
+      ← `(($(← numeralConstant Q 0) * Polynomial.X : Polynomial ℚ) ≠ 0)]
+
+#guard_msgs in
+run_elab do
+  let Z ← `(NamedRings.ringIntegers)
+  let Q ← `(NamedRings.ringRationals)
+  let Z4 ← `(NamedRings.ringIntegersMod 4)
+  expectEstablished LinearAlgebra.monicEvidence
+    [← monicOfDegree (← `((Polynomial.X ^ 2 - $(← numeralConstant Q 2) : Polynomial ℚ))) (← `(2)),
+      ← monicOfDegree
+        (← `(($(← numeralConstant Z 1) * Polynomial.X ^ 2 + Polynomial.X : Polynomial ℤ))) (← `(2)),
+      ← monicOfDegree (← `((Polynomial.X ^ 2 + $(← numeralConstant Z4 3) : Polynomial (ZMod 4))))
+        (← `(2)),
+      -- `4 = 0` in `ℤ/4`: `x`, monic of degree `1`.
+      ← monicOfDegree (← `(($(← numeralConstant Z4 4) * Polynomial.X ^ 2 + Polynomial.X :
+        Polynomial (ZMod 4)))) (← `(1)),
+      -- `5 = 1` in `ℤ/4`: `x² + x`.
+      ← monicOfDegree (← `(($(← numeralConstant Z4 5) * Polynomial.X ^ 2 + Polynomial.X :
+        Polynomial (ZMod 4)))) (← `(2))]
+  expectRefused LinearAlgebra.monicEvidence
+    [← monicOfDegree
+        (← `(($(← numeralConstant Z 2) * Polynomial.X ^ 2 + Polynomial.X : Polynomial ℤ))) (← `(2)),
+      ← monicOfDegree (← `(($(← numeralConstant Z4 4) * Polynomial.X ^ 2 + Polynomial.X :
+        Polynomial (ZMod 4)))) (← `(2)),
+      ← monicOfDegree (← `(($(← numeralConstant Z4 3) * Polynomial.X ^ 2 + Polynomial.X :
+        Polynomial (ZMod 4)))) (← `(2)),
+      -- `6 = 2` in `ℤ/4`.
+      ← monicOfDegree (← `(($(← numeralConstant Z4 6) * Polynomial.X ^ 2 + Polynomial.X :
+        Polynomial (ZMod 4)))) (← `(2))]
+
+end NumeralCoefficients
 
 /-! ## `C(ℝ) ↪ (ℝ → ℝ)`: `Continuous f` -/
 

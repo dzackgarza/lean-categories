@@ -23,6 +23,10 @@ inclusions `ℕ ⊆ ℤ ⊆ ℚ ⊆ ℝ ⊆ ℂ` are the casts, monomorphisms of
 (Mathlib `Nat.cast_injective`, `Int.cast_injective`, `Rat.cast_injective`,
 `Complex.ofReal_injective`; `mono_iff_injective`).
 
+The positions `Fin n` and the residues `ℤ/n` are two objects, not one: `Fin n ↪ ℤ/n` sends the
+position `k` to the numeral `k` of the ring `ℤ/n` (`finPoint_finIntegersMod`), and a position is an
+element of `ℤ/n` only through this map, never because `ZMod n` is defined as `Fin n` for `n ≠ 0`.
+
 Functions of elements, as named morphisms of `Sets`: `gcd : ℤ × ℤ → ℤ` (Mathlib `GCDMonoid.gcd`,
 nonnegative), `re, im : ℂ → ℝ`, `bar : ℂ → ℂ` (conjugation), `abs : ℂ → ℝ` (`‖z‖`),
 `sqrt : ℝ → ℝ` (`Real.sqrt`), and the element `i : 1 → ℂ`.
@@ -77,6 +81,27 @@ theorem rationalsReals_mono : Mono rationalsReals :=
 theorem realsComplexes_mono : Mono realsComplexes :=
   mono_of_injective _ Complex.ofReal_injective
 
+/-- `Fin n ↪ ℤ/n`, the position `k < n` to the residue class of `k`: the image of `k` under the
+initial ring map `ℤ → ℤ/n`. `Fin n`, the `n`-element set of positions, and `ℤ/n`, the set
+underlying the ring `ℤ/n`, are different objects, related by this map and not identified: for
+`n ≠ 0` it is a bijection (`ZMod.val` inverts it), and for `n = 0` it is `∅ ↪ ℤ`. -/
+def finIntegersMod (n : ℕ) : fin n ⟶ integersMod n :=
+  TypeCat.ofHom fun k => ((k : ℕ) : ZMod n)
+
+/-- Distinct positions `j, k < n` are distinct residues: `j ≡ k mod n` forces `j = k`
+(Mathlib `ZMod.natCast_eq_natCast_iff'`). -/
+theorem finIntegersMod_mono (n : ℕ) : Mono (finIntegersMod n) :=
+  mono_of_injective _ fun j k h => Fin.ext <| by
+    have := (ZMod.natCast_eq_natCast_iff' j k n).mp h
+    rwa [Nat.mod_eq_of_lt j.2, Nat.mod_eq_of_lt k.2] at this
+
+/-- The transport of the position `k` of `Fin n` into `ℤ/n` is the numeral `k` of the ring `ℤ/n`
+(LC-15): `1 → Fin n ↪ ℤ/n` is `1 → ℤ/n`, `k ↦ k`. -/
+theorem finPoint_finIntegersMod (n k : ℕ) (h : k < n) :
+    Foundation.Morphisms.finPoint n k h ≫ finIntegersMod n = ringNumeral (ringIntegersMod n) k := by
+  ext p
+  simp [Foundation.Morphisms.finPoint, finIntegersMod, ringNumeral]
+
 /-- `gcd : ℤ × ℤ → ℤ`. -/
 def gcd : (integers × integers : LeanCategories.Foundation.Mathlib.Sets.{0}) ⟶ integers :=
   TypeCat.ofHom fun p => GCDMonoid.gcd p.1 p.2
@@ -124,6 +149,12 @@ normalized_registry .object
     refines := some
       { base := ⟨"obj.sets.complexes"⟩, route := ringsToSets
         identification := `CasCatalogue.Algebra.NumberSystems.ringComplexesIdentification } }
+
+normalized_registry .inclusion
+  { id := ⟨"incl.sets.fin_integers_mod"⟩, category := CategoryId.sets
+    sub := ⟨"obj.sets.fin"⟩, super := ⟨"obj.sets.integers_mod"⟩
+    declaration := `CasCatalogue.Algebra.NumberSystems.finIntegersMod
+    mono := `CasCatalogue.Algebra.NumberSystems.finIntegersMod_mono }
 
 normalized_registry .inclusion
   { id := ⟨"incl.sets.naturals_integers"⟩, category := CategoryId.sets

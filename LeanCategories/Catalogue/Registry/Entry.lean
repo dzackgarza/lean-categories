@@ -191,8 +191,10 @@ structure LiteralEntry where
 its first explicit parameter is an object `R` of the category `C` and `X` is `R`'s underlying set:
 the image of `k` under the map out of `C`'s initial object (`ℕ → S` in semirings, `ℤ → R` in
 rings), for every object of `C` and so for every named set refined in `C`. Without it, it names the
-points of the sets it lands in, those points being numerals themselves (`k ∈ ℕ`, the position `k`
-of `Fin n`). Its explicit `Prop` parameters are obligations on `k` (`k < n`): they are established
+points of the object its declaration lands in, those points being numerals themselves (`k ∈ ℕ`,
+the position `k` of `Fin n`), and of no other object: that a Lean definition of another object
+unfolds to the same type (`ZMod (m + 1)` is `Fin (m + 1)`) does not make the points of one points
+of the other; they are related only by the catalogue's maps (`Fin n ↪ ℤ/n`). Its explicit `Prop` parameters are obligations on `k` (`k < n`): they are established
 when a statement is read, or the statement is invalid; a numeral never denotes nothing. -/
 structure NumeralEntry where
   id : LiteralId
