@@ -84,22 +84,22 @@ noncomputable def algebrasForgetRealization (K : Algebra.CommutativeRings.{u}) :
     targetRealization := commutativeRingsRealization }
 
 /-- `K[x₀, …, xₙ₋₁]` as a `K`-algebra. -/
-noncomputable def mvAlgebra (n : ℕ) (K : Type) [CommRing K] :
-    algebrasCategory (CommRingCat.of K) :=
+noncomputable def mvAlgebra (n : ℕ) (K : CommRingCat.{0}) :
+    algebrasCategory K :=
   Under.mk (CommRingCat.ofHom (MvPolynomial.C : K →+* MvPolynomial (Fin n) K))
 
 /-- The underlying set of the `K`-algebra `K[x₀, …, xₙ₋₁]` is `K[x₀, …, xₙ₋₁]`. -/
-def mvAlgebraIdentification (n : ℕ) (K : Type) [CommRing K] :
+def mvAlgebraIdentification (n : ℕ) (K : CommRingCat.{0}) :
     (MvPolynomials.mvPolynomials n K : Foundation.PowerSets.SetsCat.{0}) ≅
       MvPolynomials.mvPolynomials n K :=
   Iso.refl _
 
 /-- `K[x]` as a `K`-algebra. -/
-noncomputable def polyAlgebra (K : Type) [CommRing K] : algebrasCategory (CommRingCat.of K) :=
+noncomputable def polyAlgebra (K : CommRingCat.{0}) : algebrasCategory K :=
   Under.mk (CommRingCat.ofHom (Polynomial.C : K →+* Polynomial K))
 
 /-- The underlying set of the `K`-algebra `K[x]` is `K[x]`. -/
-def polyAlgebraIdentification (K : Type) [CommRing K] :
+def polyAlgebraIdentification (K : CommRingCat.{0}) :
     (Polynomials.polynomials K : Foundation.PowerSets.SetsCat.{0}) ≅ Polynomials.polynomials K :=
   Iso.refl _
 

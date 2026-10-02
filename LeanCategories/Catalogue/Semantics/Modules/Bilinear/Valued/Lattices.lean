@@ -6,6 +6,9 @@ module
 
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.CatalogueRegistration
 public import LeanCategories.Lattices.Integral
+public import LeanCategories.Lattices.Valued.Standard
+public import LeanCategories.Catalogue.Semantics.Lattices.Valued.CatalogueRegistration
+public meta import LeanCategories.Catalogue.Semantics.Lattices.Valued.Catalogue
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Catalogue
 
@@ -35,5 +38,10 @@ normalized_registry .object
 normalized_registry .morphism
   { id := ⟨"mor.bil_wform.root_lattice_a_to_dual"⟩, category := CategoryId.bilWForm
     name := "to_dual", declaration := `LeanCategories.Lattices.Integral.rootAToDual }
+
+-- The existing integral E₈ lattice retains its Gram form and selected ℤ-module.
+normalized_registry .object
+  { id := ⟨"obj.integral_lattice.e8"⟩, category := CategoryId.integralLattice, name := "E8"
+    declaration := `LeanCategories.Lattices.Valued.e8Lattice }
 
 end CasCatalogue

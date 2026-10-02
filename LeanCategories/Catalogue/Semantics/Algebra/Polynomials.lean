@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 public import Mathlib.RingTheory.SimpleRing.Basic
 public import Mathlib.Data.Int.CharZero
+public import Mathlib.Algebra.Category.Ring.Under.Basic
 public import LeanCategories.Catalogue.Semantics.Algebra.Units
 public import Mathlib.Tactic.ComputeDegree
 public import Mathlib.Tactic.ReduceModChar
@@ -42,7 +43,7 @@ Functions of polynomials, as named morphism families of `Sets` over their rings:
 * `roots : R[x] ∖ {0} → 𝒫_fin(R)`, the roots in a domain `R` (Mathlib `Polynomial.roots`),
   finitely many for a nonzero polynomial. Every element of `R` is a root of `0`, so `0` is not in
   the domain (Mathlib's `roots 0 = ∅` is a convention, LC-14);
-* `map : R[x] → S[x]` along an `R`-algebra `S` (Mathlib `Polynomial.map (algebraMap R S)`).
+* `map : R[x] → S[x]` along an `R`-algebra `S` (Mathlib `Polynomial.map f.hom`).
 -/
 
 open CategoryTheory Polynomial
@@ -52,27 +53,27 @@ namespace CasCatalogue.Algebra.Polynomials
 open CasCatalogue.Foundation.PowerSets CasCatalogue.Foundation.Objects
 
 /-- `R[x]`. -/
-abbrev polynomials (R : Type) [CommRing R] : SetsCat.{0} := Polynomial R
+abbrev polynomials (R : CommRingCat.{0}) : SetsCat.{0} := Polynomial R
 
 /-- The variable `x ∈ R[x]`. -/
-noncomputable def generator (R : Type) [CommRing R] : fin 1 ⟶ polynomials R :=
+noncomputable def generator (R : CommRingCat.{0}) : fin 1 ⟶ polynomials R :=
   TypeCat.ofHom fun _ => X
 
 /-- The constants `R ↪ R[x]` (Mathlib `Polynomial.C`), injective. -/
-noncomputable def coefficients (R : Type) [CommRing R] : (R : SetsCat.{0}) ⟶ polynomials R :=
+noncomputable def coefficients (R : CommRingCat.{0}) : (R : SetsCat.{0}) ⟶ polynomials R :=
   TypeCat.ofHom (C : R →+* Polynomial R)
 
 /-- `(p, a) ↦ p(a)`, `R[x] × A → A`. -/
-noncomputable def evaluation (R A : Type) [CommRing R] [CommRing A] [Algebra R A] :
+noncomputable def evaluation (R : CommRingCat.{0}) (A : Under R) :
     (polynomials R × A : SetsCat.{0}) ⟶ (A : SetsCat.{0}) :=
   TypeCat.ofHom fun p => aeval p.2 p.1
 
 /-- `R[x]` as a ring. -/
-noncomputable abbrev ringPolynomials (R : Type) [CommRing R] : LeanCategories.Algebra.Rings.{0} :=
+noncomputable abbrev ringPolynomials (R : CommRingCat.{0}) : LeanCategories.Algebra.Rings.{0} :=
   RingCat.of (Polynomial R)
 
 /-- The underlying set of the ring `R[x]` is `R[x]`. -/
-def ringPolynomialsIdentification (R : Type) [CommRing R] :
+def ringPolynomialsIdentification (R : CommRingCat.{0}) :
     (polynomials R : SetsCat.{0}) ≅ polynomials R :=
   Iso.refl _
 
@@ -86,19 +87,19 @@ theorem naturalsDegrees_mono : Mono naturalsDegrees :=
   NumberSystems.mono_of_injective _ WithBot.coe_injective
 
 /-- `deg : R[x] → ℕ ∪ {-∞}`. -/
-noncomputable def degree (R : Type) [CommRing R] : (polynomials R : SetsCat.{0}) ⟶ degrees :=
+noncomputable def degree (R : CommRingCat.{0}) : (polynomials R : SetsCat.{0}) ⟶ degrees :=
   TypeCat.ofHom Polynomial.degree
 
 /-- `R[x] ∖ {0}`, the nonzero polynomials. -/
-abbrev nonzeroPolynomials (R : Type) [CommRing R] : SetsCat.{0} := {p : Polynomial R // p ≠ 0}
+abbrev nonzeroPolynomials (R : CommRingCat.{0}) : SetsCat.{0} := {p : Polynomial R // p ≠ 0}
 
 /-- `R[x] ∖ {0} ↪ R[x]`. -/
-def nonzeroPolynomialsInclusion (R : Type) [CommRing R] :
+def nonzeroPolynomialsInclusion (R : CommRingCat.{0}) :
     nonzeroPolynomials R ⟶ polynomials R :=
   TypeCat.ofHom Subtype.val
 
 /-- The nonzero polynomial `p`, with the evidence that `p ≠ 0`. -/
-def admitNonzeroPolynomial (R : Type) [CommRing R] (p : Polynomial R) (h : p ≠ 0) :
+def admitNonzeroPolynomial (R : CommRingCat.{0}) (p : Polynomial R) (h : p ≠ 0) :
     fin 1 ⟶ nonzeroPolynomials R :=
   TypeCat.ofHom fun _ => ⟨p, h⟩
 
@@ -210,7 +211,7 @@ where
 
 open Classical in
 /-- The normalized irreducible factors `R[x] ∖ {0} → 𝒫_fin(R[x])`. -/
-noncomputable def factors (R : Type) [CommRing R] [IsDomain R] [NormalizationMonoid R]
+noncomputable def factors (R : CommRingCat.{0}) [IsDomain R] [NormalizationMonoid R]
     [UniqueFactorizationMonoid R] :
     nonzeroPolynomials R ⟶ Foundation.FiniteSubsets.finiteSubsets (Polynomial R) :=
   TypeCat.ofHom fun p => (UniqueFactorizationMonoid.normalizedFactors p.1).toFinset
@@ -218,19 +219,19 @@ noncomputable def factors (R : Type) [CommRing R] [IsDomain R] [NormalizationMon
 open Classical in
 /-- The roots `R[x] ∖ {0} → 𝒫_fin(R)`, finitely many for a nonzero polynomial over a domain `R`
 (Mathlib `Polynomial.roots`, `Polynomial.mem_roots`). -/
-noncomputable def roots (R : Type) [CommRing R] [IsDomain R] :
+noncomputable def roots (R : CommRingCat.{0}) [IsDomain R] :
     nonzeroPolynomials R ⟶ Foundation.FiniteSubsets.finiteSubsets R :=
   TypeCat.ofHom fun p => p.1.roots.toFinset
 
 /-- The roots of a nonzero `p` are exactly the `a` with `p(a) = 0`. -/
-theorem mem_roots (R : Type) [CommRing R] [IsDomain R] (p : nonzeroPolynomials R) (a : R) :
+theorem mem_roots (R : CommRingCat.{0}) [IsDomain R] (p : nonzeroPolynomials R) (a : R) :
     a ∈ ConcreteCategory.hom (C := Type) (roots R) p ↔ IsRoot p.1 a := by
   simp [roots, Polynomial.mem_roots p.2]
 
 /-- `map : R[x] → S[x]` along `R → S`. -/
-noncomputable def map (R S : Type) [CommRing R] [CommRing S] [Algebra R S] :
+noncomputable def map (R S : CommRingCat.{0}) (f : R ⟶ S) :
     (polynomials R : SetsCat.{0}) ⟶ polynomials S :=
-  TypeCat.ofHom (Polynomial.map (algebraMap R S))
+  TypeCat.ofHom (Polynomial.map f.hom)
 
 end CasCatalogue.Algebra.Polynomials
 

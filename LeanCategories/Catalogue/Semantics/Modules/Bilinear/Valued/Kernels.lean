@@ -132,6 +132,23 @@ theorem kernelSubmodule_map {L L' : BilinModuleCat R W} (f : L ⟶ L') (x : kern
   rw [← hk]
   exact LinearMap.congr_fun (congrArg ModuleCat.Hom.hom (kernel.condition ((forget R W).map f))) k
 
+/-- The defining inclusion of the structured kernel into the selected source. -/
+def formedKernelInclusion {L L' : BilinModuleCat R W} (f : L ⟶ L') :
+    formedKernel f ⟶ L :=
+  (forgetMonoLift R W).hom L (kernel.ι ((forget R W).map f))
+
+/-- The defining inclusion sends a kernel element to that same source element. -/
+@[simp] theorem formedKernelInclusion_apply {L L' : BilinModuleCat R W}
+    (f : L ⟶ L') (x : kernelSubmodule f) :
+    BilinModuleCat.underlyingMap (formedKernelInclusion f)
+      (show (formedKernel f).carrier from x) = x.1 := rfl
+
+/-- The retained inclusion is annihilated by the original underlying map. -/
+theorem formedKernelInclusion_condition {L L' : BilinModuleCat R W} (f : L ⟶ L') :
+    (forget R W).map (formedKernelInclusion f) ≫ (forget R W).map f = 0 := by
+  ext x
+  exact kernelSubmodule_map f x
+
 end
 
 end Modules.Bilinear.Valued.Kernels

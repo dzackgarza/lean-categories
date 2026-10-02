@@ -55,7 +55,7 @@ def unitDivide : (ℚ × ℚˣ : SetsCat.{0}) ⟶ (ℚ : SetsCat.{0}) :=
 /-- An admission into `Mˣ` whose hypothesis carries an element of `M` besides the inverse: data
 with more than one value, so the admitted unit would not be determined by `x`. -/
 def probeAdmitData (M : Type) [Monoid M] (x : M) (h : M × Invertible x) :
-    CasCatalogue.Foundation.Objects.fin 1 ⟶ CasCatalogue.Algebra.Units.units M :=
+    CasCatalogue.Foundation.Objects.fin 1 ⟶ CasCatalogue.Algebra.Units.units (MonCat.of M) :=
   TypeCat.ofHom fun _ => @unitOfInvertible M _ x h.2
 
 /-- A proof procedure: well-formed evidence, but here registered without an admission. -/

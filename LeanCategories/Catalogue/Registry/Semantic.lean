@@ -53,6 +53,8 @@ inductive SemanticEntry
   | opaque (e : OpaqueCategoryEntry)
   | fibration (e : FibrationEntry)
   | constructor (e : ConstructorEntry)
+  | presentation (e : PresentationComparisonEntry)
+  | construction (e : ConstructionEntry)
   | method (e : MethodEntry)
   | property (e : PropertyEntry)
   | lift (e : LiftEntry)
@@ -80,6 +82,8 @@ def SemanticEntry.stableId : SemanticEntry → String
   | .opaque e => e.id.raw
   | .fibration e => e.id.raw
   | .constructor e => e.id.raw
+  | .presentation e => e.id.raw
+  | .construction e => e.id.raw
   | .method e => e.id.raw
   | .property e => e.id.raw
   | .lift e => e.id.raw
@@ -109,13 +113,16 @@ def SemanticEntry.declarations : SemanticEntry → Array Name
       e.ports.flatMap fun p => #[p.declaration, p.realization]
   | .fibration e => #[e.evidence]
   | .constructor e => #[e.semantics] ++ e.functorialAction.toArray
+  | .presentation e => #[e.declaration]
+  | .construction e => #[e.declaration]
   | .method _ => #[]
   | .property _ => #[]
   | .lift e => #[e.evidence]
   | .cell e => #[e.declaration]
   | .limit e => #[e.declaration]
   | .adjunction e => #[e.declaration]
-  | .object e => #[e.declaration] ++ e.evidence.toArray
+  | .object e => #[e.declaration] ++ e.evidence.toArray ++
+      (e.functorPresentation.toArray.flatMap fun p => #[p.argument, p.identification])
   | .literal e => #[e.type, e.denotation] ++ e.evaluation.toArray
   | .numeral e => #[e.declaration]
   | .graphLiteral e => #[e.denotation]
@@ -135,6 +142,8 @@ structure SemanticState where
   opaqueCategories : Array OpaqueCategoryEntry := #[]
   fibrations : Array FibrationEntry := #[]
   constructors : Array ConstructorEntry := #[]
+  presentations : Array PresentationComparisonEntry := #[]
+  constructions : Array ConstructionEntry := #[]
   methods : Array MethodEntry := #[]
   properties : Array PropertyEntry := #[]
   lifts : Array LiftEntry := #[]
@@ -396,6 +405,8 @@ private def SemanticState.apply : SemanticState → SemanticEntry → SemanticSt
   | s, .opaque e => { s with opaqueCategories := s.opaqueCategories.push e }
   | s, .fibration e => { s with fibrations := s.fibrations.push e }
   | s, .constructor e => { s with constructors := s.constructors.push e }
+  | s, .presentation e => { s with presentations := s.presentations.push e }
+  | s, .construction e => { s with constructions := s.constructions.push e }
   | s, .method e => { s with methods := s.methods.push e }
   | s, .property e => { s with properties := s.properties.push e }
   | s, .lift e => { s with lifts := s.lifts.push e }
@@ -421,6 +432,8 @@ def SemanticState.entries (state : SemanticState) : List SemanticEntry :=
     state.opaqueCategories.toList.map SemanticEntry.opaque ++
     state.fibrations.toList.map SemanticEntry.fibration ++
     state.constructors.toList.map SemanticEntry.constructor ++
+    state.presentations.toList.map SemanticEntry.presentation ++
+    state.constructions.toList.map SemanticEntry.construction ++
     state.methods.toList.map SemanticEntry.method ++
     state.properties.toList.map SemanticEntry.property ++
     state.lifts.toList.map SemanticEntry.lift ++
@@ -1853,6 +1866,22 @@ def categoryCarrierInstance (entry : NamedCategoryEntry) : MetaM Expr := do
   let (args, _, _) ← forallMetaTelescopeReducing (← inferType declared)
   mkAppM ``CategoryTheory.Bundled.α #[mkAppN declared args]
 
+/-- The chosen category structure, not merely its object carrier. -/
+def categoryStructureInstance (entry : NamedCategoryEntry) : MetaM Expr := do
+  let declared ← mkConstWithFreshMVarLevels entry.declaration
+  let (args, _, _) ← forallMetaTelescopeReducing (← inferType declared)
+  mkAppM ``CategoryTheory.Bundled.str #[mkAppN declared args]
+
+/-- Check that a comparison lives in the registered category, including its
+chosen category structure on the carrier. -/
+def checkIsoCategory (row : String) (category : NamedCategoryEntry) (type : Expr) :
+    MetaM Unit := do
+  let #[carrier, instance_, _, _] := type.getAppArgs
+    | throwError "{row}: its comparison is not an isomorphism"
+  unless ← withTransparency .all <| (isDefEq carrier (← categoryCarrierInstance category) <&&>
+      isDefEq instance_ (← categoryStructureInstance category)) do
+    throwError "{row}: its comparison has the wrong chosen category structure"
+
 /-- A limit row names a family of Mathlib `LimitCone`s (a colimit row, of `ColimitCocone`s) of
 diagrams in its registered category. -/
 def validateLimit (state : SemanticState) (e : LimitEntry) : MetaM Unit := do
@@ -1890,6 +1919,23 @@ def validateProofProcedure (row role : String) (procedure : Name) : MetaM Unit :
   unless semanticAuthorRoots.contains module.getRoot do
     throwError "{row}: the {role} {procedure} is declared in {module}; the {role} of a domain is \
       formalized with the domain, in `lean-categories`"
+
+/-- Apply a declaration at the rigid parameters of an object family, checking
+all binder types and dependencies. No parameter may be silently specialized. -/
+def applyObjectParameters (row : String) (name : Name) (parameters : Array Expr) :
+    MetaM Expr := do
+  let mut value ← mkConstWithFreshMVarLevels name
+  let mut type ← inferType value
+  for parameter in parameters do
+    let .forallE _ domain body _ ← whnf type
+      | throwError "{row}: {name} takes fewer parameters than the object"
+    unless ← withTransparency .all <| isDefEq domain (← inferType parameter) do
+      throwError "{row}: {name} has incompatible object parameters"
+    value := mkApp value parameter
+    type := body.instantiate1 parameter
+  if (← whnf type).isForall then
+    throwError "{row}: {name} takes more parameters than the object"
+  return value
 
 /-- An object row's declaration returns, after its parameters, an object of its registered
 category. -/
@@ -1987,6 +2033,39 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
     if e.admission.isNone then
       throwError "object {e.id.raw}: evidence {evidence} is registered without an admission"
     validateProofProcedure s!"object {e.id.raw}" "evidence" evidence
+  -- Comparisons are checked uniformly, with the object's parameters as rigid locals.
+  forallTelescopeReducing (← inferType declaration) fun parameters _ => do
+    if let some presentation := e.functorPresentation then
+      let some entry := state.functor? presentation.functor
+        | throwError "object {e.id.raw}: its presentation names an unregistered functor"
+      let argument ← applyObjectParameters e.id.raw presentation.argument parameters
+      let functor ← registeredFunctorInstance entry
+      let functorType ← whnf (← inferType functor)
+      unless ← withTransparency .all <| isDefEq (← inferType argument)
+          functorType.getAppArgs[0]! do
+        throwError "object {e.id.raw}: its argument is not in the functor's source"
+      let mut at_ := entry.target
+      for step in presentation.route do
+        let some edge := state.structuralEdge? step
+          | throwError "object {e.id.raw}: its presentation route is not structural"
+        unless edge.source.syntacticEq at_ do
+          throwError "object {e.id.raw}: its presentation route does not compose"
+        at_ := edge.target
+      unless at_.syntacticEq category.expression do
+        throwError "object {e.id.raw}: its presentation ends in the wrong category"
+      let functor ← if presentation.route.isEmpty then pure functor
+        else mkFunctorComp functor (← state.routeFunctor presentation.route)
+      let image ← mkAppM ``Prefunctor.obj
+        #[← mkAppM ``CategoryTheory.Functor.toPrefunctor #[← instantiateMVars functor], argument]
+      let comparison ← applyObjectParameters e.id.raw presentation.identification parameters
+      let comparisonType ← whnfR (← inferType comparison)
+      checkIsoCategory e.id.raw category comparisonType
+      let valid ← match comparisonType.getAppFn.constName?, comparisonType.getAppArgs with
+        | some ``CategoryTheory.Iso, #[_, _, x, y] => withTransparency .all do
+            pure ((← isDefEq x image) && (← isDefEq y (mkAppN declaration parameters)))
+        | _, _ => pure false
+      unless valid do
+        throwError "object {e.id.raw}: its comparison does not identify the declared functor value"
   let some refinement := e.refines | return
   let some base := state.objects.find? (·.id == refinement.base)
     | throwError "object {e.id.raw} refines an unregistered object {refinement.base.raw}"
@@ -2341,6 +2420,52 @@ def validateCell (state : SemanticState) (e : CellEntry) : MetaM Unit := do
   unless ← withTransparency .all <| isDefEq actualRight right do
     throwError "cell {e.id.raw}: its target functor is not the composite {renderSteps e.right}"
 
+/-- A presentation comparison is a typed isomorphism between the declared
+object families, at its actual dependent parameters, checked under rigid locals. -/
+def validatePresentation (state : SemanticState) (e : PresentationComparisonEntry) :
+    MetaM Unit := do
+  if e.name.isEmpty then throwError "presentation {e.id.raw} has no surface name"
+  if state.presentations.any (·.name == e.name) then
+    throwError "presentation {e.id.raw}: its surface name is already registered"
+  let some source := state.objects.find? (·.id == e.source)
+    | throwError "presentation {e.id.raw}: its source object is not registered"
+  let some target := state.objects.find? (·.id == e.target)
+    | throwError "presentation {e.id.raw}: its target object is not registered"
+  unless source.category == target.category do
+    throwError "presentation {e.id.raw}: its endpoints have different categories"
+  let some category := state.categories.find? (·.id == source.category)
+    | throwError "presentation {e.id.raw}: its category is not registered"
+  let declaration ← mkConstWithFreshMVarLevels e.declaration
+  forallTelescopeReducing (← inferType declaration) fun _ result => do
+    let result ← whnfR result
+    checkIsoCategory e.id.raw category result
+    let some ``CategoryTheory.Iso := result.getAppFn.constName?
+      | throwError "presentation {e.id.raw}: its declaration is not an isomorphism"
+    let #[_, _, x, y] := result.getAppArgs
+      | throwError "presentation {e.id.raw}: its declaration is not an isomorphism"
+    unless x.headBeta.isAppOf source.declaration && y.headBeta.isAppOf target.declaration do
+      throwError "presentation {e.id.raw}: its isomorphism does not retain its named endpoints"
+
+/-- Validate a directly applied construction at its full, rigid dependent signature.
+Its source is the declared source, retaining the selected categories and functors. -/
+def validateConstruction (state : SemanticState) (e : ConstructionEntry) : MetaM Unit := do
+  if e.name.isEmpty then throwError "construction {e.id.raw} has no surface name"
+  if state.constructions.any (·.name == e.name) then
+    throwError "construction {e.id.raw}: its surface name is already registered"
+  let some target := state.category? e.target
+    | throwError "construction {e.id.raw}: its target category is not registered"
+  let declaration ← mkConstWithFreshMVarLevels e.declaration
+  forallTelescopeReducing (← inferType declaration) fun _ result => do
+    let result ← whnf result
+    unless result.isAppOfArity ``CategoryTheory.Functor 4 do
+      throwError "construction {e.id.raw}: its declaration is not a family of functors"
+    unless ← withTransparency .all <| isDefEq result.getAppArgs[2]!
+        (← categoryCarrierInstance target) do
+      throwError "construction {e.id.raw}: its functor has the wrong target"
+    unless ← withTransparency .all <| isDefEq result.getAppArgs[3]!
+        (← categoryStructureInstance target) do
+      throwError "construction {e.id.raw}: its target has the wrong category structure"
+
 /-- A method row names a registered functor whose source is its owner (`.object`) or the core
 of its owner (`.isoInvariant`, the registered constructor whose semantics is
 `CasCatalogue.Constructors.core`). -/
@@ -2421,6 +2546,8 @@ def validateSemanticEntryDeclaration (entry : SemanticEntry) : MetaM Unit := do
         ensureFunctorRealization port.realization
         validateOpaquePortRealization state port
   | .fibration e => validateFibrationEvidence state e
+  | .presentation e => validatePresentation state e
+  | .construction e => validateConstruction state e
   | .method e => validateMethodEntry state e
   | .property e => validateProperty state e
   | .lift e => validateLift state e

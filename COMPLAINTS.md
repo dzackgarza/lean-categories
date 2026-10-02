@@ -873,3 +873,38 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
 - **Repair link:** each item's owner is the named evidence declaration; item 1 is resolved by a
   Pratt-certificate procedure for `ℙ`, the others by adding the named characterization as a case of
   the domain's evidence.
+
+### B0 upstream construction and presentation source repairs (2026-10-02)
+
+The construction and units presentation gaps above are repaired in source by
+`ConstructionEntry`, `ObjectFunctorPresentation`, and `PresentationComparisonEntry`.
+The construction's dependent Lean signature retains its selected category and
+functor; its actual target category structure is checked. It is not an inherited
+method. `Aut` and `Stab` cite the existing generic functors. The units object cites
+`MonCat.units` and an explicit identification along its registered structural route;
+inversion belongs to the group operation, with no second sets inversion row.
+`Registry/PresentationProbes.lean` checks rejection of a comparison specialized at
+another monoid and of a functor or isomorphism using an unrelated category
+structure on the same group-object carrier.
+
+The registered polynomial, multivariate polynomial, differential, algebra, scheme
+and matrix families now take chosen commutative-ring objects; polynomial evaluation
+takes the chosen object under its coefficient ring. Field-dependent span and
+dimension take the existing field full subcategory, recovering a compatible field
+structure from its proof. The unregistered `actionHom` helper and the finite-subset
+literal's decidable equality parameter do not select an algebraic structure.
+The matrix-rank domain and meaning are preserved; this source repair makes no new
+domain decision for the previously documented alternative notions of rank.
+
+The generic polynomial quotient presentation retains its coefficient ring,
+defining polynomial, constants map and distinguished generator. Taylor substitution
+induces the registered quotient comparison. The displayed quadratic comparison
+sends the root of `X² + 1` to the root of `Y² + Y + 2` plus `2`, and a theorem proves
+that this changes the generator. Concrete symmetric and cyclic groups, alternating
+subgroups, and kernels retain their actual inclusions; the sign kernel is proved to
+be the alternating subgroup. The formed-module kernel has its restricted pairing,
+explicit inclusion and the defining zero-composite equation. The named E₈ object
+cites the existing integral lattice directly, so its module interface follows the
+registered integral-lattice forgetful functor.
+
+These are upstream source claims and probes, not reports of computational execution.

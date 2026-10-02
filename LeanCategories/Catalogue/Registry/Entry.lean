@@ -126,6 +126,17 @@ structure ObjectRefinement where
   identification : Lean.Name
   deriving Repr
 
+/-- A named object presented as the value of a registered functor, followed by a
+structural route. The argument and comparison are families at exactly the object's
+parameters; the comparison is an isomorphism in the object's category. This records
+mathematical presentation, rather than recovering structure from a carrier match. -/
+structure ObjectFunctorPresentation where
+  functor : FunctorId
+  argument : Lean.Name
+  route : Array EdgeRef := #[]
+  identification : Lean.Name
+  deriving Repr
+
 structure ObjectEntry where
   id : ObjectId
   category : CategoryId
@@ -137,6 +148,8 @@ structure ObjectEntry where
   /-- When this object is another one with more structure: `Fin(n)` in `FiniteSets` refines
   `Fin(n)` in `Sets` along the forgetful functor. -/
   refines : Option ObjectRefinement := none
+  /-- Its independently proved presentation as a functor value. -/
+  functorPresentation : Option ObjectFunctorPresentation := none
   /-- A distinguished element `∀ params, 1 ⟶ obj params` that the language names by a bound
   variable: the variable `x` of `R[x]`; or a family of them `∀ params (i : Fin n), 1 ⟶ obj params`
   indexed below a numeral parameter (the variables `xᵢ` of `R[x₀, …, xₙ₋₁]`). -/
@@ -423,6 +436,33 @@ structure FunctorEntry where
   (`∫ Mod → Ring`, `Bil → ∫ Mod` by values), which reads a parameter of the object rather than
   an object it *is*: a module is not a ring, so it must not inherit the ring's cardinality. -/
   structural : Bool := false
+  deriving Repr
+
+/-- Identifier of a directly applied, parameterized construction. -/
+structure ConstructionId where
+  raw : String
+  deriving DecidableEq, Repr, Hashable
+
+/-- A selected isomorphism between named object families. Its dependent signature
+retains all parameters at both endpoints and any hypotheses on the comparison.
+It never identifies the presentations by equality. -/
+structure PresentationComparisonEntry where
+  id : NaturalTransformationId
+  name : String
+  source : ObjectId
+  target : ObjectId
+  declaration : Lean.Name
+  deriving Repr
+
+/-- A category-sensitive family of functors. Its full dependent Lean signature
+specifies the selected category, functor, base parameters, and source category.
+It is applied directly at these arguments, never inherited along structural routes.
+For example `∀ C : Cat, Core(C) ⥤ Grp` is the one generic automorphism construction. -/
+structure ConstructionEntry where
+  id : ConstructionId
+  name : String
+  declaration : Lean.Name
+  target : CategoryExpr
   deriving Repr
 
 /-- Opaque category with typed structural ports. -/

@@ -34,70 +34,70 @@ open CasCatalogue.Limits.Registration CasCatalogue.Foundation.Objects
 open CasCatalogue.Foundation.Morphisms CasCatalogue.Algebra.NumberSystems
 
 /-- The element `u⁻¹ ∈ M` of a unit `u : 1 → Mˣ`: `1 → Mˣ → Mˣ ↪ M`. -/
-abbrev inverseElement (M : Type) [Monoid M] (u : fin 1 ⟶ units M) :
+abbrev inverseElement (M : Type) [Monoid M] (u : fin 1 ⟶ units (MonCat.of M)) :
     fin 1 ⟶ (M : LeanCategories.Foundation.Mathlib.Sets.{0}) :=
-  u ≫ inverse M ≫ inclusion M
+  u ≫ inverse (MonCat.of M) ≫ inclusion (MonCat.of M)
 
 /-- The element `a / u ∈ M`: the pair `(a, u)`, the mediator of the registered product cone,
 followed by `/ : M × Mˣ → M`. -/
 abbrev divideElement (M : Type) [Monoid M]
-    (a : fin 1 ⟶ (M : LeanCategories.Foundation.Mathlib.Sets.{0})) (u : fin 1 ⟶ units M) :
+    (a : fin 1 ⟶ (M : LeanCategories.Foundation.Mathlib.Sets.{0})) (u : fin 1 ⟶ units (MonCat.of M)) :
     fin 1 ⟶ (M : LeanCategories.Foundation.Mathlib.Sets.{0}) :=
-  (setsProduct _ _).isLimit.lift (BinaryFan.mk a u) ≫ divide M
+  (setsProduct _ _).isLimit.lift (BinaryFan.mk a u) ≫ divide (MonCat.of M)
 
 /-- The element `c ∈ M` of a value `c`. -/
 abbrev element {M : Type} (c : M) : fin 1 ⟶ (M : LeanCategories.Foundation.Mathlib.Sets.{0}) :=
   TypeCat.ofHom fun _ => c
 
 /-- `3⁻¹ = 1/3` in `ℚ`, the inverse of the unit `3 ∈ ℚˣ`. -/
-example : inverseElement ℚ (admit ℚ 3 (by run_tac invertibleEvidence)) = element (1 / 3 : ℚ) := by
+example : inverseElement ℚ (admit (MonCat.of ℚ) 3 (by run_tac invertibleEvidence)) = element (1 / 3 : ℚ) := by
   decide +kernel
 
 /-- `1 / 3 = 1/3` in `ℚ`: the numeral `1` divided by the unit `3 ∈ ℚˣ`. -/
 example : divideElement ℚ (ringNumeral ringRationals 1)
-    (admit ℚ 3 (by run_tac invertibleEvidence)) = element (1 / 3 : ℚ) := by
+    (admit (MonCat.of ℚ) 3 (by run_tac invertibleEvidence)) = element (1 / 3 : ℚ) := by
   decide +kernel
 
 /-- `3⁻¹ ≠ 1/2` in `ℚ`. -/
 example :
-    inverseElement ℚ (admit ℚ 3 (by run_tac invertibleEvidence)) ≠ element (1 / 2 : ℚ) := by
+    inverseElement ℚ (admit (MonCat.of ℚ) 3 (by run_tac invertibleEvidence)) ≠ element (1 / 2 : ℚ) := by
   decide +kernel
 
 /-- `1 / 3 ≠ 3` in `ℚ`. -/
 example : divideElement ℚ (ringNumeral ringRationals 1)
-    (admit ℚ 3 (by run_tac invertibleEvidence)) ≠ element (3 : ℚ) := by
+    (admit (MonCat.of ℚ) 3 (by run_tac invertibleEvidence)) ≠ element (3 : ℚ) := by
   decide +kernel
 
 /-- `(-3/4)⁻¹ = -4/3` in `ℚ`. -/
 example :
-    inverseElement ℚ (admit ℚ (-3 / 4) (by run_tac invertibleEvidence)) = element (-4 / 3 : ℚ) := by
+    inverseElement ℚ (admit (MonCat.of ℚ) (-3 / 4) (by run_tac invertibleEvidence)) = element (-4 / 3 : ℚ) := by
   decide +kernel
 
 /-- `2⁻¹ = 3` in `ℤ/5`. -/
-example : inverseElement (ZMod 5) (admit (ZMod 5) 2 (by run_tac invertibleEvidence)) =
+example : inverseElement (ZMod 5) (admit (MonCat.of (ZMod 5)) 2 (by run_tac invertibleEvidence)) =
     element (3 : ZMod 5) := by
   decide +kernel
 
 /-- `2⁻¹ ≠ 2` in `ℤ/5`. -/
-example : inverseElement (ZMod 5) (admit (ZMod 5) 2 (by run_tac invertibleEvidence)) ≠
+example : inverseElement (ZMod 5) (admit (MonCat.of (ZMod 5)) 2 (by run_tac invertibleEvidence)) ≠
     element (2 : ZMod 5) := by
   decide +kernel
 
 /-- `7⁻¹ = 7` in `ℤ/12` (`7 · 7 = 49 = 4 · 12 + 1`). -/
-example : inverseElement (ZMod 12) (admit (ZMod 12) 7 (by run_tac invertibleEvidence)) =
+example : inverseElement (ZMod 12) (admit (MonCat.of (ZMod 12)) 7 (by run_tac invertibleEvidence)) =
     element (7 : ZMod 12) := by
   decide +kernel
 
 /-- `(-1)⁻¹ = -1` in `ℤ`, whose units are `±1`. -/
-example : inverseElement ℤ (admit ℤ (-1) (by run_tac invertibleEvidence)) = element (-1 : ℤ) := by
+example : inverseElement ℤ (admit (MonCat.of ℤ) (-1) (by run_tac invertibleEvidence)) = element (-1 : ℤ) := by
   decide +kernel
 
 /-- `1⁻¹ = 1` in `ℤ`. -/
-example : inverseElement ℤ (admit ℤ 1 (by run_tac invertibleEvidence)) = element (1 : ℤ) := by
+example : inverseElement ℤ (admit (MonCat.of ℤ) 1 (by run_tac invertibleEvidence)) = element (1 : ℤ) := by
   decide +kernel
 
 /-- `(2 · 4)⁻¹ = 4⁻¹ · 2⁻¹ = 2 · 5 = 1` in `ℤ/7`, through the inverse of a product. -/
-example : inverseElement (ZMod 7) (admit (ZMod 7) (2 * 4) (by run_tac invertibleEvidence)) =
+example : inverseElement (ZMod 7) (admit (MonCat.of (ZMod 7)) (2 * 4) (by run_tac invertibleEvidence)) =
     element (1 : ZMod 7) := by
   decide +kernel
 
@@ -117,38 +117,38 @@ abbrev zmodNumeralValue (n k : ℕ) : integersMod n :=
 
 /-- `2⁻¹ = 3` in `ℤ/5` (`2 · 3 = 6 = 5 + 1`), at the numerals of `ℤ/5`. -/
 example : inverseElement (ZMod 5)
-    (admit (ZMod 5) (zmodNumeralValue 5 2) (by run_tac invertibleEvidence)) =
+    (admit (MonCat.of (ZMod 5)) (zmodNumeralValue 5 2) (by run_tac invertibleEvidence)) =
       zmodNumeral 5 3 := by
   decide +kernel
 
 /-- `2⁻¹ ≠ 2` in `ℤ/5`, at the numerals. -/
 example : inverseElement (ZMod 5)
-    (admit (ZMod 5) (zmodNumeralValue 5 2) (by run_tac invertibleEvidence)) ≠
+    (admit (MonCat.of (ZMod 5)) (zmodNumeralValue 5 2) (by run_tac invertibleEvidence)) ≠
       zmodNumeral 5 2 := by
   decide +kernel
 
 /-- `7⁻¹ = 7` in `ℤ/12` (`7 · 7 = 49 = 4 · 12 + 1`), at the numerals. -/
 example : inverseElement (ZMod 12)
-    (admit (ZMod 12) (zmodNumeralValue 12 7) (by run_tac invertibleEvidence)) =
+    (admit (MonCat.of (ZMod 12)) (zmodNumeralValue 12 7) (by run_tac invertibleEvidence)) =
       zmodNumeral 12 7 := by
   decide +kernel
 
 /-- `1 / 7 = 7` in `ℤ/12`: the numeral `1` divided by the unit `7`. -/
 example : divideElement (ZMod 12) (zmodNumeral 12 1)
-    (admit (ZMod 12) (zmodNumeralValue 12 7) (by run_tac invertibleEvidence)) =
+    (admit (MonCat.of (ZMod 12)) (zmodNumeralValue 12 7) (by run_tac invertibleEvidence)) =
       zmodNumeral 12 7 := by
   decide +kernel
 
 /-- `12⁻¹ = 3` in `ℤ/7`: the numeral `12` is `5`, and `5 · 3 = 15 = 2 · 7 + 1`. -/
 example : inverseElement (ZMod 7)
-    (admit (ZMod 7) (zmodNumeralValue 7 12) (by run_tac invertibleEvidence)) =
+    (admit (MonCat.of (ZMod 7)) (zmodNumeralValue 7 12) (by run_tac invertibleEvidence)) =
       zmodNumeral 7 3 := by
   decide +kernel
 
 /-- The position `2` of `Fin 5`, carried into `ℤ/5` by `Fin 5 ↪ ℤ/5`, has inverse the numeral
 `3`: the transport makes it the numeral `2`. -/
 example : inverseElement (ZMod 5)
-    (admit (ZMod 5)
+    (admit (MonCat.of (ZMod 5))
       (ConcreteCategory.hom (C := Type) (finPoint 5 2 (by decide) ≫ finIntegersMod 5)
         ⟨0, Nat.one_pos⟩) (by run_tac invertibleEvidence)) =
       zmodNumeral 5 3 := by

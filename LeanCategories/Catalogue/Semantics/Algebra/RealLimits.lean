@@ -191,7 +191,7 @@ theorem value_eq_zero_of_eq {a : fin 1 ⟶ reals} (h : a = zeroPoint) :
 registered numeral (`zeroPoint`). For `a ≠ 0` there is no such map, since `0 ∈ ℝ ∖ {a}` is not a
 unit. -/
 noncomputable def puncturedUnits (a : fin 1 ⟶ reals) (h : a = zeroPoint) :
-    puncturedLine a ⟶ CasCatalogue.Algebra.Units.units ℝ :=
+    puncturedLine a ⟶ CasCatalogue.Algebra.Units.units (MonCat.of ℝ) :=
   TypeCat.ofHom fun t => Units.mk0 t.1 fun h0 => t.2 (h0.trans (value_eq_zero_of_eq h).symm)
 
 /-- `ℝ ∖ {0} ↪ ℝˣ` is a monomorphism, through which `ℝ ∖ {0} ↪ ℝ` factors: a unit is its value. -/
@@ -201,14 +201,14 @@ theorem puncturedUnits_mono (a : fin 1 ⟶ reals) (h : a = zeroPoint) :
 
 /-- `ℝ ∖ {0} → ℝˣ → ℝ` is `ℝ ∖ {0} ↪ ℝ`. -/
 theorem puncturedUnits_inclusion (a : fin 1 ⟶ reals) (h : a = zeroPoint) :
-    puncturedUnits a h ≫ CasCatalogue.Algebra.Units.inclusion ℝ = puncturedInclusion a :=
+    puncturedUnits a h ≫ CasCatalogue.Algebra.Units.inclusion (MonCat.of ℝ) = puncturedInclusion a :=
   rfl
 
 /-! ### Limits at `±∞` -/
 
 /-- `t → a` for `a = ±∞`: the punctured neighbourhoods of `a` in `ℝ̄`, traced on `ℝˣ ⊆ ℝ ⊆ ℝ̄`. -/
 noncomputable def approachInfinity (a : fin 1 ⟶ infinities) :
-    Filter (CasCatalogue.Algebra.Units.units ℝ) :=
+    Filter (CasCatalogue.Algebra.Units.units (MonCat.of ℝ)) :=
   comap Units.val (comap Real.toEReal (𝓝[≠] (ConcreteCategory.hom (C := Type) a 0).1))
 
 /-- The punctured neighbourhoods of `+∞` traced on `ℝ` are `atTop` (Mathlib
@@ -243,7 +243,7 @@ instance approachInfinity_neBot (a : fin 1 ⟶ infinities) : (approachInfinity a
 /-- The maps `ℝˣ → ℝ` that converge at `a = ±∞`. -/
 structure ConvergentAtInfinity (a : fin 1 ⟶ infinities) : Type where
   /-- The map. -/
-  toFun : CasCatalogue.Algebra.Units.units ℝ → ℝ
+  toFun : CasCatalogue.Algebra.Units.units (MonCat.of ℝ) → ℝ
   /-- It converges at `a`. -/
   converges : ∃ L, Tendsto toFun (approachInfinity a) (𝓝 L)
 
@@ -252,7 +252,7 @@ abbrev convergentMapsAtInfinity (a : fin 1 ⟶ infinities) : SetsCat.{0} := Conv
 
 /-- The map `f`, with the evidence that it converges at `a = ±∞`. -/
 def admitConvergentAtInfinity (a : fin 1 ⟶ infinities)
-    (f : CasCatalogue.Algebra.Units.units ℝ → ℝ) (h : ∃ L, Tendsto f (approachInfinity a) (𝓝 L)) :
+    (f : CasCatalogue.Algebra.Units.units (MonCat.of ℝ) → ℝ) (h : ∃ L, Tendsto f (approachInfinity a) (𝓝 L)) :
     fin 1 ⟶ convergentMapsAtInfinity a :=
   TypeCat.ofHom fun _ => ⟨f, h⟩
 
@@ -263,7 +263,7 @@ noncomputable def limitAtInfinity (a : fin 1 ⟶ infinities) : convergentMapsAtI
 
 /-- The bound variable of `lim_{t → ±∞}` ranges over `ℝ ∖ {0} = ℝˣ`. -/
 abbrev limitAtInfinityDomain (_ : fin 1 ⟶ infinities) : SetsCat.{0} :=
-  CasCatalogue.Algebra.Units.units ℝ
+  CasCatalogue.Algebra.Units.units (MonCat.of ℝ)
 
 /-- The map tends to its limit at `±∞`. -/
 theorem tendsto_limitAtInfinity (a : fin 1 ⟶ infinities) (f : convergentMapsAtInfinity a) :
@@ -294,7 +294,7 @@ theorem limitAtInfinity_eq_iff_tendsto (a : fin 1 ⟶ infinities)
 /-- A map `f` on `ℝˣ` that is the restriction of a map `g` on `ℝ` tends to `L` as `t → G` in `ℝˣ`
 when `g` tends to `L` along `G`. -/
 theorem tendsto_comap_units_of (g : ℝ → ℝ) {G : Filter ℝ} {L : ℝ} (h : Tendsto g G (𝓝 L)) :
-    Tendsto (fun u : CasCatalogue.Algebra.Units.units ℝ => g u.1) (comap Units.val G) (𝓝 L) :=
+    Tendsto (fun u : CasCatalogue.Algebra.Units.units (MonCat.of ℝ) => g u.1) (comap Units.val G) (𝓝 L) :=
   h.comp tendsto_comap
 
 /-! ### Standard limits -/

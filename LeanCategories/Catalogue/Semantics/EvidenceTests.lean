@@ -202,7 +202,7 @@ open Lean Meta Elab Term
 /-- The numeral `k` of the ring `R[x]`, evaluated at the point of `1`. -/
 meta def polynomialNumeralValue (R : Term) (k : Nat) : TermElabM Term :=
   `(CategoryTheory.ConcreteCategory.hom (C := Type)
-      (NamedRings.ringNumeral (Polynomials.ringPolynomials $R) $(quote k))
+      (NamedRings.ringNumeral (Polynomials.ringPolynomials (CommRingCat.of $R)) $(quote k))
       (⟨0, Nat.one_pos⟩ : Foundation.Objects.fin 1))
 
 /-- The numerals of `K[x]` that are units: `3, 1 ∈ ℚ[x]`, `2 ∈ ℝ[x]`, `2 ∈ 𝔽₅[x]`,

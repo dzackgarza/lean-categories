@@ -52,13 +52,13 @@ def schemesOverRealization (S : schemesCategory.{u}) :
     CategoryRealization SchemesOverExpr (schemesOverCategory S) := {}
 
 /-- `Spec K[x]` over `Spec K`. -/
-noncomputable def specPolynomials (K : Type) [CommRing K] :
-    schemesOverCategory (Spec (CommRingCat.of K)) :=
+noncomputable def specPolynomials (K : CommRingCat.{0}) :
+    schemesOverCategory (Spec K) :=
   Over.mk (Spec.map (CommRingCat.ofHom (Polynomial.C : K →+* Polynomial K)))
 
 /-- `Spec K[x₀, …, xₙ₋₁]` over `Spec K`. -/
-noncomputable def specMvPolynomials (n : ℕ) (K : Type) [CommRing K] :
-    schemesOverCategory (Spec (CommRingCat.of K)) :=
+noncomputable def specMvPolynomials (n : ℕ) (K : CommRingCat.{0}) :
+    schemesOverCategory (Spec K) :=
   Over.mk (Spec.map (CommRingCat.ofHom (MvPolynomial.C : K →+* MvPolynomial (Fin n) K)))
 
 end Algebra.Schemes

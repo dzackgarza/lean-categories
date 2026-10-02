@@ -32,12 +32,14 @@ public import LeanCategories.Catalogue.Semantics.Algebra.NamedRings
 public import LeanCategories.Catalogue.Semantics.Algebra.NumberSystems
 public import LeanCategories.Catalogue.Semantics.Foundation.PowerSets
 public import LeanCategories.Catalogue.Semantics.Algebra.Semirings
+public import LeanCategories.Catalogue.Semantics.Algebra.PolynomialPresentations
 public import LeanCategories.Catalogue.Semantics.Algebra.Polynomials
 public import LeanCategories.Catalogue.Semantics.Algebra.Differentials
 public import LeanCategories.Catalogue.Semantics.Algebra.Units
 public import LeanCategories.Catalogue.Semantics.Algebra.LinearAlgebra
 public import LeanCategories.Catalogue.Semantics.Foundation.FiniteSubsets
 public import LeanCategories.Catalogue.Semantics.Foundation.Maps
+public import LeanCategories.Catalogue.Semantics.Algebra.FiniteGroups
 public import LeanCategories.Catalogue.Semantics.Algebra.FiniteSums
 public import LeanCategories.Catalogue.Semantics.Algebra.Calculus
 public import LeanCategories.Catalogue.Semantics.Algebra.Series

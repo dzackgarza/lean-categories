@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
+public import LeanCategories.Catalogue.Semantics.Algebra.Fields
 public import LeanCategories.Catalogue.Semantics.Algebra.Polynomials
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import Mathlib.LinearAlgebra.Matrix.Rank
@@ -65,44 +66,44 @@ def zero (A : LeanCategories.Algebra.AdditiveMonoids.{0}) (n : ℕ) :
   TypeCat.ofHom fun _ => 0
 
 /-- `Matₙ(K)`. -/
-abbrev matrices (n : ℕ) (K : Type) [CommRing K] : SetsCat.{0} := Matrix (Fin n) (Fin n) K
+abbrev matrices (n : ℕ) (K : CommRingCat.{0}) : SetsCat.{0} := Matrix (Fin n) (Fin n) K
 
 /-- The matrix with the given rows. -/
-def rows (n : ℕ) (K : Type) [CommRing K] : vectors (vectors K n) n ⟶ matrices n K :=
+def rows (n : ℕ) (K : CommRingCat.{0}) : vectors (vectors K n) n ⟶ matrices n K :=
   TypeCat.ofHom fun r => Matrix.of r
 
 /-- `(M, v) ↦ M v`. -/
-def apply (n : ℕ) (K : Type) [CommRing K] :
+def apply (n : ℕ) (K : CommRingCat.{0}) :
     (matrices n K × vectors K n : SetsCat.{0}) ⟶ vectors K n :=
   TypeCat.ofHom fun p => p.1.mulVec p.2
 
 /-- The determinant. -/
-def det (n : ℕ) (K : Type) [CommRing K] : matrices n K ⟶ (K : SetsCat.{0}) :=
+def det (n : ℕ) (K : CommRingCat.{0}) : matrices n K ⟶ (K : SetsCat.{0}) :=
   TypeCat.ofHom fun M => M.det
 
 /-- The trace. -/
-def trace (n : ℕ) (K : Type) [CommRing K] : matrices n K ⟶ (K : SetsCat.{0}) :=
+def trace (n : ℕ) (K : CommRingCat.{0}) : matrices n K ⟶ (K : SetsCat.{0}) :=
   TypeCat.ofHom fun M => M.trace
 
 /-- The rank. -/
-noncomputable def rank (n : ℕ) (K : Type) [CommRing K] :
+noncomputable def rank (n : ℕ) (K : CommRingCat.{0}) :
     matrices n K ⟶ CasCatalogue.Foundation.Objects.naturals :=
   TypeCat.ofHom fun M => M.rank
 
 /-- The characteristic polynomial `det(x - M)`. -/
-noncomputable def charpoly (n : ℕ) (K : Type) [CommRing K] : matrices n K ⟶ polynomials K :=
+noncomputable def charpoly (n : ℕ) (K : CommRingCat.{0}) : matrices n K ⟶ polynomials K :=
   TypeCat.ofHom fun M => M.charpoly
 
 /-- `Monicₙ(K)`, the monic polynomials of degree `n`. -/
-abbrev monics (n : ℕ) (K : Type) [CommRing K] : SetsCat.{0} :=
+abbrev monics (n : ℕ) (K : CommRingCat.{0}) : SetsCat.{0} :=
   {p : Polynomial K // p.Monic ∧ p.natDegree = n}
 
 /-- `Monicₙ(K) ↪ K[x]`. -/
-def monicsInclusion (n : ℕ) (K : Type) [CommRing K] : monics n K ⟶ polynomials K :=
+def monicsInclusion (n : ℕ) (K : CommRingCat.{0}) : monics n K ⟶ polynomials K :=
   TypeCat.ofHom Subtype.val
 
 /-- The monic polynomial `p` of degree `n`, with that evidence. -/
-def admitMonic (n : ℕ) (K : Type) [CommRing K] (p : Polynomial K)
+def admitMonic (n : ℕ) (K : CommRingCat.{0}) (p : Polynomial K)
     (h : p.Monic ∧ p.natDegree = n) : CasCatalogue.Foundation.Objects.fin 1 ⟶ monics n K :=
   TypeCat.ofHom fun _ => ⟨p, h⟩
 
@@ -170,22 +171,24 @@ where
 
 /-- The companion matrix of a monic `p = xⁿ + Σ_{i<n} pᵢ xⁱ`: ones below the diagonal and
 `-p₀, …, -pₙ₋₁` in the last column. Mathlib has no companion matrix. -/
-def companion (n : ℕ) (K : Type) [CommRing K] : monics n K ⟶ matrices n K :=
+def companion (n : ℕ) (K : CommRingCat.{0}) : monics n K ⟶ matrices n K :=
   TypeCat.ofHom fun p => Matrix.of fun i j =>
     if j.val + 1 = n then -p.1.coeff i.val else if i.val = j.val + 1 then 1 else 0
 
 /-- The kernel `{v | M v = 0}`. -/
-def ker (n : ℕ) (K : Type) [CommRing K] : matrices n K ⟶ powerSet (Fin n → K) :=
+def ker (n : ℕ) (K : CommRingCat.{0}) : matrices n K ⟶ powerSet (Fin n → K) :=
   TypeCat.ofHom fun M => {v | M.mulVec v = 0}
 
-/-- The span of a set of vectors. -/
-def span (K : Type) [Field K] (n : ℕ) : powerSet (Fin n → K) ⟶ powerSet (Fin n → K) :=
-  TypeCat.ofHom fun S => (Submodule.span K S : Set (Fin n → K))
+/-- The span of a set of vectors over the selected field. -/
+def span (K : LeanCategories.Algebra.FieldCat.{0}) (n : ℕ) :
+    powerSet (Fin n → Fields.ring K) ⟶ powerSet (Fin n → Fields.ring K) :=
+  TypeCat.ofHom fun S => (Submodule.span (Fields.ring K) S : Set (Fin n → Fields.ring K))
 
-/-- The dimension of the span of a set of vectors. -/
-noncomputable def dim (K : Type) [Field K] (n : ℕ) :
-    powerSet (Fin n → K) ⟶ CasCatalogue.Foundation.Objects.naturals :=
-  TypeCat.ofHom fun S => Module.finrank K (Submodule.span K S)
+/-- The dimension of the span over the selected field, using its compatible field structure. -/
+noncomputable def dim (K : LeanCategories.Algebra.FieldCat.{0}) (n : ℕ) :
+    powerSet (Fin n → Fields.ring K) ⟶ CasCatalogue.Foundation.Objects.naturals :=
+  letI := Fields.fieldStructure K
+  TypeCat.ofHom fun S => Module.finrank (Fields.ring K) (Submodule.span (Fields.ring K) S)
 
 end CasCatalogue.Algebra.LinearAlgebra
 

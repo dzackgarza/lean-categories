@@ -31,30 +31,30 @@ namespace CasCatalogue.Algebra.MvPolynomials
 open CasCatalogue.Foundation.PowerSets CasCatalogue.Foundation.Objects
 
 /-- `R[x₀, …, xₙ₋₁]`. -/
-abbrev mvPolynomials (n : ℕ) (R : Type) [CommRing R] : SetsCat.{0} := MvPolynomial (Fin n) R
+abbrev mvPolynomials (n : ℕ) (R : CommRingCat.{0}) : SetsCat.{0} := MvPolynomial (Fin n) R
 
 /-- The variable `xᵢ`. -/
-noncomputable def var (n : ℕ) (R : Type) [CommRing R] (i : Fin n) :
+noncomputable def var (n : ℕ) (R : CommRingCat.{0}) (i : Fin n) :
     fin 1 ⟶ mvPolynomials n R :=
   TypeCat.ofHom fun _ => MvPolynomial.X i
 
 /-- The constants `R ↪ R[x₀, …, xₙ₋₁]`. -/
-noncomputable def constants (n : ℕ) (R : Type) [CommRing R] :
+noncomputable def constants (n : ℕ) (R : CommRingCat.{0}) :
     (R : SetsCat.{0}) ⟶ mvPolynomials n R :=
   TypeCat.ofHom fun r => MvPolynomial.C r
 
 /-- `R[x₀, …, xₙ₋₁]` as a ring. -/
-noncomputable abbrev ringMvPolynomials (n : ℕ) (R : Type) [CommRing R] :
+noncomputable abbrev ringMvPolynomials (n : ℕ) (R : CommRingCat.{0}) :
     LeanCategories.Algebra.Rings.{0} :=
   RingCat.of (MvPolynomial (Fin n) R)
 
 /-- The underlying set of the ring `R[x₀, …, xₙ₋₁]` is `R[x₀, …, xₙ₋₁]`. -/
-def ringMvPolynomialsIdentification (n : ℕ) (R : Type) [CommRing R] :
+def ringMvPolynomialsIdentification (n : ℕ) (R : CommRingCat.{0}) :
     (mvPolynomials n R : SetsCat.{0}) ≅ mvPolynomials n R :=
   Iso.refl _
 
 /-- The total degree. -/
-def totalDegree (n : ℕ) (R : Type) [CommRing R] : mvPolynomials n R ⟶ naturals :=
+def totalDegree (n : ℕ) (R : CommRingCat.{0}) : mvPolynomials n R ⟶ naturals :=
   TypeCat.ofHom fun p => p.totalDegree
 
 /-- `ℕ∞ ∪ {-∞}`, the Krull dimensions. -/
@@ -68,7 +68,7 @@ theorem naturalsDimensions_mono : Mono naturalsDimensions :=
   NumberSystems.mono_of_injective _ (WithBot.coe_injective.comp fun _ _ h => ENat.natCast_inj.mp h)
 
 /-- The Krull dimension of a commutative ring `A`. -/
-noncomputable def dimension (A : Type) [CommRing A] : fin 1 ⟶ dimensions :=
+noncomputable def dimension (A : CommRingCat.{0}) : fin 1 ⟶ dimensions :=
   TypeCat.ofHom fun _ => ringKrullDim A
 
 end CasCatalogue.Algebra.MvPolynomials

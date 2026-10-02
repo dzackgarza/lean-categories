@@ -65,7 +65,7 @@ theorem realNumeral_zero : ConcreteCategory.hom (C := Type) (realNumeral 0) 0 = 
 /-- `t ↦ sin t / t` on `ℝ ∖ {0}`: `sin` of the inclusion `ℝ ∖ {0} ↪ ℝ`, divided by the unit `t`
 (`ℝ ∖ {0} ↪ ℝˣ`). -/
 noncomputable def sinOverT : puncturedLine (realNumeral 0) → ℝ := fun t =>
-  ConcreteCategory.hom (C := Type) (Units.divide ℝ)
+  ConcreteCategory.hom (C := Type) (Units.divide (MonCat.of ℝ))
     (ConcreteCategory.hom (C := Type) Calculus.sin
       (ConcreteCategory.hom (C := Type) (puncturedInclusion (realNumeral 0)) t),
      ConcreteCategory.hom (C := Type) (puncturedUnits (realNumeral 0) rfl) t)
@@ -84,8 +84,8 @@ theorem limit_sin_div_self (h : ∃ L, Tendsto sinOverT (approach (realNumeral 0
   simp [sinOverT, Units.divide, Calculus.sin, puncturedInclusion, puncturedUnits, div_eq_mul_inv]
 
 /-- `u ↦ 1/u` on `ℝˣ`: the division of `1` by the unit `u`. -/
-noncomputable def reciprocal : Units.units ℝ → ℝ := fun u =>
-  ConcreteCategory.hom (C := Type) (Units.divide ℝ)
+noncomputable def reciprocal : Units.units (MonCat.of ℝ) → ℝ := fun u =>
+  ConcreteCategory.hom (C := Type) (Units.divide (MonCat.of ℝ))
     (ConcreteCategory.hom (C := Type) (realNumeral 1) 0, u)
 
 /-- **`lim_{t → ∞} 1/t = 0`.** -/
@@ -263,7 +263,8 @@ run_elab do
           (RealLimits.approachInfinity RealLimits.infinity) (𝓝 L)),
      ← `(∃ L, Tendsto CasCatalogue.BinderTests.reciprocal
           (RealLimits.approachInfinity RealLimits.negInfinity) (𝓝 L)),
-     ← `(∃ L, Tendsto (fun u : Units.units ℝ => CasCatalogue.BinderTests.reciprocal u + 3)
+     ← `(∃ L, Tendsto
+          (fun u : Units.units (MonCat.of ℝ) => CasCatalogue.BinderTests.reciprocal u + 3)
           (RealLimits.approachInfinity RealLimits.negInfinity) (𝓝 L)),
      ← `(∃ L, Tendsto (fun t : RealLimits.puncturedLine (CasCatalogue.BinderTests.realNumeral 2) =>
             (ConcreteCategory.hom (C := Type)
@@ -282,7 +283,7 @@ run_elab do
 #guard_msgs in
 run_elab do
   expectEstablished RealLimits.convergenceEvidence
-    [← `(∃ L, Tendsto (fun x : Units.units ℝ =>
+    [← `(∃ L, Tendsto (fun x : Units.units (MonCat.of ℝ) =>
             (Int.castRingHom (NamedRings.asRing NumberSystems.ringReals)).toMonoidHom.toOneHom.toFun
               ((1 : ℕ) : ℤ) * ((x⁻¹ : ℝˣ) : ℝ))
           (RealLimits.approachInfinity (id RealLimits.infinity)) (𝓝 L)),
@@ -305,9 +306,9 @@ run_elab do
   expectEstablished RealLimits.convergenceEvidence
     [← `(∃ L, Tendsto (fun x : RealLimits.puncturedLine
               (id (NamedRings.ringNumeral NumberSystems.ringReals 0)) =>
-            ConcreteCategory.hom (C := Type) (Units.divide ℝ)
+            ConcreteCategory.hom (C := Type) (Units.divide (MonCat.of ℝ))
               (Real.sin (ConcreteCategory.hom (C := Type)
-                  (RealLimits.puncturedUnits _ rfl ≫ Units.inclusion ℝ) x),
+                  (RealLimits.puncturedUnits _ rfl ≫ Units.inclusion (MonCat.of ℝ)) x),
                ConcreteCategory.hom (C := Type) (RealLimits.puncturedUnits _ rfl) x))
           (RealLimits.approach (id (NamedRings.ringNumeral NumberSystems.ringReals 0))) (𝓝 L)),
      ← `(∃ L, Tendsto (fun x : RealLimits.puncturedLine
@@ -363,9 +364,9 @@ run_elab do
             Real.sin (ConcreteCategory.hom (C := Type) (RealLimits.puncturedUnits
               (CasCatalogue.BinderTests.realNumeral 0) rfl) t)⁻¹.1)
           (RealLimits.approach (CasCatalogue.BinderTests.realNumeral 0)) (𝓝 L)),
-     ← `(∃ L, Tendsto (fun u : Units.units ℝ => (u : ℝ))
+     ← `(∃ L, Tendsto (fun u : Units.units (MonCat.of ℝ) => (u : ℝ))
           (RealLimits.approachInfinity RealLimits.infinity) (𝓝 L)),
-     ← `(∃ L, Tendsto (fun u : Units.units ℝ => Real.sin (u : ℝ))
+     ← `(∃ L, Tendsto (fun u : Units.units (MonCat.of ℝ) => Real.sin (u : ℝ))
           (RealLimits.approachInfinity RealLimits.infinity) (𝓝 L))]
 
 attribute [local instance] Series.tAdic

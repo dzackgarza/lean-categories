@@ -5,6 +5,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Catalogue.Semantics.Foundation.PowerSets
+public import LeanCategories.Catalogue.Semantics.Algebra.Ports
+public import Mathlib.Algebra.Category.Grp.Adjunctions
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.Data.ZMod.Basic
@@ -50,32 +52,32 @@ namespace CasCatalogue.Algebra.Units
 open CasCatalogue.Foundation.PowerSets CasCatalogue.Foundation.Objects
 
 /-- `Mˣ`. -/
-abbrev units (M : Type) [Monoid M] : SetsCat.{0} := Mˣ
+abbrev units (M : MonCat.{0}) : SetsCat.{0} := Mˣ
 
 /-- `Mˣ ↪ M`. -/
-def inclusion (M : Type) [Monoid M] : units M ⟶ (M : SetsCat.{0}) := TypeCat.ofHom Units.val
+def inclusion (M : MonCat.{0}) : units M ⟶ (M : SetsCat.{0}) := TypeCat.ofHom Units.val
 
 /-- `u ↦ u⁻¹`, the inverse of the group `Mˣ`. -/
-def inverse (M : Type) [Monoid M] : units M ⟶ units M := TypeCat.ofHom fun u => u⁻¹
+def inverse (M : MonCat.{0}) : units M ⟶ units M := TypeCat.ofHom fun u => u⁻¹
 
 /-- `(a, u) ↦ a u⁻¹`. -/
-def divide (M : Type) [Monoid M] : (M × units M : SetsCat.{0}) ⟶ (M : SetsCat.{0}) :=
-  TypeCat.ofHom fun p => p.1 * ↑(p.2⁻¹)
+def divide (M : MonCat.{0}) : (M × units M : SetsCat.{0}) ⟶ (M : SetsCat.{0}) :=
+  TypeCat.ofHom fun p => p.1 * (@Units.val M _ (p.2⁻¹))
 
 /-- The unit `x`, with its inverse: the evidence `h : Invertible x` is the inverse `⅟x` with
 `⅟x · x = x · ⅟x = 1`, and the unit is the pair `(x, ⅟x)` (Mathlib `unitOfInvertible`). -/
-def admit (M : Type) [Monoid M] (x : M) (h : Invertible x) : fin 1 ⟶ units M :=
+def admit (M : MonCat.{0}) (x : M) (h : Invertible x) : fin 1 ⟶ units M :=
   TypeCat.ofHom fun _ => @unitOfInvertible M _ x h
 
 /-- The admitted unit is `x`: `1 → Mˣ ↪ M` is the element `x`. Stated with the composite
 applied map by map, the simp-normal form (`CategoryTheory.types_comp_apply`). -/
-@[simp] theorem admit_inclusion (M : Type) [Monoid M] (x : M) (h : Invertible x) (p : fin 1) :
+@[simp] theorem admit_inclusion (M : MonCat.{0}) (x : M) (h : Invertible x) (p : fin 1) :
     ConcreteCategory.hom (C := Type) (inclusion M)
         (ConcreteCategory.hom (C := Type) (admit M x h) p) = x :=
   rfl
 
 /-- The inverse of the admitted unit is the evidence's inverse `⅟x`. -/
-@[simp] theorem admit_inverse_inclusion (M : Type) [Monoid M] (x : M) (h : Invertible x)
+@[simp] theorem admit_inverse_inclusion (M : MonCat.{0}) (x : M) (h : Invertible x)
     (p : fin 1) :
     ConcreteCategory.hom (C := Type) (inclusion M)
         (ConcreteCategory.hom (C := Type) (inverse M)
@@ -410,18 +412,92 @@ where
 
 end CasCatalogue.Algebra.Units
 
+namespace CasCatalogue.FunctorId
+def monoidsUnits : FunctorId := ⟨"fun.monoids.units"⟩
+end CasCatalogue.FunctorId
+
+namespace CasCatalogue.Algebra.Units
+
+open CasCatalogue.Algebra.Catalogue.Magmas CasCatalogue.Algebra.CatalogueRegistration
+open CasCatalogue.Foundation.PowerSets
+
+def UnitsExpr : FunctorExpr Monoids Groups := .atomic FunctorId.monoidsUnits
+
+/-- The canonical units functor, right adjoint to forgetting a group's inverses. -/
+def unitsDeclaration : LeanCategories.Algebra.Monoids.{u} ⥤ LeanCategories.Algebra.Groups.{u} :=
+  MonCat.units
+
+noncomputable def unitsRealization : FunctorRealization UnitsExpr LeanCategories.Algebra.Monoids.{u}
+    LeanCategories.Algebra.Groups.{u} unitsDeclaration :=
+  { sourceRealization := monoidsRealization, targetRealization := groupsRealization }
+
+/-- The chosen monoid is the argument of the units functor. -/
+def monoidArgument (M : MonCat.{0}) : MonCat.{0} := M
+
+/-- The chosen group of units, with all its group structure. -/
+abbrev groupUnits (M : MonCat.{0}) : GrpCat.{0} := MonCat.units.obj M
+
+/-- Inversion belongs to every group, independent of how that group was constructed. -/
+def groupInverse (G : GrpCat.{0}) :
+    ((forget GrpCat).obj G : SetsCat.{0}) ⟶ (forget GrpCat).obj G :=
+  TypeCat.ofHom fun g => g⁻¹
+
+/-- The group object is precisely the value of the generic units functor. -/
+def groupUnitsIdentification (M : MonCat.{0}) : MonCat.units.obj M ≅ groupUnits M := Iso.refl _
+
+/-- The set presentation retains the group of units. -/
+def unitsIdentification (M : MonCat.{0}) :
+    (forget GrpCat).obj (groupUnits M) ≅ units M := Iso.refl _
+
+/-- The earlier element-calculus inversion is precisely group inversion. -/
+theorem inverse_eq_groupInverse (M : MonCat.{0}) :
+    inverse M = groupInverse (groupUnits M) := rfl
+
+end CasCatalogue.Algebra.Units
+
 namespace CasCatalogue
+
+normalized_registry .functor
+  { id := FunctorId.monoidsUnits, source := Algebra.Catalogue.Magmas.Monoids
+    target := Algebra.Catalogue.Magmas.Groups
+    declaration := `CasCatalogue.Algebra.Units.unitsDeclaration
+    realization := `CasCatalogue.Algebra.Units.unitsRealization
+    expression := Algebra.Units.UnitsExpr }
+normalized_registry .adjunction
+  { id := ⟨"adj.groups_monoids.units"⟩, left := FunctorId.groupsMonoid
+    right := FunctorId.monoidsUnits, declaration := `GrpCat.forget₂MonAdj }
+
+normalized_registry .operation
+  { id := ⟨"op.groups.inverse"⟩, category := CategoryId.groups, name := "⁻¹", arity := 1
+    declaration := `CasCatalogue.Algebra.Units.groupInverse }
 
 normalized_registry .object
   { id := ⟨"obj.sets.units"⟩, category := CategoryId.sets, name := "Units"
     declaration := `CasCatalogue.Algebra.Units.units
     inclusion := some `CasCatalogue.Algebra.Units.inclusion
     admission := some `CasCatalogue.Algebra.Units.admit
-    evidence := some `CasCatalogue.Algebra.Units.invertibleEvidence }
+    evidence := some `CasCatalogue.Algebra.Units.invertibleEvidence
+    functorPresentation := some
+      { functor := FunctorId.monoidsUnits
+        argument := `CasCatalogue.Algebra.Units.monoidArgument
+        route := #[.functor FunctorId.groupsMonoid, .functor FunctorId.monoidsSemigroup,
+          .classifierForget ClassifierId.magmasAssociative,
+          .classifierForget ClassifierId.setsBinaryOperation]
+        identification := `CasCatalogue.Algebra.Units.unitsIdentification } }
 
-normalized_registry .morphism
-  { id := ⟨"mor.sets.units_inverse"⟩, category := CategoryId.sets, name := "⁻¹"
-    declaration := `CasCatalogue.Algebra.Units.inverse }
+normalized_registry .object
+  { id := ⟨"obj.groups.units"⟩, category := CategoryId.groups, name := "Units"
+    declaration := `CasCatalogue.Algebra.Units.groupUnits
+    functorPresentation := some
+      { functor := FunctorId.monoidsUnits
+        argument := `CasCatalogue.Algebra.Units.monoidArgument
+        identification := `CasCatalogue.Algebra.Units.groupUnitsIdentification }
+    refines := some
+      { base := ⟨"obj.sets.units"⟩
+        route := #[.functor FunctorId.groupsMonoid, .functor FunctorId.monoidsSemigroup,
+          .classifierForget ClassifierId.magmasAssociative,
+          .classifierForget ClassifierId.setsBinaryOperation]
+        identification := `CasCatalogue.Algebra.Units.unitsIdentification } }
 
 normalized_registry .morphism
   { id := ⟨"mor.sets.divide"⟩, category := CategoryId.sets, name := "/"

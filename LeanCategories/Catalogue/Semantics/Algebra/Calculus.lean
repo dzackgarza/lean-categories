@@ -194,7 +194,7 @@ def power (M : LeanCategories.Algebra.Monoids.{0}) :
 /-- `k ↦ k!`, `ℕ → ℝˣ`: the image of `k!` under the initial map `ℕ → ℝ`, a unit of `ℝ` because it
 is nonzero (`ℝ` is a field of characteristic `0`). -/
 noncomputable def factorialUnit :
-    CasCatalogue.Foundation.Objects.naturals ⟶ CasCatalogue.Algebra.Units.units ℝ :=
+    CasCatalogue.Foundation.Objects.naturals ⟶ CasCatalogue.Algebra.Units.units (MonCat.of ℝ) :=
   TypeCat.ofHom fun k =>
     (Ne.isUnit (Nat.cast_ne_zero.mpr k.factorial_ne_zero : ((k.factorial : ℕ) : ℝ) ≠ 0)).unit
 
@@ -203,7 +203,7 @@ noncomputable def taylor :
     (smoothMaps × reals : SetsCat.{0}) ⟶ powerSeries (CommRingCat.of ℝ) :=
   TypeCat.ofHom fun p =>
     PowerSeries.mk fun k =>
-      ConcreteCategory.hom (C := Type) (CasCatalogue.Algebra.Units.divide ℝ)
+      ConcreteCategory.hom (C := Type) (CasCatalogue.Algebra.Units.divide (MonCat.of ℝ))
         (iteratedDeriv k p.1.1 p.2, ConcreteCategory.hom (C := Type) factorialUnit k)
 
 /-- The `k`-th coefficient of the Taylor expansion of `f` at `a` is Mathlib's Taylor coefficient

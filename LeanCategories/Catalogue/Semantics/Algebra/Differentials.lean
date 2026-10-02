@@ -31,25 +31,25 @@ namespace CasCatalogue.Algebra.Differentials
 open CasCatalogue.Algebra.Polynomials CasCatalogue.Foundation.PowerSets
 
 /-- `Ω¹_{R[x]/R}`. -/
-abbrev differentials (R : Type) [CommRing R] : SetsCat.{0} := Ω[Polynomial R⁄R]
+abbrev differentials (R : CommRingCat.{0}) : SetsCat.{0} := Ω[Polynomial R⁄R]
 
 /-- The universal derivation `d : R[x] → Ω¹_{R[x]/R}`. -/
-noncomputable def differential (R : Type) [CommRing R] :
+noncomputable def differential (R : CommRingCat.{0}) :
     (polynomials R : SetsCat.{0}) ⟶ differentials R :=
   TypeCat.ofHom fun p => KaehlerDifferential.D R (Polynomial R) p
 
 /-- The module structure `R[x] × Ω¹_{R[x]/R} → Ω¹_{R[x]/R}`, `(p, ω) ↦ p ω`. -/
-noncomputable def scale (R : Type) [CommRing R] :
+noncomputable def scale (R : CommRingCat.{0}) :
     (polynomials R × differentials R : SetsCat.{0}) ⟶ differentials R :=
   TypeCat.ofHom fun p => p.1 • p.2
 
 /-- `d/dx : R[x] → R[x]`. -/
-noncomputable def derivative (R : Type) [CommRing R] :
+noncomputable def derivative (R : CommRingCat.{0}) :
     (polynomials R : SetsCat.{0}) ⟶ polynomials R :=
   TypeCat.ofHom fun p => Polynomial.derivative p
 
 /-- The primitives `∫ ω = {g | d g = ω}` of a differential. -/
-noncomputable def primitives (R : Type) [CommRing R] :
+noncomputable def primitives (R : CommRingCat.{0}) :
     differentials R ⟶ powerSet (Polynomial R) :=
   TypeCat.ofHom fun ω => {g | KaehlerDifferential.D R (Polynomial R) g = ω}
 
