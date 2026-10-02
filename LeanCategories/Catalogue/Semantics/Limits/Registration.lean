@@ -19,6 +19,8 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.ConstructorCatalogue
 public meta import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Expressions
+public meta import LeanCategories.Catalogue.Semantics.Algebra.Subgroups
+public meta import LeanCategories.Catalogue.Semantics.Foundation.PairDiagrams
 
 @[expose] public section
 
@@ -51,7 +53,7 @@ A cokernel or kernel is a colimit or limit of a parallel pair one of whose maps 
 its input is the single map `f`, an object of the arrow category, not an arbitrary parallel pair.
 -/
 
-open CategoryTheory Limits
+open CategoryTheory Limits LeanCategories
 
 namespace CasCatalogue
 
@@ -99,21 +101,21 @@ noncomputable def arrowsBilWFormRealization (R : Type u) [CommRing R] :
 def setsPullback (F : WalkingCospan ⥤ LeanCategories.Foundation.Mathlib.Sets.{u}) :
     LimitCone F :=
   let c := Types.pullbackLimitCone (F.map WalkingCospan.Hom.inl) (F.map WalkingCospan.Hom.inr)
-  ⟨(Cones.postcompose (diagramIsoCospan F).inv).obj c.cone,
+  ⟨(Cone.postcompose (diagramIsoCospan F).inv).obj c.cone,
     (IsLimit.postcomposeInvEquiv (diagramIsoCospan F) c.cone).symm c.isLimit⟩
 
 /-- Binary products in `Sets`: the limit of a pair `F` is `F left × F right`. -/
 def setsProduct (F : Discrete WalkingPair ⥤ LeanCategories.Foundation.Mathlib.Sets.{u}) :
     LimitCone F :=
   let c := Types.binaryProductLimitCone (F.obj ⟨.left⟩) (F.obj ⟨.right⟩)
-  ⟨(Cones.postcompose (diagramIsoPair F).inv).obj c.cone,
+  ⟨(Cone.postcompose (diagramIsoPair F).inv).obj c.cone,
     (IsLimit.postcomposeInvEquiv (diagramIsoPair F) c.cone).symm c.isLimit⟩
 
 /-- Binary coproducts in `Sets`: the colimit of a pair `F` is `F left ⊕ F right`. -/
 def setsCoproduct (F : Discrete WalkingPair ⥤ LeanCategories.Foundation.Mathlib.Sets.{u}) :
     ColimitCocone F :=
   let c := Types.binaryCoproductColimitCocone (F.obj ⟨.left⟩) (F.obj ⟨.right⟩)
-  ⟨(Cocones.precompose (diagramIsoPair F).hom).obj c.cocone,
+  ⟨(Cocone.precompose (diagramIsoPair F).hom).obj c.cocone,
     (IsColimit.precomposeHomEquiv (diagramIsoPair F) c.cocone).symm c.isColimit⟩
 
 /-- Kernels in `Grp`: the limit of the parallel pair `(f, 1)` of a homomorphism `f`. -/

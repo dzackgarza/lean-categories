@@ -7,6 +7,7 @@ module
 public import LeanCategories.Catalogue.Semantics.Limits.Registration
 public import Mathlib.CategoryTheory.Limits.FintypeCat
 public meta import LeanCategories.Catalogue.Registry.Semantic
+public meta import LeanCategories.Catalogue.Semantics.Limits.Registration
 
 @[expose] public section
 
