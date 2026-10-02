@@ -11,6 +11,7 @@ public import LeanCategories.Catalogue.Semantics.Modules.Rank
 public import Mathlib.Algebra.Category.Grp.Adjunctions
 public import Mathlib.CategoryTheory.Conj
 public import Mathlib.GroupTheory.GroupAction.Basic
+public import LeanCategories.Catalogue.Semantics.Algebra.Units
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.ConstructorCatalogue
 public meta import LeanCategories.Catalogue.Semantics.Algebra.Catalogue.Magmas
@@ -31,7 +32,10 @@ what is registered there later, with no declaration of their own.
 
 * **Units.** `(−)ˣ : Mon ⥤ Grp` (Mathlib `MonCat.units`), right adjoint to the forgetful functor
   `Grp ⥤ Mon` (Mathlib `GrpCat.forget₂MonAdj`); the counit is the inclusion `Mˣ ↪ M`. The set
-  `Mˣ` of the element calculus (`Algebra.Units.units`) is the underlying set of this group.
+  `Mˣ` of the element calculus (`Algebra.Units.units`, row `obj.sets.units`) is the underlying
+  set of this group and its `⁻¹` (`Algebra.Units.inverse`) is the group's inversion
+  (`units_underlying`, `units_inverse`). The registry cannot yet relate an object row to a functor
+  value, so this comparison is a declaration, not a row (`COMPLAINTS.md`).
 * **Automorphisms.** For every category `C`, `Aut : Core(C) ⥤ Grp`, `X ↦ Aut(X)` with
   `g h = h ≫ g` (Mathlib `Aut`), and an isomorphism `e : X ≅ Y` acting by conjugation
   `a ↦ e⁻¹ ≫ a ≫ e` (Mathlib `Aut.autMulEquivOfIso`). It is defined on the core: a morphism that is
@@ -44,10 +48,10 @@ what is registered there later, with no declaration of their own.
   `{g ∈ Aut(X) | U(g) x = x}` (`mem_range_stabilizerInclusion_iff`); for `U = 𝟭 Sets` it is Mathlib's
   `MulAction.stabilizer` of `x` in `Perm(X) ≅ Aut(X)` (`stabilizer_sets`). So
   `Stab : Core(Elements(U)) ⥤ Subobjects(Grp)`, with ambient group `Aut(X)`
-  (`stabilizersCodomainIso`). The stabilizer of `x` in a group `G` acting through
-  `ρ : G → Aut(X)`, or in a subgroup `H ≤ Aut(X)`, is the pullback `ρ*(Stab(X, x))` in
-  `Subobjects(Grp)` (Mathlib `Subobject.pullback`): a subgroup by construction, with no separate
-  stabilizer for each action.
+  (`stabilizersCodomainIso`). For a group `G` acting on a set `X`, with action map
+  `ρ : G →* Perm(X) ≅ Aut(X)`, Mathlib's `MulAction.stabilizer G x` is the preimage
+  `ρ⁻¹(Stab(X, x))` (`Subgroup.comap`, the pullback of the mono `Stab(X, x) ↪ Aut(X)` along `ρ` in
+  `Grp`) (`stabilizer_action`).
 
 Registered here: `(−)ˣ` with its adjunction, and the `Aut`/`End` functors with their units
 comparison on `Core(Sets)` (symmetric groups), `Core(Grp)` (automorphism groups of groups) and
@@ -170,6 +174,31 @@ theorem stabilizer_sets (p : (𝟭 (Type u)).Elements) :
   · intro hσ
     refine ⟨Aut.mulEquivPerm.symm σ, (mem_range_stabilizerInclusion_iff _ p _).mpr hσ, ?_⟩
     simp
+
+/-- The action map `G →* Aut(X)` of a group action on a set: `g ↦ (x ↦ g • x)`. -/
+def actionHom (G : Type*) [Group G] (X : Type u) [MulAction G X] : G →* Aut X :=
+  Aut.mulEquivPerm.symm.toMonoidHom.comp (MulAction.toPermHom G X)
+
+/-- The stabilizer of `x` under a group action is the preimage of `Stab(X, x) ≤ Aut(X)` along the
+action map. -/
+theorem stabilizer_action (G : Type*) [Group G] {X : Type u} [MulAction G X] (x : X) :
+    MulAction.stabilizer G x =
+      (stabilizerInclusion (𝟭 (Type u)) ((𝟭 (Type u)).elementsMk X x)).range.comap
+        (actionHom G X) := by
+  ext g
+  rw [Subgroup.mem_comap, MulAction.mem_stabilizer_iff]
+  exact (mem_range_stabilizerInclusion_iff (𝟭 (Type u)) ((𝟭 (Type u)).elementsMk X x)
+    (actionHom G X g)).symm
+
+/-- The set `Mˣ` of the element calculus is the underlying set of the group `(−)ˣ(M)`. -/
+theorem units_underlying (M : Type) [Monoid M] :
+    (forget GrpCat).obj (MonCat.units.obj (MonCat.of M)) = Algebra.Units.units M :=
+  rfl
+
+/-- The `⁻¹` of the element calculus on `Mˣ` is the inversion of the group `(−)ˣ(M)`. -/
+theorem units_inverse (M : Type) [Monoid M] (u : MonCat.units.obj (MonCat.of M)) :
+    ConcreteCategory.hom (C := Type) (Algebra.Units.inverse M) u = u⁻¹ :=
+  rfl
 
 /-! Separating examples: a stabilizer is a proper subgroup in general, and contains `1`. -/
 

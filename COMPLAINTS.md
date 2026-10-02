@@ -345,6 +345,30 @@ does not justify weakening a dependent theorem or starting unrelated work.
   for constructions natural on `Core(C)` that are not pulled back along structural functors, or
   a category-generic functor row. The rows here stay as they are.
 
+### An object row cannot be identified with a functor value (`Units` and `(−)ˣ`)
+
+- **Need:** LC-16 places `⁻¹` on `Mˣ` as structure of the group `(−)ˣ(M)`, a value of the
+  registered functor `fun.monoids.units : Monoids → Groups` (`MonCat.units`). The element calculus
+  has a second presentation of the same set: the object row `obj.sets.units`
+  (`Algebra.Units.units M`, surface name `Units`) with `mor.sets.units_inverse` as a morphism of
+  `Sets`. The two must be stated to be one object with one inversion.
+- **Evidence:** `Automorphisms.units_underlying` (`(forget Grp)((−)ˣ(M)) = Units.units M`) and
+  `Automorphisms.units_inverse` (`Units.inverse M u = u⁻¹` in the group), both `rfl`. Neither can
+  be cited by a row: `ObjectEntry.refines` relates an object only to another object row along a
+  structural route, `CellEntry` relates composites of functors, and no entry relates an object
+  row whose declaration takes a Lean type `M` with `[Monoid M]` to the value of a functor at an
+  object of `Monoids`.
+- **Gap and impact:** the comparison is a proved declaration but not a registry fact; a consumer
+  of the registry sees `Units` (an object of `Sets`, parameterized by a Lean type) and the method
+  `units` (on `Monoids`) without a row saying they denote the same set. The surface names differ
+  only in case; both denote `Mˣ`.
+- **Coverage:** `Registry/Entry.lean` (`ObjectEntry`, `ObjectRefinement`, `CellEntry`). The
+  kernel and language were not read (LC-17).
+- **Repair link:** registry owner (orchestrator, plan node `gov-registry-gates`): an entry citing
+  an identification of an object row with a functor value (or object rows parameterized by objects
+  of a registered category). Resolved when `obj.sets.units` cites `units_underlying` and
+  `mor.sets.units_inverse` cites `units_inverse`.
+
 ## Workflow papercuts
 
 ### README tree and issue #53 cite registry paths that no longer exist
