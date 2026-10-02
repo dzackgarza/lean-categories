@@ -674,9 +674,13 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
   2. **Units of monoids outside the covered families.** `invertibleEvidence` (through
      `isUnitEvidence`) covers groups, square
      matrices over a commutative ring through the determinant (first-row expansion, so `n!`
-     terms: practical to about `6 × 6`), division rings, `ℤ`, `ℕ`, `ℤ/n` (`n ≠ 0`) and products,
-     powers and negatives of units. It refuses, although they may be units: elements of
-     polynomial rings (`Polynomial.isUnit_iff` over a domain), products `M × N`
+     terms: practical to about `6 × 6`), division rings, `ℤ`, `ℕ`, `ℤ/n` (`n ≠ 0`), constants
+     `C a` of a polynomial ring `R[x]` (among them the catalogue's numerals of `R[x]`, through
+     `Polynomial.isUnit_C`; added 2026-10-02, branch `formal/polynomial-numeral-units`, after the
+     numerals `3 ∈ ℚ[x]`, `2 ∈ 𝔽₅[x]` were found refused) and products, powers and negatives of
+     units. It refuses, although they may be units: non-constant elements of polynomial rings
+     (units only when `R` has nilpotents, `1 + 2x ∈ (ℤ/4)[x]`; `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`;
+     over a domain every unit is constant, `Polynomial.isUnit_iff`), products `M × N`
      (`Prod.isUnit_iff`), `Π`-types, rings of integers such as `ℤ[i]`, and matrices given other
      than by entries (`Matrix.of`/`!![…]`), `1`, products, transposes or diagonals. Whether an
      element of an arbitrary closed monoid is a unit is not decidable in general; each further

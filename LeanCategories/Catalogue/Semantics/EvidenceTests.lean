@@ -187,6 +187,53 @@ run_elab do
 
 end ZModNumerals
 
+/-! ### The numerals of a polynomial ring
+
+The numeral `k` of the ring `R[x]` is the image of `k` under the initial ring map `ℤ → R[x]`
+(LC-15), which is the constant `C k` of the numeral `k` of `R`, `C : R → R[x]` being a ring map.
+A constant `C a` is a unit of `R[x]` exactly when `a` is a unit of `R` (Mathlib
+`Polynomial.isUnit_C`): over a field `K`, the numeral `k` of `K[x]` is a unit iff `k ≠ 0` in `K`.
+The evidence runs on the numeral as a consumer forms it. -/
+
+section PolynomialNumerals
+
+open Lean Meta Elab Term
+
+/-- The numeral `k` of the ring `R[x]`, evaluated at the point of `1`. -/
+meta def polynomialNumeralValue (R : Term) (k : Nat) : TermElabM Term :=
+  `(CategoryTheory.ConcreteCategory.hom (C := Type)
+      (NamedRings.ringNumeral (Polynomials.ringPolynomials $R) $(quote k))
+      (⟨0, Nat.one_pos⟩ : Foundation.Objects.fin 1))
+
+/-- The numerals of `K[x]` that are units: `3, 1 ∈ ℚ[x]`, `2 ∈ ℝ[x]`, `2 ∈ 𝔽₅[x]`,
+`7 = 2 ∈ 𝔽₅[x]`, `1 ∈ 𝔽₂[x]`. -/
+meta def polynomialNumeralUnits : TermElabM (List (Term × Nat)) := do
+  return [(← `(ℚ), 3), (← `(ℚ), 1), (← `(ℝ), 2), (← `(ZMod 5), 2), (← `(ZMod 5), 7),
+    (← `(ZMod 2), 1)]
+
+/-- The numerals that are not: `0 ∈ ℚ[x]`, `5 = 0`, `10 = 0 ∈ 𝔽₅[x]`, `2 = 0 ∈ 𝔽₂[x]`, and,
+over a ring that is not a field, `2 ∈ ℤ[x]` (`2` is not a unit of `ℤ`). -/
+meta def polynomialNumeralNonunits : TermElabM (List (Term × Nat)) := do
+  return [(← `(ℚ), 0), (← `(ZMod 5), 5), (← `(ZMod 5), 10), (← `(ZMod 2), 2), (← `(ℤ), 2)]
+
+#guard_msgs in
+run_elab do
+  for (R, k) in ← polynomialNumeralUnits do
+    expectEstablished Units.invertibleEvidence [← `(Invertible $(← polynomialNumeralValue R k))]
+    expectEstablished Units.isUnitEvidence [← `(IsUnit $(← polynomialNumeralValue R k))]
+
+#guard_msgs in
+run_elab do
+  for (R, k) in ← polynomialNumeralNonunits do
+    expectRefused Units.invertibleEvidence [← `(Invertible $(← polynomialNumeralValue R k))]
+    expectRefused Units.isUnitEvidence [← `(IsUnit $(← polynomialNumeralValue R k))]
+  -- Non-constant polynomials over a field are not units.
+  expectRefused Units.invertibleEvidence
+    [← `(Invertible (Polynomial.X : Polynomial ℚ)),
+      ← `(Invertible (Polynomial.X + 1 : Polynomial (ZMod 5)))]
+
+end PolynomialNumerals
+
 /-! ## `R[x] ∖ {0} ↪ R[x]`: `p ≠ 0` -/
 
 #guard_msgs in
