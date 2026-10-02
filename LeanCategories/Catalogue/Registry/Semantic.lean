@@ -1954,8 +1954,11 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
     let constant ← mkConstWithFreshMVarLevels admission
     let (_, _, result) ← forallMetaTelescopeReducing (← inferType constant)
     let (objArgs, _, _) ← forallMetaTelescopeReducing (← inferType declaration)
-    unless ← withTransparency .all <|
-        isDefEq (← whnfR result).appArg! (mkAppN declaration objArgs) do
+    let target := (← whnfR result).appArg!.headBeta
+    -- Admission belongs to the named object, not to any object with the same carrier.
+    -- In particular, `Maps` and `Vec` remain different even though both may be function types.
+    unless target.isAppOf e.declaration &&
+        (← withTransparency .reducible <| isDefEq target (mkAppN declaration objArgs)) do
       throwError "object {e.id.raw}: the admission {admission} does not land in it"
     -- The hypotheses follow the element, the first explicit binder that is not a parameter of
     -- the object. Each is a proposition, or data with at most one value (the inverse of a unit,
@@ -2247,11 +2250,14 @@ def validateBinder (state : SemanticState) (e : BinderEntry) : MetaM Unit := do
       unless ← withTransparency .all <| isDefEq result (← categoryCarrierInstance category) do
         throwError "binder {e.id.raw}: {e.domain} does not return an object of {e.category.raw}"
       return mkAppN domain params
-    -- The source is a registered object with an admission and evidence, admitting maps `D → Y`.
+    -- Identify the actual named source before comparing its parameters: unfolding carriers
+    -- would let a vector object borrow the admission of `Maps` (Foundation/Maps.lean).
+    -- The source's own admission and evidence must admit maps `D → Y`.
     let candidates := state.objects.filter fun o =>
       o.category == e.category && o.admission.isSome && o.evidence.isSome
     let mut found := false
     for o in candidates do
+      unless source.headBeta.isAppOf o.declaration do continue
       let some admission := o.admission | continue
       let constant ← mkConstWithFreshMVarLevels admission
       let (args, infos, result) ← forallMetaTelescopeReducing (← inferType constant)
@@ -2263,7 +2269,8 @@ def validateBinder (state : SemanticState) (e : BinderEntry) : MetaM Unit := do
       let element? := (List.range args.size).find? fun i =>
         infos[i]!.isExplicit && (target'.findMVar? (· == args[i]!.mvarId!)).isNone
       let some i := element? | continue
-      unless ← withTransparency .all <| isDefEq result.appArg! source do continue
+      unless target'.headBeta.isAppOf o.declaration do continue
+      unless ← withTransparency .reducible <| isDefEq target' source do continue
       let maps ← mkArrow D target
       unless ← withTransparency .all <| isDefEq (← inferType args[i]!) maps do
         throwError "binder {e.id.raw}: the object {o.id.raw} that {e.operation} is defined on \

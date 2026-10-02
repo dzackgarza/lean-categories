@@ -32,6 +32,39 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Mathematical issues
 
+### Named admission owners must survive carrier equality (B0 binders, LC-18)
+
+- **Need:** a binder's source object is admitted by that named object's own
+  admission, with its parameters retained. An equality of unfolded carriers
+  cannot transfer another object's admission or evidence.
+- **Evidence:** independent mathematical review of candidate `6f5167e` found
+  `validateBinder` compared an admission target with the operation source at
+  transparency `.all`. `LinearAlgebra.vectors ℝ 1` and `Foundation.Maps.maps
+  (Fin 1) ℝ` both unfold to `Fin 1 → ℝ`, although Maps.lean explicitly preserves
+  their named distinction. A coordinate operation on vectors could therefore
+  borrow `Maps.admit` despite the vector row having no admission. The same
+  unrestricted equality in `validateObject` could register an admission at the
+  wrong named owner.
+- **Repair validated (2026-10-02):** admission registration and binder selection now check
+  the registered declaration head before matching parameters at reducible
+  transparency. Binder selection checks both the operation's source owner and
+  the admission's target owner. No carrier equality or declaration order
+  substitutes for either owner check.
+- **Coverage:** source comparison uses Maps.lean and the existing BinderEntry
+  requirement. Live corpus searches `Lean Meta withTransparency reducible
+  isDefEq` and `Expr.isAppOf` located Lean's existing expression recognizers;
+  the correction uses those generic recognizers, not a Maps/Vec-specific case.
+  `Registry.AdmissionOwnerProbes` contains a genuine Maps positive, a vector
+  positive with its own hypothetical admission, and negatives for borrowing or
+  registering a Maps admission on Vec. Lean 4.33.0 built the new probes with
+  exit 0. Existing `Registry.BinderProbes`, `Registry.ConstantsProbes`,
+  `Semantics.BinderTests`, `Semantics.EvidenceTests`, and
+  `Semantics.TotalityProbes` also rebuilt successfully against the owner checks.
+  Initial test-fixture record-layout and namespace-close errors were diagnosed
+  and corrected before the final passing build.
+- **Repair link:** B0 `b0-binders` and LC-18. These owner-boundary cases are
+  resolved; the checks make no claim of complete B0 or accepted-release status.
+
 ### Catalogue rows in violation of LC-13, LC-14 and LC-15
 
 - **Need:** every catalogue construction takes its object in the category that carries its
