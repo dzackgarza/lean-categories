@@ -372,6 +372,12 @@ does not justify weakening a dependent theorem or starting unrelated work.
   schema has no way to say that a functor `Core(C) ⥤ D` is defined for every `C` without being
   inherited along forgetful functors, and the registry has no category variable, so `Aut` is
   registered once per category rather than once.
+- **Independent construction assessment (2026-10-02):** `MethodShape.isoInvariant` names
+  a functor on `Core(owner)` but does not distinguish a construction intrinsic to its category
+  from an invariant inherited along a structural route. The required capability is a generic
+  presentation of `Aut_C(X)` retaining the selected category `C`, and of `Stab_U(X,x)` retaining
+  the selected functor `U`; forgetting structure must not silently change either construction.
+  This is a presentation obligation, not missing group structure or a missing comparison theorem.
 - **Coverage:** `Registry/Entry.lean` (`MethodEntry`, `MethodShape`), `Registry/Semantic.lean`
   (`validateMethodEntry`, `validateMethodLevel`); the kernel's resolution was not read (LC-17).
 - **Repair link:** registry owner (orchestrator, plan node `gov-registry-gates`): a presentation
@@ -395,6 +401,12 @@ does not justify weakening a dependent theorem or starting unrelated work.
   of the registry sees `Units` (an object of `Sets`, parameterized by a Lean type) and the method
   `units` (on `Monoids`) without a row saying they denote the same set. The surface names differ
   only in case; both denote `Mˣ`.
+- **Independent construction assessment (2026-10-02):** the required capability is to
+  expose the existing identification of the set `Mˣ` with the underlying set of the group
+  `(−)ˣ(M)`, and its inversion with group inversion, at the same typed monoid parameter.
+  An object-to-object refinement cannot express this functor-value comparison. The existing
+  generic units functor and proofs remain the mathematical owners; duplicate specialized
+  constructions or aliases would not discharge the obligation.
 - **Coverage:** `Registry/Entry.lean` (`ObjectEntry`, `ObjectRefinement`, `CellEntry`). The
   kernel and language were not read (LC-17).
 - **Repair link:** registry owner (orchestrator, plan node `gov-registry-gates`): an entry citing
