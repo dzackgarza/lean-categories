@@ -12,6 +12,7 @@ public import LeanCategories.Catalogue.Semantics.Algebra.PortComparison
 public import LeanCategories.Catalogue.Semantics.Algebra.Ports
 public import LeanCategories.Catalogue.Semantics.Algebra.Properties
 public import LeanCategories.Catalogue.Semantics.Algebra.Subgroups
+public import LeanCategories.Catalogue.Semantics.Algebra.Automorphisms
 public import LeanCategories.Catalogue.Semantics.ConstructorCatalogue
 public import LeanCategories.Catalogue.Semantics.ConstructorRegistration
 public import LeanCategories.Catalogue.Semantics.Exceptional.Catalogue
