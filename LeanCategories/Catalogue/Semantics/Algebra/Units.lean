@@ -8,6 +8,7 @@ public import LeanCategories.Catalogue.Semantics.Foundation.PowerSets
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.Data.ZMod.Basic
+public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.Tactic.NormNum
 public import Mathlib.Tactic.Positivity
@@ -112,6 +113,29 @@ meta def closedArithmeticEvidence : TacticM Unit :=
      do evalTactic (← `(tactic| norm_num [Complex.ext_iff])),
      do evalTactic (← `(tactic| decide))]
 
+open Lean Meta Elab Tactic in
+/-- Evaluate the catalogue's numerals in the main goal. The numeral `k` of a ring or semiring `R`
+is the image of `k` under the map out of the initial object, `ℤ → R` or `ℕ → R`
+(`NamedRings.ringNumeral`, `Semirings.semiringNumeral`, LC-15), an element of the underlying set
+of the object `RingCat.of R` of its category, which is `R` (the identifications of the named rings
+with their sets are identities). The catalogue's declarations are unfolded, the underlying set of
+`RingCat.of R` is read as `R`, and the image of `k` is rewritten to the cast `(k : R)`
+(`eq_intCast`, `eq_natCast`), a numeral of `R` that arithmetic, reduction modulo the
+characteristic and degree computation read. -/
+meta def evaluateNumerals : TacticM Unit := do
+  let goal ← getMainGoal
+  let target ← instantiateMVars (← goal.getType)
+  let expanded ← deltaExpand target fun n => n.getRoot == `CasCatalogue
+  let carriers := [``RingCat.carrier, ``SemiRingCat.carrier, ``CommRingCat.carrier,
+    ``CommSemiRingCat.carrier]
+  let read ← Meta.transform expanded (post := fun e => do
+    if carriers.any (e.isAppOfArity · 1) then return .done (← whnfR e)
+    return .continue)
+  replaceMainGoal [← goal.replaceTargetDefEq read]
+  evalTactic (← `(tactic| try simp only [TypeCat.ofHom_apply, ConcreteCategory.comp_apply,
+    eq_intCast, eq_natCast, Int.cast_natCast, Nat.cast_ofNat, Nat.cast_zero, Nat.cast_one,
+    Int.cast_ofNat, Int.cast_zero, Int.cast_one]))
+
 open Lean Elab Tactic in
 /-- Expand the determinants of matrices of closed entries in the main goal along their first row
 (`Matrix.det_succ_row_zero`), down to the ring's arithmetic. -/
@@ -127,9 +151,10 @@ meta def expandDeterminant : TacticM Unit := do
 open Lean Meta Elab Tactic in
 /-- The modulus `n` when the monoid of the main goal `IsUnit x` or `Invertible x` is `ℤ/n`.
 
-The monoid is read from the goal's carrier, never from the element: an element of `ℤ/n` may be
-presented as a point `⟨k, _⟩ : Fin n` (`ZMod n` is `Fin n` by definition for `n ≠ 0`, Mathlib
-`ZMod`; this is the catalogue's numeral of `ℤ/n`), whose type does not name `n` as a modulus. -/
+The case analysis is by the structure of the monoid, so the modulus is read from the goal's
+carrier, never from the element: the element's own type need not name `ℤ/n` (the numeral `k` of
+the ring `ℤ/n` lies in the underlying set of `RingCat.of (ZMod n)`; a Lean term may also reduce to
+`⟨k, _⟩ : Fin n`, `ZMod n` being `Fin n` by definition for `n ≠ 0`). -/
 meta def zmodModulus : TacticM Term := do
   let some carrier := (← getMainTarget).consumeMData.getAppArgs[0]?
     | throwError "not a statement about an element of a monoid"
@@ -147,8 +172,7 @@ open Lean Elab Tactic in
 * in a division ring (`ℚ`, `ℝ`, `ℂ`) the units are the nonzero elements (`isUnit_iff_ne_zero`);
 * the units of `ℤ` are `±1` (`Int.isUnit_iff`), of `ℕ` only `1` (`Nat.isUnit_iff`);
 * the units of `ℤ/n`, `n ≠ 0`, are the classes coprime to `n` (`zmod_isUnit_iff_coprime_val`),
-  however the class is presented: `(k : ZMod n)`, or the point `⟨k, _⟩` of `Fin n` that
-  `ZMod n` is for `n ≠ 0` (the catalogue's numeral of `ℤ/n`);
+  the modulus read from the monoid (`zmodModulus`), however the class is written;
 * in any monoid, `1`, a product of units, a power of a unit and the negative of a unit are units.
 
 It fails on an element that is not a unit (`2 ∈ ℤ`, `0 ∈ ℚ`, a singular matrix). -/
@@ -175,8 +199,8 @@ where
       evalTactic (← `(tactic| rw [Nat.isUnit_iff]))
       closedArithmeticEvidence,
      do
-      -- Applied at the modulus of the goal's monoid, not rewritten: the element may be a point
-      -- of `Fin n`, which matches `x : ZMod n` only once `n` is known (`zmodModulus`).
+      -- Applied at the modulus of the goal's monoid, not rewritten: the element's type need not
+      -- name `ZMod n`, and matches `x : ZMod n` only once `n` is known (`zmodModulus`).
       let n ← zmodModulus
       evalTactic (← `(tactic|
         refine (@CasCatalogue.Algebra.Units.zmod_isUnit_iff_coprime_val $n _ _).mpr ?_))

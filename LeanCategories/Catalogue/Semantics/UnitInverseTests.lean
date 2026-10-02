@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Catalogue.Semantics.Algebra.Units
 public import LeanCategories.Catalogue.Semantics.Algebra.NamedRings
+public import LeanCategories.Catalogue.Semantics.Algebra.NumberSystems
 public import LeanCategories.Catalogue.Semantics.Limits.Registration
 public import LeanCategories.Catalogue.Semantics.Foundation.Morphisms
 public meta import LeanCategories.Catalogue.Semantics.Algebra.Units
@@ -30,7 +31,7 @@ namespace CasCatalogue.UnitInverseTests
 open CategoryTheory Limits
 open CasCatalogue.Algebra.Units CasCatalogue.Algebra.NamedRings
 open CasCatalogue.Limits.Registration CasCatalogue.Foundation.Objects
-open CasCatalogue.Foundation.Morphisms
+open CasCatalogue.Foundation.Morphisms CasCatalogue.Algebra.NumberSystems
 
 /-- The element `u⁻¹ ∈ M` of a unit `u : 1 → Mˣ`: `1 → Mˣ → Mˣ ↪ M`. -/
 abbrev inverseElement (M : Type) [Monoid M] (u : fin 1 ⟶ units M) :
@@ -100,43 +101,62 @@ example : inverseElement (ZMod 7) (admit (ZMod 7) (2 * 4) (by run_tac invertible
     element (1 : ZMod 7) := by
   decide +kernel
 
-/-! ## The registered numerals of `ℤ/n`
+/-! ## The numerals of `ℤ/n`
 
-A consumer forms the numeral `k ∈ ℤ/n` (`obj.sets.integers_mod`, `n ≠ 0`) with the registered
-numeral `num.sets.fin`: `ℤ/n` is `Fin n` by definition (Mathlib `ZMod`), so `finPoint _ k _` at
-`1 ⟶ ℤ/n` takes `n = m + 1` and names the point `⟨k, _⟩ : Fin (m + 1)`. That element, not the
-`OfNat` literal `(k : ZMod n)`, is the one admitted here. -/
+The numeral `k ∈ ℤ/n` is `ringNumeral (ringIntegersMod n) k`, the image of `k` under the initial
+ring map `ℤ → ℤ/n` (LC-15). A position `k` of `Fin n` names an element of `ℤ/n` only through
+`Fin n ↪ ℤ/n` (`finIntegersMod`), which carries it to the numeral `k`
+(`finPoint_finIntegersMod`). -/
 
-/-- The registered numeral `u = finPoint _ k _` of `ℤ/n`, stated as an element `1 → ℤ/n` (its
-elaborated type is `1 → Fin (m + 1)`, the definition of `ℤ/n`). -/
-abbrev zmodNumeral (n : ℕ) (u : fin 1 ⟶ integersMod n) : fin 1 ⟶ integersMod n := u
+/-- The numeral `k` of `ℤ/n`, an element `1 → ℤ/n`. -/
+abbrev zmodNumeral (n k : ℕ) : fin 1 ⟶ integersMod n := ringNumeral (ringIntegersMod n) k
 
-/-- The value in `ℤ/n` of the registered numeral `u`, at the point of `1`: `⟨k, _⟩`. -/
-abbrev zmodNumeralValue (n : ℕ) (u : fin 1 ⟶ integersMod n) : integersMod n :=
-  ConcreteCategory.hom (C := Type) u ⟨0, Nat.one_pos⟩
+/-- The value in `ℤ/n` of the numeral `k`, at the point of `1`. -/
+abbrev zmodNumeralValue (n k : ℕ) : integersMod n :=
+  ConcreteCategory.hom (C := Type) (zmodNumeral n k) ⟨0, Nat.one_pos⟩
 
-/-- `2⁻¹ = 3` in `ℤ/5`, both the registered numerals of `ℤ/5` (`2 · 3 = 6 = 5 + 1`). -/
+/-- `2⁻¹ = 3` in `ℤ/5` (`2 · 3 = 6 = 5 + 1`), at the numerals of `ℤ/5`. -/
 example : inverseElement (ZMod 5)
-    (admit (ZMod 5) (zmodNumeralValue 5 (finPoint _ 2 (by decide)))
-      (by run_tac invertibleEvidence)) = zmodNumeral 5 (finPoint _ 3 (by decide)) := by
+    (admit (ZMod 5) (zmodNumeralValue 5 2) (by run_tac invertibleEvidence)) =
+      zmodNumeral 5 3 := by
   decide +kernel
 
-/-- `2⁻¹ ≠ 2` in `ℤ/5`, at the registered numerals. -/
+/-- `2⁻¹ ≠ 2` in `ℤ/5`, at the numerals. -/
 example : inverseElement (ZMod 5)
-    (admit (ZMod 5) (zmodNumeralValue 5 (finPoint _ 2 (by decide)))
-      (by run_tac invertibleEvidence)) ≠ zmodNumeral 5 (finPoint _ 2 (by decide)) := by
+    (admit (ZMod 5) (zmodNumeralValue 5 2) (by run_tac invertibleEvidence)) ≠
+      zmodNumeral 5 2 := by
   decide +kernel
 
-/-- `7⁻¹ = 7` in `ℤ/12` (`7 · 7 = 49 = 4 · 12 + 1`), at the registered numerals. -/
+/-- `7⁻¹ = 7` in `ℤ/12` (`7 · 7 = 49 = 4 · 12 + 1`), at the numerals. -/
 example : inverseElement (ZMod 12)
-    (admit (ZMod 12) (zmodNumeralValue 12 (finPoint _ 7 (by decide)))
-      (by run_tac invertibleEvidence)) = zmodNumeral 12 (finPoint _ 7 (by decide)) := by
+    (admit (ZMod 12) (zmodNumeralValue 12 7) (by run_tac invertibleEvidence)) =
+      zmodNumeral 12 7 := by
   decide +kernel
 
-/-- `1 / 7 = 7` in `ℤ/12`: the numeral `1` divided by the unit `7`, both registered numerals. -/
-example : divideElement (ZMod 12) (zmodNumeral 12 (finPoint _ 1 (by decide)))
-    (admit (ZMod 12) (zmodNumeralValue 12 (finPoint _ 7 (by decide)))
-      (by run_tac invertibleEvidence)) = zmodNumeral 12 (finPoint _ 7 (by decide)) := by
+/-- `1 / 7 = 7` in `ℤ/12`: the numeral `1` divided by the unit `7`. -/
+example : divideElement (ZMod 12) (zmodNumeral 12 1)
+    (admit (ZMod 12) (zmodNumeralValue 12 7) (by run_tac invertibleEvidence)) =
+      zmodNumeral 12 7 := by
   decide +kernel
+
+/-- `12⁻¹ = 3` in `ℤ/7`: the numeral `12` is `5`, and `5 · 3 = 15 = 2 · 7 + 1`. -/
+example : inverseElement (ZMod 7)
+    (admit (ZMod 7) (zmodNumeralValue 7 12) (by run_tac invertibleEvidence)) =
+      zmodNumeral 7 3 := by
+  decide +kernel
+
+/-- The position `2` of `Fin 5`, carried into `ℤ/5` by `Fin 5 ↪ ℤ/5`, has inverse the numeral
+`3`: the transport makes it the numeral `2`. -/
+example : inverseElement (ZMod 5)
+    (admit (ZMod 5)
+      (ConcreteCategory.hom (C := Type) (finPoint 5 2 (by decide) ≫ finIntegersMod 5)
+        ⟨0, Nat.one_pos⟩) (by run_tac invertibleEvidence)) =
+      zmodNumeral 5 3 := by
+  decide +kernel
+
+/-- The transport of the position `k` is the numeral `k`, so admitting either gives the same
+unit of `ℤ/5`. -/
+example : finPoint 5 2 (by decide) ≫ finIntegersMod 5 = zmodNumeral 5 2 :=
+  finPoint_finIntegersMod 5 2 _
 
 end CasCatalogue.UnitInverseTests
