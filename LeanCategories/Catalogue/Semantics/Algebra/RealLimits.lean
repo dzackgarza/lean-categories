@@ -41,8 +41,8 @@ where `a` lies in `ℝ̄ = ℝ ⊔ {±∞}`:
 
 Division by the bound variable of the first row needs `t ∈ ℝˣ`. The inclusion
 `ℝ ∖ {a} ↪ ℝˣ` exists exactly when `a = 0` (`puncturedUnits`, a monomorphism over the
-obligation `a = 0`; not a registered inclusion, since an inclusion row relates its objects at the
-declaration's own parameters): for `a ≠ 0`, `0 ∈ ℝ ∖ {a}` is not a unit, and a body
+obligation `a = 0`; its registered dependent inclusion retains this obligation and the
+selected multiplicative monoid of the reals): for `a ≠ 0`, `0 ∈ ℝ ∖ {a}` is not a unit, and a body
 dividing by `t` is not a map on `ℝ ∖ {a}`; a body dividing by `t - a` divides by a unit only once
 `t - a` is (the map `ℝ ∖ {a} → ℝˣ`, `t ↦ t - a`, which is again an inclusion over the fibre `a`).
 -/
@@ -487,6 +487,13 @@ normalized_registry .object
 normalized_registry .morphism
   { id := ⟨"mor.sets.punctured_units"⟩, category := CategoryId.sets, name := "puncturedUnits"
     declaration := `CasCatalogue.Algebra.RealLimits.puncturedUnits }
+
+normalized_registry .inclusion
+  { id := ⟨"incl.sets.punctured_units"⟩, category := CategoryId.sets
+    sub := ⟨"obj.sets.punctured_line"⟩, super := ⟨"obj.sets.units"⟩
+    parameterization := .dependent
+    declaration := `CasCatalogue.Algebra.RealLimits.puncturedUnits
+    mono := `CasCatalogue.Algebra.RealLimits.puncturedUnits_mono }
 
 normalized_registry .object
   { id := ⟨"obj.sets.convergent_maps"⟩, category := CategoryId.sets, name := "Convergent"

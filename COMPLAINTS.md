@@ -928,3 +928,14 @@ multiplicative monoid; its existing factorization theorem identifies the composi
 with the units inclusion as the punctured-domain inclusion into the reals. Thus
 binder body formation has the actual denominator route, independently of the
 subsequent convergence proof procedure. No binder-specific schema is added.
+
+Independent review further distinguished a registered arrow from the required
+public inclusion interface. `InclusionEntry.parameterization` now has a generic
+dependent mode: the typed arrow retains each endpoint family's actual arguments,
+selected fixed structures and conditional obligations. Validation checks its
+registered category and endpoint family heads under rigid locals, and applies the
+monomorphism proof at exactly the same dependent telescope. The shared mode stays
+the default for existing inclusions. `incl.sets.punctured_units` now cites the
+existing map and mono theorem using dependent mode. Source probes reject treating
+it as a shared-parameter family and reject a mono proof at different parameters.
+This repairs the public inclusion interface without a binder-specific rule.

@@ -274,14 +274,25 @@ structure BinderEntry where
   domain : Lean.Name
   deriving Repr
 
+/-- How an inclusion's dependent signature selects its endpoint families. -/
+inductive InclusionParameterization
+  /-- Both families receive the full common parameter telescope. -/
+  | shared
+  /-- The declared arrow supplies each endpoint's actual parameters and obligations. -/
+  | dependent
+  deriving DecidableEq, Repr, Inhabited
+
 /-- A registered inclusion of named objects of one category, `sub ⊆ super`: a monomorphism
 `declaration : ∀ params, sub params ⟶ super params` with `mono : ∀ params, Mono (declaration
-params)`, at the same parameters (`ℤ ⊆ ℚ ⊆ ℝ ⊆ ℂ` in `Sets`, by the casts). -/
+params)`. Shared parameterization applies both families to the common telescope.
+Dependent parameterization retains the actual endpoint applications in the declaration, including
+conditional proof binders and selected fixed structures. -/
 structure InclusionEntry where
   id : InclusionId
   category : CategoryId
   sub : ObjectId
   super : ObjectId
+  parameterization : InclusionParameterization := .shared
   declaration : Lean.Name
   mono : Lean.Name
   deriving Repr

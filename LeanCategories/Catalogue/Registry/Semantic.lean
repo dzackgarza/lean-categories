@@ -2177,9 +2177,10 @@ def validateMorphism (state : SemanticState) (e : MorphismEntry) : MetaM Unit :=
   unless ← withTransparency .all <| isDefEq type (← categoryHomType category) do
     throwError "morphism {e.id.raw}: {e.declaration} is not a morphism of {e.category.raw}"
 
-/-- An inclusion row's `declaration : ∀ params, sub params ⟶ super params` is a morphism of its
-category between its two registered objects there, at the same parameters, and `mono` proves it a
-monomorphism at every parameter. -/
+/-- An inclusion is a morphism between its registered object families in the selected category.
+Shared families use the common telescope; dependent families retain their actual endpoint
+parameters in the arrow signature. The mono proof uses precisely the same rigid parameters
+and obligations as the actual arrow. -/
 def validateInclusion (state : SemanticState) (e : InclusionEntry) : MetaM Unit := do
   let some category := state.categories.find? (·.id == e.category)
     | throwError "inclusion {e.id.raw} names an unregistered category {e.category.raw}"
@@ -2191,27 +2192,27 @@ def validateInclusion (state : SemanticState) (e : InclusionEntry) : MetaM Unit 
     throwError "inclusion {e.id.raw}: {e.sub.raw} and {e.super.raw} are not objects of \
       {e.category.raw}"
   let declaration ← mkConstWithFreshMVarLevels e.declaration
-  let (args, _, type) ← forallMetaTelescopeReducing (← inferType declaration)
-  let subDecl ← mkConstWithFreshMVarLevels sub.declaration
-  let superDecl ← mkConstWithFreshMVarLevels super.declaration
-  let ok ← withTransparency .all do
+  forallTelescopeReducing (← inferType declaration) fun args type => do
     let expected ← categoryHomType category
-    unless ← isDefEq type expected do return false
+    unless ← withTransparency .all <| isDefEq type expected do
+      throwError "inclusion {e.id.raw}: its declaration is not a morphism of its category"
     let type ← instantiateMVars type
-    let #[_, _, x, y] := type.getAppArgs | return false
-    pure ((← isDefEq x (mkAppN subDecl args)) && (← isDefEq y (mkAppN superDecl args)))
-  unless ok do
-    throwError "inclusion {e.id.raw}: {e.declaration} is not a family of morphisms \
-      {sub.declaration} ⟶ {super.declaration} at its parameters"
-  let mono ← mkConstWithFreshMVarLevels e.mono
-  let (monoArgs, _, monoType) ← forallMetaTelescopeReducing (← inferType mono)
-  unless monoArgs.size == args.size do
-    throwError "inclusion {e.id.raw}: {e.mono} does not take the parameters of {e.declaration}"
-  for (a, b) in monoArgs.zip args do discard <| isDefEq a b
-  let monoType ← whnfR (← instantiateMVars monoType)
-  unless monoType.isAppOf ``CategoryTheory.Mono &&
-      (← withTransparency .all <| isDefEq monoType.appArg! (mkAppN declaration args)) do
-    throwError "inclusion {e.id.raw}: {e.mono} does not prove {e.declaration} a monomorphism"
+    let #[_, _, x, y] := type.getAppArgs
+      | throwError "inclusion {e.id.raw}: its declaration is not a morphism"
+    match e.parameterization with
+    | .shared =>
+      let source ← applyObjectParameters e.id.raw sub.declaration args
+      let target ← applyObjectParameters e.id.raw super.declaration args
+      unless ← withTransparency .all <| (isDefEq x source <&&> isDefEq y target) do
+        throwError "inclusion {e.id.raw}: its endpoints do not use the shared parameters"
+    | .dependent =>
+      unless x.headBeta.isAppOf sub.declaration && y.headBeta.isAppOf super.declaration do
+        throwError "inclusion {e.id.raw}: its dependent endpoints are not the named families"
+    let mono ← applyObjectParameters e.id.raw e.mono args
+    let monoType ← whnfR (← inferType mono)
+    unless monoType.isAppOf ``CategoryTheory.Mono &&
+        (← withTransparency .all <| isDefEq monoType.appArg! (mkAppN declaration args)) do
+      throwError "inclusion {e.id.raw}: {e.mono} does not prove its actual arrow monic"
 
 /-- An operation row's `declaration : ∀ X, P ⟶ A` is, at each object `X` of its category, a
 morphism of `Sets` into the set `A` underlying `X`, from `A × A` (arity 2), `A` (arity 1) or a

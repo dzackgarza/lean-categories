@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Catalogue.Semantics.Algebra.Automorphisms
+public import LeanCategories.Catalogue.Semantics.Algebra.RealLimits
 public import LeanCategories.Catalogue.Semantics.Algebra.PolynomialPresentations
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.Algebra.Catalogue.Magmas
@@ -53,6 +54,14 @@ run_meta do
   let expectRefusal (label : String) (operation : MetaM Unit) := do
     let failure ← try operation; pure none catch e => pure (some (← e.toMessageData.toString))
     unless failure.isSome do throwError "accepted {label}"
+  let some conditional := state.inclusions.find? (·.id.raw == "incl.sets.punctured_units")
+    | throwError "missing conditional punctured-units inclusion"
+  validateInclusion state conditional
+  expectRefusal "a conditional inclusion treated as a shared-parameter family" <|
+    validateInclusion state { conditional with parameterization := .shared }
+  expectRefusal "a mono proof at different dependent parameters" <|
+    validateInclusion state
+      { conditional with mono := ``Algebra.RealLimits.realsExtendedReals_mono }
   let some units := state.objects.find? (·.id.raw == "obj.sets.units")
     | throwError "missing units presentation"
   let probe := { units with id := ⟨"obj.probe.units_presentation"⟩, name := "probe units" }
