@@ -111,11 +111,15 @@ meta def closeCoefficientGoals : TacticM Unit := do
     CasCatalogue.Algebra.Units.closedArithmeticEvidence
 
 open Lean Elab Tactic in
-/-- Put a closed polynomial expression in normal form: coefficients reduced modulo the
-characteristic of `ℤ/n`, and the expression expanded into a sum of monomials `c·xᵏ` with like
-terms collected (commutative-ring normalization), so that cancelling leading terms disappear. -/
+/-- Put a closed polynomial expression in normal form: the catalogue's numerals evaluated
+(`Units.evaluateNumerals`), coefficients reduced modulo the characteristic of `ℤ/n`, a constant
+that reduces to `0` or `1` read as that element of `R[x]` (`C 0 = 0`, `C 1 = 1`), and the
+expression expanded into a sum of monomials `c·xᵏ` with like terms collected (commutative-ring
+normalization), so that cancelling and vanishing leading terms disappear. -/
 meta def normalizePolynomial : TacticM Unit := do
+  CasCatalogue.Algebra.Units.evaluateNumerals
   evalTactic (← `(tactic| try reduce_mod_char))
+  evalTactic (← `(tactic| try simp only [map_zero, map_one]))
   evalTactic (← `(tactic| try ring_nf))
 
 open Lean Elab Tactic in
