@@ -59,7 +59,8 @@ run_meta do
      ({ pullback with shape := CategoryId.walkingPair }, "not of the shape"),
      ({ pullback with diagrams := CategoryId.setsPairDiagrams }, "is not an object of"),
      ({ pullback with category := CategoryId.groups }, "are not in"),
-     ({ pullback with diagrams := ⟨"cat.probe.unregistered"⟩ }, "unregistered category of diagrams"),
+     ({ pullback with diagrams := ⟨"cat.probe.unregistered"⟩ },
+        "unregistered category of diagrams"),
      ({ product with
           declaration := `CasCatalogue.Limits.Registration.groupsKernel,
           shape := CategoryId.walkingParallelPair, category := CategoryId.groups },
