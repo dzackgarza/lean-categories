@@ -227,10 +227,27 @@ run_elab do
   for (R, k) in ← polynomialNumeralNonunits do
     expectRefused Units.invertibleEvidence [← `(Invertible $(← polynomialNumeralValue R k))]
     expectRefused Units.isUnitEvidence [← `(IsUnit $(← polynomialNumeralValue R k))]
-  -- Non-constant polynomials over a field are not units.
-  expectRefused Units.invertibleEvidence
-    [← `(Invertible (Polynomial.X : Polynomial ℚ)),
-      ← `(Invertible (Polynomial.X + 1 : Polynomial (ZMod 5)))]
+  -- Non-constant polynomials over a field are not units, nor is a presentation of `0`.
+  let nonconstant ← [← `((Polynomial.X : Polynomial ℚ)),
+      ← `((Polynomial.X + 1 : Polynomial (ZMod 5))),
+      ← `(((Polynomial.X + 2) * (Polynomial.X + 3) - Polynomial.X ^ 2 : Polynomial ℚ)),
+      ← `(((Polynomial.X + 1) ^ 2 - Polynomial.X ^ 2 - 2 * Polynomial.X - 1 : Polynomial ℚ)),
+      ← `((2 : Polynomial ℕ))].mapM pure
+  expectRefused Units.invertibleEvidence (← nonconstant.mapM fun x => `(Invertible $x))
+  expectRefused Units.isUnitEvidence (← nonconstant.mapM fun x => `(IsUnit $x))
+
+/-! A closed polynomial whose non-constant terms cancel is its constant: `(x + 1)² - x² - 2x = 1`
+in `ℚ[x]`, `(x + 3)(x + 2) - x² = 5x + 6 = 1` in `𝔽₅[x]`, `2 · 3 = 6 = 1` in `𝔽₅[x]`. The
+constants of a polynomial semiring are covered too: `1 ∈ ℕ[x]`. -/
+
+#guard_msgs in
+run_elab do
+  let constant ←
+    [← `(((Polynomial.X + 1) ^ 2 - Polynomial.X ^ 2 - 2 * Polynomial.X : Polynomial ℚ)),
+      ← `(((Polynomial.X + 3) * (Polynomial.X + 2) - Polynomial.X ^ 2 : Polynomial (ZMod 5))),
+      ← `(((2 : Polynomial (ZMod 5)) * 3)), ← `((1 : Polynomial ℕ))].mapM pure
+  expectEstablished Units.invertibleEvidence (← constant.mapM fun x => `(Invertible $x))
+  expectEstablished Units.isUnitEvidence (← constant.mapM fun x => `(IsUnit $x))
 
 end PolynomialNumerals
 

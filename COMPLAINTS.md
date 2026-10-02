@@ -674,13 +674,17 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
   2. **Units of monoids outside the covered families.** `invertibleEvidence` (through
      `isUnitEvidence`) covers groups, square
      matrices over a commutative ring through the determinant (first-row expansion, so `n!`
-     terms: practical to about `6 × 6`), division rings, `ℤ`, `ℕ`, `ℤ/n` (`n ≠ 0`), constants
-     `C a` of a polynomial ring `R[x]` (among them the catalogue's numerals of `R[x]`, through
+     terms: practical to about `6 × 6`), division rings, `ℤ`, `ℕ`, `ℤ/n` (`n ≠ 0`), closed
+     polynomials of `R[x]` whose normal form (`ring_nf`, then `reduce_mod_char`) is a constant
+     `C a` with `a` a covered unit of `R` (the catalogue's numerals of `R[x]`, `C a`, and
+     presentations whose non-constant terms cancel, `(x + 1)² - x² - 2x = 1`; through
      `Polynomial.isUnit_C`; added 2026-10-02, branch `formal/polynomial-numeral-units`, after the
      numerals `3 ∈ ℚ[x]`, `2 ∈ 𝔽₅[x]` were found refused) and products, powers and negatives of
-     units. It refuses, although they may be units: non-constant elements of polynomial rings
-     (units only when `R` has nilpotents, `1 + 2x ∈ (ℤ/4)[x]`; `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`;
-     over a domain every unit is constant, `Polynomial.isUnit_iff`), products `M × N`
+     units. It refuses, although they may be units: polynomials whose normal form is not a
+     constant (units only when `R` has nilpotents, `1 + 2x ∈ (ℤ/4)[x]`;
+     `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`; over a domain every unit is constant,
+     `Polynomial.isUnit_iff`), polynomials built from operations `ring_nf` does not expand
+     (`p.comp q`, derivatives, `Finset` sums), products `M × N`
      (`Prod.isUnit_iff`), `Π`-types, rings of integers such as `ℤ[i]`, and matrices given other
      than by entries (`Matrix.of`/`!![…]`), `1`, products, transposes or diagonals. Whether an
      element of an arbitrary closed monoid is a unit is not decidable in general; each further
