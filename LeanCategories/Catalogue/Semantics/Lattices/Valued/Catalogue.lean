@@ -44,6 +44,7 @@ def latticeBaseChange : FunctorId := ⟨"fun.lattice.base_change"⟩
 /-- The inclusion of lattices into formed modules, `Lattice(R,W) ⥤ BilinModule(R,W)`. -/
 def latticeFormForget : FunctorId := ⟨"fun.lattice.forget_form"⟩
 def finiteProjectiveForget : FunctorId := ⟨"fun.finite_projective_lattice.forget"⟩
+def integralLatticeFormForget : FunctorId := ⟨"fun.integral_lattice.forget_form"⟩
 def integralLatticeForget : FunctorId := ⟨"fun.integral_lattice.forget"⟩
 def coordLatticeToCoord : FunctorId := ⟨"fun.coord_lattice.to_coord"⟩
 def coordLatticeToIntegral : FunctorId := ⟨"fun.coord_lattice.to_integral"⟩

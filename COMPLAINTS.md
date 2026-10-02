@@ -954,3 +954,19 @@ Source laws identify the existing rational-to-real and real-to-complex Sets
 inclusions with the underlying maps of the registered ring arrows. The polynomial
 operation domains remain unchanged. Catalogue, presentation probes and evidence
 tests pass with these inputs.
+
+Independent review identified that the registered integral-lattice expression
+exposed only its carrier module, although an integral lattice is an actual
+`R`-valued formed module. `IntegralLatticeFormForget` is now the registered
+structural inclusion `(isLattice R R).ι`. Its realization selects the actual
+formed-module fibre `(CommRingCat.of R, ModuleCat.of R R)` and retains the form
+and isometric arrows. In particular the existing selected E₈ integral object
+now reaches the fixed-value formed-module owner and its prescribed kernel lift
+through a declared structural route, without consumer-side alias recovery.
+
+The previous direct carrier row became redundant forwarding and is replaced by
+the formal composite of this inclusion with formed-module forget. The existing
+direct mathematical carrier functor remains, and
+`integralLatticeCarrierComparison` proves its agreement with the composite by
+`Iso.refl`. There is one structural carrier route, preserving the actual maps.
+The catalogue and formed-kernel/presentation probes rebuild successfully.

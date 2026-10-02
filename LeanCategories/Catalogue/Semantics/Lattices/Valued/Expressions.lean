@@ -54,8 +54,15 @@ def LatticeBaseChange : FunctorExpr Lattice
 def FiniteProjectiveForget : FunctorExpr FiniteProjectiveLattice Modules.Modules :=
   .atomic FunctorId.finiteProjectiveForget
 
+/-- Integral lattices retain their ring-valued form. The actual target fibre
+is selected by the realization at the regular module `R`. -/
+def IntegralLatticeFormForget : FunctorExpr IntegralLattice
+    CasCatalogue.Modules.Bilinear.Valued.Catalogue.BilinModule :=
+  .atomic FunctorId.integralLatticeFormForget
+
 def IntegralLatticeForget : FunctorExpr IntegralLattice Modules.Modules :=
-  .atomic FunctorId.integralLatticeForget
+  .comp IntegralLatticeFormForget
+    CasCatalogue.Modules.Bilinear.Valued.Catalogue.BilinModuleForget
 
 def CoordLatticeToCoord : FunctorExpr CoordLattice Modules.CoordExpr :=
   .atomic FunctorId.coordLatticeToCoord

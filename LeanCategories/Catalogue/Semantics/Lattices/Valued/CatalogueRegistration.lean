@@ -280,6 +280,28 @@ noncomputable def integralLatticeForgetRealization (R : Type u) [CommRing R] :
     targetRealization := CasCatalogue.Modules.CatalogueRegistration.modulesRealization
       (RingCat.of R) }
 
+/-- Integral lattices forget projectivity/symmetry, retaining the selected `R`-valued form. -/
+noncomputable def integralLatticeFormForgetDeclaration (R : Type u) [CommRing R] :
+    integralLatticeCategory R ⟶
+      CasCatalogue.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleCategory R R :=
+  (isLattice R R).ι.toCatHom
+
+/-- The target is the actual fibre `(R, R)`; the value module is computed from
+this declaration, rather than supplied by an unrelated ambient `W`. -/
+noncomputable def integralLatticeFormForgetRealization (R : Type u) [CommRing R] :
+    FunctorRealization IntegralLatticeFormForget (integralLatticeCategory R)
+      (CasCatalogue.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleCategory R R)
+      (isLattice R R).ι :=
+  { sourceRealization := integralLatticeRealization R
+    targetRealization :=
+      CasCatalogue.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleRealization R R }
+
+/-- Both registered integral-lattice carrier routes retain the same actual module maps. -/
+noncomputable def integralLatticeCarrierComparison (R : Type u) [CommRing R] :
+    integralLatticeForget R ≅
+      (isLattice R R).ι ⋙ LeanCategories.Modules.Bilinear.Valued.forget R R :=
+  Iso.refl _
+
 noncomputable def coordLatticeToCoordRealization (R : Type u) [CommRing R] (n : Nat) :
     FunctorRealization CoordLatticeToCoord (coordLatticeCategory R n)
       (CasCatalogue.Modules.CatalogueRegistration.coordCategory R n)
@@ -533,15 +555,14 @@ normalized_registry .functor
     expression := FiniteProjectiveForget
     structural := true }
 normalized_registry .functor
-  { id := FunctorId.integralLatticeForget,
-    source := IntegralLattice
-    target := Modules.Modules
+  { id := FunctorId.integralLatticeFormForget, source := IntegralLattice
+    target := CasCatalogue.Modules.Bilinear.Valued.Catalogue.BilinModule
     declaration :=
-      `CasCatalogue.Lattices.Valued.CatalogueRegistration.integralLatticeForgetDeclaration
+      `CasCatalogue.Lattices.Valued.CatalogueRegistration.integralLatticeFormForgetDeclaration
     realization :=
-      `CasCatalogue.Lattices.Valued.CatalogueRegistration.integralLatticeForgetRealization
-    expression := IntegralLatticeForget
-    structural := true }
+      `CasCatalogue.Lattices.Valued.CatalogueRegistration.integralLatticeFormForgetRealization
+    expression := IntegralLatticeFormForget, structural := true }
+
 normalized_registry .functor
   { id := FunctorId.coordLatticeToCoord,
     source := CoordLattice
@@ -572,5 +593,6 @@ normalized_registry .functor
       `CasCatalogue.Lattices.Valued.CatalogueRegistration.fractionFieldPerfectFiniteProjectiveForgetRealization
     expression := FractionFieldPerfectFiniteProjectiveForget
     structural := true }
+
 
 end CasCatalogue.Lattices.Valued.CatalogueRegistration
