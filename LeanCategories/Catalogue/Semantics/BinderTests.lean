@@ -123,6 +123,35 @@ it for `lim_{t → 0}`, `id (ringNumeral ringReals 0)`, holds by `rfl`: the evid
 build their maps with `puncturedUnits _ rfl` there. -/
 example : id (NamedRings.ringNumeral NumberSystems.ringReals 0) = zeroPoint := rfl
 
+/-- `t ↦ sin t / t` on `ℝˣ`: `sin` of the units' inclusion, divided by the unit `t`. -/
+noncomputable def sinOverUnit : Units.units ℝ → ℝ := fun t =>
+  ConcreteCategory.hom (C := Type) (Units.divide ℝ)
+    (ConcreteCategory.hom (C := Type) Calculus.sin
+      (ConcreteCategory.hom (C := Type) (Units.inclusion ℝ) t), t)
+
+/-- **`lim_{t → 0} sin t / t = 1`**, the map read on `ℝˣ`. -/
+theorem limitOnUnits_sin_div_self
+    (h : ∃ L, Tendsto sinOverUnit (approachUnits (realNumeral 0)) (𝓝 L)) (p : fin 1) :
+    ConcreteCategory.hom (C := Type)
+      (admitConvergentOnUnits (realNumeral 0) sinOverUnit h ≫ limitOnUnits (realNumeral 0)) p =
+        1 := by
+  change ConcreteCategory.hom (C := Type) (limitOnUnits (realNumeral 0)) ⟨sinOverUnit, h⟩ = 1
+  refine limitOnUnits_eq _ _ 1 ?_
+  change Tendsto sinOverUnit (comap Units.val (𝓝[≠] _)) _
+  rw [realNumeral_zero]
+  refine (tendsto_comap_units_of (fun s => Real.sin s / s) tendsto_sin_div_self).congr
+    fun t => ?_
+  simp [sinOverUnit, Units.divide, Calculus.sin, Units.inclusion, div_eq_mul_inv]
+
+/-- The two readings of `lim_{t → 0} sin t / t` agree: `sinOverT` on `ℝ ∖ {0}` and `sinOverUnit`
+on `ℝˣ` coincide where both are defined. -/
+example (L : ℝ) :
+    Tendsto sinOverT (approach (realNumeral 0)) (𝓝 L) ↔
+      Tendsto sinOverUnit (approachUnits (realNumeral 0)) (𝓝 L) :=
+  tendsto_approach_iff_approachUnits _ _ _ (fun t _ => by
+    simp [sinOverT, sinOverUnit, Units.divide, Calculus.sin, puncturedInclusion, puncturedUnits,
+      Units.inclusion]) L
+
 end Limits
 
 /-! ## `∫_{a}^{b}` -/
@@ -341,6 +370,25 @@ meta def kernelSincStatement : TermElabM Term := do
 #guard_msgs in
 run_elab do
   expectEstablished RealLimits.convergenceEvidence [← kernelSincStatement]
+
+-- `lim_{t → a}` read on `ℝˣ`: `sin t / t` at `0` as the division by the unit `t`, `t² + 1` at `2`,
+-- `1/t` at `3`.
+#guard_msgs in
+run_elab do
+  expectEstablished RealLimits.convergenceEvidence
+    [← `(∃ L, Tendsto (fun x : Units.units ℝ =>
+            ConcreteCategory.hom (C := Type) (Units.divide ℝ)
+              (Real.sin (ConcreteCategory.hom (C := Type) (Units.inclusion ℝ) x), x))
+          (RealLimits.approachUnits (id (NamedRings.ringNumeral NumberSystems.ringReals 0)))
+          (𝓝 L)),
+     ← `(∃ L, Tendsto (fun x : Units.units ℝ => (x : ℝ) ^ 2 + 1)
+          (RealLimits.approachUnits (CasCatalogue.BinderTests.realNumeral 2)) (𝓝 L)),
+     ← `(∃ L, Tendsto (fun x : Units.units ℝ => ((x⁻¹ : ℝˣ) : ℝ))
+          (RealLimits.approachUnits (CasCatalogue.BinderTests.realNumeral 3)) (𝓝 L))]
+  -- `sin(1/t)` at `0` does not converge.
+  expectRefused RealLimits.convergenceEvidence
+    [← `(∃ L, Tendsto (fun x : Units.units ℝ => Real.sin ((x⁻¹ : ℝˣ) : ℝ))
+          (RealLimits.approachUnits (CasCatalogue.BinderTests.realNumeral 0)) (𝓝 L))]
 
 -- Maps that do not converge: `sin(1/t)` at `0`, `t` and `sin t` at `∞`.
 #guard_msgs in
