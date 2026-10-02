@@ -5,6 +5,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Catalogue.Semantics.Algebra.Calculus
+public import LeanCategories.Catalogue.Semantics.Algebra.CommutativeMonoids
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.RingTheory.PowerSeries.PiTopology
 public import Mathlib.RingTheory.PowerSeries.Order
 public import Mathlib.RingTheory.PowerSeries.Trunc
@@ -12,6 +14,7 @@ public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Analysis.PSeries
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.Foundation.Evidence
+public meta import LeanCategories.Catalogue.Semantics.Algebra.CommutativeMonoids
 
 @[expose] public section
 
@@ -26,12 +29,21 @@ total map out of the summable families, `Σ(N, Y) → Y`, and that is the binder
 (`lean-cas-dsl/specs/binders.md`): its argument is the index set `N`, and the bound variable
 ranges over `N`. A family is in `Σ(N, Y)` only with the evidence that it is summable.
 
-The binder has one row per codomain, its topology fixed in the row's definition: `ℝ` and `ℂ` with
-the topology of their absolute values (`realSeriesSum`, `complexSeriesSum`), `R[[t]]` with its
-`(t)`-adic topology (`powerSeriesSum`). The codomain of the body selects the row; no row's
-topology is found by instance search, since `R[[t]]` carries several (for `ℚ[[t]]`, the product
-topology of the absolute value of `ℚ` sums the constants `n ↦ 2⁻ⁿ` to `2`, the `(t)`-adic one
-does not).
+## The category of the codomain (LC-13)
+
+The sum uses the addition, the zero and the topology of `Y`, and its uniqueness uses that `Y` is
+Hausdorff, Bourbaki's setting (*General Topology*, III.5.1, for groups; Mathlib, for monoids).
+So `Y` is an object of the category `HausdorffTopAddCommMon` of Hausdorff commutative topological
+monoids, written additively: an additive commutative monoid with a Hausdorff topology in which
+addition is continuous, and continuous additive monoid maps (Mathlib `ContinuousAdd`, `T2Space`,
+`ContinuousAddMonoidHom`). Its structural functor to additive commutative monoids forgets the
+topology. The topology is part of the object, never found by instance search on a carrier: the
+set `R[[t]]` underlies several objects of the category (for `ℚ[[t]]`, the product topology of the
+absolute value of `ℚ` sums the constants `n ↦ 2⁻ⁿ` to `2`, the `(t)`-adic one does not).
+
+The binder has one row per object, since the set of values of the body does not determine the
+topology: `ℝ` and `ℂ` with the topology of their absolute values (`realSeriesSum`,
+`complexSeriesSum`), `R[[t]]` with its `(t)`-adic topology (`powerSeriesSum`).
 
 ## Formal power series
 
@@ -44,77 +56,162 @@ is the topology in which `Σ c(n) tⁿ` is the sum of its terms: `∑_{n ∈ ℕ
 indices. In particular a family `n ↦ fₙ` with `tⁿ ∣ fₙ` is summable (`summable_of_X_pow_dvd`).
 
 Mathlib leaves the topology of `R[[t]]` scoped, since `R` may carry its own; the `(t)`-adic one is
-named here (`tAdic`), and the sum of series in `R[[t]]` is the series sum at that topology
-(`powerSeriesSum`, `powerSeriesSum_eq`).
+named here (`tAdic`), `R[[t]]` with it is the object `powerSeriesTAdic R`, and the sum of series in
+`R[[t]]` is the series sum at that object (`powerSeriesSum`, `powerSeriesSum_eq`).
 -/
 
 open CategoryTheory Filter Topology
+
+namespace CasCatalogue
+
+namespace CategoryId
+def hausdorffTopologicalMonoids : CategoryId := ⟨"cat.hausdorff_topological_commutative_monoids"⟩
+end CategoryId
+
+namespace FunctorId
+def hausdorffTopologicalMonoidsForget : FunctorId :=
+  ⟨"fun.hausdorff_topological_commutative_monoids.additive_commutative_monoid"⟩
+end FunctorId
+
+end CasCatalogue
 
 namespace CasCatalogue.Algebra.Series
 
 open CasCatalogue.Foundation.PowerSets CasCatalogue.Foundation.Objects
 
+universe u
+
+/-- A Hausdorff commutative topological monoid, written additively: an additive commutative monoid
+with a Hausdorff topology in which addition is continuous. -/
+structure HausdorffTopAddCommMon : Type (u + 1) where
+  /-- The Hausdorff commutative topological monoid on a carrier with that structure. -/
+  of ::
+  /-- The underlying set. -/
+  carrier : Type u
+  [isAddCommMonoid : AddCommMonoid carrier]
+  [isTopologicalSpace : TopologicalSpace carrier]
+  [isContinuousAdd : ContinuousAdd carrier]
+  [isT2Space : T2Space carrier]
+
+namespace HausdorffTopAddCommMon
+
+instance : CoeSort HausdorffTopAddCommMon.{u} (Type u) := ⟨carrier⟩
+
+attribute [instance] isAddCommMonoid isTopologicalSpace isContinuousAdd isT2Space
+
+/-- The continuous additive monoid maps. -/
+instance : Category HausdorffTopAddCommMon.{u} where
+  Hom Y Z := ContinuousAddMonoidHom Y Z
+  id Y := ContinuousAddMonoidHom.id Y
+  comp f g := g.comp f
+  id_comp _ := ContinuousAddMonoidHom.ext fun _ => rfl
+  comp_id _ := ContinuousAddMonoidHom.ext fun _ => rfl
+  assoc _ _ _ := ContinuousAddMonoidHom.ext fun _ => rfl
+
+/-- The underlying additive commutative monoid: the topology is forgotten. -/
+def forgetTopology : HausdorffTopAddCommMon.{u} ⥤ AddCommMonCat.{u} where
+  obj Y := AddCommMonCat.of Y
+  map f := AddCommMonCat.ofHom (ContinuousAddMonoidHom.toAddMonoidHom f)
+
+end HausdorffTopAddCommMon
+
+/-- The Hausdorff commutative topological monoids, as an object of the categories. -/
+def HausdorffTopologicalMonoids : LeanCategories.ObjCat.{u + 1, u} :=
+  Cat.of HausdorffTopAddCommMon.{u}
+
+def HausdorffTopologicalMonoidsExpr : CategoryExpr :=
+  .atom CategoryId.hausdorffTopologicalMonoids
+
+noncomputable def hausdorffTopologicalMonoidsRealization :
+    CategoryRealization HausdorffTopologicalMonoidsExpr HausdorffTopologicalMonoids.{u} := {}
+
+/-- The underlying additive commutative monoid of a Hausdorff commutative topological monoid. -/
+def hausdorffTopologicalMonoidsForget :
+    HausdorffTopologicalMonoids.{u} ⟶
+      CasCatalogue.Algebra.CommMonoids.AdditiveCommutativeMonoids.{u} :=
+  HausdorffTopAddCommMon.forgetTopology.toCatHom
+
+def HausdorffTopologicalMonoidsForgetExpr :
+    FunctorExpr HausdorffTopologicalMonoidsExpr
+      CasCatalogue.Algebra.CommMonoids.AdditiveCommutativeMonoidsExpr :=
+  .atomic FunctorId.hausdorffTopologicalMonoidsForget
+
+noncomputable def hausdorffTopologicalMonoidsForgetRealization :
+    FunctorRealization HausdorffTopologicalMonoidsForgetExpr HausdorffTopologicalMonoids.{u}
+      CasCatalogue.Algebra.CommMonoids.AdditiveCommutativeMonoids.{u}
+      hausdorffTopologicalMonoidsForget.toFunctor :=
+  { sourceRealization := hausdorffTopologicalMonoidsRealization
+    targetRealization :=
+      CasCatalogue.Algebra.CommMonoids.additiveCommutativeMonoidsRealization }
+
+/-- A Hausdorff commutative topological monoid as a `HausdorffTopAddCommMon`. -/
+abbrev asTopMonoid (Y : HausdorffTopologicalMonoids.{0}) : HausdorffTopAddCommMon.{0} := Y
+
+/-- `ℝ`, with the topology of its absolute value. -/
+noncomputable abbrev realsTop : HausdorffTopologicalMonoids.{0} := HausdorffTopAddCommMon.of ℝ
+
+/-- `ℂ`, with the topology of its absolute value. -/
+noncomputable abbrev complexesTop : HausdorffTopologicalMonoids.{0} := HausdorffTopAddCommMon.of ℂ
+
 /-- A summable family `N → Y`. -/
-structure SummableFamily (Y : Type) [AddCommMonoid Y] [TopologicalSpace Y] (N : Type) : Type where
+structure SummableFamily (Y : HausdorffTopologicalMonoids.{0}) (N : Type) : Type where
   /-- The family. -/
-  toFun : N → Y
+  toFun : N → asTopMonoid Y
   /-- It is summable. -/
   summable : Summable toFun
 
 /-- `Σ(N, Y)`, the summable families `N → Y`. -/
-abbrev summableFamilies (Y : Type) [AddCommMonoid Y] [TopologicalSpace Y] (N : Type) :
-    SetsCat.{0} :=
+abbrev summableFamilies (Y : HausdorffTopologicalMonoids.{0}) (N : Type) : SetsCat.{0} :=
   SummableFamily Y N
 
 /-- The family `f`, with the evidence that it is summable. -/
-def admit (Y : Type) [AddCommMonoid Y] [TopologicalSpace Y] (N : Type) (f : N → Y)
+def admit (Y : HausdorffTopologicalMonoids.{0}) (N : Type) (f : N → asTopMonoid Y)
     (h : Summable f) : fin 1 ⟶ summableFamilies Y N :=
   TypeCat.ofHom fun _ => ⟨f, h⟩
 
 /-- `f ↦ ∑_{n ∈ N} f(n)`, `Σ(N, Y) → Y`, in a Hausdorff commutative topological monoid `Y`
 (Mathlib `tsum`). The sum is the limit of the partial sums of the admitted family, unique because
-`Y` is Hausdorff (`HasSum.unique`). It is not itself a binder row: its topology is an instance
-argument, and a monoid such as `R[[t]]` carries several topologies, none canonical. Each binder
-row of `∑_{n ∈ N}` is this sum at one codomain whose topology is fixed in its definition
-(`realSeriesSum`, `complexSeriesSum`, `powerSeriesSum`), so that the codomain of the body selects
-the row. -/
-noncomputable def seriesSum (Y : Type) [AddCommMonoid Y] [TopologicalSpace Y] [T2Space Y]
-    (N : Type) : summableFamilies Y N ⟶ (Y : SetsCat.{0}) :=
+`Y` is Hausdorff (`HasSum.unique`). It is not itself a binder row: the set of values of the body
+does not determine the object `Y` (`R[[t]]` underlies several), so each binder row of `∑_{n ∈ N}`
+is this sum at one named object (`realSeriesSum`, `complexSeriesSum`, `powerSeriesSum`), and the
+codomain of the body selects the row. -/
+noncomputable def seriesSum (Y : HausdorffTopologicalMonoids.{0}) (N : Type) :
+    summableFamilies Y N ⟶ (asTopMonoid Y : SetsCat.{0}) :=
   TypeCat.ofHom fun f => ∑' n, f.toFun n
 
 /-- `f ↦ ∑_{n ∈ N} f(n)`, `Σ(N, ℝ) → ℝ`: the sum of real series, in the topology of the absolute
 value of `ℝ`. The binder `∑_{n ∈ N} e` with values in `ℝ`; its argument is the index set `N`. -/
 noncomputable def realSeriesSum (N : Type) :
-    summableFamilies ℝ N ⟶ CasCatalogue.Algebra.NumberSystems.reals :=
+    summableFamilies realsTop N ⟶ CasCatalogue.Algebra.NumberSystems.reals :=
   TypeCat.ofHom fun f => ∑' n, f.toFun n
 
 /-- The bound variable of `∑_{n ∈ N}` with values in `ℝ` ranges over `N`. -/
 abbrev realSeriesDomain (N : Type) : SetsCat.{0} := N
 
 /-- The sum of real series is the series sum of `ℝ`. -/
-theorem realSeriesSum_eq (N : Type) : realSeriesSum N = seriesSum ℝ N := rfl
+theorem realSeriesSum_eq (N : Type) : realSeriesSum N = seriesSum realsTop N := rfl
 
 /-- `f ↦ ∑_{n ∈ N} f(n)`, `Σ(N, ℂ) → ℂ`: the sum of complex series, in the topology of the
 absolute value of `ℂ`. The binder `∑_{n ∈ N} e` with values in `ℂ`. -/
 noncomputable def complexSeriesSum (N : Type) :
-    summableFamilies ℂ N ⟶ CasCatalogue.Algebra.NumberSystems.complexes :=
+    summableFamilies complexesTop N ⟶ CasCatalogue.Algebra.NumberSystems.complexes :=
   TypeCat.ofHom fun f => ∑' n, f.toFun n
 
 /-- The bound variable of `∑_{n ∈ N}` with values in `ℂ` ranges over `N`. -/
 abbrev complexSeriesDomain (N : Type) : SetsCat.{0} := N
 
 /-- The sum of complex series is the series sum of `ℂ`. -/
-theorem complexSeriesSum_eq (N : Type) : complexSeriesSum N = seriesSum ℂ N := rfl
+theorem complexSeriesSum_eq (N : Type) : complexSeriesSum N = seriesSum complexesTop N := rfl
 
 /-- The series sum of an admitted family is a sum of it: the partial sums converge to it. -/
-theorem hasSum_seriesSum (Y : Type) [AddCommMonoid Y] [TopologicalSpace Y] [T2Space Y]
-    (N : Type) (f : summableFamilies Y N) :
+theorem hasSum_seriesSum (Y : HausdorffTopologicalMonoids.{0}) (N : Type)
+    (f : summableFamilies Y N) :
     HasSum f.toFun (ConcreteCategory.hom (C := Type) (seriesSum Y N) f) :=
   f.summable.hasSum
 
 /-- The series sum is the unique sum: any `y` to which the partial sums converge is it. -/
-theorem seriesSum_eq_of_hasSum (Y : Type) [AddCommMonoid Y] [TopologicalSpace Y] [T2Space Y]
-    (N : Type) (f : summableFamilies Y N) (y : Y) (h : HasSum f.toFun y) :
+theorem seriesSum_eq_of_hasSum (Y : HausdorffTopologicalMonoids.{0}) (N : Type)
+    (f : summableFamilies Y N) (y : asTopMonoid Y) (h : HasSum f.toFun y) :
     ConcreteCategory.hom (C := Type) (seriesSum Y N) f = y :=
   (hasSum_seriesSum Y N f).unique h
 
@@ -207,11 +304,23 @@ theorem tsum_smul_X_pow {R : Type} [CommRing R] (c : ℕ → R) :
   simp only [PowerSeries.smul_eq_C_mul]
   exact tsum_C_mul_X_pow c
 
+/-- Addition of `R[[t]]` is continuous in the `(t)`-adic topology: `R[[t]]` is a topological ring
+over the discrete `R` (Mathlib `PowerSeries.WithPiTopology.instIsTopologicalRing`). -/
+theorem tAdic_continuousAdd (R : Type) [CommRing R] : ContinuousAdd (PowerSeries R) :=
+  letI : TopologicalSpace R := ⊥
+  haveI : DiscreteTopology R := ⟨rfl⟩
+  haveI := PowerSeries.WithPiTopology.instIsTopologicalRing (R := R)
+  inferInstance
+
+/-- `R[[t]]` with its `(t)`-adic topology, a Hausdorff commutative topological monoid. -/
+noncomputable abbrev powerSeriesTAdic (R : Type) [CommRing R] : HausdorffTopologicalMonoids.{0} :=
+  @HausdorffTopAddCommMon.of (PowerSeries R) _ (tAdic R) (tAdic_continuousAdd R) (tAdic_t2Space R)
+
 /-- The sum of series in `R[[t]]`: `f ↦ ∑_{n ∈ N} f(n)`, the series sum `seriesSum` at the
-`(t)`-adic topology (`powerSeriesSum_eq`). The binder `∑_{n ∈ N} e` with values in `R[[t]]`: its
-argument is the index set `N`, and `R` is read off the body's codomain `R[[t]]`. -/
+object `powerSeriesTAdic R` (`powerSeriesSum_eq`). The binder `∑_{n ∈ N} e` with values in
+`R[[t]]`: its argument is the index set `N`, and `R` is read off the body's codomain `R[[t]]`. -/
 noncomputable def powerSeriesSum (R : Type) [CommRing R] (N : Type) :
-    summableFamilies (PowerSeries R) N ⟶ CasCatalogue.Algebra.Calculus.powerSeries R :=
+    summableFamilies (powerSeriesTAdic R) N ⟶ CasCatalogue.Algebra.Calculus.powerSeries R :=
   TypeCat.ofHom fun f => ∑' n, f.toFun n
 
 /-- The bound variable of `∑_{n ∈ N}` with values in `R[[t]]` ranges over `N`. -/
@@ -220,8 +329,7 @@ abbrev powerSeriesSumDomain (R : Type) [CommRing R] (N : Type) : SetsCat.{0} := 
 /-- The sum of series in `R[[t]]` is the series sum of the Hausdorff monoid `R[[t]]` with its
 `(t)`-adic topology. -/
 theorem powerSeriesSum_eq (R : Type) [CommRing R] (N : Type) :
-    haveI := tAdic_t2Space R
-    powerSeriesSum R N = seriesSum (PowerSeries R) N :=
+    powerSeriesSum R N = seriesSum (powerSeriesTAdic R) N :=
   rfl
 
 /-- `∑_{n ∈ ℕ} c(n) tⁿ` at the admitted family `n ↦ C(c(n)) tⁿ` is the series `mk c`. -/
@@ -319,6 +427,21 @@ meta def summableEvidence : TacticM Unit :=
 end CasCatalogue.Algebra.Series
 
 namespace CasCatalogue
+
+normalized_registry .category
+  { id := CategoryId.hausdorffTopologicalMonoids, name := "HausdorffTopologicalMonoids"
+    declaration := `CasCatalogue.Algebra.Series.HausdorffTopologicalMonoids
+    expression := Algebra.Series.HausdorffTopologicalMonoidsExpr
+    realization := `CasCatalogue.Algebra.Series.hausdorffTopologicalMonoidsRealization }
+
+normalized_registry .functor
+  { id := FunctorId.hausdorffTopologicalMonoidsForget
+    source := Algebra.Series.HausdorffTopologicalMonoidsExpr
+    target := Algebra.CommMonoids.AdditiveCommutativeMonoidsExpr
+    declaration := `CasCatalogue.Algebra.Series.hausdorffTopologicalMonoidsForget
+    realization := `CasCatalogue.Algebra.Series.hausdorffTopologicalMonoidsForgetRealization
+    expression := Algebra.Series.HausdorffTopologicalMonoidsForgetExpr
+    structural := true }
 
 normalized_registry .object
   { id := ⟨"obj.sets.summable_families"⟩, category := CategoryId.sets, name := "Summable"

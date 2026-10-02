@@ -169,9 +169,15 @@ noncomputable def ofCoefficients (R : Type) [CommRing R]
     CasCatalogue.Foundation.Objects.fin 1 ⟶ powerSeries R :=
   TypeCat.ofHom fun _ => PowerSeries.mk (ConcreteCategory.hom (C := Type) c)
 
-/-- `(x, n) ↦ xⁿ` in a monoid. -/
-def power (X : Type) [Monoid X] : (X × CasCatalogue.Foundation.Objects.naturals : SetsCat.{0}) ⟶
-    (X : SetsCat.{0}) :=
+/-- A monoid as a `MonCat`. -/
+abbrev asMonoid (M : LeanCategories.Algebra.Monoids.{0}) : MonCat.{0} := M
+
+/-- `(x, n) ↦ xⁿ` in a monoid `M`, an object of monoids (LC-13): `x⁰ = 1` is `M`'s unit and
+`xⁿ⁺¹ = xⁿ x` its multiplication (Mathlib `Monoid.npow`). A ring reaches it along its
+multiplicative monoid `Ring → Mon`. -/
+def power (M : LeanCategories.Algebra.Monoids.{0}) :
+    (asMonoid M × CasCatalogue.Foundation.Objects.naturals : SetsCat.{0}) ⟶
+      (asMonoid M : SetsCat.{0}) :=
   TypeCat.ofHom fun p => p.1 ^ p.2
 
 /-- `k ↦ k!`, `ℕ → ℝˣ`: the image of `k!` under the initial map `ℕ → ℝ`, a unit of `ℝ` because it

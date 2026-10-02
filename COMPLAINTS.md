@@ -671,6 +671,27 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
      monoids. The mathematics of each row is correct; the presentation is the one LC-13 bans. The
      repair is a catalogue-wide move of these rows onto registered objects of those categories,
      with their units and operations reached along the structural routes.
+     **Repaired 2026-10-02 (branch `formal/lc13-carriers`):** `FiniteSums.sum`, `sumOver`,
+     `sumDomain` take `Y` in `cat.additive_commutative_monoids` (Mathlib `AddCommMonCat`);
+     `prod`, `prodOver`, `prodDomain` take `Y` in `cat.commutative_monoids` (`CommMonCat`);
+     `Series.SummableFamily`, `summableFamilies`, `admit`, `seriesSum` take `Y` in
+     `cat.hausdorff_topological_commutative_monoids` (`Series.HausdorffTopAddCommMon`, the
+     topology part of the object; `ℝ`, `ℂ`, `R[[t]]` `(t)`-adic are its objects `realsTop`,
+     `complexesTop`, `powerSeriesTAdic R`); `LinearAlgebra.zero` takes `A` in
+     `cat.additive_monoids`; `Calculus.power` takes `M` in `cat.monoids`. Routes registered:
+     `CommMon → Mon`, `AddCommMon → AddMon`, `CommRing → CommMon` (with the invertible cell
+     identifying `CommRing → Ring → Mon` and `CommRing → CommMon → Mon`), `Ring → AddCommMon`,
+     `HausdorffTopAddCommMon → AddCommMon`. `Algebra.Units` was left to lean-categories#78.
+     **Still open (same defect, inspected 2026-10-02 by `grep` for a `(X : Type) [inst]` binder on a
+     catalogue declaration):** `Polynomials` (`polynomials`, `generator`, `coefficients`,
+     `evaluation`, `ringPolynomials`, `degree`, `nonzeroPolynomials`, `admitNonzeroPolynomial`,
+     `factors`, `roots`, `map`, …), `MvPolynomials` (`mvPolynomials`, `var`, `constants`,
+     `totalDegree`, `dimension`, …), `LinearAlgebra` (`matrices`, `rows`, `apply`, `det`, `trace`,
+     `rank`, `charpoly`, `monics`, `admitMonic`, `companion`, `ker`, `span`, `dim`), `Calculus`
+     (`powerSeries` and its operations; hence `Series.powerSeriesTAdic`/`powerSeriesSum` in `R`),
+     `Differentials`, `Algebras` (`mvAlgebra`, `polyAlgebra`), `Schemes` (`specPolynomials`,
+     `specMvPolynomials`), `Automorphisms.actionHom`, `Foundation.FiniteSubsetLiterals.literal`,
+     and `Algebra.Units`. Each takes a ring (or monoid) as a bare carrier with an instance.
   2. LC-15: `num.sets.fin` registers `Foundation.Morphisms.finPoint n k (h : k < n)` under the
      registry kind `.numeral`. The point is correct mathematics (the `k`-th point of the ordinal
      `n`, formed with its evidence), but `Fin n` is an object of `Sets`, which has no initial map
@@ -691,6 +712,25 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
      finite free; over a general commutative ring "rank" has several inequivalent meanings
      (McCoy rank, determinantal rank). The row is well defined over a field (or a PID). Needs a
      domain decision: restrict to fields, or name the rank meant.
+     **Correction and alternatives (2026-10-02, Mathlib at the pinned `v4.33.0`, read):**
+     `Matrix.rank A = finrank R (range A.mulVecLin)` and `Module.rank R M` is the supremum of the
+     cardinalities of the linearly independent subsets of `M` (`Mathlib/LinearAlgebra/Dimension/
+     Basic.lean`), not a convention off finite free modules: over a nontrivial commutative ring the
+     column module embeds in `Rᵐ`, so the supremum is finite (strong rank condition) and the row
+     computes the maximal number of `R`-linearly independent elements of the column module. The
+     defect under LC-14 is the zero ring: there `finrank_subsingleton` makes the rank `1` for the
+     unique matrix of every size, `0 × 0` included (checked by elaboration). Over a commutative
+     ring with zero divisors, "rank of a matrix" has inequivalent standard meanings, so the domain
+     is a mathematical decision, not settled by LC-13/LC-14, and the row is left unchanged
+     pending it. Alternatives: (a) fields `K`: column, row and determinantal rank agree and equal
+     `Matrix.rank`; (b) integral domains `R`: a family in `Rᵐ` is `R`-independent iff it is
+     `Frac(R)`-independent (clear denominators), so `Matrix.rank` is the rank over `Frac(R)`, equal
+     to the determinantal rank; (c) nontrivial commutative rings with Mathlib's meaning, named as
+     the rank of the column module (the row's domain then excludes the zero ring, LC-14); (d)
+     commutative rings with McCoy rank (largest `t` such that the ideal of `t × t` minors has zero
+     annihilator), a different invariant; pinned Mathlib has no McCoy rank of matrices (searched
+     `McCoy`: the two hits are McCoy's theorem on zero divisors in `R[X]` and `R⟦X⟧`; other
+     surfaces not searched), so it would be formalized here.
 - **Coverage:** the `bd31fe3` diff under `LeanCategories/Catalogue/Semantics`, read against LC-13
   to LC-16 and Mathlib only. Nothing downstream was read.
 - **Repair link:** items 1 and 4 are catalogue formalization work; items 2 and 3 are the
