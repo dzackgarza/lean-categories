@@ -8,6 +8,9 @@ public import LeanCategories.Catalogue.Semantics.Foundation.PowerSets
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.Data.ZMod.Basic
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.Tactic.ReduceModChar
+public import Mathlib.Tactic.Ring.RingNF
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.Tactic.NormNum
@@ -101,6 +104,32 @@ theorem zmod_isUnit_iff_coprime_val {n : ℕ} [NeZero n] (x : ZMod n) :
     IsUnit x ↔ x.val.Coprime n := by
   rw [← ZMod.isUnit_iff_coprime, ZMod.natCast_zmod_val]
 
+/-- A constant `C a` of `R[x]` is a unit when `a` is a unit of `R`, with inverse the constant
+`C ⅟a`: the constants `C : R → R[x]` are a ring map (Mathlib `Polynomial.C`), and a monoid map
+carries `a · ⅟a = ⅟a · a = 1` to `C a · C ⅟a = C ⅟a · C a = 1`. The polynomial `p` is given
+with the equation `C a = p` that exhibits it as a constant. -/
+@[instance_reducible] noncomputable def invertibleOfConstant {R : Type} [Semiring R]
+    {p : Polynomial R} {a : R}
+    (h : Polynomial.C a = p) (ha : Invertible a) : Invertible p :=
+  ⟨Polynomial.C ⅟a, by rw [← h, ← map_mul, invOf_mul_self, map_one],
+    by rw [← h, ← map_mul, mul_invOf_self, map_one]⟩
+
+/-- A constant `C a` of `R[x]` is a unit when `a` is a unit of `R` (Mathlib `Polynomial.isUnit_C`,
+which also gives the converse). -/
+theorem isUnit_of_constant {R : Type} [Semiring R] {p : Polynomial R} {a : R}
+    (h : Polynomial.C a = p) (ha : IsUnit a) : IsUnit p :=
+  h ▸ Polynomial.isUnit_C.mpr ha
+
+/-- `x` is invertible when it equals an invertible `y`, with the inverse of `y` (Mathlib
+`Invertible.copy`). -/
+@[instance_reducible] def invertibleOfEq {M : Type} [Monoid M] {x y : M} (h : x = y)
+    (hy : Invertible y) : Invertible x :=
+  Invertible.copy hy x h
+
+/-- `x` is a unit when it equals a unit `y`. -/
+theorem isUnitOfEq {M : Type} [Monoid M] {x y : M} (h : x = y) (hy : IsUnit y) : IsUnit x :=
+  h ▸ hy
+
 open Lean Elab Tactic in
 /-- The evidence of a closed arithmetic fact in a ring — that a closed element is nonzero, equal
 to or ordered against another: the elements are evaluated (numerals, ring and field operations,
@@ -162,6 +191,67 @@ meta def zmodModulus : TacticM Term := do
   unless carrier.isAppOfArity ``ZMod 1 do throwError "the monoid is not ℤ/n"
   Term.exprToSyntax carrier.appArg!
 
+open Lean Meta Elab Tactic in
+/-- Fails unless the monoid of the main goal `IsUnit x` or `Invertible x` is a polynomial ring
+`R[x]`, read from the goal's carrier as in `zmodModulus`. -/
+meta def polynomialMonoid : TacticM Unit := do
+  let some carrier := (← getMainTarget).consumeMData.getAppArgs[0]?
+    | throwError "not a statement about an element of a monoid"
+  unless (← whnfR carrier).isAppOfArity ``Polynomial 2 do
+    throwError "the monoid is not a polynomial ring"
+
+open Lean Elab Tactic in
+/-- Exhibit the closed element `p` of `R[x]` as a constant: close the main goal `C ?a = p`, `?a`
+assigned to the coefficient. The catalogue's numerals of `R[x]` are evaluated first
+(`evaluateNumerals`); the numeral `k` of `R[x]` is the constant `C k`, the numeral `k` of `R`
+(`Polynomial.C_ofNat`, `C_eq_natCast`, `C_eq_intCast`, `C_0`, `C_1`: `C` is a ring map, so it
+commutes with the maps out of `ℤ` and `ℕ`). -/
+meta def constantOfPolynomial : TacticM Unit :=
+  CasCatalogue.Evidence.closeByFirst m!"the polynomial is not exhibited as a constant"
+    [do evalTactic (← `(tactic| exact rfl)),
+     do evalTactic (← `(tactic| exact Polynomial.C_ofNat _)),
+     do evalTactic (← `(tactic| exact Polynomial.C_eq_natCast _)),
+     do evalTactic (← `(tactic| exact Polynomial.C_eq_intCast _)),
+     do evalTactic (← `(tactic| exact Polynomial.C_0)),
+     do evalTactic (← `(tactic| exact Polynomial.C_1))]
+
+open Lean Elab Tactic in
+/-- On the goals `y`, `x = y` and a goal on `y`, with `x` a closed polynomial: assign `y` to the
+normal form of `x` — the expression expanded into monomials with like terms collected
+(commutative-semiring normalization, `ring_nf`), then coefficients reduced modulo the
+characteristic of `ℤ/n` (`reduce_mod_char`) — so that a polynomial whose non-constant terms cancel,
+`(x + 1)² - x² - 2x = 1`, is read as its constant. Leave the goal on `y`. -/
+meta def normalizedPolynomial : TacticM Unit := do
+  let goals ← getGoals
+  let some equation ← goals.findM? fun g => return (← g.getType).consumeMData.isAppOfArity ``Eq 3
+    | throwError "no equation to the normal form"
+  setGoals [equation]
+  evalTactic (← `(tactic| refine Eq.trans (b := ?_) ?_ ?_))
+  let steps ← getGoals
+  let some expand ← steps.findM? fun g => return (← g.getType).consumeMData.isAppOfArity ``Eq 3
+    | throwError "no expansion step"
+  setGoals [expand]
+  evalTactic (← `(tactic| conv_lhs => try ring_nf))
+  setGoals (← steps.filterM fun g => return !(← g.isAssigned))
+  let some reduce ← (← getGoals).findM? fun g =>
+      return (← g.getType).consumeMData.isAppOfArity ``Eq 3
+    | throwError "no reduction step"
+  setGoals [reduce]
+  evalTactic (← `(tactic| (try reduce_mod_char); rfl))
+  setGoals (← goals.filterM fun g => return !(← g.isAssigned))
+
+open Lean Elab Tactic in
+/-- On the goals `a : R`, `C a = p` and a goal on `a`, exhibit `p` as a constant
+(`constantOfPolynomial`), which assigns the coefficient `a`, and leave the goal on it. The holes are
+anonymous and the equation is found by its type, so that no name is shared with another run. -/
+meta def constantCoefficient : TacticM Unit := do
+  let goals ← getGoals
+  let some constant ← goals.findM? fun g => return (← g.getType).consumeMData.isAppOfArity ``Eq 3
+    | throwError "no goal exhibiting the polynomial as a constant"
+  setGoals [constant]
+  constantOfPolynomial
+  setGoals (← goals.filterM fun g => return !(← g.isAssigned))
+
 open Lean Elab Tactic in
 /-- The units of the monoids of closed values, by the structure of the monoid `M`:
 
@@ -173,12 +263,22 @@ open Lean Elab Tactic in
 * the units of `ℤ` are `±1` (`Int.isUnit_iff`), of `ℕ` only `1` (`Nat.isUnit_iff`);
 * the units of `ℤ/n`, `n ≠ 0`, are the classes coprime to `n` (`zmod_isUnit_iff_coprime_val`),
   the modulus read from the monoid (`zmodModulus`), however the class is written;
+* a closed polynomial of `R[x]` whose normal form is a constant `C a` (its numerals, `C a`, and
+  any expression whose non-constant terms cancel) is a unit iff `a` is a unit of `R`
+  (`Polynomial.isUnit_C`); a non-constant normal form is refused, although over a ring with
+  nilpotents it may be a unit (`1 + 2x ∈ (ℤ/4)[x]`);
 * in any monoid, `1`, a product of units, a power of a unit and the negative of a unit are units.
 
-It fails on an element that is not a unit (`2 ∈ ℤ`, `0 ∈ ℚ`, a singular matrix). -/
+It fails on an element that is not a unit (`2 ∈ ℤ`, `0 ∈ ℚ`, a singular matrix, `0 ∈ ℚ[x]`). -/
 meta partial def isUnitEvidence : TacticM Unit :=
   CasCatalogue.Evidence.establish "Units" isUnitCases
 where
+  /-- `IsUnit p` for a polynomial `p` exhibited as a constant `C a`, from `IsUnit a`. -/
+  fromConstant : TacticM Unit := do
+    evalTactic (← `(tactic|
+      refine CasCatalogue.Algebra.Units.isUnit_of_constant (a := ?_) ?_ ?_))
+    constantCoefficient
+    isUnitCases
   /-- The cases above, tried in turn on the main goal `IsUnit x`. -/
   isUnitCases : TacticM Unit :=
   CasCatalogue.Evidence.closeByFirst m!"the value is not established to be a unit"
@@ -208,6 +308,15 @@ where
         [do evalTactic (← `(tactic| decide)),
          do evalTactic (← `(tactic| norm_num [Nat.coprime_iff_gcd_eq_one, ZMod.val]))],
      do
+      polynomialMonoid
+      evaluateNumerals
+      CasCatalogue.Evidence.closeByFirst m!"the polynomial is not a constant unit"
+        [fromConstant,
+         do
+          evalTactic (← `(tactic| refine CasCatalogue.Algebra.Units.isUnitOfEq (y := ?_) ?_ ?_))
+          normalizedPolynomial
+          fromConstant],
+     do
       let x := (← getMainTarget).consumeMData.appArg!
       if x.isAppOfArity ``HMul.hMul 6 then
         evalTactic (← `(tactic| refine IsUnit.mul ?_ ?_))
@@ -233,10 +342,12 @@ equations `⅟x · x = x · ⅟x = 1` are proved (by `isUnitEvidence`, the inver
 * in a division ring (`ℚ`, `ℝ`, `ℂ`), `x⁻¹` for `x ≠ 0` (`invertibleOfNonzero`);
 * in `ℤ`, `u⁻¹ = u` for `u = ±1`; in `ℕ`, `1⁻¹ = 1`;
 * in `ℤ/n`, `a⁻¹` by the extended Euclidean algorithm (`ZMod.inv`);
+* for a closed polynomial of `R[x]` whose normal form is a constant `C a`, the constant `C ⅟a`
+  (`invertibleOfConstant`, through the normal form, `invertibleOfEq`);
 * the inverse of a product, a power, a negative of units: `⅟b · ⅟a`, `(⅟a)ⁿ`, `-⅟a`
   (`invertibleMul`, `invertiblePow`, `invertibleNeg`).
 
-It fails on an element that is not a unit (`2 ∈ ℤ`, `0 ∈ ℚ`, a singular matrix). -/
+It fails on an element that is not a unit (`2 ∈ ℤ`, `0 ∈ ℚ`, a singular matrix, `0 ∈ ℚ[x]`). -/
 meta partial def invertibleEvidence : TacticM Unit :=
   CasCatalogue.Evidence.establish "Units" invertibleCases
 where
@@ -244,6 +355,12 @@ where
   isUnitOfElement : TacticM Unit := do
     expandDeterminant
     isUnitEvidence.isUnitCases
+  /-- `Invertible p` for a polynomial `p` exhibited as a constant `C a`, from `Invertible a`. -/
+  fromConstant : TacticM Unit := do
+    evalTactic (← `(tactic|
+      refine CasCatalogue.Algebra.Units.invertibleOfConstant (a := ?_) ?_ ?_))
+    constantCoefficient
+    invertibleCases
   /-- The cases above, tried in turn on the main goal `Invertible x`. -/
   invertibleCases : TacticM Unit :=
   CasCatalogue.Evidence.closeByFirst m!"the value is not established to be a unit"
@@ -267,6 +384,16 @@ where
       evalTactic (← `(tactic|
         refine @CasCatalogue.Algebra.Units.invertibleOfIsUnitZMod $n _ ?_))
       isUnitOfElement,
+     do
+      polynomialMonoid
+      evaluateNumerals
+      CasCatalogue.Evidence.closeByFirst m!"the polynomial is not a constant unit"
+        [fromConstant,
+         do
+          evalTactic (← `(tactic|
+            refine CasCatalogue.Algebra.Units.invertibleOfEq (y := ?_) ?_ ?_))
+          normalizedPolynomial
+          fromConstant],
      do
       let x := (← getMainTarget).consumeMData.appArg!
       if x.isAppOfArity ``HMul.hMul 6 then
