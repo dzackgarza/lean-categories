@@ -908,3 +908,14 @@ cites the existing integral lattice directly, so its module interface follows th
 registered integral-lattice forgetful functor.
 
 These are upstream source claims and probes, not reports of computational execution.
+
+Independent source review of `ddf331c` plus `4e85fc4` found no mathematical error
+in the inspected constructions and identified missing generator/coefficient-map
+exposure on the closed named `F9x` and `F9y` objects. Their object rows now cite
+the distinguished generator maps, and `F9x_constants` / `F9y_constants` are
+registered arrows from the selected `ZMod 3` coefficient set to those exact named
+presentations. They specialize the generic quotient's generator and constants
+maps at the displayed defining polynomials. Closed objects have no coefficient
+parameter in their telescope; their coefficient maps therefore use the existing
+full typed morphism interface instead of weakening the parameter-based constants
+validator. Catalogue and presentation probes rebuild successfully with this repair.

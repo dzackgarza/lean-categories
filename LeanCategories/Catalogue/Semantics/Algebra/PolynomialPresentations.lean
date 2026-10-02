@@ -70,6 +70,22 @@ noncomputable abbrev firstSet : SetsCat.{0} := AdjoinRoot firstPolynomial
 /-- Underlying set of the target quadratic presentation. -/
 noncomputable abbrev secondSet : SetsCat.{0} := AdjoinRoot secondPolynomial
 
+/-- The named source retains precisely the generic presentation's root. -/
+noncomputable def firstGenerator : CasCatalogue.Foundation.Objects.fin 1 ⟶ firstSet :=
+  generator (CommRingCat.of (ZMod 3)) firstPolynomial
+
+/-- The named target retains precisely the generic presentation's root. -/
+noncomputable def secondGenerator : CasCatalogue.Foundation.Objects.fin 1 ⟶ secondSet :=
+  generator (CommRingCat.of (ZMod 3)) secondPolynomial
+
+/-- The defining coefficient map of the named source presentation. -/
+noncomputable def firstConstants : (ZMod 3 : SetsCat.{0}) ⟶ firstSet :=
+  constants (CommRingCat.of (ZMod 3)) firstPolynomial
+
+/-- The defining coefficient map of the named target presentation. -/
+noncomputable def secondConstants : (ZMod 3 : SetsCat.{0}) ⟶ secondSet :=
+  constants (CommRingCat.of (ZMod 3)) secondPolynomial
+
 def firstIdentification : (forget CommRingCat).obj first ≅ firstSet := Iso.refl _
 def secondIdentification : (forget CommRingCat).obj second ≅ secondSet := Iso.refl _
 
@@ -101,10 +117,12 @@ normalized_registry .presentation
 
 normalized_registry .object
   { id := ⟨"obj.sets.f9_x"⟩, category := CategoryId.sets, name := "F9x"
-    declaration := `CasCatalogue.Algebra.PolynomialPresentations.firstSet }
+    declaration := `CasCatalogue.Algebra.PolynomialPresentations.firstSet
+    generator := some `CasCatalogue.Algebra.PolynomialPresentations.firstGenerator }
 normalized_registry .object
   { id := ⟨"obj.sets.f9_y"⟩, category := CategoryId.sets, name := "F9y"
-    declaration := `CasCatalogue.Algebra.PolynomialPresentations.secondSet }
+    declaration := `CasCatalogue.Algebra.PolynomialPresentations.secondSet
+    generator := some `CasCatalogue.Algebra.PolynomialPresentations.secondGenerator }
 normalized_registry .object
   { id := ⟨"obj.commutative_rings.f9_x"⟩, category := CategoryId.commutativeRings
     name := "F9x", declaration := `CasCatalogue.Algebra.PolynomialPresentations.first
@@ -123,5 +141,14 @@ normalized_registry .presentation
   { id := ⟨"cmp.f9.translation"⟩, name := "F9translation"
     source := ⟨"obj.commutative_rings.f9_x"⟩, target := ⟨"obj.commutative_rings.f9_y"⟩
     declaration := `CasCatalogue.Algebra.PolynomialPresentations.quadraticComparison }
+
+-- A closed quotient has no coefficient parameter in its object telescope, so its
+-- selected coefficient maps are registered arrows with their full source and target.
+normalized_registry .morphism
+  { id := ⟨"mor.sets.f9_x_constants"⟩, category := CategoryId.sets, name := "F9x_constants"
+    declaration := `CasCatalogue.Algebra.PolynomialPresentations.firstConstants }
+normalized_registry .morphism
+  { id := ⟨"mor.sets.f9_y_constants"⟩, category := CategoryId.sets, name := "F9y_constants"
+    declaration := `CasCatalogue.Algebra.PolynomialPresentations.secondConstants }
 
 end CasCatalogue
