@@ -32,6 +32,24 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Mathematical issues
 
+### Selected presentation actions lacked a domain-owned evaluation hook
+
+**Need:** the fixed B0 nonidentity polynomial-quotient comparison transports points along
+its actual chosen forward and inverse maps, retaining the coefficient map and defining quotient.
+**Evidence:** `PresentationComparisonEntry` exposed only the full isomorphism and endpoints;
+`PolynomialPresentation.comparison_root`, algebra commutation, and quotient/Taylor action laws
+already establish its mathematical action. Polynomial arithmetic declarations can be opaque in
+imported meta environments, so unfolding their implementations is not a public evaluation API.
+**Gap and impact:** no presentation row could supply its own intrinsic proof procedure analogous
+to literal evaluation; consumers otherwise had to name mathematical lemmas outside metadata.
+**Coverage:** source-only inspection of the presentation schema, validator, exporter declaration
+list, selected F9 construction, and imported quotient/Taylor laws; no downstream inputs inspected.
+**Repair:** optional validated presentation `evaluation` metadata, exported among row declarations;
+the selected F9 evaluator uses actual root/coefficient laws in both directions and generic ring
+map/cast laws. Intrinsic source tests cover selected points, powers, initial-ring numerals,
+false identity action, invalid procedures, and unrelated endpoint data. This supplies proof terms,
+not a decidable quotient equality or a new mathematical comparison.
+
 ### Named admission owners must survive carrier equality (B0 binders, LC-18)
 
 - **Need:** a binder's source object is admitted by that named object's own

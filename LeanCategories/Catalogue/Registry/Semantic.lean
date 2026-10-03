@@ -113,7 +113,7 @@ def SemanticEntry.declarations : SemanticEntry → Array Name
       e.ports.flatMap fun p => #[p.declaration, p.realization]
   | .fibration e => #[e.evidence]
   | .constructor e => #[e.semantics] ++ e.functorialAction.toArray
-  | .presentation e => #[e.declaration]
+  | .presentation e => #[e.declaration] ++ e.evaluation.toArray
   | .construction e => #[e.declaration]
   | .method _ => #[]
   | .property _ => #[]
@@ -2426,6 +2426,8 @@ object families, at its actual dependent parameters, checked under rigid locals.
 def validatePresentation (state : SemanticState) (e : PresentationComparisonEntry) :
     MetaM Unit := do
   if e.name.isEmpty then throwError "presentation {e.id.raw} has no surface name"
+  if let some evaluation := e.evaluation then
+    validateProofProcedure s!"presentation {e.id.raw}" "evaluation" evaluation
   if state.presentations.any (·.name == e.name) then
     throwError "presentation {e.id.raw}: its surface name is already registered"
   let some source := state.objects.find? (·.id == e.source)

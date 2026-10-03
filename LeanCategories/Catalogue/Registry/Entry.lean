@@ -463,6 +463,11 @@ structure PresentationComparisonEntry where
   source : ObjectId
   target : ObjectId
   declaration : Lean.Name
+  /-- Optional domain-owned proof procedure for the selected comparison’s point action,
+  in either direction. It rewrites or proves the actual goal using intrinsic mathematical laws;
+  it supplies no alternative comparison, endpoint, coefficient structure, or equality test.
+  Validated as a `meta` declaration of type `Lean.Elab.Tactic.TacticM Unit`. -/
+  evaluation : Option Lean.Name := none
   deriving Repr
 
 /-- A category-sensitive family of functors. Its full dependent Lean signature

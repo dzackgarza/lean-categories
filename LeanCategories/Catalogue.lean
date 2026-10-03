@@ -22,6 +22,7 @@ public import LeanCategories.Catalogue.Semantics.BinderTests
 public import LeanCategories.Catalogue.Semantics.DecidableElementTests
 public import LeanCategories.Catalogue.Semantics.UnitInverseTests
 public import LeanCategories.Catalogue.Semantics.FiniteSubsetLiteralTests
+public import LeanCategories.Catalogue.Semantics.PresentationEvaluationTests
 public import LeanCategories.Catalogue.Semantics.Algebra.Catalogue
 public import LeanCategories.Catalogue.Semantics.Algebra.Catalogue.Magmas
 public import LeanCategories.Catalogue.Semantics.Algebra.Catalogue.Rings

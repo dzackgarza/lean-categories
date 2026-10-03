@@ -89,6 +89,12 @@ noncomputable def comparison : AdjoinRoot firstPolynomial ≃ₐ[ZMod 3]
     AdjoinRoot.map_root, AdjoinRoot.map_of, AdjoinRoot.algebraMap_eq']
   exact map_ofNat (AdjoinRoot.of secondPolynomial) 2
 
+/-- The chosen inverse sends the target generator to `x - 2`. -/
+@[simp] theorem comparison_symm_root : comparison.symm (AdjoinRoot.root secondPolynomial) =
+    AdjoinRoot.root firstPolynomial - 2 := by
+  apply comparison.injective
+  simp only [comparison.apply_symm_apply, map_sub, comparison_root, map_ofNat, add_sub_cancel_right]
+
 /-- The target defining relation has degree two, so constants embed in its quotient. -/
 theorem degree_second : secondPolynomial.degree = 2 := by
   unfold secondPolynomial

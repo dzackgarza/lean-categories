@@ -9,6 +9,7 @@ public import LeanCategories.Catalogue.Semantics.Algebra.Algebras
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.Algebra.Algebras
 public meta import LeanCategories.Catalogue.Semantics.Algebra.NamedRings
+public meta import Lean.Elab.Tactic.Basic
 
 @[expose] public section
 
@@ -89,6 +90,67 @@ noncomputable def secondConstants : (ZMod 3 : SetsCat.{0}) ⟶ secondSet :=
 def firstIdentification : (forget CommRingCat).obj first ≅ firstSet := Iso.refl _
 def secondIdentification : (forget CommRingCat).obj second ≅ secondSet := Iso.refl _
 
+/-- The selected comparison's action on the selected source root. -/
+@[simp] theorem quadraticComparison_root :
+    quadraticComparison.hom (AdjoinRoot.root firstPolynomial) =
+      AdjoinRoot.root secondPolynomial + 2 := comparison_root
+
+/-- The selected comparison's inverse action on the selected target root. -/
+@[simp] theorem quadraticComparison_inv_root :
+    quadraticComparison.inv (AdjoinRoot.root secondPolynomial) =
+      AdjoinRoot.root firstPolynomial - 2 := comparison_symm_root
+
+/-- The selected point arrows retain the forward generator action. -/
+theorem quadraticComparison_generator (i : Fin 1) :
+    quadraticComparison.hom (firstGenerator i) = secondGenerator i + 2 := comparison_root
+
+/-- The selected point arrows retain the inverse generator action. -/
+theorem quadraticComparison_inv_generator (i : Fin 1) :
+    quadraticComparison.inv (secondGenerator i) = firstGenerator i - 2 := comparison_symm_root
+
+/-- The selected forward action retains the actual coefficient map. -/
+@[simp] theorem quadraticComparison_constants (c : ZMod 3) :
+    quadraticComparison.hom (firstConstants c) = secondConstants c :=
+  comparison.commutes c
+
+/-- The selected inverse action retains the actual coefficient map. -/
+@[simp] theorem quadraticComparison_inv_constants (c : ZMod 3) :
+    quadraticComparison.inv (secondConstants c) = firstConstants c :=
+  comparison.symm.commutes c
+
+/-- Evaluate selected F9 comparison actions by their intrinsic root/coefficient and ring laws.
+This produces proof terms, never a quotient decision procedure. Both directions retain their
+full chosen endpoints. Unsupported statements remain goals; false statements cannot be proved. -/
+meta def quadraticEvaluation : Lean.Elab.Tactic.TacticM Unit := do
+  let rewriteSelected : Lean.Elab.Tactic.TacticM Unit := Lean.Elab.Tactic.liftMetaTactic fun goal =>
+    goal.withContext do
+      let mut goal := goal
+      let mut progress := true
+      while progress do
+        progress := false
+        for statement in #[``quadraticComparison_root, ``quadraticComparison_inv_root,
+            ``quadraticComparison_constants, ``quadraticComparison_inv_constants,
+            ``quadraticComparison_generator, ``quadraticComparison_inv_generator] do
+          let saved ← Lean.Meta.saveState
+          try
+            let result ← goal.rewrite (← goal.getType)
+              (← Lean.Meta.mkConstWithFreshMVarLevels statement)
+            unless result.mvarIds.isEmpty do throwError "action law left a hypothesis"
+            goal ← goal.replaceTargetEq result.eNew result.eqProof
+            progress := true
+          catch _ => saved.restore
+      return [goal]
+  rewriteSelected
+  Lean.Elab.Tactic.evalTactic (← `(tactic|
+    simp only [CasCatalogue.Algebra.NamedRings.ringNumeral, TypeCat.ofHom_apply,
+      Int.coe_castRingHom, Int.cast_natCast, Nat.cast_one, Nat.cast_zero,
+      map_add, map_sub, map_mul, map_pow, map_zero, map_one, map_ofNat,
+      map_natCast, map_intCast,
+      CategoryTheory.Iso.hom_inv_id_apply, CategoryTheory.Iso.inv_hom_id_apply]))
+  unless (← Lean.Elab.Tactic.getGoals).isEmpty do
+    rewriteSelected
+    Lean.Elab.Tactic.evalTactic (← `(tactic| try rfl))
+
 end CasCatalogue.Algebra.PolynomialPresentations
 
 namespace CasCatalogue
@@ -140,7 +202,8 @@ normalized_registry .object
 normalized_registry .presentation
   { id := ⟨"cmp.f9.translation"⟩, name := "F9translation"
     source := ⟨"obj.commutative_rings.f9_x"⟩, target := ⟨"obj.commutative_rings.f9_y"⟩
-    declaration := `CasCatalogue.Algebra.PolynomialPresentations.quadraticComparison }
+    declaration := `CasCatalogue.Algebra.PolynomialPresentations.quadraticComparison
+    evaluation := some `CasCatalogue.Algebra.PolynomialPresentations.quadraticEvaluation }
 
 -- A closed quotient has no coefficient parameter in its object telescope, so its
 -- selected coefficient maps are registered arrows with their full source and target.
