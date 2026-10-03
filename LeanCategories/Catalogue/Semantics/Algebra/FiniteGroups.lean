@@ -59,7 +59,7 @@ def alternating (n : ℕ) : Subgroups.subobjectsGroupsCategory.{0} :=
 
 /-- The kernel subgroup of the actual selected group homomorphism. -/
 def kernel (G H : GrpCat.{0}) (f : G ⟶ H) : Subgroups.subobjectsGroupsCategory.{0} :=
-  subgroup G f.hom.ker
+  Subgroups.kernel G H f
 
 /-- Sign values `±1` expressed as parity in the additive group `ℤ/2`. -/
 def unitsParity : ℤˣ →* Multiplicative (ZMod 2) where

@@ -12,6 +12,7 @@ public import Mathlib.Analysis.SpecialFunctions.Exp
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Calculus.Taylor
+public import Mathlib.Analysis.Calculus.ContDiff.Deriv
 public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
@@ -132,6 +133,25 @@ composite applied map by map, its simp-normal form). -/
 /-- `C^∞(ℝ)`, the smooth maps `ℝ → ℝ`. -/
 abbrev smoothMaps : SetsCat.{0} := {f : ℝ → ℝ // ContDiff ℝ (⊤ : ℕ∞) f}
 
+/-- Apply an actual smooth function, including one returned by differentiation. -/
+def smoothApplication : (smoothMaps × reals : SetsCat.{0}) ⟶ reals :=
+  TypeCat.ofHom fun fa => fa.1.1 fa.2
+
+/-- Differentiation returns another smooth function, so its result can be evaluated,
+differentiated again, or passed to the existing Taylor operation. -/
+noncomputable def smoothDerivative : smoothMaps ⟶ smoothMaps :=
+  TypeCat.ofHom fun f => ⟨deriv f.1, (contDiff_infty_iff_deriv.mp f.2).2⟩
+
+/-- A smooth result is continuous and can be passed to definite integration. -/
+def smoothContinuous : smoothMaps ⟶ continuousMaps :=
+  TypeCat.ofHom fun f => ⟨f.1, f.2.continuous⟩
+
+@[simp] theorem smoothDerivative_apply (f : smoothMaps) (x : ℝ) :
+    smoothApplication (smoothDerivative f, x) = deriv f.1 x := rfl
+
+example : smoothApplication (smoothDerivative ⟨Real.sin, Real.contDiff_sin⟩, 0) = 1 := by
+  simp [smoothApplication, smoothDerivative, Real.deriv_sin]
+
 /-- The smooth map `f`, with the evidence that `f` is smooth. -/
 def admitSmooth (f : ℝ → ℝ) (h : ContDiff ℝ (⊤ : ℕ∞) f) :
     CasCatalogue.Foundation.Objects.fin 1 ⟶ smoothMaps :=
@@ -248,6 +268,7 @@ normalized_registry .binder
 normalized_registry .object
   { id := ⟨"obj.sets.smooth_maps"⟩, category := CategoryId.sets, name := "C^∞"
     declaration := `CasCatalogue.Algebra.Calculus.smoothMaps
+    application := some `CasCatalogue.Algebra.Calculus.smoothApplication
     admission := some `CasCatalogue.Algebra.Calculus.admitSmooth
     evidence := some `CasCatalogue.Algebra.Calculus.smoothEvidence }
 
@@ -280,5 +301,12 @@ normalized_registry .morphism
 normalized_registry .morphism
   { id := ⟨"mor.sets.taylor_expansion"⟩, category := CategoryId.sets, name := "taylor_expansion"
     declaration := `CasCatalogue.Algebra.Calculus.taylor }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.smooth_derivative"⟩, category := CategoryId.sets
+    name := "smooth_derivative", declaration := `CasCatalogue.Algebra.Calculus.smoothDerivative }
+normalized_registry .morphism
+  { id := ⟨"mor.sets.smooth_continuous"⟩, category := CategoryId.sets
+    name := "smooth_continuous", declaration := `CasCatalogue.Algebra.Calculus.smoothContinuous }
 
 end CasCatalogue

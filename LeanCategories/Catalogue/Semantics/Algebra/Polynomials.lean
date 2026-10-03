@@ -110,6 +110,64 @@ noncomputable def factors (R : CommRingCat.{0}) [IsDomain R] [NormalizationMonoi
     nonzeroPolynomials R ⟶ Foundation.FiniteSubsets.finiteSubsets (Polynomial R) :=
   TypeCat.ofHom fun p => (UniqueFactorizationMonoid.normalizedFactors p.1).toFinset
 
+/-- Reusable factorization data over the selected coefficient ring. Multiplicities and the
+unit are data. Product and irreducibility laws are specifications, not fields to be supplied
+by a computational implementation. -/
+abbrev factorizationData (R : CommRingCat.{0}) : SetsCat.{0} :=
+  (Polynomial R)ˣ × Multiset (Polynomial R)
+
+/-- Polynomial multisets retain repeated factors. -/
+abbrev factorMultisets (R : CommRingCat.{0}) : SetsCat.{0} := Multiset (Polynomial R)
+
+/-- Full factorization, unlike `factors`, retains multiplicity and the unit. -/
+noncomputable def factorization (R : CommRingCat.{0}) [IsDomain R] [NormalizationMonoid R]
+    [UniqueFactorizationMonoid R] : nonzeroPolynomials R ⟶ factorizationData R :=
+  TypeCat.ofHom fun p =>
+    ⟨Classical.choose (UniqueFactorizationMonoid.prod_normalizedFactors p.2),
+      UniqueFactorizationMonoid.normalizedFactors p.1⟩
+
+/-- The unit as a polynomial, immediately usable by polynomial operations. -/
+def factorizationUnit (R : CommRingCat.{0}) : factorizationData R ⟶ polynomials R :=
+  TypeCat.ofHom fun d => (d.1 : Polynomial R)
+
+/-- The factors with their multiplicities. -/
+def factorizationFactors (R : CommRingCat.{0}) : factorizationData R ⟶ factorMultisets R :=
+  TypeCat.ofHom Prod.snd
+
+/-- Reconstruct a polynomial from reusable data; this operation is defined for every datum. -/
+noncomputable def factorizationProduct (R : CommRingCat.{0}) :
+    factorizationData R ⟶ polynomials R :=
+  TypeCat.ofHom fun d => d.2.prod * (d.1 : Polynomial R)
+
+/-- The full factorization reconstructs the actual input polynomial. -/
+theorem factorization_product (R : CommRingCat.{0}) [IsDomain R] [NormalizationMonoid R]
+    [UniqueFactorizationMonoid R] (p : nonzeroPolynomials R) :
+    (factorization R ≫ factorizationProduct R) p = p.1 :=
+  Classical.choose_spec (UniqueFactorizationMonoid.prod_normalizedFactors p.2)
+
+/-- The factor entries of the canonical result are irreducible. This law is not a
+proof-producing component of the computational result. -/
+theorem factorization_irreducible (R : CommRingCat.{0}) [IsDomain R]
+    [NormalizationMonoid R] [UniqueFactorizationMonoid R] (p : nonzeroPolynomials R)
+    (q : Polynomial R) (hq : q ∈ (factorization R p).2) : Irreducible q :=
+  (UniqueFactorizationMonoid.prime_of_normalized_factor q hq).irreducible
+
+/-- Repeated factors survive reconstruction and can be reused by ordinary evaluation. -/
+example :
+    let R := CommRingCat.of ℤ
+    let d : factorizationData R := (1, {X - 1, X - 1})
+    (factorizationProduct R d).eval 3 = 4 := by
+  simp [factorizationProduct, Polynomial.eval_sub, Polynomial.eval_X]
+
+/-- Change coefficients of reusable data, preserving its unit and repeated factors.
+The mapped factors need not remain irreducible over the new ring. -/
+noncomputable def factorizationMap (R S : CommRingCat.{0}) (f : R ⟶ S) :
+    factorizationData R ⟶ factorizationData S :=
+  TypeCat.ofHom fun d =>
+    ⟨Units.map (Polynomial.mapRingHom f.hom).toMonoidHom d.1,
+      d.2.map (Polynomial.map f.hom)⟩
+
+
 open Classical in
 /-- The roots `R[x] ∖ {0} → 𝒫_fin(R)`, finitely many for a nonzero polynomial over a domain `R`
 (Mathlib `Polynomial.roots`, `Polynomial.mem_roots`). -/
@@ -144,6 +202,16 @@ theorem admit_roots (R : CommRingCat.{0}) [IsDomain R] (p : nonzeroPolynomials R
 noncomputable def map (R S : CommRingCat.{0}) (f : R ⟶ S) :
     (polynomials R : SetsCat.{0}) ⟶ polynomials S :=
   TypeCat.ofHom (Polynomial.map f.hom)
+
+/-- Reconstruction commutes with coefficient change. -/
+theorem factorizationMap_product (R S : CommRingCat.{0}) (f : R ⟶ S)
+    (d : factorizationData R) :
+    (factorizationMap R S f ≫ factorizationProduct S) d =
+      (factorizationProduct R ≫ map R S f) d := by
+  change (d.2.map (Polynomial.mapRingHom f.hom)).prod *
+      (Polynomial.mapRingHom f.hom) (d.1 : Polynomial R) =
+    (Polynomial.mapRingHom f.hom) (d.2.prod * (d.1 : Polynomial R))
+  rw [map_mul, map_multiset_prod]
 
 end CasCatalogue.Algebra.Polynomials
 
@@ -187,6 +255,37 @@ normalized_registry .object
 normalized_registry .morphism
   { id := ⟨"mor.sets.polynomial_factors"⟩, category := CategoryId.sets, name := "factors"
     declaration := `CasCatalogue.Algebra.Polynomials.factors }
+
+normalized_registry .object
+  { id := ⟨"obj.sets.polynomial_factorization_data"⟩, category := CategoryId.sets
+    name := "PolynomialFactorization"
+    declaration := `CasCatalogue.Algebra.Polynomials.factorizationData }
+
+normalized_registry .object
+  { id := ⟨"obj.sets.polynomial_factor_multisets"⟩, category := CategoryId.sets
+    name := "PolynomialFactorMultiset"
+    declaration := `CasCatalogue.Algebra.Polynomials.factorMultisets }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.polynomial_factorization"⟩, category := CategoryId.sets
+    name := "factorization", declaration := `CasCatalogue.Algebra.Polynomials.factorization }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.polynomial_factorization_unit"⟩, category := CategoryId.sets
+    name := "unit", declaration := `CasCatalogue.Algebra.Polynomials.factorizationUnit }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.polynomial_factorization_factors"⟩, category := CategoryId.sets
+    name := "factors_with_multiplicity"
+    declaration := `CasCatalogue.Algebra.Polynomials.factorizationFactors }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.polynomial_factorization_product"⟩, category := CategoryId.sets
+    name := "product", declaration := `CasCatalogue.Algebra.Polynomials.factorizationProduct }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.polynomial_factorization_map"⟩, category := CategoryId.sets
+    name := "map_factorization", declaration := `CasCatalogue.Algebra.Polynomials.factorizationMap }
 
 normalized_registry .morphism
   { id := ⟨"mor.sets.polynomial_roots"⟩, category := CategoryId.sets, name := "roots"

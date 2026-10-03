@@ -48,3 +48,32 @@ noncomputable def kernelFunctor : Arrow C ⥤ (isMonoArrow C).FullSubcategory wh
     · simp
 
 end LeanCategories
+
+namespace LeanCategories
+
+universe v u
+
+variable (C : Type u) [Category.{v} C]
+
+/-- Epimorphisms as chosen quotient arrows, retaining their projections. -/
+def isEpiArrow : ObjectProperty (Arrow C) := fun f ↦ Epi f.hom
+
+variable [HasZeroMorphisms C] [HasCokernels C]
+
+/-- A cokernel together with its actual projection. Commutative squares act by
+`cokernel.map`; the universal laws remain formal specifications of this construction. -/
+@[simps]
+noncomputable def cokernelFunctor : Arrow C ⥤ (isEpiArrow C).FullSubcategory where
+  obj f := ⟨Arrow.mk (cokernel.π f.hom), inferInstanceAs (Epi (cokernel.π f.hom))⟩
+  map {f g} sq := ObjectProperty.homMk
+    (Arrow.homMk sq.right (cokernel.map f.hom g.hom sq.left sq.right sq.w.symm) (by simp))
+  map_id f := by
+    ext
+    · simp
+    · exact coequalizer.hom_ext (by simp)
+  map_comp _ _ := by
+    ext
+    · simp
+    · exact coequalizer.hom_ext (by simp)
+
+end LeanCategories

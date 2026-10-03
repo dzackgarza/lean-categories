@@ -7,6 +7,8 @@ module
 public import LeanCategories.Catalogue.Semantics.Algebra.Fields
 public import LeanCategories.Catalogue.Semantics.Algebra.Polynomials
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+public import Mathlib.Tactic.FinCases
 public import Mathlib.LinearAlgebra.Matrix.Rank
 public import Mathlib.LinearAlgebra.Dimension.Finrank
 public import LeanCategories.CategoryTheory.OneCat.KernelFunctor
@@ -129,6 +131,16 @@ def apply (n : ℕ) (K : CommRingCat.{0}) :
     (matrices n K × vectors K n : SetsCat.{0}) ⟶ vectors K n :=
   TypeCat.ofHom fun p => p.1.mulVec p.2
 
+/-- The actual linear morphism defined by a matrix, retaining its selected scalar ring
+and both vector-module endpoints. Its kernels and cokernels are module constructions. -/
+def matrixLinearMap (n : ℕ) (K : CommRingCat.{0}) (M : matrices n K) :
+    vectorModule (RingCat.of K) n ⟶ vectorModule (RingCat.of K) n :=
+  ModuleCat.ofHom M.mulVecLin
+
+/-- The structured morphism has precisely the existing matrix application. -/
+theorem matrixLinearMap_apply (n : ℕ) (K : CommRingCat.{0}) (M : matrices n K)
+    (v : vectors K n) : (matrixLinearMap n K M).hom v = M.mulVec v := rfl
+
 /-- The determinant. -/
 def det (n : ℕ) (K : CommRingCat.{0}) : matrices n K ⟶ (K : SetsCat.{0}) :=
   TypeCat.ofHom fun M => M.det
@@ -226,6 +238,40 @@ where
 def companion (n : ℕ) (K : CommRingCat.{0}) : monics n K ⟶ matrices n K :=
   TypeCat.ofHom fun p => Matrix.of fun i j =>
     if j.val + 1 = n then -p.1.coeff i.val else if i.val = j.val + 1 then 1 else 0
+
+/-- The quadratic companion convention, over the actual selected coefficient ring. -/
+theorem companion_two (K : CommRingCat.{0}) (p : monics 2 K) :
+    companion 2 K p = !![0, -p.1.coeff 0; 1, -p.1.coeff 1] := by
+  ext i j
+  fin_cases i <;> fin_cases j <;> rfl
+
+/-- Determinant of the computed quadratic companion. -/
+theorem companion_two_det (K : CommRingCat.{0}) (p : monics 2 K) :
+    (companion 2 K ≫ det 2 K) p = p.1.coeff 0 := by
+  change (companion 2 K p).det = _
+  rw [companion_two]
+  simp [Matrix.det_fin_two]
+
+/-- Trace of the computed quadratic companion. -/
+theorem companion_two_trace (K : CommRingCat.{0}) (p : monics 2 K) :
+    (companion 2 K ≫ trace 2 K) p = -p.1.coeff 1 := by
+  change (companion 2 K p).trace = _
+  rw [companion_two]
+  simp [Matrix.trace, Fin.sum_univ_two]
+
+/-- Characteristic-polynomial computation on the companion returns its original polynomial.
+This intrinsic quadratic workflow uses the registered maps by composition. -/
+theorem companion_two_charpoly (K : CommRingCat.{0}) [Nontrivial K] (p : monics 2 K) :
+    (companion 2 K ≫ charpoly 2 K) p = p.1 := by
+  change (companion 2 K p).charpoly = _
+  rw [Matrix.charpoly_fin_two]
+  have hd := companion_two_det K p
+  have ht := companion_two_trace K p
+  change (companion 2 K p).det = p.1.coeff 0 at hd
+  change (companion 2 K p).trace = -p.1.coeff 1 at ht
+  rw [hd, ht, p.2.1.as_sum, p.2.2]
+  simp [Finset.sum_range_succ]
+  ring
 
 /-- The kernel `{v | M v = 0}`. -/
 def ker (n : ℕ) (K : CommRingCat.{0}) : matrices n K ⟶ powerSet (Fin n → K) :=
@@ -383,6 +429,10 @@ normalized_registry .morphism
 normalized_registry .morphism
   { id := ⟨"mor.sets.matrix_charpoly"⟩, category := CategoryId.sets, name := "charpoly"
     declaration := `CasCatalogue.Algebra.LinearAlgebra.charpoly }
+
+normalized_registry .morphism
+  { id := ⟨"mor.modules.matrix_linear_map"⟩, category := CategoryId.modulesR
+    name := "matrix_linear_map", declaration := `CasCatalogue.Algebra.LinearAlgebra.matrixLinearMap }
 
 normalized_registry .morphism
   { id := ⟨"mor.sets.companion_matrix"⟩, category := CategoryId.sets, name := "companion_matrix"

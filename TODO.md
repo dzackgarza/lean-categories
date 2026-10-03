@@ -110,6 +110,43 @@ structural `algebrasForget`; no additional wrapper is needed for that datum.
 This bounded interface pass does not settle the previously recorded interpretation
 and domain decision for general-ring matrix rank.
 
+The strengthened mathematical workflow pass keeps selected coefficient rings and
+the existing finite-set `factors` operation unchanged. `Polynomials.factorization`
+returns a unit and a multiplicity-preserving polynomial multiset; callable unit,
+factor, reconstruction and coefficient-change maps make that data reusable.
+Reconstruction, irreducibility and transport laws are separate theorems, not
+proof fields demanded of computational results. Existing polynomial evaluation,
+roots, selected coefficient maps, and matrix companion/determinant/trace/charpoly
+operations already compose at their actual selected parameters. Intrinsic
+quadratic companion composition laws now check all three matrix operations.
+
+The dual generic cokernel functor retains the projection and acts on commutative
+squares. Module quotients publicly expose that projection and their actual
+quotient module; its structural route inherits rank and cardinality. Module
+subobjects expose their inclusion and domain without changing ambient-membership
+semantics. Form restriction exposes the selected `R`, value module, formed object
+and submodule as a callable constructor, with its formed inclusion and restricted
+pairing operation. Group kernels now act functorially on squares at the existing
+generic subgroup owner, preserving the original concrete kernel and inclusion.
+Smooth differentiation returns smooth maps, with application and conversion to
+continuous maps for reuse in Taylor expansion and integration. The existing
+selected nonidentity polynomial presentation already has both directions,
+coefficient maps, and intrinsic examples of reuse in ring operations.
+
+These typed object, morphism, functor and application declarations supply abstract
+computational inputs, outputs and callable components through existing metadata.
+They require no eager enumeration of an infinite carrier or function and do not
+turn the formal factorization, cartesian or universal laws into backend proof
+obligations. This pass makes no assertion about downstream computations.
+The matrix-to-linear-morphism declaration retains the supplied matrix, selected
+scalar ring and both vector modules, with application exactly the existing
+`mulVec`; module kernels and cokernels therefore consume the actual defining map.
+Independent source review of final eight-file delta
+`a6b44d6c8e51a69c99051a7d905a2eba2e2d34862c904cfef6708bec6d4a59e2`
+against `3d4634c` found no concrete mathematical defect. Focused owners,
+default build, `LeanCategories.All`, vacuity, axiom audit and local conventions
+passed sequentially on the final source with `LEAN_NUM_THREADS=1`.
+
 Within a sweep, source dependencies and traversal order come from the existing
 [source manifest](corpus/foundational-source-corpus.md); unit IDs and
 their mathematical prerequisites come from the complete source catalogues.

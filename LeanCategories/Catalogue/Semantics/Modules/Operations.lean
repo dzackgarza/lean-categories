@@ -47,6 +47,7 @@ namespace CasCatalogue
 namespace CategoryId
 def ideals : CategoryId := ⟨"cat.ideals_r"⟩
 def coreSubobjectsModules : CategoryId := ⟨"cat.core_subobjects_modules_r"⟩
+def quotientsModules : CategoryId := ⟨"cat.quotients_modules_r"⟩
 end CategoryId
 
 namespace FunctorId
@@ -55,6 +56,10 @@ def arrowsModulesImage : FunctorId := ⟨"fun.arrows_modules.image"⟩
 def subobjectsModulesForget : FunctorId := ⟨"fun.subobjects_modules.forget"⟩
 def subobjectsModulesDomain : FunctorId := ⟨"fun.subobjects_modules.domain"⟩
 def subobjectsModulesRank : FunctorId := ⟨"fun.subobjects_modules.rank"⟩
+def subobjectsModulesInclusion : FunctorId := ⟨"fun.subobjects_modules.inclusion"⟩
+def arrowsModulesCokernel : FunctorId := ⟨"fun.arrows_modules.cokernel"⟩
+def quotientsModulesProjection : FunctorId := ⟨"fun.quotients_modules.projection"⟩
+def quotientsModulesCodomain : FunctorId := ⟨"fun.quotients_modules.codomain"⟩
 end FunctorId
 
 namespace Modules.Operations
@@ -82,6 +87,15 @@ def SubobjectsForgetExpr : FunctorExpr SubobjectsModules Constructed.SubobjectsS
   .atomic FunctorId.subobjectsModulesForget
 def SubobjectsDomainExpr : FunctorExpr SubobjectsModules Modules.Modules :=
   .atomic FunctorId.subobjectsModulesDomain
+def SubobjectsInclusionExpr : FunctorExpr SubobjectsModules ArrowsModules :=
+  .atomic FunctorId.subobjectsModulesInclusion
+def QuotientsModules : CategoryExpr := .atom CategoryId.quotientsModules
+def CokernelExpr : FunctorExpr ArrowsModules QuotientsModules :=
+  .atomic FunctorId.arrowsModulesCokernel
+def QuotientsProjectionExpr : FunctorExpr QuotientsModules ArrowsModules :=
+  .atomic FunctorId.quotientsModulesProjection
+def QuotientsCodomainExpr : FunctorExpr QuotientsModules Modules.Modules :=
+  .atomic FunctorId.quotientsModulesCodomain
 def CoreSubobjectsModules : CategoryExpr :=
   .construct ConstructorId.core #[.category SubobjectsModules]
 def SubobjectsRankExpr : FunctorExpr CoreSubobjectsModules Foundation.Cardinality.Cardinals :=
@@ -133,6 +147,53 @@ def subobjectsDomainRealization (R : RingCat.{u}) :
   { sourceRealization := subobjectsModulesRealization R
     targetRealization := CasCatalogue.Modules.CatalogueRegistration.modulesRealization R }
 
+/-- The defining inclusion, retaining its source module and ambient target. -/
+def subobjectsInclusionDeclaration (R : RingCat.{u}) :
+    subobjectsModulesCategory R ⥤ arrowsModulesCategory R :=
+  (Constructors.isMonoArrow (Modules.Mathlib.ModulesOf.{u, u} R)).ι
+def subobjectsInclusionRealization (R : RingCat.{u}) :
+    FunctorRealization SubobjectsInclusionExpr (subobjectsModulesCategory R)
+      (arrowsModulesCategory R) (subobjectsInclusionDeclaration R) :=
+  { sourceRealization := subobjectsModulesRealization R
+    targetRealization := arrowsModulesRealization R }
+
+/-- Chosen quotient modules are epimorphisms, not merely quotient carriers. -/
+def quotientsModulesCategory (R : RingCat.{u}) : ObjCat.{u + 1, u} :=
+  Cat.of (LeanCategories.isEpiArrow (ModuleCat.{u} R)).FullSubcategory
+def quotientsModulesRealization (R : RingCat.{u}) :
+    CategoryRealization QuotientsModules (quotientsModulesCategory R) := {}
+
+/-- The cokernel retains the actual projection from the map's codomain. -/
+def cokernelDeclaration (R : RingCat.{u}) :
+    arrowsModulesCategory R ⥤ quotientsModulesCategory R :=
+  LeanCategories.cokernelFunctor (ModuleCat.{u} R)
+def cokernelRealization (R : RingCat.{u}) :
+    FunctorRealization CokernelExpr (arrowsModulesCategory R) (quotientsModulesCategory R)
+      (cokernelDeclaration R) :=
+  { sourceRealization := arrowsModulesRealization R
+    targetRealization := quotientsModulesRealization R }
+
+/-- A quotient's defining projection, with both module endpoints. -/
+def quotientsProjectionDeclaration (R : RingCat.{u}) :
+    quotientsModulesCategory R ⥤ arrowsModulesCategory R :=
+  (LeanCategories.isEpiArrow (ModuleCat.{u} R)).ι
+def quotientsProjectionRealization (R : RingCat.{u}) :
+    FunctorRealization QuotientsProjectionExpr (quotientsModulesCategory R)
+      (arrowsModulesCategory R) (quotientsProjectionDeclaration R) :=
+  { sourceRealization := quotientsModulesRealization R
+    targetRealization := arrowsModulesRealization R }
+
+/-- A quotient has its selected quotient module as codomain. Structural inheritance here
+is from that actual module, including its rank and underlying cardinality. -/
+def quotientsCodomainDeclaration (R : RingCat.{u}) :
+    quotientsModulesCategory R ⥤ Modules.Mathlib.ModulesOf.{u, u} R :=
+  quotientsProjectionDeclaration R ⋙ Arrow.rightFunc
+def quotientsCodomainRealization (R : RingCat.{u}) :
+    FunctorRealization QuotientsCodomainExpr (quotientsModulesCategory R)
+      (Modules.Mathlib.ModulesOf.{u, u} R) (quotientsCodomainDeclaration R) :=
+  { sourceRealization := quotientsModulesRealization R
+    targetRealization := CasCatalogue.Modules.CatalogueRegistration.modulesRealization R }
+
 def coreSubobjectsModulesCategory (R : RingCat.{u}) :=
   Constructors.core (subobjectsModulesCategory R)
 def coreSubobjectsModulesRealization (R : RingCat.{u}) :
@@ -153,6 +214,43 @@ end
 end Modules.Operations
 
 open Modules.Operations
+
+normalized_registry .category
+  { id := CategoryId.quotientsModules, expression := QuotientsModules
+    declaration := `CasCatalogue.Modules.Operations.quotientsModulesCategory
+    realization := `CasCatalogue.Modules.Operations.quotientsModulesRealization }
+normalized_registry .functor
+  { id := FunctorId.arrowsModulesCokernel, source := ArrowsModules, target := QuotientsModules
+    declaration := `CasCatalogue.Modules.Operations.cokernelDeclaration
+    realization := `CasCatalogue.Modules.Operations.cokernelRealization
+    expression := CokernelExpr }
+normalized_registry .functor
+  { id := FunctorId.quotientsModulesProjection, source := QuotientsModules, target := ArrowsModules
+    declaration := `CasCatalogue.Modules.Operations.quotientsProjectionDeclaration
+    realization := `CasCatalogue.Modules.Operations.quotientsProjectionRealization
+    expression := QuotientsProjectionExpr }
+normalized_registry .functor
+  { id := FunctorId.quotientsModulesCodomain, source := QuotientsModules, target := Modules.Modules
+    declaration := `CasCatalogue.Modules.Operations.quotientsCodomainDeclaration
+    realization := `CasCatalogue.Modules.Operations.quotientsCodomainRealization
+    expression := QuotientsCodomainExpr, structural := true }
+normalized_registry .functor
+  { id := FunctorId.subobjectsModulesInclusion, source := SubobjectsModules, target := ArrowsModules
+    declaration := `CasCatalogue.Modules.Operations.subobjectsInclusionDeclaration
+    realization := `CasCatalogue.Modules.Operations.subobjectsInclusionRealization
+    expression := SubobjectsInclusionExpr }
+normalized_registry .method
+  { id := ⟨"meth.arrow_coker"⟩, name := "coker", owner := ArrowsModules
+    functor := FunctorId.arrowsModulesCokernel, shape := .object }
+normalized_registry .method
+  { id := ⟨"meth.quotient_projection"⟩, name := "projection", owner := QuotientsModules
+    functor := FunctorId.quotientsModulesProjection, shape := .object }
+normalized_registry .method
+  { id := ⟨"meth.quotient_codomain"⟩, name := "codomain", owner := QuotientsModules
+    functor := FunctorId.quotientsModulesCodomain, shape := .object }
+normalized_registry .method
+  { id := ⟨"meth.submodule_inclusion"⟩, name := "inclusion", owner := SubobjectsModules
+    functor := FunctorId.subobjectsModulesInclusion, shape := .object }
 
 normalized_registry .category
   { id := CategoryId.ideals, declaration := `CasCatalogue.Modules.Operations.idealsCategory
@@ -179,6 +277,10 @@ normalized_registry .functor
     declaration := `CasCatalogue.Modules.Operations.subobjectsDomainDeclaration
     realization := `CasCatalogue.Modules.Operations.subobjectsDomainRealization
     expression := SubobjectsDomainExpr }
+normalized_registry .method
+  { id := ⟨"meth.submodule_domain"⟩, name := "domain", owner := SubobjectsModules
+    functor := FunctorId.subobjectsModulesDomain, shape := .object }
+
 normalized_registry .category
   { id := CategoryId.coreSubobjectsModules
     declaration := `CasCatalogue.Modules.Operations.coreSubobjectsModulesCategory

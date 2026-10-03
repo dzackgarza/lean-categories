@@ -52,6 +52,28 @@ namespace Modules.Bilinear.Valued.Kernels
 
 universe u
 
+/-- Restrict the selected form to a selected submodule. This is a callable object
+construction, separate from the formal cartesian-lift laws. -/
+noncomputable def restricted (R : CommRingCat.{u}) (W : ModuleCat.{u} R)
+    (X : BilinModuleCat R W) (N : Submodule R X.carrier) : BilinModuleCat R W :=
+  X.restrict N
+
+/-- The defining formed inclusion of the computed restriction. -/
+noncomputable def restrictedInclusion (R : CommRingCat.{u}) (W : ModuleCat.{u} R)
+    (X : BilinModuleCat R W) (N : Submodule R X.carrier) : restricted R W X N ⟶ X :=
+  X.restrictInclusion N
+
+/-- Compute the restricted pairing in the original selected value module. -/
+noncomputable def restrictedPairing (R : CommRingCat.{u}) (W : ModuleCat.{u} R)
+    (X : BilinModuleCat R W) (N : Submodule R X.carrier) :
+    (N × N : Type u) ⟶ (W : Type u) :=
+  TypeCat.ofHom fun xy => (restricted R W X N).pairing xy.1 xy.2
+
+/-- Restriction preserves the actual selected form, not merely its symmetry class. -/
+theorem restrictedPairing_apply (R : CommRingCat.{u}) (W : ModuleCat.{u} R)
+    (X : BilinModuleCat R W) (N : Submodule R X.carrier) (x y : N) :
+    restrictedPairing R W X N (x, y) = X.pairing x.val y.val := rfl
+
 def ArrowsModules : CategoryExpr := .construct ConstructorId.arrow #[.category Modules.Modules]
 def SubobjectsModules : CategoryExpr :=
   .construct ConstructorId.subobjects #[.category Modules.Modules]
@@ -217,6 +239,18 @@ end
 end Modules.Bilinear.Valued.Kernels
 
 open Modules.Bilinear.Valued.Kernels
+
+normalized_registry .object
+  { id := ⟨"obj.bilin_module.restriction"⟩, category := CategoryId.bilinModule
+    name := "RestrictedForm", declaration := `CasCatalogue.Modules.Bilinear.Valued.Kernels.restricted }
+normalized_registry .morphism
+  { id := ⟨"mor.bilin_module.restriction_inclusion"⟩, category := CategoryId.bilinModule
+    name := "restriction_inclusion"
+    declaration := `CasCatalogue.Modules.Bilinear.Valued.Kernels.restrictedInclusion }
+normalized_registry .morphism
+  { id := ⟨"mor.sets.restricted_form_pairing"⟩, category := CategoryId.sets
+    name := "restricted_pairing"
+    declaration := `CasCatalogue.Modules.Bilinear.Valued.Kernels.restrictedPairing }
 
 normalized_registry .category
   { id := CategoryId.arrowsModules
