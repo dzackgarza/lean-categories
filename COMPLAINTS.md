@@ -373,6 +373,34 @@ not a decidable quotient equality or a new mathematical comparison.
 - **Repair link:** `audit-authored-definitions` after FC01 remapping closes; repair or rename `IsJordanCanonicalInBasis` and update affected consumers while preserving `IsJordanMatrix` as the exact matrix predicate.
 
 
+### Chosen output structures absent from existing public families
+
+- **Need:** B0's typed-family and group-construction requirements, and the supplied
+  structures in `LinearAlgebra`'s own module documentation: `Aⁿ` is a product
+  additive monoid, `Rⁿ` a scalar module, and square matrices have matrix multiplication.
+  The existing named `ℚ`, `ℝ`, and `ℂ` support field-dependent `span`/`dim`.
+- **Source finding:** only set-valued `Vec`/`Mat` families and ring-valued number
+  systems were public; their chosen additive/module/matrix-ring and named field
+  objects were missing. Generic `End` existed without a construction presentation.
+  The group-action stabilizer comparison existed without its chosen mono into
+  the actual acting group.
+- **Repair (2026-10-03):** `LinearAlgebra.additiveVectors`, `vectorModule`, and
+  `matrixRing` retain the selected operations and parameters; `Fields` retains
+  the named commutative rings in its rational/real/complex field objects.
+  Each carrier identification is checked along a registered structural route.
+  `CommMonoids.ringsAdditiveMonoidCarrierCell` identifies the resulting additive
+  monoid carrier route with the existing multiplicative ring carrier route.
+  `Subgroups.subgroup` owns the chosen mono; `Automorphisms.actionStabilizer`
+  retains the actual `ρ : G → Perm(X)` and ambient `G`, with no faithfulness
+  restriction. `End` is registered at its generic selected-category owner.
+- **Coverage:** upstream mathematical owners, their examples, Mathlib's product,
+  matrix, `IsField`, conjugation and subgroup-comap definitions; no downstream
+  source or outcome was used.
+- **Checks:** independent source review found no concrete mathematical defect;
+  focused owners, default/All builds, vacuity, axiom audit, and conventions passed
+  on the final source. The trivial-action and noncommutative-matrix separating
+  examples elaborate with the owners. Exact source delta is recorded in `TODO.md`.
+
 ### Non-inherited constructions (`Aut`, `Stab`) have no method presentation
 
 - **Need:** the owner's B0 directive, "Group-valued constructions (Aut, subgroups, stabilizers,

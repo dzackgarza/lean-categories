@@ -141,6 +141,16 @@ def commutativeRingsMonoidsCell :
       (commutativeRingsMultiplicative.{u} ≫ commutativeMonoidsMonoid.{u}).toFunctor :=
   NatIso.ofComponents (fun _ => Iso.refl _) (fun _ => rfl)
 
+/-- Forgetting a ring through its additive monoid retains the same carrier and
+functions as the existing multiplicative route. Only the set-valued composites
+are compared; their additive and multiplicative operations stay distinct. -/
+def ringsAdditiveMonoidCarrierCell :
+    ringsAdditiveCommutative.{u}.toFunctor ⋙
+      additiveCommutativeMonoidsAdditiveMonoid.{u}.toFunctor ⋙
+      CatalogueRegistration.additiveMonoidsUnderlying.{u} ≅
+        LeanCategories.Algebra.ringCarrierMultiplicative.{u} :=
+  NatIso.ofComponents (fun _ => Iso.refl _) (fun _ => rfl)
+
 end Algebra.CommMonoids
 
 open Algebra.CommMonoids
@@ -200,6 +210,15 @@ normalized_registry .cell
     right := #[.functor FunctorId.commutativeRingsMultiplicative,
       .functor FunctorId.commutativeMonoidsMonoid]
     declaration := `CasCatalogue.Algebra.CommMonoids.commutativeRingsMonoidsCell
+    invertible := true }
+
+normalized_registry .cell
+  { id := ⟨"cell.rings.additive_monoid_carrier"⟩, source := Rings, target := Foundation.Sets
+    left := #[.functor FunctorId.ringsAdditiveCommutative,
+      .functor FunctorId.additiveCommutativeMonoidsAdditiveMonoid,
+      .functor FunctorId.additiveMonoidsUnderlying]
+    right := ringsToSets
+    declaration := `CasCatalogue.Algebra.CommMonoids.ringsAdditiveMonoidCarrierCell
     invertible := true }
 
 end CasCatalogue

@@ -70,6 +70,11 @@ def subobjectsGroupsRealization :
 def arrowsGroupsCategory := Constructors.arrow Algebra.Groups.{u}
 def arrowsGroupsRealization : CategoryRealization ArrowsGroups arrowsGroupsCategory.{u} := {}
 
+/-- The subgroup's chosen inclusion, with its actual ambient group retained. -/
+def subgroup (G : GrpCat.{u}) (H : Subgroup G) : subobjectsGroupsCategory.{u} :=
+  ⟨Arrow.mk (GrpCat.ofHom H.subtype),
+    (GrpCat.mono_iff_injective _).mpr Subtype.val_injective⟩
+
 /-- A subgroup is the group it is: the domain of its inclusion. -/
 def domainDeclaration : subobjectsGroupsCategory.{u} ⥤ Algebra.Groups.{u} :=
   (Constructors.isMonoArrow Algebra.Groups.{u}).ι ⋙ Arrow.leftFunc

@@ -5,9 +5,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Catalogue.Semantics.Exceptional.CatalogueRegistration
+public import LeanCategories.Catalogue.Semantics.Algebra.NamedCommutativeRings
 public import Mathlib.Algebra.Field.IsField
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.Algebra.Catalogue.Rings
+public meta import LeanCategories.Catalogue.Semantics.Algebra.NamedRings
 
 @[expose] public section
 
@@ -57,6 +59,30 @@ abbrev ring (K : LeanCategories.Algebra.FieldCat.{u}) : CommRingCat.{u} := K.obj
 noncomputable def fieldStructure (K : LeanCategories.Algebra.FieldCat.{u}) : Field (ring K) :=
   K.property.toField
 
+/-- The named rational field refines its already selected commutative ring. -/
+def rationals : LeanCategories.Algebra.FieldCat.{0} :=
+  ⟨NamedCommutativeRings.rationals, Field.toIsField ℚ⟩
+
+/-- The named real field refines its already selected commutative ring. -/
+noncomputable def reals : LeanCategories.Algebra.FieldCat.{0} :=
+  ⟨NamedCommutativeRings.reals, Field.toIsField ℝ⟩
+
+/-- The named complex field refines its already selected commutative ring. -/
+noncomputable def complexes : LeanCategories.Algebra.FieldCat.{0} :=
+  ⟨NamedCommutativeRings.complexes, Field.toIsField ℂ⟩
+
+/-- Forgetting the rational field structure retains the existing named carrier. -/
+def rationalsIdentification :
+    (forget CommRingCat).obj (ring rationals) ≅ NamedRings.rationals := Iso.refl _
+
+/-- Forgetting the real field structure retains the existing named carrier. -/
+noncomputable def realsIdentification :
+    (forget CommRingCat).obj (ring reals) ≅ NumberSystems.reals := Iso.refl _
+
+/-- Forgetting the complex field structure retains the existing named carrier. -/
+noncomputable def complexesIdentification :
+    (forget CommRingCat).obj (ring complexes) ≅ NumberSystems.complexes := Iso.refl _
+
 end Algebra.Fields
 
 normalized_registry .classifier
@@ -68,5 +94,32 @@ normalized_registry .category
   { id := CategoryId.fields, name := "Fields", expression := Algebra.Fields.Fields
     declaration := `CasCatalogue.Algebra.Fields.fieldsCategory
     realization := `CasCatalogue.Algebra.Fields.fieldsRealization }
+
+normalized_registry .object
+  { id := ⟨"obj.fields.rationals"⟩, category := CategoryId.fields, name := "ℚ"
+    declaration := `CasCatalogue.Algebra.Fields.rationals
+    refines := some
+      { base := ⟨"obj.sets.rationals"⟩
+        route := #[.classifierForget ClassifierId.commutativeRingsField,
+          .functor FunctorId.commutativeRingsRings] ++ ringsToSets
+        identification := `CasCatalogue.Algebra.Fields.rationalsIdentification } }
+
+normalized_registry .object
+  { id := ⟨"obj.fields.reals"⟩, category := CategoryId.fields, name := "ℝ"
+    declaration := `CasCatalogue.Algebra.Fields.reals
+    refines := some
+      { base := ⟨"obj.sets.reals"⟩
+        route := #[.classifierForget ClassifierId.commutativeRingsField,
+          .functor FunctorId.commutativeRingsRings] ++ ringsToSets
+        identification := `CasCatalogue.Algebra.Fields.realsIdentification } }
+
+normalized_registry .object
+  { id := ⟨"obj.fields.complexes"⟩, category := CategoryId.fields, name := "ℂ"
+    declaration := `CasCatalogue.Algebra.Fields.complexes
+    refines := some
+      { base := ⟨"obj.sets.complexes"⟩
+        route := #[.classifierForget ClassifierId.commutativeRingsField,
+          .functor FunctorId.commutativeRingsRings] ++ ringsToSets
+        identification := `CasCatalogue.Algebra.Fields.complexesIdentification } }
 
 end CasCatalogue

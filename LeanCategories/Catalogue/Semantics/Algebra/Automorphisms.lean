@@ -179,6 +179,38 @@ theorem stabilizer_sets (p : (𝟭 (Type u)).Elements) :
 def actionHom (G : Type*) [Group G] (X : Type u) [MulAction G X] : G →* Aut X :=
   Aut.mulEquivPerm.symm.toMonoidHom.comp (MulAction.toPermHom G X)
 
+/-- The stabilizer for the selected action homomorphism, as a mono into the
+selected acting group. It is the inverse image of the permutation stabilizer,
+not the permutation stabilizer's ambient automorphism group. -/
+def actionStabilizer (G : GrpCat.{0}) (X : Type)
+    (ρ : G ⟶ GrpCat.of (Equiv.Perm X)) (x : X) :
+    Subgroups.subobjectsGroupsCategory.{0} :=
+  Subgroups.subgroup G ((MulAction.stabilizer (Equiv.Perm X) x).comap ρ.hom)
+
+/-- Membership uses the actual selected action map. -/
+theorem mem_actionStabilizer (G : GrpCat.{0}) (X : Type)
+    (ρ : G ⟶ GrpCat.of (Equiv.Perm X)) (x : X) (g : G) :
+    g ∈ (MulAction.stabilizer (Equiv.Perm X) x).comap ρ.hom ↔ ρ g x = x := by
+  rw [Subgroup.mem_comap, MulAction.mem_stabilizer_iff]
+  rfl
+
+/-- The chosen action stabilizer retains its inclusion into the acting group. -/
+theorem actionStabilizer_ambient (G : GrpCat.{0}) (X : Type)
+    (ρ : G ⟶ GrpCat.of (Equiv.Perm X)) (x : X) :
+    (actionStabilizer G X ρ x).obj.right = G := rfl
+
+/-- Even a nonfaithful action retains the acting group: for the trivial action,
+the chosen inclusion has the whole acting group as its image. -/
+example (G : GrpCat.{0}) (X : Type) (x : X) :
+    Function.Surjective
+      (ConcreteCategory.hom (C := GrpCat)
+        (actionStabilizer G X (GrpCat.ofHom (1 : G →* Equiv.Perm X)) x).obj.hom) := by
+  intro g
+  refine ⟨⟨g, ?_⟩, rfl⟩
+  change (1 : G →* Equiv.Perm X) (show G from g) ∈ MulAction.stabilizer (Equiv.Perm X) x
+  rw [MulAction.mem_stabilizer_iff]
+  rfl
+
 /-- The stabilizer of `x` under a group action is the preimage of `Stab(X, x) ≤ Aut(X)` along the
 action map. -/
 theorem stabilizer_action (G : Type*) [Group G] {X : Type u} [MulAction G X] (x : X) :
@@ -218,6 +250,11 @@ example : (Iso.refl (Fin 2) : Aut (Fin 2)) ∈
 an inherited method on the underlying set. -/
 def automorphismsConstruction (C : Cat.{v, u}) : Core C ⥤ GrpCat.{v} :=
   automorphisms C
+
+/-- Endomorphisms in the selected category, retaining composition as multiplication.
+Conjugation is defined on the core, since a general morphism has no inverse. -/
+def endomorphismsConstruction (C : Cat.{v, u}) : Core C ⥤ MonCat.{v} :=
+  endomorphisms C
 
 /-- The stabilizer of the selected functor and pointed object, with its inclusion
 into the automorphism group in the selected category. -/
@@ -498,10 +535,20 @@ end CasCatalogue
 
 namespace CasCatalogue
 
+normalized_registry .object
+  { id := ⟨"obj.subgroups.action_stabilizer"⟩, category := CategoryId.subobjectsGroups
+    name := "ActionStabilizer"
+    declaration := `CasCatalogue.Algebra.Automorphisms.actionStabilizer }
+
 normalized_registry .construction
   { id := ⟨"con.automorphisms"⟩, name := "Aut"
     declaration := `CasCatalogue.Algebra.Automorphisms.automorphismsConstruction
     target := Algebra.Catalogue.Magmas.Groups }
+
+normalized_registry .construction
+  { id := ⟨"con.endomorphisms"⟩, name := "End"
+    declaration := `CasCatalogue.Algebra.Automorphisms.endomorphismsConstruction
+    target := Algebra.Catalogue.Magmas.Monoids }
 
 normalized_registry .construction
   { id := ⟨"con.stabilizers"⟩, name := "Stab"

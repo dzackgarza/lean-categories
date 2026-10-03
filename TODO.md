@@ -66,6 +66,29 @@ behind mapping its non-definitional theorem/remark/example rows.
 | `bloat-audit-loop` | Terminal convergence loop; it never closes. Before each pass reread `AGENTS.md`, `CONTRIBUTING.md`, the current source/mapping records, and the audit skills under `~/ai/opencode/skills/`: `addressing-shallow-work`, `policy-index`, `anti-slop`, `fixing-slop`, `bespoke-software-policy`, `code-patterns`, `thermo-nuclear-code-quality-review`, `brooks-audit`, `brooks-debt`, `test-guidelines`, `test-writing`, `known-solution-first`, `epistemic-integrity`, `reality-grounded-debugging`, `reviewing-llm-code`, `quality-control`, and `general-cleanup`. Rotate interpretive passes over Mathlib/external reuse, duplicate definitions and theorem statements, mathematical owner placement, imports/namespaces, typeclass and universe design, proof size and idiomatic theorem use, `simp`/rewriting surfaces, test/lint proof integrity, axioms/vacuity, dead compatibility bridges, generated/static surfaces, and architecture/module cohesion. Search pinned/current Mathlib, open upstream work, Reservoir and discoverable Lean packages before improving a local mechanism that may be reinvention. Repair small findings with kernel-checked regressions; if a finding is broad, add explicit DAG children with source-backed acceptance before implementation. A full pass finding no defensible change makes **no commit and no complaint entry** and increases confidence that the tree has converged under that lens; it does not close this node. Do not weaken source statements or rewrite phase boundaries to make an audit green | `lint-paydown` |
 | `computational-core` | Executed in [`lean-cas-dsl`](https://github.com/dzackgarza/lean-cas-dsl), which owns the CAS machinery (its `specs/computational-core-plan.md` and `specs/computational-core.md`); this repository owns the semantic registry (`LeanCategories/Catalogue/`) and the mathematics it denotes into: Lean here owns every user-visible category, functor, operation and structural route, and what holds of them; a leaf registers an opaque implementation for a catalogue operation, ships no Lean and no mathematics, and nothing it supplies is consulted for meaning or correctness; `x.f` elaborates to `f(F(x))` over composite structural functors with registered comparisons, never priorities; varying categories are stated fibrations (the module fibration over `Ring`, FOUNDATIONS §13.2), never parameterized families. Refines #53 and #54 and replaces the dynamic-inheritance core of `sage-categories`. The plan's own DAG orders its nodes, starting with `cc-p0-denotation-audit`. **Acceptance:** every plan node's acceptance holds and `cc-probe-corpus` runs through public DSL syntax only. Independent of the corpus sweeps; it does not authorize authoring definitions ahead of their sweep, and any new mathematical declaration it needs goes through the Definitions sweep's mapping-first rule. | none |
 
+**B0 chosen-structure interface completion (2026-10-03).** The source-level review of
+the existing typed constructors, module/algebra fibres, named coefficient maps,
+polynomial presentations, and group-valued constructions found missing public
+chosen objects in `LinearAlgebra` (the supplied additive product, scalar module,
+and matrix ring) and `Fields` (the already named rational, real and complex fields).
+These now refine their existing carriers along checked structural routes, retaining
+the original index and selected scalar structure. The additive-monoid carrier
+route is identified with the existing ring carrier route by an identity natural
+isomorphism at `CommutativeMonoids`, with operations distinct before forgetting.
+`Subgroups.subgroup` owns the
+generic chosen mono; `FiniteGroups.subgroup` preserves its former interface.
+`Automorphisms.actionStabilizer` retains the actual selected action homomorphism
+and inclusion into the acting group, including nonfaithful actions. Generic
+`End : Core(C) ⥤ Mon` is publicly registered beside `Aut` and `Stab`.
+These are source constructions, not evidence about any computation downstream.
+Independent mathematical source review of delta
+`ce7759439c5a99ea2c7c7145d6ea5f1befbc6a47ae85b8b01ac51101caece2e5`
+(against `c9f7b42`) found no concrete mathematical defect. Focused owner builds
+and the intrinsic nonfaithful-action/noncommutative-matrix examples passed;
+default `lake build`, `LeanCategories.All`, `LeanCategories.Tools.VacuityAudit`,
+`lake exe lean-categories-axiom-audit`, and local conventions passed sequentially
+with `LEAN_NUM_THREADS=1` on the final source.
+
 Within a sweep, source dependencies and traversal order come from the existing
 [source manifest](corpus/foundational-source-corpus.md); unit IDs and
 their mathematical prerequisites come from the complete source catalogues.

@@ -14,6 +14,11 @@ public meta import LeanCategories.Catalogue.Semantics.Algebra.Catalogue
 
 @[expose] public section
 
+namespace CasCatalogue.FunctorId
+/-- The underlying set of the selected additive monoid. -/
+def additiveMonoidsUnderlying : FunctorId := ⟨"fun.additive_monoids.underlying"⟩
+end CasCatalogue.FunctorId
+
 namespace CasCatalogue.Algebra.CatalogueRegistration
 open LeanCategories LeanCategories.Algebra
 
@@ -41,6 +46,21 @@ noncomputable def additiveMonoidsRealization :
 noncomputable def additiveGroupsRealization :
     CategoryRealization Algebra.Catalogue.Magmas.AdditiveGroups Algebra.AdditiveGroups :=
   { familyFibre := none }
+
+/-- Forgetting an additive monoid retains its actual carrier and maps. -/
+def additiveMonoidsUnderlying :
+    CategoryTheory.Functor Algebra.AdditiveMonoids.{u} Foundation.Mathlib.Sets.{u} :=
+  CategoryTheory.forget AddMonCat
+
+def AdditiveMonoidsUnderlyingExpr :
+    FunctorExpr Algebra.Catalogue.Magmas.AdditiveMonoids Foundation.Sets :=
+  .atomic FunctorId.additiveMonoidsUnderlying
+
+noncomputable def additiveMonoidsUnderlyingRealization :
+    FunctorRealization AdditiveMonoidsUnderlyingExpr Algebra.AdditiveMonoids.{u}
+      Foundation.Mathlib.Sets.{u} additiveMonoidsUnderlying :=
+  { sourceRealization := additiveMonoidsRealization
+    targetRealization := Foundation.CatalogueRegistration.setsRealization }
 noncomputable def ringsRealization :
     CategoryRealization Algebra.Catalogue.Rings.Rings Algebra.Rings := { familyFibre := none }
 noncomputable def commutativeRingsRealization :
@@ -150,4 +170,13 @@ normalized_registry .category
     declaration := `LeanCategories.Algebra.AdditiveGroups
     expression := Algebra.Catalogue.Magmas.AdditiveGroups
     realization := `CasCatalogue.Algebra.CatalogueRegistration.additiveGroupsRealization}
+
+normalized_registry .functor
+  { id := FunctorId.additiveMonoidsUnderlying
+    source := Algebra.Catalogue.Magmas.AdditiveMonoids, target := Foundation.Sets
+    declaration := `CasCatalogue.Algebra.CatalogueRegistration.additiveMonoidsUnderlying
+    realization :=
+      `CasCatalogue.Algebra.CatalogueRegistration.additiveMonoidsUnderlyingRealization
+    expression := AdditiveMonoidsUnderlyingExpr
+    structural := true }
 end CasCatalogue.Algebra.CatalogueRegistration

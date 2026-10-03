@@ -47,6 +47,19 @@ open CasCatalogue.Foundation.PowerSets CasCatalogue.Algebra.Polynomials
 /-- `Xⁿ`. -/
 abbrev vectors (X : Type) (n : ℕ) : SetsCat.{0} := Fin n → X
 
+/-- The product module over the selected scalar ring, with pointwise addition
+and scalar action; no basis or coordinates are chosen beyond the index `Fin n`. -/
+def vectorModule (R : RingCat.{0}) (n : ℕ) : ModuleCat.{0} R :=
+  ModuleCat.of R (Fin n → R)
+
+/-- Its underlying set is precisely the tuple family at the selected ring. -/
+def vectorModuleIdentification (R : RingCat.{0}) (n : ℕ) :
+    (forget (ModuleCat.{0} R)).obj (vectorModule R n) ≅ vectors R n := Iso.refl _
+
+/-- Scalar action is multiplication in the selected ring, at each retained index. -/
+theorem vectorModule_smul_apply (R : RingCat.{0}) (n : ℕ)
+    (r : R) (v : vectorModule R n) (i : Fin n) : (r • v) i = r * v i := rfl
+
 /-- The empty tuple `() ∈ X⁰`. -/
 def empty (X : Type) : CasCatalogue.Foundation.Objects.fin 1 ⟶ vectors X 0 :=
   TypeCat.ofHom fun _ => ![]
@@ -57,6 +70,14 @@ def cons (X : Type) (n : ℕ) : (X × vectors X n : SetsCat.{0}) ⟶ vectors X (
 
 /-- An additive monoid as an `AddMonCat`. -/
 abbrev asAddMonoid (A : LeanCategories.Algebra.AdditiveMonoids.{0}) : AddMonCat.{0} := A
+
+/-- The finite product of the selected additive monoid, with pointwise addition. -/
+def additiveVectors (A : LeanCategories.Algebra.AdditiveMonoids.{0}) (n : ℕ) : AddMonCat.{0} :=
+  AddMonCat.of (Fin n → asAddMonoid A)
+
+/-- The additive product has the existing tuple family as its underlying set. -/
+def additiveVectorsIdentification (A : LeanCategories.Algebra.AdditiveMonoids.{0}) (n : ℕ) :
+    (forget AddMonCat).obj (additiveVectors A n) ≅ vectors (asAddMonoid A) n := Iso.refl _
 
 /-- `0 ∈ Aⁿ`, the unit of the additive monoid `Aⁿ`, the `n`-fold product of the additive
 monoid `A` (Mathlib `Pi.addMonoid`, the product in `AddMonCat`): the point `(0, …, 0)`. It exists
@@ -70,6 +91,34 @@ def zero (A : LeanCategories.Algebra.AdditiveMonoids.{0}) (n : ℕ) :
 
 /-- `Matₙ(K)`. -/
 abbrev matrices (n : ℕ) (K : CommRingCat.{0}) : SetsCat.{0} := Matrix (Fin n) (Fin n) K
+
+/-- Square matrices with their canonical ring structure, including the selected
+coefficient ring's addition and multiplication. Matrix multiplication is not
+commutative in general, so this is an object of `RingCat`. -/
+def matrixRing (n : ℕ) (K : CommRingCat.{0}) : RingCat.{0} :=
+  RingCat.of (Matrix (Fin n) (Fin n) K)
+
+/-- Forgetting the chosen matrix ring recovers the existing matrix family. -/
+def matrixRingIdentification (n : ℕ) (K : CommRingCat.{0}) :
+    (forget RingCat).obj (matrixRing n K) ≅ matrices n K := Iso.refl _
+
+/-- The chosen multiplication is matrix multiplication, not pointwise multiplication. -/
+theorem matrixRing_mul_apply (n : ℕ) (K : CommRingCat.{0})
+    (A B : matrixRing n K) (i j : Fin n) :
+    (A * B) i j = ∑ k, A i k * B k j := Matrix.mul_apply
+
+/-- A commutative coefficient ring does not make its matrix ring commutative. -/
+example :
+    let A : matrixRing 2 (CommRingCat.of (ZMod 2)) := !![0, 1; 0, 0]
+    let B : matrixRing 2 (CommRingCat.of (ZMod 2)) := !![0, 0; 1, 0]
+    A * B ≠ B * A := by
+  dsimp only
+  intro h
+  have h₀ := congrArg (fun M : Matrix (Fin 2) (Fin 2) (ZMod 2) => M 0 0) h
+  change ((!![0, 1; 0, 0] * !![0, 0; 1, 0] : Matrix (Fin 2) (Fin 2) (ZMod 2))) 0 0 =
+    ((!![0, 0; 1, 0] * !![0, 1; 0, 0] : Matrix (Fin 2) (Fin 2) (ZMod 2))) 0 0 at h₀
+  change (1 : ZMod 2) = 0 at h₀
+  exact one_ne_zero h₀
 
 /-- The matrix with the given rows. -/
 def rows (n : ℕ) (K : CommRingCat.{0}) : vectors (vectors K n) n ⟶ matrices n K :=
@@ -269,6 +318,21 @@ normalized_registry .object
   { id := ⟨"obj.sets.vectors"⟩, category := CategoryId.sets, name := "Vec"
     declaration := `CasCatalogue.Algebra.LinearAlgebra.vectors }
 
+normalized_registry .object
+  { id := ⟨"obj.modules.vectors"⟩, category := CategoryId.modulesR, name := "Vec"
+    declaration := `CasCatalogue.Algebra.LinearAlgebra.vectorModule
+    refines := some
+      { base := ⟨"obj.sets.vectors"⟩
+        route := #[.functor FunctorId.modulesFibreInclusion, .functor FunctorId.modulesUnderlying]
+        identification := `CasCatalogue.Algebra.LinearAlgebra.vectorModuleIdentification } }
+
+normalized_registry .object
+  { id := ⟨"obj.additive_monoids.vectors"⟩, category := CategoryId.additiveMonoids, name := "Vec"
+    declaration := `CasCatalogue.Algebra.LinearAlgebra.additiveVectors
+    refines := some
+      { base := ⟨"obj.sets.vectors"⟩, route := #[.functor FunctorId.additiveMonoidsUnderlying]
+        identification := `CasCatalogue.Algebra.LinearAlgebra.additiveVectorsIdentification } }
+
 normalized_registry .morphism
   { id := ⟨"mor.sets.vectors_zero"⟩, category := CategoryId.sets, name := "0"
     declaration := `CasCatalogue.Algebra.LinearAlgebra.zero }
@@ -284,6 +348,13 @@ normalized_registry .object
   { id := ⟨"obj.sets.matrices"⟩, category := CategoryId.sets, name := "Mat"
     declaration := `CasCatalogue.Algebra.LinearAlgebra.matrices
     application := some `CasCatalogue.Algebra.LinearAlgebra.apply }
+
+normalized_registry .object
+  { id := ⟨"obj.rings.matrices"⟩, category := CategoryId.rings, name := "Mat"
+    declaration := `CasCatalogue.Algebra.LinearAlgebra.matrixRing
+    refines := some
+      { base := ⟨"obj.sets.matrices"⟩, route := ringsToSets
+        identification := `CasCatalogue.Algebra.LinearAlgebra.matrixRingIdentification } }
 
 normalized_registry .morphism
   { id := ⟨"mor.sets.tuple_empty"⟩, category := CategoryId.sets, name := "()"

@@ -51,8 +51,7 @@ def cyclicIdentification (n : ℕ) : (forget GrpCat).obj (cyclic n) ≅
 
 /-- A subgroup as a complete monomorphism, retaining its chosen ambient group. -/
 def subgroup (G : GrpCat.{0}) (H : Subgroup G) : Subgroups.subobjectsGroupsCategory.{0} :=
-  ⟨Arrow.mk (GrpCat.ofHom H.subtype),
-    (GrpCat.mono_iff_injective _).mpr Subtype.val_injective⟩
+  Subgroups.subgroup G H
 
 /-- The alternating subgroup, including its defining inclusion into `Sₙ`. -/
 def alternating (n : ℕ) : Subgroups.subobjectsGroupsCategory.{0} :=
