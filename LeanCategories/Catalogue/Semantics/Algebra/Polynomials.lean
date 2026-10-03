@@ -68,6 +68,62 @@ noncomputable def evaluation (R : CommRingCat.{0}) (A : Under R) :
     (polynomials R × A : SetsCat.{0}) ⟶ (A : SetsCat.{0}) :=
   TypeCat.ofHom fun p => aeval p.2 p.1
 
+/-- Evaluation in the selected coefficient ring itself, using its identity map.
+No further algebra structure or coefficient homomorphism is inferred from a carrier. -/
+noncomputable def ownEvaluation (R : CommRingCat.{0}) :
+    (polynomials R × R : SetsCat.{0}) ⟶ (R : SetsCat.{0}) :=
+  TypeCat.ofHom fun pa => pa.1.eval pa.2
+
+/-- Evaluation along an explicitly selected coefficient map. An endomorphism of the
+same ring is retained just as any other map; it is not replaced by the identity. -/
+noncomputable def evaluationAlong (R A : CommRingCat.{0}) (f : R ⟶ A) :
+    (polynomials R × A : SetsCat.{0}) ⟶ (A : SetsCat.{0}) :=
+  TypeCat.ofHom fun pa => pa.1.eval₂ f.hom pa.2
+
+/-- The existing algebra application uses precisely the selected coefficient map. -/
+theorem evaluation_selected (R : CommRingCat.{0}) (A : Under R) :
+    evaluation R A = evaluationAlong R A.right A.hom := rfl
+
+/-- Canonical coefficient-ring evaluation is exactly the identity-map specialization. -/
+theorem evaluationAlong_identity (R : CommRingCat.{0}) :
+    evaluationAlong R R (𝟙 R) = ownEvaluation R := rfl
+
+/-- The canonical selected algebra for own-ring evaluation has identity coefficient map. -/
+theorem evaluation_own (R : CommRingCat.{0}) :
+    evaluation R (Under.mk (𝟙 R)) = ownEvaluation R := rfl
+
+@[simp] theorem ownEvaluation_constant (R : CommRingCat.{0}) (c a : R) :
+    ownEvaluation R (C c, a) = c := Polynomial.eval_C
+
+@[simp] theorem evaluationAlong_constant (R A : CommRingCat.{0}) (f : R ⟶ A)
+    (c : R) (a : A) : evaluationAlong R A f (C c, a) = f.hom c := Polynomial.eval₂_C f.hom a
+
+@[simp] theorem evaluationAlong_variable (R A : CommRingCat.{0}) (f : R ⟶ A) (a : A) :
+    evaluationAlong R A f (X, a) = a := Polynomial.eval₂_X f.hom a
+
+/-- Polynomial operations and their results can be evaluated along the same selected map. -/
+theorem evaluationAlong_mul (R A : CommRingCat.{0}) (f : R ⟶ A)
+    (p q : Polynomial R) (a : A) :
+    evaluationAlong R A f (p * q, a) =
+      evaluationAlong R A f (p, a) * evaluationAlong R A f (q, a) :=
+  Polynomial.eval₂_mul f.hom a
+
+/-- Distinct maps on one carrier give distinct coefficient evaluations. -/
+example :
+    let R := CommRingCat.of (ℤ × ℤ)
+    let swap : R ⟶ R :=
+      CommRingCat.ofHom (RingEquiv.prodComm : (ℤ × ℤ) ≃+* (ℤ × ℤ)).toRingHom
+    evaluationAlong R R swap (C (1, 0), (0, 0)) = (0, 1) ∧
+      ownEvaluation R (C (1, 0), (0, 0)) = (1, 0) := by
+  constructor <;> simp [evaluationAlong, ownEvaluation]
+
+/-- Evaluation transports along a composite of the actual selected coefficient maps. -/
+theorem evaluationAlong_composition (R A B : CommRingCat.{0}) (f : R ⟶ A) (g : A ⟶ B)
+    (p : Polynomial R) (a : A) :
+    g.hom (evaluationAlong R A f (p, a)) =
+      evaluationAlong R B (f ≫ g) (p, g.hom a) :=
+  Polynomial.hom_eval₂ p f.hom g.hom a
+
 /-- `R[x]` as a ring. -/
 noncomputable abbrev ringPolynomials (R : CommRingCat.{0}) : LeanCategories.Algebra.Rings.{0} :=
   RingCat.of (Polynomial R)
@@ -203,6 +259,13 @@ noncomputable def map (R S : CommRingCat.{0}) (f : R ⟶ S) :
     (polynomials R : SetsCat.{0}) ⟶ polynomials S :=
   TypeCat.ofHom (Polynomial.map f.hom)
 
+/-- Coefficient change followed by own-ring evaluation equals evaluation along that
+actual selected coefficient map, including nonidentity same-carrier maps. -/
+theorem evaluationAlong_map (R A : CommRingCat.{0}) (f : R ⟶ A)
+    (p : Polynomial R) (a : A) :
+    evaluationAlong R A f (p, a) = ownEvaluation A (map R A f p, a) :=
+  Polynomial.eval₂_eq_eval_map f.hom
+
 /-- Reconstruction commutes with coefficient change. -/
 theorem factorizationMap_product (R S : CommRingCat.{0}) (f : R ⟶ S)
     (d : factorizationData R) :
@@ -294,5 +357,13 @@ normalized_registry .morphism
 normalized_registry .morphism
   { id := ⟨"mor.sets.polynomial_map"⟩, category := CategoryId.sets, name := "map"
     declaration := `CasCatalogue.Algebra.Polynomials.map }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.polynomial_own_evaluation"⟩, category := CategoryId.sets
+    name := "evaluate", declaration := `CasCatalogue.Algebra.Polynomials.ownEvaluation }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.polynomial_selected_evaluation"⟩, category := CategoryId.sets
+    name := "evaluate_along", declaration := `CasCatalogue.Algebra.Polynomials.evaluationAlong }
 
 end CasCatalogue

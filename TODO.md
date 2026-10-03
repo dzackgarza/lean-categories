@@ -188,6 +188,22 @@ against `01b44cd` found no concrete defect. Focused owners, default build,
 with `LEAN_NUM_THREADS=1` on the final source. These source checks execute no
 backend implementation and impose no backend verification duties.
 
+The selected-coefficient polynomial workflow now distinguishes evaluation in its
+own coefficient ring (`ownEvaluation`, the identity-map `Polynomial.eval`) from
+evaluation along a fully selected coefficient map (`evaluationAlong`, `eval₂`).
+Both are public typed operations. The existing `Under R` application remains
+unchanged and is identified by a checked law with its actual selected `A.hom`.
+Identity specialization, constants, variable, multiplication, coefficient change
+and composition laws retain the selected maps and parameters. An intrinsic
+nonidentity endomorphism of one product-ring carrier gives a different constant
+evaluation from the identity operation: equal carriers do not choose a map.
+These are callable value operations, with no backend proof of evaluation requested.
+Independent source review of mathematical delta
+`5219561ff02db9736dd77b5f157ce285dd67de1bdd086f82bac4bb351ef8acbc`
+against `6e8a67e` found no concrete defect. Focused polynomial elaboration, default
+build, `LeanCategories.All`, vacuity, axiom audit, local conventions and diff checks
+passed on the final source with `LEAN_NUM_THREADS=1`.
+
 Within a sweep, source dependencies and traversal order come from the existing
 [source manifest](corpus/foundational-source-corpus.md); unit IDs and
 their mathematical prerequisites come from the complete source catalogues.
