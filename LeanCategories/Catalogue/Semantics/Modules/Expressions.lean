@@ -3,6 +3,7 @@ module
 public import LeanCategories.Catalogue.Syntax
 public import LeanCategories.Catalogue.Semantics.Modules.Catalogue
 public import LeanCategories.Catalogue.Semantics.Foundation.Expressions
+public import LeanCategories.Catalogue.Semantics.Algebra.Catalogue.Magmas
 
 @[expose] public section
 
@@ -31,6 +32,10 @@ def ModulesReindexExpr : FunctorExpr ModulesAtS Modules :=
 /-- The underlying-set functor on the total category of modules. -/
 def ModulesUnderlyingExpr : FunctorExpr ModulesTotal Foundation.Sets :=
   .atomic FunctorId.modulesUnderlying
+
+/-- The actual supplied additive group on the total module category. -/
+def ModulesAdditiveGroupExpr : FunctorExpr ModulesTotal Algebra.Catalogue.Magmas.AdditiveGroups :=
+  .atomic FunctorId.modulesAdditiveGroup
 
 /-! The property categories of `R`-modules are the totals of their classifiers (CC-PROP). -/
 

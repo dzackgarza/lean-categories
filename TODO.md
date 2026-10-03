@@ -89,6 +89,27 @@ default `lake build`, `LeanCategories.All`, `LeanCategories.Tools.VacuityAudit`,
 `lake exe lean-categories-axiom-audit`, and local conventions passed sequentially
 with `LEAN_NUM_THREADS=1` on the final source.
 
+The final pass through the same existing family owners found one further supplied
+datum without its public structural projection: the additive group in the total
+module fibration (`Modules.Total`'s restriction-of-scalars example explicitly
+retains this group). `ModulesOverRings.additiveGroup` now retains that structure
+and the actual additive maps once on the total category; its intrinsic fibre and
+reindex laws identify the ordinary Mathlib module group and its unchanged group
+under restriction of scalars. `fun.modules.additive_group` and the invertible
+`cell.modules.additive_group_carrier` expose this datum and identify its forgotten
+carrier with the existing underlying-set functor. Independent source review of
+four-file delta `71d8f29bf2e9f78dda3dced12ceda73e51d2465e11b4300d231113f80e122927`
+against `1008f05` found no concrete mathematical defect.
+Focused module owners, default build, `LeanCategories.All`, vacuity, axiom audit,
+and local conventions passed sequentially on this final source with
+`LEAN_NUM_THREADS=1`.
+
+The existing polynomial/algebra objects already retain commutative coefficient
+structures and actual constants through `polyAlgebra`, `mvAlgebra`, and the
+structural `algebrasForget`; no additional wrapper is needed for that datum.
+This bounded interface pass does not settle the previously recorded interpretation
+and domain decision for general-ring matrix rank.
+
 Within a sweep, source dependencies and traversal order come from the existing
 [source manifest](corpus/foundational-source-corpus.md); unit IDs and
 their mathematical prerequisites come from the complete source catalogues.

@@ -7,10 +7,13 @@ public import LeanCategories.Modules.TruncatedResolutions
 public import LeanCategories.Modules.Total
 public import LeanCategories.Catalogue.FamilyFibration
 public import LeanCategories.Catalogue.Semantics.Foundation.CatalogueRegistration
+public import LeanCategories.Catalogue.Semantics.Algebra.Ports
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.Modules.Expressions
 public meta import LeanCategories.Catalogue.Semantics.Modules.Catalogue
 public meta import LeanCategories.Catalogue.Semantics.Foundation.Expressions
+public meta import LeanCategories.Catalogue.Semantics.Algebra.Catalogue.Magmas
+public meta import LeanCategories.Catalogue.Semantics.Algebra.Ports
 
 @[expose] public section
 
@@ -102,6 +105,19 @@ noncomputable def modulesUnderlyingRealization :
       Foundation.Mathlib.Sets.{w} modulesUnderlyingDeclaration :=
   { sourceRealization := modulesTotalRealization
     targetRealization := Foundation.CatalogueRegistration.setsRealization }
+
+/-- The selected additive group of a module over a varying scalar ring. -/
+def modulesAdditiveGroupDeclaration : modulesTotalCategory.{u, w} ⥤ Algebra.AdditiveGroups.{w} :=
+  ModulesOverRings.additiveGroup.{u, w}
+
+def modulesAdditiveGroupRealization :
+    FunctorRealization Modules.ModulesAdditiveGroupExpr modulesTotalCategory.{u, w}
+      Algebra.AdditiveGroups.{w} modulesAdditiveGroupDeclaration :=
+  { sourceRealization := modulesTotalRealization
+    targetRealization := Algebra.CatalogueRegistration.additiveGroupsRealization }
+
+/-- The new structural group projection retains the existing module carrier route. -/
+def modulesAdditiveGroupCarrierComparison := ModulesOverRings.additiveGroupCarrierIso.{u, w}
 
 noncomputable def freeCoverFamilyTransport :
     Pseudofunctor
@@ -560,6 +576,25 @@ normalized_registry .functor
     realization := `CasCatalogue.Modules.CatalogueRegistration.modulesUnderlyingRealization
     expression := Modules.ModulesUnderlyingExpr
     structural := true }
+
+normalized_registry .functor
+  { id := FunctorId.modulesAdditiveGroup
+    source := Modules.ModulesTotal, target := Algebra.Catalogue.Magmas.AdditiveGroups
+    declaration := `CasCatalogue.Modules.CatalogueRegistration.modulesAdditiveGroupDeclaration
+    realization := `CasCatalogue.Modules.CatalogueRegistration.modulesAdditiveGroupRealization
+    expression := Modules.ModulesAdditiveGroupExpr
+    structural := true }
+
+normalized_registry .cell
+  { id := ⟨"cell.modules.additive_group_carrier"⟩
+    source := Modules.ModulesTotal, target := Foundation.Sets
+    left := #[.functor FunctorId.modulesAdditiveGroup, .functor FunctorId.additiveGroupsToGroups,
+      .functor FunctorId.groupsMonoid, .functor FunctorId.monoidsSemigroup,
+      .classifierForget ClassifierId.magmasAssociative,
+      .classifierForget ClassifierId.setsBinaryOperation]
+    right := #[.functor FunctorId.modulesUnderlying]
+    declaration := `CasCatalogue.Modules.CatalogueRegistration.modulesAdditiveGroupCarrierComparison
+    invertible := true }
 
 end
 end CasCatalogue.Modules.CatalogueRegistration
