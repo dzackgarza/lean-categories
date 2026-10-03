@@ -11,6 +11,7 @@ public import Mathlib.LinearAlgebra.Matrix.Rank
 public import Mathlib.LinearAlgebra.Dimension.Finrank
 public import LeanCategories.CategoryTheory.OneCat.KernelFunctor
 public import Mathlib.Algebra.Category.ModuleCat.Subobject
+public import LeanCategories.Catalogue.Semantics.Modules.Operations
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.Foundation.Evidence
 public meta import LeanCategories.Catalogue.Semantics.Algebra.Polynomials
@@ -229,6 +230,31 @@ theorem spanSubobject_range (K : LeanCategories.Algebra.FieldCat.{0}) (n : ℕ)
     (N : Set (Fin n → Fields.ring K)))
       (generatedSubobject_range (ModuleCat.of (Fields.ring K) (Fin n → Fields.ring K)) S)
 
+/-- Span in the selected module category, retaining its chosen inclusion. -/
+def moduleSpan (R : RingCat.{0}) (M : ModuleCat.{0} R) (S : Set M) :
+    (LeanCategories.isMonoArrow (ModuleCat.{0} R)).FullSubcategory :=
+  generatedSubobject M S
+
+/-- The actual domain module of any chosen module subobject. -/
+def subobjectModule (R : RingCat.{0})
+    (A : (LeanCategories.isMonoArrow (ModuleCat.{0} R)).FullSubcategory) : ModuleCat.{0} R :=
+  A.obj.left
+
+/-- The ambient module of any chosen module subobject. -/
+def subobjectAmbient (R : RingCat.{0})
+    (A : (LeanCategories.isMonoArrow (ModuleCat.{0} R)).FullSubcategory) : ModuleCat.{0} R :=
+  A.obj.right
+
+/-- The defining inclusion of any chosen module subobject; no new representative is selected. -/
+def subobjectInclusion (R : RingCat.{0})
+    (A : (LeanCategories.isMonoArrow (ModuleCat.{0} R)).FullSubcategory) :
+    subobjectModule R A ⟶ subobjectAmbient R A := A.obj.hom
+
+/-- The retained defining inclusion is monic, by the chosen subobject's property. -/
+theorem subobjectInclusion_mono (R : RingCat.{0})
+    (A : (LeanCategories.isMonoArrow (ModuleCat.{0} R)).FullSubcategory) :
+    Mono (subobjectInclusion R A) := A.property
+
 /-- The dimension of the span over the selected field, using its compatible field structure. -/
 noncomputable def dim (K : LeanCategories.Algebra.FieldCat.{0}) (n : ℕ) :
     powerSet (Fin n → Fields.ring K) ⟶ CasCatalogue.Foundation.Objects.naturals :=
@@ -302,5 +328,24 @@ normalized_registry .morphism
 normalized_registry .morphism
   { id := ⟨"mor.sets.span_dim"⟩, category := CategoryId.sets, name := "dim"
     declaration := `CasCatalogue.Algebra.LinearAlgebra.dim }
+
+normalized_registry .object
+  { id := ⟨"obj.subobjects_modules.span"⟩, category := CategoryId.subobjectsModules, name := "span"
+    declaration := `CasCatalogue.Algebra.LinearAlgebra.moduleSpan }
+
+normalized_registry .object
+  { id := ⟨"obj.modules.subobject_domain"⟩, category := CategoryId.modulesR, name := "domain"
+    declaration := `CasCatalogue.Algebra.LinearAlgebra.subobjectModule }
+
+normalized_registry .object
+  { id := ⟨"obj.modules.subobject_ambient"⟩, category := CategoryId.modulesR, name := "ambient"
+    declaration := `CasCatalogue.Algebra.LinearAlgebra.subobjectAmbient }
+
+normalized_registry .inclusion
+  { id := ⟨"incl.modules.chosen_subobject"⟩, category := CategoryId.modulesR
+    sub := ⟨"obj.modules.subobject_domain"⟩, super := ⟨"obj.modules.subobject_ambient"⟩
+    parameterization := .dependent
+    declaration := `CasCatalogue.Algebra.LinearAlgebra.subobjectInclusion
+    mono := `CasCatalogue.Algebra.LinearAlgebra.subobjectInclusion_mono }
 
 end CasCatalogue
