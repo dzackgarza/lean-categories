@@ -990,3 +990,13 @@ is that module's additive zero, with a general naturality theorem proved by
 `map_zero`. It imposes no basis, finite rank or coordinate-family condition.
 Existing structural routes from formed modules and formed subobject domains to
 modules therefore expose the same declared zero. Catalogue compilation passes.
+
+Independent review identified that the generic nullary zero's terminal source
+had no public universal/point connection. `Foundation.Terminals` now registers
+the actual `PUnit` terminal set, its universal arrow family and complete
+empty-diagram limit, with uniqueness proved for every set. The explicit
+`Fin 1 ≅ terminal` comparison is registered between the public singleton family
+and that chosen terminal object, supplying point-domain transport. The module
+zero declaration now names this public terminal source; its value and selected
+ring/module generality are unchanged. Catalogue compilation passes with all
+terminal universal data and comparison checked upstream.

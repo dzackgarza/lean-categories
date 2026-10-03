@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Catalogue.Semantics.Modules.Rank
+public import LeanCategories.Catalogue.Semantics.Foundation.Terminals
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Kernels
 public import LeanCategories.Modules.Annihilator
 public import LeanCategories.CategoryTheory.OneCat.ImageFunctor
@@ -62,7 +63,7 @@ universe u
 
 /-- The additive zero of the selected module, as a nullary operation. -/
 def zero (R : RingCat.{u}) (M : ModuleCat.{u} R) :
-    (PUnit.{u + 1} : LeanCategories.Foundation.Mathlib.Sets.{u}) ⟶
+    Foundation.Terminals.terminal.{u} ⟶
       (M : LeanCategories.Foundation.Mathlib.Sets.{u}) :=
   TypeCat.ofHom fun _ => 0
 
