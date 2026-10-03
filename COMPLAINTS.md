@@ -981,3 +981,12 @@ and an `inclusion` method returning their stored arrow through the full-subcateg
 inclusion. These apply to arbitrary selected formed subobjects, including the
 prescribed kernel lift, without a kernel-specific accessor or a naked-module
 replacement. Catalogue and presentation probes pass with this exposure.
+
+Independent review identified that arbitrary selected modules had no public
+zero-element operation; the registered vector zero required finite tuple data.
+`Modules.Operations.zero` is now a nullary operation at the module owner, indexed
+by the actual chosen ring and module. Its terminal source is `PUnit` and its value
+is that module's additive zero, with a general naturality theorem proved by
+`map_zero`. It imposes no basis, finite rank or coordinate-family condition.
+Existing structural routes from formed modules and formed subobject domains to
+modules therefore expose the same declared zero. Catalogue compilation passes.

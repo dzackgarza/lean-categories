@@ -60,6 +60,19 @@ namespace Modules.Operations
 
 universe u
 
+/-- The additive zero of the selected module, as a nullary operation. -/
+def zero (R : RingCat.{u}) (M : ModuleCat.{u} R) :
+    (PUnit.{u + 1} : LeanCategories.Foundation.Mathlib.Sets.{u}) ⟶
+      (M : LeanCategories.Foundation.Mathlib.Sets.{u}) :=
+  TypeCat.ofHom fun _ => 0
+
+/-- Every module morphism preserves this selected additive zero. -/
+theorem zero_natural (R : RingCat.{u}) (M N : ModuleCat.{u} R) (f : M ⟶ N)
+    (p : PUnit.{u + 1}) :
+    f.hom (ConcreteCategory.hom (C := Type u) (zero R M) p) =
+      ConcreteCategory.hom (C := Type u) (zero R N) p :=
+  map_zero f.hom
+
 def Ideals : CategoryExpr := .atom CategoryId.ideals
 def AnnihilatorExpr : FunctorExpr CoreModules Ideals := .atomic FunctorId.modulesAnnihilator
 def ImageExpr : FunctorExpr ArrowsModules SubobjectsModules :=
@@ -191,5 +204,9 @@ normalized_registry .method
 normalized_registry .method
   { id := ⟨"meth.arrow_im"⟩, name := "im", owner := ArrowsModules
     functor := FunctorId.arrowsModulesImage, shape := .object }
+
+normalized_registry .operation
+  { id := ⟨"op.modules.zero"⟩, category := CategoryId.modulesR, name := "0", arity := 0
+    declaration := `CasCatalogue.Modules.Operations.zero }
 
 end CasCatalogue
