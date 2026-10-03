@@ -1023,3 +1023,49 @@ inclusion and kernel definitions are unchanged. `validateLift` continues to
 require exactly `MonoLift` for the specified route, whose stronger type now
 contains these laws. This resolves the inspected evidence-type defect; it makes
 no claim about uninspected lift constructions or downstream acceptance.
+
+Independent review against the approved elementary-language baseline and fixed B0
+identified four missing public mathematical relationships, separate from any
+implementation failure. The existing definitions themselves were retained:
+
+* The approved `W ≤ ℚ³ in Mod(ℚ)` is a categorical subobject. The registered
+  coordinate `span` exposed only its underlying subset. `Algebra/LinearAlgebra.lean`
+  now constructs and registers the generated chosen module subobject with the
+  actual subtype inclusion. It proves that its image is the standard submodule
+  span, its least-submodule property (`Submodule.span_le`), and its compatibility
+  with the existing subset-valued coordinate span. The domain, ambient module,
+  inclusion and monicity of arbitrary chosen module subobjects are exposed as
+  dependent families, reusing the existing structural domain/subset functors.
+  Mathlib `ModuleCat.subobjectModule` supplies the categorical comparison; the
+  source author's corpus searches included `span` and `subobjectModule`.
+* The approved finite root comprehension in `𝒫(ℂ)` feeds finite sums and products.
+  `Foundation/FiniteSubsets.lean` previously exported only coercion to the power
+  set. Its admission now uses Mathlib `Set.Finite.toFinset` on the actual subset,
+  with a theorem that coercion recovers exactly that subset. Finiteness evidence
+  includes finite extents and nonzero polynomial-root comprehensions, including
+  evaluation through the selected coefficient algebra. That last case requires
+  the mapped polynomial itself to remain nonzero. The pre-existing polynomial
+  nonvanishing proof procedures were moved unchanged to `PolynomialEvidence.lean`
+  so both domains reuse them without an import cycle. `Polynomials.roots_extent`
+  and `admit_roots` identify the admitted comprehension with the existing finite
+  root value. Sources are Mathlib `Set.Finite.coe_toFinset`,
+  `Polynomial.finite_setOfPred_isRoot`, `eval_map`, and `aeval_def`.
+* The approved differential coordinate expression uses the actual comparison
+  `Ω¹_{R[x]/R} ≅ R[x] dx` and distinguished `dx`, previously present only in
+  commentary. `Algebra/Differentials.lean` exposes Mathlib's
+  `KaehlerDifferential.polynomialEquiv`, its coordinate maps and `dx = d(x)`,
+  with inverse laws, `d(p) = p' dx`, and primitive membership in coordinates.
+  The universal derivation remains the definition of `d`. The source searches
+  located `polynomialEquiv`, `polynomial_D_apply`, `polynomialEquiv_D`, and
+  `polynomialEquiv_symm` in `Mathlib/RingTheory/Kaehler/Polynomial.lean`.
+* The approved `Schemes/K` means `Sch/Spec K` for a ring parameter. The correctly
+  defined generic slice previously registered as `Schemes/` took a scheme
+  parameter instead. `Algebra/Schemes.lean` now registers the ring-indexed family
+  with its independently defined affine base `Spec K` and exact fibre witness.
+  The generic scheme-indexed slice remains available as `SchemesOver`. The
+  existing polynomial-spectrum objects retain their structure-map arrows and
+  now visibly inhabit the ring-indexed category. The mathematical sources are
+  Mathlib `Scheme.Spec`, `Spec.map`, and `CategoryTheory.Over`.
+
+These repairs address the independently inspected source exposures. They do not
+extend the fixed B0 assertion inventory or establish downstream acceptance.
