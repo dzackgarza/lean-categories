@@ -25,11 +25,11 @@ The governing statement is `lean-cas-dsl/specs/architecture.md`, "The evidence m
 Only answers cross from the leaf side, and an answer is only ever checked against the formal side,
 never believed. The firewall exists because leaf code will be bad; it is the shield against that.
 
-1. **Nothing from a leaf is trusted, in any form.** Nothing a leaf says is believed by anything
-   else. That includes text, a label, a comment, a status, a trust level, a certificate, a checker,
-   a Lean proof, a theorem about its own code, a denotation of its values, an identification of two
-   values, evidence for a decision, its own tests and their results, and any other claim. None of it
-   is consulted, recorded as evidence, or allowed to affect meaning or acceptance.
+1. **Leaf declarations and outputs are computational claims and data.** Registration
+   information is consulted to dispatch, and answers are consumed to compute. Neither is
+   authority for mathematical definitions, laws, semantic placement or the truth of acceptance
+   assertions. A certificate, proof or self-test supplied by a leaf cannot establish correctness.
+
 2. **A leaf may provide any computation that meets the type.** For a registered operation, a leaf
    supplies a computation from the declared input form to the declared result form. It may be a
    mature engine, a heuristic, a lookup table, a random number or a wrong answer. The system has no
@@ -49,11 +49,12 @@ never believed. The firewall exists because leaf code will be bad; it is the shi
 5. **`lean-cas-dsl` is the sole authority on how correct an implementation is.** Nothing a leaf
    does can change, weaken, satisfy, bypass or influence that judgment, other than by answering
    correctly.
-6. **What can be discharged in Lean is never a leaf's.** A computation that can be carried out
-   entirely in Lean belongs to the formalization surface. Either `lean-categories` proves it, by its
-   own standards and blind to every implementation, or the kernel discharges it automatically and
-   generically, blind to every leaf. A leaf never implements a Lean-checked computation, because
-   that would let a leaf certify itself.
+6. **Available verified computations belong to the formal side.** A genuinely checked Lean
+   computation or proof may be used within its actual scope. The theoretical possibility of
+   implementing an algorithm in Lean does not require doing so before using an external CAS.
+   A verified specification does not verify its backend implementation, and mathematical laws
+   are not automatically runtime proof-producing obligations.
+
 7. **A leaf can be arbitrarily bad, and leaves will be.** A leaf can be riddled with bugs, a
    million lines that do nothing, a from-scratch reimplementation of GAP, or every method throwing an
    error in fifteen languages. This is not a risk to be minimized; it is certain to happen, and it
@@ -70,29 +71,42 @@ never believed. The firewall exists because leaf code will be bad; it is the shi
 
    Such a mechanism is removed. It is never tolerated, labelled, or kept "for now".
 
-9. **Quality is raised by proving more, never by trusting more.** The system never guarantees an
-   implementation's correctness and never accepts a claim of it. The response to bad leaves is:
-   - formalize more mathematics in `lean-categories`;
-   - add more cited or proved assertions to the suite: results a correct implementation must
-     recover, and a wrong one fails.
-
-   It is never to trust a leaf more. A separate engineering review may check that a leaf wires
-   into existing systems (GAP, Sage, Singular, Macaulay2, Julia, research code) rather than
-   reinventing their algorithms. Its outcome is an engineering finding, never correctness evidence,
-   and nothing on the formal side reads it.
+9. **Improve the component responsible for the actual defect.** Formal correctness improves
+   through correct definitions, source comparison and proofs. Computational correctness improves
+   through correct implementations, established engines and independent acceptance. A bad backend
+   answer does not automatically require more upstream formalization. An interface deficiency
+   belongs to its owner, which may redesign inadequate means without weakening the outcome.
+   Engineering reviews establish wiring findings; acceptance establishes observed correctness.
 
 Consequences:
 - A leaf holds zero semantic authority. It never decides what a value is, which values are equal,
   what holds of them, or which operations an object has.
 - A leaf is a registration (operation, input form, opaque implementation). It ships no mathematics
   and no Lean.
-- The kernel and the language never read anything a leaf wrote to decide meaning, types,
-  available operations or acceptance.
+- The kernel and language never use leaf declarations or outputs as authority for mathematical
+  meaning, types or operation availability. Acceptance consumes answers as observations, not proofs.
 - The workflow runs one way: formalization, then assertions, then implementations. A leaf's
-  failure never changes the mathematics, the kernel's rules or an assertion.
+  failure never redefines mathematics or an assertion; an observed interface or implementation
+  deficiency is resolved at its responsible owner.
 - Text anywhere that contradicts this is rewritten to state this model, not kept with a label.
 
 # Repository work documents
+
+> **The model to retain**
+>
+> `lean-categories` verifies and designs the mathematical API, including its abstract computational obligations. The kernel interprets and composes that API. Leaves declare implementations and supply computations under the published contracts. Acceptance tests their observed answers against independent mathematics.
+>
+> A verified specification is not a verified backend. Contract conformance is not functional correctness. Computational data may be used without becoming proof. A well-formed wrong answer is possible and must not redefine mathematical meaning.
+>
+> Interfaces follow formal constructions and selected structural maps, not backend classes or forwarding lists. Selected forms, parameters, inclusions, and actions are data; category membership does not reconstruct them.
+>
+> Each owner must complete its responsibility and may redesign inadequate implementation means. Existing code, schemas, gates, and assistant-authored plans are not mathematical facts or immutable requirements.
+>
+> When repairs multiply, inspect the prerequisite generating them. It may be an invented obligation. Removing that obligation is different from weakening the intended product.
+>
+> Judge progress by functioning required operations, their compositions, and the growth mechanism. Counts, local probes, accurate gap reports, and completed administrative machinery cannot substitute for that judgment.
+>
+> Preserve corrections and their causal examples in the existing owning documents. Do not assume conversational acknowledgment survives. Recording a settled correction is ordinary maintenance, not another approval transaction.
 
 > **You have no memory.** Nothing that exists only in chat survives compaction or the session.
 > Every correction, finding and decision request is committed to its owning document first
@@ -115,8 +129,8 @@ owns the separation of concerns.
 **Who writes here.** Only the formalization agent writes here: a subagent given the mathematical
 requirement and its sources. It never reads the kernel, the language, a test or a leaf to decide
 what to write. The orchestrator, which owns the kernel, and the test and leaf authors never author
-mathematics here (architecture.md "Authors: one role per agent"; LC-17). The orchestrator's single
-exception is compliance gates in the registry validator, which add no mathematics. Operations
+mathematics here (architecture.md "Authors: one role per agent"; LC-17). Schemas, metadata and validators that express the mathematical or abstract computational
+API are upstream-owned; their current form is an implementation means, not an immutable requirement. Operations
 exist only where their structure does (LC-16), and no map is partial (LC-14).
 
 This repository's part in the separation of concerns:
@@ -132,13 +146,14 @@ This repository's part in the separation of concerns:
   Downstream (`lean-cas-dsl`, its leaves, `research`) consumes a pinned release and may add none
   of these. A downstream need for missing mathematics arrives here as a formalization request.
   Until it is formalized and released, the CAS has no such notion.
-* **Blind to computation.** Decide what a definition means from its sources, never from what
-  Sage, GAP or any backend computes, and never from what a leaf would find convenient. Backend
-  capability is irrelevant to every audit here.
-  The leaf contract (realization rows, the port protocol, `register_leaf`) is therefore not here,
-  although it is Lean and every leaf depends on it: it is the `lean-cas-dsl` kernel's, published as
-  `lean-cas-dsl-leaf-contracts` over this repository (`lean-cas-dsl/specs/architecture.md`,
-  "Packages").
+* **Own the mathematical API and abstract computational obligations.** Decide mathematical
+  meaning from sources, independently of installed backends. Specify the required computational
+  data, operations, signatures and composition separately from formal laws. Improve schemas,
+  metadata and elaboration interfaces when needed; the current registry is not immutable.
+  Backend independence does not forbid designing a computational API. It forbids selecting
+  installed backends, certifying their behavior or narrowing mathematics to their capabilities.
+  The kernel owns generic execution of that published interface; `lean-cas-dsl-leaf-contracts`
+  owns concrete invocation and representation protocols.
 * **Auditable as mathematics alone.** Every definition checks against its citations, Mathlib and
   the formalization corpus. There is no `sorry` and no unchecked semantic axiom. This repository
   builds and audits without any downstream package.
@@ -157,10 +172,12 @@ This repository's part in the separation of concerns:
 
   `lean-cas-dsl` reads it at a pinned revision and adds only realizations. A new semantic row is
   written here, released, and re-pinned downstream.
-* **Corrections flow down, never up.** A downstream failure (a leaf that cannot compute, a failing
-  acceptance assertion) is never a reason to change a definition here. Only a mathematical error
-  in this repository is. Such a correction is released, and downstream re-pins and updates the
-  affected assertions in that same step.
+* **Mathematical authority flows down; owners complete their interfaces.** Upstream develops
+  new mathematics and improves its formal and computational API, not only false theorems.
+  Assess independently identified interface deficiencies from the mathematical need and sources.
+  A backend's convenience or a generated proof goal never determines the definition. Publish
+  corrections and API improvements for downstream consumption, preserving independent assertions.
+  Only an actual correction to mathematical meaning justifies changing their mathematical question.
 
 # Start here: corpus execution
 

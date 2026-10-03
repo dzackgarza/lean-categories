@@ -220,7 +220,7 @@ A row that violates this is ill-defined mathematics, and the registry must refus
 registration (gate owed: `lean-cas-dsl` plan node `gov-registry-gates`). Until that gate exists,
 a reviewer refuses it.
 
-## LC-17 — Formalization is authored blind to computation, tests and leaves
+## LC-17 — Independent mathematical authority and abstract computational API
 
 Mathematics here is written by the formalization author only, from the mathematical requirement
 and its sources. That author never reads the kernel, the language, an acceptance test or a leaf
@@ -231,6 +231,15 @@ mathematics, and it never shapes the answer. Formalizing an API to fit what a ke
 elaborate or a leaf can compute lets an implementation shape the mathematics, which the evidence
 model forbids ([AGENTS.md](AGENTS.md), "The evidence model"). Such work is not accepted however it
 reads: `bd31fe3` (2026-09-30) was authored this way and awaits independent review.
+
+The mathematical API includes abstract computational obligations: required data and operations,
+dependent signatures, their composition, and the interface that publishes these distinctions.
+Their owner may improve schemas, metadata and elaboration mechanisms. Backend independence
+forbids installed implementations from deciding meaning; it does not forbid computational API
+design. Formal laws are distinct from what a computational implementation must provide. Keep
+mathematical source comparison, totality and proof standards; never reshape a definition or proof
+statement to make a downstream generated goal succeed. An independently assessed API deficiency
+is resolved here from its mathematical need, not left indefinitely as a downstream limitation.
 
 ## LC-18 — Membership in a domain is established by the domain's own evidence
 
