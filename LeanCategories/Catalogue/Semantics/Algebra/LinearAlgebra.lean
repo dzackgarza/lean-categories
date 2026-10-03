@@ -9,6 +9,8 @@ public import LeanCategories.Catalogue.Semantics.Algebra.Polynomials
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import Mathlib.LinearAlgebra.Matrix.Rank
 public import Mathlib.LinearAlgebra.Dimension.Finrank
+public import LeanCategories.CategoryTheory.OneCat.KernelFunctor
+public import Mathlib.Algebra.Category.ModuleCat.Subobject
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.Foundation.Evidence
 public meta import LeanCategories.Catalogue.Semantics.Algebra.Polynomials
@@ -183,6 +185,49 @@ def ker (n : ℕ) (K : CommRingCat.{0}) : matrices n K ⟶ powerSet (Fin n → K
 def span (K : LeanCategories.Algebra.FieldCat.{0}) (n : ℕ) :
     powerSet (Fin n → Fields.ring K) ⟶ powerSet (Fin n → Fields.ring K) :=
   TypeCat.ofHom fun S => (Submodule.span (Fields.ring K) S : Set (Fin n → Fields.ring K))
+
+/-- A submodule as a chosen categorical subobject, retaining its module and defining inclusion.
+This is the representative used by Mathlib `ModuleCat.subobjectModule`, the order isomorphism
+between categorical subobjects and submodules. It works for any ring and module, independently
+of coordinates or a chosen field. -/
+def submoduleSubobject {R : Type*} [Ring R] (M : ModuleCat R) (N : Submodule R M) :
+    (LeanCategories.isMonoArrow (ModuleCat R)).FullSubcategory :=
+  ⟨Arrow.mk (ModuleCat.ofHom N.subtype), by
+    exact (ModuleCat.mono_iff_injective _).2 N.subtype_injective⟩
+
+/-- The generated submodule, with its actual inclusion, as a chosen categorical subobject.
+The standard span is the least submodule containing the generators (`Submodule.span_le`). -/
+def generatedSubobject {R : Type*} [Ring R] (M : ModuleCat R) (S : Set M) :
+    (LeanCategories.isMonoArrow (ModuleCat R)).FullSubcategory :=
+  submoduleSubobject M (Submodule.span R S)
+
+/-- The chosen subobject underlying the subset-valued `span` above. Its domain is the span
+module itself, and its arrow sends a vector in that module to the same ambient vector. -/
+def spanSubobject (K : LeanCategories.Algebra.FieldCat.{0}) (n : ℕ)
+    (S : Set (Fin n → Fields.ring K)) :
+    (LeanCategories.isMonoArrow (ModuleCat (Fields.ring K))).FullSubcategory :=
+  generatedSubobject (ModuleCat.of (Fields.ring K) (Fin n → Fields.ring K)) S
+
+/-- The chosen inclusion has exactly the standard generated submodule as its image. -/
+theorem generatedSubobject_range {R : Type*} [Ring R] (M : ModuleCat R) (S : Set M) :
+    LinearMap.range (generatedSubobject M S).obj.hom.hom = Submodule.span R S :=
+  Submodule.range_subtype _
+
+/-- The generated image is least among all submodules containing the generators. -/
+theorem generatedSubobject_le_iff {R : Type*} [Ring R] (M : ModuleCat R)
+    (S : Set M) (N : Submodule R M) :
+    LinearMap.range (generatedSubobject M S).obj.hom.hom ≤ N ↔ S ⊆ N := by
+  change LinearMap.range (Submodule.span R S).subtype ≤ N ↔ S ⊆ N
+  rw [Submodule.range_subtype]
+  exact Submodule.span_le
+
+/-- Forgetting the chosen span inclusion recovers precisely the existing subset-valued span. -/
+theorem spanSubobject_range (K : LeanCategories.Algebra.FieldCat.{0}) (n : ℕ)
+    (S : Set (Fin n → Fields.ring K)) :
+    Set.range (spanSubobject K n S).obj.hom = (span K n).hom S := by
+  exact congrArg (fun N : Submodule (Fields.ring K) (Fin n → Fields.ring K) =>
+    (N : Set (Fin n → Fields.ring K)))
+      (generatedSubobject_range (ModuleCat.of (Fields.ring K) (Fin n → Fields.ring K)) S)
 
 /-- The dimension of the span over the selected field, using its compatible field structure. -/
 noncomputable def dim (K : LeanCategories.Algebra.FieldCat.{0}) (n : ℕ) :
