@@ -149,10 +149,36 @@ def det (n : ℕ) (K : CommRingCat.{0}) : matrices n K ⟶ (K : SetsCat.{0}) :=
 def trace (n : ℕ) (K : CommRingCat.{0}) : matrices n K ⟶ (K : SetsCat.{0}) :=
   TypeCat.ofHom fun M => M.trace
 
-/-- The rank. -/
-noncomputable def rank (n : ℕ) (K : CommRingCat.{0}) :
+/-- The independence rank of the column module over the selected nontrivial
+commutative ring (Mathlib `Matrix.rank`). Over a field this is ordinary matrix rank.
+Nontriviality excludes the zero-ring convention assigning rank one even in size zero. -/
+noncomputable def rank (n : ℕ) (K : CommRingCat.{0}) [Nontrivial K] :
     matrices n K ⟶ CasCatalogue.Foundation.Objects.naturals :=
   TypeCat.ofHom fun M => M.rank
+
+/-- The actual structured linear-map image defines the exported matrix invariant. -/
+theorem rank_matrixLinearMap (n : ℕ) (K : CommRingCat.{0}) [Nontrivial K]
+    (M : matrices n K) :
+    rank n K M = Module.finrank K (LinearMap.range (matrixLinearMap n K M).hom) := rfl
+
+/-- The exported rank is finite and bounded by the retained matrix size. -/
+theorem rank_le_size (n : ℕ) (K : CommRingCat.{0}) [Nontrivial K] (M : matrices n K) :
+    rank n K M ≤ n := by
+  exact M.rank_le_card_height.trans_eq (Fintype.card_fin n)
+
+/-- No information is lost by passing from cardinal module rank to natural matrix rank. -/
+theorem rank_cardinal_image (n : ℕ) (K : CommRingCat.{0}) [Nontrivial K]
+    (M : matrices n K) :
+    (rank n K M : Cardinal) = Module.rank K (LinearMap.range (matrixLinearMap n K M).hom) :=
+  (LinearMap.range M.mulVecLin).finrank_eq_rank
+
+/-- Zero has rank zero on the mathematical domain of the exported operation. -/
+theorem rank_zero (n : ℕ) (K : CommRingCat.{0}) [Nontrivial K] :
+    rank n K (0 : matrices n K) = 0 := Matrix.rank_zero
+
+/-- The excluded source convention is genuinely different, even for an empty matrix. -/
+example : Matrix.rank (0 : Matrix (Fin 0) (Fin 0) (ZMod 1)) = 1 :=
+  Matrix.rank_subsingleton _
 
 /-- The characteristic polynomial `det(x - M)`. -/
 noncomputable def charpoly (n : ℕ) (K : CommRingCat.{0}) : matrices n K ⟶ polynomials K :=

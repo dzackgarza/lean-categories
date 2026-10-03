@@ -194,6 +194,57 @@ def quotientsCodomainRealization (R : RingCat.{u}) :
   { sourceRealization := quotientsModulesRealization R
     targetRealization := CasCatalogue.Modules.CatalogueRegistration.modulesRealization R }
 
+/-- The public kernel domain inherits precisely the concrete kernel's cardinal rank.
+This is the independence-set rank invariant over `R`, not an assumed basis cardinality. -/
+theorem kernel_domain_rank (R : RingCat.{u}) (f : Arrow (ModuleCat.{u} R)) :
+    let K : ModuleCat.{u} R :=
+      (subobjectsDomainDeclaration R).obj ((kernelDeclaration R).obj f)
+    Module.rank R K = Module.rank R f.hom.hom.ker := by
+  let K : ModuleCat.{u} R :=
+    (subobjectsDomainDeclaration R).obj ((kernelDeclaration R).obj f)
+  letI : AddCommGroup K := K.isAddCommGroup
+  letI : Module R K := K.isModule
+  exact LinearEquiv.rank_eq (ModuleCat.kernelIsoKer f.hom).toLinearEquiv
+
+/-- The selected inclusion agrees with the concrete kernel inclusion under its actual
+Mathlib comparison; neither the domain nor the defining map is replaced. -/
+theorem kernel_inclusion (R : RingCat.{u}) (f : Arrow (ModuleCat.{u} R)) :
+    (ModuleCat.kernelIsoKer f.hom).inv ≫ ((kernelDeclaration R).obj f).obj.hom =
+      ModuleCat.ofHom f.hom.hom.ker.subtype :=
+  ModuleCat.kernelIsoKer_inv_kernel_ι f.hom
+
+/-- The public quotient module inherits precisely the cokernel's concrete cardinal rank. -/
+theorem cokernel_codomain_rank (R : RingCat.{u}) (f : Arrow (ModuleCat.{u} R)) :
+    let Q : ModuleCat.{u} R :=
+      (quotientsCodomainDeclaration R).obj ((cokernelDeclaration R).obj f)
+    Module.rank R Q = Module.rank R (f.right ⧸ f.hom.hom.range) := by
+  let Q : ModuleCat.{u} R :=
+    (quotientsCodomainDeclaration R).obj ((cokernelDeclaration R).obj f)
+  letI : AddCommGroup Q := Q.isAddCommGroup
+  letI : Module R Q := Q.isModule
+  exact LinearEquiv.rank_eq (ModuleCat.cokernelIsoRangeQuotient f.hom).toLinearEquiv
+
+/-- The retained projection is exactly the quotient projection under the actual comparison. -/
+theorem cokernel_projection (R : RingCat.{u}) (f : Arrow (ModuleCat.{u} R)) :
+    ((cokernelDeclaration R).obj f).obj.hom ≫
+        (ModuleCat.cokernelIsoRangeQuotient f.hom).hom =
+      ModuleCat.ofHom f.hom.hom.range.mkQ :=
+  ModuleCat.cokernel_π_cokernelIsoRangeQuotient_hom f.hom
+
+/-- Kernel carrier cardinality is transported by the actual selected comparison. -/
+theorem kernel_domain_cardinality (R : RingCat.{u}) (f : Arrow (ModuleCat.{u} R)) :
+    Cardinal.mk (ModuleCat.carrier (R := R)
+      ((subobjectsDomainDeclaration R).obj ((kernelDeclaration R).obj f))) =
+      Cardinal.mk f.hom.hom.ker :=
+  Cardinal.mk_congr (ModuleCat.kernelIsoKer f.hom).toLinearEquiv.toEquiv
+
+/-- Quotient carrier cardinality is transported by the actual selected comparison. -/
+theorem cokernel_codomain_cardinality (R : RingCat.{u}) (f : Arrow (ModuleCat.{u} R)) :
+    Cardinal.mk (ModuleCat.carrier (R := R)
+      ((quotientsCodomainDeclaration R).obj ((cokernelDeclaration R).obj f))) =
+      Cardinal.mk (f.right ⧸ f.hom.hom.range) :=
+  Cardinal.mk_congr (ModuleCat.cokernelIsoRangeQuotient f.hom).toLinearEquiv.toEquiv
+
 def coreSubobjectsModulesCategory (R : RingCat.{u}) :=
   Constructors.core (subobjectsModulesCategory R)
 def coreSubobjectsModulesRealization (R : RingCat.{u}) :

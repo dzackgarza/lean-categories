@@ -107,8 +107,9 @@ and local conventions passed sequentially on this final source with
 The existing polynomial/algebra objects already retain commutative coefficient
 structures and actual constants through `polyAlgebra`, `mvAlgebra`, and the
 structural `algebrasForget`; no additional wrapper is needed for that datum.
-This bounded interface pass does not settle the previously recorded interpretation
-and domain decision for general-ring matrix rank.
+This bounded interface pass did not settle the previously recorded interpretation
+and domain decision for general-ring matrix rank; the subsequent source followup
+below resolves the observed defect and states the selected invariant's scope.
 
 The strengthened mathematical workflow pass keeps selected coefficient rings and
 the existing finite-set `factors` operation unchanged. `Polynomials.factorization`
@@ -167,6 +168,25 @@ Independent source review of four-file delta
 against `fa316209` found no concrete mathematical defect. Focused actual-signature
 checks, default build, `LeanCategories.All`, vacuity, axiom audit and local
 conventions passed sequentially with `LEAN_NUM_THREADS=1` on this final source.
+
+The rank-scope followup retains the existing selected Mathlib operation: matrix
+rank is the independence rank of its column module. Its public signature now
+requires a nontrivial selected commutative coefficient ring, excluding the
+observed zero-ring convention (rank one even for an empty matrix). Actual-source
+laws identify the matrix's structured linear-map image, equality with its cardinal
+module rank, the size bound, and rank zero of the zero matrix. Generic module
+rank remains the cardinal independence-subset invariant; it is not an assumed
+cardinality of an arbitrary basis without the appropriate ring hypotheses.
+The public kernel and cokernel comparisons now explicitly preserve actual
+domain/inclusion and quotient/projection, together with their inherited ranks
+and carrier cardinalities, over the same selected ring. No free-module or basis
+assumption is added to these transport laws.
+Independent mathematical source review of three-file delta
+`79e101ad7f2caf2ddfda77c0c83743ffcc653fa4be9fda62bf4eac77ce51a4cf`
+against `01b44cd` found no concrete defect. Focused owners, default build,
+`LeanCategories.All`, vacuity, axiom audit and local conventions passed sequentially
+with `LEAN_NUM_THREADS=1` on the final source. These source checks execute no
+backend implementation and impose no backend verification duties.
 
 Within a sweep, source dependencies and traversal order come from the existing
 [source manifest](corpus/foundational-source-corpus.md); unit IDs and

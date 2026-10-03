@@ -15,8 +15,11 @@ public import Mathlib.LinearAlgebra.Dimension.Basic
 # Rank as a functor
 
 The rank of a module (Mathlib's `Module.rank`, the supremum of the cardinalities of linearly
-independent families) is an isomorphism invariant (`LinearEquiv.rank_eq`), hence a functor
+independent subsets) is an isomorphism invariant (`LinearEquiv.rank_eq`), hence a functor
 `rank : Core(Mod_R) ⥤ Disc(Card)`.
+This cardinal invariant is defined over any ring. Interpreting it as the cardinality
+of an arbitrary basis requires appropriate ring hypotheses, such as the strong rank
+condition; no basis or free-module hypothesis is assumed by this functor.
 -/
 
 open CategoryTheory
