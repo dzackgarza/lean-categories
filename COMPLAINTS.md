@@ -1069,3 +1069,17 @@ implementation failure. The existing definitions themselves were retained:
 
 These repairs address the independently inspected source exposures. They do not
 extend the fixed B0 assertion inventory or establish downstream acceptance.
+
+Source-only review of the chosen formed-module parameter interface found that
+the public module vocabulary did not name the regular scalar module, although
+Mathlib already constructs it as `ModuleCat.of R R`. A value module `W` in the
+registered pairing declaration is a complete object of `ModuleCat R`; its carrier
+alone does not supply its additive structure or scalar action, and a coordinate
+module is a different selected object. `Modules/CatalogueRegistration.lean` now
+registers `RegularModule(R)` at the actual `Modules(R)` family. Its definition uses
+the selected `RingCat R` and the canonical Mathlib self-module structure
+`Semiring.toModule` (`Mathlib/Algebra/Module/Defs.lean`). The intrinsic identities
+`regularModule_addCommGroup` and `regularModule_smul` retain the ring's own
+additive group and multiplication as scalar action. This exposes the existing
+canonical mathematical object without selecting a replacement carrier, basis,
+coordinate presentation or value module for any formed object.

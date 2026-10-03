@@ -48,6 +48,21 @@ noncomputable def modulesRealization (R : RingCat.{u}) :
     parameterQuotation := .ringR R
     category_eq := by rfl })
 
+/-- The left regular module of the selected scalar ring: its additive group is the
+ring's own additive group, and scalar action is its multiplication. This is Mathlib's
+canonical `ModuleCat.of R R`, with the self-module structure `Semiring.toModule`.
+It is an object of the actual fibre `Modules(R)`, without choosing coordinates. -/
+def regularModule (R : RingCat.{u}) : ModuleCat.{u} R :=
+  ModuleCat.of R R
+
+/-- The regular module retains the scalar ring's actual additive structure. -/
+theorem regularModule_addCommGroup (R : RingCat.{u}) :
+    (regularModule R).isAddCommGroup = R.ring.toAddCommGroup := rfl
+
+/-- The scalar action of the regular module is multiplication in the chosen ring. -/
+theorem regularModule_smul (R : RingCat.{u}) (r : R) (x : regularModule R) :
+    r • x = (r * (show R from x) : R) := rfl
+
 /-! ### The module fibration (CC-FIB)
 
 The total category, fibre inclusion and reindexing are the canonical realizations of the
@@ -421,6 +436,10 @@ normalized_registry .category
     declaration := `LeanCategories.Modules.Mathlib.ModulesOf
     expression := Modules.Modules
     realization := `CasCatalogue.Modules.CatalogueRegistration.modulesRealization}
+
+normalized_registry .object
+  { id := ⟨"obj.modules.regular"⟩, category := CategoryId.modulesR, name := "RegularModule"
+    declaration := `CasCatalogue.Modules.CatalogueRegistration.regularModule }
 normalized_registry .category
   { id := CategoryId.freeModules,
     declaration := `LeanCategories.Modules.Mathlib.FreeModules
