@@ -970,3 +970,14 @@ direct mathematical carrier functor remains, and
 `integralLatticeCarrierComparison` proves its agreement with the composite by
 `Iso.refl`. There is one structural carrier route, preserving the actual maps.
 The catalogue and formed-kernel/presentation probes rebuild successfully.
+
+Independent public-interface review identified unnamed fixed-value formed modules
+and missing public form/defining-inclusion access. The fixed-value category is now
+named `Bil`; the varying-value category is named `BilWForm`. The registered pairing
+map takes the chosen commutative ring, its chosen value module and the actual
+formed object, and returns its own bilinear pairing as a map into that selected
+value module. Formed subobjects now have a structural domain functor into `Bil`
+and an `inclusion` method returning their stored arrow through the full-subcategory
+inclusion. These apply to arbitrary selected formed subobjects, including the
+prescribed kernel lift, without a kernel-specific accessor or a naked-module
+replacement. Catalogue and presentation probes pass with this exposure.

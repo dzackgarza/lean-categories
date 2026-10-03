@@ -170,15 +170,21 @@ noncomputable def bilWFormBaseChangeDeclaration (R : Type u) [CommRing R]
     bilWFormCategory R ⟶ bilWFormCategory S :=
   (LeanCategories.Lattices.Valued.baseChangeBilWForm R S).toCatHom
 
+/-- The selected form as a map of sets, retaining the chosen ring, value module and object. -/
+def pairing (R : CommRingCat.{u}) (W : ModuleCat.{u} R) (L : BilinModuleCat R W) :
+    (L.carrier × L.carrier : LeanCategories.Foundation.Mathlib.Sets.{u}) ⟶
+      (W : LeanCategories.Foundation.Mathlib.Sets.{u}) :=
+  TypeCat.ofHom fun p => L.pairing p.1 p.2
+
 normalized_registry .category
-  { id := CategoryId.bilinModule
+  { id := CategoryId.bilinModule, name := "Bil"
     declaration := `CasCatalogue.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleCategory
     expression := BilinModule
     realization :=
       `CasCatalogue.Modules.Bilinear.Valued.CatalogueRegistration.bilinModuleRealization}
 
 normalized_registry .category
-  { id := CategoryId.bilWForm
+  { id := CategoryId.bilWForm, name := "BilWForm"
     declaration := `CasCatalogue.Modules.Bilinear.Valued.CatalogueRegistration.bilWFormCategory
     expression := BilWForm
     realization := `CasCatalogue.Modules.Bilinear.Valued.CatalogueRegistration.bilWFormRealization}
@@ -240,5 +246,9 @@ normalized_registry .functor
     realization :=
       `CasCatalogue.Modules.Bilinear.Valued.CatalogueRegistration.bilWFormBaseChangeRealization
     expression := BilWFormBaseChange }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.bilin_module_pairing"⟩, category := CategoryId.sets, name := "pairing"
+    declaration := `CasCatalogue.Modules.Bilinear.Valued.CatalogueRegistration.pairing }
 
 end CasCatalogue.Modules.Bilinear.Valued.CatalogueRegistration

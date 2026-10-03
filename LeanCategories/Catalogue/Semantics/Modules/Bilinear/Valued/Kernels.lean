@@ -43,6 +43,8 @@ def subobjectsBilinModule : CategoryId := ⟨"cat.subobjects_bilin_module"⟩
 end CategoryId
 
 namespace FunctorId
+def subobjectsBilinDomain : FunctorId := ⟨"fun.subobjects_bilin_module.domain"⟩
+def subobjectsBilinInclusion : FunctorId := ⟨"fun.subobjects_bilin_module.inclusion"⟩
 def arrowsModulesKernel : FunctorId := ⟨"fun.arrows_modules.kernel"⟩
 end FunctorId
 
@@ -57,6 +59,10 @@ def ArrowsBilin : CategoryExpr :=
   .construct ConstructorId.arrow #[.category Modules.Bilinear.Valued.Catalogue.BilinModule]
 def SubobjectsBilin : CategoryExpr :=
   .construct ConstructorId.subobjects #[.category Modules.Bilinear.Valued.Catalogue.BilinModule]
+def SubobjectsBilinDomainExpr : FunctorExpr SubobjectsBilin
+    Modules.Bilinear.Valued.Catalogue.BilinModule := .atomic FunctorId.subobjectsBilinDomain
+def SubobjectsBilinInclusionExpr : FunctorExpr SubobjectsBilin ArrowsBilin :=
+  .atomic FunctorId.subobjectsBilinInclusion
 def KernelExpr : FunctorExpr ArrowsModules SubobjectsModules := .atomic FunctorId.arrowsModulesKernel
 
 noncomputable section
@@ -77,6 +83,32 @@ def subobjectsBilinCategory (R : Type u) [CommRing R] (W : Type u) [AddCommGroup
     [Module R W] := Constructors.subobjects (bilinModuleCategory R W)
 def subobjectsBilinRealization (R : Type u) [CommRing R] (W : Type u) [AddCommGroup W]
     [Module R W] : CategoryRealization SubobjectsBilin (subobjectsBilinCategory R W) := {}
+
+/-- A formed subobject retains its selected restricted form on its domain. -/
+def subobjectsBilinDomainDeclaration (R : Type u) [CommRing R] (W : Type u)
+    [AddCommGroup W] [Module R W] :
+    subobjectsBilinCategory R W ⥤ bilinModuleCategory R W :=
+  (Constructors.isMonoArrow (bilinModuleCategory R W)).ι ⋙ Arrow.leftFunc
+
+def subobjectsBilinDomainRealization (R : Type u) [CommRing R] (W : Type u)
+    [AddCommGroup W] [Module R W] :
+    FunctorRealization SubobjectsBilinDomainExpr (subobjectsBilinCategory R W)
+      (bilinModuleCategory R W) (subobjectsBilinDomainDeclaration R W) :=
+  { sourceRealization := subobjectsBilinRealization R W
+    targetRealization := bilinModuleRealization R W }
+
+/-- The actual defining inclusion of a formed subobject, with both formed endpoints. -/
+def subobjectsBilinInclusionDeclaration (R : Type u) [CommRing R] (W : Type u)
+    [AddCommGroup W] [Module R W] :
+    subobjectsBilinCategory R W ⥤ arrowsBilinCategory R W :=
+  (Constructors.isMonoArrow (bilinModuleCategory R W)).ι
+
+def subobjectsBilinInclusionRealization (R : Type u) [CommRing R] (W : Type u)
+    [AddCommGroup W] [Module R W] :
+    FunctorRealization SubobjectsBilinInclusionExpr (subobjectsBilinCategory R W)
+      (arrowsBilinCategory R W) (subobjectsBilinInclusionDeclaration R W) :=
+  { sourceRealization := subobjectsBilinRealization R W
+    targetRealization := arrowsBilinRealization R W }
 
 /-- The kernel of a module map, with its inclusion. -/
 def kernelDeclaration (R : RingCat.{u}) :
@@ -175,6 +207,21 @@ normalized_registry .category
     declaration := `CasCatalogue.Modules.Bilinear.Valued.Kernels.subobjectsBilinCategory
     expression := SubobjectsBilin
     realization := `CasCatalogue.Modules.Bilinear.Valued.Kernels.subobjectsBilinRealization }
+normalized_registry .functor
+  { id := FunctorId.subobjectsBilinDomain, source := SubobjectsBilin
+    target := Modules.Bilinear.Valued.Catalogue.BilinModule
+    declaration := `CasCatalogue.Modules.Bilinear.Valued.Kernels.subobjectsBilinDomainDeclaration
+    realization := `CasCatalogue.Modules.Bilinear.Valued.Kernels.subobjectsBilinDomainRealization
+    expression := SubobjectsBilinDomainExpr, structural := true }
+normalized_registry .functor
+  { id := FunctorId.subobjectsBilinInclusion, source := SubobjectsBilin, target := ArrowsBilin
+    declaration := `CasCatalogue.Modules.Bilinear.Valued.Kernels.subobjectsBilinInclusionDeclaration
+    realization := `CasCatalogue.Modules.Bilinear.Valued.Kernels.subobjectsBilinInclusionRealization
+    expression := SubobjectsBilinInclusionExpr }
+normalized_registry .method
+  { id := ⟨"meth.bilin_module.inclusion"⟩, name := "inclusion", owner := SubobjectsBilin
+    functor := FunctorId.subobjectsBilinInclusion, shape := .object }
+
 normalized_registry .functor
   { id := FunctorId.arrowsModulesKernel, source := ArrowsModules, target := SubobjectsModules
     declaration := `CasCatalogue.Modules.Bilinear.Valued.Kernels.kernelDeclaration
