@@ -54,6 +54,22 @@ noncomputable def fromCoordinate (R : CommRingCat.{0}) :
     (polynomials R : SetsCat.{0}) ⟶ differentials R :=
   TypeCat.ofHom (coordinateEquiv R).symm
 
+/-- The admitted coordinate comparison as an isomorphism of the named set families.
+Its maps are coordinate extraction and reconstruction. Mathlib's `Equiv.toIso`
+transports the canonical linear equivalence; LC-09 corpus search
+`"def toIso" "X ≃ Y"` finds `Mathlib/CategoryTheory/Types/Basic.lean`. -/
+noncomputable def coordinateComparison (R : CommRingCat.{0}) :
+    differentials R ≅ polynomials R :=
+  (coordinateEquiv R).toEquiv.toIso
+
+/-- The forward map of the coordinate comparison is coordinate extraction. -/
+@[simp] theorem coordinateComparison_hom (R : CommRingCat.{0}) :
+    (coordinateComparison R).hom = coordinate R := rfl
+
+/-- The inverse map of the coordinate comparison reconstructs the differential. -/
+@[simp] theorem coordinateComparison_inv (R : CommRingCat.{0}) :
+    (coordinateComparison R).inv = fromCoordinate R := rfl
+
 /-- The distinguished differential `dx = d(x)`. -/
 noncomputable def dx (R : CommRingCat.{0}) :
     CasCatalogue.Foundation.Objects.fin 1 ⟶ differentials R :=
@@ -142,6 +158,11 @@ normalized_registry .morphism
 normalized_registry .morphism
   { id := ⟨"mor.sets.kaehler_dx"⟩, category := CategoryId.sets, name := "dx"
     declaration := `CasCatalogue.Algebra.Differentials.dx }
+
+normalized_registry .presentation
+  { id := ⟨"cmp.sets.kaehler_polynomial_coordinates"⟩, name := "differentialCoordinates"
+    source := ⟨"obj.sets.kaehler_polynomials"⟩, target := ⟨"obj.sets.polynomials"⟩
+    declaration := `CasCatalogue.Algebra.Differentials.coordinateComparison }
 
 normalized_registry .morphism
   { id := ⟨"mor.sets.kaehler_scale"⟩, category := CategoryId.sets, name := "•"
