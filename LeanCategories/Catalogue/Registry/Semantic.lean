@@ -117,7 +117,7 @@ def SemanticEntry.declarations : SemanticEntry → Array Name
   | .construction e => #[e.declaration]
   | .method _ => #[]
   | .property _ => #[]
-  | .lift e => #[e.evidence]
+  | .lift e => #[e.evidence] ++ e.computation.toArray
   | .cell e => #[e.declaration]
   | .limit e => #[e.declaration]
   | .adjunction e => #[e.declaration]
@@ -1844,6 +1844,23 @@ def validateLift (state : SemanticState) (e : LiftEntry) : MetaM Unit := do
       unless ← withTransparency .all <| isDefEq onArrows edge do
         throwError "lift {e.id.raw}: {e.evidence} lifts along a functor whose action on arrows \
           is not {e.edge.label}"
+      let some name := e.computation
+        | throwError "lift {e.id.raw}: missing required callable MonoLiftComputation signature"
+      let computation ← mkConstWithFreshMVarLevels name
+      let (_, _, computationType) ←
+        forallMetaTelescopeReducing (← inferType computation)
+      let computationType ← whnfR computationType
+      unless computationType.isAppOfArity ``CasCatalogue.MonoLiftComputation 5 do
+        throwError "lift {e.id.raw}: {name} is not a MonoLiftComputation"
+      unless ← withTransparency .all <| isDefEq computationType.getAppArgs[4]! type.getAppArgs[4]! do
+        throwError "lift {e.id.raw}: callable computation uses a different selected functor"
+      -- Compare entire dependent families under rigid locals, so the check cannot
+      -- specialize the evidence's parameters to a smaller computation domain.
+      let selected ← forallTelescopeReducing (← inferType evidence) fun args _ => do
+        let data ← mkAppM ``CasCatalogue.MonoLift.computation #[mkAppN evidence args]
+        mkLambdaFVars args data
+      unless ← withTransparency .all <| isDefEq computation selected do
+        throwError "lift {e.id.raw}: callable computation does not retain the specified lift data"
   | .createsLimits shape =>
       unless type.isAppOfArity ``CategoryTheory.CreatesLimitsOfShape 7 do
         throwError "lift {e.id.raw}: {e.evidence} is not a creation of limits (CreatesLimitsOfShape)"

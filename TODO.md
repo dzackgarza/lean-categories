@@ -147,6 +147,27 @@ against `3d4634c` found no concrete mathematical defect. Focused owners,
 default build, `LeanCategories.All`, vacuity, axiom audit and local conventions
 passed sequentially on the final source with `LEAN_NUM_THREADS=1`.
 
+The remaining abstract obligation review found that `LiftEntry` published only
+the mixed mathematical `MonoLift` record. `MonoLiftComputation` now separately
+publishes its full dependent inputs and required callable object, defining map,
+and both comparison directions. Its fields carry no inverse, monicity or
+cartesian-universality proof outputs. The selected formal lift supplies those
+laws. `LiftEntry.computation` is checked as the entire dependent extraction from
+that lift, under rigid parameters, so a specialized fibre or different maps
+cannot silently replace the generic selected computation. The actual formed
+restriction row carries this declaration; intrinsic registry checks reject both
+a missing declaration and an actual integer-only specialization. Public
+composition equations describe the object/map actions and the two comparison
+orders directly. Infinite-domain functions are callable components, with no
+requirement to enumerate their graphs. Existing functor object/map signatures
+and chosen-arrow domain/codomain/defining-map signatures supply the other module
+and group result components.
+Independent source review of four-file delta
+`919d0c13607042eb35bd325a09d7809f40b9058c2119c76392e84c0156408d83`
+against `fa316209` found no concrete mathematical defect. Focused actual-signature
+checks, default build, `LeanCategories.All`, vacuity, axiom audit and local
+conventions passed sequentially with `LEAN_NUM_THREADS=1` on this final source.
+
 Within a sweep, source dependencies and traversal order come from the existing
 [source manifest](corpus/foundational-source-corpus.md); unit IDs and
 their mathematical prerequisites come from the complete source catalogues.

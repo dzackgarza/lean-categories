@@ -187,6 +187,12 @@ def forgetMonoLift (R : Type u) [CommRing R] (W : Type u) [AddCommGroup W] [Modu
       exact LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp
         (congrArg (forget R W).map (hk.2.trans hcomp.symm))) y
 
+/-- Required lift computations, with the full selected dependent inputs. The registered
+formal evidence supplies their laws; this record supplies only the object and callable maps. -/
+def forgetMonoLiftComputation (R : Type u) [CommRing R] (W : Type u)
+    [AddCommGroup W] [Module R W] : MonoLiftComputation (forget R W) :=
+  (forgetMonoLift R W).computation
+
 variable {R : Type u} [CommRing R] {W : Type u} [AddCommGroup W] [Module R W]
 
 /-- The kernel of the underlying module map, as a submodule of the source. -/
@@ -298,6 +304,29 @@ normalized_registry .method
 normalized_registry .lift
   { id := ⟨"lift.bilin_module.restrict"⟩
     edge := .constructMap ConstructorId.arrow (.functor FunctorId.bilinModuleForget)
-    evidence := `CasCatalogue.Modules.Bilinear.Valued.Kernels.forgetMonoLift }
+    evidence := `CasCatalogue.Modules.Bilinear.Valued.Kernels.forgetMonoLift
+    computation := some `CasCatalogue.Modules.Bilinear.Valued.Kernels.forgetMonoLiftComputation }
+
+/-- An actual specialization of the selected computation, used only to check that a
+generic public obligation cannot silently be replaced by one coefficient fibre. -/
+private noncomputable def integerLiftComputation :
+    MonoLiftComputation (LeanCategories.Modules.Bilinear.Valued.forget ℤ ℤ) :=
+  Modules.Bilinear.Valued.Kernels.forgetMonoLiftComputation ℤ ℤ
+
+open Lean Meta Elab Command in
+run_cmd liftTermElabM do
+  let state ← semanticState
+  let some row := state.lifts.find? (·.id.raw == "lift.bilin_module.restrict")
+    | throwError "missing actual selected restriction lift"
+  validateLift state row
+  let rejects (candidate : LiftEntry) : MetaM Bool := do
+    try
+      validateLift state candidate
+      return false
+    catch _ => return true
+  unless ← rejects { row with computation := none } do
+    throwError "a selected restriction lift must publish its required callable components"
+  unless ← rejects { row with computation := some ``integerLiftComputation } do
+    throwError "a generic selected restriction signature must retain all coefficient fibres"
 
 end CasCatalogue
