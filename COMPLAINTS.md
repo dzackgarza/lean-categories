@@ -1000,3 +1000,26 @@ and that chosen terminal object, supplying point-domain transport. The module
 zero declaration now names this public terminal source; its value and selected
 ring/module generality are unchanged. Catalogue compilation passes with all
 terminal universal data and comparison checked upstream.
+
+Independent mathematical review identified that `MonoLift` retained an object,
+arrow, base isomorphism and commuting equation but omitted cartesian universality
+and did not imply that its defining arrow was monic. For the projection
+`Sets × Sets → Sets`, the proposed lift `(K, Y ⊔ Y) → (X, Y)` with components
+`(i, fold)` satisfies those former clauses; for inhabited `Y`, its second
+component is not injective, so the arrow is not a subobject. This contradicts
+FOUNDATIONS Definition 31.1 and the prescribed structured-subobject lift required
+by B0 `cc-lift` / `core-return-lifts` / `lc-lift-subobject`.
+
+`Catalogue/Lift.lean` now requires the full pullback universal bijection for
+every base arrow, with the specified base isomorphism retained. `hom_mono`
+derives monicity from that clause, so the counterexample cannot inhabit the
+corrected evidence type even for a nonfaithful functor. `MonoLift.id` supplies
+the identity example; `MonoLift.comp` factors successively through the two
+universal properties and proves route composition preserves them. The existing
+`forgetMonoLift` for selected bilinear forms now proves this property by
+corestricting the actual formed morphism to the image submodule; form preservation
+is the source morphism's own equation. Its chosen restricted pairing, actual
+inclusion and kernel definitions are unchanged. `validateLift` continues to
+require exactly `MonoLift` for the specified route, whose stronger type now
+contains these laws. This resolves the inspected evidence-type defect; it makes
+no claim about uninspected lift constructions or downstream acceptance.

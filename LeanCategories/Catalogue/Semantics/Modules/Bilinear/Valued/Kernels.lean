@@ -133,6 +133,37 @@ def forgetMonoLift (R : Type u) [CommRing R] (W : Type u) [AddCommGroup W] [Modu
     ext x
     exact (LinearEquiv.ofInjective_symm_apply (f := i.hom)
       (h := (ModuleCat.mono_iff_injective i).mp hi) x).symm
+  universal X K i hi Y g f hf := by
+    let e := LinearEquiv.ofInjective i.hom ((ModuleCat.mono_iff_injective i).mp hi)
+    have range : ∀ y, BilinModuleCat.underlyingMap f y ∈ LinearMap.range i.hom := by
+      intro y
+      exact ⟨g.hom y, (LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp hf) y).symm⟩
+    let h : Y ⟶ X.restrict (LinearMap.range i.hom) :=
+      BilinModuleCat.homMk ((BilinModuleCat.underlyingMap f).codRestrict _ range)
+        (fun x y ↦ BilinModuleCat.map_pairing f x y)
+    have hcomp : h ≫ X.restrictInclusion (LinearMap.range i.hom) = f := by
+      apply Quiver.Hom.unop_inj
+      apply CategoryOfElements.ext
+      apply Quiver.Hom.unop_inj
+      apply ModuleCat.hom_ext
+      rfl
+    refine ⟨h, ⟨?_, hcomp⟩, ?_⟩
+    · apply (cancel_mono i).mp
+      have he : e.symm.toModuleIso.hom ≫ i =
+          (forget R W).map (X.restrictInclusion (LinearMap.range i.hom)) := by
+        ext x
+        exact LinearEquiv.ofInjective_symm_apply (f := i.hom)
+          (h := (ModuleCat.mono_iff_injective i).mp hi) x
+      erw [Category.assoc, he, ← Functor.map_comp, hcomp, hf]
+    · intro k hk
+      apply Quiver.Hom.unop_inj
+      apply CategoryOfElements.ext
+      apply Quiver.Hom.unop_inj
+      apply ModuleCat.hom_ext
+      ext y
+      apply Subtype.ext
+      exact LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp
+        (congrArg (forget R W).map (hk.2.trans hcomp.symm))) y
 
 variable {R : Type u} [CommRing R] {W : Type u} [AddCommGroup W] [Module R W]
 
