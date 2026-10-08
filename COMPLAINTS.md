@@ -36,13 +36,13 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 - **Need:** Formalize the following dependency chain as mathematics, with the named
   categories and maps at their general owners:
-  1. For a ring `R`, the categories `Fil^fin_↑(Mod_R)` and
-     `Fil^fin_↓(Mod_R)` of finite `ℤ`-filtered `R`-modules, with their
-     filtration-preserving linear maps, induced
-     subobject and quotient filtrations, strict maps, associated graded modules
-     and the induced maps on graded pieces. Form `BiFil^fin(Mod_R)` as two
-     filtrations on one module, with compatible morphisms. Distinguish a finite
-     filtration from a filtration on a finite module.
+  1. For an abelian category `C`, the categories `Fil^fin_↑(C)` and
+     `Fil^fin_↓(C)` of finite `ℤ`-filtered objects, with their
+     filtration-preserving morphisms, induced subobject and quotient
+     filtrations, strict maps, associated graded objects and induced maps on
+     graded pieces. Form `BiFil^fin(C)` from two filtrations on one object,
+     with compatible morphisms. Specialize these constructions to `Mod_R`.
+     Distinguish a finite filtration from a filtration on a finite module.
   2. Scalar extension `ℤ → ℚ → ℝ → ℂ` on modules, submodules, filtrations,
      graded pieces and their morphisms, with comparison isomorphisms. Give
      conjugation on a complexification as a semilinear involution coming from
@@ -58,17 +58,25 @@ does not justify weakening a dependent theorem or starting unrelated work.
      Establish the filtration/decomposition equivalence and base-change
      functors. Deligne permits a finite integral module with torsion; a
      torsion-free lattice is a separate refinement.
-  4. Categories `MHS_ℚ` and `MHS_ℤ` of mixed Hodge structures with finite
-     increasing weight filtration `W` over `ℚ` and finite decreasing Hodge
-     filtration `F` over `ℂ`, such that the induced filtration on every
-     `Gr_n^W` is a pure Hodge structure of weight `n`. Prove the equivalent
-     opposed-three-filtrations formulation. Define induced subobject and
+  4. Categories `MHS_ℝ`, `MHS_ℚ` and `MHS_ℤ` of mixed Hodge structures.
+     Give the real version a finite increasing weight filtration `W` over
+     `ℝ` and a finite decreasing Hodge filtration `F` over `ℂ`; give the
+     rational version `W` over `ℚ` and `F` over `ℂ`. For the integral version,
+     take a finite integral module and `W` on its rationalization. Require
+     the induced filtration on every `Gr_n^W` to be a pure Hodge structure
+     of weight `n`. Prove the equivalent opposed-three-filtrations formulation
+     and the scalar-extension comparisons. Define induced subobject and
      quotient structures, strictness of Hodge morphisms for both filtrations,
      exact `Gr_n^W` and `Gr_F^p` functors, and the pure-to-mixed embedding.
   5. Tensor, dual and internal-Hom Hodge structures, with their weight and
      bidegree formulas and comparison to underlying module constructions;
-     the Tate objects `ℤ(k)`, `ℚ(k)`, `ℝ(k)` and twist functors. Distinguish
-     internal Hom from the group of Hodge morphisms, its type `(0,0)` part.
+     the Tate objects `ℤ(k)`, `ℚ(k)`, `ℝ(k)` and twist functors. State rigid
+     tensor-dual identities on finite-free integral structures and
+     finite-dimensional rational or real structures. For pure structures,
+     distinguish internal Hom from Hodge morphisms, its type `(0,0)` part.
+     For mixed structures, express morphisms as
+     `Hom_MHS(R(0), internalHom(H,K))`, respecting both `W` and `F`, without
+     assuming a pure-type decomposition of the internal Hom.
   6. A chosen compatible pairing as a morphism `H ⊗ H → R(-n)` (or its
      integral analogue), its parity and orthogonality, and the polarized
      refinement with the Weil-operator positivity condition. For a formed
@@ -77,8 +85,13 @@ does not justify weakening a dependent theorem or starting unrelated work.
      Hodge structure into the lattice orthogonal group; only the subgroup
      preserving the Hodge filtration is its image.
 - **Evidence:** [Deligne, *Théorie de Hodge II*, §§1.1, 2.1, 2.3](https://www.numdam.org/item/10.1007/BF02684692.pdf),
-  especially (1.1.7)–(1.1.9), (2.1.9)–(2.1.15), (2.3.1)–(2.3.8), gives the pure and mixed
-  definitions, strictness, graded functors, products, duals and Tate objects.
+  (1.1.7)–(1.1.9) defines associated graded and induced/quotient
+  filtrations; (2.1.9)–(2.1.15) gives pure structures, morphisms, tensor,
+  internal Hom, dual, Tate objects and polarizations; (2.3.1)–(2.3.8) gives
+  integral and rational mixed structures, strictness and graded functors.
+  The real mixed category is the same graded-purity definition over `ℝ`,
+  using the real pure category of (2.1.9); this is an extension requested
+  here, not a named category asserted in Deligne's cited paragraphs.
   [Huybrechts, *Lectures on K3 Surfaces*, Chapter 3 §1](https://ncatlab.org/nlab/files/HuybrechtsLecturesOnK3.pdf),
   Definition 1.1 and pp. 39–43, gives the integral/rational decomposition,
   filtration, tensor, dual, twists, polarization and Hodge isometry.
@@ -97,7 +110,8 @@ does not justify weakening a dependent theorem or starting unrelated work.
   Hodge filtrations, mixed graded Hodge structure, polarization refinement,
   or Hodge-isometry subgroup. In
   particular, a lattice isometry alone need not preserve a Hodge filtration.
-  The first missing owner is the category of filtered modules and its
+  The first missing owner is the category of filtered objects of an abelian
+  category and its
   morphisms; the Hodge categories then own the opposedness and real-descent
   conditions, and the formed Hodge refinement owns the isometry comparison.
 - **Coverage:** Source-only inspection of `LeanCategories/` by the Hodge,
