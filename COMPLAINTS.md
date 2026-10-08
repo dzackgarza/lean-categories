@@ -32,6 +32,84 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Mathematical issues
 
+### Hodge structures need filtered-module categories and their comparison maps
+
+- **Need:** Formalize the following dependency chain as mathematics, with the named
+  categories and maps at their general owners:
+  1. For a ring `R`, the categories `Fil^fin_↑(Mod_R)` and
+     `Fil^fin_↓(Mod_R)` of finite `ℤ`-filtered `R`-modules, with their
+     filtration-preserving linear maps, induced
+     subobject and quotient filtrations, strict maps, associated graded modules
+     and the induced maps on graded pieces. Form `BiFil^fin(Mod_R)` as two
+     filtrations on one module, with compatible morphisms. Distinguish a finite
+     filtration from a filtration on a finite module.
+  2. Scalar extension `ℤ → ℚ → ℝ → ℂ` on modules, submodules, filtrations,
+     graded pieces and their morphisms, with comparison isomorphisms. Give
+     conjugation on a complexification as a semilinear involution coming from
+     the real form, and its action on filtrations. A complex vector space with
+     an arbitrary conjugate-linear map is not, by itself, this descent datum.
+  3. For every weight `n`, categories `HS_ℝ(n)`, `HS_ℚ(n)` and `HS_ℤ(n)`
+     of pure real, rational and integral Hodge structures: a finite-dimensional
+     real vector space with an `n`-opposed
+     finite decreasing filtration on its complexification; the equivalent
+     decomposition `H_ℂ = ⨁_{p+q=n} H^{p,q}` with
+     `conj(H^{p,q}) = H^{q,p}`; and rational or integral forms obtained by
+     scalar extension. Morphisms preserve the base form and filtration.
+     Establish the filtration/decomposition equivalence and base-change
+     functors. Deligne permits a finite integral module with torsion; a
+     torsion-free lattice is a separate refinement.
+  4. Categories `MHS_ℚ` and `MHS_ℤ` of mixed Hodge structures with finite
+     increasing weight filtration `W` over `ℚ` and finite decreasing Hodge
+     filtration `F` over `ℂ`, such that the induced filtration on every
+     `Gr_n^W` is a pure Hodge structure of weight `n`. Prove the equivalent
+     opposed-three-filtrations formulation. Define induced subobject and
+     quotient structures, strictness of Hodge morphisms for both filtrations,
+     exact `Gr_n^W` and `Gr_F^p` functors, and the pure-to-mixed embedding.
+  5. Tensor, dual and internal-Hom Hodge structures, with their weight and
+     bidegree formulas and comparison to underlying module constructions;
+     the Tate objects `ℤ(k)`, `ℚ(k)`, `ℝ(k)` and twist functors. Distinguish
+     internal Hom from the group of Hodge morphisms, its type `(0,0)` part.
+  6. A chosen compatible pairing as a morphism `H ⊗ H → R(-n)` (or its
+     integral analogue), its parity and orthogonality, and the polarized
+     refinement with the Weil-operator positivity condition. For a formed
+     integral Hodge lattice, Hodge isometries are isomorphisms preserving the
+     Hodge structure and pairing. Their automorphism group maps by forgetting
+     Hodge structure into the lattice orthogonal group; only the subgroup
+     preserving the Hodge filtration is its image.
+- **Evidence:** [Deligne, *Théorie de Hodge II*, §§1.1, 2.1, 2.3](https://www.numdam.org/item/10.1007/BF02684692.pdf),
+  especially (1.1.7)–(1.1.9), (2.1.9)–(2.1.15), (2.3.1)–(2.3.8), gives the pure and mixed
+  definitions, strictness, graded functors, products, duals and Tate objects.
+  [Huybrechts, *Lectures on K3 Surfaces*, Chapter 3 §1](https://ncatlab.org/nlab/files/HuybrechtsLecturesOnK3.pdf),
+  Definition 1.1 and pp. 39–43, gives the integral/rational decomposition,
+  filtration, tensor, dual, twists, polarization and Hodge isometry.
+  `FOUNDATIONS.md` §61.1–61.2 states pure and polarized definitions in prose.
+  `Homological/SpectralSequenceConvergence.lean` declares
+  `FiniteIncreasingFiltration`, `IncreasingFiltration`,
+  `FiniteDecreasingFiltration` and their `gradedPiece` for objects of an
+  abelian category. `Algebra/AssociatedGraded.lean` has the `ℕ`-indexed
+  ideal-filtration `AssociatedGradedModulePiece` and `AssociatedGradedModule`.
+  `Lattices/Valued/Basic.lean` declares `LatticeCat` and
+  `IntegralLatticeCat`; `Lattices/Valued/OrthogonalGroup.lean` declares
+  `LatticeAutomorphismGroup` and `latticeAutEquivOrthogonalGroup`.
+- **Gap and impact:** These inspected declarations supply filtration pieces
+  and formed-lattice automorphisms. They do not supply the named filtered
+  and Hodge categories, their morphisms, scalar-extension comparison for
+  Hodge filtrations, mixed graded Hodge structure, polarization refinement,
+  or Hodge-isometry subgroup. In
+  particular, a lattice isometry alone need not preserve a Hodge filtration.
+  The first missing owner is the category of filtered modules and its
+  morphisms; the Hodge categories then own the opposedness and real-descent
+  conditions, and the formed Hodge refinement owns the isometry comparison.
+- **Coverage:** Source-only inspection of `LeanCategories/` by the Hodge,
+  filtration, conjugation, semilinear, scalar-extension and isometry names,
+  followed by the declarations named above and `FOUNDATIONS.md` §61.
+  This is a request for formal mathematics, not a claim about uninspected
+  external formalization packages or the whole theorem corpus.
+- **Repair link:** This complaint is the formalization request. Resolve it
+  with cited declarations at the owners above, source-matched comparisons and
+  the ordinary `TODO.md` dependency workflow. Do not count §61 prose or
+  the filtration-piece declarations as a Hodge formalization.
+
 ### Selected presentation actions lacked a domain-owned evaluation hook
 
 **Need:** the fixed B0 nonidentity polynomial-quotient comparison transports points along
