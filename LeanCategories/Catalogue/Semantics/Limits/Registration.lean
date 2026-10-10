@@ -28,7 +28,9 @@ public meta import LeanCategories.Catalogue.Registry.Semantic
 * `colim.bil_w_form.cokernel`: the cokernel of a map of formed modules with varying values, the
   quotients of the carrier and of the values by the images and the mixed relations
   (lean-categories `BilWFormCat.cokernelIsColimit`); the discriminant `L♯/L` of an integral lattice
-  is the cokernel of `L → L♯`;
+  is the cokernel of `L → L♯`. For `A_n`, the catalogue names this cocone's apex
+  `obj.bil_wform.root_lattice_a_discriminant` and its quotient leg
+  `mor.bil_wform.root_lattice_a_to_discriminant`;
 * `lim.groups.kernel`: the kernel `ker f ↪ G` of a group homomorphism, an equalizer of `f` and
   the trivial homomorphism (`LeanCategories.Algebra.kernelLimitCone`).
 
