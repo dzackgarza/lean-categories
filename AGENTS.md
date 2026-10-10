@@ -129,9 +129,9 @@ This repository's part in the separation of concerns:
     query or composite);
   - predicates, coherences and comparison cells.
 
-  Downstream (`lean-cas-dsl`, its leaves, `research`) consumes a pinned release and may add none
+  Downstream (`lean-cas-dsl`, its leaves, `research`) consumes this repository's latest `main` and may add none
   of these. A downstream need for missing mathematics arrives here as a formalization request.
-  Until it is formalized and released, the CAS has no such notion.
+  Until it is formalized and pushed to `main`, the CAS has no such notion.
 * **Blind to computation.** Decide what a definition means from its sources, never from what
   Sage, GAP or any backend computes, and never from what a leaf would find convenient. Backend
   capability is irrelevant to every audit here.
@@ -146,7 +146,7 @@ This repository's part in the separation of concerns:
   strings. `LeftModules(R)`, `LeftModules(S)` and `Bimodules(R,S)` differ unless a theorem
   identifies them. Two routes are identified only by a coherence cell, never by precedence.
 * **Monotone growth.** A new generic operation or structural fact is stated at its true generality,
-  so that every object it applies to downstream acquires it on re-pin, with no leaf edit.
+  so that every object it applies to downstream acquires it on its next build, with no leaf edit.
 * **The semantic registry lives here.** Which categories, structural functors, operations and
   coherences constitute the language's semantics is mathematics. The catalogue is
   `LeanCategories/Catalogue/` (namespace `CasCatalogue`):
@@ -155,11 +155,11 @@ This repository's part in the separation of concerns:
     refuses every module outside `LeanCategories`;
   - the rows (`Semantics/`).
 
-  `lean-cas-dsl` reads it at a pinned revision and adds only realizations. A new semantic row is
-  written here, released, and re-pinned downstream.
+  `lean-cas-dsl` reads it at the latest `main` and adds only realizations. A new semantic row is
+  written here and pushed to `main`; downstream picks it up on its next build.
 * **Corrections flow down, never up.** A downstream failure (a leaf that cannot compute, a failing
   acceptance assertion) is never a reason to change a definition here. Only a mathematical error
-  in this repository is. Such a correction is released, and downstream re-pins and updates the
+  in this repository is. Such a correction is pushed to `main`, and downstream updates the
   affected assertions in that same step.
 
 # Start here: corpus execution
