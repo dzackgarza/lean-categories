@@ -16,6 +16,22 @@ no mathematics; permanent, leaf-agnostic acceptance tests as the only evidence a
 one-way workflow in which each stage is blind to the later ones. A violation found is recorded where
 the owning document records defects, even outside the task at hand.
 
+## Current API ownership
+
+`lean-categories` verifies and designs the mathematical API, including the abstract specification
+of its computational obligations. It may expose required data, callable operations, dependent
+signatures and their compositions, and improve schemas, metadata or elaboration interfaces.
+It does not select installed backends, certify their behavior or narrow mathematics to their
+capabilities. The kernel owns faithful generic interpretation and execution; the leaf contract
+owns concrete invocation and representation. Mathematical laws are not automatically runtime
+proof obligations. Complete interfaces need not eagerly enumerate infinite objects or functions.
+
+This is the owner's correction to ambiguous phrases in the historical discussion below. Its
+foundational account and causal cases are maintained in
+[the architecture chapter](https://github.com/dzackgarza/lean-cas-dsl/blob/b0/construction/specs/architecture.md).
+Keep that history as teaching material; earlier assistant proposals do not create immutable
+schemas, proof obligations or approval procedures.
+
 ## The owner's question
 
 The owner asked whether `lean-cas-dsl` is consuming `lean-categories` together with the lessons learned in `sage-categories` and `research`, and whether the intended final product of `lean-cas-dsl` is understood.

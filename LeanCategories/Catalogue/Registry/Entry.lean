@@ -86,6 +86,9 @@ structure LiftEntry where
   id : LiftId
   edge : EdgeRef
   evidence : Lean.Name
+  /-- For subobjects, a checked `MonoLiftComputation` declaration publishing exactly
+  the required object and callable maps, independently of the formal lift laws. -/
+  computation : Option Lean.Name := none
   kind : LiftKind := .subobjects
   deriving Repr
 

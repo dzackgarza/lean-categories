@@ -89,6 +89,121 @@ default `lake build`, `LeanCategories.All`, `LeanCategories.Tools.VacuityAudit`,
 `lake exe lean-categories-axiom-audit`, and local conventions passed sequentially
 with `LEAN_NUM_THREADS=1` on the final source.
 
+The final pass through the same existing family owners found one further supplied
+datum without its public structural projection: the additive group in the total
+module fibration (`Modules.Total`'s restriction-of-scalars example explicitly
+retains this group). `ModulesOverRings.additiveGroup` now retains that structure
+and the actual additive maps once on the total category; its intrinsic fibre and
+reindex laws identify the ordinary Mathlib module group and its unchanged group
+under restriction of scalars. `fun.modules.additive_group` and the invertible
+`cell.modules.additive_group_carrier` expose this datum and identify its forgotten
+carrier with the existing underlying-set functor. Independent source review of
+four-file delta `71d8f29bf2e9f78dda3dced12ceda73e51d2465e11b4300d231113f80e122927`
+against `1008f05` found no concrete mathematical defect.
+Focused module owners, default build, `LeanCategories.All`, vacuity, axiom audit,
+and local conventions passed sequentially on this final source with
+`LEAN_NUM_THREADS=1`.
+
+The existing polynomial/algebra objects already retain commutative coefficient
+structures and actual constants through `polyAlgebra`, `mvAlgebra`, and the
+structural `algebrasForget`; no additional wrapper is needed for that datum.
+This bounded interface pass did not settle the previously recorded interpretation
+and domain decision for general-ring matrix rank; the subsequent source followup
+below resolves the observed defect and states the selected invariant's scope.
+
+The strengthened mathematical workflow pass keeps selected coefficient rings and
+the existing finite-set `factors` operation unchanged. `Polynomials.factorization`
+returns a unit and a multiplicity-preserving polynomial multiset; callable unit,
+factor, reconstruction and coefficient-change maps make that data reusable.
+Reconstruction, irreducibility and transport laws are separate theorems, not
+proof fields demanded of computational results. Existing polynomial evaluation,
+roots, selected coefficient maps, and matrix companion/determinant/trace/charpoly
+operations already compose at their actual selected parameters. Intrinsic
+quadratic companion composition laws now check all three matrix operations.
+
+The dual generic cokernel functor retains the projection and acts on commutative
+squares. Module quotients publicly expose that projection and their actual
+quotient module; its structural route inherits rank and cardinality. Module
+subobjects expose their inclusion and domain without changing ambient-membership
+semantics. Form restriction exposes the selected `R`, value module, formed object
+and submodule as a callable constructor, with its formed inclusion and restricted
+pairing operation. Group kernels now act functorially on squares at the existing
+generic subgroup owner, preserving the original concrete kernel and inclusion.
+Smooth differentiation returns smooth maps, with application and conversion to
+continuous maps for reuse in Taylor expansion and integration. The existing
+selected nonidentity polynomial presentation already has both directions,
+coefficient maps, and intrinsic examples of reuse in ring operations.
+
+These typed object, morphism, functor and application declarations supply abstract
+computational inputs, outputs and callable components through existing metadata.
+They require no eager enumeration of an infinite carrier or function and do not
+turn the formal factorization, cartesian or universal laws into backend proof
+obligations. This pass makes no assertion about downstream computations.
+The matrix-to-linear-morphism declaration retains the supplied matrix, selected
+scalar ring and both vector modules, with application exactly the existing
+`mulVec`; module kernels and cokernels therefore consume the actual defining map.
+Independent source review of final eight-file delta
+`a6b44d6c8e51a69c99051a7d905a2eba2e2d34862c904cfef6708bec6d4a59e2`
+against `3d4634c` found no concrete mathematical defect. Focused owners,
+default build, `LeanCategories.All`, vacuity, axiom audit and local conventions
+passed sequentially on the final source with `LEAN_NUM_THREADS=1`.
+
+The remaining abstract obligation review found that `LiftEntry` published only
+the mixed mathematical `MonoLift` record. `MonoLiftComputation` now separately
+publishes its full dependent inputs and required callable object, defining map,
+and both comparison directions. Its fields carry no inverse, monicity or
+cartesian-universality proof outputs. The selected formal lift supplies those
+laws. `LiftEntry.computation` is checked as the entire dependent extraction from
+that lift, under rigid parameters, so a specialized fibre or different maps
+cannot silently replace the generic selected computation. The actual formed
+restriction row carries this declaration; intrinsic registry checks reject both
+a missing declaration and an actual integer-only specialization. Public
+composition equations describe the object/map actions and the two comparison
+orders directly. Infinite-domain functions are callable components, with no
+requirement to enumerate their graphs. Existing functor object/map signatures
+and chosen-arrow domain/codomain/defining-map signatures supply the other module
+and group result components.
+Independent source review of four-file delta
+`919d0c13607042eb35bd325a09d7809f40b9058c2119c76392e84c0156408d83`
+against `fa316209` found no concrete mathematical defect. Focused actual-signature
+checks, default build, `LeanCategories.All`, vacuity, axiom audit and local
+conventions passed sequentially with `LEAN_NUM_THREADS=1` on this final source.
+
+The rank-scope followup retains the existing selected Mathlib operation: matrix
+rank is the independence rank of its column module. Its public signature now
+requires a nontrivial selected commutative coefficient ring, excluding the
+observed zero-ring convention (rank one even for an empty matrix). Actual-source
+laws identify the matrix's structured linear-map image, equality with its cardinal
+module rank, the size bound, and rank zero of the zero matrix. Generic module
+rank remains the cardinal independence-subset invariant; it is not an assumed
+cardinality of an arbitrary basis without the appropriate ring hypotheses.
+The public kernel and cokernel comparisons now explicitly preserve actual
+domain/inclusion and quotient/projection, together with their inherited ranks
+and carrier cardinalities, over the same selected ring. No free-module or basis
+assumption is added to these transport laws.
+Independent mathematical source review of three-file delta
+`79e101ad7f2caf2ddfda77c0c83743ffcc653fa4be9fda62bf4eac77ce51a4cf`
+against `01b44cd` found no concrete defect. Focused owners, default build,
+`LeanCategories.All`, vacuity, axiom audit and local conventions passed sequentially
+with `LEAN_NUM_THREADS=1` on the final source. These source checks execute no
+backend implementation and impose no backend verification duties.
+
+The selected-coefficient polynomial workflow now distinguishes evaluation in its
+own coefficient ring (`ownEvaluation`, the identity-map `Polynomial.eval`) from
+evaluation along a fully selected coefficient map (`evaluationAlong`, `eval₂`).
+Both are public typed operations. The existing `Under R` application remains
+unchanged and is identified by a checked law with its actual selected `A.hom`.
+Identity specialization, constants, variable, multiplication, coefficient change
+and composition laws retain the selected maps and parameters. An intrinsic
+nonidentity endomorphism of one product-ring carrier gives a different constant
+evaluation from the identity operation: equal carriers do not choose a map.
+These are callable value operations, with no backend proof of evaluation requested.
+Independent source review of mathematical delta
+`5219561ff02db9736dd77b5f157ce285dd67de1bdd086f82bac4bb351ef8acbc`
+against `6e8a67e` found no concrete defect. Focused polynomial elaboration, default
+build, `LeanCategories.All`, vacuity, axiom audit, local conventions and diff checks
+passed on the final source with `LEAN_NUM_THREADS=1`.
+
 Within a sweep, source dependencies and traversal order come from the existing
 [source manifest](corpus/foundational-source-corpus.md); unit IDs and
 their mathematical prerequisites come from the complete source catalogues.

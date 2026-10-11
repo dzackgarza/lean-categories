@@ -400,6 +400,16 @@ not a decidable quotient equality or a new mathematical comparison.
   focused owners, default/All builds, vacuity, axiom audit, and conventions passed
   on the final source. The trivial-action and noncommutative-matrix separating
   examples elaborate with the owners. Exact source delta is recorded in `TODO.md`.
+- **Final same-scope finding:** the total module fibration supplied the additive
+  group (and explicitly retained it in its scalar-restriction example) without a
+  public structural group projection. `ModulesOverRings.additiveGroup` now retains
+  the actual group and additive maps once on the total category; intrinsic fibre,
+  reindex and natural carrier-comparison laws complete the construction. The
+  corresponding public functor and carrier comparison are registered in the
+  existing module owner. Independent mathematical source review found no concrete
+  defect; its exact four-file identity is recorded in `TODO.md`.
+  Focused owners, default/All builds, vacuity, axiom audit and conventions passed
+  on the final four-file source.
 
 ### Non-inherited constructions (`Aut`, `Stab`) have no method presentation
 
@@ -838,6 +848,16 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
      annihilator), a different invariant; pinned Mathlib has no McCoy rank of matrices (searched
      `McCoy`: the two hits are McCoy's theorem on zero divisors in `R[X]` and `R⟦X⟧`; other
      surfaces not searched), so it would be formalized here.
+     **Resolved source scope (2026-10-03):** the actual exported declaration already
+     selects Mathlib's column-module independence rank. That meaning is now stated
+     explicitly and retained, with `[Nontrivial K]` on the selected commutative
+     coefficient ring to exclude the observed zero-ring defect. Checked laws identify
+     the actual `matrixLinearMap` image, its exact cardinal module rank, the size bound
+     and the zero-matrix value. This does not assert a McCoy or determinantal-rank
+     interpretation over rings with zero divisors. The inherited module operation is
+     explicitly the cardinal independence-set invariant, not an unconditional basis
+     cardinality. Actual kernel and cokernel comparisons preserve their selected
+     domain/inclusion and quotient/projection together with rank and cardinality.
 - **Coverage:** the `bd31fe3` diff under `LeanCategories/Catalogue/Semantics`, read against LC-13
   to LC-16 and Mathlib only. Nothing downstream was read.
 - **Repair link:** items 1 and 4 are catalogue formalization work; items 2 and 3 are the

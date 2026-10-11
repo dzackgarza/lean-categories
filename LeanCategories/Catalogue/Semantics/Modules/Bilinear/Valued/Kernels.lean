@@ -52,6 +52,28 @@ namespace Modules.Bilinear.Valued.Kernels
 
 universe u
 
+/-- Restrict the selected form to a selected submodule. This is a callable object
+construction, separate from the formal cartesian-lift laws. -/
+noncomputable def restricted (R : CommRingCat.{u}) (W : ModuleCat.{u} R)
+    (X : BilinModuleCat R W) (N : Submodule R X.carrier) : BilinModuleCat R W :=
+  X.restrict N
+
+/-- The defining formed inclusion of the computed restriction. -/
+noncomputable def restrictedInclusion (R : CommRingCat.{u}) (W : ModuleCat.{u} R)
+    (X : BilinModuleCat R W) (N : Submodule R X.carrier) : restricted R W X N ⟶ X :=
+  X.restrictInclusion N
+
+/-- Compute the restricted pairing in the original selected value module. -/
+noncomputable def restrictedPairing (R : CommRingCat.{u}) (W : ModuleCat.{u} R)
+    (X : BilinModuleCat R W) (N : Submodule R X.carrier) :
+    (N × N : Type u) ⟶ (W : Type u) :=
+  TypeCat.ofHom fun xy => (restricted R W X N).pairing xy.1 xy.2
+
+/-- Restriction preserves the actual selected form, not merely its symmetry class. -/
+theorem restrictedPairing_apply (R : CommRingCat.{u}) (W : ModuleCat.{u} R)
+    (X : BilinModuleCat R W) (N : Submodule R X.carrier) (x y : N) :
+    restrictedPairing R W X N (x, y) = X.pairing x.val y.val := rfl
+
 def ArrowsModules : CategoryExpr := .construct ConstructorId.arrow #[.category Modules.Modules]
 def SubobjectsModules : CategoryExpr :=
   .construct ConstructorId.subobjects #[.category Modules.Modules]
@@ -165,6 +187,12 @@ def forgetMonoLift (R : Type u) [CommRing R] (W : Type u) [AddCommGroup W] [Modu
       exact LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp
         (congrArg (forget R W).map (hk.2.trans hcomp.symm))) y
 
+/-- Required lift computations, with the full selected dependent inputs. The registered
+formal evidence supplies their laws; this record supplies only the object and callable maps. -/
+def forgetMonoLiftComputation (R : Type u) [CommRing R] (W : Type u)
+    [AddCommGroup W] [Module R W] : MonoLiftComputation (forget R W) :=
+  (forgetMonoLift R W).computation
+
 variable {R : Type u} [CommRing R] {W : Type u} [AddCommGroup W] [Module R W]
 
 /-- The kernel of the underlying module map, as a submodule of the source. -/
@@ -218,6 +246,18 @@ end Modules.Bilinear.Valued.Kernels
 
 open Modules.Bilinear.Valued.Kernels
 
+normalized_registry .object
+  { id := ⟨"obj.bilin_module.restriction"⟩, category := CategoryId.bilinModule
+    name := "RestrictedForm", declaration := `CasCatalogue.Modules.Bilinear.Valued.Kernels.restricted }
+normalized_registry .morphism
+  { id := ⟨"mor.bilin_module.restriction_inclusion"⟩, category := CategoryId.bilinModule
+    name := "restriction_inclusion"
+    declaration := `CasCatalogue.Modules.Bilinear.Valued.Kernels.restrictedInclusion }
+normalized_registry .morphism
+  { id := ⟨"mor.sets.restricted_form_pairing"⟩, category := CategoryId.sets
+    name := "restricted_pairing"
+    declaration := `CasCatalogue.Modules.Bilinear.Valued.Kernels.restrictedPairing }
+
 normalized_registry .category
   { id := CategoryId.arrowsModules
     declaration := `CasCatalogue.Modules.Bilinear.Valued.Kernels.arrowsModulesCategory
@@ -264,6 +304,29 @@ normalized_registry .method
 normalized_registry .lift
   { id := ⟨"lift.bilin_module.restrict"⟩
     edge := .constructMap ConstructorId.arrow (.functor FunctorId.bilinModuleForget)
-    evidence := `CasCatalogue.Modules.Bilinear.Valued.Kernels.forgetMonoLift }
+    evidence := `CasCatalogue.Modules.Bilinear.Valued.Kernels.forgetMonoLift
+    computation := some `CasCatalogue.Modules.Bilinear.Valued.Kernels.forgetMonoLiftComputation }
+
+/-- An actual specialization of the selected computation, used only to check that a
+generic public obligation cannot silently be replaced by one coefficient fibre. -/
+private noncomputable def integerLiftComputation :
+    MonoLiftComputation (LeanCategories.Modules.Bilinear.Valued.forget ℤ ℤ) :=
+  Modules.Bilinear.Valued.Kernels.forgetMonoLiftComputation ℤ ℤ
+
+open Lean Meta Elab Command in
+run_cmd liftTermElabM do
+  let state ← semanticState
+  let some row := state.lifts.find? (·.id.raw == "lift.bilin_module.restrict")
+    | throwError "missing actual selected restriction lift"
+  validateLift state row
+  let rejects (candidate : LiftEntry) : MetaM Bool := do
+    try
+      validateLift state candidate
+      return false
+    catch _ => return true
+  unless ← rejects { row with computation := none } do
+    throwError "a selected restriction lift must publish its required callable components"
+  unless ← rejects { row with computation := some ``integerLiftComputation } do
+    throwError "a generic selected restriction signature must retain all coefficient fibres"
 
 end CasCatalogue
