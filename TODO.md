@@ -89,6 +89,13 @@ default `lake build`, `LeanCategories.All`, `LeanCategories.Tools.VacuityAudit`,
 `lake exe lean-categories-axiom-audit`, and local conventions passed sequentially
 with `LEAN_NUM_THREADS=1` on the final source.
 
+The B0 module-carrier graph correction keeps the named `fun.modules.underlying`
+and invertible `cell.modules.additive_group_carrier` but removes the duplicate
+structural edge: the underlying-set projection is definitionally the additive
+group's forgetful composite. The vector module refinement now follows that
+composite. Downstream formed-module cardinality probes must use the revised
+structural route rather than asserting the former three-step path.
+
 The final pass through the same existing family owners found one further supplied
 datum without its public structural projection: the additive group in the total
 module fibration (`Modules.Total`'s restriction-of-scalars example explicitly

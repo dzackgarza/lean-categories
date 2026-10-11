@@ -575,7 +575,8 @@ normalized_registry .functor
     declaration := `CasCatalogue.Modules.CatalogueRegistration.modulesUnderlyingDeclaration
     realization := `CasCatalogue.Modules.CatalogueRegistration.modulesUnderlyingRealization
     expression := Modules.ModulesUnderlyingExpr
-    structural := true }
+    -- Keep the named projection and its comparison, not a duplicate structural edge.
+    structural := false }
 
 normalized_registry .functor
   { id := FunctorId.modulesAdditiveGroup

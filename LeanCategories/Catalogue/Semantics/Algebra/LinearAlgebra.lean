@@ -395,7 +395,13 @@ normalized_registry .object
     declaration := `CasCatalogue.Algebra.LinearAlgebra.vectorModule
     refines := some
       { base := ⟨"obj.sets.vectors"⟩
-        route := #[.functor FunctorId.modulesFibreInclusion, .functor FunctorId.modulesUnderlying]
+        route := #[.functor FunctorId.modulesFibreInclusion,
+          .functor FunctorId.modulesAdditiveGroup,
+          .functor FunctorId.additiveGroupsToGroups,
+          .functor FunctorId.groupsMonoid,
+          .functor FunctorId.monoidsSemigroup,
+          .classifierForget ClassifierId.magmasAssociative,
+          .classifierForget ClassifierId.setsBinaryOperation]
         identification := `CasCatalogue.Algebra.LinearAlgebra.vectorModuleIdentification } }
 
 normalized_registry .object
