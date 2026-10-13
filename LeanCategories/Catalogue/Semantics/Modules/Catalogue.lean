@@ -51,6 +51,7 @@ def modulesFibreInclusion : FunctorId := ⟨"fun.modules.fibre_inclusion"⟩
 def modulesReindex : FunctorId := ⟨"fun.modules.reindex"⟩
 /-- The underlying-set functor `U : ∫ᶜ Mod ⥤ Sets` on the total category. -/
 def modulesUnderlying : FunctorId := ⟨"fun.modules.underlying"⟩
+def modulesAdditiveGroup : FunctorId := ⟨"fun.modules.additive_group"⟩
 end FunctorId
 
 end CasCatalogue

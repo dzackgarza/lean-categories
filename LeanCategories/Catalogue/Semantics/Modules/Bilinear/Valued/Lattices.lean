@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.CatalogueRegistration
 public import LeanCategories.Lattices.Integral
+public import LeanCategories.Modules.Bilinear.Valued.Cokernel
 public import LeanCategories.Lattices.Valued.Standard
 public import LeanCategories.Catalogue.Semantics.Lattices.Valued.CatalogueRegistration
 public meta import LeanCategories.Catalogue.Semantics.Lattices.Valued.Catalogue
@@ -27,6 +28,17 @@ Objects and morphisms of `BilWForm(ℤ)` (`cat.bil_wform`), from `LeanCategories
 
 namespace CasCatalogue
 
+open LeanCategories.Modules.Bilinear.Valued
+
+/-- The categorical discriminant quotient of the root lattice `A_n`. -/
+noncomputable def rootADiscriminant (n : ℕ) : BilWFormCat ℤ :=
+  BilWFormCat.cokernelObject (LeanCategories.Lattices.Integral.rootAToDual n)
+
+/-- Projection of `A_n`'s dual lattice to its discriminant quotient. -/
+noncomputable def rootAToDiscriminant (n : ℕ) :
+    LeanCategories.Lattices.Integral.rootADual n ⟶ rootADiscriminant n :=
+  BilWFormCat.cokernelProjection (LeanCategories.Lattices.Integral.rootAToDual n)
+
 normalized_registry .object
   { id := ⟨"obj.bil_wform.root_lattice_a"⟩, category := CategoryId.bilWForm, name := "A"
     declaration := `LeanCategories.Lattices.Integral.rootA }
@@ -38,6 +50,14 @@ normalized_registry .object
 normalized_registry .morphism
   { id := ⟨"mor.bil_wform.root_lattice_a_to_dual"⟩, category := CategoryId.bilWForm
     name := "to_dual", declaration := `LeanCategories.Lattices.Integral.rootAToDual }
+
+normalized_registry .object
+  { id := ⟨"obj.bil_wform.root_lattice_a_discriminant"⟩, category := CategoryId.bilWForm
+    name := "A_discriminant", declaration := `CasCatalogue.rootADiscriminant }
+
+normalized_registry .morphism
+  { id := ⟨"mor.bil_wform.root_lattice_a_to_discriminant"⟩, category := CategoryId.bilWForm
+    name := "to_discriminant", declaration := `CasCatalogue.rootAToDiscriminant }
 
 -- The existing integral E₈ lattice retains its Gram form and selected ℤ-module.
 normalized_registry .object
