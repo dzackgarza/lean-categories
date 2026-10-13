@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Homological.DoubleComplexFirstPages
-public import LeanCategories.Homological.SimplicialChainComplexes
+public import Mathlib.Algebra.Homology.HomologicalBicomplex
+public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 
 /-!
 # The double complex of a bisimplicial object
@@ -45,7 +45,8 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 to a bisimplicial object.  The outer direction is horizontal and the inner
 direction is vertical. -/
 def bisimplicialDoubleComplex
-    (A : SimplicialObject (SimplicialObject C)) : FirstQuadrantDoubleComplex C :=
+    (A : SimplicialObject (SimplicialObject C)) :
+    ChainComplex (ChainComplex C ℕ) ℕ :=
   ((AlgebraicTopology.alternatingFaceMapComplex C).mapHomologicalComplex
       (ComplexShape.down ℕ)).obj
     (AlgebraicTopology.AlternatingFaceMapComplex.obj A)

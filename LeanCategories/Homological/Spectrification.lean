@@ -7,6 +7,7 @@ module
 public import LeanCategories.Homological.Prespectrum
 public import LeanCategories.Homological.SpectrumLoop
 public import Mathlib.CategoryTheory.Functor.OfSequence
+public import Mathlib.CategoryTheory.WithTerminal.Cone
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!
@@ -23,8 +24,9 @@ For a CW prespectrum `D`, spectrification is the spectrum `Ω^∞D` whose
 The transition from stage `i` to stage `i+1` is obtained by iterating the
 loop functor on the adjoint map `D_{n+i} ⟶ ΩD_{n+i+1}`.  The spectrum
 structure is the one induced by shifting the colimit index.  This file
-records that source construction directly; existence of the required
-colimits and comparison theorems are separate results.
+records the canonical level colimits and the stagewise shifted maps directly.
+The theorem that these maps descend to homeomorphisms, which upgrades the raw
+data to a bundled `Spectrum`, is separate result-layer work.
 -/
 
 @[expose] public noncomputable section
@@ -156,6 +158,16 @@ def spectrificationStageFunctor (D : Prespectrum.{u}) (n : ℕ) :
     ℕ ⥤ BasedTop.{u} :=
   Functor.ofSequence (spectrificationTransition D n)
 
+/-- The canonical level space in Weibel's spectrification formula:
+`(Ω^∞D)_n = colim_i Ω^i D_{n+i}`. -/
+noncomputable def spectrificationLevel (D : Prespectrum.{u}) (n : ℕ) : BasedTop.{u} :=
+  colimit (spectrificationStageFunctor D n)
+
+/-- The canonical inclusion of a stage into the corresponding spectrification level. -/
+noncomputable def spectrificationInclusion (D : Prespectrum.{u}) (n i : ℕ) :
+    spectrificationStage D n i ⟶ spectrificationLevel D n :=
+  colimit.ι (spectrificationStageFunctor D n) i
+
 /-- The successor stage at level `n` is the based loop of the same stage at
 level `n+1`. -/
 lemma spectrificationStage_succ_eq_loop (D : Prespectrum.{u}) (n i : ℕ) :
@@ -164,6 +176,40 @@ lemma spectrificationStage_succ_eq_loop (D : Prespectrum.{u}) (n i : ℕ) :
   unfold spectrificationStage
   simp only [iteratedBasedLoopObj]
   rw [show n + (i + 1) = (n + 1) + i by omega]
+
+/-- The stagewise map whose colimit descent is the candidate spectrum-structure map
+`(Ω^∞D)_n ⟶ Ω(Ω^∞D)_{n+1}`.
+
+Its construction uses only the prespectrum transition and the canonical colimit inclusion.
+Compatibility with the sequential colimit and the assertion that the descended map is a
+homeomorphism are result-layer statements. -/
+noncomputable def spectrificationShiftStage (D : Prespectrum.{u}) (n i : ℕ) :
+    spectrificationStage D n i ⟶ basedLoopObj (spectrificationLevel D (n + 1)) :=
+  spectrificationTransition D n i ≫
+    eqToHom (spectrificationStage_succ_eq_loop D n i) ≫
+    basedLoopMap (spectrificationInclusion D (n + 1) i)
+
+/-- Proof-free raw data of Weibel's CW-prespectrum spectrification construction.
+
+The level spaces and stage maps are constructed internally; callers do not supply colimits,
+comparison maps, or homeomorphism certificates.  `Prespectrum.IsCW D` is the source hypothesis
+under which Weibel identifies the descended shift map as a spectrum homeomorphism.
+
+Source: Weibel, Construction 10.9.6, pp. 409--410 (FC05-C10-U105). -/
+structure SpectrificationData (D : Prespectrum.{u}) where
+  /-- The canonical sequential-colimit level spaces. -/
+  level : ℕ → BasedTop.{u}
+  /-- Canonical stage inclusions into the level colimits. -/
+  stageInclusion : ∀ n i : ℕ, spectrificationStage D n i ⟶ level n
+  /-- Stagewise shifted maps toward the loop of the next colimit level. -/
+  shiftStage : ∀ n i : ℕ, spectrificationStage D n i ⟶ basedLoopObj (level (n + 1))
+
+/-- The canonical raw spectrification data of a CW prespectrum. -/
+noncomputable def spectrificationData (D : Prespectrum.{u}) (_ : Prespectrum.IsCW D) :
+    SpectrificationData D where
+  level := spectrificationLevel D
+  stageInclusion := spectrificationInclusion D
+  shiftStage := spectrificationShiftStage D
 
 /-- A realization of Weibel's spectrification `Ω^∞D`.
 

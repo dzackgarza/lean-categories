@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Homological.HochschildEnveloping
+public import Mathlib.Algebra.Module.Bimodule
 
 /-!
 # The enveloping-algebra augmentation
@@ -29,7 +29,7 @@ variable (k : Type u) [CommRing k]
 variable (R : Type v) [Ring R] [Algebra k R]
 
 /-- Multiplication `Rᵉ=R⊗_kRᵐᵒᵖ → R`, `r⊗sᵐᵒᵖ ↦ rs`. -/
-def envelopingMultiplication : EnvelopingAlgebra k R →ₗ[k] R :=
+def envelopingMultiplication : (R ⊗[k] Rᵐᵒᵖ) →ₗ[k] R :=
   TensorProduct.lift <| LinearMap.mk₂ k
     (fun r s => r * MulOpposite.unop s)
     (by intro r r' s; exact add_mul _ _ _)
@@ -46,12 +46,12 @@ theorem envelopingMultiplication_tmul (r s : R) :
   rfl
 
 /-- The augmentation ideal `I=ker(Rᵉ→R)` used in Alternate Calculation 9.2.4. -/
-def hochschildAugmentationIdeal : Submodule k (EnvelopingAlgebra k R) :=
+def hochschildAugmentationIdeal : Submodule k (R ⊗[k] Rᵐᵒᵖ) :=
   LinearMap.ker (envelopingMultiplication k R)
 
 /-- The canonical `k`-linear splitting `r ↦ r⊗1`. -/
-def envelopingSection : R →ₗ[k] EnvelopingAlgebra k R :=
-  (Algebra.TensorProduct.includeLeft : R →ₐ[k] EnvelopingAlgebra k R).toLinearMap
+def envelopingSection : R →ₗ[k] (R ⊗[k] Rᵐᵒᵖ) :=
+  (Algebra.TensorProduct.includeLeft : R →ₐ[k] (R ⊗[k] Rᵐᵒᵖ)).toLinearMap
 
 @[simp]
 theorem envelopingMultiplication_section :

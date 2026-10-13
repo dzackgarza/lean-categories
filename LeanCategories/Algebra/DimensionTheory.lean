@@ -230,6 +230,29 @@ noncomputable def CharacteristicPolynomial
 
 end HilbertSamuel
 
+section MatsumuraSamuel
+
+variable {R : Type u} [CommRing R]
+variable (I : Ideal R)
+variable (M : Type v) [AddCommGroup M] [Module R M]
+
+/-- Matsumura's Samuel function
+`χ_I^M(n) = length(M / I^(n+1) M)` (`FC13-C05-U015`).
+
+The source hypotheses make these lengths finite.  The definition itself keeps
+that finiteness result separate by using the total `toNat` projection. -/
+noncomputable def SamuelFunction (n : ℕ) : ℤ :=
+  ((Module.length R (M ⧸ (I ^ (n + 1) • ⊤ : Submodule R M))).toNat : ℤ)
+
+/- The source next proves eventual polynomiality and independence of the
+resulting degree from the ideal of definition.  Those are Sweep-IV results.
+Accordingly Sweep III does not manufacture a polynomial or a canonical `d(M)`
+before those results are available.  The existing `CharacteristicPolynomial`
+interface above remains the downstream conditional constructor when such
+eventual-polynomial data are explicitly supplied. -/
+
+end MatsumuraSamuel
+
 section LocalHilbertSamuel
 
 variable (R : Type u) [CommRing R] [IsLocalRing R]

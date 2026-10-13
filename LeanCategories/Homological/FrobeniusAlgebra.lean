@@ -4,13 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Homological.IsQuasiFrobenius
 public import Mathlib.Algebra.Algebra.Opposite
+public import Mathlib.Algebra.Field.Opposite
+public import Mathlib.Algebra.Module.Injective
 public import Mathlib.Algebra.Module.Equiv.Opposite
 public import Mathlib.Algebra.Module.MinimalAxioms
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.RingTheory.Noetherian.Basic
+public import Mathlib.RingTheory.SimpleModule.InjectiveProjective
 
 /-!
 # Frobenius algebras
@@ -345,7 +347,9 @@ namespace IsFrobeniusAlgebra
 variable {k R}
 
 /-- Every Frobenius algebra is quasi-Frobenius (Weibel, after Definition 4.2.5). -/
-theorem isQuasiFrobenius (h : IsFrobeniusAlgebra k R) : IsQuasiFrobenius R := by
+theorem isQuasiFrobenius (h : IsFrobeniusAlgebra k R) :
+    IsNoetherianRing R ∧ IsNoetherianRing Rᵐᵒᵖ ∧
+      Module.Injective R R ∧ Module.Injective Rᵐᵒᵖ R := by
   rcases h with ⟨hfin, ⟨e⟩⟩
   let _ : FiniteDimensional k R := hfin
   let _ : FiniteDimensional k Rᵐᵒᵖ :=

@@ -5,7 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Homological.MixedComplex
-public import LeanCategories.Homological.DoubleComplexFirstPages
+public import Mathlib.Algebra.Homology.HomologicalBicomplex
 public import Mathlib.Algebra.Homology.Embedding.Extend
 
 /-!
@@ -219,7 +219,8 @@ noncomputable def connesHorizontal (M : MixedComplex C) (p : ℕ) :
 /-- Connes' first-quadrant double complex associated canonically to a mixed
 complex.  Column `p` is the shifted copy of `M` beginning in row `p`; the
 outer differential is the signed `B`-map above. -/
-noncomputable def connesDoubleComplex (M : MixedComplex C) : FirstQuadrantDoubleComplex C :=
+noncomputable def connesDoubleComplex (M : MixedComplex C) :
+    ChainComplex (ChainComplex C ℕ) ℕ :=
   ChainComplex.of (connesColumn M) (connesHorizontal M) (fun p => by
     ext q
     change (connesHorizontal M (p + 1)).f q ≫ (connesHorizontal M p).f q = 0
@@ -258,7 +259,8 @@ lemma connesDoubleComplex_d (M : MixedComplex C) (p : ℕ) :
 /-- Backwards-compatible name for the realized object.  The realization is no
 longer a wrapper carrying caller-supplied construction data: it is the actual
 canonical first-quadrant double complex. -/
-abbrev ConnesDoubleComplexRealization (_M : MixedComplex C) := FirstQuadrantDoubleComplex C
+abbrev ConnesDoubleComplexRealization (_M : MixedComplex C) :=
+  ChainComplex (ChainComplex C ℕ) ℕ
 
 /-- The canonical realization of Weibel Definition 9.8.2. -/
 noncomputable def connesDoubleComplexRealization (M : MixedComplex C) :

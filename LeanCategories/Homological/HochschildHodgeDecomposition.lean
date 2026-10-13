@@ -53,19 +53,4 @@ noncomputable def hochschildHodgeDegree (n i : ℕ) :
     Submodule ℚ (HochschildChainDegree (k := ℚ) (R := R) (M := R) n) :=
   LinearMap.range (hochschildHodgeProjector R n i)
 
-/-- A chain-complex realization of the degreewise Hodge pieces.  Existence is
-the content of the differential-compatibility result preceding Definition
-9.4.15; it is not asserted in the Definitions sweep. -/
-structure HochschildHodgeSubcomplexRealization (i : ℕ) where
-  /-- The realized `i`th Hodge subcomplex. -/
-  complex : ChainComplex (ModuleCat ℚ) ℕ
-  /-- Its degree-`n` object is the image of `e_n^(i)`. -/
-  degreeIso : ∀ n : ℕ,
-    complex.X n ≅ ModuleCat.of ℚ ↥(hochschildHodgeDegree R n i)
-
-/-- The homology of a realized Hodge subcomplex. -/
-noncomputable def hochschildHodgeHomology
-    {i : ℕ} (H : HochschildHodgeSubcomplexRealization R i) (n : ℕ) : ModuleCat ℚ :=
-  (HomologicalComplex.homologyFunctor (ModuleCat ℚ) (ComplexShape.down ℕ) n).obj H.complex
-
 end LeanCategories.Homological

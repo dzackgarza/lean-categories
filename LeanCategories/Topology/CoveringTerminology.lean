@@ -25,6 +25,13 @@ variable [TopologicalSpace E] [TopologicalSpace E'] [TopologicalSpace B]
 def CoveringEquivalent (p : E → B) (q : E' → B) : Prop :=
   ∃ h : E ≃ₜ E', p = q ∘ h
 
+/-- A universal covering map is a covering map with simply connected total space.
+
+This is the definition-level clause of Hatcher FC07-C01-U043.  The theorem that
+such a cover factors through every connected covering is result content. -/
+def IsUniversalCover (p : E → B) : Prop :=
+  IsCoveringMap p ∧ SimplyConnectedSpace E
+
 /-- Covering transformations of a map, bundled as a subgroup of self-homeomorphisms
 (FC02-C13-U014). -/
 def deckGroup (p : E → B) : Subgroup (E ≃ₜ E) where
@@ -45,6 +52,13 @@ def deckGroup (p : E → B) : Subgroup (E ≃ₜ E) where
     have hhx := congrFun hh (h⁻¹ x)
     simpa using hhx.symm
 
+/-- A covering is normal when its deck group acts transitively on every fiber.
+
+This is Hatcher FC07-C01-U057. -/
+def IsNormalCovering (p : E → B) : Prop :=
+  IsCoveringMap p ∧
+    ∀ e₁ e₂ : E, p e₁ = p e₂ → ∃ h : deckGroup p, h.1 e₁ = e₂
+
 /-- Fiber of a map over a basepoint. -/
 abbrev coveringFiber (p : E → B) (b : B) := p ⁻¹' {b}
 
@@ -59,6 +73,14 @@ def deckEvaluation (p : E → B) (e₀ : E) : deckGroup p → coveringFiber p (p
 normal (FC02-C13-U021). -/
 def IsRegularCoveringAt (p : E → B) (hp : IsCoveringMap p) (e₀ : E) : Prop :=
   (FundamentalGroup.map ⟨p, hp.continuous⟩ e₀).range.Normal
+
+/-- Lee's normal-covering criterion (FC08-C07-U032): a covering is normal
+when the image of the induced fundamental-group map is a normal subgroup at
+every point of the total space.
+
+The equivalence with deck-group transitivity is result content. -/
+def IsFundamentalGroupNormalCovering (p : E → B) : Prop :=
+  ∃ hp : IsCoveringMap p, ∀ e : E, IsRegularCoveringAt p hp e
 
 /-- Semilocal simple connectivity at a point, expressed by a neighborhood whose inclusion has
 trivial fundamental-group image (FC02-C13-U029). -/

@@ -68,9 +68,9 @@ explicit v2/v3 amendments, and is developed
 in four separate passes: catalogue every formal source unit; exhaustively map every unit against
 Mathlib and the broader formalization ecosystem; realize the remaining definitional layer at its correct
 categorical owners; then formalize the remaining source lemmas and theorems. Only units that
-survive the mapping sweep as genuinely unmatched are greenfield formalization. The theorem pass
-is deliberately independent so long proof programmes do not freeze growth of the mathematical
-DSL. [`TODO.md`](TODO.md), the
+survive the mapping sweep as genuinely unmatched are greenfield formalization. The
+definition layer must close before the theorem pass opens; independent ready definitions
+can proceed without waiting for source-order predecessors. [`TODO.md`](TODO.md), the
 [source/snapshot manifest](corpus/foundational-source-corpus.md), the
 [central four-phase status ledger](corpus/foundational-corpus-status.md), and
 [FEATURE-FOUNDATIONAL-CORPUS](.agents/plans/features/FEATURE-FOUNDATIONAL-CORPUS/FEATURE-FOUNDATIONAL-CORPUS.md)
@@ -103,7 +103,7 @@ just build
 ## The foundational corpus
 
 <https://dzackgarza.github.io/lean-categories/> publishes the survey behind the reuse
-gate: 16 graduate textbooks read unit by unit, each definition and theorem routed to the
+gate: the admitted foundational sources read unit by unit, each definition and theorem routed to the
 Lean declaration that owns it or recorded as having no owner, at a pinned Mathlib commit.
 Its unmatched rows are this repository's formalization roadmap.
 

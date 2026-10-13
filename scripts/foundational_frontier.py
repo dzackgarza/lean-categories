@@ -4,6 +4,12 @@
 The whole-source status ledger remains the only completion authority. This tool
 derives scheduling state from the frozen Sweep-I catalogues and Sweep-II mapping
 records; it never checks or infers a whole-source completion box.
+
+Mapping may add an exact construction edge with one sentence-final clause:
+"Construction prerequisites: `FCxx-Cyy-Uzzz`, `...`." Other cited IDs are inert.
+In Sweep III, an explicitly named theorem/result unit diagnoses a result-layer
+dependency in the proposed construction route; it never becomes executable
+definition work.
 """
 
 from __future__ import annotations
@@ -17,9 +23,48 @@ from pathlib import Path
 
 UNIT_RE = re.compile(r"FC\d{2}-[A-Z0-9]+-U\d+")
 HEADING_UNIT_RE = re.compile(r"^###\s+(FC\d{2}-[A-Z0-9]+-U\d+)\b")
+CONSTRUCTION_PREREQUISITES_MARKER = "Construction prerequisites:"
+CONSTRUCTION_PREREQUISITES_RE = re.compile(
+    r"Construction prerequisites:\s+"
+    r"(`FC\d{2}-[A-Z0-9]+-U\d+`(?:,\s*`FC\d{2}-[A-Z0-9]+-U\d+`)*)\.\s*$"
+)
 ROUTES = {"mathlib", "project-existing", "package-import", "reference-port", "unmatched"}
 DIRECT_ROUTES = {"mathlib", "project-existing"}
-NEGATIVE_VERDICT_MARKERS = ("unmatched", "partial", "wrong interface", "missing")
+NEGATIVE_VERDICT_MARKERS = ("unmatched", "wrong interface", "missing")
+NEGATIVE_PARTIAL_VERDICT_PATTERNS = (
+    r"^\s*partial(?:\s|$)",
+    r"\bpartially\b",
+    r"\bpartial\s+(?:match|comparison|interface|owner|route|implementation|formalization|coverage|clause)\b",
+    r"\bremains?\s+partial\b",
+)
+RESULT_LAYER_MARKERS = (
+    "theorem clause",
+    "theorem content",
+    "theorem work",
+    "result clause",
+    "result content",
+    "result layer",
+    "construction theorems",
+)
+RESULT_LAYER_PATTERNS = (
+    r"\b(?:theorem|result|example|comparison|classification)(?:/[a-z-]+)?\s+"
+    r"(?:clause|clauses|content|work|assertion|assertions)\b",
+    r"\b(?:theorem|result|example)/(?:theorem|result|example)\s+clauses?\b",
+)
+
+
+def is_negative_verdict(verdict: str) -> bool:
+    """Recognize evaluative negative verdicts without matching mathematical `partial` terms.
+
+    `partial flow`, `partial zeta`, and `partial Hecke theta` are mathematical nouns, not
+    Mapping status.  Older code used the raw substring `partial`, which turned such positive
+    direct routes into spurious `review` work.
+    """
+
+    value = verdict.lower()
+    return any(marker in value for marker in NEGATIVE_VERDICT_MARKERS) or any(
+        re.search(pattern, value) is not None for pattern in NEGATIVE_PARTIAL_VERDICT_PATTERNS
+    )
 POSITIVE_LEGACY_VERDICT_MARKERS = ("exact", "broad")
 DEFINITION_MARKERS = ("definition", "construction", "convention", "notation", "terminology")
 # Labels that unambiguously announce result content.  If one of these is the
@@ -39,11 +84,10 @@ STRICT_RESULT_LABEL_MARKERS = (
     "addendum",
     "calculation",
 )
-# Sources for which the richer mixed-unit phase classification below has been
-# checked against the canonical source/mapping records.  Do not silently apply
-# an FC05 audit result to another corpus source: extend this set only together
-# with that source's own phase-classification audit.
-CONTENT_CLASSIFIED_DEFINITION_SOURCES = frozenset({"FC05"})
+# Every admitted source now carries source-audited phase labels.  Classification
+# uses the label before the descriptive title, so theorem/result prose appearing
+# later in a title cannot promote a result-only unit into Sweep III.
+CONTENT_CLASSIFIED_DEFINITION_SOURCES = frozenset({f"FC{i:02d}" for i in range(1, 18)})
 THEOREM_MARKERS = (
     "lemma",
     "proposition",
@@ -61,48 +105,11 @@ THEOREM_MARKERS = (
     "calculation",
 )
 
-# Sweep-I occasionally preserves Weibel's label "Construction" for a unit whose
-# mathematical content is only an argument/result, not a construction of new
-# data.  These exceptions are source-audited rather than inferred from the word
-# "Construction" alone.  Keep this set small: new ambiguities should be resolved
-# against the source before being added here.
-RESULT_ONLY_DEFINITION_UNITS = frozenset(
-    {
-        # Construction 5.6.5 is the collapse argument deriving the Künneth short
-        # exact sequence; it introduces no new object, map, predicate, or notation.
-        "FC05-C05-U049",
-        # 6.8.3 is the pair of low-degree exact sequences extracted from the LHS
-        # spectral sequences; it is result content despite the Sweep-I label.
-        "FC05-C06-U100",
-        # The §7.4 augmentation-ideal passage applies Tor to an already-defined
-        # short exact sequence and states the resulting isomorphisms/exact sequence.
-        "FC05-C07-U030",
-        # 7.5.3 likewise consists of the low-degree exact sequences extracted
-        # from the Hochschild--Serre spectral sequences.
-        "FC05-C07-U042",
-        # The §9.4 Hodge/λ row is a theorem-level preview of the decomposition;
-        # the actual Hodge-subcomplex definition is Definition 9.4.15 (C09-U072).
-        "FC05-C09-U064",
-        # The §9.8 convention merely reuses the already-defined mixed-complex
-        # operator B to name the d¹ map of Connes' spectral sequence.  Existence
-        # of that induced homology differential is result content, not new data.
-        "FC05-C09-U122",
-        # The §10.8 convention merely says later applications use the dual
-        # Composition Theorem isomorphism LF ∘ LG ≅ L(FG) without restating it.
-        # That is theorem-level comparison data, not a new definition.
-        "FC05-C10-U092",
-        # The §10.8 change-of-rings RHom row is the Composition Theorem applied
-        # to Hom_R(S,-), asserting an isomorphism of already-defined derived Hom
-        # objects.  The comparison-map construction itself is C10-U086.
-        "FC05-C10-U096",
-    }
-)
-
-
 @dataclass(frozen=True)
 class Unit:
     unit_id: str
     kind: str
+    source_data: str
     dependencies: tuple[str, ...]
 
 
@@ -116,8 +123,14 @@ class Mapping:
     @property
     def delivered(self) -> bool:
         """Whether the mapping already supplies a canonical usable owner."""
+        if self.realized:
+            # Sweep-II provenance is causal and does not change when a later
+            # port/import/greenfield definition is realized.  `[realized]`
+            # therefore closes Sweep III without rewriting the historical
+            # route to `project-existing`.
+            return True
         verdict = self.verdict.lower()
-        if any(marker in verdict for marker in NEGATIVE_VERDICT_MARKERS):
+        if is_negative_verdict(verdict):
             return False
         if self.route is not None:
             return self.route in DIRECT_ROUTES or self.realized
@@ -133,18 +146,41 @@ class Mapping:
     @property
     def realized(self) -> bool:
         """Whether a mapped port/import has already been realized locally."""
-        return "[realized]" in self.row.lower()
+        verdict = self.verdict.lower()
+        if "[realized]" in verdict:
+            return True
+        # Two legacy rows predate the rule that completion markers live in the
+        # canonical verdict cell and record the state as ``[realized] by ...``
+        # in their provenance cell.  Keep accepting that exact historical form,
+        # but do not let prose such as ``not marked [realized]`` close a unit.
+        return re.search(r"\[realized\]\s+by\b", self.row, re.I) is not None
 
     @property
     def definition_only(self) -> bool:
         """Whether this direct owner discharges only a mixed unit's definition layer."""
-        return "[definition-only]" in self.row.lower()
+        return "[definition-only]" in self.verdict.lower()
+
+    @property
+    def sweep_iii_blocked(self) -> bool:
+        """Whether the currently recorded realization route requires result-layer input.
+
+        The marker preserves that result-layer residue for Sweep IV, but it does
+        not excuse the source's definitional content from Sweep III.  Once the
+        genuine definition prerequisites are ready, the scheduler must surface
+        the unit so its representation can be changed instead of waiting for a
+        theorem.
+        """
+        return "[sweep-iii-blocked]" in self.verdict.lower()
 
     @property
     def negative_search_complete(self) -> bool:
         """Whether an unmatched row has passed the finite negative-search gate."""
+        return "[negative-search-complete]" in self.verdict.lower()
 
-        return "[negative-search-complete]" in self.row.lower()
+    @property
+    def residue_search_audited(self) -> bool:
+        """Whether a negative definition survived the open-ended prior-art audit."""
+        return "[residue-search-audited]" in self.verdict.lower()
 
     @property
     def action(self) -> str:
@@ -155,7 +191,7 @@ class Mapping:
         if self.route == "package-import":
             return "import"
         if self.route == "unmatched":
-            return "author"
+            return "author" if self.residue_search_audited else "residue audit"
         if self.route in DIRECT_ROUTES:
             return "repair mapping/interface"
         return "resolve legacy mapping"
@@ -194,6 +230,51 @@ def dependencies(text: str) -> tuple[str, ...]:
     return tuple(dict.fromkeys(UNIT_RE.findall(text)))
 
 
+def construction_dependencies(unit: Unit, mapping: Mapping | None) -> tuple[str, ...]:
+    """Parse Mapping's explicit construction-prerequisite annotation.
+
+    Other unit IDs in Mapping are provenance, comparisons, or historical notes
+    and never become scheduler edges implicitly.
+    """
+    if mapping is None or CONSTRUCTION_PREREQUISITES_MARKER not in mapping.row:
+        return ()
+
+    if mapping.row.count(CONSTRUCTION_PREREQUISITES_MARKER) != 1:
+        raise ValueError(
+            f"{unit.unit_id}: expected exactly one sentence-final "
+            f"{CONSTRUCTION_PREREQUISITES_MARKER} annotation"
+        )
+
+    annotated_cells = [
+        cell
+        for cell in split_table_row(mapping.row)
+        if CONSTRUCTION_PREREQUISITES_MARKER in cell
+    ]
+    if len(annotated_cells) != 1:
+        raise ValueError(
+            f"{unit.unit_id}: expected exactly one sentence-final "
+            f"{CONSTRUCTION_PREREQUISITES_MARKER} annotation"
+        )
+    match = CONSTRUCTION_PREREQUISITES_RE.search(annotated_cells[0])
+    if match is None:
+        raise ValueError(
+            f"{unit.unit_id}: malformed {CONSTRUCTION_PREREQUISITES_MARKER} annotation; "
+            "use comma-separated backticked full unit IDs and a final period"
+        )
+    return tuple(dict.fromkeys(UNIT_RE.findall(match.group(1))))
+
+
+def effective_dependencies(
+    phase: str, unit: Unit, mapping: Mapping | None
+) -> tuple[str, ...]:
+    """Combine catalogue edges with explicit construction edges for Definitions."""
+    if phase != "Definitions":
+        return unit.dependencies
+    return tuple(
+        dict.fromkeys((*unit.dependencies, *construction_dependencies(unit, mapping)))
+    )
+
+
 def parse_catalogue(path: Path) -> list[Unit]:
     lines = path.read_text(encoding="utf-8").splitlines()
     units: list[Unit] = []
@@ -209,21 +290,27 @@ def parse_catalogue(path: Path) -> list[Unit]:
         while end < len(lines) and HEADING_UNIT_RE.match(lines[end]) is None:
             end += 1
         kind = ""
+        source_data = ""
         deps = ""
         for entry in lines[index + 1 : end]:
             entry_lower = entry.lower()
             if entry_lower.startswith("- **kind:**"):
                 kind = entry.split(":**", 1)[1].strip().rstrip(".")
+            elif entry_lower.startswith("- **statement/data:**"):
+                source_data = entry.split(":**", 1)[1].strip().rstrip(".")
             elif entry_lower.startswith("- **dependencies:**"):
                 deps = entry.split(":**", 1)[1].strip().rstrip(".")
         if not kind:
             raise ValueError(f"{path}: no kind for {unit_id}")
-        units.append(Unit(unit_id, kind, dependencies(deps)))
+        if not source_data:
+            raise ValueError(f"{path}: no statement/data for {unit_id}")
+        units.append(Unit(unit_id, kind, source_data, dependencies(deps)))
         seen.add(unit_id)
 
     # FC03+ use Markdown tables. Track the kind-column index from each table
     # header; dependencies are consistently the final column.
     kind_index: int | None = None
+    data_index: int | None = None
     for line in lines:
         if not line.startswith("|"):
             continue
@@ -235,12 +322,33 @@ def parse_catalogue(path: Path) -> list[Unit]:
                     (i for i, cell in enumerate(lowered) if cell == "kind" or cell.startswith("kind /")),
                     None,
                 )
+                data_index = next(
+                    (
+                        i
+                        for i, cell in enumerate(lowered)
+                        if cell
+                        in {
+                            "unit / hypotheses-data",
+                            "mathematical unit",
+                            "concise data",
+                            "concise data / hypotheses",
+                            "canonical statement / definition",
+                            "data / hypotheses",
+                            "source statement",
+                        }
+                    ),
+                    None,
+                )
             continue
         if not cells or UNIT_RE.fullmatch(cells[0]) is None or cells[0] in seen:
             continue
         if kind_index is None or kind_index >= len(cells):
             raise ValueError(f"{path}: cannot locate kind column for {cells[0]}")
-        units.append(Unit(cells[0], cells[kind_index], dependencies(cells[-1])))
+        if data_index is None or data_index >= len(cells):
+            raise ValueError(f"{path}: cannot locate source-data column for {cells[0]}")
+        units.append(
+            Unit(cells[0], cells[kind_index], cells[data_index], dependencies(cells[-1]))
+        )
         seen.add(cells[0])
 
     if not units:
@@ -261,9 +369,10 @@ def mapping_from_row(path: Path, line: str) -> tuple[str, Mapping] | None:
     # are closed vocabulary, so locate the first exact token after the verdict.
     route = next((cell for cell in cells[2:] if cell in ROUTES), None)
     verdict_lower = verdict.lower()
-    looks_like_mapping = route is not None or any(
-        marker in verdict_lower
-        for marker in (*NEGATIVE_VERDICT_MARKERS, *POSITIVE_LEGACY_VERDICT_MARKERS)
+    looks_like_mapping = (
+        route is not None
+        or is_negative_verdict(verdict_lower)
+        or any(marker in verdict_lower for marker in POSITIVE_LEGACY_VERDICT_MARKERS)
     )
     if not looks_like_mapping:
         return None
@@ -351,8 +460,6 @@ def is_definition(unit: Unit, mapping: Mapping | None = None) -> bool:
         return any(marker in kind for marker in DEFINITION_MARKERS)
     if mapping is not None and mapping.definition_only:
         return True
-    if unit.unit_id in RESULT_ONLY_DEFINITION_UNITS:
-        return False
     label = kind_label(unit.kind)
     # An explicit definitional source label wins, including mixed labels such
     # as `Construction/result`; the theorem clause is classified separately.
@@ -367,13 +474,105 @@ def is_definition(unit: Unit, mapping: Mapping | None = None) -> bool:
     return any(marker in kind for marker in DEFINITION_MARKERS)
 
 
-def is_theorem(unit: Unit) -> bool:
+def is_theorem(unit: Unit, mapping: Mapping | None = None) -> bool:
     kind = unit.kind.lower()
     # Mixed rows can contribute both a Sweep-III definition and a Sweep-IV
     # theorem clause; the definition sweep explicitly leaves theorem clauses to IV.
-    return any(marker in kind for marker in THEOREM_MARKERS) or not any(
+    # `[definition-only]` is itself a source-audited assertion that the positive
+    # mapping discharges only the definitional part, so it must force the row into
+    # Sweep IV even when Sweep I gave it a plain `Definition / construction` label.
+    # A mapping that records its own result layer is mixed by its own account; its theorem part
+    # belongs to Sweep IV whatever other markers the row carries.
+    return (
+        mapping is not None
+        and (mapping.definition_only or mapping.sweep_iii_blocked or mapping_declares_result_layer(mapping))
+    ) or any(
+        marker in kind for marker in THEOREM_MARKERS
+    ) or not any(
         marker in kind for marker in DEFINITION_MARKERS
     )
+
+
+def mapping_declares_result_layer(mapping: Mapping | None) -> bool:
+    """Whether Mapping explicitly records theorem/result content in this source unit."""
+
+    if mapping is None:
+        return False
+    row = mapping.row.lower()
+    return any(marker in row for marker in RESULT_LAYER_MARKERS) or any(
+        re.search(pattern, row) is not None for pattern in RESULT_LAYER_PATTERNS
+    )
+
+
+def validate_phase_classification(units: list[Unit], mappings: dict[str, Mapping]) -> None:
+    """Reject source rows whose recorded result layer would disappear from Sweep IV.
+
+    Mapping is allowed to split a mixed source unit into a definition route plus
+    later theorem work, but the frozen Sweep-I kind must still expose that mixed
+    role.  Otherwise a bad catalogue label silently promotes propositions into
+    Sweep III or drops them from Sweep IV.
+    """
+
+    defects = [
+        unit
+        for unit in units
+        if mapping_declares_result_layer(mappings.get(unit.unit_id))
+        and not is_theorem(unit, mappings.get(unit.unit_id))
+    ]
+    if defects:
+        rendered = ", ".join(f"{unit.unit_id} ({unit.kind})" for unit in defects)
+        raise ValueError(
+            "source/mapping phase-classification mismatch: Mapping records a "
+            f"theorem/result layer but Sweep IV would omit {rendered}"
+        )
+
+    erased_residue_audits = [
+        unit
+        for unit in units
+        if (mapping := mappings.get(unit.unit_id)) is not None
+        and mapping.route == "unmatched"
+        and not mapping.residue_search_audited
+        and (
+            mapping.realized
+            or (
+                mapping.definition_only
+                and "local source transcription" in mapping.row.lower()
+            )
+        )
+    ]
+    if erased_residue_audits:
+        rendered = ", ".join(unit.unit_id for unit in erased_residue_audits)
+        raise ValueError(
+            "Sweep-III realization erased State-1 residue-search provenance for "
+            f"{rendered}; unmatched realization must preserve "
+            "[residue-search-audited] and append realization state instead"
+        )
+
+    exercise_leaks = [
+        unit
+        for unit in units
+        if is_definition(unit, mappings.get(unit.unit_id))
+        and re.search(r"\bexercise\b", f"{unit.kind} {unit.source_data}", re.I)
+    ]
+    if exercise_leaks:
+        rendered = ", ".join(unit.unit_id for unit in exercise_leaks)
+        raise ValueError(
+            "excluded exercise material leaked into Sweep III source payload: "
+            f"{rendered}"
+        )
+
+    known_unit_ids = {unit.unit_id for unit in units}
+    for unit in units:
+        explicit_dependencies = construction_dependencies(
+            unit, mappings.get(unit.unit_id)
+        )
+        unknown = [dep for dep in explicit_dependencies if dep not in known_unit_ids]
+        if unknown:
+            rendered = ", ".join(unknown)
+            raise ValueError(
+                f"{unit.unit_id}: construction prerequisites are not catalogue units: "
+                f"{rendered}"
+            )
 
 
 def source_file(reference_dir: Path, prefix: str, source_id: str) -> Path:
@@ -389,7 +588,7 @@ def phase_units(
     if phase == "Definitions":
         return [unit for unit in units if is_definition(unit, mappings.get(unit.unit_id))]
     if phase == "Theorems":
-        return [unit for unit in units if is_theorem(unit)]
+        return [unit for unit in units if is_theorem(unit, mappings.get(unit.unit_id))]
     if phase == "Mapping":
         # Sweep-II ultimately maps every corpus unit, but only definitional rows
         # can force Sweep III to invent an object.  Discovery for that gate is
@@ -423,7 +622,7 @@ def definition_mapping_incomplete(
             continue
         if mapping is None:
             return True
-        if mapping.route == "unmatched" and not mapping.negative_search_complete:
+        if mapping.route == "unmatched" and not mapping.residue_search_audited:
             return True
     return False
 
@@ -435,7 +634,7 @@ def unit_delivered(phase: str, unit: Unit, mappings: dict[str, Mapping]) -> bool
         # still needs a port/import.  Only absent records and explicit `unmatched`
         # verdicts remain source-discovery work here.
         return mapping is not None and (
-            mapping.route != "unmatched" or mapping.negative_search_complete
+            mapping.route != "unmatched" or mapping.residue_search_audited
         )
     if phase == "Theorems" and mapping is not None and mapping.definition_only:
         return False
@@ -448,11 +647,22 @@ def phase_blocker(
     statuses: list[SourceStatus],
     units: list[Unit],
     mappings: dict[str, Mapping],
+    catalogues: dict[str, list[Unit]],
 ) -> str:
     if phase == "Mapping" and not status.catalogue:
         return "Sweep I catalogue is not complete for this source."
-    if phase == "Definitions" and not status.mapping and definition_mapping_incomplete(units, mappings):
-        return "Sweep II definition mapping is not complete for this source."
+    if phase == "Definitions":
+        open_definition_mapping = [
+            source_id
+            for source_id, source_units in catalogues.items()
+            if definition_mapping_incomplete(source_units, mappings)
+        ]
+        if open_definition_mapping:
+            return (
+                "Milestone 1 is open: definitional mapping/residue audit remains for "
+                + ", ".join(open_definition_mapping)
+                + "."
+            )
     if phase == "Theorems":
         open_definitions = [entry.source_id for entry in statuses if not entry.definitions]
         if open_definitions:
@@ -466,6 +676,10 @@ def mapping_label(mapping: Mapping | None, phase: str) -> str:
     route = mapping.route or "legacy-direct"
     if phase == "Mapping":
         if mapping.route == "unmatched":
+            if mapping.residue_search_audited:
+                return "unmatched; residue search audited"
+            if mapping.negative_search_complete:
+                return "unmatched; open-ended residue audit required"
             return "unmatched; search existing formalizations"
         return f"{route}; source already found"
     if phase == "Theorems" and mapping.definition_only:
@@ -481,26 +695,30 @@ def unit_blockers(
 ) -> tuple[str, ...]:
     """Return phase-relevant prerequisites that do not yet have a usable owner.
 
-    In the audited FC05 Definitions sweep, theorem-only source dependencies are
-    not admissible blockers: Definitions must close before theorem work opens.
-    Mixed dependencies that themselves carry definitional content still block
-    until that definition layer has an owner.
+    Catalogue theorem edges do not ordinarily block Definitions: Definitions
+    must close before theorem work opens. An explicit construction edge to a
+    theorem/result unit records why that proposed route is inadmissible in
+    Sweep III; surface the result-layer stop instead of scheduling the theorem.
     """
     if phase == "Mapping":
         # Discovery of an existing implementation does not depend on whether a
         # prerequisite unit has itself been realized locally.
         return ()
 
+    mapping = mappings.get(unit.unit_id)
     source_id = unit.unit_id.split("-", 1)[0]
+    explicit_dependencies = construction_dependencies(unit, mapping)
     blockers: list[str] = []
-    for dep in unit.dependencies:
+    for dep in effective_dependencies(phase, unit, mapping):
         if phase == "Definitions" and source_id in CONTENT_CLASSIFIED_DEFINITION_SOURCES:
             dep_unit = catalogue_index.get(dep)
             if dep_unit is not None and not is_definition(dep_unit, mappings.get(dep)):
+                if dep in explicit_dependencies:
+                    blockers.append("Sweep-IV result layer")
                 continue
         if dep not in mappings or not mappings[dep].delivered:
             blockers.append(dep)
-    return tuple(blockers)
+    return tuple(dict.fromkeys(blockers))
 
 
 def next_open_units(
@@ -561,6 +779,15 @@ def render(reference_dir: Path, limit: int) -> str:
             source_file(reference_dir, "foundational-corpus-units", status.source_id)
         )
         for status in statuses
+    }
+    validate_phase_classification(
+        [unit for source_units in catalogues.values() for unit in source_units],
+        mappings,
+    )
+    catalogue_index = {
+        unit.unit_id: unit
+        for source_units in catalogues.values()
+        for unit in source_units
     }
 
     missing_mappings = [
@@ -642,7 +869,7 @@ def render(reference_dir: Path, limit: int) -> str:
                     f"Canonical mapping rows present: **{len(delivered)}/{len(units)}**; "
                     f"row-coverage gaps: **{len(pending)}** ({counts}).",
                     f"Mapped source-unit spans: {compact_unit_ids(delivered)}.",
-                    f"Phase blocker: {phase_blocker(phase, status, statuses, source_units, mappings)}",
+                    f"Phase blocker: {phase_blocker(phase, status, statuses, source_units, mappings, catalogues)}",
                     "",
                 ]
             else:
@@ -652,7 +879,7 @@ def render(reference_dir: Path, limit: int) -> str:
                     f"Definitions with an implementation source: **{len(delivered)}/{len(units)}**; "
                     f"source-discovery gaps: **{len(pending)}** ({counts}).",
                     f"Already-sourced definition spans: {compact_unit_ids(delivered)}.",
-                    f"Phase blocker: {phase_blocker(phase, status, statuses, source_units, mappings)}",
+                    f"Phase blocker: {phase_blocker(phase, status, statuses, source_units, mappings, catalogues)}",
                     "",
                 ]
         else:
@@ -662,7 +889,7 @@ def render(reference_dir: Path, limit: int) -> str:
                 f"Delivered/directly reusable by mapping: **{len(delivered)}/{len(units)}**; "
                 f"pending realization: **{len(pending)}** ({counts}).",
                 f"Delivered/direct-reuse spans: {compact_unit_ids(delivered)}.",
-                f"Phase blocker: {phase_blocker(phase, status, statuses, source_units, mappings)}",
+                f"Phase blocker: {phase_blocker(phase, status, statuses, source_units, mappings, catalogues)}",
                 "",
             ]
         lines.extend(summary_lines)
@@ -670,7 +897,6 @@ def render(reference_dir: Path, limit: int) -> str:
             lines.extend(["No per-unit residue remains; the whole-source ledger is still authoritative.", ""])
             continue
 
-        catalogue_index = {unit.unit_id: unit for unit in catalogues[status.source_id]}
         next_units = next_open_units(phase, pending, mappings, catalogue_index, limit)
         if not next_units:
             raise ValueError(
@@ -686,7 +912,12 @@ def render(reference_dir: Path, limit: int) -> str:
             ]
         )
         for unit in next_units:
-            prerequisites = ", ".join(f"`{dep}`" for dep in unit.dependencies) or "—"
+            prerequisites = ", ".join(
+                f"`{dep}`"
+                for dep in effective_dependencies(
+                    phase, unit, mappings.get(unit.unit_id)
+                )
+            ) or "—"
             blockers = unit_blockers(phase, unit, mappings, catalogue_index)
             blocker_text = (
                 ", ".join(f"`{dep}`" for dep in blockers)

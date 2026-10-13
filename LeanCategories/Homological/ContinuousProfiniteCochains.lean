@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Homological.DiscreteProfiniteModule
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
+public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
+public import Mathlib.Topology.Algebra.MulAction
 public import Mathlib.Topology.LocallyConstant.Algebra
 
 /-!
@@ -58,7 +59,7 @@ The discrete-module hypothesis ensures the action term is continuous.
 
 Source: Weibel, Definition 6.11.12, pp. 206--215 (FC05-C06-U147). -/
 noncomputable def continuousProfiniteCochainDifferential
-    (hA : IsDiscreteProfiniteModule G A) (n : ℕ) :
+    (hA : ∀ a : A, IsOpen {g : G | A.ρ g a = a}) (n : ℕ) :
     ContinuousProfiniteCochains G A n →+ ContinuousProfiniteCochains G A (n + 1) where
   toFun f :=
     { toFun := fun g =>

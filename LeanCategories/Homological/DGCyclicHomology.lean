@@ -5,31 +5,28 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Homological.DGHochschildHomology
-public import LeanCategories.Homological.TsyganBicomplex
-public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.Ring.NegOnePow
 
 /-!
-# Cyclic homology of differential graded algebras
+# Differential-graded cyclic construction data
 
 Weibel, *An Introduction to Homological Algebra* (1994), §9.9 after
 Definition 9.9.10, pp. 354--361 (FC05-C09-U150).
 
-For a DG-algebra, the signed graded tensor powers form a cyclic object in the
-category of chain complexes.  Applying Tsygan's construction and flattening
-the resulting triple complex defines DG cyclic homology.  For nonnegatively
-graded DG-algebras, the corresponding periodic product total complex defines
-DG periodic cyclic homology.
-
-The structures below package these source constructions after the graded sign
-identities have been verified.  Those sign verifications are theorem-layer
-work; the homology objects themselves are definition-layer data.
+Sweep III records the data appearing in the source construction: the Koszul
+sign on cyclic rotation, the direct-sum indexing of the ordinary Tsygan total,
+the product indexing of the periodic total, and the signs attached to the
+three differential directions.  Proving the cyclic identities, assembling
+these data into cyclic objects or chain complexes, and taking their homology
+are result-layer work and are not manufactured here.
 -/
 
 @[expose] public noncomputable section
 
 namespace LeanCategories.Homological
 
-open CategoryTheory CategoryTheory.Limits Opposite Simplicial
+open scoped BigOperators TensorProduct
 
 universe u v
 
@@ -37,73 +34,77 @@ variable (k : Type u) [CommRing k]
 variable (A : Type v) [Ring A] [Algebra k A]
 variable (𝒜 : ℤ → Submodule k A) [GradedAlgebra 𝒜]
 
-/-- A graded algebra is nonnegatively graded when all negative homogeneous
-pieces vanish.  This is the positivity hypothesis used for periodic DG cyclic
-homology in Weibel §9.9. -/
+/-- The positivity hypothesis used for periodic DG cyclic homology. -/
 def IsNonnegativelyGraded : Prop :=
   ∀ q : ℤ, q < 0 → 𝒜 q = ⊥
 
-/-- A realization of the signed cyclic object `Z(A,d)` attached to a
-DG-algebra.  Simplicial degree `n` is the internal chain complex underlying
-Hochschild degree `n` of the DG Hochschild bicomplex. -/
-structure DGCyclicObjectRealization
-    {D : DifferentialGradedAlgebra k A 𝒜}
-    (H : DGHochschildDoubleComplexRealization k A 𝒜 D) where
-  /-- The cyclic object in integer chain complexes. -/
-  cyclic : CyclicObject (C := ChainComplex (ModuleCat.{max u v} k) ℤ)
-  /-- Its degree `n` object is the internal chain complex of DG Hochschild
-  degree `n`. -/
-  degreeIso : ∀ n : ℕ,
-    cyclic.obj.obj (op ⦋n⦌) ≅ H.bicomplex.X (n : ℤ)
+/-- Koszul exponent for moving the last homogeneous Hochschild factor to the
+front.  For degrees `a₀,…,aₙ` this is
+`aₙ(a₀+⋯+aₙ₋₁)`. -/
+def dgCyclicRotationExponent :
+    (n : ℕ) → HomogeneousDGHochschildTensor k A 𝒜 n → ℤ
+  | 0, _ => 0
+  | n + 1, x =>
+      x.degrees (Fin.last n) *
+        (x.degree0 + ∑ j : Fin n, x.degrees j.castSucc)
 
-/-- A realization of Tsygan's bicomplex for the DG cyclic object together
-with its flattened direct-sum total complex. -/
-structure DGCyclicTsyganRealization
-    {D : DifferentialGradedAlgebra k A 𝒜}
-    (H : DGHochschildDoubleComplexRealization k A 𝒜 D)
-    (Z : DGCyclicObjectRealization k A 𝒜 H) where
-  /-- Tsygan's bicomplex in the abelian category of integer chain complexes. -/
-  tsygan : TsyganBicomplexRealization Z.cyclic
-  /-- The direct-sum flattening of the Tsygan bicomplex together with the
-  internal DG direction. -/
-  totalComplex : ChainComplex (ModuleCat.{max u v} k) ℤ
+/-- The signed cyclic rotation on a homogeneous pure Hochschild tensor.
 
-/-- DG cyclic homology `HC_n^DG(A)`.
+This is the displayed source formula only.  No assertion that it descends to
+a chain automorphism or satisfies a cyclic identity is part of this
+definition. -/
+def dgCyclicPureRotation :
+    (n : ℕ) → HomogeneousDGHochschildTensor k A 𝒜 n →
+      HochschildChainDegree (k := k) (R := A) (M := A) n
+  | 0, x => x.toChain
+  | n + 1, x =>
+      (dgCyclicRotationExponent k A 𝒜 (n + 1) x).negOnePow •
+        hochschildChainPure (k := k) (R := A) (M := A)
+          (x.a (Fin.last n) : A)
+          (Fin.cons (x.a0 : A) (fun j : Fin n => (x.a j.castSucc : A)))
 
-Source: Weibel, §9.9 after Definition 9.9.10, pp. 354--361
-(FC05-C09-U150). -/
-def dgCyclicHomology
-    {D : DifferentialGradedAlgebra k A 𝒜}
-    {H : DGHochschildDoubleComplexRealization k A 𝒜 D}
-    {Z : DGCyclicObjectRealization k A 𝒜 H}
-    (T : DGCyclicTsyganRealization k A 𝒜 H Z) (n : ℤ) : ModuleCat.{max u v} k :=
-  (HomologicalComplex.homologyFunctor (ModuleCat.{max u v} k) (ComplexShape.down ℤ) n).obj
-    T.totalComplex
+/-- The two nonnegative indices of the ordinary DG Tsygan total: cyclic
+column and Hochschild degree.  The internal degree is determined by the total
+degree. -/
+abbrev DGCyclicTotalIndex := ℕ × ℕ
 
-/-- Product-total realization used to define periodic cyclic homology of a
-nonnegatively graded DG-algebra. -/
-structure DGPeriodicCyclicRealization
-    {D : DifferentialGradedAlgebra k A 𝒜}
-    {H : DGHochschildDoubleComplexRealization k A 𝒜 D}
-    {Z : DGCyclicObjectRealization k A 𝒜 H}
-    (T : DGCyclicTsyganRealization k A 𝒜 H Z)
-    (hpos : IsNonnegativelyGraded k A 𝒜) where
-  /-- The flattened product total complex of the two-sided periodic extension. -/
-  productTotalComplex : ChainComplex (ModuleCat.{max u v} k) ℤ
+/-- Internal degree belonging to a cyclic-column/Hochschild-degree pair in
+total degree `n`. -/
+def dgCyclicInternalDegree (n : ℤ) (j : DGCyclicTotalIndex) : ℤ :=
+  n - (j.1 : ℤ) - (j.2 : ℤ)
 
-/-- DG periodic cyclic homology `HP_n^DG(A)` for a nonnegatively graded
-DG-algebra.
+/-- Degree-`n` carrier of the direct-sum DG Tsygan total, before a
+differential is installed. -/
+def dgCyclicTotalDegree (n : ℤ) :=
+  DirectSum DGCyclicTotalIndex (fun j =>
+    ↥(dgHochschildBidegree k A 𝒜 j.2 (dgCyclicInternalDegree n j)))
 
-Source: Weibel, §9.9 after Definition 9.9.10, pp. 354--361
-(FC05-C09-U150). -/
-def dgPeriodicCyclicHomology
-    {D : DifferentialGradedAlgebra k A 𝒜}
-    {H : DGHochschildDoubleComplexRealization k A 𝒜 D}
-    {Z : DGCyclicObjectRealization k A 𝒜 H}
-    {T : DGCyclicTsyganRealization k A 𝒜 H Z}
-    {hpos : IsNonnegativelyGraded k A 𝒜}
-    (P : DGPeriodicCyclicRealization k A 𝒜 T hpos) (n : ℤ) : ModuleCat.{max u v} k :=
-  (HomologicalComplex.homologyFunctor (ModuleCat.{max u v} k) (ComplexShape.down ℤ) n).obj
-    P.productTotalComplex
+/-- Signs multiplying the horizontal, Hochschild, and internal differential
+directions in cyclic column `i` and Hochschild degree `q`:
+`(1,(-1)^i,(-1)^(i+q))`. -/
+def dgCyclicTotalDifferentialSigns (i q : ℕ) : ℤ × ℤ × ℤ :=
+  (1, ((i : ℤ).negOnePow : ℤ), (((i + q : ℕ) : ℤ).negOnePow : ℤ))
+
+/-- The nonnegative Hochschild/internal indices of the periodic product
+total.  In total degree `n`, the cyclic column is determined by these two
+indices. -/
+abbrev DGPeriodicCyclicTotalIndex := ℕ × ℕ
+
+/-- Cyclic column attached to a periodic-total component in total degree
+`n`. -/
+def dgPeriodicCyclicColumn (n : ℤ) (j : DGPeriodicCyclicTotalIndex) : ℤ :=
+  n - (j.1 : ℤ) - (j.2 : ℤ)
+
+/-- Degree-`n` carrier of the periodic product total for a nonnegatively
+graded DG-algebra.  The first index is Hochschild degree and the second is
+internal degree; the cyclic column is `dgPeriodicCyclicColumn n j`. -/
+def dgPeriodicCyclicTotalDegree (_n : ℤ) :=
+  (j : DGPeriodicCyclicTotalIndex) →
+    ↥(dgHochschildBidegree k A 𝒜 j.1 (j.2 : ℤ))
+
+/-- Periodic-total signs for cyclic column `i` and Hochschild degree `q`.
+These are the same three-direction signs as in the ordinary total. -/
+def dgPeriodicCyclicTotalDifferentialSigns (i : ℤ) (q : ℕ) : ℤ × ℤ × ℤ :=
+  (1, (i.negOnePow : ℤ), ((i + q).negOnePow : ℤ))
 
 end LeanCategories.Homological

@@ -39,29 +39,14 @@ namespace LeanCategories.Homological
 
 open CategoryTheory Limits
 
-/-!
-## Acyclic objects for a functor
--/
+/-- An object `X` is right-acyclic for an additive functor `F` when every
+positive right-derived functor vanishes on `X`.
 
-/-- An object `X` is **acyclic** for the functor `F` if all higher right
-    derived functors vanish at `X` (Weibel, Def. 5.8.2).
-
-    Explicitly, `IsAcyclicFor F X` holds when `R^i F(X) ≅ 0` for every
-    `i > 0`. -/
-def IsAcyclicFor {C D : Type*} [Category C] [Category D] [Abelian C]
+Hartshorne, *Algebraic Geometry*, III.1, p. 205 (FC06-C03-U015). -/
+def IsRightAcyclic {C D : Type*} [Category C] [Category D] [Abelian C]
     [HasInjectiveResolutions C] [Abelian D]
     (F : C ⥤ D) [F.Additive] (X : C) : Prop :=
-  ∀ n > 0, IsZero ((F.rightDerived n).obj X)
-
-/-- An object `X` is **coacyclic** for the functor `F` if all higher left
-    derived functors vanish at `X` (dual to Weibel, Def. 5.8.2).
-
-    Explicitly, `IsCoacyclicFor F X` holds when `L^i F(X) ≅ 0` for every
-    `i > 0`. -/
-def IsCoacyclicFor {C D : Type*} [Category C] [Category D] [Abelian C]
-    [HasProjectiveResolutions C] [Abelian D]
-    (F : C ⥤ D) [F.Additive] (X : C) : Prop :=
-  ∀ n > 0, IsZero ((F.leftDerived n).obj X)
+  ∀ i : ℕ, 0 < i → IsZero ((F.rightDerived i).obj X)
 
 /-!
 ## Cohomological dimension of a functor

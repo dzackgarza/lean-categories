@@ -55,6 +55,13 @@ def HasHomotopyExtensionProperty {A : Type u} {B : Type v}
       ∃ G : C(B × unitInterval, Y),
         (∀ b, G (b, 0) = f b) ∧ ∀ (a : A) (t : unitInterval), G (i a, t) = H (a, t)
 
+/-- Hatcher's homotopy extension property for a pair `(X, A)` (FC07-C00-U034):
+the subspace inclusion `A ↪ X` has the homotopy extension property for every target space. -/
+def PairHasHomotopyExtensionProperty (X : Type u) [TopologicalSpace X] (A : Set X) : Prop :=
+  ∀ (Y : Type w) [TopologicalSpace Y],
+    HasHomotopyExtensionProperty
+      (⟨Subtype.val, continuous_subtype_val⟩ : C(A, X)) Y
+
 /-- A Hurewicz cofibration is a continuous map having the homotopy extension property with respect
 to every target space.  This is the topological arrow-dual of a Hurewicz fibration, not a
 model-category cofibration.

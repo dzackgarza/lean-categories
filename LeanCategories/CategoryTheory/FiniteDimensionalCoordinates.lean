@@ -163,6 +163,16 @@ def coordinates : BasedFDVect k ⥤ _root_.CategoryTheory.Mat k where
     intro y hy
     exact mul_comm _ _
 
+def matrixBasedComparisonData :
+    (_root_.CategoryTheory.Mat k ⥤ BasedFDVect k) ×
+      (BasedFDVect k ⥤ _root_.CategoryTheory.Mat k) :=
+  (matrixToBased k, coordinates k)
+
+def basedUnbasedComparisonData :
+    (BasedFDVect k ⥤ FGModuleCat.{u} k) ×
+      (FGModuleCat.{u} k ⥤ BasedFDVect k) :=
+  (forget k, chooseBasis k)
+
 end BasedFDVect
 
 end LeanCategories.CategoryTheory

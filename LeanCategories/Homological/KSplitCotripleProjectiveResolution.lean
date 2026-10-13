@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Homological.CotripleProjective
 public import LeanCategories.Homological.KSplitComplex
+public import Mathlib.CategoryTheory.Monad.Basic
 public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
 
 /-!
@@ -45,7 +45,8 @@ structure KSplitCotripleProjectiveResolution
   /-- It is genuinely a resolution. -/
   quasiIso : QuasiIso augmentation
   /-- Every term is projective relative to the cotriple. -/
-  cotripleProjective : ∀ n : ℕ, T.IsCotripleProjective (complex.X n)
+  cotripleProjective : ∀ n : ℕ,
+    ∃ s : complex.X n ⟶ T.obj (complex.X n), s ≫ T.ε.app (complex.X n) = 𝟙 (complex.X n)
   /-- The augmented resolution is split exact after restriction to `k`. -/
   kSplit : IsKSplitAugmentedResolution k R complex M (augmentation.f 0)
 

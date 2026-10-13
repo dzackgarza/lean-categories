@@ -106,6 +106,15 @@ All frozen corpus-v1 sources already have full-book Markdown extractions availab
 
 No Sweep-I source-acquisition task is presently required for FC01–FC12. If one of these files proves corrupt or incomplete during traversal, repair/re-extract that same pinned source; do not substitute another edition or silently change corpus scope.
 
+**FC11 source-access recovery, 2026-09-22:** the Zotero extraction above is
+absent on the continuation host. The author's original PDF at
+<https://www-fourier.univ-grenoble-alpes.fr/~peters/Books/QuadraticForms/QuadForms.pdf>
+is labeled **Version JUNE 2024** and is an available route to the admitted
+text. Its exact hash and recovery comparison are recorded in
+`provenance-contract-for-fc11-c09.md`. Use printed page locators for this
+PDF; the extraction's line numbers do not apply to it. This changes neither
+the source edition nor the admitted units.
+
 The four v2 sources have local PDFs but **no** Markdown extraction. Each requires a Sweep-I source-acquisition task — extract the pinned PDF and verify the extraction reaches a terminal index — before it can be catalogued.
 
 | ID     | Source PDF                                                                                                                            | Extraction status                                                                                                                                                                        |

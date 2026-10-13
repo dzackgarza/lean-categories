@@ -40,18 +40,4 @@ def normalizedAntisymmetrizationPure {n : ℕ} (r₀ : R) (a : Fin n → R) :
     DeRhamDegree k R n :=
   algebraMap ℚ R ((n.factorial : ℚ)⁻¹) • deRhamPureForm k R r₀ a
 
-/-- A realization of Weibel's normalized antisymmetrization map
-`e : R ⊗_k R^{⊗ n} → Ω^n_{R/k}`.
-
-The `map_pure` field is exactly the defining formula.  Compatibility with the
-Hochschild differential and the Hodge projector is theorem-layer content. -/
-structure HochschildAntisymmetrizationRealization (n : ℕ) where
-  /-- The normalized antisymmetrization in Hochschild degree `n`. -/
-  map : ModuleCat.of k (HochschildChainDegree (k := k) (R := R) (M := R) n) ⟶
-    ModuleCat.of k (DeRhamDegree k R n)
-  /-- The map has Weibel's normalized formula on pure Hochschild chains. -/
-  map_pure : ∀ (r₀ : R) (a : Fin n → R),
-    map (hochschildChainPure (k := k) (R := R) (M := R) r₀ a) =
-      normalizedAntisymmetrizationPure k R r₀ a
-
 end LeanCategories.Homological

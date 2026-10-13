@@ -21,4 +21,5 @@ project_id: github.com__dzackgarza__lean-categories
 - Result: 0 positive routes and 9 dated `unmatched` rows.
 - Targeted searches found no compatible Lean implementation of the appendix's algebraic/compact-complex surface classification layer. Generic algebra, topology, Frobenius, group-action, manifold, or bilinear-form infrastructure is only partial.
 - `N=2026-09-07` marks dated unmatched decisions; strict whole-row semantics apply uniformly.
+- **First-pass definitional adjudication (2026-09-15):** A-U003/A-U004/A-U006/A-U007 remain `[negative-search-complete]`. Current hosted searches found no positive-characteristic K3 lifting package, characteristic-two Enriques canonical-cover/quasi-elliptic implementation, Frobenius-on-`H¹(O_S)` Enriques predicates, or quasi-bielliptic quotient. The generic characteristic-p/Frobenius/group-scheme/elliptic ingredients do not supply the missing surface and quotient/cohomology carriers. The old strict-bundle rationale is superseded for these definition/mixed rows only.
 

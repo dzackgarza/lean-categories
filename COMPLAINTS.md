@@ -1,5 +1,11 @@
 # Mathematical issues and papercuts
 
+### FC05-C09-U149/U150 require the later Koszul sign, not the ordinary weight-graded cyclic operator
+
+- **Need:** the last Hochschild face and cyclic rotation must be chain maps for the internal tensor differential.
+- **Evidence:** Weibel 9.9.10 initially refers on p.359 to the ordinary graded cyclic module; the continuation on p.360 explicitly inserts the sign `(-1)^(a_q(a₀+⋯+a_(q−1)))` in the last face and rotation. These conventions cannot be identified without correction. For the free graded algebra over Q on x of degree 1 and y of degree 0, with dx=y and dy=0 extended by graded Leibniz, the unsigned differential has b₁(x⊗x)=0 but b₁∂(x⊗x)=2(yx−xy)≠0. Distinct free words are linearly independent. The signed last face instead gives b₁(x⊗x)=2x² and restores ∂b=b∂ on this specimen. The differential squares to zero on the free algebra because its square is a derivation vanishing on both generators.
+- **Repair:** the U149/U150 catalogue and canonical mapping now retain p.360's sign and explicitly compare all chain, cyclic and totalization laws. No unsigned U137-to-DG identification is credited. The two local `DGHochschildHomology.lean` / `DGCyclicHomology.lean` files still supply their realizations as fields; they remain unaccepted realization residue for the existing State-2 obligations, not definitions verified by this State-1 mapping. The interpretation of the preliminary d=0 warning must likewise not erase the distinction between signed graded and ordinary ungraded Hochschild complexes.
+
 Capture issues as they arise under [LC-05](CONTRIBUTING.md#lc-05--record-mathematical-issues-and-papercuts-when-encountered).
 Use this file for unresolved observations; [TODO.md](TODO.md) and its linked
 sweep records own execution dependencies and completion. Entries are not a
@@ -466,6 +472,40 @@ not a decidable quotient equality or a new mathematical comparison.
   `Modules/Quadratic/Valued/BaseChange.lean` uses it with no hypothesis on `2`, with the identity
   and composition comparisons. A characteristic-2 specimen (`ℤ → ℤ/2`) is in that file.
 
+### FC11-C05-U052 mapping replaced the source presentation by an unbridged characterization
+
+- **Need:** Definition 5.4.1 requires a central algebra with a quadratic-extension symbol presentation: in characteristic different from two, `D = K + K j`, `K = k[i]`, `i²,j² ∈ kˣ`, and `jz = z* j`.
+- **Evidence:** Peters--Sterk, printed pp.136--137/PDF pp.142--143, gives these clauses explicitly and then derives `ij=-ji` and the notation `(a,b)_k`. Its second bullet literally calls `D` a skew field, but the immediate split example declares `M₂(k)` a quaternion algebra and the later U059 discussion separately characterizes when a quaternion algebra is a division algebra. The former canonical mapping instead cited FLT commit `81d8bee0f708ac41cb975da76ed3c43ad99fae72`, whose `FLT/Mathlib/Algebra/IsQuaternionAlgebra.lean::IsQuaternionAlgebra` has only `IsSimpleRing D`, `Algebra.IsCentral k D`, and `Module.rank k D = 4`.
+- **Gap and impact:** central-simple-rank-four is an abstract characterization of a supplied algebra, while the source definition includes the generators-and-relations presentation consumed by U053--U057. Crediting the FLT class without a checked structure theorem reversed that dependency and left those consumers without generators. Reading the isolated “skew field” phrase as a `DivisionRing D` requirement would instead exclude the source's own split example. Mathlib's concrete `QuaternionAlgebra k a 0 b`, `QuaternionAlgebra.Basis.self`, and `basisOneIJK` directly supply the intended source presentation for existential nonzero parameters, so no classification theorem or division assumption belongs in Sweep III.
+- **Coverage:** **Searched:** the complete pinned FLT files with quaternion, central, or simple in their paths; pinned Mathlib's `Quaternion.lean` and `QuaternionBasis.lean`; the local project. **Found:** the FLT characterization and Mathlib's complete concrete symbol presentation, but no theorem from the former to the latter. **Conclusion:** FLT is partial characterization evidence only; the source predicate must use the native existential presentation. **Confidence:** high for the pinned revisions and local tree. **Gaps:** this is not a claim that no such classification theorem exists in every external formalization.
+- **Repair link:** `FC11-C05-U052`; the canonical mapping now records the native presentation route and the source inconsistency, and `LeanCategories/ForMathlib/QuaternionAlgebraPresentation.lean` exposes centrality and the existential symbol presentation without proving the classification theorem or requiring a division ring.
+
+### FC09-C04-U012 conflates topological-space and topological-group direct limits
+
+- **Need:** preserve Neukirch's actual directed-limit quotient and group law without asserting that the final topology from the preceding topological-space construction automatically makes that group a topological group.
+- **Evidence:** FC09-C04-U011 defines the inductive limit as the quotient of the disjoint union by eventual equality, with its topological-space quotient/final topology. U012 then puts the expected group law on the same quotient and states that the result is a topological group. Pinned Mathlib's `DirectLimit.setoid`, `exists_eq_mk₂`, and `Algebra/Colimit/DirectLimit.lean` `Group` instance prove the algebraic construction and representative independence exactly. The continuity assertion is false in this generality: Banakh--Repovš, *Direct limit topologies in the categories of topological groups and of uniform spaces*, arXiv:0911.3985, pp. 1--2, distinguish the direct limit in topological spaces from the direct limit in topological groups and record that multiplication on the former need not be continuous. Their criterion already gives towers of metrizable closed subgroups for which the two topologies differ.
+- **Gap and impact:** the former U012 mapping treated absence of a general Mathlib colimit for internal groups in `TopCat` as missing Definition-stage mathematics. That asks Sweep III to realize an unqualified false continuity claim. The correct definitional owner is the native algebraic directed limit on U011's quotient; the source's continuity sentence is a separate defective result clause unless additional hypotheses are supplied. U013's universal property must likewise distinguish the topological-space final topology from the categorical colimit in topological groups rather than using one as the other without proof.
+- **Coverage and repair:** the exact U011--U013 catalogue clauses, pinned directed-limit quotient/group implementation, `GrpLimits` projective-limit support, and the cited direct-limit literature were checked. The canonical U012 mapping now reuses the native group construction and leaves the continuity assertion visible as a source defect. Do not alter the frozen source quotation, add unstated hypotheses, or manufacture a new topological-group construction to make the sentence true.
+- **Repair link:** FC09-C04-U012 and the following U013 comparison. Later realization may use the native directed algebraic limit; any topological-group statement must either carry hypotheses under which the final topology is compatible or explicitly use the distinct colimit topology in the category of topological groups.
+
+### FC05-C09-U162's primitive subcomplex needs a chain-level distinguished element
+
+- **Need:** interpret the distinguished 1 and primitive-subcomplex assertion in Weibel 9.10.8, pp.365–366, without silently changing the source's generality.
+- **Evidence:** the printed DG-coalgebra definition requires ε and Δ to be chain maps, while the primitive calculation also uses d1=0. The local `DifferentialGradedCoalgebra.lean` only asks for an arbitrary `[One H]` and then supplies primitive preservation as an extra hypothesis. The canonical U162 comparison now contains a four-dimensional Q-coalgebra satisfying coassociativity, both counit laws, d²=0 and both chain-map laws, with a degree-zero counital grouplike e chosen as 1, but with primitive y and nonprimitive dy. Exact tensor-basis calculations verify every claimed law.
+- **Scope and repair:** the source's exterior and coinvariant examples are nonnegative and have d1=0. The generic integer-graded reading is not justified by those examples. Resolve whether the prose implicitly requires a DG-coaugmentation or another condition forcing d1=0; do not substitute that additional hypothesis without recording it. The native exterior diagonal and coinvariant descent are independently recovered in U162 using `CliffordAlgebra.prodEquiv` at zero quadratic forms. U162 remains open in State 1 for the full source comparison; no arbitrary-One realization is accepted and no Lean implementation was changed.
+
+### FC08 standard symplectic matrix sign
+
+- **Need:** FC08-C22-U003/U009/U015 must retain Lee's convention `omega = sum_i dx_i wedge dy_i`, including `omega(A_i,B_j)=delta_ij`.
+- **Evidence:** pinned `Mathlib/LinearAlgebra/SymplecticGroup.lean::Matrix.J` is `fromBlocks 0 (-1) 1 0`; `Matrix.toBilin'_apply'` evaluates it as `v dot (J*w)`. Hence Lee's matrix in grouped x/y coordinates is `-J`. The inherited U003/U009 records instead identified it with J.
+- **Repair:** the 2026-09-17 Chapter 22 mapping revision corrects the sign and basis grouping in U003/U009/U015. Alternation and nondegeneracy remain native. No Lean implementation was changed in this State-1 correction; later cotangent/Hamiltonian realization must preserve the recorded sign.
+
+### FC07 relative homotopy reference omits the group structure
+
+- **Need:** `FC07-C04-U007`, Hatcher pp. 343–344, includes relative cube concatenation, group laws for n≥2 and commutativity for n≥3; U008 and U011 use this structure.
+- **Evidence:** LeanPool `WhiteheadTheorem/RelHomotopyGroup/Defs.lean` at both the cited `3fc79f0a` and current `749a5ba6` explicitly constructs only a pointed quotient set. Its `Algebra.lean` and `LongExactSeq.lean` supply pointed maps and pointed-set exactness, not the omitted algebra.
+- **Repair:** the false complete-group mapping and omitted catalogue clauses were corrected during the 2026-09-17 open-ended search. State-2 U007 must reuse the checked quotient and complete its relative algebra before group-valued consumers; neither a new quotient nor a pointed-set weakening discharges this obligation. The search scope and retained references are in the canonical U007/U011 rows.
+
 ### `IsJordanCanonicalInBasis` weakens the chosen-basis Jordan condition
 
 - **Need:** FC01-C12-U039 defines a Jordan canonical form for a linear transformation as a basis in which the representing matrix itself is block diagonal with Jordan blocks.
@@ -614,9 +654,9 @@ not a decidable quotient equality or a new mathematical comparison.
   Sweep-III gates. Examples include Construction 5.9.9 blocked by Proposition
   5.9.2, Construction 6.8.3 blocked by the LHS spectral-sequence theorem, and
   DG-Hochschild construction 9.9.10 blocked by Goodwillie's theorem. This is
-  incompatible with the repository invariant that Definitions close before
-  theorem work opens: theorem-only prerequisites may motivate or prove a later
-  property of the construction, but cannot be required to state its definition.
+  an overbroad use of catalogue edges: those particular results motivate or prove
+  later properties rather than supply the specified construction. The theorem label
+  alone does not establish this; a construction can need a supporting theorem.
 - **Coverage:** the named false positives, the newly restored
   `[definition-only]` rows, and the regenerated FC05 frontier were checked
   directly against the canonical catalogue/mapping records. This is not a
@@ -648,10 +688,15 @@ not a decidable quotient equality or a new mathematical comparison.
   source-unit label separately from its descriptive title, honors explicit
   `[definition-only]` mapping evidence for mixed/nonstandard labels, and records
   the audited result-only `FC05-C05-U049` exception. For audited FC05 Sweep III,
-  dependency blocking now ignores prerequisites that carry no definitional
-  content while retaining mixed/definition prerequisites as real blockers.
-  Keep future exceptions source-grounded and do not infer theorem obligations
-  from definition-sweep progress.
+  dependency blocking ignores contextual theorem edges while retaining definition
+  edges and explicit `Construction prerequisites:` in canonical mapping rows.
+  `FC05-C10-U085` exposed the missing distinction: its catalogue edge points to
+  theorem U083, but its mapping requires the still-unrealized RHom object U081.
+  The scheduler had returned no blockers. The regression in
+  `tests/test_foundational_frontier.py` exercises that real parsed case, an explicit
+  theorem prerequisite, and independent de Rham readiness. Ordinary provenance
+  citations stay inert; malformed or unknown explicit prerequisite IDs fail loudly.
+  This repair preserves construction inputs without opening unrelated theorem work.
 
 ### FC03 source manifest points to a missing extracted source file
 
@@ -659,6 +704,7 @@ not a decidable quotient equality or a new mathematical comparison.
 - **Evidence:** `corpus/foundational-source-corpus.md` records FC03 at `/home/dzack/Zotero/storage/NQXEU8HD/local-write-api-1783451282930-TIDLVIT4_extracted.md`, but that path does not exist on the current host; `/home/dzack/Zotero` itself is absent. The canonical FC03 catalogue remains available and identifies the affected units, including `FC03-C01-U060`, `FC03-C06-U034`, and `FC03-C06-U035`.
 - **Gap and impact:** the manifest's asserted direct-source path cannot currently be used for the required clause-by-clause source comparison. Existing catalogue statements can guide continuation, but they are not a substitute for restoring the admitted extraction path.
 - **Coverage:** checked the exact manifest path and `/home/dzack/Zotero`; no replacement extraction was found by the bounded host search attempted during this work. Confidence high that the recorded path is stale on this host; the location of any relocated copy is unknown.
+- **FC11 continuation evidence (2026-09-22):** the same absent `/home/dzack/Zotero` root also defeats the manifest's pinned Peters--Sterk extraction. This became material at `FC11-C09-U005`: the canonical catalogue/site retained only the phrase “reduced discriminant” and omitted formula (9.2), while the surrounding U003--U004 source rows and the accepted mapping retain the normalized-determinant/first-elementary-divisor construction. The unit was therefore not guessed closed: only that proof-free data was transcribed, and the actual invariant remains blocked on U003/U004 plus restoration of direct source access for any stronger clause comparison.
 - **Repair link:** corpus source acquisition/manifest maintenance. Resolve by restoring the admitted FC03 extraction or updating the manifest to its verified relocated path without changing source scope or edition.
 
 ### Lean pre-commit gate serializes hours of whole-repository audits before banking a focused unit
@@ -1251,3 +1297,192 @@ the selected `RingCat R` and the canonical Mathlib self-module structure
 additive group and multiplication as scalar action. This exposes the existing
 canonical mathematical object without selecting a replacement carrier, basis,
 coordinate presentation or value module for any formed object.
+
+### FC05-C08-U069 and U060 overstated the scalar-extension adjunction's generality
+
+- **Need:** Weibel 8.6.12 permits an arbitrary ring homomorphism k→R, and 8.6.3 permits an arbitrary group G. Neither requires commutativity of the target ring.
+- **Evidence:** pinned `ModuleCat.extendRestrictScalarsAdj` in `Mathlib/Algebra/Category/ModuleCat/ChangeOfRings.lean:885` requires both `[CommRing R]` and `[CommRing S]`. The old U069 route cited it for arbitrary rings; U060 applied it to ℤ[G], which need not be commutative. `LeanCategories/Homological/RelativeBarResolution.lean` likewise has commutative-ring parameters.
+- **Mapping repair, 2026-09-17:** U069 now retains the full arbitrary-ring obligation and identifies the actual noncommutative tensor/left-action/universal-property implementation in Mathlib PR #8638 at `50bf8ebbc306bae0c21ecb3203b131455fa784a7`. Its canonical row gives the induction functor, inverse Hom bijections and naturality, then applies the separately mapped generic cotriple construction. U060 specializes this owner rather than falsely citing the commutative-only adjunction; its genuine native standard/bar resolutions remain credited.
+- **Realization boundary:** this is State-1 provenance correction, not acceptance of the existing commutative-only project implementation or a claim that the old reference branch has been imported. Sweep III must realize the recorded general route without modifying the source to fit the old implementation.
+- **Repair links:** FC05-C08-U060/U069 and their existing Chapter 8 mapping; the relative Tor/Ext rows continue to depend on U069 rather than introducing duplicate induction constructions.
+
+### FC05-C09-U086's unsigned cyclic norm defeats the Tsygan realization
+
+- **Need:** Weibel 9.6.6, p.333, uses the cyclic-group generator T_q=(-1)^q t_q and the norm N_q=Σ_(j=0)^q T_q^j. Both horizontal composites with 1−T_q must vanish.
+- **Evidence:** `CyclicOperators.lean::cyclicNorm` instead sums powers of the unsigned t_q. `TsyganBicomplexRealization.horizontal_norm` uses that value, while its difference map already uses 1−(-1)^q t_q. For the constant cyclic object on the additive group of integers at q=1, both displayed horizontal maps would be 2 id and their composite would be 4 id, not zero. With the source norm 1−t_1, the composite is zero.
+- **Mapping repair, 2026-09-17:** corrected the canonical U086 formula and rejected the false exact project route. U087 now records the native bicomplex constructor with the signed norm, both square-zero laws, both cyclic commuting identities, and the stored-commuting/source-anticommuting sign comparison. The source catalogue retains the sign and all intrinsic laws explicitly.
+- **Realization boundary:** no Lean source was edited or accepted during State 1. The existing unsigned owner and its dependent realization records remain to be repaired at their mathematical owners in Sweep III; the corrected mapping must not be implemented by importing those definitions unchanged.
+- **Repair links:** FC05-C09-U086/U087; `LeanCategories/Homological/CyclicOperators.lean`, `TsyganBicomplex.lean`, and downstream periodic/Connes constructions consuming their norm.
+- **Follow-on U090/U154 source check, 2026-09-17:** `CyclicCoinvariantComplex.lean` also takes the image of 1−t_n for the unsigned U082 rotation. In degree one this would require b₁(x⊗y−y⊗x)=2(xy−yx) to vanish, false in Q⟨x,y⟩. U090 now uses the actual cokernel of 1−(−1)^n t_n, with its native chain-cokernel and quotient-map construction; its previously omitted definitional content is restored at the same source ID. Visual reading of Weibel p.362 additionally confirms an overall (−1)^p in λ_p, absent in `lieCyclicLambdaRaw`. U154 now constructs the correct map by native full alternatization scaled by (−1)^p/(p+1) and the exterior-power universal property. The existing Lean files remain unaccepted realization residue to repair under the existing State-2 nodes, not implementations accepted by these mapping corrections.
+
+### FC05-C09-U083 omitted the cyclic set needed by U103
+
+- **Evidence:** Weibel Example 9.6.2, p.331, constructs ZG, its faces/degeneracies/rotation, the inclusion BG→ZG, and k(ZG)≅Z(kG). The old source row retained only the formula for the cyclic operator on BG and was classified as a non-definitional example. U103 then cited algebraic tensor rotation U081 instead of its actual cyclic-set prerequisite.
+- **Repair, 2026-09-17:** restored the full construction at the existing U083 ID, classified the mixed example/construction as definitional, and mapped it through the already routed simplex-presentation constructor with native integral tensor-basis injectivity reflecting all operator laws. U103 now depends on that complete ambient cyclic set and records its invariant-subtype construction and source comparisons. No source IDs were added and no Lean was authored. The increased definition denominator reflects recovered source content, not new corpus scope.
+
+### FC05 cyclic/mixed-structure prerequisites confused motivation with construction
+
+- **Evidence:** U082's intrinsic cyclic-object definition was made dependent on its motivating Hochschild example U081. U113's intrinsic mixed-complex definition was made dependent on the Connes construction U112. Reusing the already existing structure owners to construct those examples then produces false dependency cycles.
+- **Repair, 2026-09-17:** U082 now depends on simplicial objects C08-U001; U113 depends on chain complexes C01-U001. The motivating examples are not mathematical prerequisites of their data-and-axioms definitions. U112's canonical row now supplies the actual contraction, signed operator, both mixed identities including degree zero, and the componentwise sign isomorphism to the source bicomplex. Its old supplied-identity and unsigned-norm realizations remain unaccepted; no Lean source was changed.
+
+### FC05-C09-U124 placed the algebraic de Rham complex over the wrong ring
+
+- **Evidence:** `AlgebraicDeRham.lean::DeRhamComplexRealization` requires a `CochainComplex (ModuleCat R)` and R-linear degree isomorphisms. Its source formula implies d(1)=0. For R=ℚ[X], R-linearity would therefore imply d(X)=X d(1)=0. But the ordinary polynomial derivation takes X to 1 (`Polynomial.derivative_X`) and factors through the universal Kähler differential, so dX is nonzero. The proposed realization excludes this intended example.
+- **Mapping repair, 2026-09-17:** the complete external differential, degree restriction and square-zero proofs in `Paul-Lez/HodgeConjecture@463afeff030c16e14e9e995b7dc35adb621d0bda` give an exact reference route. The mapping and source catalogue now specify the complex and its cohomology in `ModuleCat k`, while its form objects remain exterior powers over R. The differential is genuinely k-linear and satisfies the source formula without supplied realization fields.
+- **Realization boundary:** State 1 changes only the source/mapping records. The local wrong-ring structure, cohomology codomain and semantic dependents must be corrected at their owners before Sweep-III acceptance; no Lean file was edited or accepted here.
+
+### FC05-C09-U118's printed normalization argument uses a false auxiliary claim
+
+- **Source check:** the actual printed p.346 of Weibel 9.8.4, not just its OCR, asserts that the degenerate subcomplex D is preserved by cyclic rotation t. For the Hochschild cyclic module of R=ℚ[X], D₁ consists of sums of a⊗1. Rotation takes X⊗1 to 1⊗X. The ℚ-linear map a⊗b↦a·b' kills D₁ and takes 1⊗X to 1, disproving that assertion.
+- **Mathematical repair, 2026-09-17:** U118's mapping proves the actually needed B(D)⊆D from the explicit three-case formulas for t^jσ_i and the extra-degeneracy identities. Native quotient maps then descend both b and B and all mixed laws, with no t-invariance premise. The normalized construction and its source comparison obligations are retained.
+- **Catalogue repair:** the existing Application 9.8.4 ID now explicitly carries its omitted construction content, rather than being absent from the definitional index. No source unit was added and no Lean was authored. U130 must use this normalized mixed object, not an unnormalized or caller-supplied replacement.
+
+### FC05-C09-U130 confused normalized Hodge pieces with a narrower supplied realization
+
+- **Evidence:** Weibel p.352 constructs the Hodge pieces of the normalized mixed complex over k, with Q⊂R. `CyclicHodgeDoubleComplex.lean::HodgeConnesDoubleComplexRealization` instead supplies a bicomplex whose stated degree objects are images on unnormalized tensors over Q. Its source catalogue also made Lemma 9.8.15 depend on U130, reversing the dependency explicitly stated in the paragraph.
+- **Mapping/source repair, 2026-09-17:** restored the normalized quotient prerequisite U118, retained the base k in all tensor/restriction constructions, and recorded the actual image restrictions and bicomplex laws at U130. The U132 lemma now feeds U130 and retains its own proof obligation. The local supplied realization is not accepted by this comparison; its source and semantic dependents remain untouched during State 1.
+
+### FC05-C09-U137 supplied only positive-weight spans, not the source graded cyclic object
+
+- **Evidence:** `HochschildWeightGrading.lean` fixes the grading and weight index to ℕ and only supplies degreewise spans. Weibel p.354 begins with a general graded algebra and only specializes to positive grading on p.355. The source construction also requires an actual direct-sum grading and cyclic submodules; those are not supplied by the local span definitions.
+- **Mapping/source repair, 2026-09-17:** the native tensor-of-direct-sums equivalence and reindexing by the total-degree fibre construct the full grading, including negative weights. Explicit degree calculations give all cyclic restrictions and their laws; the finite-support cycle/boundary argument gives the homology decomposition. The unchanged positive-weight local file is not credited as the general realization, and a Koszul-signed braiding is not substituted for this paragraph's ordinary cyclic rotation.
+
+### FC05-C10-U081 restricted the RHom target and overlooked generic derivability
+
+- **Evidence:** Definition 10.7.2 on Weibel p.399 fixes any complex A and defines R⁺Hom(A,−):D⁺(C)→D(Ab). The previous mapping instead required a D⁺-valued output and considered only the narrower `rightDerivedFunctorPlus` constructor.
+- **Correction:** the canonical source and mapping now retain the unbounded target. Pinned `DerivabilityStructureInjectives.lean` already supplies a right derived functor for every functor from `HomotopyCategory.Plus C`, with its unit invertible on bounded-below injective complexes. The mapping gives the Hom-functor descent using the actual cochain Leibniz and homotopy identities, then applies that theorem.
+- **Boundary:** this repairs the State-1 route; it does not assert a local RHom implementation or discharge U082/U083.
+
+### FC05 spectrum constructions omitted by non-definitional source labels
+
+- **Evidence:** Weibel pp.408–411 explicitly constructs the sphere spectra, spectrification, coproduct spectra and suspension spectra. U102/U108/U109 were labelled only Example, and U105 had an unrecognized numeric label. All four were absent from the generated definition index, although U106/U110 already required their constructions.
+- **Correction:** retain the four source IDs and restore their construction kinds and exact clauses. U108/U109 and the cylinder-specific U110 construction have explicit native comparisons over the separately catalogued spectrification/adjunction; U102/U105 remain visible State-1 search obligations. The CW colimit formula is not imposed on general prespectra.
+
+### FC05-C10-U116 needs the correct suspension comparison and homotopy triangle
+
+- **Concrete failed comparison:** with the project's left-coordinate reduced suspension, the level cone structure followed by its usual collapse gives [t,σ(s,x)], while the untwisted U109 suspension gives [s,σ(t,x)]. For the spherical prespectrum beginning S⁰→ΣS⁰ and the map to zero, s=1/3 and t=2/3 give distinct noncollapsed classes. This disproves the proposed generic connecting-map assembly, not the existence of a Puppe construction. Malkiewich's Definition 2.3.6 and p.101 footnote 1 explicitly identify the required suspension-coordinate interchange. U116 retains the needed comparison rather than silently changing the source convention.
+- **Wrong local interface:** Weibel pp.412–413 restricts cofibration sequences to triangles in K(S_CW), up to triangle isomorphisms there. `SpectrumCofibrationDiagram.Iso` instead requires strict spectrum isomorphisms and independently supplies the fourth isomorphism. The catalogue and mapping now preserve the homotopy-category and suspension-induced last-component requirements. The local Lean records remain unaccepted realization work in State 1.
+
+### FC05-C10-U120 supplied the wrong shifts and skipped spectrification
+
+- **Source:** Weibel p.415 uses the CW prespectrum with levels |Γτ_{≥0}(A[−n])|, then applies spectrification. Translation 1.2.8 gives (A[−n])_i=A_{i−n} and the sign (−1)^n.
+- **Defeated local model:** `GoodTruncationStage.shiftedDegreeIso` instead requires A_{i+n}, while `ChainComplexSpectrumRealization.levelIso` identifies these raw realizations with strict spectrum levels. For A=ℤ concentrated in degree zero, those data force level zero to be discrete ℤ and level one to be a point. The required level-zero homeomorphism to the loop space of level one is impossible. The actual cellular bonding maps and the subsequent spectrification cannot be replaced by these supplied fields.
+- **Source/mapping correction:** retain the correct shifts, native cycle-valued truncations and Dold–Kan stages, and leave the actual cellular prespectrum construction open. U020/U021's explicit truncation/translation definitions were also omitted from the definition index by their noun-only labels; their constructive kinds and exact source/native comparisons are restored. No local Lean declaration is accepted or edited in State 1.
+
+### FC13 Chapter 18 duplicated incomplete Appendix-B envelope routes
+
+- The C06-U050/U057 negative mappings duplicated the already catalogued CB-U024/U025 constructions. The Appendix routes cited TauCeti predicates and uniqueness while explicitly leaving envelope existence and the minimal-resolution constructor open; those predicates do not supply either object.
+- The 2026-09-17 owner comparison now gives the full native maximal-essential-submodule/retraction construction at CB-U024 and the exact recursive minimal resolution at CB-U025. Their source IDs and all existence/uniqueness obligations are preserved. The B4 dependency is reversed only after its use is eliminated from the construction, so there is no circular existence claim. Chapter 18 reuses these owners; no Lean realization is accepted by the mapping changes.
+
+- The C06-U057 comparison additionally confused decomposition of injective terms with minimality. The corrected mapping uses essential successive embeddings from CB-U025 and counts the U054 prime-labelled summands without imposing finite multiplicities. U054 remains a separate, explicitly unresolved theorem prerequisite.
+
+### FC13-C09-U041 omitted the variable-fixing requirement
+
+The canonical source summary described all automorphisms congruent to the identity modulo t, without requiring them to fix t. Over A=k=Q, the automorphism t↦2t satisfies that congruence but restricts to the identity higher derivation on A, so the stated correspondence is not injective. The source summary and mapping now specify k-algebra automorphisms fixing t, retain infinite length, and prove the extension and both inverse laws through the native operator-series construction. This corrects the catalogue summary, not a claimed error in the printed source; no Lean realization is accepted here.
+
+### FC09 relative discriminant duplicated a later comparison obligation
+
+C01-U070 was held unmatched for lack of the norm-of-different comparison, while C03-U038 already intended the basis-generated ideal but cited the base-ring trace and integral/module bases. Both source statements use field bases of L/K contained in the integral closure, not module bases over the Dedekind base. The canonical mappings now share the exact native generator span, with integrality and unique descent proved in the comparison; C03-U039 and C03-U043 retain the full norm and ramification theorem obligations.
+
+### FC09-C01-U115 extraction confuses length additivity with multiplication
+
+The extracted source says module length is multiplicative on short exact sequences. The split sequence 0→κ→κ²→κ→0 has lengths 1,2,1, whereas the native owner `Module.length_eq_add_of_exact` proves the required additive identity. The canonical source now marks the extraction correction explicitly. The mapping uses that actual owner through `Ring.ordFrac` and does not attribute the erroneous word to an uninspected printed edition.
+
+### FC14-C03-U049 printed E8 parity condition conflicts with its displayed roots
+
+The [scanned p. 65 of Humphreys](https://djvu.online/jpg2/X/w/7/Xw7ovfkTWqu21/077.webp)
+requires `c + ∑ c_i` even for vectors `∑ c_i ε_i + (c/2)∑ ε_i`, then lists
+half-integral roots with an even number of minus signs. Its first simple root has
+`c=1` and six coefficients `c_i=-1`, so the printed condition excludes that root.
+`HumphreysE8RootModel.lean` uses `∑ c_i` even, agreeing with the displayed root list
+and base, and records the correction at the definition. The positive leading
+coefficient `1/2` of the first simple root was also checked against the scan; the OCR
+misreads it as a minus sign. No root-system or classification result is credited by
+this transcription.
+
+### FC11 Chapter 16 original source is unavailable on the continuation host
+
+On 2026-09-22 the recorded Peters--Sterk extraction under Zotero `ANG3AN65`
+was absent. The canonical Chapter-16 continuation records the compiled
+orientation definitions and the outstanding original-text comparison.
+The unit remains unaccepted; source access is not a theorem prerequisite.
+
+The U030 continuation checked the same absent extraction on 2026-09-22.
+Its canonical-divisor, half-canonical, and Riemann-constant data are transcribed
+from the recorded source clause and inspected pinned references, but remain
+unaccepted pending the original-text comparison. Target-pin checks were not
+started with only 423 MB available memory; this is not a passing check. The
+existing Chapter-16 handoff owns the exact declarations and validation debt.
+
+Source access was recovered on 2026-09-22 from the author's publication
+page: the linked PDF is explicitly labeled Version JUNE 2024. The exact
+download URL, SHA-256 and printed-page comparison are recorded in
+`corpus/provenance-contract-for-fc11-c09.md`. The Zotero extraction remains
+absent, but subsequent source comparisons can use this original-text route;
+they must not inherit source unavailability as a blocker. This resolves
+access, not the outstanding unit-specific checks or conformance comparisons.
+
+### FC11 period-domain mapping conflated two polarization conventions
+
+The 2026-09-22 source-interface read for C19-U021 found that the mapped
+TauCeti `Hodge.PeriodDomain.Point` is not the full K3 intersection-form
+period domain. Its `IsPolarization` requires Hodge--Riemann positivity on
+every component, with `i^(2p-n)` sign convention. The source instead uses
+positive isotropic period lines for the intersection form, with a
+Lorentzian `(1,1)` part. Neither copying the full-polarization predicate nor
+merely negating the entire K3 form gives the intended full-lattice carrier.
+
+The originally cited `bc404ebee90736d974da54ffd8fb7c7993d2f86d` file URL
+returned 404. The already recorded valid revision
+`f962d4a1e6a5eb6a87cd76a3900bc845df3f5950`, Apache-2.0, supplied the actual
+`Geometry/Hodge/{PeriodDomain,Polarization,Conjugation}.lean` definitions.
+The exact comparison and affected pending consumers are recorded in
+`corpus/chapter-19-application-to-moduli-of-k3-surfaces-fc11.md`.
+
+The repair constructs the source's native complexified projective-line
+locus in `Lattices/Valued/PeriodDomainData.lean` and specializes its
+positive-class, sublattice and integral-orthogonality definitions in
+`K3PeriodDomainData.lean`. Only the reference's tensor-conjugation data is
+adapted; no polarization theorem is introduced. Original-source acceptance
+and target-pin checks remain open; elaboration was not started with only
+320 MB available. The higher-dimensional plane and arithmetic quotient
+clauses are not credited by these line-level definitions.
+
+### FC11-C18-U030: printed unfolding map and discriminant ambiguity
+
+The original June-2024 Peters--Sterk PDF, printed p. 334, defines
+`F(z,u₀,u)=f(z)+u₀+Σu_j z^(B_j)` and displays
+`(z,u₀,u) ↦ (F(z,u₀,u),u)`. As written, the independent `u₀` direction
+supplies the first target coordinate and the other parameters supply the
+remaining coordinates. For the holomorphic family that ambient map cannot
+have the critical values needed for the following discriminant. The text
+also places a locus of critical points in the base rather than distinguishing
+it from its image. This is a source-map ambiguity, not a missing theorem to
+prove in Sweep III.
+
+The preceding family of zero hypersurfaces supplies a concrete definition
+route: construct `F=0`, take its points with zero differential in the `z`
+variables, and project to the parameter base. This preserves the displayed
+constant parameter and its sign. `Topology/HypersurfaceUnfoldingData.lean`
+records exactly those data with native `HasFDerivAt`; it does not use the
+always-submersive ambient map, assume a discriminant, or claim semiuniversality.
+The U030 mapping/handoff retains both the original display and the
+zero-hypersurface interpretation. Source acceptance is now against that
+coherent family interpretation, and focused target-pin validation is green;
+the printed ambient-map display remains recorded here as a source defect.
+C18-U035/U036 still need their actual geometric transport and vanishing-cycle
+constructions.
+
+### FC07-C04-U171/U173 require a singular-cohomology suspension owner
+
+Hatcher's Steenrod-square and odd-prime reduced-power definitions require
+compatibility with the canonical suspension isomorphism in singular
+cohomology. The 2026-09-25 State-2 support audit found no such owner in the
+project, pinned Mathlib, or the locally indexed/reference formalization
+material. U114 already supplies the Bockstein route and U019 supplies cup
+products, so suspension is the specific missing support. Supplying an
+arbitrary suspension map would weaken the definitions; constructing the
+canonical comparison requires result-level cohomology machinery. The
+canonical U171/U173 mapping rows therefore retain explicit
+`[sweep-iii-blocked]` status rather than manufacturing law proofs or a
+surrogate operation.

@@ -14,5 +14,8 @@ public import LeanCategories.Modules.Quadratic.Valued.Defect
 public import LeanCategories.Modules.Quadratic.Valued.Based
 public import LeanCategories.Modules.Quadratic.Valued.Presented
 public import LeanCategories.Modules.Quadratic.Valued.IsometryClasses
+public import LeanCategories.Modules.Quadratic.Valued.SemiDiscriminantData
+public import LeanCategories.Modules.Quadratic.Valued.WittRingData
+public import LeanCategories.Modules.Quadratic.Valued.RationalWittResidueData
 
 @[expose] public section

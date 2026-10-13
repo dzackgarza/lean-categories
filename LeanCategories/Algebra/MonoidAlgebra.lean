@@ -73,19 +73,39 @@ def augmentationGenerators (K : Type v) [Monoid K] : Set (MonoidAlgebra R K) :=
 
 end MonoidAlgebra
 
-
 namespace MonoidAlgebra
 
-universe u v
+universe v
 
-variable (R : Type u) [Ring R]
+/-!
+## Integral group rings
 
-/-- The norm element `N = ∑_{g ∈ G} g` of the group algebra `R[G]` for a finite group `G`.
-At `R = ℤ` this is Weibel, *An Introduction to Homological Algebra*, Definition 6.1.8,
-p. 163 (FC05-C06-U010).  Centrality and invariance are source result clauses and are not
-part of this definition. -/
-noncomputable def normElement (G : Type v) [Group G] [Fintype G] : MonoidAlgebra R G := by
-  classical
-  exact ∑ g : G, single g 1
+Serre's notation in *Local Fields*, Chapter VII, specializes the preceding
+monoid-algebra constructions to the integral group ring `ℤ[G]`.
+-/
+
+/-- The coefficient-sum augmentation `ℤ[G] → ℤ` used by Serre
+(FC10-C07-U020). -/
+noncomputable abbrev groupAugmentation (G : Type v) [Group G] :
+    MonoidAlgebra ℤ G →+* ℤ :=
+  augmentation ℤ G
+
+/-- Serre's augmentation ideal `I_G = ker(ℤ[G] → ℤ)` (FC10-C07-U020). -/
+noncomputable abbrev groupAugmentationIdeal (G : Type v) [Group G] :
+    Ideal (MonoidAlgebra ℤ G) :=
+  augmentationIdeal ℤ G
+
+/-- Serre's distinguished augmentation element `i_g = g - 1`
+(FC10-C07-U020). -/
+noncomputable def groupAugmentationGenerator (G : Type v) [Group G] (g : G) :
+    MonoidAlgebra ℤ G :=
+  single g 1 - 1
+
+/-- The raw set of Serre's elements `i_g = g - 1`.
+
+The assertion that these elements generate `I_G` is theorem content and is
+not part of this Sweep-III construction. -/
+noncomputable def groupAugmentationGenerators (G : Type v) [Group G] : Set (MonoidAlgebra ℤ G) :=
+  Set.range (groupAugmentationGenerator G)
 
 end MonoidAlgebra

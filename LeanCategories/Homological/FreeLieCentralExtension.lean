@@ -10,20 +10,20 @@ public import Mathlib.Algebra.Lie.IdealOperations
 public import Mathlib.Algebra.Lie.Quotient
 
 /-!
-# The central extension attached to a free Lie presentation
+# The quotients attached to a free Lie presentation
 
 Weibel, *An Introduction to Homological Algebra* (1994), Construction 7.9.1,
 pp. 248--249 (FC05-C07-U068).
 
 Choose a free Lie algebra `f` mapping onto `g`, and let `r` be its kernel.  Weibel
-forms the relative commutator ideal `[r,f]` and the central extension
+forms the relative commutator ideal `[r,f]` and the quotient map
 
-`0 → r/[r,f] → f/[r,f] → g → 0`.
+`f/[r,f] → g`.
 
-If `g` is perfect, Weibel then restricts to `[f,f]/[r,f]` and proves that this
-restriction is the universal central extension with kernel `H₂(g,k)`.  Those
-surjectivity, kernel-identification, and universality assertions are theorem-layer
-content and are deliberately not asserted here.
+If `g` is perfect, Weibel then restricts this map to the image of `[f,f]`.
+Centrality, surjectivity, exactness, kernel comparisons, the `H₂` identification,
+and universality are proposition/result content and are deliberately not asserted
+in this definition unit.
 -/
 
 @[expose] public noncomputable section
@@ -62,13 +62,6 @@ def lieIdealQuotientLift {L : Type v} {M : Type w}
         change f ⁅x, y⁆ = ⁅f x, f y⁆
         exact f.map_lie x y
 
-@[simp]
-lemma lieIdealQuotientLift_mk {L : Type v} {M : Type w}
-    [LieRing L] [LieAlgebra k L] [LieRing M] [LieAlgebra k M]
-    (I : LieIdeal k L) (f : L →ₗ⁅k⁆ M) (hI : I ≤ f.ker) (x : L) :
-    lieIdealQuotientLift k I f hI (LieSubmodule.Quotient.mk x) = f x :=
-  rfl
-
 /-- A free presentation `0 → r → f → g → 0` of a Lie algebra. -/
 structure FreeLiePresentation (G : Type v) [LieRing G] [LieAlgebra k G] where
   /-- Chosen free generators. -/
@@ -92,10 +85,6 @@ def relations : LieIdeal k (FreeLieAlgebra k P.Generators) :=
 def relationCommutator : LieIdeal k (FreeLieAlgebra k P.Generators) :=
   ⁅P.relations, (⊤ : LieIdeal k (FreeLieAlgebra k P.Generators))⁆
 
-/-- `[r,f]` is contained in `r`, so the presentation map kills it. -/
-lemma relationCommutator_le_ker : P.relationCommutator ≤ P.quotientMap.ker := by
-  exact LieSubmodule.lie_le_left _ _
-
 /-- The middle Lie algebra `f/[r,f]` of Construction 7.9.1. -/
 abbrev centralCover :=
   FreeLieAlgebra k P.Generators ⧸ P.relationCommutator
@@ -103,35 +92,26 @@ abbrev centralCover :=
 /-- The map `f/[r,f] → g` induced by the free presentation. -/
 def centralCoverProjection : P.centralCover →ₗ⁅k⁆ G :=
   lieIdealQuotientLift k P.relationCommutator P.quotientMap
-    P.relationCommutator_le_ker
-
-lemma centralCoverProjection_surjective :
-    Function.Surjective P.centralCoverProjection := by
-  intro g
-  obtain ⟨f, rfl⟩ := P.quotientMap_surjective g
-  exact ⟨LieSubmodule.Quotient.mk f, rfl⟩
-
-/-- The Lie-algebra extension determined by the surjection
-`f/[r,f] → g`.  Its kernel is canonically the image of `r`, i.e. the source
-model for `r/[r,f]`. -/
-def centralExtension :
-    LieAlgebra.Extension k P.centralCoverProjection.ker G :=
-  (LieAlgebra.isExtension_of_surjective
-    P.centralCoverProjection P.centralCoverProjection_surjective).extension
+    (LieSubmodule.lie_le_left _ _)
 
 /-- The image of the relation ideal in `f/[r,f]`, representing
 `r/[r,f]`. -/
 def relationQuotientImage : LieIdeal k P.centralCover :=
   LieIdeal.map (lieIdealQuotientMk k P.relationCommutator) P.relations
 
-/-- Definition-layer realization that Weibel's quotient extension is central
-and that its kernel is exactly the image of the relation ideal. -/
-structure CentralExtensionRealization : Prop where
-  /-- `ker(f/[r,f]→g)=r/[r,f]`. -/
-  kernel_eq_relationQuotient :
-    P.centralCoverProjection.ker = P.relationQuotientImage
-  /-- The kernel lies in the center of `f/[r,f]`. -/
-  central : P.centralCoverProjection.ker ≤ LieAlgebra.center k P.centralCover
+/-- The derived ideal `[f,f]` of the chosen free Lie algebra. -/
+def derivedIdeal : LieIdeal k (FreeLieAlgebra k P.Generators) :=
+  ⁅(⊤ : LieIdeal k (FreeLieAlgebra k P.Generators)),
+    (⊤ : LieIdeal k (FreeLieAlgebra k P.Generators))⁆
+
+/-- The source model for `[f,f]/[r,f]`, realized as the image of `[f,f]`
+inside `f/[r,f]`. -/
+def perfectCover : LieIdeal k P.centralCover :=
+  LieIdeal.map (lieIdealQuotientMk k P.relationCommutator) P.derivedIdeal
+
+/-- The restriction of `f/[r,f] → g` to the perfect-cover carrier. -/
+def perfectCoverProjection : P.perfectCover →ₗ⁅k⁆ G :=
+  P.centralCoverProjection.comp P.perfectCover.incl
 
 end FreeLiePresentation
 

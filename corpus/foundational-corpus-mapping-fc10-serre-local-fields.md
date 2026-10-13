@@ -24,6 +24,20 @@ Pinned project baseline: Mathlib `db584cd6d46c92f209a44c0f1c829460d327499d`, Lea
 
 Every canonical unit receives exactly one Sweep-II route: `mathlib`, `project-existing`, `package-import`, `reference-port`, or `unmatched`. Project source is searched first, followed by pinned/current Mathlib, open/current work, and targeted external Lean discovery. Strict bundle semantics apply throughout.
 
+## Structured definitional residue pass 2 — 2026-09-17
+
+The seven provisional FC10 definitional residues were re-run against project history, pinned/current Mathlib, the live Formalization Corpus, the repository's importable packages, and targeted current Lean searches. The pass covered truncated Witt ring schemes; ℓ-adic curve homology/Jacobian representations; nonabelian group `H¹`, its functoriality and the two low-degree connecting maps; and the tensor/group/base-change structure on the classical Brauer quotient.
+
+One first-pass false negative is now an exact importable route. The pinned `Whysoserioushah/BrauerGroup@54a54e35abf4c69fdef952100df57a8ec2bc1ea9` package defines Brauer multiplication from tensor products of central simple algebras, proves the quotient is a commutative group, defines scalar extension as `BrauerGroupHom.BaseChange`, and packages field-extension functoriality as `BrauerGroupHom.Br`; its relevant files are proof-complete. Hence `FC10-C10-U027` is remapped to `package-import`.
+
+The other six rows remain provisional unmatched residue. No checked source was found assembling truncated Witt vectors into Serre's affine finite-type ring scheme, or supplying general ℓ-adic homology of smooth projective curves together with `H₁=T_ℓ(J)`. Mathlib's `CategoryTheory/Sites/NonabelianCohomology/H1.lean` constructs Čech-style `H¹` for a presheaf of groups rather than Serre's group-action cohomology, while `RepresentationTheory/Homological/GroupCohomology/LowDegree.lean` explicitly leaves nonabelian group cohomology TODO and its multiplicative interface assumes commutative coefficients. Current external hits either remain in the abelian setting or are roadmap declarations with `sorry`, so they do not supply `FC10-C07-U039/U040/U044/U045`. No definition authoring occurred.
+
+## Open-ended prior-art recovery — 2026-09-17
+
+The unconstrained search then found open Mathlib PR #31613 at `xyzw12345/mathlib4@9dc1e337689fa7ba4fefa52b4874660bdd3a3619`, whose new `GroupCohomology/NonAbelian.lean` explicitly follows Serre's *Local Fields*. Its active head code has no `sorry`/`admit` and the head `main` check succeeds. It defines the arbitrary-noncommutative crossed-cocycle setoid and quotient, proves quotient functoriality, and constructs the degree-zero connecting map together with the factor-through proof giving lift independence. Hence `FC10-C07-U039`, `U040`, and `U044` are recovered as `reference-port` routes.
+
+The same PR does not close `FC10-C07-U045`: the proposed `connectHom₁`/`δ₁ : H1 G C → H2 A` development is wholly commented out at the inspected head, and the generated declaration summary contains no `δ₁`. It is therefore design-level partial evidence only. Together with the still-unmatched truncated-Witt ring scheme and general ℓ-adic curve/Jacobian representation, FC10 now has three surviving definitional residue rows. No definition authoring occurred.
+
 [Provenance contract for FC10 C01](provenance-contract-for-fc10-c01)
 
 [Chapter 1. Discrete Valuation Rings and Dedekind Domains FC10](chapter-1-discrete-valuation-rings-and-dedekind-domains-fc10)

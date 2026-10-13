@@ -23,4 +23,5 @@ project_id: github.com__dzackgarza__lean-categories
 - Generic étale infrastructure likewise does not supply U024: no checked torsion-line-bundle-to-double-cover construction was found. Number-theoretic Kummer extensions/theorems are unrelated to Kummer surfaces.
 - Broad GitHub/indexed search on 2026-09-07 returned no compatible Lean implementation of the K3/Enriques/Kummer surface statements.
 - `N=2026-09-07` marks dated unmatched decisions. Strict whole-row semantics apply uniformly.
+- **First-pass definitional adjudication (2026-09-15):** U003/U004/U009/U021/U024 were re-read semantically and remain `[negative-search-complete]`. Current hosted searches found no algebraic K3/Enriques surface predicate, rational-double-point/du Val surface singularity, or order-two-line-bundle étale double-cover construction; apparent ADE/Kummer/torsion hits were unrelated. The K3/Enriques definitions are blocked specifically by the still-missing minimality, Kodaira-dimension, coherent-invariant and canonical-class interfaces, not by absence of a named wrapper. The 2026-09-07 strict-bundle rationale is superseded for these definition/mixed rows only.
 

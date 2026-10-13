@@ -1,0 +1,166 @@
+/-
+Copyright (c) 2026 Dzack Garza. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+-/
+module
+
+public import LeanCategories.Schemes.TotalQuotientSheafData
+public import Mathlib.Algebra.Category.Grp.Adjunctions
+public import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
+public import Mathlib.CategoryTheory.Sites.Whiskering
+public import Mathlib.Topology.Sheaves.Abelian
+
+/-!
+# Cartier-divisor line-bundle data
+
+Definition-level realization of Hartshorne FC06-C02-U191.
+
+For a Cartier divisor `D` with local equations `f_i`, Hartshorne defines
+`L(D)` as the `O_X`-subsheaf of the total quotient sheaf `K_X` locally generated
+by `f_i⁻¹`.  FC06-C02-U181 now provides the canonical arbitrary-scheme
+total quotient sheaf, while the generic sheaf-quotient construction from
+FC06-C02-U182 gives a proof-free way to state the local equation condition.
+
+This file records the exact section carrier before the theorem boundary: a
+section `s ∈ K_X(U)` belongs to `L(D)(U)` exactly when every point has a smaller
+neighbourhood on which `s = a f⁻¹` for a regular section `a` and a local
+equation `f` of `D`.
+
+Restriction closure, additive/module closure, the sheaf condition, independence
+of representatives, and invertibility are result clauses of Proposition 6.13
+(FC06-C02-U192).  None is proved or bundled into a constructor here.
+-/
+
+@[expose] public noncomputable section
+
+open CategoryTheory Limits TopologicalSpace Opposite
+open AlgebraicGeometry
+
+namespace LeanCategories.Schemes
+
+universe u
+
+/-- Commutative-ring units, written additively so their sheaves live in the
+abelian category `AddCommGrpCat`. -/
+abbrev commRingAdditiveUnitsData : CommRingCat.{u} ⥤ AddCommGrpCat.{u} :=
+  forget₂ CommRingCat CommMonCat ⋙ CommMonCat.units ⋙
+    commGroupAddCommGroupEquivalence.functor
+
+/-- Pointwise unit sheaf functor for sheaves of commutative rings. -/
+abbrev additiveUnitsSheafFunctorData (X : Scheme.{u}) :
+    TopCat.Sheaf CommRingCat X ⥤ TopCat.Sheaf AddCommGrpCat X :=
+  CategoryTheory.sheafCompose (Opens.grothendieckTopology X)
+    commRingAdditiveUnitsData
+
+/-- Hartshorne's regular-unit sheaf `O_X^*`, written additively. -/
+abbrev regularUnitSheafData (X : Scheme.{u}) :
+    TopCat.Sheaf AddCommGrpCat X :=
+  (additiveUnitsSheafFunctorData X).obj X.sheaf
+
+/-- The total-quotient unit sheaf of supplied candidate data, written additively. -/
+abbrev totalQuotientUnitSheafData {X : Scheme.{u}}
+    (K : TotalQuotientSheafCandidateData X) :
+    TopCat.Sheaf AddCommGrpCat X :=
+  (additiveUnitsSheafFunctorData X).obj (totalQuotientRingSheafData K)
+
+/-- The map `O_X^* → K_X^*` induced by supplied `O_X → K_X`. -/
+def toTotalQuotientUnitSheafData {X : Scheme.{u}}
+    (K : TotalQuotientSheafCandidateData X) :
+    regularUnitSheafData X ⟶ totalQuotientUnitSheafData K :=
+  (additiveUnitsSheafFunctorData X).map (toTotalQuotientSheafData K)
+
+/-- The Cartier-divisor sheaf assembled from supplied total-quotient data. -/
+def cartierDivisorSheafData {X : Scheme.{u}}
+    (K : TotalQuotientSheafCandidateData X) :
+    TopCat.Sheaf AddCommGrpCat X :=
+  cokernel (toTotalQuotientUnitSheafData K)
+
+/-- Quotient projection `K_X^* → K_X^*/O_X^*`. -/
+def toCartierDivisorSheafData {X : Scheme.{u}}
+    (K : TotalQuotientSheafCandidateData X) :
+    totalQuotientUnitSheafData K ⟶ cartierDivisorSheafData K :=
+  cokernel.π (toTotalQuotientUnitSheafData K)
+
+/-- Cartier divisors as global sections of `K_X^*/O_X^*`. -/
+abbrev CartierDivisorData {X : Scheme.{u}}
+    (K : TotalQuotientSheafCandidateData X) : Type u :=
+  ((cartierDivisorSheafData K).presheaf.obj (op (⊤ : X.Opens)) : Type u)
+
+/-- A rational unit `f` on `U` is a local equation for the Cartier divisor
+`D` when its quotient class is the restriction of `D` to `U`. -/
+def IsCartierLocalEquationData {X : Scheme.{u}}
+    (K : TotalQuotientSheafCandidateData X) (D : CartierDivisorData K)
+    (U : X.Opens) (f : Additive (TotalQuotientUnitSectionsData K U)) : Prop :=
+  (toCartierDivisorSheafData K).hom.app (op U) f =
+    (cartierDivisorSheafData K).presheaf.map (homOfLE le_top).op D
+
+/-- Source membership condition for a section of `L(D)`.
+
+Locally, the section is a regular function multiplied by the inverse of a
+local equation of `D`. -/
+def IsCartierLineBundleSectionData {X : Scheme.{u}}
+    (K : TotalQuotientSheafCandidateData X) (D : CartierDivisorData K)
+    (U : X.Opens)
+    (s : (totalQuotientRingSheafData K).presheaf.obj (op U)) : Prop :=
+  ∀ x : U,
+    ∃ (V : X.Opens) (hVU : V ≤ U) (_hx : x.1 ∈ V)
+      (f : Additive (TotalQuotientUnitSectionsData K V))
+      (a : X.sheaf.presheaf.obj (op V)),
+      IsCartierLocalEquationData K D V f ∧
+        (totalQuotientRingSheafData K).presheaf.map (homOfLE hVU).op s =
+          (toTotalQuotientSheafData K).hom.app (op V) a *
+            (↑((Additive.toMul f)⁻¹) :
+              (totalQuotientRingSheafData K).presheaf.obj (op V))
+
+/-- Hartshorne's `L(D)` at the definition boundary: the family of section
+carriers inside `K_X` locally generated by inverse local equations.
+
+FC06-C02-U192 supplies the later result that these carriers and inherited
+restrictions form an invertible `O_X`-subsheaf. -/
+def cartierLineBundleSectionData {X : Scheme.{u}}
+    (K : TotalQuotientSheafCandidateData X) (D : CartierDivisorData K)
+    (U : X.Opens) : Set ((totalQuotientRingSheafData K).presheaf.obj (op U)) :=
+  {s | IsCartierLineBundleSectionData K D U s}
+
+/-!
+## Canonical arbitrary-scheme specialization
+
+The preceding declarations remain useful for later comparison theorems with
+an arbitrary candidate total quotient sheaf.  The source-level definitions
+below specialize them to the canonical `K_X` constructed in FC06-C02-U181,
+so the Hartshorne objects no longer carry a supplied-candidate parameter.
+-/
+
+/-- The canonical total-quotient candidate attached to `X`, for reuse by the
+generic Cartier-divisor assembly above. -/
+abbrev canonicalTotalQuotientCandidateData (X : Scheme.{u}) :
+    TotalQuotientSheafCandidateData X :=
+  canonicalTotalQuotientSheafCandidateData X
+
+/-- Hartshorne's Cartier-divisor sheaf `K_X^*/O_X^*` for the canonical total
+quotient sheaf. -/
+abbrev canonicalCartierDivisorSheafData (X : Scheme.{u}) :
+    TopCat.Sheaf AddCommGrpCat X :=
+  cartierDivisorSheafData (canonicalTotalQuotientCandidateData X)
+
+/-- Cartier divisors on `X` as global sections of the canonical
+`K_X^*/O_X^*`. -/
+abbrev CanonicalCartierDivisorData (X : Scheme.{u}) : Type u :=
+  CartierDivisorData (canonicalTotalQuotientCandidateData X)
+
+/-- The local-equation predicate for a Cartier divisor on the canonical
+total-quotient sheaf. -/
+abbrev IsCanonicalCartierLocalEquationData (X : Scheme.{u})
+    (D : CanonicalCartierDivisorData X) (U : X.Opens)
+    (f : Additive (TotalQuotientUnitSectionsData
+      (canonicalTotalQuotientCandidateData X) U)) : Prop :=
+  IsCartierLocalEquationData (canonicalTotalQuotientCandidateData X) D U f
+
+/-- Hartshorne's `L(D)(U)` section carrier for the canonical total quotient
+sheaf: sections locally generated by inverses of local equations of `D`. -/
+abbrev canonicalCartierLineBundleSectionData (X : Scheme.{u})
+    (D : CanonicalCartierDivisorData X) (U : X.Opens) :
+    Set ((totalQuotientSheafData X).presheaf.obj (op U)) :=
+  cartierLineBundleSectionData (canonicalTotalQuotientCandidateData X) D U
+
+end LeanCategories.Schemes

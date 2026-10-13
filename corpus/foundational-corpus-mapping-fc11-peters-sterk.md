@@ -22,6 +22,12 @@ Pinned mapping baseline remains Mathlib `db584cd6d46c92f209a44c0f1c829460d327499
 
 Whole-source route totals after the exact-route remap: `mathlib` 221, `project-existing` 53, `package-import` 0, `reference-port` 9, `unmatched` 831; total 1,114.
 
+## Structured definitional residue pass 2 — revalidated 2026-09-17
+
+The 2026-09-16 FC11 second-pass evidence was revalidated after `fc17-mapping` closed. The current canonical definition index has exactly the same 46 `residue-search` unit IDs covered by that pass, every one of those mapping rows still carries its scoped second-pass evidence, and there have been no subsequent FC11 mapping-record changes. The recovered lattice Nikulin involution `FC11-C20-U060` remains a positive `project-existing` route and is not in the residue.
+
+Fresh live-corpus searches on 2026-09-17 also found no new source-complete owner in the principal surviving clusters: Brown/`τ₈`/Milgram invariants; Kummer/K3-period/Shioda--Inose geometry; plumbing/lens-space/Rohlin/Hirzebruch--Jung topology; Witt-ring/semi-discriminant/dyadic-Jordan constructions; general-Jacobian Weil pairings; Milnor-fibre/vanishing-cycle/Lefschetz-pencil geometry; and Hodge/Néron--Severi/canonical-bundle/Hirzebruch-surface/Cartan--Leray infrastructure. The 46 rows therefore remain provisional `[negative-search-complete]` residue for the later corpus-wide open-ended prior-art audit. No definition authoring occurred.
+
 ## Promoted chapter records
 
 - [[provenance-contract-for-fc11-c01|Provenance contract for FC11 C01]]

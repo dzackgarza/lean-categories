@@ -72,32 +72,4 @@ structure RightCEResolution (A : CochainComplex C ℕ) where
   /-- A zero source term has a zero resolving column. -/
   zero_column : ∀ p : ℕ, IsZero (A.X p) → ∀ q : ℕ, IsZero ((I.X p).X q)
 
-variable {D : Type u'} [Category.{v'} D] [Abelian D]
-
-/-- Apply an additive functor degreewise to a right C--E bicomplex. -/
-noncomputable def mapRightCEDouble (F : C ⥤ D) [F.Additive]
-    {A : CochainComplex C ℕ} (J : RightCEResolution A) :
-    CochainComplex (CochainComplex D ℕ) ℕ :=
-  let G := F.mapHomologicalComplex (ComplexShape.up ℕ)
-  (G.mapHomologicalComplex (ComplexShape.up ℕ)).obj J.I
-
-/-- Extend both nonnegative cohomological axes by zero to `ℤ`, where Mathlib's
-canonical cohomological total-complex signs are available. -/
-noncomputable def mapRightCEDoubleInt (F : C ⥤ D) [F.Additive]
-    {A : CochainComplex C ℕ} (J : RightCEResolution A) :
-    CochainComplex (CochainComplex D ℤ) ℤ :=
-  let innerExtend := ComplexShape.embeddingUpNat.extendFunctor D
-  let K : CochainComplex (CochainComplex D ℤ) ℕ :=
-    (innerExtend.mapHomologicalComplex (ComplexShape.up ℕ)).obj (mapRightCEDouble F J)
-  (ComplexShape.embeddingUpNat.extendFunctor (CochainComplex D ℤ)).obj K
-
-/-- The right hyper-derived object computed from a chosen right C--E
-resolution and a chosen totalization. -/
-noncomputable def rightHyperDerivedObject (F : C ⥤ D) [F.Additive]
-    {A : CochainComplex C ℕ} (J : RightCEResolution A)
-    [HomologicalComplex₂.HasTotal (mapRightCEDoubleInt F J) (ComplexShape.up ℤ)]
-    (n : ℕ) : D :=
-  (HomologicalComplex.homologyFunctor D (ComplexShape.up ℤ) (n : ℤ)).obj
-    (HomologicalComplex₂.total (mapRightCEDoubleInt F J) (ComplexShape.up ℤ))
-
 end LeanCategories.Homological

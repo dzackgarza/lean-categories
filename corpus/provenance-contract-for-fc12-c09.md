@@ -20,4 +20,5 @@ project_id: github.com__dzackgarza__lean-categories
 - Search order: project `A=12618f8abc2b4852b3da9ab65c3bc547ac4c1f19`, P=`db584cd6d46c92f209a44c0f1c829460d327499d`, H=`71a80585ee495fc24472fd0eaffc89d94e4fd8d6`, current/open/indexed, Reservoir/packages, broad GitHub Lean and local references.
 - Result: 0 positive routes, 10 dated unmatched rows.
 - Targeted P/H search found no elliptic-surface/fibration object, canonical bundle formula for an elliptic surface, Kodaira-dimension-one pluricanonical theorem, or compatible external Lean implementation. Existing elliptic-curve and scheme infrastructure realizes only proper subsets.
+- **First-pass definitional adjudication (2026-09-15):** U003 remains `[negative-search-complete]`. Current hosted searches under elliptic-surface/genus-one-fibration terminology found no relevant owner; the lone LeanPool hit is an aggregate import file. Scheme fibers and smoothness are native, but there is no checked algebraic curve-genus/generic-fiber genus-one interface needed to state Beauville's defining condition. The 2026-09-07 strict-bundle rationale is superseded for this definition row.
 

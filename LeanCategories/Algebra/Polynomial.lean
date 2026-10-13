@@ -45,7 +45,7 @@ def IsRemainder {σ : Type*} (m : MonomialOrder σ) {R : Type*} [CommRing R]
 The first divisor whose leading monomial divides the current leading monomial
 is used; if no divisor applies, the current leading term is moved to the
 remainder accumulator. -/
-def OrderedDivisionStep {σ : Type*} (m : MonomialOrder σ) {k : Type*} [Field k]
+noncomputable def OrderedDivisionStep {σ : Type*} (m : MonomialOrder σ) {k : Type*} [Field k]
     {n : ℕ} (b : Fin n → MvPolynomial σ k) :
     (MvPolynomial σ k × MvPolynomial σ k) →
       (MvPolynomial σ k × MvPolynomial σ k) → Prop :=
@@ -61,11 +61,81 @@ def OrderedDivisionStep {σ : Type*} (m : MonomialOrder σ) {k : Type*} [Field k
       (∀ i : Fin n, b i = 0 ∨ ¬m.degree (b i) ≤ m.degree state.1) ∧
       next = (state.1 - m.leadingTerm state.1, state.2 + m.leadingTerm state.1))
 
+/-- Data carried by the source ordered multivariate-division procedure.
+
+`current` is the polynomial still to be reduced, `quotients i` is the
+coefficient accumulated at the `i`th divisor, and `remainder` is the
+accumulated remainder. Divisor positions are retained, so repeated equal
+polynomials remain distinct entries exactly as in the ordered source list
+(FC01-C09-U052). -/
+structure OrderedDivisionState (σ : Type*) (k : Type*) [Field k] (n : ℕ) where
+  current : MvPolynomial σ k
+  quotients : Fin n → MvPolynomial σ k
+  remainder : MvPolynomial σ k
+
+/-- The initial state of ordered multivariate division. -/
+noncomputable def orderedDivisionInitialState {σ : Type*} {k : Type*} [Field k] {n : ℕ}
+    (f : MvPolynomial σ k) : OrderedDivisionState σ k n where
+  current := f
+  quotients := 0
+  remainder := 0
+
+/-- The first divisor position whose leading monomial divides the current
+leading monomial. This is the source's ordered first-applicable-divisor
+choice; no termination statement is part of this definition. -/
+noncomputable def orderedDivisionFirstDivisor? {σ : Type*} (m : MonomialOrder σ)
+    {k : Type*} [Field k] {n : ℕ} (b : Fin n → MvPolynomial σ k)
+    (f : MvPolynomial σ k) : Option (Fin n) := by
+  classical
+  exact (List.finRange n).find? fun i =>
+    decide (b i ≠ 0 ∧ m.degree (b i) ≤ m.degree f)
+
+/-- The quotient monomial used when the `i`th divisor cancels the current
+leading term. -/
+noncomputable def orderedDivisionQuotientTerm {σ : Type*} (m : MonomialOrder σ)
+    {k : Type*} [Field k] {n : ℕ} (b : Fin n → MvPolynomial σ k)
+    (state : OrderedDivisionState σ k n) (i : Fin n) : MvPolynomial σ k :=
+  monomial (m.degree state.current - m.degree (b i))
+    ((m.leadingCoeff (b i))⁻¹ * m.leadingCoeff state.current)
+
+/-- One deterministic data step of Dummit--Foote's ordered multivariate
+division algorithm (FC01-C09-U052).
+
+If an ordered divisor applies, the first such position is used and its
+positional quotient accumulator is increased. Otherwise the current leading
+term is moved to the remainder. Termination and every equation satisfied by
+the eventual output are result-layer statements. -/
+noncomputable def orderedDivisionDataStep {σ : Type*} (m : MonomialOrder σ)
+    {k : Type*} [Field k] {n : ℕ} (b : Fin n → MvPolynomial σ k)
+    (state : OrderedDivisionState σ k n) : OrderedDivisionState σ k n := by
+  classical
+  match orderedDivisionFirstDivisor? m b state.current with
+  | some i =>
+      let q := orderedDivisionQuotientTerm m b state i
+      exact
+        { current := state.current - q * b i
+          quotients := Function.update state.quotients i (state.quotients i + q)
+          remainder := state.remainder }
+  | none =>
+      exact
+        { current := state.current - m.leadingTerm state.current
+          quotients := state.quotients
+          remainder := state.remainder + m.leadingTerm state.current }
+
+/-- The complete quotient/remainder state after a specified number of source
+division steps. This fuelled construction keeps Sweep III free of the
+well-founded termination proof. -/
+noncomputable def orderedDivisionStateAfter {σ : Type*} (m : MonomialOrder σ)
+    {k : Type*} [Field k] {n : ℕ} (b : Fin n → MvPolynomial σ k)
+    (f : MvPolynomial σ k) (steps : ℕ) : OrderedDivisionState σ k n :=
+  (orderedDivisionDataStep m b)^[steps] (orderedDivisionInitialState f)
+
 /-- `r` is the remainder produced by the textbook ordered multivariate-division
-procedure applied to `f` and the ordered divisor family `b`.  This realizes the
-order-sensitive relation denoted `f ≡ r mod G` in Dummit--Foote FC01-C09-U057.
+procedure applied to `f` and the ordered divisor family `b`.  This is the
+definition-level relation underlying the ordered division algorithm FC01-C09-U052;
+FC01-C09-U057 is only the notation `f ≡ r mod G` for this output relation.
 Termination and comparison with Gröbner normal forms are theorem-level facts. -/
-def IsOrderedRemainder {σ : Type*} (m : MonomialOrder σ) {k : Type*} [Field k]
+noncomputable def IsOrderedRemainder {σ : Type*} (m : MonomialOrder σ) {k : Type*} [Field k]
     {n : ℕ} (b : Fin n → MvPolynomial σ k)
     (f r : MvPolynomial σ k) : Prop :=
   Relation.ReflTransGen (m.OrderedDivisionStep b) (f, 0) (0, r)
@@ -96,5 +166,62 @@ def IsMinimal.reduceByRemainders {hG : m.IsGroebnerBasis G I}
   Set.range r
 
 end IsGroebnerBasis
+
+/-- The ordered divisor family obtained by suppressing one positional basis
+entry. Repeated equal polynomials at other positions remain distinct. -/
+noncomputable def orderedDivisionWithout {σ : Type*} {k : Type*} [Field k] {n : ℕ}
+    (b : Fin n → MvPolynomial σ k) (i : Fin n) : Fin n → MvPolynomial σ k :=
+  Function.update b i 0
+
+/-- Scale an `m`-leading coefficient to one when it is nonzero.
+
+This is only the source normalization operation; the assertion that a
+particular input is nonzero or becomes monic is result content. -/
+noncomputable def normalizeLeadingCoeff {σ : Type*} (m : MonomialOrder σ)
+    {k : Type*} [Field k] (f : MvPolynomial σ k) : MvPolynomial σ k :=
+  C (m.leadingCoeff f)⁻¹ * f
+
+/-- The remainder produced by Mathlib's terminating multivariate-division
+algorithm for a divisor set whose leading coefficients are units. -/
+noncomputable def divisionRemainder {σ : Type*} (m : MonomialOrder σ)
+    {k : Type*} [Field k] (B : Set (MvPolynomial σ k))
+    (hB : ∀ b ∈ B, IsUnit (m.leadingCoeff b))
+    (f : MvPolynomial σ k) : MvPolynomial σ k :=
+  (m.div_set hB f).choose_spec.choose
+
+/-- Dummit--Foote's reduction of a minimal Gröbner basis (FC01-C09-U062).
+
+Each basis member is divided by the other basis members using the terminating
+native division algorithm, and the resulting remainder is normalized to
+leading coefficient one. No remainder family or iteration fuel is supplied by
+the caller. Reducedness and uniqueness are subsequent results. -/
+noncomputable def reducedGroebnerBasisData {σ : Type*} (m : MonomialOrder σ)
+    {k : Type*} [Field k] {G : Set (MvPolynomial σ k)}
+    {I : Ideal (MvPolynomial σ k)} (hG : m.IsGroebnerBasis G I)
+    (hmin : hG.IsMinimal) : Set (MvPolynomial σ k) :=
+  Set.range fun g : G =>
+    normalizeLeadingCoeff m <|
+      divisionRemainder m (G \ {g.1}) (by
+        intro b hb
+        have hbG : b ∈ G := hb.1
+        have hmonic := hmin.1 b hbG
+        rw [Monic] at hmonic
+        rw [hmonic]
+        exact isUnit_one) g.1
+
+/-- Data-level form of Dummit--Foote's reduction of a minimal Gröbner basis
+(FC01-C09-U062).
+
+For each positional generator `b i`, run a supplied finite number of ordered
+division steps against the same ordered family with position `i` suppressed,
+take the accumulated remainder, and normalize its leading coefficient.
+Minimality, termination to the unique normal remainder, and the assertion that
+the resulting family is a reduced Gröbner basis are all result-layer facts. -/
+noncomputable def reducedGroebnerDataAfter {σ : Type*} (m : MonomialOrder σ)
+    {k : Type*} [Field k] {n : ℕ} (b : Fin n → MvPolynomial σ k)
+    (steps : Fin n → ℕ) : Fin n → MvPolynomial σ k :=
+  fun i =>
+    normalizeLeadingCoeff m
+      (orderedDivisionStateAfter m (orderedDivisionWithout b i) (b i) (steps i)).remainder
 
 end MonomialOrder

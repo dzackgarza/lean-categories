@@ -33,22 +33,6 @@ universe u
 
 variable (G : Type u) [Group G]
 
-/-- Basis symbols `[g₁|...|gₙ]` for the unnormalized bar construction. -/
-abbrev UnnormalizedBarBasis (n : ℕ) := Fin n → G
-
-/-- Basis symbols `[g₁|...|gₙ]` for the normalized bar construction: every entry is nonidentity.
-Source: Weibel, §6.5, pp. 177–178 (FC05-C06-U048). -/
-abbrev NormalizedBarBasis (n : ℕ) := Fin n → {g : G // g ≠ 1}
-
-/-- The degree-`n` free `ℤ[G]`-module of the unnormalized bar construction.  This is the
-universe-polymorphic form of the term used by Mathlib's `Rep.barComplex`. -/
-noncomputable abbrev unnormalizedBarTerm (n : ℕ) : Rep.{u} ℤ G :=
-  Rep.free ℤ G (UnnormalizedBarBasis G n)
-
-/-- The degree-`n` free `ℤ[G]`-module of the normalized bar construction. -/
-noncomputable abbrev normalizedBarTerm (n : ℕ) : Rep.{u} ℤ G :=
-  Rep.free ℤ G (NormalizedBarBasis G n)
-
 /-- The normalized value of an unnormalized bar symbol.
 
 If every entry of `[g₁|...|gₙ]` is nonidentity, this is the corresponding basis vector in the
@@ -56,8 +40,8 @@ normalized bar term.  If some entry is the identity, it is zero.  This is Weibel
 immediately after Definition 6.5.1.
 
 Source: Weibel, §6.5, p. 178 (FC05-C06-U050). -/
-noncomputable def normalizedBarSymbol {n : ℕ} (g : UnnormalizedBarBasis G n) :
-    (normalizedBarTerm G n).V := by
+noncomputable def normalizedBarSymbol {n : ℕ} (g : Fin n → G) :
+    (Rep.free ℤ G (Fin n → {g : G // g ≠ 1})).V := by
   classical
   by_cases h : ∀ i, g i ≠ 1
   · exact Finsupp.single (fun i => ⟨g i, h i⟩) (MonoidAlgebra.single 1 1)
@@ -68,8 +52,8 @@ symbol, with every symbol containing an identity entry sent to zero.
 
 Source: Weibel, §6.5, p. 178 (FC05-C06-U050). -/
 noncomputable abbrev normalizeBarTerm (n : ℕ) :
-    unnormalizedBarTerm G n ⟶ normalizedBarTerm G n :=
-  Rep.freeLift ℤ G (normalizedBarTerm G n)
-    (fun g : UnnormalizedBarBasis G n => normalizedBarSymbol G g)
+    Rep.free ℤ G (Fin n → G) ⟶ Rep.free ℤ G (Fin n → {g : G // g ≠ 1}) :=
+  Rep.freeLift ℤ G (Rep.free ℤ G (Fin n → {g : G // g ≠ 1}))
+    (fun g : Fin n → G => normalizedBarSymbol G g)
 
 end LeanCategories.Homological

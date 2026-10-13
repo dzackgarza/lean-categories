@@ -46,6 +46,7 @@ public import LeanCategories.Lattices.Valued.Residue
 public import LeanCategories.Lattices.Valued.LocalGlobal
 public import LeanCategories.Lattices.Valued.LocalInvariants
 public import LeanCategories.Lattices.Valued.Dyadic
+public import LeanCategories.Lattices.Valued.DyadicScaledLatticeData
 public import LeanCategories.Lattices.Valued.Jordan
 public import LeanCategories.Lattices.Valued.JordanSplitting
 public import LeanCategories.Lattices.Valued.RankOneDual
@@ -94,5 +95,8 @@ public import LeanCategories.Lattices.Valued.AdelicClass
 public import LeanCategories.Lattices.Valued.LocalDensity
 public import LeanCategories.Lattices.Valued.DensityProduct
 public import LeanCategories.Lattices.Valued.AdelicSpinorNorm
+public import LeanCategories.Lattices.Valued.K3WeylChamberData
+public import LeanCategories.Lattices.Valued.K3GenericPeriodData
+public import LeanCategories.Lattices.Valued.K3EnriquesPeriodData
 
 @[expose] public section

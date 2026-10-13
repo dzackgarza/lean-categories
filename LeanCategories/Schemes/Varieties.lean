@@ -22,6 +22,8 @@ open-immersion predicates.  These definitions combine those existing objects.
 No projectivity theorem or variety-specific proxy is introduced here.
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open AlgebraicGeometry CategoryTheory

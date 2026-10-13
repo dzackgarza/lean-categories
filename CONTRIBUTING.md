@@ -22,9 +22,14 @@ does not construct the required object.
 ## LC-03 — Establish meaning before dependent use
 
 Apply [definition acceptance](AGENTS.md#establish-the-definition-before-dependent-use).
-Compare all defining clauses with the source, supply an intended and a separating
-example, and prove intrinsic construction laws before export or downstream use.
-Compilation establishes formal derivability, not fidelity to the named concept.
+Compare all defining clauses with the source and preserve the source's actual
+declaration/construction data before export or downstream use. Source examples may
+be used as semantic checks. Sweep III contains no proof work: if a proposed Lean
+representation requires a law, identity, well-definedness theorem, descent proof,
+existence/uniqueness result, or other proposition in order to build the value, use a
+source-faithful data-level representation instead. All proposition/result clauses remain
+Sweep IV work. Compilation establishes formal derivability, not fidelity to the named
+concept.
 
 ## LC-04 — Follow the execution DAG
 
@@ -262,3 +267,41 @@ evidence and nothing else, and their build refuses any reference to mathematics 
 they could run instead (`lean-cas-dsl/specs/architecture.md`, "What must be impossible"). A
 statement whose evidence does not establish its hypotheses is invalid. The fix is never a proof
 written downstream.
+
+## LC-19 — Exhaust prior art before greenfield definitions
+
+Apply the two-stage negative-search rule in
+[AGENTS.md](AGENTS.md#a-bundled-row-is-matched-clause-by-clause-and-unmatched-is-the-last-resort).
+`[negative-search-complete]` closes only the bounded source-local search pass and
+does not authorize authorship. Before any definitional row may remain greenfield,
+the corpus-wide residue audit must search beyond the known indexes and local
+engines, follow newly discovered repositories/projects/branches/PRs and other
+proof-assistant implementations, and record reproducible dated search evidence in
+the canonical mapping row. Only `unmatched [residue-search-audited]` may enter the
+new-mathematics queue. A worker that cannot access a relevant search surface leaves
+that part open rather than treating absence of access as a negative result.
+
+## LC-20 — Match every realized definition to the complete prose source
+
+Apply [definition acceptance](AGENTS.md#establish-the-definition-before-dependent-use)
+locally and the final corpus-wide `definition-source-conformance` milestone in
+[TODO.md](TODO.md#execution-dag). Re-read the original prose reference and inspect
+the actual reused/imported/ported/authored Lean realization clause-by-clause. Preserve
+all declaration data, hypotheses, quantifiers, variance, universe/generalization
+choices, quotient or representative data, and claimed generality. Well-definedness,
+identities, functoriality, existence/uniqueness, exactness, square-zero, universality,
+comparison statements, and analogous propositions remain Sweep IV work without a
+Sweep-III exception. If a proposed representation requires any such proposition to
+construct the value, use the source-faithful data-level representation required by the
+[construction boundary](AGENTS.md#sweep-iii-construction-boundary). Reuse existing
+formalizations first. Build success, familiar names,
+downstream theorems, and absence of `sorry` do not establish semantic fidelity.
+
+## LC-21 — Keep bulk execution state repository-local
+
+Apply [build and probe storage locality](AGENTS.md#build-and-probe-storage-stays-inside-this-repository).
+Lean build state belongs in `.lake/`; probes and disposable package experiments
+belong in repository-owned ignored scratch such as `.tmp-*/`. Do not create
+global-`/tmp` checkouts, throwaway worktrees/environments, or user-global caches
+for repository work. A workflow that would write hundreds of megabytes outside
+the repository must be redirected or redesigned before it runs.

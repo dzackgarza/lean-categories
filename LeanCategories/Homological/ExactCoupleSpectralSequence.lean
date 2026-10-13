@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
-public import LeanCategories.Homological.ExactCouple
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
+public import Mathlib.CategoryTheory.Abelian.Basic
 public import Mathlib.Algebra.Homology.SpectralSequence.Basic
 
 /-!
@@ -165,9 +166,8 @@ def page : HomologicalComplex C X.pageShape where
 couple derivation.  The two object formulas are the constructional content
 needed by Proposition 5.9.2: `D' = im(i)` and `E' = H(E,kj)`.
 
-The induced-map comparison formulas are already owned in the ungraded U069
-interface `DerivedCoupleData`; their bigraded degree formulas are theorem-layer
-content and are deliberately not duplicated as assumptions here. -/
+The induced-map comparison formulas are theorem-layer content and are deliberately
+not duplicated as assumptions here. -/
 structure DerivedData where
   /-- The next exact couple. -/
   couple : BigradedExactCouple (C := C)

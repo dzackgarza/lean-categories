@@ -1,0 +1,107 @@
+/-
+Copyright (c) 2026 Dzack Garza. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+-/
+module
+
+public import Mathlib.RingTheory.FormalGroup.Basic
+
+@[expose] public section
+
+/-!
+# Formal modules
+
+This file records Neukirch's definition of a formal `O`-module from *Algebraic Number
+Theory*, Chapter V, Section 4, Definition 4.4 (FC09-C05-U039). The definition is expanded into
+power-series equations: the bracket series are formal-group endomorphisms, preserve zero, one,
+addition and multiplication, and have linear coefficient `a`.
+
+The formal-group-homomorphism field follows the proof-complete reference interface
+`FormalGroupHom` in leanprover-community/mathlib4 PR #38213 at commit
+`133714768d42ba1a6107b7a84e2d22222c7c69ed` (Apache-2.0). The ring operations are stated
+directly here because the pinned Mathlib does not yet bundle the endomorphism ring.
+-/
+
+noncomputable section
+
+open MvPowerSeries
+
+namespace LeanCategories
+
+variable {O : Type*} [CommRing O]
+
+/-- Raw power-series carrier for a homomorphism between one-dimensional
+formal group laws (FC09-C05-U034). -/
+abbrev FormalGroupHomSeries (_F _G : FormalGroup O) := PowerSeries O
+
+/-- Neukirch's defining condition for a formal-group homomorphism.
+
+The source object is represented without a proof-bearing bundled constructor:
+a supplied power series has zero constant coefficient and satisfies
+`f(F(X,Y)) = G(f(X),f(Y))`. -/
+def IsFormalGroupHom (F G : FormalGroup O) (f : FormalGroupHomSeries F G) : Prop :=
+  f.constantCoeff = 0 ∧
+    f.subst F.toPowerSeries =
+      G.toPowerSeries.subst (fun i => PowerSeries.subst (MvPowerSeries.X i) f)
+
+/-- Raw forward/inverse power-series data for a formal-group isomorphism
+(FC09-C05-U036). -/
+abbrev FormalGroupIsoSeries (F G : FormalGroup O) :=
+  FormalGroupHomSeries F G × FormalGroupHomSeries G F
+
+/-- Neukirch's inverse-series definition of a formal-group isomorphism.
+
+The equivalent unit-linear-coefficient criterion is deliberately not part of
+this Sweep-III declaration. -/
+def IsFormalGroupIso (F G : FormalGroup O) (e : FormalGroupIsoSeries F G) : Prop :=
+  IsFormalGroupHom F G e.1 ∧
+    IsFormalGroupHom G F e.2 ∧
+      e.1.subst e.2 = PowerSeries.X ∧ e.2.subst e.1 = PowerSeries.X
+
+/-- Raw homomorphism-series carrier after extension of coefficients
+(FC09-C05-U037). -/
+abbrev FormalGroupHomSeriesOver {O' : Type*} [CommRing O']
+    (phi : O →+* O') (F G : FormalGroup O) :=
+  FormalGroupHomSeries (F.map phi) (G.map phi)
+
+/-- Neukirch's notion of a formal-group homomorphism defined over an
+extension ring: the U034 compatibility predicate after coefficient base
+change. -/
+def IsFormalGroupHomOver {O' : Type*} [CommRing O']
+    (phi : O →+* O') (F G : FormalGroup O)
+    (f : FormalGroupHomSeriesOver phi F G) : Prop :=
+  IsFormalGroupHom (F.map phi) (G.map phi) f
+
+/-- A power series which is an endomorphism of the formal group `F`. -/
+structure IsFormalGroupEndomorphism (F : FormalGroup O) (f : PowerSeries O) : Prop where
+  /-- A formal-group endomorphism has zero constant coefficient. -/
+  zero_constantCoeff : f.constantCoeff = 0
+  /-- The equation `f(F(X,Y)) = F(f(X),f(Y))`. -/
+  map_formalGroup : f.subst F.toPowerSeries =
+    F.toPowerSeries.subst (fun i => PowerSeries.subst (MvPowerSeries.X i) f)
+
+/-- A formal `O`-module: a formal group over `O` together with the scalar endomorphisms
+`[a]_F(X)`, written as the equations expressing the ring homomorphism
+`O → End_O(F)` and the congruence `[a]_F(X) ≡ aX mod deg 2`. -/
+structure FormalModule (O : Type*) [CommRing O] where
+  /-- The underlying one-dimensional formal group law. -/
+  formalGroup : FormalGroup O
+  /-- Neukirch's standing formal-group definition includes commutativity. -/
+  formalGroup_comm : formalGroup.IsComm
+  /-- The scalar endomorphism `[a]_F(X)`. -/
+  bracket : O → PowerSeries O
+  /-- Every bracket series is an endomorphism of the underlying formal group. -/
+  bracket_endomorphism : ∀ a, IsFormalGroupEndomorphism formalGroup (bracket a)
+  /-- The scalar zero acts by the zero series. -/
+  bracket_zero : bracket 0 = 0
+  /-- The scalar one acts by the identity series. -/
+  bracket_one : bracket 1 = PowerSeries.X
+  /-- Addition in `O` is formal-group addition of the bracket series. -/
+  bracket_add : ∀ a b, bracket (a + b) =
+    formalGroup.toPowerSeries.subst ![bracket a, bracket b]
+  /-- Multiplication in `O` is composition of the bracket series. -/
+  bracket_mul : ∀ a b, bracket (a * b) = (bracket a).subst (bracket b)
+  /-- The linear coefficient of `[a]_F(X)` is `a`. -/
+  bracket_coeff_one : ∀ a, (bracket a).coeff 1 = a
+
+end LeanCategories

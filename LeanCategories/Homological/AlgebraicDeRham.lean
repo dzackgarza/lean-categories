@@ -4,16 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
+public import LeanCategories.ForMathlib.AlgebraDeRhamLemmas
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-public import Mathlib.LinearAlgebra.ExteriorPower.Basic
-public import Mathlib.RingTheory.Kaehler.Basic
 
 /-!
 # Algebraic de Rham complex
 
 Weibel, *An Introduction to Homological Algebra* (1994), Definition 9.8.9,
-pp. 344--353 (FC05-C09-U124).
+p. 349 (FC05-C09-U124).
 
 For a commutative `k`-algebra `R`, the algebraic de Rham differential is
 characterized on generators by
@@ -21,10 +20,7 @@ characterized on generators by
 `d(r₀ dr₁ ∧ ... ∧ drₙ) = dr₀ ∧ dr₁ ∧ ... ∧ drₙ`.
 
 The identity `d²=0` makes the exterior powers of `Ω[R⁄k]` into a cochain
-complex, and its cohomology is algebraic de Rham cohomology.  This file
-records the degree objects and the defining formula by a realization
-structure; construction and uniqueness of the differential from the formula
-are theorem-layer work.
+complex of `k`-modules. Its cohomology is algebraic de Rham cohomology.
 -/
 
 @[expose] public noncomputable section
@@ -41,47 +37,72 @@ variable (R : Type u) [CommRing R] [Algebra k R]
 
 /-- The degree-`n` module of algebraic differential forms `Ω^n_{R/k}`. -/
 abbrev DeRhamDegree (n : ℕ) : Type u :=
-  ⋀[R]^n Ω[R⁄k]
+  Algebra.DeRham.Form k R n
 
 /-- The pure differential form `r₀ dr₁ ∧ ... ∧ drₙ`. -/
 def deRhamPureForm {n : ℕ} (r₀ : R) (a : Fin n → R) :
     DeRhamDegree k R n :=
-  r₀ • exteriorPower.ιMulti R n (fun i => KaehlerDifferential.D k R (a i))
+  Algebra.DeRham.mk k R n r₀ a
 
 /-- The source value of the de Rham differential on a pure form:
 `dr₀ ∧ dr₁ ∧ ... ∧ drₙ`. -/
 def deRhamDifferentialPure {n : ℕ} (r₀ : R) (a : Fin n → R) :
     DeRhamDegree k R (n + 1) :=
-  exteriorPower.ιMulti R (n + 1)
-    (Fin.cons (KaehlerDifferential.D k R r₀)
-      (fun i => KaehlerDifferential.D k R (a i)))
+  Algebra.DeRham.mk k R (n + 1) 1 (Fin.cons r₀ a)
 
-/-- A realization of Weibel's algebraic de Rham complex.
+/-- The defining formula for the exterior derivative on pure differential forms. -/
+@[simp]
+theorem deRhamDifferential_pure {n : ℕ} (r₀ : R) (a : Fin n → R) :
+    Algebra.DeRham.differential k R n (deRhamPureForm k R r₀ a) =
+      deRhamDifferentialPure k R r₀ a :=
+  Algebra.DeRham.differential_mk k R n r₀ a
 
-The `d_pure` field is the defining formula from Definition 9.8.9.  Since the
-supplied object is already a cochain complex, the relation `d²=0` is carried
-by its homological-complex structure rather than repeated as a separate field.
--/
-structure DeRhamComplexRealization where
-  /-- The cochain complex `(Ω^*_{R/k},d)`. -/
-  complex : CochainComplex (ModuleCat R) ℕ
-  /-- Degree `n` is the `n`th exterior power of Kähler differentials. -/
-  degreeIso : ∀ n : ℕ,
-    complex.X n ≅ ModuleCat.of R (DeRhamDegree k R n)
-  /-- The differential satisfies
-  `d(r₀ dr₁∧...∧drₙ)=dr₀∧dr₁∧...∧drₙ`. -/
-  d_pure : ∀ (n : ℕ) (r₀ : R) (a : Fin n → R),
-    (degreeIso (n + 1)).hom
-        (complex.d n (n + 1)
-          ((degreeIso n).inv (deRhamPureForm k R r₀ a))) =
-      deRhamDifferentialPure k R r₀ a
+/-- The algebraic de Rham cochain complex `(Ω^*_{R/k}, d)` of `k`-modules. -/
+noncomputable def algebraicDeRhamComplex : CochainComplex (ModuleCat k) ℕ :=
+  CochainComplex.of
+    (fun n => ModuleCat.of k (DeRhamDegree k R n))
+    (fun n => ModuleCat.ofHom (Algebra.DeRham.differential k R n))
+    (fun n => by
+      apply ModuleCat.hom_ext
+      change (Algebra.DeRham.differential k R (n + 1)).comp
+          (Algebra.DeRham.differential k R n) = 0
+      ext x
+      exact congrArg Subtype.val (Algebra.DeRham.differential_squared k R n x))
 
-/-- Algebraic de Rham cohomology
-`H^n_dR(R/k)=H^n(Ω^*_{R/k},d)` attached to a realization of Weibel's
-de Rham complex. -/
-def algebraicDeRhamCohomology
-    (D : DeRhamComplexRealization k R) (n : ℕ) : ModuleCat R :=
-  (HomologicalComplex.homologyFunctor (ModuleCat R) (ComplexShape.up ℕ) n).obj
-    D.complex
+@[simp]
+theorem algebraicDeRhamComplex_X (n : ℕ) :
+    (algebraicDeRhamComplex k R).X n = ModuleCat.of k (DeRhamDegree k R n) := rfl
+
+@[simp]
+theorem algebraicDeRhamComplex_d (n : ℕ) :
+    (algebraicDeRhamComplex k R).d n (n + 1) =
+      ModuleCat.ofHom (Algebra.DeRham.differential k R n) := by
+  simp [algebraicDeRhamComplex]
+
+/-- The differential of the algebraic de Rham complex has Weibel's defining pure-form value. -/
+@[simp]
+theorem algebraicDeRhamComplex_d_pure {n : ℕ} (r₀ : R) (a : Fin n → R) :
+    (algebraicDeRhamComplex k R).d n (n + 1) (deRhamPureForm k R r₀ a) =
+      deRhamDifferentialPure k R r₀ a := by
+  rw [algebraicDeRhamComplex_d]
+  exact deRhamDifferential_pure k R r₀ a
+
+/-- The cochain map on algebraic de Rham complexes induced by a `k`-algebra homomorphism. -/
+noncomputable def algebraicDeRhamComplexMap {S : Type u} [CommRing S] [Algebra k S]
+    (f : R →ₐ[k] S) : algebraicDeRhamComplex k R ⟶ algebraicDeRhamComplex k S :=
+  CochainComplex.ofHom
+    (fun n => ModuleCat.ofHom (Algebra.DeRham.map k f n))
+    (fun n => by
+      simp only [algebraicDeRhamComplex, CochainComplex.of_d]
+      apply ModuleCat.hom_ext
+      change (Algebra.DeRham.differential k S n).comp (Algebra.DeRham.map k f n) =
+        (Algebra.DeRham.map k f (n + 1)).comp (Algebra.DeRham.differential k R n)
+      ext x
+      exact congrArg Subtype.val (Algebra.DeRham.map_differential k f n x).symm)
+
+/-- Algebraic de Rham cohomology `H^n_dR(R/k)=H^n(Ω^*_{R/k},d)` as a `k`-module. -/
+noncomputable def algebraicDeRhamCohomology (n : ℕ) : ModuleCat k :=
+  (HomologicalComplex.homologyFunctor (ModuleCat k) (ComplexShape.up ℕ) n).obj
+    (algebraicDeRhamComplex k R)
 
 end LeanCategories.Homological

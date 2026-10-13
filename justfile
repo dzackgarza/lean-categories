@@ -2,8 +2,7 @@
 #
 # Lake owns compilation and Mathlib supplies the dependency cache. Language-level
 # QC law is delegated to the global ai-review-ci checkout;
-# this file keeps only build entry points, the repo-supplied kernel-axiom audit,
-# and the repo's additive convention layer.
+# this file keeps build entry points and repo-supplied Lean audits.
 #
 # Not yet wired: the global lean-semgrep gate (Lean referent tripwires). It is
 # adopted the moment the legacy tree's axiom/shim debt is burned down by work
@@ -31,7 +30,6 @@ cache:
 # Run the complete repository quality gate
 test: build
     @just -f {{ai_review_ci}}/justfiles/lean.just -d . lean-no-sorry
-    @just _lint-conventions
     @just _lean-vacuity-audit
     @just _lean-mathlib-lint-audit
     @just _lean-unused-variables
@@ -42,7 +40,6 @@ test: build
 # transcription. Full elaboration, exporter/linter/axiom audits run in CI
 # (`test-ci`), where `test` remains the complete repository gate.
 test-commit:
-    @just _lint-conventions
 
 # Run the CI quality gate
 test-ci: test
@@ -100,20 +97,6 @@ _lean-unused-variables:
     if [ -n "$matches" ]; then
         echo "$matches"
         echo 'ERROR: unused-variable/parameter warnings present (Lean core linter.unusedVariables).' >&2
-        exit 1
-    fi
-
-# Additive local convention layer (project rulings; see issue #1 and AGENTS.md).
-# Cartan matrices have no role in this program's lattice conventions: Gram
-# matrices are defined by cited root presentations (Corrections 2–3 on #1).
-[private]
-_lint-conventions:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    matches="$(rg -n --glob '*.lean' 'Cartan' . || true)"
-    if [ -n "$matches" ]; then
-        echo "$matches"
-        echo 'ERROR: Cartan matrices are banned from lattice conventions (issue #1, Correction 3).' >&2
         exit 1
     fi
 

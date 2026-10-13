@@ -68,21 +68,4 @@ def hochschildShufflePure {p q : ℕ}
             (fun i => hochschildExternalFactor k R S a b (σ.symm i)))
     else 0
 
-/-- A chain-level realization of the Hochschild shuffle external product.
-The `map_pure` field fixes the map uniquely on the standard pure generators.
-Compatibility with Hochschild differentials is deliberately theorem-layer. -/
-structure HochschildShuffleExternalProductRealization where
-  /-- The `(p,q)` chain-level external product. -/
-  map : ∀ p q : ℕ,
-    ModuleCat.of k
-        (HochschildChainDegree (k := k) (R := R) (M := M) p ⊗[k]
-          HochschildChainDegree (k := k) (R := S) (M := N) q) ⟶
-      ModuleCat.of k (HochschildShuffleTargetDegree k R S M N p q)
-  /-- On pure Hochschild chains, `map` is the signed shuffle sum. -/
-  map_pure : ∀ (p q : ℕ) (m : M) (a : Fin p → R) (n : N) (b : Fin q → S),
-    map p q
-        (hochschildChainPure (k := k) (R := R) (M := M) m a ⊗ₜ[k]
-          hochschildChainPure (k := k) (R := S) (M := N) n b) =
-      hochschildShufflePure k R S M N m a n b
-
 end LeanCategories.Homological
