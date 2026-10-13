@@ -17,15 +17,28 @@ public import LeanCategories.Modules.Mathlib
 @[expose] public section
 
 /-!
-# Truncated free resolutions: free covers and bases
+# Selected module augmentations: free covers and categorical framings
 
-FOUNDATIONS Defs. 13.10–13.11: an augmented free resolution `⋯ → F₁ → F₀ → M → 0` truncates to
-a *free cover* `R^(I) ↠ M` (1-truncated: a chosen surjection from a free module, i.e. chosen
-generators) and, when the augmentation is invertible, to a free resolution of length zero
-`R^(I) ≅ M` (a chosen basis). These replace the former "generating frames" and "basis frames"
-(FOUNDATIONS Defs. 13.5–13.6, superseded): "frame" is reserved for framings of bundles
-(Remark 13.12). Maps of truncated resolutions are the maps of augmented complexes; `Coord` keeps a
-chosen basis but admits all linear maps.
+This file implements particular module-level augmentations of the form
+`R^(I) → M` using the shared structured-arrow construction:
+
+* `FreeCover R I`: the augmentation is epimorphic.
+* `BasedModule R I`: the augmentation is invertible, hence a **categorical framing**
+  relative to the free-module adjunction (a length-zero free resolution).
+* `Coord R I`: retains the chosen framing objects but allows arbitrary linear
+  maps instead of requiring basis preservation.
+
+FOUNDATIONS Defs. 13.10–13.12 distinguish **the general augmented object**
+from the additional cofiber-vanishing (full resolution), epimorphism, and
+isomorphism conditions. In particular, an epimorphic cover need not be a
+quasi-isomorphism. The category of arbitrary augmented objects, a truncation
+parameter n : ℕ, degreewise classes (free, projective, flasque, F-acyclic),
+amplitude and cofiber conditions, and their forgetful/specialization maps
+are *not* realized by this file or by the separate catalogue entries for these
+particular cases. Here `I` indexes generators; it is not the truncation degree.
+
+The missing general construction is tracked in dzackgarza/lean-categories#62.
+
 -/
 
 noncomputable section
