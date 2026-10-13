@@ -24,7 +24,6 @@ build:
 
 # Fetch Mathlib's prebuilt compilation cache
 cache:
-    @lake update
     @lake exe cache get
 
 # Run the complete repository quality gate
