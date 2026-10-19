@@ -614,6 +614,24 @@ not a decidable quotient equality or a new mathematical comparison.
 
 ## Workflow papercuts
 
+### The corpus output check does not classify explicit catalogue-interface work
+
+- **Need:** an explicit request to expose already formalized mathematics through the typed
+  catalogue must remain distinguishable from selecting a new foundational-corpus unit.
+- **Evidence:** on 2026-10-19 at `e1d422eb`, `python3 scripts/output_check.py` exited 1 with
+  `0 of 20 recent commits realized a definition (0%)`. Its population includes two toolchain
+  commits, merges, source requests, and catalogue-interface constructions. The check recognizes
+  corpus realization markers, so it does not establish whether those interface obligations
+  delivered their specified mathematics.
+- **Gap and impact:** the script's instruction to stop selecting corpus units cannot evaluate
+  an independently assigned exposure of Mathlib's existing abelian image/coimage construction.
+  Neither changing corpus markers nor weakening the mathematical request would repair that
+  scope mismatch. No further corpus unit was selected, and the script is unchanged.
+- **Coverage and repair link:** the printed 20-commit population and the current `AGENTS.md`
+  output-check contract were inspected. The owner of that contract should distinguish corpus
+  selection from explicit catalogue work; the mathematical request itself is checked against
+  the existing FC03-CE-U012 / FC05-C01-U013 mappings and the pinned Mathlib declarations.
+
 ### README tree and issue #53 cite registry paths that no longer exist
 
 - **Need:** a worker following the README or #53 to the registry, resolver and realization owners finds them.
