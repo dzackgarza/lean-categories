@@ -228,7 +228,7 @@ def coimageRealization (R : RingCat.{u}) :
 /-- Mathlib's canonical coimage-to-image map, functorial on commutative squares. -/
 def coimageImageComparisonDeclaration (R : RingCat.{u}) :
     arrowsModulesCategory R ⥤ arrowsModulesCategory R :=
-  Abelian.coimageImageComparisonFunctor
+  Abelian.coimageImageComparisonFunctor (C := ModuleCat.{u} R)
 
 def coimageImageComparisonRealization (R : RingCat.{u}) :
     FunctorRealization CoimageImageComparisonExpr (arrowsModulesCategory R)
@@ -241,7 +241,7 @@ existing first-isomorphism construction in every abelian category. -/
 def coimageImageIso (R : RingCat.{u}) :
     coimageDeclaration R ⋙ quotientsCodomainDeclaration R ≅
       imageDeclaration R ⋙ subobjectsDomainDeclaration R :=
-  Abelian.coimIsoIm
+  Abelian.coimIsoIm (C := ModuleCat.{u} R)
 
 /-- The defining quotient map `M → coim(f)`. -/
 def coimageProjection (R : RingCat.{u}) (f : Arrow (ModuleCat.{u} R)) :
