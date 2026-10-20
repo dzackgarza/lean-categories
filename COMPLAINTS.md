@@ -1069,6 +1069,17 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
      than by entries (`Matrix.of`/`!![…]`), `1`, products, transposes or diagonals. Whether an
      element of an arbitrary closed monoid is a unit is not decidable in general; each further
      family is a characterization of its units, added as a case.
+     **Selected ring objects (#92, 2026-10-20).** The matrix `!![1,2;3,4]` was established
+     over literal `ℚ` but refused over the definitionally equal selected rational-ring carrier.
+     Its arithmetic retained `RingCat.instRingObjForgetRingHomCarrier` and the inherited
+     multiplication, addition and numeral instances. Reducing the carrier alone did not repair
+     this. `Units.normalizeRingObjects` reduces both bundled carriers and their structure and
+     forgetful-carrier instance wrappers before the unchanged unit procedures run. The existing
+     specimen suite now includes the selected invertible matrix and a selected singular matrix,
+     retaining the literal cases. Reuse searches (`Matrix.invertibleOfDetInvertible`,
+     `invertibleOfNonzero`, `instance RingCat.carrier`) and the inspected Mathlib
+     `Algebra/Category/Ring/Basic.lean` show that the existing inverse constructions suffice;
+     no mathematical definition, theorem or admission condition changes.
   3. **Closed facts about real numbers.** Nonzero-ness of a real element (units of `ℝ`, leading
      coefficients of real polynomials) is established by evaluation (`norm_num`) or by positivity.
      A nonzero value that is neither evaluable nor of known sign (`π - 3`, `exp 1 - e`-style

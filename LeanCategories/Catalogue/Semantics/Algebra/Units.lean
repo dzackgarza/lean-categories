@@ -145,6 +145,30 @@ meta def closedArithmeticEvidence : TacticM Unit :=
      do evalTactic (← `(tactic| decide))]
 
 open Lean Meta Elab Tactic in
+/-- Read the carrier and algebra structure of a selected ring object by definitional reduction.
+The instances on the carrier of the forgetful functor are wrappers around the object's own
+structure. Reduce those wrappers as well as the carrier: otherwise arithmetic on a named field
+can retain the selected ring's instance even after its displayed type has become the field. -/
+meta def normalizeRingObjects : TacticM Unit := do
+  let goal ← getMainGoal
+  let target ← instantiateMVars (← goal.getType)
+  let projections := [``RingCat.carrier, ``RingCat.ring,
+    ``RingCat.instRingObjForgetRingHomCarrier,
+    ``SemiRingCat.carrier, ``SemiRingCat.semiring,
+    ``SemiRingCat.instSemiringObjForgetRingHomCarrier,
+    ``CommRingCat.carrier, ``CommRingCat.commRing,
+    ``CommRingCat.instCommRingObjForgetRingHomCarrier,
+    ``CommSemiRingCat.carrier, ``CommSemiRingCat.commSemiring,
+    ``CommSemiRingCat.instCommSemiringObjForgetRingHomCarrier]
+  let normalized ← Meta.transform target (post := fun e => do
+    if projections.any (e.isAppOfArity · 1) then
+      let reduced ← withTransparency .default <| whnf e
+      if reduced != e then return .visit reduced
+      return .done e
+    return .continue)
+  replaceMainGoal [← goal.change normalized]
+
+open Lean Meta Elab Tactic in
 /-- Evaluate the catalogue's numerals in the main goal. The numeral `k` of a ring or semiring `R`
 is the image of `k` under the map out of the initial object, `ℤ → R` or `ℕ → R`
 (`NamedRings.ringNumeral`, `Semirings.semiringNumeral`, LC-15), an element of the underlying set
@@ -273,7 +297,9 @@ open Lean Elab Tactic in
 
 It fails on an element that is not a unit (`2 ∈ ℤ`, `0 ∈ ℚ`, a singular matrix, `0 ∈ ℚ[x]`). -/
 meta partial def isUnitEvidence : TacticM Unit :=
-  CasCatalogue.Evidence.establish "Units" isUnitCases
+  CasCatalogue.Evidence.establish "Units" do
+    normalizeRingObjects
+    isUnitCases
 where
   /-- `IsUnit p` for a polynomial `p` exhibited as a constant `C a`, from `IsUnit a`. -/
   fromConstant : TacticM Unit := do
@@ -351,7 +377,9 @@ equations `⅟x · x = x · ⅟x = 1` are proved (by `isUnitEvidence`, the inver
 
 It fails on an element that is not a unit (`2 ∈ ℤ`, `0 ∈ ℚ`, a singular matrix, `0 ∈ ℚ[x]`). -/
 meta partial def invertibleEvidence : TacticM Unit :=
-  CasCatalogue.Evidence.establish "Units" invertibleCases
+  CasCatalogue.Evidence.establish "Units" do
+    normalizeRingObjects
+    invertibleCases
 where
   /-- `IsUnit x` for the element `x` of a ring, its determinants expanded first. -/
   isUnitOfElement : TacticM Unit := do
