@@ -61,6 +61,7 @@ public import LeanCategories.Catalogue.Semantics.Limits.Registration
 public import LeanCategories.Catalogue.Semantics.Foundation.FiniteSubsetLiterals
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Catalogue
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.CatalogueRegistration
+public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Constructions
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Lattices
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Expressions
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Kernels

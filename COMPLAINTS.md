@@ -1524,3 +1524,28 @@ removed that recipe and its coarse Cartan-matrix convention; the later push-tier
 wiring retained its invocation. The repair removes this dangling invocation and
 the stale description of the retired check. The shared Lean no-sorry scan remains
 the push check; full elaboration and the existing audits remain the CI gate.
+
+### Callable formed-module constructions lacked their actual defining data (2026-10-20)
+
+The approved `cc-specimens` and `cc-forms-general` requirements need forms supplied
+by an actual bilinear function, including distinct chosen forms on one carrier and
+varying value modules. The existing catalogue exposed selected constants and pairing,
+but no generic callable constructor or metric-dual/discriminant construction.
+`Constructions.lean` exposes those existing owners, their actual carrier/value
+modules, the chosen map, and defining morphism components. Bilinear admission uses
+Mathlib's full `IsBilinearMap` laws for two possibly different source modules.
+
+Reuse queries were `bilinearForms`, `LinearMap.mk₂`, and
+`IsBilinearMap.toLinearMap` in the formalization corpus. Mathlib owns bilinear maps
+and admission; `BilinModuleCat.ofBilinMap` and `BilWFormCat.of` own formed objects;
+`Lattices/Valued/MetricDual.lean`, `Discriminant.lean`, and
+`Modules/Bilinear/Valued/Cokernel.lean` own the canonical constructions and proofs.
+New code is callable catalogue wrappers, registration, and proof-producing admission
+for elementary module identities. It introduces no replacement mathematics.
+
+Focused `ConstructionTests` compilation checks actual hyperbolic and scaled forms
+over Z, a product-valued form, mixed-source application, diagonal quadratic values,
+a proved nonlinear counterexample, and canonical zero composites. The new public
+cokernel surface currently supplies its object and projection; the existing owner's
+universal descent remains a separate interface obligation. These source checks do
+not establish downstream execution, the remaining extension trials, or B0 acceptance.
