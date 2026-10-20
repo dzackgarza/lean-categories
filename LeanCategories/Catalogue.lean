@@ -22,6 +22,7 @@ public import LeanCategories.Catalogue.Semantics.BinderTests
 public import LeanCategories.Catalogue.Semantics.DecidableElementTests
 public import LeanCategories.Catalogue.Semantics.UnitInverseTests
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.ConstructionTests
+public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.AlternatingTests
 public import LeanCategories.Catalogue.Semantics.FiniteSubsetLiteralTests
 public import LeanCategories.Catalogue.Semantics.PresentationEvaluationTests
 public import LeanCategories.Catalogue.Semantics.Algebra.Catalogue

@@ -1550,3 +1550,30 @@ cokernel surface supplies its object, projection, and prescribed descent under
 `f ≫ g = 0`, using the existing owner's proofs for both components. Its factorization
 identity is also checked generically. These source checks do not establish
 downstream execution, the remaining extension trials, or B0 acceptance.
+
+### Independent group-valued extension: center with its inclusion (2026-10-20)
+
+For directive D's independently chosen group-valued construction, expose the center
+as a subgroup with its actual ambient group and inclusion. Corpus queries
+`Subgroup.center` and `centerCongr` locate Mathlib's owners
+`GroupTheory/Subgroup/Center.lean`; the existing catalogue `Subgroups.lean` owns
+the category and generic group/subgroup interfaces. New code only supplies the
+core-of-groups functor and its catalogue registration, retaining the inclusion's
+central-image theorem. It does not assert functoriality under arbitrary group
+homomorphisms, which is false. The Mathlib-only transport/functor probe and the focused `Centers` target passed.
+The latter checks registration, the central-image theorem, and both functor laws;
+it does not establish downstream execution or B0 acceptance.
+
+### Independent classifier extension: alternating chosen forms (2026-10-20)
+
+Directive D's classifier/refinement extension uses alternation of the actual
+chosen fixed-value formed module. Corpus queries `IsAlternating` and
+`LinearMap.IsAlt`, together with the existing `Fixed.lean`, identify the bilinear
+predicate and `isAlternatingBilinModule`/`AltBilinModuleCat` as owners. New code
+only supplies their classifier/category/property registrations and the constructor
+retaining the original form and its full proof. It selects no replacement pairing.
+The focused `AlternatingTests` source check passed. The determinant pairing on
+Z² retains its value 11 on the independently chosen vectors, implies skew-symmetry,
+and the symmetric hyperbolic form on that same carrier is proved nonalternating.
+This checks the source classifier and its retained mathematics, not downstream
+execution or B0 acceptance.
