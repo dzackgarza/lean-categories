@@ -10,6 +10,7 @@ public import LeanCategories.Catalogue.Semantics.Algebra.Polynomials
 public import LeanCategories.Catalogue.Semantics.Algebra.LinearAlgebra
 public import LeanCategories.Catalogue.Semantics.Algebra.Calculus
 public import LeanCategories.Catalogue.Semantics.Algebra.NumberSystems
+public import LeanCategories.Catalogue.Semantics.Algebra.NamedCommutativeRings
 public import LeanCategories.Catalogue.Semantics.Foundation.Morphisms
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.Foundation.Evidence
@@ -98,6 +99,9 @@ equations of the inverse, establishes `IsUnit x` on the same elements. -/
 meta def unitSpecimens : Lean.Elab.Term.TermElabM (List Lean.Term) := do
   return [← `((2 : ℚ)), ← `((-3 / 4 : ℝ)),
       ← `((!![1, 2; 3, 4] : Matrix (Fin 2) (Fin 2) ℚ)),
+      ← `((!![1, 2; 3, 4] : Matrix (Fin 2) (Fin 2)
+        ↑(NamedRings.asRing (Algebras.commutativeRingsRings.toFunctor.obj
+          NamedCommutativeRings.rationals)))),
       ← `((5 : ZMod 7)), ← `((-1 : ℤ)),
       ← `((!![1, 2, 0; 3, 4, 1; 0, 5, 7] : Matrix (Fin 3) (Fin 3) ℚ)),
       ← `((!![2, 1, 0, 0; 0, 1, 3, 0; 1, 0, 1, 1; 0, 2, 0, 5] : Matrix (Fin 4) (Fin 4) ℚ)),
@@ -114,6 +118,9 @@ meta def unitSpecimens : Lean.Elab.Term.TermElabM (List Lean.Term) := do
 meta def nonunitSpecimens : Lean.Elab.Term.TermElabM (List Lean.Term) := do
   return [← `((2 : ℤ)), ← `((0 : ℚ)),
       ← `((!![1, 2; 2, 4] : Matrix (Fin 2) (Fin 2) ℚ)),
+      ← `((!![1, 2; 2, 4] : Matrix (Fin 2) (Fin 2)
+        ↑(NamedRings.asRing (Algebras.commutativeRingsRings.toFunctor.obj
+          NamedCommutativeRings.rationals)))),
       ← `((!![2, 0; 0, 1] : Matrix (Fin 2) (Fin 2) ℤ)),
       ← `((!![1, 2, 3; 4, 5, 6; 7, 8, 9] : Matrix (Fin 3) (Fin 3) ℚ)),
       ← `((2 : ℕ)), ← `((0 : ℕ)), ← `((2 : ZMod 4)),
