@@ -1593,3 +1593,18 @@ value map sends n to (n,2n); the source checks the resulting pairing (5,10) and
 its defining value-map action. Scalar extension along Z → Q checks the actual
 tensor-valued pairing with both supplied scalar factors. These source checks do
 not establish downstream execution or independent B0 acceptance.
+
+### Independent presentation extension: shifted rational dual numbers (2026-10-20)
+
+The independently chosen pair is Q[X]/(X²) and Q[Y]/((Y+1)²), with comparison
+X ↦ Y+1 and inverse Y ↦ X−1. Corpus queries `Polynomial.taylorEquiv` and
+`Ideal.quotientEquivAlg` locate the Mathlib owners; the existing
+`Algebra/Concrete/PolynomialPresentation.lean` already supplies generic translation.
+New code specializes that comparison, retains the actual quotient generators,
+proves their nonidentity action and transported nilpotent relation, and registers
+source-proved point evaluation. These rings are not represented as fields.
+The import-only mathematical proof and theorem-rewriting probes passed, followed
+by the focused `ShiftedDualNumberTests` build (source plus regressions). Both
+generator actions, coefficient preservation, composite polynomial action, the
+nonidentity negative, and the transported square-zero relation are checked in
+Lean. These source checks do not establish downstream execution or B0 acceptance.
