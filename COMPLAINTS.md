@@ -1515,3 +1515,12 @@ canonical comparison requires result-level cohomology machinery. The
 canonical U171/U173 mapping rows therefore retain explicit
 `[sweep-iii-blocked]` status rather than manufacturing law proofs or a
 surrogate operation.
+
+### Push recipe retained a retired convention check (2026-10-20)
+
+Publishing the #92 repair failed after the tracked-source no-sorry scan because
+`test-push` called the nonexistent `_lint-conventions` recipe. Commit `79c84c49`
+removed that recipe and its coarse Cartan-matrix convention; the later push-tier
+wiring retained its invocation. The repair removes this dangling invocation and
+the stale description of the retired check. The shared Lean no-sorry scan remains
+the push check; full elaboration and the existing audits remain the CI gate.

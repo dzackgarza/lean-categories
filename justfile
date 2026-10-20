@@ -34,9 +34,8 @@ test: build
     @just _lean-unused-variables
     @just _lean-axiom-audit
 
-# Commit- and push-tier QC is non-elaborating: it catches the repository's
-# local convention error while a worker can still bank a partially elaborated
-# transcription. Full elaboration, exporter/linter/axiom audits run in CI
+# Commit- and push-tier QC is non-elaborating, so a worker can bank a partially
+# elaborated transcription. Full elaboration, exporter/linter/axiom audits run in CI
 # (`test-ci`), where `test` remains the complete repository gate.
 test-commit:
 
@@ -102,7 +101,6 @@ _lean-unused-variables:
 [private]
 test-push:
     @just -f {{ai_review_ci}}/justfiles/lean.just -d . lean-no-sorry
-    @just _lint-conventions
 
 # Regenerate the corpus site pages from the agent-memory vault
 site-build:
