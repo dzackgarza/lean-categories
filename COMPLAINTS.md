@@ -1577,3 +1577,19 @@ Z² retains its value 11 on the independently chosen vectors, implies skew-symme
 and the symmetric hyperbolic form on that same carrier is proved nonalternating.
 This checks the source classifier and its retained mathematics, not downstream
 execution or B0 acceptance.
+
+### Independent structural-route and transport extensions (2026-10-20)
+
+The chosen routes are the fixed-value formed inclusion followed by total formed
+carrier, versus the direct fixed-value carrier. Their independently checked source
+comparison retains the actual module and maps. Prescribed transport uses the
+existing co-Cartesian change-of-value object/arrow and tensor scalar extension along
+an actual ring homomorphism. Corpus searches `fixedValueInclusion` and
+`baseChangeBilWForm` found no additional owner; `Total.lean` and
+`Lattices/Valued/BaseChange.lean` already supply these constructions. New code only
+exposes those owners and registers their structural comparison and callable maps.
+The import-only carrier-route equality probe passed. Focused `Transport` and `TransportTests` builds passed. The chosen nonidentity
+value map sends n to (n,2n); the source checks the resulting pairing (5,10) and
+its defining value-map action. Scalar extension along Z → Q checks the actual
+tensor-valued pairing with both supplied scalar factors. These source checks do
+not establish downstream execution or independent B0 acceptance.

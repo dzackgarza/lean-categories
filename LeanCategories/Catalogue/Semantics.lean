@@ -64,6 +64,7 @@ public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Catalog
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.CatalogueRegistration
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Constructions
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Alternating
+public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Transport
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Lattices
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Expressions
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Kernels
