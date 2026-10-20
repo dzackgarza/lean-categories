@@ -1625,3 +1625,67 @@ introducing another structured-result representation. Both the canonical-wrapper
 final `CokernelLiftTests` target checks the complete registered result
 (2928 jobs, 10-second rebuilt test), with no new source warnings. It establishes
 these mathematical source assertions, not downstream execution or B0 acceptance.
+
+### Independent review of the published B0 mathematical source (2026-10-20)
+
+**Assessed source:** `e8e97d2b13fad4b868b0f8447a5e511a47732436`, verified
+against `origin`'s advertised `main` on 2026-10-20. The reviewed change range is
+`a2123729df092e58b6fb0cd39c78db5e1714faf2..e8e97d2b13fad4b868b0f8447a5e511a47732436`.
+This is an independent mathematical construction-source assessment. No downstream
+kernel, assertion, leaf, or execution diagnostic was consulted.
+
+The inspected new declarations preserve their mathematical owners and hypotheses:
+
+- `Constructions.bilinearMaps` permits different source modules and arbitrary selected
+  value modules. `admitBilinear` requires all four universally quantified laws of
+  Mathlib's `IsBilinearMap` (`LinearAlgebra/BilinearMap.lean:647`), then uses its
+  `toLinearMap`. The constructor retains the supplied map. The actual hyperbolic
+  formula on Z², its threefold multiple on the same carrier, a product-valued
+  pairing, and a nonlinear separating example occur in `ConstructionTests`.
+- `Centers.center` retains Mathlib's center as an actual subgroup inclusion.
+  `centers` transports it on `Core GrpCat` through Mathlib's `centerCongr`, without
+  asserting the false arbitrary-homomorphism version. `Alternating` uses the full
+  existing alternation predicate; its determinant specimen and the nonalternating
+  symmetric hyperbolic specimen distinguish selected structure from carrier data.
+- `Transport.carrierRoutes` compares the actual functors, including morphisms;
+  its definitional proof is an accurate structural comparison, not a new theorem
+  about forms. Change of values retains the prescribed linear map, and scalar
+  extension uses the supplied ring homomorphism's algebra structure. The source
+  specimens use a nonidentity map n ↦ (n,2n) and tensor extension Z → Q.
+- `ShiftedDualNumbers` compares Q[X]/(X²) with Q[Y]/((Y+1)²) using the existing
+  polynomial-translation owner. Both generator actions, coefficient preservation,
+  a proved nonidentity action, and the transported square-zero relation are
+  retained. These are quotient rings, with no field claim.
+- Metric-dual wrappers retain the integral-domain hypothesis and the existing
+  dual submodule of the rational span. Their source map has the actual R → Frac(R)
+  value component. The discriminant is the existing formed cokernel, not an
+  unstructured carrier quotient. Its owner proves that value relations give
+  Frac(R)/R; comparison with the adjoint-defect presentation explicitly requires
+  fraction-field perfection (`Discriminant.discriminantCarrierEquivDefect`).
+- The formed cokernel owner kills the carrier image and both mixed-pairing
+  relations in its values. Its `cokernelIsColimit` constructs the mediator and
+  proves uniqueness on both quotient components. The new wrapper consumes that
+  owner rather than assuming the universal property. `CokernelLiftTests` uses
+  the registered colimit cocone on doubled hyperbolic U with values multiplied
+  by four and prescribed reduction modulo two; its mediator is proved nonzero
+  and both defining map actions and the quotient pairing are checked.
+
+No concrete mathematical defect was found in these new declarations. The unit
+admission change was also inspected: it normalizes selected carrier/instance
+projections by definitional reduction before existing proof-producing tactics;
+it adds no mathematical axiom or weakened predicate.
+
+**Check and limits:** the single focused command
+`lake build LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.CokernelLiftTests`
+completed successfully at the assessed source (2928 jobs, cached dependencies with
+replayed existing warnings). This establishes elaboration of that target and its
+imported source assertions. Earlier entries' focused checks for the other targets
+remain their authors' recorded checks; they were not rerun by this review.
+The newly added source examples do not establish a concrete hyperbolic-U
+metric-dual/discriminant value calculation, or a new generic binder/application
+instance covering the complete growth requirement. Their absence from these new
+examples is an assessment limit, not evidence that the existing mathematical
+owners are false or unavailable. Whole-program mathematical completeness and
+publication readiness beyond the inspected changes remain unestablished by this
+bounded review. Compilation and this source judgment confer no downstream
+functional acceptance, independent release authority, or B0 acceptance.
