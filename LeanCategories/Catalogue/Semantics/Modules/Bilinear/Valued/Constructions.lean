@@ -155,6 +155,21 @@ def cokernel (R : CommRingCat.{u}) {X Y : BilWFormCat R} (f : X ⟶ Y) : BilWFor
 /-- The defining formed quotient morphism of the cokernel. -/
 def cokernelProjection (R : CommRingCat.{u}) {X Y : BilWFormCat R} (f : X ⟶ Y) :
     Y ⟶ cokernel R f := BilWFormCat.cokernelProjection f
+/-- The prescribed lift of a formed morphism that annihilates the supplied arrow. -/
+def cokernelDesc (R : CommRingCat.{u}) {X Y Z : BilWFormCat R}
+    (f : X ⟶ Y) (g : Y ⟶ Z) (h : f ≫ g = 0) : cokernel R f ⟶ Z :=
+  BilWFormCat.cokernelDesc f g
+    (BilWFormCat.carrier_comp_eq_zero_of_comp_eq_zero f g h)
+    (BilWFormCat.value_comp_eq_zero_of_comp_eq_zero f g h)
+
+/-- The prescribed lift recovers the given arrow after the defining projection. -/
+theorem cokernelProjection_desc (R : CommRingCat.{u}) {X Y Z : BilWFormCat R}
+    (f : X ⟶ Y) (g : Y ⟶ Z) (h : f ≫ g = 0) :
+    cokernelProjection R f ≫ cokernelDesc R f g h = g :=
+  BilWFormCat.cokernelProjection_desc f g
+    (BilWFormCat.carrier_comp_eq_zero_of_comp_eq_zero f g h)
+    (BilWFormCat.value_comp_eq_zero_of_comp_eq_zero f g h)
+
 normalized_registry .object
   { id := ⟨"obj.sets.bilinear_maps"⟩, category := CategoryId.sets, name := "BilinearMaps"
     declaration := `CasCatalogue.Modules.Bilinear.Valued.Constructions.bilinearMaps
@@ -227,4 +242,8 @@ normalized_registry .morphism
   { id := ⟨"mor.bil_wform.cokernel_projection"⟩, category := CategoryId.bilWForm
     name := "formed_cokernel_projection",
     declaration := `CasCatalogue.Modules.Bilinear.Valued.Constructions.cokernelProjection }
+normalized_registry .morphism
+  { id := ⟨"mor.bil_wform.cokernel_desc"⟩, category := CategoryId.bilWForm
+    name := "formed_cokernel_desc",
+    declaration := `CasCatalogue.Modules.Bilinear.Valued.Constructions.cokernelDesc }
 end CasCatalogue.Modules.Bilinear.Valued.Constructions

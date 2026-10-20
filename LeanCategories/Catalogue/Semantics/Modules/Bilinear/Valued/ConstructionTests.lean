@@ -108,4 +108,9 @@ example (R : CommRingCat) {X Y : BilWFormCat R} (f : X ⟶ Y) :
     f ≫ cokernelProjection R f = 0 :=
   BilWFormCat.comp_cokernelProjection f
 
+example (R : CommRingCat) {X Y Z : BilWFormCat R}
+    (f : X ⟶ Y) (g : Y ⟶ Z) (h : f ≫ g = 0) :
+    cokernelProjection R f ≫ cokernelDesc R f g h = g :=
+  cokernelProjection_desc R f g h
+
 end CasCatalogue.Modules.Bilinear.Valued.ConstructionTests

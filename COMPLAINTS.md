@@ -1545,7 +1545,8 @@ for elementary module identities. It introduces no replacement mathematics.
 
 Focused `ConstructionTests` compilation checks actual hyperbolic and scaled forms
 over Z, a product-valued form, mixed-source application, diagonal quadratic values,
-a proved nonlinear counterexample, and canonical zero composites. The new public
-cokernel surface currently supplies its object and projection; the existing owner's
-universal descent remains a separate interface obligation. These source checks do
-not establish downstream execution, the remaining extension trials, or B0 acceptance.
+a proved nonlinear counterexample, and canonical zero composites. The public
+cokernel surface supplies its object, projection, and prescribed descent under
+`f ≫ g = 0`, using the existing owner's proofs for both components. Its factorization
+identity is also checked generically. These source checks do not establish
+downstream execution, the remaining extension trials, or B0 acceptance.
