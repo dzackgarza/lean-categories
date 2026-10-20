@@ -1608,3 +1608,20 @@ by the focused `ShiftedDualNumberTests` build (source plus regressions). Both
 generator actions, coefficient preservation, composite polynomial action, the
 nonidentity negative, and the transported square-zero relation are checked in
 Lean. These source checks do not establish downstream execution or B0 acceptance.
+
+### Complete formed morphisms and a nonzero prescribed cokernel descent (2026-10-20)
+
+The structured-result extension is checked on multiplication by two on U's carrier
+and four on its values, followed by reduction modulo two. Both actual module maps
+and their full pairing law are exposed by a wrapper of `BilWFormCat.homMk`; no
+carrier-only morphism or quotient is substituted. Corpus queries
+`BilWFormCat.homMk` and `AddMonoidHom.toIntLinearMap` identify the existing formed
+morphism and integral-linear map owners. The import-only map/zero-composite probe
+passed. The concrete source check additionally prescribes the nonzero descended
+carrier/value maps and checks the quotient pairing through its defining projection.
+The test consumes the already registered complete `ColimitCocone` from
+`Limits/Registration.bilWFormCokernel`, including its actual mediator, rather than
+introducing another structured-result representation. Both the canonical-wrapper and registered-cocone focused checks passed. The
+final `CokernelLiftTests` target checks the complete registered result
+(2928 jobs, 10-second rebuilt test), with no new source warnings. It establishes
+these mathematical source assertions, not downstream execution or B0 acceptance.

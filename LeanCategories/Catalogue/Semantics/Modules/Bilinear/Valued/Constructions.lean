@@ -112,6 +112,12 @@ def carrierMap (R : CommRingCat.{u}) {X Y : BilWFormCat R} (f : X ⟶ Y) :
 /-- The selected value-module component of a formed morphism. -/
 def valueMap (R : CommRingCat.{u}) {X Y : BilWFormCat R} (f : X ⟶ Y) :
     values R X ⟶ values R Y := BilWFormCat.valueMap f
+/-- A formed morphism retains both supplied module maps and their full pairing law. -/
+def morphism (R : CommRingCat.{u}) (X Y : BilWFormCat R)
+    (f : X.carrier ⟶ Y.carrier) (α : X.value ⟶ Y.value)
+    (h : ∀ x y, α.hom (X.pairing x y) = Y.pairing (f.hom x) (f.hom y)) : X ⟶ Y :=
+  BilWFormCat.homMk f.hom α.hom h
+
 /-- Evaluate a variable-value form without forgetting its selected value module. -/
 def pairing (R : CommRingCat.{u}) (L : BilWFormCat R) :
     (L.carrier × L.carrier : Type u) ⟶ (L.value : Type u) :=
@@ -210,6 +216,10 @@ normalized_registry .morphism
   { id := ⟨"mor.modules.formed_value_map"⟩, category := CategoryId.modulesR
     name := "formed_value_map"
     declaration := `CasCatalogue.Modules.Bilinear.Valued.Constructions.valueMap }
+normalized_registry .morphism
+  { id := ⟨"mor.bil_wform.from_module_maps"⟩, category := CategoryId.bilWForm
+    name := "formed_morphism"
+    declaration := `CasCatalogue.Modules.Bilinear.Valued.Constructions.morphism }
 normalized_registry .morphism
   { id := ⟨"mor.sets.formed_quadratic"⟩, category := CategoryId.sets
     name := "quadratic_value",

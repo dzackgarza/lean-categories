@@ -24,6 +24,7 @@ public import LeanCategories.Catalogue.Semantics.UnitInverseTests
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.ConstructionTests
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.AlternatingTests
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.TransportTests
+public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.CokernelLiftTests
 public import LeanCategories.Catalogue.Semantics.Algebra.ShiftedDualNumberTests
 public import LeanCategories.Catalogue.Semantics.FiniteSubsetLiteralTests
 public import LeanCategories.Catalogue.Semantics.PresentationEvaluationTests
