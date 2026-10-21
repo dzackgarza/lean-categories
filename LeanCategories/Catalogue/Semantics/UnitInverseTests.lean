@@ -53,6 +53,26 @@ abbrev element {M : Type} (c : M) : fin 1 ⟶ (M : LeanCategories.Foundation.Mat
 example : inverseElement ℚ (admit (MonCat.of ℚ) 3 (by run_tac invertibleEvidence)) = element (1 / 3 : ℚ) := by
   decide +kernel
 
+/-- The monoid of the named ring `ℚ`: its image along the multiplicative port `Ring → Mon`, the
+argument of the units functor. -/
+abbrev rationalMonoid : MonCat.{0} :=
+  monoidArgument (CasCatalogue.Algebra.Ports.ringsMultiplicative.toFunctor.obj ringRationals)
+
+/-- The numeral `3` of the named ring `ℚ`, as an element of its monoid. -/
+abbrev rationalThree : rationalMonoid :=
+  ConcreteCategory.hom (C := Type) (ringNumeral ringRationals 3) ⟨0, Nat.one_pos⟩
+
+/-- `3⁻¹ = 1/3` in `ℚ`, the numeral `3` of the named ring `ℚ` admitted into the units of its
+monoid by the registered evidence. -/
+example : admit rationalMonoid rationalThree (by run_tac invertibleEvidence) ≫
+    inverse rationalMonoid ≫ inclusion rationalMonoid = element (1 / 3 : ℚ) := by
+  decide +kernel
+
+/-- `3⁻¹ ≠ 3` in `ℚ`, at the same admitted numeral. -/
+example : admit rationalMonoid rationalThree (by run_tac invertibleEvidence) ≫
+    inverse rationalMonoid ≫ inclusion rationalMonoid ≠ element (3 : ℚ) := by
+  decide +kernel
+
 /-- `1 / 3 = 1/3` in `ℚ`: the numeral `1` divided by the unit `3 ∈ ℚˣ`. -/
 example : divideElement ℚ (ringNumeral ringRationals 1)
     (admit (MonCat.of ℚ) 3 (by run_tac invertibleEvidence)) = element (1 / 3 : ℚ) := by
