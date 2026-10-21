@@ -64,13 +64,13 @@ abbrev rationalThree : rationalMonoid :=
 
 /-- `3⁻¹ = 1/3` in `ℚ`, the numeral `3` of the named ring `ℚ` admitted into the units of its
 monoid by the registered evidence. -/
-example : admit rationalMonoid rationalThree (by run_tac invertibleEvidence) ≫
-    inverse rationalMonoid ≫ inclusion rationalMonoid = element (1 / 3 : ℚ) := by
+example : inverseElement ℚ (admit rationalMonoid rationalThree (by run_tac invertibleEvidence)) =
+    element (1 / 3 : ℚ) := by
   decide +kernel
 
 /-- `3⁻¹ ≠ 3` in `ℚ`, at the same admitted numeral. -/
-example : admit rationalMonoid rationalThree (by run_tac invertibleEvidence) ≫
-    inverse rationalMonoid ≫ inclusion rationalMonoid ≠ element (3 : ℚ) := by
+example : inverseElement ℚ (admit rationalMonoid rationalThree (by run_tac invertibleEvidence)) ≠
+    element (3 : ℚ) := by
   decide +kernel
 
 /-- `1 / 3 = 1/3` in `ℚ`: the numeral `1` divided by the unit `3 ∈ ℚˣ`. -/

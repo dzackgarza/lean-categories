@@ -145,26 +145,45 @@ meta def closedArithmeticEvidence : TacticM Unit :=
      do evalTactic (← `(tactic| decide))]
 
 open Lean Meta Elab Tactic in
-/-- Read the carrier and algebra structure of a selected ring object by definitional reduction.
-The instances on the carrier of the forgetful functor are wrappers around the object's own
-structure. Reduce those wrappers as well as the carrier: otherwise arithmetic on a named field
-can retain the selected ring's instance even after its displayed type has become the field. -/
-meta def normalizeRingObjects : TacticM Unit := do
+/-- Read the carrier and algebraic structure of a selected monoid, semiring or ring object by
+definitional reduction. A carrier or structure projection (`MonCat.carrier`, `MonCat.str`,
+`RingCat.carrier`, `RingCat.ring`, …) of an object is read off the object once the object is
+reduced to its constructor (`MonCat.of ℚ`, the image of `RingCat.of ℚ` along `Ring → Mon`), so
+that the carrier is the type the object was built on (`ℚ`, `ℤ/5`), never unfolded further (`ℤ/5`
+is not read as `Fin 5`). The instances on the carrier of the forgetful functor are wrappers around
+the object's own structure and are reduced as well: otherwise arithmetic on a named field can
+retain the selected ring's instance even after its displayed type has become the field. -/
+meta def normalizeBundledObjects : TacticM Unit := do
   let goal ← getMainGoal
   let target ← instantiateMVars (← goal.getType)
-  let projections := [``RingCat.carrier, ``RingCat.ring,
-    ``RingCat.instRingObjForgetRingHomCarrier,
-    ``SemiRingCat.carrier, ``SemiRingCat.semiring,
+  let objects := [``MonCat, ``CommMonCat, ``SemiRingCat, ``RingCat, ``CommSemiRingCat,
+    ``CommRingCat]
+  let wrappers := [``RingCat.instRingObjForgetRingHomCarrier,
     ``SemiRingCat.instSemiringObjForgetRingHomCarrier,
-    ``CommRingCat.carrier, ``CommRingCat.commRing,
     ``CommRingCat.instCommRingObjForgetRingHomCarrier,
-    ``CommSemiRingCat.carrier, ``CommSemiRingCat.commSemiring,
     ``CommSemiRingCat.instCommSemiringObjForgetRingHomCarrier]
+  -- The field `i` of the bundled object `object` of the structure `struct`, once `object` is
+  -- reduced to its constructor.
+  let field (struct : Name) (i : Nat) (object : Expr) : MetaM (Option Expr) := do
+    let object ← withTransparency .default <| whnf object
+    let ctor := getStructureCtor (← getEnv) struct
+    unless object.isAppOfArity ctor.name (ctor.numParams + ctor.numFields) do return none
+    return object.getArg! (ctor.numParams + i)
   let normalized ← Meta.transform target (post := fun e => do
-    if projections.any (e.isAppOfArity · 1) then
+    -- A primitive projection `X.1`, as `RingCat.carrier X` unfolds to.
+    if let .proj struct i object := e then
+      if objects.contains struct then
+        if let some value ← field struct i object then return .visit value
+      return .continue
+    let .const name _ := e.getAppFn | return .continue
+    if let some info ← getProjectionFnInfo? name then
+      let struct := info.ctorName.getPrefix
+      if objects.contains struct && e.getAppNumArgs == info.numParams + 1 then
+        if let some value ← field struct info.i e.appArg! then return .visit value
+      return .continue
+    if wrappers.any (e.isAppOfArity · 1) then
       let reduced ← withTransparency .default <| whnf e
       if reduced != e then return .visit reduced
-      return .done e
     return .continue)
   replaceMainGoal [← goal.change normalized]
 
@@ -190,6 +209,21 @@ meta def evaluateNumerals : TacticM Unit := do
   evalTactic (← `(tactic| try simp only [TypeCat.ofHom_apply, ConcreteCategory.comp_apply,
     eq_intCast, eq_natCast, Int.cast_natCast, Nat.cast_ofNat, Nat.cast_zero, Nat.cast_one,
     Int.cast_ofNat, Int.cast_zero, Int.cast_one]))
+
+open Lean Elab Tactic in
+/-- Read a closed value as the catalogue presents it, in the main goal (LC-18). The consumer
+states an admission's hypothesis at an element formed by the catalogue's declarations: a numeral
+of a named ring or semiring, the registered ring and semiring operations applied to elements, the
+registered maps and their composites, all at objects reached along registered functors (the
+monoid of a ring along `Ring → Mon`). The declarations are unfolded to the Mathlib terms they are
+defined by and the numerals evaluated (`evaluateNumerals`), the bundled objects read as their
+carriers and structures (`normalizeBundledObjects`), and each registered map applied, a composite
+map by map (`TypeCat.ofHom_apply`, `ConcreteCategory.comp_apply`, `CategoryTheory.hom_comp`). -/
+meta def readCatalogue : TacticM Unit := do
+  evaluateNumerals
+  normalizeBundledObjects
+  evalTactic (← `(tactic| try simp only [TypeCat.ofHom_apply, ConcreteCategory.comp_apply,
+    CategoryTheory.hom_comp, Function.comp_def]))
 
 open Lean Elab Tactic in
 /-- Expand the determinants of matrices of closed entries in the main goal along their first row
@@ -298,7 +332,7 @@ open Lean Elab Tactic in
 It fails on an element that is not a unit (`2 ∈ ℤ`, `0 ∈ ℚ`, a singular matrix, `0 ∈ ℚ[x]`). -/
 meta partial def isUnitEvidence : TacticM Unit :=
   CasCatalogue.Evidence.establish "Units" do
-    normalizeRingObjects
+    readCatalogue
     isUnitCases
 where
   /-- `IsUnit p` for a polynomial `p` exhibited as a constant `C a`, from `IsUnit a`. -/
@@ -378,7 +412,7 @@ equations `⅟x · x = x · ⅟x = 1` are proved (by `isUnitEvidence`, the inver
 It fails on an element that is not a unit (`2 ∈ ℤ`, `0 ∈ ℚ`, a singular matrix, `0 ∈ ℚ[x]`). -/
 meta partial def invertibleEvidence : TacticM Unit :=
   CasCatalogue.Evidence.establish "Units" do
-    normalizeRingObjects
+    readCatalogue
     invertibleCases
 where
   /-- `IsUnit x` for the element `x` of a ring, its determinants expanded first. -/

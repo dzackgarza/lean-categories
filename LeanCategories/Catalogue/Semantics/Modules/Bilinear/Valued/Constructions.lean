@@ -75,7 +75,7 @@ open Lean Elab Tactic in
 /-- Prove the four defining bilinearity laws by the module and ring identities. -/
 meta def bilinearEvidence : TacticM Unit :=
   CasCatalogue.Evidence.establish "Bilinearity" do
-    CasCatalogue.Algebra.Units.normalizeRingObjects
+    CasCatalogue.Algebra.Units.normalizeBundledObjects
     evalTactic (← `(tactic| constructor <;> intros))
     for goal in ← getGoals do
       setGoals [goal]

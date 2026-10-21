@@ -1111,8 +1111,33 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
      because its pieces agree on the boundary (`fun x => if x < 0 then -x else x`) and a quotient
      with a removable zero (`fun x => sin x / x` as extended) are refused; so are maps outside the
      elementary class (`Real.log`, `√` away from `0`, `arctan` are not in the registered class).
+  6. **Elements as the catalogue presents them (resolved 2026-10-21).** The specimens above state
+     hypotheses over bare Mathlib types. At the catalogue's own presentation the procedures refused
+     true members: `Invertible 3` at the monoid of the named ring `ℚ` (`Units.monoidArgument` of
+     `Ports.ringsMultiplicative` at `NamedRings.ringRationals`, the numeral
+     `NamedRings.ringNumeral`), and likewise `-3`, `3 · 2`, `2³`, `3` in the rational field's ring
+     and `2 ∈ ℤ/5`, so `(3 in ℚˣ)⁻¹ = 1/3` could not be stated at the named ring; `Nat.Prime` at
+     the semiring numeral `7 ∈ ℕ`; `Continuous` and `ContDiff` at maps written with `Calculus.sin`,
+     `Calculus.exp`, `NamedRings.add`, `NamedRings.pow` or a composite of registered maps. The
+     units procedures reduced only ring carriers, not the monoid an object reaches along
+     `Ring → Mon`, and read no catalogue declarations outside the polynomial case; the prime,
+     positivity and calculus procedures read none. Reducing a carrier by `whnf` also read `ℤ/5` as
+     `Fin 5`, which the `ℤ/n` case does not recognize. `Units.readCatalogue` now unfolds the
+     catalogue's declarations, evaluates its numerals, reads a bundled monoid, semiring or ring
+     object's carrier and structure off its constructor, whether written as a projection function
+     or as the primitive projection `X.1` it unfolds to (`normalizeBundledObjects`, which replaces
+     `normalizeRingObjects`), and applies registered maps and composites; the units, `ℕ⁺`, `ℙ`,
+     `C(ℝ)` and `C^∞(ℝ)` procedures run it first. Red: `534581a3`. The specimens are in
+     `EvidenceTests` ("Elements as the catalogue presents them") and `UnitInverseTests`
+     (`3⁻¹ = 1/3` at the named ring `ℚ`).
 - **Coverage:** the seven admissions under `Catalogue/Semantics`; the procedures' refusals were
-  exercised only on the listed specimens.
+  exercised only on the listed specimens. Item 6 additionally covered nonzero and monic
+  polynomials over `NamedCommutativeRings.rationals`, `integers`, `integersMod 5` and the rational
+  field's ring, formed by `Polynomials.generator`, `Polynomials.coefficients`, the ring numerals and
+  operations of `Polynomials.ringPolynomials`: those procedures already established and refused
+  correctly there. The convergence and summability procedures are exercised at catalogue-formed
+  maps in `BinderTests`; `𝒫_fin`, `Y^X` and bilinearity were not probed at catalogue-formed
+  elements in item 6.
 - **Repair link:** each item's owner is the named evidence declaration; item 1 is resolved by a
   Pratt-certificate procedure for `ℙ`, the others by adding the named characterization as a case of
   the domain's evidence.
