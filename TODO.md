@@ -231,6 +231,19 @@ against `fa316209` found no concrete mathematical defect. Focused actual-signatu
 checks, default build, `LeanCategories.All`, vacuity, axiom audit and local
 conventions passed sequentially with `LEAN_NUM_THREADS=1` on this final source.
 
+The cartesian universal witness also supplies `MonoLift.factor` at the full
+selected inputs `X`, `i`, `Y`, `g`, `f` and `U.map f = g ≫ i`.
+`MonoLiftFactorComputation L` and `L.factorComputation` publish this callable
+separately from the unchanged four-field `MonoLiftComputation`. Its base and
+source factorization equations, uniqueness and compatibility-proof independence
+are formal interface lemmas obtained directly from `L.universal`. The result is
+an arrow into that exact `L.obj X i`, with no faithfulness or carrier-identification
+assumption and no new lift, specimen or operation inventory.
+`MonoLift.factor_comp` identifies the factor for a composite lift with successive
+factors through its selected constituents. The first factor supplies the exact
+base arrow and compatibility proof for the second, and the result satisfies both
+universal equations for the prescribed composite comparison.
+
 The rank-scope followup retains the existing selected Mathlib operation: matrix
 rank is the independence rank of its column module. Its public signature now
 requires a nontrivial selected commutative coefficient ring, excluding the

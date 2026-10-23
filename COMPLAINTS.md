@@ -1292,6 +1292,23 @@ require exactly `MonoLift` for the specified route, whose stronger type now
 contains these laws. This resolves the inspected evidence-type defect; it makes
 no claim about uninspected lift constructions or downstream acceptance.
 
+The targeted V1 interface followup exposed the unique factor already present in
+`MonoLift.universal` as `MonoLift.factor`, with its two factorization laws and
+uniqueness. The distinct `MonoLiftFactorComputation L` keeps every selected input
+and the exact lifted target; the original four callable fields are unchanged.
+Reuse search (2026-10-23): the live Formalization Corpus queries `ExistsUnique choose`
+and `IsStronglyCartesian map_uniq`, together with the local `MonoLift` search,
+located Mathlib's unique-existence support and cartesian factor accessor pattern.
+The implementation directly reuses `Exists.choose` and `Exists.choose_spec` on
+the already supplied unique-existence witness. Mathlib's
+`CategoryTheory.Functor.IsStronglyCartesian.map` uses the same choice construction;
+its `IsHomLift` convention differs from this owner's retained base isomorphism,
+so no new fibration presentation or conversion is introduced.
+The same reuse search for `IsStronglyCartesian map_comp_map` locates Mathlib's
+uniqueness-based factor composition pattern. `MonoLift.factor_comp` applies the
+existing `factor_unique`, `factor_map` and `factor_hom` to the already defined
+composite lift, preserving its actual mapped cone and composite base comparison.
+
 Independent review against the approved elementary-language baseline and fixed B0
 identified four missing public mathematical relationships, separate from any
 implementation failure. The existing definitions themselves were retained:
