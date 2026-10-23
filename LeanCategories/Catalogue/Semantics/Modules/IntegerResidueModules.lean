@@ -8,6 +8,7 @@ public import LeanCategories.Catalogue.Semantics.Modules.CatalogueRegistration
 public import LeanCategories.Catalogue.Semantics.Algebra.NamedCommutativeRings
 public import Mathlib.Data.ZMod.Basic
 public meta import LeanCategories.Catalogue.Registry.Semantic
+public meta import LeanCategories.Catalogue.Semantics.Modules.Catalogue
 
 @[expose] public section
 
@@ -29,11 +30,14 @@ namespace CasCatalogue.Modules.IntegerResidueModules
 
 open CatalogueRegistration
 
+/-- A regular module over `S`, regarded over `R` through the selected ring morphism. -/
+noncomputable def restrictedRegularModule (R S : RingCat.{0}) (q : R ⟶ S) : ModuleCat.{0} R :=
+  (modulesFamilyRealization.reindex q).obj (regularModule S)
+
 /-- The regular residue module, restricted along the canonical integer quotient. -/
 noncomputable def integerResidueModule (n : ℕ) : ModuleCat.{0} ℤ :=
-  (modulesFamilyRealization.reindex
-    (RingCat.ofHom (Int.castRingHom (ZMod n)))).obj
-    (regularModule (RingCat.of (ZMod n)))
+  restrictedRegularModule (RingCat.of ℤ) (RingCat.of (ZMod n))
+    (RingCat.ofHom (Int.castRingHom (ZMod n)))
 
 /-- This is exactly reindexing in the existing module family. -/
 theorem reindex_selected_quotient (n : ℕ) :
@@ -43,7 +47,7 @@ theorem reindex_selected_quotient (n : ℕ) :
 
 /-- The chosen scalar action is multiplication by the image under the quotient map. -/
 theorem action_formula (n : ℕ) (r : ℤ) (x : integerResidueModule n) :
-    (integerResidueModule n).smul r x = (r : ZMod n) * (show ZMod n from x) := rfl
+    ((integerResidueModule n).smul r).hom x = (r : ZMod n) * (show ZMod n from x) := rfl
 
 /-- The reindexed module keeps the five-element additive carrier. -/
 theorem five_cardinality : Nat.card (integerResidueModule 5) = 5 := by
@@ -52,9 +56,9 @@ theorem five_cardinality : Nat.card (integerResidueModule 5) = 5 := by
 
 /-- Three scalar observations distinguish restriction from a free integer module. -/
 theorem five_actions :
-    (integerResidueModule 5).smul 2 (3 : ZMod 5) = (1 : ZMod 5) ∧
-    (integerResidueModule 5).smul 5 (1 : ZMod 5) = (0 : ZMod 5) ∧
-    (integerResidueModule 5).smul (-1) (2 : ZMod 5) = (3 : ZMod 5) := by
+    ((integerResidueModule 5).smul 2).hom (3 : ZMod 5) = (1 : ZMod 5) ∧
+    ((integerResidueModule 5).smul 5).hom (1 : ZMod 5) = (0 : ZMod 5) ∧
+    ((integerResidueModule 5).smul (-1)).hom (2 : ZMod 5) = (3 : ZMod 5) := by
   change (2 : ZMod 5) * 3 = 1 ∧ (5 : ZMod 5) * 1 = 0 ∧ (-1 : ZMod 5) * 2 = 3
   decide
 
@@ -62,16 +66,16 @@ theorem five_actions :
 theorem reindex_map_apply (n : ℕ)
     (f : regularModule (RingCat.of (ZMod n)) ⟶ regularModule (RingCat.of (ZMod n)))
     (x : integerResidueModule n) :
-    (modulesFamilyRealization.reindex
-      (RingCat.ofHom (Int.castRingHom (ZMod n)))).map f x = f x := rfl
+    ((modulesFamilyRealization.reindex
+      (RingCat.ofHom (Int.castRingHom (ZMod n)))).map f).hom x = f.hom x := rfl
 
 /-- In particular, the nonidentity regular-module map `x ↦ 2x` retains its action. -/
 theorem reindex_double_three :
-    (modulesFamilyRealization.reindex
+    ((modulesFamilyRealization.reindex
       (RingCat.ofHom (Int.castRingHom (ZMod 5)))).map
       (ModuleCat.ofHom (X := regularModule (RingCat.of (ZMod 5)))
         (Y := regularModule (RingCat.of (ZMod 5)))
-        ((2 : ZMod 5) • LinearMap.id)) (3 : ZMod 5) = (1 : ZMod 5) := by
+        ((2 : ZMod 5) • LinearMap.id))).hom (3 : ZMod 5) = (1 : ZMod 5) := by
   change (2 : ZMod 5) * 3 = 1
   decide
 
@@ -80,8 +84,8 @@ end CasCatalogue.Modules.IntegerResidueModules
 namespace CasCatalogue
 
 normalized_registry .object
-  { id := ⟨"obj.modules_r.integer_residues"⟩, category := CategoryId.modules
-    name := "IntegerResidueModule"
-    declaration := `Modules.IntegerResidueModules.integerResidueModule }
+  { id := ⟨"obj.modules_r.restricted_regular"⟩, category := CategoryId.modulesR
+    name := "RestrictedRegularModule"
+    declaration := `CasCatalogue.Modules.IntegerResidueModules.restrictedRegularModule }
 
 end CasCatalogue

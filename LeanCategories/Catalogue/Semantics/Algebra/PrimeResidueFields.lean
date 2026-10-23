@@ -6,8 +6,9 @@ module
 
 public import LeanCategories.Catalogue.Semantics.Algebra.Fields
 public import LeanCategories.Catalogue.Semantics.Foundation.Cardinality
-public import Mathlib.Data.ZMod.Basic
+public import Mathlib.Algebra.Field.ZMod
 public meta import LeanCategories.Catalogue.Registry.Semantic
+public meta import LeanCategories.Catalogue.Semantics.Algebra.Fields
 
 @[expose] public section
 
@@ -68,6 +69,6 @@ namespace CasCatalogue
 normalized_registry .object
   { id := ⟨"obj.fields.prime_residues"⟩, category := CategoryId.fields
     name := "PrimeResidues"
-    declaration := `Algebra.PrimeResidueFields.primeResidues }
+    declaration := `CasCatalogue.Algebra.PrimeResidueFields.primeResidues }
 
 end CasCatalogue

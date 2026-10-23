@@ -7,6 +7,7 @@ module
 public import LeanCategories.Catalogue.Semantics.Algebra.Series
 public import LeanCategories.Catalogue.Semantics.Algebra.NamedCommutativeRings
 public meta import LeanCategories.Catalogue.Registry.Semantic
+public meta import LeanCategories.Catalogue.Semantics.Foundation.Catalogue
 
 @[expose] public section
 
@@ -81,6 +82,6 @@ namespace CasCatalogue
 normalized_registry .morphism
   { id := ⟨"mor.sets.successor_power_series_terms"⟩, category := CategoryId.sets
     name := "successor_power_series_terms"
-    declaration := `Algebra.SuccessorSeries.successorTerms }
+    declaration := `CasCatalogue.Algebra.SuccessorSeries.successorTerms }
 
 end CasCatalogue
