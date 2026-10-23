@@ -45,11 +45,17 @@ open CasCatalogue.Algebra
 
 set_option backward.isDefEq.respectTransparency false
 
-/-- The independently specified degenerate source form. -/
+/-- The fixed `ℚ`-valued formed `ℚ`-module on `Fin 2 → ℚ` with Gram matrix
+`[[2,2],[2,2]]` in coordinates `0,1`. Its exact pairing is
+`B((a,b),(c,d)) = 2*(a+b)*(c+d)`, given by `source_pairing`.
+There are no parameters; the selected scalar and value module are both `ℚ`. -/
 abbrev source : BilinModuleCat ℚ ℚ :=
   BilinModuleCat.ofBilinMap (Matrix.toBilin' (!![2, 2; 2, 2] : Matrix (Fin 2) (Fin 2) ℚ))
 
-/-- The independently specified target form. -/
+/-- The fixed `ℚ`-valued formed `ℚ`-module on `Fin 2 → ℚ` with ordered
+Gram matrix `[[2,0],[0,5]]`. Its pairing is
+`B((s,t),(u,v)) = 2*s*u + 5*t*v`, as stated by `target_pairing`.
+There are no parameters; this is the actual target of `formedMap`. -/
 abbrev target : BilinModuleCat ℚ ℚ :=
   BilinModuleCat.ofBilinMap (Matrix.toBilin' (!![2, 0; 0, 5] : Matrix (Fin 2) (Fin 2) ℚ))
 
@@ -67,7 +73,10 @@ theorem target_pairing (x y : Fin 2 → ℚ) :
   simp only [Fin.sum_univ_two, Matrix.of_apply, Matrix.cons_val_zero, Matrix.cons_val_one]
   ring
 
-/-- The ordinary map is independently fixed by the matrix `[[1,1],[0,0]]`. -/
+/-- The ordinary `ℚ`-linear map from `source.carrierObj` to
+`target.carrierObj` with matrix `[[1,1],[0,0]]`, sending `(a,b)` to
+`(a+b,0)`. Both module carriers are `Fin 2 → ℚ`;
+`underlyingMap_apply` states the action in the fixed coordinate order. -/
 def underlyingMap : source.carrierObj ⟶ target.carrierObj :=
   LinearAlgebra.matrixLinearMap 2 (CommRingCat.of ℚ) !![1, 1; 0, 0]
 
@@ -78,14 +87,24 @@ theorem underlyingMap_apply (x : Fin 2 → ℚ) :
   fin_cases j <;>
     simp [Matrix.mulVec, dotProduct, Fin.sum_univ_two]
 
-/-- The universal pairing equation makes the fixed matrix a genuine formed arrow. -/
+/-- The formed `ℚ`-linear map `(a,b) ↦ (a+b,0)` from the plane with
+pairing `2*(a+b)*(c+d)` to the plane with pairing `2*s*u + 5*t*v`.
+Its underlying matrix is `[[1,1],[0,0]]` on `Fin 2 → ℚ`, with action
+given by `underlyingMap_apply`. For all source vectors `x,y`, the target
+pairing of their images equals the selected source pairing; this is the
+preservation equation used by `BilinModuleCat.homMk`. The scalar and value
+module are both `ℚ`, and the declaration has no additional parameters. -/
 def formedMap : source ⟶ target :=
   BilinModuleCat.homMk underlyingMap.hom (by
     intro x y
     rw [underlyingMap_apply, underlyingMap_apply, target_pairing, source_pairing]
     simp)
 
-/-- The selected, nontrivially scaled coordinate inclusion. -/
+/-- The selected module monomorphism `ℚ → source.carrierObj` with action
+`t ↦ (2*t,-2*t)` in the source's fixed coordinates. Its image is exactly
+the kernel of `(a,b) ↦ (a+b,0)` by `kernel_range`.
+`kernelInclusion_apply` gives its action and `kernel_universal` its full
+kernel factorization property; the scalar coordinate retains the factor two. -/
 def kernelInclusion : ModuleCat.of ℚ ℚ ⟶ source.carrierObj :=
   ModuleCat.ofHom
     { toFun t := ![2 * t, -2 * t]
@@ -162,12 +181,26 @@ theorem kernel_universal (T : ModuleCat.{0} ℚ) (h : T ⟶ source.carrierObj)
 /-- The first stage is the existing form restriction along the selected module inclusion. -/
 noncomputable def firstLift := Kernels.forgetMonoLift ℚ ℚ
 
+/-- The first lifted formed object has carrier `LinearMap.range kernelInclusion.hom`,
+the submodule of vectors `(a,-a)` in `ℚ²`, and the restriction of
+`source`'s pairing `2*(a+b)*(c+d)`. This pairing is zero on the submodule;
+`first_pairing` states it in the selected coordinates `beta`. -/
 noncomputable abbrev firstObject : BilinModuleCat ℚ ℚ := firstLift.obj source kernelInclusion
+/-- The formed inclusion from `firstObject` to `source`, sending each
+range-subtype element to its vector in `ℚ²`. `first_factorization` relates
+this exact inclusion to `alpha ≫ kernelInclusion`. -/
 noncomputable def firstInclusion : firstObject ⟶ source := firstLift.hom source kernelInclusion
 instance firstInclusion_mono : Mono firstInclusion :=
   inferInstanceAs (Mono (firstLift.hom source kernelInclusion))
+/-- The forward module comparison from the actual range carrier to `ℚ`,
+with action `(a,-a) ↦ a/2`, as stated by `alpha_value`. Its inverse is
+`beta`, so this selected comparison retains the scaled kernel coordinate. -/
 noncomputable def alpha : firstObject.carrierObj ⟶ ModuleCat.of ℚ ℚ :=
   firstLift.computation.forward source kernelInclusion
+/-- The inverse module comparison `ℚ → firstObject.carrierObj`, sending
+`t` to the range element with vector `(2*t,-2*t)`. `beta_value` gives the
+underlying vector; `first_inverse_forward_backward` and
+`first_inverse_backward_forward` give the two inverse equations. -/
 noncomputable def beta : ModuleCat.of ℚ ℚ ⟶ firstObject.carrierObj :=
   firstLift.computation.backward source kernelInclusion
 
@@ -211,7 +244,9 @@ theorem first_factorization :
     (forget ℚ ℚ).map firstInclusion = alpha ≫ kernelInclusion :=
   firstLift.computation_fac source kernelInclusion
 
-/-- The genuinely additional chosen form is the ordinary dot product. -/
+/-- The fixed `ℚ`-valued formed plane on `Fin 2 → ℚ` with identity Gram
+matrix. Its pairing is `(a,b),(c,d) ↦ a*c + b*d`, as stated by
+`dotSource_pairing`; this is the second selected form in `pairedSource`. -/
 abbrev dotSource : BilinModuleCat ℚ ℚ :=
   BilinModuleCat.ofBilinMap (Matrix.toBilin' (!![1, 0; 0, 1] : Matrix (Fin 2) (Fin 2) ℚ))
 
@@ -221,7 +256,13 @@ theorem dotSource_pairing (x y : Fin 2 → ℚ) :
   rw [Matrix.toBilin'_apply]
   simp [Fin.sum_univ_two]
 
-/-- A pair of chosen forms uses the existing fixed value module `ℚ × ℚ`. -/
+/-- The fixed formed `ℚ`-module with carrier `Fin 2 → ℚ`, value module
+`ℚ × ℚ`, and ordered pair of forms
+`B((a,b),(c,d)) = (2*(a+b)*(c+d), a*c+b*d)`.
+The first component has Gram matrix `[[2,2],[2,2]]` and the second the
+identity matrix; `pairedSource_pairing` states the complete pairing.
+Changing values by `LinearMap.fst ℚ ℚ ℚ` recovers exactly `source`, as
+proved by `pairedSource_first`. There are no object parameters. -/
 noncomputable abbrev pairedSource : BilinModuleCat ℚ (ℚ × ℚ) :=
   let b : TensorProduct ℚ (Fin 2 → ℚ) (Fin 2 → ℚ) →ₗ[ℚ] ℚ := source.form
   let d : TensorProduct ℚ (Fin 2 → ℚ) (Fin 2 → ℚ) →ₗ[ℚ] ℚ := dotSource.form
@@ -244,15 +285,32 @@ def secondLift :=
 /-- The composed lift uses `firstInclusion` as its second input, by `MonoLift.comp`. -/
 noncomputable def compositeLift := secondLift.comp firstLift
 
+/-- The final lifted object has the same range carrier of vectors `(a,-a)`
+as `firstObject`, with values in `ℚ × ℚ` and restricted pairing
+`((a,-a),(c,-c)) ↦ (0,2*a*c)`. In the selected coordinates
+`finalBeta s = (2*s,-2*s)`, the pairing is `(0,8*s*t)` by `final_pairing`.
+`final_object_is_successive` identifies it with restriction along the
+actual first defining map, retaining both selected forms. -/
 noncomputable abbrev finalObject : BilinModuleCat ℚ (ℚ × ℚ) :=
   compositeLift.obj pairedSource kernelInclusion
+/-- The formed inclusion from `finalObject` into `pairedSource`, sending
+each element of the actual range submodule to its vector in `ℚ²`.
+`final_defining_map` gives the action `(2*t,-2*t)` on `finalBeta t`, and
+`final_inclusion_is_second` identifies this map with the second lift's
+defining arrow. -/
 noncomputable def finalInclusion : finalObject ⟶ pairedSource :=
   compositeLift.hom pairedSource kernelInclusion
 instance finalInclusion_mono : Mono finalInclusion :=
   inferInstanceAs (Mono (compositeLift.hom pairedSource kernelInclusion))
 
+/-- The composite forward module comparison `finalObject.carrierObj → ℚ`
+with action `(a,-a) ↦ a/2`, given by `final_alpha_value`. -/
 noncomputable def finalAlpha : finalObject.carrierObj ⟶ ModuleCat.of ℚ ℚ :=
   compositeLift.computation.forward pairedSource kernelInclusion
+/-- The composite backward module comparison `ℚ → finalObject.carrierObj`
+with underlying vector `t ↦ (2*t,-2*t)`, given by `final_beta_value`.
+Its inverse equations with `finalAlpha` are
+`final_inverse_forward_backward` and `final_inverse_backward_forward`. -/
 noncomputable def finalBeta : ModuleCat.of ℚ ℚ ⟶ finalObject.carrierObj :=
   compositeLift.computation.backward pairedSource kernelInclusion
 

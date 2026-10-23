@@ -26,17 +26,29 @@ namespace CasCatalogue.Foundation.FiniteOrders
 
 open CasCatalogue.Foundation.PowerSets CasCatalogue.Foundation.Objects
 
-/-- The ordinary selected linear order on `Fin n`. -/
+/-- For `n : ℕ`, the linear-order object with carrier `Fin n` and the usual
+relation `a ≤ b` exactly when `a.val ≤ b.val` in `ℕ`. This includes the empty
+order for `n = 0`. `ordinaryCarrier` identifies its forgotten set with the
+original `fin n` by the identity, and `ordinary_carrier_card` records its
+cardinality. The selected relation remains part of the object. -/
 abbrev ordinary (n : ℕ) : LinearOrders.{0} := LinOrd.of (Fin n)
 
-/-- The reverse selected linear order on the same ordinal carrier. -/
+/-- For `n : ℕ`, the linear-order object on `OrderDual (Fin n)`: its elements
+are the same finite ordinals, and `a ≤ b` in this selected order means
+`b.val ≤ a.val` in the usual natural-number order. This includes `n = 0`.
+`reverseCarrier` is the identity comparison with the set `fin n`;
+`reverse_carrier_card` records its cardinality. `five_relations_distinct`
+separates this relation from the ordinary order on the same carrier. -/
 abbrev reverse (n : ℕ) : LinearOrders.{0} := LinOrd.of (OrderDual (Fin n))
 
-/-- The actual forgetful functor retains the original finite ordinal. -/
+/-- The identity set isomorphism from the carrier of `ordinary n` to `fin n`.
+Both directions send each finite ordinal `a` to that same `a`. -/
 def ordinaryCarrier (n : ℕ) : linearOrdersForget.toFunctor.obj (ordinary n) ≅ fin n :=
   Iso.refl _
 
-/-- Reversing the order does not change the carrier. -/
+/-- The identity set isomorphism from the carrier of `reverse n` to `fin n`.
+Both directions preserve the finite ordinal itself; the selected order was
+forgotten before this comparison. -/
 def reverseCarrier (n : ℕ) : linearOrdersForget.toFunctor.obj (reverse n) ≅ fin n :=
   Iso.refl _
 

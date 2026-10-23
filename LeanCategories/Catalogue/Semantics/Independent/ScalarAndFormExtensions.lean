@@ -16,8 +16,15 @@ public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Degener
 /-!
 # Independently authored scalar, carrier, series and formed-restriction extensions
 
-Public import root for the additive modules described in
-`Integration/IndependentScalarAndFormExtensions.md`. This module changes no
-existing mathematical declaration, registry schema, computational contract,
-kernel, leaf, or acceptance assertion.
+Public import root for prime residue fields, restriction of regular modules
+along selected ring maps, the full successor-coefficient power-series family,
+rectangular matrix maps, restrictions of selected forms to ordinary module
+kernels, and cartesian lifts along changes of value module. It also imports
+the fixed rational planes and cone arrows with their exact forms, vector
+actions, comparison maps and factorization laws.
+
+The declaration docstrings in these modules specify the selected carriers,
+scalar and value modules, pairings, dependent parameters, and complete arrow
+actions. The constructions and their formal laws remain at their existing
+mathematical owners; this file only reexports the additive modules.
 -/

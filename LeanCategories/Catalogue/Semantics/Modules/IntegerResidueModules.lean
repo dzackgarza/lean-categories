@@ -30,11 +30,21 @@ namespace CasCatalogue.Modules.IntegerResidueModules
 
 open CatalogueRegistration
 
-/-- A regular module over `S`, regarded over `R` through the selected ring morphism. -/
+/-- Given selected rings `R`, `S` and a selected ring morphism `q : R ⟶ S`,
+the `R`-module obtained by restricting the regular left `S`-module along `q`.
+Its carrier and additive group are those of `S`, and its scalar action is
+`r • s = q.hom r * s`, with multiplication in `S`. The parameters occur in
+the order `R`, `S`, `q`; the selected morphism determines the action.
+This is `(modulesFamilyRealization.reindex q).obj (regularModule S)` and
+requires neither ring to be commutative. -/
 noncomputable def restrictedRegularModule (R S : RingCat.{0}) (q : R ⟶ S) : ModuleCat.{0} R :=
   (modulesFamilyRealization.reindex q).obj (regularModule S)
 
-/-- The regular residue module, restricted along the canonical integer quotient. -/
+/-- For `n : ℕ`, the integer module with additive carrier `ZMod n` and action
+`r • x = (r : ZMod n) * x`. It restricts the regular `ZMod n`-module along
+the selected quotient `Int.castRingHom (ZMod n)`. `reindex_selected_quotient`
+states the exact reindexing construction and `action_formula` gives the
+scalar action for all integers `r` and all residue elements `x`. -/
 noncomputable def integerResidueModule (n : ℕ) : ModuleCat.{0} ℤ :=
   restrictedRegularModule (RingCat.of ℤ) (RingCat.of (ZMod n))
     (RingCat.ofHom (Int.castRingHom (ZMod n)))

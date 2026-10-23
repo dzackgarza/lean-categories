@@ -37,13 +37,25 @@ universe u
 
 set_option backward.isDefEq.respectTransparency false
 
-/-- Compose an ordinary module kernel with restriction of the independently selected form. -/
+/-- Given a selected commutative ring `R`, value module `W`, formed module
+`X : BilinModuleCat R W`, target module `Y`, and ordinary module map
+`f : X.carrierObj ⟶ Y`, form the `W`-valued module on the actual submodule
+`f.hom.ker = {x | f.hom x = 0}`. Its pairing on kernel elements `x`, `y`
+is `X.pairing x.val y.val`, as in `Kernels.restrictedPairing_apply`.
+Parameters occur in the order `R`, `W`, `X`, `Y`, `f`. There is no form
+on `Y` and no form-preservation condition on `f`. The associated formed
+inclusion is `ordinaryKernelInclusion R W X Y f`. -/
 noncomputable def ordinaryKernelRestriction (R : CommRingCat.{u}) (W : ModuleCat.{u} R)
     (X : BilinModuleCat R W) (Y : ModuleCat.{u} R) (f : X.carrierObj ⟶ Y) :
     BilinModuleCat R W :=
   Kernels.restricted R W X f.hom.ker
 
-/-- The actual defining formed inclusion of that restriction. -/
+/-- At the selected parameters `R`, `W`, `X`, `Y`, `f`, the formed map
+from `ordinaryKernelRestriction R W X Y f` to `X` sending each kernel
+element `⟨x, hx⟩` to its original vector `x`. The domain has carrier
+`{x : X.carrier | f.hom x = 0}` and the restriction of `X`'s actual
+`W`-valued pairing. `ordinaryKernelInclusion_condition` states that its
+underlying module inclusion followed by the original map `f` is zero. -/
 noncomputable def ordinaryKernelInclusion (R : CommRingCat.{u}) (W : ModuleCat.{u} R)
     (X : BilinModuleCat R W) (Y : ModuleCat.{u} R) (f : X.carrierObj ⟶ Y) :
     ordinaryKernelRestriction R W X Y f ⟶ X :=
@@ -60,7 +72,11 @@ namespace RationalProjection
 
 open CasCatalogue.Algebra
 
-/-- The original source form, with the ordered diagonal entries two and three. -/
+/-- The fixed `ℚ`-valued formed `ℚ`-module with carrier `Fin 2 → ℚ` and
+ordered Gram matrix `[[2,0],[0,3]]`. Its pairing is
+`B((a,b),(c,d)) = 2*a*c + 3*b*d`, as stated by `diagonalSource_pairing`.
+Both the scalar ring and value module are `ℚ`; there are no object parameters.
+The ordinary map `projection` out of this object sends `(a,b)` to `a`. -/
 abbrev diagonalSource : BilinModuleCat ℚ ℚ :=
   BilinModuleCat.ofBilinMap (Matrix.toBilin' (!![2, 0; 0, 3] : Matrix (Fin 2) (Fin 2) ℚ))
 

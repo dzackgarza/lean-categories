@@ -28,7 +28,14 @@ open CategoryTheory
 
 namespace CasCatalogue.Algebra.PrimeResidueFields
 
-/-- The prime residue field, with its primality evidence as an explicit input. -/
+/-- For a natural number `p` and explicit evidence `hp : p.Prime`, the field
+whose carrier is `ZMod p = ℤ / pℤ` with its usual residue addition and
+multiplication. The selected commutative ring is exactly
+`NamedCommutativeRings.integersMod p`, equipped with Mathlib's field structure
+from `hp`. `underlying_ring` identifies its forgotten ring with
+`NamedRings.ringIntegersMod p`. The additive and multiplicative routes keep this
+same residue carrier; `carrier_comparison_apply` describes their identity
+comparison on elements, without identifying their different operations. -/
 def primeResidues (p : ℕ) (hp : p.Prime) : LeanCategories.Algebra.FieldCat.{0} :=
   letI : Fact p.Prime := ⟨hp⟩
   ⟨NamedCommutativeRings.integersMod p, Field.toIsField (ZMod p)⟩

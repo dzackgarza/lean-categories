@@ -42,7 +42,12 @@ variable (W W' : Type u) [AddCommGroup W] [Module R W]
   [AddCommGroup W'] [Module R W']
 variable (a : W →ₗ[R] W')
 
-/-- Pull back the original value-module form along the actual formed arrow. -/
+/-- For a commutative ring `R`, selected `R`-modules `W`, `W'`, a linear map
+`a : W →ₗ[R] W'`, a `W`-valued formed module `X`, and a formed arrow
+`i : K ⟶ (changeValue R W a).obj X`, the `W`-valued formed module on the
+actual carrier of `K` with pairing `B(x,y) = X.pairing (i x) (i y)`.
+Here `i x` denotes the underlying linear map of `i`; `pulledBack_pairing`
+states this formula. No monicity condition is needed for this pullback object. -/
 def pulledBack (X : BilinModuleCat R W) {K : BilinModuleCat R W'}
     (i : K ⟶ (changeValue R W a).obj X) : BilinModuleCat R W :=
   BilinModuleCat.ofBilinMap
@@ -56,19 +61,39 @@ theorem pulledBack_pairing (X : BilinModuleCat R W) {K : BilinModuleCat R W'}
       X.pairing (BilinModuleCat.underlyingMap (W := W') i x)
         (BilinModuleCat.underlyingMap (W := W') i y) := rfl
 
-/-- The defining map of the restriction has exactly the given carrier map. -/
+/-- With the parameters of `pulledBack`, the formed map from that
+`W`-valued pullback to `X` whose underlying `R`-linear map is exactly the
+underlying map of `i`. Its preservation equation is the defining formula
+`(pulledBack R W W' a X i).pairing x y = X.pairing (i x) (i y)`. -/
 def pulledBackHom (X : BilinModuleCat R W) {K : BilinModuleCat R W'}
     (i : K ⟶ (changeValue R W a).obj X) : pulledBack R W W' a X i ⟶ X :=
   BilinModuleCat.homMk (BilinModuleCat.underlyingMap (W := W') i) (fun _ _ => rfl)
 
-/-- The original selected `W'`-form on `K` is recovered, not merely an isomorphic carrier. -/
+/-- With the parameters of `pulledBack`, the isomorphism
+`(changeValue R W a).obj (pulledBack R W W' a X i) ≅ K`.
+Both underlying linear directions are the identity on `K.carrier`. The left pairing is
+`a (X.pairing (i x) (i y))`, which equals `K.pairing x y` by the formed
+arrow equation for `i`. Thus this comparison retains the actual selected
+`W'`-valued form of `K`. -/
 def pulledBackIso (X : BilinModuleCat R W) {K : BilinModuleCat R W'}
     (i : K ⟶ (changeValue R W a).obj X) :
     (changeValue R W a).obj (pulledBack R W W' a X i) ≅ K :=
   BilinModuleCat.isoMk (LinearEquiv.refl R K.carrier)
     (fun x y => (BilinModuleCat.map_pairing i x y).symm)
 
-/-- The actual cartesian lift for the existing change-of-values functor. -/
+/-- Cartesian monomorphism lifts for the functor
+`changeValue R W a : BilinModuleCat R W ⥤ BilinModuleCat R W'`, which
+postcomposes each pairing by the selected linear map `a : W →ₗ[R] W'`.
+For `X`, `K`, and a monomorphism `i : K ⟶ (changeValue R W a).obj X`,
+the lifted object has carrier `K.carrier` and `W`-valued pairing
+`(x,y) ↦ X.pairing (i x) (i y)`. Its defining arrow to `X` has underlying
+map `i`; both comparison directions with `K` have the identity underlying map.
+These components are `pulledBack`, `pulledBackHom` and `pulledBackIso`.
+For `g : (changeValue R W a).obj Y ⟶ K` and `f : Y ⟶ X` with
+`(changeValue R W a).map f = g ≫ i`, the unique factor
+`Y ⟶ pulledBack R W W' a X i` has underlying map `g`. Its two equations
+and uniqueness are the laws `MonoLift.factor_map`, `MonoLift.factor_hom`
+and `MonoLift.factor_unique` of this selected lift. -/
 def changeValueMonoLift : MonoLift (changeValue R W a) where
   obj X _ i _ := pulledBack R W W' a X i
   hom X _ i _ := pulledBackHom R W W' a X i
@@ -117,7 +142,15 @@ def changeValueMonoLift : MonoLift (changeValue R W a) where
       exact congrArg (fun l : (changeValue R W a).obj Y ⟶ K =>
         BilinModuleCat.underlyingMap (W := W') l x) hk.1
 
-/-- Only the four required data components cross the computational interface. -/
+/-- The four callable components for `changeValueMonoLift R W W' a`, at
+the full selected parameters `R`, `W`, `W'`, `a`, `X`, `K`, and
+`i : K ⟶ (changeValue R W a).obj X` with `Mono i`. The object is the
+`R`-module `K.carrier` with pairing `X.pairing (i x) (i y)` valued in `W`; the defining
+map to `X` has underlying map `i`; the forward and backward comparisons
+between its changed-value object and `K` are identities on `K.carrier`.
+`MonoLift.computation_fac`, `computation_forward_backward` and
+`computation_backward_forward` are the formal laws for these data. The
+separate canonical universal factor is supplied by `MonoLift.factorComputation`. -/
 def changeValueMonoLiftComputation : MonoLiftComputation (changeValue R W a) :=
   (changeValueMonoLift R W W' a).computation
 

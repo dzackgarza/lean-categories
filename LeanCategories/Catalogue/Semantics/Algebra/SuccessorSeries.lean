@@ -27,7 +27,15 @@ namespace CasCatalogue.Algebra.SuccessorSeries
 open Series
 attribute [local instance] Series.tAdic
 
-/-- The complete successor-coefficient family in the selected coefficient ring. -/
+/-- For the selected commutative ring `R`, the set map `ℕ → PowerSeries R`
+sending every index `n` to `PowerSeries.C (n + 1 : R) * PowerSeries.X ^ n`.
+Its `n`th term has coefficient `(n + 1 : R)` at degree `n` and zero at every
+other degree, with the natural coefficient cast into this actual ring.
+This is the complete infinite family, with no truncation parameter.
+`successorTerms_summable` proves summability in the selected `(X)`-adic
+topology `powerSeriesTAdic R`; `successorTerms_admission` retains the same
+function, and `successorTerms_sum` gives the sum with coefficient `n + 1`
+at every degree `n`. -/
 noncomputable def successorTerms (R : CommRingCat.{0}) :
     (ℕ : Type) ⟶ CasCatalogue.Algebra.Calculus.powerSeries R :=
   TypeCat.ofHom fun n => PowerSeries.C (n + 1 : R) * PowerSeries.X ^ n

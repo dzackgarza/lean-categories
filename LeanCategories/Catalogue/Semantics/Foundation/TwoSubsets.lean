@@ -33,21 +33,37 @@ open CasCatalogue.Catalogue.ConstructorRegistration
 
 universe u
 
-/-- The set of unordered subsets with exactly two distinct members. -/
+/-- For any set carrier `X : Type u`, the set of unordered finite subsets
+`s : Finset X` satisfying `s.card = 2`, as Mathlib `Set.powersetCard X 2`.
+Its elements have exactly two distinct members; ordering and repetitions add
+no data. There is no finiteness hypothesis on `X`. `inclusion` forgets only
+the cardinality condition, `singleton_not_member` excludes singletons, and
+`card` gives `Nat.card X` choose two when `X` is finite. -/
 abbrev twoSubsets (X : Type u) : Type u := Set.powersetCard X 2
 
-/-- Direct image along an injection preserves the two-element condition. -/
+/-- For an embedding `f : X ↪ Y`, the function from `twoSubsets X` to
+`twoSubsets Y` taking a two-element subset to its direct image under `f`.
+Injectivity preserves its cardinality, and `map_extent` states the exact
+underlying-set equation `(map f s : Set Y) = f '' (s : Set X)`. -/
 def map {X Y : Type u} (f : X ↪ Y) : twoSubsets X → twoSubsets Y :=
   Set.powersetCard.map 2 f
 
-/-- Inclusion into the previously registered finite-subset object. -/
+/-- For `X : Type`, the inclusion `twoSubsets X → Finset X` sending
+`⟨s, hs : s.card = 2⟩` to the same finite subset `s`. Its target is the
+existing `FiniteSubsets.finiteSubsets X`; `inclusion_mono` proves monicity. -/
 def inclusion (X : Type) : twoSubsets X ⟶ FiniteSubsets.finiteSubsets X :=
   TypeCat.ofHom Subtype.val
 
 instance inclusion_mono (X : Type) : Mono (inclusion X) :=
   (CategoryTheory.mono_iff_injective _).mpr Subtype.val_injective
 
-/-- The original input set is retained; only bijections act on it here. -/
+/-- The functor `Core (Type u) ⥤ Type u` sending a selected set `X` to its
+unordered two-element subsets. An arrow of the source is a specified
+bijection `f : X ≅ Y`; its action sends each subset `s` to the direct image
+`f '' s`, using `map` and the bijection's underlying embedding.
+`map_extent` gives the action on the complete subset. This is also the
+object assignment of the public `two_subsets` method; its morphism action
+is defined on bijections, as required by the source category `Core(Sets)`. -/
 def onCore : Core (Type u) ⥤ Type u where
   obj X := twoSubsets X.of
   map f := TypeCat.ofHom (map f.iso.toEquiv.toEmbedding)
@@ -86,13 +102,19 @@ theorem singleton_not_member (X : Type u) (x : X) :
 def functorId : FunctorId := ⟨"fun.core_sets.two_subsets"⟩
 def expression : FunctorExpr Constructed.CoreSets Foundation.Sets := .atomic functorId
 
+/-- Realization of the two-subset functor from `Core(Sets)` to `Sets`, with
+the complete object and bijection actions given by `onCore`. -/
 noncomputable def realization :
     FunctorRealization expression coreSetsCategory.{u}
       LeanCategories.Foundation.Mathlib.Sets.{u} onCore :=
   { sourceRealization := coreSetsRealization
     targetRealization := Foundation.CatalogueRegistration.setsRealization }
 
+/-- The selected set `X` viewed as an object of `Core(Sets)`, keeping its
+carrier unchanged so that only bijections are available as arrows. -/
 def argument (X : Type) : coreSetsCategory.{0} := ⟨X⟩
+/-- The identity comparison between `onCore` applied to the selected set `X`
+and `twoSubsets X`; each two-element subset is preserved in both directions. -/
 def identification (X : Type) : onCore.obj (argument X) ≅ twoSubsets X := Iso.refl _
 
 end CasCatalogue.Foundation.TwoSubsets
