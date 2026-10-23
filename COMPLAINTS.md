@@ -38,6 +38,14 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Mathematical issues
 
+### Integral-affine atlases and singular integral-affine spaces need category owners
+
+- **Need:** For a real affine space modeled on `V` with a full lattice `Λ ⊆ V`, define the integral-affine group `GL(Λ) ⋉ V`, its action on charts, and compatible maximal atlases on smooth real manifolds. Specify integral-affine maps by their local affine expressions, including their action on morphisms under the forgetful functor to smooth manifolds. Define a singular integral-affine object by a topological space `B`, a selected singular subobject `Σ ↪ B`, and an integral-affine atlas on the exact complement `B ∖ Σ`. Its morphisms must retain the map of pairs and the integral-affine map on regular loci. The sphere condition and an action of a finite group are refinements or standard categorical constructions on this object, not new meanings for its atlas.
+- **Evidence:** `FOUNDATIONS.md` Definition 62.6 specifies the dual complex of a degeneration and an integral-affine atlas away from a singular locus, with transition group `GL(n, ℤ) ⋉ ℝⁿ`; it states that incidence alone does not determine the atlas. `LeanCategories/Topology/SurfaceTriangulation.lean` defines `GeometricTriangulation` and `MunkresTriangulation`; `LeanCategories/Topology/DeltaComplex.lean` defines `DeltaComplex`. These are partial complex and triangulation data, not the selected integral-affine atlas or its morphism category. The construction requiring the typed owners is recorded in `research/docs/theory/integral-affine-manifolds-and-polyhedral-complexes.md`, P1.
+- **Gap and impact:** In the inspected topology declarations, no cited owner supplies the integral-affine atlas, its map category, or the singular object with its exact regular-locus inclusion. The first missing owner is the category of integral-affine manifolds over the existing smooth-manifold foundation; the singular category depends on it and on selected subobjects and complements. A research preamble stub cannot assign their mathematical types until these owners are fixed here.
+- **Coverage:** Source inspection of Definition 62.6 and the two named Lean declarations, plus filename and name searches in `LeanCategories/`. This is a formalization request. It does not assert absence from uninspected packages or prove that every related declaration in this tree has been classified.
+- **Repair link:** Map the defining clauses against the current formalization corpus, then formalize the missing category objects, morphisms, forgetful functors, and singular-subobject construction at their general owners. The dependent P1 category graph in the research plan consumes those declarations.
+
 ### Hodge structures need filtered-module categories and their comparison maps
 
 - **Need:** Formalize the following dependency chain as mathematics, with the named
