@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Lattices.Valued.Arithmetic
+public import LeanCategories.Modules.Bilinear.Valued.OrthogonalSum
 public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.Basis.Prod
 public import Mathlib.LinearAlgebra.DFinsupp
@@ -387,6 +388,18 @@ theorem indexedOrthogonalSum_pairing {I : Type} [Fintype I]
       ∑ i, (L i).obj.pairing (x i) (y i) :=
   rfl
 
+/-- A finite indexed orthogonal sum of nondegenerate lattices has zero left and right
+radicals. This includes the empty indexed sum. -/
+theorem indexedOrthogonalSum_isNondegenerate {I : Type} [Fintype I]
+    (L : I → LatticeCat R W) (hL : ∀ i, (L i).obj.IsNondegenerate) :
+    (indexedOrthogonalSum L).obj.IsNondegenerate := by
+  change (indexedOrthogonalSumBilinMap fun i ↦ (L i).obj).Nondegenerate
+  apply isNondegenerate_of_indexedOrthogonalPairing
+    (fun i : I ↦ (L i).obj) (indexedOrthogonalSumBilinMap fun i : I ↦ (L i).obj)
+  · intro x y
+    rfl
+  · exact hL
+
 /-- The orthogonal sum of a finite indexed family of finite symmetric forms. -/
 noncomputable def finiteFormIndexedOrthogonalSum {I : Type} [Fintype I]
     (L : I → FiniteFormCat R W) : FiniteFormCat R W := by
@@ -408,6 +421,18 @@ theorem finiteFormIndexedOrthogonalSum_pairing {I : Type} [Fintype I]
     (finiteFormIndexedOrthogonalSum L).obj.pairing x y =
       ∑ i, (L i).obj.pairing (x i) (y i) :=
   rfl
+
+/-- A finite indexed orthogonal sum of nondegenerate finite symmetric forms is
+nondegenerate, including the empty indexed sum. -/
+theorem finiteFormIndexedOrthogonalSum_isNondegenerate {I : Type} [Fintype I]
+    (L : I → FiniteFormCat R W) (hL : ∀ i, (L i).obj.IsNondegenerate) :
+    (finiteFormIndexedOrthogonalSum L).obj.IsNondegenerate := by
+  change (indexedOrthogonalSumBilinMap fun i ↦ (L i).obj).Nondegenerate
+  apply isNondegenerate_of_indexedOrthogonalPairing
+    (fun i : I ↦ (L i).obj) (indexedOrthogonalSumBilinMap fun i : I ↦ (L i).obj)
+  · intro x y
+    rfl
+  · exact hL
 
 /-- The `n`-fold orthogonal power of a finite symmetric form. -/
 noncomputable def finiteFormOrthogonalPower (L : FiniteFormCat R W) (n : ℕ) :
