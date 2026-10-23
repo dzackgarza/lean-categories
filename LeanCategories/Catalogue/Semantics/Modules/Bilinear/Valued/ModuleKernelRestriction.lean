@@ -35,6 +35,8 @@ namespace CasCatalogue.Modules.Bilinear.Valued.ModuleKernelRestriction
 
 universe u
 
+set_option backward.isDefEq.respectTransparency false
+
 /-- Compose an ordinary module kernel with restriction of the independently selected form. -/
 noncomputable def ordinaryKernelRestriction (R : CommRingCat.{u}) (W : ModuleCat.{u} R)
     (X : BilinModuleCat R W) (Y : ModuleCat.{u} R) (f : X.carrierObj ⟶ Y) :
@@ -59,7 +61,7 @@ namespace RationalProjection
 open CasCatalogue.Algebra
 
 /-- The original source form, with the ordered diagonal entries two and three. -/
-def diagonalSource : BilinModuleCat ℚ ℚ :=
+abbrev diagonalSource : BilinModuleCat ℚ ℚ :=
   BilinModuleCat.ofBilinMap (Matrix.toBilin' (!![2, 0; 0, 3] : Matrix (Fin 2) (Fin 2) ℚ))
 
 /-- The exact ordinary projection into `ℚ`, obtained from its `1 × 2` matrix. -/
@@ -68,7 +70,8 @@ def projection : diagonalSource.carrierObj ⟶ ModuleCat.of ℚ ℚ :=
 
 /-- The ordinary map has its prescribed, nonsquare action. -/
 theorem projection_apply (x : Fin 2 → ℚ) : projection.hom x = x 0 := by
-  simp [projection, RectangularLinearAlgebra.rowLinearMap_apply, Fin.sum_univ_two]
+  change (!![1, 0] : Matrix (Fin 1) (Fin 2) ℚ).mulVec x 0 = x 0
+  simp [Matrix.mulVec, dotProduct, Fin.sum_univ_two]
 
 /-- The complete selected pairing, in the original coordinate order. -/
 theorem diagonalSource_pairing (x y : Fin 2 → ℚ) :
@@ -78,7 +81,8 @@ theorem diagonalSource_pairing (x y : Fin 2 → ℚ) :
 
 /-- Membership in the ordinary module kernel is exactly vanishing of the first coordinate. -/
 theorem mem_kernel (x : Fin 2 → ℚ) : x ∈ projection.hom.ker ↔ x 0 = 0 := by
-  simp [LinearMap.mem_ker, projection_apply]
+  change projection.hom x = 0 ↔ x 0 = 0
+  rw [projection_apply]
 
 /-- The fixed kernel coordinates include a scalar as the second coordinate. -/
 def kernelCoordinates : ℚ ≃ₗ[ℚ] projection.hom.ker where
@@ -87,17 +91,20 @@ def kernelCoordinates : ℚ ≃ₗ[ℚ] projection.hom.ker where
   left_inv _ := rfl
   right_inv x := by
     apply Subtype.ext
-    ext i
+    change (![0, x.val 1] : Fin 2 → ℚ) = x.val
+    funext i
     fin_cases i
     · exact ((mem_kernel x.val).1 x.property).symm
     · rfl
-  map_add' _ _ := by
+  map_add' s t := by
     apply Subtype.ext
-    ext i
+    change (![0, s + t] : Fin 2 → ℚ) = ![0, s] + ![0, t]
+    funext i
     fin_cases i <;> simp
-  map_smul' _ _ := by
+  map_smul' r t := by
     apply Subtype.ext
-    ext i
+    change (![0, r * t] : Fin 2 → ℚ) = r • ![0, t]
+    funext i
     fin_cases i <;> simp
 
 /-- The kernel has dimension one with the specified coordinate equivalence. -/
@@ -144,8 +151,20 @@ theorem projection_not_formed (B : LinearMap.BilinMap ℚ ℚ ℚ) :
       BilinModuleCat.underlyingMap f = projection.hom := by
   rintro ⟨f, hf⟩
   have h := BilinModuleCat.map_pairing f ![0, 1] ![0, 1]
-  rw [hf, projection_apply, projection_apply, diagonalSource_pairing] at h
-  norm_num at h
+  have hz : BilinModuleCat.underlyingMap f ![0, 1] = 0 := by
+    rw [hf]
+    change projection.hom ![0, 1] = (0 : ℚ)
+    exact projection_apply ![0, 1]
+  have hp : (BilinModuleCat.ofBilinMap B).pairing
+      (BilinModuleCat.underlyingMap f ![0, 1])
+      (BilinModuleCat.underlyingMap f ![0, 1]) = 0 := by
+    rw [hz]
+    exact BilinModuleCat.pairing_zero_left _ _
+  have hd : diagonalSource.pairing ![0, 1] ![0, 1] = 3 := by
+    rw [diagonalSource_pairing]
+    norm_num
+  have impossible : (0 : ℚ) = 3 := hp.symm.trans (h.trans hd)
+  norm_num at impossible
 
 end RationalProjection
 end CasCatalogue.Modules.Bilinear.Valued.ModuleKernelRestriction

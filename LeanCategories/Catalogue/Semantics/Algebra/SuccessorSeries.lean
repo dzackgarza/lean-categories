@@ -28,7 +28,7 @@ open Series
 attribute [local instance] Series.tAdic
 
 /-- The complete successor-coefficient family in the selected coefficient ring. -/
-def successorTerms (R : CommRingCat.{0}) :
+noncomputable def successorTerms (R : CommRingCat.{0}) :
     (ℕ : Type) ⟶ CasCatalogue.Algebra.Calculus.powerSeries R :=
   TypeCat.ofHom fun n => PowerSeries.C (n + 1 : R) * PowerSeries.X ^ n
 

@@ -43,6 +43,11 @@ theorem carrier_comparison_apply (p : ℕ) (hp : p.Prime) (x : ZMod p) :
     (LeanCategories.Algebra.ringCarrierComparison.app
       ((forget₂ CommRingCat RingCat).obj (Fields.ring (primeResidues p hp)))).hom x = x := rfl
 
+/-- Both complete routes retain the actual function of every ring homomorphism. -/
+theorem carrier_routes_map {R S : RingCat.{0}} (f : R ⟶ S) (x : R) :
+    LeanCategories.Algebra.ringCarrierMultiplicative.map f x = f.hom x ∧
+      LeanCategories.Algebra.ringCarrierAdditive.map f x = f.hom x := ⟨rfl, rfl⟩
+
 /-- The multiplicative route has five elements on the selected prime residue field. -/
 theorem five_multiplicative_cardinality :
     Nat.card (LeanCategories.Algebra.ringCarrierMultiplicative.obj

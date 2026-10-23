@@ -6,7 +6,7 @@ module
 
 public import LeanCategories.Catalogue.Semantics.Modules.CatalogueRegistration
 public import LeanCategories.Catalogue.Semantics.Algebra.NamedCommutativeRings
-public import Mathlib.Data.ZMod.Basic
+public import Mathlib.Algebra.Field.ZMod
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.Modules.Catalogue
 
@@ -44,6 +44,38 @@ theorem reindex_selected_quotient (n : ℕ) :
     integerResidueModule n =
       (ModuleCat.restrictScalars (Int.castRingHom (ZMod n))).obj
         (regularModule (RingCat.of (ZMod n))) := rfl
+
+/-- The selected quotient is the already published coefficient map after forgetting commutativity. -/
+theorem quotient_is_integer_coefficients (n : ℕ) :
+    RingCat.ofHom (Int.castRingHom (ZMod n)) =
+      (forget₂ CommRingCat RingCat).map
+        (Algebra.NamedCommutativeRings.integerCoefficients
+          (Algebra.NamedCommutativeRings.integersMod n)) := rfl
+
+/-- The source before reindexing is genuinely the one-dimensional regular module. -/
+theorem five_regular_dimension :
+    Module.finrank (ZMod 5) (regularModule (RingCat.of (ZMod 5))) = 1 := by
+  letI : Fact (Nat.Prime 5) := ⟨by decide⟩
+  change Module.finrank (ZMod 5) (ZMod 5) = 1
+  simp
+
+/-- The actual cartesian arrow lies over the retained quotient map. -/
+theorem five_cartesian_base :
+    modulesFamilyRealization.projection.map
+      (CategoryTheory.Pseudofunctor.CoGrothendieck.cartesianLift
+        (F := modulesFamilyRealization.transport)
+        (regularModule (RingCat.of (ZMod 5)))
+        (RingCat.ofHom (Int.castRingHom (ZMod 5)))) =
+      RingCat.ofHom (Int.castRingHom (ZMod 5)) := rfl
+
+/-- The cartesian arrow preserves the additive elements by its identity carrier map. -/
+theorem five_cartesian_carrier :
+    LeanCategories.Modules.ModulesOverRings.underlying.map
+      (CategoryTheory.Pseudofunctor.CoGrothendieck.cartesianLift
+        (F := modulesFamilyRealization.transport)
+        (regularModule (RingCat.of (ZMod 5)))
+        (RingCat.ofHom (Int.castRingHom (ZMod 5)))) = 𝟙 (ZMod 5 : Type) :=
+  LeanCategories.Modules.ModulesOverRings.underlying_map_cartesianLift _ _
 
 /-- The chosen scalar action is multiplication by the image under the quotient map. -/
 theorem action_formula (n : ℕ) (r : ℤ) (x : integerResidueModule n) :

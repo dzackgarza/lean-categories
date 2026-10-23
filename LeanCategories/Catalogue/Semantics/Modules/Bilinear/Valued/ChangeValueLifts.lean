@@ -46,18 +46,20 @@ variable (a : W →ₗ[R] W')
 def pulledBack (X : BilinModuleCat R W) {K : BilinModuleCat R W'}
     (i : K ⟶ (changeValue R W a).obj X) : BilinModuleCat R W :=
   BilinModuleCat.ofBilinMap
-    (X.bilinMap.compl₁₂ (BilinModuleCat.underlyingMap i) (BilinModuleCat.underlyingMap i))
+    (X.bilinMap.compl₁₂ (BilinModuleCat.underlyingMap (W := W') i)
+      (BilinModuleCat.underlyingMap (W := W') i))
 
 /-- The pulled-back form keeps the original values and actual arrow action. -/
 theorem pulledBack_pairing (X : BilinModuleCat R W) {K : BilinModuleCat R W'}
     (i : K ⟶ (changeValue R W a).obj X) (x y : K.carrier) :
     (pulledBack R W W' a X i).pairing x y =
-      X.pairing (BilinModuleCat.underlyingMap i x) (BilinModuleCat.underlyingMap i y) := rfl
+      X.pairing (BilinModuleCat.underlyingMap (W := W') i x)
+        (BilinModuleCat.underlyingMap (W := W') i y) := rfl
 
 /-- The defining map of the restriction has exactly the given carrier map. -/
 def pulledBackHom (X : BilinModuleCat R W) {K : BilinModuleCat R W'}
     (i : K ⟶ (changeValue R W a).obj X) : pulledBack R W W' a X i ⟶ X :=
-  BilinModuleCat.homMk (BilinModuleCat.underlyingMap i) (fun _ _ => rfl)
+  BilinModuleCat.homMk (BilinModuleCat.underlyingMap (W := W') i) (fun _ _ => rfl)
 
 /-- The original selected `W'`-form on `K` is recovered, not merely an isomorphic carrier. -/
 def pulledBackIso (X : BilinModuleCat R W) {K : BilinModuleCat R W'}
@@ -80,13 +82,18 @@ def changeValueMonoLift : MonoLift (changeValue R W a) where
   universal X K i _ Y g f hf := by
     have he (x : Y.carrier) :
         BilinModuleCat.underlyingMap f x =
-          BilinModuleCat.underlyingMap i (BilinModuleCat.underlyingMap g x) :=
-      congrArg (fun k => BilinModuleCat.underlyingMap k x) hf
+          BilinModuleCat.underlyingMap (W := W') i
+            (BilinModuleCat.underlyingMap (W := W') g x) :=
+      congrArg (fun k : (changeValue R W a).obj Y ⟶ (changeValue R W a).obj X =>
+        BilinModuleCat.underlyingMap (W := W') k x) hf
     let h : Y ⟶ pulledBack R W W' a X i :=
-      BilinModuleCat.homMk (BilinModuleCat.underlyingMap g) (by
+      BilinModuleCat.homMk (BilinModuleCat.underlyingMap (W := W') g) (by
         intro x y
-        change X.pairing (BilinModuleCat.underlyingMap i (BilinModuleCat.underlyingMap g x))
-          (BilinModuleCat.underlyingMap i (BilinModuleCat.underlyingMap g y)) = Y.pairing x y
+        change X.pairing
+          (BilinModuleCat.underlyingMap (W := W') i
+            (BilinModuleCat.underlyingMap (W := W') g x))
+          (BilinModuleCat.underlyingMap (W := W') i
+            (BilinModuleCat.underlyingMap (W := W') g y)) = Y.pairing x y
         rw [← he x, ← he y]
         exact BilinModuleCat.map_pairing f x y)
     refine ⟨h, ⟨?_, ?_⟩, ?_⟩
@@ -107,7 +114,8 @@ def changeValueMonoLift : MonoLift (changeValue R W a) where
       apply Quiver.Hom.unop_inj
       apply ModuleCat.hom_ext
       ext x
-      exact congrArg (fun l => BilinModuleCat.underlyingMap l x) hk.1
+      exact congrArg (fun l : (changeValue R W a).obj Y ⟶ K =>
+        BilinModuleCat.underlyingMap (W := W') l x) hk.1
 
 /-- Only the four required data components cross the computational interface. -/
 def changeValueMonoLiftComputation : MonoLiftComputation (changeValue R W a) :=

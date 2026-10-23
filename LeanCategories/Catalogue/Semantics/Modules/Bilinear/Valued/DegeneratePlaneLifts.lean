@@ -43,22 +43,28 @@ namespace CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneLifts
 
 open CasCatalogue.Algebra
 
+set_option backward.isDefEq.respectTransparency false
+
 /-- The independently specified degenerate source form. -/
-def source : BilinModuleCat ℚ ℚ :=
+abbrev source : BilinModuleCat ℚ ℚ :=
   BilinModuleCat.ofBilinMap (Matrix.toBilin' (!![2, 2; 2, 2] : Matrix (Fin 2) (Fin 2) ℚ))
 
 /-- The independently specified target form. -/
-def target : BilinModuleCat ℚ ℚ :=
+abbrev target : BilinModuleCat ℚ ℚ :=
   BilinModuleCat.ofBilinMap (Matrix.toBilin' (!![2, 0; 0, 5] : Matrix (Fin 2) (Fin 2) ℚ))
 
 theorem source_pairing (x y : Fin 2 → ℚ) :
     source.pairing x y = 2 * (x 0 + x 1) * (y 0 + y 1) := by
-  simp [source, Matrix.toBilin'_apply, Fin.sum_univ_two]
+  change Matrix.toBilin' (!![2, 2; 2, 2] : Matrix (Fin 2) (Fin 2) ℚ) x y = _
+  rw [Matrix.toBilin'_apply]
+  simp only [Fin.sum_univ_two, Matrix.of_apply, Matrix.cons_val_zero, Matrix.cons_val_one]
   ring
 
 theorem target_pairing (x y : Fin 2 → ℚ) :
     target.pairing x y = 2 * x 0 * y 0 + 5 * x 1 * y 1 := by
-  simp [target, Matrix.toBilin'_apply, Fin.sum_univ_two]
+  change Matrix.toBilin' (!![2, 0; 0, 5] : Matrix (Fin 2) (Fin 2) ℚ) x y = _
+  rw [Matrix.toBilin'_apply]
+  simp only [Fin.sum_univ_two, Matrix.of_apply, Matrix.cons_val_zero, Matrix.cons_val_one]
   ring
 
 /-- The ordinary map is independently fixed by the matrix `[[1,1],[0,0]]`. -/
@@ -67,10 +73,10 @@ def underlyingMap : source.carrierObj ⟶ target.carrierObj :=
 
 theorem underlyingMap_apply (x : Fin 2 → ℚ) :
     underlyingMap.hom x = ![x 0 + x 1, 0] := by
-  ext j
+  change (!![1, 1; 0, 0] : Matrix (Fin 2) (Fin 2) ℚ).mulVec x = _
+  funext j
   fin_cases j <;>
-    simp [underlyingMap, LinearAlgebra.matrixLinearMap_apply, Matrix.mulVec,
-      dotProduct, Fin.sum_univ_two]
+    simp [Matrix.mulVec, dotProduct, Fin.sum_univ_two]
 
 /-- The universal pairing equation makes the fixed matrix a genuine formed arrow. -/
 def formedMap : source ⟶ target :=
@@ -102,26 +108,34 @@ instance kernelInclusion_mono : Mono kernelInclusion := by
 
 /-- This selected model lies in the kernel of the actual formed arrow. -/
 theorem kernel_condition : kernelInclusion ≫ (forget ℚ ℚ).map formedMap = 0 := by
-  ext t j
-  change underlyingMap.hom (kernelInclusion.hom t) j = 0
-  rw [underlyingMap_apply, kernelInclusion_apply]
-  fin_cases j <;> simp <;> ring
+  apply ModuleCat.hom_ext
+  apply LinearMap.ext
+  intro t
+  change underlyingMap.hom (kernelInclusion.hom t) = (0 : Fin 2 → ℚ)
+  rw [underlyingMap_apply]
+  change (![2 * t + -2 * t, 0] : Fin 2 → ℚ) = 0
+  funext j
+  fin_cases j <;> simp
 
 /-- The image is the entire module kernel, not a smaller isotropic submodule. -/
 theorem kernel_range : LinearMap.range kernelInclusion.hom = underlyingMap.hom.ker := by
-  ext x
+  apply Submodule.ext
+  intro x
+  change (∃ t : ℚ, kernelInclusion.hom t = x) ↔ underlyingMap.hom x = (0 : Fin 2 → ℚ)
   constructor
   · rintro ⟨t, rfl⟩
-    rw [LinearMap.mem_ker, underlyingMap_apply, kernelInclusion_apply]
-    ext j
-    fin_cases j <;> simp <;> ring
+    rw [underlyingMap_apply]
+    change (![2 * t + -2 * t, 0] : Fin 2 → ℚ) = 0
+    funext j
+    fin_cases j <;> simp
   · intro hx
-    have hx₀ := congrFun (LinearMap.mem_ker.mp hx) 0
-    rw [underlyingMap_apply] at hx₀
+    have hx₀ := congrArg (fun v : Fin 2 → ℚ => v 0)
+      ((underlyingMap_apply x).symm.trans hx)
     change x 0 + x 1 = 0 at hx₀
     refine ⟨x 0 / 2, ?_⟩
-    ext j
-    fin_cases j <;> simp [kernelInclusion_apply] <;> linarith
+    change (![2 * (x 0 / 2), -2 * (x 0 / 2)] : Fin 2 → ℚ) = x
+    funext j
+    fin_cases j <;> simp <;> linarith
 
 /-- The full universal factorization for the independently selected module-kernel model. -/
 theorem kernel_universal (T : ModuleCat.{0} ℚ) (h : T ⟶ source.carrierObj)
@@ -130,12 +144,17 @@ theorem kernel_universal (T : ModuleCat.{0} ℚ) (h : T ⟶ source.carrierObj)
   let g : T ⟶ ModuleCat.of ℚ ℚ :=
     ModuleCat.ofHom ((1 / 2 : ℚ) • (LinearMap.proj 0).comp h.hom)
   have hg : g ≫ kernelInclusion = h := by
-    ext t j
-    have ht := congrArg (fun k : T ⟶ target.carrierObj => k.hom t 0) hh
-    change underlyingMap.hom (h.hom t) 0 = 0 at ht
-    rw [underlyingMap_apply] at ht
-    change h.hom t 0 + h.hom t 1 = 0 at ht
-    fin_cases j <;> change _ = _ <;> dsimp [g, kernelInclusion] <;> linarith
+    apply ModuleCat.hom_ext
+    apply LinearMap.ext
+    intro t
+    have ht := congrArg (fun k : T ⟶ target.carrierObj => k.hom t) hh
+    change underlyingMap.hom (h.hom t) = (0 : Fin 2 → ℚ) at ht
+    have ht₀ := congrArg (fun v : Fin 2 → ℚ => v 0)
+      ((underlyingMap_apply (h.hom t)).symm.trans ht)
+    change h.hom t 0 + h.hom t 1 = 0 at ht₀
+    change (![2 * ((1 / 2) * h.hom t 0), -2 * ((1 / 2) * h.hom t 0)] : Fin 2 → ℚ) = h.hom t
+    funext j
+    fin_cases j <;> simp <;> linarith
   refine ⟨g, hg, ?_⟩
   intro k hk
   exact (cancel_mono kernelInclusion).mp (hk.trans hg.symm)
@@ -143,8 +162,10 @@ theorem kernel_universal (T : ModuleCat.{0} ℚ) (h : T ⟶ source.carrierObj)
 /-- The first stage is the existing form restriction along the selected module inclusion. -/
 noncomputable def firstLift := Kernels.forgetMonoLift ℚ ℚ
 
-noncomputable def firstObject : BilinModuleCat ℚ ℚ := firstLift.obj source kernelInclusion
+noncomputable abbrev firstObject : BilinModuleCat ℚ ℚ := firstLift.obj source kernelInclusion
 noncomputable def firstInclusion : firstObject ⟶ source := firstLift.hom source kernelInclusion
+instance firstInclusion_mono : Mono firstInclusion :=
+  inferInstanceAs (Mono (firstLift.hom source kernelInclusion))
 noncomputable def alpha : firstObject.carrierObj ⟶ ModuleCat.of ℚ ℚ :=
   firstLift.computation.forward source kernelInclusion
 noncomputable def beta : ModuleCat.of ℚ ℚ ⟶ firstObject.carrierObj :=
@@ -153,8 +174,9 @@ noncomputable def beta : ModuleCat.of ℚ ℚ ⟶ firstObject.carrierObj :=
 /-- A point of the actual first lifted carrier, with its range membership. -/
 def firstPoint (a : ℚ) : firstObject.carrier :=
   ⟨![a, -a], ⟨a / 2, by
-    ext j
-    fin_cases j <;> simp [kernelInclusion_apply] <;> ring⟩⟩
+    change (![2 * (a / 2), -2 * (a / 2)] : Fin 2 → ℚ) = ![a, -a]
+    funext j
+    fin_cases j <;> simp <;> ring⟩⟩
 
 /-- The backward comparison retains the independently prescribed factor two. -/
 theorem beta_value (t : ℚ) : (beta.hom t).val = ![2 * t, -2 * t] := rfl
@@ -190,16 +212,20 @@ theorem first_factorization :
   firstLift.computation_fac source kernelInclusion
 
 /-- The genuinely additional chosen form is the ordinary dot product. -/
-def dotSource : BilinModuleCat ℚ ℚ :=
+abbrev dotSource : BilinModuleCat ℚ ℚ :=
   BilinModuleCat.ofBilinMap (Matrix.toBilin' (!![1, 0; 0, 1] : Matrix (Fin 2) (Fin 2) ℚ))
 
 theorem dotSource_pairing (x y : Fin 2 → ℚ) :
     dotSource.pairing x y = x 0 * y 0 + x 1 * y 1 := by
-  simp [dotSource, Matrix.toBilin'_apply, Fin.sum_univ_two]
+  change Matrix.toBilin' (!![1, 0; 0, 1] : Matrix (Fin 2) (Fin 2) ℚ) x y = _
+  rw [Matrix.toBilin'_apply]
+  simp [Fin.sum_univ_two]
 
 /-- A pair of chosen forms uses the existing fixed value module `ℚ × ℚ`. -/
-def pairedSource : BilinModuleCat ℚ (ℚ × ℚ) :=
-  Opposite.op ⟨Opposite.op source.carrierObj, source.form.prod dotSource.form⟩
+noncomputable abbrev pairedSource : BilinModuleCat ℚ (ℚ × ℚ) :=
+  let b : TensorProduct ℚ (Fin 2 → ℚ) (Fin 2 → ℚ) →ₗ[ℚ] ℚ := source.form
+  let d : TensorProduct ℚ (Fin 2 → ℚ) (Fin 2 → ℚ) →ₗ[ℚ] ℚ := dotSource.form
+  Opposite.op ⟨Opposite.op (ModuleCat.of ℚ (Fin 2 → ℚ)), b.prod d⟩
 
 /-- Forgetting the second value recovers exactly the original selected formed source. -/
 theorem pairedSource_first :
@@ -218,10 +244,12 @@ def secondLift :=
 /-- The composed lift uses `firstInclusion` as its second input, by `MonoLift.comp`. -/
 noncomputable def compositeLift := secondLift.comp firstLift
 
-noncomputable def finalObject : BilinModuleCat ℚ (ℚ × ℚ) :=
+noncomputable abbrev finalObject : BilinModuleCat ℚ (ℚ × ℚ) :=
   compositeLift.obj pairedSource kernelInclusion
 noncomputable def finalInclusion : finalObject ⟶ pairedSource :=
   compositeLift.hom pairedSource kernelInclusion
+instance finalInclusion_mono : Mono finalInclusion :=
+  inferInstanceAs (Mono (compositeLift.hom pairedSource kernelInclusion))
 
 noncomputable def finalAlpha : finalObject.carrierObj ⟶ ModuleCat.of ℚ ℚ :=
   compositeLift.computation.forward pairedSource kernelInclusion
