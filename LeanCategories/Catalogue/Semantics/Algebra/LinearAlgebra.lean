@@ -49,6 +49,13 @@ open CasCatalogue.Foundation.PowerSets CasCatalogue.Algebra.Polynomials
 /-- `Xⁿ`. -/
 abbrev vectors (X : Type) (n : ℕ) : SetsCat.{0} := Fin n → X
 
+/-- The finite arity of the already declared vector object. -/
+def vectorArity (_ : Type) (n : ℕ) : ℕ := n
+
+/-- Its selected coordinate maps; these retain the actual coefficient type and finite index. -/
+def vectorComponent (X : Type) (n : ℕ) (i : Fin n) : vectors X n ⟶ (X : SetsCat.{0}) :=
+  TypeCat.ofHom fun vector => vector i
+
 /-- The product module over the selected scalar ring, with pointwise addition
 and scalar action; no basis or coordinates are chosen beyond the index `Fin n`. -/
 def vectorModule (R : RingCat.{0}) (n : ℕ) : ModuleCat.{0} R :=
@@ -388,7 +395,14 @@ namespace CasCatalogue
 
 normalized_registry .object
   { id := ⟨"obj.sets.vectors"⟩, category := CategoryId.sets, name := "Vec"
-    declaration := `CasCatalogue.Algebra.LinearAlgebra.vectors }
+    declaration := `CasCatalogue.Algebra.LinearAlgebra.vectors
+    components := some
+      { arity := `CasCatalogue.Algebra.LinearAlgebra.vectorArity
+        projection := `CasCatalogue.Algebra.LinearAlgebra.vectorComponent } }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.vector_component"⟩, category := CategoryId.sets, name := "component"
+    declaration := `CasCatalogue.Algebra.LinearAlgebra.vectorComponent }
 
 normalized_registry .object
   { id := ⟨"obj.modules.vectors"⟩, category := CategoryId.modulesR, name := "Vec"

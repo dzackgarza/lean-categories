@@ -63,6 +63,7 @@ normalized_registry .object
 
 normalized_registry .object
   { id := ⟨"obj.sets.integers_mod_power"⟩, category := CategoryId.sets, name := "ZModPower"
+    notations := #["(ℤ/)^"]
     declaration := `CasCatalogue.Foundation.Objects.integersModPower }
 
 end CasCatalogue

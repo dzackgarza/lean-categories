@@ -97,6 +97,9 @@ abbrev omega : SetsCat.{0} := Prop
 /-- `⊤ : 1 → Ω`. -/
 def truth : fin 1 ⟶ omega := TypeCat.ofHom fun _ => True
 
+/-- The unique point of the selected terminal source of global elements. -/
+def point : fin 1 := 0
+
 /-- `𝒫(X)`. -/
 abbrev powerSet (X : Type) : SetsCat.{0} := Set X
 
@@ -226,6 +229,7 @@ normalized_registry .object
 normalized_registry .powerObject
   { id := ⟨"pow.sets"⟩, object := ⟨"obj.sets.power_set"⟩, omega := ⟨"obj.sets.truth_values"⟩
     truth := `CasCatalogue.Foundation.PowerSets.truth
+    point := `CasCatalogue.Foundation.PowerSets.point
     member := `CasCatalogue.Foundation.PowerSets.member
     transpose := `CasCatalogue.Foundation.PowerSets.transpose
     extent := `CasCatalogue.Foundation.PowerSets.extent

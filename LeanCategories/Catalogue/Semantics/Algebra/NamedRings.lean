@@ -121,6 +121,7 @@ normalized_registry .object
 
 normalized_registry .object
   { id := ⟨"obj.rings.integers_mod"⟩, category := CategoryId.rings, name := "ZMod"
+    notations := #["ℤ/"]
     declaration := `CasCatalogue.Algebra.NamedRings.ringIntegersMod
     refines := some
       { base := ⟨"obj.sets.integers_mod"⟩, route := ringsToSets
