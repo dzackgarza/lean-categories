@@ -38,6 +38,14 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Mathematical issues
 
+### Abstract polytopes need a graded incidence category
+
+- **Need:** A finite graded poset with a rank function and rank-preserving monotone maps is the general incidence owner. An abstract polytope is a finite ranked poset with a least face, a greatest face, strong flag connectivity, and the diamond condition on rank-two intervals. State its face inclusions, automorphism group as order automorphisms, and the forgetful functor to finite graded posets. A placed convex polytope has a face-poset functor into this category; its affine automorphisms and abstract incidence automorphisms remain distinct.
+- **Evidence:** `research/src/dzack_research/preamble/categories/schemes/polytopes.py:RegularPolytopes` declares `PartiallyOrderedSets()` while its Schläfli-symbol constructor retains only bonds and a Coxeter diagram, with no faces or order relation. The existing placed-polytope request below asks for a graded face poset but does not define the abstract target category and its map class. The research plan's P1 chain requires `P -> faces(P) -> face_poset(P) -> Aut(face_poset(P))`.
+- **Gap and impact:** The abstract incidence category is the earliest missing owner for the general face-poset target and its automorphisms. The current regular example cannot establish its claimed partial-order placement from its retained data. This blocks the polytope branch of research P1 and the Coxeter-complex incidence presentation.
+- **Coverage:** Inspected the named research constructor, this complaint's placed-polytope clause, and `LeanCategories/Orders.lean`. The rest of Mathlib's ordered and polytope libraries remains to be mapped before implementation or an absence claim.
+- **Repair link:** Map existing graded-poset and abstract-polytope formalizations, then supply only the missing definitions, morphisms, forgetful functor and face-poset comparison at their owners. Research `integral-affine-polyhedral-p1` and `coxeter-complexes-and-buildings` consume those types.
+
 ### Manifold categories need fixed dimension, degree and realification maps
 
 - **Need:** Present the category of Hausdorff second-countable topological manifolds with its continuous maps, and the categories of real `C^k` manifolds with `C^k` maps for each `k ≥ 1`, smooth real manifolds, and complex manifolds with holomorphic maps. Give the pure-dimension and dimension-at-most predicates with their actual map classes, boundary/corner local-model refinements, and the forgetful functors on both objects and morphisms. In particular, complex realification sends a complex `m`-manifold to a smooth real `2m`-manifold; it is a functor rather than a same-hom-set inclusion. The real line with its identity chart is a smooth real one-manifold, and complex coordinate space has its standard holomorphic charts.
