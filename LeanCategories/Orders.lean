@@ -8,6 +8,7 @@ public import Mathlib.Order.Category.Preord
 public import Mathlib.Order.Category.PartOrd
 public import Mathlib.Order.Category.LinOrd
 public import Mathlib.Order.Category.Lat
+public import LeanCategories.Orders.FiniteGradedPoset
 
 /-!
 # Ordered-category routes
