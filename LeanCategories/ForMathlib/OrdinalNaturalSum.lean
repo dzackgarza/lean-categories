@@ -507,4 +507,37 @@ theorem naturalSumList_pos_iff (as : List Ordinal.{u}) :
   push_neg
   simp only [pos_iff_ne_zero, ne_eq]
 
+/-- Each finite summand is bounded above by the sum of the entire list. -/
+theorem le_naturalSumList_of_mem {as : List Ordinal.{u}}
+    {a : Ordinal.{u}} (h : a ∈ as) : a ≤ naturalSumList as := by
+  induction as with
+  | nil => cases h
+  | cons b bs ih =>
+    rcases List.mem_cons.mp h with heq | h
+    · subst a
+      exact le_naturalSum_left b (naturalSumList bs)
+    · exact (ih h).trans (le_naturalSum_right b (naturalSumList bs))
+
+/-- Every finite factor is at most its product when all the other factors are
+positive; this follows from monotonicity and the unit law. -/
+theorem le_naturalProductList_of_mem {as : List Ordinal.{u}}
+    {a : Ordinal.{u}} (h : a ∈ as)
+    (hp : ∀ b ∈ as, 0 < b) : a ≤ naturalProductList as := by
+  induction as with
+  | nil => cases h
+  | cons b bs ih =>
+    rcases List.mem_cons.mp h with heq | h
+    · subst a
+      have ht : 1 ≤ naturalProductList bs :=
+        (Ordinal.one_le_iff_ne_zero).2
+          (((naturalProductList_pos_iff bs).2
+            (fun x hx => hp x (List.mem_cons_of_mem b hx))).ne')
+      simpa [naturalProductList, naturalProduct_one] using
+        (naturalProduct_mono_right (a := b) ht)
+    · have hb : 1 ≤ b := (Ordinal.one_le_iff_ne_zero).2
+        ((hp b (List.mem_cons_self ..)).ne')
+      exact (ih h (fun x hx => hp x (List.mem_cons_of_mem b hx))).trans
+        (by simpa [naturalProductList, naturalProduct_one_left] using
+          (naturalProduct_mono_left (b := naturalProductList bs) hb))
+
 end LeanCategories.ForMathlib.OrdinalNatural
