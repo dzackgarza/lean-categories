@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Catalogue.Semantics.ConstructorRegistration
 public import LeanCategories.Foundation.Cardinality
+public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.Data.ZMod.Basic
 public meta import LeanCategories.Catalogue.Registry.Semantic
@@ -33,10 +34,12 @@ namespace CasCatalogue
 
 namespace CategoryId
 def cardinals : CategoryId := ⟨"cat.cardinals"⟩
+def cardinalities : CategoryId := ⟨"cat.cardinalities"⟩
 end CategoryId
 
 namespace FunctorId
 def setsCardinality : FunctorId := ⟨"fun.sets.cardinality"⟩
+def cardinalsToCardinalities : FunctorId := ⟨"fun.cardinals.to_cardinalities"⟩
 end FunctorId
 
 namespace Foundation.Cardinality
@@ -44,13 +47,36 @@ namespace Foundation.Cardinality
 universe u
 
 def Cardinals : CategoryExpr := .atom CategoryId.cardinals
+def Cardinalities : CategoryExpr := .atom CategoryId.cardinalities
 def SetsCardinalityExpr : FunctorExpr Constructed.CoreSets Cardinals :=
   .atomic FunctorId.setsCardinality
+def CardinalsToCardinalitiesExpr : FunctorExpr Cardinals Cardinalities :=
+  .atomic FunctorId.cardinalsToCardinalities
 
 /-- Cardinal numbers, as a discrete category. -/
 abbrev cardinalsCategory : ObjCat.{u + 1, u + 1} := Cat.of (Discrete Cardinal.{u})
 noncomputable def cardinalsRealization : CategoryRealization Cardinals cardinalsCategory.{u} :=
   { familyFibre := none }
+
+/-- Cardinals ordered by `≤`: `κ ⟶ λ` exists exactly when `κ ≤ λ` and is unique. This uses
+Mathlib's category instance for a preorder, distinct from the discrete category `Card`. -/
+abbrev cardinalitiesCategory : ObjCat.{u + 1, u + 1} := Cat.of Cardinal.{u}
+noncomputable def cardinalitiesRealization :
+    CategoryRealization Cardinalities cardinalitiesCategory.{u} :=
+  { familyFibre := none }
+
+/-- An arrow in `Cardinalities` is exactly a cardinal inequality. -/
+theorem cardinalities_hom_iff (κ μ : Cardinal.{u}) :
+    Nonempty (κ ⟶ μ) ↔ κ ≤ μ :=
+  ⟨fun ⟨f⟩ => CategoryTheory.leOfHom f, fun h => ⟨CategoryTheory.homOfLE h⟩⟩
+
+/-- The identity on cardinal objects, sending an equality arrow to its order arrow. -/
+def cardinalsToCardinalities : cardinalsCategory.{u} ⥤ cardinalitiesCategory.{u} :=
+  Discrete.functor id
+noncomputable def cardinalsToCardinalitiesRealization :
+    FunctorRealization CardinalsToCardinalitiesExpr cardinalsCategory.{u}
+      cardinalitiesCategory.{u} cardinalsToCardinalities :=
+  { sourceRealization := cardinalsRealization, targetRealization := cardinalitiesRealization }
 
 /-- `card : Core(Sets) ⥤ Disc(Card)`. -/
 def setsCardinality : coreSetsCategory.{u} ⥤ cardinalsCategory.{u} :=
@@ -103,6 +129,17 @@ normalized_registry .category
     declaration := `CasCatalogue.Foundation.Cardinality.cardinalsCategory
     expression := Foundation.Cardinality.Cardinals
     realization := `CasCatalogue.Foundation.Cardinality.cardinalsRealization }
+normalized_registry .category
+  { id := CategoryId.cardinalities, name := "Cardinalities",
+    declaration := `CasCatalogue.Foundation.Cardinality.cardinalitiesCategory
+    expression := Foundation.Cardinality.Cardinalities
+    realization := `CasCatalogue.Foundation.Cardinality.cardinalitiesRealization }
+normalized_registry .functor
+  { id := FunctorId.cardinalsToCardinalities, source := Foundation.Cardinality.Cardinals
+    target := Foundation.Cardinality.Cardinalities
+    declaration := `CasCatalogue.Foundation.Cardinality.cardinalsToCardinalities
+    realization := `CasCatalogue.Foundation.Cardinality.cardinalsToCardinalitiesRealization
+    expression := Foundation.Cardinality.CardinalsToCardinalitiesExpr, structural := true }
 normalized_registry .functor
   { id := FunctorId.setsCardinality, source := Constructed.CoreSets
     target := Foundation.Cardinality.Cardinals
