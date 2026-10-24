@@ -293,12 +293,14 @@ theorem naturalSum_assoc_le (a b c : Ordinal.{u}) :
         naturalSum_mono_left hx'
       have hrec := naturalSum_assoc_le a b' c
       rw [hrec] at hle
-      exact succ_le_iff.mpr (hle.trans_lt (naturalSum_lt_right (b := b') (b' := b) hb'))
+      exact succ_le_iff.mpr <| hle.trans_lt <|
+        naturalSum_lt_right (a := a) (naturalSum_lt_left hb')
   · apply Ordinal.iSup_le
     intro z
     have hrec := naturalSum_assoc_le a b z.1
     rw [hrec]
-    exact succ_le_iff.mpr (naturalSum_lt_right (a := naturalSum a (naturalSum b z.1)) z.2)
+    exact succ_le_iff.mpr <| naturalSum_lt_right (a := a) <|
+      naturalSum_lt_right (a := b) z.2
 termination_by (a, b, c)
 decreasing_by all_goals simp_wf
 
