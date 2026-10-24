@@ -193,6 +193,19 @@ theorem naturalSum_succ (a b : Ordinal.{u}) :
 termination_by (a, b)
 decreasing_by exact Prod.Lex.left _ _ x.2
 
+/-- Hessenberg sum also commutes with successor in the first argument. -/
+theorem naturalSum_succ_left (a b : Ordinal.{u}) :
+    naturalSum (Order.succ a) b = Order.succ (naturalSum a b) := by
+  rw [naturalSum_comm, naturalSum_succ, naturalSum_comm]
+
+/-- Associativity when the third summand is a successor. -/
+theorem naturalSum_assoc_succ (a b c : Ordinal.{u}) :
+    naturalSum (naturalSum a b) (Order.succ c) =
+      naturalSum a (naturalSum b (Order.succ c)) ↔
+    naturalSum (naturalSum a b) c = naturalSum a (naturalSum b c) := by
+  rw [naturalSum_succ, naturalSum_succ, naturalSum_succ]
+  exact Order.succ_eq_succ_iff
+
 /-- Hessenberg natural product: the least ordinal `c` for which every simultaneous decrease
 of `a` and `b` satisfies `(a' ⊗ b) ⊕ (a ⊗ b') < c ⊕ (a' ⊗ b')`, with the products on the
 left interpreted recursively. This is the recursive source definition, with `⊕` explicitly
