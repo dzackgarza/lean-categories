@@ -540,4 +540,17 @@ theorem le_naturalProductList_of_mem {as : List Ordinal.{u}}
         (by simpa [naturalProductList, naturalProduct_one_left] using
           (naturalProduct_mono_left (b := naturalProductList bs) hb))
 
+/-- A pointwise strict increase of every entry strictly increases a nonempty
+finite Hessenberg sum. -/
+theorem naturalSumList_strictMono {as bs : List Ordinal.{u}}
+    (h : List.Forall₂ (· < ·) as bs) (hne : as ≠ []) :
+    naturalSumList as < naturalSumList bs := by
+  induction h with
+  | nil => exact False.elim (hne rfl)
+  | @cons a b as bs hab htail ih =>
+    have hweak : List.Forall₂ (· ≤ ·) as bs :=
+      htail.imp (fun _ _ h => h.le)
+    exact (naturalSum_lt_left hab).trans_le
+      (naturalSum_mono_right (naturalSumList_mono hweak))
+
 end LeanCategories.ForMathlib.OrdinalNatural
