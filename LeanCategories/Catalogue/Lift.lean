@@ -56,6 +56,19 @@ structure MonoLift {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category
     {Y : C} (g : U.obj Y ⟶ K) (f : Y ⟶ X), U.map f = g ≫ i →
     ∃! h : Y ⟶ obj X i, U.map h ≫ (iso X i).hom = g ∧ h ≫ hom X i = f
 
+/-- Required callable factor data for a selected cartesian monomorphism lift `L`.
+At the actual objects `X`, `K`, `Y`, monomorphism `i`, base arrow `g` and source
+arrow `f`, the formal domain equation `U.map f = g ≫ i` admits an arrow
+`Y ⟶ L.obj X i`. This signature retains the selected lift and functor, rather
+than recovering structure from an underlying carrier. It is separate from the
+four-field `MonoLiftComputation`: factorization and uniqueness are formal laws,
+not proof outputs supplied by a computation. -/
+structure MonoLiftFactorComputation {C : Type u₁} [Category.{v₁} C]
+    {D : Type u₂} [Category.{v₂} D] {U : C ⥤ D} (L : MonoLift U) where
+  factor : (X : C) → {K : D} → (i : K ⟶ U.obj X) → [Mono i] →
+    {Y : C} → (g : U.obj Y ⟶ K) → (f : Y ⟶ X) →
+    U.map f = g ≫ i → (Y ⟶ L.obj X i)
+
 namespace MonoLift
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
@@ -83,6 +96,48 @@ theorem computation_forward_backward (X : C) {K : D} (i : K ⟶ U.obj X) [Mono i
 theorem computation_backward_forward (X : C) {K : D} (i : K ⟶ U.obj X) [Mono i] :
     L.computation.backward X i ≫ L.computation.forward X i = 𝟙 K :=
   (L.iso X i).inv_hom_id
+
+/-- The unique factor through the selected cartesian lift, obtained directly
+from `L.universal`. Its two equations retain the specified base isomorphism and
+defining map; no faithfulness or identification of object carriers is used. -/
+noncomputable def factor (X : C) {K : D} (i : K ⟶ U.obj X) [Mono i]
+    {Y : C} (g : U.obj Y ⟶ K) (f : Y ⟶ X) (hf : U.map f = g ≫ i) :
+    Y ⟶ L.obj X i :=
+  (L.universal X i g f hf).choose
+
+/-- The canonical factor lies over the supplied base arrow, using the selected
+base comparison. This is an elimination lemma for the cartesian universal property. -/
+theorem factor_map (X : C) {K : D} (i : K ⟶ U.obj X) [Mono i]
+    {Y : C} (g : U.obj Y ⟶ K) (f : Y ⟶ X) (hf : U.map f = g ≫ i) :
+    U.map (L.factor X i g f hf) ≫ (L.iso X i).hom = g :=
+  (L.universal X i g f hf).choose_spec.1.1
+
+/-- The canonical factor composes with the actual lifted defining map to `f`.
+This is the other equation of the same cartesian universal property. -/
+theorem factor_hom (X : C) {K : D} (i : K ⟶ U.obj X) [Mono i]
+    {Y : C} (g : U.obj Y ⟶ K) (f : Y ⟶ X) (hf : U.map f = g ≫ i) :
+    L.factor X i g f hf ≫ L.hom X i = f :=
+  (L.universal X i g f hf).choose_spec.1.2
+
+/-- Any arrow satisfying both cartesian factorization equations is the
+canonical factor. Uniqueness is inherited from the existing universal witness. -/
+theorem factor_unique (X : C) {K : D} (i : K ⟶ U.obj X) [Mono i]
+    {Y : C} (g : U.obj Y ⟶ K) (f : Y ⟶ X) (hf : U.map f = g ≫ i)
+    (h : Y ⟶ L.obj X i) (hg : U.map h ≫ (L.iso X i).hom = g)
+    (hh : h ≫ L.hom X i = f) : h = L.factor X i g f hf :=
+  (L.universal X i g f hf).choose_spec.2 h ⟨hg, hh⟩
+
+/-- Changing only the formal proof of the domain equation does not change the
+factor arrow. All selected mathematical data remain fixed. -/
+theorem factor_proof_irrel (X : C) {K : D} (i : K ⟶ U.obj X) [Mono i]
+    {Y : C} (g : U.obj Y ⟶ K) (f : Y ⟶ X) (hf hf' : U.map f = g ≫ i) :
+    L.factor X i g f hf = L.factor X i g f hf' := rfl
+
+/-- Public callable factor signature extracted from this selected mathematical
+lift. Its value is `MonoLift.factor`, whose formal laws are `factor_map`,
+`factor_hom` and `factor_unique`; those laws are not returned computational data. -/
+noncomputable def factorComputation : MonoLiftFactorComputation L where
+  factor := L.factor
 
 /-- A cartesian lift of a monomorphism is itself a defining subobject map.
 No faithfulness assumption on the functor is needed. -/
@@ -142,6 +197,24 @@ def comp {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {E : Type u₃} [Category.{v₃} E] {U : C ⥤ D} {V : D ⥤ E}
   (L : MonoLift U) (M : MonoLift V) (X : C) {K : E} (i : K ⟶ V.obj (U.obj X)) [Mono i]
+
+/-- The canonical factor through a composed lift is obtained by factoring first
+through the selected `V`-lift and then through the selected `U`-lift. The first
+factor's source equation supplies precisely the second factor's domain equation;
+uniqueness identifies the result using both cartesian factorization laws. -/
+theorem factor_comp {Y : C} (g : V.obj (U.obj Y) ⟶ K) (f : Y ⟶ X)
+    (hf : (U ⋙ V).map f = g ≫ i) :
+    (L.comp M).factor X i g f hf =
+      L.factor X (M.hom (U.obj X) i)
+        (M.factor (U.obj X) i g (U.map f) hf) f
+        (M.factor_hom (U.obj X) i g (U.map f) hf).symm := by
+  symm
+  apply (L.comp M).factor_unique X i g f hf
+  · dsimp only [comp, Functor.comp_map, Iso.trans_hom, Functor.mapIso_hom]
+    rw [← Category.assoc, ← V.map_comp, L.factor_map, M.factor_map]
+  · exact L.factor_hom X (M.hom (U.obj X) i)
+      (M.factor (U.obj X) i g (U.map f) hf) f
+      (M.factor_hom (U.obj X) i g (U.map f) hf).symm
 
 /-- Public object-action equation for composed callable lift signatures. -/
 theorem computation_comp_obj :

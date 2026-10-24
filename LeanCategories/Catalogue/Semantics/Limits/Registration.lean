@@ -74,22 +74,79 @@ namespace CasCatalogue
 
 normalized_registry .limit
   { id := ⟨"lim.sets.pullback"⟩, category := CategoryId.sets, shape := "pullback"
-    declaration := `CasCatalogue.Limits.Registration.setsPullback }
+    declaration := `CasCatalogue.Limits.Registration.setsPullback
+    standardization := some `CategoryTheory.Limits.diagramIsoCospan
+    dataConstructor := some `CategoryTheory.Limits.PullbackCone.mk }
 
 normalized_registry .limit
   { id := ⟨"lim.sets.product"⟩, category := CategoryId.sets, shape := "product"
-    declaration := `CasCatalogue.Limits.Registration.setsProduct }
+    declaration := `CasCatalogue.Limits.Registration.setsProduct
+    standardization := some `CategoryTheory.Limits.diagramIsoPair
+    dataConstructor := some `CategoryTheory.Limits.BinaryFan.mk }
 
 normalized_registry .limit
   { id := ⟨"colim.sets.coproduct"⟩, category := CategoryId.sets, shape := "coproduct"
-    declaration := `CasCatalogue.Limits.Registration.setsCoproduct, colimit := true }
+    declaration := `CasCatalogue.Limits.Registration.setsCoproduct, colimit := true
+    standardization := some `CategoryTheory.Limits.diagramIsoPair
+    dataConstructor := some `CategoryTheory.Limits.BinaryCofan.mk }
 
 normalized_registry .limit
   { id := ⟨"colim.bil_w_form.cokernel"⟩, category := CategoryId.bilWForm, shape := "cokernel"
-    declaration := `CasCatalogue.Limits.Registration.bilWFormCokernel, colimit := true }
+    declaration := `CasCatalogue.Limits.Registration.bilWFormCokernel, colimit := true
+    standardization := some `CategoryTheory.Limits.diagramIsoParallelPair
+    dataConstructor := some `CategoryTheory.Limits.Cofork.ofπ }
 
 normalized_registry .limit
   { id := ⟨"lim.groups.kernel"⟩, category := ⟨"cat.groups"⟩, shape := "kernel"
-    declaration := `CasCatalogue.Limits.Registration.groupsKernel }
+    declaration := `CasCatalogue.Limits.Registration.groupsKernel
+    standardization := some `CategoryTheory.Limits.diagramIsoParallelPair
+    dataConstructor := some `CategoryTheory.Limits.Fork.ofι }
+
+namespace Limits.Registration
+
+/-- A valid diagram comparison, but in groups rather than the requested category of sets. -/
+def groupPairComparison (D : Discrete WalkingPair ⥤ GrpCat.{u}) := diagramIsoPair D
+
+/-- A valid isomorphism of the right shape that ignores the supplied diagram's objects. -/
+def fixedPairComparison (_D : Discrete WalkingPair ⥤ Type) :
+    pair (PUnit : Type) PUnit ≅ pair (PUnit : Type) PUnit := Iso.refl _
+
+/-- A valid data constructor with a different complete codomain category. -/
+def groupProductData {X Y P : GrpCat.{u}} (left : P ⟶ X) (right : P ⟶ Y) : BinaryFan X Y :=
+  BinaryFan.mk left right
+
+/-! Registration checks the full comparison and data schemas independently of any consumer.
+The negatives use real well-typed Mathlib constructions: wrong shape, wrong category, wrong
+direction, and specialization to fixed objects must all fail before a kernel can consume them. -/
+
+open Lean Meta Elab Command in
+run_cmd
+  liftTermElabM do
+    let state ← semanticState
+    let some product := state.limits.find? (·.id.raw == "lim.sets.product")
+      | throwError "the product presentation is not registered"
+    validateLimit state product
+    let rejects (description : String) (entry : LimitEntry) : MetaM Unit := do
+      let accepted ← try
+        validateLimit state entry
+        pure true
+      catch _ => pure false
+      if accepted then throwError "limit validation accepted {description}"
+    rejects "a cospan comparison for a product diagram" { product with
+      standardization := some `CategoryTheory.Limits.diagramIsoCospan }
+    rejects "a group comparison for a diagram of sets" { product with
+      standardization := some `CasCatalogue.Limits.Registration.groupPairComparison }
+    rejects "a fixed pair in place of the complete selected diagram" { product with
+      standardization := some `CasCatalogue.Limits.Registration.fixedPairComparison }
+    rejects "a cocone as product-cone data" { product with
+      dataConstructor := some `CategoryTheory.Limits.BinaryCofan.mk }
+    rejects "a pullback cone as product-cone data" { product with
+      dataConstructor := some `CategoryTheory.Limits.PullbackCone.mk }
+    rejects "group cone data for a diagram of sets" { product with
+      dataConstructor := some `CasCatalogue.Limits.Registration.groupProductData }
+    rejects "a universal presentation in place of plain cone data" { product with
+      dataConstructor := some `CasCatalogue.Limits.Registration.setsProduct }
+
+end Limits.Registration
 
 end CasCatalogue

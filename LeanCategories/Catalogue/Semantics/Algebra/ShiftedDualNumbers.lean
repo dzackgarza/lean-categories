@@ -26,28 +26,38 @@ namespace CasCatalogue.Algebra.ShiftedDualNumbers
 open LeanCategories.Algebra.PolynomialPresentation
 open PolynomialPresentations
 
+/-- The defining polynomial `X²` over `ℚ` for the source dual-number presentation. -/
 noncomputable abbrev sourcePolynomial : ℚ[X] := X ^ 2
+/-- The defining polynomial `(Y + 1)²` over `ℚ` for the target dual-number presentation. -/
 noncomputable abbrev targetPolynomial : ℚ[X] := Polynomial.taylor 1 sourcePolynomial
+/-- The selected commutative ring `ℚ[X]/(X²)`, with the class of `X` as its named generator. -/
 noncomputable abbrev sourceRing : CommRingCat := quotientRing (CommRingCat.of ℚ) sourcePolynomial
+/-- The selected commutative ring `ℚ[Y]/((Y + 1)²)`, with the class of `Y` as its named generator. -/
 noncomputable abbrev targetRing : CommRingCat := quotientRing (CommRingCat.of ℚ) targetPolynomial
+/-- The underlying set of the selected presentation `ℚ[X]/(X²)`. -/
 noncomputable abbrev sourceSet : SetsCat := AdjoinRoot sourcePolynomial
+/-- The underlying set of the selected presentation `ℚ[Y]/((Y + 1)²)`. -/
 noncomputable abbrev targetSet : SetsCat := AdjoinRoot targetPolynomial
+/-- The closed point selecting the class of `X` in `ℚ[X]/(X²)`. -/
 noncomputable def sourceGenerator : Foundation.Objects.fin 1 ⟶ sourceSet :=
   generator (CommRingCat.of ℚ) sourcePolynomial
+/-- The closed point selecting the class of `Y` in `ℚ[Y]/((Y + 1)²)`. -/
 noncomputable def targetGenerator : Foundation.Objects.fin 1 ⟶ targetSet :=
   generator (CommRingCat.of ℚ) targetPolynomial
 
-/-- The prescribed coefficient map of the source presentation. -/
+/-- The coefficient map `c ↦ [c]` from `ℚ` into `ℚ[X]/(X²)`. -/
 noncomputable def sourceConstants : (ℚ : SetsCat) ⟶ sourceSet :=
   constants (CommRingCat.of ℚ) sourcePolynomial
-/-- The prescribed coefficient map of the target presentation. -/
+/-- The coefficient map `c ↦ [c]` from `ℚ` into `ℚ[Y]/((Y + 1)²)`. -/
 noncomputable def targetConstants : (ℚ : SetsCat) ⟶ targetSet :=
   constants (CommRingCat.of ℚ) targetPolynomial
 
 def sourceIdentification : (forget CommRingCat).obj sourceRing ≅ sourceSet := Iso.refl _
 def targetIdentification : (forget CommRingCat).obj targetRing ≅ targetSet := Iso.refl _
 
-/-- The chosen quotient universal-property comparison. -/
+/-- The chosen isomorphism `ℚ[X]/(X²) ≅ ℚ[Y]/((Y + 1)²)` sends `[X]` to
+`[Y] + 1`; its inverse sends `[Y]` to `[X] - 1`. Both directions fix rational
+coefficients. These generator and coefficient actions are proved below. -/
 noncomputable def shiftedComparison : sourceRing ≅ targetRing :=
   translation (CommRingCat.of ℚ) sourcePolynomial 1
 

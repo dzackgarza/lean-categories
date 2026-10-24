@@ -1292,6 +1292,23 @@ require exactly `MonoLift` for the specified route, whose stronger type now
 contains these laws. This resolves the inspected evidence-type defect; it makes
 no claim about uninspected lift constructions or downstream acceptance.
 
+The targeted V1 interface followup exposed the unique factor already present in
+`MonoLift.universal` as `MonoLift.factor`, with its two factorization laws and
+uniqueness. The distinct `MonoLiftFactorComputation L` keeps every selected input
+and the exact lifted target; the original four callable fields are unchanged.
+Reuse search (2026-10-23): the live Formalization Corpus queries `ExistsUnique choose`
+and `IsStronglyCartesian map_uniq`, together with the local `MonoLift` search,
+located Mathlib's unique-existence support and cartesian factor accessor pattern.
+The implementation directly reuses `Exists.choose` and `Exists.choose_spec` on
+the already supplied unique-existence witness. Mathlib's
+`CategoryTheory.Functor.IsStronglyCartesian.map` uses the same choice construction;
+its `IsHomLift` convention differs from this owner's retained base isomorphism,
+so no new fibration presentation or conversion is introduced.
+The same reuse search for `IsStronglyCartesian map_comp_map` locates Mathlib's
+uniqueness-based factor composition pattern. `MonoLift.factor_comp` applies the
+existing `factor_unique`, `factor_map` and `factor_hom` to the already defined
+composite lift, preserving its actual mapped cone and composite base comparison.
+
 Independent review against the approved elementary-language baseline and fixed B0
 identified four missing public mathematical relationships, separate from any
 implementation failure. The existing definitions themselves were retained:
@@ -1351,6 +1368,27 @@ the selected `RingCat R` and the canonical Mathlib self-module structure
 additive group and multiplication as scalar action. This exposes the existing
 canonical mathematical object without selecting a replacement carrier, basis,
 coordinate presentation or value module for any formed object.
+
+Source-only review on 2026-10-24 found that the chosen module-kernel interface
+already retained its categorical domain and inclusion and proved rank and
+cardinality comparisons, but did not publish the canonical maps to and from
+the concrete linear-map kernel. `Modules/Operations.lean` now registers the
+concrete kernel as the existing domain functor's value on the actual chosen
+kernel subobject, with `ModuleCat.kernelIsoKer` as its presentation comparison.
+The registered maps retain the chosen inclusion, the concrete subtype
+inclusion, and both comparison directions. Their inverse and inclusion laws
+reuse Mathlib's isomorphism and its two defining equations; their naturality
+uses `KernelFork.mapOfIsLimit` on `ModuleCat.kernelCone` and the corresponding
+universal-property equations. The complete source statement and dated corpus
+searches are in FOUNDATIONS Definition 54.1. This is a general interface for
+arbitrary rings and module arrows in the existing common-universe catalogue,
+with no coordinate or dimension assumption and no change to the chosen kernel.
+The focused Lean 4.33.0 build of `Modules.Operations` and a disposable
+signature/axiom inspection passed. The inspected scalar-action, inclusion,
+inverse and naturality proofs use only `propext`, `Classical.choice` and
+`Quot.sound`. The printed declarations retain exactly the universe scopes
+recorded in FOUNDATIONS Definitions 13.1 and 54.1. This is a mathematical
+compilation and source review, without a downstream correctness judgment.
 
 ### FC05-C08-U069 and U060 overstated the scalar-extension adjunction's generality
 
