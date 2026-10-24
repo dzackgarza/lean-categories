@@ -53,6 +53,14 @@ def countableSetsCategoryRealization :
 def enumeratedSetsCategoryRealization :
     CategoryRealization Foundation.EnumeratedSets LeanCategories.Foundation.EnumeratedSets.{u} := {}
 
+def partiallyOrderedSetsCategoryRealization :
+    CategoryRealization Foundation.PartiallyOrderedSets
+      LeanCategories.Foundation.PartiallyOrderedSets.{u} := {}
+
+def totallyOrderedSetsCategoryRealization :
+    CategoryRealization Foundation.TotallyOrderedSets
+      LeanCategories.Foundation.TotallyOrderedSets.{u} := {}
+
 noncomputable def finiteToCountableRealization :
     FunctorRealization Foundation.FiniteToCountableExpr
       Foundation.Mathlib.FiniteSets Foundation.countableSets.total
@@ -64,6 +72,20 @@ noncomputable def enumeratedToCountableRealization :
     FunctorRealization Foundation.EnumeratedToCountableExpr
       Foundation.enumeratedSets.total Foundation.countableSets.total
       Foundation.enumeratedToCountable :=
+  { sourceRealization := {}
+    targetRealization := {} }
+
+noncomputable def partiallyOrderedToSetsRealization :
+    FunctorRealization Foundation.PartiallyOrderedToSetsExpr
+      LeanCategories.Foundation.PartiallyOrderedSets LeanCategories.Foundation.Mathlib.Sets
+      LeanCategories.Foundation.partiallyOrderedToSets :=
+  { sourceRealization := {}
+    targetRealization := {} }
+
+noncomputable def totallyOrderedToSetsRealization :
+    FunctorRealization Foundation.TotallyOrderedToSetsExpr
+      LeanCategories.Foundation.TotallyOrderedSets LeanCategories.Foundation.Mathlib.Sets
+      LeanCategories.Foundation.totallyOrderedToSets :=
   { sourceRealization := {}
     targetRealization := {} }
 
@@ -127,6 +149,18 @@ normalized_registry .category
     realization :=
       `CasCatalogue.Foundation.CatalogueRegistration.enumeratedSetsCategoryRealization }
 
+normalized_registry .category
+  { id := CategoryId.partiallyOrderedSets, name := "PartiallyOrderedSets"
+    declaration := `LeanCategories.Foundation.PartiallyOrderedSets
+    expression := Foundation.PartiallyOrderedSets
+    realization := `CasCatalogue.Foundation.CatalogueRegistration.partiallyOrderedSetsCategoryRealization }
+
+normalized_registry .category
+  { id := CategoryId.totallyOrderedSets, name := "TotallyOrderedSets"
+    declaration := `LeanCategories.Foundation.TotallyOrderedSets
+    expression := Foundation.TotallyOrderedSets
+    realization := `CasCatalogue.Foundation.CatalogueRegistration.totallyOrderedSetsCategoryRealization }
+
 normalized_registry .functor
   { id := FunctorId.setsIdentity
     source := Foundation.Sets
@@ -150,5 +184,21 @@ normalized_registry .functor
     declaration := `LeanCategories.Foundation.enumeratedToCountable
     realization := `CasCatalogue.Foundation.CatalogueRegistration.enumeratedToCountableRealization
     expression := Foundation.EnumeratedToCountableExpr }
+
+normalized_registry .functor
+  { id := FunctorId.partiallyOrderedToSets
+    source := Foundation.PartiallyOrderedSets
+    target := Foundation.Sets
+    declaration := `LeanCategories.Foundation.partiallyOrderedToSets
+    realization := `CasCatalogue.Foundation.CatalogueRegistration.partiallyOrderedToSetsRealization
+    expression := Foundation.PartiallyOrderedToSetsExpr }
+
+normalized_registry .functor
+  { id := FunctorId.totallyOrderedToSets
+    source := Foundation.TotallyOrderedSets
+    target := Foundation.Sets
+    declaration := `LeanCategories.Foundation.totallyOrderedToSets
+    realization := `CasCatalogue.Foundation.CatalogueRegistration.totallyOrderedToSetsRealization
+    expression := Foundation.TotallyOrderedToSetsExpr }
 
 end CasCatalogue.Foundation.CatalogueRegistration
