@@ -125,6 +125,26 @@ decreasing_by exact x.property
 theorem naturalSum_zero_left (a : Ordinal.{u}) : naturalSum 0 a = a := by
   rw [naturalSum_comm, naturalSum_zero]
 
+/-- Each argument embeds monotonically below its Hessenberg sum. -/
+theorem le_naturalSum_left (a b : Ordinal.{u}) : a ≤ naturalSum a b := by
+  calc
+    a = naturalSum a 0 := (naturalSum_zero a).symm
+    _ ≤ naturalSum a b := naturalSum_mono_right zero_le
+
+theorem le_naturalSum_right (a b : Ordinal.{u}) : b ≤ naturalSum a b := by
+  calc
+    b = naturalSum 0 b := (naturalSum_zero_left b).symm
+    _ ≤ naturalSum a b := naturalSum_mono_left zero_le
+
+theorem naturalSum_eq_zero_iff (a b : Ordinal.{u}) :
+    naturalSum a b = 0 ↔ a = 0 ∧ b = 0 := by
+  constructor
+  · intro h
+    exact ⟨(le_zero_iff.mp ((le_naturalSum_left a b).trans_eq h)),
+      (le_zero_iff.mp ((le_naturalSum_right a b).trans_eq h))⟩
+  · rintro ⟨rfl, rfl⟩
+    exact naturalSum_zero 0
+
 theorem naturalSum_lt_of_lt_of_le {a a' b b' : Ordinal.{u}}
     (ha : a < a') (hb : b ≤ b') : naturalSum a b < naturalSum a' b' :=
   (naturalSum_lt_left ha).trans_le (naturalSum_mono_right hb)
