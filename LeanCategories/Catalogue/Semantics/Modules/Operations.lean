@@ -28,6 +28,9 @@ public meta import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Ke
 * `dim`: the surface name of the rank of a module (`fun.modules.rank`), for vector spaces;
 * `im : Arr(Mod_R) ⥤ Subobjects(Mod_R)`, the abelian image `ker(coker(f))` with its inclusion
   into the codomain, and `ker`, the surface name of the kernel of a morphism;
+* the concrete linear-map kernel as a presentation of the chosen categorical kernel,
+  with both inclusions, both directions of Mathlib's canonical comparison, and naturality
+  on commutative squares;
 * `coim : Arr(Mod_R) ⥤ Quotients(Mod_R)`, the cokernel of its kernel inclusion, and the
   canonical comparison to `im`, with its inverse and the three defining factorization maps;
 * `Sub(Mod_R) ⥤ Sub(Sets)` (`LeanCategories.subobjectMap` of the forgetful functor, a right
@@ -83,6 +86,41 @@ theorem zero_natural (R : RingCat.{u}) (M N : ModuleCat.{u} R) (f : M ⟶ N)
     f.hom (ConcreteCategory.hom (C := Type u) (zero R M) p) =
       ConcreteCategory.hom (C := Type u) (zero R N) p :=
   map_zero f.hom
+
+/-- The selected module's actual scalar action, uncurried as a map of sets.
+The operands are the chosen ring and module. This operation is scoped to a common
+universe; `Modules.Mathlib.ModulesOf.{u, w}` retains independent universes.
+
+Source: `ModuleCat.smul`, `ModuleCat.smul_naturality` and
+`ModuleCat.smul_restrictScalars` in Mathlib's `Algebra/Category/ModuleCat/{Basic,
+ChangeOfRings}.lean`, pinned at `db584cd6d46c92f209a44c0f1c829460d327499d`
+(Apache-2.0). FOUNDATIONS Definition 13.1 records the source comparison and
+Formalization Corpus searches. -/
+def scalarAction (R : RingCat.{u}) (M : ModuleCat.{u} R) :
+    (R × M : LeanCategories.Foundation.Mathlib.Sets.{u}) ⟶
+      (M : LeanCategories.Foundation.Mathlib.Sets.{u}) :=
+  TypeCat.ofHom fun p => (M.smul p.1).hom p.2
+
+/-- Evaluation of the exposed operation is the selected module's scalar action. -/
+@[simp] theorem scalarAction_apply (R : RingCat.{u}) (M : ModuleCat.{u} R)
+    (r : R) (m : M) :
+    ConcreteCategory.hom (C := Type u) (scalarAction R M) (r, m) =
+      (M.smul r).hom m := rfl
+
+/-- Linear maps preserve the selected action, as in `ModuleCat.smul_naturality`. -/
+theorem scalarAction_natural (R : RingCat.{u}) (M N : ModuleCat.{u} R)
+    (f : M ⟶ N) (r : R) (m : M) :
+    f.hom (ConcreteCategory.hom (C := Type u) (scalarAction R M) (r, m)) =
+      ConcreteCategory.hom (C := Type u) (scalarAction R N) (r, f.hom m) :=
+  (ConcreteCategory.congr_hom (ModuleCat.smul_naturality f r) m).symm
+
+/-- Reindexing uses the chosen scalar homomorphism and the original module action. -/
+theorem scalarAction_reindex {R S : RingCat.{u}} (φ : R ⟶ S)
+    (N : ModuleCat.{u} S) (r : R) (n : N) :
+    ConcreteCategory.hom (C := Type u)
+        (scalarAction R ((LeanCategories.Modules.ModulesOverRings.reindex φ).obj N)) (r, n) =
+      ConcreteCategory.hom (C := Type u) (scalarAction S N) (φ.hom r, n) :=
+  ConcreteCategory.congr_hom (ModuleCat.smul_restrictScalars φ.hom r N) n
 
 def Ideals : CategoryExpr := .atom CategoryId.ideals
 def AnnihilatorExpr : FunctorExpr CoreModules Ideals := .atomic FunctorId.modulesAnnihilator
@@ -311,6 +349,141 @@ theorem imageToCoimage_comp_coimageToImage (R : RingCat.{u})
     imageToCoimage R f ≫ coimageToImage R f = 𝟙 _ :=
   (Abelian.coimageIsoImage f.hom).inv_hom_id
 
+/-! ### The chosen kernel and its concrete presentation
+
+The comparison is Mathlib's `ModuleCat.kernelIsoKer`, with its defining inclusion
+equations. The concrete map on a commutative square is induced by the concrete
+kernel's own universal property (`ModuleCat.kernelIsLimit` and
+`KernelFork.mapOfIsLimit`), independently of the comparison. These are interface
+specializations at an arbitrary ring and arrow, with no basis or dimension data.
+Sources and the Formalization Corpus search record are in FOUNDATIONS Definition 54.1.
+-/
+
+/-- The concrete kernel module of the supplied linear map. -/
+def linearKernel (R : RingCat.{u}) (f : Arrow (ModuleCat.{u} R)) : ModuleCat.{u} R :=
+  ModuleCat.of R f.hom.hom.ker
+
+/-- The actual chosen kernel subobject is the argument of its domain presentation. -/
+def kernelPresentationArgument (R : RingCat.{u}) (f : Arrow (ModuleCat.{u} R)) :
+    subobjectsModulesCategory R :=
+  (kernelDeclaration R).obj f
+
+/-- The canonical comparison starts at the published kernel's actual domain. -/
+def kernelLinearComparison (R : RingCat.{u}) (f : Arrow (ModuleCat.{u} R)) :
+    (subobjectsDomainDeclaration R).obj ((kernelDeclaration R).obj f) ≅ linearKernel R f :=
+  ModuleCat.kernelIsoKer f.hom
+
+/-- The defining inclusion of the actual chosen categorical kernel. -/
+def kernelInclusion (R : RingCat.{u}) (f : Arrow (ModuleCat.{u} R)) :
+    (subobjectsDomainDeclaration R).obj ((kernelDeclaration R).obj f) ⟶ f.left :=
+  ((kernelDeclaration R).obj f).obj.hom
+
+/-- The defining inclusion of the concrete linear-map kernel. -/
+def linearKernelInclusion (R : RingCat.{u}) (f : Arrow (ModuleCat.{u} R)) :
+    linearKernel R f ⟶ f.left :=
+  ModuleCat.ofHom f.hom.hom.ker.subtype
+
+/-- Send the chosen categorical kernel to the concrete kernel by the canonical comparison. -/
+def kernelToLinearKernel (R : RingCat.{u}) (f : Arrow (ModuleCat.{u} R)) :
+    (subobjectsDomainDeclaration R).obj ((kernelDeclaration R).obj f) ⟶ linearKernel R f :=
+  (kernelLinearComparison R f).hom
+
+/-- The inverse comparison returns to the same chosen categorical kernel. -/
+def linearKernelToKernel (R : RingCat.{u}) (f : Arrow (ModuleCat.{u} R)) :
+    linearKernel R f ⟶ (subobjectsDomainDeclaration R).obj ((kernelDeclaration R).obj f) :=
+  (kernelLinearComparison R f).inv
+
+/-- The forward comparison preserves the defining inclusion. -/
+theorem kernelToLinearKernel_comp_inclusion (R : RingCat.{u})
+    (f : Arrow (ModuleCat.{u} R)) :
+    kernelToLinearKernel R f ≫ linearKernelInclusion R f = kernelInclusion R f :=
+  ModuleCat.kernelIsoKer_hom_ker_subtype f.hom
+
+/-- The inverse comparison preserves the same defining inclusion. -/
+theorem linearKernelToKernel_comp_inclusion (R : RingCat.{u})
+    (f : Arrow (ModuleCat.{u} R)) :
+    linearKernelToKernel R f ≫ kernelInclusion R f = linearKernelInclusion R f :=
+  ModuleCat.kernelIsoKer_inv_kernel_ι f.hom
+
+/-- The two directions are inverse on the chosen categorical kernel. -/
+theorem kernelToLinearKernel_comp_linearKernelToKernel (R : RingCat.{u})
+    (f : Arrow (ModuleCat.{u} R)) :
+    kernelToLinearKernel R f ≫ linearKernelToKernel R f = 𝟙 _ :=
+  (kernelLinearComparison R f).hom_inv_id
+
+/-- The two directions are inverse on the concrete kernel. -/
+theorem linearKernelToKernel_comp_kernelToLinearKernel (R : RingCat.{u})
+    (f : Arrow (ModuleCat.{u} R)) :
+    linearKernelToKernel R f ≫ kernelToLinearKernel R f = 𝟙 _ :=
+  (kernelLinearComparison R f).inv_hom_id
+
+/-- A commutative square induces a map of concrete kernels by their universal property. -/
+def linearKernelMap (R : RingCat.{u}) {f g : Arrow (ModuleCat.{u} R)} (s : f ⟶ g) :
+    linearKernel R f ⟶ linearKernel R g :=
+  (ModuleCat.kernelCone f.hom).mapOfIsLimit (ModuleCat.kernelIsLimit g.hom) s
+
+/-- The concrete map is the restriction of the square's map on source modules. -/
+@[simp] theorem linearKernelMap_apply (R : RingCat.{u})
+    {f g : Arrow (ModuleCat.{u} R)} (s : f ⟶ g) (x : linearKernel R f) :
+    ((linearKernelMap R s).hom x : g.hom.hom.ker).val =
+      s.left.hom (x : f.hom.hom.ker).val := rfl
+
+/-- Naturality of the concrete inclusion is the existing kernel-fork lift equation. -/
+theorem linearKernelInclusion_natural (R : RingCat.{u})
+    {f g : Arrow (ModuleCat.{u} R)} (s : f ⟶ g) :
+    linearKernelMap R s ≫ linearKernelInclusion R g =
+      linearKernelInclusion R f ≫ s.left :=
+  Limits.KernelFork.mapOfIsLimit_ι _ (ModuleCat.kernelIsLimit g.hom) s
+
+/-- The chosen kernel's inclusion is natural under the published kernel functor. -/
+theorem kernelInclusion_natural (R : RingCat.{u})
+    {f g : Arrow (ModuleCat.{u} R)} (s : f ⟶ g) :
+    (subobjectsDomainDeclaration R).map ((kernelDeclaration R).map s) ≫ kernelInclusion R g =
+      kernelInclusion R f ≫ s.left :=
+  Limits.kernel.lift_ι (C := ModuleCat.{u} R) _ _ _
+
+/-- The canonical forward comparison is natural in the actual commutative square. -/
+theorem kernelToLinearKernel_natural (R : RingCat.{u})
+    {f g : Arrow (ModuleCat.{u} R)} (s : f ⟶ g) :
+    (subobjectsDomainDeclaration R).map ((kernelDeclaration R).map s) ≫ kernelToLinearKernel R g =
+      kernelToLinearKernel R f ≫ linearKernelMap R s := by
+  let k := Limits.kernel.map f.hom g.hom s.left s.right s.w.symm
+  let l := (ModuleCat.kernelCone f.hom).mapOfIsLimit (ModuleCat.kernelIsLimit g.hom) s
+  change k ≫ (ModuleCat.kernelIsoKer g.hom).hom = (ModuleCat.kernelIsoKer f.hom).hom ≫ l
+  apply (cancel_mono (ModuleCat.ofHom g.hom.hom.ker.subtype)).1
+  calc
+    (k ≫ (ModuleCat.kernelIsoKer g.hom).hom) ≫ ModuleCat.ofHom g.hom.hom.ker.subtype =
+        k ≫ Limits.kernel.ι g.hom :=
+      (Category.assoc _ _ _).trans
+        (congrArg (fun h => k ≫ h) (ModuleCat.kernelIsoKer_hom_ker_subtype g.hom))
+    _ = Limits.kernel.ι f.hom ≫ s.left :=
+      Limits.kernel.lift_ι (C := ModuleCat.{u} R) _ _ _
+    _ = (ModuleCat.kernelIsoKer f.hom).hom ≫
+        (ModuleCat.ofHom f.hom.hom.ker.subtype ≫ s.left) :=
+      (congrArg (fun h => h ≫ s.left)
+        (ModuleCat.kernelIsoKer_hom_ker_subtype f.hom).symm).trans (Category.assoc _ _ _)
+    _ = ((ModuleCat.kernelIsoKer f.hom).hom ≫ l) ≫
+        ModuleCat.ofHom g.hom.hom.ker.subtype :=
+      (congrArg (fun h => (ModuleCat.kernelIsoKer f.hom).hom ≫ h)
+        (Limits.KernelFork.mapOfIsLimit_ι (ModuleCat.kernelCone f.hom)
+          (ModuleCat.kernelIsLimit g.hom) s).symm).trans
+          (Category.assoc _ _ _).symm
+
+/-- The inverse comparison is natural with the same chosen kernels and inclusions. -/
+theorem linearKernelToKernel_natural (R : RingCat.{u})
+    {f g : Arrow (ModuleCat.{u} R)} (s : f ⟶ g) :
+    linearKernelMap R s ≫ linearKernelToKernel R g =
+      linearKernelToKernel R f ≫
+        (subobjectsDomainDeclaration R).map ((kernelDeclaration R).map s) := by
+  change (ModuleCat.kernelCone f.hom).mapOfIsLimit (ModuleCat.kernelIsLimit g.hom) s ≫
+      (ModuleCat.kernelIsoKer g.hom).inv =
+    (ModuleCat.kernelIsoKer f.hom).inv ≫
+      Limits.kernel.map f.hom g.hom s.left s.right s.w.symm
+  apply (Iso.eq_inv_comp (ModuleCat.kernelIsoKer f.hom)).2
+  exact (Category.assoc _ _ _).symm.trans
+    ((Iso.eq_comp_inv (ModuleCat.kernelIsoKer g.hom)).2
+      (kernelToLinearKernel_natural R s)).symm
+
 /-- The public kernel domain inherits precisely the concrete kernel's cardinal rank.
 This is the independence-set rank invariant over `R`, not an assumed basis cardinality. -/
 theorem kernel_domain_rank (R : RingCat.{u}) (f : Arrow (ModuleCat.{u} R)) :
@@ -449,6 +622,15 @@ normalized_registry .method
   { id := ⟨"meth.submodule_domain"⟩, name := "domain", owner := SubobjectsModules
     functor := FunctorId.subobjectsModulesDomain, shape := .object }
 
+normalized_registry .object
+  { id := ⟨"obj.modules.linear_kernel"⟩, category := CategoryId.modulesR
+    name := "linearKernel", declaration := `CasCatalogue.Modules.Operations.linearKernel
+    inclusion := some `CasCatalogue.Modules.Operations.linearKernelInclusion
+    functorPresentation := some
+      { functor := FunctorId.subobjectsModulesDomain
+        argument := `CasCatalogue.Modules.Operations.kernelPresentationArgument
+        identification := `CasCatalogue.Modules.Operations.kernelLinearComparison } }
+
 normalized_registry .category
   { id := CategoryId.coreSubobjectsModules
     declaration := `CasCatalogue.Modules.Operations.coreSubobjectsModulesCategory
@@ -523,8 +705,28 @@ normalized_registry .morphism
     name := "coimageImageFactorization"
     declaration := `CasCatalogue.Modules.Operations.coimageImageFactorization }
 
+normalized_registry .morphism
+  { id := ⟨"mor.modules.kernel_inclusion"⟩, category := CategoryId.modulesR
+    name := "kernelInclusion", declaration := `CasCatalogue.Modules.Operations.kernelInclusion }
+normalized_registry .morphism
+  { id := ⟨"mor.modules.linear_kernel_inclusion"⟩, category := CategoryId.modulesR
+    name := "linearKernelInclusion"
+    declaration := `CasCatalogue.Modules.Operations.linearKernelInclusion }
+normalized_registry .morphism
+  { id := ⟨"mor.modules.kernel_to_linear_kernel"⟩, category := CategoryId.modulesR
+    name := "kernelToLinearKernel"
+    declaration := `CasCatalogue.Modules.Operations.kernelToLinearKernel }
+normalized_registry .morphism
+  { id := ⟨"mor.modules.linear_kernel_to_kernel"⟩, category := CategoryId.modulesR
+    name := "linearKernelToKernel"
+    declaration := `CasCatalogue.Modules.Operations.linearKernelToKernel }
+
 normalized_registry .operation
   { id := ⟨"op.modules.zero"⟩, category := CategoryId.modulesR, name := "0", arity := 0
     declaration := `CasCatalogue.Modules.Operations.zero }
+
+normalized_registry .operation
+  { id := ⟨"op.modules.scalar_action"⟩, category := CategoryId.modulesR, name := "•", arity := 2
+    declaration := `CasCatalogue.Modules.Operations.scalarAction }
 
 end CasCatalogue

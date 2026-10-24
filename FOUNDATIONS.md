@@ -847,6 +847,51 @@ opposite-ring involution alone; such a functor requires a chosen anti-homomorphi
 equivalence a chosen anti-isomorphism (Proposition 91.1). The commutative case above is the
 canonical special instance (Corollary 91.2).
 
+The selected scalar action of an object \(M\in R\text{-}\mathbf{Mod}\) is the map
+\[
+a_M:U(R)\times U(M)\longrightarrow U(M),\qquad (r,m)\longmapsto r\cdot m.
+\]
+Here \(U\) denotes the underlying set of the selected ring or module. For an
+\(R\)-linear map \(f:M\to N\), the defining linearity law gives
+\(f(a_M(r,m))=a_N(r,f(m))\). For a ring homomorphism \(\varphi:R\to S\)
+and an \(S\)-module \(N\), restriction of scalars gives
+\(a_{\varphi^*N}(r,n)=a_N(\varphi(r),n)\). These statements use the actual
+chosen module structure and chosen ring homomorphism.
+
+**Lean realization and sources.** The existing `ModuleCat.smul` is the ring
+homomorphism from the scalars to endomorphisms of the module's additive group;
+`ModuleCat.smul_naturality` is its compatibility with linear maps, and
+`ModuleCat.smul_restrictScalars` is its restriction-of-scalars law. Their actual
+declarations were inspected in the pinned Mathlib revision
+`db584cd6d46c92f209a44c0f1c829460d327499d` (Apache-2.0), in
+[`Mathlib/Algebra/Category/ModuleCat/Basic.lean`](https://github.com/leanprover-community/mathlib4/blob/db584cd6d46c92f209a44c0f1c829460d327499d/Mathlib/Algebra/Category/ModuleCat/Basic.lean)
+and
+[`Mathlib/Algebra/Category/ModuleCat/ChangeOfRings.lean`](https://github.com/leanprover-community/mathlib4/blob/db584cd6d46c92f209a44c0f1c829460d327499d/Mathlib/Algebra/Category/ModuleCat/ChangeOfRings.lean).
+Formalization Corpus searches on 2026-10-24 used `ModuleCat smul`, `ModuleCat.smul`,
+`restrictScalars smul`, and `map_smul ModuleCat`, excluding downstream
+`lean-cas-dsl*` repositories, then refined to the two Mathlib files and these
+lemma names. The catalogue's `CasCatalogue.Modules.Operations.scalarAction`
+uncurries `ModuleCat.smul` as `(r, m) ↦ (M.smul r).hom m`; its apply,
+naturality and reindexing laws expose these existing declarations.
+The row `op.modules.scalar_action` is owned by `cat.modules_r`, with surface
+name `•` and arity two. Its source is the heterogeneous product \(U(R)\times U(M)\).
+This selected operation is explicitly scoped to `R : RingCat.{u}` and
+`M : ModuleCat.{u} R`, so both operands and the result lie in `Sets.{u}`.
+The category named `Modules` still realizes `ModulesOf.{u,w}` with independent
+ring and module universes; this common-universe operation does not restrict that family.
+
+An independent source review on 2026-10-24 retained this registration unchanged.
+Its complete parameter telescope is `(R : RingCat.{u}) (M : ModuleCat.{u} R)`;
+the morphism is in `Sets.{u}`, with source the selected `R × M` and target the
+selected `M`. The naturality law additionally takes `(N : ModuleCat.{u} R)`,
+`(f : M ⟶ N)`, `(r : R)` and `(m : M)`. The reindexing law takes
+`{R S : RingCat.{u}}`, `(φ : R ⟶ S)`, `(N : ModuleCat.{u} S)`, `(r : R)` and
+`(n : N)`. There are no commutativity, freeness, dimension or finiteness
+hypotheses. In particular, a scalar acts as an endomorphism of the underlying
+additive group; over a noncommutative ring it is not asserted to be an
+endomorphism of the left module. The source comparison found no mathematical
+defect in these declarations or their stated universe scope.
+
 ### Definition 13.2 (The total family of modules) {#def-total-module-family}
 
 Let \(\mathbf{Ring}^{\simeq}\) be the core of the category of rings. Extension of scalars along ring isomorphisms gives a functor
@@ -3988,6 +4033,57 @@ X\twoheadrightarrow\operatorname{coim}(f)
 \overset{\sim}{\longrightarrow}
 \operatorname{im}(f)\hookrightarrow Y.
 \]
+
+For a morphism \(f:M\to N\) of left modules over an arbitrary ring \(R\), let
+\(K_f\xrightarrow{\iota_f}M\) be the chosen categorical kernel, and let
+\(L_f=\{m\in M:f(m)=0\}\) carry its induced module structure and subtype
+inclusion \(j_f:L_f\hookrightarrow M\). The universal property gives the
+canonical isomorphism
+\[
+e_f:K_f\overset{\sim}{\longrightarrow}L_f,
+\qquad e_f\,;j_f=\iota_f,
+\qquad e_f^{-1}\,;\iota_f=j_f.
+\]
+The two directions are inverse with these actual endpoints. This compares the
+chosen kernel and its concrete presentation; it does not replace the chosen
+kernel or its inclusion. A commutative square \((a,b):f\to g\) induces the
+kernel map on \(K_f\), and the restriction \(a|_{L_f}:L_f\to L_g\) on the
+concrete kernels. Both inclusions commute with these maps, and the comparison
+and its inverse are natural with respect to the square.
+
+**Lean realization and sources.** Mathlib's `ModuleCat.kernelCone` and
+`ModuleCat.kernelIsLimit` construct the concrete kernel and its universal
+property. `ModuleCat.kernelIsoKer` compares it with the chosen categorical
+kernel; `kernelIsoKer_hom_ker_subtype` and `kernelIsoKer_inv_kernel_ι` are the
+two displayed inclusion equations. The induced concrete map is
+`KernelFork.mapOfIsLimit` applied to those concrete kernel forks, with
+`KernelFork.mapOfIsLimit_ι` its inclusion equation. The chosen kernel's
+equation is `kernel.lift_ι` applied to `kernel.map`. Naturality of the inverse
+follows from forward naturality by `Iso.eq_inv_comp` and `Iso.eq_comp_inv` in
+`Mathlib/CategoryTheory/Iso.lean`. These declarations were
+read in Mathlib revision `db584cd6d46c92f209a44c0f1c829460d327499d`
+(Apache-2.0), in
+[`Algebra/Category/ModuleCat/Kernels.lean`](https://github.com/leanprover-community/mathlib4/blob/db584cd6d46c92f209a44c0f1c829460d327499d/Mathlib/Algebra/Category/ModuleCat/Kernels.lean)
+and
+[`CategoryTheory/Limits/Shapes/Kernels.lean`](https://github.com/leanprover-community/mathlib4/blob/db584cd6d46c92f209a44c0f1c829460d327499d/Mathlib/CategoryTheory/Limits/Shapes/Kernels.lean).
+Formalization Corpus searches on 2026-10-24 included `kernelIsoKer`,
+`kernelIsLimit`, `mapOfIsLimit`, `kernel.lift_ι`, and `eq_comp_inv`, excluding downstream
+`lean-cas-dsl*` repositories; a refined `kernelIsoKer repo:mathlib4
+file:ModuleCat/Kernels` search returned the canonical comparison and both
+inclusion equations. The actual pinned source, rather than the index's newer
+notation, supplies the declarations used here.
+
+`Modules/Operations.lean` exposes the concrete module as `linearKernel(R,f)`
+and records its `ObjectFunctorPresentation` by the existing domain functor
+applied to the already chosen kernel subobject. Its identification is exactly
+`ModuleCat.kernelIsoKer f.hom`. The morphism rows `kernelInclusion`,
+`linearKernelInclusion`, `kernelToLinearKernel` and `linearKernelToKernel`
+retain both defining inclusions and both comparison directions. Their formal
+inclusion, inverse and naturality laws reuse the preceding Mathlib declarations.
+This catalogue interface has parameters `R : RingCat.{u}` and
+`f : Arrow (ModuleCat.{u} R)`, as does its existing chosen-kernel functor.
+The underlying Mathlib comparison allows independent ring and module universes;
+neither statement assumes commutativity, coordinates, a basis or a dimension.
 
 ### Definition 54.2 (Defect package of a morphism) {#def-defect-package}
 
