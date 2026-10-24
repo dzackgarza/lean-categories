@@ -76,6 +76,10 @@ noncomputable def ordinalPower (α β : Ordinal.{u}) : ordinalsCategory.{u} := �
 noncomputable def naturalSum (α β : Ordinal.{u}) : ordinalsCategory.{u} :=
   LeanCategories.ForMathlib.OrdinalNatural.naturalSum α β
 
+/-- Hessenberg natural product, distinct from ordinary ordinal multiplication. -/
+noncomputable def naturalProduct (α β : Ordinal.{u}) : ordinalsCategory.{u} :=
+  LeanCategories.ForMathlib.OrdinalNatural.naturalProduct α β
+
 /-- Natural sum carries a pair of ordinal comparisons to a comparison of their sums. -/
 noncomputable def naturalSumMap {α α' β β' : Ordinal.{u}}
     (f : α ⟶ α') (g : β ⟶ β') : naturalSum α β ⟶ naturalSum α' β' := by
@@ -110,6 +114,10 @@ normalized_registry .object
 normalized_registry .object
   { id := ⟨"obj.ordinals.natural_sum"⟩, category := CategoryId.ordinals, name := "natural_sum"
     declaration := `CasCatalogue.Foundation.Ordinals.naturalSum }
+normalized_registry .object
+  { id := ⟨"obj.ordinals.natural_product"⟩, category := CategoryId.ordinals
+    name := "natural_product"
+    declaration := `CasCatalogue.Foundation.Ordinals.naturalProduct }
 normalized_registry .morphism
   { id := ⟨"mor.ordinals.natural_sum_map"⟩, category := CategoryId.ordinals
     name := "natural_sum_map"
