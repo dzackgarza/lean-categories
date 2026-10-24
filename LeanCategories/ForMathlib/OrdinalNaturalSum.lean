@@ -206,6 +206,25 @@ theorem naturalSum_assoc_succ (a b c : Ordinal.{u}) :
   rw [naturalSum_succ, naturalSum_succ, naturalSum_succ]
   exact Order.succ_eq_succ_iff
 
+/-- On finite right operands, Hessenberg sum agrees with ordinary ordinal addition. -/
+theorem naturalSum_natCast (a : Ordinal.{u}) (n : ℕ) :
+    naturalSum a (n : Ordinal.{u}) = a + n := by
+  induction n with
+  | zero => simp [naturalSum_zero]
+  | succ n ih =>
+    rw [Nat.cast_succ, ← Order.succ_eq_add_one, naturalSum_succ, ih]
+    simp [Order.succ_eq_add_one, add_assoc]
+
+/-- Associativity holds when the third Hessenberg summand is finite. -/
+theorem naturalSum_assoc_natCast (a b : Ordinal.{u}) (n : ℕ) :
+    naturalSum (naturalSum a b) (n : Ordinal.{u}) =
+      naturalSum a (naturalSum b (n : Ordinal.{u})) := by
+  induction n with
+  | zero => simp [naturalSum_zero]
+  | succ n ih =>
+    rw [Nat.cast_succ, ← Order.succ_eq_add_one]
+    exact (naturalSum_assoc_succ a b (n : Ordinal.{u})).2 ih
+
 /-- Hessenberg natural product: the least ordinal `c` for which every simultaneous decrease
 of `a` and `b` satisfies `(a' ⊗ b) ⊕ (a ⊗ b') < c ⊕ (a' ⊗ b')`, with the products on the
 left interpreted recursively. This is the recursive source definition, with `⊕` explicitly
