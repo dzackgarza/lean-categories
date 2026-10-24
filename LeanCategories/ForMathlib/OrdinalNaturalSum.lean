@@ -196,4 +196,23 @@ decreasing_by all_goals assumption
 theorem naturalProduct_one_left (a : Ordinal.{u}) : naturalProduct 1 a = a := by
   rw [naturalProduct_comm, naturalProduct_one]
 
+/-- The Hessenberg product of two positive ordinals is positive. -/
+theorem naturalProduct_pos {a b : Ordinal.{u}} (ha : 0 < a) (hb : 0 < b) :
+    0 < naturalProduct a b := by
+  have h := naturalProduct_constraint (a' := 0) (b' := 0) ha hb
+  simpa [naturalProduct_zero, naturalProduct_zero_left,
+    naturalSum_zero, naturalSum_zero_left] using h
+
+theorem naturalProduct_eq_zero_iff (a b : Ordinal.{u}) :
+    naturalProduct a b = 0 ↔ a = 0 ∨ b = 0 := by
+  constructor
+  · intro h
+    by_contra hn
+    have ha : 0 < a := lt_of_le_of_ne zero_le (Ne.symm (not_or.mp hn).1)
+    have hb : 0 < b := lt_of_le_of_ne zero_le (Ne.symm (not_or.mp hn).2)
+    exact (naturalProduct_pos ha hb).ne' h
+  · rintro (rfl | rfl)
+    · exact naturalProduct_zero_left b
+    · exact naturalProduct_zero a
+
 end LeanCategories.ForMathlib.OrdinalNatural
