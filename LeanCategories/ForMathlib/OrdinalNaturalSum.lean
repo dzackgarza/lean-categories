@@ -225,6 +225,21 @@ theorem naturalSum_assoc_natCast (a b : Ordinal.{u}) (n : ℕ) :
     rw [Nat.cast_succ, ← Order.succ_eq_add_one]
     exact (naturalSum_assoc_succ a b (n : Ordinal.{u})).2 ih
 
+/-- Finite tails commute with Hessenberg addition, without assuming general associativity. -/
+theorem naturalSum_add_nat (a b : Ordinal.{u}) (n : ℕ) :
+    naturalSum a (b + n) = naturalSum a b + n := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [Nat.cast_succ, ← add_assoc, ← add_assoc,
+      ← Order.succ_eq_add_one, naturalSum_succ, ih,
+      Order.succ_eq_add_one, add_assoc]
+
+/-- Finite tails in the first argument satisfy the same identity. -/
+theorem naturalSum_add_nat_left (a b : Ordinal.{u}) (n : ℕ) :
+    naturalSum (a + n) b = naturalSum a b + n := by
+  rw [naturalSum_comm, naturalSum_add_nat, naturalSum_comm]
+
 /-- Hessenberg natural product: the least ordinal `c` for which every simultaneous decrease
 of `a` and `b` satisfies `(a' ⊗ b) ⊕ (a ⊗ b') < c ⊕ (a' ⊗ b')`, with the products on the
 left interpreted recursively. This is the recursive source definition, with `⊕` explicitly
