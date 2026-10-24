@@ -1390,6 +1390,27 @@ inverse and naturality proofs use only `propext`, `Classical.choice` and
 recorded in FOUNDATIONS Definitions 13.1 and 54.1. This is a mathematical
 compilation and source review, without a downstream correctness judgment.
 
+Independent mathematical interface completion on 2026-10-24 addressed three
+remaining exposures of existing constructions. `ChangeValueComparisons.lean`
+publishes both actual arrows of `ChangeValueLifts.pulledBackIso`, with its
+complete formed endpoints and no monicity assumption on the input cone.
+`CoreIsomorphisms.lean` publishes Mathlib's specified-isomorphism input to
+`Core(Sets)` and the complete existing `Fin.revPerm` reversal for every `Fin n`.
+`AutomorphismArrows.lean` publishes the forward/inverse morphisms of an actual
+automorphism element, plus evaluation through any selected set-valued functor.
+The generic formal projections and conjugation laws apply in every category;
+ordinary morphism rows expose the existing Sets, Groups and Modules owners.
+The complete parameters and sources are in
+`LeanCategories/Catalogue/Semantics/Independent/InterfaceCompletion.md`. The original
+objects, functors, selected forms, and previous independent requirements are
+unchanged. These additions reuse the locally inspected Mathlib and project
+owners; external corpus searches were blocked by the task's no-network
+constraint, so no negative-search or new-foundations claim is made. Focused
+compilation of the three interface modules passed under Lean 4.33.0, without
+new source warnings. Exact-endpoint examples and the standard-axiom inspection
+are recorded with the final source verification below; no downstream result
+is inferred from this work.
+
 ### FC05-C08-U069 and U060 overstated the scalar-extension adjunction's generality
 
 - **Need:** Weibel 8.6.12 permits an arbitrary ring homomorphism k→R, and 8.6.3 permits an arbitrary group G. Neither requires commutativity of the target ring.

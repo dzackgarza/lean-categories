@@ -12,6 +12,9 @@ public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.ModuleK
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.ChangeValueLifts
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.DegeneratePlaneLifts
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.DegeneratePlaneFactorization
+public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.ChangeValueComparisons
+public import LeanCategories.Catalogue.Semantics.Foundation.CoreIsomorphisms
+public import LeanCategories.Catalogue.Semantics.Algebra.AutomorphismArrows
 
 /-!
 # Independently authored scalar, carrier, series and formed-restriction extensions
@@ -27,4 +30,10 @@ The declaration docstrings in these modules specify the selected carriers,
 scalar and value modules, pairings, dependent parameters, and complete arrow
 actions. The constructions and their formal laws remain at their existing
 mathematical owners; this file only reexports the additive modules.
+
+The complete comparison/input interfaces additionally expose both directions
+of the general change-of-values pullback comparison, specified set isomorphisms
+as core arrows (including the complete finite reversal), and the actual arrows
+and functorial evaluation of automorphism elements. Their public signatures
+are documented in the adjacent `InterfaceCompletion.md`.
 -/
