@@ -192,4 +192,8 @@ theorem naturalProduct_one (a : Ordinal.{u}) : naturalProduct a 1 = a := by
 termination_by a
 decreasing_by all_goals assumption
 
+/-- One is also the left identity of Hessenberg natural product. -/
+theorem naturalProduct_one_left (a : Ordinal.{u}) : naturalProduct 1 a = a := by
+  rw [naturalProduct_comm, naturalProduct_one]
+
 end LeanCategories.ForMathlib.OrdinalNatural
