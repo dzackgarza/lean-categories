@@ -500,4 +500,11 @@ theorem naturalProductList_zero_of_mem {as : List Ordinal.{u}}
     (h : (0 : Ordinal.{u}) ∈ as) : naturalProductList as = 0 :=
   (naturalProductList_eq_zero_iff as).2 h
 
+/-- A finite natural sum is positive exactly when some summand is positive. -/
+theorem naturalSumList_pos_iff (as : List Ordinal.{u}) :
+    0 < naturalSumList as ↔ ∃ a ∈ as, 0 < a := by
+  rw [pos_iff_ne_zero, ne_eq, naturalSumList_eq_zero_iff]
+  push_neg
+  simp only [pos_iff_ne_zero, ne_eq]
+
 end LeanCategories.ForMathlib.OrdinalNatural
