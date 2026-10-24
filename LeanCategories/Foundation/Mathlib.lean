@@ -66,8 +66,14 @@ theorem sets_eq_cat_of : Sets.{u} = Cat.of (Type u) := rfl
 /-- Magmas as Mathlib's bundled magma category. -/
 def Magmas : ObjCat.{u + 1, u} := Cat.of MagmaCat.{u}
 
-/-- Finite types. -/
-def FiniteSets : ObjCat.{u + 1, u} := Cat.of FintypeCat.{u}
+/-- Finite types: the bundled category `FintypeCat` (Mathlib `Cat.of FintypeCat`), written as the
+bundle itself and reducible, as `Sets` is, so that its objects are reducibly objects of
+`FintypeCat` and the instances Mathlib gives `FintypeCat` (e.g. its `ConcreteCategory` structure)
+apply to morphisms of `FiniteSets`. -/
+abbrev FiniteSets : ObjCat.{u + 1, u} := ⟨FintypeCat.{u}, inferInstance⟩
+
+/-- `FiniteSets` is Mathlib's bundled category of finite types. -/
+theorem finiteSets_eq_cat_of : FiniteSets.{u} = Cat.of FintypeCat.{u} := rfl
 
 /-- ℤ-graded sets (graded objects in `Type`). -/
 def GradedSets : ObjCat.{u + 1, u} := Cat.of (GradedObject ℤ (Type u))
