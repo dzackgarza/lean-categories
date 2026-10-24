@@ -484,8 +484,8 @@ theorem naturalProduct_cancel_left {a b b' : Ordinal.{u}}
   apply naturalProduct_cancel_right ha
   simpa only [naturalProduct_comm a b, naturalProduct_comm a b'] using h
 
-/-- Finite-arity Hessenberg sum, with a fixed parenthesization that does not
-presuppose the still-unproved general associativity law. -/
+/-- Finite-arity Hessenberg sum, with a fixed parenthesization. The associativity theorem below
+shows that this parenthesization does not affect the result. -/
 def naturalSumList : List Ordinal.{u} → Ordinal.{u}
   | [] => 0
   | a :: as => naturalSum a (naturalSumList as)
@@ -517,6 +517,11 @@ theorem naturalSumList_append (as bs : List Ordinal.{u}) :
   | cons a as ih =>
     simp only [List.cons_append, naturalSumList]
     rw [ih, ← naturalSum_assoc]
+
+/-- Reordering two consecutive blocks of summands does not change their finite natural sum. -/
+theorem naturalSumList_append_comm (as bs : List Ordinal.{u}) :
+    naturalSumList (as ++ bs) = naturalSumList (bs ++ as) := by
+  rw [naturalSumList_append, naturalSumList_append, naturalSum_comm]
 
 theorem naturalProductList_pair (a b : Ordinal.{u}) :
     naturalProductList [a, b] = naturalProduct a b := by
