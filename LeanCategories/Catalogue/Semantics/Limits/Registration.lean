@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Limits.Types.Coproducts
 public import Mathlib.CategoryTheory.Limits.Types.Products
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import LeanCategories.Modules.Bilinear.Valued.Cokernel
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.CatalogueRegistration
 public meta import LeanCategories.Catalogue.Registry.Semantic
@@ -57,6 +58,16 @@ universal mediator. No filteredness assumption is needed for existence. -/
 noncomputable def setsDiagramColimit {J : Type v} [Category.{w} J]
     (F : J ⥤ Type (max v u)) : ColimitCocone F :=
   ⟨Types.TypeMax.colimitCocone F, Types.TypeMax.colimitCoconeIsColimit F⟩
+
+/-- Two representatives in a filtered set colimit agree exactly when they agree after
+transport to a common later object. This is stronger than mere existence of the colimit. -/
+theorem setsFilteredColimit_eq_iff {J : Type v} [Category.{w} J]
+    [IsFilteredOrEmpty J] (F : J ⥤ Type (max v u))
+    {i j : J} (x : F.obj i) (y : F.obj j) :
+    (setsDiagramColimit F).cocone.ι.app i x =
+        (setsDiagramColimit F).cocone.ι.app j y ↔
+      ∃ (k : J) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y := by
+  exact Types.FilteredColimit.isColimit_eq_iff F (setsDiagramColimit F).isColimit
 
 /-- Pullbacks in `Sets`. -/
 def setsPullback {X Y Z : LeanCategories.Foundation.Mathlib.Sets.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
