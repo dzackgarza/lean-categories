@@ -10,6 +10,8 @@ public import LeanCategories.Algebra.GroupKernel
 public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Types.Coproducts
 public import Mathlib.CategoryTheory.Limits.Types.Products
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import LeanCategories.Modules.Bilinear.Valued.Cokernel
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.CatalogueRegistration
 public meta import LeanCategories.Catalogue.Registry.Semantic
@@ -41,7 +43,20 @@ open CategoryTheory Limits
 
 namespace CasCatalogue.Limits.Registration
 
-universe u
+universe u v w
+
+/-- Set-valued diagram limits, with compatible sections, projections and universal mediator.
+The construction works for arbitrary small diagram shapes, including filtered shapes; it
+does not require a chosen enumeration of objects or a finite index set. -/
+noncomputable def setsDiagramLimit {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) : LimitCone F :=
+  ⟨Types.limitCone F, Types.limitConeIsLimit F⟩
+
+/-- Set-valued diagram colimits, with the quotient of tagged points, injections and
+universal mediator. No filteredness assumption is needed for existence. -/
+noncomputable def setsDiagramColimit {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) : ColimitCocone F :=
+  ⟨Types.TypeMax.colimitCocone F, Types.TypeMax.colimitCoconeIsColimit F⟩
 
 /-- Pullbacks in `Sets`. -/
 def setsPullback {X Y Z : LeanCategories.Foundation.Mathlib.Sets.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
@@ -71,6 +86,14 @@ def bilWFormCokernel {R : Type u} [CommRing R]
 end CasCatalogue.Limits.Registration
 
 namespace CasCatalogue
+
+normalized_registry .limit
+  { id := ⟨"lim.sets.diagram"⟩, category := CategoryId.sets, shape := "diagram"
+    declaration := `CasCatalogue.Limits.Registration.setsDiagramLimit }
+
+normalized_registry .limit
+  { id := ⟨"colim.sets.diagram"⟩, category := CategoryId.sets, shape := "diagram"
+    declaration := `CasCatalogue.Limits.Registration.setsDiagramColimit, colimit := true }
 
 normalized_registry .limit
   { id := ⟨"lim.sets.pullback"⟩, category := CategoryId.sets, shape := "pullback"
