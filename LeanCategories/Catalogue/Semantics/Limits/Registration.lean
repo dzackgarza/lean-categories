@@ -97,6 +97,22 @@ theorem setsDiagramColimitDesc_unique {J : Type v} [Category.{w} J]
     f = setsDiagramColimitDesc F c :=
   (setsDiagramColimit F).isColimit.uniq c f hf
 
+/-- Equality into the selected limit is detected by all its projections. -/
+theorem setsDiagramLimit_hom_ext {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) {X : Type (max v u)}
+    {f g : X ⟶ (setsDiagramLimit F).cone.pt}
+    (h : ∀ j, f ≫ (setsDiagramLimit F).cone.π.app j =
+      g ≫ (setsDiagramLimit F).cone.π.app j) : f = g :=
+  (setsDiagramLimit F).isLimit.hom_ext h
+
+/-- Equality out of the selected colimit is detected by all its injections. -/
+theorem setsDiagramColimit_hom_ext {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) {X : Type (max v u)}
+    {f g : (setsDiagramColimit F).cocone.pt ⟶ X}
+    (h : ∀ j, (setsDiagramColimit F).cocone.ι.app j ≫ f =
+      (setsDiagramColimit F).cocone.ι.app j ≫ g) : f = g :=
+  (setsDiagramColimit F).isColimit.hom_ext h
+
 /-- Two representatives in a filtered set colimit agree exactly when they agree after
 transport to a common later object. This is stronger than mere existence of the colimit. -/
 theorem setsFilteredColimit_eq_iff {J : Type v} [Category.{w} J]
