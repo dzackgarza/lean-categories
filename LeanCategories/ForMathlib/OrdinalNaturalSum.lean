@@ -541,7 +541,7 @@ theorem naturalProductList_pair (a b : Ordinal.{u}) :
   simp [naturalProductList, naturalProduct_one]
 
 /-- Pointwise comparisons of equally indexed finite families induce a comparison
-of their Hessenberg sums, without assuming associativity. -/
+of their Hessenberg sums by pointwise monotonicity. -/
 theorem naturalSumList_mono {as bs : List Ordinal.{u}}
     (h : List.Forall₂ (· ≤ ·) as bs) : naturalSumList as ≤ naturalSumList bs := by
   induction h with
