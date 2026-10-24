@@ -215,6 +215,11 @@ theorem naturalSum_natCast (a : Ordinal.{u}) (n : ℕ) :
     rw [Nat.cast_succ, ← Order.succ_eq_add_one, naturalSum_succ, ih]
     simp [Order.succ_eq_add_one, add_assoc]
 
+/-- A finite left operand contributes a finite right tail, by commutativity. -/
+theorem naturalSum_natCast_left (n : ℕ) (a : Ordinal.{u}) :
+    naturalSum (n : Ordinal.{u}) a = a + n := by
+  rw [naturalSum_comm, naturalSum_natCast]
+
 /-- Associativity holds when the third Hessenberg summand is finite. -/
 theorem naturalSum_assoc_natCast (a b : Ordinal.{u}) (n : ℕ) :
     naturalSum (naturalSum a b) (n : Ordinal.{u}) =
@@ -247,10 +252,10 @@ theorem naturalSum_assoc_natCast_left (n : ℕ) (b c : Ordinal.{u}) :
       naturalSum (n : Ordinal.{u}) (naturalSum b c) := by
   calc
     naturalSum (naturalSum (n : Ordinal.{u}) b) c = naturalSum (b + n) c := by
-      rw [naturalSum_comm (n : Ordinal.{u}) b, naturalSum_natCast]
+      rw [naturalSum_natCast_left]
     _ = naturalSum b c + n := naturalSum_add_nat_left b c n
     _ = naturalSum (n : Ordinal.{u}) (naturalSum b c) := by
-      rw [naturalSum_comm (n : Ordinal.{u}) (naturalSum b c), naturalSum_natCast]
+      rw [naturalSum_natCast_left]
 
 /-- Associativity when the middle summand is finite. -/
 theorem naturalSum_assoc_natCast_middle (a : Ordinal.{u}) (n : ℕ) (c : Ordinal.{u}) :
@@ -261,8 +266,7 @@ theorem naturalSum_assoc_natCast_middle (a : Ordinal.{u}) (n : ℕ) (c : Ordinal
       rw [naturalSum_natCast]
     _ = naturalSum a c + n := naturalSum_add_nat_left a c n
     _ = naturalSum a (naturalSum (n : Ordinal.{u}) c) := by
-      rw [naturalSum_comm (n : Ordinal.{u}) c, naturalSum_natCast,
-        naturalSum_add_nat]
+      rw [naturalSum_natCast_left, naturalSum_add_nat]
 
 /-- Hessenberg natural product: the least ordinal `c` for which every simultaneous decrease
 of `a` and `b` satisfies `(a' ⊗ b) ⊕ (a ⊗ b') < c ⊕ (a' ⊗ b')`, with the products on the
