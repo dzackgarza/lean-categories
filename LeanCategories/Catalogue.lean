@@ -88,6 +88,7 @@ public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Kernels
 public import LeanCategories.Catalogue.Semantics.Modules.Catalogue
 public import LeanCategories.Catalogue.Semantics.Modules.CatalogueRegistration
 public import LeanCategories.Catalogue.Semantics.Modules.Expressions
+public import LeanCategories.Catalogue.Semantics.Modules.LinearMaps
 public import LeanCategories.Catalogue.Semantics.Modules.Operations
 public import LeanCategories.Catalogue.Semantics.Modules.Quadratic.Valued.Catalogue
 public import LeanCategories.Catalogue.Semantics.Modules.Quadratic.Valued.CatalogueRegistration

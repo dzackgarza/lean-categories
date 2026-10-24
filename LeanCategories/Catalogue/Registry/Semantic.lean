@@ -2055,7 +2055,7 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
   if state.morphisms.any fun m => m.category == e.category && m.name == e.name then
     throwError "object {e.id.raw}: {e.category.raw} already has a morphism named {e.name}"
   let declaration ← mkConstWithFreshMVarLevels e.declaration
-  let (args, _, type) ← forallMetaTelescopeReducing (← inferType declaration)
+  let (_, _, type) ← forallMetaTelescopeReducing (← inferType declaration)
   unless ← withTransparency .all <| isDefEq type (← categoryCarrierInstance category) do
     throwError "object {e.id.raw}: {e.declaration} does not return an object of {e.category.raw}"
   if let some components := e.components then
@@ -2193,9 +2193,8 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
   let some refinement := e.refines | return
   let some base := state.objects.find? (·.id == refinement.base)
     | throwError "object {e.id.raw} refines an unregistered object {refinement.base.raw}"
-  unless base.name == e.name && base.refines.isNone do
-    throwError "object {e.id.raw} refines {base.id.raw}, which is not the unrefined object named \
-      {e.name}"
+  unless base.refines.isNone do
+    throwError "object {e.id.raw} refines {base.id.raw}, which is not an unrefined object"
   let some baseCategory := state.categories.find? (·.id == base.category)
     | throwError "object {e.id.raw}: {base.id.raw} has an unregistered category"
   let mut at_ := category.expression
@@ -2208,29 +2207,29 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
   unless !refinement.route.isEmpty && at_.syntacticEq baseCategory.expression do
     throwError "object {e.id.raw}: the route does not go from {e.category.raw} to \
       {base.category.raw}"
-  let functor ← state.routeFunctor refinement.route
-  let identification ← mkConstWithFreshMVarLevels refinement.identification
-  let (idArgs, _, idType) ← forallMetaTelescopeReducing (← inferType identification)
-  unless idArgs.size == args.size do
-    throwError "object {e.id.raw}: {refinement.identification} does not take its parameters"
-  for (a, b) in idArgs.zip args do discard <| isDefEq a b
-  let baseDeclaration ← mkConstWithFreshMVarLevels base.declaration
-  let (baseArgs, _, _) ← forallMetaTelescopeReducing (← inferType baseDeclaration)
-  let idType ← whnfR (← instantiateMVars idType)
-  -- Assign the functor's universe levels at this depth, then apply it to the object.
-  let object := mkAppN declaration args
-  let functorType ← whnf (← inferType functor)
-  discard <| withTransparency .all <| isDefEq (← inferType object) functorType.getAppArgs[0]!
-  let functor ← instantiateMVars functor
-  let image ← mkAppM ``Prefunctor.obj
-    #[← mkAppM ``CategoryTheory.Functor.toPrefunctor #[functor], object]
-  let ok ← match idType.getAppFn.constName?, idType.getAppArgs with
-    | some ``CategoryTheory.Iso, #[_, _, x, y] => withTransparency .all do
-        pure ((← isDefEq x image) && (← isDefEq y (mkAppN baseDeclaration baseArgs)))
-    | _, _ => pure false
-  unless ok do
-    throwError "object {e.id.raw}: {refinement.identification} is not an isomorphism from the \
-      image of {e.declaration} along {renderSteps refinement.route} to {base.declaration}"
+  -- Spelling does not prove a presentation. Check the actual comparison with
+  -- all object parameters rigid, so it cannot specialize a family at one size.
+  forallTelescopeReducing (← inferType declaration) fun parameters _ => do
+    let functor ← state.routeFunctor refinement.route
+    let identification ← applyObjectParameters s!"object {e.id.raw}"
+      refinement.identification parameters
+    let idType ← whnfR (← inferType identification)
+    checkIsoCategory e.id.raw baseCategory idType
+    let baseDeclaration ← mkConstWithFreshMVarLevels base.declaration
+    let (baseArgs, _, _) ← forallMetaTelescopeReducing (← inferType baseDeclaration)
+    let object := mkAppN declaration parameters
+    let functorType ← whnf (← inferType functor)
+    discard <| withTransparency .all <| isDefEq (← inferType object) functorType.getAppArgs[0]!
+    let functor ← instantiateMVars functor
+    let image ← mkAppM ``Prefunctor.obj
+      #[← mkAppM ``CategoryTheory.Functor.toPrefunctor #[functor], object]
+    let ok ← match idType.getAppFn.constName?, idType.getAppArgs with
+      | some ``CategoryTheory.Iso, #[_, _, x, y] => withTransparency .all do
+          pure ((← isDefEq x image) && (← isDefEq y (mkAppN baseDeclaration baseArgs)))
+      | _, _ => pure false
+    unless ok do
+      throwError "object {e.id.raw}: {refinement.identification} is not an isomorphism from the \
+        image of {e.declaration} along {renderSteps refinement.route} to {base.declaration}"
 
 /-- A literal row's `denotation` sends its literal `type`, which has decidable equality, to the
 objects of its registered category; one literal form per category. -/

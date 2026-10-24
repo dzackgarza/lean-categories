@@ -161,11 +161,14 @@ structure ObjectEntry where
   category : CategoryId
   declaration : Lean.Name
   /-- Its surface name in the language (`ℤ`, `Fin`, `ZMod`), applied to its parameters. An
-  unrefined object's name is unique among unrefined objects; a refinement bears its base's name,
-  and is named in the language by `X in C`. -/
+  unrefined object's name is unique among unrefined objects. A refinement may share its base's
+  name (`X in C`) or have a distinct explicit name for its selected structure. The actual
+  underlying-object comparison is determined by `refines`, not by spelling. -/
   name : String
   /-- When this object is another one with more structure: `Fin(n)` in `FiniteSets` refines
-  `Fin(n)` in `Sets` along the forgetful functor. -/
+  `Fin(n)` in `Sets` along the forgetful functor. Distinct selected structures can have distinct
+  names while retaining presentations over the same base, e.g. `FinOrder(n)` and
+  `ReverseFinOrder(n)` over the set `Fin(n)`. -/
   refines : Option ObjectRefinement := none
   /-- Additional surface forms selecting this exact mathematical object family. The reader
   owns their syntax; the registry owns which family they denote, including its chosen

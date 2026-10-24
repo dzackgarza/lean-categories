@@ -80,10 +80,16 @@ namespace CasCatalogue
 
 normalized_registry .object
   { id := ⟨"obj.linear_orders.fin_ordinary"⟩, category := CategoryId.linearOrders
-    name := "FinOrder", declaration := `CasCatalogue.Foundation.FiniteOrders.ordinary }
+    name := "FinOrder", declaration := `CasCatalogue.Foundation.FiniteOrders.ordinary
+    refines := some
+      { base := ⟨"obj.sets.fin"⟩, route := #[.functor FunctorId.linearOrdersForget]
+        identification := `CasCatalogue.Foundation.FiniteOrders.ordinaryCarrier } }
 
 normalized_registry .object
   { id := ⟨"obj.linear_orders.fin_reverse"⟩, category := CategoryId.linearOrders
-    name := "ReverseFinOrder", declaration := `CasCatalogue.Foundation.FiniteOrders.reverse }
+    name := "ReverseFinOrder", declaration := `CasCatalogue.Foundation.FiniteOrders.reverse
+    refines := some
+      { base := ⟨"obj.sets.fin"⟩, route := #[.functor FunctorId.linearOrdersForget]
+        identification := `CasCatalogue.Foundation.FiniteOrders.reverseCarrier } }
 
 end CasCatalogue

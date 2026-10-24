@@ -892,6 +892,33 @@ additive group; over a noncommutative ring it is not asserted to be an
 endomorphism of the left module. The source comparison found no mathematical
 defect in these declarations or their stated universe scope.
 
+**Formation of actual module morphisms from functions.** For fixed selected modules
+\(M,N\in R\text{-}\mathbf{Mod}\), a function \(f:U(M)\to U(N)\) defines a module
+morphism precisely when it preserves addition and the selected scalar action:
+\(f(x+y)=f(x)+f(y)\) and \(f(rx)=rf(x)\), for every \(x,y\in M\) and \(r\in R\).
+These are the two fields of Mathlib's `IsLinearMap R f`; `IsLinearMap.mk' f h`
+bundles the same function, and `ModuleCat.ofHom` makes it a morphism with the
+original module endpoints. The actual hom set embeds injectively in the set of
+all functions by forgetting the laws. This is formation from checked laws, not
+an identification of categories or a retagging of an arbitrary set map.
+
+The defining authorities are `IsLinearMap`, `IsLinearMap.mk'`, and
+`IsLinearMap.mk'_apply` in
+[`Algebra/Module/LinearMap/Defs.lean`](https://github.com/leanprover-community/mathlib4/blob/db584cd6d46c92f209a44c0f1c829460d327499d/Mathlib/Algebra/Module/LinearMap/Defs.lean),
+and `ModuleCat.Hom`, `ModuleCat.ofHom`, and `ModuleCat.hom_injective` in the
+above `ModuleCat/Basic.lean`, inspected before adding the catalogue interface.
+Formalization Corpus searches on 2026-10-24 used `IsLinearMap` and
+`IsLinearMap.mk'`, followed by direct inspection of those Mathlib definitions.
+The catalogue's `Modules.LinearMaps` interface publishes the actual hom set,
+its evaluation and injective underlying-function map, and admission by the
+exact `IsLinearMap` proposition. It retains independent ring and module
+universes and requires no commutativity, freeness, or finiteness. Its evidence
+procedure proves the defining laws with ordinary module identities; failure
+to establish them does not supply a module morphism. In particular, scalar
+multiplication by an arbitrary element of a noncommutative ring is not assumed
+to be linear. Translation by one on the regular integer module is excluded
+because it does not preserve zero.
+
 ### Definition 13.2 (The total family of modules) {#def-total-module-family}
 
 Let \(\mathbf{Ring}^{\simeq}\) be the core of the category of rings. Extension of scalars along ring isomorphisms gives a functor

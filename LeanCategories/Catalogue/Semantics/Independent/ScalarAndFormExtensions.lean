@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Catalogue.Semantics.Algebra.PrimeResidueFields
 public import LeanCategories.Catalogue.Semantics.Modules.IntegerResidueModules
+public import LeanCategories.Catalogue.Semantics.Modules.LinearMaps
 public import LeanCategories.Catalogue.Semantics.Algebra.SuccessorSeries
 public import LeanCategories.Catalogue.Semantics.Algebra.RectangularLinearAlgebra
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.ModuleKernelRestriction
