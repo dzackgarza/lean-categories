@@ -125,6 +125,31 @@ theorem setsDiagramLimitMap_π {J : Type v} [Category.{w} J]
       (setsDiagramLimit F).cone.π.app j ≫ α.app j :=
   (setsDiagramLimit G).isLimit.map_π (setsDiagramLimit F).cone α j
 
+theorem setsDiagramLimitMap_id {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) :
+    setsDiagramLimitMap (𝟙 F) = 𝟙 (setsDiagramLimit F).cone.pt := by
+  apply setsDiagramLimit_hom_ext F
+  intro j
+  rw [setsDiagramLimitMap_π]
+  simp
+
+theorem setsDiagramLimitMap_comp {J : Type v} [Category.{w} J]
+    {F G H : J ⥤ Type (max v u)} (α : F ⟶ G) (β : G ⟶ H) :
+    setsDiagramLimitMap (α ≫ β) =
+      setsDiagramLimitMap α ≫ setsDiagramLimitMap β := by
+  apply setsDiagramLimit_hom_ext H
+  intro j
+  calc
+    setsDiagramLimitMap (α ≫ β) ≫ (setsDiagramLimit H).cone.π.app j =
+        (setsDiagramLimit F).cone.π.app j ≫ (α ≫ β).app j :=
+      setsDiagramLimitMap_π (α ≫ β) j
+    _ = (setsDiagramLimit F).cone.π.app j ≫ α.app j ≫ β.app j := by
+      simp only [NatTrans.comp_app, Category.assoc]
+    _ = (setsDiagramLimitMap α ≫ setsDiagramLimitMap β) ≫
+        (setsDiagramLimit H).cone.π.app j := by
+      rw [Category.assoc, setsDiagramLimitMap_π, ← Category.assoc,
+        ← setsDiagramLimitMap_π, Category.assoc]
+
 /-- A natural transformation induces a morphism of selected set-diagram colimits. -/
 noncomputable def setsDiagramColimitMap {J : Type v} [Category.{w} J]
     {F G : J ⥤ Type (max v u)} (α : F ⟶ G) :
