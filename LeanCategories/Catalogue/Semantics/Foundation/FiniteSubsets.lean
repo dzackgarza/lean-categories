@@ -31,6 +31,22 @@ open CasCatalogue.Foundation.PowerSets
 /-- `𝒫_fin(X)`. -/
 abbrev finiteSubsets (X : Type) : SetsCat.{0} := Finset X
 
+/-- Finite subsets and their direct images form a covariant endofunctor on sets. -/
+noncomputable def directImage : SetsCat.{0} ⥤ SetsCat.{0} := by
+  classical
+  exact {
+    obj := fun X => finiteSubsets X
+    map := fun f => TypeCat.ofHom (Finset.image f)
+    map_id := by
+      intro X
+      ext A x
+      simp
+    map_comp := by
+      intro X Y Z f g
+      ext A x
+      simp [Finset.image_image]
+  }
+
 /-- `𝒫_fin(X) ↪ 𝒫(X)`. -/
 def inclusion (X : Type) : finiteSubsets X ⟶ powerSet X := TypeCat.ofHom fun A => (A : Set X)
 
@@ -91,6 +107,28 @@ meta def finiteSubsetEvidence : TacticM Unit := do
 end CasCatalogue.Foundation.FiniteSubsets
 
 namespace CasCatalogue
+
+namespace FunctorId
+def finiteSubsetsDirectImage : FunctorId := ⟨"fun.sets.finite_subsets.direct_image"⟩
+end FunctorId
+
+def finiteSubsetsDirectImageExpr : FunctorExpr Foundation.Sets Foundation.Sets :=
+  .atomic FunctorId.finiteSubsetsDirectImage
+
+noncomputable def finiteSubsetsDirectImageRealization :
+    FunctorRealization finiteSubsetsDirectImageExpr
+      CasCatalogue.Foundation.PowerSets.SetsCat.{0}
+      CasCatalogue.Foundation.PowerSets.SetsCat.{0}
+      Foundation.FiniteSubsets.directImage :=
+  { sourceRealization := Foundation.CatalogueRegistration.setsRealization
+    targetRealization := Foundation.CatalogueRegistration.setsRealization }
+
+normalized_registry .functor
+  { id := FunctorId.finiteSubsetsDirectImage, source := Foundation.Sets
+    target := Foundation.Sets
+    declaration := `CasCatalogue.Foundation.FiniteSubsets.directImage
+    realization := `CasCatalogue.finiteSubsetsDirectImageRealization
+    expression := finiteSubsetsDirectImageExpr }
 
 normalized_registry .object
   { id := ⟨"obj.sets.finite_subsets"⟩, category := CategoryId.sets, name := "𝒫_fin"
