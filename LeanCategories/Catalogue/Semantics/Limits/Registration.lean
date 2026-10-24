@@ -125,6 +125,43 @@ theorem setsDiagramLimitMap_π {J : Type v} [Category.{w} J]
       (setsDiagramLimit F).cone.π.app j ≫ α.app j :=
   (setsDiagramLimit G).isLimit.map_π (setsDiagramLimit F).cone α j
 
+/-- A natural transformation induces a morphism of selected set-diagram colimits. -/
+noncomputable def setsDiagramColimitMap {J : Type v} [Category.{w} J]
+    {F G : J ⥤ Type (max v u)} (α : F ⟶ G) :
+    (setsDiagramColimit F).cocone.pt ⟶ (setsDiagramColimit G).cocone.pt :=
+  (setsDiagramColimit F).isColimit.map (setsDiagramColimit G).cocone α
+
+theorem setsDiagramColimitMap_ι {J : Type v} [Category.{w} J]
+    {F G : J ⥤ Type (max v u)} (α : F ⟶ G) (j : J) :
+    (setsDiagramColimit F).cocone.ι.app j ≫ setsDiagramColimitMap α =
+      α.app j ≫ (setsDiagramColimit G).cocone.ι.app j :=
+  (setsDiagramColimit F).isColimit.ι_map (setsDiagramColimit G).cocone α j
+
+theorem setsDiagramColimitMap_id {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) :
+    setsDiagramColimitMap (𝟙 F) = 𝟙 (setsDiagramColimit F).cocone.pt := by
+  apply setsDiagramColimit_hom_ext F
+  intro j
+  rw [setsDiagramColimitMap_ι]
+  simp
+
+theorem setsDiagramColimitMap_comp {J : Type v} [Category.{w} J]
+    {F G H : J ⥤ Type (max v u)} (α : F ⟶ G) (β : G ⟶ H) :
+    setsDiagramColimitMap (α ≫ β) =
+      setsDiagramColimitMap α ≫ setsDiagramColimitMap β := by
+  apply setsDiagramColimit_hom_ext F
+  intro j
+  calc
+    (setsDiagramColimit F).cocone.ι.app j ≫ setsDiagramColimitMap (α ≫ β) =
+        (α ≫ β).app j ≫ (setsDiagramColimit H).cocone.ι.app j :=
+      setsDiagramColimitMap_ι (α ≫ β) j
+    _ = α.app j ≫ β.app j ≫ (setsDiagramColimit H).cocone.ι.app j := by
+      simp only [NatTrans.comp_app, Category.assoc]
+    _ = (setsDiagramColimit F).cocone.ι.app j ≫
+        (setsDiagramColimitMap α ≫ setsDiagramColimitMap β) := by
+      rw [← setsDiagramColimitMap_ι β j, ← Category.assoc,
+        ← setsDiagramColimitMap_ι α j, Category.assoc]
+
 /-- Two representatives in a filtered set colimit agree exactly when they agree after
 transport to a common later object. This is stronger than mere existence of the colimit. -/
 theorem setsFilteredColimit_eq_iff {J : Type v} [Category.{w} J]
