@@ -69,6 +69,23 @@ theorem setsFilteredColimit_eq_iff {J : Type v} [Category.{w} J]
       ∃ (k : J) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y := by
   exact Types.FilteredColimit.isColimit_eq_iff F (setsDiagramColimit F).isColimit
 
+/-- Every element of the selected set-diagram colimit has a representative at some
+diagram object. This holds without a filteredness hypothesis. -/
+theorem setsDiagramColimit_jointly_surjective {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) (z : (setsDiagramColimit F).cocone.pt) :
+    ∃ (i : J) (x : F.obj i), (setsDiagramColimit F).cocone.ι.app i x = z := by
+  exact Types.jointly_surjective F (setsDiagramColimit F).isColimit z
+
+/-- In a filtered colimit, any two elements have representatives at a common stage. -/
+theorem setsFilteredColimit_common_stage {J : Type v} [Category.{w} J]
+    [IsFilteredOrEmpty J] (F : J ⥤ Type (max v u))
+    (x y : (setsDiagramColimit F).cocone.pt) :
+    ∃ (i : J) (x' y' : F.obj i),
+      (setsDiagramColimit F).cocone.ι.app i x' = x ∧
+      (setsDiagramColimit F).cocone.ι.app i y' = y := by
+  exact Types.FilteredColimit.jointly_surjective_of_isColimit₂
+    (setsDiagramColimit F).isColimit x y
+
 /-- Pullbacks in `Sets`. -/
 def setsPullback {X Y Z : LeanCategories.Foundation.Mathlib.Sets.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
     LimitCone (cospan f g) :=
