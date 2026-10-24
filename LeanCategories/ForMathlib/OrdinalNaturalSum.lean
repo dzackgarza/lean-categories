@@ -484,4 +484,20 @@ theorem naturalProductList_pos_iff (as : List Ordinal.{u}) :
     rw [← ih]
     simp only [pos_iff_ne_zero, ne_eq, naturalProduct_eq_zero_iff, not_or]
 
+/-- Appending a finite ordinal to a finite Hessenberg sum agrees with ordinary
+ordinal addition by that finite ordinal. -/
+theorem naturalSumList_append_nat (as : List Ordinal.{u}) (n : ℕ) :
+    naturalSumList (as ++ [(n : Ordinal.{u})]) = naturalSumList as + n := by
+  induction as with
+  | nil => simp [naturalSumList, naturalSum_natCast]
+  | cons a as ih =>
+    simp only [List.cons_append, naturalSumList]
+    rw [ih, naturalSum_add_nat]
+
+/-- A finite product is zero as soon as one factor is zero, independently of its
+position in the selected parenthesization. -/
+theorem naturalProductList_zero_of_mem {as : List Ordinal.{u}}
+    (h : (0 : Ordinal.{u}) ∈ as) : naturalProductList as = 0 :=
+  (naturalProductList_eq_zero_iff as).2 h
+
 end LeanCategories.ForMathlib.OrdinalNatural
