@@ -438,4 +438,20 @@ theorem naturalProductList_pair (a b : Ordinal.{u}) :
     naturalProductList [a, b] = naturalProduct a b := by
   simp [naturalProductList, naturalProduct_one]
 
+/-- Pointwise comparisons of equally indexed finite families induce a comparison
+of their Hessenberg sums, without assuming associativity. -/
+theorem naturalSumList_mono {as bs : List Ordinal.{u}}
+    (h : List.Forall₂ (· ≤ ·) as bs) : naturalSumList as ≤ naturalSumList bs := by
+  induction h with
+  | nil => exact le_rfl
+  | @cons a b as bs hab _ ih => exact naturalSum_mono hab ih
+
+/-- Pointwise comparisons induce a comparison of finite Hessenberg products. -/
+theorem naturalProductList_mono {as bs : List Ordinal.{u}}
+    (h : List.Forall₂ (· ≤ ·) as bs) :
+    naturalProductList as ≤ naturalProductList bs := by
+  induction h with
+  | nil => exact le_rfl
+  | @cons a b as bs hab _ ih => exact naturalProduct_mono hab ih
+
 end LeanCategories.ForMathlib.OrdinalNatural

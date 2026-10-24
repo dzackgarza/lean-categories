@@ -88,6 +88,22 @@ noncomputable def naturalSumList (as : List Ordinal.{u}) : ordinalsCategory.{u} 
 noncomputable def naturalProductList (as : List Ordinal.{u}) : ordinalsCategory.{u} :=
   LeanCategories.ForMathlib.OrdinalNatural.naturalProductList as
 
+/-- The comparison induced by pointwise comparisons of finite natural sums. -/
+noncomputable def naturalSumListMap {as bs : List Ordinal.{u}}
+    (h : List.Forall₂ (· ≤ ·) as bs) : naturalSumList as ⟶ naturalSumList bs := by
+  change LeanCategories.ForMathlib.OrdinalNatural.naturalSumList as ⟶
+    LeanCategories.ForMathlib.OrdinalNatural.naturalSumList bs
+  exact CategoryTheory.homOfLE
+    (LeanCategories.ForMathlib.OrdinalNatural.naturalSumList_mono h)
+
+/-- The comparison induced by pointwise comparisons of finite natural products. -/
+noncomputable def naturalProductListMap {as bs : List Ordinal.{u}}
+    (h : List.Forall₂ (· ≤ ·) as bs) : naturalProductList as ⟶ naturalProductList bs := by
+  change LeanCategories.ForMathlib.OrdinalNatural.naturalProductList as ⟶
+    LeanCategories.ForMathlib.OrdinalNatural.naturalProductList bs
+  exact CategoryTheory.homOfLE
+    (LeanCategories.ForMathlib.OrdinalNatural.naturalProductList_mono h)
+
 /-- Natural sum carries a pair of ordinal comparisons to a comparison of their sums. -/
 noncomputable def naturalSumMap {α α' β β' : Ordinal.{u}}
     (f : α ⟶ α') (g : β ⟶ β') : naturalSum α β ⟶ naturalSum α' β' := by
@@ -167,5 +183,13 @@ normalized_registry .morphism
   { id := ⟨"mor.ordinals.natural_product_map"⟩, category := CategoryId.ordinals
     name := "natural_product_map"
     declaration := `CasCatalogue.Foundation.Ordinals.naturalProductMap }
+normalized_registry .morphism
+  { id := ⟨"mor.ordinals.natural_sum_list_map"⟩, category := CategoryId.ordinals
+    name := "natural_sum_list_map"
+    declaration := `CasCatalogue.Foundation.Ordinals.naturalSumListMap }
+normalized_registry .morphism
+  { id := ⟨"mor.ordinals.natural_product_list_map"⟩, category := CategoryId.ordinals
+    name := "natural_product_list_map"
+    declaration := `CasCatalogue.Foundation.Ordinals.naturalProductListMap }
 
 end CasCatalogue
