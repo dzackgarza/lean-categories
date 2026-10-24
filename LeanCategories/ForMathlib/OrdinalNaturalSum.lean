@@ -225,6 +225,30 @@ theorem naturalSum_assoc_natCast (a b : Ordinal.{u}) (n : ℕ) :
     rw [Nat.cast_succ, ← Order.succ_eq_add_one]
     exact (naturalSum_assoc_succ a b (n : Ordinal.{u})).2 ih
 
+/-- Associativity when the first summand is finite. This follows from the finite-tail
+identity and commutativity, without assuming general associativity. -/
+theorem naturalSum_assoc_natCast_left (n : ℕ) (b c : Ordinal.{u}) :
+    naturalSum (naturalSum (n : Ordinal.{u}) b) c =
+      naturalSum (n : Ordinal.{u}) (naturalSum b c) := by
+  calc
+    naturalSum (naturalSum (n : Ordinal.{u}) b) c = naturalSum (b + n) c := by
+      rw [naturalSum_comm (n : Ordinal.{u}) b, naturalSum_natCast]
+    _ = naturalSum b c + n := naturalSum_add_nat_left b c n
+    _ = naturalSum (n : Ordinal.{u}) (naturalSum b c) := by
+      rw [naturalSum_comm (n : Ordinal.{u}) (naturalSum b c), naturalSum_natCast]
+
+/-- Associativity when the middle summand is finite. -/
+theorem naturalSum_assoc_natCast_middle (a : Ordinal.{u}) (n : ℕ) (c : Ordinal.{u}) :
+    naturalSum (naturalSum a (n : Ordinal.{u})) c =
+      naturalSum a (naturalSum (n : Ordinal.{u}) c) := by
+  calc
+    naturalSum (naturalSum a (n : Ordinal.{u})) c = naturalSum (a + n) c := by
+      rw [naturalSum_natCast]
+    _ = naturalSum a c + n := naturalSum_add_nat_left a c n
+    _ = naturalSum a (naturalSum (n : Ordinal.{u}) c) := by
+      rw [naturalSum_comm (n : Ordinal.{u}) c, naturalSum_natCast,
+        naturalSum_add_nat]
+
 /-- Finite tails commute with Hessenberg addition, without assuming general associativity. -/
 theorem naturalSum_add_nat (a b : Ordinal.{u}) (n : ℕ) :
     naturalSum a (b + n) = naturalSum a b + n := by
