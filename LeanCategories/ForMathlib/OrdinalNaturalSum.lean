@@ -170,6 +170,29 @@ theorem naturalSum_one (a : Ordinal.{u}) : naturalSum a 1 = Order.succ a := by
 termination_by a
 decreasing_by exact x.2
 
+/-- Hessenberg sum commutes with successor in the second argument. -/
+theorem naturalSum_succ (a b : Ordinal.{u}) :
+    naturalSum a (Order.succ b) = Order.succ (naturalSum a b) := by
+  rw [naturalSum_def]
+  apply le_antisymm
+  · apply max_le
+    · apply Ordinal.iSup_le
+      intro x
+      rw [naturalSum_succ x.1 b]
+      exact Order.succ_le_succ
+        (Order.succ_le_of_lt (naturalSum_lt_left x.2))
+    · apply Ordinal.iSup_le
+      intro y
+      exact Order.succ_le_succ
+        (naturalSum_mono_right (Order.le_of_lt_succ y.2))
+  · have h : naturalSum a b + 1 ≤
+        (⨆ y : Set.Iio (Order.succ b), naturalSum a y.1 + 1) :=
+      Ordinal.le_iSup (fun y : Set.Iio (Order.succ b) => naturalSum a y.1 + 1)
+        ⟨b, Order.lt_succ b⟩
+    exact h.trans (le_max_right _ _)
+termination_by (a, b)
+decreasing_by exact Prod.Lex.left _ _ x.2
+
 /-- Hessenberg natural product: the least ordinal `c` for which every simultaneous decrease
 of `a` and `b` satisfies `(a' ⊗ b) ⊕ (a ⊗ b') < c ⊕ (a' ⊗ b')`, with the products on the
 left interpreted recursively. This is the recursive source definition, with `⊕` explicitly
