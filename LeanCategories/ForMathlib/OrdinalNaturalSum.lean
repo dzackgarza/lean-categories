@@ -553,4 +553,21 @@ theorem naturalSumList_strictMono {as bs : List Ordinal.{u}}
     exact (naturalSum_lt_left hab).trans_le
       (naturalSum_mono_right (naturalSumList_mono hweak))
 
+/-- A pointwise strict increase of positive factors strictly increases a
+nonempty finite Hessenberg product. -/
+theorem naturalProductList_strictMono {as bs : List Ordinal.{u}}
+    (h : List.Forall₂ (· < ·) as bs) (hne : as ≠ [])
+    (hp : ∀ b ∈ bs, 0 < b) :
+    naturalProductList as < naturalProductList bs := by
+  induction h with
+  | nil => exact False.elim (hne rfl)
+  | @cons a b as bs hab htail ih =>
+    have hweak : List.Forall₂ (· ≤ ·) as bs :=
+      htail.imp (fun _ _ h => h.le)
+    have ht : 0 < naturalProductList bs :=
+      (naturalProductList_pos_iff bs).2
+        (fun x hx => hp x (List.mem_cons_of_mem b hx))
+    exact (naturalProduct_mono_right (a := a) (naturalProductList_mono hweak)).trans_lt
+      (naturalProduct_lt_left hab ht)
+
 end LeanCategories.ForMathlib.OrdinalNatural
