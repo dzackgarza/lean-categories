@@ -44,6 +44,15 @@ on `M`. The endomorphisms `Matₙ(K) = End(Kⁿ)` form a monoid; their units are
   `y = y x z = z`), so the admitted unit depends on `x` alone, as membership does, and
   `Nonempty (Invertible x) ↔ IsUnit x` (`isUnit_iff_nonempty_invertible`).
 * `⁻¹ : Mˣ → Mˣ`, and division `M × Mˣ → M`, `(a, u) ↦ a u⁻¹`.
+
+Both evidence procedures compare definitionally equal presentations of the
+exact selected structure at ordinary definitional transparency, locally to
+the procedure. This includes the registered matrix and polynomial rings,
+their multiplicative-monoid presentations, and literal functions or declared
+numeral maps at those structures. The original `IsUnit` or `Invertible` target
+and all its dictionaries remain fixed. In particular, matrix multiplication
+and pointwise multiplication on the same function carrier remain distinct.
+This conversion policy adds no new family to the cases documented below.
 -/
 
 open CategoryTheory
@@ -332,6 +341,7 @@ open Lean Elab Tactic in
 
 It fails on an element that is not a unit (`2 ∈ ℤ`, `0 ∈ ℚ`, a singular matrix, `0 ∈ ℚ[x]`). -/
 meta partial def isUnitEvidence : TacticM Unit :=
+  withOptions (fun options => options.setBool `backward.isDefEq.respectTransparency false) <|
   CasCatalogue.Evidence.establish "Units" do
     readCatalogue
     isUnitCases
@@ -412,6 +422,7 @@ equations `⅟x · x = x · ⅟x = 1` are proved (by `isUnitEvidence`, the inver
 
 It fails on an element that is not a unit (`2 ∈ ℤ`, `0 ∈ ℚ`, a singular matrix, `0 ∈ ℚ[x]`). -/
 meta partial def invertibleEvidence : TacticM Unit :=
+  withOptions (fun options => options.setBool `backward.isDefEq.respectTransparency false) <|
   CasCatalogue.Evidence.establish "Units" do
     readCatalogue
     invertibleCases

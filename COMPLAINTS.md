@@ -1080,6 +1080,34 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
      `invertibleOfNonzero`, `instance RingCat.carrier`) and the inspected Mathlib
      `Algebra/Category/Ring/Basic.lean` show that the existing inverse constructions suffice;
      no mathematical definition, theorem or admission condition changes.
+     **Further closed presentations (2026-10-24).** Independent public-source controls at
+     `7a413381900a3fc4effdf5f7ce483fae042062c3` found that the integer matrix
+     `[[2,3],[3,5]]`, whose determinant is one, was established in matrix notation but its
+     literal-function presentation was refused by `isUnitEvidence`. The rational matrix
+     `[[1,2],[3,4]]`, with entries formed by the selected ring's public numeral map, was
+     refused by both unit procedures. The selected scalar and constant-polynomial controls
+     were already established. The existing Mathlib determinant and constant-polynomial
+     criteria supply the whole unit propositions and constructive inverses; no new family
+     of units was needed. Both unit procedures now scope ordinary definitional comparison
+     of implicit selected structures locally, using Lean's existing
+     `backward.isDefEq.respectTransparency := false` setting. The exact original dictionaries
+     and `IsUnit`/`Invertible` targets remain fixed, and all cases remain unchanged.
+
+     Public corpus searches used `Matrix.isUnit_iff_isUnit_det`, `Polynomial.isUnit_C`,
+     and `Pi.isUnit_iff`, excluding downstream `lean-cas-dsl` repositories.
+     The actual owners were inspected in pinned Mathlib
+     `db584cd6d46c92f209a44c0f1c829460d327499d`; the implicit-comparison policy was read in
+     Lean 4.33.0 `d8b18978322de05a8f3dba51ef03cf5461676c17`,
+     `Lean/Meta/ExprDefEq.lean::isDefEqArgs`. New public controls keep matrix multiplication
+     distinct from pointwise multiplication on the same function carrier: matrix identity
+     is a unit, while its zero off-diagonal entry makes it a nonunit pointwise. Integer
+     determinant-two and singular rational matrices and the polynomial generator are
+     independently proved to be nonunits and are refused. These source-only controls do not inspect downstream
+     assertions, implementation diagnostics, computational outcomes, kernel code, or leaves.
+     `UnitsPresentationTests.lean` supplies thirteen positive evidence obligations,
+     four independent nonunit theorems, and eight refused admission attempts. Before the
+     repair, three positive obligations failed; afterwards the complete unchanged controls
+     compile, as does `Algebra/Units.lean`, with Lean 4.33.0 and isolated build outputs.
   3. **Closed facts about real numbers.** Nonzero-ness of a real element (units of `ℝ`, leading
      coefficients of real polynomials) is established by evaluation (`norm_num`) or by positivity.
      A nonzero value that is neither evaluable nor of known sign (`π - 3`, `exp 1 - e`-style
