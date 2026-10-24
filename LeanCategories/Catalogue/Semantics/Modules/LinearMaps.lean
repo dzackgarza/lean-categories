@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Catalogue.Semantics.Modules.CatalogueRegistration
+public import LeanCategories.Catalogue.Semantics.Algebra.AdditiveOperations
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.Module

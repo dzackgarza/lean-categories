@@ -1773,3 +1773,41 @@ owners are false or unavailable. Whole-program mathematical completeness and
 publication readiness beyond the inspected changes remain unestablished by this
 bounded review. Compilation and this source judgment confer no downstream
 functional acceptance, independent release authority, or B0 acceptance.
+
+### Universal operation agreement and selected additive operations (2026-10-24)
+
+The existing first-binding operation rule left its generic definitional-equality
+discharge implicit. Source inspection of `NamedRings.mul`, `MonoidOperations.mul`,
+the actual multiplicative forgetful functors, and
+`CommMonoids.commutativeRingsMonoidsCell` shows that their whole ring and
+commutative-ring operation families agree by reflexivity. The public rule is now
+specified in `LeanCategories/Catalogue/Registry/operation-agreement.md`: compare
+the complete families under rigid universal source, category, route, and declaration
+parameters before substituting any selected object or operands. Checked `Eq.refl`
+at that exact family equality is sufficient; no new comparison row or category
+priority is needed. Named universal source equations and field/algebra
+precomposition checks are in `MonoidOperationAgreement.lean` and its tests.
+The same tests separate additive and multiplicative operations, independent owners,
+independent exponent parameters, coincident point values, and coincidence on one
+selected one-element ring. Formalization-corpus searches `Eq.refl` and
+`commutativeRingsMonoidsCell` and inspection of the pinned owners found no missing
+algebraic theorem to replace or weaken.
+
+An independent public-registry audit also found no generic additive `+` row:
+only rings and semirings exposed addition. The total module category already
+retains its selected additive group, but that group had no registered forgetful
+route to additive monoids. `AdditiveOperations.lean` now exposes Mathlib's
+existing full `AddMonCat` addition and `forget₂ AddGrpCat AddMonCat`, with
+`map_add` naturality and an identity comparison of the old/new carrier routes.
+The corpus query `"AddGrpCat" "AddMonCat"` was followed by inspection of Mathlib's
+category definitions. No module-specific operation, scalar-carrier identification,
+or new additive law was introduced. The interface is imported through the main
+catalogue and the ordinary module-map interface.
+
+The focused two-target Lean 4.33.0 source check passed on these declarations,
+their registry validation, and the whole selected-module map `m ↦ m + m` over
+arbitrary scalar rings. The check includes a module whose carrier differs from
+its scalar ring, a different additive structure on the same carrier, and
+preservation of the explicit ring binding. It establishes this mathematical
+interface only; no kernel/leaf implementation or computational answer was used,
+and it confers no downstream acceptance.
