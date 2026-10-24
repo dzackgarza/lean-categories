@@ -1845,3 +1845,51 @@ does not supply unrestricted module-linearity over a noncommutative ring.
 This is a mathematical evidence-interface repair from independent source
 theorems; no kernel, leaf, acceptance assertion, or computational outcome was
 used to select its statements.
+
+The follow-up at published `ae3c76e7a439681ad264a3d1cf113cb55d4f8fcc`
+independently checked the same complete laws through the public
+`CommRingCat → RingCat` functor, `modulesFamilyRealization.reindex`, and
+underlying Hom function presentations. Four universal source controls were
+not established: scalar action on an arbitrary restricted module over a
+forgotten commutative ring; the integer-residue action for arbitrary modulus
+and scalar; an arbitrary restricted map viewed through the forgetful functor
+to sets; and an arbitrary regular-module map restricted along the named
+integer coefficient map. The plain forgotten-base scalar action and plain
+regular residue action were already established. These are whole-map laws,
+including modulus zero, with no selected output value as a premise.
+
+No new linearity theorem was missing. The public corpus searches
+`"isLinearMap_smul" -repo:lean-cas-dsl` and
+`"restrictScalars" "smul" -repo:lean-cas-dsl`, followed by the Mathlib
+declaration refinement, were checked against the pinned Mathlib
+`db584cd6d46c92f209a44c0f1c829460d327499d` sources. The existing
+`LinearMap.isLinear`, `IsLinearMap.isLinearMap_smul`,
+`ModuleCat.RestrictScalars.map'`, and `ModuleCat.smul_restrictScalars`
+supply the full required laws. Lean 4.33.0 at
+`d8b18978322de05a8f3dba51ef03cf5461676c17`,
+`Lean/Meta/ExprDefEq.lean::isDefEqArgs`, explains the presentation gap:
+its default automation guard compares implicit selected structures at
+`.implicit` transparency, even inside an outer wider transparency scope.
+Removing outer lets alone did not fix the four controls; permitting ordinary
+definitional comparison of those arguments did.
+
+The repair therefore scopes
+`backward.isDefEq.respectTransparency := false` to `linearEvidence` only.
+It uses Lean's existing definitional conversion for the exact original
+function, scalar ring, and module instances; it adds no mathematical rule,
+global instance, new hypothesis, or carrier-based identification. The existing
+proof strategies and the complete `Evidence.establish` check remain in place.
+The six universal presentation controls are now in `LinearMapsTests`, together
+with a separating theorem: identity on the common carrier of two restricted
+regular modules is not linear when their selected base maps differ. Its proof
+uses the entire scalar-preservation law at the unit to recover equality of
+the ring maps, with the existing `RingCat.hom_ext` and `RingHom.ext`.
+The public searches `"IsLinearMap" "compHom" -repo:lean-cas-dsl` and
+`"RingHom.ext" -repo:lean-cas-dsl` checked this separating-control scope;
+the former also locates Mathlib's selected `Module.compHom.toLinearEquiv`.
+The evidence refuses the false identity admission.
+`LinearMapsTests` and the unchanged `CoordinateLinearityTests` pass under Lean
+4.33.0, checking the repair alongside the existing affine, quadratic, and
+noncentral-action boundaries. This follow-up used public mathematical source
+and its own theorem controls only; it did not inspect kernel or leaf source,
+downstream assertions, computational observations, or downstream diagnostics.

@@ -46,6 +46,16 @@ also reads catalogue wrappers by the existing definitional `Units.readCatalogue`
 procedure and proves the same laws in that presentation. `LinearMap.isLinear`
 consumes an actual bundled linear map. No wrapper changes the underlying
 function, scalar ring, or selected domain and codomain modules.
+
+Definitionally equal closed presentations of those selected structures are
+also admitted: for example, a commutative ring viewed through its forgetful
+functor, a module formed by the published restriction-of-scalars family, and
+the underlying function of that family's actual morphism action. Lean's
+default automation guard compares implicit arguments at restricted transparency.
+Within this proof procedure only, implicit selected structures are compared at
+ordinary definitional transparency instead. This reads their definitions; it
+does not identify different actions on one carrier. The original complete
+`IsLinearMap` proposition is still proved and checked by `Evidence.establish`.
 -/
 
 open CategoryTheory
@@ -104,8 +114,13 @@ meta partial def linearIdentity : TacticM Unit :=
        linearIdentity]
 
 open Lean Elab Tactic in
-/-- Prove the full addition and scalar preservation laws, never a finite sample. -/
+/-- Prove the full addition and scalar preservation laws, never a finite sample.
+The local conversion scope unfolds definitionally equal implicit selected
+structures, including restriction of scalars. It changes no structure or law.
+Lean 4.33's `Meta.isDefEqArgs` otherwise compares these arguments at `.implicit`
+transparency even inside a wider `withTransparency` scope. -/
 meta partial def linearEvidence : TacticM Unit :=
+  withOptions (fun options => options.setBool `backward.isDefEq.respectTransparency false) <|
   CasCatalogue.Evidence.establish "Linearity" do
     CasCatalogue.Algebra.Units.normalizeBundledObjects
     let prove : TacticM Unit :=

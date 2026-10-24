@@ -19,6 +19,98 @@ namespace CasCatalogue.Modules.LinearMapsTests
 
 universe u v
 
+/-- Forgetting commutativity keeps the original scalar action and its whole
+linearity law, at any chosen module and scalar. -/
+example (K : CommRingCat.{u})
+    (M : ModuleCat.{v} ((forget₂ CommRingCat RingCat).obj K)) (a : K) :
+    IsLinearMap ((forget₂ CommRingCat RingCat).obj K)
+      (M := M) (M₂ := M) (fun x : M => (M.smul a).hom x) := by
+  run_tac linearEvidence
+
+/-- The published reindexing family and uncurried scalar-action map retain the
+same selected module, even when the scalar ring is a forgotten commutative ring. -/
+example (K : CommRingCat.{0}) (S : RingCat.{0})
+    (q : (forget₂ CommRingCat RingCat).obj K ⟶ S) (N : ModuleCat.{0} S) (a : K) :
+    let R := (forget₂ CommRingCat RingCat).obj K
+    let M : ModuleCat.{0} R := (modulesFamilyRealization.reindex q).obj N
+    IsLinearMap R (M := M) (M₂ := M) (fun x : M =>
+      ConcreteCategory.hom (C := Type) (Operations.scalarAction R M) (a, x)) := by
+  run_tac linearEvidence
+
+/-- For every modulus, including zero, the named coefficient map gives the
+actual integer action on the restricted regular module. No scalar or element
+is fixed to a sample value. -/
+example (n : ℕ) (a : ℤ) :
+    let R := (forget₂ CommRingCat RingCat).obj Algebra.NamedCommutativeRings.integers
+    let S := (forget₂ CommRingCat RingCat).obj (Algebra.NamedCommutativeRings.integersMod n)
+    let q : R ⟶ S := (forget₂ CommRingCat RingCat).map
+      (Algebra.NamedCommutativeRings.integerCoefficients
+        (Algebra.NamedCommutativeRings.integersMod n))
+    let M : ModuleCat.{0} R := (modulesFamilyRealization.reindex q).obj (regularModule S)
+    IsLinearMap R (M := M) (M₂ := M) (fun x : M =>
+      ConcreteCategory.hom (C := Type) (Operations.scalarAction R M) (a, x)) := by
+  run_tac linearEvidence
+
+/-- The regular action itself is linear over the selected commutative residue
+ring, uniformly in the modulus and scalar. -/
+example (n : ℕ) (a : ZMod n) :
+    let S := (forget₂ CommRingCat RingCat).obj (Algebra.NamedCommutativeRings.integersMod n)
+    let N := regularModule S
+    IsLinearMap S (M := N) (M₂ := N) (fun x : N => (N.smul a).hom x) := by
+  run_tac linearEvidence
+
+/-- An arbitrary reindexed morphism keeps its full laws when presented through
+the ordinary forgetful functor to sets and its underlying function. -/
+example (R S : RingCat.{u}) (q : R ⟶ S) (N P : ModuleCat.{v} S) (f : N ⟶ P) :
+    let M : ModuleCat.{v} R := (modulesFamilyRealization.reindex q).obj N
+    let M' : ModuleCat.{v} R := (modulesFamilyRealization.reindex q).obj P
+    let g : M ⟶ M' := (modulesFamilyRealization.reindex q).map f
+    IsLinearMap R (M := M) (M₂ := M') (fun x : M =>
+      ConcreteCategory.hom (C := Type v) ((forget (ModuleCat R)).map g) x) := by
+  run_tac linearEvidence
+
+/-- The named coefficient presentation also preserves every whole regular
+module morphism under reindexing; its original scalar-linear function is kept. -/
+example (n : ℕ)
+    (f : regularModule (RingCat.of (ZMod n)) ⟶ regularModule (RingCat.of (ZMod n))) :
+    let R := (forget₂ CommRingCat RingCat).obj Algebra.NamedCommutativeRings.integers
+    let S := (forget₂ CommRingCat RingCat).obj (Algebra.NamedCommutativeRings.integersMod n)
+    let q : R ⟶ S := (forget₂ CommRingCat RingCat).map
+      (Algebra.NamedCommutativeRings.integerCoefficients
+        (Algebra.NamedCommutativeRings.integersMod n))
+    let M : ModuleCat.{0} R := (modulesFamilyRealization.reindex q).obj (regularModule S)
+    IsLinearMap R (M := M) (M₂ := M)
+      (fun x : M => ((modulesFamilyRealization.reindex q).map f).hom x) := by
+  run_tac linearEvidence
+
+/-- Two restrictions of the same regular module have the same carrier. Their
+identity function can be linear only when the selected base maps are equal. -/
+theorem different_restrictions_identity_not_linear (R S : RingCat.{u})
+    (q₀ q₁ : R ⟶ S) (different : q₀ ≠ q₁) :
+    let M := (ModuleCat.restrictScalars q₀.hom).obj (regularModule S)
+    let N := (ModuleCat.restrictScalars q₁.hom).obj (regularModule S)
+    ¬ IsLinearMap R (M := M) (M₂ := N) (fun x : M => (show N from x)) := by
+  dsimp only
+  intro h
+  apply different
+  apply RingCat.hom_ext
+  apply RingHom.ext
+  intro r
+  have sameAction := h.map_smul r (1 : S)
+  change q₀.hom r * 1 = q₁.hom r * 1 at sameAction
+  simpa only [mul_one] using sameAction
+
+/-- Definitional comparison must not equate distinct selected actions merely
+because their carriers are definitionally equal. -/
+example (R S : RingCat.{u}) (q₀ q₁ : R ⟶ S) (_different : q₀ ≠ q₁) : True := by
+  fail_if_success
+    have :
+        let M := (ModuleCat.restrictScalars q₀.hom).obj (regularModule S)
+        let N := (ModuleCat.restrictScalars q₁.hom).obj (regularModule S)
+        IsLinearMap R (M := M) (M₂ := N) (fun x : M => (show N from x)) := by
+      run_tac linearEvidence
+  trivial
+
 /-- The admission laws apply to arbitrary modules over arbitrary rings. -/
 example (R : RingCat.{u}) (M : ModuleCat.{v} R) :
     IsLinearMap R (fun x : M => x + x) := by
