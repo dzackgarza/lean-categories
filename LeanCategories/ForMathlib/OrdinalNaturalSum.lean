@@ -167,4 +167,29 @@ theorem naturalProduct_zero (a : Ordinal.{u}) : naturalProduct a 0 = 0 := by
 theorem naturalProduct_zero_left (a : Ordinal.{u}) : naturalProduct 0 a = 0 := by
   rw [naturalProduct_comm, naturalProduct_zero]
 
+/-- One is the right identity of Hessenberg natural product. -/
+theorem naturalProduct_one (a : Ordinal.{u}) : naturalProduct a 1 = a := by
+  rw [naturalProduct_def]
+  apply le_antisymm
+  · apply csInf_le
+    · exact ⟨0, fun _ _ => zero_le⟩
+    · intro a' ha b' hb
+      have : b' = 0 := Order.lt_one_iff.mp hb
+      subst b'
+      simpa [naturalProduct_zero, naturalSum_zero, naturalProduct_one a'] using ha
+  · apply le_csInf (naturalProduct_admissible a 1)
+    intro c hc
+    have h : ∀ a' < a, a' < c := by
+      intro a' ha
+      have := hc a' ha 0 (zero_lt_one' Ordinal)
+      simpa [naturalProduct_zero, naturalSum_zero, naturalProduct_one a'] using this
+    calc
+      a = ⨆ x : Set.Iio a, Order.succ x.1 := (iSup_succ a).symm
+      _ ≤ c := by
+        apply Ordinal.iSup_le
+        intro x
+        exact Order.succ_le_of_lt (h x.1 x.2)
+termination_by a
+decreasing_by all_goals assumption
+
 end LeanCategories.ForMathlib.OrdinalNatural
