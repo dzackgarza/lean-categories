@@ -71,15 +71,37 @@ noncomputable def setsDiagramColimitDesc {J : Type v} [Category.{w} J]
     (setsDiagramColimit F).cocone.pt ⟶ c.pt :=
   (setsDiagramColimit F).isColimit.desc c
 
+/-- The selected projection from a set-valued diagram limit at an arbitrary diagram object. -/
+noncomputable def setsDiagramLimitProjection {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) (j : J) :
+    (setsDiagramLimit F).cone.pt ⟶ F.obj j :=
+  (setsDiagramLimit F).cone.π.app j
+
+/-- The selected injection into a set-valued diagram colimit at an arbitrary diagram object. -/
+noncomputable def setsDiagramColimitInjection {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) (j : J) :
+    F.obj j ⟶ (setsDiagramColimit F).cocone.pt :=
+  (setsDiagramColimit F).cocone.ι.app j
+
 theorem setsDiagramLimitLift_fac {J : Type v} [Category.{w} J]
     (F : J ⥤ Type (max v u)) (c : Cone F) (j : J) :
     setsDiagramLimitLift F c ≫ (setsDiagramLimit F).cone.π.app j = c.π.app j :=
   (setsDiagramLimit F).isLimit.fac c j
 
+theorem setsDiagramLimitProjection_fac {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) (c : Cone F) (j : J) :
+    setsDiagramLimitLift F c ≫ setsDiagramLimitProjection F j = c.π.app j :=
+  setsDiagramLimitLift_fac F c j
+
 theorem setsDiagramColimitDesc_fac {J : Type v} [Category.{w} J]
     (F : J ⥤ Type (max v u)) (c : Cocone F) (j : J) :
     (setsDiagramColimit F).cocone.ι.app j ≫ setsDiagramColimitDesc F c = c.ι.app j :=
   (setsDiagramColimit F).isColimit.fac c j
+
+theorem setsDiagramColimitInjection_fac {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) (c : Cocone F) (j : J) :
+    setsDiagramColimitInjection F j ≫ setsDiagramColimitDesc F c = c.ι.app j :=
+  setsDiagramColimitDesc_fac F c j
 
 /-- The selected limit mediator is uniquely determined by its projection equations. -/
 theorem setsDiagramLimitLift_unique {J : Type v} [Category.{w} J]
@@ -273,9 +295,19 @@ normalized_registry .morphism
     declaration := `CasCatalogue.Limits.Registration.setsDiagramLimitLift }
 
 normalized_registry .morphism
+  { id := ⟨"mor.sets.diagram_limit_projection"⟩, category := CategoryId.sets
+    name := "diagram_limit_projection"
+    declaration := `CasCatalogue.Limits.Registration.setsDiagramLimitProjection }
+
+normalized_registry .morphism
   { id := ⟨"mor.sets.diagram_colimit_desc"⟩, category := CategoryId.sets
     name := "diagram_colimit_desc"
     declaration := `CasCatalogue.Limits.Registration.setsDiagramColimitDesc }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.diagram_colimit_injection"⟩, category := CategoryId.sets
+    name := "diagram_colimit_injection"
+    declaration := `CasCatalogue.Limits.Registration.setsDiagramColimitInjection }
 
 normalized_registry .morphism
   { id := ⟨"mor.sets.diagram_limit_map"⟩, category := CategoryId.sets
