@@ -1181,8 +1181,52 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
      uses its independently established injectivity before the source polynomial
      is considered, so the normalizer does not replace that documented proof case.
      Focused comparisons establish all four previously failing mathematical
-     statements with these existing rules; the complete module and control-suite
-     check remains pending at this source checkpoint.
+     statements with these existing rules. The complete checks subsequently closed
+     at authored commit `78796eddaf03b6007c6174bb0f32708fb7c7278b`, tree
+     `85f2bbeea99935d5972912fa807a9131883765d0` (published with that exact tree as
+     `b85548deb31e2e18498fd4847a7ff81cf1413542`). The installed Lean 4.33.0 executable
+     was `/tmp/kernel-runtime-20261024/toolchains/lean-4.33.0-linux/bin/lean`.
+     The commands, from the isolated mathematical worktree, were:
+
+     ```text
+     lean -o .tmp-polynomial-contract/lib/LeanCategories/Catalogue/Semantics/Algebra/PolynomialEvidence.olean LeanCategories/Catalogue/Semantics/Algebra/PolynomialEvidence.lean
+     lean -o .tmp-polynomial-contract/lib/LeanCategories/Catalogue/Semantics/PolynomialContractTests.olean LeanCategories/Catalogue/Semantics/PolynomialContractTests.lean
+     lean LeanCategories/Catalogue/Semantics/PolynomialPresentationEvidenceTests.lean
+     lean LeanCategories/Catalogue/Semantics/EvidenceTests.lean
+     ```
+
+     All four exited zero with no diagnostic output. Dependencies came from the
+     original immutable mathematical build and its existing runtime dependencies;
+     the changed module's outputs were isolated. No Lake update or dependency
+     build ran. The independent controls establish eighteen positive obligations,
+     six zero equations and the selected-zero identification, and six refused
+     false admissions. The unchanged public presentation and evidence suites also
+     check the earlier presentation cases and the shared monic-polynomial helpers.
+
+     Before/after equality: the selected Lean sources after these runs match their
+     exact blobs in checked commit `78796edd`; the following paths are relative to
+     `LeanCategories/Catalogue/Semantics/`.
+
+     | Source | Checked and final Git blob |
+     | --- | --- |
+     | `Algebra/PolynomialEvidence.lean` | `a342e611a599107798fcf2c02092b20d3df07096` |
+     | `PolynomialContractTests.lean` | `514eb282e73cf1d153cdcaa0ef78b0f3829e9538` |
+     | `PolynomialPresentationEvidenceTests.lean` | `d31c91cd7e4909af378e68f64237e60d3e4ffaad` |
+     | `EvidenceTests.lean` | `e0b9e2e97fee49c124bed50a1d96ccdb7dcedcc1` |
+
+     The last two files also match the original `796db9fc` source exactly. That
+     read-only producer remains at commit `796db9fc8ef18765a8f6770aeab24d08fcc58a3c`,
+     tree `0a38713eae98e3accd8c6b15a5add9041230e9c0`, before and after the checks.
+     The sequential unchanged-suite check script has SHA-256
+     `c46020d03e4c084ae9aa2c5d70bd36f0d09f75a4d566805ee958f475b10f489e`.
+     Its two captured logs, `PolynomialPresentationEvidenceTests.log` and
+     `EvidenceTests.log`, are both empty with SHA-256
+     `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`;
+     the separately recorded process exits are zero (3.877 and 40.673 seconds).
+     The original failing run remains identified by control commit `98adc3b`;
+     these passing checks do not rewrite that record. This is bounded source and
+     proof verification, not independent mathematical release acceptance or any
+     downstream functional acceptance.
   3. **Closed facts about real numbers.** Nonzero-ness of a real element (units of `ℝ`, leading
      coefficients of real polynomials) is established by evaluation (`norm_num`) or by positivity.
      A nonzero value that is neither evaluable nor of known sign (`π - 3`, `exp 1 - e`-style
