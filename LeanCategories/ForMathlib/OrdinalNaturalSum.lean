@@ -508,6 +508,16 @@ theorem naturalSumList_pair (a b : Ordinal.{u}) :
     naturalSumList [a, b] = naturalSum a b := by
   simp [naturalSumList, naturalSum_zero]
 
+/-- Concatenating two finite families computes the natural sum of their respective sums.
+The general associativity theorem makes this independent of the chosen list split. -/
+theorem naturalSumList_append (as bs : List Ordinal.{u}) :
+    naturalSumList (as ++ bs) = naturalSum (naturalSumList as) (naturalSumList bs) := by
+  induction as with
+  | nil => simp [naturalSumList, naturalSum_zero_left]
+  | cons a as ih =>
+    simp only [List.cons_append, naturalSumList]
+    rw [ih, ← naturalSum_assoc]
+
 theorem naturalProductList_pair (a b : Ordinal.{u}) :
     naturalProductList [a, b] = naturalProduct a b := by
   simp [naturalProductList, naturalProduct_one]
