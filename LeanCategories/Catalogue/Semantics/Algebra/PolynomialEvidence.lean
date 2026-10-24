@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.RingTheory.SimpleRing.Basic
 public import Mathlib.Data.Int.CharZero
 public import Mathlib.Tactic.ComputeDegree
+public import Mathlib.Tactic.Polynomial.Basic
 public import Mathlib.Tactic.ReduceModChar
 public import Mathlib.Tactic.Ring
 public meta import LeanCategories.Catalogue.Semantics.Foundation.Evidence
@@ -29,9 +30,12 @@ presentations through the existing `Units.readCatalogue` procedure. It reads
 both the carrier and the exact selected coefficient dictionaries, and exposes
 the public numeral and polynomial-map declarations by their definitions.
 The original whole polynomial, coefficient map, and `p ≠ 0` obligation are
-unchanged; only the existing degree, normalization, and injective-map cases
-are used. Normalization reduces coefficients again after expansion, because
-collecting like terms can create new multiples of the selected characteristic.
+unchanged; only the existing degree, normalization, and injective-map criteria
+are used. Mathlib's `polynomial_nf` reads constants through their selected algebra
+map before collecting terms. Coefficients are reduced again after expansion,
+because collecting like terms can create new multiples of the selected
+characteristic, and resulting zero terms are removed. Constant polynomial
+coefficients are read through `Polynomial.C_inj` before closed arithmetic.
 -/
 
 namespace CasCatalogue.Algebra.Polynomials
@@ -41,25 +45,35 @@ open Lean Elab Tactic
 
 open Lean Elab Tactic in
 /-- Close each remaining goal, a closed arithmetic fact about coefficients or degrees
-(`Units.closedArithmeticEvidence`). -/
+(`Units.closedArithmeticEvidence`). Polynomial numerals in coefficients are the images
+of their scalar numerals under `C`; `Polynomial.C_inj` reduces their equalities to the
+scalar ring without requiring a separately supplied `Nontrivial` instance. -/
 meta def closeCoefficientGoals : TacticM Unit := do
   for goal in ← getUnsolvedGoals do
     setGoals [goal]
-    CasCatalogue.Algebra.Units.closedArithmeticEvidence
+    evalTactic (← `(tactic| try simp only [ne_eq,
+      ← Polynomial.C_0, ← Polynomial.C_1, ← Polynomial.C_ofNat,
+      ← Polynomial.C_eq_natCast, ← Polynomial.C_eq_intCast, Polynomial.C_inj]))
+    unless (← getUnsolvedGoals).isEmpty do
+      CasCatalogue.Algebra.Units.closedArithmeticEvidence
 
 open Lean Elab Tactic in
 /-- Put a closed polynomial expression in normal form: the catalogue's numerals evaluated
 (`Units.evaluateNumerals`), coefficients reduced modulo the characteristic of `ℤ/n`, a constant
 that reduces to `0` or `1` read as that element of `R[x]` (`C 0 = 0`, `C 1 = 1`), and the
-expression expanded into a sum of monomials `c·xᵏ` with like terms collected (commutative-ring
-normalization), then newly collected coefficients reduced again, so that cancelling and
-vanishing leading terms disappear. -/
+expression expanded into a sum of monomials `C(c)·xᵏ` with like terms collected (Mathlib
+`polynomial_nf`, using the existing coefficient algebra map). Newly collected coefficients
+are reduced again and zero terms removed, so cancelling and nilpotent leading coefficients
+disappear. This uses the standard polynomial normal form, rather than treating `C c` as an
+independent ring variable. -/
 meta def normalizePolynomial : TacticM Unit := do
   CasCatalogue.Algebra.Units.evaluateNumerals
   evalTactic (← `(tactic| try reduce_mod_char))
   evalTactic (← `(tactic| try simp only [map_zero, map_one]))
-  evalTactic (← `(tactic| try ring_nf))
+  evalTactic (← `(tactic| try polynomial_nf))
   evalTactic (← `(tactic| try reduce_mod_char))
+  evalTactic (← `(tactic| try simp only
+    [map_zero, map_one, zero_mul, mul_zero, zero_add, add_zero]))
 
 open Lean Elab Tactic in
 /-- `p ≠ 0` because `deg p = d` for a natural number `d` (`Polynomial.ne_zero_of_coe_le_degree`):
@@ -132,10 +146,15 @@ meta partial def nonzeroPolynomialEvidence : TacticM Unit :=
     CasCatalogue.Algebra.Units.readCatalogue
     nonzeroCases
 where
-  /-- The cases above, tried in turn on the main goal `p ≠ 0`. -/
-  nonzeroCases : TacticM Unit :=
-    CasCatalogue.Evidence.closeByFirst m!"the polynomial is not established to be nonzero"
-      [nonzeroOfMap, nonzeroByDegree, do normalizePolynomial; nonzeroByDegree]
+  /-- A polynomial image retains its independent injectivity obligation. Other expressions
+  use their degree, directly or after polynomial normalization. -/
+  nonzeroCases : TacticM Unit := do
+    let target := (← instantiateMVars (← getMainTarget)).consumeMData
+    if target.isAppOfArity ``Ne 3 && (target.getArg! 1).isAppOfArity ``Polynomial.map 6 then
+      nonzeroOfMap
+    else
+      CasCatalogue.Evidence.closeByFirst m!"the polynomial is not established to be nonzero"
+        [nonzeroByDegree, do normalizePolynomial; nonzeroByDegree]
   /-- `q.map f ≠ 0` from `q ≠ 0` and the injectivity of `f`. -/
   nonzeroOfMap : TacticM Unit := do
     let target := (← instantiateMVars (← getMainTarget)).consumeMData

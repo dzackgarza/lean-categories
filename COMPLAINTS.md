@@ -1163,13 +1163,26 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
      positive obligations, zero equations and refusals, including two different
      selected commutative-ring structures on the same residue-class carrier.
      Its initial run is a failure record, not a successful verification claim;
-     the four evidence failures remain open at this checkpoint. Two auxiliary
+     the four evidence failures remain open at source checkpoint `cb40a193`. Two auxiliary
      zero-proof presentation corrections preserve their statements. Public corpus
      searches used `map_ne_zero_iff`, `ne_zero_of_coe_le_degree`,
      `algebraMap_injective`, `injective_int`, and `Equiv.commRing`, excluding
      downstream repositories; the named owners were inspected in the assigned
      pinned Mathlib source. Existing tests are unchanged. These checks use no
      downstream source, expected answers, generated goals or computational results.
+
+     The bounded repair uses that existing `polynomial_nf`, then removes zero
+     terms after characteristic reduction. The coefficient arithmetic step reads
+     polynomial numerals through `Polynomial.C_inj`; this avoids demanding a
+     separately installed `Fact (1 < 8)` merely to obtain `Nontrivial (ZMod 8)`
+     in the faithful-algebra control. It proves the scalar numeral inequality
+     by the same closed arithmetic procedure. The tested transparency option
+     does not solve this issue and is not added. An outer polynomial image still
+     uses its independently established injectivity before the source polynomial
+     is considered, so the normalizer does not replace that documented proof case.
+     Focused comparisons establish all four previously failing mathematical
+     statements with these existing rules; the complete module and control-suite
+     check remains pending at this source checkpoint.
   3. **Closed facts about real numbers.** Nonzero-ness of a real element (units of `ℝ`, leading
      coefficients of real polynomials) is established by evaluation (`norm_num`) or by positivity.
      A nonzero value that is neither evaluable nor of known sign (`π - 3`, `exp 1 - e`-style
