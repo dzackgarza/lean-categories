@@ -454,4 +454,23 @@ theorem naturalProductList_mono {as bs : List Ordinal.{u}}
   | nil => exact le_rfl
   | @cons a b as bs hab _ ih => exact naturalProduct_mono hab ih
 
+/-- A finite natural product vanishes exactly when one of its factors vanishes. -/
+theorem naturalProductList_eq_zero_iff (as : List Ordinal.{u}) :
+    naturalProductList as = 0 ↔ (0 : Ordinal.{u}) ∈ as := by
+  induction as with
+  | nil => simp [naturalProductList]
+  | cons a as ih =>
+    simp only [naturalProductList, naturalProduct_eq_zero_iff, ih,
+      List.mem_cons]
+    rw [eq_comm (a := (0 : Ordinal.{u})) (b := a)]
+
+/-- A finite natural sum vanishes exactly when every summand vanishes. -/
+theorem naturalSumList_eq_zero_iff (as : List Ordinal.{u}) :
+    naturalSumList as = 0 ↔ ∀ a ∈ as, a = 0 := by
+  induction as with
+  | nil => simp [naturalSumList]
+  | cons a as ih =>
+    simp only [naturalSumList, naturalSum_eq_zero_iff, ih,
+      List.mem_cons, forall_eq_or_imp]
+
 end LeanCategories.ForMathlib.OrdinalNatural
