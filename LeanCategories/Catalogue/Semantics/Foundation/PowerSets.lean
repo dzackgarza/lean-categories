@@ -217,10 +217,20 @@ def subset (B : BooleanAlgebras.{0}) : (boolCarrier B × boolCarrier B : SetsCat
 /-- A linear order as a `LinOrd`, and its underlying type. -/
 abbrev asOrder (L : LinearOrders.{0}) : LinOrd.{0} := L
 abbrev orderCarrier (L : LinearOrders.{0}) : Type := asOrder L
+abbrev asPartialOrder (P : PartialOrders.{0}) : PartOrd.{0} := P
+abbrev partialOrderCarrier (P : PartialOrders.{0}) : Type := asPartialOrder P
+
+/-- The order relation of a partial order, into `Ω`. -/
+def partialLe (P : PartialOrders.{0}) :
+    (partialOrderCarrier P × partialOrderCarrier P : SetsCat.{0}) ⟶ omega :=
+  TypeCat.ofHom fun p => p.1 ≤ p.2
 
 /-- `≤`, into `Ω`. -/
 def le (L : LinearOrders.{0}) : (orderCarrier L × orderCarrier L : SetsCat.{0}) ⟶ omega :=
   TypeCat.ofHom fun p => p.1 ≤ p.2
+/-- The linear-order relation is the partial-order relation after forgetting totality. -/
+theorem le_restriction (L : LinearOrders.{0}) :
+    le L = partialLe (linearOrdersToPartialOrders.obj L) := rfl
 /-- `<`, into `Ω`. -/
 def lt (L : LinearOrders.{0}) : (orderCarrier L × orderCarrier L : SetsCat.{0}) ⟶ omega :=
   TypeCat.ofHom fun p => p.1 < p.2
@@ -361,9 +371,17 @@ normalized_registry .object
         identification := `CasCatalogue.Foundation.PowerSets.orderRealsIdentification } }
 
 normalized_registry .operation
+  { id := ⟨"op.partial_orders.le"⟩, category := CategoryId.partialOrders, name := "≤"
+    arity := 2, declaration := `CasCatalogue.Foundation.PowerSets.partialLe
+    result := some ⟨"obj.sets.truth_values"⟩ }
+normalized_registry .operation
   { id := ⟨"op.linear_orders.le"⟩, category := CategoryId.linearOrders, name := "≤"
     arity := 2, declaration := `CasCatalogue.Foundation.PowerSets.le
-    result := some ⟨"obj.sets.truth_values"⟩ }
+    result := some ⟨"obj.sets.truth_values"⟩
+    refines := some
+      { base := ⟨"op.partial_orders.le"⟩
+        route := #[.functor FunctorId.linearOrdersToPartialOrders]
+        identification := `CasCatalogue.Foundation.PowerSets.le_restriction } }
 normalized_registry .operation
   { id := ⟨"op.linear_orders.lt"⟩, category := CategoryId.linearOrders, name := "<"
     arity := 2, declaration := `CasCatalogue.Foundation.PowerSets.lt
