@@ -113,6 +113,18 @@ theorem setsDiagramColimit_hom_ext {J : Type v} [Category.{w} J]
       (setsDiagramColimit F).cocone.ι.app j ≫ g) : f = g :=
   (setsDiagramColimit F).isColimit.hom_ext h
 
+/-- A natural transformation induces a morphism of the selected set-diagram limits. -/
+noncomputable def setsDiagramLimitMap {J : Type v} [Category.{w} J]
+    {F G : J ⥤ Type (max v u)} (α : F ⟶ G) :
+    (setsDiagramLimit F).cone.pt ⟶ (setsDiagramLimit G).cone.pt :=
+  (setsDiagramLimit G).isLimit.map (setsDiagramLimit F).cone α
+
+theorem setsDiagramLimitMap_π {J : Type v} [Category.{w} J]
+    {F G : J ⥤ Type (max v u)} (α : F ⟶ G) (j : J) :
+    setsDiagramLimitMap α ≫ (setsDiagramLimit G).cone.π.app j =
+      (setsDiagramLimit F).cone.π.app j ≫ α.app j :=
+  (setsDiagramLimit G).isLimit.map_π (setsDiagramLimit F).cone α j
+
 /-- Two representatives in a filtered set colimit agree exactly when they agree after
 transport to a common later object. This is stronger than mere existence of the colimit. -/
 theorem setsFilteredColimit_eq_iff {J : Type v} [Category.{w} J]
