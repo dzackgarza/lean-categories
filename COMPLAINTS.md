@@ -1811,3 +1811,37 @@ its scalar ring, a different additive structure on the same carrier, and
 preservation of the explicit ring binding. It establishes this mathematical
 interface only; no kernel/leaf implementation or computational answer was used,
 and it confers no downstream acceptance.
+
+### Generic coordinate linearity through selected module maps (2026-10-24)
+
+An independent mathematical source probe at `e2d5e308` found that the public
+`linearEvidence` did not establish an arbitrary-dimension finite-vector map
+built from linear scalar expressions, negation, and a doubled tail. Generic
+module-morphism composition and commutative scalar action already passed.
+Mathlib `LinearAlgebra/Pi.lean` explains the missing structural step:
+`Fin.cases` and function application do not commute definitionally, so it
+provides the actual `LinearMap.vecCons` constructor. The public corpus query
+`"LinearMap.vecCons"` located that owner; `LinearMap.pi`, `prod`, `vecEmpty`,
+`IsLinearMap.mk'`, and `LinearMap.isLinear` supply the remaining existing API.
+
+`CoordinateLinearity.lean` now adapts those constructors to the unchanged
+`IsLinearMap` admission predicate. Every component's full laws remain required;
+dimensions, index types, and scalar/module structures are arbitrary. The
+evidence also consumes an already bundled linear map directly. The original
+bundled proof path remains first; the existing definitional catalogue reader
+can expose the same whole function behind a public application wrapper when
+needed. Eagerly replacing the original presentation had made an existing
+restricted-module law harder to prove, so both sound proof presentations are
+retained without changing the proposition or increasing heartbeats.
+
+The new `CoordinateLinearityTests` and the unchanged `LinearMapsTests` pass
+together under Lean 4.33.0. Controls include arbitrary finite-vector tails,
+arbitrary-index functions, nested products, public application, actual module
+morphism composition, reindexed morphisms, and scalar action on a restricted
+module. Affine and quadratic coordinate maps are proved nonlinear and refused
+by the evidence. A noncentral matrix scalar is also proved nonlinear: Mathlib's
+`ModuleCat.smul` lands in endomorphisms of the underlying additive group, which
+does not supply unrestricted module-linearity over a noncommutative ring.
+This is a mathematical evidence-interface repair from independent source
+theorems; no kernel, leaf, acceptance assertion, or computational outcome was
+used to select its statements.

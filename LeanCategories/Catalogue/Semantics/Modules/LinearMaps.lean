@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Catalogue.Semantics.Modules.CatalogueRegistration
 public import LeanCategories.Catalogue.Semantics.Algebra.AdditiveOperations
+public import LeanCategories.Catalogue.Semantics.Modules.CoordinateLinearity
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.Module
@@ -32,6 +33,19 @@ Sources: `Mathlib/Algebra/Module/LinearMap/Defs.lean` and
 and Formalization Corpus searches are recorded in FOUNDATIONS Definition 13.1.
 The ring may be noncommutative. In particular, an arbitrary scalar action is
 not declared to be a module endomorphism without the same linearity laws.
+
+Coordinate closure uses the existing `LinearMap.pi`, `prod`, `vecCons`, and
+`vecEmpty` through `CoordinateLinearity.lean`. Its evidence is uniform in
+index types and finite dimensions, and proves each coordinate's complete laws.
+The existing whole `ModuleCat.Hom` functions, their compositions, and the actual
+`ModuleCat.smul` action are read at their selected module structures. The last
+is an additive-group endomorphism in general; its module-linearity is still
+proved, never inferred merely from its being bundled as an additive map.
+The evidence first uses the retained bundled presentation. When necessary it
+also reads catalogue wrappers by the existing definitional `Units.readCatalogue`
+procedure and proves the same laws in that presentation. `LinearMap.isLinear`
+consumes an actual bundled linear map. No wrapper changes the underlying
+function, scalar ring, or selected domain and codomain modules.
 -/
 
 open CategoryTheory
@@ -91,16 +105,37 @@ meta partial def linearIdentity : TacticM Unit :=
 
 open Lean Elab Tactic in
 /-- Prove the full addition and scalar preservation laws, never a finite sample. -/
-meta def linearEvidence : TacticM Unit :=
+meta partial def linearEvidence : TacticM Unit :=
   CasCatalogue.Evidence.establish "Linearity" do
     CasCatalogue.Algebra.Units.normalizeBundledObjects
-    CasCatalogue.Evidence.closeByFirst m!"the complete linearity laws are not established"
-      [do evalTactic (← `(tactic| exact IsLinearMap.isLinearMap_smul _)),
+    let prove : TacticM Unit :=
+      CasCatalogue.Evidence.closeByFirst m!"the complete linearity laws are not established"
+      [do evalTactic (← `(tactic| exact LinearMap.isLinear _)),
+       do evalTactic (← `(tactic| exact IsLinearMap.isLinearMap_smul _)),
+       do evalTactic (← `(tactic| exact CoordinateLinearity.vecEmpty)),
+       do
+         evalTactic (← `(tactic| apply CoordinateLinearity.vecCons))
+         for goal in ← getGoals do
+           setGoals [goal]
+           linearEvidence,
+       do
+         evalTactic (← `(tactic| apply CoordinateLinearity.prod))
+         for goal in ← getGoals do
+           setGoals [goal]
+           linearEvidence,
+       do
+         evalTactic (← `(tactic| apply CoordinateLinearity.pi))
+         evalTactic (← `(tactic| intro i))
+         linearEvidence,
        do
          evalTactic (← `(tactic| constructor <;> intros))
          for goal in ← getGoals do
            setGoals [goal]
            linearIdentity]
+    CasCatalogue.Evidence.closeByFirst m!"the complete linearity laws are not established"
+      [prove, do
+        CasCatalogue.Algebra.Units.readCatalogue
+        prove]
 
 end CasCatalogue.Modules.LinearMaps
 
