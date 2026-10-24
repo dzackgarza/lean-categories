@@ -89,6 +89,14 @@ noncomputable def naturalSumMap {α α' β β' : Ordinal.{u}}
     (LeanCategories.ForMathlib.OrdinalNatural.naturalSum_mono
       (CategoryTheory.leOfHom f) (CategoryTheory.leOfHom g))
 
+/-- Hessenberg sum is functorial jointly in its two ordinal arguments. -/
+noncomputable def naturalSumFunctor :
+    (ordinalsCategory.{u} × ordinalsCategory.{u}) ⥤ ordinalsCategory.{u} :=
+  { obj := fun p => naturalSum p.1 p.2
+    map := fun f => naturalSumMap f.1 f.2
+    map_id := by intros; rfl
+    map_comp := by intros; rfl }
+
 end Foundation.Ordinals
 
 normalized_registry .category
