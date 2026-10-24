@@ -81,6 +81,22 @@ theorem setsDiagramColimitDesc_fac {J : Type v} [Category.{w} J]
     (setsDiagramColimit F).cocone.ι.app j ≫ setsDiagramColimitDesc F c = c.ι.app j :=
   (setsDiagramColimit F).isColimit.fac c j
 
+/-- The selected limit mediator is uniquely determined by its projection equations. -/
+theorem setsDiagramLimitLift_unique {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) (c : Cone F)
+    (f : c.pt ⟶ (setsDiagramLimit F).cone.pt)
+    (hf : ∀ j, f ≫ (setsDiagramLimit F).cone.π.app j = c.π.app j) :
+    f = setsDiagramLimitLift F c :=
+  (setsDiagramLimit F).isLimit.uniq c f hf
+
+/-- The selected colimit mediator is uniquely determined by its injection equations. -/
+theorem setsDiagramColimitDesc_unique {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) (c : Cocone F)
+    (f : (setsDiagramColimit F).cocone.pt ⟶ c.pt)
+    (hf : ∀ j, (setsDiagramColimit F).cocone.ι.app j ≫ f = c.ι.app j) :
+    f = setsDiagramColimitDesc F c :=
+  (setsDiagramColimit F).isColimit.uniq c f hf
+
 /-- Two representatives in a filtered set colimit agree exactly when they agree after
 transport to a common later object. This is stronger than mere existence of the colimit. -/
 theorem setsFilteredColimit_eq_iff {J : Type v} [Category.{w} J]
