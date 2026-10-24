@@ -50,6 +50,14 @@ noncomputable def directImage : SetsCat.{0} ⥤ SetsCat.{0} := by
 /-- `𝒫_fin(X) ↪ 𝒫(X)`. -/
 def inclusion (X : Type) : finiteSubsets X ⟶ powerSet X := TypeCat.ofHom fun A => (A : Set X)
 
+/-- Direct image of a finite subset agrees with direct image of its extent. -/
+theorem inclusion_natural {X Y : SetsCat.{0}} (f : X ⟶ Y) :
+    directImage.map f ≫ inclusion Y =
+      inclusion X ≫ TypeCat.ofHom (fun A : Set X => f '' A) := by
+  classical
+  ext A y
+  simp [directImage, inclusion, Finset.mem_image]
+
 /-- Admit the actual finite subset, keeping its extent rather than replacing it by
 an independently chosen list. Mathlib's `Set.Finite.toFinset` is inverse to coercion. -/
 noncomputable def admit (X : Type) (A : Set X) (h : A.Finite) :
