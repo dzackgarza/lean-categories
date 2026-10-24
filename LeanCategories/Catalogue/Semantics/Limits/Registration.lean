@@ -59,6 +59,28 @@ noncomputable def setsDiagramColimit {J : Type v} [Category.{w} J]
     (F : J ⥤ Type (max v u)) : ColimitCocone F :=
   ⟨Types.TypeMax.colimitCocone F, Types.TypeMax.colimitCoconeIsColimit F⟩
 
+/-- The selected universal mediator from a cone into the actual set-diagram limit. -/
+noncomputable def setsDiagramLimitLift {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) (c : Cone F) :
+    c.pt ⟶ (setsDiagramLimit F).cone.pt :=
+  (setsDiagramLimit F).isLimit.lift c
+
+/-- The selected universal mediator from the actual set-diagram colimit into a cocone. -/
+noncomputable def setsDiagramColimitDesc {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) (c : Cocone F) :
+    (setsDiagramColimit F).cocone.pt ⟶ c.pt :=
+  (setsDiagramColimit F).isColimit.desc c
+
+theorem setsDiagramLimitLift_fac {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) (c : Cone F) (j : J) :
+    setsDiagramLimitLift F c ≫ (setsDiagramLimit F).cone.π.app j = c.π.app j :=
+  (setsDiagramLimit F).isLimit.fac c j
+
+theorem setsDiagramColimitDesc_fac {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) (c : Cocone F) (j : J) :
+    (setsDiagramColimit F).cocone.ι.app j ≫ setsDiagramColimitDesc F c = c.ι.app j :=
+  (setsDiagramColimit F).isColimit.fac c j
+
 /-- Two representatives in a filtered set colimit agree exactly when they agree after
 transport to a common later object. This is stronger than mere existence of the colimit. -/
 theorem setsFilteredColimit_eq_iff {J : Type v} [Category.{w} J]
