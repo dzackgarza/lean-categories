@@ -473,4 +473,15 @@ theorem naturalSumList_eq_zero_iff (as : List Ordinal.{u}) :
     simp only [naturalSumList, naturalSum_eq_zero_iff, ih,
       List.mem_cons, forall_eq_or_imp]
 
+/-- A finite natural product is positive precisely when all factors are positive;
+the empty product is positive. -/
+theorem naturalProductList_pos_iff (as : List Ordinal.{u}) :
+    0 < naturalProductList as ↔ ∀ a ∈ as, 0 < a := by
+  induction as with
+  | nil => simp [naturalProductList]
+  | cons a as ih =>
+    simp only [naturalProductList, List.mem_cons, forall_eq_or_imp]
+    rw [← ih]
+    simp only [pos_iff_ne_zero, ne_eq, naturalProduct_eq_zero_iff, not_or]
+
 end LeanCategories.ForMathlib.OrdinalNatural
