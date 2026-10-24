@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Catalogue.Semantics.Foundation.PowerSets
 public import LeanCategories.Catalogue.Semantics.Algebra.Ports
+public import LeanCategories.Catalogue.Semantics.Algebra.MonoidOperations
 public import Mathlib.Algebra.Category.Grp.Adjunctions
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.LinearAlgebra.Matrix.Notation
