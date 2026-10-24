@@ -2331,9 +2331,10 @@ def validateInclusion (state : SemanticState) (e : InclusionEntry) : MetaM Unit 
         (← withTransparency .all <| isDefEq monoType.appArg! (mkAppN declaration args)) do
       throwError "inclusion {e.id.raw}: {e.mono} does not prove its actual arrow monic"
 
-/-- An operation row's `declaration : ∀ X, P ⟶ A` is, at each object `X` of its category, a
-morphism of `Sets` into the set `A` underlying `X`, from `A × A` (arity 2), `A` (arity 1) or a
-terminal set (arity 0); its name is unique among the category's operations. -/
+/-- Validate the registered owner, unique nonempty surface name, supported arity, optional
+result registration, object indexing and morphism-family shape of an operation row.
+The declaration supplies its actual fixed operand product, which may be heterogeneous
+(for example `R × M` for scalar action); arity does not assert a power of one carrier. -/
 def validateOperation (state : SemanticState) (e : OperationEntry) : MetaM Unit := do
   let some category := state.categories.find? (·.id == e.category)
     | throwError "operation {e.id.raw} names an unregistered category {e.category.raw}"

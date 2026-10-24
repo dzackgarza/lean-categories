@@ -448,7 +448,7 @@ normalized_registry .classifier
     realization := `CasCatalogue.Modules.CatalogueRegistration.finiteRankRealization}
 
 normalized_registry .category
-  { id := CategoryId.modulesR,
+  { id := CategoryId.modulesR, name := "Modules"
     declaration := `LeanCategories.Modules.Mathlib.ModulesOf
     expression := Modules.Modules
     realization := `CasCatalogue.Modules.CatalogueRegistration.modulesRealization}

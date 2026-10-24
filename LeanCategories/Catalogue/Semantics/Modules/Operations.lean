@@ -84,6 +84,41 @@ theorem zero_natural (R : RingCat.{u}) (M N : ModuleCat.{u} R) (f : M ⟶ N)
       ConcreteCategory.hom (C := Type u) (zero R N) p :=
   map_zero f.hom
 
+/-- The selected module's actual scalar action, uncurried as a map of sets.
+The operands are the chosen ring and module. This operation is scoped to a common
+universe; `Modules.Mathlib.ModulesOf.{u, w}` retains independent universes.
+
+Source: `ModuleCat.smul`, `ModuleCat.smul_naturality` and
+`ModuleCat.smul_restrictScalars` in Mathlib's `Algebra/Category/ModuleCat/{Basic,
+ChangeOfRings}.lean`, pinned at `db584cd6d46c92f209a44c0f1c829460d327499d`
+(Apache-2.0). FOUNDATIONS Definition 13.1 records the source comparison and
+Formalization Corpus searches. -/
+def scalarAction (R : RingCat.{u}) (M : ModuleCat.{u} R) :
+    (R × M : LeanCategories.Foundation.Mathlib.Sets.{u}) ⟶
+      (M : LeanCategories.Foundation.Mathlib.Sets.{u}) :=
+  TypeCat.ofHom fun p => (M.smul p.1).hom p.2
+
+/-- Evaluation of the exposed operation is the selected module's scalar action. -/
+@[simp] theorem scalarAction_apply (R : RingCat.{u}) (M : ModuleCat.{u} R)
+    (r : R) (m : M) :
+    ConcreteCategory.hom (C := Type u) (scalarAction R M) (r, m) =
+      (M.smul r).hom m := rfl
+
+/-- Linear maps preserve the selected action, as in `ModuleCat.smul_naturality`. -/
+theorem scalarAction_natural (R : RingCat.{u}) (M N : ModuleCat.{u} R)
+    (f : M ⟶ N) (r : R) (m : M) :
+    f.hom (ConcreteCategory.hom (C := Type u) (scalarAction R M) (r, m)) =
+      ConcreteCategory.hom (C := Type u) (scalarAction R N) (r, f.hom m) :=
+  (ConcreteCategory.congr_hom (ModuleCat.smul_naturality f r) m).symm
+
+/-- Reindexing uses the chosen scalar homomorphism and the original module action. -/
+theorem scalarAction_reindex {R S : RingCat.{u}} (φ : R ⟶ S)
+    (N : ModuleCat.{u} S) (r : R) (n : N) :
+    ConcreteCategory.hom (C := Type u)
+        (scalarAction R ((LeanCategories.Modules.ModulesOverRings.reindex φ).obj N)) (r, n) =
+      ConcreteCategory.hom (C := Type u) (scalarAction S N) (φ.hom r, n) :=
+  ConcreteCategory.congr_hom (ModuleCat.smul_restrictScalars φ.hom r N) n
+
 def Ideals : CategoryExpr := .atom CategoryId.ideals
 def AnnihilatorExpr : FunctorExpr CoreModules Ideals := .atomic FunctorId.modulesAnnihilator
 def ImageExpr : FunctorExpr ArrowsModules SubobjectsModules :=
@@ -526,5 +561,9 @@ normalized_registry .morphism
 normalized_registry .operation
   { id := ⟨"op.modules.zero"⟩, category := CategoryId.modulesR, name := "0", arity := 0
     declaration := `CasCatalogue.Modules.Operations.zero }
+
+normalized_registry .operation
+  { id := ⟨"op.modules.scalar_action"⟩, category := CategoryId.modulesR, name := "•", arity := 2
+    declaration := `CasCatalogue.Modules.Operations.scalarAction }
 
 end CasCatalogue

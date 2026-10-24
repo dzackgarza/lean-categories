@@ -847,6 +847,39 @@ opposite-ring involution alone; such a functor requires a chosen anti-homomorphi
 equivalence a chosen anti-isomorphism (Proposition 91.1). The commutative case above is the
 canonical special instance (Corollary 91.2).
 
+The selected scalar action of an object \(M\in R\text{-}\mathbf{Mod}\) is the map
+\[
+a_M:U(R)\times U(M)\longrightarrow U(M),\qquad (r,m)\longmapsto r\cdot m.
+\]
+Here \(U\) denotes the underlying set of the selected ring or module. For an
+\(R\)-linear map \(f:M\to N\), the defining linearity law gives
+\(f(a_M(r,m))=a_N(r,f(m))\). For a ring homomorphism \(\varphi:R\to S\)
+and an \(S\)-module \(N\), restriction of scalars gives
+\(a_{\varphi^*N}(r,n)=a_N(\varphi(r),n)\). These statements use the actual
+chosen module structure and chosen ring homomorphism.
+
+**Lean realization and sources.** The existing `ModuleCat.smul` is the ring
+homomorphism from the scalars to endomorphisms of the module's additive group;
+`ModuleCat.smul_naturality` is its compatibility with linear maps, and
+`ModuleCat.smul_restrictScalars` is its restriction-of-scalars law. Their actual
+declarations were inspected in the pinned Mathlib revision
+`db584cd6d46c92f209a44c0f1c829460d327499d` (Apache-2.0), in
+[`Mathlib/Algebra/Category/ModuleCat/Basic.lean`](https://github.com/leanprover-community/mathlib4/blob/db584cd6d46c92f209a44c0f1c829460d327499d/Mathlib/Algebra/Category/ModuleCat/Basic.lean)
+and
+[`Mathlib/Algebra/Category/ModuleCat/ChangeOfRings.lean`](https://github.com/leanprover-community/mathlib4/blob/db584cd6d46c92f209a44c0f1c829460d327499d/Mathlib/Algebra/Category/ModuleCat/ChangeOfRings.lean).
+Formalization Corpus searches on 2026-10-24 used `ModuleCat smul`, `ModuleCat.smul`,
+`restrictScalars smul`, and `map_smul ModuleCat`, excluding downstream
+`lean-cas-dsl*` repositories, then refined to the two Mathlib files and these
+lemma names. The catalogue's `CasCatalogue.Modules.Operations.scalarAction`
+uncurries `ModuleCat.smul` as `(r, m) ↦ (M.smul r).hom m`; its apply,
+naturality and reindexing laws expose these existing declarations.
+The row `op.modules.scalar_action` is owned by `cat.modules_r`, with surface
+name `•` and arity two. Its source is the heterogeneous product \(U(R)\times U(M)\).
+This selected operation is explicitly scoped to `R : RingCat.{u}` and
+`M : ModuleCat.{u} R`, so both operands and the result lie in `Sets.{u}`.
+The category named `Modules` still realizes `ModulesOf.{u,w}` with independent
+ring and module universes; this common-universe operation does not restrict that family.
+
 ### Definition 13.2 (The total family of modules) {#def-total-module-family}
 
 Let \(\mathbf{Ring}^{\simeq}\) be the core of the category of rings. Extension of scalars along ring isomorphisms gives a functor

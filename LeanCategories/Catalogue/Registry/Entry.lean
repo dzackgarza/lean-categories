@@ -322,11 +322,13 @@ structure InclusionEntry where
   mono : Lean.Name
   deriving Repr
 
-/-- An element operation of a registered category `C` whose objects refine sets: `declaration :
-∀ X, (U X)^arity ⟶ U X` in `Sets`, natural in `X`, where `U X` is the set `X` refines and the power
-is Lean's product (`U X × U X` for arity 2, `U X` for arity 1, the terminal set for arity 0). Its
-surface name is the language's operator (`+`, `·`, `-`). For rings: addition, multiplication and
-negation of elements. -/
+/-- An element operation of a registered category `C` whose objects refine sets:
+`declaration : ∀ params X, P X ⟶ A X` in `Sets`, natural in `X`, where `P X` is the
+operation's actual fixed operand product. A binary source may be `U X × U X`, or a
+heterogeneous product such as `R × U X` for scalar action on an `R`-module. A unary source
+has one operand; a nullary source is terminal. Unless `result` selects another object,
+`A X` is the underlying set `U X`. The checked declaration retains each operand's selected
+parameters and structure. Its surface name is the language's operator (`+`, `·`, `-`, `•`). -/
 structure OperationEntry where
   id : OperationId
   category : CategoryId
