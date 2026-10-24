@@ -92,6 +92,18 @@ theorem naturalSum_zero (a : Ordinal.{u}) : naturalSum a 0 = a := by
 termination_by a
 decreasing_by exact x.property
 
+/-- Zero is also the left identity for Hessenberg sum. -/
+theorem naturalSum_zero_left (a : Ordinal.{u}) : naturalSum 0 a = a := by
+  rw [naturalSum_comm, naturalSum_zero]
+
+theorem naturalSum_lt_of_lt_of_le {a a' b b' : Ordinal.{u}}
+    (ha : a < a') (hb : b ≤ b') : naturalSum a b < naturalSum a' b' :=
+  (naturalSum_lt_left ha).trans_le (naturalSum_mono_right hb)
+
+theorem naturalSum_lt_of_le_of_lt {a a' b b' : Ordinal.{u}}
+    (ha : a ≤ a') (hb : b < b') : naturalSum a b < naturalSum a' b' :=
+  (naturalSum_mono_left ha).trans_lt (naturalSum_lt_right hb)
+
 /-- Hessenberg natural product: the least ordinal `c` for which every simultaneous decrease
 of `a` and `b` satisfies `(a' ⊗ b) ⊕ (a ⊗ b') < c ⊕ (a' ⊗ b')`, with the products on the
 left interpreted recursively. This is the recursive source definition, with `⊕` explicitly
