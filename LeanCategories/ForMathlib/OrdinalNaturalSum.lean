@@ -268,6 +268,52 @@ theorem naturalSum_assoc_natCast_middle (a : Ordinal.{u}) (n : ℕ) (c : Ordinal
     _ = naturalSum a (naturalSum (n : Ordinal.{u}) c) := by
       rw [naturalSum_natCast_left, naturalSum_add_nat]
 
+/-- One direction of associativity, proved by induction on the three ordinal operands.
+The recursive definition makes each operand-decrease term cofinal below the corresponding sum,
+including at limit ordinals. -/
+theorem naturalSum_assoc_le (a b c : Ordinal.{u}) :
+    naturalSum (naturalSum a b) c ≤ naturalSum a (naturalSum b c) := by
+  rw [naturalSum_def]
+  apply max_le
+  · apply Ordinal.iSup_le
+    intro x
+    have hx : x.1 < naturalSum a b := x.2
+    rw [naturalSum_def] at hx
+    rcases lt_max_iff.mp hx with hx | hx
+    · obtain ⟨a', ha', hx'⟩ := Ordinal.lt_iSup_iff.mp hx
+      have hx' : x.1 ≤ naturalSum a' b := Order.lt_succ_iff.mp hx'
+      have hle : naturalSum x.1 c ≤ naturalSum (naturalSum a' b) c :=
+        naturalSum_mono_left hx'
+      have hrec := naturalSum_assoc_le a' b c
+      rw [hrec] at hle
+      exact succ_le_iff.mpr (hle.trans_lt (naturalSum_lt_left ha'))
+    · obtain ⟨b', hb', hx'⟩ := Ordinal.lt_iSup_iff.mp hx
+      have hx' : x.1 ≤ naturalSum a b' := Order.lt_succ_iff.mp hx'
+      have hle : naturalSum x.1 c ≤ naturalSum (naturalSum a b') c :=
+        naturalSum_mono_left hx'
+      have hrec := naturalSum_assoc_le a b' c
+      rw [hrec] at hle
+      exact succ_le_iff.mpr (hle.trans_lt (naturalSum_lt_right (b := b') (b' := b) hb'))
+  · apply Ordinal.iSup_le
+    intro z
+    have hrec := naturalSum_assoc_le a b z.1
+    rw [hrec]
+    exact succ_le_iff.mpr (naturalSum_lt_right (a := naturalSum a (naturalSum b z.1)) z.2)
+termination_by (a, b, c)
+decreasing_by all_goals simp_wf
+
+/-- Hessenberg natural sum is associative. -/
+theorem naturalSum_assoc (a b c : Ordinal.{u}) :
+    naturalSum (naturalSum a b) c = naturalSum a (naturalSum b c) := by
+  apply le_antisymm
+  · exact naturalSum_assoc_le a b c
+  · calc
+      naturalSum a (naturalSum b c) = naturalSum (naturalSum c b) a := by
+        rw [naturalSum_comm b c, naturalSum_comm a (naturalSum c b)]
+      _ ≤ naturalSum c (naturalSum b a) := naturalSum_assoc_le c b a
+      _ = naturalSum (naturalSum a b) c := by
+        rw [naturalSum_comm b a, naturalSum_comm c (naturalSum a b)]
+
 /-- Hessenberg natural product: the least ordinal `c` for which every simultaneous decrease
 of `a` and `b` satisfies `(a' ⊗ b) ⊕ (a ⊗ b') < c ⊕ (a' ⊗ b')`, with the products on the
 left interpreted recursively. This is the recursive source definition, with `⊕` explicitly
