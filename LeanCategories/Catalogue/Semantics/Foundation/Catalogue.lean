@@ -9,6 +9,8 @@ namespace CasCatalogue
 
 namespace CategoryId
 def sets : CategoryId := ⟨"cat.sets"⟩
+def countableSets : CategoryId := ⟨"cat.countable_sets"⟩
+def enumeratedSets : CategoryId := ⟨"cat.enumerated_sets"⟩
 end CategoryId
 
 namespace ClassifierId

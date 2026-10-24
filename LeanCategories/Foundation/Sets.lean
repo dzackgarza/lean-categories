@@ -83,14 +83,20 @@ def enumeratedToCountable : EnumeratedSetCat.{u} ⥤ CountableSetCat.{u} :=
     change Countable X.carrier
     exact @Encodable.countable X.carrier X.enumeration
 
+/-- The category of countable sets and all functions, bundled for the semantic catalogue. -/
+abbrev CountableSets : ObjCat.{u + 1, u} := Cat.of CountableSetCat.{u}
+
+/-- The category of sets with a selected partial-inverse enumeration. -/
+abbrev EnumeratedSets : ObjCat.{u + 1, u} := Cat.of EnumeratedSetCat.{u}
+
 /-- Countability as a property classifier on sets: its total has all functions as morphisms. -/
 def countableSets : Classifier Mathlib.Sets.{u} where
-  total := Cat.of CountableSetCat.{u}
+  total := CountableSets
   forget := CountableSetCat.incl.toCatHom
 
 /-- A chosen partial-inverse enumeration as a structure classifier on sets. -/
 def enumeratedSets : Classifier Mathlib.Sets.{u} where
-  total := Cat.of EnumeratedSetCat.{u}
+  total := EnumeratedSets
   forget := EnumeratedSetCat.forget.toCatHom
 
 end LeanCategories.Foundation

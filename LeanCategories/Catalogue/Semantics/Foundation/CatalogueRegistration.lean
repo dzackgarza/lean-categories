@@ -47,6 +47,12 @@ noncomputable def enumeratedRealization :
       Foundation.Mathlib.Sets Foundation.enumeratedSets :=
   { hostRealization := setsRealization, totalRealization := {} }
 
+def countableSetsCategoryRealization :
+    CategoryRealization Foundation.CountableSets LeanCategories.Foundation.CountableSets.{u} := {}
+
+def enumeratedSetsCategoryRealization :
+    CategoryRealization Foundation.EnumeratedSets LeanCategories.Foundation.EnumeratedSets.{u} := {}
+
 noncomputable def finiteToCountableRealization :
     FunctorRealization Foundation.FiniteToCountableExpr
       Foundation.Mathlib.FiniteSets Foundation.countableSets.total
@@ -107,6 +113,19 @@ normalized_registry .classifier
     declaration := `LeanCategories.Foundation.enumeratedSets
     host := Foundation.Sets
     realization := `CasCatalogue.Foundation.CatalogueRegistration.enumeratedRealization}
+
+normalized_registry .category
+  { id := CategoryId.countableSets, name := "CountableSets"
+    declaration := `LeanCategories.Foundation.CountableSets
+    expression := Foundation.CountableSets
+    realization := `CasCatalogue.Foundation.CatalogueRegistration.countableSetsCategoryRealization }
+
+normalized_registry .category
+  { id := CategoryId.enumeratedSets, name := "EnumeratedSets"
+    declaration := `LeanCategories.Foundation.EnumeratedSets
+    expression := Foundation.EnumeratedSets
+    realization :=
+      `CasCatalogue.Foundation.CatalogueRegistration.enumeratedSetsCategoryRealization }
 
 normalized_registry .functor
   { id := FunctorId.setsIdentity
