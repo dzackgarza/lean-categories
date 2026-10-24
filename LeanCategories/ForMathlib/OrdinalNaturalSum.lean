@@ -523,6 +523,17 @@ theorem naturalSumList_append_comm (as bs : List Ordinal.{u}) :
     naturalSumList (as ++ bs) = naturalSumList (bs ++ as) := by
   rw [naturalSumList_append, naturalSumList_append, naturalSum_comm]
 
+/-- Finite Hessenberg sums are invariant under every permutation of their summands. -/
+theorem naturalSumList_perm {as bs : List Ordinal.{u}} (h : as.Perm bs) :
+    naturalSumList as = naturalSumList bs := by
+  induction h with
+  | nil => rfl
+  | cons a _ ih => simp only [naturalSumList]; rw [ih]
+  | @swap a b tail =>
+      simp only [naturalSumList]
+      rw [naturalSum_assoc, naturalSum_comm a b, ← naturalSum_assoc]
+  | trans _ _ ih₁ ih₂ => exact ih₁.trans ih₂
+
 theorem naturalProductList_pair (a b : Ordinal.{u}) :
     naturalProductList [a, b] = naturalProduct a b := by
   simp [naturalProductList, naturalProduct_one]
