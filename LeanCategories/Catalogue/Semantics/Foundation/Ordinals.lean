@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Catalogue.Semantics.Foundation.Cardinality
+public import LeanCategories.ForMathlib.OrdinalNaturalSum
 public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.SetTheory.Ordinal.Arithmetic
 public import Mathlib.SetTheory.Ordinal.Exponential
@@ -71,6 +72,19 @@ def ordinalProduct (α β : Ordinal.{u}) : ordinalsCategory.{u} := α * β
 /-- Ordinary ordinal exponentiation. -/
 noncomputable def ordinalPower (α β : Ordinal.{u}) : ordinalsCategory.{u} := α ^ β
 
+/-- Hessenberg natural sum, distinct from the ordinary `ordinal_sum`. -/
+noncomputable def naturalSum (α β : Ordinal.{u}) : ordinalsCategory.{u} :=
+  LeanCategories.ForMathlib.OrdinalNatural.naturalSum α β
+
+/-- Natural sum carries a pair of ordinal comparisons to a comparison of their sums. -/
+noncomputable def naturalSumMap {α α' β β' : Ordinal.{u}}
+    (f : α ⟶ α') (g : β ⟶ β') : naturalSum α β ⟶ naturalSum α' β' := by
+  change LeanCategories.ForMathlib.OrdinalNatural.naturalSum α β ⟶
+    LeanCategories.ForMathlib.OrdinalNatural.naturalSum α' β'
+  exact CategoryTheory.homOfLE
+    (LeanCategories.ForMathlib.OrdinalNatural.naturalSum_mono
+      (CategoryTheory.leOfHom f) (CategoryTheory.leOfHom g))
+
 end Foundation.Ordinals
 
 normalized_registry .category
@@ -93,5 +107,12 @@ normalized_registry .object
 normalized_registry .object
   { id := ⟨"obj.ordinals.power"⟩, category := CategoryId.ordinals, name := "ordinal_power"
     declaration := `CasCatalogue.Foundation.Ordinals.ordinalPower }
+normalized_registry .object
+  { id := ⟨"obj.ordinals.natural_sum"⟩, category := CategoryId.ordinals, name := "natural_sum"
+    declaration := `CasCatalogue.Foundation.Ordinals.naturalSum }
+normalized_registry .morphism
+  { id := ⟨"mor.ordinals.natural_sum_map"⟩, category := CategoryId.ordinals
+    name := "natural_sum_map"
+    declaration := `CasCatalogue.Foundation.Ordinals.naturalSumMap }
 
 end CasCatalogue
