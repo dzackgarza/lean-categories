@@ -79,6 +79,35 @@ theorem naturalSum_mono {a a' b b' : Ordinal.{u}} (ha : a ≤ a') (hb : b ≤ b'
     naturalSum a b ≤ naturalSum a' b' :=
   (naturalSum_mono_left ha).trans (naturalSum_mono_right hb)
 
+/-- Translation by a fixed ordinal reflects strict order under Hessenberg sum. -/
+theorem naturalSum_lt_iff_left {a a' b : Ordinal.{u}} :
+    naturalSum a b < naturalSum a' b ↔ a < a' := by
+  constructor
+  · intro h
+    by_contra hn
+    exact (naturalSum_mono_left (le_of_not_gt hn)).not_gt h
+  · exact naturalSum_lt_left
+
+theorem naturalSum_lt_iff_right {a b b' : Ordinal.{u}} :
+    naturalSum a b < naturalSum a b' ↔ b < b' := by
+  constructor
+  · intro h
+    by_contra hn
+    exact (naturalSum_mono_right (le_of_not_gt hn)).not_gt h
+  · exact naturalSum_lt_right
+
+theorem naturalSum_cancel_right {a a' b : Ordinal.{u}}
+    (h : naturalSum a b = naturalSum a' b) : a = a' := by
+  rcases lt_trichotomy a a' with hlt | heq | hgt
+  · exact False.elim ((naturalSum_lt_left hlt).ne h)
+  · exact heq
+  · exact False.elim ((naturalSum_lt_left hgt).ne h.symm)
+
+theorem naturalSum_cancel_left {a b b' : Ordinal.{u}}
+    (h : naturalSum a b = naturalSum a b') : b = b' := by
+  apply naturalSum_cancel_right
+  simpa only [naturalSum_comm a b, naturalSum_comm a b'] using h
+
 theorem naturalSum_zero (a : Ordinal.{u}) : naturalSum a 0 = a := by
   rw [naturalSum_def]
   rw [ciSup_of_empty (fun _ : Set.Iio 0 => _), max_bot_right]
