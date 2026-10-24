@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Catalogue.Semantics.Algebra.Automorphisms
 public import LeanCategories.Catalogue.Semantics.Algebra.FiniteGroups
+public import LeanCategories.Catalogue.Semantics.Algebra.GroupMaps
 public import Mathlib.Data.ZMod.QuotientGroup
 public import Mathlib.Data.ZMod.Aut
 public import Mathlib.GroupTheory.OrderOfElement

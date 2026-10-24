@@ -59,6 +59,7 @@ public import LeanCategories.Catalogue.Semantics.Algebra.Polynomials
 public import LeanCategories.Catalogue.Semantics.Algebra.Differentials
 public import LeanCategories.Catalogue.Semantics.Algebra.Units
 public import LeanCategories.Catalogue.Semantics.Algebra.MonoidOperations
+public import LeanCategories.Catalogue.Semantics.Algebra.GroupMaps
 public import LeanCategories.Catalogue.Semantics.Algebra.LinearAlgebra
 public import LeanCategories.Catalogue.Semantics.Foundation.FiniteSubsets
 public import LeanCategories.Catalogue.Semantics.Foundation.Maps

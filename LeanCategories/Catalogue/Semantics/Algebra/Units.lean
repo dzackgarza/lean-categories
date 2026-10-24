@@ -157,8 +157,8 @@ retain the selected ring's instance even after its displayed type has become the
 meta def normalizeBundledObjects : TacticM Unit := do
   let goal ← getMainGoal
   let target ← instantiateMVars (← goal.getType)
-  let objects := [``MonCat, ``CommMonCat, ``SemiRingCat, ``RingCat, ``CommSemiRingCat,
-    ``CommRingCat]
+  let objects := [``MonCat, ``CommMonCat, ``GrpCat, ``CommGrpCat, ``AddGrpCat,
+    ``AddCommGrpCat, ``SemiRingCat, ``RingCat, ``CommSemiRingCat, ``CommRingCat]
   let wrappers := [``RingCat.instRingObjForgetRingHomCarrier,
     ``SemiRingCat.instSemiringObjForgetRingHomCarrier,
     ``CommRingCat.instCommRingObjForgetRingHomCarrier,

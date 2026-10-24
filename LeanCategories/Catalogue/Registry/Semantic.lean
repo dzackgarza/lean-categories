@@ -133,7 +133,8 @@ def SemanticEntry.declarations : SemanticEntry → Array Name
   | .operation e => #[e.declaration]
   | .inclusion e => #[e.declaration, e.mono]
   | .powerObject e =>
-      #[e.truth, e.point, e.member, e.transpose, e.extent, e.empty, e.singleton, e.terminal, e.image]
+      #[e.truth, e.point, e.member, e.transpose, e.extent, e.empty, e.singleton, e.terminal, e.image] ++
+        e.directImage.toArray
   | .subsetLiteral e => #[e.type, e.denotation] ++ e.evaluation.toArray
   | .binder e => #[e.operation, e.domain]
 
@@ -186,6 +187,18 @@ def SemanticState.category? (state : SemanticState) (expression : CategoryExpr) 
     Option NamedCategoryEntry :=
   let candidates := state.categories.filter fun entry => entry.expression.syntacticEq expression;
   (if candidates.size == 1 then candidates[0]? else none)
+
+/-- The explicit operator binding at this exact registered owner expression.
+The key is the surface name, independently of arity. This lookup neither forgets
+structure nor substitutes a category with an equal underlying carrier. The
+consumer retains the complete typed bundle and parameters of the selected owner. -/
+def SemanticState.operationBindings (state : SemanticState) (owner : CategoryExpr)
+    (surfaceName : String) : Array OperationEntry :=
+  match state.category? owner with
+  | none => #[]
+  | some category =>
+      state.operations.filter fun entry =>
+        entry.category == category.id && entry.name == surfaceName
 
 def SemanticState.classifier? (state : SemanticState) (id : ClassifierId) :
     Option ClassifierEntry :=
@@ -1638,6 +1651,23 @@ def SemanticState.routeEdges? (state : SemanticState) (source target : CategoryE
     current := edge.target
   if current.syntacticEq target then some out else none
 
+/-- A route to the first explicit binding of this operator name on its path.
+All steps must belong to the existing structural graph; their actual sources
+are reconstructed from that graph. A binding at any proper prefix ends lookup
+there, even when a farther row has a different arity or declaration ID.
+
+This predicate supplies no ordering among incomparable surviving routes. Their
+complete typed requests remain ambiguous unless accepted whole-operation
+comparisons identify them. Classifier forgetful and derived constructor edges
+obey precisely the same rule as registered structural functors. -/
+def SemanticState.isFirstOperationBindingRoute (state : SemanticState)
+    (surfaceName : String) (route : Route) : Bool :=
+  match state.routeEdges? route.source route.target route.refs with
+  | none => false
+  | some steps =>
+      !(state.operationBindings route.target surfaceName).isEmpty &&
+        steps.all fun edge => (state.operationBindings edge.source surfaceName).isEmpty
+
 /-- The Mathlib functor of a classifier's forgetful functor `total → host`. -/
 def classifierForgetInstance (entry : ClassifierEntry) : MetaM Expr := do
   let classifier ← mkConstWithFreshMVarLevels entry.declaration
@@ -2395,6 +2425,21 @@ def validatePowerObject (state : SemanticState) (e : PowerObjectEntry) : MetaM U
     throwError "power object {e.id.raw}: {e.terminal} does not land in the source of {e.truth}"
   unless ← withTransparency .all <| isDefEq (← result e.extent) (← categoryCarrierInstance sets) do
     throwError "power object {e.id.raw}: {e.extent} does not return an object of {sets.id.raw}"
+  if let some directImage := e.directImage then
+    -- Rigid X, Y and f prevent validation from specializing a family or
+    -- replacing its full power-object source by a global point.
+    let carrier ← categoryCarrierInstance sets
+    withLocalDeclD `X carrier fun X =>
+      withLocalDeclD `Y carrier fun Y => do
+        let maps ← mkAppM ``Quiver.Hom #[X, Y]
+        withLocalDeclD `f maps fun f => do
+          let actual ← applyObjectParameters e.id.raw directImage #[X, Y, f]
+          let source ← applyObjectParameters e.id.raw power.declaration #[X]
+          let target ← applyObjectParameters e.id.raw power.declaration #[Y]
+          let expected ← mkAppM ``Quiver.Hom #[source, target]
+          unless ← withTransparency .all <| isDefEq (← inferType actual) expected do
+            throwError "power object {e.id.raw}: {directImage} is not the full \
+              direct-image map from its power object at X to its power object at Y"
 
 /-- A subset-literal row names a registered power object, at most one literal form for it, and a
 `denotation : ∀ X [DecidableEq X], T X → (1 ⟶ 𝒫 X)` whose literal argument is of its `type`
@@ -2809,7 +2854,8 @@ def SemanticEntry.totalityDeclarations : SemanticEntry → Array Name
   | .graphLiteral e => #[e.denotation]
   | .literal e => #[e.denotation]
   | .powerObject e =>
-      #[e.truth, e.point, e.member, e.transpose, e.extent, e.empty, e.singleton, e.terminal, e.image]
+      #[e.truth, e.point, e.member, e.transpose, e.extent, e.empty, e.singleton, e.terminal, e.image] ++
+        e.directImage.toArray
   | .subsetLiteral e => #[e.denotation]
   | .binder e => #[e.operation, e.domain]
   | .constructor e => #[e.semantics] ++ e.functorialAction.toArray ++
