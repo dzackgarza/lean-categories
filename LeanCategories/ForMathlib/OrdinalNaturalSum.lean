@@ -383,4 +383,31 @@ theorem naturalProduct_mono {a a' b b' : Ordinal.{u}}
     naturalProduct a b ≤ naturalProduct a' b' :=
   (naturalProduct_mono_left ha).trans (naturalProduct_mono_right hb)
 
+/-- A positive factor makes natural multiplication an order embedding. -/
+theorem naturalProduct_lt_iff_left {a a' b : Ordinal.{u}} (hb : 0 < b) :
+    naturalProduct a b < naturalProduct a' b ↔ a < a' := by
+  constructor
+  · intro h
+    by_contra hn
+    exact (naturalProduct_mono_left (le_of_not_gt hn)).not_gt h
+  · exact fun h => naturalProduct_lt_left h hb
+
+theorem naturalProduct_lt_iff_right {a b b' : Ordinal.{u}} (ha : 0 < a) :
+    naturalProduct a b < naturalProduct a b' ↔ b < b' := by
+  simpa only [naturalProduct_comm a b, naturalProduct_comm a b'] using
+    (naturalProduct_lt_iff_left (a := b) (a' := b') ha)
+
+/-- Cancellation is valid with the positive-factor hypothesis. -/
+theorem naturalProduct_cancel_right {a a' b : Ordinal.{u}}
+    (hb : 0 < b) (h : naturalProduct a b = naturalProduct a' b) : a = a' := by
+  rcases lt_trichotomy a a' with hlt | heq | hgt
+  · exact False.elim ((naturalProduct_lt_left hlt hb).ne h)
+  · exact heq
+  · exact False.elim ((naturalProduct_lt_left hgt hb).ne h.symm)
+
+theorem naturalProduct_cancel_left {a b b' : Ordinal.{u}}
+    (ha : 0 < a) (h : naturalProduct a b = naturalProduct a b') : b = b' := by
+  apply naturalProduct_cancel_right ha
+  simpa only [naturalProduct_comm a b, naturalProduct_comm a b'] using h
+
 end LeanCategories.ForMathlib.OrdinalNatural
