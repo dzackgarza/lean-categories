@@ -1137,6 +1137,39 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
      published Lean toolchain; no downstream material informs these mathematical controls.
      The unchanged `EvidenceTests.lean` and `UnitInverseTests.lean` suites also compile
      with both this repair and the preceding Units presentation repair.
+
+     **Full polynomial-expression contract (2026-10-24, independent follow-up).** At
+     `796db9fc8ef18765a8f6770aeab24d08fcc58a3c`, separately chosen whole-polynomial
+     controls found four remaining refusals: `-(X+C(2))^3+X^3` over the integers,
+     `(X-C(3/2))(X+C(3/2))-X^2` over the rationals, `(C(2)X)^3+3` over `ZMod 8`,
+     and the image of `X^2+1` over `(ZMod 8)[X]` under the faithful polynomial
+     coefficient inclusion. The first three lie in the documented ring-expression
+     and cancellation cases. The fourth retains the documented injective-map
+     criterion; direct source checking establishes the selected map's injectivity
+     with the existing `FaithfulSMul.algebraMap_injective`.
+
+     Source-level diagnosis separates these from the earlier presentation repair.
+     `ring_nf` treats `C r` as a polynomial atom: its outputs retain powers of
+     constant polynomials, and a nilpotent coefficient can therefore remain hidden
+     from characteristic reduction. The degree procedure also leaves coefficient
+     expressions such as `(-8).coeff 2`, `(C (3/2)^2).coeff 0`, and `1 ≠ 0` over
+     a polynomial coefficient ring, which the current arithmetic closure does not
+     establish. Mathlib's existing `Tactic/Polynomial/Basic.lean` supplies
+     `polynomial_nf`, expressly normalizing `C` through the selected algebra map;
+     the existing degree and coefficient-map theorems remain the mathematical
+     criteria. No replacement nonvanishing condition is indicated.
+
+     The additive `PolynomialContractTests.lean` records the independently selected
+     positive obligations, zero equations and refusals, including two different
+     selected commutative-ring structures on the same residue-class carrier.
+     Its initial run is a failure record, not a successful verification claim;
+     the four evidence failures remain open at this checkpoint. Two auxiliary
+     zero-proof presentation corrections preserve their statements. Public corpus
+     searches used `map_ne_zero_iff`, `ne_zero_of_coe_le_degree`,
+     `algebraMap_injective`, `injective_int`, and `Equiv.commRing`, excluding
+     downstream repositories; the named owners were inspected in the assigned
+     pinned Mathlib source. Existing tests are unchanged. These checks use no
+     downstream source, expected answers, generated goals or computational results.
   3. **Closed facts about real numbers.** Nonzero-ness of a real element (units of `ℝ`, leading
      coefficients of real polynomials) is established by evaluation (`norm_num`) or by positivity.
      A nonzero value that is neither evaluable nor of known sign (`π - 3`, `exp 1 - e`-style
