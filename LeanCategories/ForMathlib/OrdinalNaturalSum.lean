@@ -351,4 +351,36 @@ theorem naturalProduct_eq_zero_iff (a b : Ordinal.{u}) :
     · exact naturalProduct_zero_left b
     · exact naturalProduct_zero a
 
+/-- Multiplication by a positive ordinal is strictly monotone in its first argument. -/
+theorem naturalProduct_lt_left {a a' b : Ordinal.{u}}
+    (ha : a < a') (hb : 0 < b) :
+    naturalProduct a b < naturalProduct a' b := by
+  have h := naturalProduct_constraint (a' := a) (b' := 0) ha hb
+  simpa [naturalProduct_zero, naturalSum_zero] using h
+
+/-- Multiplication by a positive ordinal is strictly monotone in its second argument. -/
+theorem naturalProduct_lt_right {a b b' : Ordinal.{u}}
+    (ha : 0 < a) (hb : b < b') :
+    naturalProduct a b < naturalProduct a b' := by
+  simpa only [naturalProduct_comm a b, naturalProduct_comm a b'] using
+    (naturalProduct_lt_left hb ha)
+
+theorem naturalProduct_mono_left {a a' b : Ordinal.{u}}
+    (ha : a ≤ a') : naturalProduct a b ≤ naturalProduct a' b := by
+  rcases eq_or_lt_of_le ha with rfl | h
+  · exact le_rfl
+  · rcases eq_or_lt_of_le (zero_le : (0 : Ordinal.{u}) ≤ b) with rfl | hb
+    · simp [naturalProduct_zero]
+    · exact (naturalProduct_lt_left h hb).le
+
+theorem naturalProduct_mono_right {a b b' : Ordinal.{u}}
+    (hb : b ≤ b') : naturalProduct a b ≤ naturalProduct a b' := by
+  simpa only [naturalProduct_comm a b, naturalProduct_comm a b'] using
+    (naturalProduct_mono_left (a := b) (a' := b') (b := a) hb)
+
+theorem naturalProduct_mono {a a' b b' : Ordinal.{u}}
+    (ha : a ≤ a') (hb : b ≤ b') :
+    naturalProduct a b ≤ naturalProduct a' b' :=
+  (naturalProduct_mono_left ha).trans (naturalProduct_mono_right hb)
+
 end LeanCategories.ForMathlib.OrdinalNatural

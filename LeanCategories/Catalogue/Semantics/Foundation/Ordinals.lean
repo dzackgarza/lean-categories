@@ -89,6 +89,23 @@ noncomputable def naturalSumMap {α α' β β' : Ordinal.{u}}
     (LeanCategories.ForMathlib.OrdinalNatural.naturalSum_mono
       (CategoryTheory.leOfHom f) (CategoryTheory.leOfHom g))
 
+/-- Natural product carries ordinal comparisons in both arguments. -/
+noncomputable def naturalProductMap {α α' β β' : Ordinal.{u}}
+    (f : α ⟶ α') (g : β ⟶ β') : naturalProduct α β ⟶ naturalProduct α' β' := by
+  change LeanCategories.ForMathlib.OrdinalNatural.naturalProduct α β ⟶
+    LeanCategories.ForMathlib.OrdinalNatural.naturalProduct α' β'
+  exact CategoryTheory.homOfLE
+    (LeanCategories.ForMathlib.OrdinalNatural.naturalProduct_mono
+      (CategoryTheory.leOfHom f) (CategoryTheory.leOfHom g))
+
+/-- The jointly functorial Hessenberg natural product. -/
+noncomputable def naturalProductFunctor :
+    (ordinalsCategory.{u} × ordinalsCategory.{u}) ⥤ ordinalsCategory.{u} :=
+  { obj := fun p => naturalProduct p.1 p.2
+    map := fun f => naturalProductMap f.1 f.2
+    map_id := by intros; rfl
+    map_comp := by intros; rfl }
+
 /-- Hessenberg sum is functorial jointly in its two ordinal arguments. -/
 noncomputable def naturalSumFunctor :
     (ordinalsCategory.{u} × ordinalsCategory.{u}) ⥤ ordinalsCategory.{u} :=
@@ -130,5 +147,9 @@ normalized_registry .morphism
   { id := ⟨"mor.ordinals.natural_sum_map"⟩, category := CategoryId.ordinals
     name := "natural_sum_map"
     declaration := `CasCatalogue.Foundation.Ordinals.naturalSumMap }
+normalized_registry .morphism
+  { id := ⟨"mor.ordinals.natural_product_map"⟩, category := CategoryId.ordinals
+    name := "natural_product_map"
+    declaration := `CasCatalogue.Foundation.Ordinals.naturalProductMap }
 
 end CasCatalogue
