@@ -104,6 +104,23 @@ theorem naturalSum_lt_of_le_of_lt {a a' b b' : Ordinal.{u}}
     (ha : a ≤ a') (hb : b < b') : naturalSum a b < naturalSum a' b' :=
   (naturalSum_mono_left ha).trans_lt (naturalSum_lt_right hb)
 
+/-- Natural addition by one is ordinal successor. -/
+theorem naturalSum_one (a : Ordinal.{u}) : naturalSum a 1 = Order.succ a := by
+  rw [naturalSum_def]
+  have hleft : (⨆ x : Set.Iio a, naturalSum x.1 1 + 1) ≤ Order.succ a := by
+    apply Ordinal.iSup_le
+    intro x
+    rw [naturalSum_one]
+    exact Order.succ_le_succ (Order.succ_le_of_lt x.2)
+  have hright : (⨆ y : Set.Iio (1 : Ordinal.{u}), naturalSum a y.1 + 1) =
+      Order.succ a := by
+    rw [ciSup_unique]
+    simp [naturalSum_zero, Order.succ_eq_add_one]
+  rw [hright]
+  exact max_eq_right hleft
+termination_by a
+decreasing_by exact x.2
+
 /-- Hessenberg natural product: the least ordinal `c` for which every simultaneous decrease
 of `a` and `b` satisfies `(a' ⊗ b) ⊕ (a ⊗ b') < c ⊕ (a' ⊗ b')`, with the products on the
 left interpreted recursively. This is the recursive source definition, with `⊕` explicitly
