@@ -80,6 +80,14 @@ noncomputable def naturalSum (α β : Ordinal.{u}) : ordinalsCategory.{u} :=
 noncomputable def naturalProduct (α β : Ordinal.{u}) : ordinalsCategory.{u} :=
   LeanCategories.ForMathlib.OrdinalNatural.naturalProduct α β
 
+/-- The finite-arity natural sum, with its explicitly selected recursive bracketing. -/
+noncomputable def naturalSumList (as : List Ordinal.{u}) : ordinalsCategory.{u} :=
+  LeanCategories.ForMathlib.OrdinalNatural.naturalSumList as
+
+/-- The finite-arity natural product, including the empty product equal to one. -/
+noncomputable def naturalProductList (as : List Ordinal.{u}) : ordinalsCategory.{u} :=
+  LeanCategories.ForMathlib.OrdinalNatural.naturalProductList as
+
 /-- Natural sum carries a pair of ordinal comparisons to a comparison of their sums. -/
 noncomputable def naturalSumMap {α α' β β' : Ordinal.{u}}
     (f : α ⟶ α') (g : β ⟶ β') : naturalSum α β ⟶ naturalSum α' β' := by
@@ -143,6 +151,14 @@ normalized_registry .object
   { id := ⟨"obj.ordinals.natural_product"⟩, category := CategoryId.ordinals
     name := "natural_product"
     declaration := `CasCatalogue.Foundation.Ordinals.naturalProduct }
+normalized_registry .object
+  { id := ⟨"obj.ordinals.natural_sum_list"⟩, category := CategoryId.ordinals
+    name := "natural_sum_list"
+    declaration := `CasCatalogue.Foundation.Ordinals.naturalSumList }
+normalized_registry .object
+  { id := ⟨"obj.ordinals.natural_product_list"⟩, category := CategoryId.ordinals
+    name := "natural_product_list"
+    declaration := `CasCatalogue.Foundation.Ordinals.naturalProductList }
 normalized_registry .morphism
   { id := ⟨"mor.ordinals.natural_sum_map"⟩, category := CategoryId.ordinals
     name := "natural_sum_map"

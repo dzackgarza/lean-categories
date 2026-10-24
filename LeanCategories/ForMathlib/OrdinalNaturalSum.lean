@@ -410,4 +410,32 @@ theorem naturalProduct_cancel_left {a b b' : Ordinal.{u}}
   apply naturalProduct_cancel_right ha
   simpa only [naturalProduct_comm a b, naturalProduct_comm a b'] using h
 
+/-- Finite-arity Hessenberg sum, with a fixed parenthesization that does not
+presuppose the still-unproved general associativity law. -/
+def naturalSumList : List Ordinal.{u} → Ordinal.{u}
+  | [] => 0
+  | a :: as => naturalSum a (naturalSumList as)
+
+/-- Finite-arity Hessenberg product with multiplicative empty-family value. -/
+def naturalProductList : List Ordinal.{u} → Ordinal.{u}
+  | [] => 1
+  | a :: as => naturalProduct a (naturalProductList as)
+
+@[simp] theorem naturalSumList_nil : naturalSumList ([] : List Ordinal.{u}) = 0 := rfl
+@[simp] theorem naturalProductList_nil : naturalProductList ([] : List Ordinal.{u}) = 1 := rfl
+
+@[simp] theorem naturalSumList_singleton (a : Ordinal.{u}) :
+    naturalSumList [a] = a := by simp [naturalSumList, naturalSum_zero]
+
+@[simp] theorem naturalProductList_singleton (a : Ordinal.{u}) :
+    naturalProductList [a] = a := by simp [naturalProductList, naturalProduct_one]
+
+theorem naturalSumList_pair (a b : Ordinal.{u}) :
+    naturalSumList [a, b] = naturalSum a b := by
+  simp [naturalSumList, naturalSum_zero]
+
+theorem naturalProductList_pair (a b : Ordinal.{u}) :
+    naturalProductList [a, b] = naturalProduct a b := by
+  simp [naturalProductList, naturalProduct_one]
+
 end LeanCategories.ForMathlib.OrdinalNatural
