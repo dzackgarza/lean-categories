@@ -7,6 +7,7 @@ module
 public import LeanCategories.Catalogue.Semantics.Foundation.Cardinality
 public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.SetTheory.Ordinal.Arithmetic
+public import Mathlib.SetTheory.Ordinal.Exponential
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.Foundation.Cardinality
 
@@ -61,6 +62,15 @@ noncomputable def ordinalsCardRealization :
   { sourceRealization := ordinalsRealization
     targetRealization := Cardinality.cardinalitiesRealization }
 
+/-- Ordinary ordinal sum, in the stated order of its operands. -/
+def ordinalSum (α β : Ordinal.{u}) : ordinalsCategory.{u} := α + β
+
+/-- Ordinary ordinal product, in the stated order of its operands. -/
+def ordinalProduct (α β : Ordinal.{u}) : ordinalsCategory.{u} := α * β
+
+/-- Ordinary ordinal exponentiation. -/
+noncomputable def ordinalPower (α β : Ordinal.{u}) : ordinalsCategory.{u} := α ^ β
+
 end Foundation.Ordinals
 
 normalized_registry .category
@@ -74,5 +84,14 @@ normalized_registry .functor
     declaration := `CasCatalogue.Foundation.Ordinals.ordinalsCard
     realization := `CasCatalogue.Foundation.Ordinals.ordinalsCardRealization
     expression := Foundation.Ordinals.OrdinalsCardExpr }
+normalized_registry .object
+  { id := ⟨"obj.ordinals.sum"⟩, category := CategoryId.ordinals, name := "ordinal_sum"
+    declaration := `CasCatalogue.Foundation.Ordinals.ordinalSum }
+normalized_registry .object
+  { id := ⟨"obj.ordinals.product"⟩, category := CategoryId.ordinals, name := "ordinal_product"
+    declaration := `CasCatalogue.Foundation.Ordinals.ordinalProduct }
+normalized_registry .object
+  { id := ⟨"obj.ordinals.power"⟩, category := CategoryId.ordinals, name := "ordinal_power"
+    declaration := `CasCatalogue.Foundation.Ordinals.ordinalPower }
 
 end CasCatalogue
