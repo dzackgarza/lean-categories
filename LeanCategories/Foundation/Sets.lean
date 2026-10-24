@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.InducedCategory
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.Data.Countable.Defs
 public import Mathlib.Logic.Encodable.Basic
+public import LeanCategories.Foundation.Mathlib
 
 @[expose] public section
 
@@ -81,5 +82,15 @@ def enumeratedToCountable : EnumeratedSetCat.{u} ⥤ CountableSetCat.{u} :=
   ObjectProperty.lift (Countable : ObjectProperty (Type u)) EnumeratedSetCat.forget fun X ↦ by
     change Countable X.carrier
     exact @Encodable.countable X.carrier X.enumeration
+
+/-- Countability as a property classifier on sets: its total has all functions as morphisms. -/
+def countableSets : Classifier Mathlib.Sets.{u} where
+  total := Cat.of CountableSetCat.{u}
+  forget := CountableSetCat.incl.toCatHom
+
+/-- A chosen partial-inverse enumeration as a structure classifier on sets. -/
+def enumeratedSets : Classifier Mathlib.Sets.{u} where
+  total := Cat.of EnumeratedSetCat.{u}
+  forget := EnumeratedSetCat.forget.toCatHom
 
 end LeanCategories.Foundation

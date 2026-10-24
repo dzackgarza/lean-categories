@@ -3,6 +3,7 @@ module
 public import LeanCategories.Catalogue.Registry.Semantic
 public import LeanCategories.Catalogue.Semantics.Foundation.Expressions
 public import LeanCategories.Foundation.Mathlib
+public import LeanCategories.Foundation.Sets
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.Foundation.Expressions
 public meta import LeanCategories.Catalogue.Semantics.Foundation.Catalogue
@@ -35,6 +36,30 @@ noncomputable def binaryOperationRealization :
     ClassifierRealization Foundation.Sets ClassifierId.setsBinaryOperation
       Foundation.Mathlib.Sets Foundation.Mathlib.binaryOperation :=
   { hostRealization := setsRealization, totalRealization := {} }
+
+noncomputable def countableRealization :
+    ClassifierRealization Foundation.Sets ClassifierId.setsCountable
+      Foundation.Mathlib.Sets Foundation.countableSets :=
+  { hostRealization := setsRealization, totalRealization := {} }
+
+noncomputable def enumeratedRealization :
+    ClassifierRealization Foundation.Sets ClassifierId.setsEnumerated
+      Foundation.Mathlib.Sets Foundation.enumeratedSets :=
+  { hostRealization := setsRealization, totalRealization := {} }
+
+noncomputable def finiteToCountableRealization :
+    FunctorRealization Foundation.FiniteToCountableExpr
+      Foundation.Mathlib.FiniteSets Foundation.countableSets.total
+      Foundation.finiteToCountable :=
+  { sourceRealization := {}
+    targetRealization := {} }
+
+noncomputable def enumeratedToCountableRealization :
+    FunctorRealization Foundation.EnumeratedToCountableExpr
+      Foundation.enumeratedSets.total Foundation.countableSets.total
+      Foundation.enumeratedToCountable :=
+  { sourceRealization := {}
+    targetRealization := {} }
 
 noncomputable def setsIdentity : Foundation.Mathlib.Sets ⟶ Foundation.Mathlib.Sets :=
   CategoryStruct.id _
@@ -71,6 +96,18 @@ normalized_registry .classifier
     host := Foundation.Sets
     realization := `CasCatalogue.Foundation.CatalogueRegistration.binaryOperationRealization}
 
+normalized_registry .classifier
+  { id := ClassifierId.setsCountable
+    declaration := `LeanCategories.Foundation.countableSets
+    host := Foundation.Sets
+    realization := `CasCatalogue.Foundation.CatalogueRegistration.countableRealization}
+
+normalized_registry .classifier
+  { id := ClassifierId.setsEnumerated
+    declaration := `LeanCategories.Foundation.enumeratedSets
+    host := Foundation.Sets
+    realization := `CasCatalogue.Foundation.CatalogueRegistration.enumeratedRealization}
+
 normalized_registry .functor
   { id := FunctorId.setsIdentity
     source := Foundation.Sets
@@ -78,5 +115,21 @@ normalized_registry .functor
     declaration := `CasCatalogue.Foundation.CatalogueRegistration.setsIdentity
     realization := `CasCatalogue.Foundation.CatalogueRegistration.setsIdentityRealization
     expression := setsIdentityExpr }
+
+normalized_registry .functor
+  { id := FunctorId.finiteToCountable
+    source := .classifierTotal ClassifierId.setsFinite
+    target := Foundation.CountableSets
+    declaration := `LeanCategories.Foundation.finiteToCountable
+    realization := `CasCatalogue.Foundation.CatalogueRegistration.finiteToCountableRealization
+    expression := Foundation.FiniteToCountableExpr }
+
+normalized_registry .functor
+  { id := FunctorId.enumeratedToCountable
+    source := Foundation.EnumeratedSets
+    target := Foundation.CountableSets
+    declaration := `LeanCategories.Foundation.enumeratedToCountable
+    realization := `CasCatalogue.Foundation.CatalogueRegistration.enumeratedToCountableRealization
+    expression := Foundation.EnumeratedToCountableExpr }
 
 end CasCatalogue.Foundation.CatalogueRegistration
