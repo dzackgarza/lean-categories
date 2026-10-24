@@ -1369,6 +1369,27 @@ additive group and multiplication as scalar action. This exposes the existing
 canonical mathematical object without selecting a replacement carrier, basis,
 coordinate presentation or value module for any formed object.
 
+Source-only review on 2026-10-24 found that the chosen module-kernel interface
+already retained its categorical domain and inclusion and proved rank and
+cardinality comparisons, but did not publish the canonical maps to and from
+the concrete linear-map kernel. `Modules/Operations.lean` now registers the
+concrete kernel as the existing domain functor's value on the actual chosen
+kernel subobject, with `ModuleCat.kernelIsoKer` as its presentation comparison.
+The registered maps retain the chosen inclusion, the concrete subtype
+inclusion, and both comparison directions. Their inverse and inclusion laws
+reuse Mathlib's isomorphism and its two defining equations; their naturality
+uses `KernelFork.mapOfIsLimit` on `ModuleCat.kernelCone` and the corresponding
+universal-property equations. The complete source statement and dated corpus
+searches are in FOUNDATIONS Definition 54.1. This is a general interface for
+arbitrary rings and module arrows in the existing common-universe catalogue,
+with no coordinate or dimension assumption and no change to the chosen kernel.
+The focused Lean 4.33.0 build of `Modules.Operations` and a disposable
+signature/axiom inspection passed. The inspected scalar-action, inclusion,
+inverse and naturality proofs use only `propext`, `Classical.choice` and
+`Quot.sound`. The printed declarations retain exactly the universe scopes
+recorded in FOUNDATIONS Definitions 13.1 and 54.1. This is a mathematical
+compilation and source review, without a downstream correctness judgment.
+
 ### FC05-C08-U069 and U060 overstated the scalar-extension adjunction's generality
 
 - **Need:** Weibel 8.6.12 permits an arbitrary ring homomorphism k→R, and 8.6.3 permits an arbitrary group G. Neither requires commutativity of the target ring.
