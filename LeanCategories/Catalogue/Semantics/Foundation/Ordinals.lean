@@ -1,0 +1,78 @@
+/-
+Copyright (c) 2026 Dzack Garza. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+-/
+module
+
+public import LeanCategories.Catalogue.Semantics.Foundation.Cardinality
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.SetTheory.Ordinal.Arithmetic
+public meta import LeanCategories.Catalogue.Registry.Semantic
+public meta import LeanCategories.Catalogue.Semantics.Foundation.Cardinality
+
+@[expose] public section
+
+/-!
+# Ordinals as an ordered category
+
+Mathlib's preorder-category instance gives a unique arrow `α ⟶ β` exactly when `α ≤ β`.
+The monotone map `Ordinal.card` sends each ordinal to its cardinality and each comparison
+to the induced cardinal comparison. Ordinary ordinal arithmetic is supplied by Mathlib's
+`Ordinal` operations; it does not preserve both order variables as a bifunctor.
+-/
+
+open CategoryTheory
+open LeanCategories
+
+namespace CasCatalogue
+
+namespace CategoryId
+def ordinals : CategoryId := ⟨"cat.ordinals"⟩
+end CategoryId
+
+namespace FunctorId
+def ordinalsCard : FunctorId := ⟨"fun.ordinals.card"⟩
+end FunctorId
+
+namespace Foundation.Ordinals
+
+universe u
+
+def Ordinals : CategoryExpr := .atom CategoryId.ordinals
+def OrdinalsCardExpr : FunctorExpr Ordinals Cardinality.Cardinalities :=
+  .atomic FunctorId.ordinalsCard
+
+/-- The thin category of ordinals and ordinal comparison. -/
+abbrev ordinalsCategory : ObjCat.{u + 1, u + 1} := Cat.of Ordinal.{u}
+noncomputable def ordinalsRealization : CategoryRealization Ordinals ordinalsCategory.{u} :=
+  { familyFibre := none }
+
+/-- An ordinal comparison arrow exists exactly for an ordinal inequality. -/
+theorem ordinals_hom_iff (α β : Ordinal.{u}) : Nonempty (α ⟶ β) ↔ α ≤ β :=
+  ⟨fun ⟨f⟩ => CategoryTheory.leOfHom f, fun h => ⟨CategoryTheory.homOfLE h⟩⟩
+
+/-- Cardinality is monotone on ordinals, hence functorial for their thin categories. -/
+def ordinalsCard : ordinalsCategory.{u} ⥤ Cardinality.cardinalitiesCategory.{u} :=
+  (show Monotone (Ordinal.card : Ordinal.{u} → Cardinal.{u}) from
+    fun _ _ h => Ordinal.card_le_card h).functor
+noncomputable def ordinalsCardRealization :
+    FunctorRealization OrdinalsCardExpr ordinalsCategory.{u}
+      Cardinality.cardinalitiesCategory.{u} ordinalsCard :=
+  { sourceRealization := ordinalsRealization
+    targetRealization := Cardinality.cardinalitiesRealization }
+
+end Foundation.Ordinals
+
+normalized_registry .category
+  { id := CategoryId.ordinals, name := "Ordinals"
+    declaration := `CasCatalogue.Foundation.Ordinals.ordinalsCategory
+    expression := Foundation.Ordinals.Ordinals
+    realization := `CasCatalogue.Foundation.Ordinals.ordinalsRealization }
+normalized_registry .functor
+  { id := FunctorId.ordinalsCard, source := Foundation.Ordinals.Ordinals
+    target := Foundation.Cardinality.Cardinalities
+    declaration := `CasCatalogue.Foundation.Ordinals.ordinalsCard
+    realization := `CasCatalogue.Foundation.Ordinals.ordinalsCardRealization
+    expression := Foundation.Ordinals.OrdinalsCardExpr }
+
+end CasCatalogue

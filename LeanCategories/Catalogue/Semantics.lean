@@ -22,6 +22,7 @@ public import LeanCategories.Catalogue.Semantics.Exceptional.CatalogueRegistrati
 public import LeanCategories.Catalogue.Semantics.FibrationCatalogue
 public import LeanCategories.Catalogue.Semantics.FibrationRegistration
 public import LeanCategories.Catalogue.Semantics.Foundation.Cardinality
+public import LeanCategories.Catalogue.Semantics.Foundation.Ordinals
 public import LeanCategories.Catalogue.Semantics.Foundation.Catalogue
 public import LeanCategories.Catalogue.Semantics.Foundation.CatalogueRegistration
 public import LeanCategories.Catalogue.Semantics.Foundation.Expressions
