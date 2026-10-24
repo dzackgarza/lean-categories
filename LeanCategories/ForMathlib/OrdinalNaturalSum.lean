@@ -7,6 +7,7 @@ module
 
 public import Mathlib.SetTheory.Ordinal.Basic
 public import Mathlib.SetTheory.Ordinal.Family
+public import Mathlib.Order.SuccPred.CompleteLinearOrder
 
 /-!
 # Hessenberg natural sum of ordinals
@@ -77,5 +78,81 @@ theorem naturalSum_mono_right {a b b' : Ordinal.{u}} (h : b ≤ b') :
 theorem naturalSum_mono {a a' b b' : Ordinal.{u}} (ha : a ≤ a') (hb : b ≤ b') :
     naturalSum a b ≤ naturalSum a' b' :=
   (naturalSum_mono_left ha).trans (naturalSum_mono_right hb)
+
+theorem naturalSum_zero (a : Ordinal.{u}) : naturalSum a 0 = a := by
+  rw [naturalSum_def]
+  rw [ciSup_of_empty (fun _ : Set.Iio 0 => _), max_bot_right]
+  calc
+    (⨆ x : Set.Iio a, naturalSum x.1 0 + 1) =
+        ⨆ x : Set.Iio a, Order.succ x.1 := by
+          congr with x
+          rw [naturalSum_zero]
+          rfl
+    _ = a := iSup_succ a
+termination_by a
+decreasing_by exact x.property
+
+/-- Hessenberg natural product: the least ordinal `c` for which every simultaneous decrease
+of `a` and `b` satisfies `(a' ⊗ b) ⊕ (a ⊗ b') < c ⊕ (a' ⊗ b')`, with the products on the
+left interpreted recursively. This is the recursive source definition, with `⊕` explicitly
+the natural sum above. -/
+def naturalProduct (a b : Ordinal.{u}) : Ordinal.{u} :=
+  sInf {c | ∀ a' < a, ∀ b' < b,
+    naturalSum (naturalProduct a' b) (naturalProduct a b') <
+      naturalSum c (naturalProduct a' b')}
+termination_by (a, b)
+
+theorem naturalProduct_def (a b : Ordinal.{u}) :
+    naturalProduct a b = sInf {c | ∀ a' < a, ∀ b' < b,
+      naturalSum (naturalProduct a' b) (naturalProduct a b') <
+        naturalSum c (naturalProduct a' b')} := by
+  rw [naturalProduct]
+
+/-- The recursive constraint defining natural product always has an ordinal solution. -/
+theorem naturalProduct_admissible (a b : Ordinal.{u}) :
+    ({c : Ordinal.{u} | ∀ a' < a, ∀ b' < b,
+      naturalSum (naturalProduct a' b) (naturalProduct a b') <
+        naturalSum c (naturalProduct a' b')}).Nonempty := by
+  let f : Set.Iio a × Set.Iio b → Ordinal.{u} :=
+    fun x => naturalSum (naturalProduct x.1.1 b) (naturalProduct a x.2.1)
+  obtain ⟨c, hc⟩ : BddAbove (Set.range f) := Ordinal.bddAbove_of_small
+  refine ⟨c + 1, ?_⟩
+  intro a' ha b' hb
+  have hle : naturalSum (naturalProduct a' b) (naturalProduct a b') ≤ c := by
+    exact hc (Set.mem_range_self ((⟨a', ha⟩, ⟨b', hb⟩) : Set.Iio a × Set.Iio b))
+  have hright : c + 1 ≤ naturalSum (c + 1) (naturalProduct a' b') := by
+    calc
+      c + 1 = naturalSum (c + 1) 0 := (naturalSum_zero _).symm
+      _ ≤ _ := naturalSum_mono_right zero_le
+  exact (Order.lt_succ_of_le hle).trans_le hright
+
+/-- The recursively defined product satisfies every constraint used to define it. -/
+theorem naturalProduct_constraint {a a' b b' : Ordinal.{u}} (ha : a' < a) (hb : b' < b) :
+    naturalSum (naturalProduct a' b) (naturalProduct a b') <
+      naturalSum (naturalProduct a b) (naturalProduct a' b') := by
+  rw [naturalProduct_def a b]
+  exact csInf_mem (naturalProduct_admissible a b) a' ha b' hb
+
+/-- Natural product is symmetric. The defining inequalities are exchanged by swapping the
+operands and using symmetry of natural sum. -/
+theorem naturalProduct_comm (a b : Ordinal.{u}) : naturalProduct a b = naturalProduct b a := by
+  rw [naturalProduct_def a b, naturalProduct_def b a]
+  congr 1
+  ext c
+  constructor
+  · intro H b' hb a' ha
+    simpa only [naturalSum_comm, naturalProduct_comm a' b,
+      naturalProduct_comm a b', naturalProduct_comm a' b'] using H a' ha b' hb
+  · intro H a' ha b' hb
+    simpa only [naturalSum_comm, naturalProduct_comm a' b,
+      naturalProduct_comm a b', naturalProduct_comm a' b'] using H b' hb a' ha
+termination_by (a, b)
+
+theorem naturalProduct_zero (a : Ordinal.{u}) : naturalProduct a 0 = 0 := by
+  rw [naturalProduct_def]
+  simp
+
+theorem naturalProduct_zero_left (a : Ordinal.{u}) : naturalProduct 0 a = 0 := by
+  rw [naturalProduct_comm, naturalProduct_zero]
 
 end LeanCategories.ForMathlib.OrdinalNatural
