@@ -267,6 +267,26 @@ normalized_registry .limit
   { id := ⟨"colim.sets.diagram"⟩, category := CategoryId.sets, shape := "diagram"
     declaration := `CasCatalogue.Limits.Registration.setsDiagramColimit, colimit := true }
 
+normalized_registry .morphism
+  { id := ⟨"mor.sets.diagram_limit_lift"⟩, category := CategoryId.sets
+    name := "diagram_limit_lift"
+    declaration := `CasCatalogue.Limits.Registration.setsDiagramLimitLift }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.diagram_colimit_desc"⟩, category := CategoryId.sets
+    name := "diagram_colimit_desc"
+    declaration := `CasCatalogue.Limits.Registration.setsDiagramColimitDesc }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.diagram_limit_map"⟩, category := CategoryId.sets
+    name := "diagram_limit_map"
+    declaration := `CasCatalogue.Limits.Registration.setsDiagramLimitMap }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.diagram_colimit_map"⟩, category := CategoryId.sets
+    name := "diagram_colimit_map"
+    declaration := `CasCatalogue.Limits.Registration.setsDiagramColimitMap }
+
 normalized_registry .limit
   { id := ⟨"lim.sets.pullback"⟩, category := CategoryId.sets, shape := "pullback"
     declaration := `CasCatalogue.Limits.Registration.setsPullback }
