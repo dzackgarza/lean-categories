@@ -1108,6 +1108,35 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
      four independent nonunit theorems, and eight refused admission attempts. Before the
      repair, three positive obligations failed; afterwards the complete unchanged controls
      compile, as does `Algebra/Units.lean`, with Lean 4.33.0 and isolated build outputs.
+
+     **Selected polynomial nonvanishing (2026-10-24).** The same independent public-source
+     assessment checked the existing `Polynomials.nonzeroPolynomialEvidence` contract at
+     `7a413381900a3fc4effdf5f7ce483fae042062c3`. It refused `X²+C(3)` over the forgotten
+     rational-ring coefficient presentation and the image of `X²+1` under the published
+     integer-to-rational coefficient map. The procedure had not read the full selected
+     carrier, dictionaries, and public map declarations before choosing its proof case.
+     Calling the existing `Units.readCatalogue` resolves both presentation defects without
+     changing the degree or injective-map criteria, the coefficient map, or the original
+     whole-polynomial `p ≠ 0` obligation.
+
+     A separate control within the documented normalization scope, `(X+3)(X+4)-X²`
+     over the selected residue ring modulo seven, remained unresolved. Expansion collects
+     new multiples of the characteristic after the original coefficient-reduction step.
+     Applying the existing `reduce_mod_char` rule again after `ring_nf` removes those
+     terms; this polynomial is the nonzero constant five. No characteristic-specific case,
+     new mathematical domain, or different target is introduced. A tested local conversion
+     option was insufficient and is not added to the polynomial procedure.
+
+     The exact whole-polynomial criteria are Mathlib
+     `Polynomial.ne_zero_of_coe_le_degree` and `Polynomial.map_ne_zero_iff`, checked in
+     the same pinned source and public corpus, excluding downstream repositories.
+     `PolynomialPresentationEvidenceTests.lean` keeps five complete positive obligations,
+     three independently proved zero equations, and three corresponding refused admission
+     attempts. Before the repair, three positive obligations failed; afterwards all controls
+     compile with unchanged statements. All proof checking uses isolated outputs and the
+     published Lean toolchain; no downstream material informs these mathematical controls.
+     The unchanged `EvidenceTests.lean` and `UnitInverseTests.lean` suites also compile
+     with both this repair and the preceding Units presentation repair.
   3. **Closed facts about real numbers.** Nonzero-ness of a real element (units of `ℝ`, leading
      coefficients of real polynomials) is established by evaluation (`norm_num`) or by positivity.
      A nonzero value that is neither evaluable nor of known sign (`π - 3`, `exp 1 - e`-style
