@@ -187,6 +187,22 @@ theorem setsDiagramColimitMap_comp {J : Type v} [Category.{w} J]
       rw [← setsDiagramColimitMap_ι β j, ← Category.assoc,
         ← setsDiagramColimitMap_ι α j, Category.assoc]
 
+/-- The chosen diagram limits assemble into a functor, not just separate maps. -/
+noncomputable def setsDiagramLimitFunctor {J : Type v} [Category.{w} J] :
+    (J ⥤ Type (max v u)) ⥤ Type (max v u) where
+  obj F := (setsDiagramLimit F).cone.pt
+  map α := setsDiagramLimitMap α
+  map_id F := setsDiagramLimitMap_id F
+  map_comp α β := setsDiagramLimitMap_comp α β
+
+/-- The chosen diagram colimits assemble into a functor. -/
+noncomputable def setsDiagramColimitFunctor {J : Type v} [Category.{w} J] :
+    (J ⥤ Type (max v u)) ⥤ Type (max v u) where
+  obj F := (setsDiagramColimit F).cocone.pt
+  map α := setsDiagramColimitMap α
+  map_id F := setsDiagramColimitMap_id F
+  map_comp α β := setsDiagramColimitMap_comp α β
+
 /-- Two representatives in a filtered set colimit agree exactly when they agree after
 transport to a common later object. This is stronger than mere existence of the colimit. -/
 theorem setsFilteredColimit_eq_iff {J : Type v} [Category.{w} J]
