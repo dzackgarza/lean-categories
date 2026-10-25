@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.InducedCategory
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.Data.Countable.Defs
 public import Mathlib.Logic.Encodable.Basic
+public import Mathlib.Order.Category.PartOrd
+public import Mathlib.Order.Category.LinOrd
+public import LeanCategories.Foundation.Mathlib
 
 @[expose] public section
 
@@ -81,5 +84,33 @@ def enumeratedToCountable : EnumeratedSetCat.{u} ⥤ CountableSetCat.{u} :=
   ObjectProperty.lift (Countable : ObjectProperty (Type u)) EnumeratedSetCat.forget fun X ↦ by
     change Countable X.carrier
     exact @Encodable.countable X.carrier X.enumeration
+
+/-- The category of countable sets and all functions, bundled for the semantic catalogue. -/
+abbrev CountableSets : ObjCat.{u + 1, u} := Cat.of CountableSetCat.{u}
+
+/-- The category of sets with a selected partial-inverse enumeration. -/
+abbrev EnumeratedSets : ObjCat.{u + 1, u} := Cat.of EnumeratedSetCat.{u}
+
+/-- Sets equipped with a selected partial order, with monotone maps as morphisms. -/
+abbrev PartiallyOrderedSets : ObjCat.{u + 1, u} := Cat.of PartOrd.{u}
+
+/-- Sets equipped with a selected linear order, with monotone maps as morphisms. -/
+abbrev TotallyOrderedSets : ObjCat.{u + 1, u} := Cat.of LinOrd.{u}
+
+/-- Forget the selected partial order, retaining the underlying set and monotone maps. -/
+def partiallyOrderedToSets : PartOrd.{u} ⥤ Type u := forget PartOrd
+
+/-- Forget the selected linear order, retaining the underlying set and monotone maps. -/
+def totallyOrderedToSets : LinOrd.{u} ⥤ Type u := forget LinOrd
+
+/-- Countability as a property classifier on sets: its total has all functions as morphisms. -/
+def countableSets : Classifier Mathlib.Sets.{u} where
+  total := CountableSets
+  forget := CountableSetCat.incl.toCatHom
+
+/-- A chosen partial-inverse enumeration as a structure classifier on sets. -/
+def enumeratedSets : Classifier Mathlib.Sets.{u} where
+  total := EnumeratedSets
+  forget := EnumeratedSetCat.forget.toCatHom
 
 end LeanCategories.Foundation

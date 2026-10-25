@@ -10,6 +10,9 @@ public import LeanCategories.Catalogue.Semantics.Algebra.Polynomials
 public import LeanCategories.Catalogue.Semantics.Algebra.LinearAlgebra
 public import LeanCategories.Catalogue.Semantics.Algebra.Calculus
 public import LeanCategories.Catalogue.Semantics.Algebra.NumberSystems
+public import LeanCategories.Catalogue.Semantics.Algebra.NamedCommutativeRings
+public import LeanCategories.Catalogue.Semantics.Algebra.Fields
+public import LeanCategories.Catalogue.Semantics.Algebra.Algebras
 public import LeanCategories.Catalogue.Semantics.Foundation.Morphisms
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.Foundation.Evidence
@@ -98,6 +101,9 @@ equations of the inverse, establishes `IsUnit x` on the same elements. -/
 meta def unitSpecimens : Lean.Elab.Term.TermElabM (List Lean.Term) := do
   return [← `((2 : ℚ)), ← `((-3 / 4 : ℝ)),
       ← `((!![1, 2; 3, 4] : Matrix (Fin 2) (Fin 2) ℚ)),
+      ← `((!![1, 2; 3, 4] : Matrix (Fin 2) (Fin 2)
+        ↑(NamedRings.asRing (Algebras.commutativeRingsRings.toFunctor.obj
+          NamedCommutativeRings.rationals)))),
       ← `((5 : ZMod 7)), ← `((-1 : ℤ)),
       ← `((!![1, 2, 0; 3, 4, 1; 0, 5, 7] : Matrix (Fin 3) (Fin 3) ℚ)),
       ← `((!![2, 1, 0, 0; 0, 1, 3, 0; 1, 0, 1, 1; 0, 2, 0, 5] : Matrix (Fin 4) (Fin 4) ℚ)),
@@ -114,6 +120,9 @@ meta def unitSpecimens : Lean.Elab.Term.TermElabM (List Lean.Term) := do
 meta def nonunitSpecimens : Lean.Elab.Term.TermElabM (List Lean.Term) := do
   return [← `((2 : ℤ)), ← `((0 : ℚ)),
       ← `((!![1, 2; 2, 4] : Matrix (Fin 2) (Fin 2) ℚ)),
+      ← `((!![1, 2; 2, 4] : Matrix (Fin 2) (Fin 2)
+        ↑(NamedRings.asRing (Algebras.commutativeRingsRings.toFunctor.obj
+          NamedCommutativeRings.rationals)))),
       ← `((!![2, 0; 0, 1] : Matrix (Fin 2) (Fin 2) ℤ)),
       ← `((!![1, 2, 3; 4, 5, 6; 7, 8, 9] : Matrix (Fin 3) (Fin 3) ℚ)),
       ← `((2 : ℕ)), ← `((0 : ℕ)), ← `((2 : ZMod 4)),
@@ -534,5 +543,126 @@ run_elab do
   expectRefused Semirings.primeEvidence
     [← `(Nat.Prime 0), ← `(Nat.Prime 1), ← `(Nat.Prime 91), ← `(Nat.Prime (2 ^ 11 - 1)),
       ← `(Nat.Prime 1000001), ← `(Nat.Prime 561)]
+
+/-! ## Elements as the catalogue presents them
+
+A consumer states an admission's hypothesis at an element formed by the catalogue's own
+declarations: the monoid of a named ring is its image along the registered multiplicative port
+`Ring → Mon` (`Ports.ringsMultiplicative`), passed as the argument of the units functor
+(`Units.monoidArgument`); a numeral is the registered numeral of the named ring or semiring
+(`NamedRings.ringNumeral`, `Semirings.semiringNumeral`, LC-15); elements are combined by the
+registered operations (`NamedRings.add`, `mul`, `neg`, `pow`; `Semirings.add`, `mul`, `pow`); a
+map `ℝ → ℝ` is written with the registered maps (`Calculus.sin`, `Calculus.exp`,
+`NumberSystems.sqrt`) and their composites. The evidence establishes the hypothesis at these
+elements exactly when it holds (LC-18). -/
+
+section CataloguePresentation
+
+open Lean Meta Elab Term
+
+/-- The element `e : 1 → X` at the point of `1`. -/
+meta def atPoint (e : Term) : TermElabM Term :=
+  `(CategoryTheory.ConcreteCategory.hom (C := Type) $e
+      (⟨0, Nat.one_pos⟩ : Foundation.Objects.fin 1))
+
+/-- The registered map `f` applied to `a`. -/
+meta def applied (f a : Term) : TermElabM Term :=
+  `(CategoryTheory.ConcreteCategory.hom (C := Type) $f $a)
+
+/-- The hypothesis of `Mˣ`, `Invertible x`, at the monoid of the named ring `R` along the
+multiplicative port. -/
+meta def catalogueInvertible (R x : Term) : TermElabM Term :=
+  `(@Invertible (↑(Units.monoidArgument (Ports.ringsMultiplicative.toFunctor.obj $R))) _ _ $x)
+
+/-- `IsUnit x` at the same monoid. -/
+meta def catalogueIsUnit (R x : Term) : TermElabM Term :=
+  `(@IsUnit (↑(Units.monoidArgument (Ports.ringsMultiplicative.toFunctor.obj $R))) _ $x)
+
+/-- The units and non-units of named rings, as `(ring, element)`: `3, -3, 3 · 2, 2³ ∈ ℚ` and
+`3` in the rational field's ring are units of `ℚ`; `-1, (-1)(-1), 2 + (-1) ∈ ℤ` are units of `ℤ`;
+`2 ∈ ℤ/5` is a unit. The non-units: `0, 3 + (-3) ∈ ℚ`; `2, 1 + 1 ∈ ℤ`; `5 = 0 ∈ ℤ/5`. -/
+meta def catalogueUnitSpecimens : TermElabM (List (Term × Term) × List (Term × Term)) := do
+  let Q ← `(NamedRings.ringRationals)
+  let Qf ← `(Algebras.commutativeRingsRings.toFunctor.obj (Fields.ring Fields.rationals))
+  let Z ← `(NamedRings.ringIntegers)
+  let Z5 ← `(NamedRings.ringIntegersMod 5)
+  let num (R : Term) (k : Nat) : TermElabM Term := do
+    atPoint (← `(NamedRings.ringNumeral $R $(quote k)))
+  let neg (R a : Term) : TermElabM Term := do applied (← `(NamedRings.neg $R)) a
+  let add (R a b : Term) : TermElabM Term := do applied (← `(NamedRings.add $R)) (← `(($a, $b)))
+  let mul (R a b : Term) : TermElabM Term := do applied (← `(NamedRings.mul $R)) (← `(($a, $b)))
+  let pow (R a : Term) (k : Nat) : TermElabM Term := do
+    applied (← `(NamedRings.pow $R $(quote k))) a
+  let units := [(Q, ← num Q 3), (Q, ← neg Q (← num Q 3)), (Q, ← mul Q (← num Q 3) (← num Q 2)),
+    (Q, ← pow Q (← num Q 2) 3), (Qf, ← num Qf 3), (Z, ← neg Z (← num Z 1)),
+    (Z, ← mul Z (← neg Z (← num Z 1)) (← neg Z (← num Z 1))),
+    (Z, ← add Z (← num Z 2) (← neg Z (← num Z 1))), (Z5, ← num Z5 2)]
+  let nonunits := [(Q, ← num Q 0), (Q, ← add Q (← num Q 3) (← neg Q (← num Q 3))),
+    (Z, ← num Z 2), (Z, ← add Z (← num Z 1) (← num Z 1)), (Z5, ← num Z5 5)]
+  return (units, nonunits)
+
+#guard_msgs in
+run_elab do
+  let (units, _) ← catalogueUnitSpecimens
+  expectEstablished Units.invertibleEvidence (← units.mapM fun (R, x) => catalogueInvertible R x)
+  expectEstablished Units.isUnitEvidence (← units.mapM fun (R, x) => catalogueIsUnit R x)
+
+#guard_msgs in
+run_elab do
+  let (_, nonunits) ← catalogueUnitSpecimens
+  expectRefused Units.invertibleEvidence (← nonunits.mapM fun (R, x) => catalogueInvertible R x)
+  expectRefused Units.isUnitEvidence (← nonunits.mapM fun (R, x) => catalogueIsUnit R x)
+
+/-- The semiring numeral `k ∈ ℕ`. -/
+meta def naturalNumeral (k : Nat) : TermElabM Term := do
+  atPoint (← `(Semirings.semiringNumeral Semirings.semiringNaturals $(quote k)))
+
+/-! `ℕ⁺` and `ℙ` at `7`, `2² + 3 = 7` and `2 · 3 + 0 = 6`; `0`, `0 · 5`, `1`, `3 · 5` and `6` are
+refused where they lie outside. -/
+
+#guard_msgs in
+run_elab do
+  let N ← `(Semirings.semiringNaturals)
+  let add (a b : Term) : TermElabM Term := do applied (← `(Semirings.add $N)) (← `(($a, $b)))
+  let mul (a b : Term) : TermElabM Term := do applied (← `(Semirings.mul $N)) (← `(($a, $b)))
+  let pow (a : Term) (k : Nat) : TermElabM Term := do
+    applied (← `(Semirings.pow $N $(quote k))) a
+  let seven ← add (← pow (← naturalNumeral 2) 2) (← naturalNumeral 3)
+  let six ← add (← mul (← naturalNumeral 2) (← naturalNumeral 3)) (← naturalNumeral 0)
+  let zero ← mul (← naturalNumeral 0) (← naturalNumeral 5)
+  let fifteen ← mul (← naturalNumeral 3) (← naturalNumeral 5)
+  expectEstablished Semirings.positiveEvidence
+    [← `(0 < ($(← naturalNumeral 7) : ℕ)), ← `(0 < ($seven : ℕ)), ← `(0 < ($six : ℕ))]
+  expectRefused Semirings.positiveEvidence
+    [← `(0 < ($(← naturalNumeral 0) : ℕ)), ← `(0 < ($zero : ℕ))]
+  expectEstablished Semirings.primeEvidence
+    [← `(Nat.Prime ($(← naturalNumeral 7) : ℕ)), ← `(Nat.Prime ($seven : ℕ))]
+  expectRefused Semirings.primeEvidence
+    [← `(Nat.Prime ($(← naturalNumeral 1) : ℕ)), ← `(Nat.Prime ($fifteen : ℕ)),
+      ← `(Nat.Prime ($six : ℕ))]
+
+/-! Maps `ℝ → ℝ` written with the registered maps and operations: `sin`, `exp + 3`, `t²` and
+`sin ∘ exp` (a composite of registered maps) are continuous and smooth; `√` is continuous and not
+smooth (it is not differentiable at `0`). -/
+
+#guard_msgs in
+run_elab do
+  let R ← `(NumberSystems.ringReals)
+  let sinT ← `(fun t : ℝ => CategoryTheory.ConcreteCategory.hom (C := Type) Calculus.sin t)
+  let expPlusThree ← `(fun t : ℝ => CategoryTheory.ConcreteCategory.hom (C := Type)
+      (NamedRings.add $R) (CategoryTheory.ConcreteCategory.hom (C := Type) Calculus.exp t,
+        $(← atPoint (← `(NamedRings.ringNumeral $R 3)))))
+  let square ← `(fun t : ℝ =>
+      CategoryTheory.ConcreteCategory.hom (C := Type) (NamedRings.pow $R 2) t)
+  let sinExp ← `(CategoryTheory.ConcreteCategory.hom (C := Type)
+      (CategoryTheory.CategoryStruct.comp Calculus.exp Calculus.sin))
+  let sqrtT ← `(fun t : ℝ => CategoryTheory.ConcreteCategory.hom (C := Type) NumberSystems.sqrt t)
+  let smooth (f : Term) : TermElabM Term := `(ContDiff ℝ ((⊤ : ℕ∞) : WithTop ℕ∞) $f)
+  expectEstablished Calculus.continuousEvidence
+    (← [sinT, expPlusThree, square, sinExp, sqrtT].mapM fun f => `(Continuous $f))
+  expectEstablished Calculus.smoothEvidence (← [sinT, expPlusThree, square, sinExp].mapM smooth)
+  expectRefused Calculus.smoothEvidence [← smooth sqrtT]
+
+end CataloguePresentation
 
 end CasCatalogue.EvidenceTests

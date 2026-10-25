@@ -10,6 +10,9 @@ public import LeanCategories.Algebra.GroupKernel
 public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Types.Coproducts
 public import Mathlib.CategoryTheory.Limits.Types.Products
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import LeanCategories.Modules.Bilinear.Valued.Cokernel
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.CatalogueRegistration
 public meta import LeanCategories.Catalogue.Registry.Semantic
@@ -41,7 +44,213 @@ open CategoryTheory Limits
 
 namespace CasCatalogue.Limits.Registration
 
-universe u
+universe u v w
+
+/-- Set-valued diagram limits, with compatible sections, projections and universal mediator.
+The construction works for arbitrary small diagram shapes, including filtered shapes; it
+does not require a chosen enumeration of objects or a finite index set. -/
+noncomputable def setsDiagramLimit {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) : LimitCone F :=
+  ⟨Types.limitCone F, Types.limitConeIsLimit F⟩
+
+/-- Set-valued diagram colimits, with the quotient of tagged points, injections and
+universal mediator. No filteredness assumption is needed for existence. -/
+noncomputable def setsDiagramColimit {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) : ColimitCocone F :=
+  ⟨Types.TypeMax.colimitCocone F, Types.TypeMax.colimitCoconeIsColimit F⟩
+
+/-- The selected universal mediator from a cone into the actual set-diagram limit. -/
+noncomputable def setsDiagramLimitLift {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) (c : Cone F) :
+    c.pt ⟶ (setsDiagramLimit F).cone.pt :=
+  (setsDiagramLimit F).isLimit.lift c
+
+/-- The selected universal mediator from the actual set-diagram colimit into a cocone. -/
+noncomputable def setsDiagramColimitDesc {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) (c : Cocone F) :
+    (setsDiagramColimit F).cocone.pt ⟶ c.pt :=
+  (setsDiagramColimit F).isColimit.desc c
+
+/-- The selected projection from a set-valued diagram limit at an arbitrary diagram object. -/
+noncomputable def setsDiagramLimitProjection {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) (j : J) :
+    (setsDiagramLimit F).cone.pt ⟶ F.obj j :=
+  (setsDiagramLimit F).cone.π.app j
+
+/-- The selected injection into a set-valued diagram colimit at an arbitrary diagram object. -/
+noncomputable def setsDiagramColimitInjection {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) (j : J) :
+    F.obj j ⟶ (setsDiagramColimit F).cocone.pt :=
+  (setsDiagramColimit F).cocone.ι.app j
+
+theorem setsDiagramLimitLift_fac {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) (c : Cone F) (j : J) :
+    setsDiagramLimitLift F c ≫ (setsDiagramLimit F).cone.π.app j = c.π.app j :=
+  (setsDiagramLimit F).isLimit.fac c j
+
+theorem setsDiagramLimitProjection_fac {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) (c : Cone F) (j : J) :
+    setsDiagramLimitLift F c ≫ setsDiagramLimitProjection F j = c.π.app j :=
+  setsDiagramLimitLift_fac F c j
+
+theorem setsDiagramColimitDesc_fac {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) (c : Cocone F) (j : J) :
+    (setsDiagramColimit F).cocone.ι.app j ≫ setsDiagramColimitDesc F c = c.ι.app j :=
+  (setsDiagramColimit F).isColimit.fac c j
+
+theorem setsDiagramColimitInjection_fac {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) (c : Cocone F) (j : J) :
+    setsDiagramColimitInjection F j ≫ setsDiagramColimitDesc F c = c.ι.app j :=
+  setsDiagramColimitDesc_fac F c j
+
+/-- The selected limit mediator is uniquely determined by its projection equations. -/
+theorem setsDiagramLimitLift_unique {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) (c : Cone F)
+    (f : c.pt ⟶ (setsDiagramLimit F).cone.pt)
+    (hf : ∀ j, f ≫ (setsDiagramLimit F).cone.π.app j = c.π.app j) :
+    f = setsDiagramLimitLift F c :=
+  (setsDiagramLimit F).isLimit.uniq c f hf
+
+/-- The selected colimit mediator is uniquely determined by its injection equations. -/
+theorem setsDiagramColimitDesc_unique {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) (c : Cocone F)
+    (f : (setsDiagramColimit F).cocone.pt ⟶ c.pt)
+    (hf : ∀ j, (setsDiagramColimit F).cocone.ι.app j ≫ f = c.ι.app j) :
+    f = setsDiagramColimitDesc F c :=
+  (setsDiagramColimit F).isColimit.uniq c f hf
+
+/-- Equality into the selected limit is detected by all its projections. -/
+theorem setsDiagramLimit_hom_ext {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) {X : Type (max v u)}
+    {f g : X ⟶ (setsDiagramLimit F).cone.pt}
+    (h : ∀ j, f ≫ (setsDiagramLimit F).cone.π.app j =
+      g ≫ (setsDiagramLimit F).cone.π.app j) : f = g :=
+  (setsDiagramLimit F).isLimit.hom_ext h
+
+/-- Equality out of the selected colimit is detected by all its injections. -/
+theorem setsDiagramColimit_hom_ext {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) {X : Type (max v u)}
+    {f g : (setsDiagramColimit F).cocone.pt ⟶ X}
+    (h : ∀ j, (setsDiagramColimit F).cocone.ι.app j ≫ f =
+      (setsDiagramColimit F).cocone.ι.app j ≫ g) : f = g :=
+  (setsDiagramColimit F).isColimit.hom_ext h
+
+/-- A natural transformation induces a morphism of the selected set-diagram limits. -/
+noncomputable def setsDiagramLimitMap {J : Type v} [Category.{w} J]
+    {F G : J ⥤ Type (max v u)} (α : F ⟶ G) :
+    (setsDiagramLimit F).cone.pt ⟶ (setsDiagramLimit G).cone.pt :=
+  (setsDiagramLimit G).isLimit.map (setsDiagramLimit F).cone α
+
+theorem setsDiagramLimitMap_π {J : Type v} [Category.{w} J]
+    {F G : J ⥤ Type (max v u)} (α : F ⟶ G) (j : J) :
+    setsDiagramLimitMap α ≫ (setsDiagramLimit G).cone.π.app j =
+      (setsDiagramLimit F).cone.π.app j ≫ α.app j :=
+  (setsDiagramLimit G).isLimit.map_π (setsDiagramLimit F).cone α j
+
+theorem setsDiagramLimitMap_id {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) :
+    setsDiagramLimitMap (𝟙 F) = 𝟙 (setsDiagramLimit F).cone.pt := by
+  apply setsDiagramLimit_hom_ext F
+  intro j
+  rw [setsDiagramLimitMap_π]
+  simp
+
+theorem setsDiagramLimitMap_comp {J : Type v} [Category.{w} J]
+    {F G H : J ⥤ Type (max v u)} (α : F ⟶ G) (β : G ⟶ H) :
+    setsDiagramLimitMap (α ≫ β) =
+      setsDiagramLimitMap α ≫ setsDiagramLimitMap β := by
+  apply setsDiagramLimit_hom_ext H
+  intro j
+  calc
+    setsDiagramLimitMap (α ≫ β) ≫ (setsDiagramLimit H).cone.π.app j =
+        (setsDiagramLimit F).cone.π.app j ≫ (α ≫ β).app j :=
+      setsDiagramLimitMap_π (α ≫ β) j
+    _ = (setsDiagramLimit F).cone.π.app j ≫ α.app j ≫ β.app j := by
+      simp only [NatTrans.comp_app, Category.assoc]
+    _ = (setsDiagramLimitMap α ≫ setsDiagramLimitMap β) ≫
+        (setsDiagramLimit H).cone.π.app j := by
+      rw [Category.assoc, setsDiagramLimitMap_π, ← Category.assoc,
+        ← setsDiagramLimitMap_π, Category.assoc]
+
+/-- A natural transformation induces a morphism of selected set-diagram colimits. -/
+noncomputable def setsDiagramColimitMap {J : Type v} [Category.{w} J]
+    {F G : J ⥤ Type (max v u)} (α : F ⟶ G) :
+    (setsDiagramColimit F).cocone.pt ⟶ (setsDiagramColimit G).cocone.pt :=
+  (setsDiagramColimit F).isColimit.map (setsDiagramColimit G).cocone α
+
+theorem setsDiagramColimitMap_ι {J : Type v} [Category.{w} J]
+    {F G : J ⥤ Type (max v u)} (α : F ⟶ G) (j : J) :
+    (setsDiagramColimit F).cocone.ι.app j ≫ setsDiagramColimitMap α =
+      α.app j ≫ (setsDiagramColimit G).cocone.ι.app j :=
+  (setsDiagramColimit F).isColimit.ι_map (setsDiagramColimit G).cocone α j
+
+theorem setsDiagramColimitMap_id {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) :
+    setsDiagramColimitMap (𝟙 F) = 𝟙 (setsDiagramColimit F).cocone.pt := by
+  apply setsDiagramColimit_hom_ext F
+  intro j
+  rw [setsDiagramColimitMap_ι]
+  simp
+
+theorem setsDiagramColimitMap_comp {J : Type v} [Category.{w} J]
+    {F G H : J ⥤ Type (max v u)} (α : F ⟶ G) (β : G ⟶ H) :
+    setsDiagramColimitMap (α ≫ β) =
+      setsDiagramColimitMap α ≫ setsDiagramColimitMap β := by
+  apply setsDiagramColimit_hom_ext F
+  intro j
+  calc
+    (setsDiagramColimit F).cocone.ι.app j ≫ setsDiagramColimitMap (α ≫ β) =
+        (α ≫ β).app j ≫ (setsDiagramColimit H).cocone.ι.app j :=
+      setsDiagramColimitMap_ι (α ≫ β) j
+    _ = α.app j ≫ β.app j ≫ (setsDiagramColimit H).cocone.ι.app j := by
+      simp only [NatTrans.comp_app, Category.assoc]
+    _ = (setsDiagramColimit F).cocone.ι.app j ≫
+        (setsDiagramColimitMap α ≫ setsDiagramColimitMap β) := by
+      rw [← setsDiagramColimitMap_ι β j, ← Category.assoc,
+        ← setsDiagramColimitMap_ι α j, Category.assoc]
+
+/-- The chosen diagram limits assemble into a functor, not just separate maps. -/
+noncomputable def setsDiagramLimitFunctor {J : Type v} [Category.{w} J] :
+    (J ⥤ Type (max v u)) ⥤ Type (max v u) where
+  obj F := (setsDiagramLimit F).cone.pt
+  map α := setsDiagramLimitMap α
+  map_id F := setsDiagramLimitMap_id F
+  map_comp α β := setsDiagramLimitMap_comp α β
+
+/-- The chosen diagram colimits assemble into a functor. -/
+noncomputable def setsDiagramColimitFunctor {J : Type v} [Category.{w} J] :
+    (J ⥤ Type (max v u)) ⥤ Type (max v u) where
+  obj F := (setsDiagramColimit F).cocone.pt
+  map α := setsDiagramColimitMap α
+  map_id F := setsDiagramColimitMap_id F
+  map_comp α β := setsDiagramColimitMap_comp α β
+
+/-- Two representatives in a filtered set colimit agree exactly when they agree after
+transport to a common later object. This is stronger than mere existence of the colimit. -/
+theorem setsFilteredColimit_eq_iff {J : Type v} [Category.{w} J]
+    [IsFilteredOrEmpty J] (F : J ⥤ Type (max v u))
+    {i j : J} (x : F.obj i) (y : F.obj j) :
+    (setsDiagramColimit F).cocone.ι.app i x =
+        (setsDiagramColimit F).cocone.ι.app j y ↔
+      ∃ (k : J) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y := by
+  exact Types.FilteredColimit.isColimit_eq_iff F (setsDiagramColimit F).isColimit
+
+/-- Every element of the selected set-diagram colimit has a representative at some
+diagram object. This holds without a filteredness hypothesis. -/
+theorem setsDiagramColimit_jointly_surjective {J : Type v} [Category.{w} J]
+    (F : J ⥤ Type (max v u)) (z : (setsDiagramColimit F).cocone.pt) :
+    ∃ (i : J) (x : F.obj i), (setsDiagramColimit F).cocone.ι.app i x = z := by
+  exact Types.jointly_surjective F (setsDiagramColimit F).isColimit z
+
+/-- In a filtered colimit, any two elements have representatives at a common stage. -/
+theorem setsFilteredColimit_common_stage {J : Type v} [Category.{w} J]
+    [IsFilteredOrEmpty J] (F : J ⥤ Type (max v u))
+    (x y : (setsDiagramColimit F).cocone.pt) :
+    ∃ (i : J) (x' y' : F.obj i),
+      (setsDiagramColimit F).cocone.ι.app i x' = x ∧
+      (setsDiagramColimit F).cocone.ι.app i y' = y := by
+  exact Types.FilteredColimit.jointly_surjective_of_isColimit₂
+    (setsDiagramColimit F).isColimit x y
 
 /-- Pullbacks in `Sets`. -/
 def setsPullback {X Y Z : LeanCategories.Foundation.Mathlib.Sets.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
@@ -71,6 +280,44 @@ def bilWFormCokernel {R : Type u} [CommRing R]
 end CasCatalogue.Limits.Registration
 
 namespace CasCatalogue
+
+normalized_registry .limit
+  { id := ⟨"lim.sets.diagram"⟩, category := CategoryId.sets, shape := "diagram"
+    declaration := `CasCatalogue.Limits.Registration.setsDiagramLimit }
+
+normalized_registry .limit
+  { id := ⟨"colim.sets.diagram"⟩, category := CategoryId.sets, shape := "diagram"
+    declaration := `CasCatalogue.Limits.Registration.setsDiagramColimit, colimit := true }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.diagram_limit_lift"⟩, category := CategoryId.sets
+    name := "diagram_limit_lift"
+    declaration := `CasCatalogue.Limits.Registration.setsDiagramLimitLift }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.diagram_limit_projection"⟩, category := CategoryId.sets
+    name := "diagram_limit_projection"
+    declaration := `CasCatalogue.Limits.Registration.setsDiagramLimitProjection }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.diagram_colimit_desc"⟩, category := CategoryId.sets
+    name := "diagram_colimit_desc"
+    declaration := `CasCatalogue.Limits.Registration.setsDiagramColimitDesc }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.diagram_colimit_injection"⟩, category := CategoryId.sets
+    name := "diagram_colimit_injection"
+    declaration := `CasCatalogue.Limits.Registration.setsDiagramColimitInjection }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.diagram_limit_map"⟩, category := CategoryId.sets
+    name := "diagram_limit_map"
+    declaration := `CasCatalogue.Limits.Registration.setsDiagramLimitMap }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.diagram_colimit_map"⟩, category := CategoryId.sets
+    name := "diagram_colimit_map"
+    declaration := `CasCatalogue.Limits.Registration.setsDiagramColimitMap }
 
 normalized_registry .limit
   { id := ⟨"lim.sets.pullback"⟩, category := CategoryId.sets, shape := "pullback"

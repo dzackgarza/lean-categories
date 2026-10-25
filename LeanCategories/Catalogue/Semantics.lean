@@ -13,6 +13,8 @@ public import LeanCategories.Catalogue.Semantics.Algebra.Ports
 public import LeanCategories.Catalogue.Semantics.Algebra.Properties
 public import LeanCategories.Catalogue.Semantics.Algebra.Subgroups
 public import LeanCategories.Catalogue.Semantics.Algebra.Automorphisms
+public import LeanCategories.Catalogue.Semantics.Algebra.Centers
+public import LeanCategories.Catalogue.Semantics.Algebra.ShiftedDualNumbers
 public import LeanCategories.Catalogue.Semantics.ConstructorCatalogue
 public import LeanCategories.Catalogue.Semantics.ConstructorRegistration
 public import LeanCategories.Catalogue.Semantics.Exceptional.Catalogue
@@ -20,6 +22,7 @@ public import LeanCategories.Catalogue.Semantics.Exceptional.CatalogueRegistrati
 public import LeanCategories.Catalogue.Semantics.FibrationCatalogue
 public import LeanCategories.Catalogue.Semantics.FibrationRegistration
 public import LeanCategories.Catalogue.Semantics.Foundation.Cardinality
+public import LeanCategories.Catalogue.Semantics.Foundation.Ordinals
 public import LeanCategories.Catalogue.Semantics.Foundation.Catalogue
 public import LeanCategories.Catalogue.Semantics.Foundation.CatalogueRegistration
 public import LeanCategories.Catalogue.Semantics.Foundation.Expressions
@@ -61,6 +64,9 @@ public import LeanCategories.Catalogue.Semantics.Limits.Registration
 public import LeanCategories.Catalogue.Semantics.Foundation.FiniteSubsetLiterals
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Catalogue
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.CatalogueRegistration
+public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Constructions
+public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Alternating
+public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Transport
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Lattices
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Expressions
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Kernels

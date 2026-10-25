@@ -1,4 +1,5 @@
 name = "lean_categories_sphere_packing"
+packagesDir = "../../../../.local/share/lean/v4.33.0/packages"
 version = "0.1.0"
 defaultTargets = ["LeanCategoriesSpherePacking"]
 
@@ -8,8 +9,8 @@ path = "../.."
 
 [[require]]
 name = "SpherePacking"
-git = "https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean"
-rev = "bad3de916074748eb88b7d1ee6dbf9494361ad17"
+# The central checkout applies port-lean-4.33.patch to upstream bad3de916074748eb88b7d1ee6dbf9494361ad17.
+path = "../../../../.local/share/lean/v4.33.0/packages/SpherePacking"
 
 [[lean_lib]]
 name = "LeanCategoriesSpherePacking"

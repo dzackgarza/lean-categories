@@ -654,6 +654,24 @@ not a decidable quotient equality or a new mathematical comparison.
 
 ## Workflow papercuts
 
+### The corpus output check does not classify explicit catalogue-interface work
+
+- **Need:** an explicit request to expose already formalized mathematics through the typed
+  catalogue must remain distinguishable from selecting a new foundational-corpus unit.
+- **Evidence:** on 2026-10-19 at `e1d422eb`, `python3 scripts/output_check.py` exited 1 with
+  `0 of 20 recent commits realized a definition (0%)`. Its population includes two toolchain
+  commits, merges, source requests, and catalogue-interface constructions. The check recognizes
+  corpus realization markers, so it does not establish whether those interface obligations
+  delivered their specified mathematics.
+- **Gap and impact:** the script's instruction to stop selecting corpus units cannot evaluate
+  an independently assigned exposure of Mathlib's existing abelian image/coimage construction.
+  Neither changing corpus markers nor weakening the mathematical request would repair that
+  scope mismatch. No further corpus unit was selected, and the script is unchanged.
+- **Coverage and repair link:** the printed 20-commit population and the current `AGENTS.md`
+  output-check contract were inspected. The owner of that contract should distinguish corpus
+  selection from explicit catalogue work; the mathematical request itself is checked against
+  the existing FC03-CE-U012 / FC05-C01-U013 mappings and the pinned Mathlib declarations.
+
 ### README tree and issue #53 cite registry paths that no longer exist
 
 - **Need:** a worker following the README or #53 to the registry, resolver and realization owners finds them.
@@ -1091,6 +1109,17 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
      than by entries (`Matrix.of`/`!![…]`), `1`, products, transposes or diagonals. Whether an
      element of an arbitrary closed monoid is a unit is not decidable in general; each further
      family is a characterization of its units, added as a case.
+     **Selected ring objects (#92, 2026-10-20).** The matrix `!![1,2;3,4]` was established
+     over literal `ℚ` but refused over the definitionally equal selected rational-ring carrier.
+     Its arithmetic retained `RingCat.instRingObjForgetRingHomCarrier` and the inherited
+     multiplication, addition and numeral instances. Reducing the carrier alone did not repair
+     this. `Units.normalizeRingObjects` reduces both bundled carriers and their structure and
+     forgetful-carrier instance wrappers before the unchanged unit procedures run. The existing
+     specimen suite now includes the selected invertible matrix and a selected singular matrix,
+     retaining the literal cases. Reuse searches (`Matrix.invertibleOfDetInvertible`,
+     `invertibleOfNonzero`, `instance RingCat.carrier`) and the inspected Mathlib
+     `Algebra/Category/Ring/Basic.lean` show that the existing inverse constructions suffice;
+     no mathematical definition, theorem or admission condition changes.
   3. **Closed facts about real numbers.** Nonzero-ness of a real element (units of `ℝ`, leading
      coefficients of real polynomials) is established by evaluation (`norm_num`) or by positivity.
      A nonzero value that is neither evaluable nor of known sign (`π - 3`, `exp 1 - e`-style
@@ -1122,8 +1151,33 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
      because its pieces agree on the boundary (`fun x => if x < 0 then -x else x`) and a quotient
      with a removable zero (`fun x => sin x / x` as extended) are refused; so are maps outside the
      elementary class (`Real.log`, `√` away from `0`, `arctan` are not in the registered class).
+  6. **Elements as the catalogue presents them (resolved 2026-10-21).** The specimens above state
+     hypotheses over bare Mathlib types. At the catalogue's own presentation the procedures refused
+     true members: `Invertible 3` at the monoid of the named ring `ℚ` (`Units.monoidArgument` of
+     `Ports.ringsMultiplicative` at `NamedRings.ringRationals`, the numeral
+     `NamedRings.ringNumeral`), and likewise `-3`, `3 · 2`, `2³`, `3` in the rational field's ring
+     and `2 ∈ ℤ/5`, so `(3 in ℚˣ)⁻¹ = 1/3` could not be stated at the named ring; `Nat.Prime` at
+     the semiring numeral `7 ∈ ℕ`; `Continuous` and `ContDiff` at maps written with `Calculus.sin`,
+     `Calculus.exp`, `NamedRings.add`, `NamedRings.pow` or a composite of registered maps. The
+     units procedures reduced only ring carriers, not the monoid an object reaches along
+     `Ring → Mon`, and read no catalogue declarations outside the polynomial case; the prime,
+     positivity and calculus procedures read none. Reducing a carrier by `whnf` also read `ℤ/5` as
+     `Fin 5`, which the `ℤ/n` case does not recognize. `Units.readCatalogue` now unfolds the
+     catalogue's declarations, evaluates its numerals, reads a bundled monoid, semiring or ring
+     object's carrier and structure off its constructor, whether written as a projection function
+     or as the primitive projection `X.1` it unfolds to (`normalizeBundledObjects`, which replaces
+     `normalizeRingObjects`), and applies registered maps and composites; the units, `ℕ⁺`, `ℙ`,
+     `C(ℝ)` and `C^∞(ℝ)` procedures run it first. Red: `534581a3`. The specimens are in
+     `EvidenceTests` ("Elements as the catalogue presents them") and `UnitInverseTests`
+     (`3⁻¹ = 1/3` at the named ring `ℚ`).
 - **Coverage:** the seven admissions under `Catalogue/Semantics`; the procedures' refusals were
-  exercised only on the listed specimens.
+  exercised only on the listed specimens. Item 6 additionally covered nonzero and monic
+  polynomials over `NamedCommutativeRings.rationals`, `integers`, `integersMod 5` and the rational
+  field's ring, formed by `Polynomials.generator`, `Polynomials.coefficients`, the ring numerals and
+  operations of `Polynomials.ringPolynomials`: those procedures already established and refused
+  correctly there. The convergence and summability procedures are exercised at catalogue-formed
+  maps in `BinderTests`; `𝒫_fin`, `Y^X` and bilinearity were not probed at catalogue-formed
+  elements in item 6.
 - **Repair link:** each item's owner is the named evidence declaration; item 1 is resolved by a
   Pratt-certificate procedure for `ℙ`, the others by adding the named characterization as a case of
   the domain's evidence.
@@ -1526,3 +1580,177 @@ canonical comparison requires result-level cohomology machinery. The
 canonical U171/U173 mapping rows therefore retain explicit
 `[sweep-iii-blocked]` status rather than manufacturing law proofs or a
 surrogate operation.
+
+### Push recipe retained a retired convention check (2026-10-20)
+
+Publishing the #92 repair failed after the tracked-source no-sorry scan because
+`test-push` called the nonexistent `_lint-conventions` recipe. Commit `79c84c49`
+removed that recipe and its coarse Cartan-matrix convention; the later push-tier
+wiring retained its invocation. The repair removes this dangling invocation and
+the stale description of the retired check. The shared Lean no-sorry scan remains
+the push check; full elaboration and the existing audits remain the CI gate.
+
+### Callable formed-module constructions lacked their actual defining data (2026-10-20)
+
+The approved `cc-specimens` and `cc-forms-general` requirements need forms supplied
+by an actual bilinear function, including distinct chosen forms on one carrier and
+varying value modules. The existing catalogue exposed selected constants and pairing,
+but no generic callable constructor or metric-dual/discriminant construction.
+`Constructions.lean` exposes those existing owners, their actual carrier/value
+modules, the chosen map, and defining morphism components. Bilinear admission uses
+Mathlib's full `IsBilinearMap` laws for two possibly different source modules.
+
+Reuse queries were `bilinearForms`, `LinearMap.mk₂`, and
+`IsBilinearMap.toLinearMap` in the formalization corpus. Mathlib owns bilinear maps
+and admission; `BilinModuleCat.ofBilinMap` and `BilWFormCat.of` own formed objects;
+`Lattices/Valued/MetricDual.lean`, `Discriminant.lean`, and
+`Modules/Bilinear/Valued/Cokernel.lean` own the canonical constructions and proofs.
+New code is callable catalogue wrappers, registration, and proof-producing admission
+for elementary module identities. It introduces no replacement mathematics.
+
+Focused `ConstructionTests` compilation checks actual hyperbolic and scaled forms
+over Z, a product-valued form, mixed-source application, diagonal quadratic values,
+a proved nonlinear counterexample, and canonical zero composites. The public
+cokernel surface supplies its object, projection, and prescribed descent under
+`f ≫ g = 0`, using the existing owner's proofs for both components. Its factorization
+identity is also checked generically. These source checks do not establish
+downstream execution, the remaining extension trials, or B0 acceptance.
+
+### Independent group-valued extension: center with its inclusion (2026-10-20)
+
+For directive D's independently chosen group-valued construction, expose the center
+as a subgroup with its actual ambient group and inclusion. Corpus queries
+`Subgroup.center` and `centerCongr` locate Mathlib's owners
+`GroupTheory/Subgroup/Center.lean`; the existing catalogue `Subgroups.lean` owns
+the category and generic group/subgroup interfaces. New code only supplies the
+core-of-groups functor and its catalogue registration, retaining the inclusion's
+central-image theorem. It does not assert functoriality under arbitrary group
+homomorphisms, which is false. The Mathlib-only transport/functor probe and the focused `Centers` target passed.
+The latter checks registration, the central-image theorem, and both functor laws;
+it does not establish downstream execution or B0 acceptance.
+
+### Independent classifier extension: alternating chosen forms (2026-10-20)
+
+Directive D's classifier/refinement extension uses alternation of the actual
+chosen fixed-value formed module. Corpus queries `IsAlternating` and
+`LinearMap.IsAlt`, together with the existing `Fixed.lean`, identify the bilinear
+predicate and `isAlternatingBilinModule`/`AltBilinModuleCat` as owners. New code
+only supplies their classifier/category/property registrations and the constructor
+retaining the original form and its full proof. It selects no replacement pairing.
+The focused `AlternatingTests` source check passed. The determinant pairing on
+Z² retains its value 11 on the independently chosen vectors, implies skew-symmetry,
+and the symmetric hyperbolic form on that same carrier is proved nonalternating.
+This checks the source classifier and its retained mathematics, not downstream
+execution or B0 acceptance.
+
+### Independent structural-route and transport extensions (2026-10-20)
+
+The chosen routes are the fixed-value formed inclusion followed by total formed
+carrier, versus the direct fixed-value carrier. Their independently checked source
+comparison retains the actual module and maps. Prescribed transport uses the
+existing co-Cartesian change-of-value object/arrow and tensor scalar extension along
+an actual ring homomorphism. Corpus searches `fixedValueInclusion` and
+`baseChangeBilWForm` found no additional owner; `Total.lean` and
+`Lattices/Valued/BaseChange.lean` already supply these constructions. New code only
+exposes those owners and registers their structural comparison and callable maps.
+The import-only carrier-route equality probe passed. Focused `Transport` and `TransportTests` builds passed. The chosen nonidentity
+value map sends n to (n,2n); the source checks the resulting pairing (5,10) and
+its defining value-map action. Scalar extension along Z → Q checks the actual
+tensor-valued pairing with both supplied scalar factors. These source checks do
+not establish downstream execution or independent B0 acceptance.
+
+### Independent presentation extension: shifted rational dual numbers (2026-10-20)
+
+The independently chosen pair is Q[X]/(X²) and Q[Y]/((Y+1)²), with comparison
+X ↦ Y+1 and inverse Y ↦ X−1. Corpus queries `Polynomial.taylorEquiv` and
+`Ideal.quotientEquivAlg` locate the Mathlib owners; the existing
+`Algebra/Concrete/PolynomialPresentation.lean` already supplies generic translation.
+New code specializes that comparison, retains the actual quotient generators,
+proves their nonidentity action and transported nilpotent relation, and registers
+source-proved point evaluation. These rings are not represented as fields.
+The import-only mathematical proof and theorem-rewriting probes passed, followed
+by the focused `ShiftedDualNumberTests` build (source plus regressions). Both
+generator actions, coefficient preservation, composite polynomial action, the
+nonidentity negative, and the transported square-zero relation are checked in
+Lean. These source checks do not establish downstream execution or B0 acceptance.
+
+### Complete formed morphisms and a nonzero prescribed cokernel descent (2026-10-20)
+
+The structured-result extension is checked on multiplication by two on U's carrier
+and four on its values, followed by reduction modulo two. Both actual module maps
+and their full pairing law are exposed by a wrapper of `BilWFormCat.homMk`; no
+carrier-only morphism or quotient is substituted. Corpus queries
+`BilWFormCat.homMk` and `AddMonoidHom.toIntLinearMap` identify the existing formed
+morphism and integral-linear map owners. The import-only map/zero-composite probe
+passed. The concrete source check additionally prescribes the nonzero descended
+carrier/value maps and checks the quotient pairing through its defining projection.
+The test consumes the already registered complete `ColimitCocone` from
+`Limits/Registration.bilWFormCokernel`, including its actual mediator, rather than
+introducing another structured-result representation. Both the canonical-wrapper and registered-cocone focused checks passed. The
+final `CokernelLiftTests` target checks the complete registered result
+(2928 jobs, 10-second rebuilt test), with no new source warnings. It establishes
+these mathematical source assertions, not downstream execution or B0 acceptance.
+
+### Independent review of the published B0 mathematical source (2026-10-20)
+
+**Assessed source:** `e8e97d2b13fad4b868b0f8447a5e511a47732436`, verified
+against `origin`'s advertised `main` on 2026-10-20. The reviewed change range is
+`a2123729df092e58b6fb0cd39c78db5e1714faf2..e8e97d2b13fad4b868b0f8447a5e511a47732436`.
+This is an independent mathematical construction-source assessment. No downstream
+kernel, assertion, leaf, or execution diagnostic was consulted.
+
+The inspected new declarations preserve their mathematical owners and hypotheses:
+
+- `Constructions.bilinearMaps` permits different source modules and arbitrary selected
+  value modules. `admitBilinear` requires all four universally quantified laws of
+  Mathlib's `IsBilinearMap` (`LinearAlgebra/BilinearMap.lean:647`), then uses its
+  `toLinearMap`. The constructor retains the supplied map. The actual hyperbolic
+  formula on Z², its threefold multiple on the same carrier, a product-valued
+  pairing, and a nonlinear separating example occur in `ConstructionTests`.
+- `Centers.center` retains Mathlib's center as an actual subgroup inclusion.
+  `centers` transports it on `Core GrpCat` through Mathlib's `centerCongr`, without
+  asserting the false arbitrary-homomorphism version. `Alternating` uses the full
+  existing alternation predicate; its determinant specimen and the nonalternating
+  symmetric hyperbolic specimen distinguish selected structure from carrier data.
+- `Transport.carrierRoutes` compares the actual functors, including morphisms;
+  its definitional proof is an accurate structural comparison, not a new theorem
+  about forms. Change of values retains the prescribed linear map, and scalar
+  extension uses the supplied ring homomorphism's algebra structure. The source
+  specimens use a nonidentity map n ↦ (n,2n) and tensor extension Z → Q.
+- `ShiftedDualNumbers` compares Q[X]/(X²) with Q[Y]/((Y+1)²) using the existing
+  polynomial-translation owner. Both generator actions, coefficient preservation,
+  a proved nonidentity action, and the transported square-zero relation are
+  retained. These are quotient rings, with no field claim.
+- Metric-dual wrappers retain the integral-domain hypothesis and the existing
+  dual submodule of the rational span. Their source map has the actual R → Frac(R)
+  value component. The discriminant is the existing formed cokernel, not an
+  unstructured carrier quotient. Its owner proves that value relations give
+  Frac(R)/R; comparison with the adjoint-defect presentation explicitly requires
+  fraction-field perfection (`Discriminant.discriminantCarrierEquivDefect`).
+- The formed cokernel owner kills the carrier image and both mixed-pairing
+  relations in its values. Its `cokernelIsColimit` constructs the mediator and
+  proves uniqueness on both quotient components. The new wrapper consumes that
+  owner rather than assuming the universal property. `CokernelLiftTests` uses
+  the registered colimit cocone on doubled hyperbolic U with values multiplied
+  by four and prescribed reduction modulo two; its mediator is proved nonzero
+  and both defining map actions and the quotient pairing are checked.
+
+No concrete mathematical defect was found in these new declarations. The unit
+admission change was also inspected: it normalizes selected carrier/instance
+projections by definitional reduction before existing proof-producing tactics;
+it adds no mathematical axiom or weakened predicate.
+
+**Check and limits:** the single focused command
+`lake build LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.CokernelLiftTests`
+completed successfully at the assessed source (2928 jobs, cached dependencies with
+replayed existing warnings). This establishes elaboration of that target and its
+imported source assertions. Earlier entries' focused checks for the other targets
+remain their authors' recorded checks; they were not rerun by this review.
+The newly added source examples do not establish a concrete hyperbolic-U
+metric-dual/discriminant value calculation, or a new generic binder/application
+instance covering the complete growth requirement. Their absence from these new
+examples is an assessment limit, not evidence that the existing mathematical
+owners are false or unavailable. Whole-program mathematical completeness and
+publication readiness beyond the inspected changes remain unestablished by this
+bounded review. Compilation and this source judgment confer no downstream
+functional acceptance, independent release authority, or B0 acceptance.

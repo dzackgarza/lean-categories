@@ -1,0 +1,271 @@
+diff --git a/SpherePacking/Basic/E8.lean b/SpherePacking/Basic/E8.lean
+index 3822c90..b48de85 100644
+--- a/SpherePacking/Basic/E8.lean
++++ b/SpherePacking/Basic/E8.lean
+@@ -298,8 +298,9 @@ theorem E8Matrix_unimodular (R : Type*) [Field R] [NeZero (2 : R)] : (E8Matrix R
+ private lemma E8Matrix_is_basis (R : Type*) [Field R] [NeZero (2 : R)] :
+     LinearIndependent R (E8Matrix R).row ∧
+     Submodule.span R (Set.range (E8Matrix R).row) = ⊤ := by
+-  rw [Module.Basis.is_basis_iff_det (Pi.basisFun _ _), Pi.basisFun_det, ← Matrix.det, Matrix.row,
+-    E8Matrix_unimodular]
++  rw [Module.Basis.is_basis_iff_det (Pi.basisFun _ _), Pi.basisFun_det_apply]
++  change IsUnit (E8Matrix R).det
++  rw [E8Matrix_unimodular]
+   simp
+ 
+ lemma linearIndependent_E8Matrix (R : Type*) [Field R] [NeZero (2 : R)] :
+@@ -688,7 +689,9 @@ theorem E8Packing_density : E8Packing.density = ENNReal.ofReal π ^ 4 / 384 := b
+     trans ∑ i, ‖E8_ℤBasis i‖
+     · rw [← fract_eq_self.mpr hx]
+       convert norm_fract_le (K := ℝ) _ _
+-      simp; rfl
++      rename_i i hi
++      exact (congrArg norm
++        (E8_ℤBasis.ofZLatticeBasis_apply ℝ E8Packing.lattice i)).symm
+     · refine (Finset.sum_le_sum (fun i hi ↦ E8_ℤBasis_apply_norm i)).trans ?_
+       norm_num
+ 
+diff --git a/SpherePacking/Basic/PeriodicPacking.lean b/SpherePacking/Basic/PeriodicPacking.lean
+index 69c47d1..9776096 100644
+--- a/SpherePacking/Basic/PeriodicPacking.lean
++++ b/SpherePacking/Basic/PeriodicPacking.lean
+@@ -163,8 +163,10 @@ noncomputable def PeriodicSpherePacking.addActionOrbitRelEquiv
+     refine Quotient.lift ?_ ?_
+     · intro s
+       let g := Classical.choose (hD_unique_covers s.val)
+-      use g.val + s.val, S.lattice_action g.prop s.prop,
+-        (Classical.choose_spec (hD_unique_covers s.val)).left
++      use g.val + s.val
++      simp only [Set.mem_inter_iff]
++      exact ⟨S.lattice_action g.prop s.prop,
++        (Classical.choose_spec (hD_unique_covers s.val)).left⟩
+     · intro ⟨u, hu⟩ ⟨v, hv⟩ h
+       change (S.addAction.orbitRel).r ⟨u, hu⟩ ⟨v, hv⟩ at h
+       rw [AddAction.orbitRel_apply, AddAction.orbit, Set.mem_range] at h
+@@ -182,7 +184,9 @@ noncomputable def PeriodicSpherePacking.addActionOrbitRelEquiv
+         change (Classical.choose _ : S.lattice).val + (y + v) ∈ D at this
+         simp only [Subtype.forall] at this
+         exact this
+-  invFun := fun ⟨x, hx⟩ ↦ ⟦⟨x, hx.left⟩⟧
++  invFun := fun ⟨x, hx⟩ ↦ by
++    simp only [Set.mem_inter_iff] at hx
++    exact ⟦⟨x, hx.left⟩⟧
+   left_inv := by
+     apply Quotient.ind
+     intro ⟨a, ha⟩
+@@ -192,14 +196,16 @@ noncomputable def PeriodicSpherePacking.addActionOrbitRelEquiv
+     simp [addAction_vadd]
+   right_inv := by
+     intro ⟨x, hx⟩
+-    simp_rw [Quotient.lift_mk, Subtype.mk.injEq, add_eq_right]
++    simp only [Set.mem_inter_iff] at hx
++    obtain ⟨_, hx_D⟩ := hx
++    simp only [Quotient.lift_mk, Subtype.mk.injEq, add_eq_right]
+     obtain ⟨g, ⟨hg, hg'⟩⟩ := hD_unique_covers x
+     trans g.val <;> norm_cast
+     · apply hg'
+       exact (Classical.choose_spec (hD_unique_covers x)).left
+     · apply (hg' 0 ?_).symm
+       set_option backward.isDefEq.respectTransparency false in
+-      simpa using hx.right
++      simpa using hx_D
+ 
+ noncomputable def PeriodicSpherePacking.addActionOrbitRelEquiv'
+     {ι : Type*} [Finite ι] (b : Basis ι ℤ S.lattice) :
+@@ -224,8 +230,12 @@ noncomputable def PeriodicSpherePacking.addActionOrbitRelEquiv''
+       ↑(S.centers ∩ (v +ᵥ fundamentalDomain (b.ofZLatticeBasis ℝ _))) := by
+   apply (S.addActionOrbitRelEquiv' b).trans
+   exact {
+-    toFun := fun ⟨u, ⟨hu_centers, _⟩⟩ ↦ by
++    toFun := fun ⟨u, hu⟩ ↦ by
++      have hu' : u ∈ S.centers ∧ u ∈ fundamentalDomain (b.ofZLatticeBasis ℝ _) := by
++        simpa only [Set.mem_inter_iff] using hu
++      have hu_centers := hu'.left
+       use u - floor (b.ofZLatticeBasis ℝ _) (u - v)
++      simp only [Set.mem_inter_iff]
+       constructor
+       · rw [sub_eq_neg_add]
+         apply S.lattice_action ?_ hu_centers
+@@ -235,22 +245,35 @@ noncomputable def PeriodicSpherePacking.addActionOrbitRelEquiv''
+         use fract (b.ofZLatticeBasis ℝ _) (u - v), fract_mem_fundamentalDomain _ _, ?_
+         rw [fract, vadd_eq_add]
+         abel
+-    invFun := fun ⟨u, ⟨hu_centers, _⟩⟩ ↦ by
++    invFun := fun ⟨u, hu⟩ ↦ by
++      have hu' : u ∈ S.centers ∧ u ∈ v +ᵥ fundamentalDomain (b.ofZLatticeBasis ℝ _) := by
++        simpa only [Set.mem_inter_iff] using hu
++      have hu_centers := hu'.left
+       use fract (b.ofZLatticeBasis ℝ _) u
++      simp only [Set.mem_inter_iff]
+       constructor
+       · rw [fract, sub_eq_neg_add]
+         apply S.lattice_action ?_ hu_centers
+         apply Submodule.neg_mem
+         exact (mem_basis_Z_span ..).mp <| Submodule.coe_mem _
+       · exact fract_mem_fundamentalDomain _ _
+-    left_inv := fun ⟨u, ⟨hu_centers, hu_fd⟩⟩ ↦ by
+-      simp_rw [Subtype.mk.injEq]
++    left_inv := fun ⟨u, hu⟩ ↦ by
++      have hu' : u ∈ S.centers ∧ u ∈ fundamentalDomain (b.ofZLatticeBasis ℝ _) := by
++        simpa only [Set.mem_inter_iff] using hu
++      have hu_fd := hu'.right
++      apply Subtype.ext
++      change fract (b.ofZLatticeBasis ℝ _) (u - floor (b.ofZLatticeBasis ℝ _) (u - v)) = u
+       rw [sub_eq_add_neg, fract_add_ZSpan]
+       · exact fract_eq_self.mpr hu_fd
+       · apply neg_mem
+         exact Submodule.coe_mem _
+-    right_inv := fun ⟨u, ⟨hu_centers, hu_fd⟩⟩ ↦ by
+-      simp_rw [Subtype.mk.injEq]
++    right_inv := fun ⟨u, hu⟩ ↦ by
++      have hu' : u ∈ S.centers ∧ u ∈ v +ᵥ fundamentalDomain (b.ofZLatticeBasis ℝ _) := by
++        simpa only [Set.mem_inter_iff] using hu
++      have hu_fd := hu'.right
++      apply Subtype.ext
++      change fract (b.ofZLatticeBasis ℝ _) u -
++        floor (b.ofZLatticeBasis ℝ _) (fract (b.ofZLatticeBasis ℝ _) u - v) = u
+       rw [← EmbeddingLike.apply_eq_iff_eq (b.ofZLatticeBasis ℝ _).repr, map_sub]
+       have hu_fd' : u - v ∈ fundamentalDomain (b.ofZLatticeBasis ℝ _) := by
+         rwa [Set.mem_vadd_set_iff_neg_vadd_mem, vadd_eq_add, neg_add_eq_sub] at hu_fd
+diff --git a/lake-manifest.json b/lake-manifest.json
+index 271f8df..ed8adef 100644
+--- a/lake-manifest.json
++++ b/lake-manifest.json
+@@ -1,5 +1,5 @@
+ {"version": "1.2.0",
+- "packagesDir": ".lake/packages",
++ "packagesDir": "..",
+  "packages":
+  [{"url": "https://github.com/PatrickMassot/checkdecls.git",
+    "type": "git",
+@@ -8,24 +8,24 @@
+    "rev": "3d425859e73fcfbef85b9638c2a91708ef4a22d4",
+    "name": "checkdecls",
+    "manifestFile": "lake-manifest.json",
+-   "inputRev": null,
++   "inputRev": "3d425859e73fcfbef85b9638c2a91708ef4a22d4",
+    "inherited": false,
+    "configFile": "lakefile.lean"},
+-  {"url": "https://github.com/leanprover-community/mathlib4.git",
++  {"url": "https://github.com/leanprover-community/mathlib4",
+    "type": "git",
+    "subDir": null,
+-   "scope": "",
+-   "rev": "81a5d257c8e410db227a6665ed08f64fea08e997",
++   "scope": "leanprover-community",
++   "rev": "db584cd6d46c92f209a44c0f1c829460d327499d",
+    "name": "mathlib",
+    "manifestFile": "lake-manifest.json",
+-   "inputRev": "v4.32.0",
++   "inputRev": "v4.33.0",
+    "inherited": false,
+    "configFile": "lakefile.lean"},
+   {"url": "https://github.com/leanprover-community/plausible",
+    "type": "git",
+    "subDir": null,
+    "scope": "leanprover-community",
+-   "rev": "e12c1910fe855cbfc38803cd4e55543906d5fa62",
++   "rev": "b7eb3304aeae834b12dda98993a37f6a41f6f0bb",
+    "name": "plausible",
+    "manifestFile": "lake-manifest.json",
+    "inputRev": "main",
+@@ -35,7 +35,7 @@
+    "type": "git",
+    "subDir": null,
+    "scope": "leanprover-community",
+-   "rev": "c5d5b8fe6e5158def25cd28eb94e4141ad97c843",
++   "rev": "5f4d51b81cbd3f6b32b156bfad9056621a040404",
+    "name": "LeanSearchClient",
+    "manifestFile": "lake-manifest.json",
+    "inputRev": "main",
+@@ -45,7 +45,7 @@
+    "type": "git",
+    "subDir": null,
+    "scope": "leanprover-community",
+-   "rev": "7e9612bf0b9ee66db3cb5b9988a35afc706f5a12",
++   "rev": "16f02aa7642864af59f1ff0e384a015994db9118",
+    "name": "importGraph",
+    "manifestFile": "lake-manifest.json",
+    "inputRev": "main",
+@@ -55,7 +55,7 @@
+    "type": "git",
+    "subDir": null,
+    "scope": "leanprover-community",
+-   "rev": "6e311e2a844da9b2cc3971187df2fe0066947b93",
++   "rev": "4be2e3d5087eeb272cf5a8853b8f9dd025ef5957",
+    "name": "proofwidgets",
+    "manifestFile": "lake-manifest.json",
+    "inputRev": "main",
+@@ -65,7 +65,7 @@
+    "type": "git",
+    "subDir": null,
+    "scope": "leanprover-community",
+-   "rev": "a7dbf0c63b694e47f425f3dcddbc0e178bb432d3",
++   "rev": "3448c0bcc5ce01b2d1546e483ec3620e32df3d0e",
+    "name": "aesop",
+    "manifestFile": "lake-manifest.json",
+    "inputRev": "master",
+@@ -75,7 +75,7 @@
+    "type": "git",
+    "subDir": null,
+    "scope": "leanprover-community",
+-   "rev": "38d591e778f100aec9762bb582f9c7f55f50e9dc",
++   "rev": "92c15be17b7caf78c2ad767ec40f89052d908d81",
+    "name": "Qq",
+    "manifestFile": "lake-manifest.json",
+    "inputRev": "master",
+@@ -85,7 +85,7 @@
+    "type": "git",
+    "subDir": null,
+    "scope": "leanprover-community",
+-   "rev": "023ce7d62a0531e22a5331e20b587817a80d49ff",
++   "rev": "4488d40d070b9700d4d5a6aa342f0d40c31b2a2d",
+    "name": "batteries",
+    "manifestFile": "lake-manifest.json",
+    "inputRev": "main",
+@@ -95,10 +95,10 @@
+    "type": "git",
+    "subDir": null,
+    "scope": "leanprover",
+-   "rev": "88679d088c9720c27ebdf2ba4dafe17341747f94",
++   "rev": "6130a47896ce867c6a4a55373441e59e565bad0f",
+    "name": "Cli",
+    "manifestFile": "lake-manifest.json",
+-   "inputRev": "v4.32.0",
++   "inputRev": "v4.33.0",
+    "inherited": true,
+    "configFile": "lakefile.toml"}],
+  "name": "SpherePacking",
+diff --git a/lakefile.toml b/lakefile.toml
+index 8aea6ef..c71a9fe 100644
+--- a/lakefile.toml
++++ b/lakefile.toml
+@@ -1,4 +1,5 @@
+ name = "SpherePacking"
++packagesDir = ".."
+ defaultTargets = ["SpherePacking"]
+ 
+ [leanOptions]
+@@ -10,12 +11,13 @@ linter.flexible = false
+ 
+ [[require]]
+ name = "mathlib"
+-git = "https://github.com/leanprover-community/mathlib4.git"
+-rev = "v4.32.0"
++scope = "leanprover-community"
++rev = "v4.33.0"
+ 
+ [[require]]
+ name = "checkdecls"
+ git = "https://github.com/PatrickMassot/checkdecls.git"
++rev = "3d425859e73fcfbef85b9638c2a91708ef4a22d4"
+ 
+ [[lean_lib]]
+ name = "SpherePacking"
+diff --git a/lean-toolchain b/lean-toolchain
+index 94b9f49..025e595 100644
+--- a/lean-toolchain
++++ b/lean-toolchain
+@@ -1 +1 @@
+-leanprover/lean4:v4.32.0
++leanprover/lean4:v4.33.0

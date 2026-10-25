@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Catalogue.Semantics.Foundation.FiniteSubsets
+public import LeanCategories.Catalogue.Semantics.Algebra.Units
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Nat.Factorization.Basic
@@ -12,6 +13,7 @@ public import Mathlib.Tactic.NormNum.Prime
 public import Mathlib.Tactic.Positivity
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.Foundation.Evidence
+public meta import LeanCategories.Catalogue.Semantics.Algebra.Units
 public meta import LeanCategories.Catalogue.Semantics.Foundation.Catalogue
 
 @[expose] public section
@@ -113,24 +115,30 @@ def primesInclusion : primes ⟶ naturals := TypeCat.ofHom Subtype.val
 def admitPrime (p : ℕ) (h : p.Prime) : fin 1 ⟶ primes := TypeCat.ofHom fun _ => ⟨p, h⟩
 
 open Lean Elab Tactic in
-/-- The evidence that a closed natural number `n` is positive, `0 < n`: `n` is evaluated in `ℕ`
+/-- The evidence that a closed natural number `n` is positive, `0 < n`: `n` is read as the catalogue
+presents it (its semiring numerals and operations, `Units.readCatalogue`) and evaluated in `ℕ`
 (an arithmetic expression in numerals, `+`, `·`, `^`, truncated `-`, `/`, `%`, `!`), and the order
 of the resulting numerals decides it. -/
 meta def positiveEvidence : TacticM Unit :=
-  CasCatalogue.Evidence.establish "ℕ⁺" <| CasCatalogue.Evidence.closeByFirst
-    m!"the value is not established to be a positive natural number"
-    [do evalTactic (← `(tactic| norm_num [Nat.factorial])),
-     do evalTactic (← `(tactic| positivity)),
-     do evalTactic (← `(tactic| decide))]
+  CasCatalogue.Evidence.establish "ℕ⁺" do
+    CasCatalogue.Algebra.Units.readCatalogue
+    CasCatalogue.Evidence.closeByFirst
+      m!"the value is not established to be a positive natural number"
+      [do evalTactic (← `(tactic| norm_num [Nat.factorial])),
+       do evalTactic (← `(tactic| positivity)),
+       do evalTactic (← `(tactic| decide))]
 
 open Lean Elab Tactic in
-/-- The evidence that a closed natural number `p` is prime: `p` is evaluated in `ℕ`, and its
-primality is decided by trial division up to `√p` with a certificate for each factor candidate
-(Mathlib's `Nat.Prime` extension of `norm_num`, `Mathlib.Tactic.NormNum.Prime`). -/
+/-- The evidence that a closed natural number `p` is prime: `p` is read as the catalogue presents it
+(`Units.readCatalogue`) and evaluated in `ℕ`, and its primality is decided by trial division up to
+`√p` with a certificate for each factor candidate (Mathlib's `Nat.Prime` extension of `norm_num`,
+`Mathlib.Tactic.NormNum.Prime`). -/
 meta def primeEvidence : TacticM Unit :=
-  CasCatalogue.Evidence.establish "ℙ" <| CasCatalogue.Evidence.closeByFirst
-    m!"the value is not established to be prime"
-    [do evalTactic (← `(tactic| norm_num [Nat.factorial]))]
+  CasCatalogue.Evidence.establish "ℙ" do
+    CasCatalogue.Algebra.Units.readCatalogue
+    CasCatalogue.Evidence.closeByFirst
+      m!"the value is not established to be prime"
+      [do evalTactic (← `(tactic| norm_num [Nat.factorial]))]
 
 /-- The prime factors of `n ∈ ℕ⁺` (none for `n = 1`), `ℕ⁺ → 𝒫_fin(ℙ)`. -/
 def primeFactors : positiveNaturals ⟶ Foundation.FiniteSubsets.finiteSubsets Nat.Primes :=

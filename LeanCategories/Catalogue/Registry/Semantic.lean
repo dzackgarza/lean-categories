@@ -127,7 +127,7 @@ def SemanticEntry.declarations : SemanticEntry → Array Name
   | .numeral e => #[e.declaration]
   | .graphLiteral e => #[e.denotation]
   | .morphism e => #[e.declaration]
-  | .operation e => #[e.declaration]
+  | .operation e => #[e.declaration] ++ e.refines.toArray.map (·.identification)
   | .inclusion e => #[e.declaration, e.mono]
   | .powerObject e =>
       #[e.truth, e.member, e.transpose, e.extent, e.empty, e.singleton, e.terminal, e.image]
@@ -2254,6 +2254,43 @@ def validateOperation (state : SemanticState) (e : OperationEntry) : MetaM Unit 
   let type ← whnfR type
   unless type.isAppOf ``Quiver.Hom do
     throwError "operation {e.id.raw}: {e.declaration} is not a family of morphisms"
+  let some refinement := e.refines | return
+  let some base := state.operations.find? (·.id == refinement.base)
+    | throwError "operation {e.id.raw} refines an unregistered operation {refinement.base.raw}"
+  unless base.refines.isNone && base.name == e.name && base.arity == e.arity &&
+      base.result == e.result && base.numerals == e.numerals do
+    throwError "operation {e.id.raw} does not retain the name, arity and result of its general owner"
+  let some baseCategory := state.categories.find? (·.id == base.category)
+    | throwError "operation {e.id.raw}: its general owner has no registered category"
+  unless !refinement.route.isEmpty &&
+      (state.routeEdges? category.expression baseCategory.expression refinement.route).isSome do
+    throwError "operation {e.id.raw}: its restriction is not along a structural route from \
+      {e.category.raw} to {base.category.raw}"
+  let comparison ← mkConstWithFreshMVarLevels refinement.identification
+  let (comparisonArgs, _, comparisonType) ← forallMetaTelescopeReducing
+    (← inferType comparison)
+  unless comparisonArgs.size == args.size do
+    throwError "operation {e.id.raw}: its identification has different parameters"
+  let objectIndex := args.size - 1 - e.numerals
+  let object := comparisonArgs[objectIndex]!
+  unless ← withTransparency .all <| isDefEq (← inferType object)
+      (← categoryCarrierInstance category) do
+    throwError "operation {e.id.raw}: its identification has the wrong source object"
+  let route ← state.routeFunctor refinement.route
+  let routeType ← whnf (← inferType route)
+  unless ← withTransparency .all <| isDefEq (← inferType object)
+      routeType.getAppArgs[0]! do
+    throwError "operation {e.id.raw}: its identification object is not in the route's source"
+  let route ← instantiateMVars route
+  let image ← mkAppM ``Prefunctor.obj
+    #[← mkAppM ``CategoryTheory.Functor.toPrefunctor #[route], object]
+  let restricted := mkAppN declaration comparisonArgs
+  let general := mkAppN (← mkConstWithFreshMVarLevels base.declaration)
+    (comparisonArgs.set! objectIndex image)
+  let expected ← mkAppM ``Eq #[restricted, general]
+  unless ← withTransparency .all <| isDefEq comparisonType expected do
+    throwError "operation {e.id.raw}: {refinement.identification} does not identify the \
+      restriction along {renderSteps refinement.route} with {base.id.raw}"
 
 /-- A power-object row names a registered object family `𝒫` and truth values `Ω` of `Sets`, and
 declarations whose types are those its fields state: `truth` and `member` land in `Ω`; `empty`,

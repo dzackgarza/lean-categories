@@ -21,6 +21,7 @@ public import Mathlib.Tactic.FunProp
 public import Mathlib.Tactic.Positivity
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.Foundation.Evidence
+public meta import LeanCategories.Catalogue.Semantics.Algebra.Units
 
 @[expose] public section
 
@@ -88,16 +89,19 @@ def admitContinuous (f : ℝ → ℝ) (h : Continuous f) :
   TypeCat.ofHom fun _ => ⟨f, h⟩
 
 open Lean Elab Tactic in
-/-- The evidence that a closed map `f : ℝ → ℝ` is continuous: `f` is built from the identity and
-constants by `+`, `-`, `·`, `^ n`, division by a map without zeros, `sin`, `cos`, `exp` and
-composition; each of these is continuous (`Real.continuous_sin`, `Real.continuous_exp`,
-`Continuous.add`, `Continuous.comp`, …) and the rules compose along the structure of `f`
-(Mathlib `fun_prop`). That a denominator has no zeros is established by its positivity. It fails on
-a map that is not built so, a discontinuous one in particular. -/
+/-- The evidence that a closed map `f : ℝ → ℝ` is continuous: `f`, read as the catalogue presents
+it (its registered maps, operations and numerals, `Units.readCatalogue`), is built from the
+identity and constants by `+`, `-`, `·`, `^ n`, division by a map without zeros, `sin`, `cos`,
+`exp`, `√` and composition; each of these is continuous (`Real.continuous_sin`,
+`Real.continuous_exp`, `Continuous.add`, `Continuous.comp`, …) and the rules compose along the
+structure of `f` (Mathlib `fun_prop`). That a denominator has no zeros is established by its
+positivity. It fails on a map that is not built so, a discontinuous one in particular. -/
 meta def continuousEvidence : TacticM Unit :=
-  CasCatalogue.Evidence.establish "C(ℝ)" <| CasCatalogue.Evidence.closeByFirst
-    m!"the map is not established to be continuous"
-    [do evalTactic (← `(tactic| fun_prop (disch := (intros; positivity))))]
+  CasCatalogue.Evidence.establish "C(ℝ)" do
+    CasCatalogue.Algebra.Units.readCatalogue
+    CasCatalogue.Evidence.closeByFirst
+      m!"the map is not established to be continuous"
+      [do evalTactic (← `(tactic| fun_prop (disch := (intros; positivity))))]
 
 /-- `f ↦ ∫_a^b f(t) dt`, `C(ℝ) → ℝ`, at the bounds `a b ∈ ℝ`: the binder `∫_{a}^{b} e dt`
 (`lean-cas-dsl/specs/binders.md`), its arguments the two bounds. It is Mathlib's interval integral
@@ -158,14 +162,16 @@ def admitSmooth (f : ℝ → ℝ) (h : ContDiff ℝ (⊤ : ℕ∞) f) :
   TypeCat.ofHom fun _ => ⟨f, h⟩
 
 open Lean Elab Tactic in
-/-- The evidence that a closed map `f : ℝ → ℝ` is smooth, `ContDiff ℝ ∞ f`: `f` is built as for
-`continuousEvidence`, and each constituent is smooth (`Real.contDiff_sin`, `Real.contDiff_exp`,
-`ContDiff.mul`, `ContDiff.comp`, `ContDiff.div` away from zeros, …), composed along the structure
-of `f` (Mathlib `fun_prop`). It fails on a map that is not built so (`|x|`, `√x`). -/
+/-- The evidence that a closed map `f : ℝ → ℝ` is smooth, `ContDiff ℝ ∞ f`: `f`, read as the
+catalogue presents it (`Units.readCatalogue`), is built as for `continuousEvidence`, and each
+constituent is smooth (`Real.contDiff_sin`, `Real.contDiff_exp`, `ContDiff.mul`, `ContDiff.comp`,
+`ContDiff.div` away from zeros, …), composed along the structure of `f` (Mathlib `fun_prop`). It fails on a map that is not built so (`|x|`, `√x`). -/
 meta def smoothEvidence : TacticM Unit :=
-  CasCatalogue.Evidence.establish "C^∞(ℝ)" <| CasCatalogue.Evidence.closeByFirst
-    m!"the map is not established to be smooth"
-    [do evalTactic (← `(tactic| fun_prop (disch := (intros; positivity))))]
+  CasCatalogue.Evidence.establish "C^∞(ℝ)" do
+    CasCatalogue.Algebra.Units.readCatalogue
+    CasCatalogue.Evidence.closeByFirst
+      m!"the map is not established to be smooth"
+      [do evalTactic (← `(tactic| fun_prop (disch := (intros; positivity))))]
 
 /-- `R[[t]]`, for an object `R` of commutative rings (LC-13). -/
 abbrev powerSeries (R : CommRingCat.{0}) : SetsCat.{0} := PowerSeries R

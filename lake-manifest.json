@@ -1,5 +1,5 @@
 {"version": "1.2.0",
- "packagesDir": ".lake/packages",
+ "packagesDir": "../../.local/share/lean/v4.33.0/packages",
  "packages":
  [{"url": "https://github.com/Whysoserioushah/BrauerGroup.git",
    "type": "git",

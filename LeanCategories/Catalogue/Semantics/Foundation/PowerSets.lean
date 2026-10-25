@@ -7,6 +7,7 @@ module
 public import LeanCategories.Catalogue.Semantics.Algebra.NumberSystems
 public import Mathlib.Order.Category.BoolAlg
 public import Mathlib.Order.Category.LinOrd
+public import Mathlib.Order.Category.PartOrd
 public import Mathlib.Order.SymmDiff
 public import Mathlib.Data.Set.Basic
 public import Mathlib.Order.BooleanAlgebra.Set
@@ -26,7 +27,10 @@ public meta import LeanCategories.Catalogue.Semantics.Foundation.Catalogue
   `X → 1` and images `(X → Y) ↦ f(X) ∈ 𝒫 Y`. It is refined by the Boolean algebra `𝒫(X)` in
   `BooleanAlgebras` (Mathlib `BoolAlg`), whose operations are `∪ ∩ \ △` and whose order `⊆` lands
   in `Ω`.
-* `LinearOrders` (Mathlib `LinOrd`) refine `ℕ, ℤ, ℚ, ℝ`, with the relations `≤` and `<` into `Ω`.
+* `PartialOrders` (Mathlib `PartOrd`) has partial orders and monotone maps, with a faithful
+  underlying-set functor. `LinearOrders` (Mathlib `LinOrd`) maps to it by forgetting totality;
+  the resulting route to `Sets` is compared with the existing direct route.
+  Linear orders refine `ℕ, ℤ, ℚ, ℝ`, with the relations `≤` and `<` into `Ω`.
 
 The families take their sets as types, ascribed to `Sets` at their boundary, so that the instances
 of `Set X` and of the orders are found.
@@ -39,12 +43,20 @@ namespace CasCatalogue
 namespace CategoryId
 def booleanAlgebras : CategoryId := ⟨"cat.boolean_algebras"⟩
 def linearOrders : CategoryId := ⟨"cat.linear_orders"⟩
+def partialOrders : CategoryId := ⟨"cat.partial_orders"⟩
 end CategoryId
 
 namespace FunctorId
 def booleanAlgebrasForget : FunctorId := ⟨"fun.boolean_algebras.forget"⟩
 def linearOrdersForget : FunctorId := ⟨"fun.linear_orders.forget"⟩
+def partialOrdersForget : FunctorId := ⟨"fun.partial_orders.forget"⟩
+def linearOrdersToPartialOrders : FunctorId := ⟨"fun.linear_orders.to_partial_orders"⟩
 end FunctorId
+
+namespace NaturalTransformationId
+def linearOrdersCarrierComparison : NaturalTransformationId :=
+  ⟨"cmp.linear_orders.carrier"⟩
+end NaturalTransformationId
 
 namespace Foundation.PowerSets
 
@@ -58,6 +70,7 @@ abbrev SetsCat := LeanCategories.Foundation.Mathlib.Sets
 
 def BooleanAlgebrasExpr : CategoryExpr := .atom CategoryId.booleanAlgebras
 def LinearOrdersExpr : CategoryExpr := .atom CategoryId.linearOrders
+def PartialOrdersExpr : CategoryExpr := .atom CategoryId.partialOrders
 
 /-- Boolean algebras. -/
 def BooleanAlgebras : LeanCategories.ObjCat.{u + 1, u} := Cat.of BoolAlg.{u}
@@ -65,20 +78,52 @@ def BooleanAlgebras : LeanCategories.ObjCat.{u + 1, u} := Cat.of BoolAlg.{u}
 /-- Linear orders. -/
 def LinearOrders : LeanCategories.ObjCat.{u + 1, u} := Cat.of LinOrd.{u}
 
+/-- Partial orders and monotone maps, not the thin incidence category of one order. -/
+def PartialOrders : LeanCategories.ObjCat.{u + 1, u} := Cat.of PartOrd.{u}
+
 noncomputable def booleanAlgebrasRealization :
     CategoryRealization BooleanAlgebrasExpr BooleanAlgebras.{u} := {}
 noncomputable def linearOrdersRealization :
     CategoryRealization LinearOrdersExpr LinearOrders.{u} := {}
+noncomputable def partialOrdersRealization :
+    CategoryRealization PartialOrdersExpr PartialOrders.{u} := {}
 
 /-- The underlying set of a Boolean algebra. -/
 def booleanAlgebrasForget : BooleanAlgebras.{u} ⟶ SetsCat.{u} := (forget BoolAlg.{u}).toCatHom
 /-- The underlying set of a linear order. -/
 def linearOrdersForget : LinearOrders.{u} ⟶ SetsCat.{u} := (forget LinOrd.{u}).toCatHom
 
+/-- The faithful underlying-set functor of partial orders. -/
+def partialOrdersForget : PartialOrders.{u} ⟶ SetsCat.{u} :=
+  (forget PartOrd.{u}).toCatHom
+
+instance partialOrdersForget_faithful : partialOrdersForget.{u}.toFunctor.Faithful :=
+  ⟨by
+    intro X Y f g h
+    apply PartOrd.ext
+    intro x
+    exact CategoryTheory.congr_fun h x⟩
+
+/-- Forget totality through Mathlib's lattice and partial-order functors. -/
+def linearOrdersToPartialOrders : LinOrd.{u} ⥤ PartOrd.{u} :=
+  forget₂ LinOrd Lat ⋙ forget₂ Lat PartOrd
+
+def linearOrdersToPartialOrdersHom : LinearOrders.{u} ⟶ PartialOrders.{u} :=
+  linearOrdersToPartialOrders.toCatHom
+
+/-- The direct and the partial-order routes retain the same underlying set and function. -/
+def linearOrdersCarrierComparison :
+    linearOrdersToPartialOrders.{u} ⋙ forget PartOrd.{u} ≅ forget LinOrd.{u} :=
+  NatIso.ofComponents (fun _ => Iso.refl _) (fun _ => rfl)
+
 def BooleanAlgebrasForgetExpr : FunctorExpr BooleanAlgebrasExpr Foundation.Sets :=
   .atomic FunctorId.booleanAlgebrasForget
 def LinearOrdersForgetExpr : FunctorExpr LinearOrdersExpr Foundation.Sets :=
   .atomic FunctorId.linearOrdersForget
+def PartialOrdersForgetExpr : FunctorExpr PartialOrdersExpr Foundation.Sets :=
+  .atomic FunctorId.partialOrdersForget
+def LinearOrdersToPartialOrdersExpr : FunctorExpr LinearOrdersExpr PartialOrdersExpr :=
+  .atomic FunctorId.linearOrdersToPartialOrders
 
 noncomputable def booleanAlgebrasForgetRealization :
     FunctorRealization BooleanAlgebrasForgetExpr BooleanAlgebras.{u} SetsCat.{u}
@@ -90,6 +135,16 @@ noncomputable def linearOrdersForgetRealization :
       linearOrdersForget.toFunctor :=
   { sourceRealization := linearOrdersRealization
     targetRealization := CasCatalogue.Foundation.CatalogueRegistration.setsRealization }
+noncomputable def partialOrdersForgetRealization :
+    FunctorRealization PartialOrdersForgetExpr PartialOrders.{u} SetsCat.{u}
+      partialOrdersForget.toFunctor :=
+  { sourceRealization := partialOrdersRealization
+    targetRealization := CasCatalogue.Foundation.CatalogueRegistration.setsRealization }
+noncomputable def linearOrdersToPartialOrdersRealization :
+    FunctorRealization LinearOrdersToPartialOrdersExpr LinearOrders.{u} PartialOrders.{u}
+      linearOrdersToPartialOrdersHom.toFunctor :=
+  { sourceRealization := linearOrdersRealization
+    targetRealization := partialOrdersRealization }
 
 /-- `Ω`, the truth values. -/
 abbrev omega : SetsCat.{0} := Prop
@@ -162,10 +217,20 @@ def subset (B : BooleanAlgebras.{0}) : (boolCarrier B × boolCarrier B : SetsCat
 /-- A linear order as a `LinOrd`, and its underlying type. -/
 abbrev asOrder (L : LinearOrders.{0}) : LinOrd.{0} := L
 abbrev orderCarrier (L : LinearOrders.{0}) : Type := asOrder L
+abbrev asPartialOrder (P : PartialOrders.{0}) : PartOrd.{0} := P
+abbrev partialOrderCarrier (P : PartialOrders.{0}) : Type := asPartialOrder P
+
+/-- The order relation of a partial order, into `Ω`. -/
+def partialLe (P : PartialOrders.{0}) :
+    (partialOrderCarrier P × partialOrderCarrier P : SetsCat.{0}) ⟶ omega :=
+  TypeCat.ofHom fun p => p.1 ≤ p.2
 
 /-- `≤`, into `Ω`. -/
 def le (L : LinearOrders.{0}) : (orderCarrier L × orderCarrier L : SetsCat.{0}) ⟶ omega :=
   TypeCat.ofHom fun p => p.1 ≤ p.2
+/-- The linear-order relation is the partial-order relation after forgetting totality. -/
+theorem le_restriction (L : LinearOrders.{0}) :
+    le L = partialLe (linearOrdersToPartialOrders.obj L) := rfl
 /-- `<`, into `Ω`. -/
 def lt (L : LinearOrders.{0}) : (orderCarrier L × orderCarrier L : SetsCat.{0}) ⟶ omega :=
   TypeCat.ofHom fun p => p.1 < p.2
@@ -196,6 +261,12 @@ normalized_registry .category
     expression := LinearOrdersExpr
     realization := `CasCatalogue.Foundation.PowerSets.linearOrdersRealization }
 
+normalized_registry .category
+  { id := CategoryId.partialOrders, name := "PartialOrders"
+    declaration := `CasCatalogue.Foundation.PowerSets.PartialOrders
+    expression := PartialOrdersExpr
+    realization := `CasCatalogue.Foundation.PowerSets.partialOrdersRealization }
+
 normalized_registry .functor
   { id := FunctorId.booleanAlgebrasForget, source := BooleanAlgebrasExpr, target := Foundation.Sets
     declaration := `CasCatalogue.Foundation.PowerSets.booleanAlgebrasForget
@@ -207,6 +278,28 @@ normalized_registry .functor
     declaration := `CasCatalogue.Foundation.PowerSets.linearOrdersForget
     realization := `CasCatalogue.Foundation.PowerSets.linearOrdersForgetRealization
     expression := LinearOrdersForgetExpr, structural := true }
+
+normalized_registry .functor
+  { id := FunctorId.partialOrdersForget, source := PartialOrdersExpr, target := Foundation.Sets
+    declaration := `CasCatalogue.Foundation.PowerSets.partialOrdersForget
+    realization := `CasCatalogue.Foundation.PowerSets.partialOrdersForgetRealization
+    expression := PartialOrdersForgetExpr, structural := true }
+
+normalized_registry .functor
+  { id := FunctorId.linearOrdersToPartialOrders, source := LinearOrdersExpr
+    target := PartialOrdersExpr
+    declaration := `CasCatalogue.Foundation.PowerSets.linearOrdersToPartialOrdersHom
+    realization := `CasCatalogue.Foundation.PowerSets.linearOrdersToPartialOrdersRealization
+    expression := LinearOrdersToPartialOrdersExpr, structural := true }
+
+normalized_registry .cell
+  { id := NaturalTransformationId.linearOrdersCarrierComparison
+    source := LinearOrdersExpr, target := Foundation.Sets
+    left := #[.functor FunctorId.linearOrdersToPartialOrders,
+      .functor FunctorId.partialOrdersForget]
+    right := #[.functor FunctorId.linearOrdersForget]
+    declaration := `CasCatalogue.Foundation.PowerSets.linearOrdersCarrierComparison
+    invertible := true }
 
 normalized_registry .object
   { id := ⟨"obj.sets.truth_values"⟩, category := CategoryId.sets, name := "Ω"
@@ -278,9 +371,17 @@ normalized_registry .object
         identification := `CasCatalogue.Foundation.PowerSets.orderRealsIdentification } }
 
 normalized_registry .operation
+  { id := ⟨"op.partial_orders.le"⟩, category := CategoryId.partialOrders, name := "≤"
+    arity := 2, declaration := `CasCatalogue.Foundation.PowerSets.partialLe
+    result := some ⟨"obj.sets.truth_values"⟩ }
+normalized_registry .operation
   { id := ⟨"op.linear_orders.le"⟩, category := CategoryId.linearOrders, name := "≤"
     arity := 2, declaration := `CasCatalogue.Foundation.PowerSets.le
-    result := some ⟨"obj.sets.truth_values"⟩ }
+    result := some ⟨"obj.sets.truth_values"⟩
+    refines := some
+      { base := ⟨"op.partial_orders.le"⟩
+        route := #[.functor FunctorId.linearOrdersToPartialOrders]
+        identification := `CasCatalogue.Foundation.PowerSets.le_restriction } }
 normalized_registry .operation
   { id := ⟨"op.linear_orders.lt"⟩, category := CategoryId.linearOrders, name := "<"
     arity := 2, declaration := `CasCatalogue.Foundation.PowerSets.lt

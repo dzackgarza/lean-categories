@@ -300,6 +300,14 @@ structure InclusionEntry where
   mono : Lean.Name
   deriving Repr
 
+/-- A named operation is the restriction of `base` along a structural route. The identification
+proves equality of the two operations on each object of the more structured category. -/
+structure OperationRefinement where
+  base : OperationId
+  route : Array EdgeRef
+  identification : Lean.Name
+  deriving Repr
+
 /-- An element operation of a registered category `C` whose objects refine sets: `declaration :
 ∀ X, (U X)^arity ⟶ U X` in `Sets`, natural in `X`, where `U X` is the set `X` refines and the power
 is Lean's product (`U X × U X` for arity 2, `U X` for arity 1, the terminal set for arity 0). Its
@@ -316,6 +324,8 @@ structure OperationEntry where
   result : Option ObjectId := none
   /-- The number of numeral parameters the declaration takes after the object (`x^k`: one). -/
   numerals : Nat := 0
+  /-- Preserve a public operation identity while identifying it with its general owner. -/
+  refines : Option OperationRefinement := none
   deriving Repr
 
 /-- A power object of `Sets` in the sense of elementary topos theory (Mac Lane–Moerdijk, *Sheaves

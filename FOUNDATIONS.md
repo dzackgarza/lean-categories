@@ -892,8 +892,9 @@ free modules and their equivalence with finite projectivity are [@The25, tags 00
 ### Definition 13.5 (Framed generators and framed bases) {#def-module-generators-bases}
 
 > **Superseded (2026-09-28)** by Definition 13.10 (resolutions). "Frame" conflicts with its
-> standard meaning (a framing of a bundle, Remark 13.12); a chosen surjection \(R^n\to M\) is the
-> augmentation of a free resolution, and a chosen basis is a free resolution of length zero.
+> categorical meaning (Remark 13.12); a chosen surjection \(R^n\twoheadrightarrow M\)
+> is a free cover, while a chosen isomorphism \(R^n\xrightarrow{\sim}M\) is a
+> categorical framing relative to the free-module adjunction.
 > The code realizing them was renamed accordingly (2026-09-28): `LeanCategories.Modules.TruncatedResolutions`
 > defines `FreeCover R I` (1-truncated free resolutions \(R^{(I)}\twoheadrightarrow M\)) and
 > `BasedModule R I` (free resolutions of length zero \(R^{(I)}\cong M\)), registered as
@@ -988,9 +989,62 @@ Sections 73--77 develop this uniform theory and the accompanying descent of matr
 The conversations used “based,” “with generators,” and “with basis” in several provisional
 senses. This report therefore names the morphism convention whenever it matters.
 
+### Governing construction: augmentations, cofibers, and categorical framings (2026-10-13)
+
+**A selected augmentation is not automatically a resolution.** For an arbitrary
+infinity-category C and object X, begin with the category of augmented
+simplicial objects over X. No epimorphism or equivalence is demanded by
+the existence of the augmentation. When an appropriate stable enhancement
+E and comparison j:C -> E are specified, the realized augmentation is an
+arrow ε:R^bullet -> j(X) in the slice E_{/j(X)}. Every such arrow determines
+a canonical cofiber sequence
+
+\[
+R^\bullet\xrightarrow{\varepsilon}j(X)\longrightarrow
+Q_\varepsilon\longrightarrow\Sigma R^\bullet,\qquad
+Q_\varepsilon=\operatorname{cofib}(\varepsilon).
+\]
+
+**Q_eps = 0 is an additional condition**, equivalent to ε being an
+equivalence in E; it is not part of the definition of the augmented object.
+Epimorphy in C does not imply it. For example, the epimorphism
+\(\mathbb Z\twoheadrightarrow\mathbb Z/2\) has a nonzero cofiber
+in \(D(\mathbb Z)\) (kernel class \(H^{-1}\cong 2\mathbb Z\)); it
+exhibits a free cover, not a full resolution or a framing.
+In general Sp(C) and D(C) are not interchangeable, nor does an
+arbitrary C have a chain-complex category or derived enhancement.
+Epimorphy is interpreted in C or via an explicitly justified comparison.
+
+The **truncation level**, **amplitude/length**, **termwise conditions**
+(free relative to a chosen adjunction, projective, flat, flasque,
+F-acyclic), **arrow conditions** (epi, isomorphism, etc.) and
+**conditions on the cofiber** (connectivity, vanishing) are independent
+classifiers of an augmented object. A truncation imposes no automatic
+exactness on its last retained term. The selected graded/filtered/chain/
+simplicial presentation and its maps must be retained if predicates refer
+to individual degrees: the derived equivalence class alone does not
+remember selected terms. Right/coaugmented resolutions use the dual
+orientation.
+
+Given a specified free--forgetful adjunction F:D <-> C:U, a
+**categorical framing** of X is precisely a chosen pair (S,φ)
+with S in D and an isomorphism \(\phi:F(S)\xrightarrow{\sim}X\).
+It is the **length-zero free-resolution** case. Replacing the
+isomorphism by an epimorphism produces a **free cover** instead.
+Such choices are structures, whereas existence of a cover or framing
+is a separate property.
+
+The presently implemented FreeCover, BasedModule and Coord in
+LeanCategories/Modules/TruncatedResolutions.lean use separate structured
+arrow categories; the index I in those definitions indexes generators,
+**not** a truncation degree. Their registration does not supply the
+general n-truncated augmented-object/cofiber classifier or the
+specialization/forgetful functors from it. This remains the formalization
+obligation of GitHub issue dzackgarza/lean-categories#62.
+
 ### Definition 13.10 (Resolutions) {#def-resolution}
 
-Let \(\mathcal A\) be an abelian category and \(M\in\mathcal A\). A **(left) resolution** of \(M\) is a
+The general augmented-object construction above needs no exactness. For an abelian category \(\mathcal A\) and \(M\in\mathcal A\), a **full (left) resolution** of \(M\) is an augmented
 chain complex \(P_\bullet=(\cdots\to P_2\to P_1\to P_0)\) with \(P_i=0\) for \(i<0\), together with an
 augmentation \(\varepsilon:P_0\to M\), such that the augmented complex
 \[
@@ -1002,8 +1056,11 @@ Introduction to Homological Algebra* (1994), §2.2]. Morphisms of resolutions ov
 \(M\to N\) are chain maps compatible with the augmentations; by the comparison theorem any two
 projective resolutions of \(M\) are chain homotopy equivalent over \(\mathrm{id}_M\) [Weibel 1994, §2.2].
 
-The \(k\)-**truncation** of a resolution keeps \(P_{k-1}\to\cdots\to P_0\to M\to0\), exact at every
-displayed spot except the leftmost term; a resolution is the limit of its truncations.
+The \(k\)-**truncation** of a chosen augmented complex retains the \(k\) indicated terms
+\(P_{k-1}\to\cdots\to P_0\to M\to0\) and their maps; it does not by itself
+require exactness at any degree. The truncation of a *full resolution* inherits
+exactness at the displayed interior terms but not necessarily the last one.
+Truncation degree and resolution length/amplitude are different invariants.
 
 ### Definition 13.11 (Presentations and bases as truncated resolutions) {#def-presentation}
 
@@ -1025,17 +1082,28 @@ and comonadic (bar / cotriple) resolutions from an adjunction [Weibel 1994, Ch. 
 presentation of an algebraic object other than a module (a group, a ring, an operad algebra)
 is a truncation of such a simplicial or comonadic resolution.
 
-### Remark 13.12 (Framings of bundles) {#rem-framing}
+### Remark 13.12 (Categorical framings of bundles and sheaves) {#rem-framing}
 
-A **framing** of a rank-\(n\) vector bundle \(E\to X\) is a trivialization \(X\times\mathbb R^n\cong E\),
-equivalently a global frame of sections; a **stable framing** is a trivialization of
-\(E\oplus\underline{\mathbb R}^k\) for some \(k\), and a framed manifold is a manifold with a (stable)
-framing of its tangent bundle. In the language of Definition 13.10, a framing is a free
-resolution of length zero of the module of sections, \(\mathcal O_X^n\xrightarrow{\sim}\Gamma(E)\);
-a framed bundle is a bundle with such a resolution. The further conditions the owner ruling
-refers to ("a bundle with a resolution satisfying other properties as well as the
-trivialization condition") are **not yet stated**: their exact list and sources remain open
-work of `cc-resolutions`, and no definition here fixes them.
+For a smooth n-manifold X, with structure sheaf
+\(\mathcal O_X(U)=C^\infty(U,\mathbb R)\) and tangent sheaf
+\(\mathcal T_X=\operatorname{Der}_{\mathbb R}(\mathcal O_X,\mathcal O_X)\),
+a **framing** is a chosen isomorphism of sheaves of O_X-modules
+
+\[
+\mathcal O_X^{\oplus n}\xrightarrow{\sim}\mathcal T_X.
+\]
+
+Under the equivalence of vector bundles and locally free sheaves this
+corresponds to a bundle isomorphism
+\(X\times\mathbb R^n\xrightarrow{\sim}TX\). It is the
+categorical framing relative to the appropriate free O_X-module
+adjunction, not a separately named kind of resolution. A
+**stable framing** is a selected isomorphism after adjoining a
+trivial summand. Applying global sections afterward produces a
+\(C^\infty(X,\mathbb R)\)-module map, but the resulting module
+isomorphism is **not** the definition or a replacement of the
+sheaf/bundle datum. An epimorphic free cover of the tangent sheaf
+would not be a framing.
 
 ### Definition 13.8 (Bimodules) {#def-bimodule-category}
 
@@ -5538,7 +5606,7 @@ A resolution is:
 - **finite in degree \(i\)** if \(P_i\) is finitely generated;
 - **finite free in degree \(i\)** if \(P_i\) is finite-rank free.
 
-A chosen resolution is a point of a category of exact augmented complexes. It is additional data, not an intrinsic replacement for \(M\). Projective resolutions are treated in [@Wei94, §2.2].
+A chosen **full** resolution is an augmented object satisfying an additional exactness condition. The ambient augmented-object category has no automatic exactness requirement; the selected terms and maps are data, not an intrinsic replacement for \(M\). Projective resolutions are treated in [@Wei94, §2.2].
 
 ### Definition 76.3 (Modules of type \(FP_n\)) {#def-fp-n}
 
@@ -5568,7 +5636,7 @@ P_1\twoheadrightarrow K_1,
 \]
 then repeats with its kernel.
 
-Thus a generating frame can be extended to a free resolution when enough free objects and the required choices are available, but the extension is not implicit or canonical. The iterated syzygies and the choices of their generators are part of the resolution datum.
+Thus a selected free cover can be extended to a free resolution when enough free objects and the required choices are available, but the extension is not implicit or canonical. The iterated syzygies and the choices of their generators are part of the resolution datum.
 
 ### Remark 76.5 (A chain complex is not a DGA)
 

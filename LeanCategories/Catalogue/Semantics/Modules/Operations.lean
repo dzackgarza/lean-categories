@@ -26,8 +26,10 @@ public meta import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Ke
 * `annihilator : Core(Mod_R) ⥤ Disc(Ideal R)` (`LeanCategories.Modules.annihilatorFunctor`), the
   iso-invariant method `annihilator` of `Mod_R`;
 * `dim`: the surface name of the rank of a module (`fun.modules.rank`), for vector spaces;
-* `im : Arr(Mod_R) ⥤ Subobjects(Mod_R)` (`LeanCategories.imageFunctor`), the image of a morphism
-  as a subobject of its codomain, and `ker`, the surface name of the kernel of a morphism;
+* `im : Arr(Mod_R) ⥤ Subobjects(Mod_R)`, the abelian image `ker(coker(f))` with its inclusion
+  into the codomain, and `ker`, the surface name of the kernel of a morphism;
+* `coim : Arr(Mod_R) ⥤ Quotients(Mod_R)`, the cokernel of its kernel inclusion, and the
+  canonical comparison to `im`, with its inverse and the three defining factorization maps;
 * `Sub(Mod_R) ⥤ Sub(Sets)` (`LeanCategories.subobjectMap` of the forgetful functor, a right
   adjoint and so mono-preserving): a submodule as the subset it is of the underlying set of its
   ambient module — the structural route by which a submodule reaches `contains`, `set_eq`, `⊆`;
@@ -60,6 +62,9 @@ def subobjectsModulesInclusion : FunctorId := ⟨"fun.subobjects_modules.inclusi
 def arrowsModulesCokernel : FunctorId := ⟨"fun.arrows_modules.cokernel"⟩
 def quotientsModulesProjection : FunctorId := ⟨"fun.quotients_modules.projection"⟩
 def quotientsModulesCodomain : FunctorId := ⟨"fun.quotients_modules.codomain"⟩
+def arrowsModulesCoimage : FunctorId := ⟨"fun.arrows_modules.coimage"⟩
+def arrowsModulesCoimageImageComparison : FunctorId :=
+  ⟨"fun.arrows_modules.coimage_image_comparison"⟩
 end FunctorId
 
 namespace Modules.Operations
@@ -96,6 +101,10 @@ def QuotientsProjectionExpr : FunctorExpr QuotientsModules ArrowsModules :=
   .atomic FunctorId.quotientsModulesProjection
 def QuotientsCodomainExpr : FunctorExpr QuotientsModules Modules.Modules :=
   .atomic FunctorId.quotientsModulesCodomain
+def CoimageExpr : FunctorExpr ArrowsModules QuotientsModules :=
+  .atomic FunctorId.arrowsModulesCoimage
+def CoimageImageComparisonExpr : FunctorExpr ArrowsModules ArrowsModules :=
+  .atomic FunctorId.arrowsModulesCoimageImageComparison
 def CoreSubobjectsModules : CategoryExpr :=
   .construct ConstructorId.core #[.category SubobjectsModules]
 def SubobjectsRankExpr : FunctorExpr CoreSubobjectsModules Foundation.Cardinality.Cardinals :=
@@ -115,10 +124,13 @@ def annihilatorRealization (R : RingCat.{u}) :
       (annihilatorDeclaration R) :=
   { sourceRealization := coreModulesRealization R, targetRealization := idealsRealization R }
 
-/-- The image of a module map, with its inclusion into the codomain. -/
+/-- The abelian image is the kernel of the cokernel projection, retaining that inclusion.
+This is `Abelian.image`, not a separately chosen image presentation. -/
 def imageDeclaration (R : RingCat.{u}) :
     arrowsModulesCategory R ⥤ subobjectsModulesCategory R :=
-  imageFunctor (ModuleCat.{u} R)
+  LeanCategories.cokernelFunctor (ModuleCat.{u} R) ⋙
+    (LeanCategories.isEpiArrow (ModuleCat.{u} R)).ι ⋙
+      LeanCategories.kernelFunctor (ModuleCat.{u} R)
 def imageRealization (R : RingCat.{u}) :
     FunctorRealization ImageExpr (arrowsModulesCategory R) (subobjectsModulesCategory R)
       (imageDeclaration R) :=
@@ -193,6 +205,111 @@ def quotientsCodomainRealization (R : RingCat.{u}) :
       (Modules.Mathlib.ModulesOf.{u, u} R) (quotientsCodomainDeclaration R) :=
   { sourceRealization := quotientsModulesRealization R
     targetRealization := CasCatalogue.Modules.CatalogueRegistration.modulesRealization R }
+
+/-! The complete construction is already owned by Mathlib's abelian-category theory:
+`CategoryTheory/Abelian/{Images,Basic}.lean`, at the pinned revision
+`db584cd6d46c92f209a44c0f1c829460d327499d` (Apache-2.0).
+FOUNDATIONS Definition 54.1 and corpus FC03-CE-U012 / FC05-C01-U013 specify the same
+construction. The catalogue specializes it to the selected ring, with no freeness,
+finite-generation or commutativity hypothesis. The formal laws below are distinct from
+the callable maps published by the morphism rows. -/
+
+/-- The coimage is the cokernel of the actual kernel inclusion, with its projection. -/
+def coimageDeclaration (R : RingCat.{u}) :
+    arrowsModulesCategory R ⥤ quotientsModulesCategory R :=
+  kernelDeclaration R ⋙ subobjectsInclusionDeclaration R ⋙ cokernelDeclaration R
+
+def coimageRealization (R : RingCat.{u}) :
+    FunctorRealization CoimageExpr (arrowsModulesCategory R) (quotientsModulesCategory R)
+      (coimageDeclaration R) :=
+  { sourceRealization := arrowsModulesRealization R
+    targetRealization := quotientsModulesRealization R }
+
+/-- Mathlib's canonical coimage-to-image map, functorial on commutative squares. -/
+def coimageImageComparisonDeclaration (R : RingCat.{u}) :
+    arrowsModulesCategory R ⥤ arrowsModulesCategory R :=
+  Abelian.coimageImageComparisonFunctor (C := ModuleCat.{u} R)
+
+def coimageImageComparisonRealization (R : RingCat.{u}) :
+    FunctorRealization CoimageImageComparisonExpr (arrowsModulesCategory R)
+      (arrowsModulesCategory R) (coimageImageComparisonDeclaration R) :=
+  { sourceRealization := arrowsModulesRealization R
+    targetRealization := arrowsModulesRealization R }
+
+/-- The chosen quotient module and image domain are naturally isomorphic by the
+existing first-isomorphism construction in every abelian category. -/
+def coimageImageIso (R : RingCat.{u}) :
+    coimageDeclaration R ⋙ quotientsCodomainDeclaration R ≅
+      imageDeclaration R ⋙ subobjectsDomainDeclaration R :=
+  Abelian.coimIsoIm (C := ModuleCat.{u} R)
+
+/-- The defining quotient map `M → coim(f)`. -/
+def coimageProjection (R : RingCat.{u}) (f : Arrow (ModuleCat.{u} R)) :
+    f.left ⟶ (quotientsCodomainDeclaration R).obj ((coimageDeclaration R).obj f) :=
+  Abelian.coimage.π f.hom
+
+/-- The defining inclusion `im(f) → N`. -/
+def imageInclusion (R : RingCat.{u}) (f : Arrow (ModuleCat.{u} R)) :
+    (subobjectsDomainDeclaration R).obj ((imageDeclaration R).obj f) ⟶ f.right :=
+  Abelian.image.ι f.hom
+
+/-- The canonical comparison, with endpoints taken from the published constructions. -/
+def coimageToImage (R : RingCat.{u}) (f : Arrow (ModuleCat.{u} R)) :
+    (quotientsCodomainDeclaration R).obj ((coimageDeclaration R).obj f) ⟶
+      (subobjectsDomainDeclaration R).obj ((imageDeclaration R).obj f) :=
+  Abelian.coimageImageComparison f.hom
+
+/-- The inverse of the same canonical comparison. -/
+def imageToCoimage (R : RingCat.{u}) (f : Arrow (ModuleCat.{u} R)) :
+    (subobjectsDomainDeclaration R).obj ((imageDeclaration R).obj f) ⟶
+      (quotientsCodomainDeclaration R).obj ((coimageDeclaration R).obj f) :=
+  (Abelian.coimageIsoImage f.hom).inv
+
+/-- The induced map from the source to the image, before its inclusion. -/
+def factorThruImage (R : RingCat.{u}) (f : Arrow (ModuleCat.{u} R)) :
+    f.left ⟶ (subobjectsDomainDeclaration R).obj ((imageDeclaration R).obj f) :=
+  Abelian.factorThruImage f.hom
+
+/-- The induced map from the coimage to the target, after its projection. -/
+def factorThruCoimage (R : RingCat.{u}) (f : Arrow (ModuleCat.{u} R)) :
+    (quotientsCodomainDeclaration R).obj ((coimageDeclaration R).obj f) ⟶ f.right :=
+  Abelian.factorThruCoimage f.hom
+
+/-- The three maps of the first-isomorphism factorization, composed in their defining order. -/
+def coimageImageFactorization (R : RingCat.{u}) (f : Arrow (ModuleCat.{u} R)) :
+    f.left ⟶ f.right :=
+  coimageProjection R f ≫ coimageToImage R f ≫ imageInclusion R f
+
+/-- The factorization recovers the supplied morphism; this is Mathlib's general theorem. -/
+theorem coimageImageFactorization_eq (R : RingCat.{u}) (f : Arrow (ModuleCat.{u} R)) :
+    coimageImageFactorization R f = f.hom :=
+  Abelian.coimage_image_factorisation f.hom
+
+/-- The projection followed by the comparison is the induced map to the image. -/
+theorem coimageProjection_comp_comparison (R : RingCat.{u})
+    (f : Arrow (ModuleCat.{u} R)) :
+    coimageProjection R f ≫ coimageToImage R f = factorThruImage R f :=
+  Limits.cokernel.π_desc _ _ _
+
+/-- The comparison followed by the inclusion is the induced map from the coimage. -/
+theorem comparison_comp_imageInclusion (R : RingCat.{u})
+    (f : Arrow (ModuleCat.{u} R)) :
+    coimageToImage R f ≫ imageInclusion R f = factorThruCoimage R f := by
+  change Abelian.coimageImageComparison f.hom ≫ Abelian.image.ι f.hom = _
+  rw [Abelian.coimageImageComparison_eq_coimageImageComparison']
+  exact Limits.kernel.lift_ι _ _ _
+
+/-- The two callable comparison maps are mutually inverse, with the chosen endpoints. -/
+theorem coimageToImage_comp_imageToCoimage (R : RingCat.{u})
+    (f : Arrow (ModuleCat.{u} R)) :
+    coimageToImage R f ≫ imageToCoimage R f = 𝟙 _ :=
+  (Abelian.coimageIsoImage f.hom).hom_inv_id
+
+/-- The inverse identity in the image domain. -/
+theorem imageToCoimage_comp_coimageToImage (R : RingCat.{u})
+    (f : Arrow (ModuleCat.{u} R)) :
+    imageToCoimage R f ≫ coimageToImage R f = 𝟙 _ :=
+  (Abelian.coimageIsoImage f.hom).inv_hom_id
 
 /-- The public kernel domain inherits precisely the concrete kernel's cardinal rank.
 This is the independence-set rank invariant over `R`, not an assumed basis cardinality. -/
@@ -358,6 +475,53 @@ normalized_registry .method
 normalized_registry .method
   { id := ⟨"meth.arrow_im"⟩, name := "im", owner := ArrowsModules
     functor := FunctorId.arrowsModulesImage, shape := .object }
+
+normalized_registry .functor
+  { id := FunctorId.arrowsModulesCoimage, source := ArrowsModules, target := QuotientsModules
+    declaration := `CasCatalogue.Modules.Operations.coimageDeclaration
+    realization := `CasCatalogue.Modules.Operations.coimageRealization
+    expression := CoimageExpr }
+normalized_registry .functor
+  { id := FunctorId.arrowsModulesCoimageImageComparison
+    source := ArrowsModules, target := ArrowsModules
+    declaration := `CasCatalogue.Modules.Operations.coimageImageComparisonDeclaration
+    realization := `CasCatalogue.Modules.Operations.coimageImageComparisonRealization
+    expression := CoimageImageComparisonExpr }
+normalized_registry .method
+  { id := ⟨"meth.arrow_coim"⟩, name := "coim", owner := ArrowsModules
+    functor := FunctorId.arrowsModulesCoimage, shape := .object }
+normalized_registry .method
+  { id := ⟨"meth.arrow_coimage_image_comparison"⟩, name := "coimageImageComparison"
+    owner := ArrowsModules, functor := FunctorId.arrowsModulesCoimageImageComparison
+    shape := .object }
+normalized_registry .cell
+  { id := ⟨"cell.modules.coimage_image"⟩, source := ArrowsModules, target := Modules.Modules
+    left := #[.functor FunctorId.arrowsModulesCoimage, .functor FunctorId.quotientsModulesCodomain]
+    right := #[.functor FunctorId.arrowsModulesImage, .functor FunctorId.subobjectsModulesDomain]
+    declaration := `CasCatalogue.Modules.Operations.coimageImageIso, invertible := true }
+
+normalized_registry .morphism
+  { id := ⟨"mor.modules.coimage_projection"⟩, category := CategoryId.modulesR
+    name := "coimageProjection", declaration := `CasCatalogue.Modules.Operations.coimageProjection }
+normalized_registry .morphism
+  { id := ⟨"mor.modules.image_inclusion"⟩, category := CategoryId.modulesR
+    name := "imageInclusion", declaration := `CasCatalogue.Modules.Operations.imageInclusion }
+normalized_registry .morphism
+  { id := ⟨"mor.modules.coimage_to_image"⟩, category := CategoryId.modulesR
+    name := "coimageToImage", declaration := `CasCatalogue.Modules.Operations.coimageToImage }
+normalized_registry .morphism
+  { id := ⟨"mor.modules.image_to_coimage"⟩, category := CategoryId.modulesR
+    name := "imageToCoimage", declaration := `CasCatalogue.Modules.Operations.imageToCoimage }
+normalized_registry .morphism
+  { id := ⟨"mor.modules.factor_thru_image"⟩, category := CategoryId.modulesR
+    name := "factorThruImage", declaration := `CasCatalogue.Modules.Operations.factorThruImage }
+normalized_registry .morphism
+  { id := ⟨"mor.modules.factor_thru_coimage"⟩, category := CategoryId.modulesR
+    name := "factorThruCoimage", declaration := `CasCatalogue.Modules.Operations.factorThruCoimage }
+normalized_registry .morphism
+  { id := ⟨"mor.modules.coimage_image_factorization"⟩, category := CategoryId.modulesR
+    name := "coimageImageFactorization"
+    declaration := `CasCatalogue.Modules.Operations.coimageImageFactorization }
 
 normalized_registry .operation
   { id := ⟨"op.modules.zero"⟩, category := CategoryId.modulesR, name := "0", arity := 0
