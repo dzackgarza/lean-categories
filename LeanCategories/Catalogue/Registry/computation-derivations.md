@@ -130,12 +130,43 @@ Their publications retain the existing selected structures, and identity natural
 isomorphisms compare their new paths with the existing monoid port and underlying
 set path. No automatic structural route is introduced without that comparison.
 
+The comparison direction is part of the published diagram. An invertible
+comparison identifies its two functors, but invertibility alone does not choose
+which route is its source. The existing ring carrier diagram has the additive
+commutative monoid route as its unique source. Write `N` for that route, `M` for
+the multiplicative monoid route, `A` for the additive group route, `F` for the
+new ring–semiring–monoid factor route, and `S` for the route through the direct
+semiring carrier. Full `Catalogue` also includes the existing route `B` from the
+ring's additive group through its additive monoid to sets. The complete directed
+comparison diagram consists of `N → M → A → B` together with `M → F → S`.
+
+`CommMonoids.ringsAdditiveMonoidCarrierCell` supplies `N → M`, and
+`LeanCategories.Algebra.ringCarrierComparison` supplies `M → A`.
+`AdditiveOperations.additiveGroupCarrierComparison`, preceded by the ring's
+additive group functor, supplies the existing `A → B`. The newly published
+`ringMultiplicativeComparison`, followed by the existing monoid
+carrier route, supplies `M → F`. The new `semiringCarrierComparison`, preceded
+by the ring-to-semiring functor, supplies `F → S`. Its declared type and registry
+row both have the monoid carrier composite on the left and the direct semiring
+carrier on the right. Thus every new route receives a comparison from the
+existing diagram, and `N` remains its unique source independently of registry
+row order. The identity natural isomorphism and its inverse are both supplied
+by Mathlib's `Iso.refl`; `Iso.refl_symm` states that reversing it changes no
+component. This structural comparison direction is separate from the unordered
+alternative computation plans.
+
+The concrete plans and their structural factors are published by the full
+`LeanCategories.Catalogue` aggregate. The narrower `Catalogue.Semantics`
+aggregate retains its previous scope and does not import this concrete
+computation-plan module.
+
 Ring multiplication has two plans. One applies the published monoid multiplication
 at its multiplicative monoid. The other applies published semiring multiplication
 at the underlying semiring. Semiring multiplication in turn applies the same
 published monoid multiplication. The monoid port itself has the plan given by the
 ordinary composite of its two factors. The resulting dependency graph has multiple
-prerequisites, a chain, and alternatives, without a preferred semantic route.
+prerequisites, a chain, and alternatives. All alternative plans remain published;
+their list order gives none semantic priority.
 
 The ring-to-monoid whole-family equation is the already accepted
 `MonoidOperationAgreement.ring_mul`. The other equations unfold exactly the
@@ -162,6 +193,8 @@ Required live formalization-corpus searches used
 | `"forallTelescope" "mkEq"` | Mathlib `Mathlib/Lean/Meta/Simp.lean::simpEq`; inspected its use of rigid telescope opening and retained equality proofs, then reused Lean's own APIs directly. |
 | `"MonoidOperationAgreement"` | No live indexed hit; the pinned local declaration was inspected directly and is reused. |
 | `hasForgetToSemiRingCat OR hasForgetToMonCat` | No live indexed hit; the exact pinned Mathlib instances were inspected directly. |
+| `"Iso.refl" "refl_symm"` | Mathlib `CategoryTheory/Iso.lean` directly supplies identity-isomorphism reversal for the comparison-direction correction; the pinned `symm`, `refl`, and `refl_symm` declarations were inspected. |
+| `"natural isomorphism" "symm"` | Broader search returned an unrelated symmetrization application; no additional construction was needed beyond the exact Mathlib owner. |
 
 The first sandboxed API attempts failed for lack of network permission. The
 authorized read-only queries then succeeded. An absent index hit is not treated
@@ -173,8 +206,8 @@ validation, and the publication of their checked compositions are authored here.
 
 Focused Lean checks succeeded for `Registry.Computation`,
 `Semantics.Algebra.ComputationDerivations`, and `Registry.ComputationProbes`.
-The changed public aggregates `Catalogue.Semantics` and `Catalogue` also succeeded,
-so ordinary public catalogue imports expose the concrete derivations. These are
+The changed public aggregates `Catalogue.Semantics` and `Catalogue` also succeeded.
+The full public catalogue imports expose the concrete derivations. These are
 formal interface checks, not an independent computational acceptance verdict.
 
 `ComputationProbes` checks both alternatives and the recursive chain; exact
@@ -205,3 +238,24 @@ The main shared compiled import boundaries had these SHA-256 hashes:
 | `LeanCategories.Catalogue.Semantics.Algebra.MonoidOperationAgreement` | `93e606e94088302f4812d712ad5618c787ab436b09600c990f7c2ea0e1493e14` |
 | `LeanCategories.Catalogue.Semantics.Algebra.Semirings` | `67804af8e9487fbc34ca2b1c2aa2d24dab74beb812f5cf08d2e2c2f8589e7ff3` |
 | `Lean.Util.CollectAxioms` | `852c1b26920c4aa9a451d6fa466245a3a8a6b3ae597592c785d7f767234ff4de` |
+
+### Comparison direction and aggregate scope correction
+
+The isolated source correction on the integrated `f657b90` baseline passed direct
+Lean checks of `Semantics.Algebra.ComputationDerivations`, `Catalogue.Semantics`,
+and `Catalogue`, with the same pinned toolchain and isolated-output procedure.
+A separate import of the narrow aggregate together with the registry API
+confirmed that it publishes neither concrete computation rows nor the two new
+factor functors. An import of full `Catalogue` confirmed all four derivations and
+revalidated their complete family proofs.
+
+The source-only diagram audit enumerated every registered structural route from
+rings to sets, rather than assuming the initial five-route description was
+complete. Full `Catalogue` also publishes the existing additive-group route `B`,
+so the complete graph has six routes and five comparison cells. The audit checks
+their exact directed adjacency, validates the five cell declarations, and checks
+that `N` is the sole source for all 120 orders of the comparison rows and all 720
+orders of the routes. Reversing the complete functor, category, and comparison
+row arrays gives the same route population and unique source. All checks passed
+without a consumer import or a computational answer. These author checks do not
+replace independent mathematical review or downstream acceptance.

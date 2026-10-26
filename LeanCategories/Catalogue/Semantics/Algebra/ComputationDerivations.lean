@@ -91,10 +91,13 @@ def ringMultiplicativeComparison :
     Ports.ringsMultiplicative.toFunctor ≅
       (ringsSemiring.{u} ≫ semiringsMonoid).toFunctor := Iso.refl _
 
-/-- Both semiring carrier paths retain its actual underlying set and maps. -/
+/-- Both semiring carrier paths retain its actual underlying set and maps.
+The factor route is the source: after the existing ring carrier comparisons and
+`ringMultiplicativeComparison`, this direction keeps the original additive
+commutative monoid route as the unique source of the complete ring diagram. -/
 def semiringCarrierComparison :
-    Semirings.semiringsForget.toFunctor ≅
-      semiringsMonoid.{u}.toFunctor ⋙ forget MonCat := Iso.refl _
+    semiringsMonoid.{u}.toFunctor ⋙ forget MonCat ≅
+      Semirings.semiringsForget.toFunctor := Iso.refl _
 
 /-- A monoid multiplication family applied to the object map of the ring port.
 The intermediate carrier depends on the supplied functor; it is not erased. -/
@@ -163,10 +166,10 @@ normalized_registry .cell
   { id := ⟨"cell.semirings.carrier"⟩
     source := Algebra.Semirings.SemiringsExpr
     target := Foundation.Sets
-    left := #[.functor FunctorId.semiringsForget]
-    right := #[.functor FunctorId.semiringsMonoid, .functor FunctorId.monoidsSemigroup,
+    left := #[.functor FunctorId.semiringsMonoid, .functor FunctorId.monoidsSemigroup,
       .classifierForget ClassifierId.magmasAssociative,
       .classifierForget ClassifierId.setsBinaryOperation]
+    right := #[.functor FunctorId.semiringsForget]
     declaration := `CasCatalogue.Algebra.ComputationDerivations.semiringCarrierComparison
     invertible := true }
 

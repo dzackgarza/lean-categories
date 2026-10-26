@@ -73,6 +73,21 @@ does not justify weakening a dependent theorem or starting unrelated work.
   aggregates all elaborate successfully in an isolated worktree against the
   pinned dependency artifacts. The exact author-verification scope and input
   hashes are recorded in the owning interface document.
+- **Source integration correction, 2026-10-26:** The original directed ring
+  carrier diagram is additive commutative monoid `N → M → A`, through
+  multiplicative monoid `M` to additive group `A`. The new factor route added
+  `M → F`, but the initial semiring carrier row pointed `S → F`, making the
+  direct semiring carrier route `S` a second source. Natural-isomorphism
+  invertibility does not supply a preferred direction. The semiring comparison's
+  type and registered endpoints now both point `F → S`, extending the original
+  diagram while retaining `N` as its unique source. This is a correction to
+  published comparison data, not to the computation families or their proofs.
+  Full `Catalogue` also contains the existing additive-group-to-additive-monoid
+  carrier route `B`, reached by its existing `A → B` comparison; the complete
+  source audit includes all six routes and five comparisons.
+  The concrete-plan import also belongs in full `Catalogue`; it is removed from
+  the narrower `Catalogue.Semantics` aggregate. Source checks and the complete
+  directed-diagram check are recorded in the existing interface document.
 
 ### Hodge structures need filtered-module categories and their comparison maps
 
@@ -1289,6 +1304,33 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
        (`6 = 1` in `ℤ/5`), by the same push-through;
      - injectivity of maps outside the covered families (out of a non-simple ring other than `ℤ`
        with no `FaithfulSMul` instance).
+
+     **Exact cast and catalogue-presentation check, 2026-10-26 (no implementation
+     change):** at `ed89b8f22893769eba9c3d27c98383c83bc23a32`, the existing
+     `monicEvidence` establishes that `X^3 - 2*X + 1` over `ℚ` is monic of
+     natural degree `3` when its two coefficients are expressed exactly as
+     `Int.castRingHom (Polynomial ℚ) ((2 : ℕ) : ℤ)` and the analogous cast of
+     `1`. The same check succeeds over `NamedCommutativeRings.rationals`, and
+     for a degree-five polynomial with a negative integer coefficient. The
+     cubic formed from the public `generator`, `ringNumeral`, `add`, `neg`,
+     `mul`, and `pow` maps is proved equal to that ordinary expression and is
+     admitted directly by the same unchanged procedure.
+     Although `monicEvidence` does not call `Units.readCatalogue` before case
+     selection, its existing `normalizePolynomial` fallback calls
+     `Units.evaluateNumerals`. That procedure already uses Mathlib's general
+     `eq_intCast` and natural/integer cast laws. The absence of the earlier
+     reader call does not establish a missing cast capability. The exact
+     indexed owners were found by corpus queries
+     `repo:leanprover-community__mathlib4 file:Data/Int/Cast/Lemmas.lean eq_intCast`
+     and `repo:leanprover-community__mathlib4 file:Tactic/ComputeDegree.lean monicity`,
+     then compared with the pinned Mathlib source; no new algebra rule is needed.
+     The isolated Lean 4.33.0 source check exits zero with no diagnostics; its
+     source SHA-256 is
+     `9f80c2baf7e043b5865c9a63dcb0a4450dfa43efc5a088c7269f93c6cbfabff7`.
+     The polynomial and degree obligation were kept fixed, and no existing
+     assertion or evidence implementation was edited. This bounded verification
+     does not close the unsupported expression and map cases listed above.
+
   5. **Continuity and smoothness of piecewise maps.** `continuousEvidence` and `smoothEvidence`
      compose rules along the structure of the map (`fun_prop`). A piecewise map that is continuous
      because its pieces agree on the boundary (`fun x => if x < 0 then -x else x`) and a quotient

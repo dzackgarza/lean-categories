@@ -73,6 +73,7 @@ public import LeanCategories.Catalogue.Semantics.Algebra.RealLimits
 public import LeanCategories.Catalogue.Semantics.Algebra.MvPolynomials
 public import LeanCategories.Catalogue.Semantics.Algebra.Algebras
 public import LeanCategories.Catalogue.Semantics.Algebra.CommutativeMonoids
+public import LeanCategories.Catalogue.Semantics.Algebra.ComputationDerivations
 public import LeanCategories.Catalogue.Semantics.Algebra.Schemes
 public import LeanCategories.Catalogue.Semantics.Foundation.PairDiagrams
 public import LeanCategories.Catalogue.Semantics.Foundation.Subsets
