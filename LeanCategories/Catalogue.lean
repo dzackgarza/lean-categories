@@ -13,6 +13,7 @@ public import LeanCategories.Catalogue.Lift
 public import LeanCategories.Catalogue.Realization
 public import LeanCategories.Catalogue.Registry.Entry
 public import LeanCategories.Catalogue.Registry.Semantic
+public import LeanCategories.Catalogue.Registry.Computation
 public import LeanCategories.Catalogue.Registry.Typed
 public import LeanCategories.Catalogue.Semantics
 public import LeanCategories.Catalogue.Semantics.TotalityProbes

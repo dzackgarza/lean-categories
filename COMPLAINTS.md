@@ -38,6 +38,42 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Mathematical issues
 
+### Published operations lacked a generic checked computation-derivation interface
+
+- **Need:** A fixed mathematical operation may have a formally justified plan in
+  terms of other published operations. Consumers need its exact target, complete
+  dependent parameters, all primitive families and the correctness proof, so
+  installing primitives can make the fixed operation executable without changing
+  its meaning or consulting backend capabilities during mathematical resolution.
+- **Evidence:** At `82d1370de372a00a86391b74fc2566c9547dfcb6`, the catalogue publishes
+  operations, functors, methods and constructions and proves whole-operation
+  agreement, including `MonoidOperationAgreement.ring_mul`, but has no published
+  generic computation-derivation catalogue. CAP's *Managing Derived Methods*,
+  chapter 8, supplies prior art for prerequisite closure and keeps mathematical
+  applicability independent of `CanCompute`.
+- **Gap and impact:** The earliest missing owner was the upstream abstract
+  computational API. Equality of complete families was already expressible and
+  proved; a consumer lacked a checked, generically interpretable publication of
+  those plans and their prerequisites. Backend-selected operation meaning or
+  special-case handlers would not discharge that requirement.
+- **Coverage:** Inspected existing catalogue owners, pinned Mathlib's ring,
+  semiring and monoid forgetful functors, Lean's dependent expressions and equality
+  APIs, the CAP manual, and the live formalization-corpus queries recorded in
+  `LeanCategories/Catalogue/Registry/computation-derivations.md`. All mathematics
+  is reused; this is outside the foundational textbook sweep. No leaf,
+  computational acceptance assertion, or runtime answer was consulted.
+- **Repair link:** `Registry/Computation.lean` publishes exact typed family slots,
+  closed whole-family equality proofs and every alternative; the ordinary Lean
+  plan retains dependent parameters and rigid universes. The concrete existing
+  ring–semiring–monoid chain is in
+  `Semantics/Algebra/ComputationDerivations.lean`. Consumer execution and grounding
+  of cycles remain their owner's responsibility; formal probes are recorded with
+  this interface's implementation. On 2026-10-26, the registry, concrete plans,
+  source-level positive/separating probes, and both changed public catalogue
+  aggregates all elaborate successfully in an isolated worktree against the
+  pinned dependency artifacts. The exact author-verification scope and input
+  hashes are recorded in the owning interface document.
+
 ### Hodge structures need filtered-module categories and their comparison maps
 
 - **Need:** Formalize the following dependency chain as mathematics, with the named
