@@ -1,0 +1,135 @@
+{
+  "kind": "independent upstream mathematical author validation; not release acceptance",
+  "recorded_at_utc": "2026-10-23T16:13:47.328760+00:00",
+  "mathematical_base": "dbab309f2ee6a4da2c19e970f4d5d6460d8665a4",
+  "compiler": {
+    "binary": "/workspace/scratch/17aab8431d78/toolchain-download/lean-4.33.0-linux/bin/lean",
+    "version": "4.33.0",
+    "commit": "d8b18978322de05a8f3dba51ef03cf5461676c17",
+    "options": [
+      "-j1"
+    ]
+  },
+  "private_overlay": "/tmp/fresh-math-b-overlay",
+  "base_lean_path_file": "/tmp/reader-lean-path",
+  "compile_driver": "import os\nfrom pathlib import Path\nimport shutil\nimport subprocess\nimport sys\nimport tempfile\n\nroot = Path('/workspace/scratch/17aab8431d78/lean-categories-fresh-trials-b')\noverlay = Path('/tmp/fresh-math-b-overlay')\nbase = Path('/tmp/reader-lean-path').read_text().strip()\nenv = os.environ.copy()\nenv['LEAN_PATH'] = str(overlay) + ':' + base\nfor source in sys.argv[1:]:\n    rel = Path(source)\n    out = Path(tempfile.mkdtemp(prefix='fresh-math-b-build-')) / rel.with_suffix('.olean').name\n    result = subprocess.run([\n        '/workspace/scratch/17aab8431d78/toolchain-download/lean-4.33.0-linux/bin/lean',\n        '-j1', *(['--profile'] if env.get('FRESH_MATH_B_PROFILE') else []),\n        '-o', str(out), str(rel)\n    ], cwd=root, env=env)\n    if result.returncode:\n        raise SystemExit(result.returncode)\n    target = overlay / rel.with_suffix('')\n    target.parent.mkdir(parents=True, exist_ok=True)\n    for suffix in ['.olean', '.olean.private', '.olean.server', '.ir', '.ir.sig']:\n        src = out.with_suffix('') .with_name(out.stem + suffix)\n        dst = target.with_name(target.name + suffix)\n        if not src.exists():\n            raise RuntimeError('Missing private compilation artifact: ' + str(src))\n        if dst.exists() or dst.is_symlink():\n            dst.unlink()\n        shutil.copy2(src, dst)\n    print('PRIVATE COMPILE OK: ' + source, flush=True)\n",
+  "compile_driver_sha256": "8bd5ba8fdbb2e45ac72ea097d7061cab2e6bc50042cd55204b559d604ebe7b31",
+  "compile_command": [
+    "python3",
+    "/tmp/fresh-math-b-compile.py",
+    "LeanCategories/Catalogue/Semantics/Algebra/PrimeResidueFields.lean",
+    "LeanCategories/Catalogue/Semantics/Modules/IntegerResidueModules.lean",
+    "LeanCategories/Catalogue/Semantics/Algebra/SuccessorSeries.lean",
+    "LeanCategories/Catalogue/Semantics/Algebra/RectangularLinearAlgebra.lean",
+    "LeanCategories/Catalogue/Semantics/Modules/Bilinear/Valued/ChangeValueLifts.lean",
+    "LeanCategories/Catalogue/Semantics/Modules/Bilinear/Valued/ModuleKernelRestriction.lean",
+    "LeanCategories/Catalogue/Semantics/Modules/Bilinear/Valued/DegeneratePlaneLifts.lean",
+    "LeanCategories/Catalogue/Semantics/Modules/Bilinear/Valued/DegeneratePlaneFactorization.lean",
+    "LeanCategories/Catalogue/Semantics/Independent/ScalarAndFormExtensions.lean"
+  ],
+  "compile_exit_code": 0,
+  "compile_log_path": "/tmp/fresh-math-b-validation.log",
+  "compile_log_sha256": "0f8715ac1cb1a6e78c497d9d23702dc172374a9edd33af573cae76340d579d99",
+  "compile_output": "PRIVATE COMPILE OK: LeanCategories/Catalogue/Semantics/Algebra/PrimeResidueFields.lean\nLeanCategories/Catalogue/Semantics/Modules/IntegerResidueModules.lean:58:2: warning: Try this: \n  letI\u0335\n\nThe goal is a proposition, so `let` is preferred over `letI`.\nThe difference between `let` and `letI` is that `letI` inlines the value.\nBut this is not relevant for proofs because of proof irrelevance.\n\nNote: This linter can be disabled with `set_option linter.style.haveILetI false`\nPRIVATE COMPILE OK: LeanCategories/Catalogue/Semantics/Modules/IntegerResidueModules.lean\nLeanCategories/Catalogue/Semantics/Algebra/SuccessorSeries.lean:64:2: warning: Try this: \n  letI\u0335\n\nThe goal is a proposition, so `let` is preferred over `letI`.\nThe difference between `let` and `letI` is that `letI` inlines the value.\nBut this is not relevant for proofs because of proof irrelevance.\n\nNote: This linter can be disabled with `set_option linter.style.haveILetI false`\nLeanCategories/Catalogue/Semantics/Algebra/SuccessorSeries.lean:65:2: warning: Try this: \n  haveI\u0335\n\nThe goal is a proposition, so `have` is preferred over `haveI`.\nThe difference between `have` and `haveI` is that `haveI` inlines the value.\nBut this is not relevant for proofs because of proof irrelevance.\n\nNote: This linter can be disabled with `set_option linter.style.haveILetI false`\nPRIVATE COMPILE OK: LeanCategories/Catalogue/Semantics/Algebra/SuccessorSeries.lean\nPRIVATE COMPILE OK: LeanCategories/Catalogue/Semantics/Algebra/RectangularLinearAlgebra.lean\nPRIVATE COMPILE OK: LeanCategories/Catalogue/Semantics/Modules/Bilinear/Valued/ChangeValueLifts.lean\nPRIVATE COMPILE OK: LeanCategories/Catalogue/Semantics/Modules/Bilinear/Valued/ModuleKernelRestriction.lean\nLeanCategories/Catalogue/Semantics/Modules/Bilinear/Valued/DegeneratePlaneLifts.lean:157:25: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice\n\nNote: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`\nPRIVATE COMPILE OK: LeanCategories/Catalogue/Semantics/Modules/Bilinear/Valued/DegeneratePlaneLifts.lean\nLeanCategories/Catalogue/Semantics/Modules/Bilinear/Valued/DegeneratePlaneFactorization.lean:43:69: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice\n\nNote: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`\nPRIVATE COMPILE OK: LeanCategories/Catalogue/Semantics/Modules/Bilinear/Valued/DegeneratePlaneFactorization.lean\nPRIVATE COMPILE OK: LeanCategories/Catalogue/Semantics/Independent/ScalarAndFormExtensions.lean\n",
+  "sources": [
+    {
+      "path": "LeanCategories/Catalogue/Semantics/Algebra/PrimeResidueFields.lean",
+      "sha256": "67624811b9830ca8a43925bb971d59c7ce5121e5223309baf1e7c884e8ef4a63",
+      "registered_ids": [
+        "obj.fields.prime_residues"
+      ]
+    },
+    {
+      "path": "LeanCategories/Catalogue/Semantics/Modules/IntegerResidueModules.lean",
+      "sha256": "00ad27b54e7d5cd430733d565148b687039dc80f654a6469c4d9628cae3984c5",
+      "registered_ids": [
+        "obj.modules_r.restricted_regular"
+      ]
+    },
+    {
+      "path": "LeanCategories/Catalogue/Semantics/Algebra/SuccessorSeries.lean",
+      "sha256": "c5bb362447a97e58c5620d37471fb79db0e70ae74127c561fd2021fab3d3e29d",
+      "registered_ids": [
+        "mor.sets.successor_power_series_terms"
+      ]
+    },
+    {
+      "path": "LeanCategories/Catalogue/Semantics/Algebra/RectangularLinearAlgebra.lean",
+      "sha256": "c1f8778bc56fd9368c1da427c1b534aa34d7bb7269cedaaf12a969fb7457d438",
+      "registered_ids": [
+        "obj.sets.rectangular_matrices",
+        "mor.modules.rectangular_linear_map",
+        "mor.modules.row_linear_map"
+      ]
+    },
+    {
+      "path": "LeanCategories/Catalogue/Semantics/Modules/Bilinear/Valued/ChangeValueLifts.lean",
+      "sha256": "5eda616f89bfbe38b74399800ab491755099e4f562ce7d717cdf2c1c6bbd9efa",
+      "registered_ids": [
+        "lift.bilin_module.change_value_restriction"
+      ]
+    },
+    {
+      "path": "LeanCategories/Catalogue/Semantics/Modules/Bilinear/Valued/ModuleKernelRestriction.lean",
+      "sha256": "9bda222dcaeaa985c62bf9a52b43cea4fe2a8f5f2a6710eed1c7ec5f0104f52c",
+      "registered_ids": [
+        "obj.bilin_module.ordinary_kernel_restriction",
+        "mor.bilin_module.ordinary_kernel_inclusion",
+        "obj.bilin_module.rational_diagonal_2_3"
+      ]
+    },
+    {
+      "path": "LeanCategories/Catalogue/Semantics/Modules/Bilinear/Valued/DegeneratePlaneLifts.lean",
+      "sha256": "773777df69075d4535fad45542e65ffd31961097a6a4b61bb5b2ffd3218a26d6",
+      "registered_ids": [
+        "obj.bilin_module.degenerate_plane",
+        "obj.bilin_module.degenerate_plane_target",
+        "mor.bilin_module.degenerate_plane_map",
+        "obj.bilin_module.degenerate_plane_with_dot"
+      ]
+    },
+    {
+      "path": "LeanCategories/Catalogue/Semantics/Modules/Bilinear/Valued/DegeneratePlaneFactorization.lean",
+      "sha256": "a5c0a31f2040fa19f8dc279263a819bf8bd08720b0d0371ee09cf182eb107b51",
+      "registered_ids": [
+        "mor.bilin_module.degenerate_plane_cone",
+        "mor.bilin_module.degenerate_plane_paired_cone"
+      ]
+    },
+    {
+      "path": "LeanCategories/Catalogue/Semantics/Independent/ScalarAndFormExtensions.lean",
+      "sha256": "205ffe680bd7618ee8192043a2dc14209b6116db5e59c703a816bec9d41eb705",
+      "registered_ids": []
+    }
+  ],
+  "source_scan": {
+    "new_axiom_declarations": 0,
+    "sorry_tokens": 0,
+    "native_decide_tokens": 0
+  },
+  "proof_dependencies": {
+    "command": [
+      "/workspace/scratch/17aab8431d78/toolchain-download/lean-4.33.0-linux/bin/lean",
+      "-j1",
+      "/tmp/fresh-math-b-proof-provenance.lean"
+    ],
+    "exit_code": 0,
+    "script": "import LeanCategories.Catalogue.Semantics.Independent.ScalarAndFormExtensions\n\n#print axioms CasCatalogue.Algebra.PrimeResidueFields.carrier_comparison_apply\n#print axioms CasCatalogue.Algebra.PrimeResidueFields.carrier_routes_map\n#print axioms CasCatalogue.Algebra.PrimeResidueFields.five_multiplicative_cardinality\n#print axioms CasCatalogue.Modules.IntegerResidueModules.quotient_is_integer_coefficients\n#print axioms CasCatalogue.Modules.IntegerResidueModules.five_regular_dimension\n#print axioms CasCatalogue.Modules.IntegerResidueModules.five_cartesian_base\n#print axioms CasCatalogue.Modules.IntegerResidueModules.five_cartesian_carrier\n#print axioms CasCatalogue.Modules.IntegerResidueModules.reindex_double_three\n#print axioms CasCatalogue.Algebra.SuccessorSeries.successorTerms_admission\n#print axioms CasCatalogue.Algebra.SuccessorSeries.integer_degree_three\n#print axioms CasCatalogue.Algebra.SuccessorSeries.no_constant_one_admission\n#print axioms CasCatalogue.Modules.Bilinear.Valued.ModuleKernelRestriction.RationalProjection.kernel_dimension\n#print axioms CasCatalogue.Modules.Bilinear.Valued.ModuleKernelRestriction.RationalProjection.restricted_pairing\n#print axioms CasCatalogue.Modules.Bilinear.Valued.ModuleKernelRestriction.RationalProjection.projection_not_formed\n#print axioms CasCatalogue.Modules.Bilinear.Valued.ChangeValueLifts.changeValueMonoLift\n#print axioms CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneLifts.kernel_universal\n#print axioms CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneLifts.alpha_value\n#print axioms CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneLifts.final_object_is_successive\n#print axioms CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneLifts.final_inclusion_is_second\n#print axioms CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneLifts.final_alpha_value\n#print axioms CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneLifts.final_inverse_forward_backward\n#print axioms CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneLifts.final_inverse_backward_forward\n#print axioms CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneLifts.final_factorization\n#print axioms CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneLifts.final_pairing\n#print axioms CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneFactorization.formedMediator_factorization\n#print axioms CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneFactorization.formedMediator_unique\n#print axioms CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneFactorization.finalMediator_factorization\n#print axioms CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneFactorization.finalMediator_comparison\n#print axioms CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneFactorization.finalMediator_unique\n#print axioms CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneFactorization.first_observation\n#print axioms CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneFactorization.second_observation\n",
+    "script_sha256": "1d130d20f237f0a7789042bdce5a018a10ea8efd97b1e3af094caf7d28c0714f",
+    "log_path": "/tmp/fresh-math-b-proof-provenance.log",
+    "log_sha256": "2f1932c80ae088cad87c65bd098280a20f76f6b76e86d3a044d4ef1aea17f6b7",
+    "output": "'CasCatalogue.Algebra.PrimeResidueFields.carrier_comparison_apply' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Algebra.PrimeResidueFields.carrier_routes_map' depends on axioms: [propext, Classical.choice, Quot.sound]\n'CasCatalogue.Algebra.PrimeResidueFields.five_multiplicative_cardinality' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.IntegerResidueModules.quotient_is_integer_coefficients' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.IntegerResidueModules.five_regular_dimension' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.IntegerResidueModules.five_cartesian_base' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.IntegerResidueModules.five_cartesian_carrier' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.IntegerResidueModules.reindex_double_three' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Algebra.SuccessorSeries.successorTerms_admission' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Algebra.SuccessorSeries.integer_degree_three' depends on axioms: [propext, Classical.choice, Quot.sound]\n'CasCatalogue.Algebra.SuccessorSeries.no_constant_one_admission' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.Bilinear.Valued.ModuleKernelRestriction.RationalProjection.kernel_dimension' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.Bilinear.Valued.ModuleKernelRestriction.RationalProjection.restricted_pairing' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.Bilinear.Valued.ModuleKernelRestriction.RationalProjection.projection_not_formed' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.Bilinear.Valued.ChangeValueLifts.changeValueMonoLift' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneLifts.kernel_universal' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneLifts.alpha_value' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneLifts.final_object_is_successive' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneLifts.final_inclusion_is_second' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneLifts.final_alpha_value' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneLifts.final_inverse_forward_backward' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneLifts.final_inverse_backward_forward' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneLifts.final_factorization' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneLifts.final_pairing' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneFactorization.formedMediator_factorization' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneFactorization.formedMediator_unique' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneFactorization.finalMediator_factorization' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneFactorization.finalMediator_comparison' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneFactorization.finalMediator_unique' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneFactorization.first_observation' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n'CasCatalogue.Modules.Bilinear.Valued.DegeneratePlaneFactorization.second_observation' depends on axioms: [propext,\n Classical.choice,\n Quot.sound]\n",
+    "declaration_count": 31,
+    "axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  },
+  "scope_limits": [
+    "No downstream implementation, leaves, acceptance output, or runtime reports used.",
+    "No shared build outputs written.",
+    "No frozen extension trial counted.",
+    "No independent release acceptance claimed."
+  ]
+}

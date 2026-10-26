@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Catalogue.Semantics.Foundation.PowerSets
 public import LeanCategories.Catalogue.Semantics.Algebra.Ports
+public import LeanCategories.Catalogue.Semantics.Algebra.MonoidOperations
 public import Mathlib.Algebra.Category.Grp.Adjunctions
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.LinearAlgebra.Matrix.Notation
@@ -43,6 +44,15 @@ on `M`. The endomorphisms `Matₙ(K) = End(Kⁿ)` form a monoid; their units are
   `y = y x z = z`), so the admitted unit depends on `x` alone, as membership does, and
   `Nonempty (Invertible x) ↔ IsUnit x` (`isUnit_iff_nonempty_invertible`).
 * `⁻¹ : Mˣ → Mˣ`, and division `M × Mˣ → M`, `(a, u) ↦ a u⁻¹`.
+
+Both evidence procedures compare definitionally equal presentations of the
+exact selected structure at ordinary definitional transparency, locally to
+the procedure. This includes the registered matrix and polynomial rings,
+their multiplicative-monoid presentations, and literal functions or declared
+numeral maps at those structures. The original `IsUnit` or `Invertible` target
+and all its dictionaries remain fixed. In particular, matrix multiplication
+and pointwise multiplication on the same function carrier remain distinct.
+This conversion policy adds no new family to the cases documented below.
 -/
 
 open CategoryTheory
@@ -156,8 +166,8 @@ retain the selected ring's instance even after its displayed type has become the
 meta def normalizeBundledObjects : TacticM Unit := do
   let goal ← getMainGoal
   let target ← instantiateMVars (← goal.getType)
-  let objects := [``MonCat, ``CommMonCat, ``SemiRingCat, ``RingCat, ``CommSemiRingCat,
-    ``CommRingCat]
+  let objects := [``MonCat, ``CommMonCat, ``GrpCat, ``CommGrpCat, ``AddGrpCat,
+    ``AddCommGrpCat, ``SemiRingCat, ``RingCat, ``CommSemiRingCat, ``CommRingCat]
   let wrappers := [``RingCat.instRingObjForgetRingHomCarrier,
     ``SemiRingCat.instSemiringObjForgetRingHomCarrier,
     ``CommRingCat.instCommRingObjForgetRingHomCarrier,
@@ -331,6 +341,7 @@ open Lean Elab Tactic in
 
 It fails on an element that is not a unit (`2 ∈ ℤ`, `0 ∈ ℚ`, a singular matrix, `0 ∈ ℚ[x]`). -/
 meta partial def isUnitEvidence : TacticM Unit :=
+  withOptions (fun options => options.setBool `backward.isDefEq.respectTransparency false) <|
   CasCatalogue.Evidence.establish "Units" do
     readCatalogue
     isUnitCases
@@ -411,6 +422,7 @@ equations `⅟x · x = x · ⅟x = 1` are proved (by `isUnitEvidence`, the inver
 
 It fails on an element that is not a unit (`2 ∈ ℤ`, `0 ∈ ℚ`, a singular matrix, `0 ∈ ℚ[x]`). -/
 meta partial def invertibleEvidence : TacticM Unit :=
+  withOptions (fun options => options.setBool `backward.isDefEq.respectTransparency false) <|
   CasCatalogue.Evidence.establish "Units" do
     readCatalogue
     invertibleCases

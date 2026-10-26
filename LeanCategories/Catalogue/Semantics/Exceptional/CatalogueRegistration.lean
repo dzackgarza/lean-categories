@@ -120,7 +120,7 @@ normalized_registry .category
     expression := Algebra.Catalogue.Rings.Rings
     realization := `CasCatalogue.Algebra.CatalogueRegistration.ringsRealization}
 normalized_registry .category
-  { id := CategoryId.commutativeRings,
+  { id := CategoryId.commutativeRings, name := "CommutativeRings",
     declaration := `LeanCategories.Algebra.CommutativeRings
     expression := Algebra.Catalogue.Rings.CommutativeRings
     realization := `CasCatalogue.Algebra.CatalogueRegistration.commutativeRingsRealization}

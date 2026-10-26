@@ -13,6 +13,7 @@ public import LeanCategories.Catalogue.Lift
 public import LeanCategories.Catalogue.Realization
 public import LeanCategories.Catalogue.Registry.Entry
 public import LeanCategories.Catalogue.Registry.Semantic
+public import LeanCategories.Catalogue.Registry.Computation
 public import LeanCategories.Catalogue.Registry.Typed
 public import LeanCategories.Catalogue.Semantics
 public import LeanCategories.Catalogue.Semantics.TotalityProbes
@@ -58,6 +59,10 @@ public import LeanCategories.Catalogue.Semantics.Algebra.Semirings
 public import LeanCategories.Catalogue.Semantics.Algebra.Polynomials
 public import LeanCategories.Catalogue.Semantics.Algebra.Differentials
 public import LeanCategories.Catalogue.Semantics.Algebra.Units
+public import LeanCategories.Catalogue.Semantics.Algebra.MonoidOperations
+public import LeanCategories.Catalogue.Semantics.Algebra.MonoidOperationAgreement
+public import LeanCategories.Catalogue.Semantics.Algebra.AdditiveOperations
+public import LeanCategories.Catalogue.Semantics.Algebra.GroupMaps
 public import LeanCategories.Catalogue.Semantics.Algebra.LinearAlgebra
 public import LeanCategories.Catalogue.Semantics.Foundation.FiniteSubsets
 public import LeanCategories.Catalogue.Semantics.Foundation.Maps
@@ -68,6 +73,7 @@ public import LeanCategories.Catalogue.Semantics.Algebra.RealLimits
 public import LeanCategories.Catalogue.Semantics.Algebra.MvPolynomials
 public import LeanCategories.Catalogue.Semantics.Algebra.Algebras
 public import LeanCategories.Catalogue.Semantics.Algebra.CommutativeMonoids
+public import LeanCategories.Catalogue.Semantics.Algebra.ComputationDerivations
 public import LeanCategories.Catalogue.Semantics.Algebra.Schemes
 public import LeanCategories.Catalogue.Semantics.Foundation.PairDiagrams
 public import LeanCategories.Catalogue.Semantics.Foundation.Subsets
@@ -88,6 +94,7 @@ public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.Kernels
 public import LeanCategories.Catalogue.Semantics.Modules.Catalogue
 public import LeanCategories.Catalogue.Semantics.Modules.CatalogueRegistration
 public import LeanCategories.Catalogue.Semantics.Modules.Expressions
+public import LeanCategories.Catalogue.Semantics.Modules.LinearMaps
 public import LeanCategories.Catalogue.Semantics.Modules.Operations
 public import LeanCategories.Catalogue.Semantics.Modules.Quadratic.Valued.Catalogue
 public import LeanCategories.Catalogue.Semantics.Modules.Quadratic.Valued.CatalogueRegistration

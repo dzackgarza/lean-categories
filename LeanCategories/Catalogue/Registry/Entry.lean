@@ -161,11 +161,14 @@ structure ObjectEntry where
   category : CategoryId
   declaration : Lean.Name
   /-- Its surface name in the language (`ℤ`, `Fin`, `ZMod`), applied to its parameters. An
-  unrefined object's name is unique among unrefined objects; a refinement bears its base's name,
-  and is named in the language by `X in C`. -/
+  unrefined object's name is unique among unrefined objects. A refinement may share its base's
+  name (`X in C`) or have a distinct explicit name for its selected structure. The actual
+  underlying-object comparison is determined by `refines`, not by spelling. -/
   name : String
   /-- When this object is another one with more structure: `Fin(n)` in `FiniteSets` refines
-  `Fin(n)` in `Sets` along the forgetful functor. -/
+  `Fin(n)` in `Sets` along the forgetful functor. Distinct selected structures can have distinct
+  names while retaining presentations over the same base, e.g. `FinOrder(n)` and
+  `ReverseFinOrder(n)` over the set `Fin(n)`. -/
   refines : Option ObjectRefinement := none
   /-- Additional surface forms selecting this exact mathematical object family. The reader
   owns their syntax; the registry owns which family they denote, including its chosen
@@ -328,7 +331,17 @@ operation's actual fixed operand product. A binary source may be `U X × U X`, o
 heterogeneous product such as `R × U X` for scalar action on an `R`-module. A unary source
 has one operand; a nullary source is terminal. Unless `result` selects another object,
 `A X` is the underlying set `U X`. The checked declaration retains each operand's selected
-parameters and structure. Its surface name is the language's operator (`+`, `·`, `-`, `•`). -/
+parameters and structure. Its surface name is the language's operator (`+`, `·`, `-`, `•`).
+
+This row binds that name on the complete selected owner category. The binding key is the
+surface name alone: a validated owner has at most one row of a given name. Arity and numeral
+parameters belong to that binding's signature and cannot be used to skip it. Inherited lookup
+stops at the first explicit binding on each structural path, including classifier-forget and
+functorial-constructor paths. A farther binding cannot replace a selected one. Incomparable
+surviving bindings remain distinct unless accepted comparison data establishes agreement of
+their complete transported operations, with the exact operand and result structures. Neither
+equal carriers nor equal values at particular arguments identifies two bindings. This is a
+scoped name binding, not a precedence ordering of categories or registration rows. -/
 structure OperationEntry where
   id : OperationId
   category : CategoryId
@@ -368,6 +381,11 @@ structure PowerObjectEntry where
   singleton : Lean.Name
   terminal : Lean.Name
   image : Lean.Name
+  /-- The whole direct-image action, when published:
+  `∀ (X Y : Sets) (f : X ⟶ Y), 𝒫 X ⟶ 𝒫 Y`.
+  A generalized subset `A : S ⟶ 𝒫 X` composes with it without losing its original stage `S`.
+  This is separate from `image`, whose result is a global image of the entire domain. -/
+  directImage : Option Lean.Name := none
   union : String
   deriving Repr
 

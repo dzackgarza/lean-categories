@@ -133,7 +133,8 @@ def SemanticEntry.declarations : SemanticEntry → Array Name
   | .operation e => #[e.declaration]
   | .inclusion e => #[e.declaration, e.mono]
   | .powerObject e =>
-      #[e.truth, e.point, e.member, e.transpose, e.extent, e.empty, e.singleton, e.terminal, e.image]
+      #[e.truth, e.point, e.member, e.transpose, e.extent, e.empty, e.singleton, e.terminal, e.image] ++
+        e.directImage.toArray
   | .subsetLiteral e => #[e.type, e.denotation] ++ e.evaluation.toArray
   | .binder e => #[e.operation, e.domain]
 
@@ -186,6 +187,18 @@ def SemanticState.category? (state : SemanticState) (expression : CategoryExpr) 
     Option NamedCategoryEntry :=
   let candidates := state.categories.filter fun entry => entry.expression.syntacticEq expression;
   (if candidates.size == 1 then candidates[0]? else none)
+
+/-- The explicit operator binding at this exact registered owner expression.
+The key is the surface name, independently of arity. This lookup neither forgets
+structure nor substitutes a category with an equal underlying carrier. The
+consumer retains the complete typed bundle and parameters of the selected owner. -/
+def SemanticState.operationBindings (state : SemanticState) (owner : CategoryExpr)
+    (surfaceName : String) : Array OperationEntry :=
+  match state.category? owner with
+  | none => #[]
+  | some category =>
+      state.operations.filter fun entry =>
+        entry.category == category.id && entry.name == surfaceName
 
 def SemanticState.classifier? (state : SemanticState) (id : ClassifierId) :
     Option ClassifierEntry :=
@@ -1638,6 +1651,23 @@ def SemanticState.routeEdges? (state : SemanticState) (source target : CategoryE
     current := edge.target
   if current.syntacticEq target then some out else none
 
+/-- A route to the first explicit binding of this operator name on its path.
+All steps must belong to the existing structural graph; their actual sources
+are reconstructed from that graph. A binding at any proper prefix ends lookup
+there, even when a farther row has a different arity or declaration ID.
+
+This predicate supplies no ordering among incomparable surviving routes. Their
+complete typed requests remain ambiguous unless accepted whole-operation
+comparisons identify them. Classifier forgetful and derived constructor edges
+obey precisely the same rule as registered structural functors. -/
+def SemanticState.isFirstOperationBindingRoute (state : SemanticState)
+    (surfaceName : String) (route : Route) : Bool :=
+  match state.routeEdges? route.source route.target route.refs with
+  | none => false
+  | some steps =>
+      !(state.operationBindings route.target surfaceName).isEmpty &&
+        steps.all fun edge => (state.operationBindings edge.source surfaceName).isEmpty
+
 /-- The Mathlib functor of a classifier's forgetful functor `total → host`. -/
 def classifierForgetInstance (entry : ClassifierEntry) : MetaM Expr := do
   let classifier ← mkConstWithFreshMVarLevels entry.declaration
@@ -2055,7 +2085,7 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
   if state.morphisms.any fun m => m.category == e.category && m.name == e.name then
     throwError "object {e.id.raw}: {e.category.raw} already has a morphism named {e.name}"
   let declaration ← mkConstWithFreshMVarLevels e.declaration
-  let (args, _, type) ← forallMetaTelescopeReducing (← inferType declaration)
+  let (_, _, type) ← forallMetaTelescopeReducing (← inferType declaration)
   unless ← withTransparency .all <| isDefEq type (← categoryCarrierInstance category) do
     throwError "object {e.id.raw}: {e.declaration} does not return an object of {e.category.raw}"
   if let some components := e.components then
@@ -2193,9 +2223,8 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
   let some refinement := e.refines | return
   let some base := state.objects.find? (·.id == refinement.base)
     | throwError "object {e.id.raw} refines an unregistered object {refinement.base.raw}"
-  unless base.name == e.name && base.refines.isNone do
-    throwError "object {e.id.raw} refines {base.id.raw}, which is not the unrefined object named \
-      {e.name}"
+  unless base.refines.isNone do
+    throwError "object {e.id.raw} refines {base.id.raw}, which is not an unrefined object"
   let some baseCategory := state.categories.find? (·.id == base.category)
     | throwError "object {e.id.raw}: {base.id.raw} has an unregistered category"
   let mut at_ := category.expression
@@ -2208,29 +2237,29 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
   unless !refinement.route.isEmpty && at_.syntacticEq baseCategory.expression do
     throwError "object {e.id.raw}: the route does not go from {e.category.raw} to \
       {base.category.raw}"
-  let functor ← state.routeFunctor refinement.route
-  let identification ← mkConstWithFreshMVarLevels refinement.identification
-  let (idArgs, _, idType) ← forallMetaTelescopeReducing (← inferType identification)
-  unless idArgs.size == args.size do
-    throwError "object {e.id.raw}: {refinement.identification} does not take its parameters"
-  for (a, b) in idArgs.zip args do discard <| isDefEq a b
-  let baseDeclaration ← mkConstWithFreshMVarLevels base.declaration
-  let (baseArgs, _, _) ← forallMetaTelescopeReducing (← inferType baseDeclaration)
-  let idType ← whnfR (← instantiateMVars idType)
-  -- Assign the functor's universe levels at this depth, then apply it to the object.
-  let object := mkAppN declaration args
-  let functorType ← whnf (← inferType functor)
-  discard <| withTransparency .all <| isDefEq (← inferType object) functorType.getAppArgs[0]!
-  let functor ← instantiateMVars functor
-  let image ← mkAppM ``Prefunctor.obj
-    #[← mkAppM ``CategoryTheory.Functor.toPrefunctor #[functor], object]
-  let ok ← match idType.getAppFn.constName?, idType.getAppArgs with
-    | some ``CategoryTheory.Iso, #[_, _, x, y] => withTransparency .all do
-        pure ((← isDefEq x image) && (← isDefEq y (mkAppN baseDeclaration baseArgs)))
-    | _, _ => pure false
-  unless ok do
-    throwError "object {e.id.raw}: {refinement.identification} is not an isomorphism from the \
-      image of {e.declaration} along {renderSteps refinement.route} to {base.declaration}"
+  -- Spelling does not prove a presentation. Check the actual comparison with
+  -- all object parameters rigid, so it cannot specialize a family at one size.
+  forallTelescopeReducing (← inferType declaration) fun parameters _ => do
+    let functor ← state.routeFunctor refinement.route
+    let identification ← applyObjectParameters s!"object {e.id.raw}"
+      refinement.identification parameters
+    let idType ← whnfR (← inferType identification)
+    checkIsoCategory e.id.raw baseCategory idType
+    let baseDeclaration ← mkConstWithFreshMVarLevels base.declaration
+    let (baseArgs, _, _) ← forallMetaTelescopeReducing (← inferType baseDeclaration)
+    let object := mkAppN declaration parameters
+    let functorType ← whnf (← inferType functor)
+    discard <| withTransparency .all <| isDefEq (← inferType object) functorType.getAppArgs[0]!
+    let functor ← instantiateMVars functor
+    let image ← mkAppM ``Prefunctor.obj
+      #[← mkAppM ``CategoryTheory.Functor.toPrefunctor #[functor], object]
+    let ok ← match idType.getAppFn.constName?, idType.getAppArgs with
+      | some ``CategoryTheory.Iso, #[_, _, x, y] => withTransparency .all do
+          pure ((← isDefEq x image) && (← isDefEq y (mkAppN baseDeclaration baseArgs)))
+      | _, _ => pure false
+    unless ok do
+      throwError "object {e.id.raw}: {refinement.identification} is not an isomorphism from the \
+        image of {e.declaration} along {renderSteps refinement.route} to {base.declaration}"
 
 /-- A literal row's `denotation` sends its literal `type`, which has decidable equality, to the
 objects of its registered category; one literal form per category. -/
@@ -2396,6 +2425,21 @@ def validatePowerObject (state : SemanticState) (e : PowerObjectEntry) : MetaM U
     throwError "power object {e.id.raw}: {e.terminal} does not land in the source of {e.truth}"
   unless ← withTransparency .all <| isDefEq (← result e.extent) (← categoryCarrierInstance sets) do
     throwError "power object {e.id.raw}: {e.extent} does not return an object of {sets.id.raw}"
+  if let some directImage := e.directImage then
+    -- Rigid X, Y and f prevent validation from specializing a family or
+    -- replacing its full power-object source by a global point.
+    let carrier ← categoryCarrierInstance sets
+    withLocalDeclD `X carrier fun X =>
+      withLocalDeclD `Y carrier fun Y => do
+        let maps ← mkAppM ``Quiver.Hom #[X, Y]
+        withLocalDeclD `f maps fun f => do
+          let actual ← applyObjectParameters e.id.raw directImage #[X, Y, f]
+          let source ← applyObjectParameters e.id.raw power.declaration #[X]
+          let target ← applyObjectParameters e.id.raw power.declaration #[Y]
+          let expected ← mkAppM ``Quiver.Hom #[source, target]
+          unless ← withTransparency .all <| isDefEq (← inferType actual) expected do
+            throwError "power object {e.id.raw}: {directImage} is not the full \
+              direct-image map from its power object at X to its power object at Y"
 
 /-- A subset-literal row names a registered power object, at most one literal form for it, and a
 `denotation : ∀ X [DecidableEq X], T X → (1 ⟶ 𝒫 X)` whose literal argument is of its `type`
@@ -2810,7 +2854,8 @@ def SemanticEntry.totalityDeclarations : SemanticEntry → Array Name
   | .graphLiteral e => #[e.denotation]
   | .literal e => #[e.denotation]
   | .powerObject e =>
-      #[e.truth, e.point, e.member, e.transpose, e.extent, e.empty, e.singleton, e.terminal, e.image]
+      #[e.truth, e.point, e.member, e.transpose, e.extent, e.empty, e.singleton, e.terminal, e.image] ++
+        e.directImage.toArray
   | .subsetLiteral e => #[e.denotation]
   | .binder e => #[e.operation, e.domain]
   | .constructor e => #[e.semantics] ++ e.functorialAction.toArray ++
