@@ -1331,6 +1331,41 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
      assertion or evidence implementation was edited. This bounded verification
      does not close the unsupported expression and map cases listed above.
 
+     **Selected-presentation entry contract, 2026-10-26:** the public monic
+     admission takes the polynomial with its complete chosen coefficient ring,
+     dictionaries and coefficient maps. Its evidence should therefore read that
+     presentation before selecting a mathematical proof case, just as
+     `nonzeroPolynomialEvidence` already does. The monicity map case recognizes
+     an exposed `Polynomial.map`; the public categorical `Polynomials.map`
+     reaches that expression through its declared definition. The previous late
+     `normalizePolynomial` branch evaluated numerals but did not establish the
+     full `normalizeBundledObjects` entry invariant, and went directly to the
+     degree case after normalization.
+     The owner now invokes the existing `Units.readCatalogue` inside
+     `Evidence.establish`, before the unchanged monicity cases. This reads the
+     selected data by definitional equality and existing cast/map equations;
+     it does not infer a replacement ring structure from its carrier, change
+     the original `p.Monic ∧ p.natDegree = n` proposition, or add a proof rule.
+     Basic public integer-coefficient map and mapped-numeral controls already
+     succeeded on the old source. This change establishes consistent entry
+     normalization; it is not a claim that those earlier controls failed.
+     **Reuse and verification:** live corpus searches for polynomial integer
+     cast preservation and `mapRingHom` found Mathlib's
+     `Tactic/Polynomial/Basic.lean` and `Algebra/Polynomial/Eval/Defs.lean`;
+     the pinned definitions and `Polynomial.map_natCast` / `map_intCast` laws
+     are the existing owners. No equation or simplification rule was added.
+     The changed `LinearAlgebra` module and bounded upstream-only proof controls
+     pass with the unchanged Lean 4.33.0 resource options. Controls cover the
+     public canonical integer-coefficient map, mapped numeral constants, a
+     coefficient ring retained through its selected scalar algebra, and an
+     iterated polynomial coefficient ring. Wrong-degree and nonmonic obligations
+     remain refused. The complete original propositions are kernel checked;
+     `Evidence.establish` still rejects open goals, expression metavariables, and `sorry`.
+     Work is isolated from the published `ee49277` source, with copied immutable
+     Lean libraries and all new compilation outputs isolated. Comparison and
+     derivation declarations, existing assertions, and shared artifacts were
+     not changed. These are author proof controls, not independent acceptance.
+
   5. **Continuity and smoothness of piecewise maps.** `continuousEvidence` and `smoothEvidence`
      compose rules along the structure of the map (`fun_prop`). A piecewise map that is continuous
      because its pieces agree on the boundary (`fun x => if x < 0 then -x else x`) and a quotient

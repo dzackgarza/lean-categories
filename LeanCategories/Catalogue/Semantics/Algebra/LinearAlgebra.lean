@@ -233,6 +233,11 @@ open Lean Elab Tactic in
 /-- The evidence that a closed polynomial `p ∈ K[x]` is monic of degree `n`, by the structure of
 `p`:
 
+The public categorical presentation is first read by `Units.readCatalogue`,
+including the selected coefficient carrier and dictionaries, numeral maps and
+polynomial maps. Only their existing defining equations are used; the complete
+original proposition and its final proof check are retained.
+
 * `p` an expression in `x`, constants `C r`, numerals, `+`, `-`, `·`, `^` over a closed
   commutative ring `K`: its coefficient of degree `n` is `1` and none above it is nonzero. They
   are read off the expression, and, when its naive leading terms cancel, off its normal form
@@ -243,7 +248,9 @@ open Lean Elab Tactic in
 
 It fails on a polynomial that is not monic or has another degree. -/
 meta partial def monicEvidence : TacticM Unit :=
-  CasCatalogue.Evidence.establish "Monicₙ(K)" monicCases
+  CasCatalogue.Evidence.establish "Monicₙ(K)" do
+    CasCatalogue.Algebra.Units.readCatalogue
+    monicCases
 where
   /-- The cases above, tried in turn on the main goal `p.Monic ∧ p.natDegree = n`. -/
   monicCases : TacticM Unit :=
