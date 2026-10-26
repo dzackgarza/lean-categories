@@ -1629,6 +1629,43 @@ additive group and multiplication as scalar action. This exposes the existing
 canonical mathematical object without selecting a replacement carrier, basis,
 coordinate presentation or value module for any formed object.
 
+Source-only review on 2026-10-26 found that the public chosen-limit catalogue
+registered Cartesian products of sets but no Cartesian product in the selected
+module fibre. The mathematical requirement is the ordered product of arbitrary
+complete modules `M N : ModuleCat.{v} R` over the actual `R : RingCat.{u}`,
+including its componentwise structures, linear projections and universal linear
+pairing. A finite-function or vector module is a different chosen presentation
+and cannot replace this object without an explicit comparison.
+
+No mathematical construction was missing from Mathlib:
+`ModuleCat.binaryProductLimitCone` already constructs `ModuleCat.of R (M × N)`
+with exactly those structures, `LinearMap.fst`/`snd`, and `LinearMap.prod` with
+the full `IsLimit` proof. `Limits/Registration.lean` now exposes that entire
+family as `modulesProduct`, registered by `lim.modules.product` at
+`cat.modules_r`. The existing `LimitEntry`, `diagramIsoPair` and `BinaryFan.mk`
+interfaces suffice; no new registry schema, coordinate presentation or
+computational policy is introduced. The actual selected ring and both full
+module structures remain parameters, with independent ring and module
+universes. The source-fidelity equations expose the complete apex, all
+componentwise operations, the two projections and the mediator; the universal
+statement directly reuses `IsLimit.existsUnique` on the supplied cone.
+FOUNDATIONS Definition 13.1 records the general mathematical statement, the
+dated broad and focused Formalization Corpus searches, and pinned Mathlib
+revision/file/license provenance. This source exposure carries no judgment
+about downstream computations or mathematical-release acceptance.
+
+Bounded upstream source verification with Lean 4.33.0 checked the changed
+registration module and both existing public aggregates, then a source-only
+control with arbitrary selected ring and modules. The control verifies both
+projection equations, uniqueness of the linear mediator, independent ring and
+module universes, and the exact row through the full catalogue. The new
+declaration and all nine accompanying theorems use only `propext`,
+`Classical.choice` and `Quot.sound`. All final checks passed without increasing
+resource limits. The 28 missing unchanged Mathlib import modules were compiled
+only into an isolated output root; a before/after guard over 14,433 existing
+source/artifact inputs was unchanged. No active source or compiled closure was
+modified, and no comparison or computation-derivation declaration changed.
+
 Source-only review on 2026-10-24 found that the chosen module-kernel interface
 already retained its categorical domain and inclusion and proved rank and
 cardinality comparisons, but did not publish the canonical maps to and from

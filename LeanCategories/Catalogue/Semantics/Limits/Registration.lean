@@ -10,6 +10,7 @@ public import LeanCategories.Algebra.GroupKernel
 public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Types.Coproducts
 public import Mathlib.CategoryTheory.Limits.Types.Products
+public import Mathlib.Algebra.Category.ModuleCat.Biproducts
 public import LeanCategories.Modules.Bilinear.Valued.Cokernel
 public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.CatalogueRegistration
 public meta import LeanCategories.Catalogue.Registry.Semantic
@@ -23,6 +24,9 @@ public meta import LeanCategories.Catalogue.Registry.Semantic
   (Mathlib `Types.pullbackLimitCone`);
 * `lim.sets.product`: the cartesian product `X × Y` with its projections (Mathlib
   `Types.binaryProductLimitCone`);
+* `lim.modules.product`: the ordered Cartesian product of complete modules over the selected
+  ring, with componentwise structure, linear projections and universal linear pairing
+  (Mathlib `ModuleCat.binaryProductLimitCone`);
 * `colim.sets.coproduct`: the disjoint union `X ⊕ Y` with its injections (Mathlib
   `Types.binaryCoproductColimitCocone`);
 * `colim.bil_w_form.cokernel`: the cokernel of a map of formed modules with varying values, the
@@ -41,7 +45,7 @@ open CategoryTheory Limits
 
 namespace CasCatalogue.Limits.Registration
 
-universe u
+universe u v
 
 /-- Pullbacks in `Sets`. -/
 def setsPullback {X Y Z : LeanCategories.Foundation.Mathlib.Sets.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
@@ -56,6 +60,68 @@ def groupsKernel {G H : GrpCat.{u}} (f : G ⟶ H) :
 /-- Binary products in `Sets`. -/
 def setsProduct (X Y : LeanCategories.Foundation.Mathlib.Sets.{u}) : LimitCone (pair X Y) :=
   Types.binaryProductLimitCone X Y
+
+/-- The ordered Cartesian product in the selected module fibre. The complete objects `M` and
+`N` supply their actual additive groups and actions of the actual ring `R`. Ring and module
+universes are independent. No coordinate, basis, finiteness or commutativity data is required.
+
+This is exactly `ModuleCat.binaryProductLimitCone`, including its `LinearMap.fst`/`snd` legs,
+`LinearMap.prod` mediator and full `IsLimit` proof. Source: Mathlib
+`Algebra/Category/ModuleCat/Biproducts.lean` at
+`db584cd6d46c92f209a44c0f1c829460d327499d` (Apache-2.0); the clause comparison and reuse searches
+are recorded in FOUNDATIONS Definition 13.1. The chosen carrier is `M × N`; no finite-function
+presentation is substituted. -/
+def modulesProduct (R : RingCat.{u}) (M N : ModuleCat.{v} R) : LimitCone (pair M N) :=
+  ModuleCat.binaryProductLimitCone M N
+
+/-- Equality of the complete chosen module, including its component structures. -/
+theorem modulesProduct_pt (R : RingCat.{u}) (M N : ModuleCat.{v} R) :
+    (modulesProduct R M N).cone.pt = ModuleCat.of R (M × N) := rfl
+
+/-- The product's zero is the pair of the selected component zeros. -/
+theorem modulesProduct_zero (R : RingCat.{u}) (M N : ModuleCat.{v} R) :
+    (0 : (modulesProduct R M N).cone.pt) = (0, 0) := rfl
+
+/-- Addition uses the actual additive structures of both component modules. -/
+theorem modulesProduct_add (R : RingCat.{u}) (M N : ModuleCat.{v} R)
+    (x y : (modulesProduct R M N).cone.pt) :
+    x + y = (x.1 + y.1, x.2 + y.2) := rfl
+
+/-- Additive inverse is componentwise. -/
+theorem modulesProduct_neg (R : RingCat.{u}) (M N : ModuleCat.{v} R)
+    (x : (modulesProduct R M N).cone.pt) :
+    -x = (-x.1, -x.2) := rfl
+
+/-- Scalar multiplication uses both selected module actions of the same selected ring. -/
+theorem modulesProduct_smul (R : RingCat.{u}) (M N : ModuleCat.{v} R) (r : R)
+    (x : (modulesProduct R M N).cone.pt) :
+    r • x = (r • x.1, r • x.2) := rfl
+
+/-- The first cone leg is the ordinary linear first projection. -/
+theorem modulesProduct_fst (R : RingCat.{u}) (M N : ModuleCat.{v} R) :
+    (modulesProduct R M N).cone.π.app ⟨WalkingPair.left⟩ =
+      ModuleCat.ofHom (LinearMap.fst R M N) :=
+  ModuleCat.binaryProductLimitCone_cone_π_app_left M N
+
+/-- The second cone leg is the ordinary linear second projection. -/
+theorem modulesProduct_snd (R : RingCat.{u}) (M N : ModuleCat.{v} R) :
+    (modulesProduct R M N).cone.π.app ⟨WalkingPair.right⟩ =
+      ModuleCat.ofHom (LinearMap.snd R M N) :=
+  ModuleCat.binaryProductLimitCone_cone_π_app_right M N
+
+/-- The universal mediator is the linear pairing of the two supplied linear maps. -/
+theorem modulesProduct_lift (R : RingCat.{u}) (M N P : ModuleCat.{v} R)
+    (f : P ⟶ M) (g : P ⟶ N) :
+    (modulesProduct R M N).isLimit.lift (BinaryFan.mk f g) =
+      ModuleCat.ofHom (f.hom.prod g.hom) := rfl
+
+/-- Every cone over the complete selected modules has exactly one mediating linear map.
+This restates the existing `IsLimit` proof without a coordinate or finite-rank restriction. -/
+theorem modulesProduct_universal (R : RingCat.{u}) (M N : ModuleCat.{v} R)
+    (s : BinaryFan M N) :
+    ∃! h : s.pt ⟶ (modulesProduct R M N).cone.pt,
+      ∀ j, h ≫ (modulesProduct R M N).cone.π.app j = s.π.app j :=
+  (modulesProduct R M N).isLimit.existsUnique s
 
 /-- Binary coproducts in `Sets`. -/
 def setsCoproduct (X Y : LeanCategories.Foundation.Mathlib.Sets.{u}) :
@@ -81,6 +147,12 @@ normalized_registry .limit
 normalized_registry .limit
   { id := ⟨"lim.sets.product"⟩, category := CategoryId.sets, shape := "product"
     declaration := `CasCatalogue.Limits.Registration.setsProduct
+    standardization := some `CategoryTheory.Limits.diagramIsoPair
+    dataConstructor := some `CategoryTheory.Limits.BinaryFan.mk }
+
+normalized_registry .limit
+  { id := ⟨"lim.modules.product"⟩, category := CategoryId.modulesR, shape := "product"
+    declaration := `CasCatalogue.Limits.Registration.modulesProduct
     standardization := some `CategoryTheory.Limits.diagramIsoPair
     dataConstructor := some `CategoryTheory.Limits.BinaryFan.mk }
 
