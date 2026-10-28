@@ -38,6 +38,64 @@ does not justify weakening a dependent theorem or starting unrelated work.
 
 ## Mathematical issues
 
+### V1 mathematical source reconciliation with the later main branch (2026-10-28)
+
+- **Need:** preserve the independently authored source in PRs #93 and #94 together
+  with the mathematical additions published later on `main`. The assessed inputs are
+  `9508da173de86670c4e0c8a4632e2df7d2335949`,
+  `3bd4d3d9695f288749c860368174462c4d689b7c`, and
+  `8782c22ba613a022a84a1e910b6489cc2503e29a`, respectively.
+- **Reconciliation:** retain the operation-refinement schema beside the full selected
+  operation signature; retain all general set-diagram limits, colimits, legs, maps and
+  universal-property proofs beside the selected module product. Keep all independently
+  added complaint entries. No mathematical specimen, theorem statement or proof is
+  changed by the conflict resolution.
+- **Source proof repair:** the focused reconciliation build exposed an unsolved
+  wrapped `TypeCat` composition in the later-main theorem
+  `FiniteSubsets.inclusion_natural`. Its statement and the direct-image/inclusion
+  definitions are preserved. The proof now exposes the underlying set-map equality
+  and applies Mathlib's exact `Finset.coe_image`. The 2026-10-28 live corpus query
+  `coe_image repo:mathlib4 file:Data/Finset/Image` located that owner; the actual
+  declaration was read in pinned Mathlib
+  `db584cd6d46c92f209a44c0f1c829460d327499d`,
+  `Mathlib/Data/Finset/Image.lean:332` (Apache-2.0). It states the complete
+  finite-set coercion/image equation, with no injectivity hypothesis.
+- **Independent source assessment:** checked the selected Cartesian lift and
+  successive-factor equations against their universal properties; checked the
+  value-change comparisons against the two actual bilinear forms; checked the
+  degenerate-plane maps, kernel parametrization, retained second pairing and
+  unique nonzero-cone factorization. Also inspected the selected scalar
+  restriction, finite-order, unordered two-subset, cyclic-quotient,
+  prime-residue-field, square-bound, successor-series and rectangular-linear-map
+  specimens against their stated source requirements. This bounded review found
+  no semantic defect in those specimens. It is not a review of every declaration
+  imported by the branch.
+- **Executed source validation:** on 2026-10-28, Lean 4.33.0 with the pinned
+  external dependencies completed the focused `FiniteSubsets` build and then
+  `lake build
+  LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.DegeneratePlaneFactorization
+  LeanCategories.Catalogue.Semantics.Independent.ScalarAndFormExtensions
+  LeanCategories.Catalogue.Semantics.Limits.Registration` successfully (3,491
+  jobs, exit 0) at `82ab0030`. An external-package path overlay selected the
+  cached pinned dependencies; the repository's sources and manifest were not
+  rewritten for the build. The selected specimen files remain unchanged from
+  #94. The shared `ai-review-ci` no-sorry scanner and its published file-selection
+  rule also passed on all 974 selected Lean sources (exit 0). These checks do not
+  claim a fresh whole-repository axiom audit.
+- **Observed gate blocker:** GitHub CI runs `40079865209` (#93) and `40379623754`
+  (#94) complete the default build, then fail the full vacuity target on the missing
+  `Modules/Bilinear/Valued/Framed.lean` import and errors in
+  `Topology/DirectedTopologicalGroupColimitData.lean`,
+  `Schemes/P1ProductPencilBlowupData.lean`, and
+  `Geometry/HolomorphicFormSheafData.lean`. These paths are unchanged between the
+  common base `ee957329414a58759d26e23fa22e8d0a31040fc8` and the assessed `main`.
+  The logs do not establish a defect in the new catalogue constructions, and a
+  focused build cannot be represented as a passing whole-repository gate.
+- **Coverage and authority:** this is independent mathematical-source integration.
+  No downstream kernel, assertion, leaf, or execution diagnostic was consulted.
+  Source checks and publication do not confer protected mathematical release or
+  downstream acceptance. The full repository QC remains required on its own terms.
+
 ### Abstract polytopes need a graded incidence category
 
 - **Need:** A finite graded poset with a rank function and rank-preserving monotone maps is the general incidence owner. An abstract polytope is a finite ranked poset with a least face, a greatest face, strong flag connectivity, and the diamond condition on rank-two intervals. State its face inclusions, automorphism group as order automorphisms, and the forgetful functor to finite graded posets. A placed convex polytope has a face-poset functor into this category; its affine automorphisms and abstract incidence automorphisms remain distinct.
@@ -77,6 +135,56 @@ does not justify weakening a dependent theorem or starting unrelated work.
 - **Gap and impact:** In the inspected topology declarations, no cited owner supplies the integral-affine atlas, its map category, or the singular object with its exact regular-locus inclusion. The first missing owner is the category of integral-affine manifolds over the existing smooth-manifold foundation; the singular category depends on it and on selected subobjects and complements. A research preamble stub cannot assign their mathematical types until these owners are fixed here.
 - **Coverage:** Source inspection of Definition 62.6 and the two named Lean declarations, plus filename and name searches in `LeanCategories/`. This is a formalization request. It does not assert absence from uninspected packages or prove that every related declaration in this tree has been classified.
 - **Repair link:** Map the defining clauses against the current formalization corpus, then formalize the missing category objects, morphisms, forgetful functors, and singular-subobject construction at their general owners. The dependent P1 category graph in the research plan consumes those declarations.
+### Published operations lacked a generic checked computation-derivation interface
+
+- **Need:** A fixed mathematical operation may have a formally justified plan in
+  terms of other published operations. Consumers need its exact target, complete
+  dependent parameters, all primitive families and the correctness proof, so
+  installing primitives can make the fixed operation executable without changing
+  its meaning or consulting backend capabilities during mathematical resolution.
+- **Evidence:** At `82d1370de372a00a86391b74fc2566c9547dfcb6`, the catalogue publishes
+  operations, functors, methods and constructions and proves whole-operation
+  agreement, including `MonoidOperationAgreement.ring_mul`, but has no published
+  generic computation-derivation catalogue. CAP's *Managing Derived Methods*,
+  chapter 8, supplies prior art for prerequisite closure and keeps mathematical
+  applicability independent of `CanCompute`.
+- **Gap and impact:** The earliest missing owner was the upstream abstract
+  computational API. Equality of complete families was already expressible and
+  proved; a consumer lacked a checked, generically interpretable publication of
+  those plans and their prerequisites. Backend-selected operation meaning or
+  special-case handlers would not discharge that requirement.
+- **Coverage:** Inspected existing catalogue owners, pinned Mathlib's ring,
+  semiring and monoid forgetful functors, Lean's dependent expressions and equality
+  APIs, the CAP manual, and the live formalization-corpus queries recorded in
+  `LeanCategories/Catalogue/Registry/computation-derivations.md`. All mathematics
+  is reused; this is outside the foundational textbook sweep. No leaf,
+  computational acceptance assertion, or runtime answer was consulted.
+- **Repair link:** `Registry/Computation.lean` publishes exact typed family slots,
+  closed whole-family equality proofs and every alternative; the ordinary Lean
+  plan retains dependent parameters and rigid universes. The concrete existing
+  ring–semiring–monoid chain is in
+  `Semantics/Algebra/ComputationDerivations.lean`. Consumer execution and grounding
+  of cycles remain their owner's responsibility; formal probes are recorded with
+  this interface's implementation. On 2026-10-26, the registry, concrete plans,
+  source-level positive/separating probes, and both changed public catalogue
+  aggregates all elaborate successfully in an isolated worktree against the
+  pinned dependency artifacts. The exact author-verification scope and input
+  hashes are recorded in the owning interface document.
+- **Source integration correction, 2026-10-26:** The original directed ring
+  carrier diagram is additive commutative monoid `N → M → A`, through
+  multiplicative monoid `M` to additive group `A`. The new factor route added
+  `M → F`, but the initial semiring carrier row pointed `S → F`, making the
+  direct semiring carrier route `S` a second source. Natural-isomorphism
+  invertibility does not supply a preferred direction. The semiring comparison's
+  type and registered endpoints now both point `F → S`, extending the original
+  diagram while retaining `N` as its unique source. This is a correction to
+  published comparison data, not to the computation families or their proofs.
+  Full `Catalogue` also contains the existing additive-group-to-additive-monoid
+  carrier route `B`, reached by its existing `A → B` comparison; the complete
+  source audit includes all six routes and five comparisons.
+  The concrete-plan import also belongs in full `Catalogue`; it is removed from
+  the narrower `Catalogue.Semantics` aggregate. Source checks and the complete
+  directed-diagram check are recorded in the existing interface document.
 
 ### Hodge structures need filtered-module categories and their comparison maps
 
@@ -1120,6 +1228,153 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
      `invertibleOfNonzero`, `instance RingCat.carrier`) and the inspected Mathlib
      `Algebra/Category/Ring/Basic.lean` show that the existing inverse constructions suffice;
      no mathematical definition, theorem or admission condition changes.
+     **Further closed presentations (2026-10-24).** Independent public-source controls at
+     `7a413381900a3fc4effdf5f7ce483fae042062c3` found that the integer matrix
+     `[[2,3],[3,5]]`, whose determinant is one, was established in matrix notation but its
+     literal-function presentation was refused by `isUnitEvidence`. The rational matrix
+     `[[1,2],[3,4]]`, with entries formed by the selected ring's public numeral map, was
+     refused by both unit procedures. The selected scalar and constant-polynomial controls
+     were already established. The existing Mathlib determinant and constant-polynomial
+     criteria supply the whole unit propositions and constructive inverses; no new family
+     of units was needed. Both unit procedures now scope ordinary definitional comparison
+     of implicit selected structures locally, using Lean's existing
+     `backward.isDefEq.respectTransparency := false` setting. The exact original dictionaries
+     and `IsUnit`/`Invertible` targets remain fixed, and all cases remain unchanged.
+
+     Public corpus searches used `Matrix.isUnit_iff_isUnit_det`, `Polynomial.isUnit_C`,
+     and `Pi.isUnit_iff`, excluding downstream `lean-cas-dsl` repositories.
+     The actual owners were inspected in pinned Mathlib
+     `db584cd6d46c92f209a44c0f1c829460d327499d`; the implicit-comparison policy was read in
+     Lean 4.33.0 `d8b18978322de05a8f3dba51ef03cf5461676c17`,
+     `Lean/Meta/ExprDefEq.lean::isDefEqArgs`. New public controls keep matrix multiplication
+     distinct from pointwise multiplication on the same function carrier: matrix identity
+     is a unit, while its zero off-diagonal entry makes it a nonunit pointwise. Integer
+     determinant-two and singular rational matrices and the polynomial generator are
+     independently proved to be nonunits and are refused. These source-only controls do not inspect downstream
+     assertions, implementation diagnostics, computational outcomes, kernel code, or leaves.
+     `UnitsPresentationTests.lean` supplies thirteen positive evidence obligations,
+     four independent nonunit theorems, and eight refused admission attempts. Before the
+     repair, three positive obligations failed; afterwards the complete unchanged controls
+     compile, as does `Algebra/Units.lean`, with Lean 4.33.0 and isolated build outputs.
+
+     **Selected polynomial nonvanishing (2026-10-24).** The same independent public-source
+     assessment checked the existing `Polynomials.nonzeroPolynomialEvidence` contract at
+     `7a413381900a3fc4effdf5f7ce483fae042062c3`. It refused `X²+C(3)` over the forgotten
+     rational-ring coefficient presentation and the image of `X²+1` under the published
+     integer-to-rational coefficient map. The procedure had not read the full selected
+     carrier, dictionaries, and public map declarations before choosing its proof case.
+     Calling the existing `Units.readCatalogue` resolves both presentation defects without
+     changing the degree or injective-map criteria, the coefficient map, or the original
+     whole-polynomial `p ≠ 0` obligation.
+
+     A separate control within the documented normalization scope, `(X+3)(X+4)-X²`
+     over the selected residue ring modulo seven, remained unresolved. Expansion collects
+     new multiples of the characteristic after the original coefficient-reduction step.
+     Applying the existing `reduce_mod_char` rule again after `ring_nf` removes those
+     terms; this polynomial is the nonzero constant five. No characteristic-specific case,
+     new mathematical domain, or different target is introduced. A tested local conversion
+     option was insufficient and is not added to the polynomial procedure.
+
+     The exact whole-polynomial criteria are Mathlib
+     `Polynomial.ne_zero_of_coe_le_degree` and `Polynomial.map_ne_zero_iff`, checked in
+     the same pinned source and public corpus, excluding downstream repositories.
+     `PolynomialPresentationEvidenceTests.lean` keeps five complete positive obligations,
+     three independently proved zero equations, and three corresponding refused admission
+     attempts. Before the repair, three positive obligations failed; afterwards all controls
+     compile with unchanged statements. All proof checking uses isolated outputs and the
+     published Lean toolchain; no downstream material informs these mathematical controls.
+     The unchanged `EvidenceTests.lean` and `UnitInverseTests.lean` suites also compile
+     with both this repair and the preceding Units presentation repair.
+
+     **Full polynomial-expression contract (2026-10-24, independent follow-up).** At
+     `796db9fc8ef18765a8f6770aeab24d08fcc58a3c`, separately chosen whole-polynomial
+     controls found four remaining refusals: `-(X+C(2))^3+X^3` over the integers,
+     `(X-C(3/2))(X+C(3/2))-X^2` over the rationals, `(C(2)X)^3+3` over `ZMod 8`,
+     and the image of `X^2+1` over `(ZMod 8)[X]` under the faithful polynomial
+     coefficient inclusion. The first three lie in the documented ring-expression
+     and cancellation cases. The fourth retains the documented injective-map
+     criterion; direct source checking establishes the selected map's injectivity
+     with the existing `FaithfulSMul.algebraMap_injective`.
+
+     Source-level diagnosis separates these from the earlier presentation repair.
+     `ring_nf` treats `C r` as a polynomial atom: its outputs retain powers of
+     constant polynomials, and a nilpotent coefficient can therefore remain hidden
+     from characteristic reduction. The degree procedure also leaves coefficient
+     expressions such as `(-8).coeff 2`, `(C (3/2)^2).coeff 0`, and `1 ≠ 0` over
+     a polynomial coefficient ring, which the current arithmetic closure does not
+     establish. Mathlib's existing `Tactic/Polynomial/Basic.lean` supplies
+     `polynomial_nf`, expressly normalizing `C` through the selected algebra map;
+     the existing degree and coefficient-map theorems remain the mathematical
+     criteria. No replacement nonvanishing condition is indicated.
+
+     The additive `PolynomialContractTests.lean` records the independently selected
+     positive obligations, zero equations and refusals, including two different
+     selected commutative-ring structures on the same residue-class carrier.
+     Its initial run is a failure record, not a successful verification claim;
+     the four evidence failures remain open at source checkpoint `cb40a193`. Two auxiliary
+     zero-proof presentation corrections preserve their statements. Public corpus
+     searches used `map_ne_zero_iff`, `ne_zero_of_coe_le_degree`,
+     `algebraMap_injective`, `injective_int`, and `Equiv.commRing`, excluding
+     downstream repositories; the named owners were inspected in the assigned
+     pinned Mathlib source. Existing tests are unchanged. These checks use no
+     downstream source, expected answers, generated goals or computational results.
+
+     The bounded repair uses that existing `polynomial_nf`, then removes zero
+     terms after characteristic reduction. The coefficient arithmetic step reads
+     polynomial numerals through `Polynomial.C_inj`; this avoids demanding a
+     separately installed `Fact (1 < 8)` merely to obtain `Nontrivial (ZMod 8)`
+     in the faithful-algebra control. It proves the scalar numeral inequality
+     by the same closed arithmetic procedure. The tested transparency option
+     does not solve this issue and is not added. An outer polynomial image still
+     uses its independently established injectivity before the source polynomial
+     is considered, so the normalizer does not replace that documented proof case.
+     Focused comparisons establish all four previously failing mathematical
+     statements with these existing rules. The complete checks subsequently closed
+     at authored commit `78796eddaf03b6007c6174bb0f32708fb7c7278b`, tree
+     `85f2bbeea99935d5972912fa807a9131883765d0` (published with that exact tree as
+     `b85548deb31e2e18498fd4847a7ff81cf1413542`). The installed Lean 4.33.0 executable
+     was `/tmp/kernel-runtime-20261024/toolchains/lean-4.33.0-linux/bin/lean`.
+     The commands, from the isolated mathematical worktree, were:
+
+     ```text
+     lean -o .tmp-polynomial-contract/lib/LeanCategories/Catalogue/Semantics/Algebra/PolynomialEvidence.olean LeanCategories/Catalogue/Semantics/Algebra/PolynomialEvidence.lean
+     lean -o .tmp-polynomial-contract/lib/LeanCategories/Catalogue/Semantics/PolynomialContractTests.olean LeanCategories/Catalogue/Semantics/PolynomialContractTests.lean
+     lean LeanCategories/Catalogue/Semantics/PolynomialPresentationEvidenceTests.lean
+     lean LeanCategories/Catalogue/Semantics/EvidenceTests.lean
+     ```
+
+     All four exited zero with no diagnostic output. Dependencies came from the
+     original immutable mathematical build and its existing runtime dependencies;
+     the changed module's outputs were isolated. No Lake update or dependency
+     build ran. The independent controls establish eighteen positive obligations,
+     six zero equations and the selected-zero identification, and six refused
+     false admissions. The unchanged public presentation and evidence suites also
+     check the earlier presentation cases and the shared monic-polynomial helpers.
+
+     Before/after equality: the selected Lean sources after these runs match their
+     exact blobs in checked commit `78796edd`; the following paths are relative to
+     `LeanCategories/Catalogue/Semantics/`.
+
+     | Source | Checked and final Git blob |
+     | --- | --- |
+     | `Algebra/PolynomialEvidence.lean` | `a342e611a599107798fcf2c02092b20d3df07096` |
+     | `PolynomialContractTests.lean` | `514eb282e73cf1d153cdcaa0ef78b0f3829e9538` |
+     | `PolynomialPresentationEvidenceTests.lean` | `d31c91cd7e4909af378e68f64237e60d3e4ffaad` |
+     | `EvidenceTests.lean` | `e0b9e2e97fee49c124bed50a1d96ccdb7dcedcc1` |
+
+     The last two files also match the original `796db9fc` source exactly. That
+     read-only producer remains at commit `796db9fc8ef18765a8f6770aeab24d08fcc58a3c`,
+     tree `0a38713eae98e3accd8c6b15a5add9041230e9c0`, before and after the checks.
+     The sequential unchanged-suite check script has SHA-256
+     `c46020d03e4c084ae9aa2c5d70bd36f0d09f75a4d566805ee958f475b10f489e`.
+     Its two captured logs, `PolynomialPresentationEvidenceTests.log` and
+     `EvidenceTests.log`, are both empty with SHA-256
+     `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`;
+     the separately recorded process exits are zero (3.877 and 40.673 seconds).
+     The original failing run remains identified by control commit `98adc3b`;
+     these passing checks do not rewrite that record. This is bounded source and
+     proof verification, not independent mathematical release acceptance or any
+     downstream functional acceptance.
   3. **Closed facts about real numbers.** Nonzero-ness of a real element (units of `ℝ`, leading
      coefficients of real polynomials) is established by evaluation (`norm_num`) or by positivity.
      A nonzero value that is neither evaluable nor of known sign (`π - 3`, `exp 1 - e`-style
@@ -1146,6 +1401,68 @@ example : Field (AlgebraicClosure ℚ) := inferInstance
        (`6 = 1` in `ℤ/5`), by the same push-through;
      - injectivity of maps outside the covered families (out of a non-simple ring other than `ℤ`
        with no `FaithfulSMul` instance).
+
+     **Exact cast and catalogue-presentation check, 2026-10-26 (no implementation
+     change):** at `ed89b8f22893769eba9c3d27c98383c83bc23a32`, the existing
+     `monicEvidence` establishes that `X^3 - 2*X + 1` over `ℚ` is monic of
+     natural degree `3` when its two coefficients are expressed exactly as
+     `Int.castRingHom (Polynomial ℚ) ((2 : ℕ) : ℤ)` and the analogous cast of
+     `1`. The same check succeeds over `NamedCommutativeRings.rationals`, and
+     for a degree-five polynomial with a negative integer coefficient. The
+     cubic formed from the public `generator`, `ringNumeral`, `add`, `neg`,
+     `mul`, and `pow` maps is proved equal to that ordinary expression and is
+     admitted directly by the same unchanged procedure.
+     Although `monicEvidence` does not call `Units.readCatalogue` before case
+     selection, its existing `normalizePolynomial` fallback calls
+     `Units.evaluateNumerals`. That procedure already uses Mathlib's general
+     `eq_intCast` and natural/integer cast laws. The absence of the earlier
+     reader call does not establish a missing cast capability. The exact
+     indexed owners were found by corpus queries
+     `repo:leanprover-community__mathlib4 file:Data/Int/Cast/Lemmas.lean eq_intCast`
+     and `repo:leanprover-community__mathlib4 file:Tactic/ComputeDegree.lean monicity`,
+     then compared with the pinned Mathlib source; no new algebra rule is needed.
+     The isolated Lean 4.33.0 source check exits zero with no diagnostics; its
+     source SHA-256 is
+     `9f80c2baf7e043b5865c9a63dcb0a4450dfa43efc5a088c7269f93c6cbfabff7`.
+     The polynomial and degree obligation were kept fixed, and no existing
+     assertion or evidence implementation was edited. This bounded verification
+     does not close the unsupported expression and map cases listed above.
+
+     **Selected-presentation entry contract, 2026-10-26:** the public monic
+     admission takes the polynomial with its complete chosen coefficient ring,
+     dictionaries and coefficient maps. Its evidence should therefore read that
+     presentation before selecting a mathematical proof case, just as
+     `nonzeroPolynomialEvidence` already does. The monicity map case recognizes
+     an exposed `Polynomial.map`; the public categorical `Polynomials.map`
+     reaches that expression through its declared definition. The previous late
+     `normalizePolynomial` branch evaluated numerals but did not establish the
+     full `normalizeBundledObjects` entry invariant, and went directly to the
+     degree case after normalization.
+     The owner now invokes the existing `Units.readCatalogue` inside
+     `Evidence.establish`, before the unchanged monicity cases. This reads the
+     selected data by definitional equality and existing cast/map equations;
+     it does not infer a replacement ring structure from its carrier, change
+     the original `p.Monic ∧ p.natDegree = n` proposition, or add a proof rule.
+     Basic public integer-coefficient map and mapped-numeral controls already
+     succeeded on the old source. This change establishes consistent entry
+     normalization; it is not a claim that those earlier controls failed.
+     **Reuse and verification:** live corpus searches for polynomial integer
+     cast preservation and `mapRingHom` found Mathlib's
+     `Tactic/Polynomial/Basic.lean` and `Algebra/Polynomial/Eval/Defs.lean`;
+     the pinned definitions and `Polynomial.map_natCast` / `map_intCast` laws
+     are the existing owners. No equation or simplification rule was added.
+     The changed `LinearAlgebra` module and bounded upstream-only proof controls
+     pass with the unchanged Lean 4.33.0 resource options. Controls cover the
+     public canonical integer-coefficient map, mapped numeral constants, a
+     coefficient ring retained through its selected scalar algebra, and an
+     iterated polynomial coefficient ring. Wrong-degree and nonmonic obligations
+     remain refused. The complete original propositions are kernel checked;
+     `Evidence.establish` still rejects open goals, expression metavariables, and `sorry`.
+     Work is isolated from the published `ee49277` source, with copied immutable
+     Lean libraries and all new compilation outputs isolated. Comparison and
+     derivation declarations, existing assertions, and shared artifacts were
+     not changed. These are author proof controls, not independent acceptance.
+
   5. **Continuity and smoothness of piecewise maps.** `continuousEvidence` and `smoothEvidence`
      compose rules along the structure of the map (`fun_prop`). A piecewise map that is continuous
      because its pieces agree on the boundary (`fun x => if x < 0 then -x else x`) and a quotient
@@ -1332,6 +1649,23 @@ require exactly `MonoLift` for the specified route, whose stronger type now
 contains these laws. This resolves the inspected evidence-type defect; it makes
 no claim about uninspected lift constructions or downstream acceptance.
 
+The targeted V1 interface followup exposed the unique factor already present in
+`MonoLift.universal` as `MonoLift.factor`, with its two factorization laws and
+uniqueness. The distinct `MonoLiftFactorComputation L` keeps every selected input
+and the exact lifted target; the original four callable fields are unchanged.
+Reuse search (2026-10-23): the live Formalization Corpus queries `ExistsUnique choose`
+and `IsStronglyCartesian map_uniq`, together with the local `MonoLift` search,
+located Mathlib's unique-existence support and cartesian factor accessor pattern.
+The implementation directly reuses `Exists.choose` and `Exists.choose_spec` on
+the already supplied unique-existence witness. Mathlib's
+`CategoryTheory.Functor.IsStronglyCartesian.map` uses the same choice construction;
+its `IsHomLift` convention differs from this owner's retained base isomorphism,
+so no new fibration presentation or conversion is introduced.
+The same reuse search for `IsStronglyCartesian map_comp_map` locates Mathlib's
+uniqueness-based factor composition pattern. `MonoLift.factor_comp` applies the
+existing `factor_unique`, `factor_map` and `factor_hom` to the already defined
+composite lift, preserving its actual mapped cone and composite base comparison.
+
 Independent review against the approved elementary-language baseline and fixed B0
 identified four missing public mathematical relationships, separate from any
 implementation failure. The existing definitions themselves were retained:
@@ -1391,6 +1725,85 @@ the selected `RingCat R` and the canonical Mathlib self-module structure
 additive group and multiplication as scalar action. This exposes the existing
 canonical mathematical object without selecting a replacement carrier, basis,
 coordinate presentation or value module for any formed object.
+
+Source-only review on 2026-10-26 found that the public chosen-limit catalogue
+registered Cartesian products of sets but no Cartesian product in the selected
+module fibre. The mathematical requirement is the ordered product of arbitrary
+complete modules `M N : ModuleCat.{v} R` over the actual `R : RingCat.{u}`,
+including its componentwise structures, linear projections and universal linear
+pairing. A finite-function or vector module is a different chosen presentation
+and cannot replace this object without an explicit comparison.
+
+No mathematical construction was missing from Mathlib:
+`ModuleCat.binaryProductLimitCone` already constructs `ModuleCat.of R (M × N)`
+with exactly those structures, `LinearMap.fst`/`snd`, and `LinearMap.prod` with
+the full `IsLimit` proof. `Limits/Registration.lean` now exposes that entire
+family as `modulesProduct`, registered by `lim.modules.product` at
+`cat.modules_r`. The existing `LimitEntry`, `diagramIsoPair` and `BinaryFan.mk`
+interfaces suffice; no new registry schema, coordinate presentation or
+computational policy is introduced. The actual selected ring and both full
+module structures remain parameters, with independent ring and module
+universes. The source-fidelity equations expose the complete apex, all
+componentwise operations, the two projections and the mediator; the universal
+statement directly reuses `IsLimit.existsUnique` on the supplied cone.
+FOUNDATIONS Definition 13.1 records the general mathematical statement, the
+dated broad and focused Formalization Corpus searches, and pinned Mathlib
+revision/file/license provenance. This source exposure carries no judgment
+about downstream computations or mathematical-release acceptance.
+
+Bounded upstream source verification with Lean 4.33.0 checked the changed
+registration module and both existing public aggregates, then a source-only
+control with arbitrary selected ring and modules. The control verifies both
+projection equations, uniqueness of the linear mediator, independent ring and
+module universes, and the exact row through the full catalogue. The new
+declaration and all nine accompanying theorems use only `propext`,
+`Classical.choice` and `Quot.sound`. All final checks passed without increasing
+resource limits. The 28 missing unchanged Mathlib import modules were compiled
+only into an isolated output root; a before/after guard over 14,433 existing
+source/artifact inputs was unchanged. No active source or compiled closure was
+modified, and no comparison or computation-derivation declaration changed.
+
+Source-only review on 2026-10-24 found that the chosen module-kernel interface
+already retained its categorical domain and inclusion and proved rank and
+cardinality comparisons, but did not publish the canonical maps to and from
+the concrete linear-map kernel. `Modules/Operations.lean` now registers the
+concrete kernel as the existing domain functor's value on the actual chosen
+kernel subobject, with `ModuleCat.kernelIsoKer` as its presentation comparison.
+The registered maps retain the chosen inclusion, the concrete subtype
+inclusion, and both comparison directions. Their inverse and inclusion laws
+reuse Mathlib's isomorphism and its two defining equations; their naturality
+uses `KernelFork.mapOfIsLimit` on `ModuleCat.kernelCone` and the corresponding
+universal-property equations. The complete source statement and dated corpus
+searches are in FOUNDATIONS Definition 54.1. This is a general interface for
+arbitrary rings and module arrows in the existing common-universe catalogue,
+with no coordinate or dimension assumption and no change to the chosen kernel.
+The focused Lean 4.33.0 build of `Modules.Operations` and a disposable
+signature/axiom inspection passed. The inspected scalar-action, inclusion,
+inverse and naturality proofs use only `propext`, `Classical.choice` and
+`Quot.sound`. The printed declarations retain exactly the universe scopes
+recorded in FOUNDATIONS Definitions 13.1 and 54.1. This is a mathematical
+compilation and source review, without a downstream correctness judgment.
+
+Independent mathematical interface completion on 2026-10-24 addressed three
+remaining exposures of existing constructions. `ChangeValueComparisons.lean`
+publishes both actual arrows of `ChangeValueLifts.pulledBackIso`, with its
+complete formed endpoints and no monicity assumption on the input cone.
+`CoreIsomorphisms.lean` publishes Mathlib's specified-isomorphism input to
+`Core(Sets)` and the complete existing `Fin.revPerm` reversal for every `Fin n`.
+`AutomorphismArrows.lean` publishes the forward/inverse morphisms of an actual
+automorphism element, plus evaluation through any selected set-valued functor.
+The generic formal projections and conjugation laws apply in every category;
+ordinary morphism rows expose the existing Sets, Groups and Modules owners.
+The complete parameters and sources are in
+`LeanCategories/Catalogue/Semantics/Independent/InterfaceCompletion.md`. The original
+objects, functors, selected forms, and previous independent requirements are
+unchanged. These additions reuse the locally inspected Mathlib and project
+owners; external corpus searches were blocked by the task's no-network
+constraint, so no negative-search or new-foundations claim is made. Focused
+compilation of the three interface modules passed under Lean 4.33.0, without
+new source warnings. Exact-endpoint examples and the standard-axiom inspection
+are recorded with the final source verification below; no downstream result
+is inferred from this work.
 
 ### FC05-C08-U069 and U060 overstated the scalar-extension adjunction's generality
 
@@ -1754,3 +2167,123 @@ owners are false or unavailable. Whole-program mathematical completeness and
 publication readiness beyond the inspected changes remain unestablished by this
 bounded review. Compilation and this source judgment confer no downstream
 functional acceptance, independent release authority, or B0 acceptance.
+
+### Universal operation agreement and selected additive operations (2026-10-24)
+
+The existing first-binding operation rule left its generic definitional-equality
+discharge implicit. Source inspection of `NamedRings.mul`, `MonoidOperations.mul`,
+the actual multiplicative forgetful functors, and
+`CommMonoids.commutativeRingsMonoidsCell` shows that their whole ring and
+commutative-ring operation families agree by reflexivity. The public rule is now
+specified in `LeanCategories/Catalogue/Registry/operation-agreement.md`: compare
+the complete families under rigid universal source, category, route, and declaration
+parameters before substituting any selected object or operands. Checked `Eq.refl`
+at that exact family equality is sufficient; no new comparison row or category
+priority is needed. Named universal source equations and field/algebra
+precomposition checks are in `MonoidOperationAgreement.lean` and its tests.
+The same tests separate additive and multiplicative operations, independent owners,
+independent exponent parameters, coincident point values, and coincidence on one
+selected one-element ring. Formalization-corpus searches `Eq.refl` and
+`commutativeRingsMonoidsCell` and inspection of the pinned owners found no missing
+algebraic theorem to replace or weaken.
+
+An independent public-registry audit also found no generic additive `+` row:
+only rings and semirings exposed addition. The total module category already
+retains its selected additive group, but that group had no registered forgetful
+route to additive monoids. `AdditiveOperations.lean` now exposes Mathlib's
+existing full `AddMonCat` addition and `forget₂ AddGrpCat AddMonCat`, with
+`map_add` naturality and an identity comparison of the old/new carrier routes.
+The corpus query `"AddGrpCat" "AddMonCat"` was followed by inspection of Mathlib's
+category definitions. No module-specific operation, scalar-carrier identification,
+or new additive law was introduced. The interface is imported through the main
+catalogue and the ordinary module-map interface.
+
+The focused two-target Lean 4.33.0 source check passed on these declarations,
+their registry validation, and the whole selected-module map `m ↦ m + m` over
+arbitrary scalar rings. The check includes a module whose carrier differs from
+its scalar ring, a different additive structure on the same carrier, and
+preservation of the explicit ring binding. It establishes this mathematical
+interface only; no kernel/leaf implementation or computational answer was used,
+and it confers no downstream acceptance.
+
+### Generic coordinate linearity through selected module maps (2026-10-24)
+
+An independent mathematical source probe at `e2d5e308` found that the public
+`linearEvidence` did not establish an arbitrary-dimension finite-vector map
+built from linear scalar expressions, negation, and a doubled tail. Generic
+module-morphism composition and commutative scalar action already passed.
+Mathlib `LinearAlgebra/Pi.lean` explains the missing structural step:
+`Fin.cases` and function application do not commute definitionally, so it
+provides the actual `LinearMap.vecCons` constructor. The public corpus query
+`"LinearMap.vecCons"` located that owner; `LinearMap.pi`, `prod`, `vecEmpty`,
+`IsLinearMap.mk'`, and `LinearMap.isLinear` supply the remaining existing API.
+
+`CoordinateLinearity.lean` now adapts those constructors to the unchanged
+`IsLinearMap` admission predicate. Every component's full laws remain required;
+dimensions, index types, and scalar/module structures are arbitrary. The
+evidence also consumes an already bundled linear map directly. The original
+bundled proof path remains first; the existing definitional catalogue reader
+can expose the same whole function behind a public application wrapper when
+needed. Eagerly replacing the original presentation had made an existing
+restricted-module law harder to prove, so both sound proof presentations are
+retained without changing the proposition or increasing heartbeats.
+
+The new `CoordinateLinearityTests` and the unchanged `LinearMapsTests` pass
+together under Lean 4.33.0. Controls include arbitrary finite-vector tails,
+arbitrary-index functions, nested products, public application, actual module
+morphism composition, reindexed morphisms, and scalar action on a restricted
+module. Affine and quadratic coordinate maps are proved nonlinear and refused
+by the evidence. A noncentral matrix scalar is also proved nonlinear: Mathlib's
+`ModuleCat.smul` lands in endomorphisms of the underlying additive group, which
+does not supply unrestricted module-linearity over a noncommutative ring.
+This is a mathematical evidence-interface repair from independent source
+theorems; no kernel, leaf, acceptance assertion, or computational outcome was
+used to select its statements.
+
+The follow-up at published `ae3c76e7a439681ad264a3d1cf113cb55d4f8fcc`
+independently checked the same complete laws through the public
+`CommRingCat → RingCat` functor, `modulesFamilyRealization.reindex`, and
+underlying Hom function presentations. Four universal source controls were
+not established: scalar action on an arbitrary restricted module over a
+forgotten commutative ring; the integer-residue action for arbitrary modulus
+and scalar; an arbitrary restricted map viewed through the forgetful functor
+to sets; and an arbitrary regular-module map restricted along the named
+integer coefficient map. The plain forgotten-base scalar action and plain
+regular residue action were already established. These are whole-map laws,
+including modulus zero, with no selected output value as a premise.
+
+No new linearity theorem was missing. The public corpus searches
+`"isLinearMap_smul" -repo:lean-cas-dsl` and
+`"restrictScalars" "smul" -repo:lean-cas-dsl`, followed by the Mathlib
+declaration refinement, were checked against the pinned Mathlib
+`db584cd6d46c92f209a44c0f1c829460d327499d` sources. The existing
+`LinearMap.isLinear`, `IsLinearMap.isLinearMap_smul`,
+`ModuleCat.RestrictScalars.map'`, and `ModuleCat.smul_restrictScalars`
+supply the full required laws. Lean 4.33.0 at
+`d8b18978322de05a8f3dba51ef03cf5461676c17`,
+`Lean/Meta/ExprDefEq.lean::isDefEqArgs`, explains the presentation gap:
+its default automation guard compares implicit selected structures at
+`.implicit` transparency, even inside an outer wider transparency scope.
+Removing outer lets alone did not fix the four controls; permitting ordinary
+definitional comparison of those arguments did.
+
+The repair therefore scopes
+`backward.isDefEq.respectTransparency := false` to `linearEvidence` only.
+It uses Lean's existing definitional conversion for the exact original
+function, scalar ring, and module instances; it adds no mathematical rule,
+global instance, new hypothesis, or carrier-based identification. The existing
+proof strategies and the complete `Evidence.establish` check remain in place.
+The six universal presentation controls are now in `LinearMapsTests`, together
+with a separating theorem: identity on the common carrier of two restricted
+regular modules is not linear when their selected base maps differ. Its proof
+uses the entire scalar-preservation law at the unit to recover equality of
+the ring maps, with the existing `RingCat.hom_ext` and `RingHom.ext`.
+The public searches `"IsLinearMap" "compHom" -repo:lean-cas-dsl` and
+`"RingHom.ext" -repo:lean-cas-dsl` checked this separating-control scope;
+the former also locates Mathlib's selected `Module.compHom.toLinearEquiv`.
+The evidence refuses the false identity admission.
+`LinearMapsTests` and the unchanged `CoordinateLinearityTests` pass under Lean
+4.33.0, checking the repair alongside the existing affine, quadratic, and
+noncentral-action boundaries. This follow-up used public mathematical source
+and its own theorem controls only; it did not inspect kernel or leaf source,
+downstream assertions, computational observations, or downstream diagnostics.

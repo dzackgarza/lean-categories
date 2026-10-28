@@ -22,6 +22,14 @@ Object constructors of `Sets` (`cat.sets`), with typed parameters:
 
 Products of sets are the registered limit `lim.sets.product`
 (`CasCatalogue.Limits.Registration.setsProduct`).
+
+The public elementary syntax says that plain numbers are elements of `ℤ`
+(`lean-cas-dsl/SPEC.md`, "Finite sets"). The object notation selectors
+`literal.integral.domain` and `literal.finite_subset.domain` publish this existing
+default ambient object for integral literals and otherwise untyped finite-subset
+literals. They apply only when the context has not already selected an ambient
+object; they do not override an explicit domain or supply a new element operation.
+Like every object notation, each selector has one registered owner globally.
 -/
 
 namespace CasCatalogue.Foundation.Objects
@@ -51,6 +59,7 @@ normalized_registry .object
 
 normalized_registry .object
   { id := ⟨"obj.sets.integers"⟩, category := CategoryId.sets, name := "ℤ"
+    notations := #["literal.integral.domain", "literal.finite_subset.domain"]
     declaration := `CasCatalogue.Foundation.Objects.integers }
 
 normalized_registry .object
@@ -63,6 +72,7 @@ normalized_registry .object
 
 normalized_registry .object
   { id := ⟨"obj.sets.integers_mod_power"⟩, category := CategoryId.sets, name := "ZModPower"
+    notations := #["(ℤ/)^"]
     declaration := `CasCatalogue.Foundation.Objects.integersModPower }
 
 end CasCatalogue

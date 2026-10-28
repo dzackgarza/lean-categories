@@ -30,7 +30,7 @@ open CategoryTheory LeanCategories CasCatalogue CasCatalogue.Modules.CatalogueRe
 
 noncomputable section
 
-universe u
+universe u v w x
 
 def arrowsSetsCategory := Constructors.arrow Foundation.Mathlib.Sets.{u}
 def arrowsSetsRealization :
@@ -86,11 +86,17 @@ end
 normalized_registry .constructor
   { id := ConstructorId.arrow, signature := #[.category],
     semantics := `CasCatalogue.Constructors.arrow
-    functorialAction := some `CasCatalogue.Constructors.arrowMap }
+    functorialAction := some `CasCatalogue.Constructors.arrowMap
+    comparisonAction := some `CasCatalogue.Constructors.arrowComparison
+    identityComparison := some `CasCatalogue.Constructors.arrowIdentityComparison
+    compositionComparison := some `CasCatalogue.Constructors.arrowCompositionComparison }
 normalized_registry .constructor
   { id := ConstructorId.core, signature := #[.category],
     semantics := `CasCatalogue.Constructors.core
-    functorialAction := some `CasCatalogue.Constructors.coreMap }
+    functorialAction := some `CasCatalogue.Constructors.coreMap
+    comparisonAction := some `CasCatalogue.Constructors.coreComparison
+    identityComparison := some `CasCatalogue.Constructors.coreIdentityComparison
+    compositionComparison := some `CasCatalogue.Constructors.coreCompositionComparison }
 normalized_registry .constructor
   { id := ConstructorId.slice, signature := #[.category, .object],
     semantics := `CasCatalogue.Constructors.slice }
@@ -164,6 +170,75 @@ normalized_registry .functor
       `CasCatalogue.Catalogue.ConstructorRegistration.modulePointsProjectionRealization
     expression := Constructed.ModulePointsProjectionExpr
     structural := true }
+
+/-! ### Constructor action and endpoint validation
+
+The accepted actions are checked over arbitrary categories and functors. Each malformed row
+below has real declarations of the expected broad kind, but different mathematical endpoints.
+The checks reject it without consulting constructor names or computational registrations.
+-/
+
+/-- A valid restricted action that does not supply the required comparison interface. -/
+def arrowAutomorphismOnlyComparison {C : ObjCat.{u, v}} {D : ObjCat.{w, x}} {F : C ⥤ D}
+    (α : F ≅ F) : Constructors.arrowMap F ≅ Constructors.arrowMap F :=
+  Constructors.arrowComparison α
+
+/-- A valid restricted composition comparison that does not cover different middle categories. -/
+def arrowEndofunctorComposition {C : ObjCat.{u, v}} (F G : C ⥤ C) :
+    Constructors.arrowMap (F ⋙ G) ≅ Constructors.arrowMap F ⋙ Constructors.arrowMap G :=
+  Constructors.arrowCompositionComparison F G
+
+/-- An extra implicit assumption is not part of the published comparison inputs. -/
+def arrowConditionalComparison {C : ObjCat.{u, v}} {D : ObjCat.{w, x}} {F G : C ⥤ D}
+    {p : Prop} [Fact p] (α : F ≅ G) : Constructors.arrowMap F ≅ Constructors.arrowMap G :=
+  Constructors.arrowComparison α
+
+open Lean Meta Elab Command in
+run_cmd
+  liftTermElabM do
+    let arrow : ConstructorEntry := {
+      id := ConstructorId.arrow, signature := #[.category]
+      semantics := `CasCatalogue.Constructors.arrow
+      functorialAction := some `CasCatalogue.Constructors.arrowMap
+      comparisonAction := some `CasCatalogue.Constructors.arrowComparison
+      identityComparison := some `CasCatalogue.Constructors.arrowIdentityComparison
+      compositionComparison := some `CasCatalogue.Constructors.arrowCompositionComparison }
+    let core : ConstructorEntry := {
+      id := ConstructorId.core, signature := #[.category]
+      semantics := `CasCatalogue.Constructors.core
+      functorialAction := some `CasCatalogue.Constructors.coreMap
+      comparisonAction := some `CasCatalogue.Constructors.coreComparison
+      identityComparison := some `CasCatalogue.Constructors.coreIdentityComparison
+      compositionComparison := some `CasCatalogue.Constructors.coreCompositionComparison }
+    validateConstructor arrow
+    validateConstructor core
+    let rejects (description : String) (entry : ConstructorEntry) : MetaM Unit := do
+      let accepted ← try
+        validateConstructor entry
+        pure true
+      catch _ => pure false
+      if accepted then throwError "constructor validation accepted {description}"
+    rejects "the core action on arrow categories" { arrow with
+      functorialAction := core.functorialAction }
+    rejects "the core comparison action on arrow functors" { arrow with
+      comparisonAction := core.comparisonAction }
+    rejects "the core identity comparison on arrow functors" { arrow with
+      identityComparison := core.identityComparison }
+    rejects "the core composition comparison on arrow functors" { arrow with
+      compositionComparison := core.compositionComparison }
+    rejects "an action without its comparison interface" { arrow with
+      comparisonAction := none }
+    rejects "comparisons without a functor action" { arrow with
+      functorialAction := none }
+    rejects "a comparison action restricted to automorphisms" { arrow with
+      comparisonAction :=
+        some `CasCatalogue.Catalogue.ConstructorRegistration.arrowAutomorphismOnlyComparison }
+    rejects "a composition action restricted to endofunctors" { arrow with
+      compositionComparison :=
+        some `CasCatalogue.Catalogue.ConstructorRegistration.arrowEndofunctorComposition }
+    rejects "a comparison action with an undeclared condition" { arrow with
+      comparisonAction :=
+        some `CasCatalogue.Catalogue.ConstructorRegistration.arrowConditionalComparison }
 
 /-! ### Negative probe: a constructed category must be its constructor's semantics -/
 

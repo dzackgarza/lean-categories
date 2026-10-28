@@ -58,7 +58,8 @@ normalized_registry .morphism
     declaration := `CasCatalogue.Foundation.Terminals.terminalArrow }
 normalized_registry .limit
   { id := ⟨"lim.sets.terminal"⟩, category := CategoryId.sets, shape := "terminal"
-    declaration := `CasCatalogue.Foundation.Terminals.terminalLimit }
+    declaration := `CasCatalogue.Foundation.Terminals.terminalLimit
+    dataConstructor := some `CategoryTheory.Limits.asEmptyCone }
 normalized_registry .presentation
   { id := ⟨"cmp.sets.singleton_terminal"⟩, name := "singletonTerminal"
     source := ⟨"obj.sets.fin"⟩, target := ⟨"obj.sets.terminal"⟩

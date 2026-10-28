@@ -112,16 +112,19 @@ def SemanticEntry.declarations : SemanticEntry → Array Name
   | .opaque e => #[e.declaration, e.realization] ++
       e.ports.flatMap fun p => #[p.declaration, p.realization]
   | .fibration e => #[e.evidence]
-  | .constructor e => #[e.semantics] ++ e.functorialAction.toArray
+  | .constructor e => #[e.semantics] ++ e.functorialAction.toArray ++
+      e.comparisonAction.toArray ++ e.identityComparison.toArray ++
+      e.compositionComparison.toArray
   | .presentation e => #[e.declaration] ++ e.evaluation.toArray
   | .construction e => #[e.declaration]
   | .method _ => #[]
   | .property _ => #[]
   | .lift e => #[e.evidence] ++ e.computation.toArray
   | .cell e => #[e.declaration]
-  | .limit e => #[e.declaration]
+  | .limit e => #[e.declaration] ++ e.standardization.toArray ++ e.dataConstructor.toArray
   | .adjunction e => #[e.declaration]
   | .object e => #[e.declaration] ++ e.evidence.toArray ++
+      e.components.toArray.flatMap (fun components => #[components.arity, components.projection]) ++
       (e.functorPresentation.toArray.flatMap fun p => #[p.argument, p.identification])
   | .literal e => #[e.type, e.denotation] ++ e.evaluation.toArray
   | .numeral e => #[e.declaration]
@@ -130,7 +133,8 @@ def SemanticEntry.declarations : SemanticEntry → Array Name
   | .operation e => #[e.declaration] ++ e.refines.toArray.map (·.identification)
   | .inclusion e => #[e.declaration, e.mono]
   | .powerObject e =>
-      #[e.truth, e.member, e.transpose, e.extent, e.empty, e.singleton, e.terminal, e.image]
+      #[e.truth, e.point, e.member, e.transpose, e.extent, e.empty, e.singleton, e.terminal, e.image] ++
+        e.directImage.toArray
   | .subsetLiteral e => #[e.type, e.denotation] ++ e.evaluation.toArray
   | .binder e => #[e.operation, e.domain]
 
@@ -183,6 +187,18 @@ def SemanticState.category? (state : SemanticState) (expression : CategoryExpr) 
     Option NamedCategoryEntry :=
   let candidates := state.categories.filter fun entry => entry.expression.syntacticEq expression;
   (if candidates.size == 1 then candidates[0]? else none)
+
+/-- The explicit operator binding at this exact registered owner expression.
+The key is the surface name, independently of arity. This lookup neither forgets
+structure nor substitutes a category with an equal underlying carrier. The
+consumer retains the complete typed bundle and parameters of the selected owner. -/
+def SemanticState.operationBindings (state : SemanticState) (owner : CategoryExpr)
+    (surfaceName : String) : Array OperationEntry :=
+  match state.category? owner with
+  | none => #[]
+  | some category =>
+      state.operations.filter fun entry =>
+        entry.category == category.id && entry.name == surfaceName
 
 def SemanticState.classifier? (state : SemanticState) (id : ClassifierId) :
     Option ClassifierEntry :=
@@ -1635,6 +1651,23 @@ def SemanticState.routeEdges? (state : SemanticState) (source target : CategoryE
     current := edge.target
   if current.syntacticEq target then some out else none
 
+/-- A route to the first explicit binding of this operator name on its path.
+All steps must belong to the existing structural graph; their actual sources
+are reconstructed from that graph. A binding at any proper prefix ends lookup
+there, even when a farther row has a different arity or declaration ID.
+
+This predicate supplies no ordering among incomparable surviving routes. Their
+complete typed requests remain ambiguous unless accepted whole-operation
+comparisons identify them. Classifier forgetful and derived constructor edges
+obey precisely the same rule as registered structural functors. -/
+def SemanticState.isFirstOperationBindingRoute (state : SemanticState)
+    (surfaceName : String) (route : Route) : Bool :=
+  match state.routeEdges? route.source route.target route.refs with
+  | none => false
+  | some steps =>
+      !(state.operationBindings route.target surfaceName).isEmpty &&
+        steps.all fun edge => (state.operationBindings edge.source surfaceName).isEmpty
+
 /-- The Mathlib functor of a classifier's forgetful functor `total → host`. -/
 def classifierForgetInstance (entry : ClassifierEntry) : MetaM Expr := do
   let classifier ← mkConstWithFreshMVarLevels entry.declaration
@@ -1682,6 +1715,60 @@ def mkAppHere (name : Name) (explicitArgs : Array Expr) : MetaM Expr := do
       k := k + 1
   instantiateMVars (mkAppN constant args)
 
+/-- Package a functor's exact carrier types and selected category structures. These bundles
+are supplied explicitly when an interface cannot infer a bundle by inverting its projections. -/
+def functorCategoryBundles (F : Expr) : MetaM (Expr × Expr) := do
+  let type ← whnfR (← inferType F)
+  unless type.isAppOfArity ``CategoryTheory.Functor 4 do
+    throwError "the constructor interface requires an ordinary functor"
+  let args := type.getAppArgs
+  return (← mkAppOptM ``CategoryTheory.Cat.of #[some args[0]!, some args[1]!],
+    ← mkAppOptM ``CategoryTheory.Cat.of #[some args[2]!, some args[3]!])
+
+/-- Apply a declared constructor interface with its full category parameters in source-to-target
+order, before its explicit inputs. This preserves the selected dictionaries when category
+bundle projections alone cannot infer the bundle. Registration checks this complete interface
+on independent rigid categories; no mathematical category is selected by this applicator. -/
+def applyConstructorInterface (name : Name) (categories inputs : Array Expr) : MetaM Expr := do
+  let constant ← mkConstWithFreshMVarLevels name
+  let (args, binders, _) ← forallMetaTelescopeReducing (← inferType constant)
+  let mut categoryIndex := 0
+  for arg in args do
+    let type ← inferType arg
+    if type.isConstOf ``LeanCategories.ObjCat ||
+        (← whnfR type).isAppOf ``CategoryTheory.Cat then
+      let some category := categories[categoryIndex]?
+        | throwError "constructor interface {name} has too many category parameters"
+      -- `ObjCat.{u,v}` is `Cat.{v,max u v}`. Merely comparing those complete
+      -- types can leave `u` hidden beneath `max`; use the actual bundle's
+      -- carrier level as its presentation level before checking both types.
+      -- This changes no carrier or selected category structure.
+      if let .const ``LeanCategories.ObjCat [objectLevel, homLevel] := type then
+        let categoryType ← whnfR (← inferType category)
+        if let .const ``CategoryTheory.Cat [actualHomLevel, actualObjectLevel] :=
+            categoryType.getAppFn then
+          unless ← isLevelDefEq objectLevel actualObjectLevel <&&>
+              isLevelDefEq homLevel actualHomLevel do
+            throwError "constructor interface {name} has incompatible category universes"
+      unless ← withTransparency .all <| (isDefEq type (← inferType category) <&&>
+          isDefEq arg category) do
+        throwError "constructor interface {name} has a different complete category parameter"
+      categoryIndex := categoryIndex + 1
+  unless categoryIndex == categories.size do
+    throwError "constructor interface {name} has too few category parameters"
+  let mut inputIndex := 0
+  for i in [0:args.size] do
+    if binders[i]!.isExplicit then
+      let some input := inputs[inputIndex]?
+        | throwError "constructor interface {name} has too many explicit inputs"
+      unless ← withTransparency .all <| (isDefEq (← inferType args[i]!) (← inferType input) <&&>
+          isDefEq args[i]! input) do
+        throwError "constructor interface {name} rejects its complete input {inputIndex}"
+      inputIndex := inputIndex + 1
+  unless inputIndex == inputs.size do
+    throwError "constructor interface {name} has too few explicit inputs"
+  instantiateMVars (mkAppN constant args)
+
 /-- The Mathlib functor of one structural edge. -/
 partial def SemanticState.edgeFunctor (state : SemanticState) : EdgeRef → MetaM Expr
   | .functor id => match state.functor? id with
@@ -1693,7 +1780,9 @@ partial def SemanticState.edgeFunctor (state : SemanticState) : EdgeRef → Meta
   | .constructMap constructor inner => do
       let some action := (state.constructor? constructor).bind (·.functorialAction)
         | throwError "constructor {constructor.raw} has no registered action on functors"
-      mkAppHere action #[← state.edgeFunctor inner]
+      let F ← state.edgeFunctor inner
+      let (source, target) ← functorCategoryBundles F
+      applyConstructorInterface action #[source, target] #[F]
 
 /-- The Mathlib composite of a structural route. -/
 def SemanticState.routeFunctor (state : SemanticState) (steps : Array EdgeRef) :
@@ -1883,6 +1972,13 @@ def categoryCarrierInstance (entry : NamedCategoryEntry) : MetaM Expr := do
   let (args, _, _) ← forallMetaTelescopeReducing (← inferType declared)
   mkAppM ``CategoryTheory.Bundled.α #[mkAppN declared args]
 
+/-- The type `X ⟶ Y` of morphisms of the registered category `category`, for fresh `X`, `Y`. -/
+def categoryHomType (category : NamedCategoryEntry) : MetaM Expr := do
+  let carrier ← categoryCarrierInstance category
+  let X ← mkFreshExprMVar carrier
+  let Y ← mkFreshExprMVar carrier
+  mkAppM ``Quiver.Hom #[X, Y]
+
 /-- The chosen category structure, not merely its object carrier. -/
 def categoryStructureInstance (entry : NamedCategoryEntry) : MetaM Expr := do
   let declared ← mkConstWithFreshMVarLevels entry.declaration
@@ -1913,6 +2009,23 @@ def validateLimit (state : SemanticState) (e : LimitEntry) : MetaM Unit := do
   unless ← withTransparency .all <| isDefEq diagramType.getAppArgs[2]!
       (← categoryCarrierInstance category) do
     throwError "limit {e.id.raw}: its diagrams are not in {e.category.raw}"
+  -- Check schemas with every presentation parameter rigid. A comparison may
+  -- not validate by specializing a parameter of the declared family.
+  forallTelescopeReducing (← inferType declaration) fun _ result => do
+    let result ← whnfR result
+    let diagram := result.appArg!
+    if let some name := e.standardization then
+      let comparison ← mkAppM name #[diagram]
+      let expected ← mkAppM ``CategoryTheory.Iso #[diagram, diagram]
+      unless ← withTransparency .all <| isDefEq (← inferType comparison) expected do
+        throwError "limit {e.id.raw}: its standardization changes the complete declared diagram"
+    if let some name := e.dataConstructor then
+      let constructor ← mkConstWithFreshMVarLevels name
+      let (_, _, conclusion) ← forallMetaTelescopeReducing (← inferType constructor)
+      let expected ← mkAppM (if e.colimit then ``CategoryTheory.Limits.Cocone
+        else ``CategoryTheory.Limits.Cone) #[diagram]
+      unless ← withTransparency .all <| isDefEq conclusion expected do
+        throwError "limit {e.id.raw}: its data constructor has a different complete diagram or direction"
 
 /-- The library root that authors semantics. -/
 def semanticAuthorRoots : List Name := [`LeanCategories]
@@ -1960,6 +2073,10 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
   let some category := state.categories.find? (·.id == e.category)
     | throwError "object {e.id.raw} names an unregistered category {e.category.raw}"
   if e.name.isEmpty then throwError "object {e.id.raw} has no surface name"
+  for surfaceForm in e.notations do
+    if surfaceForm.isEmpty then throwError "object {e.id.raw} has an empty notation"
+    if state.objects.any (·.notations.contains surfaceForm) then
+      throwError "object {e.id.raw}: the notation {surfaceForm} already selects an object"
   if state.objects.any fun o => o.category == e.category && o.name == e.name then
     throwError "object {e.id.raw}: {e.category.raw} already has an object named {e.name}"
   if e.refines.isNone && state.objects.any fun o => o.refines.isNone && o.name == e.name then
@@ -1968,9 +2085,29 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
   if state.morphisms.any fun m => m.category == e.category && m.name == e.name then
     throwError "object {e.id.raw}: {e.category.raw} already has a morphism named {e.name}"
   let declaration ← mkConstWithFreshMVarLevels e.declaration
-  let (args, _, type) ← forallMetaTelescopeReducing (← inferType declaration)
+  let (_, _, type) ← forallMetaTelescopeReducing (← inferType declaration)
   unless ← withTransparency .all <| isDefEq type (← categoryCarrierInstance category) do
     throwError "object {e.id.raw}: {e.declaration} does not return an object of {e.category.raw}"
+  if let some components := e.components then
+    forallTelescopeReducing (← inferType declaration) fun parameters _ => do
+      let arity ← applyObjectParameters s!"object {e.id.raw}" components.arity parameters
+      unless ← isDefEq (← inferType arity) (mkConst ``Nat) do
+        throwError "object {e.id.raw}: its component arity does not return ℕ"
+      let projection ← mkConstWithFreshMVarLevels components.projection
+      let mut application := projection
+      for parameter in parameters do
+        let signature ← whnf (← inferType application)
+        unless signature.isForall && (← isDefEq signature.bindingDomain! (← inferType parameter)) do
+          throwError "object {e.id.raw}: its projections have different dependent parameters"
+        application := mkApp application parameter
+      forallTelescopeReducing (← inferType application) fun indices result => do
+        unless indices.size == 1 && (← isDefEq (← inferType indices[0]!) (← mkAppM ``Fin #[arity])) do
+          throwError "object {e.id.raw}: its projections are not indexed by their declared finite arity"
+        unless ← withTransparency .all <| isDefEq result (← categoryHomType category) do
+          throwError "object {e.id.raw}: its components are not morphisms of {e.category.raw}"
+        let result ← whnfR result
+        unless ← withTransparency .all <| isDefEq result.appFn!.appArg! (mkAppN declaration parameters) do
+          throwError "object {e.id.raw}: its projections do not leave that exact object family"
   -- A generator lands in the object; an application is a family of morphisms out of a product.
   for name in e.generator.toArray ++ e.application.toArray ++ e.constants.toArray ++
       e.inclusion.toArray ++ e.admission.toArray do
@@ -2086,9 +2223,8 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
   let some refinement := e.refines | return
   let some base := state.objects.find? (·.id == refinement.base)
     | throwError "object {e.id.raw} refines an unregistered object {refinement.base.raw}"
-  unless base.name == e.name && base.refines.isNone do
-    throwError "object {e.id.raw} refines {base.id.raw}, which is not the unrefined object named \
-      {e.name}"
+  unless base.refines.isNone do
+    throwError "object {e.id.raw} refines {base.id.raw}, which is not an unrefined object"
   let some baseCategory := state.categories.find? (·.id == base.category)
     | throwError "object {e.id.raw}: {base.id.raw} has an unregistered category"
   let mut at_ := category.expression
@@ -2101,29 +2237,29 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
   unless !refinement.route.isEmpty && at_.syntacticEq baseCategory.expression do
     throwError "object {e.id.raw}: the route does not go from {e.category.raw} to \
       {base.category.raw}"
-  let functor ← state.routeFunctor refinement.route
-  let identification ← mkConstWithFreshMVarLevels refinement.identification
-  let (idArgs, _, idType) ← forallMetaTelescopeReducing (← inferType identification)
-  unless idArgs.size == args.size do
-    throwError "object {e.id.raw}: {refinement.identification} does not take its parameters"
-  for (a, b) in idArgs.zip args do discard <| isDefEq a b
-  let baseDeclaration ← mkConstWithFreshMVarLevels base.declaration
-  let (baseArgs, _, _) ← forallMetaTelescopeReducing (← inferType baseDeclaration)
-  let idType ← whnfR (← instantiateMVars idType)
-  -- Assign the functor's universe levels at this depth, then apply it to the object.
-  let object := mkAppN declaration args
-  let functorType ← whnf (← inferType functor)
-  discard <| withTransparency .all <| isDefEq (← inferType object) functorType.getAppArgs[0]!
-  let functor ← instantiateMVars functor
-  let image ← mkAppM ``Prefunctor.obj
-    #[← mkAppM ``CategoryTheory.Functor.toPrefunctor #[functor], object]
-  let ok ← match idType.getAppFn.constName?, idType.getAppArgs with
-    | some ``CategoryTheory.Iso, #[_, _, x, y] => withTransparency .all do
-        pure ((← isDefEq x image) && (← isDefEq y (mkAppN baseDeclaration baseArgs)))
-    | _, _ => pure false
-  unless ok do
-    throwError "object {e.id.raw}: {refinement.identification} is not an isomorphism from the \
-      image of {e.declaration} along {renderSteps refinement.route} to {base.declaration}"
+  -- Spelling does not prove a presentation. Check the actual comparison with
+  -- all object parameters rigid, so it cannot specialize a family at one size.
+  forallTelescopeReducing (← inferType declaration) fun parameters _ => do
+    let functor ← state.routeFunctor refinement.route
+    let identification ← applyObjectParameters s!"object {e.id.raw}"
+      refinement.identification parameters
+    let idType ← whnfR (← inferType identification)
+    checkIsoCategory e.id.raw baseCategory idType
+    let baseDeclaration ← mkConstWithFreshMVarLevels base.declaration
+    let (baseArgs, _, _) ← forallMetaTelescopeReducing (← inferType baseDeclaration)
+    let object := mkAppN declaration parameters
+    let functorType ← whnf (← inferType functor)
+    discard <| withTransparency .all <| isDefEq (← inferType object) functorType.getAppArgs[0]!
+    let functor ← instantiateMVars functor
+    let image ← mkAppM ``Prefunctor.obj
+      #[← mkAppM ``CategoryTheory.Functor.toPrefunctor #[functor], object]
+    let ok ← match idType.getAppFn.constName?, idType.getAppArgs with
+      | some ``CategoryTheory.Iso, #[_, _, x, y] => withTransparency .all do
+          pure ((← isDefEq x image) && (← isDefEq y (mkAppN baseDeclaration baseArgs)))
+      | _, _ => pure false
+    unless ok do
+      throwError "object {e.id.raw}: {refinement.identification} is not an isomorphism from the \
+        image of {e.declaration} along {renderSteps refinement.route} to {base.declaration}"
 
 /-- A literal row's `denotation` sends its literal `type`, which has decidable equality, to the
 objects of its registered category; one literal form per category. -/
@@ -2140,13 +2276,6 @@ def validateLiteral (state : SemanticState) (e : LiteralEntry) : MetaM Unit := d
     throwError "literal {e.id.raw}: {e.denotation} is not a map {e.type} → {e.category.raw}"
   if let some evaluation := e.evaluation then
     validateProofProcedure s!"literal {e.id.raw}" "evaluation" evaluation
-
-/-- The type `X ⟶ Y` of morphisms of the registered category `category`, for fresh `X`, `Y`. -/
-def categoryHomType (category : NamedCategoryEntry) : MetaM Expr := do
-  let carrier ← categoryCarrierInstance category
-  let X ← mkFreshExprMVar carrier
-  let Y ← mkFreshExprMVar carrier
-  mkAppM ``Quiver.Hom #[X, Y]
 
 /-- A numeral row's `declaration : ∀ params (k : ℕ) (obligations), 1 ⟶ X` lands in elements of a
 set; with `over := some C` its first explicit parameter is an object of `C` (LC-15). -/
@@ -2231,9 +2360,10 @@ def validateInclusion (state : SemanticState) (e : InclusionEntry) : MetaM Unit 
         (← withTransparency .all <| isDefEq monoType.appArg! (mkAppN declaration args)) do
       throwError "inclusion {e.id.raw}: {e.mono} does not prove its actual arrow monic"
 
-/-- An operation row's `declaration : ∀ X, P ⟶ A` is, at each object `X` of its category, a
-morphism of `Sets` into the set `A` underlying `X`, from `A × A` (arity 2), `A` (arity 1) or a
-terminal set (arity 0); its name is unique among the category's operations. -/
+/-- Validate the registered owner, unique nonempty surface name, supported arity, optional
+result registration, object indexing and morphism-family shape of an operation row.
+The declaration supplies its actual fixed operand product, which may be heterogeneous
+(for example `R × M` for scalar action); arity does not assert a power of one carrier. -/
 def validateOperation (state : SemanticState) (e : OperationEntry) : MetaM Unit := do
   let some category := state.categories.find? (·.id == e.category)
     | throwError "operation {e.id.raw} names an unregistered category {e.category.raw}"
@@ -2321,11 +2451,32 @@ def validatePowerObject (state : SemanticState) (e : PowerObjectEntry) : MetaM U
     unless ← withTransparency .all <| isDefEq (← target declaration) (← family entry) do
       throwError "power object {e.id.raw}: {declaration} does not land in {entry.id.raw}"
   lands e.truth omega
+  let truthType ← result e.truth
+  let source := truthType.appFn!.appArg!
+  let point ← mkConstWithFreshMVarLevels e.point
+  unless ← withTransparency .all <| isDefEq (← inferType point) source do
+    throwError "power object {e.id.raw}: {e.point} is not a point of the source of {e.truth}"
   lands e.member omega
   for declaration in #[e.empty, e.singleton, e.transpose, e.image] do lands declaration power
-  discard <| target e.terminal
+  unless ← withTransparency .all <| isDefEq (← target e.terminal) source do
+    throwError "power object {e.id.raw}: {e.terminal} does not land in the source of {e.truth}"
   unless ← withTransparency .all <| isDefEq (← result e.extent) (← categoryCarrierInstance sets) do
     throwError "power object {e.id.raw}: {e.extent} does not return an object of {sets.id.raw}"
+  if let some directImage := e.directImage then
+    -- Rigid X, Y and f prevent validation from specializing a family or
+    -- replacing its full power-object source by a global point.
+    let carrier ← categoryCarrierInstance sets
+    withLocalDeclD `X carrier fun X =>
+      withLocalDeclD `Y carrier fun Y => do
+        let maps ← mkAppM ``Quiver.Hom #[X, Y]
+        withLocalDeclD `f maps fun f => do
+          let actual ← applyObjectParameters e.id.raw directImage #[X, Y, f]
+          let source ← applyObjectParameters e.id.raw power.declaration #[X]
+          let target ← applyObjectParameters e.id.raw power.declaration #[Y]
+          let expected ← mkAppM ``Quiver.Hom #[source, target]
+          unless ← withTransparency .all <| isDefEq (← inferType actual) expected do
+            throwError "power object {e.id.raw}: {directImage} is not the full \
+              direct-image map from its power object at X to its power object at Y"
 
 /-- A subset-literal row names a registered power object, at most one literal form for it, and a
 `denotation : ∀ X [DecidableEq X], T X → (1 ⟶ 𝒫 X)` whose literal argument is of its `type`
@@ -2548,6 +2699,100 @@ def validateMethodEntry (state : SemanticState) (e : MethodEntry) : MetaM Unit :
           "method {e.id.raw}: functor {e.functor.raw} is not defined on the core of its owner"
   validateMethodLevel state e functor
 
+/-- An identity functor retains the category structure selected by its bundled category. -/
+private def constructorIdentity (category : Expr) : MetaM Expr := do
+  let carrier ← mkAppM ``CategoryTheory.Bundled.α #[category]
+  let instance_ ← mkAppM ``CategoryTheory.Bundled.str #[category]
+  mkAppOptM ``CategoryTheory.Functor.id #[some carrier, some instance_]
+
+private def constructorFunctorType (source target : Expr) : MetaM Expr := do
+  let C ← mkAppM ``CategoryTheory.Bundled.α #[source]
+  let D ← mkAppM ``CategoryTheory.Bundled.α #[target]
+  let instC ← mkAppM ``CategoryTheory.Bundled.str #[source]
+  let instD ← mkAppM ``CategoryTheory.Bundled.str #[target]
+  mkAppOptM ``CategoryTheory.Functor #[some C, some instC, some D, some instD]
+
+/-- Applying an interface must determine every ordinary parameter from its required inputs.
+An extra assumption invisible in the result type is not an action on all those inputs. -/
+private def constructorApplication (e : ConstructorEntry) (name : Name)
+    (categories arguments : Array Expr) : MetaM Expr := do
+  let value ← instantiateMVars (← applyConstructorInterface name categories arguments)
+  if value.hasExprMVar then
+    throwError "constructor {e.id.raw}: {name} requires parameters outside its declared interface"
+  return value
+
+private def checkConstructorIso (e : ConstructorEntry) (field : String)
+    (type left right : Expr) : MetaM Unit := do
+  let type ← whnfR type
+  unless type.isAppOfArity ``CategoryTheory.Iso 4 do
+    throwError "constructor {e.id.raw}: {field} is not a natural isomorphism"
+  unless ← withTransparency .all <| isDefEq type.getAppArgs[2]! left do
+    throwError "constructor {e.id.raw}: {field} has the wrong source functor"
+  unless ← withTransparency .all <| isDefEq type.getAppArgs[3]! right do
+    throwError "constructor {e.id.raw}: {field} has the wrong target functor"
+  let expected ← mkAppHere ``CategoryTheory.Iso #[left, right]
+  unless ← withTransparency .all <| isDefEq type expected do
+    throwError "constructor {e.id.raw}: {field} uses a different category structure"
+
+/-- Check the complete action of a unary category constructor against its registered
+semantics. Its comparisons are checked under rigid category, functor and isomorphism locals;
+an isomorphism on a different construction cannot stand in for one of these fields. -/
+def validateConstructor (e : ConstructorEntry) : MetaM Unit := do
+  let semanticsConstant ← mkConstWithFreshMVarLevels e.semantics
+  let (_, binderInfos, result) ←
+    forallMetaTelescopeReducing (← inferType semanticsConstant)
+  unless (binderInfos.filter (·.isExplicit)).size == e.signature.size do
+    throwError "constructor {e.id.raw} semantics does not have its signature's arity"
+  unless (← whnfR result).isAppOf ``CategoryTheory.Cat do
+    throwError "constructor {e.id.raw} semantics does not return a category"
+  let some action := e.functorialAction | do
+    unless e.comparisonAction.isNone && e.identityComparison.isNone &&
+        e.compositionComparison.isNone do
+      throwError "constructor {e.id.raw}: comparisons require an action on functors"
+    return
+  unless e.signature == #[.category] do
+    throwError "constructor {e.id.raw}: a functorial action requires one category argument"
+  let some comparison := e.comparisonAction
+    | throwError "constructor {e.id.raw}: its functorial action requires a comparison action"
+  let some identity := e.identityComparison
+    | throwError "constructor {e.id.raw}: its functorial action requires an identity comparison"
+  let some composition := e.compositionComparison
+    | throwError "constructor {e.id.raw}: its functorial action requires a composition comparison"
+  for (name, arity) in #[(action, 1), (comparison, 1), (identity, 1), (composition, 2)] do
+    let declaration ← mkConstWithFreshMVarLevels name
+    let (_, binders, _) ← forallMetaTelescopeReducing (← inferType declaration)
+    unless (binders.filter (·.isExplicit)).size == arity do
+      throwError "constructor {e.id.raw}: {name} has the wrong explicit interface arity"
+  -- These locals are independent of each declaration's own telescope. A declaration
+  -- restricted to automorphisms or endofunctors cannot validate by specializing them.
+  withLocalDeclD `C (← mkConstWithFreshMVarLevels ``LeanCategories.ObjCat) fun C => do
+    withLocalDeclD `D (← mkConstWithFreshMVarLevels ``LeanCategories.ObjCat) fun D => do
+      withLocalDeclD `E (← mkConstWithFreshMVarLevels ``LeanCategories.ObjCat) fun E => do
+        let CD ← constructorFunctorType C D
+        let DE ← constructorFunctorType D E
+        withLocalDeclD `F CD fun F => do
+          withLocalDeclD `G CD fun G => do
+            withLocalDeclD `H DE fun H => do
+              let KC ← constructorApplication e e.semantics #[C] #[C]
+              let KD ← constructorApplication e e.semantics #[D] #[D]
+              let KF ← constructorApplication e action #[C, D] #[F]
+              let KG ← constructorApplication e action #[C, D] #[G]
+              let KH ← constructorApplication e action #[D, E] #[H]
+              unless ← withTransparency .all <| isDefEq (← inferType KF)
+                  (← constructorFunctorType KC KD) do
+                throwError "constructor {e.id.raw}: its action changes its declared categories"
+              withLocalDeclD `α (← mkAppHere ``CategoryTheory.Iso #[F, G]) fun α => do
+                let mapped ← constructorApplication e comparison #[C, D] #[α]
+                checkConstructorIso e "comparison action" (← inferType mapped) KF KG
+              let identityCell ← constructorApplication e identity #[C] #[C]
+              checkConstructorIso e "identity comparison" (← inferType identityCell)
+                (← constructorApplication e action #[C, C] #[← constructorIdentity C])
+                (← constructorIdentity KC)
+              let compositionCell ← constructorApplication e composition #[C, D, E] #[F, H]
+              checkConstructorIso e "composition comparison" (← inferType compositionCell)
+                (← constructorApplication e action #[C, E] #[← mkFunctorComp F H])
+                (← mkFunctorComp KF KH)
+
 /-- Inspect declaration types before atomically persisting a semantic row. -/
 def validateSemanticEntryDeclaration (entry : SemanticEntry) : MetaM Unit := do
   let state := semanticExt.getState (← getEnv)
@@ -2621,19 +2866,7 @@ def validateSemanticEntryDeclaration (entry : SemanticEntry) : MetaM Unit := do
   | .powerObject e => validatePowerObject state e
   | .subsetLiteral e => validateSubsetLiteral state e
   | .binder e => validateBinder state e
-  | .constructor e => do
-      let semanticsConstant ← mkConstWithFreshMVarLevels e.semantics
-      let (_, binderInfos, result) ←
-        forallMetaTelescopeReducing (← inferType semanticsConstant)
-      unless (binderInfos.filter (·.isExplicit)).size == e.signature.size do
-        throwError "constructor {e.id.raw} semantics does not have its signature's arity"
-      unless (← whnfR result).isAppOf ``CategoryTheory.Cat do
-        throwError "constructor {e.id.raw} semantics does not return a category"
-      if let some action := e.functorialAction then
-        let actionConstant ← mkConstWithFreshMVarLevels action
-        let (_, _, actionResult) ← forallMetaTelescopeReducing (← inferType actionConstant)
-        unless (← whnf actionResult).isAppOf ``CategoryTheory.Functor do
-          throwError "constructor {e.id.raw}: its action {action} does not return a functor"
+  | .constructor e => validateConstructor e
 
 /-! ### Who may write the semantic registry
 
@@ -2649,6 +2882,7 @@ def semanticRowsByModule (env : Environment) : Array (Name × Array SemanticEntr
 gate reads (LC-14, LC-16). -/
 def SemanticEntry.totalityDeclarations : SemanticEntry → Array Name
   | .object e => #[e.declaration] ++ e.generator.toArray ++ e.application.toArray ++
+      e.components.toArray.flatMap (fun components => #[components.arity, components.projection]) ++
       e.constants.toArray ++ e.inclusion.toArray ++ e.admission.toArray
   | .numeral e => #[e.declaration]
   | .morphism e => #[e.declaration]
@@ -2657,9 +2891,13 @@ def SemanticEntry.totalityDeclarations : SemanticEntry → Array Name
   | .graphLiteral e => #[e.denotation]
   | .literal e => #[e.denotation]
   | .powerObject e =>
-      #[e.truth, e.member, e.transpose, e.extent, e.empty, e.singleton, e.terminal, e.image]
+      #[e.truth, e.point, e.member, e.transpose, e.extent, e.empty, e.singleton, e.terminal, e.image] ++
+        e.directImage.toArray
   | .subsetLiteral e => #[e.denotation]
   | .binder e => #[e.operation, e.domain]
+  | .constructor e => #[e.semantics] ++ e.functorialAction.toArray ++
+      e.comparisonAction.toArray ++ e.identityComparison.toArray ++
+      e.compositionComparison.toArray
   | _ => #[]
 
 /- Validate the elaborated declaration and persist exactly one registry entry. -/

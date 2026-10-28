@@ -23,6 +23,13 @@ public meta import LeanCategories.Catalogue.Semantics.Algebra.Ports
   their underlying sets are those sets (`Iso.refl`).
 * The element operations of `Rings`: `+` and `·` (`R × R → R`), `-` and `^k` (`R → R`), natural
   in the ring, as morphisms of `Sets`. Their laws are Mathlib's (`RingCat`).
+
+The object notation selector `literal.fractional.domain` publishes `ℚ` as the
+default ambient object for an exact fractional literal when the context has not
+selected one (`lean-cas-dsl/SPEC.md`, "Exact number systems"). It selects the
+existing rational object; division still has its declared unit-denominator domain.
+Global uniqueness of object notations prevents a second default from being chosen
+by registration order. An absent selector supplies no default.
 -/
 
 open CategoryTheory
@@ -100,6 +107,7 @@ open CasCatalogue.Algebra.Catalogue.Rings
 
 normalized_registry .object
   { id := ⟨"obj.sets.rationals"⟩, category := CategoryId.sets, name := "ℚ"
+    notations := #["literal.fractional.domain"]
     declaration := `CasCatalogue.Algebra.NamedRings.rationals }
 
 normalized_registry .numeral
@@ -121,6 +129,7 @@ normalized_registry .object
 
 normalized_registry .object
   { id := ⟨"obj.rings.integers_mod"⟩, category := CategoryId.rings, name := "ZMod"
+    notations := #["ℤ/"]
     declaration := `CasCatalogue.Algebra.NamedRings.ringIntegersMod
     refines := some
       { base := ⟨"obj.sets.integers_mod"⟩, route := ringsToSets

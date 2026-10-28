@@ -323,6 +323,11 @@ theorem tAdic_continuousAdd (R : Type) [CommRing R] : ContinuousAdd (PowerSeries
 noncomputable abbrev powerSeriesTAdic (R : CommRingCat.{0}) : HausdorffTopologicalMonoids.{0} :=
   @HausdorffTopAddCommMon.of (PowerSeries R) _ (tAdic R) (tAdic_continuousAdd R) (tAdic_t2Space R)
 
+/-- Forgetting the already selected `(t)`-adic topology gives the declared power-series set. -/
+def powerSeriesTAdicIdentification (R : CommRingCat.{0}) :
+    (asTopMonoid (powerSeriesTAdic R) : SetsCat.{0}) ≅
+      CasCatalogue.Algebra.Calculus.powerSeries R := Iso.refl _
+
 /-- The sum of series in `R[[t]]`: `f ↦ ∑_{n ∈ N} f(n)`, the series sum `seriesSum` at the
 object `powerSeriesTAdic R` (`powerSeriesSum_eq`). The binder `∑_{n ∈ N} e` with values in
 `R[[t]]`: its argument is the index set `N`, and `R` is read off the body's codomain `R[[t]]`. -/
@@ -449,6 +454,17 @@ normalized_registry .functor
     realization := `CasCatalogue.Algebra.Series.hausdorffTopologicalMonoidsForgetRealization
     expression := Algebra.Series.HausdorffTopologicalMonoidsForgetExpr
     structural := true }
+
+normalized_registry .object
+  { id := ⟨"obj.hausdorff_topological_monoids.power_series"⟩
+    category := CategoryId.hausdorffTopologicalMonoids, name := "PowerSeries"
+    declaration := `CasCatalogue.Algebra.Series.powerSeriesTAdic
+    refines := some
+      { base := ⟨"obj.sets.power_series"⟩
+        route := #[.functor FunctorId.hausdorffTopologicalMonoidsForget,
+          .functor FunctorId.additiveCommutativeMonoidsAdditiveMonoid,
+          .functor FunctorId.additiveMonoidsUnderlying]
+        identification := `CasCatalogue.Algebra.Series.powerSeriesTAdicIdentification } }
 
 normalized_registry .object
   { id := ⟨"obj.sets.summable_families"⟩, category := CategoryId.sets, name := "Summable"
