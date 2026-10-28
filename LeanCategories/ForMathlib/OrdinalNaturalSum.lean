@@ -277,32 +277,31 @@ theorem naturalSum_assoc_le (a b c : Ordinal.{u}) :
   apply max_le
   · apply Ordinal.iSup_le
     intro x
-    have hx : x.1 < naturalSum a b := x.2
-    rw [naturalSum_def] at hx
+    have hx := x.2.trans_eq (naturalSum_def a b)
     rcases lt_max_iff.mp hx with hx | hx
-    · obtain ⟨a', ha', hx'⟩ := Ordinal.lt_iSup_iff.mp hx
+    · obtain ⟨⟨a', ha'⟩, hx'⟩ := Ordinal.lt_iSup_iff.mp hx
       have hx' : x.1 ≤ naturalSum a' b := Order.lt_succ_iff.mp hx'
       have hle : naturalSum x.1 c ≤ naturalSum (naturalSum a' b) c :=
         naturalSum_mono_left hx'
       have hrec := naturalSum_assoc_le a' b c
-      rw [hrec] at hle
-      exact succ_le_iff.mpr (hle.trans_lt (naturalSum_lt_left ha'))
-    · obtain ⟨b', hb', hx'⟩ := Ordinal.lt_iSup_iff.mp hx
+      exact Order.succ_le_of_lt ((hle.trans hrec).trans_lt (naturalSum_lt_left ha'))
+    · obtain ⟨⟨b', hb'⟩, hx'⟩ := Ordinal.lt_iSup_iff.mp hx
       have hx' : x.1 ≤ naturalSum a b' := Order.lt_succ_iff.mp hx'
       have hle : naturalSum x.1 c ≤ naturalSum (naturalSum a b') c :=
         naturalSum_mono_left hx'
       have hrec := naturalSum_assoc_le a b' c
-      rw [hrec] at hle
-      exact succ_le_iff.mpr <| hle.trans_lt <|
+      exact Order.succ_le_of_lt <| (hle.trans hrec).trans_lt <|
         naturalSum_lt_right (a := a) (naturalSum_lt_left hb')
   · apply Ordinal.iSup_le
     intro z
     have hrec := naturalSum_assoc_le a b z.1
-    rw [hrec]
-    exact succ_le_iff.mpr <| naturalSum_lt_right (a := a) <|
+    exact Order.succ_le_of_lt <| hrec.trans_lt <| naturalSum_lt_right (a := a) <|
       naturalSum_lt_right (a := b) z.2
 termination_by (a, b, c)
-decreasing_by all_goals simp_wf
+decreasing_by
+  · exact Prod.Lex.left _ _ ha'
+  · exact Prod.Lex.right _ (Prod.Lex.left _ _ hb')
+  · exact Prod.Lex.right _ (Prod.Lex.right _ z.2)
 
 /-- Hessenberg natural sum is associative. -/
 theorem naturalSum_assoc (a b c : Ordinal.{u}) :
@@ -533,7 +532,7 @@ theorem naturalSumList_perm {as bs : List Ordinal.{u}} (h : as.Perm bs) :
   | cons a _ ih => simp only [naturalSumList]; rw [ih]
   | @swap a b tail =>
       simp only [naturalSumList]
-      rw [naturalSum_assoc, naturalSum_comm a b, ← naturalSum_assoc]
+      rw [← naturalSum_assoc, naturalSum_comm b a, naturalSum_assoc]
   | trans _ _ ih₁ ih₂ => exact ih₁.trans ih₂
 
 theorem naturalProductList_pair (a b : Ordinal.{u}) :

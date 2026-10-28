@@ -91,6 +91,51 @@ does not justify weakening a dependent theorem or starting unrelated work.
   common base `ee957329414a58759d26e23fa22e8d0a31040fc8` and the assessed `main`.
   The logs do not establish a defect in the new catalogue constructions, and a
   focused build cannot be represented as a passing whole-repository gate.
+- **Additional inherited-main default-build defect:** PR #100 CI run
+  `40781645670`, job `123144539732`, fails in
+  `ForMathlib/OrdinalNaturalSum.lean` at the subtype-bound rewrite, a recursive
+  inequality used as a rewrite, and the permutation swap's associativity rewrite
+  (original lines 281, 301, and 536). The file has the identical Git blob
+  `96ec21b083ead65597f6a544dea3b2467e683f7d` at main
+  `8782c22ba613a022a84a1e910b6489cc2503e29a` and reconciled source
+  `93ae315a4b6718e777808946c10243cc7dc0145a`. Its three direct Mathlib imports,
+  `lean-toolchain`, `lakefile.toml`, and `lake-manifest.json` are unchanged.
+  These are existing proof-script defects, not evidence of a changed ordinal
+  construction or dependency introduced by reconciliation. The same invalid
+  inequality-rewrite step also occurs in the two preceding recursive branches
+  (original lines 288 and 295), which the first failure prevents checking.
+- **Bounded ordinal proof repair and reuse:** preserve every definition and theorem
+  statement. Transport `x.property` through `naturalSum_def` with
+  `LT.lt.trans_eq`, preserving the original dependent subtype; compose the
+  recursive inequalities with `LE.le.trans` and `LE.le.trans_lt`; and use the
+  existing associativity equation in reverse before commuting the two summands
+  in `List.Perm.swap`. The 2026-10-28 live corpus queries
+  `lt_of_lt_of_eq`, `nadd_assoc`, `List.Perm foldr_eq`, `Hessenberg`, and
+  `naturalSum_assoc` excluded the downstream `lean-cas-dsl`, `sage-categories`,
+  and `research` repositories. Refinement by
+  `trans_lt repo:mathlib4 file:Order/Basic.lean` located the order-composition
+  owners. Pinned Mathlib `db584cd6d46c92f209a44c0f1c829460d327499d`,
+  `Mathlib/Order/Basic.lean`, supplies the exact transport and transitivity
+  declarations. `Mathlib/Data/List/Perm/Basic.lean::Perm.foldr_eq` is a related
+  general result for `List.foldr`; the present theorem uses the independently
+  recursive `naturalSumList`, so the bounded repair retains its existing induction
+  and reuses the already proved `naturalSum_assoc` and `naturalSum_comm` at the
+  failed swap step. No source definition, law, hypothesis, or admitted domain is
+  weakened, and no new declaration is introduced.
+- **Further exposed proof details:** the first focused build (909 jobs, exit 1)
+  reached the previously masked branches and exposed the `iSup` witness's actual
+  nested subtype, the unqualified successor lemma, and an undischarged
+  lexicographic recursion decrease. The proof now destructures each subtype
+  explicitly, uses the existing `Order.succ_le_of_lt` already used in this file,
+  and supplies the existing `Prod.Lex.left`/`right` constructors for the three
+  decreases. The same definitions and theorem statements remain in place.
+- **Ordinal validation:** on 2026-10-28, the focused
+  `lake build LeanCategories.ForMathlib.OrdinalNaturalSum` retry passed under
+  Lean 4.33.0 with the unchanged pinned dependencies (909 jobs, exit 0). It
+  checks the complete ordinal module, including the repaired recursive
+  associativity inequality and finite-permutation theorem. Existing unused-simp
+  and deprecation warnings remain. This source build establishes neither
+  whole-repository QC nor downstream computational acceptance.
 - **Coverage and authority:** this is independent mathematical-source integration.
   No downstream kernel, assertion, leaf, or execution diagnostic was consulted.
   Source checks and publication do not confer protected mathematical release or
