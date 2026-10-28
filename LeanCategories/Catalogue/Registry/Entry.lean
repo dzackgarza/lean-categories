@@ -154,6 +154,12 @@ component. This supplies binding projections without identifying objects by thei
 structure ObjectComponents where
   arity : Lean.Name
   projection : Lean.Name
+  /-- Optional full universal-cone data for these exact coordinates. At precisely the object's
+  dependent parameters, this is `IsLimit (Fan.mk (object params) (projection params))`.
+  `IsLimit` includes the mediator as well as its factorization and uniqueness laws. Its cone
+  retains every actual component codomain and projection, not merely the apex. Omitting this
+  field makes no product claim: a general coordinate family need not be universal. -/
+  isLimit : Option Lean.Name := none
   deriving Repr
 
 structure ObjectEntry where

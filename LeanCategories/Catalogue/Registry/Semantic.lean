@@ -11,6 +11,7 @@ public import LeanCategories.Catalogue.Lift
 public import LeanCategories.Catalogue.Holds
 public import Mathlib.CategoryTheory.Core
 public import Mathlib.CategoryTheory.Limits.Creates
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Adjunction.Basic
 public import LeanCategories.CategoryTheory.OneCat.Classifier
 public import LeanCategories.Catalogue.Realization
@@ -124,7 +125,8 @@ def SemanticEntry.declarations : SemanticEntry → Array Name
   | .limit e => #[e.declaration] ++ e.standardization.toArray ++ e.dataConstructor.toArray
   | .adjunction e => #[e.declaration]
   | .object e => #[e.declaration] ++ e.evidence.toArray ++
-      e.components.toArray.flatMap (fun components => #[components.arity, components.projection]) ++
+      e.components.toArray.flatMap (fun components =>
+        #[components.arity, components.projection] ++ components.isLimit.toArray) ++
       (e.functorPresentation.toArray.flatMap fun p => #[p.argument, p.identification])
   | .literal e => #[e.type, e.denotation] ++ e.evaluation.toArray
   | .numeral e => #[e.declaration]
@@ -2108,6 +2110,16 @@ def validateObject (state : SemanticState) (e : ObjectEntry) : MetaM Unit := do
         let result ← whnfR result
         unless ← withTransparency .all <| isDefEq result.appFn!.appArg! (mkAppN declaration parameters) do
           throwError "object {e.id.raw}: its projections do not leave that exact object family"
+        if let some isLimit := components.isLimit then
+          let witness ← applyObjectParameters s!"object {e.id.raw}" isLimit parameters
+          -- Infer the diagram from the entire dependent projection family. Its actual target
+          -- objects and maps remain fixed; a limiting cone on the same apex is insufficient.
+          let fan ← mkAppM ``CategoryTheory.Limits.Fan.mk
+            #[mkAppN declaration parameters, application]
+          let expected ← mkAppM ``CategoryTheory.Limits.IsLimit #[fan]
+          unless ← withTransparency .all <| isDefEq (← inferType witness) expected do
+            throwError "object {e.id.raw}: its component limit witness is not for the exact \
+              declared fan, including its component codomains and ordered projections"
   -- A generator lands in the object; an application is a family of morphisms out of a product.
   for name in e.generator.toArray ++ e.application.toArray ++ e.constants.toArray ++
       e.inclusion.toArray ++ e.admission.toArray do
@@ -2845,7 +2857,8 @@ def semanticRowsByModule (env : Environment) : Array (Name × Array SemanticEntr
 gate reads (LC-14, LC-16). -/
 def SemanticEntry.totalityDeclarations : SemanticEntry → Array Name
   | .object e => #[e.declaration] ++ e.generator.toArray ++ e.application.toArray ++
-      e.components.toArray.flatMap (fun components => #[components.arity, components.projection]) ++
+      e.components.toArray.flatMap (fun components =>
+        #[components.arity, components.projection] ++ components.isLimit.toArray) ++
       e.constants.toArray ++ e.inclusion.toArray ++ e.admission.toArray
   | .numeral e => #[e.declaration]
   | .morphism e => #[e.declaration]

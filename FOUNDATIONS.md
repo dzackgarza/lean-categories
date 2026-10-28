@@ -275,6 +275,78 @@ For a small \(\infty\)-category \(K\), the category of \(K\)-shaped diagrams in 
 \]
 A limit is a terminal cone and a colimit is an initial cocone. Unless a strict model is specifically selected, limits and pullbacks in this report mean homotopy-coherent limits in the relevant \(\infty\)-category. The diagram and limit conventions are [@Lur18c, §7.1].
 
+**Ordered binary products of sets (catalogue interface, 2026-10-28).**
+For arbitrary objects \(X,Y\) of the catalogue's category `Sets = Type u`, the
+ordered Cartesian product is the literal type \(X \times Y\), with first and
+second projections \(\pi_0(x,y)=x\) and \(\pi_1(x,y)=y\). These coordinates are
+part of this selected construction. The complete curried functor is Mathlib's
+`Types.binaryProductFunctor : Type u ⥤ Type u ⥤ Type u`; its two-variable map
+action sends \((f,g)\) to \((x,y)\mapsto(f(x),g(y))\). For every actual stage
+\(T\) and maps \(f:T\to X\), \(g:T\to Y\), the mediator is
+\(\langle f,g\rangle(t)=(f(t),g(t))\), with both projection equations and
+uniqueness. For complete isomorphisms \(e:X\cong X'\), \(d:Y\cong Y'\), the
+product isomorphism retains both forward maps and both inverse maps.
+
+An arbitrary supplied full cone `s : LimitCone (Limits.pair X Y)` has its own
+apex and ordered legs. Its comparison with the literal ordered product is
+`IsLimit.conePointUniqueUpToIso`, characterized by the equations that its
+forward map followed by each supplied leg equals the corresponding literal
+projection. Its inverse is the ordered pairing of the supplied legs.
+Transporting a pairing along its forward map gives the supplied cone's own
+universal mediator. Equality of apices alone does not identify these cones.
+At Mathlib's chosen categorical product this comparison agrees with the
+corresponding component of the natural isomorphism `Types.binaryProductIsoProd`.
+
+The public owner
+`LeanCategories/Catalogue/Semantics/Foundation/OrderedProducts.lean` registers
+the complete curried functor at the existing `cat.endofunctors_sets`, its
+literal object, the dependent coordinate projection family, both individual
+projections, arbitrary-stage pairing, the action on two maps, and the
+componentwise isomorphism. The object component indexing has arity two:
+coordinate zero has codomain \(X\) and coordinate one has codomain \(Y\).
+The existing `lim.sets.product` row already supplies
+`Types.binaryProductLimitCone` and is unchanged.
+
+The optional `ObjectComponents.isLimit` field relates a component family to
+its full universal cone by a checked declaration of type
+`IsLimit (Fan.mk (object params) (projection params))`, at the object's exact
+rigid dependent parameters. This retains all actual component codomains and
+ordered projection maps. The ordered product's `componentIsLimit` uses the
+existing pairing, its factorization equations and uniqueness through
+`Fan.IsLimit.mk`. Absence of this optional field makes no universal-property
+claim about a general component family. The witness participates in the
+existing declaration-ownership and totality traversals. The upstream schema
+controls include a genuine limiting cone on the same apex and constant
+diagram with its legs swapped by `Fin.revPerm`; it must not validate the
+original ordered coordinate family. They also retain controls for a fixed
+object, an extra hypothesis, and a family with no product claim.
+
+The source inspected before authorship was Mathlib at
+`db584cd6d46c92f209a44c0f1c829460d327499d` (Apache-2.0):
+`Mathlib/CategoryTheory/Limits/Types/Products.lean`
+(`binaryProductFunctor`, `binaryProductCone`, `binaryProductLimit`,
+`binaryProductLimitCone`, `binaryProductIsoProd`),
+`Mathlib/CategoryTheory/Limits/IsLimit.lean`
+(`conePointUniqueUpToIso` and its projection/mediator equations),
+`Mathlib/CategoryTheory/Functor/Currying.lean` (`Functor.uncurry`),
+`Mathlib/CategoryTheory/Products/Basic.lean` (`Iso.prod`), and
+`Mathlib/CategoryTheory/Limits/Shapes/Products.lean`
+(`Fan.mk`, `Fan.IsLimit.mk`, `Fan.isLimitEquivOfEquiv`).
+The finite-index controls also use `Mathlib/Data/Fin/Rev.lean` and
+`Mathlib/Data/Fin/Basic.lean`.
+
+The original session's Formalization Corpus searches included
+`"binaryProductFunctor"`, `"cartesian product" "Type"`,
+`"conePointUniqueUpToIso" "comp"`, and `"IsLimit" "Fin 2" "Fan"`.
+The exact functor search located the existing Mathlib construction; the broad
+finite-fan query was supplemented by direct inspection of the primary sources
+above. This is publication of existing mathematics with interface equations,
+not a negative-search claim or a new foundational product construction.
+After the workspace reset, this prose was reconstructed from the retained
+independent source handoff; the six changed Lean files were recovered with
+their original SHA-256 hashes. COMPLAINTS records the distinction between the
+historical compilation evidence and the uncompiled recovery checkout.
+
 ### Definition 4.5 (Full and replete subcategory) {#def-full-replete-subcategory}
 
 A **full subcategory** \(\mathcal D\subseteq\mathcal C\) is specified by a collection of

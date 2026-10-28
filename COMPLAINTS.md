@@ -1666,6 +1666,75 @@ only into an isolated output root; a before/after guard over 14,433 existing
 source/artifact inputs was unchanged. No active source or compiled closure was
 modified, and no comparison or computation-derivation declaration changed.
 
+Source-only interface completion on 2026-10-28 addressed the ordered binary
+Cartesian product of arbitrary sets. The existing `lim.sets.product` row
+already supplied the full explicit Mathlib cone, but did not register the
+complete ordered product functor, object family, map action, pairing and
+componentwise isomorphism interface. `Foundation/PairDiagrams.lean` described
+a distinct sections presentation. The independently supplied requirement
+retained the literal product's specified coordinates and required an actual
+comparison to every arbitrary supplied full cone.
+
+`Foundation/OrderedProducts.lean` publishes the curried functor through the
+existing `cat.endofunctors_sets`, the literal object family with its two
+ordered components, both projections, arbitrary-stage pairing, the two-map
+action and the complete componentwise isomorphism.
+The declared component projection family also has its own morphism row,
+following the existing `LinearAlgebra.vectorComponent` publication convention.
+The existing limit row
+remains the universal-cone authority. The formal comparison to an arbitrary
+supplied `LimitCone (pair X Y)` retains its exact apex, both legs and universal
+mediator; its inverse is the ordered pairing of those legs. The specialization
+to Mathlib's chosen product uses its existing natural comparison. These are
+source interfaces to existing mathematics, not evidence about downstream
+computations or independent mathematical acceptance.
+
+The initial eight-row interface and both immediate public aggregates passed
+isolated Lean 4.33.0 compilation and were checkpointed as `97c7313` on
+2026-10-28. A subsequent public-interface review identified one remaining
+publication defect: `ObjectComponents` named its projections but did not
+relate that complete ordered family to a universal cone. The existing
+`LimitEntry` and equality of apices do not establish such a relation; two
+universal cones on the same apex can have different ordered legs.
+
+The generic repair is the optional `ObjectComponents.isLimit` field. It is
+checked, at the object's exact rigid dependent parameters, against
+`IsLimit (Fan.mk (object params) (projection params))`, with the actual
+component codomains and maps retained. The witness is included in declaration
+ownership and totality traversal. Absence of the field assigns no universal
+property to an ordinary component family. The ordered product supplies this
+full data from its existing pairing, factorization and uniqueness through
+Mathlib `Fan.IsLimit.mk`. `Registry/ComponentsProbes.lean` checks a genuine
+same-apex, same-diagram limiting cone whose legs are swapped by `Fin.revPerm`,
+fixed-object and extra-hypothesis witnesses, and a component family that
+makes no product claim.
+
+The recorded pre-reset verification on 2026-10-28 passed the six-module
+schema/control stage, the twelve-module owner stage, and all 90 affected
+modules through the public `LeanCategories.Catalogue` aggregate under Lean
+4.33.0. The final recorded guard found every compiled source, output artifact
+and log equal to its recorded SHA-256, with all 14,924 reused input artifacts
+(1,204,330,080 bytes) retaining their size, modification time and SHA-256.
+The product owner and aggregate logs were empty; the new component controls
+had one nonblocking line-length warning. The historical receipt's SHA-256 was
+`34c22a2325ca55bb56c5a66a9cefeece781b1122e5ea8ed31829591865b334e2`.
+This was mathematical compilation evidence for the affected public catalogue
+closure, not independent acceptance or a whole-repository build.
+
+**Recovery after workspace loss, 2026-10-28.** The unpublished checkouts and
+build artifacts were lost before remote publication. From retained original
+tool output, the six changed Lean files were reconstructed byte for byte at
+base `3bd4d3d9695f288749c860368174462c4d689b7c`, and each matches its
+pre-reset SHA-256. This includes the product owner, the schema and validator,
+the schema controls, and both aggregate imports. The original prose additions
+to this file and FOUNDATIONS were not retained completely; they are explicitly
+reconstructed here from the independent requirement and handoff. Their
+pre-reset byte hashes are not claimed. The recovered source has not yet been
+recompiled after the reset. The prior 90-module receipt and underlying build
+artifacts are unavailable; the historical guard summary survives in retained
+tool output. Recovery does not renew the earlier build evidence or establish
+any downstream result.
+
 Source-only review on 2026-10-24 found that the chosen module-kernel interface
 already retained its categorical domain and inclusion and proved rank and
 cardinality comparisons, but did not publish the canonical maps to and from

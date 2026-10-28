@@ -52,6 +52,7 @@ public import LeanCategories.Catalogue.Semantics.Algebra.NamedCommutativeRings
 public import LeanCategories.Catalogue.Semantics.Algebra.CommutativeMonoids
 public import LeanCategories.Catalogue.Semantics.Algebra.Schemes
 public import LeanCategories.Catalogue.Semantics.Foundation.PairDiagrams
+public import LeanCategories.Catalogue.Semantics.Foundation.OrderedProducts
 public import LeanCategories.Catalogue.Semantics.Foundation.Subsets
 public import LeanCategories.Catalogue.Semantics.LatticeRefinements
 public import LeanCategories.Catalogue.Semantics.Lattices.Valued.Catalogue
