@@ -136,6 +136,43 @@ does not justify weakening a dependent theorem or starting unrelated work.
   associativity inequality and finite-permutation theorem. Existing unused-simp
   and deprecation warnings remain. This source build establishes neither
   whole-repository QC nor downstream computational acceptance.
+- **Fresh published CI result:** PR #100
+  [run `40785679121`, job `123158135076`](https://github.com/dzackgarza/lean-categories/actions/runs/40785679121/job/123158135076)
+  assessed published commit `d3c8752d2d5c049061cc9ae7c4c561fbfdf436f2`, tree
+  `ce86ecc7b88a7043d1b3f7607f7ccb1aa3688a53`. Its default build completed
+  successfully with 3,770 jobs, followed by the successful tracked-source
+  no-sorry scan. The later `_lean-vacuity-audit` recipe failed while building its
+  broader 5,716-job import closure; it did not produce a completed vacuity
+  audit. The ordinal default-build defect above is therefore resolved in the
+  fresh published run, while the complete repository QC remains red.
+- **Exact remaining source provenance:** each of
+  `Modules/Bilinear/Valued.lean`, `Orders/FiniteGradedPoset.lean`,
+  `Topology/DirectedTopologicalGroupColimitData.lean`,
+  `Schemes/P1ProductPencilBlowupData.lean`, and
+  `Geometry/HolomorphicFormSheafData.lean` is byte-identical between the assessed
+  main `8782c22ba613a022a84a1e910b6489cc2503e29a` and this published tree.
+  `Modules/Bilinear/Valued/Framed.lean` is absent from both trees. This is
+  source-provenance evidence for the observed failures, not a claim that an
+  independently executed main CI run was inspected.
+- **Remaining audit failure owners:** the stale `Valued.Framed` import is in
+  `Modules/Bilinear/Valued.lean`; commit
+  `a16a5d6cbac5bb0a1bea8074a65b35e778c9f1fb` renamed `Framed.lean` to the
+  already-imported `Based.lean`. The new run also exposes
+  `Orders/FiniteGradedPoset.lean:30`, where `Fintype` is unknown before the
+  structure and its dependent declarations can elaborate; that entire file
+  was introduced on main by `afab74f345058839af07e11f2081f011995bf7d9`.
+  `DirectedTopologicalGroupColimitData.lean` first fails at line 60 to supply
+  `(forget TopCat).Monoidal`, followed by universe, map/coercion, topology and
+  operation-instance failures. `P1ProductPencilBlowupData.lean:109` lacks
+  `DivisorStandingHypothesis base.scheme` while declaring the candidate
+  structure, so its later declarations cannot resolve that structure.
+  `HolomorphicFormSheafData.lean` reports the parse error before its scoped
+  `set_option` at line 489, a deterministic elaboration timeout at line 497,
+  and then the missing `hodgeCohomologyGroupData` at line 514.
+  The bad imports in `Modules.QuotientValuedForms`, `All`, and
+  `Tools.VacuityAudit` are dependent import failures within this repository's
+  audit closure. None of these five independent failure owners
+  has been repaired or validated by this source-record update.
 - **Coverage and authority:** this is independent mathematical-source integration.
   No downstream kernel, assertion, leaf, or execution diagnostic was consulted.
   Source checks and publication do not confer protected mathematical release or
