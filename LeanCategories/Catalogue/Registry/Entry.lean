@@ -102,6 +102,13 @@ structure LimitEntry where
   declaration : Lean.Name
   /-- A colimit presentation: `declaration` is a family of Mathlib `ColimitCocone`s. -/
   colimit : Bool := false
+  /-- A natural isomorphism from any diagram of this shape to the presentation's
+  diagram constructor. Its full typed signature, including the category and its
+  chosen structure, determines the action; consumers do not select it by shape. -/
+  standardization : Option Lean.Name := none
+  /-- The complete constructor of a cone/cocone over the declared diagram. Its
+  dependent non-propositional fields are the computational data ports. -/
+  dataConstructor : Option Lean.Name := none
   deriving Repr
 
 /-- An adjunction row (CC-CALC): `declaration` is a Mathlib `Adjunction L R` between the registered
@@ -140,17 +147,33 @@ structure ObjectFunctorPresentation where
   identification : Lean.Name
   deriving Repr
 
+/-- A declared finite collection of coordinates of an object family. `arity` takes exactly
+the object's parameters and returns `ℕ`; `projection` takes those same dependent parameters
+and `i : Fin (arity params)`, and is a morphism from that exact object to its selected `i`th
+component. This supplies binding projections without identifying objects by their carriers. -/
+structure ObjectComponents where
+  arity : Lean.Name
+  projection : Lean.Name
+  deriving Repr
+
 structure ObjectEntry where
   id : ObjectId
   category : CategoryId
   declaration : Lean.Name
   /-- Its surface name in the language (`ℤ`, `Fin`, `ZMod`), applied to its parameters. An
-  unrefined object's name is unique among unrefined objects; a refinement bears its base's name,
-  and is named in the language by `X in C`. -/
+  unrefined object's name is unique among unrefined objects. A refinement may share its base's
+  name (`X in C`) or have a distinct explicit name for its selected structure. The actual
+  underlying-object comparison is determined by `refines`, not by spelling. -/
   name : String
   /-- When this object is another one with more structure: `Fin(n)` in `FiniteSets` refines
-  `Fin(n)` in `Sets` along the forgetful functor. -/
+  `Fin(n)` in `Sets` along the forgetful functor. Distinct selected structures can have distinct
+  names while retaining presentations over the same base, e.g. `FinOrder(n)` and
+  `ReverseFinOrder(n)` over the set `Fin(n)`. -/
   refines : Option ObjectRefinement := none
+  /-- Additional surface forms selecting this exact mathematical object family. The reader
+  owns their syntax; the registry owns which family they denote, including its chosen
+  structure. A form is globally unique, so registration order never selects its meaning. -/
+  notations : Array String := #[]
   /-- Its independently proved presentation as a functor value. -/
   functorPresentation : Option ObjectFunctorPresentation := none
   /-- A distinguished element `∀ params, 1 ⟶ obj params` that the language names by a bound
@@ -160,6 +183,8 @@ structure ObjectEntry where
   /-- How the elements of `obj params` act on arguments: `∀ params args, obj params × A ⟶ B`
   (a polynomial's evaluation `R[x] × A → A` at an `R`-algebra `A`). -/
   application : Option Lean.Name := none
+  /-- Declared finite components, used when a bound argument is destructured. -/
+  components : Option ObjectComponents := none
   /-- The constants: a monomorphism `∀ params, p ⟶ obj params` from the underlying set of the
   object's first set or structured object parameter `p` (the constant polynomials
   `R ↪ R[x]`, `R ↪ R[x₀, …, xₙ₋₁]`, with `R` an object of commutative rings). -/
@@ -308,11 +333,23 @@ structure OperationRefinement where
   identification : Lean.Name
   deriving Repr
 
-/-- An element operation of a registered category `C` whose objects refine sets: `declaration :
-∀ X, (U X)^arity ⟶ U X` in `Sets`, natural in `X`, where `U X` is the set `X` refines and the power
-is Lean's product (`U X × U X` for arity 2, `U X` for arity 1, the terminal set for arity 0). Its
-surface name is the language's operator (`+`, `·`, `-`). For rings: addition, multiplication and
-negation of elements. -/
+/-- An element operation of a registered category `C` whose objects refine sets:
+`declaration : ∀ params X, P X ⟶ A X` in `Sets`, natural in `X`, where `P X` is the
+operation's actual fixed operand product. A binary source may be `U X × U X`, or a
+heterogeneous product such as `R × U X` for scalar action on an `R`-module. A unary source
+has one operand; a nullary source is terminal. Unless `result` selects another object,
+`A X` is the underlying set `U X`. The checked declaration retains each operand's selected
+parameters and structure. Its surface name is the language's operator (`+`, `·`, `-`, `•`).
+
+This row binds that name on the complete selected owner category. The binding key is the
+surface name alone: a validated owner has at most one row of a given name. Arity and numeral
+parameters belong to that binding's signature and cannot be used to skip it. Inherited lookup
+stops at the first explicit binding on each structural path, including classifier-forget and
+functorial-constructor paths. A farther binding cannot replace a selected one. Incomparable
+surviving bindings remain distinct unless accepted comparison data establishes agreement of
+their complete transported operations, with the exact operand and result structures. Neither
+equal carriers nor equal values at particular arguments identifies two bindings. This is a
+scoped name binding, not a precedence ordering of categories or registration rows. -/
 structure OperationEntry where
   id : OperationId
   category : CategoryId
@@ -343,6 +380,10 @@ structure PowerObjectEntry where
   object : ObjectId
   omega : ObjectId
   truth : Lean.Name
+  /-- The selected global point of the terminal source of `truth`. Consumers use this
+  declaration when extracting a value from a global element; no numeral or representation
+  of the terminal object is part of the language or computational contract. -/
+  point : Lean.Name
   member : Lean.Name
   transpose : Lean.Name
   extent : Lean.Name
@@ -350,6 +391,11 @@ structure PowerObjectEntry where
   singleton : Lean.Name
   terminal : Lean.Name
   image : Lean.Name
+  /-- The whole direct-image action, when published:
+  `∀ (X Y : Sets) (f : X ⟶ Y), 𝒫 X ⟶ 𝒫 Y`.
+  A generalized subset `A : S ⟶ 𝒫 X` composes with it without losing its original stage `S`.
+  This is separate from `image`, whose result is a global image of the entire domain. -/
+  directImage : Option Lean.Name := none
   union : String
   deriving Repr
 
@@ -404,8 +450,19 @@ structure ConstructorEntry where
   signature : Array ConstructorArgKind
   semantics : Lean.Name
   /-- For a unary category constructor that is functorial, its action on functors
-  (`F : C ⥤ D` to `semantics C ⥤ semantics D`), e.g. `Functor.mapArrow` for `Arr`. -/
+  (`F : C ⥤ D` to `semantics C ⥤ semantics D`), e.g. `Functor.mapArrow` for `Arr`.
+  The category parameters precede the explicit inputs, in source-to-target order `C, D`. -/
   functorialAction : Option Lean.Name := none
+  /-- Action on a natural isomorphism `F ≅ G`, with result
+  `functorialAction F ≅ functorialAction G`, with category parameters `C, D`. -/
+  comparisonAction : Option Lean.Name := none
+  /-- The comparison from the image of an identity functor to the identity on the
+  constructed category: `functorialAction (𝟭 C) ≅ 𝟭 (semantics C)`. -/
+  identityComparison : Option Lean.Name := none
+  /-- The comparison from the image of a composite to the composite of the images:
+  `functorialAction (F ⋙ G) ≅ functorialAction F ⋙ functorialAction G`,
+  with category parameters `C, D, E` for `F : C ⥤ D` and `G : D ⥤ E`. -/
+  compositionComparison : Option Lean.Name := none
   deriving Repr
 
 /-- Named category registry row. -/

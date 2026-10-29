@@ -10,6 +10,7 @@ public import Mathlib.Order.Category.LinOrd
 public import Mathlib.Order.Category.PartOrd
 public import Mathlib.Order.SymmDiff
 public import Mathlib.Data.Set.Basic
+public import Mathlib.Data.Set.Image
 public import Mathlib.Order.BooleanAlgebra.Set
 public meta import LeanCategories.Catalogue.Registry.Semantic
 public meta import LeanCategories.Catalogue.Semantics.Foundation.Catalogue
@@ -24,7 +25,9 @@ public meta import LeanCategories.Catalogue.Semantics.Foundation.Catalogue
 * `𝒫(X) = Set X`, the power object of `X` (Mac Lane–Moerdijk, *Sheaves in Geometry and Logic*,
   IV.1): membership `X × 𝒫 X → Ω`, the transpose of a predicate `X → Ω` (the subset it
   classifies), the extent of a subset (the set of its members), `∅`, singletons, the terminal maps
-  `X → 1` and images `(X → Y) ↦ f(X) ∈ 𝒫 Y`. It is refined by the Boolean algebra `𝒫(X)` in
+  `X → 1`, global images `(X → Y) ↦ f(X) ∈ 𝒫 Y`, and the full direct-image action
+  `f : X → Y ↦ (A ↦ f '' A) : 𝒫 X → 𝒫 Y`. The latter composes with any generalized
+  subset `S → 𝒫 X`, retaining the stage `S`. It is refined by the Boolean algebra `𝒫(X)` in
   `BooleanAlgebras` (Mathlib `BoolAlg`), whose operations are `∪ ∩ \ △` and whose order `⊆` lands
   in `Ω`.
 * `PartialOrders` (Mathlib `PartOrd`) has partial orders and monotone maps, with a faithful
@@ -34,6 +37,12 @@ public meta import LeanCategories.Catalogue.Semantics.Foundation.Catalogue
 
 The families take their sets as types, ascribed to `Sets` at their boundary, so that the instances
 of `Set X` and of the orders are found.
+
+The direct-image interface reuses `Set.image` and `Set.image_comp` from Mathlib
+`Data/Set/Image.lean` at `db584cd6d46c92f209a44c0f1c829460d327499d`
+(Apache-2.0, Lean 4.33.0). A 2026-10-24 public formalization-corpus search for
+`Set.image` preceded inspection of that pinned definition and its existing
+functor use in `Data/Set/Functor.lean`.
 -/
 
 open CategoryTheory
@@ -152,6 +161,9 @@ abbrev omega : SetsCat.{0} := Prop
 /-- `⊤ : 1 → Ω`. -/
 def truth : fin 1 ⟶ omega := TypeCat.ofHom fun _ => True
 
+/-- The unique point of the selected terminal source of global elements. -/
+def point : fin 1 := 0
+
 /-- `𝒫(X)`. -/
 abbrev powerSet (X : Type) : SetsCat.{0} := Set X
 
@@ -183,6 +195,27 @@ def terminal (X : Type) : (X : SetsCat.{0}) ⟶ fin 1 := TypeCat.ofHom fun _ => 
 /-- The image `f(X) ∈ 𝒫 Y` of `f : X → Y`. -/
 def image (X Y : Type) (f : (X : SetsCat.{0}) ⟶ (Y : SetsCat.{0})) : fin 1 ⟶ powerSet Y :=
   TypeCat.ofHom fun _ => Set.range (ConcreteCategory.hom (C := Type) f)
+
+/-- Direct image of every subset under the whole supplied function. This is
+Mathlib's `Set.image`, whose defining condition is
+`y ∈ f '' A ↔ ∃ x, x ∈ A ∧ f x = y`; it requires no finiteness or injectivity. -/
+def directImage (X Y : Type) (f : (X : SetsCat.{0}) ⟶ (Y : SetsCat.{0})) :
+    powerSet X ⟶ powerSet Y :=
+  TypeCat.ofHom fun A => (ConcreteCategory.hom (C := Type) f) '' A
+
+/-- The image family retains its entire original stage and defining relation. -/
+theorem directImage_at_stage (S X Y : Type) (A : (S : Type) ⟶ powerSet X)
+    (f : (X : Type) ⟶ (Y : Type)) (s : S) (y : Y) :
+    y ∈ (A ≫ directImage X Y f) s ↔ ∃ x, x ∈ A s ∧ f x = y := Iff.rfl
+
+/-- Composition of direct images is the direct image of the whole composite. -/
+theorem directImage_comp (X Y Z : Type)
+    (f : (X : Type) ⟶ (Y : Type)) (g : (Y : Type) ⟶ (Z : Type)) :
+    directImage X Z (f ≫ g) = directImage X Y f ≫ directImage Y Z g := by
+  apply ConcreteCategory.hom_ext
+  intro A
+  exact Set.image_comp (ConcreteCategory.hom (C := Type) g)
+    (ConcreteCategory.hom (C := Type) f) A
 
 /-- `𝒫(X)` as a Boolean algebra. -/
 abbrev boolPowerSet (X : Type) : BooleanAlgebras.{0} := BoolAlg.of (Set X)
@@ -319,6 +352,7 @@ normalized_registry .object
 normalized_registry .powerObject
   { id := ⟨"pow.sets"⟩, object := ⟨"obj.sets.power_set"⟩, omega := ⟨"obj.sets.truth_values"⟩
     truth := `CasCatalogue.Foundation.PowerSets.truth
+    point := `CasCatalogue.Foundation.PowerSets.point
     member := `CasCatalogue.Foundation.PowerSets.member
     transpose := `CasCatalogue.Foundation.PowerSets.transpose
     extent := `CasCatalogue.Foundation.PowerSets.extent
@@ -326,7 +360,12 @@ normalized_registry .powerObject
     singleton := `CasCatalogue.Foundation.PowerSets.singleton
     terminal := `CasCatalogue.Foundation.PowerSets.terminal
     image := `CasCatalogue.Foundation.PowerSets.image
+    directImage := some `CasCatalogue.Foundation.PowerSets.directImage
     union := "∪" }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.direct_image"⟩, category := CategoryId.sets, name := "direct_image"
+    declaration := `CasCatalogue.Foundation.PowerSets.directImage }
 
 normalized_registry .operation
   { id := ⟨"op.boolean_algebras.union"⟩, category := CategoryId.booleanAlgebras, name := "∪"

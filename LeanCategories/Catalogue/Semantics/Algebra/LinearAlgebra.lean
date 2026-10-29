@@ -49,6 +49,13 @@ open CasCatalogue.Foundation.PowerSets CasCatalogue.Algebra.Polynomials
 /-- `Xⁿ`. -/
 abbrev vectors (X : Type) (n : ℕ) : SetsCat.{0} := Fin n → X
 
+/-- The finite arity of the already declared vector object. -/
+def vectorArity (_ : Type) (n : ℕ) : ℕ := n
+
+/-- Its selected coordinate maps; these retain the actual coefficient type and finite index. -/
+def vectorComponent (X : Type) (n : ℕ) (i : Fin n) : vectors X n ⟶ (X : SetsCat.{0}) :=
+  TypeCat.ofHom fun vector => vector i
+
 /-- The product module over the selected scalar ring, with pointwise addition
 and scalar action; no basis or coordinates are chosen beyond the index `Fin n`. -/
 def vectorModule (R : RingCat.{0}) (n : ℕ) : ModuleCat.{0} R :=
@@ -226,6 +233,11 @@ open Lean Elab Tactic in
 /-- The evidence that a closed polynomial `p ∈ K[x]` is monic of degree `n`, by the structure of
 `p`:
 
+The public categorical presentation is first read by `Units.readCatalogue`,
+including the selected coefficient carrier and dictionaries, numeral maps and
+polynomial maps. Only their existing defining equations are used; the complete
+original proposition and its final proof check are retained.
+
 * `p` an expression in `x`, constants `C r`, numerals, `+`, `-`, `·`, `^` over a closed
   commutative ring `K`: its coefficient of degree `n` is `1` and none above it is nonzero. They
   are read off the expression, and, when its naive leading terms cancel, off its normal form
@@ -236,7 +248,9 @@ open Lean Elab Tactic in
 
 It fails on a polynomial that is not monic or has another degree. -/
 meta partial def monicEvidence : TacticM Unit :=
-  CasCatalogue.Evidence.establish "Monicₙ(K)" monicCases
+  CasCatalogue.Evidence.establish "Monicₙ(K)" do
+    CasCatalogue.Algebra.Units.readCatalogue
+    monicCases
 where
   /-- The cases above, tried in turn on the main goal `p.Monic ∧ p.natDegree = n`. -/
   monicCases : TacticM Unit :=
@@ -388,7 +402,14 @@ namespace CasCatalogue
 
 normalized_registry .object
   { id := ⟨"obj.sets.vectors"⟩, category := CategoryId.sets, name := "Vec"
-    declaration := `CasCatalogue.Algebra.LinearAlgebra.vectors }
+    declaration := `CasCatalogue.Algebra.LinearAlgebra.vectors
+    components := some
+      { arity := `CasCatalogue.Algebra.LinearAlgebra.vectorArity
+        projection := `CasCatalogue.Algebra.LinearAlgebra.vectorComponent } }
+
+normalized_registry .morphism
+  { id := ⟨"mor.sets.vector_component"⟩, category := CategoryId.sets, name := "component"
+    declaration := `CasCatalogue.Algebra.LinearAlgebra.vectorComponent }
 
 normalized_registry .object
   { id := ⟨"obj.modules.vectors"⟩, category := CategoryId.modulesR, name := "Vec"

@@ -55,8 +55,11 @@ theorem inclusion_natural {X Y : SetsCat.{0}} (f : X ⟶ Y) :
     directImage.map f ≫ inclusion Y =
       inclusion X ≫ TypeCat.ofHom (fun A : Set X => f '' A) := by
   classical
-  ext A y
-  simp [directImage, inclusion, Finset.mem_image]
+  apply ConcreteCategory.hom_ext
+  intro A
+  change Finset X at A
+  change (↑(A.image (fun x => f x)) : Set Y) = (fun x => f x) '' (A : Set X)
+  exact Finset.coe_image
 
 /-- Admit the actual finite subset, keeping its extent rather than replacing it by
 an independently chosen list. Mathlib's `Set.Finite.toFinset` is inverse to coercion. -/
