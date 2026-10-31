@@ -8,5 +8,6 @@ public import LeanCategories.CategoryTheory.OneCat.Reindex
 public import LeanCategories.ForMathlib.CategoricalPullback
 public import LeanCategories.ForMathlib.CocartesianCancellation
 public import LeanCategories.Catalogue
+public import LeanCategories.LatticeResearch
 
 @[expose] public section
