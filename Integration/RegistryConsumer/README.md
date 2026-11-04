@@ -12,7 +12,7 @@ time, resolving rows by stable ID.
 [[require]]
 name = "lean_categories"
 git = "https://github.com/dzackgarza/lean-categories.git"
-rev = "62775782028c31bda3f6937ff985b6ba6aff7b2b"
+rev = "30c4ff73b81d9169df4ac5a726e4e6012d550e3c"
 ```
 
 The revision is a real commit on the remote, so this file alone reproduces the build. There is
