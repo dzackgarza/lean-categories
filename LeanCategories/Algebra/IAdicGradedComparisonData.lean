@@ -406,6 +406,18 @@ noncomputable def iAdicGradedComparisonMapData
   moduleZeroToGraded := (iAdicDegreeZeroModuleEquiv I M).symm
   comparison := iAdicGradedComparisonMap I M
 
+/-- Second graph clause of `IsIAdicGradedComparisonMapData` for the canonical data: the
+degree-zero component is the quotient map on representatives. -/
+theorem iAdicGradedComparisonMapData_zero_clause
+    (I : Ideal A) (M : Type v) [AddCommGroup M] [Module A M] (m : M) :
+    (iAdicGradedComparisonMapData I M).moduleZeroToGraded
+        (Submodule.Quotient.mk (p := I • (⊤ : Submodule A M)) m) =
+      (I.stableFiltration (⊤ : Submodule A M)).associatedGradedModuleMk 0
+        ⟨m, by
+          change m ∈ I ^ 0 • (⊤ : Submodule A M)
+          simp⟩ := by
+  rfl
+
 /-- First graph clause of `IsIAdicGradedComparisonMapData` for the canonical data: the ring
 component is the identity on direct-sum representatives. -/
 theorem iAdicGradedComparisonMapData_ring_clause
