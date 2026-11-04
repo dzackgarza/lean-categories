@@ -43,6 +43,26 @@ namespace LeanCategories.Topology
 
 universe u
 
+/-- The group structure carried by a group object in `TopCat`: each operation of the
+internal group is a morphism of topological spaces, hence a function of points, and the
+internal group axioms are the pointwise group laws. -/
+noncomputable instance grpObjGroup (X : TopCat.{u}) [GrpObj X] : Group X where
+  mul a b := μ[X] (a, b)
+  one := η[X] PUnit.unit
+  inv a := ι[X] a
+  mul_assoc a b c := by
+    have h := MonObj.mul_assoc (X := X)
+    exact ConcreteCategory.congr_hom h ((a, b), c)
+  one_mul a := by
+    have h := MonObj.one_mul (X := X)
+    exact ConcreteCategory.congr_hom h (PUnit.unit, a)
+  mul_one a := by
+    have h := MonObj.mul_one (X := X)
+    exact ConcreteCategory.congr_hom h (a, PUnit.unit)
+  inv_mul_cancel a := by
+    have h := GrpObj.left_inv (X := X)
+    exact ConcreteCategory.congr_hom h a
+
 variable
   {I : Type u} [Preorder I] [Nonempty I] [IsDirectedOrder I]
 
@@ -56,9 +76,22 @@ abbrev topologicalGroupProjectiveLimitData
 /-- Forget the topology of each internal topological group while retaining its
 actual group structure. -/
 noncomputable def directedTopologicalGroupUnderlyingDiagram
-    (F : I ⥤ Grp TopCat.{u}) : I ⥤ GrpCat.{u} :=
-  F ⋙ (CategoryTheory.forget TopCat.{u}).mapGrp ⋙
-    GrpTypeEquivalenceGrp.functor
+    (F : I ⥤ Grp TopCat.{u}) : I ⥤ GrpCat.{u} where
+  obj i := GrpCat.of (F.obj i).X
+  map f := GrpCat.ofHom
+    { toFun := fun a => (F.map f).hom.hom a
+      map_one' := by
+        have h := IsMonHom.one_hom (f := (F.map f).hom.hom)
+        exact ConcreteCategory.congr_hom h PUnit.unit
+      map_mul' := fun a b => by
+        have h := IsMonHom.mul_hom (f := (F.map f).hom.hom)
+        exact ConcreteCategory.congr_hom h (a, b) }
+  map_id i := by
+    ext a
+    simp
+  map_comp f g := by
+    ext a
+    simp
 
 /-- The algebraic filtered colimit of the stage groups.  This is Mathlib's
 quotient construction, so multiplication, inverse, identity, and all group
