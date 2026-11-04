@@ -406,6 +406,23 @@ noncomputable def iAdicGradedComparisonMapData
   moduleZeroToGraded := (iAdicDegreeZeroModuleEquiv I M).symm
   comparison := iAdicGradedComparisonMap I M
 
+/-- First graph clause of `IsIAdicGradedComparisonMapData` for the canonical data: the ring
+component is the identity on direct-sum representatives. -/
+theorem iAdicGradedComparisonMapData_ring_clause
+    (I : Ideal A) (M : Type v) [AddCommGroup M] [Module A M]
+    (n : ℕ) (a : ↥((I ^ n : Ideal A) : Submodule A A)) :
+    (iAdicGradedComparisonMapData I M).ringModelToGraded
+        (DirectSum.of (IAdicTensorRingPieceData I) n (Submodule.Quotient.mk a)) =
+      DirectSum.of (Ideal.IAdicAssociatedGradedPiece I) n
+        (Ideal.associatedGradedRingMk I n a) := by
+  simp only [iAdicGradedComparisonMapData, iAdicTensorRingToAssociatedGraded]
+  rw [← DirectSum.lof_eq_of A ℕ (IAdicTensorRingPieceData I) n (Submodule.Quotient.mk a)]
+  rw [DirectSum.toModule_lof]
+  rw [LinearMap.comp_apply, LinearEquiv.coe_coe]
+  rw [iAdicTensorRingPieceEquiv_mk]
+  rw [DirectSum.lof_eq_of A ℕ (Ideal.IAdicAssociatedGradedPiece I) n
+    (Ideal.associatedGradedRingMk I n a)]
+
 instance (I : Ideal A) (M : Type v) [AddCommGroup M] [Module A M] :
     Nonempty (IAdicGradedComparisonMapData I M) :=
   ⟨{
