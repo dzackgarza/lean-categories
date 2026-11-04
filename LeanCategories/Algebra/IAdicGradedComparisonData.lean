@@ -369,9 +369,14 @@ quotient presentations with the routed associated-graded pieces.  The final
 function has the literal source tensor product over `A/I` and the routed
 associated-graded module as target.
 
-All three are intentionally raw functions: their additive/linear,
-well-definedness, and isomorphism properties are results, not constructor
-fields in Sweep III. -/
+The first two canonical maps are already linear, and the tensor-friendly denominator equality
+`I • I^n = I^(n+1)` inside `I^n` is proved (`iAdicTensorRingLower_eq_associatedGradedLower`), so
+descent and linearity for these fields are established, not open. The representative graph
+`IsIAdicGradedComparisonMapData` is also proved for the canonical data
+(`isIAdicGradedComparisonMapData_canonical`). What remains open is specialization: the map is
+built on the tensor-friendly quotient presentation, and transporting it to a general
+presentation, together with representative independence of the quotient/scalar descent for
+arbitrary presentations, are still obligations. -/
 structure IAdicGradedComparisonMapData (I : Ideal A) (M : Type v)
     [AddCommGroup M] [Module A M] where
   ringModelToGraded :
@@ -524,9 +529,14 @@ does the same for `M/IM`.  The third is Matsumura's homogeneous formula:
 the pure tensor of the classes of `a ∈ I^n` and `m ∈ M` maps to the class
 of `a • m` in degree `n` of `gr_I(M)`.
 
-Existence of data satisfying this graph, independence of representatives,
-linearity over `A/I`, and the fact that these formulas give the usual
-comparison homomorphism are all result-layer obligations. -/
+Existence of data satisfying this graph is proved for the canonical data
+(`isIAdicGradedComparisonMapData_canonical`), which also exhibits an element of the subtype
+`IAdicGradedComparisonData`. What remains a result-layer obligation is representative
+independence for an arbitrary presentation, and the identification of these formulas with the
+usual comparison homomorphism at a general presentation without the tensor-friendly quotient
+model. Callers that need the proved witness must use `iAdicGradedComparisonData`: the raw
+`Nonempty` instance exists by `Classical.choice`, which is not guaranteed to select that
+witness. -/
 def IsIAdicGradedComparisonMapData
     (I : Ideal A) (M : Type v) [AddCommGroup M] [Module A M]
     (D : IAdicGradedComparisonMapData I M) : Prop :=
@@ -567,6 +577,19 @@ descent and well-definedness are proved. -/
 def IAdicGradedComparisonData
     (I : Ideal A) (M : Type v) [AddCommGroup M] [Module A M] :=
   {D : IAdicGradedComparisonMapData I M // IsIAdicGradedComparisonMapData I M D}
+
+/-- Nondegenerate control: on a representative whose graded class is nonzero, the canonical ring
+component is nonzero, so it is not the zero family. -/
+theorem iAdicGradedComparisonMapData_ring_component_ne_zero
+    (I : Ideal A) (M : Type v) [AddCommGroup M] [Module A M]
+    (n : ℕ) (a : ↥((I ^ n : Ideal A) : Submodule A A))
+    (ha : Ideal.associatedGradedRingMk I n a ≠ 0) :
+    (iAdicGradedComparisonMapData I M).ringModelToGraded
+        (DirectSum.of (IAdicTensorRingPieceData I) n (Submodule.Quotient.mk a)) ≠ 0 := by
+  rw [iAdicGradedComparisonMapData_ring_clause]
+  intro h
+  exact ha ((DirectSum.of_injective (β := Ideal.IAdicAssociatedGradedPiece I) n)
+    (by simpa only [map_zero] using h))
 
 /-- The canonical comparison data satisfies Matsumura's exact representative graph. -/
 theorem isIAdicGradedComparisonMapData_canonical
