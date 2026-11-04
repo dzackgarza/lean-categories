@@ -720,6 +720,18 @@ private initialize semanticExt : SimplePersistentEnvExtension SemanticEntry Sema
 def semanticState : CoreM SemanticState :=
   return semanticExt.getState (← getEnv)
 
+/-- The registry state obtained by replaying checked entries in registration order. A
+downstream consumer replays the rows it read (see `RegistrySnapshot`) together with the rows
+it derives, then validates the result. -/
+def SemanticState.ofEntries (entries : Array SemanticEntry) : SemanticState :=
+  entries.foldl SemanticState.apply {}
+
+/-- Fail-loud check of a whole entry sequence: duplicate stable IDs, duplicate category
+expressions, unresolved registry references and unbalanced opaque companions. This is the
+check a consumer's fold runs over a snapshot plus its own derived rows. -/
+def validateEntries (entries : Array SemanticEntry) : Except String Unit :=
+  validatePersistedSemanticState (SemanticState.ofEntries entries)
+
 /-- The result type of a declaration after exposing all of its parameters. -/
 def declarationResultType (declaration : Name) : MetaM Expr := do
   let info ← getConstInfo declaration

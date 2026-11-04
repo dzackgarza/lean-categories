@@ -43,6 +43,37 @@ implementation supplies is consulted for meaning; its answers are judged only by
 (`LeanCategories/Catalogue/`, namespace `CasCatalogue`). The contract is
 [`lean-cas-dsl/specs/architecture.md`](https://github.com/dzackgarza/lean-cas-dsl/blob/main/specs/architecture.md).
 
+## Consuming the registry (#49)
+
+A downstream package depends on a pinned revision of this repository — the release tag when one
+is published, otherwise an explicit `rev` — and reads the checked catalogue at elaboration time.
+[`Integration/RegistryConsumer/`](Integration/RegistryConsumer/) is the minimal worked example:
+it requires this package as a Lake dependency on the same toolchain and Mathlib pin, and fails
+loudly if a row it needs is missing.
+
+Consumption is staged, and each release names the stages it supports:
+
+| Stage | Surface it exposes | Owned by |
+| --- | --- | --- |
+| 1 | registry rows resolved by stable ID (`cat.`, `fun.`, `cell.`, `obj.`, `op.`, `mor.`, …) | this repository |
+| 2 | typed category and functor expressions | #31, #54 |
+| 3 | operation declarations and inherited-method resolution inputs | #28, #53 |
+
+`CasCatalogue.RegistrySnapshot.snapshot` returns the rows of the current environment;
+`findEntry?`, `hasEntry` and `declarationNames?` resolve one row and the Lean declarations it
+names; `idsWithPrefix` selects a layer. A consumer that re-registers or derives rows folds them
+through `RegistrySnapshot.validateDerived`, which is fail-loud: a stable ID that already exists,
+and any unresolved registry reference, are refused. A consumer row never overwrites a checked
+row, and a derived row acquires no meaning from the consumer that wrote it.
+
+Rows exist only when the catalogue modules are imported, so a consumer imports
+`LeanCategories.Catalogue` (the rows) together with
+`LeanCategories.Catalogue.Registry.Snapshot` (the read surface, re-exported by the catalogue),
+and resolves everything else by stable ID. No generated Sage mapping, Python seed, hand-authored
+DOT file or research branch artifact is an input to that resolution.
+
+`dzackgarza/lean-cas-dsl#14` is the first consumer of this contract.
+
 The support directories describe the same mathematical library. They do not define a
 second category system. `Core` and `Model` define the common language. `Realization`
 connects it to Mathlib. `Registry`, `Specimen`, and `Tools` inspect and export that
