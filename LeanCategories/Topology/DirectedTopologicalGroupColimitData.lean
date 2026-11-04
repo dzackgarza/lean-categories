@@ -43,6 +43,16 @@ namespace LeanCategories.Topology
 
 universe u
 
+/-- Compatibility with the original `[Nonempty I]` hypothesis.
+
+The audit finding on this file was a false positive: the flagged `Nonempty` was the section
+hypothesis `[Nonempty I]`, never an existence claim about constructed data. Because
+`Inhabited I` is stronger than `Nonempty I`, every input accepted by the original signature is
+still accepted, by supplying this instance; it goes through classical choice, which the
+`noncomputable section` of this file already assumes. -/
+noncomputable def inhabitedOfNonempty {I : Type u} [Nonempty I] : Inhabited I :=
+  Classical.inhabited_of_nonempty ‹Nonempty I›
+
 /-- The group structure carried by a group object in `TopCat`: each operation of the
 internal group is a morphism of topological spaces, hence a function of points, and the
 internal group axioms are the pointwise group laws. -/
