@@ -720,6 +720,76 @@ private initialize semanticExt : SimplePersistentEnvExtension SemanticEntry Sema
 def semanticState : CoreM SemanticState :=
   return semanticExt.getState (← getEnv)
 
+/-- The first cross-entry reference that does not resolve, as `row: unresolved field`.
+
+`validatePersistedSemanticState` covers a subset of the registry's references; this covers every
+ID-bearing field the entry types hold, so a consumer folding derived rows cannot carry a dangling
+ownership edge: an inclusion over an unregistered superobject, a power object over an
+unregistered object or truth object, an operation refining an unregistered operation, a subset
+literal over an unregistered power object, a presentation over unregistered endpoints, an object
+refinement over an unregistered base, a numeral over an unregistered category, or a category
+expression naming an unregistered category. -/
+def SemanticState.unresolvedReference (state : SemanticState) : Option String := Id.run do
+  let categoryOk (c : CategoryId) : Bool := state.categories.any (·.id == c)
+  let objectOk (o : ObjectId) : Bool := state.objects.any (·.id == o)
+  let operationOk (o : OperationId) : Bool := state.operations.any (·.id == o)
+  let edgeOk (e : EdgeRef) : Bool := e.isRegisteredIn state
+  let edgesOk (es : Array EdgeRef) : Bool := es.all edgeOk
+  let exprOk (e : CategoryExpr) : Bool := e.isRegistered state && e.referencesValid state
+  let fail (owner field : String) : Option String := some s!"{owner}: unresolved {field}"
+  for limit in state.limits do
+    unless categoryOk limit.category do return fail limit.id.raw "category"
+  for literal in state.literals do
+    unless categoryOk literal.category do return fail literal.id.raw "category"
+  for numeral in state.numerals do
+    if let some over := numeral.over then
+      unless categoryOk over do return fail numeral.id.raw "category"
+  for literal in state.graphLiterals do
+    unless categoryOk literal.category do return fail literal.id.raw "category"
+  for binder in state.binders do
+    unless categoryOk binder.category do return fail binder.id.raw "category"
+  for inclusion in state.inclusions do
+    unless categoryOk inclusion.category do return fail inclusion.id.raw "category"
+    unless objectOk inclusion.sub do return fail inclusion.id.raw "subobject"
+    unless objectOk inclusion.super do return fail inclusion.id.raw "superobject"
+  for operation in state.operations do
+    unless categoryOk operation.category do return fail operation.id.raw "category"
+    if let some result := operation.result then
+      unless objectOk result do return fail operation.id.raw "result object"
+    if let some refines := operation.refines then
+      unless operationOk refines.base do return fail operation.id.raw "refined operation"
+      unless edgesOk refines.route do return fail operation.id.raw "refinement route"
+  for morphism in state.morphisms do
+    unless categoryOk morphism.category do return fail morphism.id.raw "category"
+  for power in state.powerObjects do
+    unless objectOk power.object do return fail power.id.raw "object"
+    unless objectOk power.omega do return fail power.id.raw "truth object"
+  for literal in state.subsetLiterals do
+    unless state.powerObjects.any (·.id == literal.powerObject) do
+      return fail literal.id.raw "power object"
+  for presentation in state.presentations do
+    unless objectOk presentation.source do return fail presentation.id.raw "source object"
+    unless objectOk presentation.target do return fail presentation.id.raw "target object"
+  for object in state.objects do
+    if let some refines := object.refines then
+      unless objectOk refines.base do return fail object.id.raw "refined object"
+      unless edgesOk refines.route do return fail object.id.raw "refinement route"
+  for method in state.methods do
+    unless exprOk method.owner do return fail method.id.raw "owner category"
+  for property in state.properties do
+    if let some receiver := property.receiver then
+      unless exprOk receiver do return fail property.id.raw "receiver category"
+  for lift in state.lifts do
+    unless edgeOk lift.edge do return fail lift.id.raw "edge"
+  for construction in state.constructions do
+    unless exprOk construction.target do return fail construction.id.raw "target category"
+  for classifier in state.classifiers do
+    unless exprOk classifier.host do return fail classifier.id.raw "host category"
+  for cell in state.cells do
+    unless exprOk cell.source do return fail cell.id.raw "source category"
+    unless exprOk cell.target do return fail cell.id.raw "target category"
+  return none
+
 /-- The registry state obtained by replaying checked entries in registration order. A
 downstream consumer replays the rows it read (see `RegistrySnapshot`) together with the rows
 it derives, then validates the result. -/
@@ -727,10 +797,17 @@ def SemanticState.ofEntries (entries : Array SemanticEntry) : SemanticState :=
   entries.foldl SemanticState.apply {}
 
 /-- Fail-loud check of a whole entry sequence: duplicate stable IDs, duplicate category
-expressions, unresolved registry references and unbalanced opaque companions. This is the
-check a consumer's fold runs over a snapshot plus its own derived rows. -/
+expressions, unresolved registry references, unbalanced opaque companions, and every
+ID-bearing field of every row (`SemanticState.unresolvedReference`). This is the check a
+consumer's fold runs over a snapshot plus its own derived rows. -/
 def validateEntries (entries : Array SemanticEntry) : Except String Unit :=
-  validatePersistedSemanticState (SemanticState.ofEntries entries)
+  let state := SemanticState.ofEntries entries
+  match validatePersistedSemanticState state with
+  | .error message => .error message
+  | .ok () =>
+      match state.unresolvedReference with
+      | some message => .error s!"dangling registry reference: {message}"
+      | none => .ok ()
 
 /-- The result type of a declaration after exposing all of its parameters. -/
 def declarationResultType (declaration : Name) : MetaM Expr := do

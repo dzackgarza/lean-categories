@@ -34,10 +34,13 @@ overwritten, and a derived row does not acquire meaning from the consumer that w
 namespace CasCatalogue
 
 /-- A read-only, checked view of the semantic registry. It holds the traced entries of the
-current environment in registration order; the only write path into a registry remains
-`addSemanticEntryChecked` through the `normalized_registry` command. -/
+current environment; the only write path into a registry remains `addSemanticEntryChecked`
+through the `normalized_registry` command. -/
 structure RegistrySnapshot where
-  /-- Every checked entry of the registry, in registration order. -/
+  /-- Every checked entry of the registry. Entries are grouped by row kind in the registry's
+  own field order, and each group is in registration order; the array is **not** a global
+  registration-order trace, because the registry state stores one array per row kind. Use
+  `idsWithPrefix` or the row kinds for a stable selection, never a global index. -/
   entries : Array SemanticEntry
   deriving Inhabited
 
@@ -46,7 +49,8 @@ namespace RegistrySnapshot
 /-- The snapshot of a registry state. -/
 def ofState (state : SemanticState) : RegistrySnapshot := ⟨state.entries.toArray⟩
 
-/-- The stable IDs this release exposes, in registration order. -/
+/-- The stable IDs this release exposes, grouped by row kind in the same order as
+`RegistrySnapshot.entries`. -/
 def stableIds (snap : RegistrySnapshot) : Array String :=
   snap.entries.map SemanticEntry.stableId
 
