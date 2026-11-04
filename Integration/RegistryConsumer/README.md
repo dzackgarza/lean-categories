@@ -19,8 +19,13 @@ The revision is a real commit on the remote, so this file alone reproduces the b
 no path into a working tree, no generated Sage correspondence, no Python seed, no hand-authored
 DOT file and no research branch artifact anywhere in the resolution.
 
-When the first release is tagged, the pin becomes `tag = "v0.1.0"` with no other change. The
-repository has no tags yet, which is why the pin is a revision.
+When the first release is tagged, the pin becomes `rev = "v0.1.0"` with no other change: Lake
+v4.33.0 decodes `rev` and has no `tag` field
+([`src/lake/Lake/Load/Toml.lean`, `Dependency.decodeToml`](https://github.com/leanprover/lean4/blob/v4.33.0/src/lake/Lake/Load/Toml.lean#L308-L337)),
+and `rev` accepts any ref, including a tag name. Verified on the pinned toolchain: a `require`
+carrying `tag = "v0.1.0"` instead of `rev` ignores the tag and falls back to `rev`'s default
+branch, so it pins nothing (`revision not found 'master'` here). The repository has no tags yet,
+which is why the pin is a commit revision.
 
 ## Reproduce
 

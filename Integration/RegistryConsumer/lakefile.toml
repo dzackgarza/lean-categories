@@ -4,8 +4,9 @@ version = "0.1.0"
 defaultTargets = ["RegistryConsumer"]
 
 # The dependency is pinned to a *revision of the remote*, not to the working tree: this is what
-# makes the package a downstream consumer rather than a second copy of the library. When the
-# first release is tagged, the pin becomes `tag = "v0.1.0"` with no other change.
+# makes the package a downstream consumer rather than a second copy of the library. Lake decodes
+# `rev` and has no `tag` field (Lean v4.33.0, src/lake/Lake/Load/Toml.lean, `Dependency.decodeToml`),
+# so a release is pinned as `rev = "v0.1.0"`: `rev` accepts any ref, including a tag name.
 [[require]]
 name = "lean_categories"
 git = "https://github.com/dzackgarza/lean-categories.git"
