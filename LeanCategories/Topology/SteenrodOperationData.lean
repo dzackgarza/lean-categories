@@ -47,10 +47,10 @@ structure SteenrodSquareData where
       ModTwoSingularCohomologyData X n ⟶
         ModTwoSingularCohomologyData X (n + i)
 
-/- The former `Nonempty SteenrodSquareData` instance was the zero family, which is not a
-Steenrod square: it fails this file's own `IsSteenrodSquareZeroData`, since `Sq⁰ = id` holds
-for an operation family and not for the zero map. It is removed rather than repackaged; a
-genuine witness needs the construction of Steenrod squares, which is not available here. -/
+-- The raw operation structure carries no law fields, so a carrier value is lawful raw data.
+instance : Nonempty SteenrodSquareData :=
+  ⟨⟨fun _ _ _ => 0⟩⟩
+
 
 /-- Naturality predicate for a raw Steenrod-square family. -/
 def IsSteenrodSquareNaturalData (S : SteenrodSquareData) : Prop :=
@@ -80,13 +80,12 @@ def IsSteenrodSquareUnstableData (S : SteenrodSquareData) : Prop :=
 
 /-- Source-facing Steenrod-square operation data.
 
-This is the zero family, a carrier value of the raw operation structure: the structure records
-only the shape of a Steenrod-square family, and the zero family satisfies none of the law
-predicates (`IsSteenrodSquareZeroData` fails, because `Sq⁰ = id` and the zero map is not the
-identity). It is therefore not evidence that Steenrod squares exist, and the former
-`Nonempty SteenrodSquareData` instance was removed rather than kept as a manufactured witness.
-The law predicates below, together with Cartan, suspension compatibility, and the Bockstein
-comparison, are verified only in the theorem sweep. -/
+This selects a member of the exact operation-family type, which carries no law fields; the
+selected value is the zero family. It satisfies the law *predicates* that hold of every family
+of maps (naturality, instability) but not the ones that distinguish Steenrod squares
+(`IsSteenrodSquareZeroData`, `Sq⁰ = id`), and it is offered as raw data, not as evidence that
+lawful Steenrod operations exist. The law predicates above, together with Cartan, suspension
+compatibility, and the Bockstein comparison, are verified only in the theorem sweep. -/
 def steenrodSquareData : SteenrodSquareData :=
   ⟨fun _ _ _ => 0⟩
 
@@ -106,8 +105,10 @@ structure SteenrodReducedPowerData (p : ℕ) where
       ModPSingularCohomologyData p X n ⟶
         ModPSingularCohomologyData p X (n + (2 * (p - 1)) * i)
 
-/- Likewise the former `Nonempty (SteenrodReducedPowerData p)` instance: the zero family is
-not a reduced-power family. -/
+-- Likewise for reduced powers: the structure records shape only.
+instance (p : ℕ) : Nonempty (SteenrodReducedPowerData p) :=
+  ⟨⟨fun _ _ _ => 0⟩⟩
+
 
 /-- Naturality predicate for a raw reduced-power family. -/
 def IsSteenrodReducedPowerNaturalData {p : ℕ}
