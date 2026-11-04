@@ -16,6 +16,12 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.CategoryTheory.Linear.FunctorCategory
 public import Mathlib.Algebra.Category.ModuleCat.Limits
 
+/- The pinned library keeps `HasExt.standard` a lemma rather than an instance
+(`Ext/Basic.lean:92`), so `Ext`'s `AddCommGroup`/`Module` instances cannot be found by
+search. Registering it here gives the carrier and the `ℂ`-module structure the same
+`HasExt` instance (`HasExt.standard.{u_1,u_2} : HasExt.{max u_2 u_1} C`). -/
+attribute [instance] CategoryTheory.HasExt.standard
+
 /-!
 # Holomorphic differential-form sheaf data on complex manifolds
 
@@ -37,6 +43,9 @@ pluricanonical result is asserted here.
 
 open Bundle
 open CategoryTheory
+
+
+
 open scoped ContDiff Manifold Topology
 
 namespace LeanCategories.Geometry
@@ -497,9 +506,7 @@ noncomputable abbrev hodgeCohomologyGroupData
     [Abelian (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
     [Linear ℂ (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
     (p q : ℕ) : Type (u + 1) :=
-  (@CategoryTheory.Abelian.Ext
-    (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X)) _ _
-    (HasExt.standard (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X)))
+  (CategoryTheory.Abelian.Ext
     ((CategoryTheory.constantSheaf
       (Opens.grothendieckTopology (TopCat.of X)) (ModuleCat.{u} ℂ)).obj
         (ModuleCat.of ℂ (ULift.{u} ℂ)))
@@ -517,9 +524,7 @@ noncomputable def hodgeNumberData
     [Linear ℂ (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
     (p q : ℕ) : ℕ :=
   Module.finrank ℂ
-    (@CategoryTheory.Abelian.Ext
-      (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X)) _ _
-      (HasExt.standard (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X)))
+    (CategoryTheory.Abelian.Ext
       ((CategoryTheory.constantSheaf
         (Opens.grothendieckTopology (TopCat.of X)) (ModuleCat.{u} ℂ)).obj
           (ModuleCat.of ℂ (ULift.{u} ℂ)))
