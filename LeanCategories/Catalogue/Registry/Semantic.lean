@@ -774,6 +774,17 @@ def SemanticState.unresolvedReference (state : SemanticState) : Option String :=
     if let some refines := object.refines then
       unless objectOk refines.base do return fail object.id.raw "refined object"
       unless edgesOk refines.route do return fail object.id.raw "refinement route"
+    -- A functorially presented object names a functor *and* a route of edges from it to the
+    -- object's own category; both are references.
+    if let some presentation := object.functorPresentation then
+      unless state.functors.any (·.id == presentation.functor) do
+        return fail object.id.raw "presenting functor"
+      unless edgesOk presentation.route do
+        return fail object.id.raw "functorial presentation route"
+  for opaqueRow in state.opaqueCategories do
+    for port in opaqueRow.ports do
+      unless exprOk port.source do return fail port.id.raw "source category"
+      unless exprOk port.target do return fail port.id.raw "target category"
   for method in state.methods do
     unless exprOk method.owner do return fail method.id.raw "owner category"
   for property in state.properties do
