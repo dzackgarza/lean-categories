@@ -418,6 +418,79 @@ theorem iAdicGradedComparisonMapData_zero_clause
           simp⟩ := by
   rfl
 
+/-- The degree-zero component of the comparison on a quotient representative. -/
+theorem iAdicModuleZeroToAssociatedGraded_of
+    (I : Ideal A) (M : Type v) [AddCommGroup M] [Module A M] (m : M) :
+    iAdicModuleZeroToAssociatedGraded I M
+        (Submodule.Quotient.mk (p := I • (⊤ : Submodule A M)) m) =
+      DirectSum.of (Ideal.IAdicAssociatedGradedModulePiece I M) 0
+        ((I.stableFiltration (⊤ : Submodule A M)).associatedGradedModuleMk 0
+          ⟨m, by
+            change m ∈ I ^ 0 • (⊤ : Submodule A M)
+            simp⟩) := rfl
+
+/-- The ring component of the comparison on a direct-sum representative. -/
+theorem iAdicTensorRingToAssociatedGraded_of
+    (I : Ideal A) (n : ℕ) (a : ↥((I ^ n : Ideal A) : Submodule A A)) :
+    iAdicTensorRingToAssociatedGraded I
+        (DirectSum.of (IAdicTensorRingPieceData I) n (Submodule.Quotient.mk a)) =
+      DirectSum.of (Ideal.IAdicAssociatedGradedPiece I) n
+        (Ideal.associatedGradedRingMk I n a) := by
+  simp only [iAdicTensorRingToAssociatedGraded]
+  rw [← DirectSum.lof_eq_of A ℕ (IAdicTensorRingPieceData I) n (Submodule.Quotient.mk a)]
+  rw [DirectSum.toModule_lof]
+  rw [LinearMap.comp_apply, LinearEquiv.coe_coe]
+  rw [iAdicTensorRingPieceEquiv_mk]
+  rw [DirectSum.lof_eq_of A ℕ (Ideal.IAdicAssociatedGradedPiece I) n
+    (Ideal.associatedGradedRingMk I n a)]
+
+/-- Third graph clause: Matsumura's homogeneous formula on a pure tensor. -/
+theorem iAdicGradedComparisonMapData_tensor_clause
+    (I : Ideal A) (M : Type v) [AddCommGroup M] [Module A M]
+    (n : ℕ) (a : ↥((I ^ n : Ideal A) : Submodule A A)) (m : M) :
+    (iAdicGradedComparisonMapData I M).comparison
+        ((DirectSum.of (IAdicTensorRingPieceData I) n
+            (Submodule.Quotient.mk
+              (p := I • (⊤ : Submodule A ↥((I ^ n : Ideal A) : Submodule A A))) a)) ⊗ₜ[A ⧸ I]
+          (Submodule.Quotient.mk (p := I • (⊤ : Submodule A M)) m)) =
+      DirectSum.of (Ideal.IAdicAssociatedGradedModulePiece I M) n
+        ((I.stableFiltration (⊤ : Submodule A M)).associatedGradedModuleMk n
+          ⟨a.1 • m, by
+            change a.1 • m ∈ I ^ n • (⊤ : Submodule A M)
+            exact Submodule.smul_mem_smul a.2 Submodule.mem_top⟩) := by
+  letI : Module (A ⧸ I) (Ideal.IAdicAssociatedGraded I) :=
+    Module.compHom _ (iAdicQuotientToAssociatedGradedRing I)
+  letI : Module (A ⧸ I) (Ideal.IAdicAssociatedGradedModule I M) :=
+    Module.compHom _ (iAdicQuotientToAssociatedGradedRing I)
+  show TensorProduct.lift (iAdicGradedComparisonBilinear I M) _ = _
+  rw [TensorProduct.lift.tmul]
+  show iAdicTensorRingToAssociatedGradedQuotientLinear I
+        (DirectSum.of (IAdicTensorRingPieceData I) n (Submodule.Quotient.mk a)) •
+      iAdicModuleZeroToAssociatedGradedQuotientLinear I M
+        (Submodule.Quotient.mk (p := I • (⊤ : Submodule A M)) m) = _
+  rw [show iAdicTensorRingToAssociatedGradedQuotientLinear I
+        (DirectSum.of (IAdicTensorRingPieceData I) n (Submodule.Quotient.mk a)) =
+      iAdicTensorRingToAssociatedGraded I
+        (DirectSum.of (IAdicTensorRingPieceData I) n (Submodule.Quotient.mk a)) from rfl]
+  rw [show iAdicModuleZeroToAssociatedGradedQuotientLinear I M
+        (Submodule.Quotient.mk (p := I • (⊤ : Submodule A M)) m) =
+      iAdicModuleZeroToAssociatedGraded I M
+        (Submodule.Quotient.mk (p := I • (⊤ : Submodule A M)) m) from rfl]
+  rw [iAdicTensorRingToAssociatedGraded_of, iAdicModuleZeroToAssociatedGraded_of]
+  rw [DirectSum.Gmodule.of_smul_of]
+  change DirectSum.of (Ideal.IAdicAssociatedGradedModulePiece I M) (n + 0)
+      ((I.stableFiltration (⊤ : Submodule A M)).associatedGradedModuleSMul n 0
+        (Ideal.associatedGradedRingMk I n a)
+        ((I.stableFiltration (⊤ : Submodule A M)).associatedGradedModuleMk 0
+          ⟨m, by
+            change m ∈ I ^ 0 • (⊤ : Submodule A M)
+            simp⟩)) = _
+  rw [Ideal.Filtration.associatedGradedModuleSMul_mk']
+  rw [DirectSum.of_eq_of_gradedMonoid_eq]
+  exact Sigma.ext (Nat.add_zero n)
+    (Ideal.Filtration.associatedGradedModuleMk_heq_of_eq (F := I.stableFiltration (⊤ : Submodule A M))
+      (Nat.add_zero n) rfl _ _)
+
 /-- First graph clause of `IsIAdicGradedComparisonMapData` for the canonical data: the ring
 component is the identity on direct-sum representatives. -/
 theorem iAdicGradedComparisonMapData_ring_clause
@@ -494,5 +567,20 @@ descent and well-definedness are proved. -/
 def IAdicGradedComparisonData
     (I : Ideal A) (M : Type v) [AddCommGroup M] [Module A M] :=
   {D : IAdicGradedComparisonMapData I M // IsIAdicGradedComparisonMapData I M D}
+
+/-- The canonical comparison data satisfies Matsumura's exact representative graph. -/
+theorem isIAdicGradedComparisonMapData_canonical
+    (I : Ideal A) (M : Type v) [AddCommGroup M] [Module A M] :
+    IsIAdicGradedComparisonMapData I M (iAdicGradedComparisonMapData I M) :=
+  ⟨iAdicGradedComparisonMapData_ring_clause I M,
+   iAdicGradedComparisonMapData_zero_clause I M,
+   iAdicGradedComparisonMapData_tensor_clause I M⟩
+
+/-- The canonical comparison data as an element of the exact graph subtype. -/
+noncomputable def iAdicGradedComparisonData
+    (I : Ideal A) (M : Type v) [AddCommGroup M] [Module A M] :
+    IAdicGradedComparisonData I M :=
+  ⟨iAdicGradedComparisonMapData I M, isIAdicGradedComparisonMapData_canonical I M⟩
+
 
 end LeanCategories.Algebra
