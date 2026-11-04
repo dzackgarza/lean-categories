@@ -538,9 +538,8 @@ Existence of data satisfying this graph is proved for the canonical data
 independence for an arbitrary presentation, and the identification of these formulas with the
 usual comparison homomorphism at a general presentation without the tensor-friendly quotient
 model. Callers that need the proved witness must use `iAdicGradedComparisonData`: the raw
-`Nonempty` instance exists by `Classical.choice`, which is not guaranteed to select that
-witness: the raw instance is the zero family written out explicitly, not a value produced by
-`Classical.choice`. -/
+`Nonempty` instance is the zero family written out explicitly, so it does not select the
+canonical data. -/
 def IsIAdicGradedComparisonMapData
     (I : Ideal A) (M : Type v) [AddCommGroup M] [Module A M]
     (D : IAdicGradedComparisonMapData I M) : Prop :=
