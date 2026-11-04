@@ -64,7 +64,7 @@ noncomputable instance grpObjGroup (X : TopCat.{u}) [GrpObj X] : Group X where
     exact ConcreteCategory.congr_hom h a
 
 variable
-  {I : Type u} [Preorder I] [Nonempty I] [IsDirectedOrder I]
+  {I : Type u} [Preorder I] [Inhabited I] [IsDirectedOrder I]
 
 /-- The native projective-limit object for a system of topological groups.
 

@@ -83,18 +83,19 @@ structure PointBlowupData
   exceptional_fiber :
     Set.range exceptionalι.base =
       projection.base ⁻¹' ({p} : Set S.scheme)
+  /-- The selected isomorphism exhibiting the exceptional subscheme as a projective line. -/
   exceptional_projective_line :
-    Nonempty
-      (exceptionalScheme ≅
-        ProjectiveSpace
-          (IsLocalRing.ResidueField (S.scheme.presheaf.stalk p)) 1)
+    exceptionalScheme ≅
+      ProjectiveSpace
+        (IsLocalRing.ResidueField (S.scheme.presheaf.stalk p)) 1
   tangent_dimension :
     Module.finrank
         (IsLocalRing.ResidueField (S.scheme.presheaf.stalk p))
         (surfacePointTangentSpaceData S p) = 2
+  /-- The points of the exceptional curve parametrize the projectivized tangent space at
+  `p`: the selected equivalence, not merely its existence. -/
   exceptional_tangent_directions :
-    Nonempty
-      (exceptionalScheme ≃ surfacePointTangentDirectionsData S p)
+    exceptionalScheme ≃ surfacePointTangentDirectionsData S p
   strictTransform_eq :
     ∀ C : Set S.scheme,
       strictTransform C =
