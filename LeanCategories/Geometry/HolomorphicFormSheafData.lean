@@ -490,7 +490,7 @@ morphisms from the constant sheaf `ℂ_X`; hence their right-derived functors
 are the Ext groups below.  Mathlib's linear Ext construction supplies the
 canonical complex-vector-space structure directly. -/
 noncomputable abbrev hodgeCohomologyGroupData
-    {I : ModelWithCorners ℂ E H}
+    (I : ModelWithCorners ℂ E H) [I.Boundaryless] [IsManifold I ω X]
     [HasSheafify
       (Opens.grothendieckTopology (TopCat.of X)) (ModuleCat.{u} ℂ)]
     [Abelian (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
