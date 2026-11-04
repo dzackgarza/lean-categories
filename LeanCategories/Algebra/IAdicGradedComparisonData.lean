@@ -28,13 +28,16 @@ The routed associated-graded pieces are quotients by the explicitly embedded
 submodules `I^(n+1) ⊆ I^n`.  Mathlib's native `A/I`-module instance is
 instead available on the definitionally useful presentation
 `I^n / (I • I^n)`.  This file uses that presentation only as the tensor
-carrier.  The comparison with the routed `I^n/I^(n+1)` piece is itself
-recorded as raw data by its representative graph; no equality of denominators,
-linearity, bijectivity, tensor descent, or comparison theorem is proved here.
+carrier.  The denominator equality `I • I^n = I^(n+1)` inside `I^n` is proved
+(`iAdicTensorRingLower_eq_associatedGradedLower`), both canonical comparison maps are linear by
+construction, and data satisfying the representative graph is constructed and exhibited
+(`iAdicGradedComparisonMapData`, `isIAdicGradedComparisonMapData_canonical`,
+`iAdicGradedComparisonData`), with concrete nonvacuity witnesses over `ℤ` at `I = ⊥`.
+Bijectivity of the comparison, its transport to an arbitrary presentation of the graded pieces,
+and the comparison theorem at that generality remain Sweep-IV result work.
 
-Thus the tensor product in this file is literally over `A/I`, while every
-statement identifying the carrier presentation with the routed associated
-graded object remains Sweep-IV result work.
+The tensor product in this file is literally over `A/I`; statements identifying an arbitrary
+carrier presentation with the routed associated graded object are still open.
 -/
 
 @[expose] public noncomputable section
@@ -536,7 +539,8 @@ independence for an arbitrary presentation, and the identification of these form
 usual comparison homomorphism at a general presentation without the tensor-friendly quotient
 model. Callers that need the proved witness must use `iAdicGradedComparisonData`: the raw
 `Nonempty` instance exists by `Classical.choice`, which is not guaranteed to select that
-witness. -/
+witness: the raw instance is the zero family written out explicitly, not a value produced by
+`Classical.choice`. -/
 def IsIAdicGradedComparisonMapData
     (I : Ideal A) (M : Type v) [AddCommGroup M] [Module A M]
     (D : IAdicGradedComparisonMapData I M) : Prop :=
@@ -590,6 +594,23 @@ theorem iAdicGradedComparisonMapData_ring_component_ne_zero
   intro h
   exact ha ((DirectSum.of_injective (β := Ideal.IAdicAssociatedGradedPiece I) n)
     (by simpa only [map_zero] using h))
+
+/-- Concrete tensor control: over `ℤ` with `I = ⊥` in degree `0`, the comparison of `[1] ⊗ [1]` is
+nonzero, so the tensor graph clause is also nonvacuous. -/
+theorem iAdicGradedComparisonMapData_tensor_component_ne_zero_int :
+    (iAdicGradedComparisonMapData (⊥ : Ideal ℤ) ℤ).comparison
+      ((DirectSum.of (IAdicTensorRingPieceData (⊥ : Ideal ℤ)) 0
+          (Submodule.Quotient.mk
+            (⟨(1 : ℤ), by
+              change (1 : ℤ) ∈ (⊥ : Ideal ℤ) ^ 0
+              simp⟩ : ↥(((⊥ : Ideal ℤ) ^ 0 : Ideal ℤ) : Submodule ℤ ℤ)))) ⊗ₜ[ℤ ⧸ (⊥ : Ideal ℤ)]
+        (Submodule.Quotient.mk (p := (⊥ : Ideal ℤ) • (⊤ : Submodule ℤ ℤ)) (1 : ℤ))) ≠ 0 := by
+  rw [iAdicGradedComparisonMapData_tensor_clause]
+  intro h
+  have hx := congrArg (fun z => z 0) h
+  simp only [DirectSum.of_eq_same, DirectSum.zero_apply] at hx
+  have hmem := (Submodule.Quotient.mk_eq_zero _).mp hx
+  simpa using hmem
 
 /-- The control's hypothesis is inhabited: over `ℤ` with the zero ideal in degree `0`, the class
 of `1` has nonzero associated-graded representative, because the denominator is `⊥`. -/
