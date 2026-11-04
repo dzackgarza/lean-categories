@@ -98,15 +98,22 @@ quotient construction, so multiplication, inverse, identity, and all group
 laws are constructed here rather than supplied. -/
 noncomputable def directedTopologicalGroupColimitGroupData
     (F : I ⥤ Grp TopCat.{u}) : GrpCat.{u} :=
-  GrpCat.FilteredColimits.colimit (directedTopologicalGroupUnderlyingDiagram F)
+  let D : I ⥤ GrpCat.{u} := directedTopologicalGroupUnderlyingDiagram F
+  GrpCat.FilteredColimits.colimit D
+
+/-- Mathlib's filtered-colimit cocone for the underlying group diagram, with the
+diagram's universes pinned so that later `ι.app` uses do not leave them as metavariables. -/
+noncomputable def directedTopologicalGroupUnderlyingCocone (F : I ⥤ Grp TopCat.{u}) :
+    Cocone (directedTopologicalGroupUnderlyingDiagram F) :=
+  let D : I ⥤ GrpCat.{u} := directedTopologicalGroupUnderlyingDiagram F
+  GrpCat.FilteredColimits.colimitCocone D
 
 /-- Neukirch's final topology on the algebraic direct limit. -/
 noncomputable def directedTopologicalGroupColimitTopologyData
     (F : I ⥤ Grp TopCat.{u}) :
     TopologicalSpace (directedTopologicalGroupColimitGroupData F) :=
   ⨆ i, (F.obj i).X.str.coinduced
-    ((GrpCat.FilteredColimits.colimitCocone
-      (directedTopologicalGroupUnderlyingDiagram F)).ι.app i)
+    ((directedTopologicalGroupUnderlyingCocone F).ι.app i)
 
 /-- The direct-limit group carrier equipped with Neukirch's final topology. -/
 noncomputable def directedTopologicalGroupColimitCarrierData
@@ -121,14 +128,14 @@ the target group operations are only being specified in this file. -/
 noncomputable def directedTopologicalGroupColimitInclusionData
     (F : I ⥤ Grp TopCat.{u}) (i : I) :
     (F.obj i).X ⟶ directedTopologicalGroupColimitCarrierData F := by
+  letI : TopologicalSpace (directedTopologicalGroupColimitGroupData F) :=
+    directedTopologicalGroupColimitTopologyData F
   refine TopCat.ofHom
-    ⟨(GrpCat.FilteredColimits.colimitCocone
-        (directedTopologicalGroupUnderlyingDiagram F)).ι.app i, ?_⟩
-  rw [continuous_iff_coinduced_le]
+    ⟨(directedTopologicalGroupUnderlyingCocone F).ι.app i, ?_⟩
+  refine continuous_iff_coinduced_le.mpr ?_
   change
     (F.obj i).X.str.coinduced
-        ((GrpCat.FilteredColimits.colimitCocone
-          (directedTopologicalGroupUnderlyingDiagram F)).ι.app i) ≤
+        ((directedTopologicalGroupUnderlyingCocone F).ι.app i) ≤
       directedTopologicalGroupColimitTopologyData F
   exact le_iSup (fun j =>
     (F.obj j).X.str.coinduced
