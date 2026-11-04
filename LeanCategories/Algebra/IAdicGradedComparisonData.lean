@@ -383,6 +383,19 @@ structure IAdicGradedComparisonMapData (I : Ideal A) (M : Type v)
     IAdicGradedComparisonTensorData I M →
       Ideal.IAdicAssociatedGradedModule I M
 
+/-- The comparison data built from the canonical maps already constructed above:
+`iAdicTensorRingToAssociatedGraded`, the degree-zero component of
+`iAdicModuleZeroToAssociatedGraded`, and Matsumura's `iAdicGradedComparisonMap`.
+The source, target and universes are exactly those of the existing maps. -/
+noncomputable def iAdicGradedComparisonMapData
+    (I : Ideal A) (M : Type v) [AddCommGroup M] [Module A M] :
+    IAdicGradedComparisonMapData I M where
+  ringModelToGraded := iAdicTensorRingToAssociatedGraded I
+  moduleZeroToGraded :=
+    (DirectSum.component A ℕ (I.IAdicAssociatedGradedModulePiece M) 0).comp
+      (iAdicModuleZeroToAssociatedGraded I M)
+  comparison := iAdicGradedComparisonMap I M
+
 instance (I : Ideal A) (M : Type v) [AddCommGroup M] [Module A M] :
     Nonempty (IAdicGradedComparisonMapData I M) :=
   ⟨{
