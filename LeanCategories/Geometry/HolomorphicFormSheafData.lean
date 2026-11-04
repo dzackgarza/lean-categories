@@ -497,13 +497,13 @@ noncomputable abbrev hodgeCohomologyGroupData
     [Abelian (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
     [Linear ℂ (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
     (p q : ℕ) : Type (u + 1) :=
-  @CategoryTheory.Abelian.Ext
+  (@CategoryTheory.Abelian.Ext
     (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X)) _ _
     (HasExt.standard (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X)))
     ((CategoryTheory.constantSheaf
       (Opens.grothendieckTopology (TopCat.of X)) (ModuleCat.{u} ℂ)).obj
         (ModuleCat.of ℂ (ULift.{u} ℂ)))
-    (holomorphicPFormSheafModuleData (X := X) I p) q
+    (holomorphicPFormSheafModuleData (X := X) I p) q : Type (u + 1))
 
 /-- Peters--Sterk's Hodge number
 `h^{p,q}(X) = dim_ℂ H^{p,q}(X)`.
