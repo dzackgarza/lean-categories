@@ -480,6 +480,8 @@ noncomputable def holomorphicPFormAdditiveSheafData (p : ℕ) :
     (CategoryTheory.forget₂ (ModuleCat.{u} ℂ) AddCommGrpCat.{u})).obj
       (holomorphicPFormSheafModuleSmoothData (X := X) I p)
 
+set_option synthInstance.maxHeartbeats 200000 in
+set_option maxHeartbeats 1000000 in
 /-- Peters--Sterk's Hodge-cohomology complex vector space
 `H^{p,q}(X) = H^q(X, Ω_X^p)`.
 
@@ -487,8 +489,8 @@ For a sheaf of complex vector spaces, global sections are represented by
 morphisms from the constant sheaf `ℂ_X`; hence their right-derived functors
 are the Ext groups below.  Mathlib's linear Ext construction supplies the
 canonical complex-vector-space structure directly. -/
-set_option synthInstance.maxHeartbeats 200000 in
 noncomputable abbrev hodgeCohomologyGroupData
+    {I : ModelWithCorners ℂ E H}
     [HasSheafify
       (Opens.grothendieckTopology (TopCat.of X)) (ModuleCat.{u} ℂ)]
     [Abelian (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]

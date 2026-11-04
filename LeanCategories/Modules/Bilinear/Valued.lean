@@ -8,7 +8,6 @@ public import LeanCategories.Modules.Bilinear.Valued.Cokernel
 public import LeanCategories.Modules.Bilinear.Valued.Based
 public import LeanCategories.Modules.Bilinear.Valued.DyadicDoublingData
 public import LeanCategories.Modules.Bilinear.Valued.DyadicHalvingData
-public import LeanCategories.Modules.Bilinear.Valued.Framed
 public import LeanCategories.Modules.Bilinear.Valued.Isometry
 public import LeanCategories.Modules.Bilinear.Valued.OrthogonalGroup
 public import LeanCategories.Modules.Bilinear.Valued.Primary
