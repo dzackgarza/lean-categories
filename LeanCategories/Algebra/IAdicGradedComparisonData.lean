@@ -591,6 +591,28 @@ theorem iAdicGradedComparisonMapData_ring_component_ne_zero
   exact ha ((DirectSum.of_injective (β := Ideal.IAdicAssociatedGradedPiece I) n)
     (by simpa only [map_zero] using h))
 
+/-- The control's hypothesis is inhabited: over `ℤ` with the zero ideal in degree `0`, the class
+of `1` has nonzero associated-graded representative, because the denominator is `⊥`. -/
+theorem associatedGradedRingMk_one_ne_zero :
+    Ideal.associatedGradedRingMk (⊥ : Ideal ℤ) 0
+      (⟨(1 : ℤ), by
+        change (1 : ℤ) ∈ (⊥ : Ideal ℤ) ^ 0
+        simp⟩ : ↥(((⊥ : Ideal ℤ) ^ 0 : Ideal ℤ) : Submodule ℤ ℤ)) ≠ 0 := by
+  intro h
+  have hmem := (Submodule.Quotient.mk_eq_zero _).mp h
+  simpa using hmem
+
+/-- Concrete nonvacuous instance of the control: `A = M = ℤ`, `I = ⊥`, `n = 0`, `a = 1`. -/
+theorem iAdicGradedComparisonMapData_ring_component_ne_zero_int :
+    (iAdicGradedComparisonMapData (⊥ : Ideal ℤ) ℤ).ringModelToGraded
+      (DirectSum.of (IAdicTensorRingPieceData (⊥ : Ideal ℤ)) 0
+        (Submodule.Quotient.mk
+          (⟨(1 : ℤ), by
+            change (1 : ℤ) ∈ (⊥ : Ideal ℤ) ^ 0
+            simp⟩ : ↥(((⊥ : Ideal ℤ) ^ 0 : Ideal ℤ) : Submodule ℤ ℤ)))) ≠ 0 :=
+  iAdicGradedComparisonMapData_ring_component_ne_zero (⊥ : Ideal ℤ) ℤ 0 _ 
+    associatedGradedRingMk_one_ne_zero
+
 /-- The canonical comparison data satisfies Matsumura's exact representative graph. -/
 theorem isIAdicGradedComparisonMapData_canonical
     (I : Ideal A) (M : Type v) [AddCommGroup M] [Module A M] :
