@@ -495,10 +495,11 @@ noncomputable abbrev hodgeCohomologyGroupData
     [HasSheafify
       (Opens.grothendieckTopology (TopCat.of X)) (ModuleCat.{u} ℂ)]
     [Abelian (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
+    [Linear ℂ (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
     (p q : ℕ) : Type (u + 1) :=
-  letI : HasExt (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X)) :=
-    HasExt.standard (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))
-  CategoryTheory.Abelian.Ext
+  @CategoryTheory.Abelian.Ext
+    (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X)) _ _
+    (HasExt.standard (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X)))
     ((CategoryTheory.constantSheaf
       (Opens.grothendieckTopology (TopCat.of X)) (ModuleCat.{u} ℂ)).obj
         (ModuleCat.of ℂ (ULift.{u} ℂ)))
@@ -513,6 +514,7 @@ noncomputable def hodgeNumberData
     [HasSheafify
       (Opens.grothendieckTopology (TopCat.of X)) (ModuleCat.{u} ℂ)]
     [Abelian (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
+    [Linear ℂ (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
     (p q : ℕ) : ℕ :=
   Module.finrank ℂ (hodgeCohomologyGroupData (X := X) (I := I) p q)
 
