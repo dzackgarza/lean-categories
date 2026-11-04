@@ -3,12 +3,13 @@ packagesDir = "../../../../.local/share/lean/v4.33.0/packages"
 version = "0.1.0"
 defaultTargets = ["RegistryConsumer"]
 
-# The pinned dependency is the whole point of this package: the consumer reads the checked
-# catalogue of that revision and nothing else. A release is pinned either by tag (the
-# published form) or by `rev` (a commit) when no tag exists yet.
+# The dependency is pinned to a *revision of the remote*, not to the working tree: this is what
+# makes the package a downstream consumer rather than a second copy of the library. When the
+# first release is tagged, the pin becomes `tag = "v0.1.0"` with no other change.
 [[require]]
 name = "lean_categories"
-path = "../.."
+git = "https://github.com/dzackgarza/lean-categories.git"
+rev = "62775782028c31bda3f6937ff985b6ba6aff7b2b"
 
 [[lean_lib]]
 name = "RegistryConsumer"
