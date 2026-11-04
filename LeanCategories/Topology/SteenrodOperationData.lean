@@ -47,8 +47,10 @@ structure SteenrodSquareData where
       ModTwoSingularCohomologyData X n ⟶
         ModTwoSingularCohomologyData X (n + i)
 
-instance : Nonempty SteenrodSquareData :=
-  ⟨⟨fun _ _ _ => 0⟩⟩
+/- The former `Nonempty SteenrodSquareData` instance was the zero family, which is not a
+Steenrod square: it fails this file's own `IsSteenrodSquareZeroData`, since `Sq⁰ = id` holds
+for an operation family and not for the zero map. It is removed rather than repackaged; a
+genuine witness needs the construction of Steenrod squares, which is not available here. -/
 
 /-- Naturality predicate for a raw Steenrod-square family. -/
 def IsSteenrodSquareNaturalData (S : SteenrodSquareData) : Prop :=
@@ -78,12 +80,15 @@ def IsSteenrodSquareUnstableData (S : SteenrodSquareData) : Prop :=
 
 /-- Source-facing Steenrod-square operation data.
 
-This selects a member of the exact operation-family type without proving any
-of Hatcher's law clauses.  The law predicates above, together with Cartan,
-suspension compatibility, and the Bockstein comparison, are verified only in
-the theorem sweep. -/
+This is the zero family, a carrier value of the raw operation structure: the structure records
+only the shape of a Steenrod-square family, and the zero family satisfies none of the law
+predicates (`IsSteenrodSquareZeroData` fails, because `Sq⁰ = id` and the zero map is not the
+identity). It is therefore not evidence that Steenrod squares exist, and the former
+`Nonempty SteenrodSquareData` instance was removed rather than kept as a manufactured witness.
+The law predicates below, together with Cartan, suspension compatibility, and the Bockstein
+comparison, are verified only in the theorem sweep. -/
 def steenrodSquareData : SteenrodSquareData :=
-  Classical.choice inferInstance
+  ⟨fun _ _ _ => 0⟩
 
 /-- Mod-`p` singular cohomology in degree `n`. -/
 abbrev ModPSingularCohomologyData (p : ℕ) (X : TopCat.{0}) (n : ℕ) :
@@ -101,8 +106,8 @@ structure SteenrodReducedPowerData (p : ℕ) where
       ModPSingularCohomologyData p X n ⟶
         ModPSingularCohomologyData p X (n + (2 * (p - 1)) * i)
 
-instance (p : ℕ) : Nonempty (SteenrodReducedPowerData p) :=
-  ⟨⟨fun _ _ _ => 0⟩⟩
+/- Likewise the former `Nonempty (SteenrodReducedPowerData p)` instance: the zero family is
+not a reduced-power family. -/
 
 /-- Naturality predicate for a raw reduced-power family. -/
 def IsSteenrodReducedPowerNaturalData {p : ℕ}
@@ -133,6 +138,6 @@ instability proof is required by this constructor. -/
 def steenrodReducedPowerData
     (p : ℕ) (_hp : Nat.Prime p) (_hodd : p ≠ 2) :
     SteenrodReducedPowerData p :=
-  Classical.choice inferInstance
+  ⟨fun _ _ _ => 0⟩
 
 end LeanCategories.Topology
