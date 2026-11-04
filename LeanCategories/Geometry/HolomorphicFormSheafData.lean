@@ -523,12 +523,21 @@ noncomputable def hodgeNumberData
     [Abelian (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
     [Linear ℂ (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
     (p q : ℕ) : ℕ :=
-  Module.finrank ℂ
-    (CategoryTheory.Abelian.Ext
-      ((CategoryTheory.constantSheaf
-        (Opens.grothendieckTopology (TopCat.of X)) (ModuleCat.{u} ℂ)).obj
-          (ModuleCat.of ℂ (ULift.{u} ℂ)))
-      (holomorphicPFormSheafModuleData (X := X) I p) q : Type (u + 1))
+  -- The carrier and the `ℂ`-module structure use the same canonical instances
+  -- (`Ext/Linear.lean`, `Ext/Basic.lean`), instantiated with the same `HasExt.standard`
+  -- argument that the carrier uses, so no structure is transported or re-chosen.
+  let Sh := TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X)
+  let A : Sh :=
+    (CategoryTheory.constantSheaf
+      (Opens.grothendieckTopology (TopCat.of X)) (ModuleCat.{u} ℂ)).obj
+        (ModuleCat.of ℂ (ULift.{u} ℂ))
+  let B : Sh := holomorphicPFormSheafModuleData (X := X) I p
+  let h : HasExt.{u + 1} Sh := HasExt.standard Sh
+  letI : AddCommGroup (CategoryTheory.Abelian.Ext A B q) :=
+    @CategoryTheory.Abelian.Ext.instAddCommGroup Sh _ _ h A B q
+  letI : Module ℂ (CategoryTheory.Abelian.Ext A B q) :=
+    @CategoryTheory.Abelian.Ext.instModule ℂ _ Sh _ _ _ h A B q
+  Module.finrank ℂ (CategoryTheory.Abelian.Ext A B q)
 
 /-- Exact pointwise graph for zero in the holomorphic-form sheaf. -/
 def IsHolomorphicPFormZeroSectionData

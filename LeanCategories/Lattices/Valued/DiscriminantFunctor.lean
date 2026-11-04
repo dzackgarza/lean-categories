@@ -254,7 +254,7 @@ noncomputable def discriminantBilinIso (e : L ≅ M)
       ext x
       exact d.apply_symm_apply x }
 
-local instance (priority := 10000) moduleIntFractionRing :
+local instance (priority := 10000) moduleIntFractionRingDiscriminantFunctor :
     Module ℤ (FractionRing ℤ) :=
   Algebra.toModule
 
