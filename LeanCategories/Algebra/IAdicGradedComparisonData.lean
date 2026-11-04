@@ -383,6 +383,14 @@ structure IAdicGradedComparisonMapData (I : Ideal A) (M : Type v)
     IAdicGradedComparisonTensorData I M →
       Ideal.IAdicAssociatedGradedModule I M
 
+/-- The tensor-friendly piece equivalence is the identity on representatives: both it and
+`associatedGradedRingMk` are the quotient map. -/
+theorem iAdicTensorRingPieceEquiv_mk (I : Ideal A) (n : ℕ)
+    (a : ↥((I ^ n : Ideal A) : Submodule A A)) :
+    iAdicTensorRingPieceEquiv I n (Submodule.Quotient.mk a) =
+      Ideal.associatedGradedRingMk I n a := by
+  rfl
+
 /-- The comparison data built from the canonical maps already constructed above:
 `iAdicTensorRingToAssociatedGraded`, the degree-zero equivariance
 `(iAdicDegreeZeroModuleEquiv I M).symm`, and Matsumura's `iAdicGradedComparisonMap`.
