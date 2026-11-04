@@ -61,6 +61,13 @@ theorem inclusion_natural {X Y : SetsCat.{0}} (f : X ⟶ Y) :
   change (↑(A.image (fun x => f x)) : Set Y) = (fun x => f x) '' (A : Set X)
   exact Finset.coe_image
 
+/-- `𝒫_fin ⟶ 𝒫`, natural in the underlying set: the finite-subset direct-image functor
+maps into the covariant power-set functor `PowerSets.powerSetFunctor` by the inclusion of
+a finite subset into its extent. Naturality is `inclusion_natural`. -/
+def inclusionCell : directImage ⟶ PowerSets.powerSetFunctor where
+  app X := inclusion X
+  naturality {X Y} f := inclusion_natural (X := X) (Y := Y) f
+
 /-- Admit the actual finite subset, keeping its extent rather than replacing it by
 an independently chosen list. Mathlib's `Set.Finite.toFinset` is inverse to coercion. -/
 noncomputable def admit (X : Type) (A : Set X) (h : A.Finite) :
@@ -123,6 +130,12 @@ namespace FunctorId
 def finiteSubsetsDirectImage : FunctorId := ⟨"fun.sets.finite_subsets.direct_image"⟩
 end FunctorId
 
+namespace NaturalTransformationId
+/-- The natural inclusion `𝒫_fin ⟶ 𝒫` of finite subsets into the full power set. -/
+def finiteSubsetsInclusion : NaturalTransformationId :=
+  ⟨"cell.sets.finite_subsets.inclusion"⟩
+end NaturalTransformationId
+
 def finiteSubsetsDirectImageExpr : FunctorExpr Foundation.Sets Foundation.Sets :=
   .atomic FunctorId.finiteSubsetsDirectImage
 
@@ -140,6 +153,13 @@ normalized_registry .functor
     declaration := `CasCatalogue.Foundation.FiniteSubsets.directImage
     realization := `CasCatalogue.finiteSubsetsDirectImageRealization
     expression := finiteSubsetsDirectImageExpr }
+
+normalized_registry .cell
+  { id := NaturalTransformationId.finiteSubsetsInclusion
+    source := Foundation.Sets, target := Foundation.Sets
+    left := #[.functor FunctorId.finiteSubsetsDirectImage]
+    right := #[.functor FunctorId.setsPowerSet]
+    declaration := `CasCatalogue.Foundation.FiniteSubsets.inclusionCell }
 
 normalized_registry .object
   { id := ⟨"obj.sets.finite_subsets"⟩, category := CategoryId.sets, name := "𝒫_fin"
