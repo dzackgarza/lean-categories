@@ -104,7 +104,7 @@ noncomputable def directedTopologicalGroupColimitGroupData
 /-- Mathlib's filtered-colimit cocone for the underlying group diagram, with the
 diagram's universes pinned so that later `ι.app` uses do not leave them as metavariables. -/
 noncomputable def directedTopologicalGroupUnderlyingCocone (F : I ⥤ Grp TopCat.{u}) :
-    Cocone (directedTopologicalGroupUnderlyingDiagram F) :=
+    Cocone (directedTopologicalGroupUnderlyingDiagram F : I ⥤ GrpCat.{u}) :=
   let D : I ⥤ GrpCat.{u} := directedTopologicalGroupUnderlyingDiagram F
   GrpCat.FilteredColimits.colimitCocone D
 
@@ -139,8 +139,7 @@ noncomputable def directedTopologicalGroupColimitInclusionData
       directedTopologicalGroupColimitTopologyData F
   exact le_iSup (fun j =>
     (F.obj j).X.str.coinduced
-      ((GrpCat.FilteredColimits.colimitCocone
-        (directedTopologicalGroupUnderlyingDiagram F)).ι.app j)) i
+      ((directedTopologicalGroupUnderlyingCocone F).ι.app j)) i
 
 /-- The multiplication in one stage of an internal topological group. -/
 def directedTopologicalGroupStageMulData
@@ -178,6 +177,8 @@ noncomputable def directedTopologicalGroupColimitOperationData
     DirectedTopologicalGroupColimitOperationData F := by
   letI : TopologicalSpace (directedTopologicalGroupColimitGroupData F) :=
     directedTopologicalGroupColimitTopologyData F
+  letI : Group (directedTopologicalGroupColimitCarrierData F) :=
+    inferInstanceAs (Group (directedTopologicalGroupColimitGroupData F))
   exact
     { one := 1
       mul := (· * ·)
