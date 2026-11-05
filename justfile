@@ -42,6 +42,13 @@ test-commit:
 # Run the CI quality gate
 test-ci: test
 
+# Emit LeanCategories modules as Prove2Me definition payloads (#59).
+#   just publish-prove2me --dry-run          # write payloads, no network
+#   just publish-prove2me --layer 0          # one import layer
+#   just publish-prove2me --private          # stage privately on the platform
+publish-prove2me *ARGS:
+    @python3 scripts/publish_prove2me.py {{ARGS}}
+
 # Regenerate the derived foundational-corpus scheduling frontier. The canonical
 # whole-source status ledger remains the sole sweep-completion authority.
 foundational-frontier:
