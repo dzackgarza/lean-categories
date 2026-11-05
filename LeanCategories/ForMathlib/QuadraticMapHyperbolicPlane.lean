@@ -56,7 +56,6 @@ are isotropic and pair to `1`.
 noncomputable abbrev hyperbolicPlane (b : Basis (Fin 2) R V) : QuadraticForm R V :=
   (2 : R) • XY b
 
-@[simp]
 lemma hyperbolicPlane_apply (b : Basis (Fin 2) R V) (v : V) :
     hyperbolicPlane b v = 2 * (b.repr v 0 * b.repr v 1) := by
   simp [hyperbolicPlane, XY]
