@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 -/
 module
 
+public import LeanCategories.Topology.SmashProduct
 public import Mathlib.AlgebraicTopology.SimplicialSet.TopAdj
 
 /-!
 # The singular-realization source of a space
 
-The adjunction `TopCat.toSSet ⊣ SSet.toTop` gives every topological space a canonical
+The adjunction `SSet.toTop ⊣ TopCat.toSSet` gives every topological space a canonical
 candidate source for a CW approximation: its singular realization `|Sing X|`, with the
 adjunction counit as the structure map, and the point of `|Sing X|` obtained from the standard
 zero-simplex.
@@ -54,5 +55,46 @@ theorem singularRealization_counit_point (X : TopCat.{u}) (x : X) :
   rw [Adjunction.homEquiv_counit] at h
   exact ConcreteCategory.congr_hom h
     (default : SSet.toTop.obj (Δ[0] : SSet.{u}))
+
+/-- The based singular-realization source of a based space. -/
+def basedSingularRealizationSource (X : BasedTop.{u}) : BasedTop.{u} :=
+  Under.mk (TopCat.const (X := TopCat.of PUnit.{u + 1})
+    (singularRealizationPoint X.right X.point))
+
+@[simp] theorem basedSingularRealizationSource_point (X : BasedTop.{u}) :
+    (basedSingularRealizationSource X).point = singularRealizationPoint X.right X.point := rfl
+
+/-- The adjunction counit, as a based map out of the singular realization. -/
+def basedSingularRealizationCounit (X : BasedTop.{u}) :
+    basedSingularRealizationSource X ⟶ X :=
+  Under.homMk (sSetTopAdj.counit.app X.right) (by
+    apply TopCat.Hom.ext
+    ext z
+    cases z
+    exact singularRealization_counit_point X.right X.point)
+
+@[simp] theorem basedSingularRealizationCounit_right (X : BasedTop.{u}) :
+    (basedSingularRealizationCounit X).right = sSetTopAdj.counit.app X.right := rfl
+
+/-- The based counit is surjective on points. -/
+theorem basedSingularRealizationCounit_surjective (X : BasedTop.{u}) :
+    Function.Surjective (basedSingularRealizationCounit X).right.hom := by
+  intro x
+  exact ⟨singularRealizationPoint X.right x, singularRealization_counit_point X.right x⟩
+
+/-- The singular-realization point map is injective. -/
+theorem singularRealizationPoint_injective (X : TopCat.{u}) :
+    Function.Injective (singularRealizationPoint X) := by
+  intro x y h
+  have h' := congrArg (fun z => sSetTopAdj.counit.app X z) h
+  simpa only [singularRealization_counit_point] using h'
+
+/-- The continuous map of a simplex into the realization of a simplicial set. This is the
+simplex-map candidate for the cell structure; no cell decomposition is proved here. -/
+def realizationSimplexMap (S : SSet.{u}) (n : ℕ) (σ : S _⦋n⦌) :
+    C(stdSimplex ℝ (Fin (n + 1)), SSet.toTop.obj S) :=
+  (SSet.toTop.map (SSet.yonedaEquiv.symm σ)).hom.comp
+    (ContinuousMap.mk _
+      (SimplexCategory.toTopHomeo ⦋n⦌).symm.continuous)
 
 end LeanCategories.Topology
