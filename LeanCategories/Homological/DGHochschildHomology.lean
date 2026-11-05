@@ -39,7 +39,7 @@ variable (𝒜 : ℤ → Submodule k A) [GradedAlgebra 𝒜]
 but not for the homological integer shape `down ℤ` used by Weibel here. -/
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-local instance : ComplexShape.TensorSigns (ComplexShape.down ℤ) where
+local instance tensorSignsDownInt : ComplexShape.TensorSigns (ComplexShape.down ℤ) where
   ε' := MonoidHom.mk' Int.negOnePow Int.negOnePow_add
   rel_add p q r hpq := by
     change q + 1 = p at hpq

@@ -415,18 +415,18 @@ lemma equivSimplexCategory_functor_map_δ (n : ℕ) (i : Fin (n + 2)) :
 
 /-- The inverse of equivSimplexCategory at `SimplexCategory.mk n` is isomorphism to
 `SimplexCategoryGenRel.mk n`. -/
-noncomputable def equivSimplexCategory_inverse_objIsoMk (n : ℕ) :
+noncomputable def equivSimplexCategoryInverseObjIsoMk (n : ℕ) :
     equivSimplexCategory.inverse.obj (.mk n) ≅ mk n :=
   (equivSimplexCategory.unitIso.app (mk n)).symm
 
 /-- The inverse of equivSimplexCategory sends the degeneracies to degeneracies, up to
-conjugation by the isomorphism `equivSimplexCategory_inverse_objIsoMk`. -/
+conjugation by the isomorphism `equivSimplexCategoryInverseObjIsoMk`. -/
 @[simp]
 lemma equivSimplexCategory_inverse_map_σ (n : ℕ) (i : Fin (n + 1)) :
-   (equivSimplexCategory_inverse_objIsoMk (n + 1)).inv ≫
+   (equivSimplexCategoryInverseObjIsoMk (n + 1)).inv ≫
       equivSimplexCategory.inverse.map (SimplexCategory.σ i) ≫
-        (equivSimplexCategory_inverse_objIsoMk n).hom  = σ i := by
-  simp only [equivSimplexCategory_inverse_objIsoMk, Iso.symm_inv, Iso.symm_hom]
+        (equivSimplexCategoryInverseObjIsoMk n).hom  = σ i := by
+  simp only [equivSimplexCategoryInverseObjIsoMk, Iso.symm_inv, Iso.symm_hom]
   rw [← equivSimplexCategory_functor_map_σ]
   change equivSimplexCategory.unitIso.hom.app (mk (n + 1)) ≫
       (equivSimplexCategory.functor ⋙ equivSimplexCategory.inverse).map (σ i) ≫
@@ -435,13 +435,13 @@ lemma equivSimplexCategory_inverse_map_σ (n : ℕ) (i : Fin (n + 1)) :
   simp
 
 /-- The inverse of equivSimplexCategory sends the faces to faces, up to
-conjugation by the isomorphism `equivSimplexCategory_inverse_objIsoMk`. -/
+conjugation by the isomorphism `equivSimplexCategoryInverseObjIsoMk`. -/
 @[simp]
 lemma equivSimplexCategory_inverse_δ (n : ℕ) (i : Fin (n + 2)):
-   (equivSimplexCategory_inverse_objIsoMk n).inv ≫
+   (equivSimplexCategoryInverseObjIsoMk n).inv ≫
       equivSimplexCategory.inverse.map (SimplexCategory.δ i) ≫
-        (equivSimplexCategory_inverse_objIsoMk (n + 1)).hom  = δ i := by
-  simp only [equivSimplexCategory_inverse_objIsoMk, Iso.symm_inv, Iso.symm_hom]
+        (equivSimplexCategoryInverseObjIsoMk (n + 1)).hom  = δ i := by
+  simp only [equivSimplexCategoryInverseObjIsoMk, Iso.symm_inv, Iso.symm_hom]
   rw [← equivSimplexCategory_functor_map_δ]
   change equivSimplexCategory.unitIso.hom.app (mk n) ≫
       (equivSimplexCategory.functor ⋙ equivSimplexCategory.inverse).map (δ i) ≫
