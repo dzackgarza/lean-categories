@@ -47,10 +47,6 @@ structure SteenrodSquareData where
       ModTwoSingularCohomologyData X n ⟶
         ModTwoSingularCohomologyData X (n + i)
 
--- The raw operation structure carries no law fields, so a carrier value is lawful raw data.
-instance : Nonempty SteenrodSquareData :=
-  ⟨⟨fun _ _ _ => 0⟩⟩
-
 
 /-- Naturality predicate for a raw Steenrod-square family. -/
 def IsSteenrodSquareNaturalData (S : SteenrodSquareData) : Prop :=
@@ -104,10 +100,6 @@ structure SteenrodReducedPowerData (p : ℕ) where
     ∀ (X : TopCat.{0}) (n i : ℕ),
       ModPSingularCohomologyData p X n ⟶
         ModPSingularCohomologyData p X (n + (2 * (p - 1)) * i)
-
--- Likewise for reduced powers: the structure records shape only.
-instance (p : ℕ) : Nonempty (SteenrodReducedPowerData p) :=
-  ⟨⟨fun _ _ _ => 0⟩⟩
 
 
 /-- Naturality predicate for a raw reduced-power family. -/

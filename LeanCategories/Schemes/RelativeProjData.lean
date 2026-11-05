@@ -137,11 +137,6 @@ structure RelativeProjCandidateData (X : Scheme.{u}) where
   projection : scheme ⟶ X
   twistOne : scheme.Modules
 
-/-- Ambient candidate data is nonempty independently of the relative-Proj
-existence theorem. -/
-instance (X : Scheme.{u}) : Nonempty (RelativeProjCandidateData X) :=
-  ⟨⟨X, 𝟙 X, schemeModuleUnit X⟩⟩
-
 /-- Hartshorne's relative-Proj specification.
 
 Over every affine base open, the candidate is identified with ordinary `Proj`

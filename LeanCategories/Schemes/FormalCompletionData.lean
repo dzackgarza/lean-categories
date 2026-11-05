@@ -91,11 +91,6 @@ structure FormalCompletionCandidateData (I : X.IdealSheafData) where
   carrierEq : space.carrier = I.subscheme.carrier
   quotientTower : ℕᵒᵖ ⥤ I.subscheme.carrier.Sheaf CommRingCat
 
-instance (I : X.IdealSheafData) :
-    Nonempty (FormalCompletionCandidateData I) :=
-  ⟨⟨I.subscheme.toLocallyRingedSpace, rfl,
-    (Functor.const ℕᵒᵖ).obj I.subscheme.sheaf⟩⟩
-
 /-- The candidate structure sheaf transported along its recorded equality of
 carriers to the fixed closed support. -/
 def FormalCompletionCandidateData.sheafOnSupport

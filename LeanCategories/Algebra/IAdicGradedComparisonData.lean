@@ -516,14 +516,6 @@ theorem iAdicGradedComparisonMapData_ring_clause
   rw [DirectSum.lof_eq_of A ℕ (Ideal.IAdicAssociatedGradedPiece I) n
     (Ideal.associatedGradedRingMk I n a)]
 
-instance (I : Ideal A) (M : Type v) [AddCommGroup M] [Module A M] :
-    Nonempty (IAdicGradedComparisonMapData I M) :=
-  ⟨{
-    ringModelToGraded := fun _ => 0
-    moduleZeroToGraded := fun _ => 0
-    comparison := fun _ => 0
-  }⟩
-
 /-- Exact representative graph for the comparison construction.
 
 The first clause identifies the tensor-friendly degree-`n` quotient model
