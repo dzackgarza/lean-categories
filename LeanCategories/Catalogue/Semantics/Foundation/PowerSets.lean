@@ -60,6 +60,7 @@ def booleanAlgebrasForget : FunctorId := ⟨"fun.boolean_algebras.forget"⟩
 def linearOrdersForget : FunctorId := ⟨"fun.linear_orders.forget"⟩
 def partialOrdersForget : FunctorId := ⟨"fun.partial_orders.forget"⟩
 def linearOrdersToPartialOrders : FunctorId := ⟨"fun.linear_orders.to_partial_orders"⟩
+def setsPowerSet : FunctorId := ⟨"fun.sets.power_set"⟩
 end FunctorId
 
 namespace NaturalTransformationId
@@ -217,6 +218,19 @@ theorem directImage_comp (X Y Z : Type)
   exact Set.image_comp (ConcreteCategory.hom (C := Type) g)
     (ConcreteCategory.hom (C := Type) f) A
 
+/-- The covariant power-set endofunctor of sets: `X ↦ 𝒫(X)` on objects and
+`f ↦ (A ↦ f '' A)` on maps. Its action is Mathlib's `Set.image` and its laws are
+`Set.image_id` and `Set.image_comp`; it is the actual target of the natural
+finite-subset inclusion `𝒫_fin ⟶ 𝒫` (see `FiniteSubsets.inclusionCell`). -/
+noncomputable def powerSetFunctor : SetsCat.{0} ⥤ SetsCat.{0} where
+  obj X := powerSet X
+  map f := directImage _ _ f
+  map_id X := by
+    apply ConcreteCategory.hom_ext
+    intro A
+    exact Set.image_id A
+  map_comp f g := directImage_comp _ _ _ f g
+
 /-- `𝒫(X)` as a Boolean algebra. -/
 abbrev boolPowerSet (X : Type) : BooleanAlgebras.{0} := BoolAlg.of (Set X)
 
@@ -324,6 +338,23 @@ normalized_registry .functor
     declaration := `CasCatalogue.Foundation.PowerSets.linearOrdersToPartialOrdersHom
     realization := `CasCatalogue.Foundation.PowerSets.linearOrdersToPartialOrdersRealization
     expression := LinearOrdersToPartialOrdersExpr, structural := true }
+
+def setsPowerSetExpr : FunctorExpr Foundation.Sets Foundation.Sets :=
+  .atomic FunctorId.setsPowerSet
+
+noncomputable def setsPowerSetRealization :
+    FunctorRealization setsPowerSetExpr
+      CasCatalogue.Foundation.PowerSets.SetsCat.{0}
+      CasCatalogue.Foundation.PowerSets.SetsCat.{0}
+      CasCatalogue.Foundation.PowerSets.powerSetFunctor :=
+  { sourceRealization := Foundation.CatalogueRegistration.setsRealization
+    targetRealization := Foundation.CatalogueRegistration.setsRealization }
+
+normalized_registry .functor
+  { id := FunctorId.setsPowerSet, source := Foundation.Sets, target := Foundation.Sets
+    declaration := `CasCatalogue.Foundation.PowerSets.powerSetFunctor
+    realization := `CasCatalogue.setsPowerSetRealization
+    expression := setsPowerSetExpr }
 
 normalized_registry .cell
   { id := NaturalTransformationId.linearOrdersCarrierComparison
