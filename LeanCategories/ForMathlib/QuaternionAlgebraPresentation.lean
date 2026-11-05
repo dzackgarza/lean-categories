@@ -32,21 +32,10 @@ the split example: `D` is a ring, with no `DivisionRing D` assumption.
 
 namespace LeanCategories.ForMathlib
 
-/-- A quaternion algebra in the sense of Peters--Sterk, Definition 5.4.1.
-
-The units `a` and `b` are the source parameters `i²` and `j²`. The algebra equivalence
-transports the canonical `1, i, j, ij` presentation of `QuaternionAlgebra k a 0 b` to `D`.
--/
-class IsQuaternionAlgebra (k : Type*) [Field k] [NeZero (2 : k)]
-    (D : Type*) [Ring D] [Algebra k D] : Prop where
-  isCentral : Algebra.IsCentral k D
-  presentation :
-    ∃ a b : kˣ, Nonempty (D ≃ₐ[k] QuaternionAlgebra k (a : k) 0 (b : k))
-
-namespace IsQuaternionAlgebra
-
-attribute [instance] isCentral
-
-end IsQuaternionAlgebra
+/- Peters--Sterk Definition 5.4.1 defines a quaternion algebra over `k` by the existence of units
+`a b` with `D ≃ₐ[k] QuaternionAlgebra k a 0 b`. That is an existence assertion, and the class
+carrying it (`IsQuaternionAlgebra`, with its `presentation` field) is deleted rather than filled
+with a witness. A future work unit can reinstate it by supplying the presentation, at which point
+the `Nonempty` in the field becomes constructible data rather than an assumption. -/
 
 end LeanCategories.ForMathlib
