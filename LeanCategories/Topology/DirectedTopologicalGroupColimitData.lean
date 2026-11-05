@@ -7,6 +7,7 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits
 public import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp
 public import Mathlib.Algebra.Category.Grp.FilteredColimits
+public import Mathlib.CategoryTheory.Filtered.Basic
 public import Mathlib.Order.Category.Preord
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Category.TopCat.Monoidal
@@ -64,7 +65,7 @@ noncomputable instance grpObjGroup (X : TopCat.{u}) [GrpObj X] : Group X where
     exact ConcreteCategory.congr_hom h a
 
 variable
-  {I : Type u} [Preorder I] [Nonempty I] [IsDirectedOrder I]
+  {I : Type u} [Preorder I] [IsFiltered I]
 
 /-- The native projective-limit object for a system of topological groups.
 
