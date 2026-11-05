@@ -47,8 +47,10 @@ structure SteenrodSquareData where
       ModTwoSingularCohomologyData X n ⟶
         ModTwoSingularCohomologyData X (n + i)
 
+-- The raw operation structure carries no law fields, so a carrier value is lawful raw data.
 instance : Nonempty SteenrodSquareData :=
   ⟨⟨fun _ _ _ => 0⟩⟩
+
 
 /-- Naturality predicate for a raw Steenrod-square family. -/
 def IsSteenrodSquareNaturalData (S : SteenrodSquareData) : Prop :=
@@ -78,12 +80,14 @@ def IsSteenrodSquareUnstableData (S : SteenrodSquareData) : Prop :=
 
 /-- Source-facing Steenrod-square operation data.
 
-This selects a member of the exact operation-family type without proving any
-of Hatcher's law clauses.  The law predicates above, together with Cartan,
-suspension compatibility, and the Bockstein comparison, are verified only in
-the theorem sweep. -/
+This selects a member of the exact operation-family type, which carries no law fields; the
+selected value is the zero family. It satisfies the law *predicates* that hold of every family
+of maps (naturality, instability) but not the ones that distinguish Steenrod squares
+(`IsSteenrodSquareZeroData`, `Sq⁰ = id`), and it is offered as raw data, not as evidence that
+lawful Steenrod operations exist. The law predicates above, together with Cartan, suspension
+compatibility, and the Bockstein comparison, are verified only in the theorem sweep. -/
 def steenrodSquareData : SteenrodSquareData :=
-  Classical.choice inferInstance
+  ⟨fun _ _ _ => 0⟩
 
 /-- Mod-`p` singular cohomology in degree `n`. -/
 abbrev ModPSingularCohomologyData (p : ℕ) (X : TopCat.{0}) (n : ℕ) :
@@ -101,8 +105,10 @@ structure SteenrodReducedPowerData (p : ℕ) where
       ModPSingularCohomologyData p X n ⟶
         ModPSingularCohomologyData p X (n + (2 * (p - 1)) * i)
 
+-- Likewise for reduced powers: the structure records shape only.
 instance (p : ℕ) : Nonempty (SteenrodReducedPowerData p) :=
   ⟨⟨fun _ _ _ => 0⟩⟩
+
 
 /-- Naturality predicate for a raw reduced-power family. -/
 def IsSteenrodReducedPowerNaturalData {p : ℕ}
@@ -133,6 +139,6 @@ instability proof is required by this constructor. -/
 def steenrodReducedPowerData
     (p : ℕ) (_hp : Nat.Prime p) (_hodd : p ≠ 2) :
     SteenrodReducedPowerData p :=
-  Classical.choice inferInstance
+  ⟨fun _ _ _ => 0⟩
 
 end LeanCategories.Topology

@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Homological.CWPrespectrum
+public import LeanCategories.Topology.SingularRealization
 public import LeanCategories.Topology.MappingTelescopeData
 
 /-!
@@ -87,6 +88,21 @@ structure BasedCWApproximationCandidateData (X : BasedTop.{u}) where
 instance (X : BasedTop.{u}) :
     Nonempty (BasedCWApproximationCandidateData X) :=
   ⟨⟨X, 𝟙 X⟩⟩
+
+open LeanCategories.Topology
+
+/-- The singular-realization candidate source: `|Sing X|` with the point coming from the
+adjunction counit, and the counit as the structure map. Its CW and weak-equivalence
+obligations are not claimed here. -/
+def singularRealizationCWApproximationCandidateData (X : BasedTop.{u}) :
+    BasedCWApproximationCandidateData X where
+  source := basedSingularRealizationSource X
+  map := basedSingularRealizationCounit X
+
+/-- The packaged candidate is surjective on points. -/
+theorem singularRealizationCWApproximationCandidateData_surjective (X : BasedTop.{u}) :
+    Function.Surjective (singularRealizationCWApproximationCandidateData X).map.right.hom :=
+  basedSingularRealizationCounit_surjective X
 
 /-- Exact source specification for a based CW approximation. -/
 def IsBasedCWApproximationData

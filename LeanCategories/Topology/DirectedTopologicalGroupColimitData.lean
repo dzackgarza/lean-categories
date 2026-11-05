@@ -43,6 +43,26 @@ namespace LeanCategories.Topology
 
 universe u
 
+/-- The group structure carried by a group object in `TopCat`: each operation of the
+internal group is a morphism of topological spaces, hence a function of points, and the
+internal group axioms are the pointwise group laws. -/
+noncomputable instance grpObjGroup (X : TopCat.{u}) [GrpObj X] : Group X where
+  mul a b := μ[X] (a, b)
+  one := η[X] PUnit.unit
+  inv a := ι[X] a
+  mul_assoc a b c := by
+    have h := MonObj.mul_assoc (X := X)
+    exact ConcreteCategory.congr_hom h ((a, b), c)
+  one_mul a := by
+    have h := MonObj.one_mul (X := X)
+    exact ConcreteCategory.congr_hom h (PUnit.unit, a)
+  mul_one a := by
+    have h := MonObj.mul_one (X := X)
+    exact ConcreteCategory.congr_hom h (a, PUnit.unit)
+  inv_mul_cancel a := by
+    have h := GrpObj.left_inv (X := X)
+    exact ConcreteCategory.congr_hom h a
+
 variable
   {I : Type u} [Preorder I] [Nonempty I] [IsDirectedOrder I]
 
@@ -56,24 +76,44 @@ abbrev topologicalGroupProjectiveLimitData
 /-- Forget the topology of each internal topological group while retaining its
 actual group structure. -/
 noncomputable def directedTopologicalGroupUnderlyingDiagram
-    (F : I ⥤ Grp TopCat.{u}) : I ⥤ GrpCat.{u} :=
-  F ⋙ (CategoryTheory.forget TopCat.{u}).mapGrp ⋙
-    GrpTypeEquivalenceGrp.functor
+    (F : I ⥤ Grp TopCat.{u}) : I ⥤ GrpCat.{u} where
+  obj i := GrpCat.of (F.obj i).X
+  map f := GrpCat.ofHom
+    { toFun := fun a => (F.map f).hom.hom a
+      map_one' := by
+        have h := IsMonHom.one_hom (f := (F.map f).hom.hom)
+        exact ConcreteCategory.congr_hom h PUnit.unit
+      map_mul' := fun a b => by
+        have h := IsMonHom.mul_hom (f := (F.map f).hom.hom)
+        exact ConcreteCategory.congr_hom h (a, b) }
+  map_id i := by
+    ext a
+    simp
+  map_comp f g := by
+    ext a
+    simp
 
 /-- The algebraic filtered colimit of the stage groups.  This is Mathlib's
 quotient construction, so multiplication, inverse, identity, and all group
 laws are constructed here rather than supplied. -/
 noncomputable def directedTopologicalGroupColimitGroupData
     (F : I ⥤ Grp TopCat.{u}) : GrpCat.{u} :=
-  GrpCat.FilteredColimits.colimit (directedTopologicalGroupUnderlyingDiagram F)
+  let D : I ⥤ GrpCat.{u} := directedTopologicalGroupUnderlyingDiagram F
+  GrpCat.FilteredColimits.colimit D
+
+/-- Mathlib's filtered-colimit cocone for the underlying group diagram, with the
+diagram's universes pinned so that later `ι.app` uses do not leave them as metavariables. -/
+noncomputable def directedTopologicalGroupUnderlyingCocone (F : I ⥤ Grp TopCat.{u}) :
+    Cocone (directedTopologicalGroupUnderlyingDiagram F : I ⥤ GrpCat.{u}) :=
+  let D : I ⥤ GrpCat.{u} := directedTopologicalGroupUnderlyingDiagram F
+  GrpCat.FilteredColimits.colimitCocone D
 
 /-- Neukirch's final topology on the algebraic direct limit. -/
 noncomputable def directedTopologicalGroupColimitTopologyData
     (F : I ⥤ Grp TopCat.{u}) :
     TopologicalSpace (directedTopologicalGroupColimitGroupData F) :=
   ⨆ i, (F.obj i).X.str.coinduced
-    ((GrpCat.FilteredColimits.colimitCocone
-      (directedTopologicalGroupUnderlyingDiagram F)).ι.app i)
+    ((directedTopologicalGroupUnderlyingCocone F).ι.app i)
 
 /-- The direct-limit group carrier equipped with Neukirch's final topology. -/
 noncomputable def directedTopologicalGroupColimitCarrierData
@@ -88,19 +128,18 @@ the target group operations are only being specified in this file. -/
 noncomputable def directedTopologicalGroupColimitInclusionData
     (F : I ⥤ Grp TopCat.{u}) (i : I) :
     (F.obj i).X ⟶ directedTopologicalGroupColimitCarrierData F := by
+  letI : TopologicalSpace (directedTopologicalGroupColimitGroupData F) :=
+    directedTopologicalGroupColimitTopologyData F
   refine TopCat.ofHom
-    ⟨(GrpCat.FilteredColimits.colimitCocone
-        (directedTopologicalGroupUnderlyingDiagram F)).ι.app i, ?_⟩
-  rw [continuous_iff_coinduced_le]
+    ⟨(directedTopologicalGroupUnderlyingCocone F).ι.app i, ?_⟩
+  refine continuous_iff_coinduced_le.mpr ?_
   change
     (F.obj i).X.str.coinduced
-        ((GrpCat.FilteredColimits.colimitCocone
-          (directedTopologicalGroupUnderlyingDiagram F)).ι.app i) ≤
+        ((directedTopologicalGroupUnderlyingCocone F).ι.app i) ≤
       directedTopologicalGroupColimitTopologyData F
   exact le_iSup (fun j =>
     (F.obj j).X.str.coinduced
-      ((GrpCat.FilteredColimits.colimitCocone
-        (directedTopologicalGroupUnderlyingDiagram F)).ι.app j)) i
+      ((directedTopologicalGroupUnderlyingCocone F).ι.app j)) i
 
 /-- The multiplication in one stage of an internal topological group. -/
 def directedTopologicalGroupStageMulData
@@ -138,6 +177,8 @@ noncomputable def directedTopologicalGroupColimitOperationData
     DirectedTopologicalGroupColimitOperationData F := by
   letI : TopologicalSpace (directedTopologicalGroupColimitGroupData F) :=
     directedTopologicalGroupColimitTopologyData F
+  letI : Group (directedTopologicalGroupColimitCarrierData F) :=
+    inferInstanceAs (Group (directedTopologicalGroupColimitGroupData F))
   exact
     { one := 1
       mul := (· * ·)

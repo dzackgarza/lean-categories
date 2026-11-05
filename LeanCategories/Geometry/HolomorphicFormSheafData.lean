@@ -13,7 +13,14 @@ public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.CategoryTheory.Sites.Adjunction
 public import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
+public import Mathlib.CategoryTheory.Linear.FunctorCategory
 public import Mathlib.Algebra.Category.ModuleCat.Limits
+
+/- The pinned library keeps `HasExt.standard` a lemma rather than an instance
+(`Ext/Basic.lean:92`), so `Ext`'s `AddCommGroup`/`Module` instances cannot be found by
+search. Registering it here gives the carrier and the `ℂ`-module structure the same
+`HasExt` instance (`HasExt.standard.{u_1,u_2} : HasExt.{max u_2 u_1} C`). -/
+attribute [instance] CategoryTheory.HasExt.standard
 
 /-!
 # Holomorphic differential-form sheaf data on complex manifolds
@@ -36,6 +43,9 @@ pluricanonical result is asserted here.
 
 open Bundle
 open CategoryTheory
+
+
+
 open scoped ContDiff Manifold Topology
 
 namespace LeanCategories.Geometry
@@ -480,6 +490,8 @@ noncomputable def holomorphicPFormAdditiveSheafData (p : ℕ) :
     (CategoryTheory.forget₂ (ModuleCat.{u} ℂ) AddCommGrpCat.{u})).obj
       (holomorphicPFormSheafModuleSmoothData (X := X) I p)
 
+set_option synthInstance.maxHeartbeats 200000 in
+set_option maxHeartbeats 1000000 in
 /-- Peters--Sterk's Hodge-cohomology complex vector space
 `H^{p,q}(X) = H^q(X, Ω_X^p)`.
 
@@ -487,18 +499,18 @@ For a sheaf of complex vector spaces, global sections are represented by
 morphisms from the constant sheaf `ℂ_X`; hence their right-derived functors
 are the Ext groups below.  Mathlib's linear Ext construction supplies the
 canonical complex-vector-space structure directly. -/
-set_option synthInstance.maxHeartbeats 200000 in
 noncomputable abbrev hodgeCohomologyGroupData
+    (I : ModelWithCorners ℂ E H) [I.Boundaryless] [IsManifold I ω X]
     [HasSheafify
       (Opens.grothendieckTopology (TopCat.of X)) (ModuleCat.{u} ℂ)]
     [Abelian (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
-    [HasExt.{u + 1} (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
+    [Linear ℂ (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
     (p q : ℕ) : Type (u + 1) :=
-  CategoryTheory.Abelian.Ext
+  (CategoryTheory.Abelian.Ext
     ((CategoryTheory.constantSheaf
       (Opens.grothendieckTopology (TopCat.of X)) (ModuleCat.{u} ℂ)).obj
         (ModuleCat.of ℂ (ULift.{u} ℂ)))
-    (holomorphicPFormSheafModuleData (X := X) I p) q
+    (holomorphicPFormSheafModuleData (X := X) I p) q : Type (u + 1))
 
 /-- Peters--Sterk's Hodge number
 `h^{p,q}(X) = dim_ℂ H^{p,q}(X)`.
@@ -509,9 +521,23 @@ noncomputable def hodgeNumberData
     [HasSheafify
       (Opens.grothendieckTopology (TopCat.of X)) (ModuleCat.{u} ℂ)]
     [Abelian (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
-    [HasExt.{u + 1} (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
+    [Linear ℂ (TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X))]
     (p q : ℕ) : ℕ :=
-  Module.finrank ℂ (hodgeCohomologyGroupData (X := X) (I := I) p q)
+  -- The carrier and the `ℂ`-module structure use the same canonical instances
+  -- (`Ext/Linear.lean`, `Ext/Basic.lean`), instantiated with the same `HasExt.standard`
+  -- argument that the carrier uses, so no structure is transported or re-chosen.
+  let Sh := TopCat.Sheaf (ModuleCat.{u} ℂ) (TopCat.of X)
+  let A : Sh :=
+    (CategoryTheory.constantSheaf
+      (Opens.grothendieckTopology (TopCat.of X)) (ModuleCat.{u} ℂ)).obj
+        (ModuleCat.of ℂ (ULift.{u} ℂ))
+  let B : Sh := holomorphicPFormSheafModuleData (X := X) I p
+  let h : HasExt.{u + 1} Sh := HasExt.standard Sh
+  letI : AddCommGroup (CategoryTheory.Abelian.Ext A B q) :=
+    @CategoryTheory.Abelian.Ext.instAddCommGroup Sh _ _ h A B q
+  letI : Module ℂ (CategoryTheory.Abelian.Ext A B q) :=
+    @CategoryTheory.Abelian.Ext.instModule ℂ _ Sh _ _ _ h A B q
+  Module.finrank ℂ (CategoryTheory.Abelian.Ext A B q)
 
 /-- Exact pointwise graph for zero in the holomorphic-form sheaf. -/
 def IsHolomorphicPFormZeroSectionData
