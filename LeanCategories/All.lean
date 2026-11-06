@@ -297,5 +297,6 @@ public import LeanCategories.Catalogue.Semantics.Foundation.IntegerSquareBounds
 public import LeanCategories.Catalogue.Semantics.Foundation.TwoSubsets
 public import LeanCategories.Catalogue.Semantics.Foundation.CoreIsomorphisms
 public import LeanCategories.Catalogue.Semantics.Foundation.FiniteOrders
+public import LeanCategories.Lattices.Valued.Cusps
 
 @[expose] public section

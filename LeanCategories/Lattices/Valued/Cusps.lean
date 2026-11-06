@@ -108,15 +108,80 @@ structure CuspMorphism (X Y : CuspObject (R := R)) where
   equivariant : ∀ γ ∈ X.gamma.toSubgroup, ∃ δ ∈ Y.gamma.toSubgroup,
     (OrthogonalGroup.asLatticeIso γ).hom ≫ hom = hom ≫ (OrthogonalGroup.asLatticeIso δ).hom
 
-/-- The linear equivalence underlying an orthogonal-group element. `OrthogonalGroup` is a subgroup
-of the linear automorphism group, so its carrier is already a `LinearEquiv`. -/
-def OrthogonalGroup.toLinearEquiv {L : IntegralLatticeCat R} (g : OrthogonalGroup L) :
-    L.obj.carrier ≃ₗ[R] L.obj.carrier := g.1
+/-- The two spellings of the form agree definitionally: `asBilinForm` is the form of the underlying
+formed module. This lets `g.property`, which is stated in `L.obj.pairing`, act on goals stated in
+`L.obj.asBilinForm`. -/
+theorem IntegralLatticeCat.asBilinForm_apply (L : IntegralLatticeCat R) (a b : L.obj.carrier) :
+    L.obj.asBilinForm a b = L.obj.pairing a b := rfl
 
-/-- Transport of a submodule along an orthogonal-group element. -/
-noncomputable def actSubmodule {L : IntegralLatticeCat R}
-    (g : OrthogonalGroup L) (N : Submodule R L.obj.carrier) : Submodule R L.obj.carrier :=
-  Submodule.map (OrthogonalGroup.toLinearEquiv g : L.obj.carrier →ₗ[R] L.obj.carrier) N
+/-- The action of `O(L)` on submodules, written as `Submodule.map` along the underlying linear
+equivalence. This is the form in which the structure of a lattice is preserved. -/
+theorem OrthogonalGroup.smul_submodule_eq_map {L : IntegralLatticeCat R} (g : OrthogonalGroup L)
+    (P : Submodule R L.obj.carrier) :
+    g • P = P.map (g.1 : L.obj.carrier →ₗ[R] L.obj.carrier) := rfl
+
+/-- `O(L)` acts on primitive isotropic sublattices of rank `k`: the image of such a sublattice under
+an isometry is one again, and the image of a complement is a complement. -/
+noncomputable def PrimitiveIsotropic.act {L : IntegralLatticeCat R} {k : ℕ}
+    (g : OrthogonalGroup L) (N : PrimitiveIsotropic L k) : PrimitiveIsotropic L k where
+  toSubmodule := g • N.toSubmodule
+  isotropic := by
+    intro x hx y hy
+    simp only [OrthogonalGroup.smul_submodule_eq_map, Submodule.mem_map] at hx hy
+    obtain ⟨a, ha, rfl⟩ := hx
+    obtain ⟨b, hb, rfl⟩ := hy
+    change L.obj.asBilinForm (g.1 a) (g.1 b) = 0
+    rw [IntegralLatticeCat.asBilinForm_apply, g.property, ← IntegralLatticeCat.asBilinForm_apply]
+    exact N.isotropic a ha b hb
+  finrank_eq := by
+    change Module.finrank R ↥(N.toSubmodule.map (g.1 : L.obj.carrier →ₗ[R] L.obj.carrier)) = k
+    rw [LinearEquiv.finrank_map_eq, N.finrank_eq]
+  complemented := by
+    obtain ⟨q, hq⟩ := N.complemented
+    refine ⟨g • q, ?_⟩
+    change IsCompl (N.toSubmodule.map (g.1 : L.obj.carrier →ₗ[R] L.obj.carrier))
+      (q.map (g.1 : L.obj.carrier →ₗ[R] L.obj.carrier))
+    exact (Submodule.orderIsoMapComap
+      (g.1 : L.obj.carrier ≃ₗ[R] L.obj.carrier)).isCompl_iff.mp hq
+
+/-- `O(L)` acts on the primitive isotropic sublattices of rank `k`. -/
+noncomputable instance primitiveIsotropicSMul {L : IntegralLatticeCat R} {k : ℕ} :
+    SMul (OrthogonalGroup L) (PrimitiveIsotropic L k) :=
+  ⟨fun g N => PrimitiveIsotropic.act g N⟩
+
+noncomputable instance primitiveIsotropicMulAction {L : IntegralLatticeCat R} {k : ℕ} :
+    MulAction (OrthogonalGroup L) (PrimitiveIsotropic L k) where
+  one_smul N := by
+    apply PrimitiveIsotropic.ext
+    exact one_smul (OrthogonalGroup L) N.toSubmodule
+  mul_smul g h N := by
+    apply PrimitiveIsotropic.ext
+    exact mul_smul g h N.toSubmodule
+
+/-- A subgroup `H ⊆ O(L)`, in particular the finite-index `Γ`, acts on primitive isotropic
+sublattices by restriction of scalars along `H → O(L)`. -/
+noncomputable instance primitiveIsotropicSubgroupMulAction {L : IntegralLatticeCat R}
+    (H : Subgroup (OrthogonalGroup L)) {k : ℕ} : MulAction H (PrimitiveIsotropic L k) :=
+  MulAction.compHom (PrimitiveIsotropic L k) (Subgroup.subtype H)
+
+/-- The `Γ`-orbits of primitive isotropic sublattices of rank `k`: `k = 1` gives the 0-cusps,
+`k = 2` the 1-cusps. -/
+noncomputable def CuspOrbits (L : IntegralLatticeCat R) (Γ : FiniteIndexSubgroup L) (k : ℕ) :
+    Type u :=
+  MulAction.orbitRel.Quotient Γ.toSubgroup (PrimitiveIsotropic L k)
+
+/-- The `Γ`-orbit of a primitive isotropic sublattice of rank `k`. -/
+noncomputable def CuspOrbits.mk {L : IntegralLatticeCat R} (Γ : FiniteIndexSubgroup L) {k : ℕ}
+    (N : PrimitiveIsotropic L k) : CuspOrbits L Γ k :=
+  Quotient.mk (MulAction.orbitRel Γ.toSubgroup (PrimitiveIsotropic L k)) N
+
+/-- Incidence between a rank-1 orbit and a rank-2 orbit: some representative line is nested in some
+representative plane. -/
+noncomputable def CuspIncidence (X : CuspObject (R := R)) : CuspOrbits X.lattice X.gamma 1 →
+    CuspOrbits X.lattice X.gamma 2 → Prop :=
+  fun c₁ c₂ => ∃ v : PrimitiveIsotropic X.lattice 1,
+    CuspOrbits.mk X.gamma v = c₁ ∧ ∃ P : PrimitiveIsotropic X.lattice 2,
+      CuspOrbits.mk X.gamma P = c₂ ∧ v.toSubmodule ≤ P.toSubmodule
 
 namespace CuspMorphism
 
