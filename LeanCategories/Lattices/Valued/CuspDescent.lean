@@ -337,4 +337,33 @@ noncomputable def cuspOrbitsEquivDoubleCosetsDiscriminantRange [IsDomain R]
       rw [discriminantRangeImage_eq_map_rangeRestrict hL,
         discriminantRangeImage_eq_map_rangeRestrict hL]))
 
+/-- The fibre theorem's corollary at `Γ = ker ρ`: the `K`-orbits of primitive isotropic sublattices
+lying over the `O(L)`-orbit of `N` are the cosets `ρ(O(L)) / ρ(Stab N)`.
+
+From `cuspOrbitsEquivDoubleCosetsDiscriminantRange`: with `Γ = stableOrthogonalGroup hL`, the left
+subgroup is `ker ρ` mapped into the range, which is `⊥` (`ρ.ker ≤ (ρ.rangeRestrict).ker`), and
+`DoubleCoset.left_bot_eq_left_quot` collapses the double cosets to left cosets. `hΓ` is the separate
+lemma `(stableOrthogonalGroup hL).FiniteIndex`, which is finiteness of `O(q_L)`, taken as a
+hypothesis. -/
+noncomputable def cuspOrbitsStableEquivCosets [IsDomain R]
+    (hL : IsFractionFieldPerfect R L) (hΓ : (OrthogonalGroup.stableOrthogonalGroup hL).FiniteIndex)
+    {k : ℕ} (N : PrimitiveIsotropic L k) :
+    let Γ : FiniteIndexSubgroup L := ⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩
+    {c : CuspOrbits L Γ k //
+        ∃ v ∈ MulAction.orbit (OrthogonalGroup L) N, CuspOrbits.mk Γ v = c} ≃
+      ↥(OrthogonalGroup.discriminantRepresentation hL).range ⧸
+        (MulAction.stabilizer (OrthogonalGroup L) N).map
+          (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict := by
+  intro Γ
+  have hbot : Γ.toSubgroup.map
+      (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict = ⊥ := by
+    rw [show Γ.toSubgroup = OrthogonalGroup.stableOrthogonalGroup hL from rfl]
+    refine (Subgroup.map_eq_bot_iff _).mpr ?_
+    intro x hx
+    have hx' : (OrthogonalGroup.discriminantRepresentation hL) x = 1 := hx
+    rw [MonoidHom.mem_ker]
+    exact Subtype.ext (by simpa using hx')
+  exact (cuspOrbitsEquivDoubleCosetsDiscriminantRange hL Γ le_rfl N).trans
+    (Equiv.cast (by rw [hbot, DoubleCoset.left_bot_eq_left_quot]))
+
 end LeanCategories.Lattices.Valued
