@@ -196,44 +196,19 @@ def full_declaration(path: Path, short: str, new_name: str) -> str | None:
     return None
 
 
-def explicit_binders(stmt: str) -> list[str]:
-    """Names of the explicit `( … )` binders in a copied signature, in order."""
-    # only the part before the top-level `:` that separates binders from the type
-    depth0, cut = 0, len(stmt)
-    for k, ch in enumerate(stmt):
-        if ch in "({[⦃":
-            depth0 += 1
-        elif ch in ")}]⦄":
-            depth0 -= 1
-        elif ch == ":" and depth0 == 0:
-            cut = k
-            break
-    stmt = stmt[:cut]
-    names, depth, i = [], 0, 0
+def split_binders(stmt: str) -> tuple[str, str] | None:
+    """`(binders, type)` split at the top-level `:` that separates them."""
+    depth, i = 0, 0
     while i < len(stmt):
         ch = stmt[i]
-        if ch in "({[⦃":
+        if ch in DEPTH_PAIRS:
             depth += 1
-            if ch == "(":
-                # a binder group: (n1 n2 : T) — take identifiers before the first ':'
-                j = i + 1
-                grp, d = "", 1
-                while j < len(stmt) and d:
-                    if stmt[j] in "({[⦃":
-                        d += 1
-                    elif stmt[j] in ")}]⦄":
-                        d -= 1
-                        if d == 0:
-                            break
-                    grp += stmt[j]
-                    j += 1
-                head = grp.split(":")[0]
-                for tok in re.findall(r"[A-Za-z_][\w']*", head):
-                    names.append(tok)
-        elif ch in ")}]⦄":
+        elif ch in DEPTH_PAIRS.values():
             depth -= 1
+        elif ch == ":" and depth == 0 and not stmt.startswith(":=", i):
+            return stmt[:i].rstrip(), stmt[i + 1:].lstrip()
         i += 1
-    return names
+    return None
 
 
 def scope_context(path: Path, decl_line: int) -> tuple[str, str]:
@@ -329,6 +304,13 @@ def emit(owner: str, apply: bool) -> int:
                          if re.match(rf"^(?:theorem|lemma)\s+(?:\w+\.)*{re.escape(short)}\b", l))
         scope_ctx, scope_ends = scope_context(src, decl_line)
         stmt = re.sub(rf"^\s*(?:\w+\.)*{re.escape(short)}\b", "", stmt, count=1)
+        parts = split_binders(stmt)
+        if parts is None:
+            print(f"  REFUSED  {c['name']}: no top-level `:` separating binders from type")
+            continue
+        binders, ty = parts
+        thm_body = (" : ∀" + binders + ",\n    " + ty + " :=\n  " + c["name"]) if binders.strip() \
+            else (" : " + ty + " :=\n  " + c["name"])
         doc, authored = docstring_of(src, short, c["name"])
         if authored:
             print(f"  REFUSED  {c['name']}: the declaration has no docstring in its module, so no "
@@ -338,6 +320,13 @@ def emit(owner: str, apply: bool) -> int:
                          if re.match(rf"^(?:theorem|lemma)\s+(?:\w+\.)*{re.escape(short)}\b", l))
         scope_ctx, scope_ends = scope_context(src, decl_line)
         stmt = re.sub(rf"^\s*(?:\w+\.)*{re.escape(short)}\b", "", stmt, count=1)
+        parts = split_binders(stmt)
+        if parts is None:
+            print(f"  REFUSED  {c['name']}: no top-level `:` separating binders from type")
+            continue
+        binders, ty = parts
+        thm_body = (" : ∀" + binders + ",\n    " + ty + " :=\n  " + c["name"]) if binders.strip() \
+            else (" : " + ty + " :=\n  " + c["name"])
         doc, authored = docstring_of(src, short, c["name"])
         if authored:
             print(f"  REFUSED  {c['name']}: the declaration has no docstring in its module, so no "
@@ -356,9 +345,9 @@ def emit(owner: str, apply: bool) -> int:
             + f"open {c['module'].rsplit('.', 1)[0]}\n\n"
             + scope_ctx
             + doc + "\n"
-            + f"theorem {card_name}{stmt} :=\n  {c['name']}"
-            + ("".join(" " + b for b in explicit_binders(stmt))) + "\n\n"
-            + scope_ends + "\n"
+            + f"theorem {card_name}{thm_body}"
+            + "\n\n"
+            + scope_ends
             + "end LeanCategories.Cards\n"
         )
 

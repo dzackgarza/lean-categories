@@ -25,9 +25,8 @@ universe u
 open LeanCategories.Homological
 
 /-- The exponential morphism of continuous-function sheaves is locally surjective. -/
-theorem LeanCategories_Homological_expSheafHom_isLocallySurjective (X : TopCat.{0}) :
+theorem LeanCategories_Homological_expSheafHom_isLocallySurjective : ∀ (X : TopCat.{0}),
     TopCat.Presheaf.IsLocallySurjective (expSheafHom X).hom :=
-  LeanCategories.Homological.expSheafHom_isLocallySurjective X
-
+  LeanCategories.Homological.expSheafHom_isLocallySurjective
 
 end LeanCategories.Cards

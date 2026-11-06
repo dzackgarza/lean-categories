@@ -71,3 +71,14 @@ def test_multiline_variable_block_is_captured_whole():
     # the continuation lines of that block, indented past the `variable` keyword
     assert "  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}" in text
     assert "  {G : Type*} [TopologicalSpace G] [ChartedSpace H G] [Group G]" in text
+
+
+def test_emitted_card_is_a_pi_type_with_a_delegated_proof(tmp_path=None):
+    """The card states the original as a Π-type and delegates; no application is invented."""
+    from extract_cards import split_binders
+
+    stmt = "\n    {M : Type*} [TopologicalSpace M]\n    (hγ : IsMIntegralCurve γ v) :\n    ContMDiff 𝓘(ℝ, ℝ) I ∞ γ"
+    binders, ty = split_binders(stmt)
+    assert binders.strip().startswith("{M : Type*}")
+    assert ty == "ContMDiff 𝓘(ℝ, ℝ) I ∞ γ"
+    assert "hγ" in binders

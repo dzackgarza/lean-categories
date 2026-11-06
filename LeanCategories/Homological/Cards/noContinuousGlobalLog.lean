@@ -25,10 +25,8 @@ universe u
 open LeanCategories.Homological
 
 /-- There is no continuous logarithm defined on all of `ℂˣ`. -/
-theorem LeanCategories_Homological_noContinuousGlobalLog :
-    ¬ ∃ l : C(ℂˣ, ℂ),
+theorem LeanCategories_Homological_noContinuousGlobalLog : ¬ ∃ l : C(ℂˣ, ℂ),
       ∀ z : ℂˣ, complexExpAddHom (l z) = Additive.ofMul z :=
   LeanCategories.Homological.noContinuousGlobalLog
-
 
 end LeanCategories.Cards
