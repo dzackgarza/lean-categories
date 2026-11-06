@@ -406,4 +406,15 @@ theorem dosetFibre_mk_iff (hL : IsFractionFieldPerfect R L)
           (isotropicSubgroup N) := by
   exact cuspOrbits_class_eq_iff_stabilizer hL hΓ N g
 
+/-- A lift of a range element under the surjective restriction `ρ.rangeRestrict`. -/
+noncomputable def rangeLift (hL : IsFractionFieldPerfect R L) :
+    ↥(OrthogonalGroup.discriminantRepresentation hL).range → OrthogonalGroup L :=
+  fun x => Classical.choose (MonoidHom.rangeRestrict_surjective _ x)
+
+theorem rangeRestrict_rangeLift (hL : IsFractionFieldPerfect R L)
+    (x : ↥(OrthogonalGroup.discriminantRepresentation hL).range) :
+    (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict
+      (rangeLift hL x) = x :=
+  Classical.choose_spec (MonoidHom.rangeRestrict_surjective _ x)
+
 end LeanCategories.Lattices.Valued
