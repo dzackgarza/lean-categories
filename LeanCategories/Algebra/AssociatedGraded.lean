@@ -1,6 +1,8 @@
 /-
 Copyright (c) 2026 Dzack Garza. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
+
+source: Atiyah--Macdonald, *Introduction to Commutative Algebra*, ch. 10 (FC04-C10-U053): the associated graded ring of a filtered ring, and the multiplicative-filtration form of FC13-C05-U005.
 -/
 module
 

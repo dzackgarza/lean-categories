@@ -22,3 +22,16 @@ is by source, not by name pattern: `extract_cards.py` prints every companion it 
 | Module | Owner | What a source would need to state |
 |---|---|---|
 | `LeanCategories.Foundation.Subsets` | Foundation | Subsets as subobjects of a set, the two functors to `Set`, and the ambient equivalence induced by an isomorphism of subobjects; no `corpus/` unit and no `FOUNDATIONS.md` heading covers subobject representations |
+
+| `LeanCategories.Algebra.IntegralGeneralLinearGroup` | Algebra | integral points of the general linear group as a profinite topological group; no `corpus/` unit names this module and `FOUNDATIONS.md` has no matching heading |
+| `LeanCategories.Algebra.IntegralAdeleRing` | Algebra | the integral adele ring of a number field as a restricted product; no `corpus/` unit and no `FOUNDATIONS.md` heading states it |
+| `LeanCategories.Algebra.IdealProfiniteCompletion` | Algebra | profinite completion of an ideal as an inverse limit of quotients; no `corpus/` unit and no `FOUNDATIONS.md` heading states it |
+| `LeanCategories.Modules.Bilinear.Valued.Cokernel` | Modules | cokernel of a morphism of valued bilinear modules; no `corpus/` unit and no `FOUNDATIONS.md` heading states it |
+| `LeanCategories.Modules.Bilinear.Valued.Total` | Modules | total space of a valued bilinear module; no `corpus/` unit and no `FOUNDATIONS.md` heading states it |
+| `LeanCategories.Modules.Bilinear.Valued.Fixed` | Modules | fixed points of a group action on a valued bilinear module; no `corpus/` unit and no `FOUNDATIONS.md` heading states it |
+| `LeanCategories.Modules.Bilinear.Valued.OrthogonalSum` | Modules | orthogonal direct sum of valued bilinear modules; no `corpus/` unit and no `FOUNDATIONS.md` heading states it |
+| `LeanCategories.Modules.Bilinear.Valued.TopologicalOrthogonalGroup` | Modules | topological orthogonal group of a valued bilinear module; no `corpus/` unit and no `FOUNDATIONS.md` heading states it |
+| `LeanCategories.Modules.Quadratic.Valued.Witt` | Modules | Witt group of valued quadratic modules; no `corpus/` unit and no `FOUNDATIONS.md` heading states it |
+| `LeanCategories.Modules.Quadratic.Valued.IsometryClasses` | Modules | isometry classes of valued quadratic modules; no `corpus/` unit and no `FOUNDATIONS.md` heading states it |
+| `LeanCategories.Modules.Quadratic.Valued.Fixed` | Modules | fixed points of a group action on a valued quadratic module; no `corpus/` unit and no `FOUNDATIONS.md` heading states it |
+| `LeanCategories.Modules.Quadratic.Valued.Total` | Modules | total space of a valued quadratic module; no `corpus/` unit and no `FOUNDATIONS.md` heading states it |
