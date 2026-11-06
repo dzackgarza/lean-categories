@@ -138,7 +138,35 @@ theorem toEncodable_encodek (r : RankingData X I) [Encodable I] (x : X) :
     r.toEncodable.decode (r.toEncodable.encode x) = some x :=
   r.toEncodable.encodek x
 
+/-- The selected index is finite when it carries a `Fintype` structure; a selected index is either
+a `Fin n` or `ℕ`, so this is the finite-versus-`ω` classification of the ranking. -/
+def indexIsFinite (r : RankingData X I) : Prop := Nonempty (Fintype I)
+
+/-- The order type of the selected ranking: `some n` when the index has `n` elements, `none` when
+the index is the countably infinite `ℕ`, so the order type is `ω`. -/
+noncomputable def orderType (r : RankingData X I) [Fintype I] : Option ℕ :=
+  some (Fintype.card I)
+
+/-- A ranking whose index is a `Fin n` has order type `n`. -/
+theorem orderType_finite (r : RankingData X (Fin n)) : r.orderType = some n := by
+  simp [orderType, Fintype.card_fin]
+
+/-- The carrier of a ranking with finite index is itself finite: finiteness is transported along the
+selected equivalence, not asserted independently. -/
+noncomputable def fintypeCarrier (r : RankingData X I) (h : r.indexIsFinite) : Fintype X := by
+  classical
+  letI := Classical.choice h
+  exact Fintype.ofEquiv I r.rank.symm
+
+/-- A finite ranking therefore has a finite carrier, which is what an enumerated set needs in order
+to iterate through its selected order. -/
+theorem carrier_finite (r : RankingData X I) (h : r.indexIsFinite) : Nonempty (Fintype X) :=
+  ⟨r.fintypeCarrier h⟩
+
 end RankingData
+
+
+
 
 
 /-- Every finite set is countable. -/
