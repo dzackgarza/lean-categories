@@ -42,6 +42,10 @@ test-commit:
 # Run the CI quality gate
 test-ci: test
 
+# Emit the in-repository reference graph to LeanCategories/Tools/reference-graph.json (#59).
+reference-graph:
+    @lake env lean scripts/reference_graph.lean
+
 # Emit LeanCategories modules as Prove2Me definition payloads (#59).
 #   just publish-prove2me --dry-run          # write payloads, no network
 #   just publish-prove2me --layer 0          # one import layer

@@ -31,23 +31,39 @@ open Lean Elab Command
 
 namespace LeanCategories.Tools.ReferenceGraph
 
-/-- Names that count as part of this repository's mathematical content. -/
-def isContent (n : Name) : Bool :=
-  (`LeanCategories).isPrefixOf n && !(`LeanCategories.Tools).isPrefixOf n
+/-- The module a constant belongs to, if any. -/
+def moduleOf? (env : Environment) (n : Name) : Option Name := do
+  let idx ← env.getModuleIdxFor? n
+  return env.header.moduleNames[idx.toNat]!
 
-/-- The `LeanCategories` content constants occurring in an expression, deduplicated. -/
-def contentConstants (e : Expr) : Array Name :=
-  e.getUsedConstants.filter isContent
+/-- A constant counts as this repository's content when the module it belongs to is a
+`LeanCategories` module and not audit machinery (`LeanCategories.Tools.*`).
+
+The test is by module, not by constant-name prefix: the files under
+`LeanCategories/Catalogue/` declare in namespace `CasCatalogue`, so a name-prefix test silently
+dropped that entire half of the library. -/
+def isContent (env : Environment) (n : Name) : Bool :=
+  match moduleOf? env n with
+  | none => false
+  | some m =>
+    (`LeanCategories).isPrefixOf m && !(`LeanCategories.Tools).isPrefixOf m
+
+/-- The content constants occurring in an expression, deduplicated. -/
+def contentConstants (env : Environment) (e : Expr) : Array Name :=
+  e.getUsedConstants.filter (isContent env)
 
 /-- The constants a declaration's type and value mention, excluding the declaration itself. -/
 def references (env : Environment) (n : Name) : Array Name :=
   match env.find? n with
   | none => #[]
   | some info =>
-    let ofValue := match info.value? with
-      | some v => contentConstants v
-      | none => #[]
-    let all := contentConstants info.type ++ ofValue
+    let ofValue := match info with
+      | .thmInfo v => contentConstants env v.value
+      | .defnInfo v => contentConstants env v.value
+      | _ => match info.value? with
+        | some v => contentConstants env v
+        | none => #[]
+    let all := contentConstants env info.type ++ ofValue
     -- a declaration is not a reference to itself; private names are not content
     let all := all.filter fun c => c != n && !(`_private).isPrefixOf c
     all.qsort (·.toString < ·.toString)
@@ -79,7 +95,7 @@ structure Row where
 def build (env : Environment) : Array Row := Id.run do
   let mut rows : Array Row := #[]
   for (n, info) in env.constants.toList do
-    if !isContent n then continue
+    if !isContent env n then continue
     match info with
     | .recInfo _ => continue        -- generated recursors duplicate their inductive
     | _ => pure ()
@@ -89,7 +105,7 @@ def build (env : Environment) : Array Row := Id.run do
       { name := n, kind := kindOf info, module := modName
         refs := references env n
         typeRefs :=
-          ((contentConstants info.type).filter (· != n)).qsort (·.toString < ·.toString) }
+          ((contentConstants env info.type).filter (· != n)).qsort (·.toString < ·.toString) }
   return rows.qsort (·.name.toString < ·.name.toString)
 
 /-- Serialize the graph. -/
@@ -107,14 +123,5 @@ def json : CoreM String := do
 
 /-- Where the emitted graph is checked in. -/
 def outputPath : String := "LeanCategories/Tools/reference-graph.json"
-
--- Emit the graph at elaboration time, so the checked-in artifact cannot drift from the
--- environment it describes. Content is sorted, so an unchanged graph produces no diff.
-run_cmd do
-  let rows := LeanCategories.Tools.ReferenceGraph.build (← getEnv)
-  let withRefs := rows.filter (fun r => r.refs.size > 0) |>.size
-  IO.FS.writeFile LeanCategories.Tools.ReferenceGraph.outputPath
-    (LeanCategories.Tools.ReferenceGraph.toJson rows).compress
-  logInfo m!"reference graph: {rows.size} declarations, {withRefs} with content references"
 
 end LeanCategories.Tools.ReferenceGraph
