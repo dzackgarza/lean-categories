@@ -66,6 +66,14 @@ abbrev of (X : Type u) [Encodable X] : EnumeratedSetCat.{u} :=
 instance : Category EnumeratedSetCat.{u} :=
   inferInstanceAs (Category (InducedCategory (Type u) carrier))
 
+/-- Extensionality for morphisms of enumerated sets: two morphisms are equal when their underlying
+functions agree. The category instance is `InducedCategory (Type u) carrier` (`inferInstanceAs`), so
+Mathlib's `@[ext]` lemma for `InducedCategory.Hom` is not reached by `ext` at reducible transparency;
+this restates it at the type consumers actually see. -/
+@[ext] theorem hom_ext {X Y : EnumeratedSetCat.{u}} {f g : X ⟶ Y}
+    (h : InducedCategory.Hom.hom f = InducedCategory.Hom.hom g) : f = g :=
+  InducedCategory.Hom.ext h
+
 /-- Forget the chosen enumeration. -/
 def forget : EnumeratedSetCat.{u} ⥤ Type u where
   obj X := X.carrier
