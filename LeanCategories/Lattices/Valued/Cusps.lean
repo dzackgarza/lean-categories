@@ -113,6 +113,11 @@ of the linear automorphism group, so its carrier is already a `LinearEquiv`. -/
 def OrthogonalGroup.toLinearEquiv {L : IntegralLatticeCat R} (g : OrthogonalGroup L) :
     L.obj.carrier ≃ₗ[R] L.obj.carrier := g.1
 
+/-- Transport of a submodule along an orthogonal-group element. -/
+noncomputable def actSubmodule {L : IntegralLatticeCat R}
+    (g : OrthogonalGroup L) (N : Submodule R L.obj.carrier) : Submodule R L.obj.carrier :=
+  Submodule.map (OrthogonalGroup.toLinearEquiv g : L.obj.carrier →ₗ[R] L.obj.carrier) N
+
 namespace CuspMorphism
 
 variable {X Y Z : CuspObject (R := R)}
