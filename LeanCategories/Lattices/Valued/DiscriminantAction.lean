@@ -30,6 +30,13 @@ def asLatticeIso (g : OrthogonalGroup L) : L ≅ L :=
   ObjectProperty.isoMk (isLattice R R)
     (BilinModuleCat.OrthogonalGroup.toIso g)
 
+/-- The underlying linear map of a lattice automorphism is the isometry itself. -/
+@[simp]
+theorem underlyingMap_asLatticeIso_hom (g : OrthogonalGroup L) :
+    BilinModuleCat.underlyingMap (asLatticeIso g).hom.hom =
+      (g.1 : L.obj.carrier →ₗ[R] L.obj.carrier) :=
+  rfl
+
 /-- The contragredient action of `O(L)` on the value dual. -/
 def actOnValueDual (g : OrthogonalGroup L) :
     L.obj.valueDual ≃ₗ[R] L.obj.valueDual :=

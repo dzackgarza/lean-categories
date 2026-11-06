@@ -26,6 +26,7 @@ witness as data, which is `FiniteIndexSubgroup` below, built on Mathlib's `Subgr
 @[expose] public section
 
 open CategoryTheory
+open LeanCategories.Modules.Bilinear.Valued
 
 namespace LeanCategories.Lattices.Valued
 
@@ -65,9 +66,9 @@ def IsIsotropicSubmodule (L : IntegralLatticeCat R)
   ∀ x ∈ N, ∀ y ∈ N, LeanCategories.Modules.Bilinear.Valued.BilinModuleCat.asBilinForm
     L.obj x y = 0
 
-/-- A primitive isotropic sublattice of rank `k`: an isotropic submodule of rank `k` that is a
-direct summand of the carrier, which is primitivity at module level. Rank 1 gives 0-cusps and rank 2
-gives 1-cusps. -/
+/-- A primitive isotropic sublattice of rank `k`: an isotropic submodule of rank `k` that is
+primitive, i.e. whose quotient is torsion-free, which is Nikulin's condition. Rank 1 gives 0-cusps
+and rank 2 gives 1-cusps. -/
 structure PrimitiveIsotropic (L : IntegralLatticeCat R) (k : ℕ) where
   /-- The underlying submodule. -/
   toSubmodule : Submodule R L.obj.carrier
@@ -75,8 +76,8 @@ structure PrimitiveIsotropic (L : IntegralLatticeCat R) (k : ℕ) where
   isotropic : IsIsotropicSubmodule L toSubmodule
   /-- Its rank. -/
   finrank_eq : Module.finrank R toSubmodule = k
-  /-- Primitivity: it is a direct summand of the carrier. -/
-  complemented : ∃ N' : Submodule R L.obj.carrier, IsCompl toSubmodule N'
+  /-- Primitivity: the quotient by it is torsion-free. -/
+  primitive : IsPrimitiveSubmodule toSubmodule
 
 namespace PrimitiveIsotropic
 
@@ -104,6 +105,10 @@ i.e. for every `γ ∈ Γ₁` there is `δ ∈ Γ₂` with `f ∘ γ = δ ∘ f`
 structure CuspMorphism (X Y : CuspObject (R := R)) where
   /-- The underlying lattice morphism. -/
   hom : X.lattice ⟶ Y.lattice
+  /-- It is a primitive embedding: injective, with torsion-free cokernel. Without this the image of
+  a primitive isotropic sublattice need not be one (`x ↦ 2x` on `ℤ` with the zero form kills
+  primitivity), so the orbit map exists only for primitive morphisms. -/
+  primitive : BilinModuleCat.IsPrimitiveEmbedding hom.hom
   /-- Equivariance: every `γ ∈ Γ₁` is matched by some `δ ∈ Γ₂` with `f ∘ γ = δ ∘ f`. -/
   equivariant : ∀ γ ∈ X.gamma.toSubgroup, ∃ δ ∈ Y.gamma.toSubgroup,
     (OrthogonalGroup.asLatticeIso γ).hom ≫ hom = hom ≫ (OrthogonalGroup.asLatticeIso δ).hom
@@ -136,13 +141,32 @@ noncomputable def PrimitiveIsotropic.act {L : IntegralLatticeCat R} {k : ℕ}
   finrank_eq := by
     change Module.finrank R ↥(N.toSubmodule.map (g.1 : L.obj.carrier →ₗ[R] L.obj.carrier)) = k
     rw [LinearEquiv.finrank_map_eq, N.finrank_eq]
-  complemented := by
-    obtain ⟨q, hq⟩ := N.complemented
-    refine ⟨g • q, ?_⟩
-    change IsCompl (N.toSubmodule.map (g.1 : L.obj.carrier →ₗ[R] L.obj.carrier))
-      (q.map (g.1 : L.obj.carrier →ₗ[R] L.obj.carrier))
-    exact (Submodule.orderIsoMapComap
-      (g.1 : L.obj.carrier ≃ₗ[R] L.obj.carrier)).isCompl_iff.mp hq
+  primitive := by
+    change IsPrimitiveSubmodule
+      (N.toSubmodule.map (g.1 : L.obj.carrier →ₗ[R] L.obj.carrier))
+    exact (IsPrimitiveSubmodule.map_equiv_iff
+      (g.1 : L.obj.carrier ≃ₗ[R] L.obj.carrier) N.toSubmodule).mpr N.primitive
+
+/-- The image of a primitive isotropic sublattice under a primitive embedding: isotropy holds
+because the map preserves the form, the rank because it is injective, and primitivity by
+`IsPrimitiveSubmodule.map_of_primitiveEmbedding`. -/
+noncomputable def PrimitiveIsotropic.map {L M : IntegralLatticeCat R} {k : ℕ} (f : L ⟶ M)
+    (hf : BilinModuleCat.IsPrimitiveEmbedding f.hom) (N : PrimitiveIsotropic L k) :
+    PrimitiveIsotropic M k where
+  toSubmodule := N.toSubmodule.map (BilinModuleCat.underlyingMap f.hom)
+  isotropic := by
+    intro x hx y hy
+    simp only [Submodule.mem_map] at hx hy
+    obtain ⟨a, ha, rfl⟩ := hx
+    obtain ⟨b, hb, rfl⟩ := hy
+    rw [IntegralLatticeCat.asBilinForm_apply (L := M),
+      BilinModuleCat.map_pairing, ← IntegralLatticeCat.asBilinForm_apply (L := L)]
+    exact N.isotropic a ha b hb
+  finrank_eq := by
+    rw [← LinearEquiv.finrank_eq (Submodule.equivMapOfInjective
+      (BilinModuleCat.underlyingMap f.hom) hf.1 N.toSubmodule), N.finrank_eq]
+  primitive := IsPrimitiveSubmodule.map_of_primitiveEmbedding
+    (BilinModuleCat.underlyingMap f.hom) hf.1 hf.2 N.primitive
 
 /-- `O(L)` acts on the primitive isotropic sublattices of rank `k`. -/
 noncomputable instance primitiveIsotropicSMul {L : IntegralLatticeCat R} {k : ℕ} :
@@ -158,22 +182,30 @@ noncomputable instance primitiveIsotropicMulAction {L : IntegralLatticeCat R} {k
     apply PrimitiveIsotropic.ext
     exact mul_smul g h N.toSubmodule
 
-/-- A subgroup `H ⊆ O(L)`, in particular the finite-index `Γ`, acts on primitive isotropic
-sublattices by restriction of scalars along `H → O(L)`. -/
-noncomputable instance primitiveIsotropicSubgroupMulAction {L : IntegralLatticeCat R}
-    (H : Subgroup (OrthogonalGroup L)) {k : ℕ} : MulAction H (PrimitiveIsotropic L k) :=
-  MulAction.compHom (PrimitiveIsotropic L k) (Subgroup.subtype H)
+/-- The finite-index subgroup `Γ ⊆ O(L)` acts on primitive isotropic sublattices, by restriction of
+scalars along `Γ → O(L)`. The instance is keyed on `FiniteIndexSubgroup` rather than on a bare
+`Subgroup`: `Subgroup (OrthogonalGroup ?L)` forces the elaborator to unfold `orthogonalSubgroup` to
+compare instances, which does not terminate in practice. -/
+noncomputable instance primitiveIsotropicGammaMulAction {L : IntegralLatticeCat R}
+    (Γ : FiniteIndexSubgroup L) {k : ℕ} : MulAction Γ.toSubgroup (PrimitiveIsotropic L k) :=
+  MulAction.compHom (PrimitiveIsotropic L k) (Subgroup.subtype Γ.toSubgroup)
+
+/-- The `Γ`-orbit relation on primitive isotropic sublattices of rank `k`. Naming it keeps the
+`MulAction` instance search out of every later statement. -/
+noncomputable def cuspOrbitRel (L : IntegralLatticeCat R) (Γ : FiniteIndexSubgroup L) (k : ℕ) :
+    Setoid (PrimitiveIsotropic L k) :=
+  MulAction.orbitRel Γ.toSubgroup (PrimitiveIsotropic L k)
 
 /-- The `Γ`-orbits of primitive isotropic sublattices of rank `k`: `k = 1` gives the 0-cusps,
 `k = 2` the 1-cusps. -/
-noncomputable def CuspOrbits (L : IntegralLatticeCat R) (Γ : FiniteIndexSubgroup L) (k : ℕ) :
+noncomputable abbrev CuspOrbits (L : IntegralLatticeCat R) (Γ : FiniteIndexSubgroup L) (k : ℕ) :
     Type u :=
-  MulAction.orbitRel.Quotient Γ.toSubgroup (PrimitiveIsotropic L k)
+  Quotient (cuspOrbitRel L Γ k)
 
 /-- The `Γ`-orbit of a primitive isotropic sublattice of rank `k`. -/
-noncomputable def CuspOrbits.mk {L : IntegralLatticeCat R} (Γ : FiniteIndexSubgroup L) {k : ℕ}
+noncomputable abbrev CuspOrbits.mk {L : IntegralLatticeCat R} (Γ : FiniteIndexSubgroup L) {k : ℕ}
     (N : PrimitiveIsotropic L k) : CuspOrbits L Γ k :=
-  Quotient.mk (MulAction.orbitRel Γ.toSubgroup (PrimitiveIsotropic L k)) N
+  Quotient.mk (cuspOrbitRel L Γ k) N
 
 /-- Incidence between a rank-1 orbit and a rank-2 orbit: some representative line is nested in some
 representative plane. -/
@@ -183,6 +215,70 @@ noncomputable def CuspIncidence (X : CuspObject (R := R)) : CuspOrbits X.lattice
     CuspOrbits.mk X.gamma v = c₁ ∧ ∃ P : PrimitiveIsotropic X.lattice 2,
       CuspOrbits.mk X.gamma P = c₂ ∧ v.toSubmodule ≤ P.toSubmodule
 
+/-- A morphism of lattices intertwining two orthogonal-group elements carries the image of the
+`γ`-translate to the `δ`-translate: this is what makes the orbit map well defined. -/
+theorem PrimitiveIsotropic.map_smul {L M : IntegralLatticeCat R} {k : ℕ} (f : L ⟶ M)
+    (hf : BilinModuleCat.IsPrimitiveEmbedding f.hom) (γ : OrthogonalGroup L)
+    (δ : OrthogonalGroup M)
+    (h : (OrthogonalGroup.asLatticeIso γ).hom ≫ f = f ≫ (OrthogonalGroup.asLatticeIso δ).hom)
+    (N : PrimitiveIsotropic L k) :
+    PrimitiveIsotropic.map f hf (γ • N) = δ • PrimitiveIsotropic.map f hf N := by
+  have h' : (BilinModuleCat.underlyingMap f.hom).comp
+        (γ.1 : L.obj.carrier →ₗ[R] L.obj.carrier) =
+      (δ.1 : M.obj.carrier →ₗ[R] M.obj.carrier).comp
+        (BilinModuleCat.underlyingMap f.hom) := by
+    have h2 := congrArg (fun t : L ⟶ M => BilinModuleCat.underlyingMap t.hom) h
+    simpa only [ObjectProperty.FullSubcategory.comp_hom,
+      BilinModuleCat.underlyingMap_comp,
+      OrthogonalGroup.underlyingMap_asLatticeIso_hom] using h2
+  apply PrimitiveIsotropic.ext
+  change (γ • N).toSubmodule.map (BilinModuleCat.underlyingMap f.hom) =
+    (δ • PrimitiveIsotropic.map f hf N).toSubmodule
+  rw [show (γ • N).toSubmodule =
+        N.toSubmodule.map (γ.1 : L.obj.carrier →ₗ[R] L.obj.carrier) from rfl,
+      show (δ • PrimitiveIsotropic.map f hf N).toSubmodule =
+        (N.toSubmodule.map (BilinModuleCat.underlyingMap f.hom)).map
+          (δ.1 : M.obj.carrier →ₗ[R] M.obj.carrier) from rfl,
+      ← Submodule.map_comp, ← Submodule.map_comp, h']
+
+/-- The image of a `Γ`-orbit is a `Γ'`-orbit: the well-definedness of the orbit map, which is
+exactly the equivariance of the cusp morphism. -/
+theorem PrimitiveIsotropic.map_orbitRel {X Y : CuspObject (R := R)} {k : ℕ}
+    (f : CuspMorphism X Y) {N N' : PrimitiveIsotropic X.lattice k}
+    (hrel : cuspOrbitRel X.lattice X.gamma k N N') :
+    cuspOrbitRel Y.lattice Y.gamma k (PrimitiveIsotropic.map f.hom f.primitive N)
+      (PrimitiveIsotropic.map f.hom f.primitive N') := by
+  obtain ⟨γ, hγ⟩ := hrel
+  obtain ⟨δ, hδ, heq⟩ := f.equivariant γ γ.2
+  have hmap : PrimitiveIsotropic.map f.hom f.primitive N =
+      (⟨δ, hδ⟩ : ↥Y.gamma.toSubgroup) • PrimitiveIsotropic.map f.hom f.primitive N' := by
+    have h2 := PrimitiveIsotropic.map_smul (L := X.lattice) (M := Y.lattice) f.hom f.primitive
+      (γ : OrthogonalGroup X.lattice) δ heq N'
+    have hN : N = (γ : OrthogonalGroup X.lattice) • N' := hγ.symm
+    rw [← hN] at h2
+    exact h2
+  exact ⟨⟨δ, hδ⟩, hmap.symm⟩
+
+/-- The induced map on `Γ`-orbits of primitive isotropic sublattices of rank `k`. -/
+noncomputable def CuspOrbits.map {X Y : CuspObject (R := R)} (f : CuspMorphism X Y) (k : ℕ) :
+    CuspOrbits X.lattice X.gamma k → CuspOrbits Y.lattice Y.gamma k :=
+  have hwell : ∀ a b : PrimitiveIsotropic X.lattice k,
+      cuspOrbitRel X.lattice X.gamma k a b →
+      cuspOrbitRel Y.lattice Y.gamma k (PrimitiveIsotropic.map f.hom f.primitive a)
+        (PrimitiveIsotropic.map f.hom f.primitive b) :=
+    fun _ _ hh => PrimitiveIsotropic.map_orbitRel f hh
+  @Quotient.map _ _ (cuspOrbitRel X.lattice X.gamma k) (cuspOrbitRel Y.lattice Y.gamma k)
+    (fun N => PrimitiveIsotropic.map f.hom f.primitive N) hwell
+
+/-- The orbit map sends the class of a representative to the class of its image. -/
+theorem CuspOrbits.map_mk {X Y : CuspObject (R := R)} (f : CuspMorphism X Y) (k : ℕ)
+    (N : PrimitiveIsotropic X.lattice k) :
+    CuspOrbits.map f k (CuspOrbits.mk X.gamma N) =
+      CuspOrbits.mk Y.gamma (PrimitiveIsotropic.map f.hom f.primitive N) :=
+  @Quotient.map_mk _ _ (cuspOrbitRel X.lattice X.gamma k) (cuspOrbitRel Y.lattice Y.gamma k)
+    (fun N => PrimitiveIsotropic.map f.hom f.primitive N)
+    (fun _ _ hh => PrimitiveIsotropic.map_orbitRel f hh) N
+
 namespace CuspMorphism
 
 variable {X Y Z : CuspObject (R := R)}
@@ -190,6 +286,9 @@ variable {X Y Z : CuspObject (R := R)}
 /-- The identity morphism is equivariant for `γ ↦ γ`. -/
 def id (X : CuspObject (R := R)) : CuspMorphism X X where
   hom := 𝟙 X.lattice
+  primitive := by
+    rw [ObjectProperty.FullSubcategory.id_hom]
+    exact isPrimitiveEmbedding_id X.lattice.obj
   equivariant := by
     intro γ hγ
     exact ⟨γ, hγ, by simp⟩
@@ -197,6 +296,9 @@ def id (X : CuspObject (R := R)) : CuspMorphism X X where
 /-- Composition of equivariant embeddings is equivariant: the witnesses compose. -/
 def comp (f : CuspMorphism X Y) (g : CuspMorphism Y Z) : CuspMorphism X Z where
   hom := f.hom ≫ g.hom
+  primitive := by
+    rw [ObjectProperty.FullSubcategory.comp_hom]
+    exact isPrimitiveEmbedding_comp f.hom.hom g.hom.hom f.primitive g.primitive
   equivariant := by
     intro γ hγ
     obtain ⟨δ, hδ, hf⟩ := f.equivariant γ hγ
@@ -209,7 +311,10 @@ end CuspMorphism
 field is a proposition. -/
 @[ext] theorem CuspMorphism.ext {X Y : CuspObject (R := R)} {f g : CuspMorphism X Y}
     (h : f.hom = g.hom) : f = g := by
-  cases f; cases g; congr
+  obtain ⟨fh, fp, fe⟩ := f
+  obtain ⟨gh, gp, ge⟩ := g
+  obtain rfl := h
+  rfl
 
 /-- The cusp category: objects `(L, Γ)`, morphisms `Γ`-equivariant isometric embeddings. -/
 instance : Category (CuspObject (R := R)) where
@@ -219,6 +324,47 @@ instance : Category (CuspObject (R := R)) where
   id_comp := by intro X Y f; ext; simp [CuspMorphism.id, CuspMorphism.comp]
   comp_id := by intro X Y f; ext; simp [CuspMorphism.id, CuspMorphism.comp]
   assoc := by intro W X Y Z f g h; ext; simp [CuspMorphism.comp, Category.assoc]
+
+/-- The orbit map of the identity is the identity on classes. -/
+theorem CuspOrbits.map_id_apply {X : CuspObject (R := R)} (k : ℕ)
+    (c : CuspOrbits X.lattice X.gamma k) : CuspOrbits.map (𝟙 X) k c = c := by
+  refine Quotient.inductionOn c ?_
+  intro N
+  erw [CuspOrbits.map_mk]
+  congr 1
+  apply PrimitiveIsotropic.ext
+  change N.toSubmodule.map LinearMap.id = N.toSubmodule
+  rw [Submodule.map_id]
+
+/-- The orbit map of a composite is the composite of the orbit maps. -/
+theorem CuspOrbits.map_comp_apply {X Y Z : CuspObject (R := R)} (f : CuspMorphism X Y)
+    (g : CuspMorphism Y Z) (k : ℕ) (c : CuspOrbits X.lattice X.gamma k) :
+    CuspOrbits.map (CuspMorphism.comp f g) k c = CuspOrbits.map g k (CuspOrbits.map f k c) := by
+  refine Quotient.inductionOn c ?_
+  intro N
+  erw [CuspOrbits.map_mk]
+  congr 1
+  apply PrimitiveIsotropic.ext
+  change Submodule.map ((BilinModuleCat.underlyingMap g.hom.hom).comp
+      (BilinModuleCat.underlyingMap f.hom.hom)) N.toSubmodule
+    = Submodule.map (BilinModuleCat.underlyingMap g.hom.hom)
+        (Submodule.map (BilinModuleCat.underlyingMap f.hom.hom) N.toSubmodule)
+  rw [Submodule.map_comp]
+
+/-- The orbit functor: `(L, Γ) ↦ Γ`-orbits of primitive isotropic sublattices of rank `k`. `k = 1`
+gives the 0-cusps and `k = 2` the 1-cusps; cusps are an invariant of primitive embeddings, which is
+why the morphism class carries `IsPrimitiveEmbedding`. -/
+noncomputable def cuspOrbitFunctor (k : ℕ) : CuspObject (R := R) ⥤ Type u where
+  obj X := CuspOrbits X.lattice X.gamma k
+  map f := ↾(CuspOrbits.map f k)
+  map_id X := by
+    ext c
+    simp only [CategoryTheory.ConcreteCategory.hom_ofHom]
+    exact CuspOrbits.map_id_apply k c
+  map_comp f g := by
+    ext c
+    simp only [CategoryTheory.ConcreteCategory.hom_ofHom]
+    exact CuspOrbits.map_comp_apply f g k c
 
 /-- The cusp category as an object of the catalogue. -/
 noncomputable def cuspCategory (R : Type u) [CommRing R] : ObjCat.{u + 1, u} :=

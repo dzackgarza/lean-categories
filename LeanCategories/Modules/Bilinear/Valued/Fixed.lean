@@ -151,6 +151,15 @@ theorem map_pairing {L M : BilinModuleCat R W} (f : L ⟶ M)
   have h := f.unop.property
   exact LinearMap.congr_fun h (x ⊗ₜ[R] y)
 
+@[simp]
+theorem underlyingMap_id (L : BilinModuleCat R W) : underlyingMap (𝟙 L) = LinearMap.id :=
+  rfl
+
+@[simp]
+theorem underlyingMap_comp {L M N : BilinModuleCat R W} (f : L ⟶ M) (g : M ⟶ N) :
+    underlyingMap (f ≫ g) = (underlyingMap g).comp (underlyingMap f) :=
+  rfl
+
 /-- Build a formed-module morphism from a form-preserving linear map. -/
 def homMk {L M : BilinModuleCat R W} (f : L.carrier →ₗ[R] M.carrier)
     (h : ∀ x y, M.pairing (f x) (f y) = L.pairing x y) : L ⟶ M := by
