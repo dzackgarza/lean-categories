@@ -269,4 +269,52 @@ noncomputable def cuspOrbitsEquivDoubleCosetsDiscriminant [IsDomain R]
     (CuspDescent.DoubleCoset.quotientMulEquiv
       (QuotientGroup.quotientKerEquivRange (OrthogonalGroup.discriminantRepresentation hL)) _ _)
 
+/-- The quotient map through the kernel followed by the identification with the range is the range
+restriction of `ρ`. -/
+theorem quotientKerEquivRange_comp_mk'_ker [IsDomain R]
+    (hL : IsFractionFieldPerfect R L) :
+    (QuotientGroup.quotientKerEquivRange
+        (OrthogonalGroup.discriminantRepresentation hL)).toMonoidHom.comp
+      (QuotientGroup.mk' (OrthogonalGroup.discriminantRepresentation hL).ker) =
+      (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict := by
+  ext x
+  simp only [MonoidHom.comp_apply, QuotientGroup.quotientKerEquivRange,
+    QuotientGroup.rangeKerLift, MonoidHom.coe_rangeRestrict]
+  rfl
+
+/-- The image of a subgroup of `O(L)` in the discriminant range is its image under the range
+restriction of `ρ`. -/
+theorem discriminantRangeImage_eq_map_rangeRestrict [IsDomain R]
+    (hL : IsFractionFieldPerfect R L) (H : Subgroup (OrthogonalGroup L)) :
+    discriminantRangeImage hL H =
+      H.map (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict := by
+  rw [discriminantRangeImage]
+  have h : Subgroup.map
+      (QuotientGroup.quotientKerEquivRange
+        (OrthogonalGroup.discriminantRepresentation hL)).toMonoidHom
+      (Subgroup.map (QuotientGroup.mk' (OrthogonalGroup.discriminantRepresentation hL).ker) H) =
+      Subgroup.map (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict H := by
+    rw [Subgroup.map_map, quotientKerEquivRange_comp_mk'_ker hL]
+  exact h
+
+
+/-- The same orbit equivalence with the target written as the double cosets of the images of `Γ` and
+of the stabilizer of `N` under `ρ` itself, which is the statement of prop:descent-fibre. -/
+noncomputable def cuspOrbitsEquivDoubleCosetsDiscriminantRange [IsDomain R]
+    (hL : IsFractionFieldPerfect R L) (Γ : FiniteIndexSubgroup L)
+    (hKΓ : OrthogonalGroup.stableOrthogonalGroup hL ≤ Γ.toSubgroup) {k : ℕ}
+    (N : PrimitiveIsotropic L k) :
+    {c : CuspOrbits L Γ k //
+        ∃ v ∈ MulAction.orbit (OrthogonalGroup L) N, CuspOrbits.mk Γ v = c} ≃
+      DoubleCoset.Quotient
+        (Γ.toSubgroup.map (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict :
+          Set (OrthogonalGroup.discriminantRepresentation hL).range)
+        ((MulAction.stabilizer (OrthogonalGroup L) N).map
+          (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict :
+          Set (OrthogonalGroup.discriminantRepresentation hL).range) :=
+  (cuspOrbitsEquivDoubleCosetsDiscriminant hL Γ hKΓ N).trans
+    (Equiv.cast (by
+      rw [discriminantRangeImage_eq_map_rangeRestrict hL,
+        discriminantRangeImage_eq_map_rangeRestrict hL]))
+
 end LeanCategories.Lattices.Valued
