@@ -122,4 +122,86 @@ theorem ker_inf_saturation (hL : IsFractionFieldPerfect R L) {k : ℕ}
     obtain ⟨a, ha, rfl⟩ := Submodule.mem_map.mp hx
     refine ⟨⟨a, rfl⟩, le_saturation (M := ↥(metricDual R L)) (metricDualImage N) hx⟩
 
+theorem actOnMetricDual_toMetricDual (hL : IsFractionFieldPerfect R L)
+    (g : OrthogonalGroup L) (x : L.obj.carrier) :
+    OrthogonalGroup.actOnMetricDual g hL (toMetricDual R L x) = toMetricDual R L (g.1 x) := by
+  apply Subtype.ext
+  rw [OrthogonalGroup.actOnMetricDual_coe]
+  show OrthogonalGroup.actOnRationalSpan g (↑(toMetricDual R L x) : RationalSpan R L) =
+    ↑(toMetricDual R L (g.1 x))
+  have hx : (↑(toMetricDual R L x) : RationalSpan R L) = toRationalSpan R L x := rfl
+  rw [hx]
+  simp [OrthogonalGroup.actOnRationalSpan, toRationalSpan]
+  rfl
+
+/-- The dual action and mapping along a submodule commute: `g • (N.map toMetricDual) =
+(g • N).map toMetricDual`, because `actOnMetricDual` is the dual action of the isometry on the
+metric dual and `toMetricDual` is equivariant. -/
+theorem map_toMetricDual_smul (hL : IsFractionFieldPerfect R L) (g : OrthogonalGroup L)
+    {k : ℕ} (N : PrimitiveIsotropic L k) :
+    (N.toSubmodule.map (toMetricDual R L)).map (OrthogonalGroup.actOnMetricDual g hL).toLinearMap =
+      (g • N).toSubmodule.map (toMetricDual R L) := by
+  have hcomp : (OrthogonalGroup.actOnMetricDual g hL).toLinearMap.comp (toMetricDual R L) =
+      (toMetricDual R L).comp (g.1.toLinearMap) := by
+    ext x
+    simpa using actOnMetricDual_toMetricDual hL g x
+  calc
+    _ = N.toSubmodule.map ((OrthogonalGroup.actOnMetricDual g hL).toLinearMap.comp
+        (toMetricDual R L)) := (Submodule.map_comp _ _ _).symm
+    _ = N.toSubmodule.map ((toMetricDual R L).comp (g.1.toLinearMap)) := by rw [hcomp]
+    _ = (g • N).toSubmodule.map (toMetricDual R L) := Submodule.map_comp _ _ _
+
+/-- `saturation` commutes with mappings by a linear equivalence: membership is the same nonzero
+scalar condition on either side. -/
+theorem saturation_map_equiv {M M' : Type u} [AddCommGroup M] [Module R M]
+    [AddCommGroup M'] [Module R M'] (e : M ≃ₗ[R] M') (P : Submodule R M) :
+    (saturation P).map (e : M →ₗ[R] M') = saturation (P.map (e : M →ₗ[R] M')) := by
+  apply le_antisymm
+  · rintro x ⟨y, hy, rfl⟩
+    obtain ⟨a, ha, hay⟩ := (mem_saturation_iff (M := M) P y).mp hy
+    refine (mem_saturation_iff (M := M') (P.map (e : M →ₗ[R] M')) ((e : M →ₗ[R] M') y)).mpr ⟨a, ha, ?_⟩
+    have hmem : e (a • y) ∈ Submodule.map (e : M →ₗ[R] M') P :=
+      Submodule.mem_map_of_mem hay
+    rw [← map_smul]
+    exact hmem
+  · intro x hx
+    obtain ⟨a, ha, hax⟩ := (mem_saturation_iff (M := M') (P.map (e : M →ₗ[R] M')) x).mp hx
+    obtain ⟨z, hz, hez⟩ := Submodule.mem_map.mp hax
+    have hz' : a • e.symm x = z := by
+      calc a • e.symm x = e.symm (a • x) := (map_smul e.symm a x).symm
+        _ = z := by rw [← hez]; exact e.symm_apply_apply z
+    have hx' : e.symm x ∈ saturation P :=
+      (mem_saturation_iff (M := M) P (e.symm x)).mpr ⟨a, ha, by rw [hz']; exact hz⟩
+    exact (Submodule.mem_map (f := (e : M →ₗ[R] M')) (p := saturation P)).mpr
+      ⟨e.symm x, hx', e.apply_symm_apply x⟩
+
+/-- `J_N` is equivariant for the isometry: `isotropicSubgroup (g • N) = g • J_N`. The three
+transport steps are `map_toMetricDual_smul` for the image, `saturation_map_equiv` for the
+saturation itself, and `OrthogonalGroup.metricDualToDiscriminant_actOnMetricDual` for the
+projection to `A_L`. -/
+theorem isotropicSubgroup_smul (hL : IsFractionFieldPerfect R L)
+    (g : OrthogonalGroup L) {k : ℕ} (N : PrimitiveIsotropic L k) :
+    isotropicSubgroup (g • N) =
+      (isotropicSubgroup N).map (OrthogonalGroup.actOnDefect g).toLinearMap := by
+  calc
+    isotropicSubgroup (g • N) =
+        (saturation (M := ↥(metricDual R L)) ((N.toSubmodule.map (toMetricDual R L)).map
+            (OrthogonalGroup.actOnMetricDual g hL).toLinearMap)).map
+          (metricDualToDiscriminant R L) := by
+      rw [map_toMetricDual_smul hL g N]
+    _ = ((metricDualSaturation N).map
+        (OrthogonalGroup.actOnMetricDual g hL).toLinearMap).map
+        (metricDualToDiscriminant R L) := by
+      have h := saturation_map_equiv (M := ↥(metricDual R L)) (M' := ↥(metricDual R L))
+        (e := OrthogonalGroup.actOnMetricDual g hL)
+        (P := N.toSubmodule.map (toMetricDual R L))
+      exact congrArg (Submodule.map (metricDualToDiscriminant R L)) h.symm
+    _ = (isotropicSubgroup N).map (OrthogonalGroup.actOnDefect g).toLinearMap := by
+        have hmap : (metricDualToDiscriminant R L).comp
+            (OrthogonalGroup.actOnMetricDual g hL).toLinearMap =
+          (OrthogonalGroup.actOnDefect g).toLinearMap.comp (metricDualToDiscriminant R L) := by
+          ext x
+          exact OrthogonalGroup.metricDualToDiscriminant_actOnMetricDual g hL x
+        rw [← Submodule.map_comp, ← Submodule.map_comp, hmap]
+
 end LeanCategories.Lattices.Valued
