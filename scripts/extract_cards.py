@@ -311,6 +311,7 @@ def emit(owner: str, apply: bool) -> int:
         decl_line = next(i for i, l in enumerate(src.read_text(encoding="utf-8").splitlines())
                          if re.match(rf"^(?:theorem|lemma)\s+(?:\w+\.)*{re.escape(short)}\b", l))
         scope_ctx, scope_ends = scope_context(src, decl_line)
+        stmt = re.sub(rf"^\s*(?:\w+\.)*{re.escape(short)}\b", "", stmt, count=1)
         doc, authored = docstring_of(src, short, c["name"])
         if authored:
             print(f"  REFUSED  {c['name']}: the declaration has no docstring in its module, so no "
@@ -319,6 +320,7 @@ def emit(owner: str, apply: bool) -> int:
         decl_line = next(i for i, l in enumerate(src.read_text(encoding="utf-8").splitlines())
                          if re.match(rf"^(?:theorem|lemma)\s+(?:\w+\.)*{re.escape(short)}\b", l))
         scope_ctx, scope_ends = scope_context(src, decl_line)
+        stmt = re.sub(rf"^\s*(?:\w+\.)*{re.escape(short)}\b", "", stmt, count=1)
         doc, authored = docstring_of(src, short, c["name"])
         if authored:
             print(f"  REFUSED  {c['name']}: the declaration has no docstring in its module, so no "
