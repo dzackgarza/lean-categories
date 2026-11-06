@@ -21,6 +21,26 @@ space of `ρ(O(L))`.
 
 The single hypothesis `K ≤ Γ` is what makes the descending map well defined: if `g` is replaced by
 `g k` with `k ∈ K`, then `g k g⁻¹ ∈ K ⊆ Γ` absorbs the difference on the left of the double coset.
+
+## Trap: `ρ.ker` versus `stableOrthogonalGroup hL`
+
+`OrthogonalGroup.stableOrthogonalGroup hL` is *defined* to be
+`MonoidHom.ker (OrthogonalGroup.discriminantRepresentation hL)`, so the two subgroups are
+interchangeable by `rfl` in any *term*. They are **not** interchangeable in a *statement*.
+
+`QuotientGroup.mk' (OrthogonalGroup.stableOrthogonalGroup hL)` does not elaborate: `mk'` needs a
+`Normal` instance, and `MonoidHom.normal_ker` is found only when the subgroup is syntactically a
+kernel. `letI`/`haveI` inside a proof comes too late, because the statement is elaborated first.
+Inside a *definition* the `letI` works, which is why `discriminantRangeImage` elaborates and a new
+lemma mentioning `mk' (stableOrthogonalGroup hL)` in its type does not.
+
+Consequences, both exercised above:
+
+* state the triangle identity at `ρ.ker`, not at `stableOrthogonalGroup hL`
+  (`quotientKerEquivRange_comp_mk'_ker`);
+* when a statement must move between the two spellings, close it by definitional unfolding
+  (`exact`), not by `rw`: `Subgroup.map_map` will not fire on a `mk' (stableOrthogonalGroup hL)`
+  argument, and the implying goal is not even type-correct at `implicit` transparency.
 -/
 
 @[expose] public section
