@@ -256,7 +256,6 @@ public import LeanCategories.Homological.Extensions
 public import LeanCategories.Homological.DerivedDimension
 public import LeanCategories.Foundation.Mathlib
 public import LeanCategories.Foundation.Cardinality
-public import LeanCategories.Foundation.Cards.range_ambientEquiv
 public import LeanCategories.Foundation.Sets
 public import LeanCategories.Foundation.Subsets
 public import LeanCategories.Foundation.IsoElements

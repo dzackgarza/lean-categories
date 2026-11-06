@@ -31,6 +31,9 @@ ROOT = Path(__file__).resolve().parent.parent
 GRAPH = ROOT / "LeanCategories/Tools/reference-graph.json"
 
 # Generated companions of other declarations: tactic-proof auxiliaries and equation lemmas.
+# A `source:` citation line in a module docstring — not the `source :=` field of a structure.
+SOURCE_LINE = re.compile(r"^\s*source\s*:\s*(?!:?=)(\S.*)$", re.M | re.I)
+
 GENERATED = re.compile(r"(_proof_\d+|_eq_\d+|match_\d+|_sunfold|_unfold|\.eq_\d+|\.match_|\.injEq|\.inj$|_cstage|_fstage)")
 
 HEADER = """/-
@@ -73,6 +76,15 @@ def source_name(path: Path, short: str) -> str | None:
     return m.group(1) if m else None
 
 
+def source_of(module: str) -> str | None:
+    """The `source:` citation a card inherits from its definition module, if it has one."""
+    p = module_path(module)
+    if not p.exists():
+        return None
+    m = SOURCE_LINE.search(p.read_text(encoding="utf-8"))
+    return m.group(1).strip() if m else None
+
+
 def emit(owner: str, apply: bool) -> int:
     rows, refs_from = load()
     sel = [c for c in card_set(rows, refs_from) if c["module"].split(".")[1] == owner]
@@ -85,13 +97,17 @@ def emit(owner: str, apply: bool) -> int:
         short = c["name"].rsplit(".", 1)[-1]
         src = module_path(c["module"])
         written_name = source_name(src, short)
+        src_missing = source_of(c["module"]) is None
+        if src_missing:
+            print(f"  REFUSED  {c['name']}: definition module has no `source:` line")
+            continue
         if written_name is None:
             print(f"  SKIP     {c['name']}: no source declaration in {src.relative_to(ROOT)}")
             continue
         card_name = c["name"].replace(".", "_")
         body = (HEADER
                 + f"public import {c['module']}\n\n"
-                + "/-! # Card: " + c["name"] + "\n\n"
+                + "/-! # Card: " + c["name"] + "\n\nsource: " + source_of(c["module"]) + "\n\n"
                 + "Published copy of a result from `" + c["module"] + "`. The definition module "
                   "keeps it; this file restates it under the platform card name with the proof "
                   "delegated to the original declaration.\n-/\n\n"
