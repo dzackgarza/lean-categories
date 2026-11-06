@@ -228,4 +228,54 @@ noncomputable def CuspOrbits.isotropicSubgroup
     rw [← hsub]
     exact isotropicSubgroup_smul_of_mem_stable hL b γ γ.2)
 
+noncomputable instance parentDefect (hL : IsFractionFieldPerfect R L) :
+    MulAction (BilinModuleCat.OrthogonalGroup (discriminantBilinObject R L hL))
+      (Submodule R L.obj.defect) :=
+  BilinModuleCat.OrthogonalGroup.submoduleMulAction (discriminantBilinObject R L hL)
+
+noncomputable instance rangeDefect (hL : IsFractionFieldPerfect R L) :
+    MulAction ↥(OrthogonalGroup.discriminantRepresentation hL).range
+      (Submodule R L.obj.defect) :=
+  MulAction.compHom
+    (M := BilinModuleCat.OrthogonalGroup (discriminantBilinObject R L hL))
+    (Submodule R L.obj.defect)
+    (show ↥(OrthogonalGroup.discriminantRepresentation hL).range →*
+      BilinModuleCat.OrthogonalGroup (discriminantBilinObject R L hL) from
+      Subgroup.subtype _)
+
+theorem CuspOrbits.isotropicSubgroup_cuspOrbitOfDoset
+    (hL : IsFractionFieldPerfect R L) (hΓ : (OrthogonalGroup.stableOrthogonalGroup hL).FiniteIndex)
+    {k : ℕ} (N : PrimitiveIsotropic L k)
+    (g : OrthogonalGroup L) :
+    CuspOrbits.isotropicSubgroup (k := k) hL hΓ
+      (cuspOrbitOfDoset (⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ :
+        FiniteIndexSubgroup L) N
+        (DoubleCoset.mk (⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ :
+          FiniteIndexSubgroup L).toSubgroup
+          (MulAction.stabilizer (OrthogonalGroup L) N) g)) =
+      (LeanCategories.Lattices.Valued.isotropicSubgroup N).map
+        (OrthogonalGroup.actOnDefect g).toLinearMap := by
+  simp only [CuspOrbits.isotropicSubgroup, Quotient.lift]
+  exact isotropicSubgroup_smul hL g N
+
+
+/-- The class determined by a lift is the class of `N` exactly when the lift acts trivially on the
+isotropic subgroup. -/
+theorem cuspOrbits_class_eq_iff_stabilizer
+    (hL : IsFractionFieldPerfect R L) (hΓ : (OrthogonalGroup.stableOrthogonalGroup hL).FiniteIndex)
+    {k : ℕ} (N : PrimitiveIsotropic L k) (g : OrthogonalGroup L) :
+    CuspOrbits.isotropicSubgroup (k := k) hL hΓ
+        (cuspOrbitOfDoset (⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ :
+          FiniteIndexSubgroup L) N
+          (DoubleCoset.mk (⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ :
+            FiniteIndexSubgroup L).toSubgroup
+            (MulAction.stabilizer (OrthogonalGroup L) N) g)) =
+          (isotropicSubgroup N : Submodule R L.obj.defect) ↔
+      (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict g ∈
+        MulAction.stabilizer
+          ↥(OrthogonalGroup.discriminantRepresentation hL).range
+          (isotropicSubgroup N) := by
+  rw [CuspOrbits.isotropicSubgroup_cuspOrbitOfDoset hL hΓ N g]
+  exact Iff.rfl
+
 end LeanCategories.Lattices.Valued
