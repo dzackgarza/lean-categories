@@ -281,6 +281,7 @@ public import LeanCategories.Modules.Mathlib
 public import LeanCategories.Modules.Graded
 public import LeanCategories.Exceptional.Mathlib
 public import LeanCategories.Catalogue
+public import LeanCategories.Catalogue.Semantics.Foundation.Rankings
 public import LeanCategories.Catalogue.Semantics.Algebra.PrimeResidueFields
 public import LeanCategories.Catalogue.Semantics.Algebra.AutomorphismArrows
 public import LeanCategories.Catalogue.Semantics.Algebra.SuccessorSeries
