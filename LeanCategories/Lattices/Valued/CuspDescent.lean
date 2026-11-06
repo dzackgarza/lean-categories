@@ -193,3 +193,80 @@ noncomputable def dosetQuotientOrbit (Γ : FiniteIndexSubgroup L) {k : ℕ}
   Equiv.ofBijective _ ⟨cuspOrbitOfDoset_injective Γ N, cuspOrbitOfDoset_surjective Γ N⟩
 
 end LeanCategories.Lattices.Valued
+
+namespace LeanCategories.Lattices.Valued.CuspDescent
+
+universe u
+
+variable {G : Type u} [Group G] {G' : Type u} [Group G']
+
+/-- A group isomorphism carries the double cosets of `A` and `B` to the double cosets of their
+images. -/
+noncomputable def DoubleCoset.quotientMulEquiv (e : G ≃* G') (A B : Subgroup G) :
+    DoubleCoset.Quotient (A : Set G) (B : Set G) ≃
+      DoubleCoset.Quotient (A.map e.toMonoidHom : Set G') (B.map e.toMonoidHom : Set G') where
+  toFun := Quotient.map (e : G → G') (by
+    intro a b hab
+    obtain ⟨γ, hγ, h, hh, rfl⟩ := (DoubleCoset.rel_iff (H := A) (K := B)).mp hab
+    exact (DoubleCoset.rel_iff (H := A.map e.toMonoidHom) (K := B.map e.toMonoidHom)).mpr
+      ⟨e γ, Subgroup.mem_map_of_mem _ hγ, e h, Subgroup.mem_map_of_mem _ hh, by simp⟩)
+  invFun := Quotient.map (e.symm : G' → G) (by
+    intro a b hab
+    obtain ⟨γ, hγ, h, hh, rfl⟩ := (DoubleCoset.rel_iff
+      (H := A.map e.toMonoidHom) (K := B.map e.toMonoidHom)).mp hab
+    obtain ⟨γ₀, hγ₀, rfl⟩ := Subgroup.mem_map.mp hγ
+    obtain ⟨h₀, hh₀, rfl⟩ := Subgroup.mem_map.mp hh
+    exact (DoubleCoset.rel_iff (H := A) (K := B)).mpr
+      ⟨γ₀, hγ₀, h₀, hh₀, by simp⟩)
+  left_inv := by
+    intro q
+    induction q using Quotient.inductionOn with
+    | _ g =>
+      simp only [Quotient.map_mk, MulEquiv.symm_apply_apply]
+      rfl
+  right_inv := by
+    intro q
+    induction q using Quotient.inductionOn with
+    | _ g =>
+      simp only [Quotient.map_mk, MulEquiv.apply_symm_apply]
+      rfl
+
+end LeanCategories.Lattices.Valued.CuspDescent
+
+namespace LeanCategories.Lattices.Valued
+
+universe u
+
+variable {R : Type u} [CommRing R] {L : IntegralLatticeCat R}
+
+/-- The image of a subgroup of `O(L)` in the discriminant range `ρ(O(L))`, through `G ⧸ ker ρ`. -/
+noncomputable def discriminantRangeImage [IsDomain R] (hL : IsFractionFieldPerfect R L)
+    (H : Subgroup (OrthogonalGroup L)) :
+    Subgroup (OrthogonalGroup.discriminantRepresentation hL).range :=
+  letI : (OrthogonalGroup.stableOrthogonalGroup hL).Normal := MonoidHom.normal_ker _
+  (H.map (QuotientGroup.mk' (OrthogonalGroup.stableOrthogonalGroup hL))).map
+    (QuotientGroup.quotientKerEquivRange
+      (OrthogonalGroup.discriminantRepresentation hL)).toMonoidHom
+
+/-- The `Γ`-orbits of primitive isotropic sublattices lying over the `O(L)`-orbit of `N` are the
+double cosets of the images of `Γ` and of the stabilizer of `N` in the discriminant range
+`ρ(O(L))`, for `Γ` containing the stable orthogonal group `ker ρ`. -/
+noncomputable def cuspOrbitsEquivDoubleCosetsDiscriminant [IsDomain R]
+    (hL : IsFractionFieldPerfect R L) (Γ : FiniteIndexSubgroup L)
+    (hKΓ : OrthogonalGroup.stableOrthogonalGroup hL ≤ Γ.toSubgroup) {k : ℕ}
+    (N : PrimitiveIsotropic L k) :
+    {c : CuspOrbits L Γ k //
+        ∃ v ∈ MulAction.orbit (OrthogonalGroup L) N, CuspOrbits.mk Γ v = c} ≃
+      DoubleCoset.Quotient
+        (discriminantRangeImage hL Γ.toSubgroup :
+          Set (OrthogonalGroup.discriminantRepresentation hL).range)
+        (discriminantRangeImage hL (MulAction.stabilizer (OrthogonalGroup L) N) :
+          Set (OrthogonalGroup.discriminantRepresentation hL).range) := by
+  haveI : (OrthogonalGroup.stableOrthogonalGroup hL).Normal := MonoidHom.normal_ker _
+  exact ((dosetQuotientOrbit Γ N).symm.trans
+    (CuspDescent.dosetQuotientEquiv (OrthogonalGroup.stableOrthogonalGroup hL) Γ.toSubgroup
+      (MulAction.stabilizer (OrthogonalGroup L) N) hKΓ)).trans
+    (CuspDescent.DoubleCoset.quotientMulEquiv
+      (QuotientGroup.quotientKerEquivRange (OrthogonalGroup.discriminantRepresentation hL)) _ _)
+
+end LeanCategories.Lattices.Valued
