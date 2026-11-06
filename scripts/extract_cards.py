@@ -64,6 +64,24 @@ def load() -> tuple[list[dict], dict[str, set[str]]]:
     return rows, refs_from
 
 
+SIMPLIKE = re.compile(r"@\[\s*(?:[^\]]*\b)?(?:simp|ext)\b")
+
+
+def is_simp_or_ext(path: Path, short: str) -> bool:
+    """True when the declaration carries @[simp] or @[ext] — those stay in the definition file."""
+    lines = path.read_text(encoding="utf-8").splitlines()
+    pat = re.compile(rf"^(?:theorem|lemma)\s+(?:\w+\.)*{re.escape(short)}\b")
+    for i, l in enumerate(lines):
+        if pat.match(l):
+            j = i - 1
+            while j >= 0 and (lines[j].startswith("@[") or lines[j].lstrip().startswith("--")):
+                if SIMPLIKE.search(lines[j]):
+                    return True
+                j -= 1
+            return False
+    return False
+
+
 def is_companion(row: dict) -> bool:
     """True when no `theorem`/`lemma` declaration of this name exists in its module."""
     short = row["name"].rsplit(".", 1)[-1]
@@ -79,7 +97,8 @@ def card_set(rows: list[dict], refs_from: dict[str, set[str]],
         others = refs_from.get(r["name"], set()) - {r["module"]}
         if not others:
             continue
-        if is_companion(r):
+        p = module_path(r["module"])
+        if is_companion(r) or is_simp_or_ext(p, r["name"].rsplit(".", 1)[-1]):
             companions.append(r)
             continue
         out.append({**r, "referenced_by": sorted(others)})
@@ -162,6 +181,46 @@ def full_declaration(path: Path, short: str, new_name: str) -> str | None:
     return None
 
 
+def explicit_binders(stmt: str) -> list[str]:
+    """Names of the explicit `( … )` binders in a copied signature, in order."""
+    # only the part before the top-level `:` that separates binders from the type
+    depth0, cut = 0, len(stmt)
+    for k, ch in enumerate(stmt):
+        if ch in "({[⦃":
+            depth0 += 1
+        elif ch in ")}]⦄":
+            depth0 -= 1
+        elif ch == ":" and depth0 == 0:
+            cut = k
+            break
+    stmt = stmt[:cut]
+    names, depth, i = [], 0, 0
+    while i < len(stmt):
+        ch = stmt[i]
+        if ch in "({[⦃":
+            depth += 1
+            if ch == "(":
+                # a binder group: (n1 n2 : T) — take identifiers before the first ':'
+                j = i + 1
+                grp, d = "", 1
+                while j < len(stmt) and d:
+                    if stmt[j] in "({[⦃":
+                        d += 1
+                    elif stmt[j] in ")}]⦄":
+                        d -= 1
+                        if d == 0:
+                            break
+                    grp += stmt[j]
+                    j += 1
+                head = grp.split(":")[0]
+                for tok in re.findall(r"[A-Za-z_][\w']*", head):
+                    names.append(tok)
+        elif ch in ")}]⦄":
+            depth -= 1
+        i += 1
+    return names
+
+
 def scope_context(path: Path, decl_line: int) -> tuple[str, int]:
     """The scope in force at `decl_line`: namespace/section/open/variable lines, in order.
 
@@ -178,7 +237,8 @@ def scope_context(path: Path, decl_line: int) -> tuple[str, int]:
         if SCOPE_OPEN.match(line):
             depth += 1
             opener_names.append(stripped)
-            active.append((depth, line.rstrip()))
+            active.append((depth, ("open " + stripped.split(None, 1)[1].strip())
+                           if stripped.startswith("namespace") else line.rstrip()))
         elif stripped == "end" or re.match(r"^end\s+\S+$", stripped):
             if depth > 0:
                 active = [a for a in active if a[0] < depth]
@@ -190,9 +250,8 @@ def scope_context(path: Path, decl_line: int) -> tuple[str, int]:
     text = "\n".join(t for _, t in active)
     closers = []
     for o in reversed(opener_names):
-        if o.startswith("namespace"):
-            closers.append("end " + o.split(None, 1)[1].strip())
-        else:
+        closers.append(None) if False else None
+        if not o.startswith("namespace"):
             closers.append("end")
     return (text + "\n\n" if text else ""), "\n".join(closers)
 
@@ -234,10 +293,18 @@ def emit(owner: str, apply: bool) -> int:
                          if re.match(rf"^(?:theorem|lemma)\s+(?:\w+\.)*{re.escape(short)}\b", l))
         scope_ctx, scope_ends = scope_context(src, decl_line)
         doc, authored = docstring_of(src, short, c["name"])
+        if authored:
+            print(f"  REFUSED  {c['name']}: the declaration has no docstring in its module, so no "
+                  f"natural_language_statement exists — write one there first")
+            continue
         decl_line = next(i for i, l in enumerate(src.read_text(encoding="utf-8").splitlines())
                          if re.match(rf"^(?:theorem|lemma)\s+(?:\w+\.)*{re.escape(short)}\b", l))
         scope_ctx, scope_ends = scope_context(src, decl_line)
         doc, authored = docstring_of(src, short, c["name"])
+        if authored:
+            print(f"  REFUSED  {c['name']}: the declaration has no docstring in its module, so no "
+                  f"natural_language_statement exists — write one there first")
+            continue
         body = (
             HEADER
             + f"public import {c['module']}\n\n"
@@ -251,7 +318,8 @@ def emit(owner: str, apply: bool) -> int:
             + f"open {c['module'].rsplit('.', 1)[0]}\n\n"
             + scope_ctx
             + doc + "\n"
-            + (full_declaration(src, short, card_name) or "") + "\n\n"
+            + f"theorem {card_name}{stmt} :=\n  {c['name']}"
+            + ("".join(" " + b for b in explicit_binders(stmt))) + "\n\n"
             + scope_ends + "\n"
             + "end LeanCategories.Cards\n"
         )

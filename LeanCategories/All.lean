@@ -240,8 +240,6 @@ public import LeanCategories.Homological.CartanLerayData
 public import LeanCategories.Homological.CentralHomLocalization
 public import LeanCategories.Homological.KoszulComplex
 public import LeanCategories.Homological.Cards.noContinuousGlobalLog
-public import LeanCategories.Homological.Cards.koszulComplex_d
-public import LeanCategories.Homological.Cards.koszulBoundaryLinearMap_single
 public import LeanCategories.Homological.Cards.expSheafHom_isLocallySurjective
 public import LeanCategories.Homological.KoszulHomology
 public import LeanCategories.Homological.KoszulExteriorDescription
