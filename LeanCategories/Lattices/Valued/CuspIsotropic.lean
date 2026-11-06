@@ -336,4 +336,74 @@ noncomputable def cosetInEquiv {G : Type u} [Group G] (H K : Subgroup G) (hHK : 
     refine ⟨QuotientGroup.mk ⟨g, hg⟩, Subtype.ext ?_⟩
     rfl
 
+abbrev StableFibre (hL : IsFractionFieldPerfect R L)
+    (hΓ : (OrthogonalGroup.stableOrthogonalGroup hL).FiniteIndex) (k : ℕ)
+    (N : PrimitiveIsotropic L k) :=
+  {a : {c : CuspOrbits L (⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ :
+        FiniteIndexSubgroup L) k //
+      ∃ v ∈ MulAction.orbit (OrthogonalGroup L) N,
+          CuspOrbits.mk (⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ :
+            FiniteIndexSubgroup L) v = c} //
+    CuspOrbits.isotropicSubgroup hL hΓ a.1 = isotropicSubgroup N}
+
+/-- The same fibre on the raw double cosets. -/
+abbrev DosetFibre (hL : IsFractionFieldPerfect R L)
+    (hΓ : (OrthogonalGroup.stableOrthogonalGroup hL).FiniteIndex) (k : ℕ)
+    (N : PrimitiveIsotropic L k) :=
+  {d : DoubleCoset.Quotient
+      ((⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ :
+        FiniteIndexSubgroup L).toSubgroup : Set (OrthogonalGroup L))
+      (MulAction.stabilizer (OrthogonalGroup L) N : Set (OrthogonalGroup L)) //
+    CuspOrbits.isotropicSubgroup hL hΓ
+      (LeanCategories.Lattices.Valued.cuspOrbitOfDoset
+        (⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ :
+          FiniteIndexSubgroup L) N d).1 = isotropicSubgroup N}
+
+variable (hL : IsFractionFieldPerfect R L)
+variable (hΓ : (OrthogonalGroup.stableOrthogonalGroup hL).FiniteIndex)
+
+noncomputable def stableFibreEquivDosetFibre :
+    {a : {c : CuspOrbits L (⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ :
+          FiniteIndexSubgroup L) k //
+          ∃ v ∈ MulAction.orbit (OrthogonalGroup L) N,
+            CuspOrbits.mk (⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ :
+              FiniteIndexSubgroup L) v = c} //
+        CuspOrbits.isotropicSubgroup hL hΓ a.1 = isotropicSubgroup N} ≃
+    {d : DoubleCoset.Quotient
+        ((⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ :
+          FiniteIndexSubgroup L).toSubgroup : Set (OrthogonalGroup L))
+          (MulAction.stabilizer (OrthogonalGroup L) N : Set (OrthogonalGroup L)) //
+        CuspOrbits.isotropicSubgroup hL hΓ
+          (LeanCategories.Lattices.Valued.cuspOrbitOfDoset
+            (⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ :
+              FiniteIndexSubgroup L) N d).1 = isotropicSubgroup N} :=
+  Equiv.subtypeEquiv (dosetQuotientOrbit
+      (⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ :
+        FiniteIndexSubgroup L) N).symm fun a => by
+    rw [show LeanCategories.Lattices.Valued.cuspOrbitOfDoset
+        (⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ :
+          FiniteIndexSubgroup L) N
+        ((dosetQuotientOrbit
+          (⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ :
+            FiniteIndexSubgroup L) N).symm a) = a from
+      (dosetQuotientOrbit
+        (⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ :
+          FiniteIndexSubgroup L) N).apply_symm_apply a]
+
+theorem dosetFibre_mk_iff (hL : IsFractionFieldPerfect R L)
+    (hΓ : (OrthogonalGroup.stableOrthogonalGroup hL).FiniteIndex) {k : ℕ}
+    (N : PrimitiveIsotropic L k) (g : OrthogonalGroup L) :
+    CuspOrbits.isotropicSubgroup hL hΓ
+        (cuspOrbitOfDoset
+          (⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ :
+            FiniteIndexSubgroup L) N
+          (DoubleCoset.mk (⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ :
+            FiniteIndexSubgroup L).toSubgroup
+            (MulAction.stabilizer (OrthogonalGroup L) N) g)).1 =
+      isotropicSubgroup N ↔
+      (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict g ∈
+        MulAction.stabilizer ↥(OrthogonalGroup.discriminantRepresentation hL).range
+          (isotropicSubgroup N) := by
+  exact cuspOrbits_class_eq_iff_stabilizer hL hΓ N g
+
 end LeanCategories.Lattices.Valued
