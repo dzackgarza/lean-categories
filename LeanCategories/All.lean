@@ -298,5 +298,6 @@ public import LeanCategories.Catalogue.Semantics.Foundation.TwoSubsets
 public import LeanCategories.Catalogue.Semantics.Foundation.CoreIsomorphisms
 public import LeanCategories.Catalogue.Semantics.Foundation.FiniteOrders
 public import LeanCategories.Lattices.Valued.Cusps
+public import LeanCategories.Lattices.Valued.CuspDescent
 
 @[expose] public section
