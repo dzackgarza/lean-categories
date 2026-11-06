@@ -411,6 +411,36 @@ normalized_registry .morphism
   { id := ⟨"mor.cusps.identity"⟩, category := CategoryId.cusps, name := "id"
     declaration := `LeanCategories.Lattices.Valued.cuspIdentity }
 
+namespace FunctorId
+/-- The Γ-orbit functor of the cusp category (#113). -/
+def cuspsOrbits : FunctorId := ⟨"fun.cusps.orbits"⟩
+end FunctorId
+
+/-- The expression of the orbit functor: from the cusp category to `Sets`. -/
+def CuspsOrbitsExpr : FunctorExpr CuspsExpr Foundation.Sets :=
+  .atomic FunctorId.cuspsOrbits
+
+/-- The orbit functor to `Sets`, as a functor of the registered categories: `(L, Γ) ↦ Γ`-orbits
+of primitive isotropic sublattices of rank `k`. -/
+noncomputable def cuspsOrbits (R : Type u) [CommRing R] (k : ℕ) :
+    LeanCategories.Lattices.Valued.cuspCategory (R := R) ⥤
+      LeanCategories.Foundation.Mathlib.Sets.{u} :=
+  LeanCategories.Lattices.Valued.cuspOrbitFunctor k
+
+/-- Its realization, over the cusp and `Sets` category realizations. -/
+noncomputable def cuspsOrbitsRealization (R : Type u) [CommRing R] (k : ℕ) :
+    FunctorRealization CuspsOrbitsExpr
+      (LeanCategories.Lattices.Valued.cuspCategory (R := R))
+      LeanCategories.Foundation.Mathlib.Sets.{u} (cuspsOrbits R k) :=
+  { sourceRealization := cuspsRealization R
+    targetRealization := Foundation.CatalogueRegistration.setsRealization }
+
+normalized_registry .functor
+  { id := FunctorId.cuspsOrbits, source := CuspsExpr, target := Foundation.Sets
+    declaration := `CasCatalogue.cuspsOrbits
+    realization := `CasCatalogue.cuspsOrbitsRealization
+    expression := CuspsOrbitsExpr }
+
 end
 
 end CasCatalogue
