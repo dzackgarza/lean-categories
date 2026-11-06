@@ -5,6 +5,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Lattices.Valued.DiscriminantAction
+public import LeanCategories.Lattices.Valued.Sublattice
+public import LeanCategories.Modules.Bilinear.Valued.Isometry
 public import Mathlib.GroupTheory.Index
 public import LeanCategories.Catalogue.Syntax
 public import LeanCategories.Catalogue.Semantics.Lattices.Valued.CatalogueRegistration
@@ -56,6 +58,38 @@ def top (L : IntegralLatticeCat R) : FiniteIndexSubgroup L where
   finiteIndex := inferInstance
 
 end FiniteIndexSubgroup
+
+/-- A submodule is isotropic when the restricted form vanishes on it. -/
+def IsIsotropicSubmodule (L : IntegralLatticeCat R)
+    (N : Submodule R L.obj.carrier) : Prop :=
+  ∀ x ∈ N, ∀ y ∈ N, LeanCategories.Modules.Bilinear.Valued.BilinModuleCat.asBilinForm
+    L.obj x y = 0
+
+/-- A primitive isotropic sublattice of rank `k`: an isotropic submodule of rank `k` that is a
+direct summand of the carrier, which is primitivity at module level. Rank 1 gives 0-cusps and rank 2
+gives 1-cusps. -/
+structure PrimitiveIsotropic (L : IntegralLatticeCat R) (k : ℕ) where
+  /-- The underlying submodule. -/
+  toSubmodule : Submodule R L.obj.carrier
+  /-- The restricted form vanishes. -/
+  isotropic : IsIsotropicSubmodule L toSubmodule
+  /-- Its rank. -/
+  finrank_eq : Module.finrank R toSubmodule = k
+  /-- Primitivity: it is a direct summand of the carrier. -/
+  complemented : ∃ N' : Submodule R L.obj.carrier, IsCompl toSubmodule N'
+
+namespace PrimitiveIsotropic
+
+variable {L : IntegralLatticeCat R} {k : ℕ}
+
+instance : CoeOut (PrimitiveIsotropic L k) (Submodule R L.obj.carrier) :=
+  ⟨PrimitiveIsotropic.toSubmodule⟩
+
+/-- Two primitive isotropic sublattices of the same rank are equal when their submodules are. -/
+@[ext] theorem ext {N M : PrimitiveIsotropic L k} (h : N.toSubmodule = M.toSubmodule) : N = M := by
+  cases N; cases M; congr
+
+end PrimitiveIsotropic
 
 /-- An object of the cusp category: an integral lattice together with a finite-index subgroup of its
 orthogonal group. -/
