@@ -278,4 +278,62 @@ theorem cuspOrbits_class_eq_iff_stabilizer
   rw [CuspOrbits.isotropicSubgroup_cuspOrbitOfDoset hL hΓ N g]
   exact Iff.rfl
 
+/-- Elements of the stabilizer of `N` lift into the stabilizer of `J_N`. -/
+theorem stabilizerMap_le (hL : IsFractionFieldPerfect R L) {k : ℕ}
+    (N : PrimitiveIsotropic L k) :
+    (MulAction.stabilizer (OrthogonalGroup L) N).map
+        (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict ≤
+      MulAction.stabilizer ↥(OrthogonalGroup.discriminantRepresentation hL).range
+        (isotropicSubgroup N) := by
+  intro y hy
+  obtain ⟨g, hg, rfl⟩ := Subgroup.mem_map.mp hy
+  rw [MulAction.mem_stabilizer_iff]
+  change (isotropicSubgroup N).map (OrthogonalGroup.actOnDefect g).toLinearMap =
+    isotropicSubgroup N
+  rw [← isotropicSubgroup_smul hL g N, (MulAction.mem_stabilizer_iff).mp hg]
+
+/-- The predicate `g ∈ K` on left cosets of a smaller subgroup, well-defined when `H ≤ K`. -/
+def inCoset {G : Type u} [Group G] (H K : Subgroup G) (hHK : H ≤ K) : G ⧸ H → Prop :=
+  Quotient.lift (fun g : G => g ∈ K) (by
+    intro a b hrel
+    have hmem : a⁻¹ * b ∈ K := hHK ((QuotientGroup.leftRel_apply).mp hrel)
+    apply propext
+    constructor
+    · intro ha
+      have hmem' := K.mul_mem ha hmem
+      convert hmem' using 1; group
+    · intro hb
+      have hmem' := K.mul_mem hb (K.inv_mem hmem)
+      convert hmem' using 1; group)
+
+lemma inCoset_mk {G : Type u} [Group G] (H K : Subgroup G) (hHK : H ≤ K) (g : G) :
+    inCoset H K hHK (QuotientGroup.mk g) = (g ∈ K) := by rfl
+
+/-- The cosets of a subgroup `H` inside its own stabilizer are the left cosets by `H` in `K`. -/
+noncomputable def cosetInEquiv {G : Type u} [Group G] (H K : Subgroup G) (hHK : H ≤ K) :
+    {x : G ⧸ H // inCoset H K hHK x} ≃ K ⧸ H.subgroupOf K := by
+  let f : K ⧸ H.subgroupOf K → {x : G ⧸ H // inCoset H K hHK x} :=
+    fun y => ⟨Quotient.map (fun g : K => g.1) (fun a b h => (QuotientGroup.leftRel_apply).mpr
+        (Subgroup.mem_subgroupOf.mp ((QuotientGroup.leftRel_apply).mp h))) y, by
+      induction y using Quotient.inductionOn with
+      | _ g => exact g.2⟩
+  apply Equiv.symm (Equiv.ofBijective f ⟨?_, ?_⟩)
+  · intro x y hxy
+    induction x using Quotient.inductionOn with
+    | _ a =>
+    induction y using Quotient.inductionOn with
+    | _ b =>
+    apply Quotient.eq.mpr
+    have h := congrArg Subtype.val hxy
+    simp only [f, Quotient.map_mk] at h
+    apply (QuotientGroup.leftRel_apply).mpr
+      (Subgroup.mem_subgroupOf.mpr ((QuotientGroup.leftRel_apply).mp (Quotient.exact h)))
+  · intro x
+    obtain ⟨z, hz⟩ := x
+    induction z using Quotient.inductionOn with
+    | _ g =>
+    have hg : g ∈ K := hz
+    refine ⟨QuotientGroup.mk ⟨g, hg⟩, Subtype.ext ?_⟩
+    rfl
+
 end LeanCategories.Lattices.Valued
