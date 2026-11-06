@@ -281,5 +281,20 @@ public import LeanCategories.Modules.Mathlib
 public import LeanCategories.Modules.Graded
 public import LeanCategories.Exceptional.Mathlib
 public import LeanCategories.Catalogue
+public import LeanCategories.Catalogue.Semantics.Algebra.PrimeResidueFields
+public import LeanCategories.Catalogue.Semantics.Algebra.AutomorphismArrows
+public import LeanCategories.Catalogue.Semantics.Algebra.SuccessorSeries
+public import LeanCategories.Catalogue.Semantics.Algebra.CyclicQuotients
+public import LeanCategories.Catalogue.Semantics.Algebra.RectangularLinearAlgebra
+public import LeanCategories.Catalogue.Semantics.Modules.IntegerResidueModules
+public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.DegeneratePlaneLifts
+public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.ModuleKernelRestriction
+public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.DegeneratePlaneFactorization
+public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.ChangeValueComparisons
+public import LeanCategories.Catalogue.Semantics.Modules.Bilinear.Valued.ChangeValueLifts
+public import LeanCategories.Catalogue.Semantics.Foundation.IntegerSquareBounds
+public import LeanCategories.Catalogue.Semantics.Foundation.TwoSubsets
+public import LeanCategories.Catalogue.Semantics.Foundation.CoreIsomorphisms
+public import LeanCategories.Catalogue.Semantics.Foundation.FiniteOrders
 
 @[expose] public section
