@@ -35,3 +35,15 @@ is by source, not by name pattern: `extract_cards.py` prints every companion it 
 | `LeanCategories.Modules.Quadratic.Valued.IsometryClasses` | Modules | isometry classes of valued quadratic modules; no `corpus/` unit and no `FOUNDATIONS.md` heading states it |
 | `LeanCategories.Modules.Quadratic.Valued.Fixed` | Modules | fixed points of a group action on a valued quadratic module; no `corpus/` unit and no `FOUNDATIONS.md` heading states it |
 | `LeanCategories.Modules.Quadratic.Valued.Total` | Modules | total space of a valued quadratic module; no `corpus/` unit and no `FOUNDATIONS.md` heading states it |
+
+## Batch ledger
+
+| Owner | Modules sourced | Cards emitted | Modules listed here |
+|---|---|---|---|
+| Homological | 2 | 2 | 0 |
+| Topology | 2 | 4 | 1 (`Topology.SingularRealization`) |
+| Foundation | 0 | 0 | 1 (`Foundation.Subsets`) |
+| Algebra | 1 (`Algebra.AssociatedGraded`) | 0 | 3 |
+| Modules | 0 | 0 | 9 |
+
+Total cards emitted: 6 of 333.
