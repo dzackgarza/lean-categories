@@ -76,6 +76,47 @@ def source_name(path: Path, short: str) -> str | None:
     return m.group(1) if m else None
 
 
+def statement_text(path: Path, short: str) -> str | None:
+    """Binders and type of a declaration, copied from the source up to (not including) `:=`."""
+    lines = path.read_text(encoding="utf-8").splitlines()
+    pat = re.compile(rf"^(?:theorem|lemma)\s+(?:\w+\.)*{re.escape(short)}\b")
+    for i, l in enumerate(lines):
+        if pat.match(l):
+            head = re.sub(rf"^(theorem|lemma)\s+(?:\w+\.)*{re.escape(short)}\b", "", l)
+            chunk = [head]
+            j = i
+            while ":=" not in "\n".join(chunk):
+                j += 1
+                if j >= len(lines):
+                    return None
+                chunk.append(lines[j])
+            text = "\n".join(chunk)
+            return text.split(":=")[0].rstrip()
+    return None
+
+
+def docstring_of(path: Path, short: str, full: str) -> tuple[str, bool]:
+    """The original's docstring if it has one, else an authored one. Second component: authored?"""
+    lines = path.read_text(encoding="utf-8").splitlines()
+    pat = re.compile(rf"^(?:theorem|lemma)\s+(?:\w+\.)*{re.escape(short)}\b")
+    for i, l in enumerate(lines):
+        if pat.match(l):
+            j = i - 1
+            block: list[str] = []
+            while j >= 0 and lines[j].strip():
+                block.insert(0, lines[j])
+                j -= 1
+            text = "\n".join(block)
+            if "/--" in text and "-/" in text:
+                start = text.rindex("/--")
+                end = text.rindex("-/") + 2
+                return text[start:end], False
+            return (f"/-- A published result of `{full.rsplit('.', 1)[0]}`, restated here under its "
+                    f"platform card name with the proof delegated to the original declaration. -/",
+                    True)
+    return (f"/-- `{full}`, published as a card. -/", True)
+
+
 def source_of(module: str) -> str | None:
     """The `source:` citation a card inherits from its definition module, if it has one."""
     p = module_path(module)
@@ -105,6 +146,11 @@ def emit(owner: str, apply: bool) -> int:
             print(f"  SKIP     {c['name']}: no source declaration in {src.relative_to(ROOT)}")
             continue
         card_name = c["name"].replace(".", "_")
+        stmt = statement_text(src, short)
+        if stmt is None:
+            print(f"  SKIP     {c['name']}: cannot extract a signature")
+            continue
+        doc, authored = docstring_of(src, short, c["name"])
         body = (HEADER
                 + f"public import {c['module']}\n\n"
                 + "/-! # Card: " + c["name"] + "\n\nsource: " + source_of(c["module"]) + "\n\n"
