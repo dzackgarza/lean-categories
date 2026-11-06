@@ -56,6 +56,17 @@ noncomputable def toMetricDual (L : IntegralLatticeCat R) :
     rw [rationalizedForm_tmul]
     simp)
 
+/-- The rationalized form of two lattice elements, read in the metric dual, is the algebra map of
+their pairing. -/
+theorem rationalizedForm_toMetricDual (L : IntegralLatticeCat R) (a b : L.obj.carrier) :
+    rationalizedForm R L (↑(toMetricDual R L a) : RationalSpan R L)
+        (↑(toMetricDual R L b) : RationalSpan R L) =
+      algebraMap R (FractionRing R) (L.obj.pairing a b) := by
+  have ha : (↑(toMetricDual R L a) : RationalSpan R L) = toRationalSpan R L a := rfl
+  have hb : (↑(toMetricDual R L b) : RationalSpan R L) = toRationalSpan R L b := rfl
+  rw [ha, hb]
+  simp [toRationalSpan, rationalizedForm_tmul, Algebra.smul_def]
+
 /-- A lattice is unimodular when its metric dual equals its integral image. -/
 noncomputable def IsUnimodular (L : IntegralLatticeCat R) : Prop :=
   metricDual R L = integralImage R L
