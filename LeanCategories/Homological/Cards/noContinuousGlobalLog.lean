@@ -10,10 +10,8 @@ public import LeanCategories.Homological.SheafPresheafComparison
 
 source: Weibel, *An Introduction to Homological Algebra* (1994), §1.6 (FC05-C01-U057).
 
-Published copy of a result from `LeanCategories.Homological.SheafPresheafComparison`; the definition module keeps the original declaration, this file restates it, and the platform submission replaces the delegated proof with `by sorry`.
+Published copy of a result of `LeanCategories.Homological.SheafPresheafComparison`. The definition module keeps the original declaration; this file states it and delegates the proof, and the platform submission replaces that proof term with `by sorry`.
 -/
-
-@[expose] public section
 
 namespace LeanCategories.Cards
 
@@ -22,7 +20,6 @@ open LeanCategories.Homological
 open CategoryTheory Opposite TopologicalSpace
 open scoped AlgebraicGeometry
 universe u
-open LeanCategories.Homological
 
 /-- There is no continuous logarithm defined on all of `ℂˣ`. -/
 theorem LeanCategories_Homological_noContinuousGlobalLog : ¬ ∃ l : C(ℂˣ, ℂ),

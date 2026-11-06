@@ -82,3 +82,13 @@ def test_emitted_card_is_a_pi_type_with_a_delegated_proof(tmp_path=None):
     assert binders.strip().startswith("{M : Type*}")
     assert ty == "ContMDiff 𝓘(ℝ, ℝ) I ∞ γ"
     assert "hγ" in binders
+
+
+def test_multiline_source_paragraph_is_captured_whole():
+    """A `source:` paragraph spanning several lines is captured to the next blank line."""
+    from extract_cards import source_of
+
+    src = source_of("LeanCategories.Topology.InvariantIntegralCurve")
+    assert src.startswith("Lee, *Introduction to Smooth Manifolds*")
+    assert src.endswith("corpus/chapter-20-the-exponential-map-fc08.md`."), src
+    assert "\n" not in src

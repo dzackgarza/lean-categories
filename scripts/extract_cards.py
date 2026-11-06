@@ -268,12 +268,67 @@ def scope_context(path: Path, decl_line: int) -> tuple[str, str]:
 
 
 def source_of(module: str) -> str | None:
-    """The `source:` citation a card inherits from its definition module, if it has one."""
+    """The `source:` paragraph a card inherits: from `source:` to the next blank line or `-/`."""
     p = module_path(module)
     if not p.exists():
         return None
-    m = SOURCE_LINE.search(p.read_text(encoding="utf-8"))
-    return m.group(1).strip() if m else None
+    lines = p.read_text(encoding="utf-8").splitlines()
+    for i, line in enumerate(lines):
+        if SOURCE_LINE.match(line):
+            first = re.sub(r"^\s*source\s*:\s*", "", line.strip(), flags=re.I)
+            if "-/" in first:
+                return first.split("-/")[0].strip()
+            para = [first]
+            for nxt in lines[i + 1:]:
+                if not nxt.strip():
+                    break
+                if "-/" in nxt:
+                    para.append(nxt.split("-/")[0].strip())
+                    break
+                para.append(nxt.strip())
+            return re.sub(r"\s*-/\s*$", "", " ".join(para)).strip()
+    return None
+
+
+def render(module: str, name: str, card_name: str, stmt: str, doc: str) -> str | None:
+    """The card file: module header, source paragraph, Π-type statement, delegated proof."""
+    src_text = source_of(module)
+    if src_text is None:
+        return None
+    parts = split_binders(stmt)
+    if parts is None:
+        return None
+    binders, ty = parts
+    if binders.strip():
+        thm = f"theorem {card_name} : ∀{binders},\n    {ty} :=\n  {name}"
+    else:
+        thm = f"theorem {card_name} : {ty} :=\n  {name}"
+    return (
+        HEADER
+        + f"public import {module}\n\n"
+        + f"/-! # Card: `{name}`\n\nsource: {src_text}\n\n"
+        + f"Published copy of a result of `{module}`. The definition module keeps the original "
+          f"declaration; this file states it and delegates the proof, and the platform submission "
+          f"replaces that proof term with `by sorry`.\n-/\n\n"
+        + "namespace LeanCategories.Cards\n\n"
+        + f"open {module.rsplit('.', 1)[0]}\n\n"
+        + scope_of(module, name)
+        + doc + "\n"
+        + thm + "\n\n"
+        + "end LeanCategories.Cards\n"
+    )
+
+
+def scope_of(module: str, name: str) -> str:
+    p = module_path(module)
+    lines = p.read_text(encoding="utf-8").splitlines()
+    short = name.rsplit(".", 1)[-1]
+    pat = re.compile(rf"^(?:theorem|lemma)\s+(?:\w+\.)*{re.escape(short)}\b")
+    decl = next(i for i, l in enumerate(lines) if pat.match(l))
+    text, _ = scope_context(p, decl)
+    # the module's own namespace is opened by `render`; drop a duplicate of it
+    dup = f"open {module.rsplit('.', 1)[0]}\n"
+    return text.replace(dup, "")
 
 
 def emit(owner: str, apply: bool) -> int:
@@ -287,73 +342,25 @@ def emit(owner: str, apply: bool) -> int:
     for c in sorted(sel, key=lambda r: r["name"]):
         short = c["name"].rsplit(".", 1)[-1]
         src = module_path(c["module"])
-        written_name = source_name(src, short)
-        src_missing = source_of(c["module"]) is None
-        if src_missing:
-            print(f"  REFUSED  {c['name']}: definition module has no `source:` line")
-            continue
-        if written_name is None:
-            print(f"  SKIP     {c['name']}: no source declaration in {src.relative_to(ROOT)}")
-            continue
-        card_name = c["name"].replace(".", "_")
         stmt = signature_text(src, short)
         if stmt is None:
-            print(f"  SKIP     {c['name']}: cannot extract a signature")
+            print(f"  REFUSED  {c['name']}: no top-level `:=` in its signature")
             continue
-        decl_line = next(i for i, l in enumerate(src.read_text(encoding="utf-8").splitlines())
-                         if re.match(rf"^(?:theorem|lemma)\s+(?:\w+\.)*{re.escape(short)}\b", l))
-        scope_ctx, scope_ends = scope_context(src, decl_line)
         stmt = re.sub(rf"^\s*(?:\w+\.)*{re.escape(short)}\b", "", stmt, count=1)
-        parts = split_binders(stmt)
-        if parts is None:
-            print(f"  REFUSED  {c['name']}: no top-level `:` separating binders from type")
+        if source_of(c["module"]) is None:
+            print(f"  REFUSED  {c['name']}: definition module has no `source:` line")
             continue
-        binders, ty = parts
-        thm_body = (" : ∀" + binders + ",\n    " + ty + " :=\n  " + c["name"]) if binders.strip() \
-            else (" : " + ty + " :=\n  " + c["name"])
         doc, authored = docstring_of(src, short, c["name"])
         if authored:
-            print(f"  REFUSED  {c['name']}: the declaration has no docstring in its module, so no "
-                  f"natural_language_statement exists — write one there first")
+            print(f"  REFUSED  {c['name']}: no docstring on the declaration")
             continue
-        decl_line = next(i for i, l in enumerate(src.read_text(encoding="utf-8").splitlines())
-                         if re.match(rf"^(?:theorem|lemma)\s+(?:\w+\.)*{re.escape(short)}\b", l))
-        scope_ctx, scope_ends = scope_context(src, decl_line)
-        stmt = re.sub(rf"^\s*(?:\w+\.)*{re.escape(short)}\b", "", stmt, count=1)
-        parts = split_binders(stmt)
-        if parts is None:
-            print(f"  REFUSED  {c['name']}: no top-level `:` separating binders from type")
+        card_name = c["name"].replace(".", "_")
+        body = render(c["module"], c["name"], card_name, stmt, doc)
+        if body is None:
+            print(f"  REFUSED  {c['name']}: cannot render")
             continue
-        binders, ty = parts
-        thm_body = (" : ∀" + binders + ",\n    " + ty + " :=\n  " + c["name"]) if binders.strip() \
-            else (" : " + ty + " :=\n  " + c["name"])
-        doc, authored = docstring_of(src, short, c["name"])
-        if authored:
-            print(f"  REFUSED  {c['name']}: the declaration has no docstring in its module, so no "
-                  f"natural_language_statement exists — write one there first")
-            continue
-        body = (
-            HEADER
-            + f"public import {c['module']}\n\n"
-            + f"/-! # Card: `{c['name']}`\n\n"
-            + f"source: {source_of(c['module'])}\n\n"
-            + f"Published copy of a result from `{c['module']}`; the definition module keeps the "
-              "original declaration, this file restates it, and the platform submission replaces "
-              "the delegated proof with `by sorry`.\n-/\n\n"
-            + "@[expose] public section\n\n"
-            + f"namespace LeanCategories.Cards\n\n"
-            + f"open {c['module'].rsplit('.', 1)[0]}\n\n"
-            + scope_ctx
-            + doc + "\n"
-            + f"theorem {card_name}{thm_body}"
-            + "\n\n"
-            + scope_ends
-            + "end LeanCategories.Cards\n"
-        )
-
         target = ROOT / f"LeanCategories/{owner}/Cards/{short}.lean"
-        print(f"  CARD     {c['name']}")
-        print(f"           -> {target.relative_to(ROOT)}  (theorem {card_name} := {written_name})")
+        print(f"  CARD     {c['name']}\n           -> {target.relative_to(ROOT)}")
         if apply:
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(body, encoding="utf-8")

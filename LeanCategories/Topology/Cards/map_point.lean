@@ -8,12 +8,10 @@ public import LeanCategories.Topology.SmashProduct
 
 /-! # Card: `LeanCategories.Topology.BasedTop.map_point`
 
-source: Riehl, *Category Theory in Context*, §4.4 (FC03-C04-U037): the based smash product
+source: Riehl, *Category Theory in Context*, §4.4 (FC03-C04-U037): the based smash product `Top_* × Top_* ⟶ Top_*`, recorded in `corpus/foundational-corpus-mapping-fc03-riehl-category-theory-in-context.md`.
 
-Published copy of a result from `LeanCategories.Topology.SmashProduct`; the definition module keeps the original declaration, this file restates it, and the platform submission replaces the delegated proof with `by sorry`.
+Published copy of a result of `LeanCategories.Topology.SmashProduct`. The definition module keeps the original declaration; this file states it and delegates the proof, and the platform submission replaces that proof term with `by sorry`.
 -/
-
-@[expose] public section
 
 namespace LeanCategories.Cards
 
@@ -21,7 +19,6 @@ open LeanCategories.Topology
 
 open _root_.CategoryTheory
 open scoped _root_.CategoryTheory
-open LeanCategories.Topology
 universe u
 open BasedTop
 
