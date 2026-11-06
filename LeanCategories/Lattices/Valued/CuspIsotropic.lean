@@ -448,4 +448,152 @@ theorem doset_mk_eq_of_rangeRestrict_mul (hL : IsFractionFieldPerfect R L)
   rw [DoubleCoset.eq]
   exact ⟨_, hγ, s, hs, by group⟩
 
+/-- The fibre element represented by a stabilizer of the isotropic subgroup,
+via a lift along `ρ.rangeRestrict`. -/
+noncomputable def stabilizerLiftDoset (hL : IsFractionFieldPerfect R L)
+    (hΓ : (OrthogonalGroup.stableOrthogonalGroup hL).FiniteIndex) {k : ℕ}
+    (N : PrimitiveIsotropic L k)
+    (x : MulAction.stabilizer ↥(OrthogonalGroup.discriminantRepresentation hL).range
+        (isotropicSubgroup N)) : DosetFibre hL hΓ k N :=
+  ⟨DoubleCoset.mk
+      ((⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ :
+          FiniteIndexSubgroup L).toSubgroup)
+      (MulAction.stabilizer (OrthogonalGroup L) N) (rangeLift hL x.1),
+    (dosetFibre_mk_iff hL hΓ N (rangeLift hL x.1)).mpr
+      (by rw [rangeRestrict_rangeLift hL x.1]; exact x.2)⟩
+
+/-- The map from stabilizer cosets to the fibre on raw double cosets. Well-defined because two
+lifts in the same coset differ by an element of the stabilizer of `N`. -/
+noncomputable def cosetsToDosetFibre (hL : IsFractionFieldPerfect R L)
+    (hΓ : (OrthogonalGroup.stableOrthogonalGroup hL).FiniteIndex) {k : ℕ}
+    (N : PrimitiveIsotropic L k) :
+    MulAction.stabilizer ↥(OrthogonalGroup.discriminantRepresentation hL).range
+        (isotropicSubgroup N) ⧸
+      ((MulAction.stabilizer (OrthogonalGroup L) N).map
+        (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict).subgroupOf
+      (MulAction.stabilizer ↥(OrthogonalGroup.discriminantRepresentation hL).range
+        (isotropicSubgroup N)) →
+        DosetFibre hL hΓ k N :=
+  Quotient.lift (stabilizerLiftDoset hL hΓ N) (by
+    intro a b hrel
+    obtain ⟨s, hs, hes⟩ := Subgroup.mem_map.mp
+      (Subgroup.mem_subgroupOf.mp ((QuotientGroup.leftRel_apply).mp hrel))
+    have hcoe : ((a⁻¹ * b : MulAction.stabilizer ↥
+          (OrthogonalGroup.discriminantRepresentation hL).range
+          (isotropicSubgroup N)) :
+        ↥(OrthogonalGroup.discriminantRepresentation hL).range) = a.1⁻¹ * b.1 := by
+      rw [Subgroup.coe_mul, Subgroup.coe_inv]
+    have hpair :
+        (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict (rangeLift hL b.1) =
+        (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict (rangeLift hL a.1) *
+          (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict s :=
+      (rangeRestrict_rangeLift hL b.1).trans
+        ((mul_inv_cancel_left a.1 b.1).symm.trans
+          ((congrArg (fun t => a.1 * t) (hes.trans hcoe)).symm.trans
+            (congrArg (fun t =>
+              t * (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict s)
+              (rangeRestrict_rangeLift hL a.1)).symm))
+    apply Subtype.ext
+    exact doset_mk_eq_of_rangeRestrict_mul hL hΓ N hs hpair)
+
+set_option maxHeartbeats 1200000 in
+-- the two quotient inductions and the subgroup-coercion membership rewrites re-run
+-- instance search through the discriminant bilinear object, which is expensive here
+/-- Injective: equal fibre classes have equal stabilizer classes. -/
+theorem cosetsToDosetFibre_injective (hL : IsFractionFieldPerfect R L)
+    (hΓ : (OrthogonalGroup.stableOrthogonalGroup hL).FiniteIndex) {k : ℕ}
+    (N : PrimitiveIsotropic L k) :
+    Function.Injective (cosetsToDosetFibre hL hΓ N) := by
+  intro A B hxy
+  induction A using Quotient.inductionOn with
+  | _ a =>
+  induction B using Quotient.inductionOn with
+  | _ b =>
+  have hxy' : stabilizerLiftDoset hL hΓ N a = stabilizerLiftDoset hL hΓ N b := hxy
+  obtain ⟨γ, hγ, s, hs, hrel⟩ :=
+    (DoubleCoset.eq
+        ((⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ :
+          FiniteIndexSubgroup L).toSubgroup)
+        (MulAction.stabilizer (OrthogonalGroup L) N)
+        (rangeLift hL a.1) (rangeLift hL b.1)).mp (congrArg Subtype.val hxy')
+  have hker : γ ∈ (OrthogonalGroup.discriminantRepresentation hL).ker := hγ
+  have hγ1 : (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict γ = 1 := by
+    rw [← MonoidHom.mem_ker, MonoidHom.ker_rangeRestrict]
+    exact hker
+  have hb : b.1 =
+      a.1 * (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict s := by
+    calc b.1 = (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict
+          (rangeLift hL b.1) := (rangeRestrict_rangeLift hL b.1).symm
+      _ = (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict
+            (γ * rangeLift hL a.1 * s) := congrArg _ hrel
+      _ = (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict
+            (γ * rangeLift hL a.1) *
+          (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict s := map_mul _ _ _
+      _ = ((OrthogonalGroup.discriminantRepresentation hL).rangeRestrict γ *
+          (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict
+            (rangeLift hL a.1)) *
+          (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict s :=
+            congrArg (fun t =>
+              t * (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict s)
+              (map_mul _ _ _)
+      _ = (1 * (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict
+            (rangeLift hL a.1)) *
+          (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict s := by
+            rw [hγ1]
+      _ = (1 * a.1) *
+          (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict s := by
+            rw [rangeRestrict_rangeLift hL a.1]
+      _ = a.1 * (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict s := by
+            rw [one_mul]
+  have hcoe : ((a⁻¹ * b : MulAction.stabilizer ↥
+          (OrthogonalGroup.discriminantRepresentation hL).range
+          (isotropicSubgroup N)) :
+        ↥(OrthogonalGroup.discriminantRepresentation hL).range) = a.1⁻¹ * b.1 := by
+    rw [Subgroup.coe_mul, Subgroup.coe_inv]
+  refine QuotientGroup.eq.mpr ?_
+  rw [Subgroup.mem_subgroupOf, Subgroup.mem_map]
+  exact ⟨s, hs, ((hcoe.trans
+    ((congrArg (fun t => a.1⁻¹ * t) hb).trans (inv_mul_cancel_left a.1 _))).symm)⟩
+
+set_option maxHeartbeats 1200000 in
+-- unfolding the lifted fibre element to a raw double coset re-runs instance search
+-- through the discriminant bilinear object, which is expensive here
+/-- Surjective: every fibre class is the image of a stabilizer coset, represented by a lift
+of the range restriction. -/
+theorem cosetsToDosetFibre_surjective (hL : IsFractionFieldPerfect R L)
+    (hΓ : (OrthogonalGroup.stableOrthogonalGroup hL).FiniteIndex) {k : ℕ}
+    (N : PrimitiveIsotropic L k) :
+    Function.Surjective (cosetsToDosetFibre hL hΓ N) := by
+  rintro ⟨⟨g⟩, hd⟩
+  have hg : (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict g ∈
+      MulAction.stabilizer ↥(OrthogonalGroup.discriminantRepresentation hL).range
+        (isotropicSubgroup N) := (dosetFibre_mk_iff hL hΓ N g).mp hd
+  refine ⟨QuotientGroup.mk
+    ⟨(OrthogonalGroup.discriminantRepresentation hL).rangeRestrict g, hg⟩, ?_⟩
+  apply Subtype.ext
+  have hone : (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict g =
+      (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict
+        (rangeLift hL ((OrthogonalGroup.discriminantRepresentation hL).rangeRestrict g)) *
+      (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict (1 : OrthogonalGroup L) := by
+    rw [rangeRestrict_rangeLift, map_one, mul_one]
+  exact doset_mk_eq_of_rangeRestrict_mul hL hΓ N (Subgroup.one_mem _) hone
+
+/-- The fibre theorem (#113 item 3): the fibre of the isotropic-class map at `N` is in bijection
+with the stabilizer of `J_N` in the discriminant range, modulo the image of the stabilizer
+of `N` under the range restriction. -/
+noncomputable def cuspOrbitsStableEquivStabilizer (hL : IsFractionFieldPerfect R L)
+    (hΓ : (OrthogonalGroup.stableOrthogonalGroup hL).FiniteIndex) {k : ℕ}
+    (N : PrimitiveIsotropic L k) :
+    StableFibre hL hΓ k N ≃
+      MulAction.stabilizer ↥(OrthogonalGroup.discriminantRepresentation hL).range
+          (isotropicSubgroup N) ⧸
+        ((MulAction.stabilizer (OrthogonalGroup L) N).map
+          (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict).subgroupOf
+        (MulAction.stabilizer ↥(OrthogonalGroup.discriminantRepresentation hL).range
+          (isotropicSubgroup N)) :=
+  (stableFibreEquivDosetFibre hL hΓ).trans
+    (Equiv.ofBijective (cosetsToDosetFibre hL hΓ N)
+      ⟨cosetsToDosetFibre_injective hL hΓ N,
+        cosetsToDosetFibre_surjective hL hΓ N⟩).symm
+
 end LeanCategories.Lattices.Valued
