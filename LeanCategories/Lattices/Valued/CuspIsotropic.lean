@@ -204,4 +204,28 @@ theorem isotropicSubgroup_smul (hL : IsFractionFieldPerfect R L)
           exact OrthogonalGroup.metricDualToDiscriminant_actOnMetricDual g hL x
         rw [← Submodule.map_comp, ← Submodule.map_comp, hmap]
 
+theorem isotropicSubgroup_smul_of_mem_stable (hL : IsFractionFieldPerfect R L)
+    {k : ℕ} (N : PrimitiveIsotropic L k) (γ : OrthogonalGroup L)
+    (hγ : γ ∈ OrthogonalGroup.stableOrthogonalGroup hL) :
+    isotropicSubgroup (γ • N) = isotropicSubgroup N := by
+  have hact : OrthogonalGroup.actOnDiscriminantForm γ hL = 1 := hγ
+  have heq : OrthogonalGroup.actOnDefect γ = 1 := congrArg (fun z => z.1) hact
+  rw [isotropicSubgroup_smul hL γ N, heq]
+  exact Submodule.map_id _
+
+/-- The class of a primitive isotropic sublattice, read on the `K`-orbit set: well-defined because
+ker ρ preserves every `J_N`. -/
+noncomputable def CuspOrbits.isotropicSubgroup
+    (hL : IsFractionFieldPerfect R L)
+    (hΓ : (OrthogonalGroup.stableOrthogonalGroup hL).FiniteIndex) {k : ℕ} :
+    let Γ : FiniteIndexSubgroup L := ⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩
+    CuspOrbits L Γ k → Submodule R L.obj.defect := by
+  intro Γ
+  exact Quotient.lift (fun N : PrimitiveIsotropic L k => LeanCategories.Lattices.Valued.isotropicSubgroup N) (by
+    intro a b hrel
+    obtain ⟨γ, hγ⟩ := hrel
+    have hsub : (γ : OrthogonalGroup L) • b = a := hγ
+    rw [← hsub]
+    exact isotropicSubgroup_smul_of_mem_stable hL b γ γ.2)
+
 end LeanCategories.Lattices.Valued
