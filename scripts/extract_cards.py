@@ -144,34 +144,57 @@ def docstring_of(path: Path, short: str, full: str) -> tuple[str, bool]:
     return (f"/-- `{full}`, published as a card. -/", True)
 
 
-def variable_block(path: Path) -> str:
-    """The module's `variable` and `open` lines, so a copied declaration compiles standalone."""
-    out = []
-    for line in path.read_text(encoding="utf-8").splitlines():
-        ls = line.strip()
-        if ls.startswith("open ") or (out and ls and line.startswith("  ")):
-            out.append(line)
-        elif out and ls and not line.startswith(" "):
-            if not ls.startswith("variable"):
-                out.append("")
-                break
-    text = "\n".join(out).strip()
-    return text + "\n\n" if text else ""
+SCOPE_OPEN = re.compile(r"^\s*(namespace\s+\S+|section(?:\s+\S+)?)\s*$")
+SCOPE_INNER = re.compile(r"^\s*(open\s|variable\s|universe\s|attribute\s*\[|set_option\s|local\s)")
 
 
 def full_declaration(path: Path, short: str, new_name: str) -> str | None:
-    """The declaration copied verbatim with its name replaced, so the copy always elaborates."""
+    """The declaration copied verbatim with its name replaced."""
     lines = path.read_text(encoding="utf-8").splitlines()
     pat = re.compile(rf"^(theorem|lemma)\s+((?:\w+\.)*){re.escape(short)}\b")
     for i, l in enumerate(lines):
         if pat.match(l):
-            outs = [pat.sub(lambda m: f"{m.group(1)} {m.group(2)}{new_name}", l)]
+            outs = [pat.sub(lambda mm: f"{mm.group(1)} {mm.group(2)}{new_name}", l)]
             j = i + 1
             while j < len(lines) and (lines[j].startswith(" ") or lines[j].startswith("\t")):
-                outs.append(lines[j])
-                j += 1
+                outs.append(lines[j]); j += 1
             return "\n".join(outs)
     return None
+
+
+def scope_context(path: Path, decl_line: int) -> tuple[str, int]:
+    """The scope in force at `decl_line`: namespace/section/open/variable lines, in order.
+
+    This is the text Lean had in scope when it compiled the original declaration, so a verbatim
+    copy placed in the same scope compiles for the same reason the original does. Lines after the
+    declaration and lines inside sibling sections that have already been closed are excluded.
+    """
+    lines = path.read_text(encoding="utf-8").splitlines()
+    depth = 0
+    active: list[tuple[int, str]] = []      # (depth, text)
+    opener_names: list[str] = []
+    for line in lines[:decl_line]:
+        stripped = line.strip()
+        if SCOPE_OPEN.match(line):
+            depth += 1
+            opener_names.append(stripped)
+            active.append((depth, line.rstrip()))
+        elif stripped == "end" or re.match(r"^end\s+\S+$", stripped):
+            if depth > 0:
+                active = [a for a in active if a[0] < depth]
+                depth -= 1
+                if opener_names:
+                    opener_names.pop()
+        elif SCOPE_INNER.match(line):
+            active.append((depth, line.rstrip()))
+    text = "\n".join(t for _, t in active)
+    closers = []
+    for o in reversed(opener_names):
+        if o.startswith("namespace"):
+            closers.append("end " + o.split(None, 1)[1].strip())
+        else:
+            closers.append("end")
+    return (text + "\n\n" if text else ""), "\n".join(closers)
 
 
 def source_of(module: str) -> str | None:
@@ -207,7 +230,13 @@ def emit(owner: str, apply: bool) -> int:
         if stmt is None:
             print(f"  SKIP     {c['name']}: cannot extract a signature")
             continue
+        decl_line = next(i for i, l in enumerate(src.read_text(encoding="utf-8").splitlines())
+                         if re.match(rf"^(?:theorem|lemma)\s+(?:\w+\.)*{re.escape(short)}\b", l))
+        scope_ctx, scope_ends = scope_context(src, decl_line)
         doc, authored = docstring_of(src, short, c["name"])
+        decl_line = next(i for i, l in enumerate(src.read_text(encoding="utf-8").splitlines())
+                         if re.match(rf"^(?:theorem|lemma)\s+(?:\w+\.)*{re.escape(short)}\b", l))
+        scope_ctx, scope_ends = scope_context(src, decl_line)
         doc, authored = docstring_of(src, short, c["name"])
         body = (
             HEADER
@@ -220,9 +249,10 @@ def emit(owner: str, apply: bool) -> int:
             + "@[expose] public section\n\n"
             + f"namespace LeanCategories.Cards\n\n"
             + f"open {c['module'].rsplit('.', 1)[0]}\n\n"
-            + variable_block(src)
+            + scope_ctx
             + doc + "\n"
             + (full_declaration(src, short, card_name) or "") + "\n\n"
+            + scope_ends + "\n"
             + "end LeanCategories.Cards\n"
         )
 
