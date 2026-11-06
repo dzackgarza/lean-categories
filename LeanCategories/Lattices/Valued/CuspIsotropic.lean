@@ -99,4 +99,27 @@ theorem discriminantBilinMap_eq_zero_of_mem_isotropicSubgroup
       · exact h'
   rw [hzero, map_zero]
 
+/-- In `L^∨`, the saturation of `N` meets the kernel of the projection to `A_L` exactly along the
+image of `N` itself, because the kernel is `toMetricDual`-of `L` and `N` is primitive. -/
+theorem ker_inf_saturation (hL : IsFractionFieldPerfect R L) {k : ℕ}
+    (N : PrimitiveIsotropic L k) :
+    LinearMap.ker (metricDualToDiscriminant R L) ⊓ metricDualSaturation N = metricDualImage N := by
+  rw [ker_metricDualToDiscriminant R L hL]
+  apply le_antisymm
+  · rintro x ⟨⟨a, rfl⟩, hx⟩
+    obtain ⟨r, hr, hrx⟩ := (mem_saturation_iff (metricDualImage N) (toMetricDual R L a)).mp hx
+    obtain ⟨b, hb, hrb⟩ := Submodule.mem_map.mp hrx
+    have hb' : b = r • a := by
+      apply toMetricDual_injective
+      rw [hrb, map_smul]
+    have ha' : r • a ∈ N.toSubmodule := hb' ▸ hb
+    have ha : a ∈ saturation (M := L.obj.carrier) N.toSubmodule := by
+      rw [mem_saturation_iff]
+      exact ⟨r, hr, ha'⟩
+    rw [(isPrimitiveSubmodule_iff_saturation_eq N.toSubmodule).mp N.primitive] at ha
+    exact Submodule.mem_map.mpr ⟨a, ha, rfl⟩
+  · intro x hx
+    obtain ⟨a, ha, rfl⟩ := Submodule.mem_map.mp hx
+    refine ⟨⟨a, rfl⟩, le_saturation (M := ↥(metricDual R L)) (metricDualImage N) hx⟩
+
 end LeanCategories.Lattices.Valued
