@@ -42,6 +42,10 @@ SOURCE_LINE = re.compile(r"^\s*source\s*:\s*(?!:?=)(\S.*)$", re.M | re.I)
 
 GENERATED = re.compile(r"(_proof_\d+|_eq_\d+|match_\d+|_sunfold|_unfold|\.eq_\d+|\.match_|\.injEq|\.inj$|_cstage|_fstage)")
 
+def SRC_OPEN(module: str) -> str:
+    return f"open {module.rsplit('.', 1)[0]}\n\n" if False else ""
+
+
 HEADER = """/-
 Copyright (c) 2026 Dzack Garza. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -107,13 +111,14 @@ def statement_text(path: Path, short: str) -> str | None:
             head = re.sub(rf"^(theorem|lemma)\s+(?:\w+\.)*{re.escape(short)}\b", "", l)
             chunk = [head]
             j = i
-            while ":=" not in "\n".join(chunk):
+            while not "\n".join(chunk).rstrip().endswith(":=") and ":= by" not in "\n".join(chunk) and ":= rfl" not in "\n".join(chunk):
                 j += 1
                 if j >= len(lines):
                     return None
                 chunk.append(lines[j])
             text = "\n".join(chunk)
-            return text.split(":=")[0].rstrip()
+            idx = min([text.find(k) for k in (":= by", ":= rfl", "\n:=") if text.find(k) >= 0] or [len(text)])
+            return text[:idx].rstrip()
     return None
 
 
@@ -137,6 +142,36 @@ def docstring_of(path: Path, short: str, full: str) -> tuple[str, bool]:
                     f"platform card name with the proof delegated to the original declaration. -/",
                     True)
     return (f"/-- `{full}`, published as a card. -/", True)
+
+
+def variable_block(path: Path) -> str:
+    """The module's `variable` and `open` lines, so a copied declaration compiles standalone."""
+    out = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        ls = line.strip()
+        if ls.startswith("open ") or (out and ls and line.startswith("  ")):
+            out.append(line)
+        elif out and ls and not line.startswith(" "):
+            if not ls.startswith("variable"):
+                out.append("")
+                break
+    text = "\n".join(out).strip()
+    return text + "\n\n" if text else ""
+
+
+def full_declaration(path: Path, short: str, new_name: str) -> str | None:
+    """The declaration copied verbatim with its name replaced, so the copy always elaborates."""
+    lines = path.read_text(encoding="utf-8").splitlines()
+    pat = re.compile(rf"^(theorem|lemma)\s+((?:\w+\.)*){re.escape(short)}\b")
+    for i, l in enumerate(lines):
+        if pat.match(l):
+            outs = [pat.sub(lambda m: f"{m.group(1)} {m.group(2)}{new_name}", l)]
+            j = i + 1
+            while j < len(lines) and (lines[j].startswith(" ") or lines[j].startswith("\t")):
+                outs.append(lines[j])
+                j += 1
+            return "\n".join(outs)
+    return None
 
 
 def source_of(module: str) -> str | None:
@@ -173,15 +208,24 @@ def emit(owner: str, apply: bool) -> int:
             print(f"  SKIP     {c['name']}: cannot extract a signature")
             continue
         doc, authored = docstring_of(src, short, c["name"])
-        body = (HEADER
-                + f"public import {c['module']}\n\n"
-                + "/-! # Card: " + c["name"] + "\n\nsource: " + source_of(c["module"]) + "\n\n"
-                + "Published copy of a result from `" + c["module"] + "`. The definition module "
-                  "keeps it; this file restates it under the platform card name with the proof "
-                  "delegated to the original declaration.\n-/\n\n"
-                + "@[expose] public section\n\n"
-                + f"/-- `{c['name']}`, published as a card. -/\n"
-                + f"theorem {card_name} :=\n  {written_name}\n")
+        doc, authored = docstring_of(src, short, c["name"])
+        body = (
+            HEADER
+            + f"public import {c['module']}\n\n"
+            + f"/-! # Card: `{c['name']}`\n\n"
+            + f"source: {source_of(c['module'])}\n\n"
+            + f"Published copy of a result from `{c['module']}`; the definition module keeps the "
+              "original declaration, this file restates it, and the platform submission replaces "
+              "the delegated proof with `by sorry`.\n-/\n\n"
+            + "@[expose] public section\n\n"
+            + f"namespace LeanCategories.Cards\n\n"
+            + f"open {c['module'].rsplit('.', 1)[0]}\n\n"
+            + variable_block(src)
+            + doc + "\n"
+            + (full_declaration(src, short, card_name) or "") + "\n\n"
+            + "end LeanCategories.Cards\n"
+        )
+
         target = ROOT / f"LeanCategories/{owner}/Cards/{short}.lean"
         print(f"  CARD     {c['name']}")
         print(f"           -> {target.relative_to(ROOT)}  (theorem {card_name} := {written_name})")

@@ -18,6 +18,7 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
 Weibel, *An Introduction to Homological Algebra* (1994), §1.6,
 FC05-C01-U057.
+source: Weibel, *An Introduction to Homological Algebra* (1994), §1.6 (FC05-C01-U057).
 
 Sheaves of abelian groups form an abelian category, but the inclusion into
 presheaves is not an abelian subcategory: epimorphisms of sheaves need only be
