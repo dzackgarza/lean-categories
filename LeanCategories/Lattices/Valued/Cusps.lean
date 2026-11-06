@@ -6,6 +6,8 @@ module
 
 public import LeanCategories.Lattices.Valued.DiscriminantAction
 public import Mathlib.GroupTheory.Index
+public import LeanCategories.Catalogue.Syntax
+public import LeanCategories.Catalogue.Semantics.Lattices.Valued.CatalogueRegistration
 
 /-!
 # The `(L, Γ)` cusp category (#113)
@@ -109,4 +111,53 @@ instance : Category (CuspObject (R := R)) where
   comp_id := by intro X Y f; ext; simp [CuspMorphism.id, CuspMorphism.comp]
   assoc := by intro W X Y Z f g h; ext; simp [CuspMorphism.comp, Category.assoc]
 
+/-- The cusp category as an object of the catalogue. -/
+noncomputable def cuspCategory (R : Type u) [CommRing R] (W : Type u) [AddCommGroup W]
+    [Module R W] : ObjCat.{u + 1, u} :=
+  Cat.of (CuspObject (R := R))
+
+/-- The canonical cusp object at a lattice: the pair with `Γ = O(L)`. -/
+noncomputable def canonicalCusp (L : IntegralLatticeCat R) : CuspObject (R := R) where
+  lattice := L
+  gamma := FiniteIndexSubgroup.top L
+
+/-- The identity cusp morphism as a morphism of the registered category. -/
+def cuspIdentity (X : CuspObject (R := R)) : X ⟶ X := CuspMorphism.id X
+
 end LeanCategories.Lattices.Valued
+
+namespace CasCatalogue
+
+noncomputable section
+
+namespace CategoryId
+/-- The cusp category of the lattice pipeline (#113). -/
+def cusps : CategoryId := ⟨"cat.cusps"⟩
+end CategoryId
+
+/-- The category expression of the cusp category. -/
+def CuspsExpr : CategoryExpr := .atom CategoryId.cusps
+
+/-- Its realization. -/
+noncomputable def cuspsRealization (R : Type u) [CommRing R] (W : Type u) [AddCommGroup W]
+    [Module R W] :
+    CategoryRealization CuspsExpr
+      (LeanCategories.Lattices.Valued.cuspCategory (R := R) (W := W)) := {}
+
+normalized_registry .category
+  { id := CategoryId.cusps, name := "Cusps"
+    declaration := `LeanCategories.Lattices.Valued.cuspCategory
+    expression := CuspsExpr
+    realization := `CasCatalogue.cuspsRealization }
+
+normalized_registry .object
+  { id := ⟨"obj.cusps.canonical"⟩, category := CategoryId.cusps, name := "Cusp"
+    declaration := `LeanCategories.Lattices.Valued.canonicalCusp }
+
+normalized_registry .morphism
+  { id := ⟨"mor.cusps.identity"⟩, category := CategoryId.cusps, name := "id"
+    declaration := `LeanCategories.Lattices.Valued.cuspIdentity }
+
+end
+
+end CasCatalogue
