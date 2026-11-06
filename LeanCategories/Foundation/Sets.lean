@@ -138,22 +138,23 @@ theorem toEncodable_encodek (r : RankingData X I) [Encodable I] (x : X) :
     r.toEncodable.decode (r.toEncodable.encode x) = some x :=
   r.toEncodable.encodek x
 
-/-- The selected index is finite when it carries a `Fintype` structure; a selected index is either
-a `Fin n` or `ℕ`, so this is the finite-versus-`ω` classification of the ranking. -/
-def indexIsFinite (r : RankingData X I) : Prop := Nonempty (Fintype I)
+/-- The selected index is finite when it carries a `Fintype` structure. A selected index is a
+`Fin n` or `ℕ`, so this is the finite-versus-`ω` classification; it is stated on the index because
+that is the data the ranking supplies, and the carrier's own finiteness then follows by transport
+along the ranking (`fintypeCarrier`). -/
+def IsFiniteIndex (I : Type v) : Prop := Nonempty (Fintype I)
 
-/-- The order type of the selected ranking: `some n` when the index has `n` elements, `none` when
-the index is the countably infinite `ℕ`, so the order type is `ω`. -/
-noncomputable def orderType (r : RankingData X I) [Fintype I] : Option ℕ :=
-  some (Fintype.card I)
+/-- The order type of a selected index: `some n` when it has `n` elements, and by the classification
+above the remaining case is `ℕ`, of order type `ω`. -/
+noncomputable def orderType (I : Type v) [Fintype I] : Option ℕ := some (Fintype.card I)
 
 /-- A ranking whose index is a `Fin n` has order type `n`. -/
-theorem orderType_finite (r : RankingData X (Fin n)) : r.orderType = some n := by
+theorem orderType_fin (n : ℕ) : orderType (Fin n) = some n := by
   simp [orderType, Fintype.card_fin]
 
 /-- The carrier of a ranking with finite index is itself finite: finiteness is transported along the
 selected equivalence, not asserted independently. -/
-noncomputable def fintypeCarrier (r : RankingData X I) (h : r.indexIsFinite) : Fintype X := by
+noncomputable def fintypeCarrier (r : RankingData X I) (h : IsFiniteIndex I) : Fintype X := by
   classical
   letI := Classical.choice h
   exact Fintype.ofEquiv I r.rank.symm
