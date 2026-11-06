@@ -10,6 +10,8 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.TopAdj
 /-!
 # The singular-realization source of a space
 
+source: Hatcher, *Algebraic Topology*, §2.C and May, *A Concise Course in Algebraic Topology*, ch. 16 (the singular-realization adjunction `|Sing X| ⊣ Sing`), realized formally as Mathlib's `SSet.toTop ⊣ TopCat.toSSet` (`Mathlib.AlgebraicTopology.SimplicialSet.TopAdj`) at the pinned revision; the point and counit equation proved here are those of the adjunction's counit.
+
 The adjunction `SSet.toTop ⊣ TopCat.toSSet` gives every topological space a canonical
 candidate source for a CW approximation: its singular realization `|Sing X|`, with the
 adjunction counit as the structure map, and the point of `|Sing X|` obtained from the standard

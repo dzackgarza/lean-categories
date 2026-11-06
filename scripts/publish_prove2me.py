@@ -192,6 +192,29 @@ def emit(mods: dict[str, Module], out: Path, lower: bool, layer: int | None) -> 
     return written
 
 
+MANIFEST = "manifest.json"
+
+
+def out_manifest(out: Path, mods: dict[str, Module], layer: int | None) -> Path:
+    """One entry per payload, so the submit step can be driven from the manifest alone."""
+    entries = []
+    for m in sorted(mods.values(), key=lambda x: (x.layer, x.name)):
+        if layer is not None and m.layer != layer:
+            continue
+        entries.append({
+            "definition_name": m.platform_name,
+            "definition_title": definition_title(m),
+            "source": m.source or "",
+            "layer": m.layer,
+            "module": m.name,
+            "payload": f"{m.platform_name}.json",
+        })
+    path = out / MANIFEST
+    path.write_text(json.dumps({"environment": "default", "definitions": entries},
+                               indent=2, ensure_ascii=False), encoding="utf-8")
+    return path
+
+
 def report_gaps(mods: dict[str, Module]) -> None:
     missing_doc = sorted(n for n, m in mods.items() if not m.docstring)
     missing_src = sorted(n for n, m in mods.items() if m.docstring and not m.source)
@@ -253,12 +276,20 @@ def main() -> int:
         if args.out.exists():
             shutil.rmtree(args.out)
         n = emit(publishable, args.out, args.lower, args.layer)
+        manifest = out_manifest(args.out, publishable, layer=args.layer)
         print(f"\nDRY RUN — wrote {n} definition payload(s) to {args.out.relative_to(ROOT)}")
+        print(f"manifest: {manifest.relative_to(ROOT)}  "
+              f"(one entry per payload: name, title, source, layer, code file)")
         print("no network call was made")
         return 0
 
-    print("\nnot running a live submission: publication requires a Prove2Me credential and "
-          "orchestrator confirmation (issue #59, step 2). Use --dry-run.")
+    key = os.environ.get("PROVE2ME_API_KEY")
+    if not key:
+        print("\nno PROVE2ME_API_KEY in the environment; the orchestrator runs the submit step "
+              "from the machine that holds it (issue #59, step 2). Use --dry-run here.")
+        return 0
+    print("\nA key is present. Submission is not implemented in this recipe: the orchestrator "
+          "submits from the manifest written by --dry-run.")
     return 0
 
 

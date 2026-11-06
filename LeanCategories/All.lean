@@ -43,6 +43,8 @@ public import LeanCategories.Topology.BipointedTop
 public import LeanCategories.Topology.IntervalWedge
 public import LeanCategories.Topology.SingularRealization
 public import LeanCategories.Topology.SmashProduct
+public import LeanCategories.Foundation.Cards.range_ambientEquiv
+public import LeanCategories.Topology.Cards.basedSingularRealizationCounit_surjective
 public import LeanCategories.Topology.Cards.map_point
 public import LeanCategories.Topology.Cards.isMIntegralCurve_mulInvariantIntegralCurveData
 public import LeanCategories.Topology.Cards.contMDiff_mulInvariantVectorField_infty_data
