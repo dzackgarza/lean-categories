@@ -85,7 +85,7 @@ def is_simp_or_ext(path: Path, short: str) -> bool:
 def is_companion(row: dict) -> bool:
     """True when no `theorem`/`lemma` declaration of this name exists in its module."""
     short = row["name"].rsplit(".", 1)[-1]
-    return statement_text(module_path(row["module"]), short) is None
+    return signature_text(module_path(row["module"]), short) is None
 
 
 def card_set(rows: list[dict], refs_from: dict[str, set[str]],
@@ -121,24 +121,43 @@ def source_name(path: Path, short: str) -> str | None:
     return m.group(1) if m else None
 
 
-def statement_text(path: Path, short: str) -> str | None:
-    """Binders and type of a declaration, copied from the source up to (not including) `:=`."""
-    lines = path.read_text(encoding="utf-8").splitlines()
-    pat = re.compile(rf"^(?:theorem|lemma)\s+(?:\w+\.)*{re.escape(short)}\b")
-    for i, l in enumerate(lines):
-        if pat.match(l):
-            head = re.sub(rf"^(theorem|lemma)\s+(?:\w+\.)*{re.escape(short)}\b", "", l)
-            chunk = [head]
-            j = i
-            while not "\n".join(chunk).rstrip().endswith(":=") and ":= by" not in "\n".join(chunk) and ":= rfl" not in "\n".join(chunk):
-                j += 1
-                if j >= len(lines):
-                    return None
-                chunk.append(lines[j])
-            text = "\n".join(chunk)
-            idx = min([text.find(k) for k in (":= by", ":= rfl", "\n:=") if text.find(k) >= 0] or [len(text)])
-            return text[:idx].rstrip()
+DEPTH_PAIRS = {"(": ")", "[": "]", "{": "}", "⦃": "⦄", "⟨": "⟩"}
+
+
+def signature_text(path: Path, short: str) -> str | None:
+    """The declaration's binders and type: everything from the keyword to the first depth-0 `:=`.
+
+    Delimiters `( ) [ ] { } ⦃ ⦄ ⟨ ⟩` are balanced across lines, so a signature that spans several
+    lines — with instance binders or λ-expressions — is cut where Lean cuts it. A declaration with
+    no depth-0 `:=` before `where`, a `|` equation line, or end of file is refused (returns None);
+    nothing is guessed.
+    """
+    text = path.read_text(encoding="utf-8")
+    m = re.search(rf"^(theorem|lemma)\s+(?:\w+\.)*{re.escape(short)}\b",
+                  text, re.M)
+    if not m:
+        return None
+    body = text[m.start():]
+    keyword = m.group(1)
+    depth = 0
+    i = len(keyword)
+    while i < len(body):
+        ch = body[i]
+        if ch in DEPTH_PAIRS:
+            depth += 1
+        elif ch in DEPTH_PAIRS.values():
+            depth -= 1
+        elif depth == 0:
+            if body.startswith(":=", i):
+                return body[len(keyword):i].rstrip()
+            if body.startswith(" where", i) or body.startswith("\n| ", i) or body.startswith("\n  | ", i):
+                return None
+        i += 1
     return None
+
+
+# kept for callers that still use the older name
+statement_text = signature_text
 
 
 def docstring_of(path: Path, short: str, full: str) -> tuple[str, bool]:
@@ -285,7 +304,7 @@ def emit(owner: str, apply: bool) -> int:
             print(f"  SKIP     {c['name']}: no source declaration in {src.relative_to(ROOT)}")
             continue
         card_name = c["name"].replace(".", "_")
-        stmt = statement_text(src, short)
+        stmt = signature_text(src, short)
         if stmt is None:
             print(f"  SKIP     {c['name']}: cannot extract a signature")
             continue
