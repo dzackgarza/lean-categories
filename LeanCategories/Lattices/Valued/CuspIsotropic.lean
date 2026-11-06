@@ -417,4 +417,35 @@ theorem rangeRestrict_rangeLift (hL : IsFractionFieldPerfect R L)
       (rangeLift hL x) = x :=
   Classical.choose_spec (MonoidHom.rangeRestrict_surjective _ x)
 
+
+
+variable {R : Type u} [CommRing R] [IsDomain R] {L : IntegralLatticeCat R}
+
+/-- Two lifts whose values differ by an element of the stabilizer give the same double coset. -/
+theorem doset_mk_eq_of_rangeRestrict_mul (hL : IsFractionFieldPerfect R L)
+    (hΓ : (OrthogonalGroup.stableOrthogonalGroup hL).FiniteIndex) {k : ℕ}
+    (N : PrimitiveIsotropic L k) {x y s : OrthogonalGroup L}
+    (hs : s ∈ MulAction.stabilizer (OrthogonalGroup L) N)
+    (h : (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict y =
+        (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict x *
+          (OrthogonalGroup.discriminantRepresentation hL).rangeRestrict s) :
+    DoubleCoset.mk (⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ :
+          FiniteIndexSubgroup L).toSubgroup
+        (MulAction.stabilizer (OrthogonalGroup L) N) x =
+      DoubleCoset.mk (⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ :
+          FiniteIndexSubgroup L).toSubgroup (MulAction.stabilizer (OrthogonalGroup L) N) y := by
+  have h' : (OrthogonalGroup.discriminantRepresentation hL) y =
+      (OrthogonalGroup.discriminantRepresentation hL) x *
+        (OrthogonalGroup.discriminantRepresentation hL) s := by
+    have := congrArg Subtype.val h
+    simpa [MonoidHom.coe_rangeRestrict, Subgroup.coe_mul] using this
+  have hk : x⁻¹ * y * s⁻¹ ∈ (OrthogonalGroup.discriminantRepresentation hL).ker := by
+    rw [MonoidHom.mem_ker, map_mul, map_mul, map_inv, map_inv, h']
+    group
+  have hγ : x * (x⁻¹ * y * s⁻¹) * x⁻¹ ∈
+      (⟨OrthogonalGroup.stableOrthogonalGroup hL, hΓ⟩ : FiniteIndexSubgroup L).toSubgroup :=
+    (MonoidHom.normal_ker _).conj_mem _ hk x
+  rw [DoubleCoset.eq]
+  exact ⟨_, hγ, s, hs, by group⟩
+
 end LeanCategories.Lattices.Valued
