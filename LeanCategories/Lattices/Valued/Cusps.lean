@@ -108,6 +108,11 @@ structure CuspMorphism (X Y : CuspObject (R := R)) where
   equivariant : ∀ γ ∈ X.gamma.toSubgroup, ∃ δ ∈ Y.gamma.toSubgroup,
     (OrthogonalGroup.asLatticeIso γ).hom ≫ hom = hom ≫ (OrthogonalGroup.asLatticeIso δ).hom
 
+/-- The linear equivalence underlying an orthogonal-group element. `OrthogonalGroup` is a subgroup
+of the linear automorphism group, so its carrier is already a `LinearEquiv`. -/
+def OrthogonalGroup.toLinearEquiv {L : IntegralLatticeCat R} (g : OrthogonalGroup L) :
+    L.obj.carrier ≃ₗ[R] L.obj.carrier := g.1
+
 namespace CuspMorphism
 
 variable {X Y Z : CuspObject (R := R)}
@@ -146,8 +151,7 @@ instance : Category (CuspObject (R := R)) where
   assoc := by intro W X Y Z f g h; ext; simp [CuspMorphism.comp, Category.assoc]
 
 /-- The cusp category as an object of the catalogue. -/
-noncomputable def cuspCategory (R : Type u) [CommRing R] (W : Type u) [AddCommGroup W]
-    [Module R W] : ObjCat.{u + 1, u} :=
+noncomputable def cuspCategory (R : Type u) [CommRing R] : ObjCat.{u + 1, u} :=
   Cat.of (CuspObject (R := R))
 
 /-- The canonical cusp object at a lattice: the pair with `Γ = O(L)`. -/
@@ -173,10 +177,9 @@ end CategoryId
 def CuspsExpr : CategoryExpr := .atom CategoryId.cusps
 
 /-- Its realization. -/
-noncomputable def cuspsRealization (R : Type u) [CommRing R] (W : Type u) [AddCommGroup W]
-    [Module R W] :
+noncomputable def cuspsRealization (R : Type u) [CommRing R] :
     CategoryRealization CuspsExpr
-      (LeanCategories.Lattices.Valued.cuspCategory (R := R) (W := W)) := {}
+      (LeanCategories.Lattices.Valued.cuspCategory (R := R)) := {}
 
 normalized_registry .category
   { id := CategoryId.cusps, name := "Cusps"
