@@ -158,10 +158,7 @@ noncomputable def fintypeCarrier (r : RankingData X I) (h : r.indexIsFinite) : F
   letI := Classical.choice h
   exact Fintype.ofEquiv I r.rank.symm
 
-/-- A finite ranking therefore has a finite carrier, which is what an enumerated set needs in order
-to iterate through its selected order. -/
-theorem carrier_finite (r : RankingData X I) (h : r.indexIsFinite) : Nonempty (Fintype X) :=
-  ⟨r.fintypeCarrier h⟩
+
 
 end RankingData
 
