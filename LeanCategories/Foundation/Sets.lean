@@ -161,6 +161,22 @@ noncomputable def fintypeCarrier (r : RankingData X I) (h : IsFiniteIndex I) : F
 
 
 
+/-- `rank` as a plain function on carriers, the underlying map of the ranking morphism. -/
+def rankFun (r : RankingData X I) : X → I := r.rank
+
+/-- `unrank` as a plain function on carriers, the underlying map of the inverse-ranking morphism. -/
+def unrankFun (r : RankingData X I) : I → X := r.unrank
+
+/-- `unrank` after `rank` is the identity: the composite law cited by the ranking morphism rows. -/
+theorem unrank_comp_rank (r : RankingData X I) : r.unrankFun ∘ r.rankFun = id := by
+  funext x
+  exact r.unrank_rank x
+
+/-- `rank` after `unrank` is the identity. -/
+theorem rank_comp_unrank (r : RankingData X I) : r.rankFun ∘ r.unrankFun = id := by
+  funext i
+  exact r.rank_unrank i
+
 end RankingData
 
 
