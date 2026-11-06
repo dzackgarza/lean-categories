@@ -156,10 +156,6 @@ def signature_text(path: Path, short: str) -> str | None:
     return None
 
 
-# kept for callers that still use the older name
-statement_text = signature_text
-
-
 def docstring_of(path: Path, short: str, full: str) -> tuple[str, bool]:
     """The original's docstring if it has one, else an authored one. Second component: authored?"""
     lines = path.read_text(encoding="utf-8").splitlines()
@@ -240,38 +236,59 @@ def explicit_binders(stmt: str) -> list[str]:
     return names
 
 
-def scope_context(path: Path, decl_line: int) -> tuple[str, int]:
-    """The scope in force at `decl_line`: namespace/section/open/variable lines, in order.
+def scope_context(path: Path, decl_line: int) -> tuple[str, str]:
+    """The scope in force at `decl_line`: scope lines with their indented continuations, in order.
 
-    This is the text Lean had in scope when it compiled the original declaration, so a verbatim
-    copy placed in the same scope compiles for the same reason the original does. Lines after the
-    declaration and lines inside sibling sections that have already been closed are excluded.
+    A `namespace`, `section`, `open`, `variable` or `universe` line in scope is reproduced together
+    with every following line indented more than it, up to the first line at its indentation or
+    less — that is a multi-line `variable` block or `open` list taken whole. An in-scope
+    `namespace X` becomes `open X`, so the card does not nest a second copy of the namespace.
     """
     lines = path.read_text(encoding="utf-8").splitlines()
     depth = 0
-    active: list[tuple[int, str]] = []      # (depth, text)
+    active: list[tuple[int, list[str]]] = []
     opener_names: list[str] = []
-    for line in lines[:decl_line]:
+    i = 0
+    while i < decl_line:
+        line = lines[i]
         stripped = line.strip()
-        if SCOPE_OPEN.match(line):
+        indent = len(line) - len(line.lstrip())
+        is_opener = SCOPE_OPEN.match(line) is not None
+        is_inner = SCOPE_INNER.match(line) is not None
+        if is_opener:
+            block = [stripped.startswith("namespace") and
+                     ("open " + stripped.split(None, 1)[1].strip()) or line.rstrip()]
+            j = i + 1
+            while j < decl_line and lines[j].strip() and                     (len(lines[j]) - len(lines[j].lstrip())) > indent:
+                block.append(lines[j].rstrip())
+                j += 1
             depth += 1
             opener_names.append(stripped)
-            active.append((depth, ("open " + stripped.split(None, 1)[1].strip())
-                           if stripped.startswith("namespace") else line.rstrip()))
-        elif stripped == "end" or re.match(r"^end\s+\S+$", stripped):
+            active.append((depth, block))
+            i = j
+            continue
+        if stripped == "end" or re.match(r"^end\s+\S+$", stripped):
             if depth > 0:
                 active = [a for a in active if a[0] < depth]
                 depth -= 1
                 if opener_names:
                     opener_names.pop()
-        elif SCOPE_INNER.match(line):
-            active.append((depth, line.rstrip()))
-    text = "\n".join(t for _, t in active)
-    closers = []
-    for o in reversed(opener_names):
-        closers.append(None) if False else None
-        if not o.startswith("namespace"):
-            closers.append("end")
+            i += 1
+            continue
+        if is_inner:
+            block = [line.rstrip()]
+            j = i + 1
+            while j < decl_line and lines[j].strip() and \
+                    (len(lines[j]) - len(lines[j].lstrip())) > indent:
+                block.append(lines[j].rstrip())
+                j += 1
+            active.append((depth, block))
+            i = j
+            continue
+        i += 1
+    text = "\n".join("\n".join(b) for _, b in active)
+    closers = ["end" if not o.startswith("namespace") else None for o in opener_names]
+    closers = [c for c in closers if c]
     return (text + "\n\n" if text else ""), "\n".join(closers)
 
 

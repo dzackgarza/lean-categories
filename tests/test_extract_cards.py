@@ -57,3 +57,17 @@ def test_single_line_signature():
 
 def test_missing_declaration_is_none():
     assert signature_text(CURVE, "no_such_declaration_here") is None
+
+
+def test_multiline_variable_block_is_captured_whole():
+    """A multi-line `variable` block is reproduced with its continuation lines (#59)."""
+    import re
+    from extract_cards import scope_context
+
+    lines = CURVE.read_text(encoding="utf-8").splitlines()
+    decl = next(i for i, l in enumerate(lines) if l.startswith("theorem contMDiff_data"))
+    text, _ = scope_context(CURVE, decl)
+    assert "variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]" in text
+    # the continuation lines of that block, indented past the `variable` keyword
+    assert "  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}" in text
+    assert "  {G : Type*} [TopologicalSpace G] [ChartedSpace H G] [Group G]" in text
