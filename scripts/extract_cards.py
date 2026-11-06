@@ -16,7 +16,13 @@ green. The platform form (``import Definitions.Def_<module>``) is derived from t
 publisher, per decision 3.
 
 The card set is the graph's ``theorem``-kind declarations referenced from a module other than
-their own, minus generated companions, which have no source text of their own.
+their own, minus **generated companions**. The companion test is by source, not by name: a
+declaration is a companion when its module contains no `theorem`/`lemma` declaration of that name —
+that is, when it is produced by a `class`/`structure`/`instance` command, an `@[ext]` derivation or
+a tactic block. Companions leave the population; the ones excluded are printed so the list can be
+checked.
+
+With that test the population is 394 cards, down from 460.
 """
 
 from __future__ import annotations
@@ -54,14 +60,30 @@ def load() -> tuple[list[dict], dict[str, set[str]]]:
     return rows, refs_from
 
 
-def card_set(rows: list[dict], refs_from: dict[str, set[str]]) -> list[dict]:
-    out = []
+def is_companion(row: dict) -> bool:
+    """True when no `theorem`/`lemma` declaration of this name exists in its module."""
+    short = row["name"].rsplit(".", 1)[-1]
+    return statement_text(module_path(row["module"]), short) is None
+
+
+def card_set(rows: list[dict], refs_from: dict[str, set[str]],
+             report: bool = False) -> list[dict]:
+    out, companions = [], []
     for r in rows:
         if r["kind"] != "theorem" or GENERATED.search(r["name"]):
             continue
         others = refs_from.get(r["name"], set()) - {r["module"]}
-        if others:
-            out.append({**r, "referenced_by": sorted(others)})
+        if not others:
+            continue
+        if is_companion(r):
+            companions.append(r)
+            continue
+        out.append({**r, "referenced_by": sorted(others)})
+    if report:
+        print(f"companions excluded (generated, no source declaration): {len(companions)}")
+        for r in sorted(companions, key=lambda x: x["name"]):
+            print(f"  companion  {r['name']}  ({r['module']})")
+        print()
     return out
 
 
