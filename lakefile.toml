@@ -31,3 +31,8 @@ name = "LeanCategories"
 name = "lean-categories-axiom-audit"
 root = "LeanCategories.Tools.AxiomAuditMain"
 supportInterpreter = true
+
+[[lean_exe]]
+name = "lean-categories-reference-graph"
+root = "LeanCategories.Tools.ReferenceGraphMain"
+supportInterpreter = true
