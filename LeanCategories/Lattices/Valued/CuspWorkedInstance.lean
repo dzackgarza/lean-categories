@@ -6,6 +6,7 @@ module
 
 public import LeanCategories.Lattices.Valued.CuspIsotropic
 public import LeanCategories.Lattices.Valued.CuspVector
+public import LeanCategories.Lattices.Valued.CuspHomFibre
 public import LeanCategories.Lattices.Valued.Standard
 
 /-!
@@ -30,6 +31,7 @@ a point.
 @[expose] public section
 
 open LeanCategories.Modules.Bilinear.Valued
+open LeanCategories.Modules.Quadratic.Valued
 
 namespace LeanCategories.Lattices.Valued
 
@@ -59,6 +61,7 @@ and the generators of a line differ by units. -/
 instance twoHyperbolicPlanesCarrierTorsionFree :
     NoZeroSMulDivisors ℤ ↥twoHyperbolicPlanes.obj.carrier :=
   inferInstanceAs (NoZeroSMulDivisors ℤ (Fin 4 → ℤ))
+attribute [local instance 10000] twoHyperbolicPlanesCarrierTorsionFree
 
 /-- The pairing is the split-coordinate dot product plus its flip. -/
 theorem twoHyperbolicPlanes_pairing (x y : Fin 4 → ℤ) :
@@ -1191,4 +1194,114 @@ theorem twoHyperbolicPlanes_vectorOrbit_single :
   obtain ⟨g, hg⟩ := twoHyperbolicPlanes_vectorOrbit_unique u w
   exact ⟨⟨g, by rw [twoHyperbolicPlanesGamma_toSubgroup]; exact Subgroup.mem_top g⟩, hg⟩
 
+
+attribute [local instance 10000] Submodule.Quotient.module
+
+/-- `U ⊕ U` is even: the diagonal of its form vanishes in the standard basis, so the basis
+criterion `isEven_of_basis` applies. -/
+theorem twoHyperbolicPlanes_isEven : IsEven twoHyperbolicPlanes := by
+  apply isEven_of_basis twoHyperbolicPlanes (Pi.basisFun ℤ (Fin 4))
+  intro i
+  rw [Ideal.mem_span_singleton]
+  refine ⟨0, ?_⟩
+  change twoHyperbolicPlanes.obj.pairing ((Pi.basisFun ℤ (Fin 4)) i)
+      ((Pi.basisFun ℤ (Fin 4)) i) = 2 * 0
+  fin_cases i <;> simp [twoHyperbolicPlanes_pairing]
+
+/-- The quadratic discriminant representation of `U ⊕ U` is surjective onto the whole quadratic
+orthogonal group `O(q_{U ⊕ U})`: the quadratic discriminant module is a subsingleton (the
+lattice is
+unimodular), so every quadratic isometry is the identity, and the identity isometry is a preimage.
+This is the explicit surjectivity hypothesis of `vectorFibreEquivQuadraticSurjective`, proved
+rather than assumed. -/
+theorem twoHyperbolicPlanes_quadraticRepresentation_surjective :
+    Function.Surjective (OrthogonalGroup.evenDiscriminantRepresentation
+      twoHyperbolicPlanes_isFractionFieldPerfect twoHyperbolicPlanes_isEven) := by
+  letI : Subsingleton (evenDiscriminantQuadraticObject twoHyperbolicPlanes
+      twoHyperbolicPlanes_isFractionFieldPerfect twoHyperbolicPlanes_isEven).carrier :=
+    twoHyperbolicPlanes_defect_subsingleton
+  intro y
+  refine ⟨1, ?_⟩
+  apply Subtype.ext
+  apply LinearEquiv.ext
+  intro x
+  exact Subsingleton.elim _ _
+
+/-- The kernel of the quadratic representation of `U ⊕ U` is all of `O(L)` — the discriminant is
+trivial, so every isometry acts as the identity on it — and hence has finite index (index 1). This
+is the finiteness hypothesis of `vectorFibreEquivQuadraticSurjective`, proved rather than assumed;
+it also identifies the theorem's `Γ = ker ρ` with `O(L)`, as in the line formulation. -/
+theorem twoHyperbolicPlanes_quadratic_kernel_finiteIndex :
+    (MonoidHom.ker (OrthogonalGroup.evenDiscriminantRepresentation
+      twoHyperbolicPlanes_isFractionFieldPerfect twoHyperbolicPlanes_isEven)).FiniteIndex := by
+  have hk : MonoidHom.ker (OrthogonalGroup.evenDiscriminantRepresentation
+      twoHyperbolicPlanes_isFractionFieldPerfect twoHyperbolicPlanes_isEven) = ⊤ := by
+    refine (Subgroup.eq_top_iff' _).mpr (fun g => ?_)
+    letI : Subsingleton (evenDiscriminantQuadraticObject twoHyperbolicPlanes
+        twoHyperbolicPlanes_isFractionFieldPerfect twoHyperbolicPlanes_isEven).carrier :=
+      twoHyperbolicPlanes_defect_subsingleton
+    rw [MonoidHom.mem_ker]
+    apply Subtype.ext
+    apply LinearEquiv.ext
+    intro x
+    exact Subsingleton.elim _ _
+  refine ⟨?_⟩
+  rw [hk, Subgroup.index_top]
+  norm_num
+
+/-- The discriminant class `[v/d]` of the standard vector of `U ⊕ U`, read in the quadratic
+discriminant module: the image of the lift `toMetricDual v` under the discriminant projection,
+which is `[v/d]` for the divisor `d = 1`. That the divisor is `1` is unimodularity: the defect of
+`U ⊕ U` is trivial (`twoHyperbolicPlanes_defect_subsingleton`), so by
+`isUnimodular_iff_toMetricDual_surjective` the metric dual is the integral image and the primitive
+lift of `v` in `L^∨` is `toMetricDual v` itself. -/
+noncomputable def twoHyperbolicPlanesQuadraticClass :
+    quadraticDiscriminantCarrier twoHyperbolicPlanes_isFractionFieldPerfect
+      twoHyperbolicPlanes_isEven :=
+  metricDualToDiscriminant ℤ twoHyperbolicPlanes
+    (toMetricDual ℤ twoHyperbolicPlanes twoHyperbolicPlanesVector.toVector)
+
+/-- The class `[v/d]` is trivial: the lift `toMetricDual v` lies in the image of `toMetricDual`,
+which is exactly the kernel of the discriminant projection. -/
+theorem twoHyperbolicPlanesQuadraticClass_eq_zero :
+    twoHyperbolicPlanesQuadraticClass = 0 := by
+  letI : Subsingleton (evenDiscriminantQuadraticObject twoHyperbolicPlanes
+      twoHyperbolicPlanes_isFractionFieldPerfect twoHyperbolicPlanes_isEven).carrier :=
+    twoHyperbolicPlanes_defect_subsingleton
+  exact Subsingleton.elim _ _
+
+/-- Every isometry stabilizing the standard vector fixes its discriminant class: the quadratic
+discriminant module of `U ⊕ U` is a subsingleton, so the fixation is automatic — but it is the
+`hstab` hypothesis of the fibre theorem, stated and proved rather than assumed. -/
+theorem twoHyperbolicPlanes_quadratic_stabilizer_fixes_class
+    (h : OrthogonalGroup twoHyperbolicPlanes)
+    (_hf : h • twoHyperbolicPlanesVector = twoHyperbolicPlanesVector) :
+    OrthogonalGroup.evenDiscriminantRepresentation twoHyperbolicPlanes_isFractionFieldPerfect
+        twoHyperbolicPlanes_isEven h • twoHyperbolicPlanesQuadraticClass =
+      twoHyperbolicPlanesQuadraticClass := by
+  letI : Subsingleton (evenDiscriminantQuadraticObject twoHyperbolicPlanes
+      twoHyperbolicPlanes_isFractionFieldPerfect twoHyperbolicPlanes_isEven).carrier :=
+    twoHyperbolicPlanes_defect_subsingleton
+  exact Subsingleton.elim _ _
+
+set_option maxHeartbeats 1200000 in
+-- instantiating the theorem re-elaborates the nested DoubleCoset/quotient-of-subgroup type
+/-- **The `U ⊕ U` instance through the quadratic-discriminant fibre theorem** (#113): for
+`L = U ⊕ U` (even, unimodular), `v` the standard primitive isotropic vector with divisor `d = 1`
+and class `[v/d] = 0`, the fibre of the discriminant-class map `ker ρ · g · Stab(v) ↦
+`ρ(g)·[v/d]`
+over `[v/d]` is the stabilizer of `[v/d]` in `O(q_{U ⊕ U})` modulo `ρ(Stab_{O(L)}(v))`. Every
+hypothesis of `vectorFibreEquivQuadraticSurjective` is discharged by a proved fact of this lattice:
+surjectivity of the quadratic representation and the stabilizer fixation of the class; the
+kernel is all of `O(L)` and so has finite index
+(`twoHyperbolicPlanes_quadratic_kernel_finiteIndex`),
+which identifies the theorem's `Γ = ker ρ` with `O(L)`. -/
+noncomputable def twoHyperbolicPlanesQuadraticFibre :=
+  @vectorFibreEquivQuadraticSurjective ℤ _ _ twoHyperbolicPlanes
+    twoHyperbolicPlanesCarrierTorsionFree
+    twoHyperbolicPlanes_isFractionFieldPerfect twoHyperbolicPlanes_isEven
+    twoHyperbolicPlanesVector twoHyperbolicPlanesQuadraticClass
+    (fun s hs => twoHyperbolicPlanes_quadratic_stabilizer_fixes_class s
+      (MulAction.mem_stabilizer_iff.mp hs))
+    twoHyperbolicPlanes_quadraticRepresentation_surjective
 end LeanCategories.Lattices.Valued
