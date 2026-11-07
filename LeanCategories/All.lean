@@ -300,6 +300,7 @@ public import LeanCategories.Catalogue.Semantics.Foundation.FiniteOrders
 public import LeanCategories.Lattices.Valued.Cusps
 public import LeanCategories.Lattices.Valued.CuspDescent
 public import LeanCategories.Lattices.Valued.CuspIsotropic
+public import LeanCategories.Lattices.Valued.CuspVector
 public import LeanCategories.Lattices.Valued.CuspWorkedInstance
 
 @[expose] public section

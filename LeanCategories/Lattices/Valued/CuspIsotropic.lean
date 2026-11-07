@@ -243,6 +243,18 @@ noncomputable instance rangeDefect (hL : IsFractionFieldPerfect R L) :
       BilinModuleCat.OrthogonalGroup (discriminantBilinObject R L hL) from
       Subgroup.subtype _)
 
+/-- The discriminant range acts on the discriminant module itself, by restriction of scalars. The
+submodule action above is used for isotropic subgroups; this one is what the stabilizer of a
+*discriminant class* needs. It is written out rather than obtained from `MulAction.compHom`, because
+the orthogonal group of the discriminant bilinear object acts on that object's carrier, which type
+class search does not identify with `L.obj.defect`. -/
+noncomputable instance rangeDefectPoint (hL : IsFractionFieldPerfect R L) :
+    MulAction ↥(OrthogonalGroup.discriminantRepresentation hL).range L.obj.defect where
+  smul x c := (x.1.1 : (discriminantBilinObject R L hL).carrier ≃ₗ[R]
+    (discriminantBilinObject R L hL).carrier) c
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
+
 theorem CuspOrbits.isotropicSubgroup_cuspOrbitOfDoset
     (hL : IsFractionFieldPerfect R L) (hΓ : (OrthogonalGroup.stableOrthogonalGroup hL).FiniteIndex)
     {k : ℕ} (N : PrimitiveIsotropic L k)

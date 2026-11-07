@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 module
 
 public import LeanCategories.Lattices.Valued.CuspIsotropic
+public import LeanCategories.Lattices.Valued.CuspVector
 public import LeanCategories.Lattices.Valued.Standard
 
 /-!
@@ -52,6 +53,12 @@ def twoHyperbolicPlanes : IntegralLatticeCat ℤ :=
     show x 0 * y 1 + x 1 * y 0 + x 2 * y 3 + x 3 * y 2 =
       y 0 * x 1 + y 1 * x 0 + y 2 * x 3 + y 3 * x 2
     ring⟩
+
+/-- The carrier of `U ⊕ U` is `ℤ⁴`, hence torsion-free: what makes the line of a vector primitive
+and the generators of a line differ by units. -/
+instance twoHyperbolicPlanesCarrierTorsionFree :
+    NoZeroSMulDivisors ℤ ↥twoHyperbolicPlanes.obj.carrier :=
+  inferInstanceAs (NoZeroSMulDivisors ℤ (Fin 4 → ℤ))
 
 /-- The pairing is the split-coordinate dot product plus its flip. -/
 theorem twoHyperbolicPlanes_pairing (x y : Fin 4 → ℤ) :
@@ -1061,5 +1068,127 @@ noncomputable def twoHyperbolicPlanesCuspUnique :
       | _ M =>
         exact congrArg (fun s => s.1.1) (Subsingleton.elim (fibreOf N) (fibreOf M))
   exact uniqueOfSubsingleton (CuspOrbits.mk _ standardLine)
+
+
+/-! ## The vector form of the worked instance
+
+Issue #113 states the worked instance for primitive isotropic **vectors** of `U ⊕ U`; the section
+above counts **line** orbits. The two are related by `PrimitiveIsotropicVector.toLine`, and the
+transitivity of `O(L)` on primitive isotropic vectors is `exists_isometry_apply_eq`, proved above for
+the normal-form argument. Both formulations are recorded here, together with the two facts that make
+the passage exact: the standard vector spans the standard line, and the sign `-1` lies in `Γ = O(L)`,
+so the unit ambiguity of a line's generators is invisible on `Γ`-orbits. -/
+
+/-- The line spanned by the standard vector is primitive: the other three coordinates of a vector
+annihilated into the line by a nonzero scalar vanish. -/
+theorem standardVector_primitiveSpan :
+    IsPrimitiveSubmodule (Submodule.span ℤ {standardVector}) := by
+  rw [isPrimitiveSubmodule_iff_saturation_eq]
+  refine le_antisymm ?_ (le_saturation _)
+  intro x hx
+  obtain ⟨r, hr, hrx⟩ :=
+    (mem_saturation_iff (R := ℤ) (Submodule.span ℤ {standardVector}) x).mp hx
+  rw [Submodule.mem_span_singleton] at hrx ⊢
+  obtain ⟨c, hc⟩ := hrx
+  refine ⟨x 0, ?_⟩
+  funext i
+  fin_cases i
+  · simp [standardVector, smul_eq_mul]
+  · have h := congrFun hc 1
+    simp only [standardVector, Pi.smul_apply, smul_eq_mul, Matrix.cons_val_zero,
+      Matrix.cons_val_one, Matrix.cons_val_two, Matrix.cons_val_three, Matrix.head_cons,
+      Matrix.tail_cons, mul_zero, zero_mul] at h
+    have hx' : x 1 = 0 := (mul_eq_zero.mp h.symm).resolve_left hr
+    simp [hx', standardVector, smul_eq_mul]
+  · have h := congrFun hc 2
+    simp only [standardVector, Pi.smul_apply, smul_eq_mul, Matrix.cons_val_zero,
+      Matrix.cons_val_one, Matrix.cons_val_two, Matrix.cons_val_three, Matrix.head_cons,
+      Matrix.tail_cons, mul_zero, zero_mul] at h
+    have hx' : x 2 = 0 := (mul_eq_zero.mp h.symm).resolve_left hr
+    simp [hx', standardVector, smul_eq_mul]
+  · have h := congrFun hc 3
+    simp only [standardVector, Pi.smul_apply, smul_eq_mul, Matrix.cons_val_zero,
+      Matrix.cons_val_one, Matrix.cons_val_two, Matrix.cons_val_three, Matrix.head_cons,
+      Matrix.tail_cons, mul_zero, zero_mul] at h
+    have hx' : x 3 = 0 := (mul_eq_zero.mp h.symm).resolve_left hr
+    simp [hx', standardVector, smul_eq_mul]
+
+/-- The standard vector as a primitive isotropic vector. -/
+noncomputable def twoHyperbolicPlanesVector : PrimitiveIsotropicVector twoHyperbolicPlanes where
+  toVector := standardVector
+  nonzero := by
+    intro h
+    have h0 := congrFun h 0
+    simp only [standardVector, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_two,
+      Matrix.cons_val_three, Matrix.head_cons, Matrix.tail_cons, Pi.zero_apply] at h0
+    exact one_ne_zero h0
+  isotropic := by
+    rw [twoHyperbolicPlanes_pairing]
+    simp [standardVector]
+  indivisible := by
+    intro c w hw
+    have h0 := congrFun hw 0
+    simp only [standardVector, Pi.smul_apply, smul_eq_mul, Matrix.cons_val_zero,
+      Matrix.cons_val_one, Matrix.cons_val_two, Matrix.cons_val_three, Matrix.head_cons,
+      Matrix.tail_cons, mul_one] at h0
+    exact isUnit_iff_exists.mpr ⟨w 0, h0.symm, by rw [mul_comm]; exact h0.symm⟩
+  primitiveSpan := standardVector_primitiveSpan
+
+@[simp]
+theorem twoHyperbolicPlanesVector_toVector :
+    twoHyperbolicPlanesVector.toVector = standardVector :=
+  rfl
+
+/-- The standard vector generates the standard line. This is the submodule form of
+`PrimitiveIsotropicVector.toLine twoHyperbolicPlanesVector = standardLine`, stated without the
+torsion-freeness instance that `toLine` carries as an argument: `toLine_toSubmodule` turns one into
+the other. -/
+theorem twoHyperbolicPlanesVector_span :
+    Submodule.span ℤ {twoHyperbolicPlanesVector.toVector} = standardLine.toSubmodule :=
+  rfl
+
+/-- **The vector-orbit result**: `O(L)` is transitive on primitive isotropic vectors of `U ⊕ U`.
+This is `exists_isometry_apply_eq`, the transitivity proved for the normal form, read on the type of
+primitive isotropic vectors. -/
+theorem twoHyperbolicPlanes_vectorTransitive (u : PrimitiveIsotropicVector twoHyperbolicPlanes) :
+    ∃ g : OrthogonalGroup twoHyperbolicPlanes, g • twoHyperbolicPlanesVector = u := by
+  have hdiv : ∀ (c : ℤ) (w : Fin 4 → ℤ), u.toVector = c • w → c = 1 ∨ c = -1 := by
+    intro c w hw
+    exact Int.isUnit_iff.mp (u.indivisible c w hw)
+  obtain ⟨g, hg⟩ := exists_isometry_apply_eq u.toVector u.nonzero u.isotropic hdiv
+  refine ⟨g⁻¹, ?_⟩
+  apply PrimitiveIsotropicVector.ext
+  rw [PrimitiveIsotropicVector.smul_toVector, twoHyperbolicPlanesVector_toVector]
+  show (g⁻¹).1 standardVector = u.toVector
+  rw [← hg]
+  simp
+
+/-- Transitivity in the form used for orbits: any two primitive isotropic vectors are related by an
+isometry. -/
+theorem twoHyperbolicPlanes_vectorOrbit_unique (u w : PrimitiveIsotropicVector twoHyperbolicPlanes) :
+    ∃ g : OrthogonalGroup twoHyperbolicPlanes, g • u = w := by
+  obtain ⟨g₁, h₁⟩ := twoHyperbolicPlanes_vectorTransitive u
+  obtain ⟨g₂, h₂⟩ := twoHyperbolicPlanes_vectorTransitive w
+  refine ⟨g₂ * g₁⁻¹, ?_⟩
+  have hstep : g₁⁻¹ • u = twoHyperbolicPlanesVector := by
+    rw [← h₁, inv_smul_smul]
+  rw [mul_smul, hstep, h₂]
+
+/-- The sign `-1` lies in `Γ = O(L)`: the two generators of a primitive isotropic line are therefore
+in the same `Γ`-orbit, so the vector formulation and the line formulation of the worked instance
+count the same orbits. -/
+theorem twoHyperbolicPlanes_neg_mem :
+    negGroup ∈ twoHyperbolicPlanesGamma.toSubgroup := by
+  rw [twoHyperbolicPlanesGamma_toSubgroup]
+  exact Subgroup.mem_top _
+
+/-- The worked instance in the issue's vector formulation: with `Γ = O(L)`, the primitive isotropic
+vectors of `U ⊕ U` form a single `Γ`-orbit. -/
+theorem twoHyperbolicPlanes_vectorOrbit_single :
+    ∀ u w : PrimitiveIsotropicVector twoHyperbolicPlanes,
+      ∃ γ : twoHyperbolicPlanesGamma.toSubgroup, γ • u = w := by
+  intro u w
+  obtain ⟨g, hg⟩ := twoHyperbolicPlanes_vectorOrbit_unique u w
+  exact ⟨⟨g, by rw [twoHyperbolicPlanesGamma_toSubgroup]; exact Subgroup.mem_top g⟩, hg⟩
 
 end LeanCategories.Lattices.Valued
